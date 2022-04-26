@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
-module LinkAuto (linkAuto, linkAutoFiltered) where
+module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-04-25 18:44:37 gwern"
+When:  Time-stamp: "2022-04-26 19:50:32 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -312,7 +312,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Czeslaw Milosz|Czesław Miłosz|Miłosz|Milosz)", "https://en.wikipedia.org/wiki/Czeslaw_Milosz")
         , ("(DAICON III|DAICON IV)", "https://en.wikipedia.org/wiki/Daicon_III_and_IV_Opening_Animations")
         , ("(Deep[Mm]ind.?Lab|DM[Ll]ab-30|DM[Ll]ab)", "https://arxiv.org/abs/1612.03801#deepmind")
-        , ("(Dungeons (&|and) Dragons|D&D)", "https://en.wikipedia.org/wiki/Dungeons_%26_Dragons")
+        , ("(Dungeons (&|and) Dragons|D&D)", "https://en.wikipedia.org/wiki/Dungeons_&amp;_Dragons")
         , ("(EHR|[Ee]lectronic [Hh]ealth [Rr]ecords?)", "https://en.wikipedia.org/wiki/Electronic_health_record")
         , ("(EV|[Ee]xpected[ -][Vv]alue)", "https://en.wikipedia.org/wiki/Expected_value")
         , ("(Edward N. Luttwak|Edward Luttwak|Luttwak)", "https://en.wikipedia.org/wiki/Edward_Luttwak")

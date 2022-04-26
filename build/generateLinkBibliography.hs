@@ -32,8 +32,9 @@ import Control.Monad.Parallel as Par (mapM_)
 import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(Para, OrderedList), Pandoc(..))
 import Text.Pandoc.Walk (walk)
 
-import LinkMetadata (generateAnnotationBlock, parseRawBlock, readLinkMetadata, authorsTruncate, Metadata, MetadataItem)
+import LinkAuto (cleanUpDivsEmpty)
 import LinkBacklink (getBackLink, getSimilarLink)
+import LinkMetadata (generateAnnotationBlock, parseRawBlock, readLinkMetadata, authorsTruncate, Metadata, MetadataItem)
 import Query (extractURLs)
 import Utils (writeUpdatedFile)
 
@@ -95,7 +96,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
               Str ":" : Space :
               Link nullAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
 -- long items:
-generateLinkBibliographyItem (f,a,bl,sl) = walk (parseRawBlock nullAttr) $ generateAnnotationBlock ("/"`isPrefixOf`f) True False (f,Just a) bl sl
+generateLinkBibliographyItem (f,a,bl,sl) = walk cleanUpDivsEmpty $ walk (parseRawBlock nullAttr) $ generateAnnotationBlock ("/"`isPrefixOf`f) True False (f,Just a) bl sl
 
 extractLinksFromPage :: String -> IO [String]
 extractLinksFromPage path = do f <- TIO.readFile path
