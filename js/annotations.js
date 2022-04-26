@@ -220,7 +220,7 @@ Annotations = {
             tagsHTML:       (tagsElement ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>` : ``),
             backlinksHTML:  (backlinksElement ? `<span class="data-field backlinks">${backlinksElement.innerHTML}</span>` : ``),
             similarHTML:    (similarElement ? `<span class="data-field similars" >${similarElement.innerHTML}</span>` : ``),
-            abstract:   	Extracts.newDocument(referenceEntry.querySelector("blockquote div").children)
+            abstract:   	Extracts.newDocument(referenceEntry.querySelector("blockquote").children)
         };
     },
 
