@@ -255,6 +255,9 @@ else
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s'; }
     wrap λ "Stray links in Markdown/HTML."
 
+    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '<div>' | fgrep -v -e 'I got around this by adding in the Hakyll template an additional'; }
+    wrap λ "Stray <div>?"
+
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '.invertible-not}{' -e '.invertibleNot' -e '.invertible-Not' -e '{.sallcaps}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'tex-logotype'; }
     wrap λ "Misspelled/outdated classes in Markdown/HTML."
 
@@ -449,7 +452,7 @@ else
     ## Randomize sync type—usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
     bold "Syncing everything else…"
     SPEED=""; if ((RANDOM % 100 < 99)); then SPEED="--size-only"; else SPEED="--delete --checksum"; fi;
-    rsync --exclude=".*" --chmod='a+r' --recursive --delete --checksum --copy-links --verbose --itemize-changes --stats ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
+    rsync --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
     set +e
 
     bold "Expiring ≤100 updated files…"
@@ -476,6 +479,9 @@ else
             --data "{\"files\":[\"$CHECK_RANDOM\"]}" > /dev/null; )
     # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
     (sleep 20s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM"; sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM&no_referer=on"; )
+
+    # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
+    if ((RANDOM % 100 < 99)); then $X_BROWSER "https://wave.webaim.org/report#/$CHECK_RANDOM"; fi
 
     # Testing post-sync:
     bold "Checking MIME types, redirects, content…"
