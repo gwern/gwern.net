@@ -803,6 +803,8 @@ function rewriteFootnoteBackLinks(loadEventInfo) {
 
 	requestIdleCallback(() => {
 		let size = parseInt(getComputedStyle(footnotesSection).fontSize);
+		if (size == 0)
+			return;
 		footnotes.forEach(footnote => {
 			let arrow = footnote.querySelector(".footnote-back img");
 			arrow.width = size;
@@ -908,7 +910,8 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     rewriteFootnoteBackLinks(info);
 }, {
 	phase: "rewrite",
-	condition: (info) => (info.needsRewrite && info.isFullPage)
+	condition: (info) => (   info.needsRewrite 
+						  && info.isFullPage)
 });
 
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.injectFootnotesTOCLink = (info) => {
