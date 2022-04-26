@@ -234,7 +234,7 @@ Extracts = { ...Extracts, ...{
             return target.hash.startsWith("#sn")
                    ? blockElement.querySelector(".sidenote-inner-wrapper")
                    : blockElement;
-        });
+        }, true);
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
@@ -315,7 +315,7 @@ Extracts = { ...Extracts, ...{
     citationBackLinkForTarget: (target) => {
         GWLog("Extracts.citationBackLinkForTarget", "extracts-content.js", 2);
 
-        return Extracts.localTranscludeForTarget(target);
+        return Extracts.localTranscludeForTarget(target, null, true);
     },
 
     /*  This “special testing function” is used to exclude certain targets which
@@ -373,7 +373,7 @@ Extracts = { ...Extracts, ...{
 
 		//	Hyphenate.
 		if (Hyphenopoly.hyphenators)
-			hyphenateWithin(popFrame);
+			hyphenateWithin(popup);
     }
 }};
 

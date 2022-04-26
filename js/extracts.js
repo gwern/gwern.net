@@ -384,7 +384,7 @@ Extracts = {
     //  Called by: Extracts.localTranscludeForTarget
     //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
     nearestBlockElement: (element) => {
-        return element.closest("section, .footnote, .sidenote, #markdownBody > *");
+        return element.closest("section, .footnote, .sidenote, .markdownBody > *");
     },
 
     /*  This function fills a pop-frame for a given target with content. It
@@ -600,10 +600,12 @@ Extracts = {
     //  Called by: Extracts.fillPopFrame (as `popFrameFillFunctionName`)
     //	Called by: Extracts.citationForTarget (extracts-content.js)
     //	Called by: Extracts.citationBackLinkForTarget (extracts-content.js)
-    localTranscludeForTarget: (target, unwrapFunction = ((blockElement) => {
-			return (blockElement.tagName == "SECTION" ? blockElement.children : blockElement);
-		})) => {
+    localTranscludeForTarget: (target, unwrapFunction, forceNarrow) => {
         GWLog("Extracts.localTranscludeForTarget", "extracts.js", 2);
+
+		unwrapFunction = unwrapFunction || ((blockElement) => {
+			return (blockElement.tagName == "SECTION" ? blockElement.children : blockElement);
+		});
 
         /*  Check to see if the target location matches an already-displayed
             page (which can be the root page of the window).
@@ -618,6 +620,7 @@ Extracts = {
         let fullTargetDocument = Extracts.targetDocument(target);
         if (   target.hash > ""
         	&& (   fullTargetDocument
+        		|| forceNarrow
         		|| target.closest(".TOC"))) {
         	/*	Fall back to loaded and cached full page, if it exists but is
         		not displayed in a pop-frame.
@@ -629,6 +632,7 @@ Extracts = {
             	let linkedElement = fullTargetDocument.querySelector(selectorFromHash(target.hash));
 				return Extracts.newDocument(unwrapFunction(Extracts.nearestBlockElement(linkedElement)));
 			} else {
+				//	If the page hasn’t been loaded yet, load it.
 				Extracts.refreshPopFrameAfterLocalPageLoads(target);
 
 				return Extracts.newDocument();
