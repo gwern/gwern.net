@@ -732,6 +732,11 @@ Extracts = {
             popFrameTitleText = nearestBlockElement.tagName == "SECTION"
                                 ? nearestBlockElement.firstElementChild.textContent
                                 : target.hash;
+			/*	Special case for the Footnotes section, which has no heading 
+				associated with it, and thus no text to use as a section title.
+			 */
+			if (nearestBlockElement.id == "footnotes")
+				popFrameTitleText = "Footnotes";
         } else {
             if (popFrame.classList.contains("external-page-embed")) {
                 //  Entire other pages.
@@ -745,6 +750,12 @@ Extracts = {
 					popFrameTitleText = nearestBlockElement.tagName == "SECTION"
 										? `${nearestBlockElement.firstElementChild.textContent} (${pageTitleOrPath})`
 										: `${target.hash} (${pageTitleOrPath})`;
+					/*	Special case for the Footnotes section, which has no
+						heading associated with it, and thus no text to use as
+						a section title.
+					 */
+					if (nearestBlockElement.id == "footnotes")
+						popFrameTitleText = `Footnotes (${pageTitleOrPath})`;
                 } else {
                 	popFrameTitleText = target.pathname + target.hash;
                 }
@@ -758,7 +769,7 @@ Extracts = {
                 to a link or some other element. In that case, we don’t want a
                 section mark!
              */
-            && !(popFrameTitleText.startsWith("#"))
+            && !popFrameTitleText.startsWith("#")
             && !popFrame.classList.contains("external-page-embed"))
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
