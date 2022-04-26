@@ -604,7 +604,10 @@ Extracts = {
         GWLog("Extracts.localTranscludeForTarget", "extracts.js", 2);
 
 		unwrapFunction = unwrapFunction || ((blockElement) => {
-			return (blockElement.tagName == "SECTION" ? blockElement.children : blockElement);
+			return ((   blockElement.tagName == "SECTION" 
+					 && blockElement.id != "footnotes")
+					? blockElement.children 
+					: blockElement);
 		});
 
         /*  Check to see if the target location matches an already-displayed
