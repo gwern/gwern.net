@@ -434,6 +434,57 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 //     return container.innerHTML;
 // }
 
+/******************************************************************/
+/*	Configure Hyphenopoly.
+
+    Requires Hyphenopoly_Loader.js to be loaded prior to this file.
+ */
+Hyphenopoly.config({
+	require: {
+		"en-us": "FORCEHYPHENOPOLY"
+	},
+	setup: {
+		hide: "none",
+		keepAlive: true,
+		safeCopy: true
+	}
+});
+
+/******************************************************************/
+/*	Hyphenate with Hyphenopoly.
+
+    Requires Hyphenopoly_Loader.js to be loaded prior to this file.
+ */
+function hyphenate(loadEventInfo) {
+    GWLog("hyphenate", "rewrite.js", 1);
+
+	if (GW.isX11())
+		return;
+
+	let selector = ".markdownBody p";
+
+	if (Hyphenopoly.hyphenators)
+		Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
+			loadEventInfo.document.querySelectorAll(selector).forEach(block => {
+				hyphenate(block);
+			});
+		});
+}
+
+/*******************************************/
+/*  Add content load handler for typography.
+ */
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.typography = (info) => {
+    GWLog("GW.rewriteFunctions.typography", "rewrite.js", 2);
+
+	hyphenate(info);
+}, {
+	phase: "rewrite",
+	condition: (info) => (   info.isMainDocument == false
+						  || (   info.needsRewrite
+						  	  && GW.isMobile()))
+});
+
 
 /*********************/
 /* FULL-WIDTH BLOCKS */

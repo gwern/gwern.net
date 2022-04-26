@@ -295,10 +295,6 @@ Extracts = { ...Extracts, ...{
             flags: 0
         });
 
-		//	Hyphenate.
-		if (Hyphenopoly.hyphenators)
-			hyphenateWithin(popFrame);
-
         //  Scroll to the target.
         if (target.hash > "") {
             requestAnimationFrame(() => {

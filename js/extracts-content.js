@@ -129,10 +129,6 @@ Extracts = { ...Extracts, ...{
             location: Extracts.locationForTarget(target),
             flags: 0
         });
-
-		//	Hyphenate.
-		if (Hyphenopoly.hyphenators)
-			hyphenateWithin(popFrame);
     },
 
     /*  Page or document for whom the aux-links are.
@@ -286,10 +282,6 @@ Extracts = { ...Extracts, ...{
             location: Extracts.locationForTarget(target),
             flags: 0
         });
-
-		//	Hyphenate.
-		if (Hyphenopoly.hyphenators)
-			hyphenateWithin(popFrame);
     },
 }};
 
@@ -370,10 +362,6 @@ Extracts = { ...Extracts, ...{
             location: Extracts.locationForTarget(target),
             flags: 0
         });
-
-		//	Hyphenate.
-		if (Hyphenopoly.hyphenators)
-			hyphenateWithin(popup);
     }
 }};
 

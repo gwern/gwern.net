@@ -790,10 +790,6 @@ Extracts = {
             flags: 0
         });
 
-		//	Hyphenate.
-		if (Hyphenopoly.hyphenators)
-			hyphenateWithin(popFrame);
- 
 		//	Lazy-loading of adjacent sections.
 		//	WARNING: Experimental code!
 // 		if (target.hash > "") {
