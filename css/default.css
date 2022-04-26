@@ -3021,7 +3021,10 @@ body.index-directory #footer {
     overflow: unset;
 }
 
-.popframe:not(.zoomed) p + p {
+.popframe:not(.zoomed) p + p,
+.popframe:not(.zoomed) p + figure[class^='float-'] + p,
+.popframe:not(.zoomed) div[class^='drop-cap-'] + p,
+.popframe:not(.zoomed) .abstract.scrape-abstract-not + p, {
     text-indent: 1.75em;
 }
 

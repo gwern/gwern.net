@@ -1078,7 +1078,7 @@ function applyDropCapsClasses(loadEventInfo) {
     let dropCapBlocksSelector = [
     	".markdownBody > p:first-child",
     	".markdownBody > .epigraph:first-child + p",
-    	".markdownBody .abstract + p"
+    	".markdownBody .abstract:not(.scrape-abstract-not) + p"
     ].join(", ");
     let dropCapClass = Array.from(loadedDocBody.classList).find(cssClass => cssClass.startsWith("drop-caps-"));
     if (dropCapClass)
