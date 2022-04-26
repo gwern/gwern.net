@@ -688,6 +688,8 @@ Extracts = {
     //  Called by: Extracts.preparePopFrame (as `preparePopFrame_${targetTypeName}`)
     //	Called by: Extracts.preparePopup_LOCAL_PAGE
 	preparePopFrame_LOCAL_PAGE: (popFrame) => {
+        GWLog("Extracts.preparePopFrame_LOCAL_PAGE", "extracts.js", 2);
+
 		//	Add to a full-page pop-frame the body classes of the page.
 		if (   popFrame.classList.contains("external-page-embed")
 			&& Extracts.cachedPageBodyClasses[popFrame.spawningTarget.pathname] > null)
@@ -698,6 +700,8 @@ Extracts = {
 
     //  Called by: Extracts.preparePopup (as `preparePopup_${targetTypeName}`)
     preparePopup_LOCAL_PAGE: (popup) => {
+        GWLog("Extracts.preparePopup_LOCAL_PAGE", "extracts.js", 2);
+
         let target = popup.spawningTarget;
 
 		popup = Extracts.preparePopFrame_LOCAL_PAGE(popup);
@@ -713,6 +717,8 @@ Extracts = {
 
     //  Called by: Extracts.titleForPopFrame (as `titleForPopFrame_${targetTypeName}`)
     titleForPopFrame_LOCAL_PAGE: (popFrame) => {
+        GWLog("Extracts.titleForPopFrame_LOCAL_PAGE", "extracts.js", 2);
+
         let target = popFrame.spawningTarget;
 
         let popFrameTitleText;
@@ -760,6 +766,8 @@ Extracts = {
     //  Called by: Extracts.rewritePopinContent (as `rewritePopFrameContent_${targetTypeName}`)
     //  Called by: Extracts.rewritePopupContent (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_PAGE: (popFrame) => {
+        GWLog("Extracts.rewritePopFrameContent_LOCAL_PAGE", "extracts.js", 2);
+
         let target = popFrame.spawningTarget;
 
         //  Qualify internal links in the pop-frame.
@@ -781,6 +789,14 @@ Extracts = {
 		//	Hyphenate.
 		if (Hyphenopoly.hyphenators)
 			hyphenateWithin(popFrame);
+ 
+		//	Lazy-loading of adjacent sections.
+		//	WARNING: Experimental code!
+// 		if (target.hash > "") {
+// 			requestAnimationFrame(() => {
+// 				Extracts.loadAdjacentSections(popFrame, "next,prev");
+// 			});
+// 		}
 
         //  Scroll to the target.
         if (target.hash > ""
@@ -792,10 +808,75 @@ Extracts = {
                     Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
             });
         }
+    },
+
+	loadAdjacentSections: (popFrame, which) => {
+        GWLog("Extracts.loadAdjacentSections", "extracts.js", 2);
+
+		which = which.split(",");
+		let next = which.includes("next");
+		let prev = which.includes("prev");
+
+		let target = popFrame.spawningTarget;
+		let sourceDocument = Extracts.cachedPages[target.pathname] || Extracts.rootDocument;
+
+		popFrame.firstSection = popFrame.firstSection || sourceDocument.querySelector(selectorFromHash(target.hash));
+		popFrame.lastSection = popFrame.lastSection || popFrame.firstSection;
+
+		if (!(next || prev))
+			return;
+
+		if (popFrame.contentView.querySelector(selectorFromHash(target.hash)) == null) {
+			let sectionWrapper = document.createElement("SECTION");
+			sectionWrapper.id = popFrame.firstSection.id;
+			sectionWrapper.classList.add(...(popFrame.firstSection.classList));
+			sectionWrapper.replaceChildren(...(popFrame.contentView.children));
+			popFrame.contentView.appendChild(sectionWrapper);
+
+			//  Fire a contentDidLoad event.
+			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+				source: "Extracts.loadAdjacentSections",
+				document: popFrame.contentView.firstElementChild,
+				location: Extracts.locationForTarget(target),
+				flags: 0
+			});
+		}
+
+		let prevSection = popFrame.firstSection.previousElementSibling;
+		if (prev && prevSection) {
+			popFrame.contentView.insertBefore(Extracts.newDocument(prevSection), popFrame.contentView.firstElementChild);
+
+			//  Fire a contentDidLoad event.
+			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+				source: "Extracts.loadAdjacentSections",
+				document: popFrame.contentView.firstElementChild,
+				location: Extracts.locationForTarget(target),
+				flags: 0
+			});
+
+			popFrame.firstSection = prevSection;
+		}
+
+		let nextSection = popFrame.lastSection.nextElementSibling;
+		if (next && nextSection) {
+			popFrame.contentView.insertBefore(Extracts.newDocument(nextSection), null);
+
+			//  Fire a contentDidLoad event.
+			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+				source: "Extracts.loadAdjacentSections",
+				document: popFrame.contentView.lastElementChild,
+				location: Extracts.locationForTarget(target),
+				flags: 0
+			});
+
+			popFrame.lastSection = nextSection;
+		}
 	},
 
     //  Called by: Extracts.rewritePopinContent (as `rewritePopinContent_${targetTypeName}`)
     rewritePopinContent_LOCAL_PAGE: (popin) => {
+        GWLog("Extracts.rewritePopinContent_LOCAL_PAGE", "extracts.js", 2);
+
         Extracts.rewritePopFrameContent_LOCAL_PAGE(popin);
 
         let target = popin.spawningTarget;
@@ -824,6 +905,8 @@ Extracts = {
 
     //  Called by: Extracts.rewritePopupContent (as `rewritePopupContent_${targetTypeName}`)
     rewritePopupContent_LOCAL_PAGE: (popup) => {
+        GWLog("Extracts.rewritePopupContent_LOCAL_PAGE", "extracts.js", 2);
+
         Extracts.rewritePopFrameContent_LOCAL_PAGE(popup);
 
         let target = popup.spawningTarget;
