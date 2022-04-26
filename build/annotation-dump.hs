@@ -2,7 +2,7 @@
 -- Print out single-line-formatted annotations for easier grepping
 
 import LinkMetadata (authorsToCite, sortItemPathDate, readYamlFast, MetadataItem)
-import Data.List (intercalate, isInfixOf)
+import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf)
 import Data.List.Utils (replace)
 import Data.Map as M (union, toList, fromList)
 
