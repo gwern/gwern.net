@@ -3076,6 +3076,10 @@ body.index-directory #footer {
     display: none;
 }
 
+.popframe .footnotes .footnote-back {
+    vertical-align: text-top;
+}
+
 .popframe .footnote-self-link {
     display: none;
 }
