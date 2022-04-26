@@ -718,22 +718,11 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /* FOOTNOTES */
 /*************/
 
-/************************************************************************/
-/*  The footnotes section has no ID because Pandoc is weird. Give it one.
- */
-function identifyFootnotesSection(loadEventInfo) {
-    GWLog("identifyFootnotesSection", "rewrite.js", 1);
-
-    let footnotesSection = loadEventInfo.document.querySelector("section.footnotes");
-    if (footnotesSection)
-        footnotesSection.id = "footnotes";
-}
-
 /*****************************************/
 /*	Add footnote class to footnote blocks.
  */
 function addFootnoteClassToFootnotes(loadEventInfo) {
-    GWLog("identifyFootnotesSection", "rewrite.js", 1);
+    GWLog("addFootnoteClassToFootnotes", "rewrite.js", 1);
     let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
     if (!footnotesSection)
         return;
@@ -903,7 +892,6 @@ function injectFootnotesTOCLink(loadEventInfo) {
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFootnotes = (info) => {
     GWLog("GW.rewriteFunctions.processFootnotes", "rewrite.js", 2);
 
-    identifyFootnotesSection(info);
     addFootnoteClassToFootnotes(info);
     injectFootnoteSectionSelfLink(info);
     injectFootnoteSelfLinks(info);

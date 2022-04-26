@@ -270,11 +270,6 @@ Extracts = { ...Extracts, ...{
     rewritePopFrameContent_ANNOTATION: (popFrame) => {
         let target = popFrame.spawningTarget;
 
-		//	Rewrite #footnotes section TOC link.
-		let footnoteSectionTOCLink = popFrame.querySelector(".TOC a[href$='#fn1']");
-		footnoteSectionTOCLink.hash = "#footnotes";
-		footnoteSectionTOCLink.id.replace("-fn1", "-footnotes");
-
         //  Mark Wikipedia entries.
         if (popFrame.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
             popFrame.contentView.classList.add("wikipedia-entry");
