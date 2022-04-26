@@ -304,7 +304,8 @@ Popups = {
 
 		requestAnimationFrame(() => {
 			//	Disable rendering progress indicator (spinner).
-			target.popup.classList.toggle("rendering", false);
+			if (target.popup)
+				target.popup.classList.toggle("rendering", false);
 
 			//	Reset cursor to normal.
 			Popups.clearWaitCursorForTarget(target);
