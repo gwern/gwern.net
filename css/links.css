@@ -216,6 +216,9 @@ a[data-link-icon-type*='overline']::after {
 /*=----------------------------=*/
 /*= Within-page (anchor) links =*/
 /*=----------------------------=*/
+/*=----------------------------------------------------=*/
+/*= Cross-directory links on tag-directory index pages =*/
+/*=----------------------------------------------------=*/
 
 a[data-link-icon='¶']::after {
     --link-icon-size: 0.75em;
@@ -227,7 +230,8 @@ a[data-link-icon='¶']::after {
 }
 
 a[data-link-icon='arrow-up']::after,
-a[data-link-icon='arrow-down']::after {
+a[data-link-icon='arrow-down']::after,
+a[data-link-icon='arrow-right']::after {
     --link-icon-size: 0.65em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.2em;
@@ -235,11 +239,13 @@ a[data-link-icon='arrow-down']::after {
     opacity: 0.8;
 }
 a[data-link-icon='arrow-up']:hover::after,
-a[data-link-icon='arrow-down']:hover::after {
+a[data-link-icon='arrow-down']:hover::after,
+a[data-link-icon='arrow-right']:hover::after {
     opacity: 0.4;
 }
 a[data-link-icon='arrow-up'] { --link-icon-url: url('/static/img/icons/arrow-up.svg'); }
 a[data-link-icon='arrow-down'] { --link-icon-url: url('/static/img/icons/arrow-down.svg'); }
+a[data-link-icon='arrow-right'] { --link-icon-url: url('/static/img/icons/arrow-right.svg'); }
 
 /*=------------------------------=*/
 /*= Internal (within-site) links =*/
@@ -286,29 +292,6 @@ body.index a.link-local::after,
 #footer a[href*='docs.google.com'i]::after {
     content: none;
 }
-
-/*=----------------------------------------------------=*/
-/*= Cross-Directory Links on Tag-Directory index pages =*/
-/*=----------------------------------------------------=*/
-/* Unicode arrows are either too small/thin, or break on many platforms, so we usual, we provide our own arrows. */
-.directory-indexes-upwards::after,
-.directory-indexes-sideways::after,
-.directory-indexes-downwards::after {
-    content: "";
-    padding: 0 0.9em 0 0;
-    position: static;
-    background-repeat: no-repeat;
-    margin: 0 0 0 0.25em;
-    background-position-y: 0.15em;
-    font-size: 0.8em;
-}
-
-.directory-indexes-upwards::after {
-    background-image: url('/static/img/icons/arrow-up.svg');    }
-.directory-indexes-sideways::after {
-    background-image: url('/static/img/icons/arrow-right.svg'); }
-.directory-indexes-downwards::after {
-    background-image: url('/static/img/icons/arrow-down.svg');  }
 
 /*=-------------------------------=*/
 /*= Textual per-domain link icons =*/
