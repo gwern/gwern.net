@@ -216,9 +216,6 @@ a[data-link-icon-type*='overline']::after {
 /*=----------------------------=*/
 /*= Within-page (anchor) links =*/
 /*=----------------------------=*/
-/*=----------------------------------------------------=*/
-/*= Cross-directory links on tag-directory index pages =*/
-/*=----------------------------------------------------=*/
 
 a[data-link-icon='¶']::after {
     --link-icon-size: 0.75em;
@@ -230,8 +227,7 @@ a[data-link-icon='¶']::after {
 }
 
 a[data-link-icon='arrow-up']::after,
-a[data-link-icon='arrow-down']::after,
-a[data-link-icon='arrow-right']::after {
+a[data-link-icon='arrow-down']::after {
     --link-icon-size: 0.65em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.2em;
@@ -239,13 +235,11 @@ a[data-link-icon='arrow-right']::after {
     opacity: 0.8;
 }
 a[data-link-icon='arrow-up']:hover::after,
-a[data-link-icon='arrow-down']:hover::after,
-a[data-link-icon='arrow-right']:hover::after {
+a[data-link-icon='arrow-down']:hover::after {
     opacity: 0.4;
 }
 a[data-link-icon='arrow-up'] { --link-icon-url: url('/static/img/icons/arrow-up.svg'); }
 a[data-link-icon='arrow-down'] { --link-icon-url: url('/static/img/icons/arrow-down.svg'); }
-a[data-link-icon='arrow-right'] { --link-icon-url: url('/static/img/icons/arrow-right.svg'); }
 
 /*=------------------------------=*/
 /*= Internal (within-site) links =*/
@@ -292,6 +286,28 @@ body.index a.link-local::after,
 #footer a[href*='docs.google.com'i]::after {
     content: none;
 }
+
+/*=----------------------------------------------------=*/
+/*= Cross-directory links on tag-directory index pages =*/
+/*=----------------------------------------------------=*/
+
+a[data-link-icon='arrow-up-left']::after,
+a[data-link-icon='arrow-down-right']::after,
+a[data-link-icon='arrow-right']::after {
+    --link-icon-size: 0.65em;
+    --link-icon-offset-x: 0.2em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.8;
+}
+a[data-link-icon='arrow-up-left']:hover::after,
+a[data-link-icon='arrow-down-right']:hover::after,
+a[data-link-icon='arrow-right']:hover::after {
+    opacity: 0.4;
+}
+a[data-link-icon='arrow-up-left'] { --link-icon-url: url('/static/img/icons/arrow-up-left.svg'); }
+a[data-link-icon='arrow-down-right'] { --link-icon-url: url('/static/img/icons/arrow-down-right.svg'); }
+a[data-link-icon='arrow-right'] { --link-icon-url: url('/static/img/icons/arrow-right.svg'); }
 
 /*=-------------------------------=*/
 /*= Textual per-domain link icons =*/
