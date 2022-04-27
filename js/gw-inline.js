@@ -205,10 +205,31 @@ Object.defineProperty(Node.prototype, "firstTextNode", {
 		if (this.childNodes.length == 0)
 			return null;
 
-		for (node of this.childNodes) {
-			let firstTextNodeWithinChildNode = node.firstTextNode;
+		for (let i = 0; i < this.childNodes.length; i++) {
+			let firstTextNodeWithinChildNode = this.childNodes[i].firstTextNode;
 			if (firstTextNodeWithinChildNode)
 				return firstTextNodeWithinChildNode;
+		}
+
+		return null;
+    }
+});
+
+/*	The last text node of a node or element (or null if an element contains no
+	text nodes).
+ */
+Object.defineProperty(Node.prototype, "lastTextNode", {
+    get() {
+		if (this.nodeType == Node.TEXT_NODE)
+			return this;
+
+		if (this.childNodes.length == 0)
+			return null;
+
+		for (let i = this.childNodes.length - 1; i >= 0; i--) {
+			let lastTextNodeWithinChildNode = this.childNodes[i].lastTextNode;
+			if (lastTextNodeWithinChildNode)
+				return lastTextNodeWithinChildNode;
 		}
 
 		return null;
