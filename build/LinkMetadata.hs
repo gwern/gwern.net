@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-26 22:21:03 gwern"
+When:  Time-stamp: "2022-04-27 10:10:16 gwern"
 License: CC-0
 -}
 
@@ -1500,9 +1500,12 @@ gwernAbstract shortAllowed p' description toc f =
                          abstractRaw = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
                          restofpageAbstract = trim $ renderTags $ filter filterAbstract abstractRaw
                          in (titleClean, abstractRaw, restofpageAbstract)
-      abstrct'  = (if anyPrefix abstrct ["<p>", "<p>", "<figure>"] then abstrct else "<p>"++abstrct++"</p>") ++ " " ++ toc
+      abstrct'  = (if anyPrefix abstrct ["<p>", "<p>", "<figure>"] then abstrct else if null abstrct then "" else "<p>"++abstrct++"</p>") ++ " " ++ toc
       -- combine description + abstract; if there's no abstract, settle for the description:
-      abstrct'' = if null description then abstrct' else "<p>"++description++"</p>"++abstrct'
+      abstrct'' = if description /= "" && abstrct' /= "" then "<p>"++description++"</p>"++abstrct'
+                                      else if description == "" && abstrct' /= "" then abstrct'
+                                           else if description /= "" && abstrct' == "" then "<p>"++description++"</p>"
+                                                else ""
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
       abstrct'''' = sed " id=\"fnref[0-9]+\"" "" abstrct''' -- rm footnote IDs - cause problems when transcluded
   in if "scrape-abstract-not" `isInfixOf` (renderTags abstrctRw) then (t,"") else if shortAllowed then (t,abstrct'''') else if length abstrct < minimumAnnotationLength then ("","") else (t,abstrct'''')
@@ -2082,6 +2085,16 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" ix)", " (9)")
           , ("(x)", "(10)")
           , (" x)", " (10)")
+          , (" a) ", " (1) ")
+          , (" b) ", " (2) ")
+          , (" c) ", " (3) ")
+          , (" d) ", " (4) ")
+          , (" e) ", " (5) ")
+          , (" f) ", " (6) ")
+          , (" h) ", " (7) ")
+          , (" i) ", " (8) ")
+          , (" j) ", " (9) ")
+          , (" k) ", " (10) ")
           , (" =  ", " = ")
           , ("<strong><strong>", "<strong>")
           , ("</strong></strong>", "</strong>")
