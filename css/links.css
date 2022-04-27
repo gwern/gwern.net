@@ -132,11 +132,12 @@ blockquote .TOC a::after {
     content: none;
 }
 
-/*==============================================*/
-/*= ICONS FOR CERTAIN LINK TYPES: BY FILE TYPE =*/
-/*==============================================*/
+/*=================*/
+/*= COMMON STYLES =*/
+/*=================*/
 
-/*  Common styles.
+/*******************/
+/*  Graphical icons.
     */
 a[data-link-icon-type='svg']::after {
     --link-icon-size: 0.5em;
@@ -154,158 +155,12 @@ a[data-link-icon-type='svg']::after {
     background-repeat: no-repeat;
     opacity: 0.45;
 }
-
-/*  Hover styles.
-    */
 a[data-link-icon-type='svg']:hover::after {
     opacity: 0.3;
 }
 
-/*  PDFs.
-    */
-a[data-link-icon='pdf']::after {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M181.9 256.1c-5-16-4.9-46.9-2-46.9 8.4 0 7.6 36.9 2 46.9zm-1.7 47.2c-7.7 20.2-17.3 43.3-28.4 62.7 18.3-7 39-17.2 62.9-21.9-12.7-9.6-24.9-23.4-34.5-40.8zM86.1 428.1c0 .8 13.2-5.4 34.9-40.2-6.7 6.3-29.1 24.5-34.9 40.2zM248 160h136v328c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V24C0 10.7 10.7 0 24 0h200v136c0 13.2 10.8 24 24 24zm-8 171.8c-20-12.2-33.3-29-42.7-53.8 4.5-18.5 11.6-46.6 6.2-64.2-4.7-29.4-42.4-26.5-47.8-6.8-5 18.3-.4 44.1 8.1 77-11.6 27.6-28.7 64.6-40.8 85.8-.1 0-.1.1-.2.1-27.1 13.9-73.6 44.5-54.5 68 5.6 6.9 16 10 21.5 10 17.9 0 35.7-18 61.1-61.8 25.8-8.5 54.1-19.1 79-23.2 21.7 11.8 47.1 19.5 64 19.5 29.2 0 31.2-32 19.7-43.4-13.9-13.6-54.3-9.7-73.6-7.2zM377 105L279 7c-4.5-4.5-10.6-7-17-7h-6v128h128v-6.1c0-6.3-2.5-12.4-7-16.9zm-74.1 255.3c4.1-2.7-2.5-11.9-42.8-9 37.1 15.8 42.8 9 42.8 9z"/></svg>');
-}
-
-/*===========================================*/
-/*= ICONS FOR CERTAIN LINK TYPES: BY TARGET =*/
-/*===========================================*/
-
-/*=----------------------------=*/
-/*= Within-page (anchor) links =*/
-/*=----------------------------=*/
-
-a.link-self::after {
-    content: "\00B6"; /* (¶) Pilcrow Sign */
-    margin: 0 1px 0 3px;
-    font-size: 0.75em;
-    font-style: normal;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.45em;
-    opacity: 0.72;
-}
-
-/*  Dynamically set direction of internal link to an upwards or downwards arrow:
-    */
-a.link-self.identifier-link-up::after,
-a.link-self.identifier-link-down::after {
-    content: "";
-    display: inline-block;
-    font-size: 1em;
-    width: 0.75em;
-    height: 0.75em;
-    margin: 0 0 0 4px;
-    bottom: 0.1em;
-    background-repeat: no-repeat;
-    opacity: 0.8;
-}
-a.link-self.identifier-link-up::after {
-    background-image: url('/static/img/icons/arrow-up.svg');
-}
-a.link-self.identifier-link-down::after {
-    background-image: url('/static/img/icons/arrow-down.svg');
-}
-a.link-self.identifier-link-up:hover::after,
-a.link-self.identifier-link-down:hover::after {
-    opacity: 0.4;
-}
-
-/*=------------------------------=*/
-/*= Internal (within-site) links =*/
-/*=------------------------------=*/
-
-a.link-local::after {
-    content: "\1D50A"; /* (𝔊) Gothic G / MATHEMATICAL FRAKTUR CAPITAL G */
-    background-image: none;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.15em;
-    opacity: 0.75;
-    font-size: 0.9em;
-    font-style: normal;
-    font-weight: normal;
-}
-
-#page-metadata a.link-local::after {
-    content: none;
-}
-
-/*	Index page, and embeds thereof, do not need the G icon.
- */
-body.index a.link-local::after,
-.popframe.index a.link-local::after {
-    content: none;
-}
-
-/*  Suppress link icons for backlinks popups: because the backlinks HTML file
-    for each URL is stored at an escaped version of that URL
-    ('/metadata/annotations/backlinks/escape($URL)'), the backlinks link will
-    match many of the link icons. That's not really sensible: after all, the
-    backlinks contains only links *to* it, and that won't be the same
-    domain/author/filetype/whatever as the target link. (If I link to a
-    sciencedirect.com page, the backlinks would look like
-    '/metadata/annotations/backlinks/http*sciencedirect.com*foo', but it would
-    contain only links like '/Sunk-costs', none of which are a Science Direct
-    page, only linking *to* it.) If it got any icon, it would be a 'G', but that
-    would just be clutter and is not worth adding, so we merely suppress them
-    entirely.
-
-	Also remove G icon from the tags inside popups (which go to directory
-	indexes, which aren’t really top-level/essay content, and the G is clutter).
-
-	Ditto link tags.
- */
-.markdownBody .backlinks a::after,
-.markdownBody .similars a::after,
-.markdownBody .link-tags a::after {
-	content: none;
-}
-/*	Italicize link tags in popups/indexes similar to the page metadata block”s
-	tags for consistency
- */
-.link-tags {
-	font-style: italic;
-}
-
-/*	Remove the ‘W’ document icon from the anonymous feedback link icon; it is
-	true, but not useful (a ‘document’ doesn’t look like ‘a thing I can interact
-	with & type in text to), and it looks bad/cluttered given that icons are
-	removed from the rest of the ‘surrounding’ UI (*especially* in /index).
- */
-#footer a[href*='docs.google.com'i]::after {
-    content: none;
-}
-
-/*=----------------------------------------------------=*/
-/*= Cross-Directory Links on Tag-Directory index pages =*/
-/*=----------------------------------------------------=*/
-/* Unicode arrows are either too small/thin, or break on many platforms, so we usual, we provide our own arrows. */
-.directory-indexes-upwards::after,
-.directory-indexes-sideways::after,
-.directory-indexes-downwards::after {
-    content: "";
-    padding: 0 0.9em 0 0;
-    position: static;
-    background-repeat: no-repeat;
-    margin: 0 0 0 0.25em;
-    background-position-y: 0.15em;
-    font-size: 0.8em;
-}
-
-.directory-indexes-upwards::after {
-    background-image: url('/static/img/icons/arrow-up.svg');    }
-.directory-indexes-sideways::after {
-    background-image: url('/static/img/icons/arrow-right.svg'); }
-.directory-indexes-downwards::after {
-    background-image: url('/static/img/icons/arrow-down.svg');  }
-
-/*=-------------------------------=*/
-/*= Textual per-domain link icons =*/
-/*=-------------------------------=*/
-
-/*  Common styles.
+/*****************/
+/*  Textual icons.
     */
 a[data-link-icon-type*='text']::after {
     --link-icon-size: 0.75em;
@@ -353,6 +208,111 @@ a[data-link-icon-type*='overline']::after {
 
     --link-icon-offset-y: 0.2em;
 }
+
+/*===========================================*/
+/*= ICONS FOR CERTAIN LINK TYPES: BY TARGET =*/
+/*===========================================*/
+
+/*=----------------------------=*/
+/*= Within-page (anchor) links =*/
+/*=----------------------------=*/
+
+a[data-link-icon='¶']::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-y: 0.45em;
+    --link-icon-offset-x: 0.2em;
+
+    font-weight: normal;
+    opacity: 0.7;
+}
+
+a[data-link-icon='arrow-up']::after,
+a[data-link-icon='arrow-down']::after {
+    --link-icon-size: 0.65em;
+    --link-icon-offset-x: 0.2em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.8;
+}
+a[data-link-icon='arrow-up']:hover::after,
+a[data-link-icon='arrow-down']:hover::after {
+    opacity: 0.4;
+}
+a[data-link-icon='arrow-up'] { --link-icon-url: url('/static/img/icons/arrow-up.svg'); }
+a[data-link-icon='arrow-down'] { --link-icon-url: url('/static/img/icons/arrow-down.svg'); }
+
+/*=------------------------------=*/
+/*= Internal (within-site) links =*/
+/*=------------------------------=*/
+
+a[data-link-icon='𝔊']::after {
+    --link-icon-size: 0.9em;
+    --link-icon-offset-y: 0.15em;
+    --link-icon-offset-x: 0.12em;
+
+    opacity: 0.75;
+}
+
+#page-metadata a.link-local::after {
+    content: none;
+}
+
+/*	Index page, and embeds thereof, do not need the G icon; nor do backlinks
+	pop-frames.
+ */
+body.index a.link-local::after,
+.popframe.index a.link-local::after,
+.popframe.backlinks a.link-local::after {
+    content: none;
+}
+
+/*	Also remove ‘G’ icon from the tags inside popups or in directory index 
+	entries (which go to directory indexes, which aren’t really top-level/essay
+	content, and the G is clutter).
+
+	Ditto link tags.
+ */
+.markdownBody .backlinks a::after,
+.markdownBody .similars a::after,
+.markdownBody .link-tags a::after {
+	content: none;
+}
+
+/*	Remove the ‘W’ document icon from the anonymous feedback link icon; it is
+	true, but not useful (a ‘document’ doesn’t look like ‘a thing I can interact
+	with & type in text to), and it looks bad/cluttered given that icons are
+	removed from the rest of the ‘surrounding’ UI (*especially* in /index).
+ */
+#footer a[href*='docs.google.com'i]::after {
+    content: none;
+}
+
+/*=----------------------------------------------------=*/
+/*= Cross-Directory Links on Tag-Directory index pages =*/
+/*=----------------------------------------------------=*/
+/* Unicode arrows are either too small/thin, or break on many platforms, so we usual, we provide our own arrows. */
+.directory-indexes-upwards::after,
+.directory-indexes-sideways::after,
+.directory-indexes-downwards::after {
+    content: "";
+    padding: 0 0.9em 0 0;
+    position: static;
+    background-repeat: no-repeat;
+    margin: 0 0 0 0.25em;
+    background-position-y: 0.15em;
+    font-size: 0.8em;
+}
+
+.directory-indexes-upwards::after {
+    background-image: url('/static/img/icons/arrow-up.svg');    }
+.directory-indexes-sideways::after {
+    background-image: url('/static/img/icons/arrow-right.svg'); }
+.directory-indexes-downwards::after {
+    background-image: url('/static/img/icons/arrow-down.svg');  }
+
+/*=-------------------------------=*/
+/*= Textual per-domain link icons =*/
+/*=-------------------------------=*/
 
 /******************/
 /*  Logotype icons.

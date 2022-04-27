@@ -294,8 +294,9 @@ function wrapImages(loadEventInfo) {
 		unwrap(image.parentElement);
 	});
 
+	let exclusionSelector = ".footnote-back, .mwe-math-element";
 	wrapAll("img", (image) => {
-		if (image.closest(".footnote-back"))
+		if (image.closest(exclusionSelector))
 			return;
 
 		let figure = image.closest("figure");
@@ -964,7 +965,8 @@ function addSpecialLinkClasses(loadEventInfo) {
 
         if (   loadEventInfo.location
             && link.pathname == loadEventInfo.location.pathname
-            && loadEventInfo.isFullPage) {
+            && (   loadEventInfo.isFullPage
+            	|| null != loadEventInfo.document.querySelector(selectorFromHash(link.hash)))) {
             link.swapClasses([ "link-self", "link-local" ], 0);
         } else if (link.pathname.slice(1).match(/[\.]/) == null) {
             link.swapClasses([ "link-self", "link-local" ], 1);
@@ -972,30 +974,41 @@ function addSpecialLinkClasses(loadEventInfo) {
     });
 }
 
-/*****************************************************************************/
-/*  Directional navigation links on self-links: for each self-link like
-    “see [later](#later-identifier)”, find the linked identifier, whether it’s
-    before or after, and if it is before/previously, annotate the self-link
-    with ‘↑’ and if after/later, ‘↓’. This helps the reader know if it’s a
-    backwards link to an identifier already read, or an unread identifier.
+/************************************************************************/
+/*	Assign proper link icons to self-links (directional or otherwise) and 
+	local links.
  */
-function directionalizeAnchorLinks(loadEventInfo) {
-    GWLog("directionalizeAnchorLinks", "rewrite.js", 1);
+function designateSpecialLinkIcons(loadEventInfo) {
+    GWLog("designateSpecialLinkIcons", "rewrite.js", 1);
 
-    loadEventInfo.document.querySelectorAll("a.link-self").forEach(identifierLink => {
-        if (!identifierLink.hash)
-        	return;
+	//	Self-links (anchorlinks to the current page).
+	loadEventInfo.document.querySelectorAll(".link-self").forEach(link => {
+		link.dataset.linkIconType = "text";
+		link.dataset.linkIcon = "\u{00B6}"; // ¶
 
-        target = loadEventInfo.document.querySelector(selectorFromHash(identifierLink.hash));
+		/*  Directional navigation links on self-links: for each self-link like
+			“see [later](#later-identifier)”, find the linked identifier, 
+			whether it’s before or after, and if it is before/previously, 
+			annotate the self-link with ‘↑’ and if after/later, ‘↓’. This helps 
+			the reader know if it’s a backwards link to an identifier already 
+			read, or an unread identifier.
+		 */
+        let target = loadEventInfo.document.querySelector(selectorFromHash(link.hash));
         if (!target)
         	return;
 
-        identifierLink.classList.add(
-            identifierLink.compareDocumentPosition(target) == Node.DOCUMENT_POSITION_FOLLOWING
-            ? 'identifier-link-down'
-            : 'identifier-link-up'
-        );
-    });
+        link.dataset.linkIconType = "svg";
+        link.dataset.linkIcon = 
+        	(link.compareDocumentPosition(target) == Node.DOCUMENT_POSITION_FOLLOWING
+             ? 'arrow-down'
+             : 'arrow-up');
+	});
+
+	//	Local links (to other pages on the site).
+	loadEventInfo.document.querySelectorAll(".link-local").forEach(link => {
+		link.dataset.linkIconType = "text";
+		link.dataset.linkIcon = "\u{1D50A}"; // 𝔊
+	});
 }
 
 /***************************************************************/
@@ -1018,9 +1031,9 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     GWLog("GW.rewriteFunctions.processLinks", "rewrite.js", 2);
 
     addSpecialLinkClasses(info);
+    designateSpecialLinkIcons(info);
 
     if (info.needsRewrite) {
-        directionalizeAnchorLinks(info);
 //		addLinkDecorationData(info);
     }
 }, { phase: "rewrite" });

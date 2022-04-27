@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-27 10:34:46 gwern"
+When:  Time-stamp: "2022-04-27 10:38:43 gwern"
 License: CC-0
 -}
 
@@ -376,7 +376,7 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                                                     [Str (T.pack $ dateTruncateBad dt)]]
                                     backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
-                                    tags = if ts==[] then [] else (if dt=="" then [] else [Str ";", Space]) ++ [tagsToLinksSpan ts]
+                                    tags = if ts==[] then [] else (if dt=="" then [] else [Str ";", Space]) ++ [tagsToLinksSpan $ map T.pack ts]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     linkPrefix = if rawFilep then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else []
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
@@ -429,20 +429,20 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 --   <a href="/docs/genetics/heritable/index" class="link-tag">genetics/heritable</a>,
 --   <a href="/docs/psychology/writing/index" class="link-tag">psychology/writing</a>
 -- </span>
-tagsToLinksSpan :: [String] -> Inline
+tagsToLinksSpan :: [T.Text] -> Inline
 tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = sort ts in
                        Span ("", ["link-tags"], []) $
-                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
+                       intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
 -- Ditto; but since a Div is a Block element, we copy-paste a separate function:
-tagsToLinksDiv :: [String] -> Block
+tagsToLinksDiv :: [T.Text] -> Block
 tagsToLinksDiv [] = Div nullAttr []
 tagsToLinksDiv [""] = Div nullAttr []
 tagsToLinksDiv ts = let tags = sort ts in
                        Div ("", ["link-tags"], []) $
-                       [Para $ intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags]
+                       [Para $ intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags]
 
 -- Abbreviate displayed tag names to make tag lists more readable. For some tags, like 'reinforcement-learning/*' or 'genetics/*', they might be used very heavily and densely, leading to cluttered unreadable tag lists, and discouraging use of meaningful directory names: 'reinforcement-learning/exploration, reinforcement-learning/alphago, reinforcement-learning/meta-learning, reinforcement-learning/...' would be quite difficult to read. But we also would rather not abbreviate the directory-tag itself down to just 'rl/', as that is not machine-readable or explicit. So we can abbreviate them just for display, while rendering the tags to Inline elements.
 abbreviateTag :: T.Text -> T.Text
