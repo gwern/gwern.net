@@ -84,7 +84,7 @@ Annotations = {
         if (Annotations.isWikipediaArticleLink(identifier)) {
             //  Wikipedia entry.
             annotationURL = new URL(identifier);
-            let wikiPageName = fixedEncodeURIComponent(/\/wiki\/(.+?)$/.exec(annotationURL.pathname)[1]);
+            let wikiPageName = fixedEncodeURIComponent(/\/wiki\/(.+?)$/.exec(decodeURIComponent(annotationURL.pathname))[1]);
             annotationURL.pathname = `/api/rest_v1/page/mobile-sections/${wikiPageName}`;
             annotationURL.hash = "";
         } else {
