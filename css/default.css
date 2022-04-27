@@ -3422,12 +3422,12 @@ body.index-directory #footer {
     overflow-x: hidden;
 }
 
-.popframe.local-transclude .popframe-content-view > h1:first-child,
-.popframe.local-transclude .popframe-content-view > h2:first-child,
-.popframe.local-transclude .popframe-content-view > h3:first-child,
-.popframe.local-transclude .popframe-content-view > h4:first-child,
-.popframe.local-transclude .popframe-content-view > h5:first-child,
-.popframe.local-transclude .popframe-content-view > h6:first-child {
+.popframe .popframe-content-view > h1:first-child,
+.popframe .popframe-content-view > h2:first-child,
+.popframe .popframe-content-view > h3:first-child,
+.popframe .popframe-content-view > h4:first-child,
+.popframe .popframe-content-view > h5:first-child,
+.popframe .popframe-content-view > h6:first-child {
     margin-top: 0;
 }
 
