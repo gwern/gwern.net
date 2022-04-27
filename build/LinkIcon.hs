@@ -16,12 +16,18 @@ import Data.Containers.ListUtils (nubOrd)
 import LinkBacklink (readBacklinksDB)
 import Utils (host, writeUpdatedFile)
 
--- Statically, at compile-time, define the link-icons for links. Doing this at runtime with CSS is
+-- Statically, at site 'compile-time', define the link-icons for links. Doing this at runtime with CSS is
 -- entirely possible and originally done by links.css, but the logic becomes increasingly convoluted
 -- & bug-prone because of CSS properties like cascading & longest-matches, and exceptions like
 -- 'organization icon overrides PDF icon' become fertile sources of errors & regressions.
--- Doing this at runtime in Haskell is easier and also reduces performance burden on the client
+-- Doing this at compile-time in Haskell is easier and also reduces performance burden on the client
 -- browser.
+--
+-- NOTE: we generate the link icon classes in generateDirectory.hs there, setting the SVG/arrows directly on the directory-index links,
+-- because in isolation it is hard to tell the context of a `/docs/foo/bar/index` link: is this linked in the parent `/docs/foo/index`, linked
+-- in a child of `foo/bar` like `foo/bar/baz/index` trying to link to its ../, or a cross-reference in an entirely parallel directory-index
+-- `/docs/quux/index`? generateDirectory.hs does encode .link-tag classes ('directory-indexes-upward'/'directory-indexes-downwards'/'directory-indexes-sideways')
+-- which we could switch on here, but that feels like bad indirection, so we do it all there.
 
 -- Generate a HTML <style>-delimited CSS block written to
 -- `static/includes/inlined-graphical-linkicon-styles.html` for transclusion into `default.html`.

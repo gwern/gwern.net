@@ -224,16 +224,21 @@ generateDirectoryItems parent current ds =
  where
        parent'' = case parent of
                      Nothing -> []
-                     Just p -> [[Para [Span ("",["directory-indexes-upwards"],[]) [Link ("",["link-tag"],[("rel","tag")]) [Str "Parent"] (T.pack p, "Link to parent directory '" `T.append`  (T.pack $ takeDirectory p) `T.append` "' (ascending)")]]]]
+                     Just p -> [[Para [Span ("",[],[]) [Link ("",
+                                                               ["link-tag", "directory-indexes-upwards"],
+                                                               [("rel","tag"), ("link-icon-type", "svg"), ("link-icon", "arrow-up-left")]
+                                                             )
+                                                               [Str "Parent"] (T.pack p, "Link to parent directory '" `T.append`  (T.pack $ takeDirectory p) `T.append` "' (ascending)")]]]]
 
        generateDirectoryItem :: FilePath -> [Block]
        -- arrow symbolism: subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')
-       generateDirectoryItem d = [Para [
-                                     Span ("",
-                                            if directoryPrefixDown current d then ["directory-indexes-downwards"] else ["directory-indexes-sideways"],
-                                            [("link-icon-type", "svg")])
-                                       [Link ("",["link-tag"],[("rel","tag")]) [Emph [Str $ abbreviateTag $ T.pack $ takeDirectory d]] (T.pack d, "")]
-                                 ]]
+       generateDirectoryItem d = let downP = directoryPrefixDown current d in
+                                   [Para [Link ("",
+                                               ["link-tag", if downP then "directory-indexes-downwards" else "directory-indexes-sideways"],
+                                               [("rel","tag"), ("link-icon-type", "svg"), ("link-icon", if downP then "arrow-down-right" else "arrow-right")]
+                                             )
+                                               [Emph [Str $ abbreviateTag $ T.pack $ takeDirectory d]] (T.pack d, "")]
+                                 ]
        directoryPrefixDown :: FilePath -> FilePath -> Bool
        directoryPrefixDown currentd d' = ("/"++currentd) `isPrefixOf` d'
 
