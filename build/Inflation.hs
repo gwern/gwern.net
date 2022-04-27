@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2022-04-02 21:43:19 gwern"
+-- When:  Time-stamp: "2022-04-27 12:13:46 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -98,7 +98,7 @@ dollarAdjuster l@(Link _ text (oldYears, _)) =
       [Str (T.pack $ "$"++adjustedDollarString),  Span ("",["supsub"],[]) [Superscript [Str $ T.pack $ "$" ++ oldDollarString'], Subscript [Str oldYear]]]
     where -- oldYear = '$1970' → '1970'
           oldYear = T.tail oldYears
-          oldDollarString = filter (/= '$') $ inlinesToString text -- '$50.50' → '50.50'
+          oldDollarString = filter (/= '$') $ inlinesToText text -- '$50.50' → '50.50'
           oldDollar = case (readMaybe (filter (/=',') oldDollarString) :: Maybe Float) of
                         Just d -> d
                         Nothing -> error (show l)
@@ -112,8 +112,8 @@ dollarAdjuster l@(Link _ text (oldYears, _)) =
 
 dollarAdjuster x = x
 
-inlinesToString :: [Inline] -> String
-inlinesToString = concatMap go
+inlinesToText :: [Inline] -> String
+inlinesToText = concatMap go
   where go x = case x of
                Str s    -> T.unpack s
                Code _ s -> T.unpack s
@@ -171,7 +171,7 @@ bitcoinAdjuster l@(Link _ text (oldDates, _)) =
              ("title", T.pack ("Exchange-rate-adjusted currency: \8383"++oldBitcoinString++" in "++T.unpack oldDate++" → $"++adjustedBitcoinString)) ])
       [Str (T.pack $ "$"++adjustedBitcoinString),  Span ("",["supsub"],[]) [Superscript text, Subscript [Str (T.pack oldYear)]]]
   where oldDate = T.tail oldDates
-        oldBitcoinString = filter (/= '\8383') $ inlinesToString text
+        oldBitcoinString = filter (/= '\8383') $ inlinesToText text
         oldBitcoin = case (readMaybe (filter (/=',') oldBitcoinString) :: Maybe Float) of
                        Just ob -> ob
                        Nothing -> error (show l)
