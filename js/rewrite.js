@@ -1009,23 +1009,6 @@ function designateSpecialLinkIcons(loadEventInfo) {
 		link.dataset.linkIconType = "text";
 		link.dataset.linkIcon = "\u{1D50A}"; // 𝔊
 	});
-
-	//	Directory index navigation links.
-	loadEventInfo.document.querySelectorAll(".directory-indexes li a").forEach(link => {
-		link.dataset.linkIconType = "svg";
-		switch (link.parentElement.className) {
-			case "directory-indexes-upwards":
-				link.dataset.linkIcon = "arrow-up";
-				break;
-			case "directory-indexes-downwards":
-				link.dataset.linkIcon = "arrow-down";
-				break;
-			case "directory-indexes-sideways":
-				link.dataset.linkIcon = "arrow-right";
-				break;
-		}
-		unwrap(link.parentElement);
-	});
 }
 
 /************************************************/
