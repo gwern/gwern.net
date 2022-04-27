@@ -329,7 +329,9 @@ Extracts = { ...Extracts, ...{
         let target = popup.spawningTarget;
 
         //  Do not spawn citation context popup if citation is visible.
-        if (Popups.isVisible(Extracts.targetDocument(target).querySelector(selectorFromHash(target.hash))))
+        let targetDocument = Extracts.targetDocument(target);
+        if (   targetDocument
+        	&& Popups.isVisible(targetDocument.querySelector(selectorFromHash(target.hash))))
             return null;
 
         //  Mini title bar.

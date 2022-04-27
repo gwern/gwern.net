@@ -801,10 +801,23 @@ function rewriteFootnoteBackLinks(loadEventInfo) {
 			src: "/static/img/icons/arrow-hook-left.svg"
 		}));
 	});
+}
+
+/***********************************************************************/
+/*	Set size properly, after setting default value in previous function.
+ */
+function rectifyFootnoteBackLinkArrowSize(loadEventInfo) {
+    GWLog("rectifyFootnoteBackLinkArrowSize", "rewrite.js", 1);
+
+    let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
+    if (!footnotesSection)
+        return;
+
+    let footnotes = Array.from(footnotesSection.querySelector("#footnotes > ol").children);
 
 	requestIdleCallback(() => {
 		let size = parseInt(getComputedStyle(footnotesSection).fontSize);
-		if (size == 0)
+		if (!size)
 			return;
 		footnotes.forEach(footnote => {
 			let arrow = footnote.querySelector(".footnote-back img");
@@ -926,6 +939,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processCitations = (info) => {
     GWLog("GW.rewriteFunctions.processCitations", "rewrite.js", 2);
 
+	rectifyFootnoteBackLinkArrowSize(info);
 	bindHighlightEventsToFootnoteSelfLinks(info);
     bindNoteHighlightEventsToCitations(info);
 }, { phase: "eventListeners" });
