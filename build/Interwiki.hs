@@ -1,39 +1,38 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Interwiki (convertInterwikiLinks, inlinesToString, wpPopupClasses, interwikiTestSuite) where
+module Interwiki (convertInterwikiLinks, inlinesToText, wpPopupClasses, interwikiTestSuite) where
 
 import Data.Containers.ListUtils (nubOrd)
-import Data.List (isPrefixOf, isSuffixOf)
 import qualified Data.Map as M (fromList, lookup, Map)
-import qualified Data.Text as T (append, concat, head, isInfixOf, null, tail, take, toUpper, pack, unpack, Text)
+import qualified Data.Text as T (append, concat, head, isInfixOf, null, tail, take, toUpper, pack, unpack, Text, isPrefixOf, isSuffixOf, takeWhile)
 import Network.URI (parseURIReference, uriPath, uriAuthority, uriRegName)
 
 import Text.Pandoc (Inline(..), nullAttr)
 
-import Utils (replaceMany)
+import Utils (replaceManyT)
 
 -- INTERWIKI PLUGIN
 -- This is a simplification of the original interwiki plugin I wrote for Gitit: <https://github.com/jgm/gitit/blob/master/plugins/Interwiki.hs>
 -- It's more or less the same thing, but the interwiki mapping is cut down to only the ones I use, and it avoids a dependency on Gitit.
 -- | Convert a list of inlines into a string.
-inlinesToString :: [Inline] -> T.Text
-inlinesToString = T.concat . map go
+inlinesToText :: [Inline] -> T.Text
+inlinesToText = T.concat . map go
   where go x = case x of
                -- reached the literal T.Text:
                Str s    -> s
                -- strip & recurse on the [Inline]:
-               Emph        x' -> inlinesToString x'
-               Underline   x' -> inlinesToString x'
-               Strong      x' -> inlinesToString x'
-               Strikeout   x' -> inlinesToString x'
-               Superscript x' -> inlinesToString x'
-               Subscript   x' -> inlinesToString x'
-               SmallCaps   x' -> inlinesToString x'
+               Emph        x' -> inlinesToText x'
+               Underline   x' -> inlinesToText x'
+               Strong      x' -> inlinesToText x'
+               Strikeout   x' -> inlinesToText x'
+               Superscript x' -> inlinesToText x'
+               Subscript   x' -> inlinesToText x'
+               SmallCaps   x' -> inlinesToText x'
                -- throw away attributes and recurse on the [Inline]:
-               Span _      x' -> inlinesToString x' -- eg. [foo]{.smallcaps} -> foo
-               Quoted _    x' -> inlinesToString x'
-               Cite _      x' -> inlinesToString x'
-               Link _   x' _  -> inlinesToString x'
-               Image _  x' _  -> inlinesToString x'
+               Span _      x' -> inlinesToText x' -- eg. [foo]{.smallcaps} -> foo
+               Quoted _    x' -> inlinesToText x'
+               Cite _      x' -> inlinesToText x'
+               Link _   x' _  -> inlinesToText x'
+               Image _  x' _  -> inlinesToText x'
                -- throw away attributes, return the literal T.Text:
                Math _      x' -> x'
                RawInline _ x' -> x'
@@ -48,14 +47,14 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
   if T.head interwiki == '!' then
         case M.lookup (T.tail interwiki) interwikiMap of
                 Just url  -> let attr' = (ident,
-                                            wpPopupClasses (T.unpack (url `interwikiurl` (if article=="" then inlinesToString ref else article))) ++
+                                            wpPopupClasses (url `interwikiurl` (if article=="" then inlinesToText ref else article)) ++
                                             classes,
                                            kvs) in
                              case article of
-                                  "" -> Link attr' ref (url `interwikiurl` inlinesToString ref, "") -- tooltip is now handled by LinkMetadata.hs
+                                  "" -> Link attr' ref (url `interwikiurl` inlinesToText ref, "") -- tooltip is now handled by LinkMetadata.hs
                                   _  -> Link attr' ref (url `interwikiurl` article, "")
                 Nothing -> error $ "Attempted to use an interwiki link with no defined interwiki: " ++ show x
-  else let classes' = wpPopupClasses (T.unpack interwiki) ++ classes in
+  else let classes' = wpPopupClasses interwiki ++ classes in
          if ".wikipedia.org/wiki/" `T.isInfixOf` interwiki then
            Link (ident, classes', kvs) ref (interwiki, article)
               else x
@@ -63,9 +62,9 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
     interwikiurl :: T.Text -> T.Text -> T.Text
     -- normalize links; MediaWiki requires first letter to be capitalized, and prefers '_' to ' '/'%20' for whitespace
     interwikiurl u a = let a' = if ".wikipedia.org/wiki/" `T.isInfixOf` u then T.toUpper (T.take 1 a) `T.append` T.tail a else a in
-                         u `T.append` T.pack (replaceMany [("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $ deunicode (T.unpack a'))
-    deunicode :: String -> String
-    deunicode = replaceMany [("‘", "\'"), ("’", "\'"), (" ", " "), (" ", " ")]
+                         u `T.append` (replaceManyT [("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_"), ("&","&amp;")] $ deunicode a')
+    deunicode :: T.Text -> T.Text
+    deunicode = replaceManyT [("‘", "\'"), ("’", "\'"), (" ", " "), (" ", " ")]
 convertInterwikiLinks x = x
 
 interwikiTestSuite :: [(Inline, Inline, Inline)]
@@ -159,29 +158,29 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
 -- So just checking for 'en.wikipedia.org/wiki/' prefix is not enough.
 --
 -- This is important because we can request Articles through the API and display them as a WP popup, but for other namespaces it would be meaningless (what is the contents of [[Special:Random]]? Or [[Special:BookSources/0-123-456-7]]?). These can only be done as live link popups (if at all, we can't for Special:).
-wpPopupClasses :: String -> [T.Text]
-wpPopupClasses u = nubOrd $ ["backlinks-not", "id-not"] ++ case parseURIReference u of
+wpPopupClasses :: T.Text -> [T.Text]
+wpPopupClasses u = nubOrd $ ["backlinks-not", "id-not"] ++ case parseURIReference (T.unpack u) of
                         Nothing -> []
                         Just uri -> case uriAuthority uri of
                           Nothing -> []
-                          Just authority -> let article = uriPath uri
-                                                domain = uriRegName authority
+                          Just authority -> let article = T.pack $ uriPath uri
+                                                domain = T.pack $ uriRegName authority
                                             in
-                                             if not ("wikipedia.org" `isSuffixOf` domain) && "http" `isPrefixOf` u then [] else
-                                                        let u' = takeWhile (/= ':') $ replaceMany [("/wiki/", "")] article in
+                                             if not ("wikipedia.org" `T.isSuffixOf` domain) && "http" `T.isPrefixOf` u then [] else
+                                                        let u' = T.takeWhile (/= ':') $ replaceManyT [("/wiki/", "")] article in
                                                           [if u' `elem` apiNamespacesNo then "link-annotated-not" else "link-annotated",
                                                            if u' `elem` linkliveNamespacesNo then "link-live-not" else "link-live"]
 
 -- WP namespaces which are known to not return a useful annotation from the API; Special: does not (eg. Special:Random, or, common in article popups, Special:BookSources for ISBNs) and returns nothing while Category: returns something which is useless (just the category title!), but surprisingly, most others return something useful (eg. even Talk pages like <https:/en.wikipedia.org/api/rest_v1/page/mobile-sections/Talk:Small_caps> do).
 -- I have not checked the full list of namespaces carefully so some of the odder namespaces may be bad.
-apiNamespacesNo :: [String]
+apiNamespacesNo :: [T.Text]
 apiNamespacesNo = ["Category", "File", "Special"]
 
 -- A separate question from API annotations is whether a namespace permits live popups, or if it sets X-FRAME headers. Thus far, only Special: appears to block embeddings (probably for security reasons, as there is a lot of MediaWiki functionality gatewayed behind Special: URLs, while the other namespaces should be harder to abuse).
-linkliveNamespacesNo :: [String]
+linkliveNamespacesNo :: [T.Text]
 linkliveNamespacesNo = ["Special"]
 
--- nonArticleNamespace :: [String]
+-- nonArticleNamespace :: [T.Text]
 -- nonArticleNamespace = ["Talk", "User", "User_talk", "Wikipedia", "Wikipedia_talk", "File", "File_talk", "MediaWiki", "MediaWiki_talk", "Template", "Template_talk", "Help", "Help_talk", "Category", "Category_talk", "Portal", "Portal_talk", "Draft", "Draft_talk", "TimedText", "TimedText_talk", "Module", "Module_talk", "Gadget", "Gadget_talk", "Gadget definition", "Gadget definition_talk", "Special", "Media"]
 
 -- | Large table of constants; this is a mapping from shortcuts to a URL. The URL can be used by

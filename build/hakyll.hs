@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-27 10:46:24 gwern"
+When: Time-stamp: "2022-04-27 12:13:39 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -69,7 +69,7 @@ import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack
 
 -- local custom modules:
 import Inflation (nominalToRealInflationAdjuster)
-import Interwiki (convertInterwikiLinks, inlinesToString, interwikiTestSuite)
+import Interwiki (convertInterwikiLinks, inlinesToText, interwikiTestSuite)
 import LinkMetadata (isLocalLinkWalk, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString, tagsToLinksDiv, safeHtmlWriterOptions)
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (linebreakingTransform, typographyTransform, invertImageInline, imageMagickDimensions)
@@ -355,7 +355,7 @@ addAmazonAffiliate x = x
 -- | Make headers into links to themselves, so they can be clicked on or copy-pasted easily.
 -- BUG: Pandoc uses the Span trick to remove the Link from the generated ToC, which leaves behind redundant meaningless <span></span> wrappers. <https://github.com/jgm/pandoc/issues/8020>
 headerSelflink :: Block -> Block
-headerSelflink (Header a (href,b,c) d) = Header a (href,b,c) [Link nullAttr d ("#"`T.append`href, "Link to section: § '"`T.append`inlinesToString(d)`T.append`"'")]
+headerSelflink (Header a (href,b,c) d) = Header a (href,b,c) [Link nullAttr d ("#"`T.append`href, "Link to section: § '"`T.append`inlinesToText(d)`T.append`"'")]
 headerSelflink x = x
 
 -- FASTER HTML RENDERING BY STATICLY SPECIFYING ALL IMAGE DIMENSIONS

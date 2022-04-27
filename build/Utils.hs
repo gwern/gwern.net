@@ -15,7 +15,7 @@ import System.IO (stderr, hPutStrLn)
 import System.IO.Temp (emptySystemTempFile)
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Show.Pretty (ppShow)
-import qualified Data.Text as T (Text, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf)
+import qualified Data.Text as T (Text, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf, replace)
 
 import Text.Regex (subRegex, mkRegex) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors: `$ cabal install regex-compat-tdfa && ghc-pkg --user hide regex-compat-0.95.1`
 
@@ -109,6 +109,11 @@ sedMany regexps s = foldr (uncurry sed) s regexps
 -- list of fixed string rewrites
 replaceMany :: [(String,String)] -> (String -> String)
 replaceMany rewrites s = foldr (uncurry replace) s rewrites
+
+-- list of fixed string rewrites
+replaceManyT :: [(T.Text,T.Text)] -> (T.Text -> T.Text)
+replaceManyT rewrites s = foldr (uncurry T.replace) s rewrites
+
 
 frequency :: Ord a => [a] -> [(Int,a)]
 frequency list = map (\l -> (length l, head l)) (group (sort list))

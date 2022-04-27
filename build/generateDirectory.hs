@@ -26,7 +26,7 @@ import System.IO (stderr, hPrint)
 import Control.Monad.Parallel as Par (mapM_)
 import Text.Pandoc.Walk (walk)
 
-import Interwiki (inlinesToString)
+import Interwiki (inlinesToText)
 import LinkAuto (cleanUpDivsEmpty)
 import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag)
 import LinkBacklink (getBackLink, getSimilarLink)
@@ -85,7 +85,7 @@ generateDirectory mta dir'' = do
   -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnailText'
   let imageFirst = take 1 $ extractImages (Pandoc nullMeta titledLinksSections)
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst)) ++ "\n"
-  let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToString caption in if not (captionText == "") then captionText else if not (altText == "") then altText else "") (head imageFirst))) ++ "'\n"
+  let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if not (captionText == "") then captionText else if not (altText == "") then altText else "") (head imageFirst))) ++ "'\n"
 
   let header = generateYAMLHeader dir'' (getNewestDate links) (length dirsChildren + length dirsSeeAlsos, length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
   let directorySectionChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
@@ -224,16 +224,21 @@ generateDirectoryItems parent current ds =
  where
        parent'' = case parent of
                      Nothing -> []
-                     Just p -> [[Para [Span ("",["directory-indexes-upwards"],[]) [Link ("",["link-tag"],[("rel","tag")]) [Str "Parent"] (T.pack p, "Link to parent directory '" `T.append`  (T.pack $ takeDirectory p) `T.append` "' (ascending)")]]]]
+                     Just p -> [[Para [Span ("",[],[]) [Link ("",
+                                                               ["link-tag", "directory-indexes-upwards"],
+                                                               [("rel","tag"), ("link-icon-type", "svg"), ("link-icon", "arrow-up-left")]
+                                                             )
+                                                               [Str "Parent"] (T.pack p, "Link to parent directory '" `T.append`  (T.pack $ takeDirectory p) `T.append` "' (ascending)")]]]]
 
        generateDirectoryItem :: FilePath -> [Block]
        -- arrow symbolism: subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')
-       generateDirectoryItem d = [Para [
-                                     Span ("",
-                                            if directoryPrefixDown current d then ["directory-indexes-downwards"] else ["directory-indexes-sideways"],
-                                            [("link-icon-type", "svg")])
-                                       [Link ("",["link-tag"],[("rel","tag")]) [Emph [Str $ abbreviateTag $ T.pack $ takeDirectory d]] (T.pack d, "")]
-                                 ]]
+       generateDirectoryItem d = let downP = directoryPrefixDown current d in
+                                   [Para [Link ("",
+                                               ["link-tag", if downP then "directory-indexes-downwards" else "directory-indexes-sideways"],
+                                               [("rel","tag"), ("link-icon-type", "svg"), ("link-icon", if downP then "arrow-down-right" else "arrow-right")]
+                                             )
+                                               [Emph [Str $ abbreviateTag $ T.pack $ takeDirectory d]] (T.pack d, "")]
+                                 ]
        directoryPrefixDown :: FilePath -> FilePath -> Bool
        directoryPrefixDown currentd d' = ("/"++currentd) `isPrefixOf` d'
 
@@ -266,7 +271,7 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) = -- no abstracts:
                      else Str (T.pack $ authorShort)
        author   = if aut=="" || aut=="N/A" then [] else [Str ",", Space, authorSpan]
        date     = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]]
-       tags     = if tgs==[] then [] else (if dt/="" then [Str "; "] else []) ++ [tagsToLinksSpan tgs]
+       tags     = if tgs==[] then [] else (if dt/="" then [Str "; "] else []) ++ [tagsToLinksSpan $ map T.pack tgs]
        backlink = if bl=="" then [] else (if dt=="" && tgs==[] then [] else [Str ";", Space]) ++ [Span ("", ["backlinks"], []) [Link ("",["link-local", "backlinks"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]
        similar  = if sl=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["link-local", "similar"],[]) [Str "similar"] (T.pack sl,"Similar links (by text embedding).")]]
   in

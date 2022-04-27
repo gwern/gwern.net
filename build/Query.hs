@@ -1,7 +1,7 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2022-04-12 20:59:05 gwern"
+When:  Time-stamp: "2022-04-27 12:22:25 gwern"
 License: CC-0
 -}
 
@@ -9,10 +9,10 @@ License: CC-0
 module Query (extractImages, extractLinks, extractLinksWith, extractURLs, extractURLsWith, extractURL, extractURLWith, extractURLsAndAnchorTooltips, parseMarkdownOrHTML, truncateTOCHTML) where
 
 import qualified Data.Text as T (append, init, drop, head, last, Text)
-import Text.Pandoc -- (def, pandocExtensions, queryWith, readerExtensions, readHtml, readMarkdown, Inline(Image, Link), runPure, Pandoc(..), Block(BulletList, Para))
-import Text.Pandoc.Walk -- (walk)
+import Text.Pandoc (def, pandocExtensions, queryWith, readerExtensions, readHtml, readMarkdown, Inline(Image, Link), runPure, Pandoc(..), Block(BulletList, OrderedList), nullMeta)
+import Text.Pandoc.Walk (query, walk)
 
-import Interwiki (convertInterwikiLinks, inlinesToString)
+import Interwiki (convertInterwikiLinks, inlinesToText)
 
 parseMarkdownOrHTML :: Bool -> T.Text -> Pandoc
 parseMarkdownOrHTML md txt = let parsedEither = if md then runPure $ readMarkdown def{readerExtensions = pandocExtensions } txt
@@ -39,7 +39,7 @@ extractURLs = extractURLsWith (const True)
 extractURLWith :: (Inline -> Bool) -> Inline -> [(T.Text,T.Text,T.Text)]
 extractURLWith rule x@(Link _ anchorText (url, tooltip))
     | url == "" || T.head url == '$' || T.head url == '\8383' = []
-    | rule x = [(url, inlinesToString anchorText, tooltip)]
+    | rule x = [(url, inlinesToText anchorText, tooltip)]
     | otherwise = []
 extractURLWith _ _ = []
 
@@ -55,8 +55,8 @@ extractURLsAndAnchorTooltips :: Pandoc -> [(T.Text,[T.Text])]
 extractURLsAndAnchorTooltips = queryWith extractURLSquashed . walk convertInterwikiLinks
  where
    extractURLSquashed :: Inline -> [(T.Text,[T.Text])]
-   extractURLSquashed (Link _ il (u,""))     = [(u, [cleanURL $ inlinesToString il])]
-   extractURLSquashed (Link _ il (u,target)) = [(u, [cleanURL $ inlinesToString il]), (u, [target])]
+   extractURLSquashed (Link _ il (u,""))     = [(u, [cleanURL $ inlinesToText il])]
+   extractURLSquashed (Link _ il (u,target)) = [(u, [cleanURL $ inlinesToText il]), (u, [target])]
    extractURLSquashed _ = []
 
    -- NOTE: apparently due to nested Spans (from the smallcaps) and the RawInline issue (yet again), some link suggestions look like ">ADHD<". Very undesirable replacement targets. So we special-case clean those:
