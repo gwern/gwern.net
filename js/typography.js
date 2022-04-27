@@ -98,7 +98,7 @@ Typography = {
 		],
 		wordbreaks: [
 			// word-breaks after slashes (for long URLs etc.)
-			[/\/+/g, '$&\u200b'],
+			[/.\/+/g, '$&\u200b'],
 		],
 		misc: [
 			// convert nbsp to regular space
@@ -116,22 +116,21 @@ Typography = {
 		return str;
 	},
 	replaceZeroWidthSpaces: (element) => {
-		var mustReplace = false;
-		for (let i = 0; i < element.childNodes.length; i++) {
-			let node = element.childNodes[i];
+		let mustReplace = false;
+		for (node of element.childNodes) {
 			if (node.nodeType === Node.ELEMENT_NODE) {
 				Typography.replaceZeroWidthSpaces(node);
 			} else if (   node.nodeType === Node.TEXT_NODE
-					   && node.nodeValue.match(/\u200b/) != null) {
+					   && node.textContent.match(/\u200b|&ZeroWidthSpace;/) != null) {
 				mustReplace = true;
 			}
 		}
 		if (mustReplace) {
 			// Replace U+200B ZERO-WIDTH SPACE with <wbr> tag.
-			element.innerHTML = element.innerHTML.replace(/\u200b/g, "<wbr>");
+			element.innerHTML = element.innerHTML.replace(/\u200b|&ZeroWidthSpace;/g, "<wbr>");
 
 			// Remove all but one of each set of consecutive <wbr> tags.
-			var prevNodeIsWBR = false;
+			let prevNodeIsWBR = false;
 			for (let i = 0; i < element.childNodes.length; i++) {
 				let node = element.childNodes[i];
 				if (   node.nodeType === Node.ELEMENT_NODE 
@@ -152,9 +151,7 @@ Typography = {
 		if ([ 'CODE', 'PRE', 'SCRIPT', 'STYLE', 'NOSCRIPT' ].includes(element.nodeName))
 			return;
 
-		for (let i = 0; i < element.childNodes.length; i++) {
-			let node = element.childNodes[i];
-
+		for (node of element.childNodes) {
 			if (node.nodeType === Node.TEXT_NODE) {
 				node.nodeValue = Typography.processString(node.nodeValue, replacementTypes);
 			} else if (node.childNodes.length > 0) {

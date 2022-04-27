@@ -604,10 +604,10 @@ function rectifyTypographyInAnnotation(loadEventInfo) {
     GWLog("rectifyTypographyInAnnotation", "rewrite.js", 1);
 
     Typography.processElement(loadEventInfo.document,
-          Typography.replacementTypes.QUOTES
-        | Typography.replacementTypes.WORDBREAKS
-        | Typography.replacementTypes.ELLIPSES
-    );
+        (  Typography.replacementTypes.QUOTES
+         | Typography.replacementTypes.WORDBREAKS
+         | Typography.replacementTypes.ELLIPSES),
+    	true);
 
     //  Educate quotes in image alt-text.
     loadEventInfo.document.querySelectorAll("img").forEach(image => {
