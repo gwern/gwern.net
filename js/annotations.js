@@ -400,6 +400,11 @@ Annotations = {
             cell.outerHTML = `<td>${cell.innerHTML}</td>`;
         });
 
+		//	Fix chemical formulas.
+		annotation.querySelectorAll(".chemf br").forEach(br => {
+			br.remove();
+		});
+
         //  Rectify table classes.
         annotation.querySelectorAll("table.sidebar").forEach(table => {
             table.classList.toggle("infobox", true);
