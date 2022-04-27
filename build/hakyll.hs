@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-25 10:43:12 gwern"
+When: Time-stamp: "2022-04-27 10:46:24 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -236,7 +236,7 @@ fieldsTagHTML m = field "tagsHTML" $ \item -> do
   let path = "/" ++ (replace ".page" "" $ toFilePath $ itemIdentifier item)
   case M.lookup path m of
     Nothing                 -> return "" -- noResult "no description field"
-    Just x@(_,_,_,_,tags,_) -> case (runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta [tagsToLinksDiv tags])) of
+    Just x@(_,_,_,_,tags,_) -> case (runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta [tagsToLinksDiv $ map T.pack tags])) of
                                  Left e -> error ("Failed to compile tags to HTML fragment: " ++ show path ++ show x ++ show e)
                                  Right html -> return (T.unpack html)
 

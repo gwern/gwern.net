@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-27 10:10:16 gwern"
+When:  Time-stamp: "2022-04-27 10:38:43 gwern"
 License: CC-0
 -}
 
@@ -376,7 +376,7 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                                                     [Str (T.pack $ dateTruncateBad dt)]]
                                     backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
-                                    tags = if ts==[] then [] else (if dt=="" then [] else [Str ";", Space]) ++ [tagsToLinksSpan ts]
+                                    tags = if ts==[] then [] else (if dt=="" then [] else [Str ";", Space]) ++ [tagsToLinksSpan $ map T.pack ts]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     linkPrefix = if rawFilep then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else []
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
@@ -429,37 +429,20 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 --   <a href="/docs/genetics/heritable/index" class="link-tag">genetics/heritable</a>,
 --   <a href="/docs/psychology/writing/index" class="link-tag">psychology/writing</a>
 -- </span>
-tagsToLinksSpan :: [String] -> Inline
+tagsToLinksSpan :: [T.Text] -> Inline
 tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
-tagsToLinksSpan ts = let tags = condenseTags (sort ts) in
+tagsToLinksSpan ts = let tags = sort ts in
                        Span ("", ["link-tags"], []) $
-                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
+                       intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
 -- Ditto; but since a Div is a Block element, we copy-paste a separate function:
-tagsToLinksDiv :: [String] -> Block
+tagsToLinksDiv :: [T.Text] -> Block
 tagsToLinksDiv [] = Div nullAttr []
 tagsToLinksDiv [""] = Div nullAttr []
-tagsToLinksDiv ts = let tags = condenseTags (sort ts) in
+tagsToLinksDiv ts = let tags = sort ts in
                        Div ("", ["link-tags"], []) $
-                       [Para $ intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags]
-
--- For some links, tag names may overlap considerably, eg. ["genetics/heritable", "genetics/selection", "genetics/correlation"]. This takes up a lot of space, and as tags get both more granular & deeply nested, the problem will get worse (look at subtags of 'reinforcement-learning'). We'd like to condense the tags by their shared prefix. We take a (sorted) list of tags, in order to return the formatted text & actual tag, and for each tag, we look at whether its full prefix is shared with any previous entries; if there is a prior one in the list, then this one loses its prefix in the formatted text version.
---
--- > condenseTags ["genetics/heritable",            "genetics/selection",                "genetics/correlation"]
--- → [("genetics/heritable","genetics/heritable"), ("/selection","genetics/selection"), ("/correlation","genetics/correlation")]
--- > condenseTags ["reinforcement-learning",               "reinforcement-learning/alphago",             "reinforcement-learning/muzero"]
--- → [("reinforcement-learning","reinforcement-learning"),("/alphago","reinforcement-learning/alphago"),("/muzero","reinforcement-learning/muzero")]
-condenseTags :: [String] -> [(T.Text,T.Text)]
-condenseTags ts = map (\t -> let previousList = map prefixfy $ takeWhile (/=t) ts
-                                 prefix = prefixfy t
-                             in
-                          if prefix `elem` previousList then (T.pack (postfixfy t), T.pack t)
-                          else (T.pack t, T.pack t)
-                      )
-                  ts
-  where prefixfy  s = let prefix = reverse $ dropWhile (/= '/') $ reverse s in if prefix=="" then s else init prefix
-        postfixfy s = "/" ++ (reverse $ takeWhile (/= '/') $ reverse s)
+                       [Para $ intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags]
 
 -- Abbreviate displayed tag names to make tag lists more readable. For some tags, like 'reinforcement-learning/*' or 'genetics/*', they might be used very heavily and densely, leading to cluttered unreadable tag lists, and discouraging use of meaningful directory names: 'reinforcement-learning/exploration, reinforcement-learning/alphago, reinforcement-learning/meta-learning, reinforcement-learning/...' would be quite difficult to read. But we also would rather not abbreviate the directory-tag itself down to just 'rl/', as that is not machine-readable or explicit. So we can abbreviate them just for display, while rendering the tags to Inline elements.
 abbreviateTag :: T.Text -> T.Text
@@ -470,9 +453,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("ai/anime", "anime AI")
           , ("eva/little-boy", "Little Boy")
           , ("GPT/inner-monologue", "inner monologue (AI)")
-          , ("/gpt", "GPT")
           , ("ai/gpt", "GPT")
-          , ("/nn", "neural net")
           , ("ai/nn", "neural net")
           , ("ai/rnn", "AI/RNN")
           , ("ai/scaling", "AI scaling")
@@ -482,16 +463,11 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("iq/smpy", "SMPY")
           , ("vitamin-d", "Vitamin D")
           , ("dual-n-back", "DNB")
-          , ("/codex", "Codex")
           , ("ai/gpt/codex", "Codex")
-          , ("/lamda", "LaMDA")
           , ("ai/gpt/lamda", "LaMDA")
           , ("iq/anne-roe", "Anne Roe")
-          , ("/diffusion", "diffusion model")
           , ("ai/diffusion", "diffusion model")
           , ("ai/gan", "GAN")
-          , ("/gan", "GAN")
-          , ("/stylegan", "Style GAN")
           , ("ai/stylegan", "Style GAN")
           , ("ai/gpt/dall-e", "DALL·E")
           , ("ai/highleyman", "Highleyman")
@@ -510,10 +486,8 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("cs/r", "R")
           , ("cs/shell", "shell")
           , ("cs/scheme", "Scheme")
-          , ("/css", "CSS")
           , ("cs/css", "CSS")
           , ("cs/cryptography", "crypto")
-          , ("/js", "JS")
           , ("cs/js", "JS")
           , ("cs/haskell", "Haskell")
           , ("cs/python", "Python")
@@ -522,7 +496,6 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("nootropic/quantified-self", "QS")
           , ("silk-road", "DNM")
           , ("silk-road/william-pickard", "William Pickard")
-          , ("/muzero", "MuZero")
           , ("reinforcement-learning/muzero", "MuZero")
           , ("reinforcement-learning/alphago", "AlphaGo")
           , ("reinforcement-learning/alphastar", "AlphaStar")
@@ -548,7 +521,6 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("psychology/european-journal-of-parapsychology", "EJP")
           , ("psychiatry/traumatic-brain-injury", "TBI")
           , ("genetics/heritable/rare-variants", "rare genes")
-          , ("/heritable/rare-variants", "rare genes")
           , ("genetics/heritable/emergenesis", "emergenesis")
           , ("sociology/abandoned-footnotes", "Abandoned Footnotes")
           , ("statistics/survival-analysis", "survival analysis")
