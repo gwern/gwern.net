@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-26 22:17:29 gwern"
+When:  Time-stamp: "2022-04-26 22:21:03 gwern"
 License: CC-0
 -}
 
@@ -146,7 +146,7 @@ readLinkMetadataAndCheck = do
              let files = map (takeWhile (/='#') . tail) $ filter (\u -> head u == '/') urls
              forM_ files (\f -> unless (takeFileName f == "index" || takeFileName f == "index.page" || "/tags/" `isInfixOf` f) $
                                 do exist <- doesFileExist f
-                                   unless exist $ error ("Custom annotation error: file does not exist? " ++ f))
+                                   unless exist $ printRed ("Custom annotation error: file does not exist? " ++ f))
 
              let titles = map (\(_,(t,_,_,_,_,_)) -> filter (\c -> not (isPunctuation c || isSpace c)) $ map toLower t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
 
