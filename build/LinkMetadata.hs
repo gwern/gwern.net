@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-26 14:25:05 gwern"
+When:  Time-stamp: "2022-04-27 10:10:16 gwern"
 License: CC-0
 -}
 
@@ -146,7 +146,7 @@ readLinkMetadataAndCheck = do
              let files = map (takeWhile (/='#') . tail) $ filter (\u -> head u == '/') urls
              forM_ files (\f -> unless (takeFileName f == "index" || takeFileName f == "index.page" || "/tags/" `isInfixOf` f) $
                                 do exist <- doesFileExist f
-                                   unless exist $ error ("Custom annotation error: file does not exist? " ++ f))
+                                   unless exist $ printRed ("Custom annotation error: file does not exist? " ++ f))
 
              let titles = map (\(_,(t,_,_,_,_,_)) -> filter (\c -> not (isPunctuation c || isSpace c)) $ map toLower t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
 
@@ -1433,7 +1433,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let metas = filter (isTagOpenName "meta") f
                         let title = cleanAbstractsHTML $ concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
                         let date = let dateTmp = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dc.date.issued" then snd $ head w else "") metas
-                                       in if dateTmp=="N/A" || dateTmp=="2009-01-01" || dateTmp =~ dateRegex then "" else dateTmp
+                                       in if dateTmp=="N/A" || dateTmp=="2009-01-01" || not (dateTmp =~ dateRegex) then "" else dateTmp
                         let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
                         let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then Data.List.Utils.split ", " $ snd $ head y else []) metas
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
@@ -1449,7 +1449,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                               return ("<figure><img " ++ imgClass ++ " height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\" /></figure>")
 
                         let doi = ""
-                        let footnotesP = "<section class=\"footnotes\" role=\"doc-endnotes\">" `isInfixOf` b
+                        let footnotesP = "<section class=\"footnotes\"" `isInfixOf` b
 
                         let toc = gwernTOC footnotesP p' f
                         let toc' = if toc == "<div class=\"columns\" class=\"TOC\"></div>" then "" else toc
@@ -1500,9 +1500,12 @@ gwernAbstract shortAllowed p' description toc f =
                          abstractRaw = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
                          restofpageAbstract = trim $ renderTags $ filter filterAbstract abstractRaw
                          in (titleClean, abstractRaw, restofpageAbstract)
-      -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
-      abstrct'  = if length description > length abstrct then description else abstrct
-      abstrct'' = (if anyPrefix abstrct' ["<p>", "<p>", "<figure>"] then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ toc
+      abstrct'  = (if anyPrefix abstrct ["<p>", "<p>", "<figure>"] then abstrct else if null abstrct then "" else "<p>"++abstrct++"</p>") ++ " " ++ toc
+      -- combine description + abstract; if there's no abstract, settle for the description:
+      abstrct'' = if description /= "" && abstrct' /= "" then "<p>"++description++"</p>"++abstrct'
+                                      else if description == "" && abstrct' /= "" then abstrct'
+                                           else if description /= "" && abstrct' == "" then "<p>"++description++"</p>"
+                                                else ""
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
       abstrct'''' = sed " id=\"fnref[0-9]+\"" "" abstrct''' -- rm footnote IDs - cause problems when transcluded
   in if "scrape-abstract-not" `isInfixOf` (renderTags abstrctRw) then (t,"") else if shortAllowed then (t,abstrct'''') else if length abstrct < minimumAnnotationLength then ("","") else (t,abstrct'''')
@@ -2082,6 +2085,16 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" ix)", " (9)")
           , ("(x)", "(10)")
           , (" x)", " (10)")
+          , (" a) ", " (1) ")
+          , (" b) ", " (2) ")
+          , (" c) ", " (3) ")
+          , (" d) ", " (4) ")
+          , (" e) ", " (5) ")
+          , (" f) ", " (6) ")
+          , (" h) ", " (7) ")
+          , (" i) ", " (8) ")
+          , (" j) ", " (9) ")
+          , (" k) ", " (10) ")
           , (" =  ", " = ")
           , ("<strong><strong>", "<strong>")
           , ("</strong></strong>", "</strong>")

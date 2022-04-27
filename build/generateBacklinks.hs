@@ -23,7 +23,7 @@ import LinkAuto (linkAutoFiltered)
 import LinkMetadata (hasAnnotation, isLocalPath, readLinkMetadata, generateID, Metadata, MetadataItem, safeHtmlWriterOptions)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB,)
 import Query (extractLinksWith)
-import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix)
+import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed)
 
 main :: IO ()
 main = do
@@ -38,7 +38,7 @@ main = do
         filter ("/"`isPrefixOf`) $ map T.unpack $
         M.keys bldb ++ concat (M.elems bldb)
   forM_ filesCheck (\f -> do exist <- doesFileExist f
-                             unless exist $ error ("Backlinks: files annotation error: file does not exist? " ++ f))
+                             unless exist $ printRed ("Backlinks: files annotation error: file does not exist? " ++ f))
 
   -- if all are valid, write out:
   _ <- M.traverseWithKey (writeOutCallers md) bldb
