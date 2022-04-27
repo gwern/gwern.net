@@ -294,8 +294,9 @@ function wrapImages(loadEventInfo) {
 		unwrap(image.parentElement);
 	});
 
+	let exclusionSelector = ".footnote-back, .mwe-math-element";
 	wrapAll("img", (image) => {
-		if (image.closest(".footnote-back"))
+		if (image.closest(exclusionSelector))
 			return;
 
 		let figure = image.closest("figure");
