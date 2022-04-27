@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-04-25 12:36:42 gwern"
+When:  Time-stamp: "2022-04-27 13:26:10 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -34,7 +34,8 @@ import Control.Monad (unless)
 import Data.List (sort)
 import Data.Maybe (isNothing)
 import qualified Data.Map.Strict as M (fromListWith, toList, map, keys)
-import Data.Text as T (isInfixOf, isPrefixOf, unpack, Text)
+import Data.Text as T (append, isInfixOf, isPrefixOf, Text)
+import Data.Text.IO as TIO (appendFile)
 import Text.Pandoc (Inline(Link), nullAttr)
 
 import Interwiki (wpPopupClasses)
@@ -84,11 +85,11 @@ linkLivePrioritize = do b <- readBacklinksDB
         -- Append an example of a prioritized link to /Lorem#link-testcases for manual review, to skip copy-paste hassle"
         writeLinkLiveTestcase :: Backlinks -> T.Text -> IO ()
         writeLinkLiveTestcase b l = let link = head $ filter (l `T.isInfixOf`) $ M.keys b in -- take the first URL which matches the domain:
-                                      appendFile "Lorem.page" $ "\n- <" ++ T.unpack link ++ ">{.archive-not .link-annotated-not .link-live}"
+                                      TIO.appendFile "Lorem.page" $ "\n- <" `T.append` link `T.append` ">{.archive-not .link-annotated-not .link-live}"
 
 -- Wikipedia link-live capabilities are page-dependent: anything in the Special namespace is blocked by headers (which makes sense given how many queries/capabilities are inside it). But it looks like pretty much all other namespaces (see Interwiki.hs's nonArticleNamespace for a list) should be live?
 wikipedia :: T.Text -> Maybe Bool
-wikipedia u = Just $ "link-live" `elem` wpPopupClasses (T.unpack u)
+wikipedia u = Just $ "link-live" `elem` wpPopupClasses u
 
 goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple :: [T.Text]
 goodDomainsSub = [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com",
