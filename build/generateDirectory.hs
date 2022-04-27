@@ -226,7 +226,7 @@ generateDirectoryItems parent current ds =
                      Nothing -> []
                      Just p -> [[Para [Span ("",[],[]) [Link ("",
                                                                ["link-tag", "directory-indexes-upwards"],
-                                                               [("rel","tag"), ("link-icon-type", "svg"), ("link-icon", "arrow-up-left")]
+                                                               [("rel","tag")]
                                                              )
                                                                [Str "Parent"] (T.pack p, "Link to parent directory '" `T.append`  (T.pack $ takeDirectory p) `T.append` "' (ascending)")]]]]
 
@@ -235,7 +235,7 @@ generateDirectoryItems parent current ds =
        generateDirectoryItem d = let downP = directoryPrefixDown current d in
                                    [Para [Link ("",
                                                ["link-tag", if downP then "directory-indexes-downwards" else "directory-indexes-sideways"],
-                                               [("rel","tag"), ("link-icon-type", "svg"), ("link-icon", if downP then "arrow-down-right" else "arrow-right")]
+                                               [("rel","tag")]
                                              )
                                                [Emph [Str $ abbreviateTag $ T.pack $ takeDirectory d]] (T.pack d, "")]
                                  ]
