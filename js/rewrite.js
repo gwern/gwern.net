@@ -817,7 +817,6 @@ function rectifyFootnoteBackLinkArrowSize(loadEventInfo) {
 
 	requestIdleCallback(() => {
 		let size = parseInt(getComputedStyle(footnotesSection).fontSize);
-		console.log(size);
 		if (!size)
 			return;
 		footnotes.forEach(footnote => {

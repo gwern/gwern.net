@@ -384,7 +384,7 @@ Extracts = {
     //  Called by: Extracts.localTranscludeForTarget
     //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
     nearestBlockElement: (element) => {
-        return element.closest("section, .footnote, .sidenote, .markdownBody > *");
+        return element.closest("section, .footnote, .sidenote, .markdownBody > *, p");
     },
 
     /*  This function fills a pop-frame for a given target with content. It
