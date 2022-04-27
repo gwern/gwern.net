@@ -550,6 +550,13 @@ hr::after,
 /* DIRECTORY INDEXES & LINK BIBLIOGRAPHIES */
 /*******************************************/
 
+/*	Italicize link tags in popups/indexes similar to the page metadata block’s
+	tags, for consistency.
+ */
+.link-tags {
+	font-style: italic;
+}
+
 blockquote .TOC {
     margin: 1em 0 0 0;
     padding: 0.5em 0.5em 0.75em 0.75em;
