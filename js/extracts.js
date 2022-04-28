@@ -346,7 +346,10 @@ Extracts = {
             if (originalURL.hostname == "ar5iv.labs.arxiv.org") {
                 originalURL.hostname = "arxiv.org";
                 originalURL.pathname = originalURL.pathname.replace("/html/", "/abs/");
-                originalURL.search = ""; /* erase the ?fallback=original query parameter necessary to make it redirect if no Ar5iv version is available */
+                /*	Erase the ?fallback=original query parameter necessary to 
+                	make it redirect if no Ar5iv version is available.
+                 */
+                originalURL.search = ""; 
             }
 
             return originalURL.href;
@@ -1102,8 +1105,7 @@ Extracts = {
         popFrame.classList.add(...target.classList);
         //  We then remove some of the imported classes.
         popFrame.classList.remove("has-annotation", "has-content", "link-self",
-            "link-local", "spawns-popup", "spawns-popin", "id-not",
-            "backlinks-not", "uri");
+            "link-local", "spawns-popup", "spawns-popin", "uri");
 
         //  Add ‘markdownBody’ class.
         popFrame.contentView.classList.add("markdownBody");
