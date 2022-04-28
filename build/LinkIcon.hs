@@ -80,7 +80,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | hasIcon x           = x
  | hasKeyAL u overrideLinkIcons = let (i,it) = fromJust $ lookup u overrideLinkIcons in addIcon x i it
 
- | "directory-indexes-upward"    `elem` cl = aI "arrow-up-left"    "svg"
+ | "directory-indexes-upwards"    `elem` cl = aI "arrow-up-left"    "svg"
  | "directory-indexes-downwards" `elem` cl = aI "arrow-down-right" "svg"
  | "directory-indexes-sideways"  `elem` cl = aI "arrow-right"      "svg"
 

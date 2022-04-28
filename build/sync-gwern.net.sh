@@ -142,7 +142,7 @@ else
             FILELENGTH=$(cat "$FILE" | wc --lines)
             (echo -e "~~~{.$LANGUAGE}";
             if [ $EXTENSION == "page" ]; then # the very long lines look bad in narrow popups, so we fold:
-                cat "$FILE" | fold --spaces --width=66 | head -1100 | iconv -t utf8 -c;
+                cat "$FILE" | fold --spaces --width=65 | head -1100 | iconv -t utf8 -c;
             else
                 cat "$FILE" | head -1000;
             fi
@@ -210,13 +210,13 @@ else
                               -e 's/\([a-z]\)…\([0-9]\)/\1⁠…⁠\2/g' -e 's/\([a-z]\)…<sub>\([0-9]\)/\1⁠…⁠<sub>\2/g' -e 's/\([a-z]\)<sub>…\([0-9]\)/\1⁠<sub>…⁠\2/g' -e 's/\([a-z]\)<sub>…<\/sub>\([0-9]\)/\1⁠<sub>…⁠<\/sub>\2/g' \
                               -e 's/\([a-z]\)⋯\([0-9]\)/\1⁠⋯⁠\2/g' -e 's/\([a-z]\)⋯<sub>\([0-9]\)/\1⁠⋯⁠<sub>\2/g' \
                               -e 's/\([a-z]\)⋱<sub>\([0-9]\)/\1⁠⋱⁠<sub>\2/g' -e 's/\([a-z]\)<sub>⋱\([0-9]\)/\1<sub>⁠⋱⁠\2/g' \
-                              -e 's/  / /g' -e 's/​​/​/g' -e 's/​ ​​ ​/​ /g' -e 's/​ ​ ​ ​  / /g' -e 's/​ ​ ​ ​/ /g' -e 's/​ ​ ​ / /g' -e 's/  / /g' \
+                              -e 's/ \+/ /g' -e 's/​​\+/​/g' -e 's/​ ​​ ​\+/​ /g' -e 's/​ ​\+/ /g' -e 's/​ ​ ​ \+/ /g' -e 's/​ ​ ​ \+/ /g' \
                             "$@"; }; export -f nonbreakSpace;
     find ./ -path ./_site -prune -type f -o -name "*.page" | fgrep -v -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 nonbreakSpace || true
     find ./_site/metadata/annotations/ -maxdepth 1 -type f -name "*.html" | sort | parallel --max-args=100 nonbreakSpace || true
 
-    bold "Adding #footnotes section ID…" # Pandoc BUG? see <https://github.com/jgm/pandoc/issues/8043>
-    footnotesIDAdd () { sed -i -e 's/<section class="footnotes" role="doc-endnotes">/<section class="footnotes" role="doc-endnotes" id="footnotes">/' "$@"; }
+    bold "Adding #footnotes section ID…" # Pandoc bug; see <https://github.com/jgm/pandoc/issues/8043>; fixed in <https://github.com/jgm/pandoc/commit/50c9848c34d220a2c834750c3d28f7c94e8b94a0>, presumably will be fixed in Pandoc >2.18
+    footnotesIDAdd () { sed -i -e 's/<section class="footnotes" role="doc-endnotes">/<section class="footnotes" role="doc-endnotes" id="footnotes">/' "$@"; }; export -f footnotesIDAdd
     find ./ -path ./_site -prune -type f -o -name "*.page" | fgrep -v -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 footnotesIDAdd || true
 
     # Testing compilation results:
@@ -485,7 +485,7 @@ else
     (sleep 20s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM"; sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM&no_referer=on"; )
 
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
-    if ((RANDOM % 100 < 99)); then $X_BROWSER "https://wave.webaim.org/report#/$CHECK_RANDOM"; fi
+    if ((RANDOM % 100 > 99)); then $X_BROWSER "https://wave.webaim.org/report#/$CHECK_RANDOM"; fi
 
     # Testing post-sync:
     bold "Checking MIME types, redirects, content…"
