@@ -8,10 +8,11 @@ import Data.List.Utils (hasKeyAL)
 import qualified Data.Map.Strict as M (toList, fromListWith, map)
 import Data.Maybe (fromJust)
 import Data.Text as T (append, drop, head, isInfixOf, isPrefixOf, pack, unpack, Text)
-import Text.Pandoc (Inline(Link), nullAttr)
+import Text.Pandoc (Inline(Link,Str), nullAttr)
 import Network.URI (parseURIReference, uriPath)
 import System.FilePath (takeExtension)
 import Data.Containers.ListUtils (nubOrd)
+import System.Directory (doesFileExist)
 
 import LinkBacklink (readBacklinksDB)
 import Utils (host, writeUpdatedFile)
@@ -22,12 +23,6 @@ import Utils (host, writeUpdatedFile)
 -- 'organization icon overrides PDF icon' become fertile sources of errors & regressions.
 -- Doing this at compile-time in Haskell is easier and also reduces performance burden on the client
 -- browser.
---
--- NOTE: we generate the link icon classes in generateDirectory.hs there, setting the SVG/arrows directly on the directory-index links,
--- because in isolation it is hard to tell the context of a `/docs/foo/bar/index` link: is this linked in the parent `/docs/foo/index`, linked
--- in a child of `foo/bar` like `foo/bar/baz/index` trying to link to its ../, or a cross-reference in an entirely parallel directory-index
--- `/docs/quux/index`? generateDirectory.hs does encode .link-tag classes ('directory-indexes-upward'/'directory-indexes-downwards'/'directory-indexes-sideways')
--- which we could switch on here, but that feels like bad indirection, so we do it all there.
 
 -- Generate a HTML <style>-delimited CSS block written to
 -- `static/includes/inlined-graphical-linkicon-styles.html` for transclusion into `default.html`.
@@ -44,9 +39,14 @@ import Utils (host, writeUpdatedFile)
 -- precedence/overriding—while still generating CSS code from normal data (the test suite entries).
 rebuildSVGIconCSS :: IO ()
 rebuildSVGIconCSS = do unless (null linkIconTest) $ error ("Error! Link icons failed match! : " ++ show linkIconTest)
-                       let svgs = nubOrd $ map (\(_,icon,_) -> T.unpack icon) $ filter (\(_, _, icontype) -> icontype == "svg") linkIconTestUnits
+                       let svgs1 = nubOrd $ map (\(_,icon,_) -> T.unpack icon) $ filter (\(_, _, icontype) -> icontype == "svg") (linkIconTestUnitsText)
+                       let svgs2 = nubOrd $ map (\(_,icon,_) -> T.unpack icon) $ filter (\(_, _, icontype) -> icontype == "svg") (linkIconTestUnitsLink)
+                       let svg = svgs1++svgs2
+                       mapM_ (\s -> do existsP <- doesFileExist $ "static/img/icons/" ++ s ++ ".svg"
+                                       unless existsP (error ("ERROR: SVG icon " ++ s ++ " does not exist!")))
+                         svg
                        let html = unlines $ ["<style id=\"graphical-link-icons\">"] ++
-                             map (\svg -> "a[data-link-icon='" ++ svg ++ "'] { --link-icon-url: url('/static/img/icons/" ++ svg ++ ".svg'); }") svgs ++
+                             map (\s -> "a[data-link-icon='" ++ s ++ "'] { --link-icon-url: url('/static/img/icons/" ++ s ++ ".svg'); }") svg ++
                              ["</style>"]
                        writeUpdatedFile "svgicons" "static/includes/inlined-graphical-linkicon-styles.html" (T.pack html)
 
@@ -79,6 +79,10 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | "no-icon" `elem` cl = x
  | hasIcon x           = x
  | hasKeyAL u overrideLinkIcons = let (i,it) = fromJust $ lookup u overrideLinkIcons in addIcon x i it
+
+ | "directory-indexes-upward"    `elem` cl = aI "arrow-up-left"    "svg"
+ | "directory-indexes-downwards" `elem` cl = aI "arrow-down-right" "svg"
+ | "directory-indexes-sideways"  `elem` cl = aI "arrow-right"      "svg"
 
  -- organizational mentions or affiliations take precedence over domain or filetypes; typically matches anywhere in the URL.
  | u' "deepmind"  = aI "deepmind" "svg" -- DeepMind; match articles or anchors about DM too. Primary user: deepmind.com, DM papers on Arxiv
@@ -494,14 +498,14 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
 -- fixing.
 -- Here we test that URLs get assigned the appropriate icons; on /Lorem, we render them to check for
 -- CSS/visual glitches. Any new test-cases should be added to both (with different URLs where possible).
-linkIconTest, linkIconTestUnits :: [(T.Text,T.Text,T.Text)]
+linkIconTest, linkIconTestUnitsText :: [(T.Text,T.Text,T.Text)]
 linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
                                           /=
                                           Link ("",[], [("link-icon",li), ("link-icon-type", lit)]) [] (url,"")
                                                    )
-               linkIconTestUnits
+               linkIconTestUnitsText
 -- in /Lorem order:
-linkIconTestUnits =
+linkIconTestUnitsText =
         [("/static/img/icons/deepmind.svg",  "deepmind","svg")
          , ("https://academic.oup.com/ije/article/43/3/775/758445",  "OUP","text,tri")
          , ("https://ajcn.nutrition.org/content/69/5/842.full", "OUP", "text,tri")
@@ -993,3 +997,12 @@ linkIconTestUnits =
          , ("https://cacm.acm.org/magazines/2017/8/219606-the-science-of-brute-force/fulltext", "acm", "text,tri,sans")
          , ("https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3474085.3475293&file=MM21-fp0702.mp4.mp4", "acm", "text,tri,sans")
         ]
+
+linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
+linkIconTestUnitsLink = [(Link ("", ["directory-indexes-upwards"],     []) [Str "Test"] ("/docs/index", "Link to parent directory (ascending)"),
+                           "arrow-up-left", "svg")
+                        , (Link ("", ["directory-indexes-downwards"],  []) [Str "Test"] ("/docs/zeo/index", "Link to child directory zeo (descending)"),
+                           "arrow-down-right", "svg")
+                          , (Link ("", ["directory-indexes-sideways"], []) [Str "Test"] ("/docs/ai/alphafold/index", "Link to other directory ai/alphafold (descending)"),
+                           "arrow-right", "svg")
+                          ]
