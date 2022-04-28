@@ -1006,6 +1006,9 @@ function designateSpecialLinkIcons(loadEventInfo) {
 
 	//	Local links (to other pages on the site).
 	loadEventInfo.document.querySelectorAll(".link-local").forEach(link => {
+		if (link.dataset.linkIcon)
+			return;
+
 		link.dataset.linkIconType = "text";
 		link.dataset.linkIcon = "\u{1D50A}"; // 𝔊
 	});
