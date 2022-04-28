@@ -3255,6 +3255,9 @@ body.index-directory #footer {
     margin: 0 0 0.75em 0;
     font-style: italic;
 }
+.wikipedia-entry .chemf {
+	word-break: break-all;
+}
 
 /*  Special case for inline math in Wikipedia pop-frames.
     */
