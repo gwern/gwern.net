@@ -3883,7 +3883,7 @@ body.index-directory #footer {
 /*│ Aux-link popups. │*/
 /*└──────────────────┘*/
 
-.popup.backlinks {
+.popup.aux-links {
     min-width: var(--GW-popups-aux-links-popup-min-width);
     min-height: var(--GW-popups-aux-links-popup-min-height);
 }
