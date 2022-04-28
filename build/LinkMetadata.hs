@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-27 10:38:43 gwern"
+When:  Time-stamp: "2022-04-28 10:14:15 gwern"
 License: CC-0
 -}
 
@@ -482,8 +482,6 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("modafinil/darknet-market", "modafinil DNM")
           , ("history/s-l-a-marshall", "SLAM")
           , ("lesswrong-survey/hpmor", "HP:MoR")
-          , ("cs/c", "C")
-          , ("cs/r", "R")
           , ("cs/shell", "shell")
           , ("cs/scheme", "Scheme")
           , ("cs/css", "CSS")
@@ -570,6 +568,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
         tagRewritesRegexes  :: [(String,String)]
         tagRewritesRegexes = [("^cs/", "CS/")
                              , ("^cs$", "CS")
+                             , ("^cs/c$", "C")
                              , ("^cs/r$", "R")
                              , ("^ai/", "AI/")
                              , ("^ai$", "AI")
