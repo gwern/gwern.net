@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-04-28 10:15:52 gwern"
+When:  Time-stamp: "2022-04-28 11:53:23 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -213,7 +213,10 @@ archiveURL l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArc
 -- PDF link too. We don't need a third version, just to provide the two, so this is easier than the Ar5iv rewrite.
 -- (Hypothetically, we could do Twitter→Nitter, Reddit.com→Old.Reddit.com, or LW→GW rewrites this way too.)
 transformURLsForArchiving :: String -> String
-transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/pdf/\\1.pdf\\2" . sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://arxiv.org/pdf/\\1/\\2.pdf\\3" . replace "https://openreview.net/forum" "https://openreview.net/pdf"
+transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/pdf/\\1.pdf\\2" . sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://arxiv.org/pdf/\\1/\\2.pdf\\3"
+                            . replace "https://openreview.net/forum" "https://openreview.net/pdf"
+                            -- Mobile Reddit snapshots for live popups much better than Old Reddit (although Old Reddit is a much better browsing/user experience)
+                            . replace "https://old.reddit.com" "https://i.reddit.com"
 transformURLsForLinking   :: String -> String
 transformURLsForLinking   = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
   sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" -- handle oddities like hep-ph
@@ -672,7 +675,7 @@ whiteList url
       , "kth2mwuwlkezwziy.onion" -- dead
       , "i25c62nvu4cgeqyz.onion" -- dead
       , "gitcoin.co"
-      , "gitlab.io"
+      , "gitlab.io" -- stable
       , "osf.io" -- stable
       , "libgen.io" -- archive
       , "websitedownloader.io" -- service/source code
@@ -685,8 +688,22 @@ whiteList url
       , "isciii.es"
       , "archive.is" -- archive
       , "books.google.com/books"
-      , "buzzricksons"
-      , "reddit.com/r/DarkNetMarkets/" -- dead
+      , "buzzricksons" -- stable
+      , "reddit.com/r/AgMarketplace/" -- dead (banned)
+      , "reddit.com/r/BlackBank/" -- dead (banned)
+      , "reddit.com/r/DarkNetDeals/" -- dead (banned)
+      , "reddit.com/r/DarkNetMarkets/" -- dead (banned)
+      , "reddit.com/r/DarknetMarketsNZ/" -- dead (banned)
+      , "reddit.com/r/MEMarketplace/" -- dead (banned)
+      , "reddit.com/r/QuantikXanax/" -- dead (banned)
+      , "reddit.com/r/blackmarketreloaded/" -- dead (banned)
+      , "reddit.com/r/fakeid/" -- dead (banned)
+      , "reddit.com/r/grams/" -- dead (banned)
+      , "reddit.com/r/havanamarket/" -- dead (banned)
+      , "reddit.com/r/medsforbitcoins/" -- dead (banned)
+      , "reddit.com/r/modup/" -- dead (banned)
+      , "reddit.com/r/sanitariummarket/" -- dead (banned)
+      , "reddit.com/r/themarketplace/" -- dead (banned)
       , "donmai.us" -- stable
       , "hutter1.net" -- stable
       , "anidb.net" -- stable
