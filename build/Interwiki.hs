@@ -39,6 +39,9 @@ inlinesToText = T.concat . map go
                Code _      x' -> x'
                -- fall through with a blank:
                _        -> " "::T.Text
+
+-- BUG: Escaping bugs with Unicode: eg [Pāli Canon](!W) / <https://en.wikipedia.org/wiki/P%C4%81li_Canon>
+-- but if I simply Network.HTTP.urlEncode the article, that breaks a lot of other stuff (like colons in namespaces)...? What *is* the right way to escape/encode WP article names?
 convertInterwikiLinks :: Inline -> Inline
 convertInterwikiLinks x@(Link _ []           _) = error $ "Link error: no anchor text‽ " ++ show x
 convertInterwikiLinks x@(Link _ _ ("", _))      = x
@@ -71,85 +74,85 @@ interwikiTestSuite :: [(Inline, Inline, Inline)]
 interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\(link1, link2) -> convertInterwikiLinks link1 /= link2) [
   -- !Wikipedia
   (Link nullAttr [Str "Pondicherry"] ("!Wikipedia",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
   , (Link nullAttr [Str "Special:Pondicherry"] ("!Wikipedia",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
   , (Link nullAttr [Str "SpecialPondicherry"] ("!Wikipedia",""),
-     Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
+     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
   , (Link nullAttr [Str "Category:Pondicherry"] ("!Wikipedia",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
 
   -- !W
   , (Link nullAttr [Str "Pondicherry"] ("!W",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
   , (Link nullAttr [Str "Special:Pondicherry"] ("!W",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
   , (Link nullAttr [Str "SpecialPondicherry"] ("!W",""),
-     Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
+     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
   , (Link nullAttr [Str "Category:Pondicherry"] ("!W",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
 
   -- !W + title
   , (Link nullAttr [Str "foo"] ("!W","Pondicherry"),
-    Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
   , (Link nullAttr [Str "foo"] ("!W","Special:Pondicherry"),
-    Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
   , (Link nullAttr [Str "foo"] ("!W","SpecialPondicherry"),
-     Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
+     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
   , (Link nullAttr [Str "foo"] ("!W","Category:Pondicherry"),
-    Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
 
    -- <https://en.wikipedia.org/wiki/$ARTICLE>
   , (Link nullAttr [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
   , (Link nullAttr [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
   , (Link nullAttr [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry",""),
-     Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
+     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
   , (Link nullAttr [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
 
   -- /Lorem testcases: Should popup (as an **annotation**):
   , (Link nullAttr [Emph [Str "Liber Figurarum"]] ("https://it.wikipedia.org/wiki/Liber_Figurarum",""),
-     Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Liber Figurarum"]] ("https://it.wikipedia.org/wiki/Liber_Figurarum", ""))
+     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Liber Figurarum"]] ("https://it.wikipedia.org/wiki/Liber_Figurarum", ""))
   , (Link nullAttr [Str "Small caps"] ("!W",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Small caps"] ("https://en.wikipedia.org/wiki/Small_caps", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Small caps"] ("https://en.wikipedia.org/wiki/Small_caps", ""))
   , (Link nullAttr [Str "Talk:Small caps"] ("!W",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Talk:Small caps"] ("https://en.wikipedia.org/wiki/Talk:Small_caps", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Talk:Small caps"] ("https://en.wikipedia.org/wiki/Talk:Small_caps", ""))
   , (Link nullAttr [Str "User:Gwern"] ("!W",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "User:Gwern"] ("https://en.wikipedia.org/wiki/User:Gwern", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "User:Gwern"] ("https://en.wikipedia.org/wiki/User:Gwern", ""))
   , (Link nullAttr [Str "User talk:Gwern"] ("!W",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "User talk:Gwern"] ("https://en.wikipedia.org/wiki/User_talk:Gwern", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "User talk:Gwern"] ("https://en.wikipedia.org/wiki/User_talk:Gwern", ""))
   , (Link nullAttr [Str "Help:Authority control"] ("!W",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Help:Authority control"] ("https://en.wikipedia.org/wiki/Help:Authority_control", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Help:Authority control"] ("https://en.wikipedia.org/wiki/Help:Authority_control", ""))
   , (Link nullAttr [Str "Help talk:Authority control"] ("!W",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Help talk:Authority control"] ("https://en.wikipedia.org/wiki/Help_talk:Authority_control", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Help talk:Authority control"] ("https://en.wikipedia.org/wiki/Help_talk:Authority_control", ""))
   , (Link nullAttr [Str "Wikipedia:Wikipedia Signpost"] ("!W",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Wikipedia:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia:Wikipedia_Signpost", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Wikipedia:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia:Wikipedia_Signpost", ""))
   , (Link nullAttr [Str "Wikipedia talk:Wikipedia Signpost"] ("!W",""),
-    Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Wikipedia talk:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia_talk:Wikipedia_Signpost", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Wikipedia talk:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia_talk:Wikipedia_Signpost", ""))
   , (Link nullAttr [Str "Wikipedia talk:Wikipedia Signpost"] ("!W",""),
-     Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Wikipedia talk:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia_talk:Wikipedia_Signpost", ""))
+     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Wikipedia talk:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia_talk:Wikipedia_Signpost", ""))
   , (Link nullAttr [Str "File:NASA Worm logo.svg"] ("!W",""),
-      Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live"], []) [Str "File:NASA Worm logo.svg"] ("https://en.wikipedia.org/wiki/File:NASA_Worm_logo.svg", ""))
+      Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "File:NASA Worm logo.svg"] ("https://en.wikipedia.org/wiki/File:NASA_Worm_logo.svg", ""))
   , (Link nullAttr [Str "MediaWiki:Citethispage-content"] ("!W",""),
-      Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "MediaWiki:Citethispage-content"] ("https://en.wikipedia.org/wiki/MediaWiki:Citethispage-content", ""))
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "MediaWiki:Citethispage-content"] ("https://en.wikipedia.org/wiki/MediaWiki:Citethispage-content", ""))
 
     -- Should popup (as a **live link** but not annotation): [Category:Buddhism and sports](!W)
   , (Link nullAttr [Str "Category:Buddhism and sports"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports",""),
-     Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Buddhism and sports"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports", ""))
+     Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Buddhism and sports"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports", ""))
     , (Link nullAttr [Str "Category:Buddhism and sports"] ("!W",""),
-     Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Buddhism and sports"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports", ""))
+     Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Buddhism and sports"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports", ""))
     , (Link nullAttr [Str "Category:Buddhism and sports"] ("!W",""),
-     Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Buddhism and sports"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports", ""))
+     Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Buddhism and sports"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports", ""))
     , (Link nullAttr [Str "Buddhism category"] ("!W","Category:Buddhism and sports"),
-     Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Buddhism category"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports", ""))
+     Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Buddhism category"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports", ""))
 
     -- Should **not** popup at all: [Special:Random](!W)
   , (Link nullAttr [Str "Special:Random"] ("!W",""),
-      Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Random"] ("https://en.wikipedia.org/wiki/Special:Random", ""))
+      Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Random"] ("https://en.wikipedia.org/wiki/Special:Random", ""))
   , (Link nullAttr [Str "Special:BookSources/0-8054-2836-4"] ("!W",""),
-     Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:BookSources/0-8054-2836-4"] ("https://en.wikipedia.org/wiki/Special:BookSources/0-8054-2836-4", ""))
+     Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:BookSources/0-8054-2836-4"] ("https://en.wikipedia.org/wiki/Special:BookSources/0-8054-2836-4", ""))
   ]
 
 -- Set link-live/link-live-not and link-annotated/link-annotated-not classes on a WP link depending on its namespace. As the quality of WP API annotations, and the possibility of iframe popups, varies across WP namespaces, we can't simply set them universally.
@@ -159,7 +162,7 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
 --
 -- This is important because we can request Articles through the API and display them as a WP popup, but for other namespaces it would be meaningless (what is the contents of [[Special:Random]]? Or [[Special:BookSources/0-123-456-7]]?). These can only be done as live link popups (if at all, we can't for Special:).
 wpPopupClasses :: T.Text -> [T.Text]
-wpPopupClasses u = nubOrd $ ["backlinks-not", "id-not"] ++ case parseURIReference (T.unpack u) of
+wpPopupClasses u = nubOrd $ ["backlink-not", "id-not"] ++ case parseURIReference (T.unpack u) of
                         Nothing -> []
                         Just uri -> case uriAuthority uri of
                           Nothing -> []

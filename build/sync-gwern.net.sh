@@ -161,6 +161,18 @@ else
                  -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'docs/www/' | parallel  --jobs 25 syntaxHighlight
     set -e
 
+    bold "Stripping compile-time-only classes unnecessary at runtime…"
+    cleanClasses () {
+        sed -i -e 's/class=\"\(.*\)archive-local \?/class="\1/g' \
+               -e 's/class=\"\(.*\)archive-not \?/class="\1/g' \
+               -e 's/class=\"\(.*\)backlink-not \?/class="\1/g' \
+               -e 's/class=\"\(.*\)id-not \?/class="\1/g' \
+               -e 's/class=\"\(.*\)link-annotated-not \?/class="\1/g' \
+               -e 's/class=\"\(.*\)link-live-not \?/class="\1/g' \
+    "$@"; }; export -f cleanClasses
+    find ./ -path ./_site -prune -type f -o -name "*.page" | fgrep -v -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 cleanClasses || true
+    find ./_site/metadata/ -type f -name "*.html" | sort | parallel --max-args=100 cleanClasses || true
+
     bold "Reformatting HTML sources to look nicer using HTML Tidy…"
     # WARNING: HTML Tidy breaks the static-compiled MathJax. One of Tidy's passes breaks the mjpage-generated CSS (messes with 'center', among other things). So we do Tidy *before* the MathJax.
     # WARNING: HTML Tidy by default will wrap & add newlines for cleaner HTML in ways which don't show up in rendered HTML - *except* for when something is an 'inline-block', then the added newlines *will* show up, as excess spaces. <https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Whitespace#spaces_in_between_inline_and_inline-block_elements> <https://patrickbrosset.medium.com/when-does-white-space-matter-in-html-b90e8a7cdd33> And we use inline-blocks for the #page-metadata block, so naive HTML Tidy use will lead to the links in it having a clear visible prefixed space. We disable wrapping entirely by setting `-wrap 0` to avoid that.
@@ -168,7 +180,7 @@ else
     ## tidy wants to dump whole well-formed HTML pages, not fragments to transclude, so switch.
     tidyUpWhole () {    tidy -indent -wrap 0 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only no  -modify "$@" || true; }
     export -f tidyUpFragment tidyUpWhole
-    find ./metadata/annotations/ -maxdepth 1 -type f -name "*.html" |  parallel --max-args=250 tidyUpFragment
+    find ./metadata/annotations/ -type f -name "*.html" |  parallel --max-args=250 tidyUpFragment
     find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | fgrep -v -e '#' -e 'Death-Note-script' | parallel --max-args=250 tidyUpWhole
 
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
@@ -213,7 +225,7 @@ else
                               -e 's/ \+/ /g' -e 's/​​\+/​/g' -e 's/​ ​​ ​\+/​ /g' -e 's/​ ​\+/ /g' -e 's/​ ​ ​ \+/ /g' -e 's/​ ​ ​ \+/ /g' \
                             "$@"; }; export -f nonbreakSpace;
     find ./ -path ./_site -prune -type f -o -name "*.page" | fgrep -v -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 nonbreakSpace || true
-    find ./_site/metadata/annotations/ -maxdepth 1 -type f -name "*.html" | sort | parallel --max-args=100 nonbreakSpace || true
+    find ./_site/metadata/annotations/ -type f -name "*.html" | sort | parallel --max-args=100 nonbreakSpace || true
 
     bold "Adding #footnotes section ID…" # Pandoc bug; see <https://github.com/jgm/pandoc/issues/8043>; fixed in <https://github.com/jgm/pandoc/commit/50c9848c34d220a2c834750c3d28f7c94e8b94a0>, presumably will be fixed in Pandoc >2.18
     footnotesIDAdd () { sed -i -e 's/<section class="footnotes" role="doc-endnotes">/<section class="footnotes" role="doc-endnotes" id="footnotes">/' "$@"; }; export -f footnotesIDAdd
@@ -262,7 +274,7 @@ else
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '<div>' | fgrep -v -e 'I got around this by adding in the Hakyll template an additional'; }
     wrap λ "Stray <div>?"
 
-    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '.invertible-not}{' -e '.invertibleNot' -e '.invertible-Not' -e '{.sallcaps}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'tex-logotype'; }
+    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '.invertible-not}{' -e '.invertibleNot' -e '.invertible-Not' -e '{.sallcaps}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not'; }
     wrap λ "Misspelled/outdated classes in Markdown/HTML."
 
      λ(){ find ./ -type f -name "*.page" | fgrep -v '/Variables' | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '{#'; }
@@ -388,7 +400,7 @@ else
         set +e;
         IFS=$(echo -en "\n\b");
         PAGES="$(find . -type f -name "*.page" | fgrep -v -e '_site/' -e 'index' -e 'docs/link-bibliography' | sort -u)"
-        OTHERS="$(find metadata/annotations/ -maxdepth 1 -name "*.html"; echo index)"
+        OTHERS="$(find metadata/annotations/ -name "*.html"; echo index)"
         for PAGE in $PAGES $OTHERS ./static/404; do
             HTML="${PAGE%.page}"
             TIDY=$(tidy -quiet -errors --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \
@@ -486,6 +498,9 @@ else
 
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
     if ((RANDOM % 100 > 99)); then $X_BROWSER "https://wave.webaim.org/report#/$CHECK_RANDOM"; fi
+
+    # some of the live popups have probably broken, since websites keep adding X-FRAME options...
+    if ((RANDOM % 100 > 99)); then ghci -istatic/build/ ./static/build/LinkLive.hs  -e 'linkLiveTestHeaders'; fi
 
     # Testing post-sync:
     bold "Checking MIME types, redirects, content…"
@@ -708,9 +723,9 @@ else
 
     ## Remind to refine doc directory-tags (should be <50):
     find docs/ -type d -print0 | egrep --null-data -v -e 'docs/$' -e 'www' -e 'rotten.com' -e '2011-gwern-yourmorals.org' -e '2000-iapac-norvir' -e 'docs/link-bibliography' |
-        while read -d '' -r dir;
-    do N=$(find "$dir" -maxdepth 1 -type f | wc --lines);
-       if [[ $N -gt 50 ]]; then printf "%5d: %s\n" $N "$dir"; fi;
+        while read -d '' -r DIR;
+    do N=$(find "$DIR" -maxdepth 1 -type f | wc --lines);
+       if [[ $N -gt 50 ]]; then printf "%5d: %s\n" "$N $DIR"; fi;
     done | sort --numeric-sort
 
     ## Look for domains that may benefit from link icons or link live status now:

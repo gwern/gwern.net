@@ -978,7 +978,7 @@ linkIconTestUnitsText =
          , ("https://nypost.com/2019/06/27/north-carolina-couple-paid-25k-to-clone-their-beloved-pet-cat/", "NYP", "text,tri,sans,italic")
          , ("https://longreads.com/2015/01/28/friendship-is-complicated/", "Long", "text,quad")
          , ("https://crookedtimber.org/2012/05/30/in-soviet-union-optimization-problem-solves-you/", "CT", "text")
-         , ("http://articles.latimes.com/1986-07-30/business/fi-18840_1_laser-defense", "𝔏A", "text")
+         , ("http://articles.latimes.com/print/1988-07-17/magazine/tm-9636_1_x-ray-laser", "𝔏A", "text")
          , ("/images/fiction/batman/2022-04-15-manasuka-artdecobatmantriptych-batman.psd",  "image","svg")
          , ("https://warontherocks.com/2021/08/foreign-fighters-and-cheese-bells/", "WOTR", "text,quad,sans")
          , ("https://www.connectedpapers.com/main/1ffe143b40a9f8c01940c7397280de4cf666d635/Lessons-from-AlphaZero-for-Optimal%2C-Model-Predictive%2C-and-Adaptive-Control/graph", "connected-papers","svg")
