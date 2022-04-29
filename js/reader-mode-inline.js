@@ -1,8 +1,8 @@
 ReaderMode = {
 	active: false,
 
-	styles:
-		_π("body.reader-mode-active ", [
+	styles: `
+		${(_π("body.reader-mode-active ", [
 		   "#sidebar-links",
 		   "#page-metadata",
 		   "#TOC ul li::before",
@@ -12,9 +12,9 @@ ReaderMode = {
 		   "#sidenote-column-right",
 		    ".inflationAdjusted .supsub",
             ".footnote-ref"
-		]).join(",\n") + ` {
+		]).join(",\n"))} {
 			display: none;
-		}` + `
+		}
 		body.reader-mode-active #logo {
 			border-color: transparent;
 		}
@@ -26,24 +26,24 @@ ReaderMode = {
 		body.reader-mode-active #TOC ul li {
 			padding-left: 0.125em;
 		}
-		` + _π("body.reader-mode-active .spawns-", [ "popup", "popin" ]).join(",\n") + ` {
+		${(_π("body.reader-mode-active .spawns-", [ "popup", "popin" ]).join(",\n"))} {
 			margin: 0;
 		}
-		` + _π("body.reader-mode-active .spawns-", [ "popup", "popin" ], " .indicator-hook").join(",\n") + ` {
+		${(_π("body.reader-mode-active .spawns-", [ "popup", "popin" ], " .indicator-hook").join(",\n"))} {
 			padding-left: 0;
 		}
-		` + _π("body.reader-mode-active .spawns-", [ "popup", "popin" ], " .indicator-hook::before").join(",\n") + ` {
+		${(_π("body.reader-mode-active .spawns-", [ "popup", "popin" ], " .indicator-hook::before").join(",\n"))} {
 			left: -0.3em;
 			box-shadow:
 				-0.17em 0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
 				-0.17em -0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
 				-0.17em 0 0 0 var(--GW-reader-mode-masked-link-bracket-background-color);
 		}
-		` + _π("body.reader-mode-active.masked-links-hidden .spawns-", [ "popup", "popin" ], " .indicator-hook").join(",\n") + ",\n" +
-			_π("body.reader-mode-active #markdownBody ", [ "p", "li", "figcaption" ], " a::after").join(",\n") + ` {
+		${(_π("body.reader-mode-active.masked-links-hidden .spawns-", [ "popup", "popin" ], " .indicator-hook").join(",\n"))},
+		${(_π("body.reader-mode-active #markdownBody ", [ "p", "li", "figcaption" ], " a::after").join(",\n"))} {
 			display: none;
 		}
-		` + _π("body.reader-mode-active.masked-links-hidden #markdownBody ", [ "p", "li", "figcaption" ], " a:not(.popup-open)", [ "", ":visited", ":hover" ]).join(",\n") + ` {
+		${(_π("body.reader-mode-active.masked-links-hidden #markdownBody ", [ "p", "li", "figcaption" ], " a:not(.popup-open)", [ "", ":visited", ":hover" ]).join(",\n"))} {
 			color: inherit;
 			background: none;
 			cursor: text;
