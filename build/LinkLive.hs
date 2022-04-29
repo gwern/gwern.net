@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-04-27 13:26:10 gwern"
+When:  Time-stamp: "2022-04-28 19:56:00 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -28,25 +28,29 @@ automatically generate a live-link testcase appended to /Lorem for manual review
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkLive (linkLive, linkLiveTest, urlLive, linkLivePrioritize) where
+module LinkLive (linkLive, linkLiveTest, linkLiveTestHeaders, urlLive, linkLivePrioritize) where
 
-import Control.Monad (unless)
-import Data.List (sort)
+import Control.Monad (forM_, when, unless)
+import Data.Char (toLower)
+import Data.List (isInfixOf, sort)
 import Data.Maybe (isNothing)
 import qualified Data.Map.Strict as M (fromListWith, toList, map, keys)
-import Data.Text as T (append, isInfixOf, isPrefixOf, Text)
+import qualified Data.Text as T (append, isInfixOf, isPrefixOf, unpack, Text)
 import Data.Text.IO as TIO (appendFile)
 import Text.Pandoc (Inline(Link), nullAttr)
+import Data.FileStore.Utils (runShellCommand)
+import qualified Data.ByteString.Lazy.UTF8 as U (toString)
+import System.Exit (ExitCode(ExitFailure))
 
 import Interwiki (wpPopupClasses)
 import LinkBacklink (readBacklinksDB, Backlinks)
-import Utils (addClass, host, anySuffixT)
+import Utils (addClass, host, anySuffixT, printRed)
 
 linkLive :: Inline -> Inline
 linkLive x@(Link (_,cl,_) _ (u, _))
  | "link-live-not" `elem` cl = x
  | u `elem` overrideLinkLive = aL x
- | "/" `isPrefixOf` u = x -- local links shouldn't match anything, but to be safe, we'll check anyway.
+ | "/" `T.isPrefixOf` u = x -- local links shouldn't match anything, but to be safe, we'll check anyway.
  | otherwise = case urlLive u of
                  Just True -> aL x
                  _         -> x
@@ -2463,6 +2467,16 @@ linkLiveTest = filter (\(u, bool) -> bool /=
                                        (url u == Link ("",["link-live"], []) [] (u,""))
                       )
                linkLiveTestUnits
+
+-- check the live test-cases with curl for X-Frame HTTP headers; the presence of these guarantees liveness no longer works and they need to be updated.
+linkLiveTestHeaders :: IO ()
+linkLiveTestHeaders = forM_ (map fst goodLinks)
+  (\u -> do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--user-agent", "gwern+headerscraping@gwern.net", "--location","--silent","--head", T.unpack u]
+            case status of
+                ExitFailure _ -> printRed ("Error: curl download failed on URL " ++ T.unpack u) >> print (" : " ++ show status ++ " : " ++ show bs)
+                _ -> do let s = map toLower $ U.toString bs
+                        when ("x-frame" `isInfixOf` s) $ printRed (T.unpack u) >> print (" : X-FRAME option detected on URL : " ++ show bs)
+  )
 
 linkLiveTestUnits, goodLinks, badLinks :: [(T.Text,Bool)]
 linkLiveTestUnits = goodLinks ++ badLinks

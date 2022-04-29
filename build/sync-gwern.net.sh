@@ -499,6 +499,9 @@ else
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
     if ((RANDOM % 100 > 99)); then $X_BROWSER "https://wave.webaim.org/report#/$CHECK_RANDOM"; fi
 
+    # some of the live popups have probably broken, since websites keep adding X-FRAME options...
+    if ((RANDOM % 100 > 99)); then ghci -istatic/build/ ./static/build/LinkLive.hs  -e 'linkLiveTestHeaders'; fi
+
     # Testing post-sync:
     bold "Checking MIME types, redirects, content…"
     c () { curl --compressed --silent --output /dev/null --head "$@"; }
