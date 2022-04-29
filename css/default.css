@@ -5035,12 +5035,6 @@ section.highlight-fading::before {
 	margin: 0 0 0 1.625em;
     display: inline-block;
 }
-.reader-mode-selector-inline button:first-child {
-    margin-left: 1.375em;
-}
-.reader-mode-selector-inline button:last-child {
-    margin-right: -0.25em;
-}
 
 .reader-mode-selector button::before {
     width: calc(7/5 * 1em);

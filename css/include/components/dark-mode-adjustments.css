@@ -189,7 +189,8 @@ div#mode-selector button.select-mode-light::before {
 
 /*  Reader mode selector, same as above.
  */
-div#reader-mode-selector button::before {
+div.reader-mode-selector button::before,
+span.reader-mode-selector button::before {
     filter: invert(1);
 }
 @media only screen and (min-width: 1280px) {
