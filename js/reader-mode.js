@@ -11,9 +11,9 @@ ReaderMode = { ...ReaderMode, ...{
 	adjustedPopupTriggerDelay: 2400,
 
 	modeOptions: [
-		[ 'auto', 'Auto', 'Reader mode enabled automatically on certain pages. (When enabled, hold Alt key to show links in text.)' ],
-		[ 'on', 'On', 'Enable reader mode on all pages. (Hold Alt key to show links in text.)' ],
-		[ 'off', 'Off', 'Disable reader mode on all pages.' ]
+		[ "auto", "Auto", "Reader mode enabled automatically on certain pages. (When enabled, hold Alt key to show links in text.)" ],
+		[ "on", "On", "Enable reader mode on all pages. (Hold Alt key to show links in text.)" ],
+		[ "off", "Off", "Disable reader mode on all pages." ]
 	],
 
 	selectedModeOptionNote: " [This option is currently selected.]",
@@ -44,14 +44,15 @@ ReaderMode = { ...ReaderMode, ...{
 	setup: () => {
 		GWLog("ReaderMode.setup", "reader-mode.js", 1);
 
-		//	Inject mode selector.
-		ReaderMode.injectModeSelector();
-
 		//	Fully activate.
-		if (ReaderMode.active) {
+		if (ReaderMode.active)
 			ReaderMode.activate();
-			ReaderMode.updateModeSelectorState();
-		}
+
+		//	Inject mode selector(s).
+		ReaderMode.injectModeSelector();
+		document.querySelectorAll(".reader-mode-selector-inline").forEach(element => {
+			ReaderMode.injectModeSelector(element);
+		});
 	},
 
 	/******************/
@@ -85,34 +86,60 @@ ReaderMode = { ...ReaderMode, ...{
 			ReaderMode.spawnObserver();
 		}
 
-		//	Update mode selector state, if available.
-		if (ReaderMode.updateModeSelectorState)
-			ReaderMode.updateModeSelectorState();
+		//	Fire event.
+		GW.notificationCenter.fireEvent("ReaderMode.didSetMode");
 	},
 
-	//	Called by: ReaderMode.setup
-	injectModeSelector: () => {
-		GWLog("ReaderMode.injectModeSelector", "reader-mode.js", 1);
+	//	Called by: ReaderMode.injectModeSelector
+	modeSelectorHTML: (inline = false) => {
+		let selectorTagName = (inline ? "span" : "div");
+		let selectorId = (inline ? "" : " id='reader-mode-selector'");
+		let selectorClass = (" class='reader-mode-selector" + (inline ? " reader-mode-selector-inline" : "") + "'");
 
 		//	Get saved mode setting (or default).
 		let currentMode = ReaderMode.currentMode();
 
-		//	Inject the mode selector widget.
-		ReaderMode.modeSelector = addUIElement(
-			"<div id='reader-mode-selector'>" +
-			String.prototype.concat.apply("", ReaderMode.modeOptions.map(modeOption => {
+		return `<${selectorTagName}${selectorId}${selectorClass}>`
+			+ ReaderMode.modeOptions.map(modeOption => {
 				let [ name, label, desc ] = modeOption;
-				let selected = (name == currentMode ? ' selected' : '');
-				let disabled = (name == currentMode ? ' disabled' : '');
+				let selected = (name == currentMode ? " selected" : "");
+				let disabled = (name == currentMode ? " disabled" : "");
+				let active = ((   currentMode == "auto"
+							   && name == (ReaderMode.active ? "on" : "off"))
+							  ? " active"
+							  : "");
 				if (name == currentMode)
 					desc += ReaderMode.selectedModeOptionNote;
-				return `<button type='button' class='select-mode-${name}${selected}'${disabled} tabindex='-1' data-name='${name}' title='${desc}'>${label}</button>`})) +
-			"</div>");
+				return `<button 
+							type="button"
+							class="select-mode-${name}${selected}${active}"
+							${disabled} 
+							tabindex="-1"
+							data-name="${name}" 
+							title="${desc}"
+								>${label}</button>`;
+			  }).join("")
+			+ `</${selectorTagName}>`;
+	},
+
+	//	Called by: ReaderMode.setup
+	injectModeSelector: (replacedElement = null) => {
+		GWLog("ReaderMode.injectModeSelector", "reader-mode.js", 1);
+
+		//	Inject the mode selector widget.
+		let modeSelector;
+		if (replacedElement) {
+			replacedElement.innerHTML = ReaderMode.modeSelectorHTML(true);
+			modeSelector = replacedElement.firstElementChild;
+			unwrap(replacedElement);
+		} else {
+			modeSelector = ReaderMode.modeSelector = addUIElement(ReaderMode.modeSelectorHTML());
+		}
 
 		//  Add event listeners and update state.
 		requestAnimationFrame(() => {
 			//	Activate mode selector widget buttons.
-			ReaderMode.modeSelector.querySelectorAll("button").forEach(button => {
+			modeSelector.querySelectorAll("button").forEach(button => {
 				button.addActivateEvent(ReaderMode.modeSelectButtonClicked = (event) => {
 					GWLog("ReaderMode.modeSelectButtonClicked", "reader-mode.js", 2);
 
@@ -146,31 +173,39 @@ ReaderMode = { ...ReaderMode, ...{
 				});
 			});
 
-			//	Show the button on hover (if it’s hid via scroll-down).
-			ReaderMode.modeSelector.addEventListener("mouseenter", () => { ReaderMode.showModeSelector(); });
+			if (modeSelector == ReaderMode.modeSelector) {
+				//	Show the button on hover (if it’s hid via scroll-down).
+				ReaderMode.modeSelector.addEventListener("mouseenter", () => { ReaderMode.showModeSelector(); });
+			}
 		});
 
-		//	Show/hide the button on scroll up/down.
-		addScrollListener(ReaderMode.updateModeSelectorVisibility,
-			"ReaderMode.updateModeSelectorVisibilityScrollListener");
+		//	Register event handler to update mode selector state.
+		GW.notificationCenter.addHandlerForEvent("ReaderMode.didSetMode", (info) => {
+			ReaderMode.updateModeSelectorState(modeSelector);
+		});
+
+		if (modeSelector == ReaderMode.modeSelector) {
+			//	Show/hide the button on scroll up/down.
+			addScrollListener(ReaderMode.updateModeSelectorVisibility,
+				"ReaderMode.updateModeSelectorVisibilityScrollListener");
+		}
 	},
 
-	//	Called by: ReaderMode.setMode
-	//	Called by: ReaderMode.setMode (reader-mode-inline.js)
+	//	Called by: ReaderMode.didSetMode event handler
 	//	Called by: ReaderMode.deactivateOnScrollDownObserver callback
-	updateModeSelectorState: () => {
+	updateModeSelectorState: (modeSelector = ReaderMode.modeSelector) => {
 		GWLog("ReaderMode.updateModeSelectorState", "reader-mode.js", 2);
 
 		/*	If the mode selector has not yet been injected, then do nothing.
 		 */
-		if (ReaderMode.modeSelector == null)
+		if (modeSelector == null)
 			return;
 
 		//	Get saved mode setting (or default).
 		let currentMode = ReaderMode.currentMode();
 
 		//	Clear current buttons state.
-		ReaderMode.modeSelector.querySelectorAll("button").forEach(button => {
+		modeSelector.querySelectorAll("button").forEach(button => {
 			button.classList.remove("active", "selected");
 			button.disabled = false;
 			if (button.title.endsWith(ReaderMode.selectedModeOptionNote))
@@ -178,7 +213,7 @@ ReaderMode = { ...ReaderMode, ...{
 		});
 
 		//	Set the correct button to be selected.
-		ReaderMode.modeSelector.querySelectorAll(`.select-mode-${currentMode}`).forEach(button => {
+		modeSelector.querySelectorAll(`.select-mode-${currentMode}`).forEach(button => {
 			button.classList.add("selected");
 			button.disabled = true;
 			button.title += ReaderMode.selectedModeOptionNote;
@@ -188,7 +223,7 @@ ReaderMode = { ...ReaderMode, ...{
 			indicator, if the current mode is ‘auto’.
 		 */
 		if (currentMode == "auto")
-			ReaderMode.modeSelector.querySelector(`.select-mode-${(ReaderMode.active ? "on" : "off")}`).classList.add("active");
+			modeSelector.querySelector(`.select-mode-${(ReaderMode.active ? "on" : "off")}`).classList.add("active");
 	},
 
 	//	Called by: ReaderMode.updateModeSelectorVisibilityScrollListener
@@ -255,7 +290,7 @@ ReaderMode = { ...ReaderMode, ...{
 		//	Mask links.
 		ReaderMode.maskedLinks.forEach(link => {
 			//	Insert hooks for linkicons.
-// 			link.insertAdjacentHTML("beforeend", `<span class='icon-hook'><span></span></span>`);
+// 			link.insertAdjacentHTML("beforeend", `<span class="icon-hook"><span></span></span>`);
 
 			if (GW.isMobile() == false) {
 				/*	Add `mouseenter` / `mouseleave` listeners to show/hide masked
@@ -281,9 +316,9 @@ ReaderMode = { ...ReaderMode, ...{
 
 		if (GW.isMobile() == false) {
 			//	Inject info alert.
-			ReaderMode.maskedLinksKeyToggleInfoAlert = addUIElement(`<div id='masked-links-key-toggle-info-alert'>`
+			ReaderMode.maskedLinksKeyToggleInfoAlert = addUIElement(`<div id="masked-links-key-toggle-info-alert">`
 				+ `<p>`
-				+ `<img src='/static/img/icons/book-open-solid.svg'>`
+				+ `<img src="/static/img/icons/book-open-solid.svg">`
 				+ `Hold <span class="key">alt</span> / <span class="key">option</span> key to show links</p>`
 				+ `</div>`);
 
@@ -406,16 +441,16 @@ ReaderMode = { ...ReaderMode, ...{
 
 		//	Update tracked state.
 		switch (event.type) {
-			case 'mouseenter':
+			case "mouseenter":
 				ReaderMode.state.hoveringOverLink = true;
 				break;
-			case 'mouseleave':
+			case "mouseleave":
 				ReaderMode.state.hoveringOverLink = false;
 				break;
-			case 'keydown':
+			case "keydown":
 				ReaderMode.state.altKeyPressed = true;
 				break;
-			case 'keyup':
+			case "keyup":
 				ReaderMode.state.altKeyPressed = false;
 				break;
 			default:
@@ -478,14 +513,14 @@ GW.notificationCenter.fireEvent("ReaderMode.didLoad");
 	already in place.)
  */
 let setupSetup = () => {
-    GW.notificationCenter.addHandlerForEvent(Extracts.popFrameProviderName + ".setupDidComplete", () => {
+    GW.notificationCenter.addHandlerForEvent(Extracts.popFrameProviderName + ".setupDidComplete", (info) => {
         ReaderMode.setup();
     }, { once: true });
 }
 if (window.Extracts) {
     setupSetup();
 } else {
-    GW.notificationCenter.addHandlerForEvent("Extracts.didLoad", () => {
+    GW.notificationCenter.addHandlerForEvent("Extracts.didLoad", (info) => {
         setupSetup();
     }, { once: true });
 }

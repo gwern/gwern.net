@@ -1926,7 +1926,8 @@ div#mode-selector button.select-mode-light::before {
 
 /*  Reader mode selector, same as above.
  */
-div#reader-mode-selector button::before {
+div.reader-mode-selector button::before,
+span.reader-mode-selector button::before {
     filter: invert(1);
 }
 @media only screen and (min-width: 1280px) {
@@ -2927,8 +2928,8 @@ GW.notificationCenter = {
                 /*	If neither of the break conditions in the loop were
                 	encountered, j is now equal to -1; in this case, set j to
                 	the handlers array length, such that the new handler will be
-                	added to the end of the array.
-                	Otherwise, it’ll be inserted in the appropriate place.
+                	added to the end of the array. Otherwise, it’ll be inserted 
+                	in the appropriate place.
                  */
                 insertAt = defval(handlers.length, j, -1);
             } else {
@@ -3015,7 +3016,10 @@ GW.notificationCenter = {
     	‘source’ key) is (if present) included in the console message that is
     	printed when the event is fired.
      */
-    fireEvent: (eventName, eventInfo) => {
+    fireEvent: (eventName, eventInfo = { }) => {
+		if (!eventName)
+			return;
+
         /*  The ‘16’ here is the width of the date field plus spacing.
             The “Source:” text is manually padded to be as wide
             as “[notification]”.
@@ -3031,7 +3035,8 @@ GW.notificationCenter = {
 
 		/*	If no handlers have been registered for this event, we do nothing.
 		 */
-        if (GW.notificationCenter.eventHandlers[eventName] == null)
+        if (   GW.notificationCenter.eventHandlers[eventName] == null
+        	|| GW.notificationCenter.eventHandlers[eventName] == [ ])
             return;
 
 		/*	If event-specific pre-fire processing is needed, do it.
@@ -3242,20 +3247,21 @@ setMode(currentMode);
 ReaderMode = {
 	active: false,
 
-	styles:
-		_π("body.reader-mode-active ", [
-		   "#sidebar-links",
-		   "#page-metadata",
-		   "#TOC ul li::before",
-		   "#footer",
-		   "#navigation",
-		   "#sidenote-column-left",
-		   "#sidenote-column-right",
-		    ".inflationAdjusted .supsub",
-            ".footnote-ref"
-		]).join(",\n") + ` {
+	styles: `
+		$${(_π("body.reader-mode-active ", 
+			  [ "#sidebar-links",
+			    "#page-metadata",
+			    "#TOC ul li::before",
+			    "#footer",
+			    "#navigation",
+			    "#sidenote-column-left",
+			    "#sidenote-column-right",
+			    ".inflationAdjusted .supsub",
+			    ".footnote-ref"
+			    ]
+			  ).join(",\n"))} {
 			display: none;
-		}` + `
+		}
 		body.reader-mode-active #logo {
 			border-color: transparent;
 		}
@@ -3267,24 +3273,42 @@ ReaderMode = {
 		body.reader-mode-active #TOC ul li {
 			padding-left: 0.125em;
 		}
-		` + _π("body.reader-mode-active .spawns-", [ "popup", "popin" ]).join(",\n") + ` {
+		$${(_π("body.reader-mode-active .spawns-", 
+			  [ "popup", "popin" ]
+			  ).join(",\n"))} {
 			margin: 0;
 		}
-		` + _π("body.reader-mode-active .spawns-", [ "popup", "popin" ], " .indicator-hook").join(",\n") + ` {
+		$${(_π("body.reader-mode-active .spawns-", 
+			  [ "popup", "popin" ], 
+			  " .indicator-hook"
+			  ).join(",\n"))} {
 			padding-left: 0;
 		}
-		` + _π("body.reader-mode-active .spawns-", [ "popup", "popin" ], " .indicator-hook::before").join(",\n") + ` {
+		$${(_π("body.reader-mode-active .spawns-", 
+			  [ "popup", "popin" ], 
+			  " .indicator-hook::before"
+			  ).join(",\n"))} {
 			left: -0.3em;
 			box-shadow:
 				-0.17em 0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
 				-0.17em -0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
 				-0.17em 0 0 0 var(--GW-reader-mode-masked-link-bracket-background-color);
 		}
-		` + _π("body.reader-mode-active.masked-links-hidden .spawns-", [ "popup", "popin" ], " .indicator-hook").join(",\n") + ",\n" +
-			_π("body.reader-mode-active #markdownBody ", [ "p", "li", "figcaption" ], " a::after").join(",\n") + ` {
+		$${(_π("body.reader-mode-active.masked-links-hidden .spawns-", 
+			  [ "popup", "popin" ], 
+			  " .indicator-hook"
+			  ).join(",\n"))},
+		$${(_π("body.reader-mode-active #markdownBody ", 
+			  [ "p", "li", "figcaption" ], 
+			  " a::after"
+			  ).join(",\n"))} {
 			display: none;
 		}
-		` + _π("body.reader-mode-active.masked-links-hidden #markdownBody ", [ "p", "li", "figcaption" ], " a:not(.popup-open)", [ "", ":visited", ":hover" ]).join(",\n") + ` {
+		$${(_π("body.reader-mode-active.masked-links-hidden #markdownBody ", 
+			  [ "p", "li", "figcaption" ], 
+			  " a:not(.popup-open)", 
+			  [ "", ":visited", ":hover" ]
+			  ).join(",\n"))} {
 			color: inherit;
 			background: none;
 			cursor: text;

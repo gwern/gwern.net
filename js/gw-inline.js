@@ -930,8 +930,8 @@ GW.notificationCenter = {
                 /*	If neither of the break conditions in the loop were
                 	encountered, j is now equal to -1; in this case, set j to
                 	the handlers array length, such that the new handler will be
-                	added to the end of the array.
-                	Otherwise, it’ll be inserted in the appropriate place.
+                	added to the end of the array. Otherwise, it’ll be inserted 
+                	in the appropriate place.
                  */
                 insertAt = defval(handlers.length, j, -1);
             } else {
@@ -1018,7 +1018,10 @@ GW.notificationCenter = {
     	‘source’ key) is (if present) included in the console message that is
     	printed when the event is fired.
      */
-    fireEvent: (eventName, eventInfo) => {
+    fireEvent: (eventName, eventInfo = { }) => {
+		if (!eventName)
+			return;
+
         /*  The ‘16’ here is the width of the date field plus spacing.
             The “Source:” text is manually padded to be as wide
             as “[notification]”.
@@ -1034,7 +1037,8 @@ GW.notificationCenter = {
 
 		/*	If no handlers have been registered for this event, we do nothing.
 		 */
-        if (GW.notificationCenter.eventHandlers[eventName] == null)
+        if (   GW.notificationCenter.eventHandlers[eventName] == null
+        	|| GW.notificationCenter.eventHandlers[eventName] == [ ])
             return;
 
 		/*	If event-specific pre-fire processing is needed, do it.

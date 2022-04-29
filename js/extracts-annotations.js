@@ -351,7 +351,7 @@ Extracts = { ...Extracts, ...{
             /*  Set up handler to remove hover event listeners from all
                 the annotated targets in the document.
                 */
-            GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", () => {
+            GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", (info) => {
                 allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
                     annotatedTarget.removeAnnotationLoadEvents();
                     annotatedTarget.removeAnnotationLoadEvents = null;
@@ -373,7 +373,7 @@ Extracts = { ...Extracts, ...{
             /*  Set up handler to remove click event listeners from all
                 the annotated targets in the document.
                 */
-            GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", () => {
+            GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", (info) => {
                 allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
                     annotatedTarget.removeEventListener("click", annotatedTarget.annotationLoad_click);
                 });

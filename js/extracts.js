@@ -1328,7 +1328,7 @@ doSetup = () => {
 if (window[Extracts.popFrameProviderName]) {
     doSetup();
 } else {
-    GW.notificationCenter.addHandlerForEvent(Extracts.popFrameProviderName + ".didLoad", () => {
+    GW.notificationCenter.addHandlerForEvent(Extracts.popFrameProviderName + ".didLoad", (info) => {
         doSetup();
     }, { once: true });
 }
