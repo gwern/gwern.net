@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-29 11:51:12 gwern"
+When:  Time-stamp: "2022-04-29 14:57:31 gwern"
 License: CC-0
 -}
 
@@ -1445,20 +1445,22 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
 
 truncateTOC :: String -> String -> String
 truncateTOC p' toc = let pndc = truncateTOCHTML (T.pack (sed ".*#" "" p')) (T.pack toc) in
-                       case (runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta pndc)) of
-                         Left e -> error ("Failed to compile truncated ToC: " ++ show p' ++ show toc ++ show e)
-                         Right text -> T.unpack text
+                       if null pndc then "" else
+                           case (runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta (init pndc))) of
+                             Left e -> error ("Failed to compile truncated ToC: " ++ show p' ++ show toc ++ show e)
+                             Right text -> T.unpack text
 
 gwernTOC :: Bool -> String -> [Tag String] -> String
 gwernTOC footnotesP p' f =
                        (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#footnotes\">Footnotes</a></li></ul></div>" tc) $ -- Pandoc declines to add an ID to footnotes section; on Gwern.net, we override this by at compile-time rewriting the <section> to have `#footnotes`
                               replace "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns\" class=\"TOC\">" $ -- add columns class to condense it in popups/tag-directories
                               replace "<span>" "" $ replace "</span>" "" $ -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right?), we'll remove them.
-                              (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then ("<div class=\"columns\" class=\"TOC\">" ++ toc ++ "</div>") else "") else id) $ -- NOTE: we strip the `id="TOC"` deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies
+                              (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then ("<div class=\"columns\" class=\"TOC\">" ++ toc ++ "</div>") else "") else replace "<a href=" "<a class=\"id-not\" href=") $ -- NOTE: we strip the `id="TOC"` deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies
                               replace " id=\"TOC\"" "" $
                                renderTagsOptions renderOptions  ([TagOpen "div" [("class","columns")]] ++
                                                                  (takeWhile (\e' -> e' /= TagClose "div")  $ dropWhile (\e -> e /=  (TagOpen "div" [("id","TOC"), ("class","TOC")])) f) ++
                                                                  [TagClose "div"])
+
 
 gwernAbstract :: Bool -> String -> String -> String -> [Tag String] -> (String,String)
 gwernAbstract shortAllowed p' description toc f =
