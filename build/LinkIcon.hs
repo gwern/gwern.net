@@ -775,7 +775,7 @@ linkIconTestUnitsText =
          , ("/static/build/linkAbstract.R",  "code","svg")
          , ("/static/css/links.css",  "code","svg")
          , ("/static/build/hakyll.hs",  "code","svg")
-         , ("https://wiki.haskell.org/Xmonad/Config_archive/Gwern%27s_xmonad.hs",  "code","svg")
+         , ("https://wiki.haskell.org/Xmonad/Config_archive/Gwern's_xmonad.hs",  "code","svg")
          , ("/static/templates/default.html",  "code","svg")
          , ("/static/js/sidenotes.js",  "code","svg")
          , ("/docs/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch",  "code","svg")

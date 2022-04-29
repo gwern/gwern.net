@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-28 10:14:15 gwern"
+When:  Time-stamp: "2022-04-29 11:51:12 gwern"
 License: CC-0
 -}
 
@@ -191,6 +191,12 @@ readLinkMetadataAndCheck = do
              auto <- readYaml "metadata/auto.yaml"
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto) -- left-biased, so 'custom' overrides 'partial' overrides 'auto'
+
+             -- check validity of all external links:
+             let urlsAll = filter (\(x@(u:_),_) -> if u == '/' || u == '!' || u == '$' || u == '\8383' ||
+                                                      "wikipedia.org" `isInfixOf` x || "hoogle.haskell.org" `isInfixOf` x then False
+                                                 else not (isURIReference x)) (M.toList final)
+             when (not $ null urlsAll) $ printRed "Invalid URIs?" >> putStrLn (ppShow urlsAll)
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) (M.toList final) in
                Par.mapM_ (\a -> when (not (null a)) $ when (a =~ dateRegex) (error $ "Mixed up author & date?: " ++ a) ) authors
@@ -699,23 +705,21 @@ data Failure = Temporary | Permanent deriving Show
 
 linkDispatcher :: Path -> IO (Either Failure (Path, MetadataItem))
 gwern, arxiv, biorxiv, pubmed, openreview :: Path -> IO (Either Failure (Path, MetadataItem))
-linkDispatcher l | anyPrefix l' ["/metadata/annotations/backlinks/", "/metadata/annotations/similars/"] = return (Left Permanent)
+linkDispatcher l | anyPrefix l ["/metadata/annotations/backlinks/", "/metadata/annotations/similars/"] = return (Left Permanent)
                  -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for directory-tags.
-                 | "https://en.wikipedia.org/wiki/" `isPrefixOf` l' = return $ Right (l', (wikipediaURLToTitle l', "", "", "", [], ""))
-                 | "https://arxiv.org/abs/" `isPrefixOf` l' = arxiv l'
-                 | "https://openreview.net/forum?id=" `isPrefixOf` l' || "https://openreview.net/pdf?id=" `isPrefixOf` l' = openreview l'
-                 | anyPrefix l' ["https://www.biorxiv.org/content/", "https://www.medrxiv.org/content/"] = biorxiv l'
-                 | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l' = pubmed l'
+                 | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return $ Right (l, (wikipediaURLToTitle l, "", "", "", [], ""))
+                 | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
+                 | "https://openreview.net/forum?id=" `isPrefixOf` l || "https://openreview.net/pdf?id=" `isPrefixOf` l = openreview l
+                 | anyPrefix l ["https://www.biorxiv.org/content/", "https://www.medrxiv.org/content/"] = biorxiv l
+                 | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l = pubmed l
                      -- WARNING: this is not a complete list of PLOS domains, just the ones currently used on Gwern.net; didn't see a complete list anywhere...
-                 | anyInfix l' ["journals.plos.org", "plosbiology.org", "ploscompbiology.org", "plosgenetics.org", "plosmedicine.org", "plosone.org"] = pubmed l'
-                 | null l' = return (Left Permanent)
+                 | anyInfix l ["journals.plos.org", "plosbiology.org", "ploscompbiology.org", "plosgenetics.org", "plosmedicine.org", "plosone.org"] = pubmed l
+                 | null l = return (Left Permanent)
                  -- locally-hosted PDF?
-                 | ".pdf" `isInfixOf` l' = let l'' = linkCanonicalize l' in if head l'' == '/' then pdf $ tail l' else return (Left Permanent)
-                 | otherwise = let l'' = linkCanonicalize l in if head l'' == '/' then gwern $ tail l
+                 | ".pdf" `isInfixOf` l = let l' = linkCanonicalize l in if head l' == '/' then pdf $ tail l else return (Left Permanent)
+                 | otherwise = let l' = linkCanonicalize l in if head l' == '/' then gwern $ tail l
                  -- And everything else is unhandled:
                     else return (Left Permanent)
-                 -- check validity of all external links:
-                 where l' = l -- if head l == '/' then l else if not (isURIReference l) then error $ "External URL is invalid‽ " ++ l else l
 
 -- handles both PM & PLOS right now:
 pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
