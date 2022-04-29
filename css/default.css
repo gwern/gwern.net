@@ -4993,8 +4993,8 @@ section.highlight-fading::before {
     position: absolute;
     right: 11em;
     display: flex;
-    background-color: var(--GW-mode-selector-background-color);
     padding: 0.1em 0.25em 0.3em 0.25em;
+    background-color: var(--GW-mode-selector-background-color);
     border: 3px solid transparent;
     opacity: 0.3;
     transition:
@@ -5008,7 +5008,15 @@ section.highlight-fading::before {
     opacity: 1.0;
     border: 3px double var(--GW-mode-selector-border-hover-color);
 }
-#reader-mode-selector button {
+
+.reader-mode-selector-inline {
+	--GW-mode-selector-background-color: var(--GW-link-underline-background-color);
+
+    display: inline;
+    margin: 0 -0.25em;
+}
+
+.reader-mode-selector button {
     -moz-appearance: none;
     appearance: none;
     border: none;
@@ -5023,7 +5031,12 @@ section.highlight-fading::before {
     position: relative;
     display: flex;
 }
-#reader-mode-selector button::before {
+.reader-mode-selector-inline button {
+	margin: 0 0 0 1.625em;
+    display: inline-block;
+}
+
+.reader-mode-selector button::before {
     width: calc(7/5 * 1em);
     height: calc(7/5 * 1em);
     position: absolute;
@@ -5031,52 +5044,54 @@ section.highlight-fading::before {
     opacity: 0.4;
     top: 0.5em;
 }
-#reader-mode-selector button.select-mode-auto::before {
+.reader-mode-selector button.select-mode-auto::before {
     content: url('/static/img/icons/book-with-gear.svg');
     top: 0.4em;
 }
-#reader-mode-selector button.select-mode-on::before {
+.reader-mode-selector button.select-mode-on::before {
     content: url('/static/img/icons/book-open-solid.svg');
 }
-#reader-mode-selector button.select-mode-off::before {
+.reader-mode-selector button.select-mode-off::before {
     content: url('/static/img/icons/book-open.svg');
 }
-#reader-mode-selector button:not(.selected):hover::before {
+.reader-mode-selector button:not(.selected):hover::before {
     opacity: 1.0;
 }
-#reader-mode-selector button:hover,
-#reader-mode-selector button.selected {
-    box-shadow:
-        0 2px 0 6px var(--GW-mode-selector-background-color) inset,
-        0 1px 0 6px currentColor inset;
-}
-#reader-mode-selector button:not(:disabled):hover {
+.reader-mode-selector button:not(:disabled):hover {
     color: var(--GW-mode-selector-button-hover-text-color);
     cursor: pointer;
 }
-#reader-mode-selector button:not(:disabled):active {
+.reader-mode-selector button:not(:disabled):active {
     transform: translateY(2px);
-    box-shadow:
-        0 0px 0 6px var(--GW-mode-selector-background-color) inset,
-        0 -1px 0 6px currentColor inset;
 }
-#reader-mode-selector button.active:not(:hover)::after {
+.reader-mode-selector button:hover::after,
+.reader-mode-selector button.selected::after,
+.reader-mode-selector button.active:not(:hover)::after {
     content: "";
     position: absolute;
     bottom: 0.25em;
     left: 0;
     right: 0;
-    border-bottom: 1px dotted currentColor;
     width: calc(100% - 12px);
     margin: auto;
 }
-@media only screen and (max-width: 1800px) {
+.reader-mode-selector button:not(:disabled):active::after {
+    transform: translateY(-2px);
+}
+.reader-mode-selector button:hover::after,
+.reader-mode-selector button.selected::after {
+    border-bottom: 1px solid currentColor;
+}
+.reader-mode-selector button.active:not(:hover)::after {
+    border-bottom: 1px dotted currentColor;
+}
+@media only screen and (max-width: 1799px) {
     #reader-mode-selector {
         right: 0;
         top: 2em;
     }
 }
-@media only screen and (max-width: 1535px) {
+@media only screen and (max-width: 1534px) {
     #reader-mode-selector {
         flex-flow: column;
         padding: 0.1em 0.1em 0.2em 0.15em;
@@ -5106,7 +5121,7 @@ section.highlight-fading::before {
     #reader-mode-selector button.select-mode-off {
         opacity: 0.3;
     }
-    #reader-mode-selector  button + button {
+    #reader-mode-selector button + button {
         margin-top: 0.5em;
     }
     #reader-mode-selector button::before {

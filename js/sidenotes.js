@@ -573,7 +573,7 @@ Sidenotes = {
 			This function rewrites all footnote reference links appropriately to the
 			current mode (based on viewport width).
 			*/
-		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", () => {
+		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteCitationTargetsForCurrentMode", (mediaQuery) => {
 				for (var i = 0; i < Sidenotes.citations.length; i++)
 					Sidenotes.citations[i].href = (mediaQuery.matches ? "#fn" : "#sn") + (i + 1);
@@ -585,11 +585,11 @@ Sidenotes = {
 
 		/*  Bind sidenote mouse-hover events.
 			*/
-		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", () => {
+		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
 			Sidenotes.bindSidenoteMouseEvents();
 		}, { once: true });
 
-		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", () => {
+		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.addOrRemoveEventHandlersForCurrentMode", (mediaQuery) => {
 				if (!mediaQuery.matches) {
 					/*  After the hash updates, properly highlight everything, if needed.
@@ -608,14 +608,14 @@ Sidenotes = {
 					/*	Add event handler to (asynchronously) recompute sidenote positioning
 						when full-width media lazy-loads.
 						*/
-					GW.notificationCenter.addHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad = () => {
+					GW.notificationCenter.addHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad = (info) => {
 						requestAnimationFrame(Sidenotes.updateSidenotePositions);
 					});
 
 					/*	Add event handler to (asynchronously) recompute sidenote positioning
 						when collapse blocks are expanded/collapsed.
 						*/
-					GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange = () => {
+					GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange = (info) => {
 						requestAnimationFrame(Sidenotes.updateSidenotePositions);
 					});
 				} else {
@@ -636,7 +636,7 @@ Sidenotes = {
 
 		/*	Once the sidenotes are constructed, lay them out.
 			*/
-		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", () => {
+		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
 			/*  Lay out the sidenotes as soon as the document is loaded.
 				*/
 			Sidenotes.updateSidenotePositions();
@@ -645,7 +645,7 @@ Sidenotes = {
 				when all layout is complete.
 				*/
 			if (!GW.pageLayoutComplete) {
-				GW.notificationCenter.addHandlerForEvent("Rewrite.pageLayoutDidComplete", () => {
+				GW.notificationCenter.addHandlerForEvent("Rewrite.pageLayoutDidComplete", (info) => {
 					requestAnimationFrame(Sidenotes.updateSidenotePositions);
 				}, { once: true });
 			}

@@ -614,6 +614,6 @@ doWhenDOMContentLoaded(imageFocusSetup);
 doWhenDOMContentLoaded(focusImageSpecifiedByURL);
 
 //  TODO: re-enable this once imageFocusSetup() is refactored to be repeatable
-//  GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", () => {
+//  GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
 // 	imageFocusSetup();
 //  }, { once: true });
