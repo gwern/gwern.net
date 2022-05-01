@@ -507,9 +507,30 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
         margin: 2em auto;
         font-size: 1rem;
     }
-    #TOC > ul > li > ul {
-        column-count: 2;
-    }
+    #TOC {
+		padding: 0.5em;
+	}
+	#TOC li {
+		padding-left: 0;
+	}
+	#TOC ul li::before {
+		content: none;
+	}
+
+	#TOC > ul {
+		column-count: 2;
+		margin: 0;
+		column-gap: 1.25em;
+	}
+
+	#TOC {
+		background-image:
+			linear-gradient(var(--GW-TOC-border-color),
+							var(--GW-TOC-border-color));
+		background-repeat: no-repeat;
+		background-size: 1px 100%;
+		background-position: 50% 0;
+	}
 }
 @media only screen and (max-width: 649px) {
     #TOC a {
@@ -545,6 +566,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     text-indent: 0;
     padding: 0;
     overflow: unset;
+    break-inside: avoid-column;
 }
 
 .TOC ul ul {
@@ -566,6 +588,9 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     margin-bottom: 0.25em;
     font-weight: normal;
     font-size: 0.9em;
+}
+.TOC li li:last-child {
+	margin-bottom: 0;
 }
 
 .TOC p {
@@ -1097,3 +1122,4 @@ span.smallcaps {
 /*	See /static/js/darkmode.js and /static/css/dark-mode.css; this allows the 
 	user to toggle at runtime.
  */
+ 
