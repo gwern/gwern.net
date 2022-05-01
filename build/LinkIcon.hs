@@ -101,7 +101,6 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "andrewgelman.com" || u'' "statmodeling.stat.columbia.edu" = aI "▅▇▃" "text" -- Favicon is a little normal distribution/histogram (▅▇▃) LOWER FIVE EIGHTHS BLOCK, LOWER SEVEN EIGHTHS BLOCK, LOWER THREE EIGHTHS BLOCK
  | u'' "meltingasphalt.com" = aI "▲" "text" -- Kevin Simler’s Melting Asphalt blog uses 3 triangles but that's too many, so we just use one. (▲) BLACK UP-POINTING TRIANGLE
  | u' ".bloomberg.com" || u'' "www.businessweek.com" = aI "𝐁" "text" -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B
- | aU'' ["link.springer.com", "rd.springer.com"] || u' ".biomedcentral.com" = aI "♘" "text"  -- (♘) WHITE CHESS KNIGHT
  | u'' "www.tinyletter.com" = aI "✉" "text" -- TinyLetter’s icon, without color, isn’t memorable enough; throw in the other email services (✉) ENVELOPE
  | aU'' ["blog.givewell.org", "www.givewell.org", "files.givewell.org"] || u' "groups.yahoo.com/group/givewell/" = aI "GW" "text"
  | u'' "groups.yahoo.com" = aI "✉" "text"
@@ -369,6 +368,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' ".cochrane.org" || aU'' ["www.cochrane.org.uk", "www.cochranelibrary.com"] = aI "cochrane-collaboration" "svg" -- <https://upload.wikimedia.org/wikipedia/commons/archive/a/a1/20200122144949%21Cclogo.svg> (Newer version is not actually an SVG; reported on Talk page)
  | u'' "www.connectedpapers.com" = aI "connected-papers" "svg"
  | u' "nasa.gov" = aI "nasa" "svg" -- NASA has way too many subdomains to try to whitelist them individually. SVG is a quad version of <https://commons.wikimedia.org/wiki/File:NASA_Worm_logo_(black).svg>
+ | aU'' ["link.springer.com", "rd.springer.com"] || u' ".biomedcentral.com" = aI "springerlink" "svg"  -- (♘) WHITE CHESS KNIGHT as SVG
 
  -- many orgs will use a medium subdomain, so we fall back here for Medium and override above:
  | u'' "medium.com" || u'' "towardsdatascience.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
@@ -998,6 +998,7 @@ linkIconTestUnitsText =
          , ("https://cacm.acm.org/magazines/2017/8/219606-the-science-of-brute-force/fulltext", "acm", "text,tri,sans")
          , ("https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3474085.3475293&file=MM21-fp0702.mp4.mp4", "acm", "text,tri,sans")
          , ("https://www.research.va.gov/", "VA", "text,sans")
+         , ("https://link.springer.com/article/10.3758/s13423-021-01927-8", "springerlink", "svg")
         ]
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
