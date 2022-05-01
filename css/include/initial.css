@@ -293,8 +293,7 @@ header h1 {
 	margin: 0 0.05em 0 0.1em;
 }
 
-#page-metadata .link-tags,
-#page-metadata #page-metadata-block {
+#page-metadata div > * {
     hyphens: none;
 }
 
@@ -308,11 +307,9 @@ header h1 {
     }
 	#page-metadata-block #page-confidence,
 	#page-metadata-block #page-importance {
-		white-space: normal;
-		display: block;
+		display: inline-block;
 	}
 	#page-metadata-block #page-status::after,
-	#page-metadata-block #page-confidence::after,
 	#page-metadata-block #page-importance::after {
 		content: none;
 	}
