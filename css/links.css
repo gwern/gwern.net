@@ -258,7 +258,7 @@ body.index a.link-local::after,
     content: none;
 }
 
-/*	Also remove ‘G’ icon from the tags inside popups or in directory index 
+/*	Also remove ‘G’ icon from the tags inside popups or in directory index
 	entries (which go to directory indexes, which aren’t really top-level/essay
 	content, and the G is clutter).
 
@@ -781,7 +781,7 @@ a[data-link-icon='reddit']::after {
 }
 
 a[data-link-icon='springerlink']::after {
-    --link-icon-size: 0.9em;
+    --link-icon-size: 0.85em;
     --link-icon-offset-x: 0.1em;
     --link-icon-offset-y: 0.05em;
 
@@ -994,8 +994,8 @@ a[data-link-icon='wikipedia']:hover::after {
 }
 
 /*  Suppress the WP link icon suffix (knowledge of WP ‘articles’ vs.
-	Talk pages/History/etc is baked into the links by the link-annotated + 
-	has-annotation classes, see LinkMetadata.hs’s `wikipediaArticleNamespace` 
+	Talk pages/History/etc is baked into the links by the link-annotated +
+	has-annotation classes, see LinkMetadata.hs’s `wikipediaArticleNamespace`
 	function); the dotted-underlining is enough.
  */
 a[data-link-icon='wikipedia'].has-annotation::after {

@@ -40,7 +40,7 @@ inlinesToText = T.concat . map go
                -- fall through with a blank:
                _        -> " "::T.Text
 
--- BUG: Escaping bugs with Unicode: eg [Pāli Canon](!W) / <https://en.wikipedia.org/wiki/P%C4%81li_Canon>
+-- BUG: Escaping bugs with Unicode: eg. [Pāli Canon](!W) / <https://en.wikipedia.org/wiki/P%C4%81li_Canon>
 -- but if I simply Network.HTTP.urlEncode the article, that breaks a lot of other stuff (like colons in namespaces)...? What *is* the right way to escape/encode WP article names?
 convertInterwikiLinks :: Inline -> Inline
 convertInterwikiLinks x@(Link _ []           _) = error $ "Link error: no anchor text‽ " ++ show x

@@ -101,7 +101,6 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "andrewgelman.com" || u'' "statmodeling.stat.columbia.edu" = aI "▅▇▃" "text" -- Favicon is a little normal distribution/histogram (▅▇▃) LOWER FIVE EIGHTHS BLOCK, LOWER SEVEN EIGHTHS BLOCK, LOWER THREE EIGHTHS BLOCK
  | u'' "meltingasphalt.com" = aI "▲" "text" -- Kevin Simler’s Melting Asphalt blog uses 3 triangles but that's too many, so we just use one. (▲) BLACK UP-POINTING TRIANGLE
  | u' ".bloomberg.com" || u'' "www.businessweek.com" = aI "𝐁" "text" -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B
- | aU'' ["link.springer.com", "rd.springer.com"] || u' ".biomedcentral.com" = aI "♘" "text"  -- (♘) WHITE CHESS KNIGHT
  | u'' "www.tinyletter.com" = aI "✉" "text" -- TinyLetter’s icon, without color, isn’t memorable enough; throw in the other email services (✉) ENVELOPE
  | aU'' ["blog.givewell.org", "www.givewell.org", "files.givewell.org"] || u' "groups.yahoo.com/group/givewell/" = aI "GW" "text"
  | u'' "groups.yahoo.com" = aI "✉" "text"
@@ -239,6 +238,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "quantifiedself.com" || u'' "forum.quantifiedself.com" || u' "old.reddit.com/r/QuantifiedSelf/" = aI "QS" "text,sans"
  | u'' "www.pragmatic.ml" = aI "𝕄" "text" -- Madison May, machine learning blog
  | aU'' ["thepiratebay.org", "rss.thepiratebay.se", "thepiratebay.se",  "thepiratebay.sx"] = aI "🏴\8205☠️" "text,sans" -- BLACK FLAG + SKULL AND CROSSBONES + ZWJ = PIRATE FLAG <https://emojipedia.org/pirate-flag/>  And if that doesn't work try adding U+FE0F to the end
+ | u'' "www.research.va.gov" = aI "VA" "text,sans" -- US Department of Veterans Affair (mostly linked for Million Veteran Project)
 
  -- Tri/triple TLAs
  | u' "animenewsnetwork.com" = aI "ANN" "text,tri"
@@ -368,6 +368,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' ".cochrane.org" || aU'' ["www.cochrane.org.uk", "www.cochranelibrary.com"] = aI "cochrane-collaboration" "svg" -- <https://upload.wikimedia.org/wikipedia/commons/archive/a/a1/20200122144949%21Cclogo.svg> (Newer version is not actually an SVG; reported on Talk page)
  | u'' "www.connectedpapers.com" = aI "connected-papers" "svg"
  | u' "nasa.gov" = aI "nasa" "svg" -- NASA has way too many subdomains to try to whitelist them individually. SVG is a quad version of <https://commons.wikimedia.org/wiki/File:NASA_Worm_logo_(black).svg>
+ | aU'' ["link.springer.com", "rd.springer.com"] || u' ".biomedcentral.com" = aI "springerlink" "svg"  -- (♘) WHITE CHESS KNIGHT as SVG
 
  -- many orgs will use a medium subdomain, so we fall back here for Medium and override above:
  | u'' "medium.com" || u'' "towardsdatascience.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
@@ -573,9 +574,9 @@ linkIconTestUnitsText =
          , ("https://jamanetwork.com/journals/jama/fullarticle/201218", "JAMA", "text,sans,quad")
          , ("https://jama.jamanetwork.com/article.aspx?articleid=183162", "JAMA", "text,sans,quad")
          , ("https://kk.org/books/out-of-control/",  "KK","text,sans")
-         , ("https://link.springer.com/article/10.1007/BF02253535",  "\9816","text")
-         , ("https://rd.springer.com/article/10.1007/s10071-021-01530-3",  "\9816","text")
-         , ("https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/1471-2288-4-13",  "\9816","text")
+         , ("https://link.springer.com/article/10.1007/BF02253535",  "springerlink", "svg")
+         , ("https://rd.springer.com/article/10.1007/s10071-021-01530-3",  "springerlink", "svg")
+         , ("https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/1471-2288-4-13",  "springerlink", "svg")
          , ("https://longbets.org/",  "X","text,overline")
          , ("https://longnow.org/ideas/02014/08/21/lenski-long-term-evolution-experiment/",  "X","text,overline")
          , ("https://www.longecity.org/forum/topic/10464-modalert-is-this-what-modafinil-is-like/?&p=108566#entry108566", "⧖", "text")
@@ -996,6 +997,8 @@ linkIconTestUnitsText =
          , ("https://queue.acm.org/detail.cfm?ref=rss&id=2856460", "acm", "text,tri,sans")
          , ("https://cacm.acm.org/magazines/2017/8/219606-the-science-of-brute-force/fulltext", "acm", "text,tri,sans")
          , ("https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3474085.3475293&file=MM21-fp0702.mp4.mp4", "acm", "text,tri,sans")
+         , ("https://www.research.va.gov/", "VA", "text,sans")
+         , ("https://link.springer.com/article/10.3758/s13423-021-01927-8", "springerlink", "svg")
         ]
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]

@@ -55,12 +55,12 @@ else
     bold "Pulling infrastructure updates…"
     (cd ./static/ && git status && git pull --verbose 'https://gwern.obormot.net/static/.git' || true)
 
-    ## check validity of annotation database before spending time compiling:
-    bold "Checking annotations first…"
-    ghci -istatic/build/ ./static/build/LinkMetadata.hs  -e 'readLinkMetadataAndCheck' > /dev/null
-    λ(){ egrep -- '/[[:graph:]]\+[0-9]–[0-9]' ./metadata/*.yaml ./metadata/*.hs || true;
-         fgrep -- '–' ./metadata/*.hs || true; }
-    wrap λ "En-dashes in URLs?"
+    # ## check validity of annotation database before spending time compiling:
+    # bold "Checking annotations first…"
+    # ghci -istatic/build/ ./static/build/LinkMetadata.hs  -e 'readLinkMetadataAndCheck' > /dev/null
+    # λ(){ egrep -- '/[[:graph:]]\+[0-9]–[0-9]' ./metadata/*.yaml ./metadata/*.hs || true;
+    #      fgrep -- '–' ./metadata/*.hs || true; }
+    # wrap λ "En-dashes in URLs?"
 
     bold "Compiling…"
     cd ./static/build
@@ -725,13 +725,13 @@ else
     find docs/ -type d -print0 | egrep --null-data -v -e 'docs/$' -e 'www' -e 'rotten.com' -e '2011-gwern-yourmorals.org' -e '2000-iapac-norvir' -e 'docs/link-bibliography' |
         while read -d '' -r DIR;
     do N=$(find "$DIR" -maxdepth 1 -type f | wc --lines);
-       if [[ $N -gt 50 ]]; then printf "%5d: %s\n" "$N $DIR"; fi;
+       if [[ $N -gt 50 ]]; then printf "%5d: %s\n" $N $DIR; fi;
     done | sort --numeric-sort
 
     ## Look for domains that may benefit from link icons or link live status now:
     λ() { ghci -istatic/build/ ./static/build/LinkIcon.hs  -e 'linkIconPrioritize' | fgrep -v -e ' secs,' -e 'it :: [(Int, Text)]' -e '[]'; }
     wrap λ "Need link icons?"
-    λ() { ghci -istatic/build/ ./static/build/LinkLive.hs  -e 'linkLivePrioritize' | fgrep -v -e ' secs,' -e 'it :: [(Int, Text)]' -e '[]'; }
+    λ() { ghci -istatic/build/ ./static/build/LinkLive.hs  -e 'linkLivePrioritize' | fgrep -v -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
     wrap λ "Need link live whitelist/blacklisting?"
 
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.
