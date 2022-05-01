@@ -25,25 +25,17 @@
 .has-content .indicator-hook::before {
     content: " ";
     position: absolute;
-    width: 0.45em;
-    height: 0.75em;
-    color: transparent;
-    text-shadow: none;
-
-    background-image:
-        linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color)),
-        linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
-    background-size: 1px 1px;
-    background-repeat: repeat-x, repeat-y;
-    background-position: 100% 100%, 0 100%;
     left: 0;
-    top: unset;
-    bottom: 0.1em;
-    overflow: hidden;
+    bottom: 0;
+    width: 1px;
+    height: 0.75em;
+    background-image:
+        linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
+    background-size: 1px calc(100% - 0.1em);
+    background-repeat: no-repeat;
 }
 .has-content:hover .indicator-hook::before {
     background-image:
-        linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover)),
         linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
 }
 .TOC .has-content,
