@@ -1076,3 +1076,16 @@
     src: url("/static/font/quivira/Quivira-SUBSETTED.ttf") format("truetype");
     font-display: swap;
 }
+
+/**************/
+/* NOTO EMOJI */
+/**************/
+/* specific symbols (linkicons, etc.) */
+
+@font-face {
+    font-family: "Noto Emoji";
+    font-weight: normal;
+    font-style: normal;
+    src: url("/static/font/noto-emoji/NotoEmoji-Bold-SUBSETTED.ttf") format("truetype");
+    font-display: swap;
+}
