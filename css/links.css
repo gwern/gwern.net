@@ -158,9 +158,9 @@ a[data-link-icon-type*='text']::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.125em;
     --link-icon-offset-y: 0.25em;
-    --link-icon-font-serif: Quivira, var(--GW-serif-font-stack);
-    --link-icon-font-sans: Quivira, var(--GW-sans-serif-font-stack);
-    --link-icon-font-mono: Quivira, var(--GW-monospaced-font-stack);
+    --link-icon-font-serif: Noto Emoji, Quivira, var(--GW-serif-font-stack);
+    --link-icon-font-sans: Noto Emoji, Quivira, var(--GW-sans-serif-font-stack);
+    --link-icon-font-mono: Noto Emoji, Quivira, var(--GW-monospaced-font-stack);
 
     content: attr(data-link-icon);
     font-size: var(--link-icon-size);
@@ -447,7 +447,11 @@ a[data-link-icon='෴']::after { /* Moustache / antilop.cc */
 }
 
 a[data-link-icon='🤖']::after { /* ROBOT FACE U+1F916 beepb00p.xyz */
-    --link-icon-offset-y: 0.5em;
+	--link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.3em;
+
+    opacity: 0.8;
 
     opacity: 0.75;
 }
