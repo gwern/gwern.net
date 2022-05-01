@@ -239,6 +239,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "quantifiedself.com" || u'' "forum.quantifiedself.com" || u' "old.reddit.com/r/QuantifiedSelf/" = aI "QS" "text,sans"
  | u'' "www.pragmatic.ml" = aI "𝕄" "text" -- Madison May, machine learning blog
  | aU'' ["thepiratebay.org", "rss.thepiratebay.se", "thepiratebay.se",  "thepiratebay.sx"] = aI "🏴\8205☠️" "text,sans" -- BLACK FLAG + SKULL AND CROSSBONES + ZWJ = PIRATE FLAG <https://emojipedia.org/pirate-flag/>  And if that doesn't work try adding U+FE0F to the end
+ | u'' "www.research.va.gov" = aI "VA" "text,sans" -- US Department of Veterans Affair (mostly linked for Million Veteran Project)
 
  -- Tri/triple TLAs
  | u' "animenewsnetwork.com" = aI "ANN" "text,tri"
@@ -996,6 +997,7 @@ linkIconTestUnitsText =
          , ("https://queue.acm.org/detail.cfm?ref=rss&id=2856460", "acm", "text,tri,sans")
          , ("https://cacm.acm.org/magazines/2017/8/219606-the-science-of-brute-force/fulltext", "acm", "text,tri,sans")
          , ("https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3474085.3475293&file=MM21-fp0702.mp4.mp4", "acm", "text,tri,sans")
+         , ("https://www.research.va.gov/", "VA", "text,sans")
         ]
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]

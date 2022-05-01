@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-04-28 23:21:52 gwern"
+When:  Time-stamp: "2022-04-30 15:58:41 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -2455,7 +2455,7 @@ badDomainsSimple = ["1d4chan.org",
     , "www.pcworld.com"
     , "www.mangaupdates.com"
     , "www.microsoft.com"
-
+    , "www.research.va.gov"
    ]
 
 url :: T.Text -> Inline
@@ -4808,4 +4808,5 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.pcworld.com/article/422832/italian-police-shutter-dark-web-marketplace.html", False)
     , ("https://www.mangaupdates.com/series.html?id=2701", False)
     , ("https://www.microsoft.com/en-us/research/blog/zero-2-deepspeed-shattering-barriers-of-deep-learning-speed-scale/", False)
+    , ("https://www.research.va.gov/mvp/", False)
     ]

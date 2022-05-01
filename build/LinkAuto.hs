@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-04-27 12:13:54 gwern"
+When:  Time-stamp: "2022-04-29 15:35:26 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -781,7 +781,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Michael Nielsen", "https://michaelnielsen.org/")
         , ("Mike Darwin", "https://en.wikipedia.org/wiki/Mike_Darwin")
         , ("Mike Power", "http://mikepower.pressfolios.com/")
-        , ("Million Veteran Program", "https://www.research.va.gov/mvp/")
         , ("Mind Sparke", "http://www.mindsparke.com/")
         , ("Minecraft", "https://en.wikipedia.org/wiki/Minecraft")
         , ("Mnemosyne", "https://en.wikipedia.org/wiki/Mnemosyne_%28software%29")
@@ -1007,7 +1006,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("X[Mm]onad", "https://en.wikipedia.org/wiki/Xmonad")
         , ("Yasuhiro Takeda", "https://en.wikipedia.org/wiki/Yasuhiro_Takeda")
         , ("Yoshiyuki Tomino", "https://en.wikipedia.org/wiki/Yoshiyuki_Tomino")
-        , ("Your[Mm]orals\\.org", "https://yourmorals.org/")
         , ("Yunmen Wenyan", "https://en.wikipedia.org/wiki/Yunmen_Wenyan")
         , ("ZUN", "https://en.wikipedia.org/wiki/Team_Shanghai_Alice#Member")
         , ("Zeo", "/Zeo")
@@ -1109,7 +1107,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Gg]ame theory", "https://en.wikipedia.org/wiki/Game_theory")
         , ("[Gg]enetic [Cc]orrelations?", "https://en.wikipedia.org/wiki/Genetic_correlation")
         , ("[Gg]enetic drift", "https://en.wikipedia.org/wiki/Genetic_drift")
-        , ("[Gg]enome-[Ww]ide [Cc]omplex [Tt]rait [Aa]nalysis", "https://en.wikipedia.org/wiki/Genome-wide_complex_trait_analysis")
+        , ("[Gg]enome-[Ww]ide [Cc]omplex [Tt]rait [Aa]nalysis", "https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308")
         , ("[Gg]esamtkunstwerk", "https://en.wikipedia.org/wiki/Gesamtkunstwerk")
         , ("[Gg]gambler's ruin", "https://en.wikipedia.org/wiki/Gambler%27s_ruin")
         , ("[Gg]it", "https://en.wikipedia.org/wiki/Git_%28software%29")
@@ -1351,7 +1349,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("([Hh]aplotypes?)", "https://en.wikipedia.org/wiki/Haplotype")
         , ("[Ss]ummary [Ss]tatistics?", "https://en.wikipedia.org/wiki/Summary_statistics")
         , ("[Pp]enetrance", "https://en.wikipedia.org/wiki/Penetrance")
-        , ("(Alpha[Ff]old ?2?|AF2)", "https://www.nature.com/articles/s41586-021-03819-2#deepmind") -- AlphaFold
         , ("OLS( regressions?|regression models?)?", "https://en.wikipedia.org/wiki/Ordinary_least_squares")
         , ("[Ee]nsemble?s( learning| methods?)", "https://en.wikipedia.org/wiki/Ensemble_learning")
         , ("fMRIs?( machine| study| experiment| data| task| responses)", "https://en.wikipedia.org/wiki/Functional_magnetic_resonance_imaging")
