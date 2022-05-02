@@ -13,13 +13,16 @@ import GenerateSimilar (bestNEmbeddings, embed, embeddings2Forest, findN, missin
 import LinkMetadata (readLinkMetadata)
 import Utils (printGreen)
 
+maxEmbedAtOnce :: Int
+maxEmbedAtOnce = 100
+
 main :: IO ()
 main = do md  <- readLinkMetadata
           edb <- readEmbeddings
           printGreen "Read databases."
 
           -- update for any missing embeddings, and return updated DB for computing distances & writing out fragments:
-          let todo = take 100 $ sort $ missingEmbeddings md edb
+          let todo = take maxEmbedAtOnce $ sort $ missingEmbeddings md edb
           edb'' <- if null todo then printGreen "All databases up to date." >> return edb else
                      do
                        printGreen $ "Embedding…\n" ++ unlines (map show todo)

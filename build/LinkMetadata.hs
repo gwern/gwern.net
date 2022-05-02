@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-29 14:57:31 gwern"
+When:  Time-stamp: "2022-05-01 12:27:07 gwern"
 License: CC-0
 -}
 
@@ -1526,6 +1526,7 @@ initializeAuthors = trim . replaceMany [(",,", ","), (",,", ","), (", ,", ", "),
                          (",$", ""),
                          (", +", ", "),
                          ("([A-Z]\\.)([A-Za-z]+)", "\\1 \\2"),                              -- "A.Smith"      → "A. Smith"
+                         ("[ ^]?([A-Z])([A-Z]) ([A-Za-z]+)", " \\1. \\2. \\3"),             -- " LK Barnes"   → " L. K. Barnes"
                          ("([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3"),               -- "A.B. Smith"   → "A. B. Smith"
                          ("([A-Z]\\.)([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3 \\4"), -- "C.A.B. Smith" → "C. A. B. Smith"
                          (" ([A-Z])([A-Z])([A-Z]) ", " \\1. \\2. \\3. "),                   -- "John HAB Smith" → "John H. A. B. Smith"
@@ -1682,6 +1683,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<i>", "<em>")
           , ("</i>", "</em>")
           -- math substitutions:
+          , ("<span class=\"math inline\">\\(^\\circ\\)</span>", "°")
           , ("<span class=\"math inline\">\\(\\pi_1\\)</span>", "π<sub>1</sub>")
           , ("<span class=\"math inline\">\\(7.5\\sim9.5\\times\\)</span>", "7.5–9.5×")
           , ("<span class=\"math inline\">\times</span>", "×")
