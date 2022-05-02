@@ -166,10 +166,13 @@ Extracts = {
 			link.querySelector(".indicator-hook").remove();
 		});
 
-        //  Unbind event listeners, restore targets, and remove popups.
+        //  Unbind event listeners and restore targets.
         document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
             Extracts.removeTargetsWithin(container);
         });
+
+		//	Remove pop-frames & containers.
+		Extracts.popFrameProvider.cleanup();
 
         //  Remove content load event handlers.
         [ Extracts.processTargetsOnContentLoad,
@@ -224,6 +227,10 @@ Extracts = {
             GWLog("Activating popups.", "extracts.js", 1);
         } else {
             GWLog("Setting up for popins.", "extracts.js", 1);
+
+			if (!Extracts.popinsEnabled()) {
+				return;
+			}
 
             GWLog("Activating popins.", "extracts.js", 1);
         }
@@ -1120,6 +1127,11 @@ Extracts = {
     /**********/
     /*  Popins.
      */
+
+    //  Called by: Extracts.setup
+    popinsEnabled: () => {
+        return (localStorage.getItem("extract-popins-disabled") != "true");
+    },
 
     /*  Called by popins.js just before injecting the popin. This is our chance
         to fill the popin with content, and rewrite that content in whatever

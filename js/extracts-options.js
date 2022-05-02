@@ -21,6 +21,31 @@ Extracts = { ...Extracts, ...{
 		return button;
 	},
 
+	disableExtractPopins: () => {
+		GWLog("Extracts.disableExtractPopins", "extracts-options.js", 1);
+
+		localStorage.setItem("extract-popins-disabled", "true");
+		Extracts.cleanup();
+// 		Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
+	},
+
+	enableExtractPopins: () => {
+		GWLog("Extracts.enableExtractPopins", "extracts-options.js", 1);
+
+		localStorage.removeItem("extract-popins-disabled");
+
+		//  Run setup.
+		Extracts.setup();
+
+		/*  Since the main document has already loaded, we must trigger the
+			processing of targets manually.
+		 */
+		Extracts.processTargetsInDocument();
+
+		//  Remove the icon/button.
+// 		Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
+	},
+
 	/**********/
 	/*	Popups.
 	 */
@@ -48,7 +73,7 @@ Extracts = { ...Extracts, ...{
 
 	//	Called by: Extracts.savePopupOptions
 	disableExtractPopups: () => {
-		GWLog("Extracts.disableExtractPopups", "extracts.js", 1);
+		GWLog("Extracts.disableExtractPopups", "extracts-options.js", 1);
 
 		localStorage.setItem("extract-popups-disabled", "true");
 		Extracts.cleanup();
@@ -57,7 +82,7 @@ Extracts = { ...Extracts, ...{
 
 	//	Called by: Extracts.savePopupOptions
 	enableExtractPopups: () => {
-		GWLog("Extracts.enableExtractPopups", "extracts.js", 1);
+		GWLog("Extracts.enableExtractPopups", "extracts-options.js", 1);
 
 		localStorage.removeItem("extract-popups-disabled");
 
@@ -75,7 +100,7 @@ Extracts = { ...Extracts, ...{
 
 	//	Called by: Extracts.injectPopupsDisabledShowPopupOptionsDialogButton
 	showPopupOptionsDialog: () => {
-		GWLog("Extracts.showPopupOptionsDialog", "extracts.js", 1);
+		GWLog("Extracts.showPopupOptionsDialog", "extracts-options.js", 1);
 
 		Popups.hidePopupContainer();
 
@@ -155,7 +180,7 @@ Extracts = { ...Extracts, ...{
 
 	//	Called by: Extracts.showPopupOptionsDialog
 	fadePopupOptionsDialog: () => {
-		GWLog("Extracts.fadePopupOptionsDialog", "extracts.js", 1);
+		GWLog("Extracts.fadePopupOptionsDialog", "extracts-options.js", 1);
 
 		Extracts.popupOptionsDialog.classList.toggle("fading", true);
 		setTimeout(Extracts.hidePopupOptionsDialog, 150);
@@ -163,7 +188,7 @@ Extracts = { ...Extracts, ...{
 
 	//	Called by: Extracts.fadePopupOptionsDialog
 	hidePopupOptionsDialog: () => {
-		GWLog("Extracts.hidePopupOptionsDialog", "extracts.js", 1);
+		GWLog("Extracts.hidePopupOptionsDialog", "extracts-options.js", 1);
 
 		Popups.unhidePopupContainer();
 
@@ -175,7 +200,7 @@ Extracts = { ...Extracts, ...{
 
 	//	Called by: Extracts.showPopupOptionsDialog
 	savePopupOptions: () => {
-		GWLog("Extracts.savePopupOptions", "extracts.js", 1);
+		GWLog("Extracts.savePopupOptions", "extracts-options.js", 1);
 
 		if (Extracts.popupOptionsDialog.querySelector("input.popups-enable").checked)
 			Extracts.enableExtractPopups();
@@ -187,7 +212,7 @@ Extracts = { ...Extracts, ...{
 	//	Called by: extracts-options.js (at end of file)
 	//	Called by: extracts.js
 	injectPopupsDisabledShowPopupOptionsDialogButton: () => {
-		GWLog("Extracts.injectPopupsDisabledShowPopupOptionsDialogButton", "extracts.js", 1);
+		GWLog("Extracts.injectPopupsDisabledShowPopupOptionsDialogButton", "extracts-options.js", 1);
 
 		if (Extracts.popupsDisabledShowPopupOptionsDialogButton != null)
 			return;
@@ -215,7 +240,7 @@ Extracts = { ...Extracts, ...{
 
 	//	Called by: Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibilityScrollListener
 	updatePopupsDisabledShowPopupOptionsDialogButtonVisibility: (event) => {
-		GWLog("Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibility", "rewrite.js", 3);
+		GWLog("Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibility", "extracts-options.js", 3);
 
 		if (Extracts.popupsDisabledShowPopupOptionsDialogButton == null)
 			return;
@@ -244,7 +269,7 @@ Extracts = { ...Extracts, ...{
 	//	Called by: Extracts.enableExtractPopups
 	//	Called by: extracts.js
 	removePopupsDisabledShowPopupOptionsDialogButton: () => {
-		GWLog("Extracts.removePopupsDisabledShowPopupOptionsDialogButton", "extracts.js", 1);
+		GWLog("Extracts.removePopupsDisabledShowPopupOptionsDialogButton", "extracts-options.js", 1);
 
 		if (Extracts.popupsDisabledShowPopupOptionsDialogButton == null)
 			return;
