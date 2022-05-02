@@ -280,6 +280,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.schneier.com" = aI "SOS" "text,tri,sans" -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says... "SOS")
  | u'' "hbr.org" = aI "HBR" "text,tri,sans" -- Harvard Business Review
  | aU'' ["dl.acm.org", "queue.acm.org", "cacm.acm.org"] = aI "acm" "text,tri,sans" -- <https://en.wikipedia.org/wiki/File:Association_for_Computing_Machinery_(ACM)_logo.svg> 'acm' sans in a circle inside a diamond; can't fake it with Unicode joiners (they'd only put one character into a circle+diamond), and I probably don't want to bother with a SVG.
+ | u' "www.cs.utexas.edu/~EWD/" = aI "EWD" "text,tri,sans" -- Edsger W. Dijkstra, of course, wrote in sans
 
  -- Quad-letter-square icons.
  | aU'' ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
@@ -396,7 +397,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
        -- simplest check for string anywhere; note that if it is a full domain name like `https://foo.com` (intended to match `https://foo.com/xyz.html`), then it will *not* match when the local-archive code fires and the URL gets rewritten to "/docs/foo.com/$HASH.html". So we error out if the user tries this, having forgotten that u' ≠ u'' in that respect.
        u' v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v then error ("Overly strict prefix in infix matching: " ++ show u ++ ":" ++ show v) else
          if originalURL=="" then v `T.isInfixOf` u else v `T.isInfixOf` originalURL
-       -- more careful check:
+       -- more stringent check, matching exactly the domain name:
        u'' v = if originalURL=="" then isHostOrArchive v u else isHostOrArchive v originalURL
        originalURL :: T.Text
        originalURL = case lookup "data-url-original" attributes of
@@ -999,6 +1000,7 @@ linkIconTestUnitsText =
          , ("https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3474085.3475293&file=MM21-fp0702.mp4.mp4", "acm", "text,tri,sans")
          , ("https://www.research.va.gov/", "VA", "text,sans")
          , ("https://link.springer.com/article/10.3758/s13423-021-01927-8", "springerlink", "svg")
+         , ("https://www.cs.utexas.edu/users/EWD/transcriptions/EWD03xx/EWD340.html", "EWD", "text,tri,sans")
         ]
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
