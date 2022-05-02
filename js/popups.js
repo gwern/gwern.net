@@ -48,7 +48,7 @@ Popups = {
 	cleanup: () => {
 		GWLog("Popups.cleanup", "popups.js", 1);
 
-        //  Remove popups container and injected styles.
+        //  Remove popups container.
         document.querySelectorAll(`#${Popups.popupContainerID}`).forEach(element => element.remove());
 
 		//  Remove Escape key event listener.
