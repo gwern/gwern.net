@@ -364,6 +364,13 @@ Annotations = {
 
         //  Process links.
         annotation.querySelectorAll("a").forEach(link => {
+			//	De-linkify non-anchor self-links.
+			if (   link.hash     == ""
+				&& link.pathname == articleURL.pathname) {
+				unwrap(link);
+				return;
+			}
+
             //  Qualify links.
             if (link.getAttribute("href").startsWith("#"))
                 link.pathname = articleURL.pathname;
