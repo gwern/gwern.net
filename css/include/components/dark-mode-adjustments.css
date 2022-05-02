@@ -1,6 +1,6 @@
 :root {
     /*  Adjust background color to prevent pixels from turning off (contrary to popular belief, pixels turning off saves trivial energy, like <1% in measurements, and causes nasty scrolling/update jank due to delay in pixels turning back on), and improve contrast with the white.
-    */
+     */
     --GW-body-background-color: #111111;
 
     /*  Dial back from pure white to keep contrast from being *too* high & 'stark' (#fff bg / #000 text seems to work in light mode, but not in dark mode, perhaps because of differences in lighting environment?)
@@ -25,7 +25,7 @@
 /*  The ‘fill’ attribute of the SVGs is modified in dark mode.
     (We cannot use an invert filter because we don’t want to invert the whole
      element, only the background-image.)
-    */
+ */
 .collapse .disclosure-button::before {
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%235C5C5C"/></svg>');
 }
@@ -39,19 +39,29 @@
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="%23000"/></svg>');
 }
 
-/* Create a 'footer' at the bottom of pages which looks like '—————𝔊—————', similar to the arabesque navbar.
-Footers help denote 'this is the end', and avoid the somewhat lame effect of just having the anonymous feedback link at the end of the page and ending there with nothing else.
-NOTE: this is for mobile only, and takes the place of desktop's full arabesque navbar (see default.css).
+/*	Create a ‘footer’ at the bottom of pages which looks like ‘—————𝔊—————’, 
+	similar to the arabesque navbar.
 
-Implementation: Modifying the 'fill' does not work so well when we call an SVG as a 'background-image' (like for the  footers on the index page), so we do variable+invert tricks to get a white copy of the logo as a hack. */
-@media  only screen and (max-width: 649px) {
-    main article::after, main article::after {
-        filter: invert(1); background-color: var(--GW-body-background-color-inverted);
+	Footers help denote “this is the end”, and avoid the somewhat lame effect of
+	just having the anonymous feedback link at the end of the page and ending 
+	there with nothing else.
+
+	NOTE: this is for mobile only, and takes the place of desktop’s full 
+	arabesque navbar (see default.css).
+
+	Implementation: Modifying the ‘fill’ does not work so well when we call an
+	SVG as a ‘background-image’ (like for the  footers on the index page), so we
+	do variable+invert tricks to get a white copy of the logo as a hack.
+ */
+@media only screen and (max-width: 649px) {
+    div#footer::after {
+        filter: invert(1);
+        background-color: var(--GW-body-background-color-inverted);
     }
 }
 
 /*  The ‘celestial symbol’ horizontal rules are SVGs and must be inverted.
-    */
+ */
 hr::after,
 .horizontalRule-nth-0 hr::after {
     opacity: 1;
@@ -67,14 +77,14 @@ hr::after,
 }
 
 /*  Drop cap opacity adjustment.
-    */
+ */
 .drop-cap-goudy::first-letter,
 .drop-cap-goudy > p::first-letter {
     opacity: 0.95;
 }
 
 /*  Admonition icons.
-    */
+ */
 .admonition.tip::before,
 .admonition.note::before,
 .admonition.warn::before,
@@ -90,20 +100,20 @@ div.admonition.error {
 }
 
 /*  List bullets are SVGs and have to be inverted.
-    */
+ */
 ul > li::before {
     filter: invert(1);
 }
 
 /*  Exclusion for TOC entries.
-    */
+ */
 .TOC ul > li::before {
     filter: none;
 }
 
 /*  For sortable table column headings, we use dark versions of the up/down/both
     arrow icons.
-    */
+ */
 table th.tablesorter-header {
     background-image: url('/static/img/tablesorter/tablesorter-bg-dark.gif');
 }
@@ -116,7 +126,7 @@ table th.tablesorter-headerDesc {
 
 /*  The pixel-grid-checkerboard pattern of these scroll bars is created by GIF
     background-images; we use alternate versions of the images in dark mode.
-    */
+ */
 .table-wrapper::-webkit-scrollbar-thumb {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
 }
@@ -166,14 +176,14 @@ img:not(.invertible):not(.invertible-auto):hover {
 
 /*  The loading spinner for object popups (image, iframe, object) is inverted
     and made more visible in dark mode.
-    */
+ */
 .popupdiv.loading::before {
     filter: invert(1);
     opacity: 0.4;
 }
 
 /*  “Loading failed” messages for object popups.
-    */
+ */
 .popupdiv.loading-failed::after {
     opacity: 0.4;
 }
