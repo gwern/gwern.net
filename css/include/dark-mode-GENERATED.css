@@ -318,7 +318,7 @@
     */
     --GW-body-background-color: #111111;
 
-    /*	Dial back from pure white to keep contrast from being *too* high & 'stark' (#fff bg / #000 text seems to work in light mode, but not in dark mode, perhaps because of differences in lighting environment?)
+    /*  Dial back from pure white to keep contrast from being *too* high & 'stark' (#fff bg / #000 text seems to work in light mode, but not in dark mode, perhaps because of differences in lighting environment?)
      */
     --GW-body-text-color: #f1f1f1;
 
@@ -328,13 +328,13 @@
      */
     --GW-syntax-highlight-color-control-flow: #cce1c8;
 
-    /*	Variable for SVGs to use (like for the —𝔊— footers on the index page)
+    /*  Variable for SVGs to use (like for the —𝔊— footers on the index page)
      */
     --GW-body-background-color-inverted: #ededed;
 
-	/*	Reader mode.
-	 */
-	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.85);
+    /*  Reader mode.
+     */
+    --GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.85);
 }
 
 /*  The ‘fill’ attribute of the SVGs is modified in dark mode.
@@ -354,10 +354,15 @@
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="%23000"/></svg>');
 }
 
-/* Modifying the 'fill' does not work so well when we call an SVG as a 'background-image' (like for the —𝔊— footers on the index page), so we do variable+invert tricks to get a white copy of the logo as a hack. */
-body.index main article::after, 
-body.index-directory main article::after {
-    filter: invert(1); background-color: var(--GW-body-background-color-inverted);
+/* Create a 'footer' at the bottom of pages which looks like '—————𝔊—————', similar to the arabesque navbar.
+Footers help denote 'this is the end', and avoid the somewhat lame effect of just having the anonymous feedback link at the end of the page and ending there with nothing else.
+NOTE: this is for mobile only, and takes the place of desktop's full arabesque navbar (see default.css).
+
+Implementation: Modifying the 'fill' does not work so well when we call an SVG as a 'background-image' (like for the  footers on the index page), so we do variable+invert tricks to get a white copy of the logo as a hack. */
+@media  only screen and (max-width: 649px) {
+    main article::after, main article::after {
+        filter: invert(1); background-color: var(--GW-body-background-color-inverted);
+    }
 }
 
 /*  The ‘celestial symbol’ horizontal rules are SVGs and must be inverted.
@@ -444,8 +449,8 @@ table th.tablesorter-headerDesc {
 /*  Images that are marked as invertible by the server are inverted,
     hue-rotated, and desaturated. Other (non-invertible) images are merely
     desaturated. Hovering over an image restores it to its original state.
-    Hierarchy: ‘.invertible-not’: no inversion or grayscale; 
-    ‘.invertible’/‘.invertible-auto’: inverted (uninverted upon mouse hover); 
+    Hierarchy: ‘.invertible-not’: no inversion or grayscale;
+    ‘.invertible’/‘.invertible-auto’: inverted (uninverted upon mouse hover);
     none: grayscaled (ungrayscaled on hover).
  */
 img.invertible,
@@ -467,10 +472,10 @@ img:not(.invertible):not(.invertible-auto):hover {
     filter: none;
     transition: filter 0s ease 0.25s;
 }
-/*	For images which have been manually marked up with ‘.invertible-not’, we 
-	avoid any filtering at all. If they are manually marked up (artwork,
-	diagrams with multiple subtly-different colors matched to a legend/caption),
-	the color is important and shouldn’t be faded out by default.
+/*  For images which have been manually marked up with ‘.invertible-not’, we
+    avoid any filtering at all. If they are manually marked up (artwork,
+    diagrams with multiple subtly-different colors matched to a legend/caption),
+    the color is important and shouldn’t be faded out by default.
  */
 #markdownBody img.invertible-not { filter: none; }
 
@@ -509,12 +514,12 @@ span.reader-mode-selector button::before {
     filter: invert(1);
 }
 @media only screen and (min-width: 1280px) {
-	div#reader-mode-selector {
-    	opacity: 0.6;
-	}
-	div#reader-mode-selector button::before {
-	    opacity: 0.45;
-	}
+    div#reader-mode-selector {
+        opacity: 0.6;
+    }
+    div#reader-mode-selector button::before {
+        opacity: 0.45;
+    }
 }
 @media only screen and (max-width: 1279px) {
     div#reader-mode-selector button {
@@ -523,21 +528,21 @@ span.reader-mode-selector button::before {
     div#reader-mode-selector button.select-mode-off {
         opacity: 0.35;
     }
-	div#reader-mode-selector button:hover,
-	div#reader-mode-selector button.selected {
-		opacity: 0.9;
-	}
-	div#reader-mode-selector button.select-mode-on:hover,
-	div#reader-mode-selector button.select-mode-on.selected {
-		opacity: 0.75;
-	}
-	div#reader-mode-selector button.select-mode-off:hover,
-	div#reader-mode-selector button.select-mode-off.selected {
-		opacity: 1.0;
-	}
+    div#reader-mode-selector button:hover,
+    div#reader-mode-selector button.selected {
+        opacity: 0.9;
+    }
+    div#reader-mode-selector button.select-mode-on:hover,
+    div#reader-mode-selector button.select-mode-on.selected {
+        opacity: 0.75;
+    }
+    div#reader-mode-selector button.select-mode-off:hover,
+    div#reader-mode-selector button.select-mode-off.selected {
+        opacity: 1.0;
+    }
 }
 
-/*	Masked links key toggle info alert panel.
+/*  Masked links key toggle info alert panel.
  */
 div#masked-links-key-toggle-info-alert img {
     filter: drop-shadow(0 0 3px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color));
@@ -559,16 +564,16 @@ a[data-link-icon-type*='svg']::after {
     filter: invert(1);
 }
 
-/*	Block buttons must be inverted.
+/*  Block buttons must be inverted.
  */
 .mjpage__block .block-button-bar button img,
 .mjpage__block .block-button-bar button img:hover {
-	filter: invert(1);
+    filter: invert(1);
 }
 
-/*	Footnote back-to-citation link icons.
+/*  Footnote back-to-citation link icons.
  */
 .footnotes .footnote-back img,
 .footnotes .footnote-back img:hover {
-	filter: invert(1);
+    filter: invert(1);
 }
