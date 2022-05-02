@@ -550,11 +550,11 @@ hr::after,
 /* DIRECTORY INDEXES & LINK BIBLIOGRAPHIES */
 /*******************************************/
 
-/*	Italicize link tags in popups/indexes similar to the page metadata block’s
-	tags, for consistency.
+/*  Italicize link tags in popups/indexes similar to the page metadata block’s
+    tags, for consistency.
  */
 .link-tags {
-	font-style: italic;
+    font-style: italic;
 }
 
 blockquote .TOC {
@@ -592,14 +592,14 @@ blockquote .TOC a:hover::after {
 /***********/
 /* NUMBERS */
 /***********/
-/*  ‘Tabular figures’ to make numbers line up in tables or other 
-	monospace/code like contexts:
+/*  ‘Tabular figures’ to make numbers line up in tables or other
+    monospace/code like contexts:
 
     https://practicaltypography.com/alternate-figures.html#tabular-and-proportional-figures
-	https://helpx.adobe.com/fonts/using/open-type-syntax.html#tnum
+    https://helpx.adobe.com/fonts/using/open-type-syntax.html#tnum
  */
-/*	Skip old-style figures in elements with underlining, to reduce the need to 
-	cross the underline with skip-ink
+/*  Skip old-style figures in elements with underlining, to reduce the need to
+    cross the underline with skip-ink
  */
 table, code, pre, a, h1, h2, h3, h4, h5, h6 {
     font-variant-numeric: tabular-nums;
@@ -879,7 +879,7 @@ img::before {
 /* BLOCKQUOTES */
 /***************/
 
-/*	Main gray background is implemented in initial.css to avoid ‘flash’ on load. 
+/*  Main gray background is implemented in initial.css to avoid ‘flash’ on load.
  */
 
 blockquote {
@@ -1103,17 +1103,17 @@ a.footnote-ref {
     margin: 1em 0 0 0;
 }
 
-/*	On directory indexes, titles may include ‘19th’ century, which with the 
-	default size & padding makes the ‘ TH ’ really stand out. e.g. 
-	
-	https://www.gwern.net/docs/sociology/index#johow-et-al-2019-section ‘“HIGH CONSANGUINITY PROMOTES INTERGENERATIONAL WEALTH CONCENTRATION IN SOCIOECONOMICALLY PRIVILEGED KRUMMHÖRN FAMILIES OF THE 18TH AND 19TH CENTURIES”, JOHOW ET AL 2019’
+/*  On directory indexes, titles may include ‘19th’ century, which with the
+    default size & padding makes the ‘ TH ’ really stand out. e.g.
+
+    https://www.gwern.net/docs/sociology/index#johow-et-al-2019-section ‘“HIGH CONSANGUINITY PROMOTES INTERGENERATIONAL WEALTH CONCENTRATION IN SOCIOECONOMICALLY PRIVILEGED KRUMMHÖRN FAMILIES OF THE 18TH AND 19TH CENTURIES”, JOHOW ET AL 2019’
  */
 h1 sub, h1 sup, h2 sub, h2 sup {
-	font-size: 0.6em;
+    font-size: 0.6em;
 }
-.markdownBody h2 a:link > sub, 
+.markdownBody h2 a:link > sub,
 .markdownBody h2 a:link > sup {
-	padding-left: 0em; 
+    padding-left: 0em;
 }
 
 /*=------------------------=*/
@@ -1991,7 +1991,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
    CSS standard: https://www.w3.org/TR/css-text-3/#propdef-hanging-punctuation
    Supported only in Safari https://caniuse.com/css-hanging-punctuation https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation#browser_compatibility but that has 18% market share, which is not nothing. */
 p {
-	hanging-punctuation: first last;
+    hanging-punctuation: first last;
 }
 
 /*  LaTeX/TeX: Format the logotypes correctly (a higher up, e lower)
@@ -3087,15 +3087,15 @@ body.index-directory #footer {
     display: none;
 }
 
-.popframe #footnotes > hr:first-child, 
+.popframe #footnotes > hr:first-child,
 .popframe #footnotes > hr:first-child + a.section-self-link {
-	display: none;
+    display: none;
 }
 
 .popframe #footnotes li > blockquote:nth-last-child(2),
 .popframe #footnotes li > pre:nth-last-child(2),
 .popframe #footnotes li > .sourceCode:nth-last-child(2) {
-	margin-bottom: 2em;
+    margin-bottom: 2em;
 }
 
 .popframe .footnotes .footnote-back {
@@ -3256,7 +3256,7 @@ body.index-directory #footer {
     font-style: italic;
 }
 .wikipedia-entry .chemf {
-	word-break: break-all;
+    word-break: break-all;
 }
 
 /*  Special case for inline math in Wikipedia pop-frames.
@@ -3285,9 +3285,9 @@ body.index-directory #footer {
 }
 
 /* WP wraps references entirely in <cite> elements; <cite> is styled by browsers (Chrome/FF) by default in italics. No one wants their entire reference in italics, so WP resets the font to the default style (whatever that is), and styles italics bits (like book titles) manually. We need to replicate that, or else references sections in our WP popups will be entirely italics! */
-.wikipedia-entry cite, 
+.wikipedia-entry cite,
 .wikipedia-entry dfn {
-	font-style: inherit; 
+    font-style: inherit;
 }
 
 /*┌──────────────────────┐*/
@@ -4016,15 +4016,15 @@ body.index-directory #footer {
 /*│ Tag popups. │*/
 /*└─────────────┘*/
 /* on tag/directory index popups, we want to hide the initial '# Links' <h1> because it takes up way too much space and adds nothing. */
-.popup h1.display-pop-not, 
+.popup h1.display-pop-not,
 .popin h1.display-pop-not {
-	display: none;
+    display: none;
 }
 
 /* We also want to squeeze the directory list because the default unordered-list padding of 2em bottom uses up too much of a popup. */
 .popup #directory-indexes ul {
-	margin-top: 0.5em; 
-	margin-bottom: 0.5em; 
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 /*=---------------=*/
@@ -4676,11 +4676,12 @@ section.highlight-fading::before {
 /*********************/
 /* SEQUENTIAL NAV UI */
 /*********************/
-/* Navigation bar for previous/next page links (horizontal divider based on: https://commons.wikimedia.org/wiki/File:Filet_arabesque.svg ) */
+/* Navigation bar for previous/next page links (horizontal divider based on: https://commons.wikimedia.org/wiki/File:Filet_arabesque.svg )
+   On mobile, instead of the arabesque #navigation, we insert a G footer; see `dark-mode-adjustments.css`. */
 
 @media only screen and (max-width: 649px) {
     #navigation {
-    	display: none; 
+        display: none;
     }
 }
 @media only screen and (min-width: 650px) {
@@ -5010,7 +5011,7 @@ section.highlight-fading::before {
 }
 
 .reader-mode-selector-inline {
-	--GW-mode-selector-background-color: var(--GW-link-underline-background-color);
+    --GW-mode-selector-background-color: var(--GW-link-underline-background-color);
 
     display: inline;
     margin: 0 -0.25em;
@@ -5032,7 +5033,7 @@ section.highlight-fading::before {
     display: flex;
 }
 .reader-mode-selector-inline button {
-	margin: 0 0 0 1.625em;
+    margin: 0 0 0 1.625em;
     display: inline-block;
 }
 
