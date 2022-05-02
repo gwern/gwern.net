@@ -117,7 +117,7 @@ else
     ## possible alternative implementation in hakyll: https://www.rohanjain.in/hakyll-sitemap/
     (echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
      ## very static files which rarely change: PDFs, images, site infrastructure:
-     find -L _site/docs/ _site/images/ _site/static/ -not -name "*.page" -type f | fgrep --invert-match -e 'docs/www/' -e 'metadata/' -e '.git' -e '404' | \
+     find -L _site/docs/ _site/images/ _site/static/ -not -name "*.page" -type f | fgrep --invert-match -e 'docs/www/' -e 'docs/link-bibliography' -e 'metadata/' -e '.git' -e '404' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/www\.gwern\.net\/\1<\/loc><changefreq>never<\/changefreq><\/url>/'
      ## Everything else changes once in a while:
@@ -169,6 +169,8 @@ else
                -e 's/class=\"\(.*\)id-not \?/class="\1/g' \
                -e 's/class=\"\(.*\)link-annotated-not \?/class="\1/g' \
                -e 's/class=\"\(.*\)link-live-not \?/class="\1/g' \
+               -e 's/ data-embedding[-Dd]istance="0.[0-9]\+"//' \
+               -e 's/ data-link[-Tt]ags="[a-z0-9 \/-]\+">/>/' \
     "$@"; }; export -f cleanClasses
     find ./ -path ./_site -prune -type f -o -name "*.page" | fgrep -v -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 cleanClasses || true
     find ./_site/metadata/ -type f -name "*.html" | sort | parallel --max-args=100 cleanClasses || true
@@ -364,6 +366,9 @@ else
 
     λ(){ fgrep -e '""' -- ./metadata/*.yaml | fgrep -v -e ' alt=""' -e 'controls=""'; }
     wrap λ "Doubled double-quotes in YAML, usually an error."
+
+    λ(){ fgrep -e "'''" -- ./metadata/custom.yaml ./metadata/partial.yaml; }
+    wrap λ "Triple quotes in YAML, should be curly quotes for readability/safety."
 
     λ(){ eg -v '^- - ' -- ./metadata/*.yaml | gf -e ' -- ' -e '---'; }
     wrap λ "Markdown hyphen problems in YAML metadata database"

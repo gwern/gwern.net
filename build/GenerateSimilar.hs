@@ -271,7 +271,7 @@ generateItem md (p2,distance) = case M.lookup p2 md of
                                   Just (_,_,_,_,_,"") -> []
                                   Just (t,_,_,_,tags,_) ->
                                     [Para
-                                      [Link ("", ["link-annotated", "backlink-not", "id-not"], [("embeddingDistance", T.pack $ take 7 $ show distance)] ++
-                                              if null tags then [] else [("linkTags", T.pack $ unwords tags) ]
+                                      [Link ("", ["link-annotated", "backlink-not", "id-not"], [("embedding-distance", T.pack $ take 7 $ show distance)] ++
+                                              if null tags then [] else [("link-tags", T.pack $ unwords tags) ]
                                             ) [RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
                                     ]
