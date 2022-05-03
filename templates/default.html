@@ -138,9 +138,18 @@
       </article>
     </main>
 
-    $partial("static/includes/inlined-foot.html")$
+    <!-- SSI: Versioned external CSS/JS assets -->
+    <!--#include virtual="/static/includes/inlined-foot.html" -->
 
-    $partial("static/includes/inlined-graphical-linkicon-styles.html")$
+    $if(index)$ <!-- Stuff we don’t need on /index gets conditionally loaded: --> $else$
+
+    <!-- SSI: More versioned external CSS/JS assets -->
+    <!--#include virtual="/static/includes/inlined-foot-extra.html" -->
+
+    $endif$
+
+    <!-- SSI: Inlined mappings of SVG linkicon identifiers to SVG files -->
+    <!--#include virtual="/static/includes/inlined-graphical-linkicon-styles.html" -->
 
     <script async fetchpriority="low" id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" onload="GW.googleAnalyticsLoaded = true;"></script>
     <script>

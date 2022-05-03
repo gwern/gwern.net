@@ -25,6 +25,7 @@ $static_root = __DIR__ . "/..";
 
 $files = [
 	"inlined-foot",
+	"inlined-foot-extra",
 	"inlined-fonts"
 ];
 
