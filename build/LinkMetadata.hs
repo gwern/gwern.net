@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-01 12:27:07 gwern"
+When:  Time-stamp: "2022-05-02 10:48:33 gwern"
 License: CC-0
 -}
 
@@ -927,7 +927,8 @@ processArxivAbstract a = let cleaned = runPure $ do
 -- Is an annotation (HTML or Markdown) already If the input has more than one <p>, or if there is one or more double-newlines, that means this input is already multiple-paragraphs
 -- and we will skip trying to break it up further.
 paragraphized :: String -> Bool
-paragraphized a = paragraphsMarkdown a || blockElements a || length (paragraphsHtml a) > 1
+paragraphized a = notElem a whitelist &&
+                  paragraphsMarkdown a || blockElements a || length (paragraphsHtml a) > 1
  where
    -- double newlines are only in Markdown strings, and split paragraphs:
    paragraphsMarkdown :: String -> Bool
@@ -938,6 +939,8 @@ paragraphized a = paragraphsMarkdown a || blockElements a || length (paragraphsH
    -- annotations are wrapped in a '<p>...</p>' pair, unless they start with another block element; if there are two or more '<p>', then, there are at least two paragraphs (because it must be '<p>...</p> ... <p>...</p>') and it counts as being paragraphized.
    paragraphsHtml :: String -> [(T.Text,T.Text)]
    paragraphsHtml b = T.breakOnAll "<p>" (T.pack b)
+   whitelist :: [String]
+   whitelist = ["/docs/cs/1980-rytter.pdf"]
 
 -- If a String (which is not HTML!) is a single long paragraph (has no double-linebreaks), call out to paragraphizer.py, which will use GPT-3 to try to break it up into multiple more-readable paragraphs.
 -- This is quite tricky to use: it wants non-HTML plain text (any HTML will break GPT-3), but everything else wants HTML

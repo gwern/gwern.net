@@ -364,7 +364,7 @@ whiteList = M.fromList [
   , ( "http://perfdynamics.blogspot.com/2013/09/laplace-bayesianista-and-mass-of-saturn.html"
     , [ "Laplace the Bayesianista and the Mass of Saturn" ]
     )
-  , ( "http://rsta.royalsocietypublishing.org/content/369/1956/4913.full.pdf"
+  , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3270388/"
     , [ "The time resolution of the St Petersburg paradox" ]
     )
   , ( "https://www.avmf.org/clientuploads/documents/News%20Articles/Cat%20Health%20Network%20Feline%20SNP%20Chip%20Studies%20-%20Final%20Accomplishments%20MAFFINAL%2005-23-13.pdf"

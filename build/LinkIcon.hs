@@ -1000,7 +1000,7 @@ linkIconTestUnitsText =
          , ("https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3474085.3475293&file=MM21-fp0702.mp4.mp4", "acm", "text,tri,sans")
          , ("https://www.research.va.gov/", "VA", "text,sans")
          , ("https://link.springer.com/article/10.3758/s13423-021-01927-8", "springerlink", "svg")
-         , ("https://www.cs.utexas.edu/users/EWD/transcriptions/EWD03xx/EWD340.html", "EWD", "text,tri,sans")
+         , ("https://www.cs.utexas.edu/~EWD/transcriptions/EWD03xx/EWD340.html", "EWD", "text,tri,sans")
         ]
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
