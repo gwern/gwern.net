@@ -48,8 +48,8 @@ else
     # lower priority of everything we run (some of it is expensive):
     renice -n 15 "$$" &>/dev/null
 
-    ## Parallelization:
-    N="$(if [ ${#} == 0 ]; then echo 25; else echo "$1"; fi)"
+    ## Parallelization: WARNING: post-2022-03 Hakyll uses parallelism which catastrophically slows down at >= # of physical cores; see <https://groups.google.com/g/hakyll/c/5_evK9wCb7M/m/3oQYlX9PAAAJ>
+    N="$(if [ ${#} == 0 ]; then echo 24; else echo "$1"; fi)"
 
     (cd ~/wiki/ && git status || true) &
     bold "Pulling infrastructure updates…"
@@ -83,7 +83,7 @@ else
     # like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of
     # docs, so we'll blacklist those:
     bold "Building directory indexes…"
-    ./static/build/generateDirectory +RTS -N"$N" -RTS \
+    ./static/build/generateDirectory +RTS -N"$N" -qg1 -RTS \
                 $(find docs/ fiction/ haskell/ newsletter/ nootropics/ notes/ reviews/ zeo/ -type d \
                       | sort | fgrep -v -e 'docs/www' -e 'docs/rotten.com' -e 'docs/genetics/selection/www.mountimprobable.com' \
                                         -e 'docs/biology/2000-iapac-norvir' -e 'docs/gwern.net-gitstats' -e 'docs/rl/armstrong-controlproblem' \

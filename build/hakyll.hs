@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-27 12:13:39 gwern"
+When: Time-stamp: "2022-05-03 15:27:12 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -41,7 +41,6 @@ import Data.IORef (newIORef, IORef)
 import Data.List (intercalate, isInfixOf, isSuffixOf, isPrefixOf, nubBy, sort)
 import qualified Data.Map.Strict as M (lookup)
 import Data.Maybe (isNothing)
-import Data.Monoid ((<>))
 import Network.HTTP (urlDecode)
 import System.Directory (doesFileExist)
 import System.FilePath (takeExtension)
@@ -162,8 +161,7 @@ main = hakyll $ do
                                      "**.yaml",
                                      "metadata/**",
                                      "static/build/.htaccess",
-                                     "atom.xml", -- copy stub of deprecated RSS feed
-                                     "index"]
+                                     "atom.xml"] -- copy stub of deprecated RSS feed
 
              match "static/templates/*.html" $ compile templateCompiler
              match "static/includes/inlined-head-escaped.html"  $ compile templateCompiler

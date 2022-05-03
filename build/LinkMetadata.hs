@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-02 10:48:33 gwern"
+When:  Time-stamp: "2022-05-03 09:08:22 gwern"
 License: CC-0
 -}
 
@@ -30,7 +30,7 @@ import Data.FileStore.Utils (runShellCommand)
 import Data.Function (on)
 import Data.List (intercalate, intersect, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
 import Data.List.Utils (replace, split, uniq)
-import Data.Maybe (Maybe, fromJust, fromMaybe)
+import Data.Maybe (fromJust, fromMaybe)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
 import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) -- NOTE: from 'yaml' package, *not* 'HsYaml'
 import GHC.Generics (Generic)
