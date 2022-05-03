@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-05-03 15:27:12 gwern"
+When: Time-stamp: "2022-05-03 16:56:31 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -164,8 +164,6 @@ main = hakyll $ do
                                      "atom.xml"] -- copy stub of deprecated RSS feed
 
              match "static/templates/*.html" $ compile templateCompiler
-             match "static/includes/inlined-head-escaped.html"  $ compile templateCompiler
-             match "static/includes/inlined-fonts.html"  $ compile templateCompiler
              match "static/includes/inlined-foot.html"  $ compile templateCompiler
              match "static/includes/inlined-graphical-linkicon-styles.html"  $ compile templateCompiler
 

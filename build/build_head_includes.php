@@ -2,17 +2,17 @@
 
 /*
  Instructions:
- 
+
  	php build_head_includes.php
- 
+
  In <head> of template or page:
- 
+
  	<!--#include virtual="/static/includes/inlined-head.html"-->
 
  (Pages must be .shtml (not .html) for this to work.)
- 
+
  In .htaccess (if using Apache):
- 
+
 	Options +Includes
 	AddType text/html .shtml
 	AddOutputFilter INCLUDES .shtml
@@ -54,7 +54,7 @@ foreach ($includes as $include) {
 		default:
 			break;
 	}
-	
+
 	$outfile .= "<{$type}" . ($attributes ? " {$attributes}" : "") . ">\n";
 	$outfile .= file_get_contents($dir_prefix . $file_name);
 	$outfile .= "</{$type}>\n";
@@ -63,9 +63,5 @@ foreach ($includes as $include) {
 $includes_dir = __DIR__ . "/../includes";
 
 file_put_contents("{$includes_dir}/inlined-head.html", $outfile);
-
-$outfile = str_replace('$', '$$', $outfile);
-
-file_put_contents("{$includes_dir}/inlined-head-escaped.html", $outfile);
 
 ?>

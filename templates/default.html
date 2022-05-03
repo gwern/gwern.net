@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8">
 
-    <!-- CSS+JS inline for speed -->
-    $partial("static/includes/inlined-head-escaped.html")$
+    <!-- SSI: CSS+JS inline for speed -->
+    <!--#include virtual="/static/includes/inlined-head.html" -->
 
-    <!-- fetch the title & body fonts immediately to avoid re-rendering -->
-    <!-- also inline minimal set of font CSS needed for initial screen, for speed -->
-    $partial("static/includes/inlined-fonts.html")$
+    <!-- SSI: fetch the title & body fonts immediately to avoid re-rendering -->
+    <!-- SSI: also inline minimal set of font CSS needed for initial screen, for speed -->
+    <!--#include virtual="/static/includes/inlined-fonts.html" -->
 
     $if(index)$
     <!-- Google Webmaster requires this tag, but only on the index/homepage -->
