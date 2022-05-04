@@ -197,6 +197,10 @@ Extracts = { ...Extracts, ...{
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
     titleForPopFrame_ANNOTATION: (popFrame) => {
+        GWLog("Extracts.titleForPopFrame_ANNOTATION", "extracts-annotations.js", 2);
+
+		return "";
+
         let target = popFrame.spawningTarget;
 
         let popFrameTitleText = Extracts.popFrameHasLoaded(popFrame)
@@ -259,6 +263,8 @@ Extracts = { ...Extracts, ...{
 
 	//	Called by: extracts.js (as `preparePopup_${targetTypeName}`)
 	preparePopup_ANNOTATION: (popup) => {
+        GWLog("Extracts.preparePopup_ANNOTATION", "extracts-annotations.js", 2);
+
         let target = popup.spawningTarget;
 
         /*  Do not spawn annotation popup if the annotation is already visible
@@ -280,6 +286,10 @@ Extracts = { ...Extracts, ...{
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_ANNOTATION: (popFrame) => {
+        GWLog("Extracts.rewritePopFrameContent_ANNOTATION", "extracts-annotations.js", 2);
+
+		return;
+
         let target = popFrame.spawningTarget;
 
         //  Mark Wikipedia entries.
