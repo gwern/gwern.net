@@ -1028,10 +1028,8 @@ Extracts = {
 
 				//	Add the page metadata block.
                 let pageMetadata = page.querySelector("#page-metadata");
-                if (pageMetadata) {
-                	pageMetadata.classList.remove("markdownBody");
+                if (pageMetadata)
                     pageContent.insertBefore(pageMetadata, pageContent.firstElementChild);
-                }
 
 				//	Discard extraneous DOM structure.
 				page.replaceChildren(...pageContent.children);
@@ -1116,9 +1114,8 @@ Extracts = {
         popFrame.classList.remove("has-annotation", "has-content", "link-self",
             "link-local", "spawns-popup", "spawns-popin", "uri");
 
-        //  Add ‘markdownBody’ class, and others.
-        popFrame.shadowBody.classList.add("markdownBody");
-        popFrame.shadowBody.classList.add(...popFrame.classList);
+        //  Add ‘markdownBody’ class.
+        popFrame.contentView.classList.add("markdownBody");
 
         //  Attempt to fill the popup.
         if (Extracts.fillPopFrame(popFrame) == false)
