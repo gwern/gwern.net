@@ -729,8 +729,10 @@ Extracts = {
         /*  Designate popups spawned from section links in the the TOC (for
             special styling).
          */
-        if (Extracts.isTOCLink(target))
+        if (Extracts.isTOCLink(target)) {
             popup.classList.add("toc-section");
+            popup.body.classList.add("toc-section");
+        }
 
         return popup;
     },

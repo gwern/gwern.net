@@ -2991,20 +2991,20 @@ body.index-directory #footer {
     overflow: unset;
 }
 
-.popframe:not(.zoomed) p + p,
-.popframe:not(.zoomed) p + figure[class^='float-'] + p,
-.popframe:not(.zoomed) div[class^='drop-cap-'] + p,
-.popframe:not(.zoomed) .abstract.scrape-abstract-not + p, {
+.popframe-body p + p,
+.popframe-body p + figure[class^='float-'] + p,
+.popframe-body div[class^='drop-cap-'] + p,
+.popframe-body .abstract.scrape-abstract-not + p, {
     text-indent: 1.75em;
 }
 
-.popframe:not(.zoomed) p + ul,
-.popframe:not(.zoomed) p + ol {
+.popframe-body p + ul,
+.popframe-body p + ol {
     margin-top: 0.2em;
     margin-bottom: 0.2em;
 }
 
-.popframe:not(.zoomed) li {
+.popframe-body li {
     text-align: left;
 }
 
@@ -3026,7 +3026,7 @@ body.index-directory #footer {
     text-shadow: none;
 }
 
-.popframe:not(.zoomed) blockquote {
+.popframe-body blockquote {
     margin: 1em 0;
 }
 
@@ -3172,59 +3172,59 @@ body.index-directory #footer {
 
 /*  Wikipedia entries.
  */
-.wikipedia-entry .table-wrapper {
+.popframe-body.wikipedia-entry .table-wrapper {
     margin: 1.5em 0 1.5em 0;
     clear: both;
 }
-.wikipedia-entry .infobox {
+.popframe-body.wikipedia-entry .infobox {
     font-size: 0.9em;
 }
-.wikipedia-entry .infobox tbody tr:hover {
+.popframe-body.wikipedia-entry .infobox tbody tr:hover {
     outline: none;
 }
-.wikipedia-entry .infobox th[colspan="2"],
-.wikipedia-entry .infobox td[colspan="2"],
-.wikipedia-entry .infobox th.sidebar-title,
-.wikipedia-entry .infobox th.sidebar-heading {
+.popframe-body.wikipedia-entry .infobox th[colspan="2"],
+.popframe-body.wikipedia-entry .infobox td[colspan="2"],
+.popframe-body.wikipedia-entry .infobox th.sidebar-title,
+.popframe-body.wikipedia-entry .infobox th.sidebar-heading {
     text-align: center;
 }
-.wikipedia-entry .infobox th {
+.popframe-body.wikipedia-entry .infobox th {
     border-top: 1px solid var(--GW-table-row-horizontal-border-color);
 }
-.wikipedia-entry .infobox tr:first-of-type th {
+.popframe-body.wikipedia-entry .infobox tr:first-of-type th {
     font-size: 1.25em;
 }
-.wikipedia-entry .infobox td:first-child {
+.popframe-body.wikipedia-entry .infobox td:first-child {
     font-weight: bold;
 }
-.wikipedia-entry .infobox td ul {
+.popframe-body.wikipedia-entry .infobox td ul {
     margin: 0.25em 0;
     padding: 0 0 0 1.5em;
 }
-.wikipedia-entry > figure.float-right {
+.popframe-body.wikipedia-entry > figure.float-right {
     margin: 0.125em 0 0.75em 1.5em;
 }
-.wikipedia-entry #Timeline-row {
+.popframe-body.wikipedia-entry #Timeline-row {
     display: flex;
     width: -moz-fit-content;
     width: fit-content;
     margin: 0.25em auto;
 }
-.wikipedia-entry th br ~ * {
+.popframe-body.wikipedia-entry th br ~ * {
     font-weight: normal;
     font-size: calc((1 / 1.25) * 1em);
 }
-.wikipedia-entry .hatnote {
+.popframe-body.wikipedia-entry .hatnote {
     margin: 0 0 0.75em 0;
     font-style: italic;
 }
-.wikipedia-entry .chemf {
+.popframe-body.wikipedia-entry .chemf {
     word-break: break-all;
 }
 
 /*  Special case for inline math in Wikipedia pop-frames.
     */
-.wikipedia-entry .mwe-math-element {
+.popframe-body.wikipedia-entry .mwe-math-element {
     display: inline-block;
     height: 1.25em;
     line-height: 1;
@@ -3233,30 +3233,29 @@ body.index-directory #footer {
     padding: 0;
     text-indent: 0;
 }
-.wikipedia-entry .mwe-math-element img {
+.popframe-body.wikipedia-entry .mwe-math-element img {
     display: inline-block;
     height: 100%;
 }
 /*  Ditto, but block math.
  */
-.wikipedia-entry dl .mwe-math-element {
+.popframe-body.wikipedia-entry dl .mwe-math-element {
     display: block;
     height: unset;
 }
-.wikipedia-entry dl .mwe-math-element img {
+.popframe-body.wikipedia-entry dl .mwe-math-element img {
     display: block;
 }
 
 /* WP wraps references entirely in <cite> elements; <cite> is styled by browsers (Chrome/FF) by default in italics. No one wants their entire reference in italics, so WP resets the font to the default style (whatever that is), and styles italics bits (like book titles) manually. We need to replicate that, or else references sections in our WP popups will be entirely italics! */
-.wikipedia-entry cite,
-.wikipedia-entry dfn {
+.popframe-body.wikipedia-entry cite,
+.popframe-body.wikipedia-entry dfn {
     font-style: inherit;
 }
 
 /*┌──────────────────────┐*/
 /*│ Footnote pop-frames. │*/
 /*└──────────────────────┘*/
-/* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
 
 .popframe-body.footnote > blockquote:last-child {
     margin-bottom: calc(1em/9);
@@ -3416,6 +3415,24 @@ body.index-directory #footer {
     border-bottom: 1px dotted currentColor;
     width: calc(100% + 2em);
     margin: 1em -1em 1.125em -1em;
+}
+
+/*┌─────────────────┐*/
+/*│ Tag pop-frames. │*/
+/*└─────────────────┘*/
+/*	On tag/directory index pop-frames, we want to hide the initial ‘# Links’ 
+	<h1> because it takes up way too much space and adds nothing.
+ */
+.popframe-body h1.display-pop-not {
+    display: none;
+}
+
+/*	We also want to squeeze the directory list because the default 
+	unordered-list padding of 2em bottom uses up too much of a pop-frame.
+ */
+.popframe-body #directory-indexes ul {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 /**********/
@@ -3877,8 +3894,8 @@ body.index-directory #footer {
     height: var(--GW-popups-popup-max-height);
 }
 
-.popup.object iframe,
-.popup.object object {
+.popup-body.object iframe,
+.popup-body.object object {
     width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
     height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
 }
@@ -3894,15 +3911,15 @@ body.index-directory #footer {
     min-height: var(--GW-popups-image-popup-min-size);
 }
 
-.popup.image img {
+.popup-body.image img {
     margin: auto;
     max-width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
     max-height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
     object-fit: contain;
     background-color: var(--GW-popups-popup-border-color);
 }
-.popup.image img.invertible,
-.popup.image img.invertible-auto {
+.popup-body.image img.invertible,
+.popup-body.image img.invertible-auto {
     background-color: var(--GW-body-background-color);
 }
 
@@ -3935,7 +3952,7 @@ body.index-directory #footer {
     width: unset;
     height: unset;
 }
-.popup.video iframe {
+.popup-body.video iframe {
     width: var(--GW-popups-video-iframe-width);
     height: var(--GW-popups-video-iframe-height);
 }
@@ -3959,7 +3976,7 @@ body.index-directory #footer {
 
 /*  Table of contents popups.
     */
-.popup.local-transclude.toc-section .popframe-scroll-view {
+.popup-body.local-transclude.toc-section .popframe-scroll-view {
     max-height: calc(100vh - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
 }
 
@@ -3970,37 +3987,15 @@ body.index-directory #footer {
     height: var(--GW-popups-popup-max-height);
 }
 
-/*┌─────────────┐*/
-/*│ Tag popups. │*/
-/*└─────────────┘*/
-/*	On tag/directory index popups, we want to hide the initial ‘# Links’ <h1>
-	because it takes up way too much space and adds nothing.
- */
-.popframe-body h1.display-pop-not {
-    display: none;
-}
-
-/*	We also want to squeeze the directory list because the default 
-	unordered-list padding of 2em bottom uses up too much of a popup.
- */
-.popframe-body #directory-indexes ul {
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-}
-
 /*=---------------=*/
 /*= POPUP CONTENT =*/
 /*=---------------=*/
 /*  Adjustments for styles in popups.
     */
 
-.popup:not(.pinned) .popframe-body .image-wrapper::after {
-    display: none;
-}
-
 /*  Page thumbnails in local page transclude popups.
  */
-.popframe-body .abstract figure {
+.popup-body .abstract figure {
     float: right;
     max-width: calc(50% - 1em);
     margin: 0.5em 0 1em 1em;
@@ -4447,9 +4442,9 @@ body.index-directory #footer {
     animation: fa-spin 2s infinite linear;
 }
 
-.popin.image.loading img,
-.popin.image.loading-failed img,
-.popin.object.loading-failed iframe {
+.popin-body.image.loading img,
+.popin-body.image.loading-failed img,
+.popin-body.object.loading-failed iframe {
     visibility: hidden;
 }
 
@@ -4549,8 +4544,8 @@ body.index-directory #footer {
 /*│ Object popins. │*/
 /*└────────────────┘*/
 
-.popin.object iframe,
-.popin.object object {
+.popin-body.object iframe,
+.popin-body.object object {
     width: 100%;
     height: calc(var(--GW-popins-popin-max-height) - 2 * var(--GW-popins-popin-border-width) - var(--popin-title-bar-height));
 }
@@ -4559,7 +4554,7 @@ body.index-directory #footer {
 /*│ Image popins. │*/
 /*└───────────────┘*/
 
-.popin.image img {
+.popin-body.image img {
     margin: auto;
     max-height: calc(var(--GW-popins-popin-max-height) - 2 * var(--GW-popins-popin-border-width) - var(--popin-title-bar-height));
 }
@@ -4568,11 +4563,11 @@ body.index-directory #footer {
 /*│ Video popins. │*/
 /*└───────────────┘*/
 
-.popin.video-popin {
+.popin.video {
     padding: 0;
 }
 
-.popin.video-popin iframe {
+.popin-body.video iframe {
     display: block;
     width: 100%;
 }
@@ -4589,7 +4584,7 @@ body.index-directory #footer {
 /*│ Local transclude popins. │*/
 /*└──────────────────────────┘*/
 
-.popin #page-metadata::after {
+.popin-body #page-metadata::after {
     width: calc(100% + 1em);
     margin: 1em -1em 1.125em 0;
 }
@@ -4599,18 +4594,6 @@ body.index-directory #footer {
 /*=---------------=*/
 /*  Adjustments for styles in popins.
     */
-
-/*┌──────────────┐*/
-/*│ Style reset. │*/
-/*└──────────────┘*/
-
-.popin {
-    white-space: normal;
-    font-weight: normal;
-    font-style: normal;
-    font-size: var(--GW-body-text-font-size);
-    text-align: unset;
-}
 
 /***************/
 /* ANNOTATIONS */
