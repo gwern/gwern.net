@@ -3030,23 +3030,23 @@ body.index-directory #footer {
     margin: 1em 0;
 }
 
-.popframe .popframe-content-view > figure:only-child {
+.popframe.markdownBody > figure:only-child {
     margin: 0;
     max-width: unset;
 }
 
-.popframe.local-transclude .popframe-content-view > blockquote:first-child,
-.popframe.local-transclude .popframe-content-view > .table-wrapper:first-child,
-.popframe.local-transclude .popframe-content-view > div.sourceCode:first-child pre {
+.popframe.local-transclude.markdownBody > blockquote:first-child,
+.popframe.local-transclude.markdownBody > .table-wrapper:first-child,
+.popframe.local-transclude.markdownBody > div.sourceCode:first-child pre {
     margin-top: calc(3em/9);
 }
-.popframe.local-transclude .popframe-content-view > blockquote:last-child,
-.popframe.local-transclude .popframe-content-view > .table-wrapper:last-child,
-.popframe.local-transclude .popframe-content-view > div.sourceCode:last-child pre {
+.popframe.local-transclude.markdownBody > blockquote:last-child,
+.popframe.local-transclude.markdownBody > .table-wrapper:last-child,
+.popframe.local-transclude.markdownBody > div.sourceCode:last-child pre {
     margin-bottom: calc(1em/9);
 }
 
-.popframe .popframe-content-view > hr:first-child {
+.popframe.markdownBody > hr:first-child {
     display: none;
 }
 
@@ -3090,7 +3090,7 @@ body.index-directory #footer {
     font-size: 6.625em;
 }
 
-.popframe-content-view > [class^='drop-cap-']:last-child {
+.popframe.markdownBody > [class^='drop-cap-']:last-child {
     overflow: hidden;
 }
 
@@ -3157,7 +3157,7 @@ body.index-directory #footer {
 
 /*  Images (such as the ones in Wikipedia pop-frames).
     */
-.popframe.annotation .popframe-content-view > figure.float-right {
+.popframe.annotation.markdownBody > figure.float-right {
     margin: 0.125em 0 0.125em 1.5em;
     max-width: calc(50% - 1.5em);
     float: right;
@@ -3201,7 +3201,7 @@ body.index-directory #footer {
     margin: 0.25em 0;
     padding: 0 0 0 1.5em;
 }
-.popframe.annotation .popframe-content-view.wikipedia-entry > figure.float-right {
+.wikipedia-entry > figure.float-right {
     margin: 0.125em 0 0.75em 1.5em;
 }
 .wikipedia-entry #Timeline-row {
@@ -3258,7 +3258,7 @@ body.index-directory #footer {
 /*└──────────────────────┘*/
 /* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
 
-.popframe.footnote .popframe-content-view > blockquote:last-child {
+.popframe.footnote.markdownBody > blockquote:last-child {
     margin-bottom: calc(1em/9);
 }
 
@@ -3273,7 +3273,7 @@ body.index-directory #footer {
 .popframe.local-code-file .popframe-content-view {
     padding: 0;
 }
-.popframe.local-code-file .popframe-content-view div.sourceCode {
+.popframe.local-code-file.markdownBody div.sourceCode {
     height: 100%;
 }
 .popframe.local-code-file pre {
@@ -3395,12 +3395,12 @@ body.index-directory #footer {
     overflow-x: hidden;
 }
 
-.popframe .popframe-content-view > h1:first-child,
-.popframe .popframe-content-view > h2:first-child,
-.popframe .popframe-content-view > h3:first-child,
-.popframe .popframe-content-view > h4:first-child,
-.popframe .popframe-content-view > h5:first-child,
-.popframe .popframe-content-view > h6:first-child {
+.popframe.markdownBody > h1:first-child,
+.popframe.markdownBody > h2:first-child,
+.popframe.markdownBody > h3:first-child,
+.popframe.markdownBody > h4:first-child,
+.popframe.markdownBody > h5:first-child,
+.popframe.markdownBody > h6:first-child {
     margin-top: 0;
 }
 
@@ -3996,7 +3996,7 @@ body.index-directory #footer {
 /*  Adjustments for styles in popups.
     */
 
-.popup:not(.pinned) .popframe-content-view .image-wrapper::after {
+.popup:not(.pinned) .popframe.markdownBody .image-wrapper::after {
     display: none;
 }
 
@@ -4517,10 +4517,12 @@ body.index-directory #footer {
 /*└────────────────────┘*/
 
 @media only screen and (max-width: 649px) {
-    .popin .annotation-abstract figure:first-child {
+	/*	TODO: check this!
+	 */
+    .annotation-abstract figure:first-child {
         margin-top: 1.75em;
     }
-    .popin .annotation-abstract.wikipedia-entry figure:first-child {
+    .annotation-abstract.wikipedia-entry figure:first-child {
         margin-top: 1.5em;
     }
 }

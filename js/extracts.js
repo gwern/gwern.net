@@ -43,7 +43,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE"
             document:
-                The contentView of the local transclude pop-frame.
+                The documentElement of the local transclude pop-frame.
             location:
                 URL of the local page (including anchor, if any).
             flags:
@@ -100,7 +100,7 @@ Extracts = {
 
                 //  Do not allow pop-frames to spawn themselves.
                 //	TODO: verify!
-                let containingPopFrame = target.closest(".popframe");
+                let containingPopFrame = Extracts.popFrameProvider.containingPopFrame(target);
                 if (   containingPopFrame
                 	&& Extracts.targetsMatch(containingPopFrame.spawningTarget, target))
                     return false;
@@ -386,7 +386,7 @@ Extracts = {
     //  Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
     //  Called by: extracts-annotations.js
     qualifyLinksInPopFrame: (popFrame) => {
-        popFrame.querySelectorAll("a[href^='#']").forEach(anchorLink => {
+        popFrame.body.querySelectorAll("a[href^='#']").forEach(anchorLink => {
             anchorLink.pathname = popFrame.spawningTarget.pathname;
         });
     },
@@ -413,8 +413,10 @@ Extracts = {
         if (   targetTypeInfo
         	&& targetTypeInfo.popFrameFillFunctionName) {
             didFill = Extracts.popFrameProvider.setPopFrameContent(popFrame, Extracts[targetTypeInfo.popFrameFillFunctionName](target));
-            if (targetTypeInfo.popFrameClasses)
+            if (targetTypeInfo.popFrameClasses) {
                 popFrame.classList.add(...(targetTypeInfo.popFrameClasses.split(" ")));
+                popFrame.body.classList.add(...(targetTypeInfo.popFrameClasses.split(" ")));
+            }
         }
 
         if (didFill) {
@@ -506,12 +508,12 @@ Extracts = {
         if (Extracts.popFrameProvider == Popups) {
             let popupForTargetDocument = Popups.allSpawnedPopups().find(popup => (   popup.classList.contains("external-page-embed")
                                                                                   && popup.spawningTarget.pathname == target.pathname));
-            return popupForTargetDocument ? popupForTargetDocument.contentView : null;
+            return popupForTargetDocument ? popupForTargetDocument.body : null;
         } else if (Extracts.popFrameProvider == Popins) {
             let popinForTargetDocument = Popins.allSpawnedPopins().find(popin => (   popin.classList.contains("external-page-embed")
                                                                                   && popin.spawningTarget.pathname == target.pathname)
                                                                                   && Extracts.popFrameHasLoaded(popin));
-            return popinForTargetDocument ? popinForTargetDocument.contentView : null;
+            return popinForTargetDocument ? popinForTargetDocument.body : null;
         }
     },
 
@@ -534,7 +536,7 @@ Extracts = {
         popFrame.classList.toggle("loading", true);
 
         //  When loading ends (in success or failure)...
-        let objectOfSomeSort = popFrame.querySelector("iframe, object, img, video");
+        let objectOfSomeSort = popFrame.body.querySelector("iframe, object, img, video");
         if (objectOfSomeSort.tagName == "IFRAME") {
             //  Iframes do not fire ‘error’ on server error.
             objectOfSomeSort.onload = (event) => {
@@ -803,14 +805,14 @@ Extracts = {
         Extracts.qualifyLinksInPopFrame(target.popFrame);
 
         //  Rectify margin note style.
-        popFrame.querySelectorAll(".marginnote").forEach(marginNote => {
+        popFrame.body.querySelectorAll(".marginnote").forEach(marginNote => {
             marginNote.swapClasses([ "inline", "sidenote" ], 0);
         });
 
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
-            document: popFrame.contentView,
+            document: popFrame.documentElement,
             location: Extracts.locationForTarget(target),
             flags: 0
         });
@@ -829,7 +831,7 @@ Extracts = {
             requestAnimationFrame(() => {
             	let element = null;
                 if (   popFrame
-                	&& (element = popFrame.querySelector(selectorFromHash(target.hash))))
+                	&& (element = popFrame.body.querySelector(selectorFromHash(target.hash))))
                     Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
             });
         }
@@ -851,17 +853,17 @@ Extracts = {
 		if (!(next || prev))
 			return;
 
-		if (popFrame.contentView.querySelector(selectorFromHash(target.hash)) == null) {
+		if (popFrame.body.querySelector(selectorFromHash(target.hash)) == null) {
 			let sectionWrapper = document.createElement("SECTION");
 			sectionWrapper.id = popFrame.firstSection.id;
 			sectionWrapper.classList.add(...(popFrame.firstSection.classList));
-			sectionWrapper.replaceChildren(...(popFrame.contentView.children));
-			popFrame.contentView.appendChild(sectionWrapper);
+			sectionWrapper.replaceChildren(...(popFrame.body.children));
+			popFrame.body.appendChild(sectionWrapper);
 
 			//  Fire a contentDidLoad event.
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.loadAdjacentSections",
-				document: popFrame.contentView.firstElementChild,
+				document: popFrame.body.firstElementChild,
 				location: Extracts.locationForTarget(target),
 				flags: 0
 			});
@@ -869,12 +871,12 @@ Extracts = {
 
 		let prevSection = popFrame.firstSection.previousElementSibling;
 		if (prev && prevSection) {
-			popFrame.contentView.insertBefore(Extracts.newDocument(prevSection), popFrame.contentView.firstElementChild);
+			popFrame.body.insertBefore(Extracts.newDocument(prevSection), popFrame.body.firstElementChild);
 
 			//  Fire a contentDidLoad event.
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.loadAdjacentSections",
-				document: popFrame.contentView.firstElementChild,
+				document: popFrame.body.firstElementChild,
 				location: Extracts.locationForTarget(target),
 				flags: 0
 			});
@@ -884,12 +886,12 @@ Extracts = {
 
 		let nextSection = popFrame.lastSection.nextElementSibling;
 		if (next && nextSection) {
-			popFrame.contentView.insertBefore(Extracts.newDocument(nextSection), null);
+			popFrame.body.insertBefore(Extracts.newDocument(nextSection), null);
 
 			//  Fire a contentDidLoad event.
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.loadAdjacentSections",
-				document: popFrame.contentView.lastElementChild,
+				document: popFrame.body.lastElementChild,
 				location: Extracts.locationForTarget(target),
 				flags: 0
 			});
@@ -909,14 +911,14 @@ Extracts = {
         /*  Make non-popin-spawning anchorlinks scroll popin instead of opening
             normally.
          */
-        popin.querySelectorAll("a").forEach(link => {
+        popin.body.querySelectorAll("a").forEach(link => {
             if (   link.hostname == target.hostname
                 && link.pathname == target.pathname
                 && link.hash > ""
                 && link.classList.contains("no-popin")) {
                 link.onclick = () => { return false; };
                 link.addActivateEvent((event) => {
-                    let hashTarget = popin.querySelector(selectorFromHash(link.hash));
+                    let hashTarget = popin.body.querySelector(selectorFromHash(link.hash));
                     if (hashTarget) {
                         Popins.scrollElementIntoViewInPopFrame(hashTarget);
                         return false;
@@ -938,19 +940,19 @@ Extracts = {
 
 		//	Insert page thumbnail into page abstract.
 		if (Extracts.cachedPageThumbnailImageTags[target.pathname]) {
-			let pageAbstract = popup.querySelector("#page-metadata + .abstract blockquote");
+			let pageAbstract = popup.body.querySelector("#page-metadata + .abstract blockquote");
 			if (pageAbstract)
 				pageAbstract.insertAdjacentHTML("afterbegin", `<figure>${Extracts.cachedPageThumbnailImageTags[target.pathname]}</figure>`);
 		}
 
         //  Make anchorlinks scroll popup instead of opening normally.
-        popup.querySelectorAll("a").forEach(link => {
+        popup.body.querySelectorAll("a").forEach(link => {
             if (   link.hostname == target.hostname
                 && link.pathname == target.pathname
                 && link.hash > "") {
                 link.onclick = () => { return false; };
                 link.addActivateEvent((event) => {
-                    let hashTarget = popup.querySelector(selectorFromHash(link.hash));
+                    let hashTarget = popup.body.querySelector(selectorFromHash(link.hash));
                     if (hashTarget) {
                         Popups.scrollElementIntoViewInPopFrame(hashTarget);
                         return false;
@@ -1116,13 +1118,25 @@ Extracts = {
         popFrame.classList.remove("has-annotation", "has-content", "link-self",
             "link-local", "spawns-popup", "spawns-popin", "uri");
 
-        //  Add ‘markdownBody’ class, and others.
-        popFrame.shadowBody.classList.add("markdownBody");
-        popFrame.shadowBody.classList.add(...popFrame.classList);
-
         //  Attempt to fill the popup.
         if (Extracts.fillPopFrame(popFrame) == false)
             return null;
+
+        //  Add ‘markdownBody’ class.
+        popFrame.body.classList.add("markdownBody");
+
+		//	Inject styles.
+		[ "inlined-styles-colors", 
+		  "inlined-styles", 
+		  "inlined-dark-mode-styles", 
+		  "inlined-fonts", 
+		  "graphical-link-icons" ].forEach(styleBlockID => {
+			let styleBlock = document.getElementById(styleBlockID).cloneNode(true);
+			popFrame.documentElement.insertBefore(styleBlock, popFrame.body);
+		});
+		document.querySelectorAll("link[rel='stylesheet']").forEach(cssLink => {
+			popFrame.documentElement.insertBefore(cssLink.cloneNode(true), popFrame.body);
+		});
 
         return popFrame;
     },
@@ -1201,7 +1215,7 @@ Extracts = {
             specialRewriteFunction(popin);
 
         //  For object popins, scroll popin into view once object loads.
-        let objectOfSomeSort = popin.querySelector("iframe, object, img, video");
+        let objectOfSomeSort = popin.body.querySelector("iframe, object, img, video");
         if (objectOfSomeSort) {
             objectOfSomeSort.addEventListener("load", (event) => {
                 requestAnimationFrame(() => {
@@ -1317,7 +1331,7 @@ Extracts = {
             specialRewriteFunction(popup);
 
         //  Ensure no reflow due to figures.
-        popup.querySelectorAll("figure[class^='float-'] img[width]").forEach(img => {
+        popup.body.querySelectorAll("figure[class^='float-'] img[width]").forEach(img => {
             if (img.style.width <= "") {
                 img.style.width = img.getAttribute("width") + "px";
                 img.style.maxHeight = "unset";

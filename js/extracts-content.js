@@ -4,7 +4,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_CITATION"
             document:
-                The contentView of the citation pop-frame.
+                The documentElement of the citation pop-frame.
             location:
                 URL of (i.e., anchor-link to) the footnote (or sidenote; this
                 depends on whether the page in which the citation appears -
@@ -24,7 +24,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopupContent_CITATION_BACK_LINK"
             document:
-                The contentView of the citation back-link popup.
+                The documentElement of the citation back-link popup.
             location:
                 URL of (i.e., anchor-link to) the citation which references the
                 footnote/sidenote which spawned the popup. (If there are
@@ -44,7 +44,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK"
             document:
-                The contentView of the aux-links pop-frame.
+                The documentElement of the aux-links pop-frame.
             location:
                 URL of the aux-links source file.
             flags:
@@ -125,7 +125,7 @@ Extracts = { ...Extracts, ...{
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK",
-            document: popFrame.contentView,
+            document: popFrame.documentElement,
             location: Extracts.locationForTarget(target),
             flags: 0
         });
@@ -276,13 +276,13 @@ Extracts = { ...Extracts, ...{
         let target = popFrame.spawningTarget;
 
 		//	Remove back-link and self-link.
-		popFrame.querySelector(".footnote-self-link").remove();
-		popFrame.querySelector(".footnote-back").remove();
+		popFrame.body.querySelector(".footnote-self-link").remove();
+		popFrame.body.querySelector(".footnote-back").remove();
 
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_CITATION",
-            document: popFrame.contentView,
+            document: popFrame.documentElement,
             location: Extracts.locationForTarget(target),
             flags: 0
         });
@@ -349,11 +349,11 @@ Extracts = { ...Extracts, ...{
             inside the popup (to prevent confusion with the citation that
             the spawning link points to, which will be highlighted).
          */
-        popup.querySelectorAll(".footnote-ref.targeted").forEach(targetedCitation => {
+        popup.body.querySelectorAll(".footnote-ref.targeted").forEach(targetedCitation => {
             targetedCitation.classList.remove("targeted");
         });
         //  In the popup, the citation for which context is being shown.
-        let citationInPopup = popup.querySelector(decodeURIComponent(target.hash));
+        let citationInPopup = popFrame.body.querySelector(decodeURIComponent(target.hash));
         //  Highlight the citation.
         citationInPopup.classList.add("targeted");
         //  Scroll to the citation.
@@ -364,7 +364,7 @@ Extracts = { ...Extracts, ...{
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopupContent_CITATION_BACK_LINK",
-            document: popup.contentView,
+            document: popup.documentElement,
             location: Extracts.locationForTarget(target),
             flags: 0
         });
@@ -572,7 +572,7 @@ Extracts = { ...Extracts, ...{
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_IMAGE: (popFrame) => {
         //  Remove extraneous classes from images in image pop-frames.
-        popFrame.querySelector("img").classList.remove("has-annotation", "has-content", "link-self", "link-local");
+        popFrame.body.querySelector("img").classList.remove("has-annotation", "has-content", "link-self", "link-local");
 
         //  Loading spinner.
         Extracts.setLoadingSpinner(popFrame);
@@ -583,7 +583,7 @@ Extracts = { ...Extracts, ...{
         Extracts.rewritePopFrameContent_LOCAL_IMAGE(popin);
 
         //  Remove extraneous classes from images in image popins.
-        popin.querySelector("img").classList.remove("spawns-popin");
+        popin.body.querySelector("img").classList.remove("spawns-popin");
     },
 
     //  Called by: extracts.js (as `rewritePopinContent_${targetTypeName}`)
@@ -591,9 +591,9 @@ Extracts = { ...Extracts, ...{
         Extracts.rewritePopFrameContent_LOCAL_IMAGE(popup);
 
         //  Remove extraneous classes from images in image popups.
-        popup.querySelector("img").classList.remove("spawns-popup");
+        popup.body.querySelector("img").classList.remove("spawns-popup");
 
-        if (popup.querySelector("img[width][height]"))
+        if (popup.body.querySelector("img[width][height]"))
             popup.classList.add("dimensions-specified");
     },
 }};
@@ -653,7 +653,7 @@ Extracts = { ...Extracts, ...{
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_DOCUMENT: (popFrame) => {
         //  Set title of popup from page title.
-        let iframe = popFrame.querySelector("iframe");
+        let iframe = popFrame.body.querySelector("iframe");
         if (iframe) {
             iframe.addEventListener("load", (event) => {
                 popFrame.titleBar.querySelector(".popframe-title-link").innerHTML = iframe.contentDocument.title;
@@ -828,7 +828,7 @@ Extracts = { ...Extracts, ...{
                     if (event.target.getResponseHeader("content-type").startsWith("text/plain"))
                         doc.innerHTML = `<pre>${doc.innerHTML}</pre>`;
 
-                    target.popFrame.querySelector("iframe").srcdoc = doc.innerHTML;
+                    target.popFrame.body.querySelector("iframe").srcdoc = doc.innerHTML;
 
                     target.popFrame.classList.toggle("loading", false);
                 },
