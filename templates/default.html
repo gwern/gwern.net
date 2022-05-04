@@ -4,14 +4,14 @@
     <meta charset="utf-8">
 
     <!-- SSI: CSS+JS inline for speed -->
-    <!--#include virtual="/static/includes/inlined-head.html" -->
+    <!-- INLINED-HEAD-BEGIN --><!--#include virtual="/static/includes/inlined-head.html" --><!-- INLINED-HEAD-END -->
 
     <!-- SSI: fetch the title & body fonts immediately to avoid re-rendering -->
     <!-- SSI: also inline minimal set of font CSS needed for initial screen, for speed -->
-    <!--#include virtual="/static/includes/inlined-fonts.html" -->
+    <!-- INLINED-FONTS-BEGIN --><!--#include virtual="/static/includes/inlined-fonts.html" --><!-- INLINED-FONTS-END -->
 
     <!-- SSI: Inlined mappings of SVG linkicon identifiers to SVG files -->
-    <!--#include virtual="/static/includes/inlined-graphical-linkicon-styles.html" -->
+    <!-- INLINED-GRAPHICAL-LINKICON-STYLES-BEGIN --><!--#include virtual="/static/includes/inlined-graphical-linkicon-styles.html" --><!-- INLINED-GRAPHICAL-LINKICON-STYLES-END -->
 
     $if(index)$
     <!-- Google Webmaster requires this tag, but only on the index/homepage -->
@@ -142,12 +142,12 @@
     </main>
 
     <!-- SSI: Versioned external CSS/JS assets -->
-    <!--#include virtual="/static/includes/inlined-foot.html" -->
+    <!-- INLINED-FOOT-BEGIN --><!--#include virtual="/static/includes/inlined-foot.html" --><!-- INLINED-FOOT-END -->
 
     $if(index)$ <!-- Stuff we don’t need on /index gets conditionally loaded: --> $else$
 
     <!-- SSI: More versioned external CSS/JS assets -->
-    <!--#include virtual="/static/includes/inlined-foot-extra.html" -->
+    <!-- INLINED-FOOT-EXTRA-BEGIN --><!--#include virtual="/static/includes/inlined-foot-extra.html" --><!-- INLINED-FOOT-EXTRA-END -->
 
     $endif$
 
