@@ -10,6 +10,9 @@
     <!-- SSI: also inline minimal set of font CSS needed for initial screen, for speed -->
     <!--#include virtual="/static/includes/inlined-fonts.html" -->
 
+    <!-- SSI: Inlined mappings of SVG linkicon identifiers to SVG files -->
+    <!--#include virtual="/static/includes/inlined-graphical-linkicon-styles.html" -->
+
     $if(index)$
     <!-- Google Webmaster requires this tag, but only on the index/homepage -->
     <meta name="google-site-verification" content="BOhOQI1uMfsqu_DopVApovk1mJD5ZBLfan0s9go3phk" />
@@ -147,9 +150,6 @@
     <!--#include virtual="/static/includes/inlined-foot-extra.html" -->
 
     $endif$
-
-    <!-- SSI: Inlined mappings of SVG linkicon identifiers to SVG files -->
-    <!--#include virtual="/static/includes/inlined-graphical-linkicon-styles.html" -->
 
     <script async fetchpriority="low" id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" onload="GW.googleAnalyticsLoaded = true;"></script>
     <script>
