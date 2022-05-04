@@ -1032,6 +1032,8 @@ Extracts = {
                 let pageMetadata = page.querySelector("#page-metadata");
                 if (pageMetadata) {
                 	pageMetadata.classList.remove("markdownBody");
+                	if (pageMetadata.className == "")
+                		pageMetadata.removeAttribute("class");
                     pageContent.insertBefore(pageMetadata, pageContent.firstElementChild);
                 }
 

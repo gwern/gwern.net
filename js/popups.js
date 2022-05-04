@@ -232,8 +232,8 @@ Popups = {
 	//	Called by: extracts.js
 	//	Called by: extracts-content.js
 	scrollElementIntoViewInPopFrame: (element) => {
-		let popup = element.closest(".popup");
-		popup.scrollView.scrollTop = element.getBoundingClientRect().top - popup.contentView.getBoundingClientRect().top;
+		let popup = Popups.containingPopFrame(element);
+		popup.scrollView.scrollTop = element.getBoundingClientRect().top - popup.body.getBoundingClientRect().top;
 	},
 
 	/*******************************/
@@ -254,7 +254,7 @@ Popups = {
 		popup.documentElement = popup.contentView.shadowRoot;
 		popup.documentElement.appendChild(document.createElement("DIV"));
 		popup.body = popup.shadowBody = popup.documentElement.firstElementChild;
-		popup.body.classList.add("popframe", "shadow-body");
+		popup.body.classList.add("popframe-body", "popup-body", "shadow-body");
 
 		popup.body.popup = popup.contentView.popup = popup.scrollView.popup = popup;
 
