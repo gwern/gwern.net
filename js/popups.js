@@ -237,7 +237,14 @@ Popups = {
 		popup.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
 		popup.scrollView = popup.querySelector(".popframe-scroll-view");
 		popup.contentView = popup.querySelector(".popframe-content-view");
-		popup.contentView.popup = popup.scrollView.popup = popup;
+
+		popup.contentView.attachShadow({ mode: "open" });
+		popup.contentView.shadowRoot.appendChild(document.createElement("DIV"));
+		popup.shadowBody = popup.contentView.shadowRoot.firstElementChild;
+		popup.shadowBody.classList.add("shadow-body");
+
+		popup.shadowBody.popup = popup.contentView.popup = popup.scrollView.popup = popup;
+
 		popup.titleBarContents = [ ];
 
 		//  Give the popup a reference to the target.
@@ -250,7 +257,8 @@ Popups = {
 	//	Called by: extracts-content.js
 	setPopFrameContent: (popup, content) => {
 		if (content) {
-			popup.contentView.appendChild(content);
+			popup.shadowBody.appendChild(content);
+
 			return true;
 		} else {
 			return false;
