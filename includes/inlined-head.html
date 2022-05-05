@@ -568,25 +568,17 @@ header h1 {
 
 #page-metadata {
     margin: 0 0 2rem 0;
-    overflow: auto;
-    font-size: 0.95em;
     line-height: 1.5;
 }
 
 /* Override normal handling of italics: before, we wrapped descriptions in `<em>`; however, they compile to HTML which can contain italics of their own (eg. book titles). This causes HTML Tidy to warn about nested italics (which is valid HTML but *usually* means you've made an error - this often triggers when I mess up bolding, for example, like on /GPT-3 ). So we removed the wrapper in favor of the above `font-style: italic`. However, now the titles don't unitalicize automatically like they would for nested italics! So we force italicized titles back to normal Roman font to match the expected typographic convention. */
-#page-metadata #page-description {
+#page-description {
     display: block;
-    margin: 0 auto 0.75em auto;
     font-style: italic;
     text-align: justify;
 }
-#page-metadata #page-description em {
+#page-description em {
     font-style: normal;
-}
-
-#page-metadata #page-metadata-block,
-#page-metadata > .link-tags {
-    font-size: 0.9em;
 }
 
 #page-metadata > .link-tags {
@@ -603,12 +595,8 @@ header h1 {
     hyphens: none;
 }
 
-#page-metadata-block > span:nth-of-type(n+3) {
+#page-metadata-block > span {
     white-space: nowrap;
-}
-
-#page-metadata-block br {
-	display: none;
 }
 
 /*	Interpunct separators for the metadata fields; looks nicer than semicolons 
@@ -619,28 +607,46 @@ header h1 {
     margin: 0 0.35em 0 0.65em;
 }
 
+@media only screen and (min-width: 650px) {
+	#page-metadata {
+		overflow: auto;
+		font-size: calc((19/20) * var(--GW-base-font-size));
+	}
+	#page-description {
+		margin: 0 auto 0.75em auto;
+	}
+	#page-metadata-block,
+	#page-metadata > .link-tags {
+		font-size: calc((18/20) * var(--GW-base-font-size));
+	}
+	#page-metadata-block br {
+		display: none;
+	}
+}
 @media only screen and (max-width: 649px) {
 	#page-metadata {
 		overflow: visible;
 		font-size: calc((17/18) * var(--GW-base-font-size));
 	}
-    #page-metadata > * {
-        text-align: center;
-    }
-	#page-metadata #page-description {
+	#page-description {
+		margin: 0 auto 1em auto;
 		line-height: calc(25/17);
 		-webkit-hyphens: auto;
 		hyphens: auto;
 	}
+    #page-metadata > .link-tags,
+    #page-metadata-block {
+    	text-align: center;
+    }
     #page-metadata > .link-tags {
     	margin: 0 auto 0.75em auto;
-    	font-size: 1em;
     }
-    #page-metadata-block br {
-    	display: initial;
+	#page-metadata-block {
+		font-size: calc((16/18) * var(--GW-base-font-size));
+    	line-height: calc(25/16);
     }
-	#page-metadata-block #page-status::after,
-	#page-metadata-block #page-importance::after {
+	#page-metadata-block > #page-status::after,
+	#page-metadata-block > #page-importance::after {
 		content: none;
 	}
 }
