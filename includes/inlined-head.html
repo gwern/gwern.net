@@ -336,6 +336,13 @@
     --GW-monospaced-font-stack: "IBM Plex Mono", "Liberation Mono", "Consolas", "Courier", monospace, "Noto Emoji", "Quivira";
 
     --GW-body-text-font-size: 1rem;
+
+	--GW-base-font-size: 20px;
+}
+@media only screen and (max-width: 649px) {
+	:root {
+		--GW-base-font-size: 18px;
+	}
 }
 
 /***********/
@@ -347,7 +354,7 @@ html {
     margin: 0;
     background-color: var(--GW-body-background-color);
     color: var(--GW-body-text-color);
-    font-size: 20px;
+    font-size: var(--GW-base-font-size);
     font-weight: 400;
     font-family: var(--GW-serif-font-stack);
 }
@@ -356,12 +363,6 @@ body {
     max-width: 1120px;
 
     font-size: var(--GW-body-text-font-size);
-}
-
-@media only screen and (max-width: 649px) {
-    html {
-        font-size: 18px;
-    }
 }
 
 @media only screen and (min-width: 650px) {
@@ -583,20 +584,9 @@ header h1 {
     font-style: normal;
 }
 
-#page-metadata #page-description ~ * {
+#page-metadata #page-metadata-block,
+#page-metadata > .link-tags {
     font-size: 0.9em;
-}
-
-#page-metadata-block > span:nth-of-type(n+3) {
-    white-space: nowrap;
-}
-
-/*	Interpunct separators for the metadata fields; looks nicer than semicolons 
-	or slashes
- */
-#page-metadata-block > span:not(:last-child)::after {
-    content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
-    margin: 0 0.35em 0 0.65em;
 }
 
 #page-metadata > .link-tags {
@@ -613,12 +603,34 @@ header h1 {
     hyphens: none;
 }
 
+#page-metadata-block > span:nth-of-type(n+3) {
+    white-space: nowrap;
+}
+
+/*	Interpunct separators for the metadata fields; looks nicer than semicolons 
+	or slashes
+ */
+#page-metadata-block > span:not(:last-child)::after {
+    content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
+    margin: 0 0.35em 0 0.65em;
+}
+
 @media only screen and (max-width: 649px) {
+	#page-metadata {
+		overflow: visible;
+		font-size: calc((17/18) * var(--GW-base-font-size));
+	}
     #page-metadata > * {
         text-align: center;
     }
+	#page-metadata #page-description {
+		line-height: calc(25/17);
+		-webkit-hyphens: auto;
+		hyphens: auto;
+	}
     #page-metadata > .link-tags {
     	margin: 0 auto 0.75em auto;
+    	font-size: 1em;
     }
 	#page-metadata-block #page-status::after,
 	#page-metadata-block #page-importance::after {
@@ -630,7 +642,9 @@ header h1 {
 /*= /index =*/
 /*=--------=*/
 
-/* on the index page, we hide article-related formatting, begging, to make it more compact & classy */
+/*	On the index page, we hide article-related formatting, begging, to make it 
+	more compact & classy.
+ */
 body.index #sidebar a.patreon,
 body.index #TOC,
 body.index #page-metadata,
@@ -1064,7 +1078,6 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 .markdownBody p,
 .markdownBody li {
     -webkit-hyphens: auto;
-    -ms-hyphens: auto;
     hyphens: auto;
 }
 @media only screen and (min-width: 900px) {
