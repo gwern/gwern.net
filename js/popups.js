@@ -217,6 +217,12 @@ Popups = {
 		return popup;
 	},
 
+	//	Called by: many functions in many places
+	addClassesToPopFrame: (popup, ...args) => {
+		popup.classList.add(...args);
+		popup.body.classList.add(...args);
+	},
+
 	/****************************************/
 	/*  Visibility of elements within popups.
 		*/
@@ -270,7 +276,8 @@ Popups = {
 	//	Called by: extracts-content.js
 	setPopFrameContent: (popup, content) => {
 		if (content) {
-			popup.contentView.appendChild(content);
+			popup.body.appendChild(content);
+
 			return true;
 		} else {
 			return false;
