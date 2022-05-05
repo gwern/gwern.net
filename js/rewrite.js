@@ -58,7 +58,7 @@
 			DOM object containing the loaded content. (For the GW.contentDidLoad
 			event fired on the initial page load, the value of this key is
 			`document.firstElementChild`, i.e. the <html> element of the page.
-			For pop-frames, this is the contentView of the pop-frame.)
+			For pop-frames, this is the documentElement of the pop-frame.)
 
 		‘location’ (key)
 			URL object (https://developer.mozilla.org/en-US/docs/Web/API/URL)

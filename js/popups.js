@@ -205,6 +205,18 @@ Popups = {
 		return Array.from(Popups.popupContainer.children).filter(popup => !popup.classList.contains("fading"));
 	},
 
+	//	Called by: extracts.js
+	//	Called by: many functions, all in popups.js
+	containingPopFrame: (target) => {
+		let popup = target.closest(".popup");
+		if (!popup) {
+			let shadowBody = target.closest(".shadow-body");
+			if (shadowBody)
+				popup = shadowBody.popup;
+		}
+		return popup;
+	},
+
 	/****************************************/
 	/*  Visibility of elements within popups.
 		*/
@@ -220,8 +232,8 @@ Popups = {
 	//	Called by: extracts.js
 	//	Called by: extracts-content.js
 	scrollElementIntoViewInPopFrame: (element) => {
-		let popup = element.closest(".popup");
-		popup.scrollView.scrollTop = element.getBoundingClientRect().top - popup.contentView.getBoundingClientRect().top;
+		let popup = Popups.containingPopFrame(element);
+		popup.scrollView.scrollTop = element.getBoundingClientRect().top - popup.body.getBoundingClientRect().top;
 	},
 
 	/*******************************/
@@ -237,7 +249,15 @@ Popups = {
 		popup.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
 		popup.scrollView = popup.querySelector(".popframe-scroll-view");
 		popup.contentView = popup.querySelector(".popframe-content-view");
-		popup.contentView.popup = popup.scrollView.popup = popup;
+
+		popup.contentView.attachShadow({ mode: "open" });
+		popup.documentElement = popup.contentView.shadowRoot;
+		popup.documentElement.appendChild(document.createElement("DIV"));
+		popup.body = popup.shadowBody = popup.documentElement.firstElementChild;
+		popup.body.classList.add("popframe-body", "popup-body", "shadow-body");
+
+		popup.body.popup = popup.contentView.popup = popup.scrollView.popup = popup;
+
 		popup.titleBarContents = [ ];
 
 		//  Give the popup a reference to the target.
@@ -318,7 +338,7 @@ Popups = {
 
 		//  Add popup to a popup stack.
 		if (popup.popupStack == null) {
-			let parentPopup = popup.spawningTarget.closest(".popup");
+			let parentPopup = Popups.containingPopFrame(popup.spawningTarget);
 			popup.popupStack = parentPopup ? parentPopup.popupStack : [ ];
 		} else {
 			popup.popupStack.remove(popup);
@@ -434,7 +454,7 @@ Popups = {
 		if (indexOfPopup != -1) {
 			return popup.popupStack.slice(0, indexOfPopup + 1);
 		} else {
-			let parentPopup = popup.spawningTarget.closest(".popup");
+			let parentPopup = Popups.containingPopFrame(popup.spawningTarget);
 			return ((parentPopup && parentPopup.popupStack) 
 				    ? Popups.getPopupAncestorStack(parentPopup) 
 				    : [ ]);
@@ -952,7 +972,7 @@ Popups = {
 			button.buttonAction = (event) => {
 				event.stopPropagation();
 
-				Popups.despawnPopup(event.target.closest(".popup"));
+				Popups.despawnPopup(Popups.containingPopFrame(event.target));
 			};
 
 			return button;
@@ -1218,7 +1238,7 @@ Popups = {
 			let offToTheSide = false;
 			let popupSpawnYOriginForSpawnAbove = targetViewportRect.top - Popups.popupBreathingRoomY;
 			let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom + Popups.popupBreathingRoomY;
-			if (target.closest(".popup") || Popups.preferSidePositioning(target)) {
+			if (Popups.containingPopFrame(target) || Popups.preferSidePositioning(target)) {
 				/*  The popup is a nested popup, or the target specifies that it
 					prefers to have popups spawned to the side; we try to put
 					the popup off to the left or right.
@@ -1491,7 +1511,7 @@ Popups = {
     popupClicked: (event) => {
 		GWLog("Popups.popupClicked", "popups.js", 2);
 
-		let popup = event.target.closest(".popup");
+		let popup = Popups.containingPopFrame(event.target);
 
 		if (!(Popups.popupIsFrontmost(popup))) {
 			Popups.bringPopupToFront(popup);
@@ -1516,7 +1536,7 @@ Popups = {
 		event.stopPropagation();
 
 		//  Get the containing popup.
-		let popup = event.target.closest(".popup");
+		let popup = Popups.containingPopFrame(event.target);
 
 		/*  Make sure we’re clicking on the popup (ie. its edge) and not
 			on any of the popup’s contained elements; that this is a
@@ -1677,7 +1697,7 @@ Popups = {
 		event.stopPropagation();
 
 		//  Get the containing popup.
-		let popup = event.target.closest(".popup");
+		let popup = Popups.containingPopFrame(event.target);
 
 		//  Bring the popup to the front.
 		Popups.bringPopupToFront(popup);
@@ -1795,7 +1815,7 @@ Popups = {
 				as mousing out of the popup.
 				*/
 			if ((  !event.target.closest
-				 || event.target.closest(".popup") == null)
+				 || Popups.containingPopFrame(event.target) == null)
 				&&  Popups.popupIsEphemeral(popup)) {
 				Popups.getPopupAncestorStack(popup).reverse().forEach(popupInStack => {
 					Popups.clearPopupTimers(popupInStack.spawningTarget);
@@ -1815,7 +1835,7 @@ Popups = {
 	popupTitleBarMouseUp: (event) => {
 		GWLog("Popups.popupTitleBarMouseUp", "popups.js", 2);
 
-		event.target.closest(".popup").classList.toggle("grabbed", false);
+		Popups.containingPopFrame(event.target).classList.toggle("grabbed", false);
 	},
 
 	/*  The popup title bar double-click event.
@@ -1824,7 +1844,7 @@ Popups = {
 	popupTitleBarDoubleClicked: (event) => {
 		GWLog("Popups.popupTitleBarDoubleClicked", "popups.js", 2);
 
-		let popup = event.target.closest(".popup");
+		let popup = Popups.containingPopFrame(event.target);
 		Popups.collapseOrUncollapsePopup(popup);
 	},
 

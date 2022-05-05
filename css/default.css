@@ -2051,6 +2051,16 @@ span.inflationAdjusted {
     white-space: nowrap;
 }
 
+span.link-tags a,
+span.aux-links a,
+span.backlinks a,
+span.similars a,
+span.link-bibliography a {
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    hyphens: none;
+}
+
 /*************/
 /* DROP CAPS */
 /*************/
@@ -2962,7 +2972,7 @@ body.index-directory #footer {
 /*  Adjustments for styles in pop-frames.
     */
 
-.popframe .TOC {
+.popframe-body .TOC {
     margin: 1.25em 0 0 0;
     padding: 0.5em 0.5em 0.75em 0.75em;
 
@@ -2975,128 +2985,128 @@ body.index-directory #footer {
     width: calc(100% - 1.25em);    /* Subtract side padding. */
 }
 
-.popframe .TOC > ul {
+.popframe-body .TOC > ul {
     column-width: 12em;
 }
 
-.popframe .TOC a:hover::after {
+.popframe-body .TOC a:hover::after {
     margin: 0;
     bottom: unset;
     font-size: inherit;
     opacity: unset;
 }
 
-.popframe ul,
-.popframe ol {
+.popframe-body ul,
+.popframe-body ol {
     overflow: unset;
 }
 
-.popframe:not(.zoomed) p + p,
-.popframe:not(.zoomed) p + figure[class^='float-'] + p,
-.popframe:not(.zoomed) div[class^='drop-cap-'] + p,
-.popframe:not(.zoomed) .abstract.scrape-abstract-not + p, {
+.popframe-body p + p,
+.popframe-body p + figure[class^='float-'] + p,
+.popframe-body div[class^='drop-cap-'] + p,
+.popframe-body .abstract.scrape-abstract-not + p, {
     text-indent: 1.75em;
 }
 
-.popframe:not(.zoomed) p + ul,
-.popframe:not(.zoomed) p + ol {
+.popframe-body p + ul,
+.popframe-body p + ol {
     margin-top: 0.2em;
     margin-bottom: 0.2em;
 }
 
-.popframe:not(.zoomed) li {
+.popframe-body li {
     text-align: left;
 }
 
-.popframe h1,
-.popframe h2,
-.popframe h3,
-.popframe h4,
-.popframe h5,
-.popframe h6 {
+.popframe-body h1,
+.popframe-body h2,
+.popframe-body h3,
+.popframe-body h4,
+.popframe-body h5,
+.popframe-body h6 {
     margin-left: 0;
 }
-.popframe h1 a:link,
-.popframe h2 a:link,
-.popframe h3 a:link,
-.popframe h4 a:link,
-.popframe h5 a:link,
-.popframe h6 a:link {
+.popframe-body h1 a:link,
+.popframe-body h2 a:link,
+.popframe-body h3 a:link,
+.popframe-body h4 a:link,
+.popframe-body h5 a:link,
+.popframe-body h6 a:link {
     background-image: none;
     text-shadow: none;
 }
 
-.popframe:not(.zoomed) blockquote {
+.popframe-body blockquote {
     margin: 1em 0;
 }
 
-.popframe .popframe-content-view > figure:only-child {
+.popframe-body > figure:only-child {
     margin: 0;
     max-width: unset;
 }
 
-.popframe.local-transclude .popframe-content-view > blockquote:first-child,
-.popframe.local-transclude .popframe-content-view > .table-wrapper:first-child,
-.popframe.local-transclude .popframe-content-view > div.sourceCode:first-child pre {
+.popframe-body.local-transclude > blockquote:first-child,
+.popframe-body.local-transclude > .table-wrapper:first-child,
+.popframe-body.local-transclude > div.sourceCode:first-child pre {
     margin-top: calc(3em/9);
 }
-.popframe.local-transclude .popframe-content-view > blockquote:last-child,
-.popframe.local-transclude .popframe-content-view > .table-wrapper:last-child,
-.popframe.local-transclude .popframe-content-view > div.sourceCode:last-child pre {
+.popframe-body.local-transclude > blockquote:last-child,
+.popframe-body.local-transclude > .table-wrapper:last-child,
+.popframe-body.local-transclude > div.sourceCode:last-child pre {
     margin-bottom: calc(1em/9);
 }
 
-.popframe .popframe-content-view > hr:first-child {
+.popframe-body > hr:first-child {
     display: none;
 }
 
-.popframe #footnotes > hr:first-child,
-.popframe #footnotes > hr:first-child + a.section-self-link {
+.popframe-body #footnotes > hr:first-child,
+.popframe-body #footnotes > hr:first-child + a.section-self-link {
     display: none;
 }
 
-.popframe #footnotes li > blockquote:nth-last-child(2),
-.popframe #footnotes li > pre:nth-last-child(2),
-.popframe #footnotes li > .sourceCode:nth-last-child(2) {
+.popframe-body #footnotes li > blockquote:nth-last-child(2),
+.popframe-body #footnotes li > pre:nth-last-child(2),
+.popframe-body #footnotes li > .sourceCode:nth-last-child(2) {
     margin-bottom: 2em;
 }
 
-.popframe .footnotes .footnote-back {
+.popframe-body .footnotes .footnote-back {
     vertical-align: text-top;
 }
 
 /*  Drop caps in pop-frames.
     */
-.popframe.markdownBody .drop-cap-goudy > p,
-.popframe.markdownBody .drop-cap-yinit > p,
-.popframe.markdownBody .drop-cap-de-zs > p,
-.popframe.markdownBody .drop-cap-cheshire > p,
-.popframe.markdownBody .drop-cap-kanzlei > p {
+.popframe-body .drop-cap-goudy > p,
+.popframe-body .drop-cap-yinit > p,
+.popframe-body .drop-cap-de-zs > p,
+.popframe-body .drop-cap-cheshire > p,
+.popframe-body .drop-cap-kanzlei > p {
     text-indent: 0;
 }
-.popframe.markdownBody .drop-cap-goudy > p::first-letter {
+.popframe-body .drop-cap-goudy > p::first-letter {
     font-size: 6.5em;
 }
-.popframe.markdownBody .drop-cap-yinit > p::first-letter {
+.popframe-body .drop-cap-yinit > p::first-letter {
     font-size: 5.125em;
 }
-.popframe.markdownBody .drop-cap-de-zs > p::first-letter {
+.popframe-body .drop-cap-de-zs > p::first-letter {
     font-size: 6.375em;
 }
-.popframe.markdownBody .drop-cap-cheshire > p::first-letter {
+.popframe-body .drop-cap-cheshire > p::first-letter {
     font-size: 6.375em;
 }
-.popframe.markdownBody .drop-cap-kanzlei > p::first-letter {
+.popframe-body .drop-cap-kanzlei > p::first-letter {
     font-size: 6.625em;
 }
 
-.popframe-content-view > [class^='drop-cap-']:last-child {
+.popframe-body > [class^='drop-cap-']:last-child {
     overflow: hidden;
 }
 
 /*  Margin notes in pop-frames.
     */
-.popframe .marginnote {
+.popframe-body .marginnote {
     display: initial;
 }
 
@@ -3108,7 +3118,7 @@ body.index-directory #footer {
 /*│ Aux-link pop-frames. │*/
 /*└──────────────────────┘*/
 
-.popframe.backlinks .columns ul {
+.popframe-body.backlinks .columns ul {
     margin: 0.75em 0 1em 0;
     padding: 0 0 0 1.75em;
 }
@@ -3119,112 +3129,107 @@ body.index-directory #footer {
 
 /*  Data fields.
     */
-.popframe.annotation .data-field {
+.popframe-body.annotation .data-field {
     text-align: left;
     text-indent: 0;
 }
-.popframe.annotation .data-field + .data-field {
+.popframe-body.annotation .data-field + .data-field {
     margin-top: 0.25em;
 }
 
-.popframe.annotation .data-field.title {
+.popframe-body.annotation .data-field.title {
     font-weight: bold;
     font-size: 1.125em;
     line-height: 1.35;
 }
-.popframe.annotation .data-field.author {
+.popframe-body.annotation .data-field.author {
     font-style: italic;
 }
-.popframe.annotation .date-plus-cites {
+.popframe-body.annotation .date-plus-cites {
     display: inline-block;
 }
-.popframe.annotation .originalURL {
+.popframe-body.annotation .originalURL {
     font-variant-caps: small-caps;
     margin: 0 0.5em 0 0;
     font-size: 0.875em;
 }
-.popframe.annotation .iaMirror {
+.popframe-body.annotation .iaMirror {
     padding-right: 0.3em;
 }
-.popframe.annotation .link-tags a {
-    -webkit-hyphens: none;
-    -moz-hyphens: none;
-    hyphens: none;
-}
-.popframe.annotation .data-field.annotation-abstract {
+.popframe-body.annotation .data-field.annotation-abstract {
     margin-top: 0.5em;
 }
 
 /*  Images (such as the ones in Wikipedia pop-frames).
     */
-.popframe.annotation .popframe-content-view > figure.float-right {
+.popframe-body.annotation.markdownBody > figure.float-right {
     margin: 0.125em 0 0.125em 1.5em;
     max-width: calc(50% - 1.5em);
     float: right;
 }
-.popframe.annotation figure.float-left .image-wrapper,
-.popframe.annotation figure.float-right .image-wrapper {
+.popframe-body.annotation figure.float-left .image-wrapper,
+.popframe-body.annotation figure.float-right .image-wrapper {
     max-width: 100%;
 }
-.popframe.annotation figure img {
+.popframe-body.annotation figure img {
     width: 100%;
 }
 
 /*  Wikipedia entries.
  */
-.wikipedia-entry .table-wrapper {
+.popframe-body.wikipedia-entry .table-wrapper {
     margin: 1.5em 0 1.5em 0;
     clear: both;
 }
-.wikipedia-entry .infobox {
+.popframe-body.wikipedia-entry .infobox {
     font-size: 0.9em;
 }
-.wikipedia-entry .infobox tbody tr:hover {
+.popframe-body.wikipedia-entry .infobox tbody tr:hover {
     outline: none;
 }
-.wikipedia-entry .infobox th[colspan="2"],
-.wikipedia-entry .infobox td[colspan="2"],
-.wikipedia-entry .infobox th.sidebar-title,
-.wikipedia-entry .infobox th.sidebar-heading {
+.popframe-body.wikipedia-entry .infobox th[colspan="2"],
+.popframe-body.wikipedia-entry .infobox td[colspan="2"],
+.popframe-body.wikipedia-entry .infobox th.sidebar-title,
+.popframe-body.wikipedia-entry .infobox th.sidebar-heading {
     text-align: center;
 }
-.wikipedia-entry .infobox th {
+.popframe-body.wikipedia-entry .infobox th {
     border-top: 1px solid var(--GW-table-row-horizontal-border-color);
 }
-.wikipedia-entry .infobox tr:first-of-type th {
+.popframe-body.wikipedia-entry .infobox tr:first-of-type th {
     font-size: 1.25em;
 }
-.wikipedia-entry .infobox td:first-child {
+.popframe-body.wikipedia-entry .infobox td:first-child {
     font-weight: bold;
 }
-.wikipedia-entry .infobox td ul {
+.popframe-body.wikipedia-entry .infobox td ul {
     margin: 0.25em 0;
     padding: 0 0 0 1.5em;
 }
-.popframe.annotation .popframe-content-view.wikipedia-entry > figure.float-right {
+.popframe-body.wikipedia-entry > figure.float-right {
     margin: 0.125em 0 0.75em 1.5em;
 }
-.wikipedia-entry #Timeline-row {
+.popframe-body.wikipedia-entry #Timeline-row {
     display: flex;
     width: -moz-fit-content;
     width: fit-content;
     margin: 0.25em auto;
 }
-.wikipedia-entry th br ~ * {
+.popframe-body.wikipedia-entry th br ~ * {
     font-weight: normal;
     font-size: calc((1 / 1.25) * 1em);
 }
-.wikipedia-entry .hatnote {
+.popframe-body.wikipedia-entry .hatnote {
     margin: 0 0 0.75em 0;
     font-style: italic;
 }
-.wikipedia-entry .chemf {
+.popframe-body.wikipedia-entry .chemf {
     word-break: break-all;
 }
 
 /*  Special case for inline math in Wikipedia pop-frames.
     */
-.wikipedia-entry .mwe-math-element {
+.popframe-body.wikipedia-entry .mwe-math-element {
     display: inline-block;
     height: 1.25em;
     line-height: 1;
@@ -3233,32 +3238,31 @@ body.index-directory #footer {
     padding: 0;
     text-indent: 0;
 }
-.wikipedia-entry .mwe-math-element img {
+.popframe-body.wikipedia-entry .mwe-math-element img {
     display: inline-block;
     height: 100%;
 }
 /*  Ditto, but block math.
  */
-.wikipedia-entry dl .mwe-math-element {
+.popframe-body.wikipedia-entry dl .mwe-math-element {
     display: block;
     height: unset;
 }
-.wikipedia-entry dl .mwe-math-element img {
+.popframe-body.wikipedia-entry dl .mwe-math-element img {
     display: block;
 }
 
 /* WP wraps references entirely in <cite> elements; <cite> is styled by browsers (Chrome/FF) by default in italics. No one wants their entire reference in italics, so WP resets the font to the default style (whatever that is), and styles italics bits (like book titles) manually. We need to replicate that, or else references sections in our WP popups will be entirely italics! */
-.wikipedia-entry cite,
-.wikipedia-entry dfn {
+.popframe-body.wikipedia-entry cite,
+.popframe-body.wikipedia-entry dfn {
     font-style: inherit;
 }
 
 /*┌──────────────────────┐*/
 /*│ Footnote pop-frames. │*/
 /*└──────────────────────┘*/
-/* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
 
-.popframe.footnote .popframe-content-view > blockquote:last-child {
+.popframe-body.footnote > blockquote:last-child {
     margin-bottom: calc(1em/9);
 }
 
@@ -3273,10 +3277,11 @@ body.index-directory #footer {
 .popframe.local-code-file .popframe-content-view {
     padding: 0;
 }
-.popframe.local-code-file .popframe-content-view div.sourceCode {
+
+.popframe-body.local-code-file div.sourceCode {
     height: 100%;
 }
-.popframe.local-code-file pre {
+.popframe-body.local-code-file pre {
     height: 100%;
     margin: 0;
     border: none;
@@ -3291,15 +3296,15 @@ body.index-directory #footer {
 
 /*  “Raw code” pop-frames.
     */
-.popframe.local-code-file pre.raw-code {
+.popframe-body.local-code-file pre.raw-code {
     white-space: pre-wrap;
 }
-.popframe.local-code-file pre.raw-code code {
+.popframe-body.local-code-file pre.raw-code code {
     word-break: break-word;
     padding-left: 2px;
     padding-right: 2px;
 }
-.popframe.local-code-file pre.raw-code .line {
+.popframe-body.local-code-file pre.raw-code .line {
     counter-increment: code-line;
     display: inline-block;
     width: 100%;
@@ -3307,13 +3312,13 @@ body.index-directory #footer {
     padding: 0 0 0.25em 4em;
     box-sizing: border-box;
 }
-.popframe.local-code-file pre.raw-code .line:hover {
+.popframe-body.local-code-file pre.raw-code .line:hover {
     background-color: var(--GW-raw-code-popframe-line-highlight-background-color);
     box-shadow:
     0  1px 0 0 var(--GW-raw-code-popframe-line-hightlight-border-color),
     0 -1px 0 0 var(--GW-raw-code-popframe-line-hightlight-border-color);
 }
-.popframe.local-code-file pre.raw-code .line::before {
+.popframe-body.local-code-file pre.raw-code .line::before {
     content: counter(code-line);
     position: absolute;
     width: 3.5em;
@@ -3338,12 +3343,13 @@ body.index-directory #footer {
 
 .popframe.object .popframe-content-view {
     padding: 0;
+    background-color: var(--GW-object-popup-background-color);
 }
 
-.popframe.object img,
-.popframe.object video,
-.popframe.object iframe,
-.popframe.object object {
+.popframe-body.object img,
+.popframe-body.object video,
+.popframe-body.object iframe,
+.popframe-body.object object {
     display: block;
 }
 
@@ -3395,23 +3401,43 @@ body.index-directory #footer {
     overflow-x: hidden;
 }
 
-.popframe .popframe-content-view > h1:first-child,
-.popframe .popframe-content-view > h2:first-child,
-.popframe .popframe-content-view > h3:first-child,
-.popframe .popframe-content-view > h4:first-child,
-.popframe .popframe-content-view > h5:first-child,
-.popframe .popframe-content-view > h6:first-child {
+.popframe-body > h1:first-child,
+.popframe-body > h2:first-child,
+.popframe-body > h3:first-child,
+.popframe-body > h4:first-child,
+.popframe-body > h5:first-child,
+.popframe-body > h6:first-child {
     margin-top: 0;
 }
 
-.popframe #page-metadata {
+.popframe-body #page-metadata {
     margin: 0;
     overflow: visible;
 }
-.popframe #page-metadata::after {
+.popframe-body #page-metadata::after {
     content: "";
     display: block;
     border-bottom: 1px dotted currentColor;
+    width: calc(100% + 2em);
+    margin: 1em -1em 1.125em -1em;
+}
+
+/*┌─────────────────┐*/
+/*│ Tag pop-frames. │*/
+/*└─────────────────┘*/
+/*	On tag/directory index pop-frames, we want to hide the initial ‘# Links’ 
+	<h1> because it takes up way too much space and adds nothing.
+ */
+.popframe-body h1.display-pop-not {
+    display: none;
+}
+
+/*	We also want to squeeze the directory list because the default 
+	unordered-list padding of 2em bottom uses up too much of a pop-frame.
+ */
+.popframe-body #directory-indexes ul {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 /**********/
@@ -3873,12 +3899,8 @@ body.index-directory #footer {
     height: var(--GW-popups-popup-max-height);
 }
 
-.popframe.object .popframe-content-view {
-    background-color: var(--GW-object-popup-background-color);
-}
-
-.popup.object iframe,
-.popup.object object {
+.popup-body.object iframe,
+.popup-body.object object {
     width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
     height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
 }
@@ -3894,15 +3916,15 @@ body.index-directory #footer {
     min-height: var(--GW-popups-image-popup-min-size);
 }
 
-.popup.image img {
+.popup-body.image img {
     margin: auto;
     max-width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
     max-height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
     object-fit: contain;
     background-color: var(--GW-popups-popup-border-color);
 }
-.popup.image img.invertible,
-.popup.image img.invertible-auto {
+.popup-body.image img.invertible,
+.popup-body.image img.invertible-auto {
     background-color: var(--GW-body-background-color);
 }
 
@@ -3935,7 +3957,7 @@ body.index-directory #footer {
     width: unset;
     height: unset;
 }
-.popup.video iframe {
+.popup-body.video iframe {
     width: var(--GW-popups-video-iframe-width);
     height: var(--GW-popups-video-iframe-height);
 }
@@ -3959,7 +3981,7 @@ body.index-directory #footer {
 
 /*  Table of contents popups.
     */
-.popup.local-transclude.toc-section .popframe-scroll-view {
+.popup-body.local-transclude.toc-section .popframe-scroll-view {
     max-height: calc(100vh - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
 }
 
@@ -3970,39 +3992,15 @@ body.index-directory #footer {
     height: var(--GW-popups-popup-max-height);
 }
 
-.popup #page-metadata::after {
-    width: calc(100% + 2em);
-    margin: 1em -1em 1.125em -1em;
-}
-
-/*┌─────────────┐*/
-/*│ Tag popups. │*/
-/*└─────────────┘*/
-/* on tag/directory index popups, we want to hide the initial '# Links' <h1> because it takes up way too much space and adds nothing. */
-.popup h1.display-pop-not,
-.popin h1.display-pop-not {
-    display: none;
-}
-
-/* We also want to squeeze the directory list because the default unordered-list padding of 2em bottom uses up too much of a popup. */
-.popup #directory-indexes ul {
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-}
-
 /*=---------------=*/
 /*= POPUP CONTENT =*/
 /*=---------------=*/
 /*  Adjustments for styles in popups.
     */
 
-.popup:not(.pinned) .popframe-content-view .image-wrapper::after {
-    display: none;
-}
-
 /*  Page thumbnails in local page transclude popups.
  */
-.popup .abstract figure {
+.popup-body .abstract figure {
     float: right;
     max-width: calc(50% - 1em);
     margin: 0.5em 0 1em 1em;
@@ -4449,9 +4447,9 @@ body.index-directory #footer {
     animation: fa-spin 2s infinite linear;
 }
 
-.popin.image.loading img,
-.popin.image.loading-failed img,
-.popin.object.loading-failed iframe {
+.popin-body.image.loading img,
+.popin-body.image.loading-failed img,
+.popin-body.object.loading-failed iframe {
     visibility: hidden;
 }
 
@@ -4517,10 +4515,12 @@ body.index-directory #footer {
 /*└────────────────────┘*/
 
 @media only screen and (max-width: 649px) {
-    .popin .annotation-abstract figure:first-child {
+	/*	TODO: check this!
+	 */
+    .annotation-abstract figure:first-child {
         margin-top: 1.75em;
     }
-    .popin .annotation-abstract.wikipedia-entry figure:first-child {
+    .annotation-abstract.wikipedia-entry figure:first-child {
         margin-top: 1.5em;
     }
 }
@@ -4549,8 +4549,8 @@ body.index-directory #footer {
 /*│ Object popins. │*/
 /*└────────────────┘*/
 
-.popin.object iframe,
-.popin.object object {
+.popin-body.object iframe,
+.popin-body.object object {
     width: 100%;
     height: calc(var(--GW-popins-popin-max-height) - 2 * var(--GW-popins-popin-border-width) - var(--popin-title-bar-height));
 }
@@ -4559,7 +4559,7 @@ body.index-directory #footer {
 /*│ Image popins. │*/
 /*└───────────────┘*/
 
-.popin.image img {
+.popin-body.image img {
     margin: auto;
     max-height: calc(var(--GW-popins-popin-max-height) - 2 * var(--GW-popins-popin-border-width) - var(--popin-title-bar-height));
 }
@@ -4568,11 +4568,11 @@ body.index-directory #footer {
 /*│ Video popins. │*/
 /*└───────────────┘*/
 
-.popin.video-popin {
+.popin.video {
     padding: 0;
 }
 
-.popin.video-popin iframe {
+.popin-body.video iframe {
     display: block;
     width: 100%;
 }
@@ -4589,7 +4589,7 @@ body.index-directory #footer {
 /*│ Local transclude popins. │*/
 /*└──────────────────────────┘*/
 
-.popin #page-metadata::after {
+.popin-body #page-metadata::after {
     width: calc(100% + 1em);
     margin: 1em -1em 1.125em 0;
 }

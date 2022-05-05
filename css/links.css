@@ -65,14 +65,14 @@ body.index .has-content .indicator-hook::before {
 
 /*	TOCs in pop-frames, and also in link bibliographies, directory indexes, etc.
  */
-.popframe .TOC a,
-.popframe .TOC a *,
+.popframe-body .TOC a,
+.popframe-body .TOC a *,
 blockquote .TOC a:link,
 blockquote .TOC a:link * {
 	background: none;
 	text-shadow: none;
 }
-.popframe .TOC a::after,
+.popframe-body .TOC a::after,
 blockquote .TOC a::after {
 	display: none;
 }
@@ -253,8 +253,8 @@ a[data-link-icon='𝔊']::after {
 	pop-frames.
  */
 body.index a.link-local::after,
-.popframe.index a.link-local::after,
-.popframe.backlinks a.link-local::after {
+.popframe-body.index a.link-local::after,
+.popframe-body.backlinks a.link-local::after {
     content: none;
 }
 
@@ -1004,6 +1004,6 @@ a[data-link-icon='wikipedia'].has-annotation::after {
 
 /*	TOC-links in Wikipedia pop-frames.
  */
-.popframe .wikipedia-entry .TOC a.has-annotation:hover {
+.popframe-body.wikipedia-entry .TOC a.has-annotation:hover {
 	background-image: none;
 }

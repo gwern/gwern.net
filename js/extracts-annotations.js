@@ -20,7 +20,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_ANNOTATION"
             document:
-                The contentView of the annotation pop-frame.
+                The documentElement of the annotation pop-frame.
             location:
                 URL of the annotated target (NOT the URL of the annotation
                 resource!).
@@ -197,10 +197,12 @@ Extracts = { ...Extracts, ...{
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
     titleForPopFrame_ANNOTATION: (popFrame) => {
+        GWLog("Extracts.titleForPopFrame_ANNOTATION", "extracts-annotations.js", 2);
+
         let target = popFrame.spawningTarget;
 
         let popFrameTitleText = Extracts.popFrameHasLoaded(popFrame)
-                                ? popFrame.querySelector(".data-field.title").textContent
+                                ? popFrame.body.querySelector(".data-field.title").textContent
                                 : (Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))
                                    ? target.href
                                    : target.pathname + target.hash);
@@ -280,11 +282,13 @@ Extracts = { ...Extracts, ...{
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_ANNOTATION: (popFrame) => {
+        GWLog("Extracts.rewritePopFrameContent_ANNOTATION", "extracts-annotations.js", 2);
+
         let target = popFrame.spawningTarget;
 
         //  Mark Wikipedia entries.
-        if (popFrame.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
-            popFrame.contentView.classList.add("wikipedia-entry");
+        if (popFrame.body.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
+            popFrame.classList.add("wikipedia-entry");
 
         //  Qualify internal links.
         if (target.hostname == location.hostname)
@@ -294,15 +298,15 @@ Extracts = { ...Extracts, ...{
             (only on sufficiently wide viewports).
             */
         if (!(GW.mediaQueries.mobileWidth.matches)) {
-            let initialFigure = popFrame.querySelector(".annotation-abstract > figure.float-right:first-child");
+            let initialFigure = popFrame.body.querySelector(".annotation-abstract > figure.float-right:first-child");
             if (initialFigure)
-                popFrame.contentView.insertBefore(initialFigure, popFrame.contentView.firstElementChild);
+                popFrame.body.insertBefore(initialFigure, popFrame.body.firstElementChild);
         }
 
         //  Fire contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_ANNOTATION",
-            document: popFrame.contentView,
+            document: popFrame.documentElement,
             location: Extracts.locationForTarget(target),
             flags: 0
         });
@@ -312,7 +316,7 @@ Extracts = { ...Extracts, ...{
             requestAnimationFrame(() => {
             	let element = null;
                 if (   popFrame
-                	&& (element = popFrame.querySelector(selectorFromHash(target.hash))))
+                	&& (element = popFrame.body.querySelector(selectorFromHash(target.hash))))
                     Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
             });
         }
