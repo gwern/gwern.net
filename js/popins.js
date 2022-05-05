@@ -171,6 +171,12 @@ Popins = {
 		return popin;
 	},
 
+	//	Called by: many functions in many places
+	addClassesToPopFrame: (popin, ...args) => {
+		popin.classList.add(...args);
+		popin.body.classList.add(...args);
+	},
+
 	/********************/
 	/*	Popin title bars.
 		*/

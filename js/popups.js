@@ -217,6 +217,12 @@ Popups = {
 		return popup;
 	},
 
+	//	Called by: many functions in many places
+	addClassesToPopFrame: (popup, ...args) => {
+		popup.classList.add(...args);
+		popup.body.classList.add(...args);
+	},
+
 	/****************************************/
 	/*  Visibility of elements within popups.
 		*/

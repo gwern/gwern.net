@@ -287,10 +287,8 @@ Extracts = { ...Extracts, ...{
         let target = popFrame.spawningTarget;
 
         //  Mark Wikipedia entries.
-        if (popFrame.body.querySelector(".annotation-abstract").classList.contains("wikipedia-entry")) {
-            popFrame.classList.add("wikipedia-entry");
-        	popFrame.body.classList.add("wikipedia-entry");
-        }
+        if (popFrame.body.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
+        	Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "wikipedia-entry");
 
         //  Qualify internal links.
         if (target.hostname == location.hostname)
