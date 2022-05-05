@@ -281,7 +281,7 @@ Popins = {
 	//	Called by: extracts-content.js
 	setPopFrameContent: (popin, content) => {
 		if (content) {
-			popin.shadowBody.appendChild(content);
+			popin.body.appendChild(content);
 
 			return true;
 		} else {
