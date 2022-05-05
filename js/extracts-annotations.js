@@ -261,8 +261,6 @@ Extracts = { ...Extracts, ...{
 
 	//	Called by: extracts.js (as `preparePopup_${targetTypeName}`)
 	preparePopup_ANNOTATION: (popup) => {
-        GWLog("Extracts.preparePopup_ANNOTATION", "extracts-annotations.js", 2);
-
         let target = popup.spawningTarget;
 
         /*  Do not spawn annotation popup if the annotation is already visible

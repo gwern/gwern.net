@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-05-03 16:56:31 gwern"
+When: Time-stamp: "2022-05-04 10:33:54 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -41,7 +41,6 @@ import Data.IORef (newIORef, IORef)
 import Data.List (intercalate, isInfixOf, isSuffixOf, isPrefixOf, nubBy, sort)
 import qualified Data.Map.Strict as M (lookup)
 import Data.Maybe (isNothing)
-import Network.HTTP (urlDecode)
 import System.Directory (doesFileExist)
 import System.FilePath (takeExtension)
 import Data.FileStore.Utils (runShellCommand)
@@ -60,7 +59,7 @@ import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
                     Block(..), HTMLMathMethod(MathJax), defaultMathJaxURL, Inline(..),
                     ObfuscationMethod(NoObfuscation), Pandoc(..), WriterOptions(..), nullMeta)
 import Text.Pandoc.Walk (walk, walkM)
-import Network.HTTP (urlEncode)
+import Network.HTTP (urlDecode, urlEncode)
 import System.IO.Unsafe (unsafePerformIO)
 
 import Data.List.Utils (replace)
@@ -164,13 +163,6 @@ main = hakyll $ do
                                      "atom.xml"] -- copy stub of deprecated RSS feed
 
              match "static/templates/*.html" $ compile templateCompiler
-             match "static/includes/inlined-foot.html"  $ compile templateCompiler
-             match "static/includes/inlined-graphical-linkicon-styles.html"  $ compile templateCompiler
-
--- https://kyle.marek-spartz.org/posts/2014-12-09-hakyll-css-template-compiler.html
--- cssTemplateCompiler :: Compiler (Item Template)
--- cssTemplateCompiler = cached "Hakyll.Web.Template.cssTemplateCompiler" $
---     fmap (readTemplate . compressCss) <$> getResourceString
 
 woptions :: WriterOptions
 woptions = defaultHakyllWriterOptions{ writerSectionDivs = True,
@@ -225,7 +217,7 @@ postCtx md =
     imageDimensionWidth "thumbnailWidth" <>
     -- for use in templating, `<body class="$safeURL$">`, allowing page-specific CSS:
     escapedTitleField "safeURL" <>
-    (mapContext (\p -> (urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) $ ("/" ++ (replace ".page" ".html" p)))) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotations/backlinks/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotations/backlinks/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotations/backlinks/%2Fnotes%2FFaster.html'
+    (mapContext (\p -> (urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) $ ("/" ++ replace ".page" ".html" p))) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotations/backlinks/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotations/backlinks/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotations/backlinks/%2Fnotes%2FFaster.html'
 
 fieldsTagHTML :: Metadata -> Context a
 fieldsTagHTML m = field "tagsHTML" $ \item -> do
@@ -290,7 +282,7 @@ pandocTransform md adb archived p = -- linkAuto needs to run before convertInter
                            do let pw = walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
                               _ <- createAnnotations md pw
                               let pb = walk (hasAnnotation md True) pw
-                              pbt <- fmap typographyTransform . walkM (localizeLink adb archived) $ walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) $ pb
+                              pbt <- fmap typographyTransform . walkM (localizeLink adb archived) $ walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) pb
                               let pbth = isLocalLinkWalk $ walk headerSelflink pbt
                               pbth' <- walkM invertImageInline pbth
                               pbth'' <- walkM imageSrcset pbth'
@@ -329,7 +321,8 @@ imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = if (".png" `T.isSuffixOf`
                                                             if not exists then printRed ("imageSrcset (Link): " ++ show x ++ " does not exist?") >> return x else
                                                               do (h,w) <- imageMagickDimensions $ T.unpack p
                                                                  return (Link (htmlid, classes,
-                                                                               kvs++[("image-height",(T.pack h)),("image-width",(T.pack w))])
+                                                                               kvs++[("image-height",T.pack h),
+                                                                                      ("image-width",T.pack w)])
                                                                          xs (p,t))
                                                        else return x
 imageSrcset x = return x
@@ -351,7 +344,8 @@ addAmazonAffiliate x = x
 -- | Make headers into links to themselves, so they can be clicked on or copy-pasted easily.
 -- BUG: Pandoc uses the Span trick to remove the Link from the generated ToC, which leaves behind redundant meaningless <span></span> wrappers. <https://github.com/jgm/pandoc/issues/8020>
 headerSelflink :: Block -> Block
-headerSelflink (Header a (href,b,c) d) = Header a (href,b,c) [Link nullAttr d ("#"`T.append`href, "Link to section: § '"`T.append`inlinesToText(d)`T.append`"'")]
+headerSelflink (Header a (href,b,c) d) = Header a (href,b,c) [Link nullAttr d ("#"`T.append`href,
+                                                                               "Link to section: § '" `T.append` inlinesToText d `T.append` "'")]
 headerSelflink x = x
 
 -- FASTER HTML RENDERING BY STATICLY SPECIFYING ALL IMAGE DIMENSIONS
@@ -380,13 +374,13 @@ staticImg x@(TagOpen "img" xs) = do
      ("/" `isPrefixOf` p && not ("data:image/" `isPrefixOf` p)) then
     if (takeExtension p == ".svg") then
       -- for SVGs, only set the lazy-loading attribute, since height/width is not necessarily meaningful for vector graphics
-            return (TagOpen "img" (uniq ([("loading", "lazy")]++xs)))
+            return (TagOpen "img" (uniq (("loading", "lazy"):xs)))
     else
        do
          let p' = urlDecode $ if head p == '/' then tail p else p
          exists <- doesFileExist p'
          if not exists then printRed ("staticImg: File does not exist: " ++ p') >> return x else
-          do (height,width) <- imageMagickDimensions p' `onException` (putStrLn p)
+          do (height,width) <- imageMagickDimensions p' `onException` printRed p
              -- body max-width is 1600 px, sidebar is 150px, so any image wider than ~1400px
              -- will wind up being reflowed by the 'img { max-width: 100%; }' responsive-image CSS declaration;
              -- let's avoid that specific case by lying about its width, although this doesn't fix all the reflowing.
@@ -417,8 +411,8 @@ staticImg x = return x
 marginNotes :: Inline -> Inline
 marginNotes x@(Note (bs:cs)) =
   case bs of
-    Para ((Str m):ms) -> if not ("!Margin:" == m) then x else
-                            Span ("", ["marginnote"], []) (blocksToInlines $ (Para ms):cs)
+    Para (Str m:ms) -> if "!Margin:" /= m then x else
+                            Span ("", ["marginnote"], []) (blocksToInlines $ Para ms:cs)
     _ -> x
 marginNotes x = x
 
