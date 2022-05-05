@@ -85,7 +85,8 @@ Extracts = {
         excludedElementsSelector: [
             ".section-self-link",
             ".footnote-self-link",
-            ".sidenote-self-link"
+            ".sidenote-self-link",
+            "[aria-hidden='true']"
         ].join(", "),
         excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
         //  See comment at Extracts.isLocalPageLink for info on this function.

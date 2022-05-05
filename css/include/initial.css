@@ -1138,6 +1138,10 @@ figure video {
 /* MISC */
 /********/
 
+[aria-hidden='true'] {
+	display: none;
+}
+
 /*  Enable standard Pandoc attribute-based syntax for small-caps like 
 	‘[foo]{.smallcaps}’; see https://pandoc.org/MANUAL.html#small-caps
  */
