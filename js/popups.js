@@ -212,7 +212,7 @@ Popups = {
 		if (!popup) {
 			let shadowBody = target.closest(".shadow-body");
 			if (shadowBody)
-				popup = shadowBody.parentNode.host.popup;
+				popup = shadowBody.popup;
 		}
 		return popup;
 	},

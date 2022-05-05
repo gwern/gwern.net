@@ -23,7 +23,7 @@ Popins = {
 		*/
 
 	//	Used in: Popins.containingDocumentForTarget
-	rootDocument: document.firstElementChild,
+	rootDocument: document,
 
 	//	Called by: Popins.setup
 	cleanup: () => {
@@ -127,14 +127,14 @@ Popins = {
 	//	Called by: extracts.js
 	//	Called by: extracts-content.js
 	scrollElementIntoViewInPopFrame: (element) => {
-		let popin = element.closest(".popin");
-		popin.scrollView.scrollTop = element.getBoundingClientRect().top - popin.contentView.getBoundingClientRect().top;
+		let popin = Popups.containingPopFrame(element);
+		popin.scrollView.scrollTop = element.getBoundingClientRect().top - popin.body.getBoundingClientRect().top;
 	},
 
 	//	Called by: Popins.injectPopinForTarget
 	containingDocumentForTarget: (target) => {
-		let containingPopin = target.closest(".popin");
-		return (containingPopin ? containingPopin.contentView : Popins.rootDocument);
+		let containingPopin = Popins.containingPopFrame(target);
+		return (containingPopin ? containingPopin.body : Popins.rootDocument);
 	},
 
 	//	Called by: Popins.targetClicked (event handler)
@@ -156,6 +156,19 @@ Popins = {
 			return parseInt(popinBelow.titleBar.stackCounter.textContent) + 1;
 		else
 			return 1;
+	},
+
+	//	Called by: extracts.js
+	//	Called by: Popins.containingDocumentForTarget
+	//	Called by: Popins.scrollElementIntoViewInPopFrame
+	containingPopFrame: (target) => {
+		let popin = target.closest(".popin");
+		if (!popin) {
+			let shadowBody = target.closest(".shadow-body");
+			if (shadowBody)
+				popin = shadowBody.popin;
+		}
+		return popin;
 	},
 
 	/********************/
@@ -247,7 +260,15 @@ Popins = {
 		popin.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
 		popin.scrollView = popin.querySelector(".popframe-scroll-view");
 		popin.contentView = popin.querySelector(".popframe-content-view");
-		popin.contentView.popin = popin.scrollView.popin = popin;
+
+		popin.contentView.attachShadow({ mode: "open" });
+		popin.documentElement = popin.contentView.shadowRoot;
+		popin.documentElement.appendChild(document.createElement("DIV"));
+		popin.body = popin.shadowBody = popin.documentElement.firstElementChild;
+		popin.body.classList.add("popframe-body", "popin-body", "shadow-body");
+
+		popin.body.popin = popin.contentView.popin = popin.scrollView.popin = popin;
+
 		popin.titleBarContents = [ ];
 
 		//  Give the popin a reference to the target.
@@ -260,7 +281,8 @@ Popins = {
 	//	Called by: extracts-content.js
 	setPopFrameContent: (popin, content) => {
 		if (content) {
-			popin.contentView.appendChild(content);
+			popin.shadowBody.appendChild(content);
+
 			return true;
 		} else {
 			return false;

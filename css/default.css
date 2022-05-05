@@ -2051,6 +2051,16 @@ span.inflationAdjusted {
     white-space: nowrap;
 }
 
+span.link-tags a,
+span.aux-links a,
+span.backlinks a,
+span.similars a,
+span.link-bibliography a {
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    hyphens: none;
+}
+
 /*************/
 /* DROP CAPS */
 /*************/
@@ -3145,11 +3155,6 @@ body.index-directory #footer {
 }
 .popframe-body.annotation .iaMirror {
     padding-right: 0.3em;
-}
-.popframe-body.annotation .link-tags a {
-    -webkit-hyphens: none;
-    -moz-hyphens: none;
-    hyphens: none;
 }
 .popframe-body.annotation .data-field.annotation-abstract {
     margin-top: 0.5em;
@@ -4594,6 +4599,18 @@ body.index-directory #footer {
 /*=---------------=*/
 /*  Adjustments for styles in popins.
     */
+
+/*┌──────────────┐*/
+/*│ Style reset. │*/
+/*└──────────────┘*/
+
+.popin {
+    white-space: normal;
+    font-weight: normal;
+    font-style: normal;
+    font-size: var(--GW-body-text-font-size);
+    text-align: unset;
+}
 
 /***************/
 /* ANNOTATIONS */

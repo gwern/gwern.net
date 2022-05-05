@@ -591,7 +591,7 @@ header h1 {
     font-size: 0.9em;
 }
 
-#page-metadata-block span:nth-of-type(n+3) {
+#page-metadata-block > span:nth-of-type(n+3) {
     white-space: nowrap;
 }
 
@@ -604,14 +604,14 @@ header h1 {
     margin: 0 0.35em 0 0.65em;
 }
 
-#page-metadata .link-tags {
+#page-metadata > .link-tags {
 	margin: 0 auto 0.25em auto;
 }
-#page-metadata .link-tags a:nth-child(n+2) {
+#page-metadata > .link-tags a:nth-child(n+2) {
 	margin: 0 0.05em 0 0.1em;
 }
 
-#page-metadata div > * {
+#page-metadata > div > * {
     hyphens: none;
 }
 
@@ -620,7 +620,7 @@ header h1 {
     #page-metadata #page-description {
         text-align: center;
     }
-    #page-metadata .link-tags {
+    #page-metadata > .link-tags {
     	margin: 0 auto 0.75em auto;
     }
 	#page-metadata-block #page-confidence,
