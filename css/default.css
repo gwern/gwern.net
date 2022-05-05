@@ -3981,7 +3981,7 @@ body.index-directory #footer {
 
 /*  Table of contents popups.
     */
-.popup-body.local-transclude.toc-section .popframe-scroll-view {
+.popup.local-transclude.toc-section .popframe-scroll-view {
     max-height: calc(100vh - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
 }
 
