@@ -607,6 +607,10 @@ header h1 {
     white-space: nowrap;
 }
 
+#page-metadata-block br {
+	display: none;
+}
+
 /*	Interpunct separators for the metadata fields; looks nicer than semicolons 
 	or slashes
  */
@@ -631,6 +635,9 @@ header h1 {
     #page-metadata > .link-tags {
     	margin: 0 auto 0.75em auto;
     	font-size: 1em;
+    }
+    #page-metadata-block br {
+    	display: initial;
     }
 	#page-metadata-block #page-status::after,
 	#page-metadata-block #page-importance::after {
@@ -1053,6 +1060,11 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
             line-height: 1.60;
         }
     }
+}
+@media only screen and (max-width: 649px) {
+	.markdownBody {
+		line-height: 1.45;
+	}
 }
 
 /*  On wide screens (desktop), use fully-justified text (words get
