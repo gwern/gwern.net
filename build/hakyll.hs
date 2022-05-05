@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-05-04 10:33:54 gwern"
+When: Time-stamp: "2022-05-05 09:03:32 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -236,9 +236,9 @@ fieldsTagPlain m = field "tagsPlain" $ \item -> do
     Just (_,_,_,_,tags,_) -> return $ intercalate ", " tags
 
 -- should backlinks be in the metadata? We skip backlinks for newsletters & indexes (excluded from the backlink generation process as well) due to lack of any value of looking for backlinks to hose.
--- HACK: uses unsafePerformIO. Not sure how to check up front without IO... Read the backlinks DB and thread it all the way through `postCtx`, `postList`, `tagPage`, and `main`?
+-- HACK: uses unsafePerformIO. Not sure how to check up front without IO... Read the backlinks DB and thread it all the way through `postCtx`, and `main`?
 backlinkCheck :: Item a -> Bool
-backlinkCheck i = let p = toFilePath (itemIdentifier i) in unsafePerformIO (doesFileExist (("metadata/annotations/backlinks/%2F" ++ replace ".page" "" p) ++ ".html")) && not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
+backlinkCheck i = let p = toFilePath (itemIdentifier i) in unsafePerformIO (doesFileExist (("metadata/annotations/backlinks/" ++ replace "/" "%2F" (replace ".page" "" ("/"++p))) ++ ".html")) && not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
 
 imageDimensionWidth :: String -> Context a
 imageDimensionWidth d = field d $ \item -> do
