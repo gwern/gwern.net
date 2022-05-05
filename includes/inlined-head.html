@@ -600,7 +600,6 @@ header h1 {
  */
 #page-metadata-block > span:not(:last-child)::after {
     content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
-    display: inline-block;
     margin: 0 0.35em 0 0.65em;
 }
 
@@ -619,17 +618,12 @@ header h1 {
 }
 
 @media only screen and (max-width: 649px) {
-    #page-metadata,
-    #page-metadata #page-description {
+    #page-metadata > * {
         text-align: center;
     }
     #page-metadata > .link-tags {
     	margin: 0 auto 0.75em auto;
     }
-	#page-metadata-block #page-confidence,
-	#page-metadata-block #page-importance {
-		display: inline-block;
-	}
 	#page-metadata-block #page-status::after,
 	#page-metadata-block #page-importance::after {
 		content: none;
