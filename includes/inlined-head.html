@@ -331,7 +331,7 @@
 /*************/
 
 :root {
-    --GW-serif-font-stack: "Source Serif Pro",  "Apple Garamond", "Baskerville", "Libre Baskerville", "Droid Serif", "Times New Roman", "Times", serif, "Noto Emoji", "Quivira";
+    --GW-serif-font-stack: "Source Serif Pro", "Apple Garamond", "Baskerville", "Libre Baskerville", "Droid Serif", "Times New Roman", "Times", serif, "Noto Emoji", "Quivira";
     --GW-sans-serif-font-stack: "Lucida Sans Unicode", "Source Sans Pro", "Helvetica", "Trebuchet MS", sans-serif, "Noto Emoji", "Quivira";
     --GW-monospaced-font-stack: "IBM Plex Mono", "Liberation Mono", "Consolas", "Courier", monospace, "Noto Emoji", "Quivira";
 
@@ -479,22 +479,21 @@ svg {
         width: 100px;
     }
     #sidebar a#logo {
-        margin: 1em 0 2em 0;
+        margin: 1em 0 2.25em 0;
+		width: fit-content;
     }
     #sidebar a#logo svg {
+		display: block;
         width: 64px;
     }
-    #sidebar a.new,
-    #sidebar a.patreon {
+	#sidebar a.links::after,
+	#sidebar a.mail::after {
+		content: "";
+		display: block;
+		margin: 0.75em 0 0.375em 0;
         border-top: 1px dotted var(--GW-sidebar-horizontal-rule-color);
-    }
-    #sidebar a.new {
-        padding-top: 0.45em;
-        margin-top: 0.55em;
-    }
+	}
     #sidebar a.patreon {
-        padding-top: 0.6em;
-        margin-top: 0.55em;
         font-size: 0.9em;
         white-space: nowrap;
         line-height: 1.35;
@@ -504,18 +503,13 @@ svg {
 @media only screen and (max-width: 649px) {
     #sidebar {
         justify-content: center;
-        margin: 1.4em 0 0.5em 0;
+        margin: 0.75em 0 0.5em 0;
     }
     #sidebar a {
         border: 1px dotted var(--GW-sidebar-mobile-link-border-color);
         padding: 0.25em 0.5em;
         text-align: center;
         margin: 1px;
-    }
-    #sidebar a#logo {
-        padding: 0.5em 0.375em;
-        line-height: 1;
-        display: flex;
     }
     #sidebar,
     #sidebar-links {
@@ -526,17 +520,19 @@ svg {
         flex: 1 1 100%;
         margin: 0.5em 0 0 0;
     }
+    #sidebar a#logo {
+        margin: calc(0.5em + 1px) 1px 1px 0;
+        padding: 0.5em 0.375em;
+    }
+    #sidebar a#logo svg {
+		display: block;
+        width: 2.5rem;
+    }
     #sidebar a:not(#logo) {
         flex: 1 1 40%;
     }
     #sidebar a.patreon {
         display: none;
-    }
-    #sidebar #logo {
-        margin: calc(0.5em + 1px) 1px 1px 0;
-    }
-    #sidebar #logo svg {
-        width: 2.5rem;
     }
 }
 
