@@ -171,6 +171,12 @@ Popins = {
 		return popin;
 	},
 
+	//	Called by: many functions in many places
+	addClassesToPopFrame: (popin, ...args) => {
+		popin.classList.add(...args);
+		popin.body.classList.add(...args);
+	},
+
 	/********************/
 	/*	Popin title bars.
 		*/
@@ -281,7 +287,7 @@ Popins = {
 	//	Called by: extracts-content.js
 	setPopFrameContent: (popin, content) => {
 		if (content) {
-			popin.shadowBody.appendChild(content);
+			popin.body.appendChild(content);
 
 			return true;
 		} else {

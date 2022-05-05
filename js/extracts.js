@@ -413,10 +413,8 @@ Extracts = {
         if (   targetTypeInfo
         	&& targetTypeInfo.popFrameFillFunctionName) {
             didFill = Extracts.popFrameProvider.setPopFrameContent(popFrame, Extracts[targetTypeInfo.popFrameFillFunctionName](target));
-            if (targetTypeInfo.popFrameClasses) {
-                popFrame.classList.add(...(targetTypeInfo.popFrameClasses.split(" ")));
-                popFrame.body.classList.add(...(targetTypeInfo.popFrameClasses.split(" ")));
-            }
+            if (targetTypeInfo.popFrameClasses)
+            	Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(targetTypeInfo.popFrameClasses.split(" ")));
         }
 
         if (didFill) {
@@ -663,11 +661,11 @@ Extracts = {
                  location).
              */
 			//  Mark the pop-frame as an external page embed.
-			target.popFrame.classList.add("external-page-embed");
+			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "external-page-embed");
 
 			if (Extracts.cachedPages[target.pathname]) {
 				//  Give the pop-frame an identifying class.
-				target.popFrame.classList.add("page-" + target.pathname.slice(1));
+				Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "page-" + target.pathname.slice(1));
 
 				return Extracts.newDocument(Extracts.cachedPages[target.pathname]);
 			} else {
@@ -713,7 +711,7 @@ Extracts = {
 		//	Add to a full-page pop-frame the body classes of the page.
 		if (   popFrame.classList.contains("external-page-embed")
 			&& Extracts.cachedPageBodyClasses[popFrame.spawningTarget.pathname] > null)
-			popFrame.classList.add(...Extracts.cachedPageBodyClasses[popFrame.spawningTarget.pathname]);
+			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...Extracts.cachedPageBodyClasses[popFrame.spawningTarget.pathname]);
 
 		return popFrame;
 	},
@@ -729,10 +727,8 @@ Extracts = {
         /*  Designate popups spawned from section links in the the TOC (for
             special styling).
          */
-        if (Extracts.isTOCLink(target)) {
-            popup.classList.add("toc-section");
-            popup.body.classList.add("toc-section");
-        }
+        if (Extracts.isTOCLink(target))
+        	Extracts.popFrameProvider.addClassesToPopFrame(popup, "toc-section");
 
         return popup;
     },

@@ -3,6 +3,7 @@ metadata/archive.hs
 **\.png-768px\.png
 **\.jpg-768px\.jpg
 .DS_Store
+404.shtml
 **.o
 **.hi
 build/hakyll

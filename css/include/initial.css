@@ -13,11 +13,18 @@
 /*************/
 
 :root {
-    --GW-serif-font-stack: "Source Serif Pro",  "Apple Garamond", "Baskerville", "Libre Baskerville", "Droid Serif", "Times New Roman", "Times", serif, "Noto Emoji", "Quivira";
+    --GW-serif-font-stack: "Source Serif Pro", "Apple Garamond", "Baskerville", "Libre Baskerville", "Droid Serif", "Times New Roman", "Times", serif, "Noto Emoji", "Quivira";
     --GW-sans-serif-font-stack: "Lucida Sans Unicode", "Source Sans Pro", "Helvetica", "Trebuchet MS", sans-serif, "Noto Emoji", "Quivira";
     --GW-monospaced-font-stack: "IBM Plex Mono", "Liberation Mono", "Consolas", "Courier", monospace, "Noto Emoji", "Quivira";
 
     --GW-body-text-font-size: 1rem;
+
+	--GW-base-font-size: 20px;
+}
+@media only screen and (max-width: 649px) {
+	:root {
+		--GW-base-font-size: 18px;
+	}
 }
 
 /***********/
@@ -29,7 +36,7 @@ html {
     margin: 0;
     background-color: var(--GW-body-background-color);
     color: var(--GW-body-text-color);
-    font-size: 20px;
+    font-size: var(--GW-base-font-size);
     font-weight: 400;
     font-family: var(--GW-serif-font-stack);
 }
@@ -38,12 +45,6 @@ body {
     max-width: 1120px;
 
     font-size: var(--GW-body-text-font-size);
-}
-
-@media only screen and (max-width: 649px) {
-    html {
-        font-size: 18px;
-    }
 }
 
 @media only screen and (min-width: 650px) {
@@ -161,22 +162,21 @@ svg {
         width: 100px;
     }
     #sidebar a#logo {
-        margin: 1em 0 2em 0;
+        margin: 1em 0 2.25em 0;
+		width: fit-content;
     }
     #sidebar a#logo svg {
+		display: block;
         width: 64px;
     }
-    #sidebar a.new,
-    #sidebar a.patreon {
+	#sidebar a.links::after,
+	#sidebar a.mail::after {
+		content: "";
+		display: block;
+		margin: 0.75em 0 0.375em 0;
         border-top: 1px dotted var(--GW-sidebar-horizontal-rule-color);
-    }
-    #sidebar a.new {
-        padding-top: 0.45em;
-        margin-top: 0.55em;
-    }
+	}
     #sidebar a.patreon {
-        padding-top: 0.6em;
-        margin-top: 0.55em;
         font-size: 0.9em;
         white-space: nowrap;
         line-height: 1.35;
@@ -186,18 +186,13 @@ svg {
 @media only screen and (max-width: 649px) {
     #sidebar {
         justify-content: center;
-        margin: 1.4em 0 0.5em 0;
+        margin: 0.75em 0 0.5em 0;
     }
     #sidebar a {
         border: 1px dotted var(--GW-sidebar-mobile-link-border-color);
         padding: 0.25em 0.5em;
         text-align: center;
         margin: 1px;
-    }
-    #sidebar a#logo {
-        padding: 0.5em 0.375em;
-        line-height: 1;
-        display: flex;
     }
     #sidebar,
     #sidebar-links {
@@ -208,17 +203,19 @@ svg {
         flex: 1 1 100%;
         margin: 0.5em 0 0 0;
     }
+    #sidebar a#logo {
+        margin: calc(0.5em + 1px) 1px 1px 0;
+        padding: 0.5em 0.375em;
+    }
+    #sidebar a#logo svg {
+		display: block;
+        width: 2.5rem;
+    }
     #sidebar a:not(#logo) {
         flex: 1 1 40%;
     }
     #sidebar a.patreon {
         display: none;
-    }
-    #sidebar #logo {
-        margin: calc(0.5em + 1px) 1px 1px 0;
-    }
-    #sidebar #logo svg {
-        width: 2.5rem;
     }
 }
 
@@ -269,20 +266,9 @@ header h1 {
     font-style: normal;
 }
 
-#page-metadata #page-description ~ * {
+#page-metadata #page-metadata-block,
+#page-metadata > .link-tags {
     font-size: 0.9em;
-}
-
-#page-metadata-block > span:nth-of-type(n+3) {
-    white-space: nowrap;
-}
-
-/*	Interpunct separators for the metadata fields; looks nicer than semicolons 
-	or slashes
- */
-#page-metadata-block > span:not(:last-child)::after {
-    content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
-    margin: 0 0.35em 0 0.65em;
 }
 
 #page-metadata > .link-tags {
@@ -299,12 +285,41 @@ header h1 {
     hyphens: none;
 }
 
+#page-metadata-block > span:nth-of-type(n+3) {
+    white-space: nowrap;
+}
+
+#page-metadata-block br {
+	display: none;
+}
+
+/*	Interpunct separators for the metadata fields; looks nicer than semicolons 
+	or slashes
+ */
+#page-metadata-block > span:not(:last-child)::after {
+    content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
+    margin: 0 0.35em 0 0.65em;
+}
+
 @media only screen and (max-width: 649px) {
+	#page-metadata {
+		overflow: visible;
+		font-size: calc((17/18) * var(--GW-base-font-size));
+	}
     #page-metadata > * {
         text-align: center;
     }
+	#page-metadata #page-description {
+		line-height: calc(25/17);
+		-webkit-hyphens: auto;
+		hyphens: auto;
+	}
     #page-metadata > .link-tags {
     	margin: 0 auto 0.75em auto;
+    	font-size: 1em;
+    }
+    #page-metadata-block br {
+    	display: initial;
     }
 	#page-metadata-block #page-status::after,
 	#page-metadata-block #page-importance::after {
@@ -316,7 +331,9 @@ header h1 {
 /*= /index =*/
 /*=--------=*/
 
-/* on the index page, we hide article-related formatting, begging, to make it more compact & classy */
+/*	On the index page, we hide article-related formatting, begging, to make it 
+	more compact & classy.
+ */
 body.index #sidebar a.patreon,
 body.index #TOC,
 body.index #page-metadata,
@@ -726,6 +743,11 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
         }
     }
 }
+@media only screen and (max-width: 649px) {
+	.markdownBody {
+		line-height: 1.45;
+	}
+}
 
 /*  On wide screens (desktop), use fully-justified text (words get
     broken/hyphenated as necessary to avoid a ‘ragged margin’), overriding
@@ -750,7 +772,6 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 .markdownBody p,
 .markdownBody li {
     -webkit-hyphens: auto;
-    -ms-hyphens: auto;
     hyphens: auto;
 }
 @media only screen and (min-width: 900px) {
