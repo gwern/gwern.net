@@ -1,4 +1,4 @@
-#!/usr/bin/env runhaskell
+#!/usr/bin/env runghc
 {-# LANGUAGE OverloadedStrings #-}
 -- dependencies: libghc-pandoc-dev, Unique, monad-parallel, Interwiki.hs
 

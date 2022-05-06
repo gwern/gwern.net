@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
-# can be done using 'runhaskell hakyll.hs build', but that is slow, semi-error-prone (did you
+# can be done using 'runghc hakyll.hs build', but that is slow, semi-error-prone (did you
 # remember to delete all intermediates?), and does no sanity checks or optimizations like compiling
 # the MathJax to static CSS/fonts (avoiding multi-second JS delays).
 #
@@ -183,9 +183,7 @@ else
         fi
     }
     export -f cleanCodeblockSelflinks
-    (find ./ -path ./_site -prune -type f -o -name "*.page" | fgrep -v -e '#' | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/';
-     find _site/metadata/annotations/ -name '*.html') | \
-        parallel --jobs 31 --max-args=1 cleanCodeblockSelflinks
+    find ./ -path ./_site -prune -type f -o -name "*.page" | fgrep -v -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 cleanCodeblockSelflinks || true
 
     bold "Reformatting HTML sources to look nicer using HTML Tidy…"
     # WARNING: HTML Tidy breaks the static-compiled MathJax. One of Tidy's passes breaks the mjpage-generated CSS (messes with 'center', among other things). So we do Tidy *before* the MathJax.
@@ -321,7 +319,7 @@ else
     λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeYAML "metadata/custom.yaml"'; }
     wrap λ "Annotations that need to be rewritten into paragraphs."
 
-    λ(){ runhaskell -istatic/build/ ./static/build/link-prioritize.hs 20; }
+    λ(){ runghc -istatic/build/ ./static/build/link-prioritize.hs 20; }
     wrap λ "Links needing annotations by priority:"
 
     λ(){ eg -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -- ./metadata/*.yaml; }
@@ -767,7 +765,7 @@ else
 
         # check for any pages that could use multi-columns now:
         λ(){ (find . -name "*.page"; find ./metadata/annotations/ -maxdepth 1 -name "*.html") | shuf | \
-                 parallel --max-args=100 runhaskell -istatic/build/ ./static/build/Columns.hs --print-filenames; }
+                 parallel --max-args=100 runghc -istatic/build/ ./static/build/Columns.hs --print-filenames; }
         wrap λ "Multi-columns use?"
     fi
     # if the end of the month, expire all of the annotations to get rid of stale ones:
@@ -778,7 +776,7 @@ else
     # once a year, check all on-site local links to make sure they point to the true current URL; this avoids excess redirects and various possible bugs (such as an annotation not being applied because it's defined for the true current URL but not the various old ones, or going through HTTP nginx redirects first)
     if [ $(date +"%j") == "002" ]; then
         bold "Checking all URLs for redirects…"
-        for URL in $(find . -type f -name "*.page" | parallel --max-args=100 runhaskell ./static/build/link-extractor.hs | \
+        for URL in $(find . -type f -name "*.page" | parallel --max-args=100 runghc ./static/build/link-extractor.hs | \
                          egrep -e '^/' | cut --delimiter=' ' --field=1 | sort -u); do
             echo "$URL"
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "https://www.gwern.net$URL");

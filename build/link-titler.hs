@@ -1,4 +1,4 @@
-#!/usr/bin/env runhaskell
+#!/usr/bin/env runghc
 {-# LANGUAGE OverloadedStrings #-}
 
 -- link-titler.hs: add titles to bare links in a Markdown file using a database of link metadata

@@ -1,4 +1,4 @@
-#!/usr/bin/env runhaskell
+#!/usr/bin/env runghc
 -- Print out single-line-formatted annotations for easier grepping
 
 import LinkMetadata (authorsToCite, sortItemPathDate, readYamlFast, MetadataItem)

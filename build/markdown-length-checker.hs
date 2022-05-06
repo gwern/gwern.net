@@ -1,6 +1,6 @@
-#! /usr/bin/env runhaskell
+#! /usr/bin/env runghc
 {-# LANGUAGE OverloadedStrings #-}
--- example usage: $ find ~/wiki/ -name "*.page" -exec runhaskell markdown-length-checker.hs {} \;
+-- example usage: $ find ~/wiki/ -name "*.page" -exec runghc markdown-length-checker.hs {} \;
 --
 -- default: looks for lines >110 characters long inside codeblocks, which suggests source code that
 -- needs to be rewritten for more clarity.

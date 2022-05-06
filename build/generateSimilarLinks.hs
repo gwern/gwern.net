@@ -1,4 +1,4 @@
-#!/usr/bin/env runhaskell
+#!/usr/bin/env runghc
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main where
@@ -42,7 +42,7 @@ main = do md  <- readLinkMetadata
           -- suggested-links.)
           --
           -- eg. in a crontab, this would work:
-          -- $ `@reboot screen -d -m -S "embed" bash -c 'cd ~/wiki/; while true; do inotifywait ~/wiki/metadata/*.yaml -e attrib && sleep 10s && date && runhaskell -istatic/build/ ./static/build/generateSimilarLinks.hs --update-only-embeddings; done'`
+          -- $ `@reboot screen -d -m -S "embed" bash -c 'cd ~/wiki/; while true; do inotifywait ~/wiki/metadata/*.yaml -e attrib && sleep 10s && date && runghc -istatic/build/ ./static/build/generateSimilarLinks.hs --update-only-embeddings; done'`
           --
           -- [ie.: 'at boot, start a background daemon which monitors the annotation files and
           -- whenever one is modified, kill the monitor, wait 10s, and check for new annotations to
