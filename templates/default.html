@@ -106,7 +106,7 @@
       <article> $if(index)$ $else$
         <div class="markdownBody" id="page-metadata">
           <p>$if(description)$
-            <div id="page-description" title="Short description of page.">$description$</div>$endif$
+            <div id="page-description" title="Short description of page."><p>$description$</p></div>$endif$
            $if(tagsHTML)$ $tagsHTML$ $endif$
             <div id="page-metadata-block">
               $if(author)$ <span id="page-author" title="Author of this page.">by: <em>$author$</em></span>$endif$
