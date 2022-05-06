@@ -53,7 +53,7 @@ else
 
     (cd ~/wiki/ && git status || true) &
     bold "Pulling infrastructure updates…"
-    (cd ./static/ && git status && git pull --verbose 'https://gwern.obormot.net/static/.git' || true)
+    (cd ./static/ && git status && git pull --verbose 'https://gwern.obormot.net/static/.git/' master || true)
 
     # ## check validity of annotation database before spending time compiling:
     # bold "Checking annotations first…"
@@ -174,6 +174,18 @@ else
     "$@"; }; export -f cleanClasses
     find ./ -path ./_site -prune -type f -o -name "*.page" | fgrep -v -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 cleanClasses || true
     find ./_site/metadata/ -type f -name "*.html" | sort | parallel --max-args=100 cleanClasses || true
+
+    ## Pandoc/Skylighting by default adds empty self-links to line-numbered code blocks to make them clickable (as opposed to just setting a span ID, which it also does). These links *would* be hidden except that self links get marked up with up/down arrows, so arrows decorate the codeblocks. We have no use for them and Pandoc/skylighting has no option or way to disable them, so we strip them.
+    bold "Stripping self-links from syntax-highlighted HTML…"
+    cleanCodeblockSelflinks () {
+        if [[ $(fgrep -e 'class="sourceCode' "$@") ]]; then
+            sed -i -e 's/<a href="\#cb[0-9]\+-[0-9]\+" aria-hidden="true" tabindex="-1"><\/a>//g' "$@";
+        fi
+    }
+    export -f cleanCodeblockSelflinks
+    (find ./ -path ./_site -prune -type f -o -name "*.page" | fgrep -v -e '#' | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/';
+     find _site/metadata/annotations/ -name '*.html') | \
+        parallel --jobs 31 --max-args=1 cleanCodeblockSelflinks
 
     bold "Reformatting HTML sources to look nicer using HTML Tidy…"
     # WARNING: HTML Tidy breaks the static-compiled MathJax. One of Tidy's passes breaks the mjpage-generated CSS (messes with 'center', among other things). So we do Tidy *before* the MathJax.
@@ -466,7 +478,7 @@ else
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. docs/*), just force a hash-based sync every time:
     bold "Syncing static/…"
-    rsync --exclude=".*" --exclude='preprocess-markdown' --exclude='generateSimilar' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
+    rsync --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='generateSimilar' --exclude='hakyll' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie. non-generated files):
     bold "Syncing pages…"
     rsync --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
