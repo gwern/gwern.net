@@ -571,7 +571,7 @@ linkIconTestUnitsText =
          , ("https://web.archive.org/web/19981202185145/http://www.ex.org/2.4/11-news.html",  "internetarchive","svg")
          , ("https://www.webcitation.org/6Qj7v6mqd",  "internetarchive","svg")
          , ("https://www.justice.gov/archive/usao/cac/Pressroom/2012/045.html",  "DoJ","text,tri")
-         , ("https://archinte.jamanetwork.com/article.aspx?articleid=414283", "JAMA", "text,sans,quad")
+         , ("https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/414283", "JAMA", "text,sans,quad")
          , ("https://jamanetwork.com/journals/jama/fullarticle/201218", "JAMA", "text,sans,quad")
          , ("https://jama.jamanetwork.com/article.aspx?articleid=183162", "JAMA", "text,sans,quad")
          , ("https://kk.org/books/out-of-control/",  "KK","text,sans")

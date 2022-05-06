@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-05 09:32:06 gwern"
+When:  Time-stamp: "2022-05-05 18:05:24 gwern"
 License: CC-0
 -}
 
@@ -229,7 +229,7 @@ sectionAnonymousRegex = "^#section-[0-9]+$" -- unnamed sections which receive Pa
 -- read a YAML database and look for annotations that need to be paragraphized.
 warnParagraphizeYAML :: FilePath -> IO ()
 warnParagraphizeYAML path = do yaml <- readYaml path
-                               let unparagraphized = filter (\(_,(_,_,_,_,_,abst)) -> not (paragraphized abst)) yaml
+                               let unparagraphized = filter (\(f,(_,_,_,_,_,abst)) -> not (paragraphized f abst)) yaml
                                unless (null unparagraphized) $ putStrLn $ ppShow (map fst unparagraphized)
 
 minimumAnnotationLength :: Int
@@ -474,7 +474,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("iq/anne-roe", "Anne Roe")
           , ("ai/diffusion", "diffusion model")
           , ("ai/gan", "GAN")
-          , ("ai/stylegan", "Style GAN")
+          , ("ai/stylegan", "StyleGAN")
           , ("ai/gpt/dall-e", "DALL·E")
           , ("ai/highleyman", "Highleyman")
           , ("existential-risk", "x-risk")
@@ -519,6 +519,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("genetics/selection/index-selection", "index selection")
           , ("reinforcement-learning/meta-learning", "meta-learning")
           , ("reinforcement-learning/preference-learning", "preference learning")
+          , ("reinforcement-learning/multi-agent", "MARL")
           , ("prediction/election", "election forecast")
           , ("psychology/illusion-of-depth", "the illusion of depth")
           , ("psychology/neuroscience", "neuroscience")
@@ -926,8 +927,8 @@ processArxivAbstract a = let cleaned = runPure $ do
 
 -- Is an annotation (HTML or Markdown) already If the input has more than one <p>, or if there is one or more double-newlines, that means this input is already multiple-paragraphs
 -- and we will skip trying to break it up further.
-paragraphized :: String -> Bool
-paragraphized a = notElem a whitelist &&
+paragraphized :: FilePath -> String -> Bool
+paragraphized f a = notElem f whitelist &&
                   paragraphsMarkdown a || blockElements a || length (paragraphsHtml a) > 1
  where
    -- double newlines are only in Markdown strings, and split paragraphs:
@@ -1686,6 +1687,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<i>", "<em>")
           , ("</i>", "</em>")
           -- math substitutions:
+          , ("<span class=\"math inline\">\\(\\perp\\)</span>", "⟂")
+          , ("<span class=\"math inline\">\\(^{\\perp}\\)</span>", "<sup>⟂</sup>")
           , ("<span class=\"math inline\">\\(^\\circ\\)</span>", "°")
           , ("<span class=\"math inline\">\\(\\pi_1\\)</span>", "π<sub>1</sub>")
           , ("<span class=\"math inline\">\\(7.5\\sim9.5\\times\\)</span>", "7.5–9.5×")
