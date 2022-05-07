@@ -4408,6 +4408,7 @@ body.index-directory #footer {
 .popin .popin-footer-bar .popframe-title-link {
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.875rem;
+    text-indent: 0;
 }
 
 /*┌────────────────────┐*/
