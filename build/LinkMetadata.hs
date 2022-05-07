@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-05 18:05:24 gwern"
+When:  Time-stamp: "2022-05-06 19:37:10 gwern"
 License: CC-0
 -}
 
@@ -731,7 +731,7 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
                         if length parsed < 5 then return (Left Permanent) else
                           do let (title:author:date:doi:abstrct) = parsed
                              let ts = [] -- TODO: replace with ML call to infer tags
-                             abstract' <- processParagraphizer $ processPubMedAbstract $ unlines abstrct
+                             abstract' <- processParagraphizer l $ processPubMedAbstract $ unlines abstrct
                              return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim $ processDOI doi, ts, abstract'))
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
@@ -783,7 +783,7 @@ doi2Abstract doi = if length doi < 7 then return Nothing
                                     Right j' -> let j'' = abstract $ message j' in
                                       case j'' of
                                        Nothing -> return Nothing
-                                       Just a -> do trimmedAbstract <- fmap cleanAbstractsHTML $ processParagraphizer $ cleanAbstractsHTML a
+                                       Just a -> do trimmedAbstract <- fmap cleanAbstractsHTML $ processParagraphizer doi $ cleanAbstractsHTML a
                                                     return $ Just trimmedAbstract
 
 -- handles medRxiv too (same codebase)
@@ -802,7 +802,7 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                                  let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
                                  let author  = initializeAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
                                  abstrct <- fmap (replace "9s" "s") $ -- BUG: Biorxiv's abstracts have broken quote encoding. I reported this to them 2 years ago and they still have not fixed it.
-                                   fmap cleanAbstractsHTML $ processParagraphizer $ cleanAbstractsHTML $ concat $ parseMetadataTagsoupSecond "citation_abstract" metas
+                                   fmap cleanAbstractsHTML $ processParagraphizer p $ cleanAbstractsHTML $ concat $ parseMetadataTagsoupSecond "citation_abstract" metas
                                  let ts = [] -- TODO: replace with ML call to infer tags
                                  if abstrct == "" then return (Left Temporary) else
                                                    return $ Right (p, (title, author, date, doi, ts, abstrct))
@@ -827,7 +827,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          -- NOTE: Arxiv used to not provide its own DOIs; that changed in 2022: <https://blog.arxiv.org/2022/02/17/new-arxiv-articles-are-now-automatically-assigned-dois/>; so look for DOI and if not set, try to construct it automatically using their schema `10.48550/arXiv.2202.01037`
                          let doiTmp = processDOI $ findTxt $ fst $ element "arxiv:doi" tags
                          let doi = if null doiTmp then processDOIArxiv url else doiTmp
-                         abst <- fmap cleanAbstractsHTML $ processParagraphizer $ cleanAbstractsHTML $ processArxivAbstract $ findTxt $ fst $ element "summary" tags
+                         abst <- fmap cleanAbstractsHTML $ processParagraphizer url $ cleanAbstractsHTML $ processArxivAbstract $ findTxt $ fst $ element "summary" tags
                          let ts = [] -- TODO: replace with ML call to infer tags
                          -- the API sometimes lags the website, and a valid Arxiv URL may not yet have obtainable abstracts, so it's a temporary failure:
                          if abst=="" then return (Left Temporary) else
@@ -928,7 +928,7 @@ processArxivAbstract a = let cleaned = runPure $ do
 -- Is an annotation (HTML or Markdown) already If the input has more than one <p>, or if there is one or more double-newlines, that means this input is already multiple-paragraphs
 -- and we will skip trying to break it up further.
 paragraphized :: FilePath -> String -> Bool
-paragraphized f a = notElem f whitelist &&
+paragraphized f a = f `elem` whitelist ||
                   paragraphsMarkdown a || blockElements a || length (paragraphsHtml a) > 1
  where
    -- double newlines are only in Markdown strings, and split paragraphs:
@@ -945,10 +945,10 @@ paragraphized f a = notElem f whitelist &&
 
 -- If a String (which is not HTML!) is a single long paragraph (has no double-linebreaks), call out to paragraphizer.py, which will use GPT-3 to try to break it up into multiple more-readable paragraphs.
 -- This is quite tricky to use: it wants non-HTML plain text (any HTML will break GPT-3), but everything else wants HTML
-processParagraphizer :: String -> IO String
-processParagraphizer "" = return ""
-processParagraphizer a =
-      if length a < 1024 || paragraphized a then return a
+processParagraphizer :: FilePath -> String -> IO String
+processParagraphizer _ "" = return ""
+processParagraphizer p a =
+      if length a < 1024 || paragraphized p a then return a
       else do let a' = replace "<p>" "" $ replace "</p>" "" a
               let a'' = trim $ replace "\160" " " $ toMarkdown a'
               (status,_,mb) <- runShellCommand "./" Nothing "python" ["static/build/paragraphizer.py", a'']
@@ -1909,6 +1909,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<h2>", "<p><strong>")
           , ("</h3>", "</strong></p>")
           , ("<h3>", "<p><strong>")
+          , ("</p>\\n<p>", "</p> <p>")
           , ("<br/></p>", "</p>")
           , ("<br/><br/>", "</p> <p>")
           , ("<br/><h3>", "<h3>")
@@ -1931,6 +1932,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<p></p>", "")
           , ("<p></li> </ul> </p>", "</li> </ul>")
           , ("</li><br/>", "</li>")
+          , ("</p>\n \n <jats:sec><p>", "</p> <p>")
+          , ("</p>\n \n <jats:sec>\n<p>", "</p> <p>")
+          , ("<strong>Abstract</strong>\n <jats:sec>\n<p>", "<p>")
           , ("<sec>", "")
           , ("</sec>", "")
           , ("  </sec><br/>  ", "")
@@ -2035,6 +2039,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<p>Background: ", "<p><strong>Background</strong>: ")
           , (" Interpretation. ", "</p> <p><strong>Interpretation</strong>: ")
           , (" Findings. ", "</p> <p><strong>Findings</strong>: ")
+          , ("<strong>Methods</strong>\n<p>", "<p><strong>Methods</strong>: ")
           , (" Methods. ", "</p> <p><strong>Methods</strong>: ")
           , (". <strong>Methods</strong>: ", ".</p> <p><strong>Methods</strong>: ")
           , (" \n <strong>Methods</strong>\n<p>", "<p><strong>Methods</strong>: ")
@@ -2153,6 +2158,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\nBackground: ", "\n<strong>Background</strong>: ")
           , ("\nAbstract: ", "\n<strong>Abstract</strong>: ")
           , ("\nContext: ", "\n<strong>Context</strong>: ")
+          , ("<strong>Purpose</strong>\n<p>", "<p><strong>Purpose</strong>: ")
           , ("\nPurpose: ", "\n<strong>Purpose</strong>: ")
           , ("\nRationale: ", "\n<strong>Rationale</strong>: ")
           , ("<p><strong>OBJECTIVE</strong></p>\n<p>", "<p><strong>Objective</strong>: ")
@@ -2214,6 +2220,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\91Keywords: ", "\91<strong>Keywords</strong>: ")
           , ("&lt;/i&gt;&lt;/b&gt;", "</em>")
           , ("&lt;b&gt;&lt;i&gt;", "<em>")
+          , (" m/s", " m⁄s")
           , ("~1/250", "~1⁄250")
           , (" 2/3 ", " 2⁄3 ")
           , (" 3/3 ", " 3⁄3 ")
@@ -2328,9 +2335,13 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" R2", " R<sup>2</sup>")
           , ("R2 = ", "R<sup>2</sup> = ")
           , ("top-k", "top-<em>k</em>")
+          , (" z = ", " <em>z</em> = ")
           , ("z-score", "<em>z</em>-score")
           , ("Z-score", "<em>z</em>-score")
           , ("z-scores", "<em>z</em>-scores")
+          , (" &lt; .0", " &lt; 0.0")
+          , (" p &amp;gt; ", " <em>p</em> &gt; ")
+          , (" p &amp;lt; ", " <em>p</em> &lt; ")
           , ("<em>p<\\/em>=", "<em>p</em> = ")
           , ("P = ", "<em>p</em> = ")
           , ("P values", "<em>p</em>-values")

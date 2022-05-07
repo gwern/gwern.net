@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-04-30 15:58:41 gwern"
+When:  Time-stamp: "2022-05-06 22:24:23 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -2122,7 +2122,6 @@ badDomainsSimple = ["1d4chan.org",
     , "www.repository.cam.ac.uk"
     , "www.rescuetime.com"
     , "www.researchandmarkets.com"
-    , "www.richardwpatterson.com"
     , "www.roangelo.net"
     , "www.rollingstone.com"
     , "www.rsm.nl"
@@ -4441,7 +4440,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.repository.cam.ac.uk/bitstream/handle/1810/3484/RamseyText.html?sequence=5", False)
     , ("https://www.rescuetime.com/teams", False)
     , ("https://www.researchandmarkets.com/reportinfo.asp?report_id=305358", False)
-    , ("https://www.richardwpatterson.com/PattersonJMP11_18.pdf", False)
     , ("https://www.r-inla.org/", False)
     , ("https://www.rollingstone.com/culture/culture-features/smiley-face-murder-serial-killer-drowning-death-882042/", False)
     , ("https://www.rsm.nl/fileadmin/Images_NEW/Departments/TOM/Calis_Thijmen_Thesis.pdf", False)

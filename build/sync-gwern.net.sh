@@ -179,7 +179,7 @@ else
     bold "Stripping self-links from syntax-highlighted HTML…"
     cleanCodeblockSelflinks () {
         if [[ $(fgrep -e 'class="sourceCode' "$@") ]]; then
-            sed -i -e 's/<a href="\#cb[0-9]\+-[0-9]\+" aria-hidden="true" tabindex="-1"><\/a>//g' "$@";
+            sed -i -e 's/<a href="\#cb[0-9]\+-[0-9]\+" aria-hidden="true" tabindex="-1"><\/a>//g' -e 's/<a href="\#cb[0-9]\+-[0-9]\+" aria-hidden="true" tabindex="-1" \/>//g' -- "$@";
         fi
     }
     export -f cleanCodeblockSelflinks
