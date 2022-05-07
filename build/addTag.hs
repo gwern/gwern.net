@@ -1,4 +1,4 @@
-#!/usr/bin/env runhaskell
+#!/usr/bin/env runghc
 
 -- CLI tool to add link-tags to specified URLs/paths. eg. 'addTag.hs
 -- "https://en.wikipedia.org/wiki/Experience_curve_effects" "economics/experience-curve" '

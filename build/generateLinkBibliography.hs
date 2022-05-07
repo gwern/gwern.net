@@ -1,4 +1,4 @@
-#!/usr/bin/env runhaskell
+#!/usr/bin/env runghc
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 

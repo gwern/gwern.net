@@ -64,6 +64,8 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
   where
     interwikiurl :: T.Text -> T.Text -> T.Text
     -- normalize links; MediaWiki requires first letter to be capitalized, and prefers '_' to ' '/'%20' for whitespace
+    interwikiurl "" _ = error (show x)
+    interwikiurl _ "" = error (show x)
     interwikiurl u a = let a' = if ".wikipedia.org/wiki/" `T.isInfixOf` u then T.toUpper (T.take 1 a) `T.append` T.tail a else a in
                          u `T.append` (replaceManyT [("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_"), ("&","&amp;")] $ deunicode a')
     deunicode :: T.Text -> T.Text

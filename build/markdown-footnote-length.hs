@@ -1,7 +1,7 @@
-#! /usr/bin/env runhaskell
+#! /usr/bin/env runghc
 {-# OPTIONS_GHC -fno-warn-warnings-deprecations #-}
 {-# LANGUAGE OverloadedStrings #-}
--- example usage: $ find ~/wiki/ -name "*.page" -exec runhaskell markdown-footnote-length {} \;
+-- example usage: $ find ~/wiki/ -name "*.page" -exec runghc markdown-footnote-length {} \;
 -- default: looks for footnotes >2400 characters long (too long on my screen)
 import System.Environment (getArgs)
 import Text.Pandoc (bottomUpM, def, nullMeta, readMarkdown, pandocExtensions, writePlain,

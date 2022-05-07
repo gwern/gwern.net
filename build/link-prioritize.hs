@@ -1,4 +1,4 @@
-#!/usr/bin/env runhaskell
+#!/usr/bin/env runghc
 {- LinkPrioritize.hs: simple CLI utility for taking a list of URLs, comparing to automatic & manual
                       link annotation databases, and ranking poorly-annotated links by frequency to help prioritize
                       creation of manual link annotations.
@@ -21,7 +21,7 @@ short entries.
 Simple use: (because it uses the LinkMetadata module, invoking it from a different directory than
 inside static/build/ is a bit tricky)
 
-$ ~/wiki/static/build/link-extractor.hs DNB-FAQ.page | runhaskell -istatic/build/ ./static/build/link-prioritize.hs
+$ ~/wiki/static/build/link-extractor.hs DNB-FAQ.page | runghc -istatic/build/ ./static/build/link-prioritize.hs
 175 : !W
 4 : https://groups.google.com/g/brain-training/browse_thread/thread/3008683d4b314f6/5e833c4c0df9fb9b
 4 : #jaeggi-2010
