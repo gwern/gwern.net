@@ -4418,9 +4418,16 @@ body.index-directory #footer {
 .popin .popframe-content-view {
     background-color: var(--GW-popins-popin-background-color);
     --GW-link-underline-background-color: var(--GW-popins-popin-title-bar-background-color);
-    font-size: 0.9em;
-    padding: calc(7em/9) 1em calc(8em/9) 1em;
+    padding: 0.7em 0.9em 0.8em 0.9em;
     overflow: auto;
+}
+
+/*┌─────────────┐*/
+/*│ Popin body. │*/
+/*└─────────────┘*/
+
+.popin-body {
+    font-size: 0.9em;
 }
 
 /*┌───────────────────────────┐*/
