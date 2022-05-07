@@ -96,8 +96,8 @@
         <a class="new   link-local link-annotated" href="/Changelog"        title="Changelog of what's new or updated">Changes</a>
         <a class="mail  link-local"                href="/docs/newsletter/index" title="Monthly mailing list archives" rel="me">News</a>
         <a class="patreon" href="https://www.patreon.com/gwern" title="Link to Patreon donation profile to support my writing" rel="me">support on<br><span>PATREON</span></a>
-        </nav>
-      </div>
+        </div>
+      </nav>
 
       <header>
         <h1>$title$</h1>
@@ -105,9 +105,9 @@
 
       <article> $if(index)$ $else$
         <div class="markdownBody" id="page-metadata">
-          <p>$if(description)$
+          $if(description)$
             <div id="page-description" title="Short description of page."><p>$description$</p></div>$endif$
-           $if(tagsHTML)$ $tagsHTML$ $endif$
+            $if(tagsHTML)$ $tagsHTML$ $endif$
             <div id="page-metadata-block">
               $if(author)$ <span id="page-author" title="Author of this page.">by: <em>$author$</em></span>$endif$
               <span id="page-date-range"><span id="page-creation" title="Date page contents were begun."><em>$created$</em></span>–<span id="page-source"><a title="Link to latest revision of the raw Markdown text source for this page, '$title$': $url$.page" class="no-icon" href="$url$.page"><span id="page-modified" title="Date of last major modification to this page."><em>$modified$</em></span></a></span></span>
@@ -116,8 +116,7 @@
               <span id="page-importance"><a href="/About#importance-tags" title="Explanation of 'importance' metadata: rating 1–10 about how much a topic matters to the world.">importance</a>: <em>$importance$</em></span> <br>
               $if(backlinksNo)$<span class="backlinks"><a id="backlinks" class="backlinks" href="/metadata/annotations/backlinks/$escapedURL$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page).">backlinks</a></span>$endif$
               <span class="link-bibliography"><a id="link-bibliography-link" href="/docs/link-bibliography$url$" title="Bibliography of links cited in this page (forward citations).">bibliography</a></span>
-            </div>
-        </p>
+          </div>
         </div>
 
         <noscript><div id="noscriptWarning" class="admonition warning"><div class="admonition-title"><p>[JS Disabled!]</p></div> <p>[For support of <a href="/Design" title="About: Gwern.net Design: principles, features, links, tricks">website features</a> (tablesorting, collapsible sections, image zooming, link annotation popups/popins, sidenotes), please enable JavaScript.]</p></div></noscript>
