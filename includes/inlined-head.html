@@ -349,9 +349,8 @@
 /* GENERAL */
 /***********/
 
-html {
-    padding: 0;
-    margin: 0;
+html,
+.shadow-body {
     background-color: var(--GW-body-background-color);
     color: var(--GW-body-text-color);
     font-size: var(--GW-base-font-size);
@@ -359,10 +358,26 @@ html {
     font-family: var(--GW-serif-font-stack);
 }
 
+body,
+.shadow-body {
+    font-size: var(--GW-body-text-font-size);
+}
+
+svg {
+    fill: currentColor;
+}
+
+/**********/
+/* LAYOUT */
+/**********/
+
+html {
+    padding: 0;
+    margin: 0;
+}
+
 body {
     max-width: 1120px;
-
-    font-size: var(--GW-body-text-font-size);
 }
 
 @media only screen and (min-width: 650px) {
@@ -428,10 +443,6 @@ body {
     body {
         margin: 0 15px;
     }
-}
-
-svg {
-    fill: currentColor;
 }
 
 /*****************/
@@ -842,6 +853,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 @media only screen and (max-width: 900px) {
     #TOC {
         float: none;
+        clear: both;
         margin: 2em auto;
         font-size: 1rem;
     }

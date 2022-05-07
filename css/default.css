@@ -3014,6 +3014,11 @@ body.index-directory #footer {
     margin-bottom: 0.2em;
 }
 
+.popframe-body .columns ul:last-child,
+.popframe-body .columns ol:last-child {
+    margin-bottom: 1em;
+}
+
 .popframe-body li {
     text-align: left;
 }

@@ -273,6 +273,10 @@ Popins = {
 		popin.body = popin.shadowBody = popin.documentElement.firstElementChild;
 		popin.body.classList.add("popframe-body", "popin-body", "shadow-body");
 
+		let styleReset = document.createElement("STYLE");
+		styleReset.innerHTML = `.shadow-body { all: initial; }`;
+		popin.documentElement.insertBefore(styleReset, popin.body);
+
 		popin.body.popin = popin.contentView.popin = popin.scrollView.popin = popin;
 
 		popin.titleBarContents = [ ];

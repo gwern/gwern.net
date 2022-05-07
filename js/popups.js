@@ -262,6 +262,10 @@ Popups = {
 		popup.body = popup.shadowBody = popup.documentElement.firstElementChild;
 		popup.body.classList.add("popframe-body", "popup-body", "shadow-body");
 
+		let styleReset = document.createElement("STYLE");
+		styleReset.innerHTML = `.shadow-body { all: initial; }`;
+		popup.documentElement.insertBefore(styleReset, popup.body);
+
 		popup.body.popup = popup.contentView.popup = popup.scrollView.popup = popup;
 
 		popup.titleBarContents = [ ];
