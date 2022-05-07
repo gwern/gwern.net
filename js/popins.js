@@ -218,6 +218,32 @@ Popins = {
 		});
 	},
 
+	/*  Add secondary title-link to a popin which has a title-link.
+		*/
+	//	Called by: Popins.injectPopinForTarget
+	addFooterBarToPopin: (popin) => {
+		let popinTitleLink = popin.querySelector(".popframe-title-link");
+		if (!popinTitleLink)
+			return;
+
+		//  Set class ‘has-footer-bar’ on the popin.
+		popin.classList.add("has-footer-bar");
+
+		//	Inject popin footer bar.
+		popin.footerBar = document.createElement("DIV");
+		popin.footerBar.classList.add("popin-footer-bar");
+		popin.insertBefore(popin.footerBar, null);
+
+		//	Inject footer title-link.
+		let footerTitleLink = document.createElement("A");
+		footerTitleLink.classList.add("popframe-title-link");
+		footerTitleLink.href = popinTitleLink.href;
+		footerTitleLink.title = `Open ${footerTitleLink.href} in a new window.`;
+		footerTitleLink.target = "_blank";
+		footerTitleLink.textContent = "Continue reading…";
+		popin.footerBar.appendChild(footerTitleLink);
+	},
+
 	/*  Elements and methods related to popin title bars.
 		*/
 	titleBarComponents: {
@@ -315,6 +341,7 @@ Popins = {
 			*/
 		if (target.popin.titleBarContents.length > 0)
 			Popins.addTitleBarToPopin(target.popin);
+			Popins.addFooterBarToPopin(target.popin);
 
 		//  Get containing document.
 		let containingDocument = Popins.containingDocumentForTarget(target);

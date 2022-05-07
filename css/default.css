@@ -45,6 +45,7 @@
     --GW-popins-popin-min-height: 120px;
     --GW-popins-popin-border-width: 3px;
     --GW-popins-popin-title-bar-height: 1.75rem;
+    --GW-popins-popin-footer-bar-height: 1.75rem;
 }
 
 /*********************/
@@ -3476,7 +3477,8 @@ body.index-directory #footer {
 .popup,
 .popup .popframe-scroll-view,
 .popup .popframe-content-view,
-.popup .popframe-title-bar {
+.popup .popframe-title-bar,
+.popup .popframe-footer-bar {
     box-sizing: border-box;
 }
 
@@ -4279,7 +4281,7 @@ body.index-directory #footer {
     max-width: calc(100% + (2 * var(--GW-popins-popin-border-width)) - 2em);
     border-style: double;
     border-color: var(--GW-popins-popin-border-color);
-    border-width:  var(--GW-popins-popin-border-width) var(--GW-popins-popin-border-width) 0 var(--GW-popins-popin-border-width);
+    border-width: var(--GW-popins-popin-border-width) var(--GW-popins-popin-border-width) 0 var(--GW-popins-popin-border-width);
     background-color: var(--GW-popins-popin-title-bar-background-color);
     --GW-link-underline-background-color: var(--GW-popins-popin-title-bar-background-color);
     display: flex;
@@ -4375,6 +4377,38 @@ body.index-directory #footer {
     text-indent: 0;
     cursor: default;
     color: var(--GW-popins-popin-stack-counter-text-color);
+}
+
+/*┌───────────────────┐*/
+/*│ Popin footer bar. │*/
+/*└───────────────────┘*/
+
+.popin.has-footer-bar {
+	margin-bottom: calc(1em + var(--GW-popins-popin-border-width) + var(--GW-popins-popin-footer-bar-height));
+}
+
+.popin .popin-footer-bar {
+    position: absolute;
+    left: calc(-1 * var(--GW-popins-popin-border-width));
+    right: calc(-1 * var(--GW-popins-popin-border-width));
+    top: calc(100%);
+    height: calc(var(--GW-popins-popin-border-width) + var(--GW-popins-popin-footer-bar-height));
+    max-width: calc(100% + (2 * var(--GW-popins-popin-border-width)));
+    border-style: double;
+    border-color: var(--GW-popins-popin-border-color);
+    border-width: 1px var(--GW-popins-popin-border-width) var(--GW-popins-popin-border-width) var(--GW-popins-popin-border-width);
+    background-color: var(--GW-popins-popin-title-bar-background-color);
+    --GW-link-underline-background-color: var(--GW-popins-popin-title-bar-background-color);
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.popin .popin-footer-bar .popframe-title-link {
+    font-family: var(--GW-sans-serif-font-stack);
+    font-size: 0.875rem;
 }
 
 /*┌────────────────────┐*/
