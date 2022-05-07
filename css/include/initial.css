@@ -273,7 +273,8 @@ header h1 {
 	margin: 0 0.05em 0 0.1em;
 }
 
-#page-metadata > div > * {
+#page-metadata > .link-tags,
+#page-metadata-block {
     hyphens: none;
 }
 
@@ -296,6 +297,7 @@ header h1 {
 	}
 	#page-description {
 		margin: 0 auto 0.75em auto;
+    	hyphens: none;
 	}
 	#page-metadata-block,
 	#page-metadata > .link-tags {
@@ -313,8 +315,6 @@ header h1 {
 	#page-description {
 		margin: 0 auto 1em auto;
 		line-height: calc(25/17);
-		-webkit-hyphens: auto;
-		hyphens: auto;
 	}
     #page-metadata > .link-tags,
     #page-metadata-block {
