@@ -4250,7 +4250,6 @@ body.index-directory #footer {
     /*  Layout. */
     display: block;
     position: relative;
-    float: left;
     width: 100%;
     max-height: var(--GW-popins-popin-max-height);
     min-height: var(--GW-popins-popin-min-height);
