@@ -3696,9 +3696,16 @@ body.index-directory #footer {
 
 .popup .popframe-content-view {
     background-color: var(--GW-popups-popup-background-color);
-    font-size: 0.9em;
-    padding: calc(7em/9) 1em calc(8em/9) 1em;
+    padding: 0.7em 0.9em 0.8em 0.9em;
     overflow: auto;
+}
+
+/*┌─────────────┐*/
+/*│ Popup body. │*/
+/*└─────────────┘*/
+
+.popup-body {
+    font-size: 0.9em;
     line-height: 1.50;
 }
 
