@@ -340,9 +340,22 @@ Popins = {
 		//  Mark target as having an open popin associated with it.
 		target.classList.add("popin-open", "highlighted");
 
-		//  Scroll page so that entire popin is visible, if need be.
+		//	Adjust popin position.
 		requestAnimationFrame(() => {
-			Popins.scrollPopinIntoView(target.popin);
+			//	Make popin take up entire content column width.
+			let popin = target.popin;
+			let popinRect = popin.getBoundingClientRect();
+			let bodyRect = document.body.getBoundingClientRect();
+			let leftMargin = (bodyRect.left - popinRect.left);
+			let rightMargin = (popinRect.right - bodyRect.right);
+			popin.style = `margin-left: ${leftMargin}px; `
+						+ `margin-right: ${rightMargin}px; `
+						+ `width: calc(100% + ${(-1 * (leftMargin + rightMargin))}px)`;
+
+			//  Scroll page so that entire popin is visible, if need be.
+			requestAnimationFrame(() => {
+				Popins.scrollPopinIntoView(target.popin);
+			});
 		});
 
 		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
