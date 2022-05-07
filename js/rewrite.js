@@ -323,12 +323,12 @@ function wrapFigures(loadEventInfo) {
             return;
 
         //  Create an inner wrapper for the figure contents.
-        let innerWrapper = document.createElement("span");
+        let innerWrapper = document.createElement("SPAN");
         innerWrapper.classList.add("figure-inner-wrapper");
         figure.appendChild(innerWrapper);
 
         //  Wrap the caption in the wrapper span.
-        let wrapper = document.createElement("span");
+        let wrapper = document.createElement("SPAN");
         wrapper.classList.add("caption-wrapper");
         wrapper.appendChild(caption);
 
@@ -430,7 +430,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
  */
 //	NOTE: This function appears to currently be unused. —SA, 2022-01-31
 // function getSelectionHTML() {
-//     let container = document.createElement("div");
+//     let container = document.createElement("DIV");
 //     container.appendChild(window.getSelection().getRangeAt(0).cloneContents());
 //     return container.innerHTML;
 // }

@@ -422,7 +422,7 @@ function doWhenBodyExists(f) {
 function addUIElement(element_html) {
     let ui_elements_container = document.querySelector("#ui-elements-container");
     if (!ui_elements_container) {
-        ui_elements_container = document.createElement("div");
+        ui_elements_container = document.createElement("DIV");
         ui_elements_container.id = "ui-elements-container";
         document.querySelector("body").appendChild(ui_elements_container);
     }

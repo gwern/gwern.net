@@ -147,7 +147,7 @@ function prepareCollapseBlocks(loadEventInfo) {
 			collapseBlock.classList.remove("collapse");
 		} else {
 			//  Construct collapse block wrapper and inject the disclosure button.
-			let realCollapseBlock = document.createElement("div");
+			let realCollapseBlock = document.createElement("DIV");
 			realCollapseBlock.classList.add("collapse");
 			realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
 			if (checked > "")

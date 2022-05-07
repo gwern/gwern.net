@@ -469,7 +469,7 @@ Sidenotes = {
 		Sidenotes.citations = Array.from(document.querySelectorAll("a.footnote-ref"));
 		for (var i = 0; i < Sidenotes.citations.length; i++) {
 			//  Create the sidenote outer containing block...
-			let sidenote = document.createElement("div");
+			let sidenote = document.createElement("DIV");
 			sidenote.classList.add("sidenote");
 			let sidenoteNumber = "" + (i + 1);
 			sidenote.id = "sn" + sidenoteNumber;
@@ -489,7 +489,7 @@ Sidenotes = {
 		/*  Create & inject the sidenote self-links (ie. boxed sidenote numbers).
 			*/
 		for (var i = 0; i < Sidenotes.citations.length; i++) {
-			let sidenoteSelfLink = document.createElement("a");
+			let sidenoteSelfLink = document.createElement("A");
 			sidenoteSelfLink.classList.add("sidenote-self-link");
 			sidenoteSelfLink.href = "#sn" + (i + 1);
 			sidenoteSelfLink.textContent = (i + 1);

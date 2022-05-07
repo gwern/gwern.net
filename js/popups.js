@@ -250,7 +250,7 @@ Popups = {
 	newPopup: (target) => {
 		GWLog("Popups.newPopup", "popups.js", 2);
 
-		let popup = document.createElement("div");
+		let popup = document.createElement("DIV");
 		popup.classList.add("popup", "popframe");
 		popup.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
 		popup.scrollView = popup.querySelector(".popframe-scroll-view");
@@ -879,7 +879,7 @@ Popups = {
 		popup.classList.add("has-title-bar");
 
 		//  Create and inject the title bar element.
-		popup.titleBar = document.createElement("div");
+		popup.titleBar = document.createElement("DIV");
 		popup.titleBar.classList.add("popframe-title-bar");
 		popup.titleBar.title = "Drag popup by title bar to reposition; double-click title bar to collapse";
 		popup.insertBefore(popup.titleBar, popup.firstElementChild);
@@ -1107,7 +1107,7 @@ Popups = {
 
 			button.classList.add("has-submenu");
 
-			button.submenu = document.createElement("div");
+			button.submenu = document.createElement("DIV");
 			button.submenu.classList.add("submenu", submenuClass);
 
 			popup.titleBar.insertBefore(button.submenu, button.nextElementSibling);

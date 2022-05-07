@@ -806,7 +806,7 @@ Extracts = { ...Extracts, ...{
                     if (!target.popFrame)
                         return;
 
-                    let doc = document.createElement("div");
+                    let doc = document.createElement("DIV");
                     doc.innerHTML = event.target.responseText;
                     doc.querySelectorAll("[href], [src]").forEach(element => {
                         if (element.href) {

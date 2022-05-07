@@ -189,12 +189,12 @@ Popins = {
 		popin.classList.add("has-title-bar");
 
 		//  Create and inject the title bar element.
-		popin.titleBar = document.createElement("div");
+		popin.titleBar = document.createElement("DIV");
 		popin.titleBar.classList.add("popframe-title-bar");
 		popin.insertBefore(popin.titleBar, popin.firstElementChild);
 
 		//  Add popin stack counter.
-		popin.titleBar.stackCounter = document.createElement("span");
+		popin.titleBar.stackCounter = document.createElement("SPAN");
 		popin.titleBar.stackCounter.classList.add("popin-stack-counter");
 		requestAnimationFrame(() => {
 			let popinStackNumber = Popins.popinStackNumber(popin);
@@ -287,7 +287,7 @@ Popins = {
 	newPopin: (target) => {
 		GWLog("Popins.newPopin", "popins.js", 2);
 
-		let popin = document.createElement("div");
+		let popin = document.createElement("DIV");
 		popin.classList.add("popin", "popframe");
 		popin.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
 		popin.scrollView = popin.querySelector(".popframe-scroll-view");

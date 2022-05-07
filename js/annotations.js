@@ -425,7 +425,7 @@ Annotations = {
             let thumbnailContainer = thumbnail.parentElement;
 
             //  Create the figure and move the thumbnail into it.
-            let figure = document.createElement("figure");
+            let figure = document.createElement("FIGURE");
             figure.classList.add("float-right");
             figure.appendChild(thumbnail);
 
@@ -433,7 +433,7 @@ Annotations = {
             let caption = annotation.querySelector(".mw-default-size + div");
             if (   caption 
             	&& caption.textContent > "") {
-                let figcaption = document.createElement("figcaption");
+                let figcaption = document.createElement("FIGCAPTION");
                 figcaption.innerHTML = caption.innerHTML;
                 figure.appendChild(figcaption);
             }

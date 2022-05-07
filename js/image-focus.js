@@ -74,7 +74,7 @@ function imageFocusSetup() {
 
 		let imageContainer = image.parentElement;
 
-		let wrapper = document.createElement("span");
+		let wrapper = document.createElement("SPAN");
 		wrapper.classList.add("image-wrapper");
 		wrapper.appendChild(image);
 		imageContainer.insertBefore(wrapper, imageContainer.firstChild);
