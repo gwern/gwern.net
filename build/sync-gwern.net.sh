@@ -298,7 +298,7 @@ else
     λ(){ find ./ -type f -name "*.page" -type f -exec egrep --color=always -e 'cssExtension: [a-c,e-z]' {} \; ; }
     wrap λ "Incorrect drop caps in Markdown."
 
-    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 "fgrep --with-filename -- '<span class=\"er\">'" | fgrep -v '<span class="er">foo!'; } # NOTE: filtered out Lorem.page's deliberate CSS test-case use of it
+    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | fgrep -v 'Lorem.page' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 "fgrep --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out Lorem.page's deliberate CSS test-case use of it
     wrap λ "Broken code in Markdown."
 
     λ(){ eg -e '<div class="admonition .*">[^$]' -e '<div class="epigrah">' **/*.page; }

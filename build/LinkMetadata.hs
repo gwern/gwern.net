@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-06 19:37:10 gwern"
+When:  Time-stamp: "2022-05-07 21:53:07 gwern"
 License: CC-0
 -}
 
@@ -534,6 +534,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("statistics/meta-analysis", "meta-analysis")
           , ("statistics/power-analysis", "power analysis")
           , ("statistics/bayes", "Bayes")
+          , ("statistics/order", "order statistics")
           , ("psychiatry/schizophrenia", "SCZ")
           , ("longevity/john-bjorksten", "John Bjorksten")
           , ("genetics/gametogenesis", "gametogenesis")

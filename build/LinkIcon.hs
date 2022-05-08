@@ -281,6 +281,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "hbr.org" = aI "HBR" "text,tri,sans" -- Harvard Business Review
  | aU'' ["dl.acm.org", "queue.acm.org", "cacm.acm.org"] = aI "acm" "text,tri,sans" -- <https://en.wikipedia.org/wiki/File:Association_for_Computing_Machinery_(ACM)_logo.svg> 'acm' sans in a circle inside a diamond; can't fake it with Unicode joiners (they'd only put one character into a circle+diamond), and I probably don't want to bother with a SVG.
  | u' "www.cs.utexas.edu/~EWD/" = aI "EWD" "text,tri,sans" -- Edsger W. Dijkstra, of course, wrote in sans
+ | u'' "iopscience.iop.org" = aI "IOP" "text,tri,sans" -- <https://en.wikipedia.org/wiki/IOP_Publishing> Institute of Physics Publishing
 
  -- Quad-letter-square icons.
  | aU'' ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
@@ -1001,6 +1002,7 @@ linkIconTestUnitsText =
          , ("https://www.research.va.gov/", "VA", "text,sans")
          , ("https://link.springer.com/article/10.3758/s13423-021-01927-8", "springerlink", "svg")
          , ("https://www.cs.utexas.edu/~EWD/transcriptions/EWD03xx/EWD340.html", "EWD", "text,tri,sans")
+         , ("https://iopscience.iop.org/article/10.1088/1748-9326/aabf9b", "IOP", "text,tri,sans")
         ]
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]

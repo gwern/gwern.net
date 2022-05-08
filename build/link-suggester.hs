@@ -555,11 +555,9 @@ whiteList = M.fromList [
   , ( "https://en.wikipedia.org/wiki/Confounding"
     , [ "Confounding" , "confounding" ]
     )
-  , ( "https://en.wikipedia.org/wiki/Conscientiousness"
-    , [ "Conscientiousness" ]
-    )
+
   , ( "https://en.wikipedia.org/wiki/Conscientiousness#Personality_models"
-    , [ "Conscientiousness" , "conscientiousness" ]
+    , [ "Conscientiousness" , "conscientiousness", "Conscientious", "conscientious" ]
     )
   , ( "https://en.wikipedia.org/wiki/Cowpox"
     , [ "Cowpox" , "cowpox" ]
@@ -781,7 +779,7 @@ whiteList = M.fromList [
     )
   , ( "https://en.wikipedia.org/wiki/Netflix" , [ "Netflix" ] )
   , ( "https://en.wikipedia.org/wiki/Neuroticism"
-    , [ "Neuroticism" ]
+    , [ "Neuroticism", "neuroticism", "neurotic", "Neurotic" ]
     )
   , ( "https://en.wikipedia.org/wiki/Niccol%C3%B2_Machiavelli"
     , [ "Machiavelli" ]
@@ -1129,4 +1127,5 @@ whiteList = M.fromList [
     , ("https://en.wikipedia.org/wiki/Animal_welfare", ["animal welfare"])
     , ("https://en.wikipedia.org/wiki/Dungeons_%26_Dragons", ["D&D"])
     , ("https://en.wikipedia.org/wiki/The_Guardian", ["_The Guardian_", "The Guardian"])
+    , ("https://en.wikipedia.org/wiki/Openness_to_experience", ["Openness", "openness", "open to experience", "Open To Experience"])
   ]
