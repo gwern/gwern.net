@@ -200,7 +200,7 @@ Extracts = {
         if (Extracts.popFrameProvider == Popups) {
             Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, Extracts.preparePopupTarget);
         } else if (Extracts.popFrameProvider == Popins) {
-            Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin);
+            Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin, Extracts.preparePopinTarget);
         }
 
 		Extracts.setUpAnnotationLoadEventWithin(container);
@@ -1150,6 +1150,24 @@ Extracts = {
     popinsEnabled: () => {
         return (localStorage.getItem("extract-popins-disabled") != "true");
     },
+
+    /*  Called by popins.js when adding a target.
+     */
+    //  (See Extracts.addTargetsWithin)
+	preparePopinTarget: (target) => {
+		target.adjustPopinWidth = (popin) => {
+			if (GW.mediaQueries.mobileWidth.matches) {
+				//	Make popin take up entire content column width.
+				let popinRect = popin.getBoundingClientRect();
+				let bodyRect = document.body.getBoundingClientRect();
+				let leftMargin = (bodyRect.left - popinRect.left);
+				let rightMargin = (popinRect.right - bodyRect.right);
+				popin.style = `margin-left: ${leftMargin}px; `
+							+ `margin-right: ${rightMargin}px; `
+							+ `width: calc(100% + ${(-1 * (leftMargin + rightMargin))}px)`;
+			}
+		};
+	},
 
     /*  Called by popins.js just before injecting the popin. This is our chance
         to fill the popin with content, and rewrite that content in whatever

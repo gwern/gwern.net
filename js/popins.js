@@ -369,15 +369,8 @@ Popins = {
 
 		//	Adjust popin position.
 		requestAnimationFrame(() => {
-			//	Make popin take up entire content column width.
-			let popin = target.popin;
-			let popinRect = popin.getBoundingClientRect();
-			let bodyRect = document.body.getBoundingClientRect();
-			let leftMargin = (bodyRect.left - popinRect.left);
-			let rightMargin = (popinRect.right - bodyRect.right);
-			popin.style = `margin-left: ${leftMargin}px; `
-						+ `margin-right: ${rightMargin}px; `
-						+ `width: calc(100% + ${(-1 * (leftMargin + rightMargin))}px)`;
+			if (target.adjustPopinWidth)
+				target.adjustPopinWidth(target.popin);
 
 			//  Scroll page so that entire popin is visible, if need be.
 			requestAnimationFrame(() => {
