@@ -815,7 +815,7 @@ figcaption strong {
     margin: 1px auto 0 auto;
     width: 100%;
 }
-figure.outline-no .caption-wrapper {
+figure.outline-not .caption-wrapper {
     outline: none;
 }
 video + .caption-wrapper {
@@ -3431,14 +3431,14 @@ body.index-directory #footer {
 /*┌─────────────────┐*/
 /*│ Tag pop-frames. │*/
 /*└─────────────────┘*/
-/*	On tag/directory index pop-frames, we want to hide the initial ‘# Links’ 
+/*	On tag/directory index pop-frames, we want to hide the initial ‘# Links’
 	<h1> because it takes up way too much space and adds nothing.
  */
 .popframe-body h1.display-pop-not {
     display: none;
 }
 
-/*	We also want to squeeze the directory list because the default 
+/*	We also want to squeeze the directory list because the default
 	unordered-list padding of 2em bottom uses up too much of a pop-frame.
  */
 .popframe-body #directory-indexes ul {
@@ -4697,7 +4697,7 @@ section.highlight-fading::before {
 @media only screen and (max-width: 649px) {
 	#footer {
         --footer-decoration-spacing: 3.5em;
-        
+
         position: relative;
         margin: calc(1em + var(--footer-decoration-spacing)) 0 2em 0;
 	}
