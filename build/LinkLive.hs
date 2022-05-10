@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-05-06 22:24:23 gwern"
+When:  Time-stamp: "2022-05-10 13:00:16 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -25,6 +25,8 @@ a local archive or 404 or changed domain entirely).
 
 Finally, to keep up to date with new domains, each sync we rank domains by # of uses, and above a threshold,
 automatically generate a live-link testcase appended to /Lorem for manual review.
+
+For an independent JS NPM library implementation, see <https://github.com/Stvad/link-summoner>.
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
@@ -2639,7 +2641,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://www.genetics.org/content/genetics/144/1/205.full.pdf", True)
     , ("https://www.gizmodo.com.au/2020/05/the-internet-furry-drama-raising-big-questions-about-artificial-intelligence/", True)
     , ("https://www.gnxp.com/WordPress/2017/12/12/most-people-say-they-think-nurture-is-more-important-than-nature-especially-white-americans/", True)
-    , ("https://www.google-melange.com/gsoc/project/google/gsoc2011/refold/31001", True)
+    , ("https://web.archive.org/web/20110429055151/http://www.google-melange.com/gsoc/project/google/gsoc2011/refold/31001", True)
     , ("https://www.gutenberg.org/files/5978/5978-h/5978-h.htm#c15", True)
     , ("https://www.haskell.org/cabal/", True)
     , ("https://www.hpmor.com/chapter/64", True)
@@ -2797,7 +2799,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://penelope.uchicago.edu/hydrionoframes/hydrion.html", True)
     , ("https://parahumans.wordpress.com/2011/06/21/gestation-1-4/", True)
     , ("https://palladiummag.com/2018/11/29/a-week-in-xinjiangs-absolute-surveillance-state/", True)
-    , ("https://packdeps.haskellers.com/reverse/push-notify", True)
+    , ("https://web.archive.org/web/20110415182316/http://packdeps.haskellers.com/reverse/push-notify", True)
     , ("http://ohtori.nu/creators/contributors.html", True)
     , ("https://my.vanderbilt.edu/smpy/publications/camilla-benbow/", True)
     , ("https://mathworld.wolfram.com/FermatsLastTheorem.html", True)
@@ -3048,7 +3050,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://www.ghibli.jp/kazetachinu/character.html", True)
     , ("http://www.galbithink.org/names/agnames.htm", True)
     , ("https://www.fast.ai/2018/08/10/fastai-diu-imagenet/", True)
-    , ("http://www.evacommentary.org/appendix/character-names.html", True)
+    , ("https://web.archive.org/web/20151106005148/http://www.evacommentary.org/appendix/character-names.html", True)
     , ("https://www.discoverteas.com/246/218/tea/oolong-teas/p-glenburn-moonshine-oolong", True)
     , ("https://www.depauw.edu/sfs/interviews/wolfe46interview.htm", True)
     , ("https://www.deseret.com/1995/7/20/19183190/teller-regrets-failure-to-seek-a-demonstration-option", True)
@@ -3302,8 +3304,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
 badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", False)
     , ("https://annals.org/article.aspx?articleid=745807", False)
     , ("http://archive.foolz.us/a/thread/77196171/#77207238", False)
-    , ("http://archive.recapthelaw.org/paed/205626/", False)
-    , ("http://archpsyc.ama-assn.org/cgi/content/abstract/46/1/73", False)
+    , ("https://www.courtlistener.com/docket/4367922/apotex-inc-v-cephalon-inc/", False)
     , ("http://aurellem.org/vba-clojure/html/total-control.html", False)
     , ("http://bakabt.me/159362-umineko-no-naku-koro-ni-music-collection-flac.html", False)
     , ("http://bit-player.org/2021/three-months-in-monte-carlo", False)
@@ -3333,7 +3334,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://tom7.org/mario/", False)
     , ("http://waifu2x.udp.jp/", False)
     , ("http://worrydream.com/LearnableProgramming/", False)
-    , ("http://www.blog.sethroberts.net/2011/01/29/the-buttermind-experiment/", False)
+    , ("http://sethroberts.net/2011/01/29/the-buttermind-experiment/", False)
     , ("http://www.catb.org/jargon/html/R/religious-issues.html", False)
     , ("http://www.getlamp.com/", False)
     , ("https://www.goproblems.com/", False)
@@ -3556,7 +3557,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.atlasobscura.com/articles/what-bread-did-ancient-egyptians-eat", False)
     , ("https://if50.substack.com/p/1999-king-of-dragon-pass", False)
     , ("https://escholarship.org/uc/item/5bv8c7p3", False)
-    , ("http://johakyu.net/lib/2007/07/2007-07-27-000535.php", False)
     , ("https://knowyourmeme.com/memes/tendies-stories", False)
     , ("https://gizmodo.com/generation-cryo-fighting-death-in-the-frozen-unknown-1786446378", False)
     , ("https://aws.amazon.com/blogs/opensource/keeping-open-source-open-open-distro-for-elasticsearch/", False)
@@ -3750,7 +3750,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://bmcneurosci.biomedcentral.com/articles/10.1186/1471-2202-6-23", False)
     , ("http://blog.sigfpe.com/2012/12/shuffles-bayes-theorem-and-continuations.html", False)
     , ("http://blog.darcs.net/2010/11/coming-in-darcs-28-new-features.html", False)
-    , ("http://bifunctor.homelinux.net/~roel/cgi-bin/hackage-scripts/revdeps/iteratee#direct", False)
     , ("http://betsofbitco.in/list?status=available&category=All&sorting=-moderationTime", False)
     , ("https://benbest.com/nutrceut/melatonin.html#negative", False)
     , ("https://bayes.wustl.edu/etj/articles/general.background.ps.gz", False)
@@ -4558,7 +4557,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://www.hakalalabs.com/testing.html", False)
     , ("http://www.imminst.org/", False)
     , ("http://www.jackkinsella.ie/articles/janki-method", False)
-    , ("http://www.joshdean.com/files/articles/pdf/feat_clones44.pdf", False)
+    , ("https://joshdean.com/sites/default/files/articles/feat_clones44.pdf", False)
     , ("http://www.kptv.com/story/15084456/battle-ground-schools-let-students-sleep-in", False)
     , ("https://www.lightspeedmagazine.com/fiction/exhalation/", False)
     , ("http://www.locusmag.com/2002/Issue09/GaimanWolfe.html", False)
@@ -4717,7 +4716,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://nces.ed.gov/naal/sample.asp", False)
     , ("https://mymodafinil.net/armodafinil/", False)
     , ("https://www.lanl.gov/bdit/html/projects/AHF.htm", False)
-    , ("http://sparky.haskell.org:8080/", False)
     , ("http://plaza.harmonix.ne.jp/~onizuka/literal/EVA26.txt", False)
     , ("https://hivemind-repo.s3-us-west-2.amazonaws.com/twdne3/twdne3.onnx", False)
     , ("https://scp-wiki.wikidot.com/scp-988", False)
@@ -4770,7 +4768,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://h01-dot-neuroglancer-demo.appspot.com/#!gs://h01-release/assets/library_state.json", False)
     , ("https://lichess.org/blog/YafSBxEAACIAr0ZA/exact-exacting-who-is-the-most-accurate-world-champion", False)
     , ("https://leme.me/verah/mp3/?C93/Lost%20Garden%20%E2%80%94%20ENIGMATIC%20LINER%20%5BMP3-V0%5D%5BC93%5D#trk6", False)
-    , ("https://lair.lighton.ai/akronomicon/", False)
+    , ("https://github.com/lightonai/akronomicon", False)
     , ("https://journals.ametsoc.org/view/journals/clim/18/23/jcli3593.1.xml", False)
     , ("https://gsejournal.biomedcentral.com/articles/10.1186/s12711-016-0280-3", False)
     , ("http://colab.research.google.com", False)

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-07 21:53:07 gwern"
+When:  Time-stamp: "2022-05-10 18:43:53 gwern"
 License: CC-0
 -}
 
@@ -456,6 +456,8 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
   where tagRewritesFixed :: [(String,String)]
         tagRewritesFixed = [
           ("reinforcement-learning", "RL")
+          , ("psychology/chess", "chess psychology")
+          , ("reinforcement-learning/chess", "AI chess")
           , ("ai/anime", "anime AI")
           , ("eva/little-boy", "Little Boy")
           , ("GPT/inner-monologue", "inner monologue (AI)")
@@ -520,6 +522,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("reinforcement-learning/meta-learning", "meta-learning")
           , ("reinforcement-learning/preference-learning", "preference learning")
           , ("reinforcement-learning/multi-agent", "MARL")
+          , ("reinforcement-learning/robot", "robotics")
           , ("prediction/election", "election forecast")
           , ("psychology/illusion-of-depth", "the illusion of depth")
           , ("psychology/neuroscience", "neuroscience")
@@ -1670,6 +1673,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         -- simple string substitutions:
         replaceMany [
           ("<span style=\"font-weight:normal\"> </span>", "")
+          , ("href=\"github.com", "href=\"https://github.com")
           , ("i . e .,", "ie.")
           , ("<p><strong>Motivation</strong></p>\n<p>", "<p><strong>Motivation</strong>: ")
           , ("<p><strong>Availability</strong></p>\n<p>", "<p><strong>Availability</strong>: ")
@@ -1709,11 +1713,13 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(6\\times 10^{-6}\\)</span>", "6×10<sup>−6</sup>")
           , ("<span class=\"math inline\">\\(\\sqrt{n/k}\\)</span>", "√<em>n</em>⁄<em>k</em>")
           , ("<span class=\"math inline\">\\(O\\sqrt{n})\\)</span>", "𝒪(√<em>n</em>)")
+          , ("<span class=\\\"math inline\\\">\\\\(O(\\\\sqrt{n})\\\\)</span>", "𝒪(√<em>n</em>)")
           , ("<span class=\"math inline\">\\(128/255\\)</span>", "128⁄255")
           , ("<span class=\"math inline\">\\(8/255\\)</span>", "8⁄255")
           , (" <span class=\"math inline\">\\(-\\)</span> ", "—")
           , ("<span class=\"math inline\">\\(\\nu\\)</span>", "ν")
           , ("<span class=\"math inline\">\\(O(n^2)\\)</span>", "𝒪(<em>n</em><sup>2</sup>)")
+          , ("<span class=\"math inline\">\\(O(N^2)\\)</span>", "𝒪(<em>n</em><sup>2</sup>)")
           , ("<span class=\"math inline\">\\(\\alpha &gt; 0\\)</span>", "α > 0")
           , ("<span class=\"math inline\">\\(n^{-\\alpha}\\)</span>", "<em>n</em><sup>−α</sup>")
           , ("<span class=\"math inline\">\\(L_2\\)</span>", "<em>L</em><sub>2</sub>")
@@ -1862,6 +1868,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\([0,1]\\)</span>", "[0,1]")
           , ("<span class=\"math inline\">\\(R^2\\)</span>", "<em>R</em><sup>2</sup>")
           , ("<span class=\"math inline\">\\(m^{1+o(1)}\\)</span>", "<em>m</em><sup>1+<em>o</em>(1)</sup>")
+          , ("<span class=\"math inline\">\\(1,000\\times\\)</span>", "1,000×")
+          , ("<span class=\"math inline\">\\(10^5\\times\\)</span>", "10<sup>5</sup>×")
           , ("O(N) ", "𝑂(<em>N</em>) ")
           , (" O(N)", " 𝑂(<em>N</em>)")
           , (" N pixels", " <em>N</em> pixels")
@@ -2415,6 +2423,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("(P &lt;", "(<em>p</em> &lt;")
           , ("(P &gt;", "(<em>p</em> &gt;")
           , ("(p≤", "(<em>p</em> ≤ ")
+          , ("&gt; &gt;0", "≫0")
           , ("(p&lt;", "(<em>p</em> &lt; ")
           , ("(p&gt;", "(<em>p</em> &gt; ")
           , ("(p &lt;", "(<em>p</em> &lt;")
@@ -2430,6 +2439,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\40P=",     "\40<em>p</em> = ")
           , ("P-value", "<em>p</em>-value")
           , ("p-value", "<em>p</em>-value")
+          , (" p-level ", " <em>p</em>-level ")
           , ("ﬁ", "fi")
           , (" ", " ")
           , ("DALL-E", "DALL·E")

@@ -1108,7 +1108,7 @@ whiteList = M.fromList [
       , "Pellegrino et al 2014"
       ]
     ), ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4313871/"
-    , [ "The contribution of de novo coding mutations to autism spectrum disorder"
+    , [ "The contribution of <em>de novo</em> coding mutations to autism spectrum disorder"
       ]
     ), ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4509557/"
     , [ "Helbich et al 2015"

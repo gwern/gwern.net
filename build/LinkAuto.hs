@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-05-05 18:15:03 gwern"
+When:  Time-stamp: "2022-05-10 19:41:00 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -472,7 +472,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Analog Science Fiction and Fact", "https://en.wikipedia.org/wiki/Analog_Science_Fiction_and_Fact")
         , ("Anders Sandberg", "https://en.wikipedia.org/wiki/Anders_Sandberg")
         , ("Andy Matuschak", "https://andymatuschak.org/")
-        , ("Andy Warhol", "https://en.wikipedia.org/wiki/Lonesome_Cowboys")
         , ("AniSeg", "https://github.com/jerryli27/AniSeg/")
         , ("Anki", "https://en.wikipedia.org/wiki/Anki_%28software%29")
         , ("Anne Roe", "https://en.wikipedia.org/wiki/Anne_Roe")
@@ -710,11 +709,9 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("J\\. ?B\\. ?S\\. Haldane", "https://en.wikipedia.org/wiki/J._B._S._Haldane")
         , ("J\\. ?G\\. ?Ballard", "https://en.wikipedia.org/wiki/J._G._Ballard")
         , ("J\\. ?K\\. ?Rowling", "https://en.wikipedia.org/wiki/J._K._Rowling")
-        , ("James C\\. Scott", "https://en.wikipedia.org/wiki/James_C._Scott")
         , ("Jargon File", "https://en.wikipedia.org/wiki/Jargon_File")
         , ("Jeanne Calment", "https://en.wikipedia.org/wiki/Jeanne_Calment")
         , ("Jensen's inequality", "https://en.wikipedia.org/wiki/Jensen%27s_inequality")
-        , ("John Carreyrou", "https://en.wikipedia.org/wiki/John_Carreyrou")
         , ("John D\\. Arnold", "https://en.wikipedia.org/wiki/John_D._Arnold")
         , ("John L\\. Leal", "https://en.wikipedia.org/wiki/John_L._Leal")
         , ("Joseph Conrad", "https://en.wikipedia.org/wiki/Joseph_Conrad")
@@ -733,12 +730,10 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Kirk Allen", "https://en.wikipedia.org/wiki/Kirk_Allen")
         , ("Known Space", "https://en.wikipedia.org/wiki/Known_Space")
         , ("Kolmogorov axioms", "https://en.wikipedia.org/wiki/Probability_axioms")
-        , ("Kolmogorov complexity", "https://en.wikipedia.org/wiki/Kolmogorov_complexity")
         , ("Krummhörn", "https://en.wikipedia.org/wiki/Krummh%C3%B6rn")
         , ("LAMBADA", "https://arxiv.org/abs/1606.06031")
         , ("LD ?Hub", "http://ldsc.broadinstitute.org/about/")
         , ("LaTeX", "https://en.wikipedia.org/wiki/LaTeX")
-        , ("Lady Jane", "https://en.wikipedia.org/wiki/Lady_Jane_%281986_film%29")
         , ("Laplace approximations?", "https://en.wikipedia.org/wiki/Laplace%27s_method")
         , ("Larry Niven", "https://en.wikipedia.org/wiki/Larry_Niven")
         , ("Lawrence Bragg", "https://en.wikipedia.org/wiki/Lawrence_Bragg")
@@ -831,7 +826,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Pay[Pp]al", "https://en.wikipedia.org/wiki/PayPal")
         , ("Peter Singer", "https://en.wikipedia.org/wiki/Peter_Singer")
         , ("Peter Watts", "https://en.wikipedia.org/wiki/Peter_Watts_%28author%29")
-        , ("Philip K\\. Dick", "https://en.wikipedia.org/wiki/Philip_K._Dick")
         , ("Poisson distribution", "https://en.wikipedia.org/wiki/Poisson_distribution")
         , ("Polderman et al 2015", "/docs/genetics/heritable/2015-polderman.pdf")
         , ("Portia", "https://en.wikipedia.org/wiki/Portia_(spider)")
@@ -1123,7 +1117,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Hh]yperbolic discounting", "https://en.wikipedia.org/wiki/Hyperbolic_discounting")
         , ("[Ii]diopathic hypersomnia", "https://en.wikipedia.org/wiki/Idiopathic_hypersomnia")
         , ("[Ii]nclusionists?", "https://meta.wikimedia.org/wiki/Inclusionism")
-        , ("[Ii]ncretin", "https://en.wikipedia.org/wiki/Incretin")
         , ("[Ii]nequality of arithmetic and geometric means", "https://en.wikipedia.org/wiki/Inequality_of_arithmetic_and_geometric_means")
         , ("[Ii]nverted pendulum", "https://en.wikipedia.org/wiki/Inverted_pendulum")
         , ("[Ii]yashikei", "https://tvtropes.org/pmwiki/pmwiki.php/Main/Iyashikei")
@@ -1189,7 +1182,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Pp]arasocial", "/notes/Parasocial")
         , ("[Pp]areidolia", "https://en.wikipedia.org/wiki/Pareidolia")
         , ("[Pp]article filtering", "https://en.wikipedia.org/wiki/Particle_filter")
-        , ("[Pp]asteurellosis", "https://en.wikipedia.org/wiki/Pasteurellosis")
         , ("[Pp]entobarbital", "https://en.wikipedia.org/wiki/Pentobarbital")
         , ("[Pp]erpetual futures", "https://en.wikipedia.org/wiki/Perpetual_futures")
         , ("[Pp]harmacogenomics", "https://en.wikipedia.org/wiki/Pharmacogenomics")
