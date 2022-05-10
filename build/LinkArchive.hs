@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-04-28 11:53:23 gwern"
+When:  Time-stamp: "2022-05-10 11:57:59 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -158,7 +158,7 @@ readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata
                                   Right Nothing   -> return True
                                   Left  _         -> return True)
                               pdl
-                         let pdl'' = filter (\(p,_) -> "http"`isPrefixOf`p && not ("https://www.gwern.net"`isPrefixOf`p)) pdl'
+                         let pdl'' = filter (\(p,_) -> "http"`isPrefixOf`p && not (whiteList p)) pdl'
                          return $ M.fromList pdl''
 
 -- rewriteLink:
@@ -345,6 +345,7 @@ whiteList url
       , "nixnote.org"
       , "wikiquote.org"
       , "archive.org"
+      , "web.archive.org"
       , "philarchive.org"
       , "httparchive.org"
       , "ietf.org"
