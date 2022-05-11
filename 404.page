@@ -14,8 +14,9 @@ index: true
 error404: true
 ...
 
-<figure class="float-right invertible outline-not">
-<img src="/static/img/logo/logo-unifrakturmaguntia-lowercase-h.png" title="&#39;I think you went too far.&#39; [Image of Fraktur/blackletter lowercase letter &#39;H&#39;, alluding to the &#39;G&#39; Fraktur logo of Gwern.net, humorously implying that the reader who has triggered a 404 Not Found error went too far past the &#39;G&#39;.]" alt="You went too far." /><figcaption aria-hidden="true">You went too far.</figcaption>
+<figure class="float-right outline-not">
+<svg width="452" height="452" alt="You went too far."><title>&lsquo;I think you went too far.&rsquo; [Image of Fraktur/blackletter lowercase letter &lsquo;H&rsquo;, alluding to the &lsquo;G&rsquo; Fraktur logo of Gwern.net, humorously implying that the reader who has triggered a 404 Not Found error went too far past the &lsquo;G&rsquo;.]</title><use href="/static/img/logo/logo-unifrakturmaguntia-lowercase-h.svg#logo-unifrakturmaguntia-lowercase-h"></use></svg>
+<figcaption aria-hidden="true">You went too far.</figcaption>
 </figure>
 
 <div class="epigraph">
