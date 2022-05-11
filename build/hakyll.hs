@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-05-05 09:03:32 gwern"
+When: Time-stamp: "2022-05-11 16:47:39 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -34,6 +34,7 @@ Explanations:
 - the 'echo' calls are there to ring the terminal bell and notify the user that he needs to edit the Modafinil file or that the whole thing is done
 -}
 
+import Control.Concurrent (forkIO)
 import Control.Exception (onException)
 import Control.Monad (when, unless, void)
 import Data.Char (toLower)
@@ -306,11 +307,10 @@ imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
                (status,_,bs) <-  runShellCommand "./" Nothing "convert" [tail target', "-resize", "768x768", smallerPath]
                case status of
                  ExitFailure _ -> error $ show status ++ show bs
-                 _ -> do if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
-                             void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [smallerPath]
-                           else
-                             void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/compressJPG" [smallerPath]
-                         void $ printGreen ("Created smaller image: " ++ smallerPath)
+                 _ -> void $ forkIO $ if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
+                                        void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [smallerPath]
+                                      else
+                                        void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/compressJPG" [smallerPath]
              let srcset = T.pack ("/"++smallerPath++" 768w, " ++ target'++" "++w++"w")
              return $ Image (c, t, pairs++[("srcset", srcset), ("sizes", T.pack ("(max-width: 768px) 100vw, "++w++"px"))])
                             inlines (target, title)
