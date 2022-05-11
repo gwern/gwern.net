@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-05-10 19:41:00 gwern"
+When:  Time-stamp: "2022-05-11 18:22:21 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -688,7 +688,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Hiroki Azuma", "https://en.wikipedia.org/wiki/Hiroki_Azuma")
         , ("Hiroshi Miyauchi", "https://en.wikipedia.org/wiki/Hiroshi_Miyauchi")
         , ("Hiroyuki Yamaga", "https://en.wikipedia.org/wiki/Hiroyuki_Yamaga")
-        , ("Hokkaido", "https://en.wikipedia.org/wiki/Hokkaido")
         , ("Homeric Question", "https://en.wikipedia.org/wiki/Homeric_Question")
         , ("Hsu 2014", "https://arxiv.org/abs/1408.3421")
         , ("Hugh Everett", "https://en.wikipedia.org/wiki/Hugh_Everett_III")
@@ -711,7 +710,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("J\\. ?K\\. ?Rowling", "https://en.wikipedia.org/wiki/J._K._Rowling")
         , ("Jargon File", "https://en.wikipedia.org/wiki/Jargon_File")
         , ("Jeanne Calment", "https://en.wikipedia.org/wiki/Jeanne_Calment")
-        , ("Jensen's inequality", "https://en.wikipedia.org/wiki/Jensen%27s_inequality")
         , ("John D\\. Arnold", "https://en.wikipedia.org/wiki/John_D._Arnold")
         , ("John L\\. Leal", "https://en.wikipedia.org/wiki/John_L._Leal")
         , ("Joseph Conrad", "https://en.wikipedia.org/wiki/Joseph_Conrad")
@@ -1117,9 +1115,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Hh]yperbolic discounting", "https://en.wikipedia.org/wiki/Hyperbolic_discounting")
         , ("[Ii]diopathic hypersomnia", "https://en.wikipedia.org/wiki/Idiopathic_hypersomnia")
         , ("[Ii]nclusionists?", "https://meta.wikimedia.org/wiki/Inclusionism")
-        , ("[Ii]nequality of arithmetic and geometric means", "https://en.wikipedia.org/wiki/Inequality_of_arithmetic_and_geometric_means")
-        , ("[Ii]nverted pendulum", "https://en.wikipedia.org/wiki/Inverted_pendulum")
-        , ("[Ii]yashikei", "https://tvtropes.org/pmwiki/pmwiki.php/Main/Iyashikei")
         , ("[Jj]ello", "https://en.wikipedia.org/wiki/Gelatin_dessert")
         , ("[Jj]umping [Ss]piders?", "https://en.wikipedia.org/wiki/Jumping_spider")
         , ("[Jj]ustified text", "https://en.wikipedia.org/wiki/Typographic_alignment#Justified")

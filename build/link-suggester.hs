@@ -204,7 +204,7 @@ filterAnchors d t = T.length t > anchorLengthMaximum ||
                        "matrix multiplication", "Silk Road 2", "Silk Road 2.0", "online", "Online", "side effects",
                        "status", "transcription/translation", "ADHD", "more difficult", "Johnson", "June 2016", "decline with age",
                        "criminal records", "the appendix", "API", "another page", "at least once", "must be", "expected from their",
-                       "animal welfare", "psychiatry", "the initial screening", "average-case", "go", "been removed", "mystical experience", "research in general", "been examined", "November 2021", "court records", "in a", "The Guardian", "suggests that", "learn faster", "project page", "psychiatry", "lifetime income", "December 2017", "January 2010", "another suggestion", "at all", "how long it takes", "sun"]
+                       "animal welfare", "psychiatry", "the initial screening", "average-case", "go", "been removed", "mystical experience", "research in general", "been examined", "November 2021", "court records", "in a", "The Guardian", "suggests that", "learn faster", "project page", "psychiatry", "lifetime income", "December 2017", "January 2010", "another suggestion", "at all", "how long it takes", "sun", "music generation"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteList :: M.Map T.Text [T.Text]
@@ -1128,4 +1128,15 @@ whiteList = M.fromList [
     , ("https://en.wikipedia.org/wiki/Dungeons_%26_Dragons", ["D&D"])
     , ("https://en.wikipedia.org/wiki/The_Guardian", ["_The Guardian_", "The Guardian"])
     , ("https://en.wikipedia.org/wiki/Openness_to_experience", ["Openness", "openness", "open to experience", "Open To Experience"])
+  , ( "https://en.wikipedia.org/wiki/Wikileaks" , [ "Wikileaks" ] )
+  , ( "https://en.wikipedia.org/wiki/Wine_(software)"
+    , [ "WINE" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Wired_(magazine)"
+    , [ "Wired" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Wozzeck" , [ "Wozzeck" ] )
+    , ( "https://en.wikipedia.org/wiki/Troll_(Internet)"
+    , [ "trolling" ]
+    )
   ]

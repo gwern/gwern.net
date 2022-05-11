@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-11 12:28:43 gwern"
+When:  Time-stamp: "2022-05-11 18:13:44 gwern"
 License: CC-0
 -}
 
@@ -459,6 +459,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
   where tagRewritesFixed :: [(String,String)]
         tagRewritesFixed = [
           ("reinforcement-learning", "RL")
+          , ("music-distraction", "music distraction")
           , ("psychology/chess", "chess psychology")
           , ("reinforcement-learning/chess", "AI chess")
           , ("ai/anime", "anime AI")
@@ -551,7 +552,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("economics/georgism", "Georgism")
           , ("bitcoin/pirateat40", "Pirateat40")
           , ("psychology/novelty", "novelty U-curve")
-          , ("spaced-repetition", "SRS")
+          , ("spaced-repetition", "spaced repetition")
           , ("fiction/criticism", "literary criticism")
           , ("fiction/text-game", "text games")
           , ("fiction/gene-wolfe", "Gene Wolfe")
@@ -566,7 +567,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("fiction/opera", "opera")
           , ("fiction/poetry", "poetry")
           , ("insight-porn", "insight porn")
-          , ("wikipedia", "WP")
+          , ("wikipedia", "Wikipedia")
           , ("sunk-cost", "sunk cost")
           , ("radiance", "Radiance")
           , ("long-now", "Long Now")
@@ -578,6 +579,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("touhou", "Touhou")
           , ("zeo", "sleep")
           , ("co2", "CO₂")
+          , ("traffic", "web traffic")
           ]
         tagRewritesRegexes  :: [(String,String)]
         tagRewritesRegexes = [("^cs/", "CS/")
@@ -588,8 +590,8 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
                              , ("^ai$", "AI")
                              , ("^iq/", "IQ/")
                              , ("^iq$", "IQ")
-                             , ("^eva/", "NGE")
-                             , ("^tcs/", "TDCS")
+                             , ("^eva$", "NGE")
+                             , ("^tcs$", "TDCS")
                              , ("^gan$", "GAN")
                              , ("^psychology/", "psych/")
                              , ("^technology/", "tech/")

@@ -14,7 +14,6 @@ index: true
 error404: true
 ...
 
-
 <figure class="float-right outline-not">
 <svg width="452" height="452" alt="You went too far."><title>&lsquo;I think you went too far.&rsquo; [Image of Fraktur/blackletter lowercase letter &lsquo;H&rsquo;, alluding to the &lsquo;G&rsquo; Fraktur logo of Gwern.net, humorously implying that the reader who has triggered a 404 Not Found error went too far past the &lsquo;G&rsquo;.]</title><use href="/static/img/logo/logo-unifrakturmaguntia-lowercase-h.svg#logo-unifrakturmaguntia-lowercase-h"></use></svg>
 <figcaption aria-hidden="true">You went too far.</figcaption>
@@ -189,7 +188,7 @@ Other search options:
 - [Immoral Books](/Immoral-Books){.backlink-not}
 - [A/B testing long-form readability on Gwern.net](/AB-testing "Branwen 2012"){.backlink-not}
 - [_McNamara's Folly_: The Denial of Individual Differences](/reviews/McNamara){.backlink-not}
-- [Nash 1955](/docs/cs/1955-nash){.backlink-not}
+- [Nash 1955](/docs/cs/cryptography/1955-nash){.backlink-not}
 - [Does Mouse Utopia Exist?](/Mouse-Utopia "Branwen 2019"){.backlink-not}
 - [Ordinary Incompetence](/notes/Competence){.backlink-not}
 - [`/newsletter/2020/13`](/newsletter/2020/13){.backlink-not}
