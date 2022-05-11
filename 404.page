@@ -14,9 +14,11 @@ index: true
 error404: true
 ...
 
-<figure class="float-right invertible outline-not">
-<img src="/static/img/logo/logo-unifrakturmaguntia-lowercase-h.png" title="&#39;I think you went too far.&#39; [Image of Fraktur/blackletter lowercase letter &#39;H&#39;, alluding to the &#39;G&#39; Fraktur logo of Gwern.net, humorously implying that the reader who has triggered a 404 Not Found error went too far past the &#39;G&#39;.]" alt="You went too far." /><figcaption aria-hidden="true">You went too far.</figcaption>
-</figure>
+<svg width="452" height="452"
+    alt="You went too far."
+    title="'I think you went too far.' [Image of Fraktur/blackletter lowercase letter 'H', alluding to the 'G' Fraktur logo of Gwern.net, humorously implying that the reader who has triggered a 404 Not Found error went too far past the 'G'.]">
+    <use href="/static/img/logo/logo-unifrakturmaguntia-lowercase-h.svg#logo-unifrakturmaguntia-lowercase-h"></use>
+</svg>
 
 <div class="epigraph">
 > "Every shrub, every tree—<br />if one has not forgotten<br />where they were planted—<br />has beneath the fallen snow<br />some vestige of its form."
@@ -26,10 +28,13 @@ error404: true
 
 Try to remember...
 
-Other options:
+---
+
+Other search options:
 
 - visit the [**main index**](/index "'Essays', N/A 2009"){.backlink-not} of pages to find what you are looking for
-- [use a **search engine**](https://www.google.com/search?q=site%3Agwern.net)
+- use a [**search engine**](https://www.google.com/search?q=site%3Agwern.net)
+- browse [documents by **tag**](/docs/index "‘Essays’, N/A 2009")
 - or look at this list of **pages by traffic**:
 
 <div class="columns">
@@ -129,7 +134,7 @@ Other options:
 - [`/newsletter/2021/02`](/newsletter/2021/02){.backlink-not}
 - [Timing Technology: Lessons From _The Media Lab_](/Timing "Branwen 2012"){.backlink-not}
 - [The Kelly Coin-Flipping Game: Exact Solutions](/Coin-flip "Branwen et al 2017"){.backlink-not}
-- [`/docs/nootropic/quantified-self/index`](/docs/nootropic/quantified-self/index){.backlink-not}
+- [`/docs/nootropic/quantified-self/index`](/docs/nootropic/quantified-self/index "'Essays', N/A 2009"){.backlink-not}
 - [Iodine and Adult IQ meta-analysis](/Iodine "Branwen 2012"){.backlink-not}
 - [Dual _n_-Back Meta-Analysis](/DNB-meta-analysis "Branwen 2012"){.backlink-not}
 - [When Should I Check The Mail?](/Mail-delivery "Branwen 2015"){.backlink-not}
@@ -156,7 +161,7 @@ Other options:
 - [GPT-2 Preference Learning for Music Generation](/GPT-2-preference-learning "Branwen 2019"){.backlink-not}
 - [Hafu in anime](/Hafu){.backlink-not}
 - [`/komm-susser-tod`](/komm-susser-tod){.backlink-not}
-- [`/docs/bitcoin/index`](/docs/bitcoin/index){.backlink-not}
+- [`/docs/bitcoin/index`](/docs/bitcoin/index "'Essays', N/A 2009"){.backlink-not}
 - [CO2/ventilation sleep experiment](/zeo/CO2 "Branwen 2016"){.backlink-not}
 - [ZMA Sleep Experiment](/zeo/ZMA "Branwen 2017"){.backlink-not}
 - [_MLP_: Immanetizing The Equestrian](/reviews/MLP "Branwen 2018"){.backlink-not}
@@ -168,16 +173,16 @@ Other options:
 - [Caffeine wakeup experiment](/zeo/Caffeine "Branwen 2013"){.backlink-not}
 - [Terrorism is not Effective](/Terrorism-is-not-Effective){.backlink-not}
 - ["Shiny Balls of Mud"](/docs/japanese/2002-gibson){.backlink-not}
-- [`/docs/anime/index`](/docs/anime/index){.backlink-not}
+- [`/docs/anime/index`](/docs/anime/index "'Essays', N/A 2009"){.backlink-not}
 - [SMPY Bibliography](/SMPY "Branwen 2018"){.backlink-not}
 - [Cat Psychology & Domestication: Are We Good Owners?](/reviews/Cat-Sense "Branwen 2018"){.backlink-not}
 - [Wooden pillows](/Wooden-pillows){.backlink-not}
-- [`/docs/psychology/index`](/docs/psychology/index){.backlink-not}
+- [`/docs/psychology/index`](/docs/psychology/index "'Essays', N/A 2009"){.backlink-not}
 - [`/notes/Scaling`](/notes/Scaling){.backlink-not}
 - [Origins of Innovation: Bakewell & Breeding](/reviews/Bakewell "Branwen 2018"){.backlink-not}
 - [Conscientiousness and online education](/Conscientiousness-and-online-education){.backlink-not}
 - [The Ups and Downs of the Hope Function](/docs/statistics/bayes/1994-falk){.backlink-not}
-- [`/docs/ai/gpt/index`](/docs/ai/gpt/index){.backlink-not}
+- [`/docs/ai/gpt/index`](/docs/ai/gpt/index "'Essays', N/A 2009"){.backlink-not}
 - ["Loyal to the Group of Seventeen’s Story—The Just Man"](/docs/culture/1983-wolfe-thecitadeloftheautarch-thejustman "Wolfe 2018"){.backlink-not}
 - [Charity is not about helping](/Charity-is-not-about-helping){.backlink-not}
 - [Slowing Moore’s Law: How It Could Happen](/Slowing-Moores-Law "Branwen 2012"){.backlink-not}
@@ -193,7 +198,7 @@ Other options:
 - [What Is The Collecting Mindset?](/Collecting){.backlink-not}
 - [Tea Reviews](/reviews/Tea "Branwen 2011"){.backlink-not}
 - [On the (Non) Existence of Powerful Natural Languages](/Language "Branwen 2016"){.backlink-not}
-- [`/docs/insight-porn/index`](/docs/insight-porn/index){.backlink-not}
+- [`/docs/insight-porn/index`](/docs/insight-porn/index "'Essays', N/A 2009"){.backlink-not}
 - [`/docs/index`](/docs/index "Documents, N/A 2009"){.backlink-not}
 - [Fake Journal Club: Teaching Critical Reading](/Fake-Journal-Club "Branwen 2022"){.backlink-not}
 - [Wikipedia resume](/Wikipedia-resume){.backlink-not}
@@ -206,10 +211,10 @@ Other options:
 - [`/docs/japanese/teika`](/docs/japanese/teika){.backlink-not}
 - [Lithium in ground-water and well-being](/Lithium "Branwen 2010"){.backlink-not}
 - [Making Anime With BigGAN](/BigGAN "Branwen 2019"){.backlink-not}
-- [Superrationality, Hofstadter 1985](/docs/existential-risk/1985-hofstadter){.backlink-not}
+- [Superrationality, Hofstadter 1985](/docs/existential-risk/1985-hofstadter "‘Metamagical Themas: Sanity and Survival’, Hofstadter 2012"){.backlink-not}
 - [Music and distraction](/Music-distraction){.backlink-not}
 - [Dune notes](/dune "Branwen 2010"){.backlink-not}
-- [`/docs/nootropic/index`](/docs/nootropic/index){.backlink-not}
+- [`/docs/nootropic/index`](/docs/nootropic/index "'Essays', N/A 2009"){.backlink-not}
 - [_Radiance: A Novel_](/docs/radiance/2002-scholz-radiance "Scholz et al 2013"){.backlink-not}
 - [Catnip immunity and alternatives](/Catnip "Branwen 2015"){.backlink-not}
 </div>
