@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-10 18:43:53 gwern"
+When:  Time-stamp: "2022-05-11 12:28:43 gwern"
 License: CC-0
 -}
 
@@ -198,8 +198,11 @@ readLinkMetadataAndCheck = do
                                                  else not (isURIReference x)) (M.toList final)
              when (not $ null urlsAll) $ printRed "Invalid URIs?" >> putStrLn (ppShow urlsAll)
 
-             let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) (M.toList final) in
-               Par.mapM_ (\a -> when (not (null a)) $ when (a =~ dateRegex) (error $ "Mixed up author & date?: " ++ a) ) authors
+             let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) (M.toList final)
+             Par.mapM_ (\a -> when (not (null a)) $ when (a =~ dateRegex) (error $ "Mixed up author & date?: " ++ a) ) authors
+             let authorsSemicolon = filter (';' `elem`) authors
+             when (not (null authorsSemicolon)) (printRed "Semicolons & not comma-separated author list?" >> putStrLn (ppShow authorsSemicolon))
+
              let dates = map (\(_,(_,_,dt,_,_,_)) -> dt) (M.toList final) in
                Par.mapM_ (\d -> when (not (null d)) $ unless (d =~ dateRegex) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
 
@@ -2552,6 +2555,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("learn-ing", "learning")
           , ("Per- formance", "Performance")
           , ("per- formance", "performance")
+          , (" itis ", " it is ")
+          , (" k ", " <em>k</em> ")
+          , (" k-shot", " <em>k</em>-shot")
           , ("one- or five-shot", "one-shot or five-shot")
           , ("lan- guage", "language")
           , ("pro-posed", "proposed")
@@ -2584,4 +2590,6 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("₂", "<sub>2</sub>")
           , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
           , ("‰", "%") -- PER MILLE SIGN https://en.wikipedia.org/wiki/Per_mille - only example I've ever seen was erroneous
+          , ("Oamp#x02019;", "O’")
+          , ("Camp#x000ED;", "Cí")
             ]
