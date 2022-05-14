@@ -30,7 +30,7 @@ import Utils (writeUpdatedFile, printGreen, anyInfixT, anyPrefixT)
 
 hitsMinimum, anchorLengthMaximum :: Int
 hitsMinimum = 2
-anchorLengthMaximum = 173
+anchorLengthMaximum = 100
 
 -- | Map over the filenames
 main :: IO ()
@@ -45,28 +45,31 @@ main = do
   let db = M.filterWithKey (\k _ -> not $ filterURLs k) $ M.fromListWith (++) pairs :: M.Map T.Text [T.Text]
 
   -- we de-duplicate *after* checking for minimum. Particularly for citations, each use counts, but we don't need each instance of 'Foo et al 2021' in the DB (`/usr/share/dict/words`), so we unique the list of anchors
-  let db' = M.map (nub . sort . cleanAnchors) $ M.filter (\texts -> length texts >= hitsMinimum) db
+  let dbMinimumLess = M.union whiteList $ M.map (nub . sort . cleanAnchors) $ M.filter (\texts -> length texts >= hitsMinimum) db
+  let dbFailedMinimum = ("Did not pass hitsMinimum filter", db `M.difference` dbMinimumLess) -- NOTE: difference is not symmetrical: "Return elements of the first map not existing in the second map." so need to do OLD `M.difference` NEW
 
   -- We want to filter out any anchor text which is associated with more than 1 URL (those are too ambiguous to be useful), any text which is in the system dictionary, and anything in the blacklist patterns or list.
-  let anchorTextsDupes = U.repeated $ concat $ M.elems db'
-  dict <- dictionarySystem
-  let db'' = whiteList `M.union`
-             (M.filter (not . null) $ M.map (filter (\t -> not (t `elem` anchorTextsDupes || filterAnchors dict t))) db')
+  let anchorTextsDupes = U.repeated $ concat $ M.elems dbMinimumLess
+  let dbTextDupeLess = M.union whiteList $ M.map (filter (`notElem` anchorTextsDupes)) dbMinimumLess
+  let dbFailedDupe = ("Did not pass anchorTextDupes filter"::T.Text,                   dbMinimumLess `M.difference` dbTextDupeLess)
 
-  -- record what we threw away for later inspection:
-  let deletedDb = M.difference db' db''
-  -- print $
-  --   sortBy (\t1 t2 -> if (T.length t1 > T.length t2) then LT else if (T.length t1 == T.length t2) then if (t1 > t2) then LT else GT else GT) $
-  --   filter (\t -> (" " `T.isInfixOf` t) && (all (\t'' -> S.member (T.toLower t'') dict) $ T.words t)) $ concat $ M.elems db''
+  dict <- dictionarySystem
+  let dbDictLess = M.union whiteList $ M.map (filter (\t -> not (S.member (T.toLower t) dict))) dbTextDupeLess
+  let dbFailedDict = ("Did not pass system dictionary filter"::T.Text,                          dbTextDupeLess `M.difference` dbDictLess)
+
+  let dbAnchorLess = M.union whiteList $ M.map (filter (not . filterAnchors)) dbDictLess
+  let dbFailedAnchor = ("Did not pass anchor filter"::T.Text,                 dbDictLess `M.difference` dbAnchorLess)
+
+  let dbClean = M.union whiteList $ M.filter (not . null) dbAnchorLess
 
   -- swap [(URL,[Anchor])] to [(Anchor,URL)] (which we need for doing 'search-replace before after'), by expanding/flattening the list:
-  let reversedDB = concatMap (\(url,ts) -> zip ts (repeat url)) $ M.toList db''
+  let reversedDB = concatMap (\(url,ts) -> zip ts (repeat url)) $ M.toList dbClean
   -- sort by length of anchor text in descending length: longer matches should come first, for greater specificity in doing rewrites.
   let reversedDBSorted = sortBy (\(t1,_) (t2,_) -> if T.length t1 > T.length t2 then LT else if T.length t1 == T.length t2 then if t1 > t2 then LT else GT else GT) reversedDB
   let elispDB = haskellListToElispList reversedDBSorted
 
   writeUpdatedFile "linkSuggestions.el.tmp" outputTarget elispDB
-  writeUpdatedFile "linkSuggestions-deleted.hs.tmp" "metadata/linkSuggestions-deleted.hs" $ T.pack (ppShow deletedDb)
+  writeUpdatedFile "linkSuggestions-deleted.hs.tmp" "metadata/linkSuggestions-deleted.hs" $ T.pack (ppShow [dbFailedAnchor, dbFailedDupe, dbFailedDict, dbFailedMinimum])
   printGreen "Wrote out link suggestion database."
 
 -- format the pairs in Elisp `(setq rewrites '((foo bar)) )` style so it can be read in & executed directly by Emacs's `load-file`.
@@ -82,7 +85,7 @@ cleanAnchors :: [T.Text] -> [T.Text]
 cleanAnchors = map cleanAnchor
    where cleanAnchor :: T.Text -> T.Text
          cleanAnchor = T.dropWhileEnd trimText . T.dropWhile trimText
-         trimText = (\c -> isSpace c || isPunctuation c || c == '=' || c == '+')
+         trimText c = isSpace c || isPunctuation c || c == '=' || c == '+'
 
 -- We do case-insensitive matching to pick up dictionary words at beginning of sentence. We only look up entire phrases; if we split into words by whitespace and look up each word, then even when all words are in the dictionary, too many reasonable anchor texts would be filtered out.
 dictionarySystem :: IO (S.Set T.Text)
@@ -99,9 +102,8 @@ parseURLs file = do
 filterURLs :: T.Text -> Bool
 filterURLs    u = anyPrefixT u ["$","\8383","#","/static/img/","/newsletter/20","dropbox.com","https://www.harney.com"] ||
                   u `elem` ["https://www.reuters.com/article/us-germany-cyber-idUSKCN1071KW"]
-filterAnchors :: S.Set T.Text -> T.Text -> Bool
-filterAnchors d t = T.length t > anchorLengthMaximum ||
-                    S.member (T.toLower t) d ||
+filterAnchors :: T.Text -> Bool
+filterAnchors   t = T.length t > anchorLengthMaximum ||
                     t =~ regex ||
                     anyInfixT t ["$","%","[","]"] ||
                     anyPrefixT t ["(","."] ||
@@ -204,7 +206,7 @@ filterAnchors d t = T.length t > anchorLengthMaximum ||
                        "matrix multiplication", "Silk Road 2", "Silk Road 2.0", "online", "Online", "side effects",
                        "status", "transcription/translation", "ADHD", "more difficult", "Johnson", "June 2016", "decline with age",
                        "criminal records", "the appendix", "API", "another page", "at least once", "must be", "expected from their",
-                       "animal welfare", "psychiatry", "the initial screening", "average-case", "go", "been removed", "mystical experience", "research in general", "been examined", "November 2021", "court records", "in a", "The Guardian", "suggests that", "learn faster", "project page", "psychiatry", "lifetime income", "December 2017", "January 2010", "another suggestion", "at all", "how long it takes", "sun", "music generation", "LW", "HN", "survey results"]
+                       "animal welfare", "psychiatry", "the initial screening", "average-case", "go", "been removed", "mystical experience", "research in general", "been examined", "November 2021", "court records", "in a", "The Guardian", "suggests that", "learn faster", "project page", "psychiatry", "lifetime income", "December 2017", "January 2010", "another suggestion", "at all", "how long it takes", "sun", "music generation", "LW", "HN", "survey results", "1kg", "~6", "3D", "Rumi"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteList :: M.Map T.Text [T.Text]
@@ -1139,4 +1141,5 @@ whiteList = M.fromList [
     , ( "https://en.wikipedia.org/wiki/Troll_(Internet)"
     , [ "trolling" ]
     )
+    , ("https://en.wikipedia.org/wiki/Rumi", ["Rumi"] )
   ]
