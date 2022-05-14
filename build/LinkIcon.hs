@@ -323,6 +323,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.nextplatform.com" = aI "NEXT" "text,quad,sans" -- The Next Platform's double-cube logo *could* work as an SVG but not convinced it'd be recognizable
  | u'' "www.vetta.org" = aI "Legg" "text,quad,sans" -- Shane Legg (DeepMind)
  | u'' "www.spiegel.de" = aI "SPGL" "text,quad" -- Der Spiegel, major German newspaper; the 'S' logo is unrecognizable given the sheer number of 'S' logos out there, so abbreviation instead
+ | u ''tasvideos.org'' = aI "TASV" "text,quad" -- TASVideos.org: tool-assisted game movies
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -371,6 +372,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.connectedpapers.com" = aI "connected-papers" "svg"
  | u' "nasa.gov" = aI "nasa" "svg" -- NASA has way too many subdomains to try to whitelist them individually. SVG is a quad version of <https://commons.wikimedia.org/wiki/File:NASA_Worm_logo_(black).svg>
  | aU'' ["link.springer.com", "rd.springer.com"] || u' ".biomedcentral.com" = aI "springerlink" "svg"  -- (♘) WHITE CHESS KNIGHT as SVG
+ | u'' "www.metaculus.com" = aI "metaculus" "svg"
 
  -- many orgs will use a medium subdomain, so we fall back here for Medium and override above:
  | u'' "medium.com" || u'' "towardsdatascience.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
@@ -1003,6 +1005,8 @@ linkIconTestUnitsText =
          , ("https://link.springer.com/article/10.3758/s13423-021-01927-8", "springerlink", "svg")
          , ("https://www.cs.utexas.edu/~EWD/transcriptions/EWD03xx/EWD340.html", "EWD", "text,tri,sans")
          , ("https://iopscience.iop.org/article/10.1088/1748-9326/aabf9b", "IOP", "text,tri,sans")
+         , ("https://tasvideos.org/3653M", "TASV", "text,quad")
+         , ("https://www.metaculus.com/questions/notebooks/8702/the-promise-and-impact-of-the-next-generation-of-weight-loss-drugs/", "metaculus", "svg")
         ]
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
