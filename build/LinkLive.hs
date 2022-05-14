@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-05-10 13:00:16 gwern"
+When:  Time-stamp: "2022-05-11 21:30:18 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -4074,7 +4074,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://priceonomics.com/why-is-art-expensive/", False)
     , ("https://prisons.org.uk/worker-at-brixton-jail-charged-with-trying-to-buy-gun-and-ammo/", False)
     , ("https://proceedings.neurips.cc/paper/2016/hash/7ef605fc8dba5425d6965fbd4c8fbe1f-Abstract.html", False)
-    , ("https://psi.sagepub.com/content/12/1/3.full?ijkey=/bwNip9GMWEg2&keytype=ref&siteid=sppsi", False)
+    , ("https://psi.sagepub.com/content/12/1/3.full", False)
     , ("https://psmag.com/social-justice/diy-diagnosis-extreme-athlete-uncovered-genetic-flaw-88763", False)
     , ("https://pss.sagepub.com/content/24/4/562.full", False)
     , ("https://psychology.gatech.edu/renglelab/2010/shipsteadredickengle.pdf", False)

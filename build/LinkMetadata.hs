@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-11 18:13:44 gwern"
+When:  Time-stamp: "2022-05-13 10:19:43 gwern"
 License: CC-0
 -}
 
@@ -884,7 +884,7 @@ openreview p   = do let p' = replace "/pdf?id=" "/forum?id=" p
                                                  else "[Keywords: " ++ concat keywords ++ "]"
                                let tldr' = cleanAbstractsHTML $ processArxivAbstract tldr
                                let desc' = cleanAbstractsHTML $ processArxivAbstract desc
-                               let abstractCombined = intercalate "\n" [tldr', desc', cleanAbstractsHTML $ processArxivAbstract keywords']
+                               let abstractCombined = trim $ intercalate "\n" [tldr', desc', cleanAbstractsHTML $ processArxivAbstract keywords']
                                return $ Right (p, (trimTitle title, initializeAuthors $ trim author, date, "", [],
                                                    -- due to pseudo-LaTeX
                                                      abstractCombined))
@@ -1751,6 +1751,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(\\mathcal{O}(1)\\)</span>", "𝒪(1)")
           , ("<span class=\"texhtml \">\\mathcal{O}(log <i>n</i>)</span>", "𝒪(log <em>n</em>)")
           , ("$O(log n)$", "𝒪(log <em>n</em>)")
+          , ("<span class=\"math inline\">\\(\\log n\\)</span>", "log <em>n</em>")
           , ("$\\mathcal{O}(log n)$", "𝒪(log <em>n</em>)")
           , ("<span class=\"math inline\">\\(\\mathcal{O}(L^2)\\)</span>", "𝑂(<em>L</em><sup>2</sup>)")
           , ("<span class=\"math inline\">\\(\\mathcal{O}(L\\log(L))\\)</span>", "𝑂(log(<em>L</em>))")
@@ -1797,6 +1798,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(n\\)</span>", "<em>n</em>")
           , ("<span class=\"math inline\">\\(\\alpha\\)</span>", "α")
           , ("<span class=\"math inline\">\\(n^{1/4}\\)</span>", "<em>n</em><sup>1⁄4</sup>")
+          , ("<span class=\"math inline\">\\(n^{1/3}\\)</span>", "<em>n</em><sup>1⁄3</sup>")
+          , ("<span class=\"math inline\">\\(c n^{1/3}\\)</span>", "<em>cn</em><sup>1⁄3</sup>")
+          , ("<span class=\"math inline\">\\(c&gt;0\\)</span>", "<em>c</em> &gt; 0")
           , ("<span class=\"math inline\">\\(n^{1/2}\\)</span>", "<em>n</em><sup>1⁄2</sup>")
           , ("<span class=\"math inline\">\\(n^{-1/2}\\)</span>", "<em>n</em><sup>−1⁄2</sup>")
           , ("<span class=\"math inline\">\\(n^{-1}\\)</span>", "<em>n</em><sup>−1</sup>")
@@ -1808,6 +1812,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(k\\)</span>", "<em>k</em>")
           , ("<span class=\"math inline\">\\(k \\rightarrow \\infty\\)</span>", "<em>k</em> → ∞")
           , ("<span class=\"math inline\">\\(\\infty\\)</span>", "∞")
+          , ("<span class=\"math inline\">\\(1/2 H_n\\)</span>", "1⁄2<em>H<sub>n</sub></em>")
+          , ("<span class=\"math inline\">\\(H_n \\sim \\ln n\\)</span>", "<em>H<sub>n</sub></em> ln <em>n</em>")
           , ("<math>A</math>", "<em>A</em>")
           , ("<math>B</math>", "<em>B</em>")
           , ("<math>C</math>", "<em>C</em>")

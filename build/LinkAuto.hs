@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-05-11 18:22:21 gwern"
+When:  Time-stamp: "2022-05-13 12:55:34 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -600,7 +600,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("EigenGAN", "https://arxiv.org/abs/2104.12476")
         , ("El Ten Eleven", "https://en.wikipedia.org/wiki/El_Ten_Eleven")
         , ("Eleme", "https://en.wikipedia.org/wiki/Ele.me")
-        , ("Elena Ferrante", "https://en.wikipedia.org/wiki/Elena_Ferrante")
         , ("Elo rating system", "https://en.wikipedia.org/wiki/Elo_rating_system")
         , ("Emacs", "https://en.wikipedia.org/wiki/Emacs")
         , ("Epigrams in Programming", "/docs/cs/1982-perlis.pdf")
@@ -620,15 +619,12 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Feynman", "https://en.wikipedia.org/wiki/Richard_Feynman")
         , ("Fischer Black", "https://en.wikipedia.org/wiki/Fischer_Black")
         , ("Flash", "https://en.wikipedia.org/wiki/Adobe_Flash")
-        , ("Flexner Report", "https://en.wikipedia.org/wiki/Flexner_Report")
         , ("Flickr", "https://en.wikipedia.org/wiki/Flickr")
         , ("Flowers for Algernon", "https://en.wikipedia.org/wiki/Flowers_for_Algernon")
         , ("Flynn [Ee]ffect", "https://en.wikipedia.org/wiki/Flynn_effect")
         , ("Fourier identity", "https://en.wikipedia.org/wiki/Fourier_transform")
         , ("Francis Fukuyama", "https://en.wikipedia.org/wiki/Francis_Fukuyama")
-        , ("Frank Dikötter", "https://en.wikipedia.org/wiki/Frank_Dik%C3%B6tter")
         , ("Frank P. Ramsey", "https://en.wikipedia.org/wiki/Frank_Ramsey_(mathematician)")
-        , ("Frankie Muniz", "https://en.wikipedia.org/wiki/Frankie_Muniz")
         , ("Franz Ferdinand", "https://en.wikipedia.org/wiki/Archduke_Franz_Ferdinand_of_Austria")
         , ("FreeBSD", "https://en.wikipedia.org/wiki/FreeBSD")
         , ("Freeman Dyson", "https://en.wikipedia.org/wiki/Freeman_Dyson")
@@ -665,7 +661,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Givewell", "https://en.wikipedia.org/wiki/Givewell")
         , ("Global Burden of Disease", "https://en.wikipedia.org/wiki/Global_burden_of_disease")
         , ("Go[- ]?Explore", "https://arxiv.org/abs/1901.10995#uber")
-        , ("God [Ii]s [Aa]n Astronaut", "https://en.wikipedia.org/wiki/God_Is_an_Astronaut")
         , ("Gompertz", "https://en.wikipedia.org/wiki/Gompertz%E2%80%93Makeham_law_of_mortality")
         , ("GoodReads", "https://en.wikipedia.org/wiki/GoodReads")
         , ("Google Reader", "https://en.wikipedia.org/wiki/Google_Reader")
@@ -679,7 +674,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Hans Moravec", "https://en.wikipedia.org/wiki/Hans_Moravec")
         , ("Hayao Miyazaki", "https://en.wikipedia.org/wiki/Hayao_Miyazaki")
         , ("Henry Darger", "https://en.wikipedia.org/wiki/Henry_Darger")
-        , ("Herbert Hoover", "https://en.wikipedia.org/wiki/Herbert_Hoover")
         , ("Hermann Hesse", "https://en.wikipedia.org/wiki/Hermann_Hesse")
         , ("Hex", "https://en.wikipedia.org/wiki/Hex_(board_game)")
         , ("Hideaki Anno", "https://en.wikipedia.org/wiki/Hideaki_Anno")
@@ -880,7 +874,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Scott Aaronson", "https://en.wikipedia.org/wiki/Scott_Aaronson")
         , ("Scott Alexander", "https://astralcodexten.substack.com/")
         , ("Scott Sumner", "https://en.wikipedia.org/wiki/Scott_Sumner")
-        , ("Sestero", "https://en.wikipedia.org/wiki/Greg_Sestero")
         , ("Seymour Cray", "https://en.wikipedia.org/wiki/Seymour_Cray")
         , ("Shawn Bradley", "https://en.wikipedia.org/wiki/Shawn_Bradley")
         , ("Shawn Presser", "https://nitter.hu/theshawwn")
@@ -1046,7 +1039,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Cc]ryonics?", "https://en.wikipedia.org/wiki/Cryonics")
         , ("[Cc]ryopreserv(e.?|ation)", "https://en.wikipedia.org/wiki/Cryopreservation")
         , ("[Cc]ryptographic hash function", "https://en.wikipedia.org/wiki/Cryptographic_hash_function")
-        , ("[Cc]urare", "https://en.wikipedia.org/wiki/Curare")
         , ("[Cc]ypherpunk", "https://en.wikipedia.org/wiki/Cypherpunk")
         , ("[Dd]arcs", "https://en.wikipedia.org/wiki/Darcs")
         , ("[Dd]ark [Tt]riad", "https://en.wikipedia.org/wiki/Dark_triad")
