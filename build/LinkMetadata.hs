@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-13 10:19:43 gwern"
+When:  Time-stamp: "2022-05-14 20:32:51 gwern"
 License: CC-0
 -}
 
@@ -58,7 +58,7 @@ import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink (getSimilarLink, getBackLink)
 import Query (extractURLs, truncateTOCHTML)
-import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix)
+import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency)
 
 ----
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
@@ -151,10 +151,10 @@ readLinkMetadataAndCheck = do
              let titles = map (\(_,(t,_,_,_,_,_)) -> filter (\c -> not (isPunctuation c || isSpace c)) $ map toLower t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
 
              let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> '–' `elem` doi || '—' `elem` doi || ' ' `elem` doi || ',' `elem` doi || "http" `isInfixOf` doi) custom in
-                 when (not (null badDoisDash)) $ error $ "Bad DOIs (bad punctuation): " ++ show badDoisDash
+                 unless (null badDoisDash) $ error $ "Bad DOIs (bad punctuation): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
              let badDoisSlash = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else not ('/' `elem` doi)) custom in
-               when (not (null badDoisSlash)) $ error $ "Invalid DOI (missing mandatory forward slash): " ++ show badDoisSlash
+               unless (null badDoisSlash) $ error $ "Invalid DOI (missing mandatory forward slash): " ++ show badDoisSlash
 
              let emptyCheck = filter (\(u,(t,a,_,_,_,s)) ->  "" `elem` [u,t,a,s]) custom
              unless (null emptyCheck) $ error $ "Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
@@ -196,19 +196,19 @@ readLinkMetadataAndCheck = do
              let urlsAll = filter (\(x@(u:_),_) -> if u == '/' || u == '!' || u == '$' || u == '\8383' ||
                                                       "wikipedia.org" `isInfixOf` x || "hoogle.haskell.org" `isInfixOf` x then False
                                                  else not (isURIReference x)) (M.toList final)
-             when (not $ null urlsAll) $ printRed "Invalid URIs?" >> putStrLn (ppShow urlsAll)
+             unless (null urlsAll) $ printRed "Invalid URIs?" >> putStrLn (ppShow urlsAll)
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) (M.toList final)
-             Par.mapM_ (\a -> when (not (null a)) $ when (a =~ dateRegex) (error $ "Mixed up author & date?: " ++ a) ) authors
+             Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex) (error $ "Mixed up author & date?: " ++ a) ) authors
              let authorsSemicolon = filter (';' `elem`) authors
-             when (not (null authorsSemicolon)) (printRed "Semicolons & not comma-separated author list?" >> putStrLn (ppShow authorsSemicolon))
+             unless (null authorsSemicolon) (printRed "Semicolons & not comma-separated author list?" >> putStrLn (ppShow authorsSemicolon))
 
              let dates = map (\(_,(_,_,dt,_,_,_)) -> dt) (M.toList final) in
-               Par.mapM_ (\d -> when (not (null d)) $ unless (d =~ dateRegex) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
+               Par.mapM_ (\d -> unless (null d) $ unless (d =~ dateRegex) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
 
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.
              let titlesEmpty = M.filter (\(t,_,_,_,_,abst) -> t=="" && length abst > 100) final
-             when (not $ null titlesEmpty) $ error ("Link Annotation Error: missing title despite abstract!" ++ show titlesEmpty)
+             unless (null titlesEmpty) $ error ("Link Annotation Error: missing title despite abstract!" ++ show titlesEmpty)
 
              let tagIsNarrowerThanFilename = M.map (\(title,_,_,_,tags,_) -> (title,tags)) $ M.filterWithKey (\f (_,_,_,_,tags,_) -> if not ("/docs/" `isPrefixOf` f) then False else
                                                         let fileTag = replace "/docs/" "" $ takeDirectory f
@@ -218,10 +218,13 @@ readLinkMetadataAndCheck = do
              -- check tags (not just custom but all of them, including partials)
              let tagsSet = nubOrd $ concat $ M.elems $ M.map (\(_,_,_,_,tags,_) -> tags) final
              Par.mapM_ (\tag -> do directoryP <- doesDirectoryExist ("docs/"++tag++"/")
-                                   when (not directoryP) $ do
+                                   unless directoryP $ do
                                      let missingTags = M.filter (\(_,_,_,_,tags,_) -> tag`elem`tags) final
                                      error ("Link Annotation Error: tag does not match a directory! " ++ "Bad tag: '" ++ tag ++ "'\nBad annotation: " ++ show missingTags))
                tagsSet
+
+             let tagsOverused = filter (\(c,_) -> c > tagMax) $ tagCount final
+             unless (null tagsOverused) $ (printRed "Overused tags: " >> print tagsOverused)
              return final
 
 dateRegex, footnoteRegex, sectionAnonymousRegex :: String
@@ -417,6 +420,12 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
 -- WARNING: because of the usual RawHtml issues, reading with Pandoc doesn't help - it just results in RawInlines which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
 rewriteAnchors :: FilePath -> T.Text -> T.Text
 rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
+
+-- Remind to refine link directory-tags: should be <100. (We count using the annotation database instead of counting files inside each directory because so many are now cross-tagged or virtual.)
+tagMax :: Int
+tagMax = 100
+tagCount :: Metadata -> [(Int,String)]
+tagCount = frequency . concatMap (\(_,(_,_,_,_,tags,_)) -> tags) . M.toList
 
 -- Compile tags down into a Span containing a list of links to the respective /docs/ directory indexes which will contain a copy of all annotations corresponding to that tag/directory.
 --
@@ -1673,7 +1682,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         ("<strong>([a-zA-Z0-9_]+)</strong>:<p>", "<p><strong>\\1</strong>: "),
         ("<jats:title>([a-zA-Z0-9_]+):</jats:title><jats:p>", "<p><strong>\\1</strong>: "),
         ("<jats:sec id=\"[a-zA-Z0-9_]+\">", ""),
-        ("<jats:sec id=\"[a-zA-Z0-9_]+\" sec-type=\"[a-z]+\">", "")
+        ("<jats:sec id=\"[a-zA-Z0-9_]+\" sec-type=\"[a-z]+\">", ""),
+        (" © [0-9]+ European Association of Personality Psychology", "")
         ] .
         -- simple string substitutions:
         replaceMany [
@@ -2600,4 +2610,5 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("‰", "%") -- PER MILLE SIGN https://en.wikipedia.org/wiki/Per_mille - only example I've ever seen was erroneous
           , ("Oamp#x02019;", "O’")
           , ("Camp#x000ED;", "Cí")
+          , ("amp#x000E9", "é")
             ]

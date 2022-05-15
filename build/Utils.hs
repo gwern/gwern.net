@@ -116,7 +116,7 @@ replaceManyT rewrites s = foldr (uncurry T.replace) s rewrites
 
 
 frequency :: Ord a => [a] -> [(Int,a)]
-frequency list = map (\l -> (length l, head l)) (group (sort list))
+frequency list = sort $ map (\l -> (length l, head l)) (group (sort list))
 
 host :: T.Text -> T.Text
 host p = case parseURIReference (T.unpack p) of

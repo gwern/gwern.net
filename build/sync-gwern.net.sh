@@ -676,7 +676,11 @@ else
                                -e 'This is a PDF file of an unedited manuscript that has been accepted for publication.' \
                                -e 'Additional services and information for ' -e 'Access to this document was granted through an Emerald subscription' \
                                -e 'PLEASE SCROLL DOWN FOR ARTICLE' -e 'ZEW Discussion Papers' -e "$LL" -e 'eScholarship.org' \
-                  -e 'Full Terms & Conditions of access and use can be found at' -e 'This paper is posted at DigitalCommons' -e 'This paper is included in the Proceedings of the' )
+                  -e 'Full Terms & Conditions of access and use can be found at' -e 'This paper is posted at DigitalCommons' -e 'This paper is included in the Proceedings of the' \
+                  -e 'See discussions, stats, and author profiles for this publication at' \
+                  -e 'This article appeared in a journal published by Elsevier. The attached' \
+                  -e 'The user has requested enhancement of the downloaded file' \
+                  -e 'See discussions, stats, and author profiles for this publication at: https://www.researchgate.net' )
             if [ "$HEADER" != "" ]; then echo "Header: $@"; fi;
         }
         export -f checkSpamHeader
@@ -735,13 +739,6 @@ else
               fi;
           done; }
     wrap λ "Too-wide images (downscale)"
-
-    ## Remind to refine doc directory-tags (should be <50):
-    find docs/ -type d -print0 | egrep --null-data -v -e 'docs/$' -e 'www' -e 'rotten.com' -e '2011-gwern-yourmorals.org' -e '2000-iapac-norvir' -e 'docs/link-bibliography' |
-        while read -d '' -r DIR;
-    do N=$(find "$DIR" -maxdepth 1 -type f | wc --lines);
-       if [[ $N -gt 50 ]]; then printf "%5d: %s\n" $N $DIR; fi;
-    done | sort --numeric-sort
 
     ## Look for domains that may benefit from link icons or link live status now:
     λ() { ghci -istatic/build/ ./static/build/LinkIcon.hs  -e 'linkIconPrioritize' | fgrep -v -e ' secs,' -e 'it :: [(Int, Text)]' -e '[]'; }
