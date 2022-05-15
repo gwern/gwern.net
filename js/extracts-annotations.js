@@ -11,7 +11,7 @@
             flags:
                 GW.contentDidLoadEventFlags.needsRewrite
         }
-        Fired when the content of the annotation pop-frame (i.e., the 
+        Fired when the content of the annotation pop-frame (i.e., the
         annotation) has been constructed, but not yet injected into a pop-frame.
 
         (See rewrite.js for more information about the keys and values of the
@@ -24,7 +24,7 @@
             location:
                 URL of the annotated target (NOT the URL of the annotation
                 resource!).
-            flags: 
+            flags:
                 0 (no flags set)
         }
         Fired when an annotation pop-frame has been filled with content (i.e.,
@@ -127,8 +127,8 @@ Extracts = { ...Extracts, ...{
         }
 
         //  Extract title/link.
-        let titleLinkClass = (originalLinkHTML > "" 
-        					  ? `title-link local-archive-link` 
+        let titleLinkClass = (originalLinkHTML > ""
+        					  ? `title-link local-archive-link`
         					  : (isWikipediaLink
         					  	 ? `title-link link-live`
         					  	 : `title-link`));
@@ -145,17 +145,17 @@ Extracts = { ...Extracts, ...{
 
 		//	Similars, backlinks, tags.
         let auxLinks = ``;
-    	if (referenceData.backlinksHTML == ``) { 
+    	if (referenceData.backlinksHTML == ``) {
     		if (referenceData.tagsHTML > ``)
 				auxLinks += `; <span class="data-field link-tags">${referenceData.tagsHTML}</span>`;
 		} else {
 			if (referenceData.tagsHTML > ``)
-				auxLinks += `; ${referenceData.tagsHTML}`; 
+				auxLinks += `; ${referenceData.tagsHTML}`;
 
-        	auxLinks += `; ${referenceData.backlinksHTML}`;		
+        	auxLinks += `; ${referenceData.backlinksHTML}`;
 		}
-        auxLinks += (referenceData.similarHTML 
-        			 ? `; ${referenceData.similarHTML}` 
+        auxLinks += (referenceData.similarHTML
+        			 ? `; ${referenceData.similarHTML}`
         			 : ``);
 
         //  The fully constructed annotation pop-frame contents.
@@ -165,14 +165,14 @@ Extracts = { ...Extracts, ...{
 
 		let constructedAnnotation = Extracts.newDocument(
         	  `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
-        	/*	Suppress the author block in WP popups; we have nothing more 
-        		useful to say than ‘Wikipedia’ (even if we grabbed the 
-        		last-revision-time from WP, that’s usually just a trivial bot 
-        		edit and isn’t a ‘real’ author date), and the fact that it’s WP 
-        		is already denoted by the dotted underline, ‘W’ icon on the 
-        		title link, lack of the standard metadata block which non-WP 
-        		annotations have (author/date/tag/backlinks/similar-links), and 
-        		the encyclopedic topic & tone. Putting ‘Wikipedia’ on an entire 
+        	/*	Suppress the author block in WP popups; we have nothing more
+        		useful to say than ‘Wikipedia’ (even if we grabbed the
+        		last-revision-time from WP, that’s usually just a trivial bot
+        		edit and isn’t a ‘real’ author date), and the fact that it’s WP
+        		is already denoted by the dotted underline, ‘W’ icon on the
+        		title link, lack of the standard metadata block which non-WP
+        		annotations have (author/date/tag/backlinks/similar-links), and
+        		the encyclopedic topic & tone. Putting ‘Wikipedia’ on an entire
         		line by itself is just a waste of precious popup vertical space.
         	 */
         	+ (isWikipediaLink
@@ -217,7 +217,7 @@ Extracts = { ...Extracts, ...{
 				 */
 				&& !(["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance",
 					  "deepmind", "eleutherai", "elementai", "facebook", "flickr",
-					  "google", "googledeepmind", "huawei", "intel", "laion",
+					  "google", "googledeepmind", "googlegraphcore", "huawei", "intel", "laion",
 					  "lighton", "microsoft", "microsoftnvidia", "miri",
 					  "nvidia", "openai", "pdf", "salesforce", "sensetime",
 					  "snapchat", "tencent", "tensorfork", "uber", "yandex"
@@ -394,7 +394,7 @@ Extracts = { ...Extracts, ...{
 
         target.popFrame.classList.toggle("loading", true);
 
-        /*  We set up an event handler for when the annotation loads, and 
+        /*  We set up an event handler for when the annotation loads, and
         	respawn the popup / re-inject the popin, after it spawns (if it
             hasn’t de-spawned already, eg. if the user moused out of the
             target).

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-14 20:32:51 gwern"
+When:  Time-stamp: "2022-05-14 22:20:48 gwern"
 License: CC-0
 -}
 
@@ -22,7 +22,7 @@ import Data.Char (isAlpha, isAlphaNum, isPunctuation, isSpace, toLower)
 import qualified Data.ByteString as B (appendFile, readFile, intercalate, split, ByteString)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
-import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, toList, lookup, map, union, Map) -- traverseWithKey, union, Map
+import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, toList, lookup, map, union, Map) -- traverseWithKey, union, Map
 import qualified Data.Text as T (append, breakOnAll, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.IORef (IORef)
@@ -141,7 +141,7 @@ readLinkMetadataAndCheck = do
              let normalizedUrls = map (replace "https://" "" . replace "http://" "") urls
              when (length (uniq (sort normalizedUrls)) /=  length normalizedUrls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (normalizedUrls \\ nubOrd normalizedUrls)
 
-             let brokenUrls = filter (\u -> null u || not (head u == 'h' || head u == '/') || ' ' `elem` u) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
+             let brokenUrls = filter (\u -> null u || not (head u == 'h' || head u == '/') || "//" `isPrefixOf` u || ' ' `elem` u) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
 
              let files = map (takeWhile (/='#') . tail) $ filter (\u -> head u == '/') urls
              forM_ files (\f -> unless (takeFileName f == "index" || takeFileName f == "index.page" || "/tags/" `isInfixOf` f) $
@@ -197,6 +197,10 @@ readLinkMetadataAndCheck = do
                                                       "wikipedia.org" `isInfixOf` x || "hoogle.haskell.org" `isInfixOf` x then False
                                                  else not (isURIReference x)) (M.toList final)
              unless (null urlsAll) $ printRed "Invalid URIs?" >> putStrLn (ppShow urlsAll)
+
+             -- look for duplicates due to missing affiliation:
+             let urlsDuplicateAffiliation = findDuplicatesURLsByAffiliation final
+             unless (null urlsDuplicateAffiliation) $ printRed "Duplicated URLs by affiliation:" >> print urlsDuplicateAffiliation
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) (M.toList final)
              Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex) (error $ "Mixed up author & date?: " ++ a) ) authors
@@ -420,6 +424,20 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
 -- WARNING: because of the usual RawHtml issues, reading with Pandoc doesn't help - it just results in RawInlines which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
 rewriteAnchors :: FilePath -> T.Text -> T.Text
 rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
+
+-- WARNING: update the list in /static/js/extracts-annotation.js L218 if you change this list!
+affiliationAnchors :: [String]
+affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "google", "googlegraphcore", "googledeepmind", "huawei", "intel", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "nvidia", "openai", "pdf", "salesforce", "sensetime", "snapchat", "tencent", "tensorfork", "uber", "yandex"]
+
+-- find all instances where I link "https://arxiv.org/abs/1410.5401" when it should be "https://arxiv.org/abs/1410.5401#deepmind", where they are inconsistent and the hash matches a whitelist of orgs.
+findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]
+findDuplicatesURLsByAffiliation md = let urls  = nubOrd . filter ('.' `elem`) $ map (\(u,_) -> u) $ M.toList md
+                                         urlDB = M.fromListWith (++) $ map (\u -> (takeWhile (/= '#') u, [u])) urls
+                                         affiliationURLPatterns = (map (\org -> "#"++org) affiliationAnchors) ++
+                                                                   (map (\org -> "org="++org) affiliationAnchors)
+                                         affiliationWhitelist = ["page=", "lilianweng.github.io"]
+                                         affiliationURLs = M.filter (\vs -> any (\v -> anyInfix v affiliationURLPatterns) vs) urlDB
+                                     in M.toList $ M.filter (\v -> length (filter (\v' -> not (anyInfix v' affiliationWhitelist)) v) > 1) affiliationURLs
 
 -- Remind to refine link directory-tags: should be <100. (We count using the annotation database instead of counting files inside each directory because so many are now cross-tagged or virtual.)
 tagMax :: Int
