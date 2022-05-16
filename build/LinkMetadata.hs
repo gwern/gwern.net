@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-14 22:20:48 gwern"
+When:  Time-stamp: "2022-05-15 21:45:44 gwern"
 License: CC-0
 -}
 
@@ -148,8 +148,6 @@ readLinkMetadataAndCheck = do
                                 do exist <- doesFileExist f
                                    unless exist $ printRed ("Custom annotation error: file does not exist? " ++ f))
 
-             let titles = map (\(_,(t,_,_,_,_,_)) -> filter (\c -> not (isPunctuation c || isSpace c)) $ map toLower t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
-
              let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> '–' `elem` doi || '—' `elem` doi || ' ' `elem` doi || ',' `elem` doi || "http" `isInfixOf` doi) custom in
                  unless (null badDoisDash) $ error $ "Bad DOIs (bad punctuation): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
@@ -201,6 +199,10 @@ readLinkMetadataAndCheck = do
              -- look for duplicates due to missing affiliation:
              let urlsDuplicateAffiliation = findDuplicatesURLsByAffiliation final
              unless (null urlsDuplicateAffiliation) $ printRed "Duplicated URLs by affiliation:" >> print urlsDuplicateAffiliation
+
+             let titlesSimilar = sort $ map (\(u,(t,_,_,_,_,_)) -> (u, t)) $ filter (\(u,_) -> '.' `elem` u && not ("wikipedia.org" `isInfixOf` u)) $ M.toList final
+             let titles = filter (not . null) $ map snd titlesSimilar
+             unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in YAMLs!: " >> print (titles \\ nubOrd titles)
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) (M.toList final)
              Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex) (error $ "Mixed up author & date?: " ++ a) ) authors
@@ -427,7 +429,7 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 -- WARNING: update the list in /static/js/extracts-annotation.js L218 if you change this list!
 affiliationAnchors :: [String]
-affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "google", "googlegraphcore", "googledeepmind", "huawei", "intel", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "nvidia", "openai", "pdf", "salesforce", "sensetime", "snapchat", "tencent", "tensorfork", "uber", "yandex"]
+affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "google", "googlegraphcore", "googledeepmind", "huawei", "intel", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "nvidia", "openai", "pdf", "salesforce", "sensetime", "snapchat", "tencent", "tensorfork", "uber", "yandex"]
 
 -- find all instances where I link "https://arxiv.org/abs/1410.5401" when it should be "https://arxiv.org/abs/1410.5401#deepmind", where they are inconsistent and the hash matches a whitelist of orgs.
 findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]
@@ -772,6 +774,8 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
 pdf p = do let p' = takeWhile (/='#') p
+           let pageNumber = sed ".*\\.pdf#page=([0-9]+).*" "\\1" p -- eg "foo.pdf#page=50&org=openai" → "50"
+
            (_,_,mb)  <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date", "-Title", "-Author", "-dateFormat", "%F", "-Date", p']
            (_,_,mb2) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$DOI", "-DOI", p']
            if BL.length mb > 0 then
@@ -780,6 +784,7 @@ pdf p = do let p' = takeWhile (/='#') p
                 case results of
                   d:[] -> return $ Right (p, ("", "", d, "", [], ""))
                   (etitle:eauthor:edate:_) -> do
+                    let title = (filterMeta $ trimTitle $ cleanAbstractsHTML etitle) ++ (if null pageNumber then "" else " § pg" ++ pageNumber)
                     let edoi = lines $ U.toString mb2
                     let edoi' = if null edoi then "" else processDOI $ head edoi
                     -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
@@ -790,7 +795,7 @@ pdf p = do let p' = takeWhile (/='#') p
                     let ts = [] -- TODO: replace with ML call to infer tags
                     printGreen $ "PDF: " ++ p ++" DOI: " ++ edoi'
                     at <- fmap (fromMaybe "") $ doi2Abstract edoi'
-                    return $ Right (p, (filterMeta $ trimTitle $ cleanAbstractsHTML etitle, author, trim $ replace ":" "-" edate, edoi', ts, at))
+                    return $ Right (p, (title, author, trim $ replace ":" "-" edate, edoi', ts, at))
                   _ -> return (Left Permanent)
                 -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:
                 -- case aMaybe of
@@ -1668,6 +1673,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         (" = -([0-9])", " = −\\1"), -- eg. 'β = -0.08', HYPHEN to MINUS SIGN
         ("× ?10[-–—]([0-9]+)", "× 10<sup>−\\1</sup>"), -- the Unicode '×' seems to never match when used inside a range...?
         ("([0-9]) [x×] 10[-–—]([0-9]+)", "\\1 × 10<sup>−\\2</sup>"),
+        ("([0-9]) [x×] 10\\([-–—]([0-9]+)\\)", "\\1 × 10<sup>−\\2</sup>"),
         ("<sup>-([0-9]+)</sup>", "<sup>−\\1</sup>"), -- eg. '10<sup>-7</sup>', HYPHEN to MINUS SIGN
         ("([0-9]+%?)-([0-9]+)", "\\1–\\2"),
         ("([0-9]) %", "\\1%"),
@@ -2073,6 +2079,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("statistically significant", "statistically-significant")
           , ("clinical significance", "clinical-significance")
           , ("clinically significant", "clinically-significant")
+          , ("<p><strong>Significance Statement</strong></p>\n<p>", "<p><strong>Significance Statement</strong>: ")
           , (". <strong>Conclusion</strong>: ", ".</p> <p><strong>Conclusion</strong>: ")
           , (". <strong>Conclusions</strong>: ", ".</p> <p><strong>Conclusions</strong>: ")
           , ("<strong>Conclusions</strong>\n<p>", "<p><strong>Conclusions</strong>: ")
@@ -2543,6 +2550,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("ml-1", "ml<sup>−1</sup>")
           , ("10(9)", "10<sup>9</sup>")
           , ("(10(9))", "(10<sup>9</sup>)")
+          , ("kg/m(2)", "kg⁄m<sup>2</sup>")
           , ("Cmax", "C<sub>max</sub>")
           , ("<small></small>", "")
           , (" et al ", " et al ") -- et al: try to ensure no linebreaking of citations
@@ -2558,6 +2566,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" eg ", " eg. ")
           , ("eg., ", "eg. ")
           , ("e.g., ", "eg. ")
+          , ("e.g. ", "eg. ")
           , ("labell", "label")
           , ( "optimise", "optimize")
           , ("organise", "organize")
@@ -2629,4 +2638,5 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("Oamp#x02019;", "O’")
           , ("Camp#x000ED;", "Cí")
           , ("amp#x000E9", "é")
+          , ("\160", " ") -- NO BREAK SPACE
             ]

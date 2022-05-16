@@ -216,7 +216,7 @@ Extracts = { ...Extracts, ...{
 					should not get a section mark.
 				 */
 				&& !(["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance",
-					  "deepmind", "eleutherai", "elementai", "facebook", "flickr",
+					  "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr",
 					  "google", "googledeepmind", "googlegraphcore", "huawei", "intel", "laion",
 					  "lighton", "microsoft", "microsoftnvidia", "miri",
 					  "nvidia", "openai", "pdf", "salesforce", "sensetime",
