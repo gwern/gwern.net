@@ -323,7 +323,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.nextplatform.com" = aI "NEXT" "text,quad,sans" -- The Next Platform's double-cube logo *could* work as an SVG but not convinced it'd be recognizable
  | u'' "www.vetta.org" = aI "Legg" "text,quad,sans" -- Shane Legg (DeepMind)
  | u'' "www.spiegel.de" = aI "SPGL" "text,quad" -- Der Spiegel, major German newspaper; the 'S' logo is unrecognizable given the sheer number of 'S' logos out there, so abbreviation instead
- | u ''tasvideos.org'' = aI "TASV" "text,quad" -- TASVideos.org: tool-assisted game movies
+ | u'' "tasvideos.org" = aI "TASV" "text,quad" -- TASVideos.org: tool-assisted game movies
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"

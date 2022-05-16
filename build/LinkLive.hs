@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-05-11 21:30:18 gwern"
+When:  Time-stamp: "2022-05-14 20:33:31 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -3628,7 +3628,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://stats.stackexchange.com/users/2392/probabilityislogic", False)
     , ("https://schizophreniabulletin.oxfordjournals.org/content/33/6/1277.full", False)
     , ("https://politicalscience.osu.edu/faculty/jmueller/MID11TSM.PDF", False)
-    , ("https://hal.archives-ouvertes.fr/hal-00904097/document", False)
+    , ("https://hal.archives-ouvertes.fr/hal-00904097/document#pdf", False)
     , ("https://code.google.com/archive/p/amphetype", False)
     , ("http://cardcaptor.moekaku.com/?p=112", False)
     , ("https://wyclif.substack.com/p/the-natural-selection-paper-part-908", False)
@@ -4517,7 +4517,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.washingtonexaminer.com/weekly-standard/the-history-of-russian-terrorism-dagger-and-swagger", False)
     , ("https://www.watercoolertrivia.com/blog/gpt-3-vs-water-cooler-trivia-participants-a-human-vs-robot-showdown", False)
     , ("https://www.wcscanada.org/portals/42/media/file/WSB_Ocelot.pdf", False)
-    , ("https://www.weizmann.ac.il/brain-sciences/labs/dudai/uploads/files/Science-2011-Edelson-108-11.pdf", False)
     , ("https://www.welt.de/regionales/muenchen/article117869257/Fahnder-zerschlagen-Bitcoin-Drogenring-DarkNet.html", False)
     , ("https://www.whio.com/news/news/crime-law/police-4-pound-of-pot-mailed-to-oxford/nkgqT/", False)
     , ("https://www.who.int/classifications/classification-of-diseases", False)

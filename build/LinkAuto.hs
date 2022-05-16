@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-05-13 12:55:34 gwern"
+When:  Time-stamp: "2022-05-15 20:58:59 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -617,7 +617,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Fermi (estimate|method|problem|heuristic)", "https://en.wikipedia.org/wiki/Fermi_estimate")
         , ("Fermi [Pp]aradox", "https://en.wikipedia.org/wiki/Fermi_paradox")
         , ("Feynman", "https://en.wikipedia.org/wiki/Richard_Feynman")
-        , ("Fischer Black", "https://en.wikipedia.org/wiki/Fischer_Black")
         , ("Flash", "https://en.wikipedia.org/wiki/Adobe_Flash")
         , ("Flickr", "https://en.wikipedia.org/wiki/Flickr")
         , ("Flowers for Algernon", "https://en.wikipedia.org/wiki/Flowers_for_Algernon")
@@ -912,7 +911,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("TPU-?v2s?(-[0-9]+)?", "https://en.wikipedia.org/wiki/Tensor_Processing_Unit#Second_generation_TPU")
         , ("TPU-?v3s?(-[0-9]+)?", "https://en.wikipedia.org/wiki/Tensor_Processing_Unit#Third_generation_TPU")
         , ("TPU-?v4s?(-[0-9]+)?", "https://en.wikipedia.org/wiki/Tensor_Processing_Unit#Fourth_generation_TPU")
-        , ("TPUs?(-[0-9]+)?", "/docs/ai/2020-jouppi.pdf#google")
+        , ("TPUs?(-[0-9]+)?", "/docs/ai/scaling/hardware/2020-jouppi.pdf#google")
         , ("Ted Chiang", "https://en.wikipedia.org/wiki/Ted_Chiang")
         , ("Terence Tao", "https://en.wikipedia.org/wiki/Terence_Tao")
         , ("[Tt]extual criticism", "https://en.wikipedia.org/wiki/Textual_criticism")
