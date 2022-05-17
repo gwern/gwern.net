@@ -217,7 +217,7 @@ Extracts = { ...Extracts, ...{
 				 */
 				&& !(["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance",
 					  "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr",
-					  "google", "googledeepmind", "googlegraphcore", "huawei", "intel", "laion",
+					  "github", "google", "googledeepmind", "googlegraphcore", "huawei", "intel", "laion",
 					  "lighton", "microsoft", "microsoftnvidia", "miri",
 					  "nvidia", "openai", "pdf", "salesforce", "sensetime",
 					  "snapchat", "tencent", "tensorfork", "uber", "yandex"

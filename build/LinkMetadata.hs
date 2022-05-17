@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-15 21:45:44 gwern"
+When:  Time-stamp: "2022-05-16 12:30:10 gwern"
 License: CC-0
 -}
 
@@ -429,7 +429,7 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 -- WARNING: update the list in /static/js/extracts-annotation.js L218 if you change this list!
 affiliationAnchors :: [String]
-affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "google", "googlegraphcore", "googledeepmind", "huawei", "intel", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "nvidia", "openai", "pdf", "salesforce", "sensetime", "snapchat", "tencent", "tensorfork", "uber", "yandex"]
+affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "googlegraphcore", "googledeepmind", "huawei", "intel", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "nvidia", "openai", "pdf", "salesforce", "sensetime", "snapchat", "tencent", "tensorfork", "uber", "yandex"]
 
 -- find all instances where I link "https://arxiv.org/abs/1410.5401" when it should be "https://arxiv.org/abs/1410.5401#deepmind", where they are inconsistent and the hash matches a whitelist of orgs.
 findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]
@@ -775,6 +775,7 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
 pdf p = do let p' = takeWhile (/='#') p
            let pageNumber = sed ".*\\.pdf#page=([0-9]+).*" "\\1" p -- eg "foo.pdf#page=50&org=openai" → "50"
+           let pageNumber' = if pageNumber == p then "" else pageNumber
 
            (_,_,mb)  <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date", "-Title", "-Author", "-dateFormat", "%F", "-Date", p']
            (_,_,mb2) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$DOI", "-DOI", p']
@@ -784,7 +785,7 @@ pdf p = do let p' = takeWhile (/='#') p
                 case results of
                   d:[] -> return $ Right (p, ("", "", d, "", [], ""))
                   (etitle:eauthor:edate:_) -> do
-                    let title = (filterMeta $ trimTitle $ cleanAbstractsHTML etitle) ++ (if null pageNumber then "" else " § pg" ++ pageNumber)
+                    let title = (filterMeta $ trimTitle $ cleanAbstractsHTML etitle) ++ (if null pageNumber' then "" else " § pg" ++ pageNumber')
                     let edoi = lines $ U.toString mb2
                     let edoi' = if null edoi then "" else processDOI $ head edoi
                     -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
