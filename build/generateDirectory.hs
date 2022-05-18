@@ -134,8 +134,10 @@ generateYAMLHeader d date (directoryN,annotationN,linkN) thumbnail
   = concat [ "---\n",
              "title: " ++ T.unpack (abbreviateTag (T.pack (replace "docs/" "" (init d)))) ++ " directory\n",
              "author: 'N/A'\n",
-             "description: 'Annotated bibliography for the tag-directory <code>/" ++ d ++ "</code>, most recent first." ++
-              " " ++ show directoryN ++ " related tags, " ++ show annotationN ++ " annotations, " ++ show linkN ++ " links.'\n",
+             "description: 'Annotated bibliography for the tag-directory <code>/" ++ d ++ "</code>, most recent first:" ++
+              " " ++ show directoryN ++ " related tag" ++ pl directoryN ++ ", " ++
+               show annotationN ++ " annotation" ++ pl annotationN ++ ", " ++
+               show linkN ++ " link" ++ pl linkN ++ ".'\n",
              thumbnail,
              "created: 'N/A'\n",
              if date=="" then "" else "modified: " ++ date ++ "\n",
@@ -146,6 +148,7 @@ generateYAMLHeader d date (directoryN,annotationN,linkN) thumbnail
              "index: true\n",
              "...\n",
              "\n"]
+  where pl n = if n > 1 then "s" else "" -- pluralize helper
 
 -- given a list of ["docs/foo/index.page"] directories, convert them to what will be the final absolute path ("/docs/foo/index"), while checking they exist (typos are easy, eg. dropping 'docs/' is common).
 listDirectories :: [FilePath] -> IO [FilePath]
