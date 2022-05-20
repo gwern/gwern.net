@@ -215,7 +215,7 @@ Extracts = { ...Extracts, ...{
 					for link icons (eg. 'https://arxiv.org/abs/2006.07159#google')
 					should not get a section mark.
 				 */
-				&& !(["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance",
+				    && !(["adobe", "alibaba", "allen", "amazon", "apple", "baidu", "bytedance",
 					  "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr",
 					  "github", "google", "googledeepmind", "googlegraphcore", "huawei", "intel", "laion",
 					  "lighton", "microsoft", "microsoftnvidia", "miri",

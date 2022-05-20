@@ -4027,7 +4027,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://moz.com/ugc/google-alerts-vs-mention-vs-talkwalker", False)
     , ("https://mpra.ub.uni-muenchen.de/74268/1/MPRA_paper_74268.pdf", False)
     , ("https://mujoco.org/", False)
-    , ("https://mysbfiles.stonybrook.edu/~stfeldma/feldman_johnston_ideology.pdf", False)
+    , ("/docs/sociology/2013-feldman.pdf", False)
     , ("https://naldc.nal.usda.gov/download/CAT71326739/PDF", False)
     , ("https://nansenundpiccard.de/de/Wir/Hanske", False)
     , ("https://nationalinterest.org/bookreview/the-fallacy-human-freedom-8652?nopaging=1", False)

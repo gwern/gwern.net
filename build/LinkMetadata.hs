@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-16 12:30:10 gwern"
+When:  Time-stamp: "2022-05-19 16:32:22 gwern"
 License: CC-0
 -}
 
@@ -429,7 +429,7 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 -- WARNING: update the list in /static/js/extracts-annotation.js L218 if you change this list!
 affiliationAnchors :: [String]
-affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "googlegraphcore", "googledeepmind", "huawei", "intel", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "nvidia", "openai", "pdf", "salesforce", "sensetime", "snapchat", "tencent", "tensorfork", "uber", "yandex"]
+affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "apple", "baidu", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "googlegraphcore", "googledeepmind", "huawei", "intel", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "nvidia", "openai", "pdf", "salesforce", "sensetime", "snapchat", "tencent", "tensorfork", "uber", "yandex"]
 
 -- find all instances where I link "https://arxiv.org/abs/1410.5401" when it should be "https://arxiv.org/abs/1410.5401#deepmind", where they are inconsistent and the hash matches a whitelist of orgs.
 findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]
@@ -983,7 +983,7 @@ paragraphized f a = f `elem` whitelist ||
    paragraphsHtml :: String -> [(T.Text,T.Text)]
    paragraphsHtml b = T.breakOnAll "<p>" (T.pack b)
    whitelist :: [String]
-   whitelist = ["/docs/cs/1980-rytter.pdf"]
+   whitelist = ["/docs/cs/1980-rytter.pdf", "/docs/economics/1998-delong"]
 
 -- If a String (which is not HTML!) is a single long paragraph (has no double-linebreaks), call out to paragraphizer.py, which will use GPT-3 to try to break it up into multiple more-readable paragraphs.
 -- This is quite tricky to use: it wants non-HTML plain text (any HTML will break GPT-3), but everything else wants HTML
@@ -2547,6 +2547,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("64,000th", "64,000<sup>th</sup>")
           , ("(5th", "(5<sup>th</sup>")
           , ("(12th", "(12<sup>th</sup>")
+          , (" 14th ", " 14<sup>th</sup> ")
           , ("<code class=\"mw-highlight mw-highlight-lang-bash mw-content-ltr\" dir=\"ltr\">", "<code>")
           , ("ml-1", "ml<sup>−1</sup>")
           , ("10(9)", "10<sup>9</sup>")
@@ -2596,6 +2597,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("(Peromyscus leucopus)", "(<em>Peromyscus leucopus</em>)")
           , ("(Globicephala melas)", "(<em>Globicephala melas</em>)")
           , (" Arabidopsis thaliana", " <em>Arabidopsis thaliana</em>")
+          , ("(Drosophila melanogaster", "(<em>Drosophila melanogaster</em>")
+          , (" Drosophila melanogaster", " <em>Drosophila melanogaster</em>")
           , (" C. elegans", " <em>C. elegans</em>")
           , (" T. gondii", " <em>T. gondii</em>")
           , ("learn-ing", "learning")

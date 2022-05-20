@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-05-15 20:58:59 gwern"
+When:  Time-stamp: "2022-05-19 20:48:33 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -621,7 +621,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Flickr", "https://en.wikipedia.org/wiki/Flickr")
         , ("Flowers for Algernon", "https://en.wikipedia.org/wiki/Flowers_for_Algernon")
         , ("Flynn [Ee]ffect", "https://en.wikipedia.org/wiki/Flynn_effect")
-        , ("Fourier identity", "https://en.wikipedia.org/wiki/Fourier_transform")
         , ("Francis Fukuyama", "https://en.wikipedia.org/wiki/Francis_Fukuyama")
         , ("Frank P. Ramsey", "https://en.wikipedia.org/wiki/Frank_Ramsey_(mathematician)")
         , ("Franz Ferdinand", "https://en.wikipedia.org/wiki/Archduke_Franz_Ferdinand_of_Austria")
@@ -1072,7 +1071,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ee]xponential distribution", "https://en.wikipedia.org/wiki/Exponential_distribution")
         , ("[Ff]actor analysis", "https://en.wikipedia.org/wiki/Factor_analysis")
         , ("[Bb]i-?factor ?(model|models|modeling|analysis)?", "/docs/statistics/2019-markon.pdf")
-        , ("[Ff]ast Fourier [Tt]ransform", "https://en.wikipedia.org/wiki/Fast_Fourier_transform")
         , ("[Ff]entanyl", "https://en.wikipedia.org/wiki/Fentanyl")
         , ("[Ff]ixation", "https://en.wikipedia.org/wiki/Fixation_%28population_genetics%29")
         , ("[Ff]ixing effect", "https://en.wikipedia.org/wiki/Functional_fixedness")
