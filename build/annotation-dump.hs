@@ -17,7 +17,7 @@ main = do custom  <- readYamlFast "/home/gwern/wiki/metadata/custom.yaml"  -- fo
           mapM_ printSingleLine final
 
 blacklist :: String -> [(Path,MetadataItem)] -> [(String,(MetadataItem,String))]
-blacklist sourceLabel = map (\(a,b) -> (a,(b,sourceLabel))) . filter (\(f,(b,_,_,_,_,_)) -> not (b=="" ||
+blacklist sourceLabel = map (\(a,b) -> (a,(b,sourceLabel))) . filter (\(f,(title,_,_,_,_,_)) -> not (title=="" ||
                                                                                                   "en.wikipedia.org" `isInfixOf` f ||
                                                                                                   ("/docs/"`isPrefixOf`f && "/index" `isSuffixOf` f)))
 
