@@ -69,10 +69,10 @@ do
         λ(){ ~/wiki/static/build/Columns.hs "$PAGE"; }
         wrap λ "Add columns wrapper?"
 
-        λ(){ runhaskell -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egp --only-matching -e '^http://.*archive\.org/.*\.pdf$'; }
+        λ(){ runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egp --only-matching -e '^http://.*archive\.org/.*\.pdf$'; }
         wrap λ "check for aggregator-hosted PDFs and host them on Gwern.net to make them visible to Google Scholar/provide backups"
 
-        λ(){ runhaskell -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egp --only-matching -e '^http://twitter.com/' -e 'https://.*twitter.com/.+/status/[0-9]+'; }
+        λ(){ runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egp --only-matching -e '^http://twitter.com/' -e 'https://.*twitter.com/.+/status/[0-9]+'; }
         wrap λ "Switch Twitter.com to Nitter.net links"
 
         λ(){ egp -e 'http://www.pnas.org/content/.*/.*/.*.abstract' -e '[^\.]t\.test\(' -e '^\~\~\{\.' \
@@ -207,17 +207,17 @@ do
                    | egp -e '\!Margin:.*↩'; } # ))
         wrap λ "look for syntax errors making it to the final HTML output"
 
-        λ(){ runhaskell -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egrep -v -e "^http" -e '^!Wikipedia' -e '^#' -e '^/' -e '^\!' -e  '^\$'; }
+        λ(){ runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egrep -v -e "^http" -e '^!Wikipedia' -e '^#' -e '^/' -e '^\!' -e  '^\$'; }
         wrap λ "special syntax shouldn't make it to the compiled HTML"
 
-        λ() { runhaskell -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egrep -v -e '^\!' -e  '^\$' | sort | uniq --count | sort --numeric-sort | egrep -v -e '.* 1 '; }
+        λ() { runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egrep -v -e '^\!' -e  '^\$' | sort | uniq --count | sort --numeric-sort | egrep -v -e '.* 1 '; }
         wrap λ "Duplicate links"
 
         λ(){ egp --only-matching '\!\[.*\]\(http://.*\)' -- "$PAGE"; }
         wrap λ "image hotlinking deprecated; impolite, and slows page loads & site compiles"
 
         # Note links which need to be annotated (probably most of them...)
-        λ() { runhaskell -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egrep -v -e '^\!' -e '^\$' -e '^/docs/.*txt' -e '.xz$' -e '^#' -e '.patch$' -e '.jpg$' -e '.png$' -e '.mp4' -e '.mp3' -e 'news.ycombinator.com' -e 'old.reddit.com' -e 'youtube.com' -e 'youtu.be/' -e 'amazon.com' -e 'bandcamp.com' -e 'dropbox.com' -e 'vocadb.net' -e 'twitter.com' -e 'nitter.cc' -e '#link-bibliography' -e 'https://en.wikipedia.org/wiki' | runhaskell -istatic/build/ static/build/link-prioritize.hs; }
+        λ() { runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egrep -v -e '^\!' -e '^\$' -e '^/docs/.*txt' -e '.xz$' -e '^#' -e '.patch$' -e '.jpg$' -e '.png$' -e '.mp4' -e '.mp3' -e 'news.ycombinator.com' -e 'old.reddit.com' -e 'youtube.com' -e 'youtu.be/' -e 'amazon.com' -e 'bandcamp.com' -e 'dropbox.com' -e 'vocadb.net' -e 'twitter.com' -e 'nitter.cc' -e '#link-bibliography' -e 'https://en.wikipedia.org/wiki' | runghc -istatic/build/ static/build/link-prioritize.hs; }
         wrap λ "Link annotations required"
 
         # we use link annotations on URLs to warn readers about PDFs; if a URL ends in 'pdf', it gets a PDF icon. What about URLs which redirect to or serve PDF?
@@ -235,10 +235,10 @@ do
               ## checkPDF 'http://www.nytimes.com/2009/11/15/business/economy/15view.html ' # no
               ## checkPDF 'http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.208.2314&rep=rep1&type=pdf' # yes
               ## checkPDF 'https://files.osf.io/v1/resources/np2jd/providers/osfstorage/59614dec594d9002288271b6?action=download&version=1&direct' # yes
-              runhaskell -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egrep "^http" | fgrep -v -e 'https://www.gwern.net' -e arxiv.org -e pnas.org | sort -u | shuf | parallel -n 1 checkPDF; }
+              runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egrep "^http" | fgrep -v -e 'https://www.gwern.net' -e arxiv.org -e pnas.org | sort -u | shuf | parallel -n 1 checkPDF; }
         wrap λ "Non-icon/warned PDF links"
 
-        λ() { for PDF in $(runhaskell -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egrep -e '^/docs/' -e 'https:\/\/www\.gwern\.net\/' | \
+        λ() { for PDF in $(runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egrep -e '^/docs/' -e 'https:\/\/www\.gwern\.net\/' | \
                                egrep '\.pdf$' | sed -e 's/\/docs/docs/' -e 's/https:\/\/www\.gwern\.net//' ); do
 
                   TITLE=$(exiftool -printFormat '$Title' -Title ~/wiki/"$PDF")

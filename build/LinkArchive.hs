@@ -1112,7 +1112,7 @@ whiteList url
       , "https://universome.github.io/stylegan-v" -- video embed
       , "https://openaipublic.blob.core.windows.net/webgpt-answer-viewer/index.html" -- interactive
       , "http://recur-env.eba-rm3fchmn.us-east-2.elasticbeanstalk.com/" -- interactive
-      , "https://bit.ly/3niE5FS" -- interactive
+      , "http://recur-env.eba-rm3fchmn.us-east-2.elasticbeanstalk.com/" -- interactive
       , "https://pandoc.org/" -- homepage
       , "https://caniuse.com/" -- updated
       , "https://www.vesta.earth/" -- homepage

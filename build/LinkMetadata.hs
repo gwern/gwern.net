@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-21 20:33:34 gwern"
+When:  Time-stamp: "2022-05-22 21:29:36 gwern"
 License: CC-0
 -}
 
@@ -18,7 +18,7 @@ module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMet
 
 import Control.Monad (unless, void, when, forM_)
 import Data.Aeson (eitherDecode, FromJSON)
-import Data.Char (isAlpha, isAlphaNum, isPunctuation, isSpace, toLower)
+import Data.Char (isAlpha, isAlphaNum, isPunctuation, toLower)
 import qualified Data.ByteString as B (appendFile, readFile, intercalate, split, ByteString)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
@@ -429,7 +429,7 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 -- WARNING: update the list in /static/js/extracts-annotation.js L218 if you change this list!
 affiliationAnchors :: [String]
-affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "apple", "baidu", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "googlegraphcore", "googledeepmind", "huawei", "intel", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "nvidia", "openai", "pdf", "salesforce", "sensetime", "snapchat", "tencent", "tensorfork", "uber", "yandex"]
+affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "apple", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "googlegraphcore", "googledeepmind", "huawei", "intel", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "nvidia", "openai", "pdf", "salesforce", "sensetime", "snapchat", "tencent", "tensorfork", "uber", "yandex"]
 
 -- find all instances where I link "https://arxiv.org/abs/1410.5401" when it should be "https://arxiv.org/abs/1410.5401#deepmind", where they are inconsistent and the hash matches a whitelist of orgs.
 findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]
@@ -492,6 +492,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("psychology/chess", "chess psychology")
           , ("reinforcement-learning/chess", "AI chess")
           , ("ai/anime", "anime AI")
+          , ("ai/anime/danbooru", "Danbooru AI")
           , ("eva/little-boy", "Little Boy")
           , ("GPT/inner-monologue", "inner monologue (AI)")
           , ("ai/gpt", "GPT")
@@ -533,8 +534,8 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("cs/end-to-end-principle", "end-to-end")
           , ("philosophy/frank-p-ramsey", "Frank Ramsey")
           , ("nootropic/quantified-self", "QS")
-          , ("silk-road", "DNM")
-          , ("silk-road/william-pickard", "William Pickard")
+          , ("darknet-markets", "DNM")
+          , ("darknet-markets/william-pickard", "William Pickard")
           , ("reinforcement-learning/muzero", "MuZero")
           , ("reinforcement-learning/alphago", "AlphaGo")
           , ("reinforcement-learning/alphastar", "AlphaStar")
@@ -1050,8 +1051,8 @@ generateID url author date
                       [
       ("/docs/ai/gpt/2019-radford.pdf#openai", "gpt-2-paper")
        , ("/docs/ai/2020-chen.pdf#openai", "chen-igpt-paper")
-       , ("/docs/ai/anime/2020-ko.pdf", "ko-cho-2020")
-       , ("/docs/anime/2020-akita.pdf", "akita-et-al-2020-2")
+       , ("/docs/ai/anime/danbooru/2020-ko.pdf", "ko-cho-2020")
+       , ("/docs/ai/anime/danbooru/2020-akita-2.pdf", "akita-et-al-2020-2")
        , ("/docs/bitcoin/2008-nakamoto", "nakamoto-2008-2")
        , ("/docs/borges/1936-borges-thetranslatorsofthethousandandonenights.pdf", "borges-1936-translators-2")
        , ("/docs/cs/2019-kleppmann.pdf", "kleppmann-et-al-2019-paper")
@@ -1082,10 +1083,10 @@ generateID url author date
        , ("/docs/radiance/2002-scholz-radiance#old-legends", "old-legends-2")
        , ("/docs/radiance/2002-scholz-radiance", "scholz-2002-2")
        , ("/docs/sociology/1987-rossi", "rossi-1987-2")
-       , ("/docs/silk-road/2019-du.pdf", "du-et-al-2019-2")
-       , ("/docs/silk-road/2020-ladegaard.pdf", "ladegaard-2020-2")
-       , ("/docs/silk-road/2020-norbutas.pdf", "norbutas-et-al-2020-1")
-       , ("/docs/silk-road/2020-yang-2.pdf", "yang-et-al-2020-b")
+       , ("/docs/darknet-markets/2019-du.pdf", "du-et-al-2019-2")
+       , ("/docs/darknet-markets/2020-ladegaard.pdf", "ladegaard-2020-2")
+       , ("/docs/darknet-markets/2020-norbutas.pdf", "norbutas-et-al-2020-1")
+       , ("/docs/darknet-markets/2020-yang-2.pdf", "yang-et-al-2020-b")
        , ("/docs/statistics/bias/2020-mcabe.pdf", "mccabe-2020-2")
        , ("/docs/statistics/causality/2019-gordon.pdf", "gordon-et-al-2019-2")
        , ("/docs/statistics/peer-review/1975-johnson-2.pdf", "johnson-1975-2")
@@ -1654,7 +1655,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         (" ([0-9]+)([0-9][0-9][0-9])([0-9][0-9][0-9])([0-9][0-9][0-9])",                  " \\1,\\2,\\3,\\4"),     -- billions
         (" ([0-9]+)([0-9][0-9][0-9])([0-9][0-9][0-9])([0-9][0-9][0-9])([0-9][0-9][0-9])", " \\1,\\2,\\3,\\4,\\5"), -- trillions
         ("([0-9]+) percent([ [:punct:]])", "\\1%\\2"), -- eg '$22,000 (46 percent) higher annual early-career wages than they would'
-        ("([0-9][0-9]+) ?x ?([0-9][0-9]+) ?px", "\\1×\\2px"), --  "Alexnet performance for 16 x16 px features)."
+        ("([0-9][0-9]+) [xX] ([0-9][0-9]+) ", "\\1×\\2"), -- "high fidelity generation of 1024 x 1024 images" / "0.85 X 30 mEq/kg"
+        ("([0-9][0-9]+) ?[xX] ?([0-9][0-9]+) ?px", "\\1×\\2px"), --  "Alexnet performance for 16 x16 px features)."
         ("([0-9]+)[ -]fold", "\\1×"),
         ("([0-9]+)[ -]times", "\\1×"),
         ("<br/> <strong>([A-Z][a-z]+)<\\/strong><p>", "<p><strong>\\1</strong>: "), --         <br/> <strong>Background</strong><p>
@@ -2380,6 +2382,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<wbr></wbr>\8203", "")
           , ("<abbr>", "<span>")
           , ("</abbr>", "</span>")
+          , ("</a> .", "</a>.")
           , ("<ext-link ext-link-type=\"uri\"", "<a")
           , ("<ext-link ext-link-type=\"uri\" xlink:href=", "<a href=")
           , ("xlink:type=\"simple\"", "")
