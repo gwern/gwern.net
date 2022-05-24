@@ -16,7 +16,7 @@ import Text.Show.Pretty (ppShow)
 import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure))
-import Data.Binary (decodeFileOrFail, encodeFile)
+import qualified Data.Binary as DB (decodeFileOrFail, encodeFile)
 import Network.HTTP (urlEncode)
 
 import qualified Data.Vector as V (toList, Vector)
@@ -51,19 +51,21 @@ type Embeddings = [Embedding]
 
 embeddingsPath :: String
 embeddingsPath = "metadata/embeddings.bin"
-
 readEmbeddings :: IO Embeddings
-readEmbeddings = do exists <- doesFileExist embeddingsPath
-                    if not exists then return [] else
-                      do eE <- decodeFileOrFail embeddingsPath
-                         case eE of
-                           Right e -> return e
-                           Left err -> error $ show err
+readEmbeddings = readEmbeddingsPath embeddingsPath
+readEmbeddingsPath :: FilePath -> IO Embeddings
+readEmbeddingsPath p = do exists <- doesFileExist p
+                          if not exists then return [] else
+                            do eE <- DB.decodeFileOrFail embeddingsPath
+                               case eE of
+                                 Right e -> return e
+                                 Left err -> error $ show err
 
 writeEmbeddings :: Embeddings -> IO ()
 writeEmbeddings es = do tempf <- emptySystemTempFile "hakyll-embeddings"
-                        encodeFile tempf es
-                        renameFile tempf embeddingsPath
+                        DB.encodeFile tempf es
+                        es' <- readEmbeddingsPath tempf
+                        if length es' < 1 then error "Embeddings corrupted! Not writing out." else renameFile tempf embeddingsPath
 
 missingEmbeddings :: Metadata -> Embeddings -> [(String, MetadataItem)]
 missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, tags, abst) -> length (t++aut++show tags++abst) > minimumLength) md
