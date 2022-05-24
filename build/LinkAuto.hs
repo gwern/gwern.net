@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-05-19 20:48:33 gwern"
+When:  Time-stamp: "2022-05-23 20:24:26 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -146,6 +146,7 @@ defineLinks dict is = concatMap go $ mergeSpaces is
    go (Span a x) = [Span a (concatMap go x)]
    go x@(Str a)  = case findRegexMatch dict a of
                      Nothing   -> [x]
+                     Just (before,"",after, _) -> go (Str before) ++ go (Str after)
                      -- NOTE: our regexps must delimit on space/punctuation, which puts the matched character *inside* `matched` instead of `before`/`after`;
                      -- unfortunately, if we move it inside the Link, this will look bad when Links get their underlining decoration
                      -- in-browser (if it's a space, it'll be a weird extended underline, and if it's punctuation, it's not usually included in a link and looks inconsistent).

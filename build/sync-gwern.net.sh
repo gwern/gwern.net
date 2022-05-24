@@ -75,7 +75,7 @@ else
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" || true # backup in case of corruption
     cp ./metadata/archive.hs "/tmp/archive-$(date +%s).hs.bak"
-    cp ./metadata/embeddings.bin "/tmp/embeddings-$(date +%s).bin.bak"
+    ghci -i/home/gwern/wiki/static/build/ static/build/GenerateSimilar.hs  -e 'e <- readEmbeddings' && cp ./metadata/embeddings.bin "/tmp/embeddings-$(date +%s).bin.bak"
 
     # We update the linkSuggestions.el in a cron job because too expensive, and vastly slows down build.
 

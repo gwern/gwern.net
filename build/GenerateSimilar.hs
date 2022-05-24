@@ -16,7 +16,7 @@ import Text.Show.Pretty (ppShow)
 import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure))
-import Data.Binary (decodeFile, encodeFile)
+import Data.Binary (decodeFileOrFail, encodeFile)
 import Network.HTTP (urlEncode)
 
 import qualified Data.Vector as V (toList, Vector)
@@ -54,7 +54,11 @@ embeddingsPath = "metadata/embeddings.bin"
 
 readEmbeddings :: IO Embeddings
 readEmbeddings = do exists <- doesFileExist embeddingsPath
-                    if exists then decodeFile embeddingsPath else return []
+                    if not exists then return [] else
+                      do eE <- decodeFileOrFail embeddingsPath
+                         case eE of
+                           Right e -> return e
+                           Left err -> error $ show err
 
 writeEmbeddings :: Embeddings -> IO ()
 writeEmbeddings es = do tempf <- emptySystemTempFile "hakyll-embeddings"

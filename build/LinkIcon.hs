@@ -271,7 +271,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | aU' ["onegeek.org", "eva-fan.com", "evaotaku.com", "khara.co.jp", "gainax.co.jp", "17th-angel.tumblr.com", "gainax.com", "johakyu.net", "kanzaki.sub.jp", "homepage3.nifty.com", "www.cjas.org", "www.dummy-system.com", "www.evalegend.com", "www.usagi.org", "animekritik.wordpress.com", "fullfrontal.moe", "wavemotioncannon.com", "www.angelfire.com/anime4/"] = aI "NGE" "text,tri" -- Primary user: forum.evageeks.org wiki.evageeks.org
  | u'' "academic.oup.com" || u' ".nutrition.org" || u' ".oxfordjournals.org" = aI "OUP" "text,tri" -- Oxford Academic Journals / OUP
  | u'' "poniesatdawn.bandcamp.com" = aI "P@D" "text,tri"
- | u'' "slatestarscratchpad.tumblr.com" || u'' "astralcodexten.substack.com" || (u'' "slatestarcodex.com" && (extension u /= ".pdf")) || (isLocal u && (u' "yvain" ||  u' "slatestarcodex")) = aI "SSC" "text,tri" -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead
+ | u'' "slatestarscratchpad.tumblr.com" || u'' "astralcodexten.substack.com" || (u'' "slatestarcodex.com" && (extension u /= ".pdf")) || (isLocal x u && (u' "yvain" ||  u' "slatestarcodex")) = aI "SSC" "text,tri" -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead
  | u'' "plato.stanford.edu" = aI "SEP" "text,tri"
  | u'' "www.vox.com" = aI "Vox" "text,tri,italic"
  | aU'' ["blogs.wsj.com", "online.wsj.com", "www.wsj.com"] = aI "WSJ" "text,tri" -- The Wall Street Journal
@@ -392,7 +392,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | iE ["epub"] = aI "EPUB" "text,quad,sans"
  | u'' "imgur.com" || u'' "i.imgur.com"       = aI "image" "svg"
  | "/static/" `T.isPrefixOf` u && hasExtension ".html" u  = aI "code" "svg"
- | isLocal u && hasExtension ".php" u                     = aI "code" "svg"
+ | isLocal x u && hasExtension ".php" u                     = aI "code" "svg"
  | aU' [".pdf", ".PDF", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org"] = aI "pdf" "svg"
 
  -- Fallback
@@ -443,8 +443,9 @@ addIcon x@(Link (idt,cl,ks) a (b,c)) icon iconType  =
                                   ks) a (b,c)
 addIcon x _ _ = x
 
-isLocal :: T.Text -> Bool
-isLocal s = T.head s == '/'
+isLocal :: Inline -> T.Text -> Bool
+isLocal x "" = error $ "Invalid empty string used as link in isLocal: " ++ show x
+isLocal _ s = T.head s == '/'
 
 hasExtension :: T.Text -> T.Text -> Bool
 hasExtension ext p = extension p == ext

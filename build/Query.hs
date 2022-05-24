@@ -1,7 +1,7 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2022-04-29 14:25:49 gwern"
+When:  Time-stamp: "2022-05-23 20:23:30 gwern"
 License: CC-0
 -}
 
@@ -37,6 +37,7 @@ extractURLs :: Pandoc -> [T.Text]
 extractURLs = extractURLsWith (const True)
 
 extractURLWith :: (Inline -> Bool) -> Inline -> [(T.Text,T.Text,T.Text)]
+extractURLWith _ x@(Link _ _ ("", _)) = error $ "Invalid link used in extractURLWith: " ++ show x
 extractURLWith rule x@(Link _ anchorText (url, tooltip))
     | url == "" || T.head url == '$' || T.head url == '\8383' = []
     | rule x = [(url, inlinesToText anchorText, tooltip)]

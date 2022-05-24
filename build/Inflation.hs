@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2022-05-06 11:56:24 gwern"
+-- When:  Time-stamp: "2022-05-23 20:19:10 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -76,6 +76,7 @@ minPercentage :: Float
 minPercentage = 1 + 0.20
 
 nominalToRealInflationAdjuster :: Inline -> Inline
+nominalToRealInflationAdjuster x@(Link _ _ ("", _)) = error $ "Inflation adjustment (nominalToRealInflationAdjuster) failed on malformed link: " ++ show x
 nominalToRealInflationAdjuster x@(Link _ _ (ts, _))
   | t == '$' = dollarAdjuster x
   | t == '\8383' = bitcoinAdjuster x --- official Bitcoin Unicode: '₿'/'\8383'; obsoletes THAI BAHT SIGN
@@ -84,6 +85,7 @@ nominalToRealInflationAdjuster x = x
 
 -- TODO: refactor dollarAdjuster/bitcoinAdjuster - they do *almost* the same thing, aside from handling year vs dates
 dollarAdjuster :: Inline -> Inline
+dollarAdjuster l@(Link _ _ ("", _)) = error $ "Inflation adjustment (dollarAdjuster) failed on malformed link: " ++ show l
 dollarAdjuster l@(Link _ text (oldYears, _)) =
   -- if the adjustment is <X%, don't bother, it's not misleading enough yet to need adjusting:
  if (adjustedDollar / oldDollar) < minPercentage
@@ -163,6 +165,7 @@ formatDecimal d prec
           mapFst f (x,y) = (f x,y)
 
 bitcoinAdjuster :: Inline -> Inline
+bitcoinAdjuster l@(Link _ _ ("", _)) = error $ "Inflation adjustment (bitcoinAdjuster) failed on malformed link: " ++ show l
 bitcoinAdjuster l@(Link _ text (oldDates, _)) =
  if (adjustedBitcoin / oldBitcoin) < minPercentage
  then Str $ T.pack ("\8383"++oldBitcoinString)
