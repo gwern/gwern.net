@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-22 21:29:36 gwern"
+When:  Time-stamp: "2022-05-24 11:52:51 gwern"
 License: CC-0
 -}
 
@@ -535,6 +535,13 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("philosophy/frank-p-ramsey", "Frank Ramsey")
           , ("nootropic/quantified-self", "QS")
           , ("darknet-markets", "DNM")
+          , ("darknet-markets/agora", "Agora DNM")
+          , ("darknet-markets/alphabay", "AlphaBay")
+          , ("darknet-markets/atlantis", "Atlantis DNM")
+          , ("darknet-markets/blackmarket-reloaded", "BMR")
+          , ("darknet-markets/evolution", "Evolution DNM")
+          , ("darknet-markets/silk-road/1", "SR1")
+          , ("darknet-markets/silk-road/2", "SR2")
           , ("darknet-markets/william-pickard", "William Pickard")
           , ("reinforcement-learning/muzero", "MuZero")
           , ("reinforcement-learning/alphago", "AlphaGo")
@@ -984,7 +991,7 @@ paragraphized f a = f `elem` whitelist ||
    paragraphsHtml :: String -> [(T.Text,T.Text)]
    paragraphsHtml b = T.breakOnAll "<p>" (T.pack b)
    whitelist :: [String]
-   whitelist = ["/docs/cs/1980-rytter.pdf", "/docs/economics/1998-delong"]
+   whitelist = ["/docs/cs/1980-rytter.pdf", "/docs/economics/1998-delong.pdf"]
 
 -- If a String (which is not HTML!) is a single long paragraph (has no double-linebreaks), call out to paragraphizer.py, which will use GPT-3 to try to break it up into multiple more-readable paragraphs.
 -- This is quite tricky to use: it wants non-HTML plain text (any HTML will break GPT-3), but everything else wants HTML
@@ -2604,6 +2611,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" Drosophila melanogaster", " <em>Drosophila melanogaster</em>")
           , (" C. elegans", " <em>C. elegans</em>")
           , (" T. gondii", " <em>T. gondii</em>")
+          , ("Lempel–Ziv–Markov", "Lempel-Ziv-Markov")
           , ("learn-ing", "learning")
           , ("Per- formance", "Performance")
           , ("per- formance", "performance")
@@ -2645,5 +2653,6 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("Oamp#x02019;", "O’")
           , ("Camp#x000ED;", "Cí")
           , ("amp#x000E9", "é")
+          , ("\\aka", "a.k.a.")
           , ("\160", " ") -- NO BREAK SPACE
             ]

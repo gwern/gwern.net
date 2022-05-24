@@ -282,6 +282,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | aU'' ["dl.acm.org", "queue.acm.org", "cacm.acm.org"] = aI "acm" "text,tri,sans" -- <https://en.wikipedia.org/wiki/File:Association_for_Computing_Machinery_(ACM)_logo.svg> 'acm' sans in a circle inside a diamond; can't fake it with Unicode joiners (they'd only put one character into a circle+diamond), and I probably don't want to bother with a SVG.
  | u' "www.cs.utexas.edu/~EWD/" = aI "EWD" "text,tri,sans" -- Edsger W. Dijkstra, of course, wrote in sans
  | u'' "iopscience.iop.org" = aI "IOP" "text,tri,sans" -- <https://en.wikipedia.org/wiki/IOP_Publishing> Institute of Physics Publishing
+ | u'' "wandb.ai" = aI "⡳⠃" "text,tri,sans" -- Weights & Biases/WandB: blog/podcasts, writeups etc; complicated 4-dot grid logo intended to evoke NN layers with large/small weights, which I approximate using Braille Unicode <https://en.wikipedia.org/wiki/Braille_Patterns#Block>
 
  -- Quad-letter-square icons.
  | aU'' ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
@@ -325,6 +326,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.spiegel.de" = aI "SPGL" "text,quad" -- Der Spiegel, major German newspaper; the 'S' logo is unrecognizable given the sheer number of 'S' logos out there, so abbreviation instead
  | u'' "tasvideos.org" = aI "TASV" "text,quad" -- TASVideos.org: tool-assisted game movies
  | u'' "habr.com" = aI "Habr" "text,quad,sans" -- Russian tech collaborative blog <https://en.wikipedia.org/wiki/Habr>
+ | u' "sites.google.com/berkeley.edu" || aU'' ["ml.berkeley.edu", "people.eecs.berkeley.edu", "bair.berkeley.edu"] = aI "BAIR" "text,quad,sans" -- Berkeley AI Research: Chelsea Finn, Sergey Levine, robotics, Decision Transformer, etc.
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -1010,6 +1012,11 @@ linkIconTestUnitsText =
          , ("https://tasvideos.org/3653M", "TASV", "text,quad")
          , ("https://www.metaculus.com/questions/notebooks/8702/the-promise-and-impact-of-the-next-generation-of-weight-loss-drugs/", "metaculus", "svg")
          , ("https://habr.com/ru/post/516190/", "Habr", "text,quad,sans")
+         , ("https://sites.google.com/berkeley.edu/decision-transformer", "BAIR", "text,quad,sans")
+         , ("https://ml.berkeley.edu/blog/posts/clip-art/", "BAIR", "text,quad,sans")
+         , ("https://people.eecs.berkeley.edu/~janner/trajectory-transformer/files/trajectory-transformer.pdf", "BAIR", "text,quad,sans")
+         , ("https://bair.berkeley.edu/blog/2020/07/11/auction/", "BAIR", "text,quad,sans")
+         , ("https://wandb.ai/wandb_fc/gradient-dissent/reports/What-could-make-AI-conscious-with-Wojciech-Zaremba-co-founder-of-OpenAI--Vmlldzo3NDk3MDI", "⡳⠃", "text,tri,sans")
         ]
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
