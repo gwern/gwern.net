@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-24 11:52:51 gwern"
+When:  Time-stamp: "2022-05-24 19:28:27 gwern"
 License: CC-0
 -}
 
@@ -247,9 +247,9 @@ warnParagraphizeYAML path = do yaml <- readYaml path
 minimumAnnotationLength :: Int
 minimumAnnotationLength = 200
 
-writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Bool -> IO ()
+writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Integer -> IO ()
 writeAnnotationFragments am md archived = mapM_ (\(p, mi) -> writeAnnotationFragment am md archived p mi) $ M.toList md
-writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Bool -> Path -> MetadataItem -> IO ()
+writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Integer -> Path -> MetadataItem -> IO ()
 writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > minimumAnnotationLength) $
                                           do let u' = linkCanonicalize u
                                              bl <- getBackLink u'

@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-05-10 11:57:59 gwern"
+When:  Time-stamp: "2022-05-24 19:28:16 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -91,7 +91,7 @@ in February 2020.) But it'll be worth it to forestall thousands of dying links, 
 frustration, and a considerable waste of my time every month dealing with the latest broken links. -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata) where
+module LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata) where
 
 import Control.Monad (filterM)
 import Data.IORef (IORef, readIORef, writeIORef)
@@ -122,7 +122,7 @@ type ArchiveMetadata = M.Map Path ArchiveMetadataItem
 type Path = String
 
 -- Pandoc types: Link = Link Attr [Inline] Target; Attr = (String, [String], [(String, String)]); Target = (String, String)
-localizeLink :: ArchiveMetadata -> IORef Bool -> Inline -> IO Inline
+localizeLink :: ArchiveMetadata -> IORef Integer -> Inline -> IO Inline
 localizeLink adb archived x@(Link (identifier, classes, pairs) b (targetURL, targetDescription)) =
   -- skip local archiving if matches the whitelist, or it has a manual annotation '.archive-not' class on it, like
   -- `[Foo](!W "Bar"){.archive-not}` in which case we don't do any sort of 'archiving' such as rewriting to point to a
@@ -167,8 +167,8 @@ readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata
 -- 3. If we've never attempted to archive it and have known the url _n_ days, do so. (With the exception of PDFs, which we
 --    locally archive immediately.) Do only 1 archive per run by checking the IORef to see
 -- 4. Return archive contents.
-rewriteLink :: ArchiveMetadata -> IORef Bool -> String -> IO String
-rewriteLink adb archived url = do
+rewriteLink :: ArchiveMetadata -> IORef Integer -> String -> IO String
+rewriteLink adb archivedN url = do
   today <- currentDay
   -- print $ "checkLink: " ++ url
   fromMaybe url <$> if whiteList url then return Nothing else
@@ -178,16 +178,17 @@ rewriteLink adb archived url = do
         then return Nothing
         else do
           -- have we already done a link archive this run? If so, skip all additional link archives
-          archivedAlreadyP <- readIORef archived
-          if (not archivedAlreadyP) then (do archive <- archiveURL (transformURLsForArchiving url)
-                                             insertLinkIntoDB (Right archive) url
-                                             writeIORef archived True
-                                             return archive)
+          archivedAlreadyP <- readIORef archivedN
+          if archivedAlreadyP > 0 then (do archive <- archiveURL (transformURLsForArchiving url)
+                                           insertLinkIntoDB (Right archive) url
+                                           writeIORef archivedN (archivedAlreadyP - 1)
+                                           return archive)
           else return Nothing
       Just (Right archive) -> if archive == Just "" then printRed ("Error! Tried to return a link to a non-existent archive! " ++ url) >> return Nothing else return archive
 
-archiveDelay :: Integer
+archiveDelay, archivePerRunN :: Integer
 archiveDelay = 60
+archivePerRunN = 2
 
 insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
 insertLinkIntoDB a url = do adb <- readArchiveMetadata

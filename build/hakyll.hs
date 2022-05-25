@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-05-11 16:47:39 gwern"
+When: Time-stamp: "2022-05-24 19:28:23 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -70,7 +70,7 @@ import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToText, interwikiTestSuite)
 import LinkMetadata (isLocalLinkWalk, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString, tagsToLinksDiv, safeHtmlWriterOptions)
-import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
+import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (linebreakingTransform, typographyTransform, invertImageInline, imageMagickDimensions)
 import LinkAuto (linkAuto)
 import LinkIcon (rebuildSVGIconCSS)
@@ -99,7 +99,7 @@ main = hakyll $ do
              preprocess $ printGreen ("Annotations parsing…" :: String)
              meta <- preprocess readLinkMetadataAndCheck
              preprocess $ printGreen ("Writing annotations…" :: String)
-             hasArchivedOnce <- preprocess $ newIORef False
+             hasArchivedOnce <- preprocess $ newIORef archivePerRunN
              preprocess $ writeAnnotationFragments am meta hasArchivedOnce
              preprocess $ printGreen ("Begin site compilation…" :: String)
              match "**.page" $ do
@@ -278,7 +278,7 @@ descField d = field d $ \item -> do
                          Left _          -> noResult "no description field"
                          Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
 
-pandocTransform :: Metadata -> ArchiveMetadata -> IORef Bool -> Pandoc -> IO Pandoc
+pandocTransform :: Metadata -> ArchiveMetadata -> IORef Integer -> Pandoc -> IO Pandoc
 pandocTransform md adb archived p = -- linkAuto needs to run before convertInterwikiLinks so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary
                            do let pw = walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
                               _ <- createAnnotations md pw
