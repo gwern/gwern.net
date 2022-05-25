@@ -80,13 +80,14 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | hasIcon x           = x
  | hasKeyAL u overrideLinkIcons = let (i,it) = fromJust $ lookup u overrideLinkIcons in addIcon x i it
 
- | "directory-indexes-upwards"    `elem` cl = aI "arrow-up-left"    "svg"
+ | "directory-indexes-upwards"   `elem` cl = aI "arrow-up-left"    "svg"
  | "directory-indexes-downwards" `elem` cl = aI "arrow-down-right" "svg"
  | "directory-indexes-sideways"  `elem` cl = aI "arrow-right"      "svg"
 
  -- organizational mentions or affiliations take precedence over domain or filetypes; typically matches anywhere in the URL.
  | u' "deepmind"  = aI "deepmind" "svg" -- DeepMind; match articles or anchors about DM too. Primary user: deepmind.com, DM papers on Arxiv
  | u' "facebook" || u' ".fb.com"  = aI "facebook" "svg"
+ | u' "sites.google.com/berkeley.edu" || aU'' ["ml.berkeley.edu", "people.eecs.berkeley.edu", "bair.berkeley.edu"] = aI "BAIR" "text,quad,mono" -- Berkeley AI Research: Chelsea Finn, Sergey Levine, robotics, Decision Transformer, etc. Overrides Google Sites.
  | u'' "groups.google.com" = aI "✉" "text"
  | u'' "scholar.google.com" = aI "google-scholar" "svg" -- Google Scholar.
  | u'' "docs.google.com" = aI "worddoc" "svg"
@@ -326,7 +327,6 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.spiegel.de" = aI "SPGL" "text,quad" -- Der Spiegel, major German newspaper; the 'S' logo is unrecognizable given the sheer number of 'S' logos out there, so abbreviation instead
  | u'' "tasvideos.org" = aI "TASV" "text,quad" -- TASVideos.org: tool-assisted game movies
  | u'' "habr.com" = aI "Habr" "text,quad,sans" -- Russian tech collaborative blog <https://en.wikipedia.org/wiki/Habr>
- | u' "sites.google.com/berkeley.edu" || aU'' ["ml.berkeley.edu", "people.eecs.berkeley.edu", "bair.berkeley.edu"] = aI "BAIR" "text,quad,sans" -- Berkeley AI Research: Chelsea Finn, Sergey Levine, robotics, Decision Transformer, etc.
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -1012,10 +1012,10 @@ linkIconTestUnitsText =
          , ("https://tasvideos.org/3653M", "TASV", "text,quad")
          , ("https://www.metaculus.com/questions/notebooks/8702/the-promise-and-impact-of-the-next-generation-of-weight-loss-drugs/", "metaculus", "svg")
          , ("https://habr.com/ru/post/516190/", "Habr", "text,quad,sans")
-         , ("https://sites.google.com/berkeley.edu/decision-transformer", "BAIR", "text,quad,sans")
-         , ("https://ml.berkeley.edu/blog/posts/clip-art/", "BAIR", "text,quad,sans")
-         , ("https://people.eecs.berkeley.edu/~janner/trajectory-transformer/files/trajectory-transformer.pdf", "BAIR", "text,quad,sans")
-         , ("https://bair.berkeley.edu/blog/2020/07/11/auction/", "BAIR", "text,quad,sans")
+         , ("https://sites.google.com/berkeley.edu/decision-transformer", "BAIR", "text,quad,mono")
+         , ("https://ml.berkeley.edu/blog/posts/clip-art/", "BAIR", "text,quad,mono")
+         , ("https://people.eecs.berkeley.edu/~janner/trajectory-transformer/files/trajectory-transformer.pdf", "BAIR", "text,quad,mono")
+         , ("https://bair.berkeley.edu/blog/2020/07/11/auction/", "BAIR", "text,quad,mono")
          , ("https://wandb.ai/wandb_fc/gradient-dissent/reports/What-could-make-AI-conscious-with-Wojciech-Zaremba-co-founder-of-OpenAI--Vmlldzo3NDk3MDI", "⡳⠃", "text,tri,sans")
         ]
 

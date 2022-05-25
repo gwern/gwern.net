@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-24 19:28:27 gwern"
+When:  Time-stamp: "2022-05-25 17:05:33 gwern"
 License: CC-0
 -}
 
@@ -1624,6 +1624,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         (" *</p>", "</p>"),
         ("<em>R</em>  *<sup>2</sup>", "<em>R</em><sup>2</sup>"),
         -- regexp substitutions:
+        -- rewrite *Markdown italics* to <em>HTML italics</em>, and strong/bold:
+        ("(.*)\\*(.+)\\*(.*)", "\\1<em>\\2</em>\\3"),
+        ("(.*)\\*\\*(.+)\\*\\*(.*)", "\\1<strong>\\2</strong>\\3"),
         ("<p>This paper was accepted by [A-Z][a-z]+ [A-Z][a-z]+, .*\\.</p>", ""),
         -- cleanup bare URLs (particularly common in Arxiv abstracts when linking to Github):
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+)$", " <a href=\"\\1\">\\1</a>$"),

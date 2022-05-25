@@ -55,13 +55,6 @@ else
     bold "Pulling infrastructure updates…"
     (cd ./static/ && git status && git pull --verbose 'https://gwern.obormot.net/static/.git/' master || true)
 
-    # ## check validity of annotation database before spending time compiling:
-    # bold "Checking annotations first…"
-    # ghci -istatic/build/ ./static/build/LinkMetadata.hs  -e 'readLinkMetadataAndCheck' > /dev/null
-    # λ(){ egrep -- '/[[:graph:]]\+[0-9]–[0-9]' ./metadata/*.yaml ./metadata/*.hs || true;
-    #      fgrep -- '–' ./metadata/*.hs || true; }
-    # wrap λ "En-dashes in URLs?"
-
     bold "Compiling…"
     cd ./static/build
     compile () { ghc -O2 -Wall -rtsopts -threaded --make "$@"; }
@@ -71,11 +64,12 @@ else
     compile preprocess-markdown.hs &
     ## NOTE: generateSimilarLinks.hs & link-suggester.hs are done at midnight by a cron job because
     ## they are too slow to run during a regular site build & don't need to be super-up-to-date
-    ## anyway    wait
+    ## anyway
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" || true # backup in case of corruption
     cp ./metadata/archive.hs "/tmp/archive-$(date +%s).hs.bak"
-    ghci -i/home/gwern/wiki/static/build/ static/build/GenerateSimilar.hs  -e 'e <- readEmbeddings' && cp ./metadata/embeddings.bin "/tmp/embeddings-$(date +%s).bin.bak"
+    bold "Checking embeddings database…"
+    ghci -i/home/gwern/wiki/static/build/ static/build/GenerateSimilar.hs  -e 'e <- readEmbeddings' &>/dev/null && cp ./metadata/embeddings.bin "/tmp/embeddings-$(date +%s).bin.bak"
 
     # We update the linkSuggestions.el in a cron job because too expensive, and vastly slows down build.
 
@@ -248,6 +242,9 @@ else
     # Testing compilation results:
     set +e
 
+    bold "Checking annotations…"
+    ghci -istatic/build/ ./static/build/LinkMetadata.hs  -e 'readLinkMetadataAndCheck' > /dev/null
+
     λ(){ PAGES="$(find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotations/ -type f -name '*.html' | sort)"
          echo "$PAGES" | xargs fgrep -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
                                      fgrep --invert-match -e '/docs/cs/1955-nash' -e '/Backstop' -e '/Death-Note-Anonymity' -e '/Differences' \
@@ -278,6 +275,10 @@ else
 
     λ(){ egrep -e '#[[:alnum:]-]+#' -e '[[:alnum:]-]+##[[:alnum:]-]+' metadata/*.yaml metadata/*.hs; }
     wrap λ "Broken double-hash anchors in links somewhere?"
+
+    λ(){ egrep -- '/[[:graph:]]\+[0-9]–[0-9]' ./metadata/*.yaml ./metadata/*.hs || true;
+         fgrep -- '–' ./metadata/*.hs || true; }
+    wrap λ "En-dashes in URLs?"
 
     λ(){ gf '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
@@ -372,7 +373,8 @@ else
             -e '</strong>::' -e ' bya ' -e '?gi=' -e ' ]' -e '<span class="cit' -e 'gwsed' -e 'full.full' -e ',,' \
             -e '"!"' -e '</sub<' -e 'xref>' -e '<xref' -e '<e>' -e '\\$' -e 'title="http' -e '%3Csup%3E' -e 'sup%3E' -e ' et la ' \
             -e '<strong>Abstract' -e ' ]' -e "</a>’s" -e 'title="&#39; ' -e 'collapseAbstract' -e 'utm_' \
-            -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -e ' : ' -e " ' " -e '>/>a' -e '</a></a>' -e '(, ' -- ./metadata/*.yaml;
+            -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -e ' : ' -e " ' " -e '>/>a' -e '</a></a>' -e '(, ' \
+            -e '*' -- ./metadata/*.yaml;
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
 
@@ -529,7 +531,7 @@ else
          cr 'https://www.gwern.net/Archiving%20URLs.html' 'https://www.gwern.net/Archiving-URLs'
          cr 'https://www.gwern.net/Book-reviews' 'https://www.gwern.net/reviews/Books'
          cr 'https://www.gwern.net/docs/ai/2019-10-21-gwern-gpt2-folkrnn-samples.ogg' 'https://www.gwern.net/docs/ai/music/2019-10-21-gwern-gpt2-folkrnn-samples.mp3';
-         cr 'https://www.gwern.net/docs/sr/2013-06-07-premiumdutch-profile.htm' 'https://www.gwern.net/docs/silk-road/2013-06-07-premiumdutch-profile.htm'
+         cr 'https://www.gwern.net/docs/sr/2013-06-07-premiumdutch-profile.htm' 'https://www.gwern.net/docs/darknet-markets/silk-road/1/2013-06-07-premiumdutch-profile.htm'
          cr 'https://www.gwern.net/docs/elections/2012-gwern-notes.txt' 'https://www.gwern.net/docs/prediction/election/2012-gwern-notes.txt'
          cr 'https://www.gwern.net/docs/statistics/peerreview/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf' 'https://www.gwern.net/docs/statistics/peer-review/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf'
          cr 'https://www.gwern.net/docs/longnow/form990-longnowfoundation-2001-12.pdf' 'https://www.gwern.net/docs/long-now/form990-longnowfoundation-2001-12.pdf'
@@ -584,7 +586,7 @@ else
           cm "text/csv; charset=utf-8" 'https://www.gwern.net/docs/statistics/2013-google-index.csv'
           cm "text/html" 'https://www.gwern.net/atom.xml'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/docs/cs/2012-terencetao-anonymity.html'
-          cm "text/html; charset=utf-8" 'https://www.gwern.net/docs/silk-road/2013-06-07-premiumdutch-profile.htm'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/docs/darknet-markets/silk-road/1/2013-06-07-premiumdutch-profile.htm'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/notes/Attention'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/notes/Faster'
