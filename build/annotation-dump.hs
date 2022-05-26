@@ -24,9 +24,9 @@ blacklist sourceLabel = map (\(a,b) -> (a,(b,sourceLabel))) . filter (\(f,(title
 printSingleLine :: (Path,(MetadataItem,String)) -> IO ()
 printSingleLine (f,((b,c,d,_,tags,abst),label)) = putStrLn $ ("\x1b[36m"++label++"\x1b[0m: ") ++ intercalate "; "
   [ authorsToCite f c d,
-    "\x1b[32m"++f++"\x1b[0m ",
+    "\x1b[32m "++f++" \x1b[0m",
+    show tags,
     "\x1b[35m\""++b++"\"\x1b[0m",
     " (" ++ c ++ ")",
     d,
-    show tags,
     replace "\n" " " abst]
