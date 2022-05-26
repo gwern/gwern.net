@@ -283,7 +283,6 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | aU'' ["dl.acm.org", "queue.acm.org", "cacm.acm.org"] = aI "acm" "text,tri,sans" -- <https://en.wikipedia.org/wiki/File:Association_for_Computing_Machinery_(ACM)_logo.svg> 'acm' sans in a circle inside a diamond; can't fake it with Unicode joiners (they'd only put one character into a circle+diamond), and I probably don't want to bother with a SVG.
  | u' "www.cs.utexas.edu/~EWD/" = aI "EWD" "text,tri,sans" -- Edsger W. Dijkstra, of course, wrote in sans
  | u'' "iopscience.iop.org" = aI "IOP" "text,tri,sans" -- <https://en.wikipedia.org/wiki/IOP_Publishing> Institute of Physics Publishing
- | u'' "wandb.ai" = aI "⡳⠃" "text,tri,sans" -- Weights & Biases/WandB: blog/podcasts, writeups etc; complicated 4-dot grid logo intended to evoke NN layers with large/small weights, which I approximate using Braille Unicode <https://en.wikipedia.org/wiki/Braille_Patterns#Block>
 
  -- Quad-letter-square icons.
  | aU'' ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
@@ -376,6 +375,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "nasa.gov" = aI "nasa" "svg" -- NASA has way too many subdomains to try to whitelist them individually. SVG is a quad version of <https://commons.wikimedia.org/wiki/File:NASA_Worm_logo_(black).svg>
  | aU'' ["link.springer.com", "rd.springer.com"] || u' ".biomedcentral.com" = aI "springerlink" "svg"  -- (♘) WHITE CHESS KNIGHT as SVG
  | u'' "www.metaculus.com" = aI "metaculus" "svg"
+ | u'' "wandb.ai" = aI "wandb" "svg" -- Weights & Biases/WandB: blog/podcasts, writeups etc; complicated 4-dot grid logo intended to evoke NN layers with large/small weights, <view-source:https://assets.website-files.com/5ac6b7f2924c656f2b13a88c/6066c22135b8983b61ad7939_weights-and-biases-logo.svg>; edited into BW, enlarged the large dots to make viewable as a link icon
 
  -- many orgs will use a medium subdomain, so we fall back here for Medium and override above:
  | u'' "medium.com" || u'' "towardsdatascience.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
@@ -1016,7 +1016,7 @@ linkIconTestUnitsText =
          , ("https://ml.berkeley.edu/blog/posts/clip-art/", "BAIR", "text,quad,mono")
          , ("https://people.eecs.berkeley.edu/~janner/trajectory-transformer/files/trajectory-transformer.pdf", "BAIR", "text,quad,mono")
          , ("https://bair.berkeley.edu/blog/2020/07/11/auction/", "BAIR", "text,quad,mono")
-         , ("https://wandb.ai/wandb_fc/gradient-dissent/reports/What-could-make-AI-conscious-with-Wojciech-Zaremba-co-founder-of-OpenAI--Vmlldzo3NDk3MDI", "⡳⠃", "text,tri,sans")
+         , ("https://wandb.ai/wandb_fc/gradient-dissent/reports/What-could-make-AI-conscious-with-Wojciech-Zaremba-co-founder-of-OpenAI--Vmlldzo3NDk3MDI", "wandb", "svg")
         ]
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
