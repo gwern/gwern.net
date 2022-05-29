@@ -1,10 +1,12 @@
 #!/usr/bin/env runghc
 -- Print out single-line-formatted annotations for easier grepping
 
-import LinkMetadata (authorsToCite, sortItemPathDate, readYamlFast, MetadataItem)
 import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf)
 import Data.List.Utils (replace)
 import Data.Map as M (union, toList, fromList)
+
+import LinkMetadata (authorsToCite, sortItemPathDate, readYamlFast, MetadataItem)
+import Utils (sed)
 
 type Path = String
 
@@ -29,4 +31,4 @@ printSingleLine (f,((b,c,d,_,tags,abst),label)) = putStrLn $ ("\x1b[36m"++label+
     "\x1b[35m\""++b++"\"\x1b[0m",
     " (" ++ c ++ ")",
     d,
-    replace "\n" " " abst]
+    sed " +" " " $ replace "\n" " " abst]

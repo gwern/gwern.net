@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-25 17:05:33 gwern"
+When:  Time-stamp: "2022-05-28 21:50:28 gwern"
 License: CC-0
 -}
 
@@ -141,7 +141,7 @@ readLinkMetadataAndCheck = do
              let normalizedUrls = map (replace "https://" "" . replace "http://" "") urls
              when (length (uniq (sort normalizedUrls)) /=  length normalizedUrls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (normalizedUrls \\ nubOrd normalizedUrls)
 
-             let brokenUrls = filter (\u -> null u || not (head u == 'h' || head u == '/') || "//" `isPrefixOf` u || ' ' `elem` u) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
+             let brokenUrls = filter (\u -> null u || not (head u == 'h' || head u == '/') || "//" `isPrefixOf` u || ' ' `elem` u || '\'' `elem` u) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
 
              let files = map (takeWhile (/='#') . tail) $ filter (\u -> head u == '/') urls
              forM_ files (\f -> unless (takeFileName f == "index" || takeFileName f == "index.page" || "/tags/" `isInfixOf` f) $
@@ -182,7 +182,7 @@ readLinkMetadataAndCheck = do
              partial <- readYaml "metadata/partial.yaml"
              let (customPaths,partialPaths) = (map fst custom, map fst partial)
              let redundantPartials = intersect customPaths partialPaths
-             unless (null redundantPartials) $ printRed $ "Redundant entries in partial.yaml & custom.yaml: " ++ show redundantPartials
+             unless (null redundantPartials) (printRed "Redundant entries in partial.yaml & custom.yaml: " >> printGreen (show redundantPartials))
 
              -- auto-generated cached definitions; can be deleted if gone stale
              rewriteLinkMetadata partial custom "metadata/auto.yaml" -- do auto-cleanup  first
@@ -194,20 +194,20 @@ readLinkMetadataAndCheck = do
              let urlsAll = filter (\(x@(u:_),_) -> if u == '/' || u == '!' || u == '$' || u == '\8383' ||
                                                       "wikipedia.org" `isInfixOf` x || "hoogle.haskell.org" `isInfixOf` x then False
                                                  else not (isURIReference x)) (M.toList final)
-             unless (null urlsAll) $ printRed "Invalid URIs?" >> putStrLn (ppShow urlsAll)
+             unless (null urlsAll) $ printRed "Invalid URIs?" >> printGreen (ppShow urlsAll)
 
              -- look for duplicates due to missing affiliation:
              let urlsDuplicateAffiliation = findDuplicatesURLsByAffiliation final
-             unless (null urlsDuplicateAffiliation) $ printRed "Duplicated URLs by affiliation:" >> print urlsDuplicateAffiliation
+             unless (null urlsDuplicateAffiliation) $ printRed "Duplicated URLs by affiliation:" >> printGreen (show urlsDuplicateAffiliation)
 
              let titlesSimilar = sort $ map (\(u,(t,_,_,_,_,_)) -> (u, t)) $ filter (\(u,_) -> '.' `elem` u && not ("wikipedia.org" `isInfixOf` u)) $ M.toList final
              let titles = filter (not . null) $ map snd titlesSimilar
-             unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in YAMLs!: " >> print (titles \\ nubOrd titles)
+             unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in YAMLs!: " >> printGreen (show (titles \\ nubOrd titles))
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) (M.toList final)
              Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex) (error $ "Mixed up author & date?: " ++ a) ) authors
              let authorsSemicolon = filter (';' `elem`) authors
-             unless (null authorsSemicolon) (printRed "Semicolons & not comma-separated author list?" >> putStrLn (ppShow authorsSemicolon))
+             unless (null authorsSemicolon) (printRed "Semicolons & not comma-separated author list?" >> printGreen (ppShow authorsSemicolon))
 
              let dates = map (\(_,(_,_,dt,_,_,_)) -> dt) (M.toList final) in
                Par.mapM_ (\d -> unless (null d) $ unless (d =~ dateRegex) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
@@ -230,7 +230,7 @@ readLinkMetadataAndCheck = do
                tagsSet
 
              let tagsOverused = filter (\(c,_) -> c > tagMax) $ tagCount final
-             unless (null tagsOverused) $ (printRed "Overused tags: " >> print tagsOverused)
+             unless (null tagsOverused) $ (printRed "Overused tags: " >> printGreen (show tagsOverused))
              return final
 
 dateRegex, footnoteRegex, sectionAnonymousRegex :: String
@@ -242,7 +242,7 @@ sectionAnonymousRegex = "^#section-[0-9]+$" -- unnamed sections which receive Pa
 warnParagraphizeYAML :: FilePath -> IO ()
 warnParagraphizeYAML path = do yaml <- readYaml path
                                let unparagraphized = filter (\(f,(_,_,_,_,_,abst)) -> not (paragraphized f abst)) yaml
-                               unless (null unparagraphized) $ putStrLn $ ppShow (map fst unparagraphized)
+                               unless (null unparagraphized) $ printGreen $ ppShow (map fst unparagraphized)
 
 minimumAnnotationLength :: Int
 minimumAnnotationLength = 200
@@ -270,7 +270,7 @@ writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > min
                                              let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions localizedPandoc
                                              annotationExisted <- doesFileExist filepath'
                                              case finalHTMLEither of
-                                               Left er -> error ("Writing annotation fragment failed! " ++ show u ++ ": " ++ show i ++ ": " ++ show er)
+                                               Left er -> error ("Writing annotation fragment failed! " ++ show u ++ " : " ++ show i ++ " : " ++ show er)
                                                Right finalHTML -> -- let refloated = T.pack $ restoreFigureClass e $ T.unpack finalHTML
                                                                   let refloated = finalHTML
                                                                   in writeUpdatedFile "annotation" filepath' refloated -- >>
@@ -286,7 +286,7 @@ safeHtmlWriterOptions = def{writerColumns = 9999, writerExtensions = (enableExte
 typesetHtmlField :: String -> String -> String
 typesetHtmlField orig t = let fieldPandocMaybe = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack t) in
                        case fieldPandocMaybe of
-                         Left errr -> error $ show orig ++ ": " ++ t ++ show errr
+                         Left errr -> error $ show orig ++ " : " ++ t ++ show errr
                          Right fieldPandoc -> let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
                                                 let (Right fieldHtml) = runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta fieldPandoc') in
                            T.unpack fieldHtml -- restoreFigureClass orig $ T.unpack fieldHtml
@@ -324,7 +324,7 @@ annotateLink md target
                        -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations:
                        Left Permanent -> appendLinkMetadata target'' ("", "", "", "", [], "") >> return False
                        Right y@(f,m@(_,_,_,_,_,e)) -> do
-                                       when (e=="") $ printGreen (f ++ ": " ++ show target ++ ": " ++ show y)
+                                       when (e=="") $ printGreen (f ++ " : " ++ show target ++ " : " ++ show y)
                                        -- return true because we *did* change the database & need to rebuild:
                                        appendLinkMetadata target'' m >> return True
 
@@ -371,7 +371,7 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
 parseRawBlock :: Attr -> Block -> Block
 parseRawBlock attr x@(RawBlock (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
                                           case pandoc of
-                                            Left e -> error (show x ++ ": " ++ show e)
+                                            Left e -> error (show x ++ " : " ++ show e)
                                             Right (Pandoc _ blocks) -> Div attr blocks
 parseRawBlock _ x = x
 
@@ -429,7 +429,7 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 -- WARNING: update the list in /static/js/extracts-annotation.js L218 if you change this list!
 affiliationAnchors :: [String]
-affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "apple", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "googlegraphcore", "googledeepmind", "huawei", "intel", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "nvidia", "openai", "pdf", "salesforce", "sensetime", "snapchat", "tencent", "tensorfork", "uber", "yandex"]
+affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "apple", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "huawei", "intel", "jd", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pdf", "salesforce", "sensetime", "snapchat", "tencent", "tensorfork", "uber", "yandex"]
 
 -- find all instances where I link "https://arxiv.org/abs/1410.5401" when it should be "https://arxiv.org/abs/1410.5401#deepmind", where they are inconsistent and the hash matches a whitelist of orgs.
 findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]
@@ -494,14 +494,16 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("ai/anime", "anime AI")
           , ("ai/anime/danbooru", "Danbooru AI")
           , ("eva/little-boy", "Little Boy")
-          , ("GPT/inner-monologue", "inner monologue (AI)")
           , ("ai/gpt", "GPT")
+          , ("ai/gpt/inner-monologue", "inner monologue (AI)")
           , ("ai/nn", "neural net")
           , ("ai/rnn", "AI/RNN")
           , ("ai/scaling", "AI scaling")
           , ("ai/scaling/moe", "AI/MoE")
           , ("iq/ses", "IQ/SES")
           , ("ai/clip", "CLIP")
+          , ("design/typography", "typography")
+          , ("design/visualization", "data visualization")
           , ("iq/smpy", "SMPY")
           , ("vitamin-d", "Vitamin D")
           , ("dual-n-back", "DNB")
@@ -510,6 +512,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("iq/anne-roe", "Anne Roe")
           , ("ai/diffusion", "diffusion model")
           , ("ai/gan", "GAN")
+          , ("ai/gan/biggan", "BigGAN")
           , ("ai/stylegan", "StyleGAN")
           , ("ai/gpt/dall-e", "DALL·E")
           , ("ai/highleyman", "Highleyman")
@@ -524,6 +527,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("modafinil/darknet-market", "modafinil DNM")
           , ("history/s-l-a-marshall", "SLAM")
           , ("lesswrong-survey/hpmor", "HP:MoR")
+          , ("cs/cellular-automaton", "cellular automata")
           , ("cs/shell", "shell")
           , ("cs/scheme", "Scheme")
           , ("cs/css", "CSS")
@@ -535,18 +539,21 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("philosophy/frank-p-ramsey", "Frank Ramsey")
           , ("nootropic/quantified-self", "QS")
           , ("darknet-markets", "DNM")
+          , ("darknet-markets/dnm-archives", "DNM Archives")
           , ("darknet-markets/agora", "Agora DNM")
-          , ("darknet-markets/alphabay", "AlphaBay")
+          , ("darknet-markets/alphabay", "AlphaBay DNM")
           , ("darknet-markets/atlantis", "Atlantis DNM")
-          , ("darknet-markets/blackmarket-reloaded", "BMR")
+          , ("darknet-markets/blackmarket-reloaded", "BMR DNM")
           , ("darknet-markets/evolution", "Evolution DNM")
-          , ("darknet-markets/silk-road/1", "SR1")
-          , ("darknet-markets/silk-road/2", "SR2")
+          , ("darknet-markets/sheep-marketplace", "Sheep DNM")
+          , ("darknet-markets/silk-road/1", "SR1 DNM")
+          , ("darknet-markets/silk-road/2", "SR2 DNM")
           , ("darknet-markets/william-pickard", "William Pickard")
           , ("reinforcement-learning/muzero", "MuZero")
           , ("reinforcement-learning/alphago", "AlphaGo")
           , ("reinforcement-learning/alphastar", "AlphaStar")
           , ("reinforcement-learning/oa5", "OA5")
+          , ("history/uighur", "Uighur genocide")
           , ("history/public-domain-review", "Public Domain Review")
           , ("technology", "tech")
           , ("technology/carbon-capture", "carbon capture")
@@ -558,11 +565,16 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("reinforcement-learning/openai", "OA")
           , ("reinforcement-learning/deepmind", "DM")
           , ("genetics/cloning", "cloning")
+          , ("genetics/cloning/dog", "dog cloning")
           , ("genetics/heritable/adoption", "adoption")
+          , ("genetics/selection/apple", "apple breeding")
           , ("genetics/selection/index-selection", "index selection")
           , ("reinforcement-learning/meta-learning", "meta-learning")
           , ("reinforcement-learning/preference-learning", "preference learning")
           , ("reinforcement-learning/multi-agent", "MARL")
+          , ("reinforcement-learning/imperfect-information/diplomacy", "Diplomacy AI")
+          , ("reinforcement-learning/imperfect-information/hanabi", "Hanabi AI")
+          , ("reinforcement-learning/imperfect-information/poker", "poker AI")
           , ("reinforcement-learning/robot", "robotics")
           , ("prediction/election", "election forecast")
           , ("psychology/illusion-of-depth", "the illusion of depth")
@@ -594,6 +606,8 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("fiction/text-game", "text games")
           , ("fiction/gene-wolfe", "Gene Wolfe")
           , ("cat/catnip/survey", "catnip survey")
+          , ("cat/genetics", "cat genetics")
+          , ("cat/psychology", "cat psychology")
           , ("modafinil/survey", "modafinil survey")
           , ("lesswrong-survey", "LW survey")
           , ("genetics/editing", "genetic engineering")
@@ -661,7 +675,7 @@ readYamlFast :: Path -> IO MetadataList
 readYamlFast yamlp = do file <- B.readFile yamlp
                         let yaml = Y.decodeEither' file :: Either ParseException [[String]]
                         case yaml of
-                           Left  _ -> let y = recoverYamlAttempt 25 yamlp file in print y >> (return $ concatMap convertListToMetadataFast y) :: IO MetadataList
+                           Left  _ -> let y = recoverYamlAttempt 25 yamlp file in printGreen (show y) >> (return $ concatMap convertListToMetadataFast y) :: IO MetadataList
                            Right y -> (return $ concatMap convertListToMetadataFast y) :: IO MetadataList
                 where
                  convertListToMetadataFast :: [String] -> MetadataList
@@ -788,7 +802,7 @@ pdf p = do let p' = takeWhile (/='#') p
            (_,_,mb)  <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date", "-Title", "-Author", "-dateFormat", "%F", "-Date", p']
            (_,_,mb2) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$DOI", "-DOI", p']
            if BL.length mb > 0 then
-             do print mb
+             do printGreen (show mb)
                 let results = (lines $ (\s -> if head s == '\n' then tail s else s) $ replace "\n\n" "\n" $ U.toString mb)
                 case results of
                   d:[] -> return $ Right (p, ("", "", d, "", [], ""))
@@ -816,7 +830,7 @@ filterMeta :: String -> String
 filterMeta ea = if anyInfix ea badSubstrings || elem ea badWholes then "" else ea
  where badSubstrings, badWholes :: [String]
        badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED"]
-       badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf", "comp", "khan", "Science Magazine"]
+       badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf", "comp", "khan", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan"]
 
 -- nested JSON object: eg. 'jq .message.abstract'
 newtype Crossref = Crossref { message :: Message } deriving (Show,Generic)
@@ -846,7 +860,7 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                         let metas = filter (isTagOpenName "meta") f
 
                         let title = concat $ parseMetadataTagsoup "DC.Title" metas
-                        if title=="" then printRed ("BioRxiv parsing failed: " ++ p ++ ": parsed metadata: " ++ ppShow metas ++ "\nParsed tags: " ++ show f) >> return (Left Permanent)
+                        if title=="" then printRed ("BioRxiv parsing failed: " ++ p ++ " : parsed metadata: " ++ ppShow metas ++ "\nParsed tags: " ++ show f) >> return (Left Permanent)
                           else do
                                  let date    = concat $ parseMetadataTagsoup "DC.Date" metas
                                  let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
@@ -919,7 +933,7 @@ openreview p   = do let p' = replace "/pdf?id=" "/forum?id=" p
                         ExitFailure _ -> printRed ("OpenReview download failed: " ++ p) >> return (Left Permanent)
                         _ -> do
                                let (title:author:date:tldr:desc:keywords) = lines $ U.toString bs
-                               print desc
+                               printGreen desc
                                let keywords' = if null keywords || keywords == [""] then "" else
                                                  if length keywords > 1 then (unlines $ init keywords) ++ "\n[Keywords: " ++ last keywords ++ "]"
                                                  else "[Keywords: " ++ concat keywords ++ "]"
@@ -951,7 +965,7 @@ processPubMedAbstract abst = let clean = runPure $ do
                                    html <- writeHtml5String safeHtmlWriterOptions pandoc
                                    return $ T.unpack html
                              in case clean of
-                                  Left e -> error $ ppShow e ++ ": " ++ abst
+                                  Left e -> error $ ppShow e ++ " : " ++ abst
                                   Right output -> cleanAbstractsHTML $ trim $ replace "<br/>" "" $ cleanAbstractsHTML output
 
 -- Arxiv makes multi-paragraph abstracts hard because the 'HTML' is actually LaTeX, so we need to special Pandoc preprocessing (for paragraph breaks, among other issues):
@@ -972,7 +986,7 @@ processArxivAbstract a = let cleaned = runPure $ do
 
                                     writeHtml5String safeHtmlWriterOptions{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc
               in case cleaned of
-                 Left e -> error $ " : " ++ ppShow e ++ ": " ++ a
+                 Left e -> error $ " : " ++ ppShow e ++ " : " ++ a
                  Right output -> cleanAbstractsHTML $ T.unpack output
 
 -- Is an annotation (HTML or Markdown) already If the input has more than one <p>, or if there is one or more double-newlines, that means this input is already multiple-paragraphs
@@ -1009,7 +1023,7 @@ processParagraphizer p a =
                               html <- writeHtml5String safeHtmlWriterOptions pandoc
                               return $ T.unpack html
                         case clean of
-                              Left e -> error $ ppShow e ++ ": " ++ a
+                              Left e -> error $ ppShow e ++ " : " ++ a
                               Right output -> return $ cleanAbstractsHTML output
 
 --------------------------------------------
@@ -1488,7 +1502,8 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let combinedAnnotation = (if "</figure>" `isInfixOf` gabstract || "<img>" `isInfixOf` gabstract then "" else thumbnailFigure) ++ -- some pages like /Questions have an image inside the abstract; preserve that if it's there
                                                  gabstract
 
-                        if gabstract == "404 Not Found Error: no page by this name!" || title' == "404 Not Found" then return (Left Temporary)
+                        if gabstract == "404 Not Found Error: no page by this name!" || title' == "404 Not Found" then
+                          return (Left Permanent) -- NOTE: special-case: if a new essay or a tag-directory hasn't been uploaded yet, make a stub entry; the stub entry will eventually be updated via a `updateGwernEntries` scrape. (A Temporary error has the drawback that it throws changeTag.hs into an infinite loop as it keeps trying to fix the temporary error.)
                           else if gabstract `elem` ["", "<p></p>", "<p></p> "] then return (Left Permanent) else
                                  return $ Right (p, (title', author, date, doi, keywords, combinedAnnotation))
         where
@@ -1632,8 +1647,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+)$", " <a href=\"\\1\">\\1</a>$"),
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+)</p>", " <a href=\"\\1\">\\1</a></p>"),
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+)\\)", " <a href=\"\\1\">\\1</a> )"),
-        (" (https?://[a-zA-Z0-9_\\.\\?/-]+) \\.", " <a href=\"\\1\">\\1</a> ."),
-        (" (https?://[a-zA-Z0-9_\\.\\?/-]+) ?\\.</p>", " <a href=\"\\1\">\\1</a> .</p>"),
+        (" (https?://[a-zA-Z0-9_\\.\\?/-]+) \\.", " <a href=\"\\1\">\\1</a>."),
+        (" (https?://[a-zA-Z0-9_\\.\\?/-]+) ?\\.</p>", " <a href=\"\\1\">\\1</a>.</p>"),
+        ("at:? (github.com/.*).</p>", "at <a href=\"https://\\1\">\\1</a>.</p>"), -- "Code is available at github.com/microsoft/SPACH.</p>" / "Code will be released at: github.com/NVlabs/SegFormer.</p>"
         (" (https://github.com/[a-zA-Z0-9_\\.\\?/-]+) ?\\.</p>", " <a href=\"\\1\">Github</a>.</p>"),
         -- try to rewrite half-parenthesis lists like '(( 1) foo; 2) bar' into '(1) foo; (2) bar' for consistency & parentheses-checking:
         ("\\(10\\) (.*) 11\\)", " (10) \\1 (11)"),
@@ -1726,6 +1742,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         replaceMany [
           ("<span style=\"font-weight:normal\"> </span>", "")
           , ("href=\"github.com", "href=\"https://github.com")
+          , ("https://github.com/deepmind/ deepmind-research/", "https://github.com/deepmind/deepmind-research/")
           , ("i . e .,", "ie.")
           , ("<p><strong>Motivation</strong></p>\n<p>", "<p><strong>Motivation</strong>: ")
           , ("<p><strong>Availability</strong></p>\n<p>", "<p><strong>Availability</strong>: ")

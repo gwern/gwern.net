@@ -71,6 +71,10 @@ else
     bold "Checking embeddings database…"
     ghci -i/home/gwern/wiki/static/build/ static/build/GenerateSimilar.hs  -e 'e <- readEmbeddings' &>/dev/null && cp ./metadata/embeddings.bin "/tmp/embeddings-$(date +%s).bin.bak"
 
+    # duplicates a later check but if we have a fatal link error, we'd rather find out now rather than 30 minutes later while generating annotations:
+    λ(){ fgrep -e 'href=""' -- ./metadata/*.yaml || true; }
+    wrap λ "Malformed empty link in annotations?"
+
     # We update the linkSuggestions.el in a cron job because too expensive, and vastly slows down build.
 
     # Update the directory listing index pages: there are a number of directories we want to avoid,
@@ -243,7 +247,8 @@ else
     set +e
 
     bold "Checking annotations…"
-    ghci -istatic/build/ ./static/build/LinkMetadata.hs  -e 'readLinkMetadataAndCheck' > /dev/null
+    λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs  -e 'readLinkMetadataAndCheck' 2>&1 >/dev/null; }
+    wrap λ "Metadata lint checks fired."
 
     λ(){ PAGES="$(find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotations/ -type f -name '*.html' | sort)"
          echo "$PAGES" | xargs fgrep -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
@@ -341,7 +346,7 @@ else
     λ(){ egrep -e '[.,:;-<!]</a>' -e '\]</a>' -- ./metadata/*.yaml | fgrep -v -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>' -e '#' -e '[review]</a>' | eg -e '[.,:;-<!]</a>' -e '\]</a>'; }
     wrap λ "Look for punctuation inside links; unless it's a full sentence or a quote or a section link, generally prefer to put punctuation outside."
 
-    λ(){ gf -e '**' -e 'amp#' -e ' _' -e '_ ' -e '!!' -- ./metadata/custom.yaml; }
+    λ(){ gf -e '**' -e 'amp#' -e ' _' -e '_ ' -e '!!' -e '*' -- ./metadata/custom.yaml ./metadata/partial.yaml; }
     wrap λ "Look for italics errors."
 
     λ(){ egrep --color=always -e '^- - /doc/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]\+ [A-Z]' \
@@ -351,7 +356,7 @@ else
             -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' -e '#googl$' -e "#googl$'" -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database (regexp matches)."
 
-    λ(){ fgrep --color=always -e ']{.smallcaps}' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
+    λ(){ fgrep --color=always -e ']{' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
             -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' -e '>>' \
             -e '<abstract' -e '<em<' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' \
             -e '</i></i>' -e '<i><i>' -e 'font-style:italic' -e '<p><p>' -e '</p></p>' -e 'fnref' \
@@ -374,7 +379,7 @@ else
             -e '"!"' -e '</sub<' -e 'xref>' -e '<xref' -e '<e>' -e '\\$' -e 'title="http' -e '%3Csup%3E' -e 'sup%3E' -e ' et la ' \
             -e '<strong>Abstract' -e ' ]' -e "</a>’s" -e 'title="&#39; ' -e 'collapseAbstract' -e 'utm_' \
             -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -e ' : ' -e " ' " -e '>/>a' -e '</a></a>' -e '(, ' \
-            -e '*' -- ./metadata/*.yaml;
+             -- ./metadata/*.yaml;
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
 
@@ -464,6 +469,9 @@ else
 
     λ(){ find . -not -name "*#*" -xtype l -printf 'Broken symbolic link: %p\n'; }
     wrap λ "Broken symbolic links"
+
+    λ(){ gwa | fgrep -v '[]'; }
+    wrap λ "Untagged annotations."
 
     ## Is the Internet up?
     ping -q -c 5 google.com  &>/dev/null

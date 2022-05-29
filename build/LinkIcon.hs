@@ -146,7 +146,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.theparisreview.org" = aI "PR" "text" -- The Paris Review: not even going to try to make their weird bird logo work
  | u'' "www.theverge.com" = aI "▽" "text" -- The Verge uses a sort of delta Escher triangle-esque 'V' stylization <https://en.wikipedia.org/wiki/The_Verge> which looks like a triangle pointing down, so, ▽ WHITE DOWN-POINTING TRIANGLE (Nabla operator) &#x25BD; &#9661;
  | u'' "www.quora.com" = aI "Q" "text" -- surprisingly, no one's taken 'Q' yet
- | aU'' ["www.edwardtufte.com", "edwardtufte.github.io"] || aU' ["github.com/edwardtufte/", "github.com/jez/tufte-pandoc-jekyll", "github.com/jez/tufte", "github.com/clayh53/tufte", "/docs/design/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "cran.r-project.org/web/packages/tufte/"] = aI "ET" "text"
+ | aU'' ["www.edwardtufte.com", "edwardtufte.github.io"] || aU' ["github.com/edwardtufte/", "github.com/jez/tufte-pandoc-jekyll", "github.com/jez/tufte", "github.com/clayh53/tufte", "/docs/design/typography/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "cran.r-project.org/web/packages/tufte/"] = aI "ET" "text"
  | aU'' ["cran.r-project.org", "www.r-project.org", "lme4.r-forge.r-project.org", "www.metafor-project.org", "rstudio.com"] || u' "github.com/paul-buerkner/brms" = aI "R" "text" -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too... primary user: cran.r-project.org
  | u'' "www.science.org" || u'' "sciencemag.org" = aI "S" "text" -- Science is just typeset in red
  | u'' "www.sciencedaily.com" = aI "SD" "text,sans"
@@ -886,7 +886,7 @@ linkIconTestUnitsText =
          , ("https://jaspervdj.be/hakyll/reference/Hakyll-Web-Redirect.html", "JVDJ", "text,quad,mono")
          , ("https://gizmodo.com/weird-and-wonderful-movies-that-youll-never-get-to-see-5877874", "GIZM", "text,quad,mono")
          , ("https://www.edwardtufte.com/bboard/images/0000yO-774.gif", "ET", "text")
-         , ("/docs/design/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "ET", "text")
+         , ("/docs/design/typography/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "ET", "text")
          , ("https://cran.r-project.org/web/packages/tufte/index.html", "ET", "text")
          , ("https://edwardtufte.github.io/tufte-css/#epigraphs", "ET", "text")
          , ("https://github.com/clayh53/tufte-jekyll", "ET", "text")

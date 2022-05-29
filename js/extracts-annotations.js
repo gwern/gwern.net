@@ -40,19 +40,19 @@
 /*=-------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-	"ANNOTATION",               // Type name
-	"isAnnotatedLink",          // Type predicate function
-	"has-annotation",           // Target classes to add
-	"annotationForTarget",      // Pop-frame fill function
-	"annotation"                // Pop-frame classes
+    "ANNOTATION",               // Type name
+    "isAnnotatedLink",          // Type predicate function
+    "has-annotation",           // Target classes to add
+    "annotationForTarget",      // Pop-frame fill function
+    "annotation"                // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts, ...{
     //  Used in: Extracts.setUpAnnotationLoadEventWithin
     annotatedTargetSelectors: [ "a.link-annotated" ],
 
-	//	Constructed annotations.
-	cachedAnnotations: { },
+    //  Constructed annotations.
+    cachedAnnotations: { },
 
     //  Called by: extracts.js (as `predicateFunctionName`)
     //  Called by: extracts.js
@@ -81,17 +81,17 @@ Extracts = { ...Extracts, ...{
 
         let annotationIdentifier = Extracts.targetIdentifier(target);
 
-		//	Use cached constructed annotation, if available.
-		if (Extracts.cachedAnnotations[annotationIdentifier])
-			return Extracts.newDocument(Extracts.cachedAnnotations[annotationIdentifier]);
+        //  Use cached constructed annotation, if available.
+        if (Extracts.cachedAnnotations[annotationIdentifier])
+            return Extracts.newDocument(Extracts.cachedAnnotations[annotationIdentifier]);
 
-		//	Get annotation reference data (if available).
+        //  Get annotation reference data (if available).
         let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
 
-		//	Wikipedia (external) annotations get special treatment.
-		let isWikipediaLink = Annotations.isWikipediaArticleLink(annotationIdentifier);
+        //  Wikipedia (external) annotations get special treatment.
+        let isWikipediaLink = Annotations.isWikipediaArticleLink(annotationIdentifier);
 
-		//	Check whether the annotation reference data is loaded.
+        //  Check whether the annotation reference data is loaded.
         if (referenceData == null) {
             /*  If the annotation has yet to be loaded, we’ll ask for it to load,
                 and meanwhile wait, and do nothing yet.
@@ -115,7 +115,7 @@ Extracts = { ...Extracts, ...{
         //  Link to original URL (for archive links).
         let originalLinkHTML = "";
         if (   referenceData.element
-        	&& referenceData.element.dataset.urlOriginal != undefined
+            && referenceData.element.dataset.urlOriginal != undefined
             && referenceData.element.dataset.urlOriginal != target.href) {
             let originalURLText = referenceData.element.dataset.urlOriginal.includes("ar5iv") ? `<span class="smallcaps">HTML</span>` : "live";
             originalLinkHTML = ` <span class="originalURL">[<a
@@ -128,13 +128,13 @@ Extracts = { ...Extracts, ...{
 
         //  Extract title/link.
         let titleLinkClass = (originalLinkHTML > ""
-        					  ? `title-link local-archive-link`
-        					  : (isWikipediaLink
-        					  	 ? `title-link link-live`
-        					  	 : `title-link`));
+                              ? `title-link local-archive-link`
+                              : (isWikipediaLink
+                                 ? `title-link link-live`
+                                 : `title-link`));
         let titleLinkIconMetadata = (isWikipediaLink
-        							 ? `data-link-icon-type="svg" data-link-icon="wikipedia"`
-        							 : ``);
+                                     ? `data-link-icon-type="svg" data-link-icon="wikipedia"`
+                                     : ``);
         let titleLinkHTML = `<a
                                 class="${titleLinkClass}"
                                 title="Open ${target.href} in a new window"
@@ -143,41 +143,41 @@ Extracts = { ...Extracts, ...{
                                 ${titleLinkIconMetadata}
                                     >${referenceData.titleHTML}</a>`;
 
-		//	Similars, backlinks, tags.
+        //  Similars, backlinks, tags.
         let auxLinks = ``;
-    	if (referenceData.backlinksHTML == ``) {
-    		if (referenceData.tagsHTML > ``)
-				auxLinks += `; <span class="data-field link-tags">${referenceData.tagsHTML}</span>`;
-		} else {
-			if (referenceData.tagsHTML > ``)
-				auxLinks += `; ${referenceData.tagsHTML}`;
+        if (referenceData.backlinksHTML == ``) {
+            if (referenceData.tagsHTML > ``)
+                auxLinks += `; <span class="data-field link-tags">${referenceData.tagsHTML}</span>`;
+        } else {
+            if (referenceData.tagsHTML > ``)
+                auxLinks += `; ${referenceData.tagsHTML}`;
 
-        	auxLinks += `; ${referenceData.backlinksHTML}`;
-		}
+            auxLinks += `; ${referenceData.backlinksHTML}`;
+        }
         auxLinks += (referenceData.similarHTML
-        			 ? `; ${referenceData.similarHTML}`
-        			 : ``);
+                     ? `; ${referenceData.similarHTML}`
+                     : ``);
 
         //  The fully constructed annotation pop-frame contents.
         let abstractSpecialClass = ``;
         if (isWikipediaLink)
             abstractSpecialClass = "wikipedia-entry";
 
-		let constructedAnnotation = Extracts.newDocument(
-        	  `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
-        	/*	Suppress the author block in WP popups; we have nothing more
-        		useful to say than ‘Wikipedia’ (even if we grabbed the
-        		last-revision-time from WP, that’s usually just a trivial bot
-        		edit and isn’t a ‘real’ author date), and the fact that it’s WP
-        		is already denoted by the dotted underline, ‘W’ icon on the
-        		title link, lack of the standard metadata block which non-WP
-        		annotations have (author/date/tag/backlinks/similar-links), and
-        		the encyclopedic topic & tone. Putting ‘Wikipedia’ on an entire
-        		line by itself is just a waste of precious popup vertical space.
-        	 */
-        	+ (isWikipediaLink
-        	   ? ``
-        	   : `<p class="data-field author-date-aux">${referenceData.authorHTML}${referenceData.dateHTML}${auxLinks}</p>`)
+        let constructedAnnotation = Extracts.newDocument(
+              `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
+            /*  Suppress the author block in WP popups; we have nothing more
+                useful to say than ‘Wikipedia’ (even if we grabbed the
+                last-revision-time from WP, that’s usually just a trivial bot
+                edit and isn’t a ‘real’ author date), and the fact that it’s WP
+                is already denoted by the dotted underline, ‘W’ icon on the
+                title link, lack of the standard metadata block which non-WP
+                annotations have (author/date/tag/backlinks/similar-links), and
+                the encyclopedic topic & tone. Putting ‘Wikipedia’ on an entire
+                line by itself is just a waste of precious popup vertical space.
+             */
+            + (isWikipediaLink
+               ? ``
+               : `<p class="data-field author-date-aux">${referenceData.authorHTML}${referenceData.dateHTML}${auxLinks}</p>`)
             + `<div class="data-field annotation-abstract ${abstractSpecialClass}"></div>`);
         constructedAnnotation.querySelector(".annotation-abstract").appendChild(referenceData.abstract);
 
@@ -189,8 +189,8 @@ Extracts = { ...Extracts, ...{
             flags: GW.contentDidLoadEventFlags.needsRewrite
         });
 
-		//	Cache constructed and processed annotation.
-		Extracts.cachedAnnotations[annotationIdentifier] = constructedAnnotation;
+        //  Cache constructed and processed annotation.
+        Extracts.cachedAnnotations[annotationIdentifier] = constructedAnnotation;
 
         return Extracts.newDocument(constructedAnnotation);
     },
@@ -207,32 +207,32 @@ Extracts = { ...Extracts, ...{
                                    ? target.href
                                    : target.pathname + target.hash);
 
-		//	Sections.
+        //  Sections.
         if (   target.hash > ""
-	        //  For sections of local pages, mark with ‘§’ symbol.
+            //  For sections of local pages, mark with ‘§’ symbol.
             && (    target.hostname == location.hostname
-				/*	Annotations for local archive links with an org notation
-					for link icons (eg. 'https://arxiv.org/abs/2006.07159#google')
-					should not get a section mark.
-				 */
-				    && !(["adobe", "alibaba", "allen", "amazon", "apple", "baidu", "bair", "bytedance",
-					  "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr",
-					  "github", "google", "googledeepmind", "googlegraphcore", "huawei", "intel", "laion",
-					  "lighton", "microsoft", "microsoftnvidia", "miri",
-					  "nvidia", "openai", "pdf", "salesforce", "sensetime",
-					  "snapchat", "tencent", "tensorfork", "uber", "yandex"
-					  ].includes(target.hash.slice(1))))) {
+                /*  Annotations for local archive links with an org notation
+                    for link icons (eg. 'https://arxiv.org/abs/2006.07159#google')
+                    should not get a section mark.
+                 */
+                    && !(["adobe", "alibaba", "allen", "amazon", "apple", "baidu", "bair", "bytedance",
+                      "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr",
+                      "github", "google", "googledeepmind", "google-graphcore", "huawei", "intel", "jd", "laion",
+                      "lighton", "microsoft", "microsoftnvidia", "miri", "naver",
+                      "nvidia", "openai", "pdf", "salesforce", "sensetime",
+                      "snapchat", "tencent", "tensorfork", "uber", "yandex"
+                      ].includes(target.hash.slice(1))))) {
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
         } else if (   target.hash > ""
-        		   && Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))
-        		   && Extracts.popFrameHasLoaded(popFrame)) {
-        	/*	For Wikipedia, show the page title and the section title,
-        		separated by the ‘§’ symbol.
-        	 */
-        	let referenceData = Annotations.referenceDataForAnnotationIdentifier(Extracts.targetIdentifier(popFrame.spawningTarget));
-        	popFrameTitleText =   referenceData.articleTitle
-        						+ " &#x00a7; "
-        						+ popFrameTitleText;
+                   && Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))
+                   && Extracts.popFrameHasLoaded(popFrame)) {
+            /*  For Wikipedia, show the page title and the section title,
+                separated by the ‘§’ symbol.
+             */
+            let referenceData = Annotations.referenceDataForAnnotationIdentifier(Extracts.targetIdentifier(popFrame.spawningTarget));
+            popFrameTitleText =   referenceData.articleTitle
+                                + " &#x00a7; "
+                                + popFrameTitleText;
         }
 
 
@@ -259,26 +259,26 @@ Extracts = { ...Extracts, ...{
         }
     },
 
-	//	Called by: extracts.js (as `preparePopup_${targetTypeName}`)
-	preparePopup_ANNOTATION: (popup) => {
+    //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
+    preparePopup_ANNOTATION: (popup) => {
         let target = popup.spawningTarget;
 
         /*  Do not spawn annotation popup if the annotation is already visible
-        	on screen. (This may occur if the target is in a popup that was
-        	spawned from a backlinks popup for this same annotation as viewed on
-        	a tag index page, for example.)
+            on screen. (This may occur if the target is in a popup that was
+            spawned from a backlinks popup for this same annotation as viewed on
+            a tag index page, for example.)
          */
         let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='` + CSS.escape(target.href) + `']`);
         if (targetAnalogueInLinkBibliography) {
-        	let containingSection = targetAnalogueInLinkBibliography.closest("section");
-        	if (   containingSection
-        		&& Popups.isVisible(containingSection)) {
-        		return null;
-        	}
+            let containingSection = targetAnalogueInLinkBibliography.closest("section");
+            if (   containingSection
+                && Popups.isVisible(containingSection)) {
+                return null;
+            }
         }
 
-		return popup;
-	},
+        return popup;
+    },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_ANNOTATION: (popFrame) => {
@@ -288,7 +288,7 @@ Extracts = { ...Extracts, ...{
 
         //  Mark Wikipedia entries.
         if (popFrame.body.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
-        	Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "wikipedia-entry");
+            Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "wikipedia-entry");
 
         //  Qualify internal links.
         if (target.hostname == location.hostname)
@@ -314,9 +314,9 @@ Extracts = { ...Extracts, ...{
         //  Scroll to the target.
         if (target.hash > "") {
             requestAnimationFrame(() => {
-            	let element = null;
+                let element = null;
                 if (   popFrame
-                	&& (element = popFrame.body.querySelector(selectorFromHash(target.hash))))
+                    && (element = popFrame.body.querySelector(selectorFromHash(target.hash))))
                     Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
             });
         }
@@ -339,17 +339,17 @@ Extracts = { ...Extracts, ...{
         if (Extracts.popFrameProvider == Popups) {
             //  Add hover event listeners to all the annotated targets.
             allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
-				annotatedTarget.removeAnnotationLoadEvents = onEventAfterDelayDo(annotatedTarget, "mouseenter", Extracts.annotationLoadHoverDelay, (event) => {
-					//  Get the unique identifier of the annotation for the target.
-					let annotationIdentifier = Extracts.targetIdentifier(annotatedTarget);
+                annotatedTarget.removeAnnotationLoadEvents = onEventAfterDelayDo(annotatedTarget, "mouseenter", Extracts.annotationLoadHoverDelay, (event) => {
+                    //  Get the unique identifier of the annotation for the target.
+                    let annotationIdentifier = Extracts.targetIdentifier(annotatedTarget);
 
-					//  Do nothing if the annotation is already loaded.
-					if (Annotations.cachedAnnotationExists(annotationIdentifier))
-						return;
+                    //  Do nothing if the annotation is already loaded.
+                    if (Annotations.cachedAnnotationExists(annotationIdentifier))
+                        return;
 
-					//	Otherwise, load the annotation.
-					Annotations.loadAnnotation(annotationIdentifier);
-				}, "mouseleave");
+                    //  Otherwise, load the annotation.
+                    Annotations.loadAnnotation(annotationIdentifier);
+                }, "mouseleave");
             });
 
             /*  Set up handler to remove hover event listeners from all
@@ -395,7 +395,7 @@ Extracts = { ...Extracts, ...{
         target.popFrame.classList.toggle("loading", true);
 
         /*  We set up an event handler for when the annotation loads, and
-        	respawn the popup / re-inject the popin, after it spawns (if it
+            respawn the popup / re-inject the popin, after it spawns (if it
             hasn’t de-spawned already, eg. if the user moused out of the
             target).
             */

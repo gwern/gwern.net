@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-05-14 20:33:31 gwern"
+When:  Time-stamp: "2022-05-25 23:18:32 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -106,7 +106,6 @@ goodDomainsSimple =
   ["1dollarscan.com"
     , "80000hours.org"
     , "abandonedfootnotes.blogspot.com"
-    , "academic.oup.com"
     , "academic.oup.com"
     , "academictorrents.com"
     , "ageing.oxfordjournals.org"
@@ -1272,7 +1271,6 @@ badDomainsSimple = ["1d4chan.org",
     , "web.mit.edu"
     , "variety.com"
     , "stats.stackexchange.com"
-    , "schizophreniabulletin.oxfordjournals.org"
     , "politicalscience.osu.edu"
     , "hal.archives-ouvertes.fr"
     , "code.google.com"
@@ -3626,7 +3624,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://web.mit.edu/remy/", False)
     , ("https://variety.com/2017/digital/news/netflix-thumbs-vs-stars-1202010492/", False)
     , ("https://stats.stackexchange.com/users/2392/probabilityislogic", False)
-    , ("https://academic.oup.com/schizophreniabulletin/article/33/6/1277/1902355", False)
+    , ("https://academic.oup.com/schizophreniabulletin/article/33/6/1277/1902355", True)
     , ("https://politicalscience.osu.edu/faculty/jmueller/MID11TSM.PDF", False)
     , ("https://hal.archives-ouvertes.fr/hal-00904097/document#pdf", False)
     , ("https://code.google.com/archive/p/amphetype", False)
