@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-05-28 21:50:28 gwern"
+When:  Time-stamp: "2022-05-29 22:05:52 gwern"
 License: CC-0
 -}
 
@@ -429,7 +429,7 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 -- WARNING: update the list in /static/js/extracts-annotation.js L218 if you change this list!
 affiliationAnchors :: [String]
-affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "apple", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "huawei", "intel", "jd", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pdf", "salesforce", "sensetime", "snapchat", "tencent", "tensorfork", "uber", "yandex"]
+affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "apple", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "huawei", "intel", "jd", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pdf", "salesforce", "sensetime", "snapchat", "spotify", "tencent", "tensorfork", "uber", "yandex"]
 
 -- find all instances where I link "https://arxiv.org/abs/1410.5401" when it should be "https://arxiv.org/abs/1410.5401#deepmind", where they are inconsistent and the hash matches a whitelist of orgs.
 findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]
@@ -513,7 +513,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("ai/diffusion", "diffusion model")
           , ("ai/gan", "GAN")
           , ("ai/gan/biggan", "BigGAN")
-          , ("ai/stylegan", "StyleGAN")
+          , ("ai/gan/stylegan", "StyleGAN")
           , ("ai/gpt/dall-e", "DALL·E")
           , ("ai/highleyman", "Highleyman")
           , ("existential-risk", "x-risk")
@@ -1456,9 +1456,10 @@ linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://
                    | otherwise = l
 
 -- gwern :: Path -> IO (Either Failure (Path, MetadataItem))
-gwern p | ".pdf" `isInfixOf` p = pdf p
+gwern p | p == "/" || p == "" = return (Left Permanent)
+        | ".pdf" `isInfixOf` p = pdf p
         | anyInfix p [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
-        | anyPrefix p ["tags/", "/tags/", "newsletter/", "/newsletter/", "docs/link-bibliography/"] ||
+        | anyPrefix p ["tags/", "/tags/", "docs/link-bibliography/"] ||
           anySuffix p ["#external-links", "#see-also", "#see-also-1", "#see-also-2", "#footnotes", "#links", "#top-tag", "#misc", "#miscellaneous", "#appendix", "#appendices", "#conclusion", "#conclusion-1", "#conclusion-2", "#media", "#writings", "#filmtv", "#music", "#books"] ||
           anyInfix p ["index.html", "/index#"] ||
           ("/index#" `isInfixOf` p && "-section" `isSuffixOf` p)  = return (Left Permanent) -- likewise: the newsletters are useful only as cross-page popups, to browse
@@ -1497,7 +1498,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let toc = gwernTOC footnotesP p' f
                         let toc' = if toc == "<div class=\"columns\" class=\"TOC\"></div>" then "" else toc
 
-                        let (sectTitle,gabstract) = gwernAbstract ("/index" `isSuffixOf` p') p' description toc' f
+                        let (sectTitle,gabstract) = gwernAbstract ("/index" `isSuffixOf` p' || "newsletter/" `isPrefixOf` p') p' description toc' f
                         let title' = if null sectTitle then title else title ++ " § " ++ sectTitle
                         let combinedAnnotation = (if "</figure>" `isInfixOf` gabstract || "<img>" `isInfixOf` gabstract then "" else thumbnailFigure) ++ -- some pages like /Questions have an image inside the abstract; preserve that if it's there
                                                  gabstract
