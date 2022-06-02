@@ -219,8 +219,8 @@ Extracts = { ...Extracts, ...{
                       "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr",
                       "github", "google", "googledeepmind", "google-graphcore", "huawei", "intel", "jd", "laion",
                       "lighton", "microsoft", "microsoftnvidia", "miri", "naver",
-                      "nvidia", "openai", "pdf", "salesforce", "sensetime",
-                      "snapchat", "tencent", "tensorfork", "uber", "yandex"
+                          "nvidia", "openai", "pdf", "salesforce", "sberbank", "sensetime",
+                      "snapchat", "spotify", "tencent", "tensorfork", "uber", "yandex"
                       ].includes(target.hash.slice(1))))) {
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
         } else if (   target.hash > ""

@@ -470,7 +470,7 @@ else
     λ(){ find . -not -name "*#*" -xtype l -printf 'Broken symbolic link: %p\n'; }
     wrap λ "Broken symbolic links"
 
-    λ(){ gwa | fgrep -v '[]'; }
+    λ(){ gwa | fgrep -- '[]'; }
     wrap λ "Untagged annotations."
 
     ## Is the Internet up?

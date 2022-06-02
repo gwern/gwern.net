@@ -4686,7 +4686,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.the-tls.co.uk/articles/alternative-to-peer-review-essay-timothy-gowers/", False)
     , ("https://www.sudowrite.com/", False)
     , ("https://www.stevepetersen.net/wittgenstein-fog.html", False)
-    , ("https://www.sciencemag.org/news/2018/02/these-lab-grown-human-eggs-could-combat-infertility-if-they-prove-healthy", False)
+    , ("https://www.science.org/content/article/these-lab-grown-human-eggs-could-combat-infertility-if-they-prove-healthy", False)
     , ("https://www.proofofexistence.com/", False)
     , ("https://www.prnewswire.com/news-releases/400-million-investment-programme-positions-ireland-for-global-leadership-in-genomic-research-and-advanced-life-sciences-300755716.html", False)
     , ("https://www.poetrynook.com/poem/birdless-country", False)
