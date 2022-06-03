@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-05-23 20:24:26 gwern"
+When:  Time-stamp: "2022-06-02 20:27:37 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -835,7 +835,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("R2D3", "https://arxiv.org/abs/1909.01387#deepmind")
         , ("RAND", "https://en.wikipedia.org/wiki/RAND_Corporation")
         , ("REALM", "https://kentonl.com/pub/gltpc.2020.pdf#google")
-        , ("REINFORCE", "/docs/reinforcement-learning/1992-williams.pdf")
+        , ("REINFORCE", "/docs/reinforcement-learning/model-free/1992-williams.pdf")
         , ("ROUGE", "https://en.wikipedia.org/wiki/ROUGE_(metric)")
         , ("R[Ee][Ll][Uu]", "https://en.wikipedia.org/wiki/Rectifier_(neural_networks)")
         , ("R[Oo]BERT[aA]", "https://arxiv.org/abs/1907.11692#facebook") -- RoBERTa
@@ -1013,7 +1013,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Cc]ache-oblivious", "https://en.wikipedia.org/wiki/Cache-oblivious_algorithm")
         , ("[Cc]affein(e|ate|ated)", "https://en.wikipedia.org/wiki/Caffeine")
         , ("[Cc]aloric restriction", "https://en.wikipedia.org/wiki/Caloric_restriction")
-        , ("[Cc]anned dog food", "https://en.wikipedia.org/wiki/Dog_food#Wet_food")
         , ("[Cc]ard marking", "https://en.wikipedia.org/wiki/Card_marking")
         , ("[Cc]arfentanil", "https://en.wikipedia.org/wiki/Carfentanil")
         , ("[Cc]ase.?[Cc]ontrol", "https://en.wikipedia.org/wiki/Case%E2%80%93control_study")

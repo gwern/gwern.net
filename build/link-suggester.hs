@@ -297,10 +297,10 @@ whiteList = M.fromList [
     , [ "Cognitive modifications associated with tobacco smoking [review]', Lecacheux et al 2009"
       ]
     )
-  , ( "/docs/reinforcement-learning/1992-williams.pdf"
+  , ( "/docs/reinforcement-learning/model-free/1992-williams.pdf"
     , [ "REINFORCE" ]
     )
-  , ( "/docs/reinforcement-learning/2016-graves.pdf#deepmind"
+  , ( "/docs/reinforcement-learning/model-free/2016-graves.pdf#deepmind"
     , [ "Hybrid computing using a neural network with dynamic external memory"
       ]
     )
