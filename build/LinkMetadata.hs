@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-01 21:51:15 gwern"
+When:  Time-stamp: "2022-06-02 21:09:41 gwern"
 License: CC-0
 -}
 
@@ -87,6 +87,9 @@ isLocalPath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
 -- For example, to use `processDOIArxiv` to add inferred-DOIs to all Arxiv annotations prior to Arxiv adding official DOIs, one could run a command like:
 --
 -- > walkAndUpdateLinkMetadata (\x@(path,(title,author,date,doi,tags,abstrct)) -> if not ("https://arxiv.org" `isPrefixOf` path) || (doi /= "") then return x else return (path,(title,author,date,processDOIArxiv path,tags,abstrct)))
+-- To rewrite a tag, eg 'conscientiousness' → 'psychology/personality/conscientiousness':
+-- > walkAndUpdateLinkMetadata (\(path,(title,author,date,doi,tags,abst)) -> return (path,(title,author,date,doi,
+--      map (\t -> if t/="conscientiousness" then t else "psychology/personality/conscientiousness") tags,  abst)) )
 walkAndUpdateLinkMetadata :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
 walkAndUpdateLinkMetadata f = do walkAndUpdateLinkMetadataYaml f "metadata/custom.yaml"
                                  walkAndUpdateLinkMetadataYaml f "metadata/partial.yaml"
@@ -152,7 +155,7 @@ readLinkMetadataAndCheck = do
                  unless (null badDoisDash) $ error $ "Bad DOIs (bad punctuation): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
              -- Thus far, I have not run into any real DOIs which omit numbers, so we'll include that as a check for accidental tags inserted into the DOI field.
-             let badDois = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else not ('/' `elem` doi || not (null (intersect "0123456789" doi)))) custom in
+             let badDois = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else '/' `notElem` doi || null (intersect "0123456789" doi)) custom in
                unless (null badDois) $ error $ "Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
 
              let emptyCheck = filter (\(u,(t,a,_,_,_,s)) ->  "" `elem` [u,t,a,s]) custom
@@ -489,9 +492,11 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
   where tagRewritesFixed :: [(String,String)]
         tagRewritesFixed = [
           ("reinforcement-learning", "RL")
+          , ("psychology/personality/conscientiousness", "Conscientiousness")
           , ("music-distraction", "music distraction")
           , ("psychology/chess", "chess psychology")
           , ("reinforcement-learning/chess", "AI chess")
+          , ("ai/tabular", "tabular ML")
           , ("ai/anime", "anime AI")
           , ("ai/anime/danbooru", "Danbooru AI")
           , ("eva/little-boy", "Little Boy")
@@ -512,6 +517,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("ai/gpt/lamda", "LaMDA")
           , ("iq/anne-roe", "Anne Roe")
           , ("ai/diffusion", "diffusion model")
+          , ("ai/diffusion/discrete ", "discrete diffusion")
           , ("ai/gan", "GAN")
           , ("ai/gan/biggan", "BigGAN")
           , ("ai/gan/stylegan", "StyleGAN")
@@ -550,6 +556,9 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("darknet-markets/silk-road/1", "SR1 DNM")
           , ("darknet-markets/silk-road/2", "SR2 DNM")
           , ("darknet-markets/william-pickard", "William Pickard")
+          , ("reinforcement-learning/model", "model-based RL")
+          , ("reinforcement-learning/model-free", "model-free RL")
+          , ("reinforcement-learning/model/decision-transformer", "Decision Transformer")
           , ("reinforcement-learning/muzero", "MuZero")
           , ("reinforcement-learning/alphago", "AlphaGo")
           , ("reinforcement-learning/alphastar", "AlphaStar")
@@ -1526,8 +1535,9 @@ gwernTOC footnotesP p' f =
                        (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#footnotes\">Footnotes</a></li></ul></div>" tc) $ -- Pandoc declines to add an ID to footnotes section; on Gwern.net, we override this by at compile-time rewriting the <section> to have `#footnotes`
                               replace "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns\" class=\"TOC\">" $ -- add columns class to condense it in popups/tag-directories
                               replace "<span>" "" $ replace "</span>" "" $ -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right?), we'll remove them.
-                              (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then ("<div class=\"columns\" class=\"TOC\">" ++ toc ++ "</div>") else "") else replace "<a href=" "<a class=\"id-not\" href=") $ -- NOTE: we strip the `id="TOC"` deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies
-                              replace " id=\"TOC\"" "" $
+                              (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then ("<div class=\"columns\" class=\"TOC\">" ++ toc ++ "</div>") else "") else replace "<a href=" "<a class=\"id-not\" href=") $
+                              -- NOTE: we strip the `id="TOC"`, and all other link IDs on TOC subentries, deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies
+                              sed " id=\"[a-z0-9-]+\">" ">" $ replace " id=\"TOC\"" "" $
                                renderTagsOptions renderOptions  ([TagOpen "div" [("class","columns")]] ++
                                                                  (takeWhile (\e' -> e' /= TagClose "div")  $ dropWhile (\e -> e /=  (TagOpen "div" [("id","TOC"), ("class","TOC")])) f) ++
                                                                  [TagClose "div"])
@@ -1947,6 +1957,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(m^{1+o(1)}\\)</span>", "<em>m</em><sup>1+<em>o</em>(1)</sup>")
           , ("<span class=\"math inline\">\\(1,000\\times\\)</span>", "1,000×")
           , ("<span class=\"math inline\">\\(10^5\\times\\)</span>", "10<sup>5</sup>×")
+          , ("<span class=\"math inline\">\\(\\exp({\\Omega}(d))\\)</span>", "exp(Ω(<em>d</em>))")
+          , ("<span class=\"math inline\">\\(\\exp({\\mathcal{O}}(k))\\)</span>", "exp(𝑂(<em>k>/em>))")
+          , ("<span class=\"math inline\">\\(k \\ll d\\)</span>", "<em>k</em> ≪ <em>d</em>")
           , ("O(N) ", "𝑂(<em>N</em>) ")
           , (" O(N)", " 𝑂(<em>N</em>)")
           , (" N pixels", " <em>N</em> pixels")
@@ -2247,6 +2260,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\nContext: ", "\n<strong>Context</strong>: ")
           , ("<strong>Purpose</strong>\n<p>", "<p><strong>Purpose</strong>: ")
           , ("\nPurpose: ", "\n<strong>Purpose</strong>: ")
+          , ("<p>Purpose. ", "\n<strong>Purpose</strong>: ")
           , ("\nRationale: ", "\n<strong>Rationale</strong>: ")
           , ("<p><strong>OBJECTIVE</strong></p>\n<p>", "<p><strong>Objective</strong>: ")
           , ("<p><strong>METHOD</strong></p>\n<p>", "<p><strong>Method</strong>: ")
@@ -2256,8 +2270,10 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\nObjectives: ", "\n<strong>Objectives</strong>: ")
           , ("\nQuestion: ", "\n<strong>Question</strong>: ")
           , ("\nDescription: ", "\n<strong>Description</strong>: ")
+          , ("Design and</p>\n<p><strong>Methods</strong>: ", "</p> <p><strong>Design & Methods</strong>: ")
           , ("\nDesign: ", "\n<strong>Design</strong>: ")
           , ("\nMethods: ", "\n<strong>Methods</strong>: ")
+          , ("\nDesign and Methods: ", "\n<strong>Design & Methods</strong>: ")
           , ("\nSetting: ", "\n<strong>Setting</strong>: ")
           , ("\nParticipants: ", "\n<strong>Participants</strong>: ")
           , ("\nMeaning: ", "\n<strong>Meaning</strong>: ")
@@ -2266,11 +2282,13 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\nData Sources: ", "\n<strong>Data Sources</strong>: ")
           , ("\nMain Outcomes & Measures: ", "\n<strong>Main Outcomes and Measures</strong>: ")
           , ("\nMeasurements: ", "\n<strong>Measurements</strong>: ")
+          , (". Results. ", ".</p> <p><strong>Results</strong>: ")
           , ("\nResults: ", "\n<strong>Results</strong>: ")
           , ("\nSignificance: ", "\n<strong>Significance</strong>: ")
+          , (". Conclusions. ", ".</p> <p><strong>Conclusion</strong>: ")
           , ("\nConclusion: ", "\n<strong>Conclusion</strong>: ")
           , ("\nConclusions: ", "\n<strong>Conclusion</strong>: ")
-          , ("\nConclusions & Relevance: ", "\n<strong>Conclusions and Relevance</strong>: ")
+          , ("\nConclusions & Relevance: ", "\n<strong>Conclusion and Relevance</strong>: ")
           , ("\nTrial Registration: ", "\n<strong>Trial Registration</strong>: ")
           , ("<h3>Highlights</h3>\n<p>", "<p><strong>Highlights</strong>: ")
           , ("<h3>Background</h3>\n<p>", "<p><strong>Background</strong>: ")
