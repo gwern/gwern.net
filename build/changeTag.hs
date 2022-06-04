@@ -28,10 +28,10 @@ main :: IO ()
 main = do args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://www.gwern.net/" "/") $ getArgs
 
           let links = filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) $ args
-          when (null links) $ error "Forgot links?"
+          when (null links) $ error ("Forgot links?" ++ show args)
           let tags = map (filter (/=',')) $ -- we store tags comma-separated so sometimes we might leave in a stray tag when copy-pasting
                 filter (\arg -> (not (arg `elem` links))) args
-          when (null tags) $ error "Forgot tags?"
+          when (null tags) $ error ("Forgot tags? " ++ show args)
 
           mapM_ (\arg' -> do filep <- doesDirectoryExist ("docs/"++ if head arg' == '-' then tail arg' else arg')
                              if not filep then error ("Error: specified tag not defined? '" ++ arg' ++ "'") else return arg') tags

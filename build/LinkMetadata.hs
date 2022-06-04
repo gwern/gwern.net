@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-02 21:09:41 gwern"
+When:  Time-stamp: "2022-06-03 18:03:48 gwern"
 License: CC-0
 -}
 
@@ -113,7 +113,7 @@ updateGwernEntries = walkAndUpdateLinkMetadata updateGwernEntry
                     case newEntry of
                       Left Temporary -> return x
                       Left Permanent -> return (path,(title,author,date,doi,tags,"")) -- zero out the abstract but preserve the other metadata; if we mistakenly scraped a page before and generated a pseudo-abstract, and have fixed that mistake so now it returns an error rather than pseudo-abstract, we want to erase that pseudo-abstract until such time as it returns a 'Right' (a successful real-abstract)
-                      Right (path', (title',author',date',doi',tags',abstract')) -> return (path', (title',author',date',doi',nubOrd(tags++tags'),abstract'))
+                      Right (path', (title',author',date',doi',tags',abstract')) -> return (path', (title',author',date',doi',sort $ nubOrd(tags++tags'),abstract'))
 
 -- read the annotation base (no checks, >8× faster)
 readLinkMetadata :: IO Metadata
@@ -611,6 +611,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("economics/georgism", "Georgism")
           , ("bitcoin/pirateat40", "Pirateat40")
           , ("psychology/novelty", "novelty U-curve")
+          , ("psychiatry/meditation", "meditation")
           , ("spaced-repetition", "spaced repetition")
           , ("fiction/criticism", "literary criticism")
           , ("fiction/text-game", "text games")
@@ -729,7 +730,7 @@ tag2Default path = if "/docs/" `isPrefixOf` path && not ("/docs/" `isPrefixOf` p
 
 -- de-duplicate tags: uniquefy, and remove the more general tags in favor of nested (more specific) tags. eg. ["ai", "ai/gpt", "reinforcement-learning"] → ["ai/gpt", "reinforcement-learning"]
 uniqTags :: [String] -> [String]
-uniqTags tags = nubOrd $ filter(\t -> not (any ((t++"/") `isPrefixOf`) tags)) tags
+uniqTags tags = nubOrd $ sort $ filter(\t -> not (any ((t++"/") `isPrefixOf`) tags)) tags
 
 -- guess tag based on URL
 pages2Tags :: String -> [String] -> [String]
@@ -1958,7 +1959,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(1,000\\times\\)</span>", "1,000×")
           , ("<span class=\"math inline\">\\(10^5\\times\\)</span>", "10<sup>5</sup>×")
           , ("<span class=\"math inline\">\\(\\exp({\\Omega}(d))\\)</span>", "exp(Ω(<em>d</em>))")
-          , ("<span class=\"math inline\">\\(\\exp({\\mathcal{O}}(k))\\)</span>", "exp(𝑂(<em>k>/em>))")
+          , ("<span class=\"math inline\">\\(\\exp({\\mathcal{O}}(k))\\)</span>", "exp(𝑂(<em>k</em>))")
           , ("<span class=\"math inline\">\\(k \\ll d\\)</span>", "<em>k</em> ≪ <em>d</em>")
           , ("O(N) ", "𝑂(<em>N</em>) ")
           , (" O(N)", " 𝑂(<em>N</em>)")
