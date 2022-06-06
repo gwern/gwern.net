@@ -162,7 +162,7 @@ listFiles m direntries' = do
                    files <- filterM (doesFileExist . tail) direntries'
                    let files'          = (sort . filter (not . ("index"`isSuffixOf`)) . map (replace ".page" "") . filter ('#' `notElem`) . filter (not . isSuffixOf ".tar") ) files
                    let fileAnnotationsMi = map (lookupFallback m) files'
-                   -- NOTE: files may be annotated only under a hash, eg. '/docs/ai/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/docs/ai/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/docs/ai/2021-norrie.pdf' → `('/docs/ai/2021-norrie.pdf#google',_)`
+                   -- NOTE: files may be annotated only under a hash, eg. '/docs/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/docs/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/docs/ai/scaling/hardware/2021-norrie.pdf' → `('/docs/ai/scaling/hardware/2021-norrie.pdf#google',_)`
                    backlinks    <- mapM getBackLink $ map fst fileAnnotationsMi
                    similarlinks <- mapM getSimilarLink $ map fst fileAnnotationsMi
 

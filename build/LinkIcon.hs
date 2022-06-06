@@ -795,7 +795,7 @@ linkIconTestUnitsText =
          , ("/docs/zeo/firmware-v2.6.3R-zeo.img",  "archive","svg")
          , ("https://hivemind-repo.s3-us-west-2.amazonaws.com/twdne3/twdne3.onnx",  "archive","svg")
          , ("/docs/spaced-repetition/michaellee-memoryretentionexperiments-data.tar",  "archive","svg")
-         , ("/docs/ai/rnn/2015-06-03-karpathy-charrnn-visualization.tar.xz",  "archive","svg")
+         , ("/docs/ai/nn/rnn/2015-06-03-karpathy-charrnn-visualization.tar.xz",  "archive","svg")
          , ("/docs/ai/anime/danbooru/2019-02-10-stylegan-holo-handselectedsamples.zip",  "archive","svg")
          , ("/docs/darknet-markets/usareshipper-profile.maff", "archive","svg")
          , ("/images/cs/2017-reddit-dhieno-theplace-timelapseevolution.mp4",  "file-video","svg")
