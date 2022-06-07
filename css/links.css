@@ -978,6 +978,15 @@ a[data-link-icon='connected-papers']::after {
 	opacity: 0.65;
 }
 
+/* LibGen/Sci-Hub */
+a[data-link-icon='raven']::after {
+	--link-icon-size: 0.95em;
+	--link-icon-offset-y: 0.1em;
+	--link-icon-offset-x: 0em;
+
+	opacity: 0.65;
+}
+
 /*=------------------=*/
 /*= Wikipedia links. =*/
 /*=------------------=*/
