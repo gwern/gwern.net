@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-06-02 20:27:37 gwern"
+When:  Time-stamp: "2022-06-07 19:33:49 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -556,7 +556,8 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Cryptonomicon", "https://en.wikipedia.org/wiki/Cryptonomicon")
         , ("Cyphernomicon", "https://en.wikipedia.org/wiki/Cyphernomicon")
         , ("D4PG", "https://arxiv.org/abs/1804.08617#deepmind")
-        , ("DALL[-·]E", "https://openai.com/blog/dall-e/")
+        , ("DALL[-·]E 2", "https://openai.com/dall-e-2/")
+        , ("DALL[-·]E 1", "https://openai.com/blog/dall-e/")
         , ("DARPA", "https://en.wikipedia.org/wiki/DARPA")
         , ("DDPG", "https://arxiv.org/abs/1509.02971#deepmind")
         , ("DFAs?", "https://arxiv.org/abs/1609.01596")
@@ -570,7 +571,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Das Rheingold", "https://en.wikipedia.org/wiki/Das_Rheingold")
         , ("David Brin", "https://en.wikipedia.org/wiki/David_Brin")
         , ("David Foster Wallace", "https://en.wikipedia.org/wiki/David_Foster_Wallace")
-        , ("David Lewis'", "https://en.wikipedia.org/wiki/David_Lewis_(philosopher)")
         , ("David Sedaris", "https://en.wikipedia.org/wiki/David_Sedaris")
         , ("DeBERTa", "https://arxiv.org/abs/2006.03654#microsoft")
         , ("Death Note", "https://en.wikipedia.org/wiki/Death_Note")
@@ -606,7 +606,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Epigrams in Programming", "/docs/cs/1982-perlis.pdf")
         , ("Equivalence [Pp]rinciple", "https://en.wikipedia.org/wiki/Equivalence_principle")
         , ("Eric S\\. Raymond", "https://en.wikipedia.org/wiki/Eric_S._Raymond")
-        , ("Eriksen Flanker", "https://en.wikipedia.org/wiki/Eriksen_flanker_task")
         , ("Eugene Wigner", "https://en.wikipedia.org/wiki/Eugene_Wigner")
         , ("Eurisko", "https://en.wikipedia.org/wiki/Eurisko")
         , ("Evangelion 2\\.0", "https://en.wikipedia.org/wiki/Evangelion:_2.0_You_Can_(Not)_Advance")
