@@ -980,9 +980,9 @@ a[data-link-icon='connected-papers']::after {
 
 /* LibGen/Sci-Hub */
 a[data-link-icon='raven']::after {
-	--link-icon-size: 0.95em;
-	--link-icon-offset-y: 0.1em;
-	--link-icon-offset-x: 0em;
+	--link-icon-size: 0.65em;
+	--link-icon-offset-y: 0.2em;
+	--link-icon-offset-x: 0.1em;
 
 	opacity: 0.65;
 }

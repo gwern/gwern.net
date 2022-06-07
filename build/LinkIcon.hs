@@ -376,7 +376,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | aU'' ["link.springer.com", "rd.springer.com"] || u' ".biomedcentral.com" = aI "springerlink" "svg"  -- (♘) WHITE CHESS KNIGHT as SVG
  | u'' "www.metaculus.com" = aI "metaculus" "svg"
  | u'' "wandb.ai" = aI "wandb" "svg" -- Weights & Biases/WandB: blog/podcasts, writeups etc; complicated 4-dot grid logo intended to evoke NN layers with large/small weights, <view-source:https://assets.website-files.com/5ac6b7f2924c656f2b13a88c/6066c22135b8983b61ad7939_weights-and-biases-logo.svg>; edited into BW, enlarged the large dots to make viewable as a link icon
- | aU'' ["libgen.rs", "libgen.org", "library.bz"] = aI "raven" "svg" -- Libgen/Sci-Hub raven+key icon is too detailed for a link-icon so fall back to just the raven. There are many LG+SH domains, but these are the only ones we link.
+ | aU'' ["libgen.rs", "libgen.org", "library.bz"] = aI "raven" "svg" -- Libgen/Sci-Hub raven+key icon <https://en.wikipedia.org/wiki/File:Scihub_raven.png>, while pretty, is too detailed for a link-icon so fall back to just the raven. There are many LG+SH domains, but these are the only ones we link.
  | u'' "www.hoover.org" = aI "hoover-institution" "svg" -- <https://en.wikipedia.org/wiki/Hoover_Institution_Library_and_Archives> <https://en.wikipedia.org/wiki/Hoover_Tower> <https://en.wikipedia.org/wiki/New_Cathedral_of_Salamanca>
 
  -- many orgs will use a medium subdomain, so we fall back here for Medium and override above:
