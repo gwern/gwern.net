@@ -3,7 +3,7 @@
 # openReviewAbstract.sh: scrape paper metadata from OpenReview
 # Author: Gwern Branwen
 # Date: 2021-10-12
-# When:  Time-stamp: "2022-06-04 11:02:14 gwern"
+# When:  Time-stamp: "2022-06-07 20:44:47 gwern"
 # License: CC-0
 #
 # Shell script to scrape paper titles/date/author/abstract (TLDR if exists, then full
@@ -31,17 +31,31 @@
 # set -e
 # set -x
 
-curl --silent --location "$@" | \
+JSON=$(curl --silent --location "$@" | \
     # normalizing with Tidy puts the JSON object on a single line, which we can then grep out without full-blown HTML parsing:
-    tidy -quiet 2>/dev/null | fgrep "pageProps" | \
+    tidy -quiet 2>/dev/null | fgrep "pageProps")
+PARSED=""
+if [[ $(echo "$JSON" | fgrep '"value":') ]]; then
+   PARSED=$(echo "$JSON" |
     jq --raw-output '(.props.pageProps.forumNote.content.title.value),
        (.props.pageProps.forumNote.content.authors.value | join(", ")),
        (.props.pageProps.forumNote.tmdate / 1000 | strftime("%F")),
        .props.pageProps.forumNote.content."TL;DR",
        (.props.pageProps.forumNote.content.abstract.value | sub("\n"; " ")),
-       (.props.pageProps.forumNote.content.keywords | join(", "))?' | \
-           # empty fields should be empty lines
-    sed -e 's/^null$//' | \
+       (.props.pageProps.forumNote.content.keywords | join(", "))?' )
+else
+   PARSED=$(echo "$JSON" |
+    jq --raw-output '(.props.pageProps.forumNote.content.title),
+       (.props.pageProps.forumNote.content.authors | join(", ")),
+       (.props.pageProps.forumNote.tmdate / 1000 | strftime("%F")),
+       .props.pageProps.forumNote.content."TL;DR",
+       (.props.pageProps.forumNote.content.abstract | sub("\n"; " ")),
+       (.props.pageProps.forumNote.content.keywords | join(", "))?' )
+fi
+# cleanup:
+# empty fields should be empty lines
+ echo "$PARSED" | \
+     sed -e 's/^null$//' | \
         # join hyphen-broken newlines
         sed -e ':again' -e '/[[:alpha:]]-$/ { N; s/-\n//; b again; }' | \
             # manually clean up some LaTeXisms that Pandoc ignores:
