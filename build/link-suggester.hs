@@ -218,6 +218,7 @@ whiteList = M.fromList [
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
+  , ("https://en.wikipedia.org/wiki/Benjamin_Franklin", ["Benjamin Franklin", "Ben Franklin"])
   , ("https://derpibooru.org/", ["Derpibooru"])
   , ("https://en.wikipedia.org/wiki/Mother_Jones_(magazine)", ["Mother Jones", "Mother Jones magazine"])
   , ("https://en.wikipedia.org/wiki/European_Union", ["EU", "European Union"] )
@@ -1046,7 +1047,7 @@ whiteList = M.fromList [
        ]
      )
     , ( "https://www.lesswrong.com" , [ "LessWrong" , "LessWrong.com" ] )
-    , ( "https://link.springer.com/content/pdf/10.1007%2Fs13238-015-0153-5.pdf"
+    , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4417674/"
                                                                          , [ "CRISPR/Cas9-mediated gene editing in human tripronuclear zygotes"
                                                                            ]
                                                                          )

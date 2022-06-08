@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-06-07 19:33:49 gwern"
+When:  Time-stamp: "2022-06-08 17:46:20 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -516,7 +516,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Bradley.Terry model", "https://en.wikipedia.org/wiki/Bradley-Terry_model")
         , ("Brain Workshop", "http://brainworkshop.sourceforge.net/")
         , ("Bruce Schneier", "https://en.wikipedia.org/wiki/Bruce_Schneier")
-        , ("Busy Beaver functions?", "https://en.wikipedia.org/wiki/Busy_beaver")
         , ("ByT5", "https://arxiv.org/abs/2105.13626#google")
         , ("C4\\.5", "https://en.wikipedia.org/wiki/C4.5_algorithm")
         , ("CC[ -]12M", "https://arxiv.org/abs/2102.08981#google")

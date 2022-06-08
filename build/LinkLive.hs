@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-05-25 23:18:32 gwern"
+When:  Time-stamp: "2022-06-08 18:00:54 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -2033,7 +2033,6 @@ badDomainsSimple = ["1d4chan.org",
     , "www.lightspeedmagazine.com"
     , "www.limeadery.com"
     , "www.linode.com"
-    , "www.lloyds.com"
     , "www.loc.gov"
     , "www.locusmag.com"
     , "www.loudountimes.com"
@@ -2699,7 +2698,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://intelligence.org/2016/09/12/new-paper-logical-induction/", True)
     , ("https://eprint.iacr.org/2021/1273", True)
     , ("https://www.explainxkcd.com/wiki/index.php/Randall", True)
-    , ("http://web.archive.org/web/20170722004635/http://silverhandmeadery.com/portfolio-posts/dream-by-the-fire/", True)
+    , ("https://web.archive.org/web/20170722004635/http://silverhandmeadery.com/portfolio-posts/dream-by-the-fire/", True)
     , ("https://www.nickbostrom.com/astronomical/waste.html", True)
     , ("https://well.blogs.nytimes.com/2009/06/08/worries-about-antioxidant-use-by-breast-cancer-patients/#more-6629", True)
     , ("https://rjlipton.wordpress.com/the-gdel-letter/", True)
@@ -4361,7 +4360,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.limeadery.com/", False)
     , ("https://www.linode.com/", False)
     , ("https://www.l-iz.de/leben/faelle-unfaelle/2015/03/leipziger-ermittler-nehmen-drogenversand-shiny-flakes-hoch-78227", False)
-    , ("https://www.lloyds.com/News-and-Insight/News-and-Features/Archive/2007/07/A_hole_new_insurance_policy", False)
     , ("https://www.loc.gov/collections/edison-company-motion-pictures-and-sound-recordings/about-this-collection/#vocal", False)
     , ("https://www.lshtm.ac.uk/ncdeu/currentresearch/researchprojects/bwhhs/", False)
     , ("https://www.maa.org/sites/default/files/images/images/upload_library/22/Polya/07468342.di020715.02p0066x.pdf", False)

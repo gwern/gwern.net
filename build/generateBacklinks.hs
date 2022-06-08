@@ -34,7 +34,7 @@ main = do
   -- check that all backlink targets/callers are valid:
   let dotPageFy f = if '.' `elem` f then f else f++".page" -- all files have at least 1 period in them (for file extensions); a file missing periods must be a `.page` Markdown file, with the exception of tag pages which are auto-generated
   let filesCheck = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $
-        filter (\f -> not (anyInfix f ["tags/","/index","/docs/link-bibliography/"])) $
+        filter (\f -> not (anyInfix f ["/index","/docs/link-bibliography/"])) $
         filter ("/"`isPrefixOf`) $ map T.unpack $
         M.keys bldb ++ concat (M.elems bldb)
   forM_ filesCheck (\f -> do exist <- doesFileExist f
@@ -131,7 +131,7 @@ truncateAnchors = T.takeWhile (/='#')
 blackList :: T.Text -> Bool
 blackList f
   | anyInfixT f ["/backlinks/", "/link-bibliography/", "/similars/", "wikipedia.org/wiki/"] = False
-  | anyPrefixT f ["/images", "/tags/", "/docs/www/", "/newsletter/", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem",
+  | anyPrefixT f ["/images", "/docs/www/", "/newsletter/", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem",
                    -- WARNING: do not filter out 'metadata/annotations' because that leads to empty databases & infinite loops
                    "https://www.youtube.com/", "/static/404",
                    "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = False
