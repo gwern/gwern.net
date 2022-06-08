@@ -71,8 +71,8 @@ changeAndWriteTags t i c p a = do let cP = hasItem i c
 -- to work with (and will do auto.yaml → partial.yaml).
 addNewLink :: String -> String -> IO ()
 addNewLink tag p = do md <- readLinkMetadata
-                      _ <- annotateLink md p
-                      changeOneTag p tag
+                      returnValue <- annotateLink md p
+                      if returnValue then changeOneTag p tag else error ("annotateLink returned False! " ++ show tag ++ " : " ++ show p)
 
 changeTag, addTag, removeTag :: String -> MetadataList -> String -> MetadataList
 changeTag i ml tag = if head tag /= '-' then addTag i ml tag else removeTag i ml (tail tag)
