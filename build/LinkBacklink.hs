@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-04-02 12:02:15 gwern"
+When:  Time-stamp: "2022-06-07 22:52:09 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -22,6 +22,7 @@ import Data.List (sort)
 import qualified Data.Map.Strict as M (empty, fromList, toList, Map) -- fromListWith,
 import qualified Data.Text as T (pack, unpack, Text)
 import Data.Text.IO as TIO (readFile)
+import Text.Read (readMaybe)
 import Network.HTTP (urlEncode)
 import Text.Show.Pretty (ppShow)
 import System.Directory (doesFileExist)
@@ -34,8 +35,10 @@ readBacklinksDB :: IO Backlinks
 readBacklinksDB = do exists <- doesFileExist "metadata/backlinks.hs"
                      bll <- if exists then TIO.readFile "metadata/backlinks.hs" else return ""
                      if bll=="" then return M.empty else
-                       let bldb = M.fromList (read (T.unpack bll) :: [(T.Text,[T.Text])]) in
-                         return bldb
+                       let bllM = readMaybe (T.unpack bll) :: Maybe [(T.Text,[T.Text])]
+                       in case bllM of
+                         Nothing   -> error ("Failed to parse backlinks.hs; read string: " ++ show bll)
+                         Just bldb -> return $ M.fromList bldb
 writeBacklinksDB :: Backlinks -> IO ()
 writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[T.Text])]
                            let bll' = sort $ map (\(a,b) -> (T.unpack a, sort $ map T.unpack b)) bll

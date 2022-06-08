@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-06-01 23:35:18 gwern"
+When:  Time-stamp: "2022-06-07 22:47:27 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -99,6 +99,7 @@ import qualified Data.Map.Strict as M (fromList, insert, lookup, toAscList, Map)
 import Data.List (isInfixOf, isPrefixOf)
 import Data.List.Utils (replace)
 import Data.Maybe (isNothing, fromMaybe)
+import Text.Read (readMaybe)
 import qualified Data.Text.IO as TIO (readFile)
 import qualified Data.Text as T (pack, unpack)
 import Data.Time.Calendar (toModifiedJulianDay)
@@ -141,25 +142,28 @@ localizeLink adb archived x@(Link (identifier, classes, pairs) b (targetURL, tar
 localizeLink _ _ x = return x
 
 readArchiveMetadata :: IO ArchiveMetadata
-readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata/archive.hs") :: IO ArchiveMetadataList
-                         -- check for failed archives:
-                         pdl' <- filterM (\(p,ami) -> case ami of
-                                  Right (Just "") -> printRed ("Error! Invalid empty archive link: " ++ show p ++ show ami) >> return False
-                                  Right u@(Just ('/':'/':_)) -> printRed ("Error! Invalid double-slash archive link: " ++ show p ++ show ami ++ show u) >> return False
-                                  Right (Just u)  -> if not ("http" `isPrefixOf` p) then
-                                                       printRed ("Error! Did a local link slip in somehow? " ++ show p ++ show u ++ show ami) >> return False
-                                                     else
-                                                       if isNothing (parseTLD p) then
-                                                        printRed ("Error! Invalid URI link in archive? " ++ show p ++ show u ++ show ami) >> return False
-                                                       else do size <- getFileStatus (takeWhile (/='#') $ tail u) >>= \s -> return $ fileSize s
-                                                               if size == 0 then
-                                                                 printRed ("Error! Empty archive file. Not using: " ++ show p ++ show u ++ show ami) >> return False
-                                                                 else if size > 1024 then return True else return False
-                                  Right Nothing   -> return True
-                                  Left  _         -> return True)
-                              pdl
-                         let pdl'' = filter (\(p,_) -> "http"`isPrefixOf`p && not (whiteList p)) pdl'
-                         return $ M.fromList pdl''
+readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/archive.hs") :: IO String
+                         case (readMaybe pdlString :: Maybe ArchiveMetadataList) of
+                           Nothing -> error $ "Failed to read metadata/archive.hs. Contents of string: " ++ pdlString
+                           Just pdl -> do
+                            -- check for failed archives:
+                            pdl' <- filterM (\(p,ami) -> case ami of
+                                     Right (Just "") -> printRed ("Error! Invalid empty archive link: " ++ show p ++ show ami) >> return False
+                                     Right u@(Just ('/':'/':_)) -> printRed ("Error! Invalid double-slash archive link: " ++ show p ++ show ami ++ show u) >> return False
+                                     Right (Just u)  -> if not ("http" `isPrefixOf` p) then
+                                                          printRed ("Error! Did a local link slip in somehow? " ++ show p ++ show u ++ show ami) >> return False
+                                                        else
+                                                          if isNothing (parseTLD p) then
+                                                           printRed ("Error! Invalid URI link in archive? " ++ show p ++ show u ++ show ami) >> return False
+                                                          else do size <- getFileStatus (takeWhile (/='#') $ tail u) >>= \s -> return $ fileSize s
+                                                                  if size == 0 then
+                                                                    printRed ("Error! Empty archive file. Not using: " ++ show p ++ show u ++ show ami) >> return False
+                                                                    else if size > 1024 then return True else return False
+                                     Right Nothing   -> return True
+                                     Left  _         -> return True)
+                                 pdl
+                            let pdl'' = filter (\(p,_) -> "http"`isPrefixOf`p && not (whiteList p)) pdl'
+                            return $ M.fromList pdl''
 
 -- rewriteLink:
 -- 1. Exit on whitelisted URLs.
