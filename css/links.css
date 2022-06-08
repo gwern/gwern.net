@@ -63,18 +63,18 @@ body.index .has-content .indicator-hook::before {
     background-image: var(--GW-dotted-underline-hover-background-image);
 }
 
-/*	TOCs in pop-frames, and also in link bibliographies, directory indexes, etc.
+/*  TOCs in pop-frames, and also in link bibliographies, directory indexes, etc.
  */
 .popframe-body .TOC a,
 .popframe-body .TOC a *,
 blockquote .TOC a:link,
 blockquote .TOC a:link * {
-	background: none;
-	text-shadow: none;
+    background: none;
+    text-shadow: none;
 }
 .popframe-body .TOC a::after,
 blockquote .TOC a::after {
-	display: none;
+    display: none;
 }
 
 /**************/
@@ -249,8 +249,8 @@ a[data-link-icon='𝔊']::after {
     content: none;
 }
 
-/*	Index page, and embeds thereof, do not need the G icon; nor do backlinks
-	pop-frames.
+/*  Index page, and embeds thereof, do not need the G icon; nor do backlinks
+    pop-frames.
  */
 body.index a.link-local::after,
 .popframe-body.index a.link-local::after,
@@ -258,22 +258,22 @@ body.index a.link-local::after,
     content: none;
 }
 
-/*	Also remove ‘G’ icon from the tags inside popups or in directory index
-	entries (which go to directory indexes, which aren’t really top-level/essay
-	content, and the G is clutter).
+/*  Also remove ‘G’ icon from the tags inside popups or in directory index
+    entries (which go to directory indexes, which aren’t really top-level/essay
+    content, and the G is clutter).
 
-	Ditto link tags.
+    Ditto link tags.
  */
 .markdownBody .backlinks a::after,
 .markdownBody .similars a::after,
 .markdownBody .link-tags a::after {
-	content: none;
+    content: none;
 }
 
-/*	Remove the ‘W’ document icon from the anonymous feedback link icon; it is
-	true, but not useful (a ‘document’ doesn’t look like ‘a thing I can interact
-	with & type in text to), and it looks bad/cluttered given that icons are
-	removed from the rest of the ‘surrounding’ UI (*especially* in /index).
+/*  Remove the ‘W’ document icon from the anonymous feedback link icon; it is
+    true, but not useful (a ‘document’ doesn’t look like ‘a thing I can interact
+    with & type in text to), and it looks bad/cluttered given that icons are
+    removed from the rest of the ‘surrounding’ UI (*especially* in /index).
  */
 #footer a[href*='docs.google.com'i]::after {
     content: none;
@@ -447,7 +447,7 @@ a[data-link-icon='෴']::after { /* Moustache / antilop.cc */
 }
 
 a[data-link-icon='🤖']::after { /* ROBOT FACE U+1F916 beepb00p.xyz */
-	--link-icon-size: 0.8em;
+    --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.3em;
 
@@ -717,11 +717,11 @@ a[data-link-icon='nasa']::after {
 }
 
 a[data-link-icon='nautilus']::after {
-	--link-icon-size: 0.7em;
-	--link-icon-offset-y: 0.25em;
-	--link-icon-offset-x: 0.15em;
+    --link-icon-size: 0.7em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-offset-x: 0.15em;
 
-	opacity: 0.6;
+    opacity: 0.6;
 }
 
 a[data-link-icon='newyorktimes']::after {
@@ -971,22 +971,29 @@ a[data-link-icon='cochrane-collaboration']::after {
 }
 
 a[data-link-icon='connected-papers']::after {
-	--link-icon-size: 0.85em;
-	--link-icon-offset-y: 0.1em;
-	--link-icon-offset-x: 0.05em;
+    --link-icon-size: 0.85em;
+    --link-icon-offset-y: 0.1em;
+    --link-icon-offset-x: 0.05em;
 
-	opacity: 0.65;
+    opacity: 0.65;
 }
 
 /* LibGen/Sci-Hub */
 a[data-link-icon='raven']::after {
-	--link-icon-size: 0.65em;
-	--link-icon-offset-y: 0.2em;
-	--link-icon-offset-x: 0.1em;
+    --link-icon-size: 0.65em;
+    --link-icon-offset-y: 0.2em;
+    --link-icon-offset-x: 0.1em;
 
-	opacity: 0.65;
+    opacity: 0.65;
 }
 
+a[data-link-icon='hoover-institution']::after {
+    --link-icon-size: 0.45em;
+    --link-icon-offset-y: 0.0em;
+    --link-icon-offset-x: 0.15em;
+
+    opacity: 0.65;
+}
 /*=------------------=*/
 /*= Wikipedia links. =*/
 /*=------------------=*/
@@ -1003,16 +1010,16 @@ a[data-link-icon='wikipedia']:hover::after {
 }
 
 /*  Suppress the WP link icon suffix (knowledge of WP ‘articles’ vs.
-	Talk pages/History/etc is baked into the links by the link-annotated +
-	has-annotation classes, see LinkMetadata.hs’s `wikipediaArticleNamespace`
-	function); the dotted-underlining is enough.
+    Talk pages/History/etc is baked into the links by the link-annotated +
+    has-annotation classes, see LinkMetadata.hs’s `wikipediaArticleNamespace`
+    function); the dotted-underlining is enough.
  */
 a[data-link-icon='wikipedia'].has-annotation::after {
     content: none;
 }
 
-/*	TOC-links in Wikipedia pop-frames.
+/*  TOC-links in Wikipedia pop-frames.
  */
 .popframe-body.wikipedia-entry .TOC a.has-annotation:hover {
-	background-image: none;
+    background-image: none;
 }
