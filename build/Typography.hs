@@ -233,10 +233,10 @@ identUniquefy doc = evalState (walkM addIdentNth doc) M.empty
        addIdentNth x@(Link (ident,b,c) d (e,f)) = do
          db <- get
          case M.lookup ident db of
-           Nothing    -> do put (M.insert ident 0 db)
+           Nothing    -> do put (M.insert ident 1 db)
                             return x
            Just count -> do put (M.insert ident (count + 1) db)
-                            return $ Link (ident `T.append` "-" `T.append` (T.pack (show count)),
+                            return $ Link (ident `T.append` "-" `T.append` (T.pack (show (count + 1))),
                                             b,c) d (e,f)
        addIdentNth x = return x
 

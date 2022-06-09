@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-08 18:29:08 gwern"
+When:  Time-stamp: "2022-06-08 21:56:35 gwern"
 License: CC-0
 -}
 
@@ -313,10 +313,13 @@ annotateLink md target
 
      -- check local link validity: every local link except tags should exist on-disk:
      when (head target'' == '/' && not ("/metadata/annotations/" `isPrefixOf` target'')) $
-       do let target''' = (\f -> if not ('.' `elem` f) then f ++ ".page" else f) $ takeWhile (/='#') $ tail target''
+       do isDirectory <- doesDirectoryExist (tail target'')
+          when isDirectory $ error ("Attempted to annotate a directory, which is not allowed (links must be to files or $DIRECTORY/index): " ++ target' ++ " : " ++ target)
+          let target''' = (\f -> if not ('.' `elem` f) then f ++ ".page" else f) $ takeWhile (/='#') $ tail target''
+
           unless (takeFileName target''' == "index" || takeFileName target''' == "index.page") $
-            do exist <- doesFileExist target'''
-               unless exist $ printRed ("Link error in 'annotateLink': file does not exist? " ++ target''' ++ " (" ++target++")")
+             do exist <- doesFileExist target'''
+                unless exist $ printRed ("Link error in 'annotateLink': file does not exist? " ++ target''' ++ " (" ++target++")")
 
      let annotated = M.lookup target'' md
      case annotated of
@@ -799,7 +802,8 @@ linkDispatcher l | anyPrefix l ["/metadata/annotations/backlinks/", "/metadata/a
                     else return (Left Permanent)
 
 -- handles both PM & PLOS right now:
-pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
+pubmed l = do checkURL l
+              (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
               case status of
                 ExitFailure err -> printGreen (intercalate " : " [l, ppShow status, ppShow err, ppShow mb]) >> return (Left Permanent)
                 _ -> do
@@ -867,7 +871,8 @@ doi2Abstract doi = if length doi < 7 then return Nothing
                                                     return $ Just trimmedAbstract
 
 -- handles medRxiv too (same codebase)
-biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
+biorxiv p = do checkURL p
+               (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
                case status of
                  ExitFailure _ -> printRed ("BioRxiv download failed: " ++ p) >> return (Left Permanent)
                  _ -> do
@@ -949,21 +954,22 @@ element nm (t:ts) | isTagOpenName nm t = let (r,rs) = closeEl 0 ts
                                             in (x:r,rs)
                     | otherwise          = let (r,rs) = closeEl i     xs
                                             in (x:r,rs)
-openreview p   = do let p' = replace "/pdf?id=" "/forum?id=" p
-                    (status,_,bs) <- runShellCommand "./" Nothing "openReviewAbstract.sh" [p']
-                    case status of
-                        ExitFailure _ -> printRed ("OpenReview download failed: " ++ p) >> return (Left Permanent)
-                        _ -> do
-                               let (title:author:date:tldr:desc:keywords) = lines $ U.toString bs
-                               let keywords' = if null keywords || keywords == [""] then "" else
-                                                 if length keywords > 1 then (unlines $ init keywords) ++ "\n[Keywords: " ++ last keywords ++ "]"
-                                                 else "[Keywords: " ++ concat keywords ++ "]"
-                               let tldr' = cleanAbstractsHTML $ processArxivAbstract tldr
-                               let desc' = cleanAbstractsHTML $ processArxivAbstract desc
-                               let abstractCombined = trim $ intercalate "\n" [tldr', desc', cleanAbstractsHTML $ processArxivAbstract keywords']
-                               return $ Right (p, (trimTitle title, initializeAuthors $ trim author, date, "", [],
-                                                   -- due to pseudo-LaTeX
-                                                     abstractCombined))
+openreview p = do checkURL p
+                  let p' = replace "/pdf?id=" "/forum?id=" p
+                  (status,_,bs) <- runShellCommand "./" Nothing "openReviewAbstract.sh" [p']
+                  case status of
+                      ExitFailure _ -> printRed ("OpenReview download failed: " ++ p) >> return (Left Permanent)
+                      _ -> do
+                             let (title:author:date:tldr:desc:keywords) = lines $ U.toString bs
+                             let keywords' = if null keywords || keywords == [""] then "" else
+                                               if length keywords > 1 then (unlines $ init keywords) ++ "\n[Keywords: " ++ last keywords ++ "]"
+                                               else "[Keywords: " ++ concat keywords ++ "]"
+                             let tldr' = cleanAbstractsHTML $ processArxivAbstract tldr
+                             let desc' = cleanAbstractsHTML $ processArxivAbstract desc
+                             let abstractCombined = trim $ intercalate "\n" [tldr', desc', cleanAbstractsHTML $ processArxivAbstract keywords']
+                             return $ Right (p, (trimTitle title, initializeAuthors $ trim author, date, "", [],
+                                                 -- due to pseudo-LaTeX
+                                                   abstractCombined))
 
 processDOI, processDOIArxiv :: String -> String
 processDOI = replace "–" "-" . replace "—" "-"
@@ -1490,6 +1496,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
         | otherwise =
             let p' = sed "^/" "" $ replace "https://www.gwern.net/" "" p in
             do printRed p'
+               checkURL p
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--silent", "https://www.gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"] -- we strip `--location` because we do *not* want to follow redirects. Redirects creating duplicate annotations is a problem.
                case status of
                  ExitFailure _ -> printRed ("Gwern.net download failed: " ++ p) >> return (Left Permanent)
