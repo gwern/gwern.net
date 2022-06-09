@@ -36,6 +36,7 @@ import LinkAuto (cleanUpDivsEmpty)
 import LinkBacklink (getBackLink, getSimilarLink)
 import LinkMetadata (generateAnnotationBlock, parseRawBlock, readLinkMetadata, authorsTruncate, Metadata, MetadataItem)
 import Query (extractURLs)
+import Typography (identUniquefy)
 import Utils (writeUpdatedFile)
 
 main :: IO ()
@@ -51,7 +52,8 @@ generateLinkBibliography md page = do links <- extractLinksFromPage page
                                           pairs' = zipWith3 (\(a,b) c d -> (a,b,c,d)) pairs backlinks similarlinks
                                           body = generateLinkBibliographyItems pairs'
                                           document = Pandoc nullMeta [body]
-                                          markdown = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
+                                          markdown = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} $
+                                            walk identUniquefy document -- global rewrite to de-duplicate all of the inserted URLs
                                       case markdown of
                                         Left e   -> hPrint stderr e
                                         -- compare with the old version, and update if there are any differences:
@@ -105,7 +107,7 @@ extractLinksFromPage path = do f <- TIO.readFile path
                                           Left  _ -> []
                                           -- make the list unique, but keep the original ordering
                                           Right p -> map (replace "https://www.gwern.net/" "/") $
-                                                     filter (\l -> not (head l == '#')) $ -- self-links are not useful in link bibliographies
+                                                     filter (\l -> head l /= '#') $ -- self-links are not useful in link bibliographies
                                                      nub $ map T.unpack $ extractURLs p -- TODO: maybe extract the title from the metadata for nicer formatting?
 
 linksToAnnotations :: Metadata -> [String] -> [(String,MetadataItem)]

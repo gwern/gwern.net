@@ -9,7 +9,7 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (invertImage, invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase') where
+module Typography (invertImage, invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase', identUniquefy) where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Control.Monad (void, when)
@@ -21,11 +21,12 @@ import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
 import System.Directory (doesFileExist, getModificationTime, removeFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.Posix.Temp (mkstemp)
-import qualified Data.Text as T (any, isSuffixOf, pack, unpack, replace, Text)
+import qualified Data.Text as T (any, append, isSuffixOf, pack, unpack, replace, Text)
 import Text.Read (readMaybe)
 import Text.Regex.TDFA ((=~)) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
 import System.IO (stderr, hPrint)
 import System.IO.Temp (emptySystemTempFile)
+import qualified Data.Map.Strict as M
 
 import Data.Text.Titlecase (titlecase)
 
@@ -224,6 +225,20 @@ rulersCycle modulus doc = evalState (walkM addHrNth doc) 0
          let nthClass = T.pack $ "horizontalRule" ++ "-nth-" ++ show nth
          return $ Div ("", [nthClass], []) [HorizontalRule]
        addHrNth x = return x
+
+-- Walk a document, and de-duplicate overlapping IDs by appending "-n" for the nth use. This should not be used on regular content pages, where duplicate links should either be de-linked (replaced by a within-page anchor link, say) or given unique IDs by hand. This is useful for auto-generated pages like link-bibliographies or tag-directories, where arbitrarily many different annotations will be inserted and it would be difficult or impossible to remove duplicates or override. So, somewhat analogous to `gensym`, we walk the doc and simply assign new IDs on demand.
+identUniquefy :: Pandoc -> Pandoc
+identUniquefy doc = evalState (walkM addIdentNth doc) M.empty
+ where addIdentNth :: Inline -> State (M.Map T.Text Int) Inline
+       addIdentNth x@(Link (ident,b,c) d (e,f)) = do
+         db <- get
+         case M.lookup ident db of
+           Nothing    -> do put (M.insert ident 0 db)
+                            return x
+           Just count -> do put (M.insert ident (count + 1) db)
+                            return $ Link (ident `T.append` "-" `T.append` (T.pack (show count)),
+                                            b,c) d (e,f)
+       addIdentNth x = return x
 
 -- rewrite a string (presumably an annotation title) into a mixed-case 'title case'
 -- https://en.wikipedia.org/wiki/Title_case as we expect from headlines/titles

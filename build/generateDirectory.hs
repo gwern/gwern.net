@@ -31,6 +31,7 @@ import LinkAuto (cleanUpDivsEmpty)
 import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag)
 import LinkBacklink (getBackLink, getSimilarLink)
 import Query (extractImages)
+import Typography (identUniquefy)
 import Utils (writeUpdatedFile, sed)
 
 main :: IO ()
@@ -121,7 +122,8 @@ generateDirectory mta dir'' = do
                       RawBlock (Format "html") "</div>"])
 
   let document = Pandoc nullMeta body
-  let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
+  let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} $
+           walk identUniquefy document  -- global rewrite to de-duplicate all of the inserted URLs
 
   case p of
     Left e   -> hPrint stderr e

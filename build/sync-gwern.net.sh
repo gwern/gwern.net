@@ -295,6 +295,9 @@ else
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html'; }
     wrap λ "Stray or bad URL links in Markdown/HTML."
 
+    λ(){ egrep 'http.*http' metadata/archive.hs  | fgrep -v -e 'web.archive.org' -e 'https-everywhere' -e 'check_cookie.html' -e 'translate.goog' -e 'archive.md' -e 'webarchive.loc.gov' -e 'https://http.cat/'; }
+    wrap λ "Bad URL links in archive database (and perhaps site-wide)."
+
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '<div>' | fgrep -v -e 'I got around this by adding in the Hakyll template an additional'; }
     wrap λ "Stray <div>?"
 
@@ -427,7 +430,7 @@ else
     λ(){
         set +e;
         IFS=$(echo -en "\n\b");
-        PAGES="$(find . -type f -name "*.page" | fgrep -v -e '_site/' -e 'index' -e 'docs/link-bibliography' | sort -u)"
+        PAGES="$(find . -type f -name "*.page" | fgrep -v -e '_site/' -e 'index' | sort -u)"
         OTHERS="$(find metadata/annotations/ -name "*.html"; echo index)"
         for PAGE in $PAGES $OTHERS ./static/404; do
             HTML="${PAGE%.page}"
@@ -439,23 +442,6 @@ else
                              -e "Warning: inserting missing 'title' element" -e 'Warning: <img> proprietary attribute "decoding"' \
                              -e 'Warning: <a> escaping malformed URI reference' -e 'Warning: <script> proprietary attribute "fetchpriority"' )
             if [[ -n $TIDY ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$TIDY"; fi
-        done
-
-        # indexes/bibliographies necessarily have a lot of colliding IDs and it's difficult to avoid them automatically,
-        # so we skip them, though they are errors in regular pages.
-        INDEXES="$(find docs/ -type f -name "index.page" | sort -u)"
-        LINKBIBLIOGRAPHIES="$(find docs/link-bibliography/ -type f -name "*.page" | sort -u)"
-        for INDEX in $INDEXES $LINKBIBLIOGRAPHIES; do
-            HTML="${INDEX%.page}"
-            TIDY=$(tidy -quiet -errors --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \
-                       egrep --invert-match -e '<link> proprietary attribute ' -e 'Warning: trimming empty <span>' \
-                             -e "Error: missing quote mark for attribute value" -e 'Warning: <img> proprietary attribute "loading"' \
-                             -e 'Warning: <svg> proprietary attribute "alt"' -e 'Warning: <source> proprietary attribute "alt"' \
-                             -e 'Warning: missing <!DOCTYPE> declaration' -e 'Warning: inserting implicit <body>' \
-                             -e "Warning: inserting missing 'title' element" -e 'Warning: <img> proprietary attribute "decoding"' \
-                             -e 'Warning: <a> anchor .* already defined' -e 'Warning: <a> escaping malformed URI reference' \
-                             -e 'Warning: <script> proprietary attribute "fetchpriority"' )
-            if [[ -n $TIDY ]]; then echo -e "\n\e[31m$INDEX\e[0m:\n$TIDY"; fi
         done
 
         set -e;
