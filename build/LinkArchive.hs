@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-06-07 22:47:27 gwern"
+When:  Time-stamp: "2022-06-08 22:42:51 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -111,6 +111,10 @@ import Data.FileStore.Utils (runShellCommand)
 import Network.URI.TLD (parseTLD)
 import Text.Pandoc (Inline(Link))
 import Text.Show.Pretty (ppShow)
+import Data.ByteString.Base16 (encode) -- base16-bytestring
+import Crypto.Hash.SHA1 (hash) -- cryptohash
+import Data.ByteString.Char8 (pack, unpack)
+import System.FilePath (takeFileName)
 
 import Utils (writeUpdatedFile, printGreen, printRed, sed, addClass, anyInfix, anyPrefix, anySuffix)
 
@@ -162,8 +166,16 @@ readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/ar
                                      Right Nothing   -> return True
                                      Left  _         -> return True)
                                  pdl
-                            let pdl'' = filter (\(p,_) -> "http"`isPrefixOf`p && not (whiteList p)) pdl'
+                            let pdl'' = filter (\(p,ami) -> "http"`isPrefixOf`p && not (whiteList p) && hashIsValid p ami) pdl'
                             return $ M.fromList pdl''
+
+-- When we rewrite links to fix link rot, archive.hs can become stale: it records a failed archive of the old URL, and doesn't know there's a new URL because archive.hs was rewritten with the rest of gwern.net. But since the hash is deterministically derived from the URL, the hash of the URL will no longer match the hash encoded in the file name. So when there is a mismatch, we can drop that entry, deleting it, and now the new URL will get picked up as a fresh URL entered into the archive queue.
+hashIsValid :: Path -> ArchiveMetadataItem -> Bool
+hashIsValid _ (Left _) = True
+hashIsValid _ (Right Nothing) = True
+hashIsValid url (Right (Just file)) = let derivedHash = Data.ByteString.Char8.unpack $ Data.ByteString.Base16.encode $ Crypto.Hash.SHA1.hash $ Data.ByteString.Char8.pack (transformURLsForArchiving (takeWhile (/='#') url) ++ "\n")
+                                          storedHash = dropWhile (/= '.') $ takeFileName file
+                                      in derivedHash == storedHash
 
 -- rewriteLink:
 -- 1. Exit on whitelisted URLs.
@@ -1170,5 +1182,6 @@ whiteList url
       , "https://sites.google.com/view/mbrl-amortization/home" -- low quality (video embeds)
       , "https://sites.google.com/view/mend-editing" -- low quality (animated embeds)
       , "https://energy-based-model.github.io/comet/" -- low quality (video embeds)
+      , "https://huggingface.co/spaces/" -- interactive
       ] = True
     | otherwise = False
