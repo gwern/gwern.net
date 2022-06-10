@@ -215,12 +215,12 @@ Extracts = { ...Extracts, ...{
                     for link icons (eg. 'https://arxiv.org/abs/2006.07159#google')
                     should not get a section mark.
                  */
-                    && !(["adobe", "alibaba", "allen", "amazon", "apple", "baidu", "bair", "bytedance",
-                      "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr",
-                      "github", "google", "googledeepmind", "google-graphcore", "huawei", "intel", "jd", "laion",
-                      "lighton", "microsoft", "microsoftnvidia", "miri", "naver",
+                    && !(["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baidu", "bair", "bytedance",
+                          "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr",
+                          "github", "google", "googledeepmind", "google-graphcore", "huawei", "intel", "jd", "kako", "laion",
+                          "lighton", "microsoft", "microsoftnvidia", "miri", "naver",
                           "nvidia", "openai", "pdf", "salesforce", "sberbank", "sensetime",
-                      "snapchat", "spotify", "tencent", "tensorfork", "uber", "yandex"
+                          "snapchat", "spotify", "tencent", "tensorfork", "uber", "yandex"
                       ].includes(target.hash.slice(1))))) {
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
         } else if (   target.hash > ""

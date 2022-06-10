@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-06-08 17:46:20 gwern"
+When:  Time-stamp: "2022-06-09 08:58:04 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -555,8 +555,8 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Cryptonomicon", "https://en.wikipedia.org/wiki/Cryptonomicon")
         , ("Cyphernomicon", "https://en.wikipedia.org/wiki/Cyphernomicon")
         , ("D4PG", "https://arxiv.org/abs/1804.08617#deepmind")
-        , ("DALL[-·]E 2", "https://openai.com/dall-e-2/")
-        , ("DALL[-·]E 1", "https://openai.com/blog/dall-e/")
+        -- , ("DALL[-·]E 2", "https://openai.com/dall-e-2/")
+        -- , ("DALL[-·]E 1", "https://openai.com/blog/dall-e/")
         , ("DARPA", "https://en.wikipedia.org/wiki/DARPA")
         , ("DDPG", "https://arxiv.org/abs/1509.02971#deepmind")
         , ("DFAs?", "https://arxiv.org/abs/1609.01596")
@@ -633,7 +633,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("GLUE", "https://arxiv.org/abs/1804.07461")
         , ("GODIVA", "https://arxiv.org/abs/2104.14806#microsoft")
         , ("GPT-1", "https://openai.com/blog/language-unsupervised/")
-        , ("GPT-2", "/docs/ai/gpt/2019-radford.pdf#openai")
+        , ("GPT-2", "/docs/ai/nn/transformer/gpt/2019-radford.pdf#openai")
         , ("GPT-3", "https://arxiv.org/abs/2005.14165#openai")
         , ("GPT-J", "https://arankomatsuzaki.wordpress.com/2021/06/04/gpt-j/")
         , ("GPT-f", "https://arxiv.org/abs/2009.03393#openai")
