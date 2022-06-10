@@ -4,13 +4,12 @@
 -- If an argument has an empty annotation, it is printed out as well, as a separate line. (This enables use-cases like parsing all the links out of a file using link-extracter.hs and passing it into annotation-dump.hs to see which ones do not so much as have a tag, so a tag can be added.)
 
 import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, nub)
-import Utils (replace)
 import Data.Map as M (lookup, union, toList, fromList)
 import Data.Text as T (unpack)
 import Data.Text.IO as TIO (getContents)
 
 import LinkMetadata (authorsToCite, sortItemPathDate, readYamlFast, MetadataItem)
-import Utils (anyInfix, sed)
+import Utils (anyInfix, replace, sed)
 
 type Path = String
 
@@ -38,7 +37,8 @@ blacklist sourceLabel = map (\(a,b) -> (a,(b,sourceLabel))) . filter (\(f,(title
                                                                                                   ("/docs/"`isPrefixOf`f && "/index" `isSuffixOf` f)))
 
 toSingleLine :: (Path,(MetadataItem,String)) -> String
-toSingleLine (f,(("",c,d,e,[],g),_)) = f ++ " []" -- we insert '[]' to parallel links with barebones auto-metadata but lacking even a tag; this lets us grep output for all untagged links (as opposed to only being able to grep for the smaller & much more arbitrary subset, 'untagged but has an auto-title')
+toSingleLine ("",_) = ""
+toSingleLine (f,(("",_,_,_,[],_),_)) = f ++ " []" -- we insert '[]' to parallel links with barebones auto-metadata but lacking even a tag; this lets us grep output for all untagged links (as opposed to only being able to grep for the smaller & much more arbitrary subset, 'untagged but has an auto-title')
 toSingleLine (f,((b,c,d,_,tags,abst),label)) = ("\x1b[36m"++label++"\x1b[0m: ") ++ intercalate "; "
   [ authorsToCite f c d,
     "\x1b[32m "++f++" \x1b[0m",

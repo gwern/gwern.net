@@ -26,15 +26,16 @@ import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml, Metada
 
 main :: IO ()
 main = do args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://www.gwern.net/" "/") $ getArgs
+          when (length args < 2) $ error "Error: Insufficient arguments (<2)."
 
           let links = filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) $ args
-          when (null links) $ error ("Forgot links?" ++ show args)
+          when (null links) $ error ("Error: Forgot links?" ++ show args)
           let tags = map (filter (/=',')) $ -- we store tags comma-separated so sometimes we might leave in a stray tag when copy-pasting
                 filter (\arg -> (not (arg `elem` links))) args
-          when (null tags) $ error ("Forgot tags? " ++ show args)
+          when (null tags) $ error ("Error: Forgot tags? " ++ show args)
 
           mapM_ (\arg' -> do filep <- doesDirectoryExist ("docs/"++ if head arg' == '-' then tail arg' else arg')
-                             if not filep then error ("Error: specified tag not defined? '" ++ arg' ++ "'") else return arg') tags
+                             if not filep then error ("Error: Specified tag not defined? '" ++ arg' ++ "'") else return arg') tags
           mapM_ (\link -> mapM_ (changeOneTag link) tags) links
 
 changeOneTag :: String -> String -> IO ()
