@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-06-08 22:42:51 gwern"
+When:  Time-stamp: "2022-06-09 18:19:47 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -97,7 +97,7 @@ import Control.Monad (filterM)
 import Data.IORef (IORef, readIORef, writeIORef)
 import qualified Data.Map.Strict as M (fromList, insert, lookup, toAscList, Map)
 import Data.List (isInfixOf, isPrefixOf)
-import Data.List.Utils (replace)
+import Utils (replace)
 import Data.Maybe (isNothing, fromMaybe)
 import Text.Read (readMaybe)
 import qualified Data.Text.IO as TIO (readFile)
@@ -166,8 +166,10 @@ readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/ar
                                      Right Nothing   -> return True
                                      Left  _         -> return True)
                                  pdl
-                            let pdl'' = filter (\(p,ami) -> "http"`isPrefixOf`p && not (whiteList p) && hashIsValid p ami) pdl'
-                            return $ M.fromList pdl''
+                            let pdl'' = filter (\(p,_) -> "http"`isPrefixOf`p && not (whiteList p)) pdl'
+                            -- for mismatches, we know they were archived before, so we should archive them ASAP:
+                            let pdl''' = map (\(p,ami) ->  if hashIsValid p ami then (p,ami) else (p, Left 0)) pdl''
+                            return $ M.fromList pdl'''
 
 -- When we rewrite links to fix link rot, archive.hs can become stale: it records a failed archive of the old URL, and doesn't know there's a new URL because archive.hs was rewritten with the rest of gwern.net. But since the hash is deterministically derived from the URL, the hash of the URL will no longer match the hash encoded in the file name. So when there is a mismatch, we can drop that entry, deleting it, and now the new URL will get picked up as a fresh URL entered into the archive queue.
 hashIsValid :: Path -> ArchiveMetadataItem -> Bool
@@ -204,7 +206,7 @@ rewriteLink adb archivedN url = do
 
 archiveDelay, archivePerRunN :: Integer
 archiveDelay = 60
-archivePerRunN = 3
+archivePerRunN = 10
 
 insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
 insertLinkIntoDB a url = do adb <- readArchiveMetadata
