@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-08 21:56:35 gwern"
+When:  Time-stamp: "2022-06-09 21:58:22 gwern"
 License: CC-0
 -}
 
@@ -28,8 +28,7 @@ import Data.Containers.ListUtils (nubOrd)
 import Data.IORef (IORef)
 import Data.FileStore.Utils (runShellCommand)
 import Data.Function (on)
-import Data.List (intercalate, intersect, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
-import Data.List.Utils (replace, split, uniq)
+import Data.List (intercalate, intersect, intersperse, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, sortBy, (\\))
 import Data.Maybe (fromJust, fromMaybe)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
 import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) -- NOTE: from 'yaml' package, *not* 'HsYaml'
@@ -58,7 +57,7 @@ import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink (getSimilarLink, getBackLink)
 import Query (extractURLs, truncateTOCHTML)
-import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency)
+import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split)
 
 ----
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
@@ -142,7 +141,7 @@ readLinkMetadataAndCheck = do
              -- - annotations must exist and be unique inside custom.yaml (overlap in auto.yaml can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
              let urlsC = map fst custom
              let normalizedUrlsC = map (replace "https://" "" . replace "http://" "") urlsC
-             when (length (uniq (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
+             when (length (nub (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
 
              let brokenUrlsC = filter (\u -> null u || not (head u == 'h' || head u == '/') || "//" `isPrefixOf` u || ' ' `elem` u || '\'' `elem` u) urlsC in when (brokenUrlsC /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrlsC
 
@@ -157,7 +156,7 @@ readLinkMetadataAndCheck = do
              unless (null emptyCheck) $ error $ "Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
 
              let annotations = map (\(_,(_,_,_,_,_,s)) -> s) custom in
-               when (length (uniq (sort annotations)) /= length annotations) $ error $
+               when (length (nub (sort annotations)) /= length annotations) $ error $
                "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
 
              let balancedQuotes = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (=='"') abst in
@@ -238,10 +237,11 @@ readLinkMetadataAndCheck = do
              unless (null tagsOverused) $ (printRed "Overused tags: " >> printGreen (show tagsOverused))
              return final
 
-dateRegex, footnoteRegex, sectionAnonymousRegex :: String
+dateRegex, footnoteRegex, sectionAnonymousRegex, badUrlRegex :: String
 dateRegex             = "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$"
 footnoteRegex         = "^/?[[:alnum:]-]+#fn[1-9][0-9]*$" -- '/Foo#fn3', 'Foo#fn1', 'Foo-Bar-2020#fn999' etc
 sectionAnonymousRegex = "^#section-[0-9]+$" -- unnamed sections which receive Pandoc positional auto-names like "#section-1", "#section-15"; unstable, should be named if ever to be linked to, etc.
+badUrlRegex           = "http.*http"::String
 
 -- read a YAML database and look for annotations that need to be paragraphized.
 warnParagraphizeYAML :: FilePath -> IO ()
@@ -437,7 +437,7 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 -- WARNING: update the list in /static/js/extracts-annotation.js L218 if you change this list!
 affiliationAnchors :: [String]
-affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "apple", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "huawei", "intel", "jd", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pdf", "salesforce", "sberbank", "sensetime", "snapchat", "spotify", "tencent", "tensorfork", "uber", "yandex"]
+affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "huawei", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pdf", "salesforce", "sberbank", "sensetime", "snapchat", "spotify", "tencent", "tensorfork", "uber", "yandex"]
 
 -- find all instances where I link "https://arxiv.org/abs/1410.5401" when it should be "https://arxiv.org/abs/1410.5401#deepmind", where they are inconsistent and the hash matches a whitelist of orgs.
 findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]
@@ -504,8 +504,8 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("ai/anime", "anime AI")
           , ("ai/anime/danbooru", "Danbooru AI")
           , ("eva/little-boy", "Little Boy")
-          , ("ai/gpt", "GPT")
-          , ("ai/gpt/inner-monologue", "inner monologue (AI)")
+          , ("ai/nn/transformer/gpt", "GPT")
+          , ("ai/nn/transformer/gpt/inner-monologue", "inner monologue (AI)")
           , ("ai/nn", "neural net")
           , ("ai/nn/rnn", "RNN")
           , ("ai/nn/fully-connected", "MLP NN")
@@ -519,15 +519,15 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("iq/smpy", "SMPY")
           , ("vitamin-d", "Vitamin D")
           , ("dual-n-back", "DNB")
-          , ("ai/gpt/codex", "Codex")
-          , ("ai/gpt/lamda", "LaMDA")
+          , ("ai/nn/transformer/gpt/codex", "Codex")
+          , ("ai/nn/transformer/gpt/lamda", "LaMDA")
           , ("iq/anne-roe", "Anne Roe")
           , ("ai/diffusion", "diffusion model")
           , ("ai/diffusion/discrete ", "discrete diffusion")
           , ("ai/gan", "GAN")
           , ("ai/gan/biggan", "BigGAN")
           , ("ai/gan/stylegan", "StyleGAN")
-          , ("ai/gpt/dall-e", "DALL·E")
+          , ("ai/nn/transformer/gpt/dall-e", "DALL·E")
           , ("ai/highleyman", "Highleyman")
           , ("existential-risk", "x-risk")
           , ("philosophy/ethics", "ethics")
@@ -736,7 +736,7 @@ tag2TagsWithDefault path tags = let tags' = map trim $ split ", " $ map toLower 
 tag2Default :: String -> String
 tag2Default path = if "/docs/" `isPrefixOf` path && not ("/docs/" `isPrefixOf` path && "/index" `isSuffixOf` path) then replace "/docs/" "" $ takeDirectory path else ""
 
--- de-duplicate tags: uniquefy, and remove the more general tags in favor of nested (more specific) tags. eg. ["ai", "ai/gpt", "reinforcement-learning"] → ["ai/gpt", "reinforcement-learning"]
+-- de-duplicate tags: uniquefy, and remove the more general tags in favor of nested (more specific) tags. eg. ["ai", "ai/nn/transformer/gpt", "reinforcement-learning"] → ["ai/nn/transformer/gpt", "reinforcement-learning"]
 uniqTags :: [String] -> [String]
 uniqTags tags = nubOrd $ sort $ filter(\t -> not (any ((t++"/") `isPrefixOf`) tags)) tags
 
@@ -849,7 +849,7 @@ pdf p = do let p' = takeWhile (/='#') p
 filterMeta :: String -> String
 filterMeta ea = if anyInfix ea badSubstrings || elem ea badWholes then "" else ea
  where badSubstrings, badWholes :: [String]
-       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS"]
+       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant"]
        badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf", "comp", "khan", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo", "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "mchahino"]
 
 -- nested JSON object: eg. 'jq .message.abstract'
@@ -899,7 +899,7 @@ biorxiv p = do checkURL p
 
 -- Heuristic checks for specific link sources:
 checkURL :: String -> IO ()
-checkURL u = do let doubleURL = (u =~ ("http.*http"::String)) :: Bool -- I keep accidentally concatenating Arxiv URLs when retagging.
+checkURL u = do let doubleURL = u =~ badUrlRegex -- I keep accidentally concatenating Arxiv URLs when tagging.
                 if not doubleURL then return () else error u
 
 arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak through or are deliberate section/page links
@@ -1097,7 +1097,7 @@ generateID url author date
     linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start with [a-zA-Z]
                               if (not $ isAlpha $ head $ T.unpack ident) then error ("Invalid link ID override! " ++ ppShow o) else o) $
                       [
-      ("/docs/ai/gpt/2019-radford.pdf#openai", "gpt-2-paper")
+      ("/docs/ai/nn/transformer/gpt/2019-radford.pdf#openai", "gpt-2-paper")
        , ("/docs/ai/2020-chen.pdf#openai", "chen-igpt-paper")
        , ("/docs/ai/anime/danbooru/2020-ko.pdf", "ko-cho-2020")
        , ("/docs/ai/anime/danbooru/2020-akita-2.pdf", "akita-et-al-2020-2")
@@ -1508,7 +1508,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let date = let dateTmp = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dc.date.issued" then snd $ head w else "") metas
                                        in if dateTmp=="N/A" || dateTmp=="2009-01-01" || not (dateTmp =~ dateRegex) then "" else dateTmp
                         let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
-                        let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then Data.List.Utils.split ", " $ snd $ head y else []) metas
+                        let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then Utils.split ", " $ snd $ head y else []) metas
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas

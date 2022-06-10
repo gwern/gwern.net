@@ -16,7 +16,7 @@ import Control.Monad (void, when)
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
 import Data.Char (toUpper)
 import Data.List (isPrefixOf)
-import Data.List.Utils (replace)
+import Utils (replace)
 import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
 import System.Directory (doesFileExist, getModificationTime, removeFile)
 import System.Exit (ExitCode(ExitFailure))
@@ -134,7 +134,7 @@ notInvertibleP :: [T.Text] -> Bool
 notInvertibleP classes = "invertible-not" `elem` classes
 
 invertImage :: FilePath -> IO (Bool, String, String) -- invertible / height / width
-invertImage f | "https://www.gwern.net/" `isPrefixOf` f = invertImageLocal $ Data.List.Utils.replace "https://www.gwern.net/" "" f
+invertImage f | "https://www.gwern.net/" `isPrefixOf` f = invertImageLocal $ Utils.replace "https://www.gwern.net/" "" f
               | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-invertible"
                                            -- NOTE: while wget preserves it, curl erases the original modification time reported by server in favor of local file creation; this is useful for `invertImagePreview` --- we want to check downloaded images manually before their annotation gets stored permanently.
                                            (status,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", f, "--output", temp]
@@ -230,6 +230,7 @@ rulersCycle modulus doc = evalState (walkM addHrNth doc) 0
 identUniquefy :: Pandoc -> Pandoc
 identUniquefy doc = evalState (walkM addIdentNth doc) M.empty
  where addIdentNth :: Inline -> State (M.Map T.Text Int) Inline
+       addIdentNth x@(Link ("",_,_) _ _) = return x
        addIdentNth x@(Link (ident,b,c) d (e,f)) = do
          db <- get
          case M.lookup ident db of

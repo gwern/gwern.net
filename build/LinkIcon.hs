@@ -4,7 +4,6 @@ module LinkIcon (linkIcon, rebuildSVGIconCSS, linkIconPrioritize) where
 
 import Control.Monad (unless)
 import Data.List (sort)
-import Data.List.Utils (hasKeyAL)
 import qualified Data.Map.Strict as M (toList, fromListWith, map)
 import Data.Maybe (fromJust)
 import Data.Text as T (append, drop, head, isInfixOf, isPrefixOf, pack, unpack, Text)
@@ -15,7 +14,7 @@ import Data.Containers.ListUtils (nubOrd)
 import System.Directory (doesFileExist)
 
 import LinkBacklink (readBacklinksDB)
-import Utils (host, writeUpdatedFile)
+import Utils (host, writeUpdatedFile, hasKeyAL)
 
 -- Statically, at site 'compile-time', define the link-icons for links. Doing this at runtime with CSS is
 -- entirely possible and originally done by links.css, but the logic becomes increasingly convoluted
@@ -655,7 +654,7 @@ linkIconTestUnitsText =
          , ("https://nvlabs.github.io/stylegan2/versions.html",  "n","text,sans,italic")
          , ("https://6thfloor.blogs.nytimes.com/2013/03/20/a-sham-procedure-leads-to-disappointing-m-s-news/",  "newyorktimes","svg")
          , ("https://www.wsj.com/articles/SB10000872396390443696604577647870908169992",  "WSJ","text,tri")
-         , ("/docs/ai/gpt/dall-e/2020-chen.pdf#openai",  "openai","svg")
+         , ("/docs/ai/nn/transformer/gpt/dall-e/2020-chen.pdf#openai",  "openai","svg")
          , ("https://openai.com/blog/better-language-models/",  "openai","svg")
          , ("https://openreview.net/forum?id=xTJEN-ggl1b", "OR", "text,sans")
          , ("https://arxiv.org/abs/1611.02779#openai",  "openai","svg")

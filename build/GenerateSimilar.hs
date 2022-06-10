@@ -6,7 +6,7 @@ module GenerateSimilar where
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str, Strong), Format(..), runPure, Pandoc(..))
 import qualified Data.Text as T  (append, intercalate, length, pack, replace, strip, take, unlines, unpack, Text)
 import Data.List ((\\), intercalate,  nub)
-import Data.List.Utils (replace)
+import Utils (replace)
 import Data.Maybe (fromJust)
 import qualified Data.Map.Strict as M (filter, keys, lookup)
 import System.Directory (doesFileExist, renameFile)

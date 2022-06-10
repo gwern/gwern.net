@@ -13,7 +13,7 @@ module Main where
 
 import Control.Monad (filterM)
 import Data.List (isPrefixOf, isInfixOf, isSuffixOf, nub, sort, sortBy)
-import Data.List.Utils (replace)
+import Utils (replace)
 import Data.Text.Titlecase (titlecase)
 import System.Directory (listDirectory, doesFileExist, doesDirectoryExist)
 import System.Environment (getArgs)
@@ -150,7 +150,7 @@ generateYAMLHeader d date (directoryN,annotationN,linkN) thumbnail
              "index: true\n",
              "...\n",
              "\n"]
-  where pl n = if n > 1 then "s" else "" -- pluralize helper
+  where pl n = if n > 1 || n == 0 then "s" else "" -- pluralize helper: "2 links", "1 link", "0 links".
 
 -- given a list of ["docs/foo/index.page"] directories, convert them to what will be the final absolute path ("/docs/foo/index"), while checking they exist (typos are easy, eg. dropping 'docs/' is common).
 listDirectories :: [FilePath] -> IO [FilePath]

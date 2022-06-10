@@ -4,7 +4,7 @@
 -- If an argument has an empty annotation, it is printed out as well, as a separate line. (This enables use-cases like parsing all the links out of a file using link-extracter.hs and passing it into annotation-dump.hs to see which ones do not so much as have a tag, so a tag can be added.)
 
 import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, nub)
-import Data.List.Utils (replace)
+import Utils (replace)
 import Data.Map as M (lookup, union, toList, fromList)
 import Data.Text as T (unpack)
 import Data.Text.IO as TIO (getContents)

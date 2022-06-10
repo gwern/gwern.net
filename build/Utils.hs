@@ -3,8 +3,8 @@ module Utils where
 
 import Control.Monad (when)
 import Data.Char (isSpace)
-import Data.List (group, sort, isInfixOf, isPrefixOf, isSuffixOf)
-import Data.List.Utils (replace)
+import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf)
+-- import Utils (replace)
 import Data.Text.IO as TIO (readFile, writeFile)
 import Data.Time.Calendar (toGregorian)
 import Data.Time.Clock (getCurrentTime, utctDay)
@@ -114,6 +114,32 @@ replaceMany rewrites s = foldr (uncurry replace) s rewrites
 replaceManyT :: [(T.Text,T.Text)] -> (T.Text -> T.Text)
 replaceManyT rewrites s = foldr (uncurry T.replace) s rewrites
 
+-- replace/split/hasKeyAL copied from https://hackage.haskell.org/package/MissingH-1.5.0.1/docs/src/Data.List.Utils.html to avoid MissingH's dependency of regex-compat
+replace :: Eq a => [a] -> [a] -> [a] -> [a]
+replace old new = intercalate new . split old
+split :: Eq a => [a] -> [a] -> [[a]]
+split _ [] = []
+split delim str =
+    let (firstline, remainder) = breakList (isPrefixOf delim) str
+        in
+        firstline : case remainder of
+                                   [] -> []
+                                   x -> if x == delim
+                                        then [[]]
+                                        else split delim
+                                                 (drop (length delim) x)
+  where
+    breakList :: ([a] -> Bool) -> [a] -> ([a], [a])
+    breakList func = spanList (not . func)
+    spanList :: ([a] -> Bool) -> [a] -> ([a], [a])
+    spanList _ [] = ([],[])
+    spanList func list@(x:xs) =
+        if func list
+           then (x:ys,zs)
+           else ([],list)
+        where (ys,zs) = spanList func xs
+hasKeyAL :: Eq a => a -> [(a, b)] -> Bool
+hasKeyAL key list = key `elem` map fst list
 
 frequency :: Ord a => [a] -> [(Int,a)]
 frequency list = sort $ map (\l -> (length l, head l)) (group (sort list))

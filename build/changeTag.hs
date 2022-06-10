@@ -16,7 +16,7 @@
 module Main where
 
 import Control.Monad (when)
-import Data.List.Utils (replace)
+import Utils (replace)
 import Data.List (isPrefixOf)
 import Data.Maybe (isJust, fromJust)
 import System.Environment (getArgs)
@@ -71,8 +71,8 @@ changeAndWriteTags t i c p a = do let cP = hasItem i c
 -- to work with (and will do auto.yaml → partial.yaml).
 addNewLink :: String -> String -> IO ()
 addNewLink tag p = do md <- readLinkMetadata
-                      returnValue <- annotateLink md p
-                      if returnValue then changeOneTag p tag else error ("annotateLink returned False! " ++ show tag ++ " : " ++ show p)
+                      _ <- annotateLink md p
+                      return () -- if returnValue then changeOneTag p tag else error ("annotateLink returned False! " ++ show tag ++ " : " ++ show p)
 
 changeTag, addTag, removeTag :: String -> MetadataList -> String -> MetadataList
 changeTag i ml tag = if head tag /= '-' then addTag i ml tag else removeTag i ml (tail tag)

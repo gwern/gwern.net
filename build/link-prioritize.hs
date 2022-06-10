@@ -55,7 +55,7 @@ module Main where
 
 import Control.Monad (when)
 import qualified Data.Map.Strict as M (lookup, map, size, toList)
-import Data.List.Utils (replace)
+import Utils (replace)
 import Data.List (sort)
 import qualified Data.Text as T (isInfixOf, unpack)
 import System.Environment (getArgs)

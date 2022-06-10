@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-05-24 19:28:23 gwern"
+When: Time-stamp: "2022-06-09 18:19:33 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -63,7 +63,6 @@ import Text.Pandoc.Walk (walk, walkM)
 import Network.HTTP (urlDecode, urlEncode)
 import System.IO.Unsafe (unsafePerformIO)
 
-import Data.List.Utils (replace)
 import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack, unpack, length)
 
 -- local custom modules:
@@ -75,7 +74,7 @@ import Typography (linebreakingTransform, typographyTransform, invertImageInline
 import LinkAuto (linkAuto)
 import LinkIcon (rebuildSVGIconCSS)
 import LinkLive (linkLiveTest, linkLivePrioritize)
-import Utils (printGreen, printRed)
+import Utils (printGreen, printRed, replace)
 
 main :: IO ()
 main = hakyll $ do

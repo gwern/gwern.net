@@ -13,7 +13,7 @@ import Data.List (isPrefixOf, isSuffixOf)
 import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter)
 import System.Directory (createDirectoryIfMissing, doesFileExist)
 import Network.HTTP (urlEncode)
-import Data.List.Utils (replace)
+import Utils (replace)
 import Data.Containers.ListUtils (nubOrd)
 import Control.Monad (forM_, unless)
 

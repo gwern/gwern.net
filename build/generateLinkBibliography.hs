@@ -17,7 +17,7 @@ module Main where
 -- link in the page metadata block, paired with the backlinks.
 
 import Data.List (isPrefixOf, isSuffixOf, nub)
-import Data.List.Utils (replace)
+import Utils (replace)
 import Data.Text.Titlecase (titlecase)
 import qualified Data.Map as M (lookup)
 import System.Environment (getArgs)
