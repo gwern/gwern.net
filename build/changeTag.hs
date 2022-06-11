@@ -11,8 +11,12 @@
 --
 -- eg. 'changeTag.hs "https://en.wikipedia.org/wiki/Experience_curve_effects"
 -- "economics/experience-curve" "genetics/heritable"
--- "https://www.genome.gov/about-genomics/fact-sheets/DNA-Sequencing-Costs-Data"' would add 2 tags for the 2
+-- "https://www.genome.gov/about-genomics/fact-sheets/DNA-Sequencing-Costs-Data"' would add both tags on both
 -- links.
+--
+-- Tags can be tagged by tagging their directory-index file (`/docs/$TAG1/index`); to do a one-way tag (to make $TAG1 'see also' $TAG2),
+-- one does `changeTag.hs $TAG1 /docs/$TAG2/index`. Since it's common to want tags to be reciprocal or bidirectional, this is a shortcut,
+-- just `changeTag.hs $TAG1 $TAG2`.
 module Main where
 
 import Control.Monad (when)
@@ -25,18 +29,23 @@ import System.Directory (doesDirectoryExist, doesFileExist)
 import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml, MetadataList, MetadataItem)
 
 main :: IO ()
-main = do args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://www.gwern.net/" "/") $ getArgs
+main = do args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://www.gwern.net/" "/") getArgs
           when (length args < 2) $ error "Error: Insufficient arguments (<2)."
 
-          let links = filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) $ args
-          when (null links) $ error ("Error: Forgot links?" ++ show args)
+          let links = filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) args
           let tags = map (filter (/=',')) $ -- we store tags comma-separated so sometimes we might leave in a stray tag when copy-pasting
-                filter (\arg -> (not (arg `elem` links))) args
-          when (null tags) $ error ("Error: Forgot tags? " ++ show args)
+                filter (`notElem` links) args
 
+          when (null tags) $ error ("Error: Forgot tags? " ++ show args)
           mapM_ (\arg' -> do filep <- doesDirectoryExist ("docs/"++ if head arg' == '-' then tail arg' else arg')
                              if not filep then error ("Error: Specified tag not defined? '" ++ arg' ++ "'") else return arg') tags
-          mapM_ (\link -> mapM_ (changeOneTag link) tags) links
+          if length tags == 2 && null links then
+            -- setting up a bidirectional tag, equivalent to: changeTag.hs /docs/$TAG1/index $TAG2 && changeTag.hs /docs/$TAG2/index $TAG1
+            changeOneTag ("/docs/" ++ head tags ++ "index") (tags !! 1) >>
+            changeOneTag ("/docs/" ++ (tags !! 1) ++ "index") (head tags)
+           else do
+            when (null links) $ error ("Error: Forgot links?" ++ show args)
+            mapM_ (\link -> mapM_ (changeOneTag link) tags) links
 
 changeOneTag :: String -> String -> IO ()
 changeOneTag link tag = do
@@ -71,7 +80,7 @@ changeAndWriteTags t i c p a = do let cP = hasItem i c
 -- (which will be in auto.yaml), and then run changeTag.hs *again*, so this time it has an annotation
 -- to work with (and will do auto.yaml → partial.yaml).
 addNewLink :: String -> String -> IO ()
-addNewLink tag p = do md <- readLinkMetadata
+addNewLink _   p = do md <- readLinkMetadata
                       _ <- annotateLink md p
                       return () -- if returnValue then changeOneTag p tag else error ("annotateLink returned False! " ++ show tag ++ " : " ++ show p)
 
