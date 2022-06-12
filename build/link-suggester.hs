@@ -206,7 +206,7 @@ filterAnchors   t = T.length t > anchorLengthMaximum ||
                        "matrix multiplication", "Silk Road 2", "Silk Road 2.0", "online", "Online", "side effects",
                        "status", "transcription/translation", "ADHD", "more difficult", "Johnson", "June 2016", "decline with age",
                        "criminal records", "the appendix", "API", "another page", "at least once", "must be", "expected from their",
-                       "animal welfare", "psychiatry", "the initial screening", "average-case", "go", "been removed", "mystical experience", "research in general", "been examined", "November 2021", "court records", "in a", "The Guardian", "suggests that", "learn faster", "project page", "psychiatry", "lifetime income", "December 2017", "January 2010", "another suggestion", "at all", "how long it takes", "sun", "music generation", "LW", "HN", "survey results", "1kg", "~6", "3D", "Rumi", ">>", "<<", "@9", "for example", "@8", "a laptop", "This paper", "this paper", "The results", "The problem", "Co", "field experiment", "@9", "@7", "@10", "body weight", "pdf", "on average", "one month", "for example", "For example", "into English", "meta", "8 years", "better performance", "more samples", "classifier", "I have", "an example", "scales with model size", "Appendix G", "delusional", "Code is available", "de facto", "the problem", "an article", "increased mortality", "young adults", "at night", "raw data", "into the abdomen"]
+                       "animal welfare", "psychiatry", "the initial screening", "average-case", "go", "been removed", "mystical experience", "research in general", "been examined", "November 2021", "court records", "in a", "The Guardian", "suggests that", "learn faster", "project page", "psychiatry", "lifetime income", "December 2017", "January 2010", "another suggestion", "at all", "how long it takes", "sun", "music generation", "LW", "HN", "survey results", "1kg", "~6", "3D", "Rumi", ">>", "<<", "@9", "for example", "@8", "a laptop", "This paper", "this paper", "The results", "The problem", "Co", "field experiment", "@9", "@7", "@10", "body weight", "pdf", "on average", "one month", "for example", "For example", "into English", "meta", "8 years", "better performance", "more samples", "classifier", "I have", "an example", "scales with model size", "Appendix G", "delusional", "Code is available", "de facto", "the problem", "an article", "increased mortality", "young adults", "at night", "raw data", "into the abdomen", "well-known"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteList :: M.Map T.Text [T.Text]
@@ -235,10 +235,10 @@ whiteList = M.fromList [
   , ( "/docs/ai/diffusion/2018-sharma.pdf#google" , [ "Conceptual Captions" ] )
   , ( "/docs/dual-n-back/2010-zhang.pdf"
     , [ "Chinese journal finds 31% of submissions plagiarized', Zhang 2010"])
-      , ( "/docs/eva/2002-takeda-notenkimemoirs#opening-the-general-products-store"
+      , ( "/docs/anime/eva/2002-takeda-notenkimemoirs#opening-the-general-products-store"
     , [ "General Products" ]
     )
-  , ( "/docs/eva/2002-takeda-notenkimemoirs#the-daicon-3-decision"
+  , ( "/docs/anime/eva/2002-takeda-notenkimemoirs#the-daicon-3-decision"
     , [ "DAICON III" ]
     )
   , ( "/docs/genetics/correlation/2014-mosing.pdf"
@@ -268,7 +268,7 @@ whiteList = M.fromList [
       , "Pellegrino et al 2014"
       ]
     )
-  , ( "/docs/genetics/selection/1933-student.pdf"
+  , ( "/docs/genetics/selection/artificial/1933-student.pdf"
     , ["Evolution By Selection: The Implications of Winter’s Selection Experiment [in <em>Student's Collected Papers</em>]"
       , "Student 1933"
       ]
@@ -305,12 +305,12 @@ whiteList = M.fromList [
     , [ "Hybrid computing using a neural network with dynamic external memory"
       ]
     )
-  , ( "/docs/reinforcement-learning/alphago/2017-silver.pdf#page=3&org=deepmind"
+  , ( "/docs/reinforcement-learning/model/alphago/2017-silver.pdf#page=3&org=deepmind"
     , [ "AlphaGo Zero"
       , "Mastering the game of Go without human knowledge', Silver et al 2017"
       ]
     )
-  , ( "/docs/reinforcement-learning/alphago/2017-silver.pdf#page=3&org=deepmind"
+  , ( "/docs/reinforcement-learning/model/alphago/2017-silver.pdf#page=3&org=deepmind"
     , [ "AlphaGo Zero"
       , "Mastering the game of Go without human knowledge', Silver et al 2017"
       ]
@@ -1036,7 +1036,7 @@ whiteList = M.fromList [
     , [ "Hell is the Absence of God" ]
     ), ( "https://web.archive.org/web/20190111175346/https://nplusonemag.com/issue-3/reviews/adventures-of-a-man-of-science/"
     , [ "Adventures of a Man of Science" , "Batuman 2005" ]
-    ), ( "https://www.aipl.arsusda.gov/publish/other/2011/Cole-VanRaden_JABG-EV_4-13-11.pdf"
+    ), ( "/docs/genetics/selection/artificial/index-selection/2011-cole.pdf"
     , [ "Cole & VanRaden 2011"
       , "Use of haplotypes to estimate Mendelian sampling effects and selection limits"
       ]

@@ -360,7 +360,7 @@ else
             -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
             -e '[⁰ⁱ⁴⁵⁶⁷⁸⁹⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]' -e '<p>Table [0-9]' -e '<p>Figure [0-9]' \
             -e 'id="[0-9]' -e '</[a-z][a-z]+\?' -e 'via.*ihub' -e " '$" -e "’’" -e ' a [aeio]' -e '</[0-9]\+' \
-            -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' -e '#googl$' -e "#googl$'" -- ./metadata/*.yaml; }
+            -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' -e '#googl$' -e "#googl$'" -e 'gwtag' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database (regexp matches)."
 
     λ(){ fgrep --color=always -e ']{' -e 'id="cb1"' -e '<dd>' -e '<dl>' \

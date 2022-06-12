@@ -298,7 +298,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(AFQT|ASVAB|Armed Forces Qualification Test|Armed Services Vocational Aptitude Battery)", "https://en.wikipedia.org/wiki/Armed_Services_Vocational_Aptitude_Battery")
         , ("(Akaike [Ii]nformation [Cc]riterion|AIC)", "https://en.wikipedia.org/wiki/Akaike_information_criterion")
         , ("(Alexey )?Guzey", "https://guzey.com/")
-        , ("(Alpha ?Zero|Alpha0)", "/docs/reinforcement-learning/alphago/2018-silver.pdf#deepmind")
+        , ("(Alpha ?Zero|Alpha0)", "/docs/reinforcement-learning/model/alphago/2018-silver.pdf#deepmind")
         , ("(Andrey )?Kolmogorov.?.?.?", "https://en.wikipedia.org/wiki/Andrey_Kolmogorov")
         , ("(Anime News Network|ANN)", "https://en.wikipedia.org/wiki/Anime_News_Network")
         , ("(ArXiv|Arxiv|arxiv)", "https://en.wikipedia.org/wiki/ArXiv")

@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-06-08 18:00:54 gwern"
+When:  Time-stamp: "2022-06-10 18:54:34 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -327,7 +327,7 @@ goodDomainsSimple =
     , "eprint.iacr.org"
     , "www.explainxkcd.com"
     , "www.silverhandmeadery.com"
-    , "www.nickbostrom.com"
+    , "nickbostrom.com"
     , "well.blogs.nytimes.com"
     , "www.gwern.net"
     , "rjlipton.wordpress.com"
@@ -4146,7 +4146,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://timarit.is/page/131542", False)
     , ("https://github.com/google-research/google-research/tree/master/supcon", False)
     , ("https://tobaccocontrol.bmj.com/content/14/1/49.full", False)
-    , ("https://top500.org/lists/2010/11/performance_development/", False)
+    , ("https://top500.org/news/fugaku-holds-top-spot-exascale-remains-elusive/", False)
     , ("https://trialsjournal.biomedcentral.com/articles/10.1186/s13063-015-1080-8", False)
     , ("https://tribune.com.pk/story/1967033/3-amid-animal-cruelty-debate-80-south-koreas-sniffer-dogs-cloned", False)
     , ("https://truewetsuits.jp/travel_guide/tokyo_books_music/manga/Mangano-mori+Ikebukuro/1995", False)
