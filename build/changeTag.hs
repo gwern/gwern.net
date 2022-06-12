@@ -80,9 +80,9 @@ changeAndWriteTags t i c p a = do let cP = hasItem i c
 -- (which will be in auto.yaml), and then run changeTag.hs *again*, so this time it has an annotation
 -- to work with (and will do auto.yaml → partial.yaml).
 addNewLink :: String -> String -> IO ()
-addNewLink _   p = do md <- readLinkMetadata
+addNewLink tag p = do md <- readLinkMetadata
                       _ <- annotateLink md p
-                      return () -- if returnValue then changeOneTag p tag else error ("annotateLink returned False! " ++ show tag ++ " : " ++ show p)
+                      changeOneTag p tag -- if returnValue then changeOneTag p tag else error ("annotateLink returned False! " ++ show tag ++ " : " ++ show p)
 
 changeTag, addTag, removeTag :: String -> MetadataList -> String -> MetadataList
 changeTag i ml tag = if head tag /= '-' then addTag i ml tag else removeTag i ml (tail tag)
