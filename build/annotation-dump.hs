@@ -8,7 +8,7 @@ import Data.Map as M (lookup, union, toList, fromList)
 import Data.Text as T (unpack)
 import Data.Text.IO as TIO (getContents)
 
-import LinkMetadata (authorsToCite, sortItemPathDate, readYamlFast, MetadataItem)
+import LinkMetadata (authorsToCite, authorsTruncate, sortItemPathDate, readYamlFast, uniqTags, MetadataItem)
 import Utils (anyInfix, replace, sed)
 
 type Path = String
@@ -42,8 +42,8 @@ toSingleLine (f,(("",_,_,_,[],_),_)) = f ++ " []" -- we insert '[]' to parallel 
 toSingleLine (f,((b,c,d,_,tags,abst),label)) = ("\x1b[36m"++label++"\x1b[0m: ") ++ intercalate "; "
   [ authorsToCite f c d,
     "\x1b[32m "++f++" \x1b[0m",
-    show tags,
+    show (uniqTags tags),
     "\x1b[35m\""++b++"\"\x1b[0m",
-    " (" ++ c ++ ")",
+    " (" ++ authorsTruncate c ++ ")",
     d,
     sed " +" " " $ replace "\n" " " abst]
