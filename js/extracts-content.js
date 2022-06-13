@@ -794,6 +794,44 @@ Extracts = { ...Extracts, ...{
         return target.classList.contains("link-live");
     },
 
+	//	Used in: Extracts.foreignSiteForTarget
+	foreignSiteEmbedURLTransforms: [
+		//  Less Wrong
+		[	(url) => [ "www.lesswrong.com", "lesswrong.com", "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname),
+			(url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "www"); } 
+			],
+		//  Alignment Forum
+		[	(url) => (   [ "www.alignmentforum.org", "alignmentforum.org" ].includes(url.hostname)
+					  || (   [ "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)
+						  && url.searchParams.get("view") == "alignment-forum")),
+			(url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "www", "view=alignment-forum"); }
+			],
+		//  EA Forum
+		[	(url) => [ "forum.effectivealtruism.org", "ea.greaterwrong.com" ].includes(url.hostname),
+			(url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "ea"); } 
+			],
+		//  Arbital
+		[	(url) => [ "arbital.com", "arbital.greaterwrong.com" ].includes(url.hostname),
+			(url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "arbital"); } 
+			],
+		//  Wikipedia
+		[	(url) => /(.+?)\.wikipedia\.org/.test(url.hostname) == true,
+			(url) => {
+				url.hostname = url.hostname.replace(/(.+?)(?:\.m)?\.wikipedia\.org/, "$1.m.wikipedia.org");
+				if (!url.hash)
+					url.hash = "#bodyContent";
+			} ]
+	],
+
+	//	Used in: Extracts.foreignSiteEmbedURLTransforms
+	foreignSiteEmbedURLTransform_GreaterWrong: (url, subdomain = "www", searchString = null) => {
+		url.hostname = `${subdomain}.greaterwrong.com`;
+		url.search = (searchString
+					  ? `${searchString}&`
+					  : ``) + 
+					 "format=preview&theme=classic";
+	},
+
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
     foreignSiteForTarget: (target) => {
         GWLog("Extracts.foreignSiteForTarget", "extracts-content.js", 2);
@@ -849,37 +887,14 @@ Extracts = { ...Extracts, ...{
         }
         //  END EXPERIMENTAL SECTION
 
-        if ([ "www.lesswrong.com", "lesswrong.com", "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)) {
-            //  Less Wrong
-            url.protocol = "https:";
-            url.hostname = "www.greaterwrong.com";
-            url.search = "format=preview&theme=classic";
-        } else if (   [ "www.alignmentforum.org", "alignmentforum.org" ].includes(url.hostname)
-                   || (   [ "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)
-                       && url.searchParams.get("view") == "alignment-forum")) {
-            //  Alignment Forum
-            url.protocol = "https:";
-            url.hostname = "www.greaterwrong.com";
-            url.search = "view=alignment-forum&format=preview&theme=classic";
-        } else if ([ "forum.effectivealtruism.org", "ea.greaterwrong.com" ].includes(url.hostname)) {
-            //  EA Forum
-            url.protocol = "https:";
-            url.hostname = "ea.greaterwrong.com";
-            url.search = "format=preview&theme=classic";
-        } else if ([ "arbital.com", "arbital.greaterwrong.com" ].includes(url.hostname)) {
-            //  Arbital
-            url.protocol = "https:";
-            url.hostname = "arbital.greaterwrong.com";
-            url.search = "format=preview&theme=classic";
-        } else if (/(.+?)\.wikipedia\.org/.test(url.hostname) == true) {
-            //  Wikipedia
-            url.protocol = "https:";
-            url.hostname = url.hostname.replace(/(.+?)(?:\.m)?\.wikipedia\.org/, "$1.m.wikipedia.org");
-            if (!url.hash)
-                url.hash = "#bodyContent";
-        } else {
-            url.protocol = "https:";
-        }
+		//	Transform URL for embedding.
+		url.protocol = "https:";
+		for ([ test, transform ] of Extracts.foreignSiteEmbedURLTransforms) {
+			if (test(url)) {
+				transform(url);
+				break;
+			}
+		}
 
 		return Extracts.newDocument(Extracts.objectHTMLForURL(url, "sandbox"));
     },
