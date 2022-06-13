@@ -72,6 +72,26 @@
          GW.contentDidLoad event.)
 */
 
+Extracts = { ...Extracts, ...{
+	//	Called by: Extracts.videoForTarget
+	//	Called by: Extracts.localDocumentForTarget
+	//	Called by: Extracts.foreignSiteForTarget
+	objectHTMLForURL: (url, additionalAttributes = null) => {
+		if (url.href.match(/\.pdf(#|$)/) != null) {
+            let data = url.href + (url.hash ? "&" : "#") + "view=FitH";
+            return `<object 
+            			data="${data}"
+            				></object>`;
+        } else {
+            return `<iframe 
+            			src="${url.href}" 
+            			frameborder="0" 
+            		  + ${(additionalAttributes ? (" " + additionalAttributes) : "")}
+            				></iframe>`;
+        }
+	},
+}};
+
 /*=-----------------=*/
 /*= AUXILIARY LINKS =*/
 /*=-----------------=*/
@@ -413,7 +433,7 @@ Extracts = { ...Extracts, ...{
         GWLog("Extracts.videoForTarget", "extracts-content.js", 2);
 
         let videoId = Extracts.youtubeId(target.href);
-        let videoEmbedURL = `https://www.youtube.com/embed/${videoId}`;
+        let videoEmbedURL = new URL(`https://www.youtube.com/embed/${videoId}`);
         let placeholderImgSrc = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
         let srcdocStyles = `<style>` +
             `* { padding: 0; margin: 0; overflow: hidden; }` +
@@ -422,17 +442,11 @@ Extracts = { ...Extracts, ...{
             `span { height: 1.5em; text-align: center; font: 48px/1.5 sans-serif; color: white; text-shadow: 0 0 0.5em black; }` +
             `</style>`;
         let playButtonHTML = `<span class='video-embed-play-button'>&#x25BA;</span>`;
-        let srcdocHTML = `<a href='${videoEmbedURL}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
+        let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
         //  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-        return Extracts.newDocument(
-        	`<iframe 
-        		src="${videoEmbedURL}" 
-        		srcdoc="${srcdocStyles}${srcdocHTML}" 
-        		frameborder="0" 
-        		allowfullscreen 
-        		sandbox="allow-scripts allow-same-origin"
-        			></iframe>`);
+        return Extracts.newDocument(Extracts.objectHTMLForURL(videoEmbedURL, 
+			`srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`));
     }
 }};
 
@@ -626,17 +640,8 @@ Extracts = { ...Extracts, ...{
     localDocumentForTarget: (target) => {
         GWLog("Extracts.localDocumentForTarget", "extracts-content.js", 2);
 
-        if (target.href.match(/\.pdf(#|$)/) != null) {
-            let data = target.href + (target.href.includes("#") ? "&" : "#") + "view=FitH";
-            return Extracts.newDocument(`<object data="${data}"></object>`);
-        } else {
-            return Extracts.newDocument(`<iframe 
-            								src="${target.href}" 
-            								frameborder="0" 
-            								sandbox="allow-same-origin" 
-            								referrerpolicy="same-origin"
-            									></iframe>`);
-        }
+		return Extracts.newDocument(Extracts.objectHTMLForURL(target,
+			`sandbox="allow-same-origin" referrerpolicy="same-origin"`));
     },
 
     /*  This “special testing function” is used to exclude certain targets which
@@ -789,6 +794,44 @@ Extracts = { ...Extracts, ...{
         return target.classList.contains("link-live");
     },
 
+	//	Used in: Extracts.foreignSiteForTarget
+	foreignSiteEmbedURLTransforms: [
+		//  Less Wrong
+		[	(url) => [ "www.lesswrong.com", "lesswrong.com", "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname),
+			(url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "www"); } 
+			],
+		//  Alignment Forum
+		[	(url) => (   [ "www.alignmentforum.org", "alignmentforum.org" ].includes(url.hostname)
+					  || (   [ "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)
+						  && url.searchParams.get("view") == "alignment-forum")),
+			(url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "www", "view=alignment-forum"); }
+			],
+		//  EA Forum
+		[	(url) => [ "forum.effectivealtruism.org", "ea.greaterwrong.com" ].includes(url.hostname),
+			(url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "ea"); } 
+			],
+		//  Arbital
+		[	(url) => [ "arbital.com", "arbital.greaterwrong.com" ].includes(url.hostname),
+			(url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "arbital"); } 
+			],
+		//  Wikipedia
+		[	(url) => /(.+?)\.wikipedia\.org/.test(url.hostname) == true,
+			(url) => {
+				url.hostname = url.hostname.replace(/(.+?)(?:\.m)?\.wikipedia\.org/, "$1.m.wikipedia.org");
+				if (!url.hash)
+					url.hash = "#bodyContent";
+			} ]
+	],
+
+	//	Used in: Extracts.foreignSiteEmbedURLTransforms
+	foreignSiteEmbedURLTransform_GreaterWrong: (url, subdomain = "www", searchString = null) => {
+		url.hostname = `${subdomain}.greaterwrong.com`;
+		url.search = (searchString
+					  ? `${searchString}&`
+					  : ``) + 
+					 "format=preview&theme=classic";
+	},
+
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
     foreignSiteForTarget: (target) => {
         GWLog("Extracts.foreignSiteForTarget", "extracts-content.js", 2);
@@ -844,39 +887,16 @@ Extracts = { ...Extracts, ...{
         }
         //  END EXPERIMENTAL SECTION
 
-        if ([ "www.lesswrong.com", "lesswrong.com", "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)) {
-            //  Less Wrong
-            url.protocol = "https:";
-            url.hostname = "www.greaterwrong.com";
-            url.search = "format=preview&theme=classic";
-        } else if (   [ "www.alignmentforum.org", "alignmentforum.org" ].includes(url.hostname)
-                   || (   [ "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)
-                       && url.searchParams.get("view") == "alignment-forum")) {
-            //  Alignment Forum
-            url.protocol = "https:";
-            url.hostname = "www.greaterwrong.com";
-            url.search = "view=alignment-forum&format=preview&theme=classic";
-        } else if ([ "forum.effectivealtruism.org", "ea.greaterwrong.com" ].includes(url.hostname)) {
-            //  EA Forum
-            url.protocol = "https:";
-            url.hostname = "ea.greaterwrong.com";
-            url.search = "format=preview&theme=classic";
-        } else if ([ "arbital.com", "arbital.greaterwrong.com" ].includes(url.hostname)) {
-            //  Arbital
-            url.protocol = "https:";
-            url.hostname = "arbital.greaterwrong.com";
-            url.search = "format=preview&theme=classic";
-        } else if (/(.+?)\.wikipedia\.org/.test(url.hostname) == true) {
-            //  Wikipedia
-            url.protocol = "https:";
-            url.hostname = url.hostname.replace(/(.+?)(?:\.m)?\.wikipedia\.org/, "$1.m.wikipedia.org");
-            if (!url.hash)
-                url.hash = "#bodyContent";
-        } else {
-            url.protocol = "https:";
-        }
+		//	Transform URL for embedding.
+		url.protocol = "https:";
+		for ([ test, transform ] of Extracts.foreignSiteEmbedURLTransforms) {
+			if (test(url)) {
+				transform(url);
+				break;
+			}
+		}
 
-        return Extracts.newDocument(`<iframe src="${url.href}" frameborder="0" sandbox></iframe>`);
+		return Extracts.newDocument(Extracts.objectHTMLForURL(url, "sandbox"));
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
