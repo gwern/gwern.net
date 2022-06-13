@@ -72,6 +72,26 @@
          GW.contentDidLoad event.)
 */
 
+Extracts = { ...Extracts, ...{
+	//	Called by: Extracts.videoForTarget
+	//	Called by: Extracts.localDocumentForTarget
+	//	Called by: Extracts.foreignSiteForTarget
+	objectHTMLForURL: (url, additionalAttributes = null) => {
+		if (url.href.match(/\.pdf(#|$)/) != null) {
+            let data = url.href + (url.hash ? "&" : "#") + "view=FitH";
+            return `<object 
+            			data="${data}"
+            				></object>`;
+        } else {
+            return `<iframe 
+            			src="${url.href}" 
+            			frameborder="0" 
+            		  + ${(additionalAttributes ? (" " + additionalAttributes) : "")}
+            				></iframe>`;
+        }
+	},
+}};
+
 /*=-----------------=*/
 /*= AUXILIARY LINKS =*/
 /*=-----------------=*/
@@ -413,7 +433,7 @@ Extracts = { ...Extracts, ...{
         GWLog("Extracts.videoForTarget", "extracts-content.js", 2);
 
         let videoId = Extracts.youtubeId(target.href);
-        let videoEmbedURL = `https://www.youtube.com/embed/${videoId}`;
+        let videoEmbedURL = new URL(`https://www.youtube.com/embed/${videoId}`);
         let placeholderImgSrc = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
         let srcdocStyles = `<style>` +
             `* { padding: 0; margin: 0; overflow: hidden; }` +
@@ -422,17 +442,11 @@ Extracts = { ...Extracts, ...{
             `span { height: 1.5em; text-align: center; font: 48px/1.5 sans-serif; color: white; text-shadow: 0 0 0.5em black; }` +
             `</style>`;
         let playButtonHTML = `<span class='video-embed-play-button'>&#x25BA;</span>`;
-        let srcdocHTML = `<a href='${videoEmbedURL}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
+        let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
         //  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-        return Extracts.newDocument(
-        	`<iframe 
-        		src="${videoEmbedURL}" 
-        		srcdoc="${srcdocStyles}${srcdocHTML}" 
-        		frameborder="0" 
-        		allowfullscreen 
-        		sandbox="allow-scripts allow-same-origin"
-        			></iframe>`);
+        return Extracts.newDocument(Extracts.objectHTMLForURL(videoEmbedURL, 
+			`srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`));
     }
 }};
 
@@ -626,17 +640,8 @@ Extracts = { ...Extracts, ...{
     localDocumentForTarget: (target) => {
         GWLog("Extracts.localDocumentForTarget", "extracts-content.js", 2);
 
-        if (target.href.match(/\.pdf(#|$)/) != null) {
-            let data = target.href + (target.href.includes("#") ? "&" : "#") + "view=FitH";
-            return Extracts.newDocument(`<object data="${data}"></object>`);
-        } else {
-            return Extracts.newDocument(`<iframe 
-            								src="${target.href}" 
-            								frameborder="0" 
-            								sandbox="allow-same-origin" 
-            								referrerpolicy="same-origin"
-            									></iframe>`);
-        }
+		return Extracts.newDocument(Extracts.objectHTMLForURL(target,
+			`sandbox="allow-same-origin" referrerpolicy="same-origin"`));
     },
 
     /*  This “special testing function” is used to exclude certain targets which
@@ -876,7 +881,7 @@ Extracts = { ...Extracts, ...{
             url.protocol = "https:";
         }
 
-        return Extracts.newDocument(`<iframe src="${url.href}" frameborder="0" sandbox></iframe>`);
+		return Extracts.newDocument(Extracts.objectHTMLForURL(url, "sandbox"));
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
