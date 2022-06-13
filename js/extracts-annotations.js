@@ -132,6 +132,20 @@ Extracts = { ...Extracts, ...{
                               : (isWikipediaLink
                                  ? `title-link link-live`
                                  : `title-link`));
+        //	Import certain link classes from target.
+        /*	Just ‘link-live’ for now, but the inclusion rule is: any class that 
+        	is used to test whether a link is of a certain type - see e.g.
+        	Extracts.isForeignSiteLink() in extracts-content.js - for which link
+        	type there can be annotations (so not, e.g., ‘footnote-ref’, because
+        	there’s no such thing as an annotated footnote link). This way, the
+        	title-link of the popup will correctly test as the *un-annotated*
+        	link type of the original target.
+        	—SA 2022-06-13
+         */
+        [ "link-live" ].forEach(targetClass => {
+        	if (target.classList.contains(targetClass))
+        		titleLinkClass += ` ${targetClass}`;
+        });
         let titleLinkIconMetadata = (isWikipediaLink
                                      ? `data-link-icon-type="svg" data-link-icon="wikipedia"`
                                      : ``);
