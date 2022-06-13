@@ -28,7 +28,7 @@ import Text.Pandoc.Walk (walk)
 
 import Interwiki (inlinesToText)
 import LinkAuto (cleanUpDivsEmpty)
-import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag)
+import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag, hasAnnotation)
 import LinkBacklink (getBackLink, getSimilarLink)
 import Query (extractImages)
 import Typography (identUniquefy)
@@ -43,9 +43,9 @@ main = do dirs <- getArgs
           Par.mapM_ (generateDirectory meta) dirs' -- because of the expense of searching the annotation database for each directory-tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
 
 generateDirectory :: Metadata -> FilePath -> IO ()
-generateDirectory mta dir'' = do
+generateDirectory md dir'' = do
 
-  tagged <- listTagged mta (init dir'')
+  tagged <- listTagged md (init dir'')
 
   -- actual subdirectories:
   let parentDirectory = takeDirectory $ takeDirectory dir''
@@ -66,7 +66,7 @@ generateDirectory mta dir'' = do
   dirsChildren   <- listDirectories direntries'
   dirsSeeAlsos   <- listDirectories taggedDirs
 
-  triplets  <- listFiles mta direntries'
+  triplets  <- listFiles md direntries'
 
   let links = nub $ reverse $ sortByDate $ triplets++tagged' -- newest first, to show recent additions
 
@@ -93,7 +93,7 @@ generateDirectory mta dir'' = do
   let directorySectionSeeAlsos = if null dirsSeeAlsos then [] else generateDirectoryItems Nothing dir'' dirsSeeAlsos
 
   -- A directory-tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at the ID '/docs/foo/index#manual-annotation'
-  let abstract = case M.lookup ("/"++dir''++"index#manual-annotation") mta of
+  let abstract = case M.lookup ("/"++dir''++"index#manual-annotation") md of
                    Nothing -> []
                    Just (_,_,_,_,_,"") -> []
                    Just (_,_,_,_,_,dirAbstract) -> [parseRawBlock ("",["abstract"],[]) $ RawBlock (Format "html") (T.pack $ "<blockquote>"++dirAbstract++"</blockquote>")]
@@ -123,7 +123,7 @@ generateDirectory mta dir'' = do
 
   let document = Pandoc nullMeta body
   let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} $
-           walk identUniquefy document  -- global rewrite to de-duplicate all of the inserted URLs
+           walk identUniquefy $ walk (hasAnnotation md True) document  -- global rewrite to de-duplicate all of the inserted URLs
 
   case p of
     Left e   -> hPrint stderr e

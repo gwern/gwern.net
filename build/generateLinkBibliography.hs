@@ -34,7 +34,7 @@ import Text.Pandoc.Walk (walk)
 
 import LinkAuto (cleanUpDivsEmpty)
 import LinkBacklink (getBackLink, getSimilarLink)
-import LinkMetadata (generateAnnotationBlock, parseRawBlock, readLinkMetadata, authorsTruncate, Metadata, MetadataItem)
+import LinkMetadata (generateAnnotationBlock, parseRawBlock, readLinkMetadata, authorsTruncate, hasAnnotation, Metadata, MetadataItem)
 import Query (extractURLs)
 import Typography (identUniquefy)
 import Utils (writeUpdatedFile)
@@ -53,7 +53,7 @@ generateLinkBibliography md page = do links <- extractLinksFromPage page
                                           body = generateLinkBibliographyItems pairs'
                                           document = Pandoc nullMeta [body]
                                           markdown = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} $
-                                            walk identUniquefy document -- global rewrite to de-duplicate all of the inserted URLs
+                                            walk identUniquefy $ walk (hasAnnotation md True) document -- global rewrite to de-duplicate all of the inserted URLs
                                       case markdown of
                                         Left e   -> hPrint stderr e
                                         -- compare with the old version, and update if there are any differences:
