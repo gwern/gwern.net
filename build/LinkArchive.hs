@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-06-10 09:31:31 gwern"
+When:  Time-stamp: "2022-06-14 22:22:27 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -152,32 +152,32 @@ readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/ar
                            Just pdl -> do
                             -- check for failed archives:
                             pdl' <- filterM (\(p,ami) -> case ami of
-                                     Right (Just "") -> printRed ("Error! Invalid empty archive link: " ++ show p ++ show ami) >> return False
-                                     Right u@(Just ('/':'/':_)) -> printRed ("Error! Invalid double-slash archive link: " ++ show p ++ show ami ++ show u) >> return False
+                                     Right (Just "") -> printRed ("Error! Invalid empty archive link: ") >> print (show p ++ show ami) >> return False
+                                     Right u@(Just ('/':'/':_)) -> printRed ("Error! Invalid double-slash archive link: ") >> print (show p ++ show ami ++ show u) >> return False
                                      Right (Just u)  -> if not ("http" `isPrefixOf` p) then
-                                                          printRed ("Error! Did a local link slip in somehow? " ++ show p ++ show u ++ show ami) >> return False
+                                                          printRed ("Error! Did a local link slip in somehow? ") >> print (show p ++ show u ++ show ami) >> return False
                                                         else
                                                           if isNothing (parseTLD p) then
-                                                           printRed ("Error! Invalid URI link in archive? " ++ show p ++ show u ++ show ami) >> return False
+                                                           printRed ("Error! Invalid URI link in archive? ") >> print (show p ++ show u ++ show ami) >> return False
                                                           else do size <- getFileStatus (takeWhile (/='#') $ tail u) >>= \s -> return $ fileSize s
                                                                   if size == 0 then
-                                                                    printRed ("Error! Empty archive file. Not using: " ++ show p ++ show u ++ show ami) >> return False
+                                                                    printRed "Error! Empty archive file. Not using: " >> print (show p ++ show u ++ show ami) >> return False
                                                                     else if size > 1024 then return True else return False
                                      Right Nothing   -> return True
                                      Left  _         -> return True)
                                  pdl
                             let pdl'' = filter (\(p,_) -> "http"`isPrefixOf`p && not (whiteList p)) pdl'
                             -- for mismatches, we know they were archived before, so we should archive them ASAP:
-                            let pdl''' = map (\(p,ami) ->  if hashIsValid p ami then (p,ami) else (p, Left 0)) pdl''
+                            let pdl''' = map (\(p,ami) ->  if checksumIsValid p ami then (p,ami) else (p, Left 0)) pdl''
                             return $ M.fromList pdl'''
 
--- When we rewrite links to fix link rot, archive.hs can become stale: it records a failed archive of the old URL, and doesn't know there's a new URL because archive.hs was rewritten with the rest of gwern.net. But since the hash is deterministically derived from the URL, the hash of the URL will no longer match the hash encoded in the file name. So when there is a mismatch, we can drop that entry, deleting it, and now the new URL will get picked up as a fresh URL entered into the archive queue.
-hashIsValid :: Path -> ArchiveMetadataItem -> Bool
-hashIsValid _ (Left _) = True
-hashIsValid _ (Right Nothing) = True
-hashIsValid url (Right (Just file)) = let derivedHash = Data.ByteString.Char8.unpack $ Data.ByteString.Base16.encode $ Crypto.Hash.SHA1.hash $ Data.ByteString.Char8.pack (transformURLsForArchiving (takeWhile (/='#') url) ++ "\n")
-                                          storedHash = dropWhile (/= '.') $ takeFileName file
-                                      in derivedHash == storedHash
+-- When we rewrite links to fix link rot, archive.hs can become stale: it records a failed archive of the old URL, and doesn't know there's a new URL because archive.hs was rewritten with the rest of gwern.net. But since the checksum is deterministically derived from the URL, the checksum of the URL will no longer match the checksum encoded in the file name. So when there is a mismatch, we can drop that entry, deleting it, and now the new URL will get picked up as a fresh URL entered into the archive queue.
+checksumIsValid :: Path -> ArchiveMetadataItem -> Bool
+checksumIsValid _ (Left _) = True
+checksumIsValid _ (Right Nothing) = True
+checksumIsValid url (Right (Just file)) = let derivedChecksum = Data.ByteString.Char8.unpack $ Data.ByteString.Base16.encode $ Crypto.Hash.SHA1.hash $ Data.ByteString.Char8.pack (transformURLsForArchiving (takeWhile (/='#') url) ++ "\n")
+                                              storedChecksum = takeWhile (/= '.') $ takeFileName file
+                                          in derivedChecksum == storedChecksum
 
 -- rewriteLink:
 -- 1. Exit on whitelisted URLs.
@@ -202,11 +202,11 @@ rewriteLink adb archivedN url = do
                                            writeIORef archivedN (archivedAlreadyP - 1)
                                            return archive)
           else return Nothing
-      Just (Right archive) -> if archive == Just "" then printRed ("Error! Tried to return a link to a non-existent archive! " ++ url) >> return Nothing else return archive
+      Just (Right archive) -> if archive == Just "" then printRed "Error! Tried to return a link to a non-existent archive! " >> print url >> return Nothing else return archive
 
 archiveDelay, archivePerRunN :: Integer
 archiveDelay = 60
-archivePerRunN = 10
+archivePerRunN = 2000
 
 insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
 insertLinkIntoDB a url = do adb <- readArchiveMetadata
@@ -222,7 +222,7 @@ archiveURL l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArc
                   case exit of
                      ExitSuccess -> do printGreen ( "Archiving (LinkArchive.hs): " ++ l ++ " returned: " ++ U.toString stdout)
                                        return $ Just $ U.toString stdout
-                     ExitFailure _ -> printRed (l ++ " : archiving failed: " ++ U.toString stderr') >> return Nothing
+                     ExitFailure _ -> printRed (l ++ " : archiving failed: ") >> print (U.toString stderr') >> return Nothing
 
 -- sometimes we may want to do automated transformations of a URL *before* we check any whitelists. In the case of
 -- Arxiv, we want to generate the PDF equivalent of the HTML abstract landing page, so the PDF gets archived, but then
