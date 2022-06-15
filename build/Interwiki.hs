@@ -5,6 +5,7 @@ import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Map as M (fromList, lookup, Map)
 import qualified Data.Text as T (append, concat, head, isInfixOf, null, tail, take, toUpper, pack, unpack, Text, isPrefixOf, isSuffixOf, takeWhile)
 import Network.URI (parseURIReference, uriPath, uriAuthority, uriRegName)
+import qualified Network.URI.Encode as E (encodeTextWith, isAllowed)
 
 import Text.Pandoc (Inline(..), nullAttr)
 
@@ -67,7 +68,7 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
     interwikiurl "" _ = error (show x)
     interwikiurl _ "" = error (show x)
     interwikiurl u a = let a' = if ".wikipedia.org/wiki/" `T.isInfixOf` u then T.toUpper (T.take 1 a) `T.append` T.tail a else a in
-                         u `T.append` (replaceManyT [("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_"), ("&","&amp;")] $ deunicode a')
+                         u `T.append` (E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '\'', '+'])) $ replaceManyT [("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $ deunicode a')
     deunicode :: T.Text -> T.Text
     deunicode = replaceManyT [("‘", "\'"), ("’", "\'"), (" ", " "), (" ", " ")]
 convertInterwikiLinks x = x
@@ -77,6 +78,24 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
   -- !Wikipedia
   (Link nullAttr [Str "Pondicherry"] ("!Wikipedia",""),
     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
+    , (Link nullAttr [Emph [Str "Monty Python's Life of Brian"]] ("!Wikipedia",""),
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Monty Python's Life of Brian"]] ("https://en.wikipedia.org/wiki/Monty_Python's_Life_of_Brian", ""))
+  , (Link nullAttr [Str "SHA-1#Attacks"] ("!Wikipedia",""),
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "SHA-1#Attacks"] ("https://en.wikipedia.org/wiki/SHA-1#Attacks", ""))
+    , (Link nullAttr [Str "C++ templates"] ("!Wikipedia","Template (C++)"),
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "C++ templates"] ("https://en.wikipedia.org/wiki/Template_(C++)", ""))
+    , (Link nullAttr [Str "Aaahh!!! Real Monsters"] ("!Wikipedia",""),
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Aaahh!!! Real Monsters"] ("https://en.wikipedia.org/wiki/Aaahh%21%21%21_Real_Monsters", ""))
+    , (Link nullAttr [Str "Senryū"] ("!Wikipedia",""),
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Senryū"] ("https://en.wikipedia.org/wiki/Senry%C5%AB", ""))
+    , (Link nullAttr [Str "D&D"] ("!Wikipedia","Dungeons & Dragons"),
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "D&D"] ("https://en.wikipedia.org/wiki/Dungeons_%26_Dragons", ""))
+    , (Link nullAttr [Str "Arm & Hammer"] ("!Wikipedia",""),
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Arm & Hammer"] ("https://en.wikipedia.org/wiki/Arm_%26_Hammer", ""))
+    , (Link nullAttr [Str "Achaea"] ("!Wikipedia","Achaea, Dreams of Divine Lands"),
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Achaea"] ("https://en.wikipedia.org/wiki/Achaea,_Dreams_of_Divine_Lands", ""))
+    , (Link nullAttr [Str "Armageddon"] ("!Wikipedia","Armageddon (MUD)"),
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Armageddon"] ("https://en.wikipedia.org/wiki/Armageddon_(MUD)", ""))
   , (Link nullAttr [Str "Special:Pondicherry"] ("!Wikipedia",""),
     Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
   , (Link nullAttr [Str "SpecialPondicherry"] ("!Wikipedia",""),
@@ -85,6 +104,7 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
     Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
 
   -- !W
+  , (Link nullAttr [Str "Jure Robič"] ("!W",""), Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Jure Robič"] ("https://en.wikipedia.org/wiki/Jure_Robi%C4%8D", ""))
   , (Link nullAttr [Str "Pondicherry"] ("!W",""),
     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
   , (Link nullAttr [Str "Special:Pondicherry"] ("!W",""),

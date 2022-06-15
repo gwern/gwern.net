@@ -232,7 +232,7 @@ generateMatches md p abst matches =
                Just ("",_,_,_,_,_)  -> []
                Just (_,_,_,_,_,"")  -> []
                Just (title,_,_,doi,_,_) -> let doiQuery = "doi:" ++ doi
-                                               title' = simplifiedString title -- need to strip out HTML formatting like "<em>Peep Show</em>—The Most Realistic Portrayal of Evil Ever Made"
+                                               title' = replace "\"" "'" $ simplifiedString title -- need to strip out HTML formatting like "<em>Peep Show</em>—The Most Realistic Portrayal of Evil Ever Made"
                                                titleQuery = "%22" ++ title' ++ "%22"
                                                query = if null title' && not (null doi) then doiQuery else if null doi && not (null title) then titleQuery else doiQuery ++ "+OR+" ++ titleQuery
                                                linkMetadataG  = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "google"), ("link-icon-type", "svg")])
