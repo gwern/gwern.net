@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-11 21:58:52 gwern"
+When:  Time-stamp: "2022-06-14 10:47:47 gwern"
 License: CC-0
 -}
 
@@ -101,7 +101,6 @@ walkAndUpdateLinkMetadataYaml f file = do db <- readYaml file
                                           db' <- mapM f db
                                           writeYaml file db'
                                           printGreen $ "Updated " ++ file
--- Or to rescrape the metadata for Gwern.net pages like '/Design'; preserve the tags, because the annotation tags and the page tags are currently different systems, and we can't extract the annotation tags from the page tags (yet).
 -- This can be run every few months to update abstracts (they generally don't change much).
 updateGwernEntries :: IO ()
 updateGwernEntries = walkAndUpdateLinkMetadata updateGwernEntry
@@ -112,7 +111,7 @@ updateGwernEntries = walkAndUpdateLinkMetadata updateGwernEntry
                     case newEntry of
                       Left Temporary -> return x
                       Left Permanent -> return (path,(title,author,date,doi,tags,"")) -- zero out the abstract but preserve the other metadata; if we mistakenly scraped a page before and generated a pseudo-abstract, and have fixed that mistake so now it returns an error rather than pseudo-abstract, we want to erase that pseudo-abstract until such time as it returns a 'Right' (a successful real-abstract)
-                      Right (path', (title',author',date',doi',tags',abstract')) -> return (path', (title',author',date',doi',sort $ nubOrd(tags++tags'),abstract'))
+                      Right (path', (title',author',date',doi',tags',abstract')) -> return (path', (title',author',date',doi',tags',abstract'))
 
 -- read the annotation base (no checks, >8× faster)
 readLinkMetadata :: IO Metadata
@@ -388,8 +387,8 @@ simplifiedHTMLString arg = trim $ T.unpack $ simplified $ parseRawBlock nullAttr
 
 generateAnnotationBlock :: Bool -> Bool -> Bool -> (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> FilePath -> [Block]
 generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = case ann of
-                              Nothing -> nonAnnotatedLink
-                              Just ("",   _,_,_,_,_) -> nonAnnotatedLink
+                              Nothing                 -> nonAnnotatedLink
+                              Just ("",   _,_,_,_,_)  -> nonAnnotatedLink
                               Just (_,    _,_,_,_,"") -> nonAnnotatedLink
                               Just (tle,aut,dt,doi,ts,abst) ->
                                 let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
@@ -437,7 +436,7 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 -- WARNING: update the list in /static/js/extracts-annotation.js L218 if you change this list!
 affiliationAnchors :: [String]
-affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "huawei", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pdf", "salesforce", "sberbank", "sensetime", "snapchat", "spotify", "tencent", "tensorfork", "uber", "yandex"]
+affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "graphcore", "huawei", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pdf", "salesforce", "sberbank", "sensetime", "snapchat", "spotify", "tencent", "tensorfork", "uber", "yandex"]
 
 -- find all instances where I link "https://arxiv.org/abs/1410.5401" when it should be "https://arxiv.org/abs/1410.5401#deepmind", where they are inconsistent and the hash matches a whitelist of orgs.
 findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]

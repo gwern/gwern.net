@@ -530,7 +530,7 @@ else
          cr 'https://www.gwern.net/Book-reviews' 'https://www.gwern.net/reviews/Books'
          cr 'https://www.gwern.net/docs/ai/2019-10-21-gwern-gpt2-folkrnn-samples.ogg' 'https://www.gwern.net/docs/ai/music/2019-10-21-gwern-gpt2-folkrnn-samples.mp3';
          cr 'https://www.gwern.net/docs/sr/2013-06-07-premiumdutch-profile.htm' 'https://www.gwern.net/docs/darknet-markets/silk-road/1/2013-06-07-premiumdutch-profile.htm'
-         cr 'https://www.gwern.net/docs/elections/2012-gwern-notes.txt' 'https://www.gwern.net/docs/prediction/election/2012-gwern-notes.txt'
+         cr 'https://www.gwern.net/docs/elections/2012-gwern-notes.txt' 'https://www.gwern.net/docs/statistics/prediction/election/2012-gwern-notes.txt'
          cr 'https://www.gwern.net/docs/statistics/peerreview/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf' 'https://www.gwern.net/docs/statistics/peer-review/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf'
          cr 'https://www.gwern.net/docs/longnow/form990-longnowfoundation-2001-12.pdf' 'https://www.gwern.net/docs/long-now/form990-longnowfoundation-2001-12.pdf'
        }
@@ -539,7 +539,7 @@ else
           ### check key pages:
           ## check every possible extension:
           ## check some random ones:
-          cm "application/epub+zip" 'https://www.gwern.net/docs/eva/2002-takeda-notenkimemoirs.epub'
+          cm "application/epub+zip" 'https://www.gwern.net/docs/anime/eva/2002-takeda-notenkimemoirs.epub'
           cm "application/font-sfnt" 'https://www.gwern.net/static/font/drop-cap/kanzlei/Kanzlei-Initialen-M.ttf'
           cm "application/javascript" 'https://www.gwern.net/docs/statistics/order/beanmachine-multistage/script.js'
           cm "application/javascript" 'https://www.gwern.net/static/js/rewrite.js'
@@ -555,7 +555,7 @@ else
           cm "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 'https://www.gwern.net/docs/cs/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx'
           cm "application/vnd.openxmlformats-officedocument.wordprocessingml.document" 'https://www.gwern.net/docs/genetics/heritable/2015-mosing-supplement.docx'
           cm "application/vnd.rn-realmedia" 'https://www.gwern.net/docs/rotten.com/library/bio/crime/serial-killers/elmer-wayne-henley/areyouguilty.rm'
-          cm "application/x-maff" 'https://www.gwern.net/docs/eva/2001-pulpmag-hernandez-2.html.maff'
+          cm "application/x-maff" 'https://www.gwern.net/docs/anime/eva/2001-pulpmag-hernandez-2.html.maff'
           cm "application/x-shockwave-flash" 'https://www.gwern.net/docs/rotten.com/library/bio/entertainers/comic/patton-oswalt/patton.swf'
           cm "application/x-tar" 'https://www.gwern.net/docs/dual-n-back/2011-zhong.tar'
           cm "application/x-xz" 'https://www.gwern.net/docs/personal/2013-09-25-gwern-googlealertsemails.tar.xz'

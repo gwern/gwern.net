@@ -133,7 +133,7 @@ Extracts = { ...Extracts, ...{
                                  ? `title-link link-live`
                                  : `title-link`));
         //	Import certain link classes from target.
-        /*	Just ‘link-live’ for now, but the inclusion rule is: any class that 
+        /*	Just ‘link-live’ for now, but the inclusion rule is: any class that
         	is used to test whether a link is of a certain type - see e.g.
         	Extracts.isForeignSiteLink() in extracts-content.js - for which link
         	type there can be annotations (so not, e.g., ‘footnote-ref’, because
@@ -231,7 +231,7 @@ Extracts = { ...Extracts, ...{
                  */
                     && !(["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baidu", "bair", "bytedance",
                           "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr",
-                          "github", "google", "googledeepmind", "google-graphcore", "huawei", "intel", "jd", "kako", "laion",
+                          "github", "google", "googledeepmind", "google-graphcore", "graphcore", "huawei", "intel", "jd", "kako", "laion",
                           "lighton", "microsoft", "microsoftnvidia", "miri", "naver",
                           "nvidia", "openai", "pdf", "salesforce", "sberbank", "sensetime",
                           "snapchat", "spotify", "tencent", "tensorfork", "uber", "yandex"

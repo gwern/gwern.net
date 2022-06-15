@@ -41,8 +41,8 @@ main = do args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a)
                              if not filep then error ("Error: Specified tag not defined? '" ++ arg' ++ "'") else return arg') tags
           if length tags == 2 && null links then
             -- setting up a bidirectional tag, equivalent to: changeTag.hs /docs/$TAG1/index $TAG2 && changeTag.hs /docs/$TAG2/index $TAG1
-            changeOneTag ("/docs/" ++ head tags ++ "index") (tags !! 1) >>
-            changeOneTag ("/docs/" ++ (tags !! 1) ++ "index") (head tags)
+            changeOneTag ("/docs/" ++ head tags ++ "/index") (tags !! 1) >>
+            changeOneTag ("/docs/" ++ (tags !! 1) ++ "/index") (head tags)
            else do
             when (null links) $ error ("Error: Forgot links?" ++ show args)
             mapM_ (\link -> mapM_ (changeOneTag link) tags) links
