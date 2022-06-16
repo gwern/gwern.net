@@ -38,7 +38,7 @@ require("{$font_dir}/font_spec.php");
 $spec_file = ob_get_contents();
 ob_end_clean();
 
-$outfile = '@charset "UTF-8";' . "\n\n";
+$outfile = '@charset "UTF-8";' . "\n";
 
 $spec_blocks = explode("\n\n", trim($spec_file));
 

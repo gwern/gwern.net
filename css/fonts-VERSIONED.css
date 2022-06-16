@@ -1,745 +1,743 @@
 @charset "UTF-8";
 
-/* Font overview: loads Source Serif Pro for body, Source Sans Pro for ToC, and yinit/Goudy/Deutsche Zierschrift for 3 kinds of drop caps (enabled in /static/css/default.css) */
-
 /********************/
 /* SOURCE SERIF PRO */
 /********************/
-/* workhorse font for the body */
 
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 200;
-    font-style: normal;
-    src: url("/static/font/ssfp/SourceSerifPro-BASIC-ExtraLight.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    /*  for body text, display as soon as possible (presumably as system font Baskerville)
-        and re-render with Source Serif Pro whenever it downloads:
-        https://developers.google.com/web/updates/2016/02/font-display
-        https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display
-        https://caniuse.com/#search=font-display
-        */
-    font-display: swap;
+	font-family: 'Source Serif Pro';
+	font-weight: 200;
+	font-style: normal;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-ExtraLight.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 200;
-    font-style: italic;
-    src: url("/static/font/ssfp/SourceSerifPro-BASIC-ExtraLightItalic.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Serif Pro';
+	font-weight: 200;
+	font-style: italic;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-ExtraLightItalic.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 300;
-    font-style: normal;
-    src: url("/static/font/ssfp/SourceSerifPro-BASIC-Light.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Serif Pro';
+	font-weight: 300;
+	font-style: normal;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Light.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 300;
-    font-style: italic;
-    src: url("/static/font/ssfp/SourceSerifPro-BASIC-LightItalic.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Serif Pro';
+	font-weight: 300;
+	font-style: italic;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-LightItalic.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 400;
-    font-style: normal;
-    src: url("/static/font/ssfp/SourceSerifPro-BASIC-Regular.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Serif Pro';
+	font-weight: 400;
+	font-style: normal;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Regular.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 400;
-    font-style: italic;
-    src: url("/static/font/ssfp/SourceSerifPro-BASIC-RegularItalic.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Serif Pro';
+	font-weight: 400;
+	font-style: italic;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-RegularItalic.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 600;
-    font-style: normal;
-    src: url("/static/font/ssfp/SourceSerifPro-BASIC-Semibold.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Serif Pro';
+	font-weight: 600;
+	font-style: normal;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Semibold.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 600;
-    font-style: italic;
-    src: url("/static/font/ssfp/SourceSerifPro-BASIC-SemiboldItalic.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Serif Pro';
+	font-weight: 600;
+	font-style: italic;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-SemiboldItalic.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 700;
-    font-style: normal;
-    src: url("/static/font/ssfp/SourceSerifPro-BASIC-Bold.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Serif Pro';
+	font-weight: 700;
+	font-style: normal;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Bold.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 700;
-    font-style: italic;
-    src: url("/static/font/ssfp/SourceSerifPro-BASIC-BoldItalic.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Serif Pro';
+	font-weight: 700;
+	font-style: italic;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-BoldItalic.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 900;
-    font-style: normal;
-    src: url("/static/font/ssfp/SourceSerifPro-BASIC-Black.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Serif Pro';
+	font-weight: 900;
+	font-style: normal;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Black.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 900;
-    font-style: italic;
-    src: url("/static/font/ssfp/SourceSerifPro-BASIC-BlackItalic.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Serif Pro';
+	font-weight: 900;
+	font-style: italic;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-BlackItalic.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 
 /*******************/
 /* SOURCE SANS PRO */
 /*******************/
-/* used in Table of Contents as a better sans font; primarily intended for Mac/iOS users */
 
 @font-face {
-    font-family: "Source Sans Pro";
-    font-weight: 200;
-    font-style: normal;
-    src: url("/static/font/ssp/SourceSansPro-BASIC-ExtraLight.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 200;
+	font-style: normal;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-ExtraLight.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Sans Pro";
-    font-weight: 200;
-    font-style: italic;
-    src: url("/static/font/ssp/SourceSansPro-BASIC-ExtraLightItalic.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 200;
+	font-style: italic;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-ExtraLightItalic.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Sans Pro";
-    font-weight: 300;
-    font-style: normal;
-    src: url("/static/font/ssp/SourceSansPro-BASIC-Light.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 300;
+	font-style: normal;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Light.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Sans Pro";
-    font-weight: 300;
-    font-style: italic;
-    src: url("/static/font/ssp/SourceSansPro-BASIC-LightItalic.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 300;
+	font-style: italic;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-LightItalic.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Sans Pro";
-    font-weight: 400;
-    font-style: normal;
-    src: url("/static/font/ssp/SourceSansPro-BASIC-Regular.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 400;
+	font-style: normal;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Regular.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Sans Pro";
-    font-weight: 400;
-    font-style: italic;
-    src: url("/static/font/ssp/SourceSansPro-BASIC-RegularItalic.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 400;
+	font-style: italic;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-RegularItalic.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Sans Pro";
-    font-weight: 600;
-    font-style: normal;
-    src: url("/static/font/ssp/SourceSansPro-BASIC-Semibold.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 600;
+	font-style: normal;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Semibold.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Sans Pro";
-    font-weight: 600;
-    font-style: italic;
-    src: url("/static/font/ssp/SourceSansPro-BASIC-SemiboldItalic.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 600;
+	font-style: italic;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-SemiboldItalic.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Sans Pro";
-    font-weight: 700;
-    font-style: normal;
-    src: url("/static/font/ssp/SourceSansPro-BASIC-Bold.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 700;
+	font-style: normal;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Bold.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Sans Pro";
-    font-weight: 700;
-    font-style: italic;
-    src: url("/static/font/ssp/SourceSansPro-BASIC-BoldItalic.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 700;
+	font-style: italic;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-BoldItalic.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Sans Pro";
-    font-weight: 900;
-    font-style: normal;
-    src: url("/static/font/ssp/SourceSansPro-BASIC-Black.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 900;
+	font-style: normal;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Black.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 @font-face {
-    font-family: "Source Sans Pro";
-    font-weight: 900;
-    font-style: italic;
-    src: url("/static/font/ssp/SourceSansPro-BASIC-BlackItalic.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 900;
+	font-style: italic;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-BlackItalic.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
 
 /*****************/
 /* IBM PLEX MONO */
 /*****************/
-/* Used in code blocks */
 
 @font-face {
-    font-family: "IBM Plex Mono";
-    font-weight: normal;
-    font-style: normal;
-    src: url("/static/font/ibm-plex-mono/IBMPlexMono-Regular.otf?v=1606177027") format("opentype");
-    font-display: swap;
+	font-family: 'IBM Plex Mono';
+	font-weight: normal;
+	font-style: normal;
+	src: url('/static/font/ibm-plex-mono/IBMPlexMono-Regular.otf') format('opentype');
+	font-display: swap;
 }
+@font-face {
+	font-family: 'IBM Plex Mono';
+	font-weight: normal;
+	font-style: italic;
+	src: url('/static/font/ibm-plex-mono/IBMPlexMono-RegularItalic.otf') format('opentype');
+	font-display: swap;
+}
+@font-face {
+	font-family: 'IBM Plex Mono';
+	font-weight: bold;
+	font-style: normal;
+	src: url('/static/font/ibm-plex-mono/IBMPlexMono-Bold.otf') format('opentype');
+	font-display: swap;
+}
+@font-face {
+	font-family: 'IBM Plex Mono';
+	font-weight: bold;
+	font-style: italic;
+	src: url('/static/font/ibm-plex-mono/IBMPlexMono-BoldItalic.otf') format('opentype');
+	font-display: swap;
+}
+
+/***********/
+/* QUIVIRA */
+/***********/
 
 @font-face {
-    font-family: "IBM Plex Mono";
-    font-weight: normal;
-    font-style: italic;
-    src: url("/static/font/ibm-plex-mono/IBMPlexMono-RegularItalic.otf?v=1606177027") format("opentype");
-    font-display: swap;
+	font-family: 'Quivira';
+	font-weight: normal;
+	src: url('/static/font/quivira/Quivira-SUBSETTED.ttf') format('truetype');
+	font-display: swap;
 }
+
+/**************/
+/* NOTO EMOJI */
+/**************/
 
 @font-face {
-    font-family: "IBM Plex Mono";
-    font-weight: bold;
-    font-style: normal;
-    src: url("/static/font/ibm-plex-mono/IBMPlexMono-Bold.otf?v=1606177026") format("opentype");
-    font-display: swap;
+	font-family: 'Noto Emoji';
+	font-weight: normal;
+	src: url('/static/font/noto-emoji/NotoEmoji-Bold-SUBSETTED.ttf') format('truetype');
+	font-display: swap;
 }
-
-@font-face {
-    font-family: "IBM Plex Mono";
-    font-weight: bold;
-    font-style: italic;
-    src: url("/static/font/ibm-plex-mono/IBMPlexMono-BoldItalic.otf?v=1606177027") format("opentype");
-    font-display: swap;
-}
-
-/*************************/
-/* Drop Caps Support     */
-/* each font is subsetted into A-Z, so only *one* letter needs to be loaded (at a cost of 8-16KB), rather than 200-700KB or worse */
-/*************************/
 
 /************************/
 /* DEUTSCHE ZIERSCHRIFT */
-/* used for general pages */
 /************************/
 
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-A.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0041;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-A.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0041;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-B.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0042;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-B.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0042;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-C.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0043;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-C.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0043;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-D.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0044;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-D.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0044;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-E.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0045;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-E.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0045;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-F.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0046;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-F.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0046;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-G.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0047;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-G.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0047;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-H.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0048;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-H.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0048;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-I.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0049;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-I.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0049;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-J.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004A;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-J.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004A;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-K.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004B;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-K.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004B;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-L.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004C;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-L.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004C;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-M.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004D;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-M.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004D;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-N.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004E;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-N.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004E;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-O.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004F;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-O.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004F;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-P.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0050;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-P.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0050;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-Q.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0051;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-Q.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0051;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-R.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0052;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-R.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0052;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-S.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0053;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-S.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0053;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-T.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0054;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-T.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0054;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-U.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0055;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-U.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0055;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-V.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0056;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-V.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0056;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-W.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0057;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-W.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0057;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-X.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0058;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-X.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0058;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-Y.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0059;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-Y.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0059;
 }
 @font-face {
-    font-family: "Deutsche Zierschrift";
-    src: url("/static/font/drop-cap/de-zs/DeutscheZierschrift-Z.ttf?v=1604173830") format("truetype");
-    unicode-range: U+005A;
-    font-display: swap;
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-Z.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+005A;
 }
 
 /*********/
 /* YINIT */
-/* for technical/scientific pages */
-/* https://www.tug.org/TUGboat/tb12-1/tb31hara.pdf#page=8 */
 /*********/
 
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-A.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0041;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-A.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0041;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-B.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0042;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-B.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0042;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-C.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0043;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-C.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0043;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-D.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0044;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-D.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0044;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-E.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0045;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-E.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0045;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-F.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0046;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-F.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0046;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-G.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0047;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-G.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0047;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-H.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0048;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-H.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0048;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-I.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0049;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-I.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0049;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-J.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004A;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-J.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004A;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-K.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004B;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-K.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004B;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-L.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004C;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-L.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004C;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-M.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004D;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-M.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004D;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-N.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004E;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-N.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004E;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-O.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004F;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-O.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004F;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-P.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0050;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-P.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0050;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-Q.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0051;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-Q.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0051;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-R.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0052;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-R.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0052;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-S.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0053;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-S.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0053;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-T.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0054;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-T.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0054;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-U.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0055;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-U.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0055;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-V.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0056;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-V.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0056;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-W.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0057;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-W.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0057;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-X.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0058;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-X.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0058;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-Y.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0059;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-Y.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0059;
 }
 @font-face {
-    font-family: "Yinit";
-    src: url("/static/font/drop-cap/yinit/Yinit-Z.ttf?v=1604173830") format("truetype");
-    unicode-range: U+005A;
-    font-display: swap;
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-Z.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+005A;
 }
 
 /*******************/
 /* GOUDY INITIALEN */
-/* for humanities/literature/history */
-/* https://wiki.obormot.net/Main/BonusFontsDemo?demo_font_one=Goudy+Initialen */
 /*******************/
 
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-A.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0041;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-A.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0041;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-B.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0042;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-B.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0042;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-C.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0043;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-C.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0043;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-D.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0044;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-D.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0044;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-E.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0045;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-E.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0045;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-F.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0046;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-F.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0046;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-G.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0047;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-G.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0047;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-H.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0048;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-H.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0048;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-I.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0049;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-I.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0049;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-J.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004A;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-J.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004A;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-K.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004B;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-K.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004B;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-L.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004C;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-L.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004C;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-M.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004D;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-M.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004D;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-N.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004E;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-N.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004E;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-O.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004F;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-O.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004F;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-P.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0050;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-P.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0050;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-Q.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0051;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-Q.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0051;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-R.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0052;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-R.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0052;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-S.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0053;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-S.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0053;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-T.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0054;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-T.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0054;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-U.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0055;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-U.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0055;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-V.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0056;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-V.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0056;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-W.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0057;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-W.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0057;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-X.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0058;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-X.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0058;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-Y.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0059;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-Y.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0059;
 }
 @font-face {
-    font-family: "Goudy Initialen";
-    src: url("/static/font/drop-cap/goudy/GoudyInitialen-Z.ttf?v=1604173830") format("truetype");
-    unicode-range: U+005A;
-    font-display: swap;
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-Z.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+005A;
 }
 
 /*********************/
@@ -747,160 +745,160 @@
 /*********************/
 
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-A.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0041;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-A.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0041;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-B.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0042;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-B.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0042;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-C.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0043;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-C.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0043;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-D.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0044;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-D.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0044;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-E.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0045;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-E.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0045;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-F.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0046;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-F.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0046;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-G.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0047;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-G.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0047;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-H.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0048;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-H.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0048;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-I.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0049;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-I.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0049;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-J.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004A;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-J.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004A;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-K.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004B;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-K.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004B;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-L.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004C;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-L.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004C;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-M.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004D;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-M.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004D;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-N.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004E;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-N.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004E;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-O.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004F;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-O.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004F;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-P.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0050;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-P.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0050;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-Q.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0051;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-Q.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0051;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-R.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0052;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-R.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0052;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-S.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0053;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-S.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0053;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-T.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0054;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-T.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0054;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-U.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0055;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-U.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0055;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-V.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0056;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-V.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0056;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-W.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0057;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-W.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0057;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-X.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0058;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-X.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0058;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-Y.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0059;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-Y.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0059;
 }
 @font-face {
-    font-family: "Cheshire Initials";
-    src: url("/static/font/drop-cap/cheshire/Cheshire-Initials-Z.ttf?v=1604173830") format("truetype");
-    unicode-range: U+005A;
-    font-display: swap;
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-Z.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+005A;
 }
 
 /*********************/
@@ -908,184 +906,158 @@
 /*********************/
 
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-A.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0041;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-A.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0041;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-B.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0042;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-B.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0042;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-C.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0043;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-C.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0043;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-D.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0044;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-D.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0044;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-E.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0045;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-E.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0045;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-F.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0046;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-F.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0046;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-G.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0047;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-G.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0047;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-H.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0048;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-H.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0048;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-I.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0049;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-I.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0049;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-J.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004A;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-J.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004A;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-K.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004B;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-K.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004B;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-L.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004C;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-L.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004C;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-M.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004D;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-M.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004D;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-N.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004E;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-N.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004E;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-O.ttf?v=1604173830") format("truetype");
-    unicode-range: U+004F;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-O.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+004F;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-P.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0050;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-P.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0050;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-Q.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0051;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-Q.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0051;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-R.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0052;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-R.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0052;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-S.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0053;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-S.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0053;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-T.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0054;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-T.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0054;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-U.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0055;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-U.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0055;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-V.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0056;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-V.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0056;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-W.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0057;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-W.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0057;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-X.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0058;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-X.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0058;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-Y.ttf?v=1604173830") format("truetype");
-    unicode-range: U+0059;
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-Y.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0059;
 }
 @font-face {
-    font-family: "Kanzlei Initialen";
-    src: url("/static/font/drop-cap/kanzlei/Kanzlei-Initialen-Z.ttf?v=1604173830") format("truetype");
-    unicode-range: U+005A;
-    font-display: swap;
-}
-
-/***********/
-/* QUIVIRA */
-/***********/
-/* specific symbols (linkicons, etc.) */
-
-@font-face {
-    font-family: "Quivira";
-    font-weight: normal;
-    font-style: normal;
-    src: url("/static/font/quivira/Quivira-SUBSETTED.ttf?v=1648781861") format("truetype");
-    font-display: swap;
-}
-
-/**************/
-/* NOTO EMOJI */
-/**************/
-/* specific symbols (linkicons, etc.) */
-
-@font-face {
-    font-family: "Noto Emoji";
-    font-weight: normal;
-    font-style: normal;
-    src: url("/static/font/noto-emoji/NotoEmoji-Bold-SUBSETTED.ttf?v=1651378359") format("truetype");
-    font-display: swap;
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-Z.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+005A;
 }
