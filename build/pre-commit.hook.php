@@ -32,6 +32,13 @@ if ($force || (`git diff-index --cached HEAD -- {$head_includes}`)) {
 	`git add {$static_dir}/includes/.`;
 }
 
+## Font spec.
+$font_spec = "{$static_dir}/font/font_spec.php";
+if ($force || (`git diff-index --cached HEAD -- {$font_spec}`)) {
+	require_once("{$build_dir}/build_font_css.php");
+	`git add {$static_dir}/css/.`;
+}
+
 ## Fonts and font CSS.
 $fonts_and_font_css = [
 	"{$static_dir}/css/fonts.css"
