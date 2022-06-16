@@ -4,9 +4,9 @@
 module GenerateSimilar where
 
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str, Strong), Format(..), runPure, Pandoc(..))
-import qualified Data.Text as T  (append, intercalate, length, pack, replace, strip, take, unlines, unpack, Text)
+import qualified Data.Text as T  (append, intercalate, length, pack, strip, take, unlines, unpack, Text)
 import Data.List ((\\), intercalate,  nub)
-import Utils (replace)
+import Utils (replace, replaceManyT)
 import Data.Maybe (fromJust)
 import qualified Data.Map.Strict as M (filter, keys, lookup)
 import System.Directory (doesFileExist, renameFile)
@@ -99,7 +99,8 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
         plainText = simplifiedDoc parsedEither `T.append` documentURLsText
         -- post-processing: 'We suggest replacing newlines (\n) in your input with a single space, as we have observed inferior results when newlines are present.' https://beta.openai.com/docs/api-reference/embeddings/create
         -- GPT-3 apparently doesn't do well with Unicode punctuation either (they get a bad BPE expansion factor too), so smart quotes are right out.
-        gptPlainText = T.take maxLength $ T.strip $ T.replace "\n" " " $ T.replace "  " " " $ T.replace "  " " " $ T.replace "…" "..." $ T.replace "“" "'" $ T.replace "”" "'" $ T.replace "‘" "'" $ T.replace "’" "'" $ T.replace "\\" "" $ T.replace "\"" "'" $ T.replace "\"" "'" plainText
+        gptPlainText = T.take maxLength $ T.strip $
+                       replaceManyT [("\n"," "), ("  "," "), ("…","..."), ("“","'"), ("”","'"), ("‘","'"), ("’","'"), ("\\",""), ("\"","'"), ("\"","'")] plainText
     in
       gptPlainText
   where
@@ -232,8 +233,8 @@ generateMatches md p abst matches =
                Just ("",_,_,_,_,_)  -> []
                Just (_,_,_,_,_,"")  -> []
                Just (title,_,_,doi,_,_) -> let doiQuery = "doi:" ++ doi
-                                               title' = replace "\"" "'" $ simplifiedString title -- need to strip out HTML formatting like "<em>Peep Show</em>—The Most Realistic Portrayal of Evil Ever Made"
-                                               titleQuery = "%22" ++ title' ++ "%22"
+                                               title' = simplifiedString title -- need to strip out HTML formatting like "<em>Peep Show</em>—The Most Realistic Portrayal of Evil Ever Made"
+                                               titleQuery = urlEncode $ "\"" ++ title' ++ "\""
                                                query = if null title' && not (null doi) then doiQuery else if null doi && not (null title) then titleQuery else doiQuery ++ "+OR+" ++ titleQuery
                                                linkMetadataG  = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "google"), ("link-icon-type", "svg")])
                                                linkMetadataGS = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "google-scholar"), ("link-icon-type", "svg")])
@@ -243,7 +244,7 @@ generateMatches md p abst matches =
                                               [Strong [Str "Search"], Str ": ",
                                                 Link linkMetadataGS
                                                 [Str "GS"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
-                                                             T.pack ("Reverse citations of this paper in Google Scholar")),
+                                                             T.pack "Reverse citations of this paper in Google Scholar"),
                                               Str "; "]
                                                ++
                                                (if null doi then [] else [Link linkMetadataCP
@@ -256,7 +257,7 @@ generateMatches md p abst matches =
                                                                   T.pack ("Google search engine hits for ‘" ++ title' ++ "’.")),
                                                  Str "; ",
                                                  Link linkMetadataG
-                                                 [Str "site-wide"] (T.pack ("https://www.google.com/search?q=site:www.gwern.net+-site:www.gwern.net/metadata/+" ++ title'),
+                                                 [Str "site-wide"] (T.pack ("https://www.google.com/search?q=site:www.gwern.net+-site:www.gwern.net/metadata/+" ++ urlEncode title'),
                                                                     T.pack ("Gwern.net site search hits for ‘" ++ title' ++ "’."))
                                                ]]]
 
