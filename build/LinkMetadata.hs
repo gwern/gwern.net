@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-14 10:47:47 gwern"
+When:  Time-stamp: "2022-06-16 19:48:39 gwern"
 License: CC-0
 -}
 
@@ -20,7 +20,7 @@ import Control.Monad (unless, void, when, forM_)
 import Data.Aeson (eitherDecode, FromJSON)
 import Data.Char (isAlpha, isAlphaNum, isPunctuation, toLower)
 import qualified Data.ByteString as B (appendFile, readFile, intercalate, split, ByteString)
-import qualified Data.ByteString.Lazy as BL (length)
+import qualified Data.ByteString.Lazy as BL (length, concat)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, toList, lookup, map, union, Map) -- traverseWithKey, union, Map
 import qualified Data.Text as T (append, breakOnAll, pack, unpack, Text)
@@ -823,37 +823,37 @@ pdf p = do let p' = takeWhile (/='#') p
            let pageNumber = sed ".*\\.pdf#page=([0-9]+).*" "\\1" p -- eg "foo.pdf#page=50&org=openai" → "50"
            let pageNumber' = if pageNumber == p then "" else pageNumber
 
-           (_,_,mb)  <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date", "-Title", "-Author", "-dateFormat", "%F", "-Date", p']
-           (_,_,mb2) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$DOI", "-DOI", p']
-           if BL.length mb > 0 then
-             do printGreen (show mb)
-                let results = (lines $ (\s -> if head s == '\n' then tail s else s) $ replace "\n\n" "\n" $ U.toString mb)
-                case results of
-                  d:[] -> return $ Right (p, ("", "", d, "", [], ""))
-                  (etitle:eauthor:edate:_) -> do
-                    let title = (filterMeta $ trimTitle $ cleanAbstractsHTML etitle) ++ (if null pageNumber' then "" else " § pg" ++ pageNumber')
-                    let edoi = lines $ U.toString mb2
-                    let edoi' = if null edoi then "" else processDOI $ head edoi
-                    -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
-                    (_,_,mb3) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Creator", "-Creator", p']
-                    let ecreator = filterMeta $ U.toString mb3
-                    let eauthor' = filterMeta eauthor
-                    let author = initializeAuthors $ trim $ if length eauthor' > length ecreator then eauthor' else ecreator
-                    let ts = [] -- TODO: replace with ML call to infer tags
-                    printGreen $ "PDF: " ++ p ++" DOI: " ++ edoi'
-                    at <- fmap (fromMaybe "") $ doi2Abstract edoi'
-                    return $ Right (p, (title, author, trim $ replace ":" "-" edate, edoi', ts, at))
-                  _ -> return (Left Permanent)
+           (_,_,mbTitle)  <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title",  "-Title",  p']
+           (_,_,mbAuthor) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Author", "-Author", p']
+           (_,_,mbCreator)<- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Creator", "-Creator", p']
+           (_,_,mbDate)   <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Date",    "-dateFormat", "%F", "-Date", p']
+           (_,_,mbDoi)    <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$DOI",     "-DOI", p']
+           if BL.length (BL.concat [mbTitle,mbAuthor,mbDate,mbDoi]) > 0 then
+             do printGreen (show [mbTitle,mbCreator,mbAuthor,mbDate,mbDoi])
+                let title = (filterMeta $ trimTitle $ cleanAbstractsHTML $ U.toString mbTitle) ++ (if null pageNumber' then "" else " § pg" ++ pageNumber')
+                let edoi = U.toString mbDoi
+                let edoi' = if null edoi then "" else processDOI edoi
+                -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
+                let ecreator = filterMeta $ U.toString mbCreator
+                let eauthor' = filterMeta  $ U.toString mbAuthor
+                let author = initializeAuthors $ trim $ if length eauthor' > length ecreator then eauthor' else ecreator
+                let ts = [] -- TODO: replace with ML call to infer tags
+                printGreen $ "PDF: " ++ p ++" DOI: " ++ edoi'
+                at <- fmap (fromMaybe "") $ doi2Abstract edoi'
+                if length (title ++ author ++ U.toString mbDate ++ edoi') > 0 then
+                  return $ Right (p, (title, author, trim $ replace ":" "-" (U.toString mbDate), edoi', ts, at))
+                  else
+                  return (Left Permanent)
                 -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:
                 -- case aMaybe of
                 --   Nothing -> return (Left Permanent)
                 --   Just a -> return $ Right (p, (trimTitle etitle, author, trim $ replace ":" "-" edate, edoi', a))
-           else return (Left Permanent)
+           else printRed "PDF annotation failed, insufficient data or unreadable file; exiftool returned: " >> putStrLn ("title/author/date: " ++ show mbTitle ++ " ; DOI: " ++ show mbDoi) >> return (Left Permanent)
 
 filterMeta :: String -> String
 filterMeta ea = if anyInfix ea badSubstrings || elem ea badWholes then "" else ea
  where badSubstrings, badWholes :: [String]
-       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd"]
+       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd", "pdftk-java"]
        badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf", "comp", "khan", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo", "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "mchahino"]
 
 -- nested JSON object: eg. 'jq .message.abstract'
@@ -1992,6 +1992,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(G(X)\\)</span>", "<em>G(X)</em>")
           , ("<span class=\"math inline\">\\(F: Y \\rightarrow X\\)</span>", "<em>F : Y → X</em>")
           , ("<span class=\"math inline\">\\(F(G(X)) \\approx X\\)</span>", "<em>F(G(X)) ≈ X</em>")
+          , ("<span class=\"math inline\">\\(\\boldsymbol{sponge} \\sim\\boldsymbol{examples}\\)</span>", "<strong>sponge examples</strong>")
           , ("O((log n log log n)^2)", "𝑂(log<sup>2</sup> <em>n</em> log log <em>n</em>)")
           , ("O(m log^2 n)", "𝑂(<em>m</em> log <em>n</em> + <em>n</em> log<sup>2</sup> <em>n</em>)")
           , ("O(N) ", "𝑂(<em>N</em>) ")
