@@ -10,7 +10,7 @@ $css_dir = "{$static_root}/css";
 
 $font_css = file_get_contents("{$css_dir}/fonts.css");
 
-$versioned_font_css = preg_replace_callback('/"\/static\/(.+?)"/i', 'VersionAssetURL', $font_css);
+$versioned_font_css = preg_replace_callback('/\'\/static\/(.+?)\'/i', 'VersionAssetURL', $font_css);
 
 file_put_contents("{$css_dir}/fonts-VERSIONED.css", $versioned_font_css);
 
@@ -22,7 +22,7 @@ function VersionAssetURL($m) {
 	$file_path = "{$static_root}/{$m[1]}";
 	$file_mod_time = filemtime($file_path);
 
-	return "\"/static/{$m[1]}?v={$file_mod_time}\"";
+	return "'/static/{$m[1]}?v={$file_mod_time}'";
 }
 
 ?>
