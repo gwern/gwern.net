@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-16 19:48:39 gwern"
+When:  Time-stamp: "2022-06-16 20:00:38 gwern"
 License: CC-0
 -}
 
@@ -831,7 +831,7 @@ pdf p = do let p' = takeWhile (/='#') p
            if BL.length (BL.concat [mbTitle,mbAuthor,mbDate,mbDoi]) > 0 then
              do printGreen (show [mbTitle,mbCreator,mbAuthor,mbDate,mbDoi])
                 let title = (filterMeta $ trimTitle $ cleanAbstractsHTML $ U.toString mbTitle) ++ (if null pageNumber' then "" else " § pg" ++ pageNumber')
-                let edoi = U.toString mbDoi
+                let edoi = trim $ U.toString mbDoi
                 let edoi' = if null edoi then "" else processDOI edoi
                 -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
                 let ecreator = filterMeta $ U.toString mbCreator
@@ -2066,6 +2066,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<p></p>", "")
           , ("<p></li> </ul> </p>", "</li> </ul>")
           , ("</li><br/>", "</li>")
+          , ("</p>\n\n<jats:sec>\n<strong>", "</p> <p><strong>")
           , ("</p>\n \n <jats:sec><p>", "</p> <p>")
           , ("</p>\n \n <jats:sec>\n<p>", "</p> <p>")
           , ("<strong>Abstract</strong>\n <jats:sec>\n<p>", "<p>")
@@ -2109,6 +2110,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<sec id=\"english\">", "")
           , ("<sec sec-type=\"headed\">", "")
           , ("<p><sec sec-type=\"headed\"></p>", "")
+          , ("<strong>Abstract</strong>\n<jats:sec>\n<strong>", "<p><strong>")
           , ("</strong></p>    <p>", "</strong> ")
           , ("</title>", "</strong>:</p>")
           , ("<title/>", "")
@@ -2221,6 +2223,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" j) ", " (9) ")
           , (" k) ", " (10) ")
           , (" =  ", " = ")
+          , ("</strong>\n<p>", "</strong>: ")
           , ("<strong><strong>", "<strong>")
           , ("</strong></strong>", "</strong>")
           , ("< /b>", "</strong>")
@@ -2297,10 +2300,25 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\nPurpose: ", "\n<strong>Purpose</strong>: ")
           , ("<p>Purpose. ", "\n<strong>Purpose</strong>: ")
           , ("\nRationale: ", "\n<strong>Rationale</strong>: ")
+
+          , ("<strong>ANIMALS</strong>: ", "<strong>Animals</strong>: ")
+          , ("<strong>OBJECTIVE</strong>: ", "<strong>Objective</strong>: ")
+          , ("<strong>METHOD</strong>: ", "<strong>Method</strong>: ")
+          , ("<strong>RESULTS</strong>: ", "<strong>Results</strong>: ")
+          , ("<strong>CONCLUSIONS</strong>: ", "<strong>Conclusions</strong>: ")
+          , ("<strong>CLINICAL RELEVANCE</strong>: ", "<strong>Clinical Relevance</strong>: ")
+          , ("<strong>PROCEDURES</strong>: ", "<strong>Procedures</strong>: ")
+
+          , ("<strong>OBJECTIVE</strong></p>\n", "<strong>Objective</strong>: ")
+          , ("<strong>METHOD</strong></p>\n", "<strong>Method</strong>: ")
+          , ("<strong>RESULTS</strong></p>\n", "<strong>Results</strong>: ")
+          , ("<strong>CONCLUSIONS</strong></p>\n         ", "<strong>Conclusions</strong>: ")
+          , ("<strong>CLINICAL RELEVANCE</strong></p>\n         ", "<strong>Clinical Relevance</strong>: ")
           , ("<p><strong>OBJECTIVE</strong></p>\n<p>", "<p><strong>Objective</strong>: ")
           , ("<p><strong>METHOD</strong></p>\n<p>", "<p><strong>Method</strong>: ")
           , ("<p><strong>RESULTS</strong></p>\n<p>", "<p><strong>Results</strong>: ")
           , ("<p><strong>CONCLUSIONS</strong></p>\n<p>         ", "<p><strong>Conclusions</strong>: ")
+          , ("<p><strong>CLINICAL RELEVANCE</strong></p>\n<p>         ", "<p><strong>Clinical Relevance</strong>: ")
           , ("\nObjective: ", "\n<strong>Objective</strong>: ")
           , ("\nObjectives: ", "\n<strong>Objectives</strong>: ")
           , ("\nQuestion: ", "\n<strong>Question</strong>: ")

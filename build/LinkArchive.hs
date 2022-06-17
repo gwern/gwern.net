@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-06-14 22:22:27 gwern"
+When:  Time-stamp: "2022-06-16 10:27:58 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -118,6 +118,10 @@ import System.FilePath (takeFileName)
 
 import Utils (writeUpdatedFile, printGreen, printRed, sed, addClass, anyInfix, anyPrefix, anySuffix)
 
+archiveDelay, archivePerRunN :: Integer
+archiveDelay = 60
+archivePerRunN = 20
+
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg. 2019-11-22 = 58810
   (Maybe FilePath) -- Our archive of the URL: local archive path (if successful, otherwise, should be skipped - already dead?)
@@ -203,10 +207,6 @@ rewriteLink adb archivedN url = do
                                            return archive)
           else return Nothing
       Just (Right archive) -> if archive == Just "" then printRed "Error! Tried to return a link to a non-existent archive! " >> print url >> return Nothing else return archive
-
-archiveDelay, archivePerRunN :: Integer
-archiveDelay = 60
-archivePerRunN = 2000
 
 insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
 insertLinkIntoDB a url = do adb <- readArchiveMetadata
@@ -1186,5 +1186,15 @@ whiteList url
       , "https://energy-based-model.github.io/comet/" -- low quality (video embeds)
       , "https://huggingface.co/spaces/" -- interactive
       , "https://www.arknights.global/" -- homepage
+      , "http://arborjs.org/" -- homepage
+      , "https://nitter.hu/OpenAI" -- PR account
+      , "https://songweige.github.io/projects/tats/index.html" -- video
+      , "https://self-distilled-stylegan.github.io/" -- low quality (video embeds)
+      , "https://www.flavorwire.com/415737/5-of-the-most-scandalous-affairs-in-literary-history" -- fails to archive, as does https://story.californiasunday.com/cosmic-crisp-apple-launch/ https://www.outsideonline.com/health/training-performance/inside-look-surprisingly-violent-quidditch-world-cup/ https://www.technologyreview.com/2020/02/17/844721/ai-openai-moonshot-elon-musk-sam-altman-greg-brockman-messy-secretive-reality/
+      , "https://semantle.com/" -- interactive game
+      , "https://agc.platform.baai.ac.cn/CogView/index.html" -- interactive demo
+      , "https://unminify.com/" -- interactive service
+      , "https://www.bulletproof.com/" -- homepage
+      , "https://www.google.com/alerts" -- interactive service
       ] = True
     | otherwise = False
