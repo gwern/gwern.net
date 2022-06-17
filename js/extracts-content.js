@@ -373,7 +373,7 @@ Extracts = { ...Extracts, ...{
             targetedCitation.classList.remove("targeted");
         });
         //  In the popup, the citation for which context is being shown.
-        let citationInPopup = popFrame.body.querySelector(decodeURIComponent(target.hash));
+        let citationInPopup = popup.body.querySelector(decodeURIComponent(target.hash));
         //  Highlight the citation.
         citationInPopup.classList.add("targeted");
         //  Scroll to the citation.
