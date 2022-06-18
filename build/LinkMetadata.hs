@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-18 16:12:17 gwern"
+When:  Time-stamp: "2022-06-18 17:18:42 gwern"
 License: CC-0
 -}
 
@@ -226,14 +226,18 @@ readLinkMetadataAndCheck = do
              unless (null tagIsNarrowerThanFilename) $ printRed "Files whose tags are more specific than their path: " >> printGreen (unlines $ map (\(f',(t',tag')) -> t' ++ " : " ++ f' ++ " " ++ unwords tag') $ M.toList tagIsNarrowerThanFilename)
 
              -- check tags (not just custom but all of them, including partials)
-             let tagsSet = nubOrd $ concat $ M.elems $ M.map (\(_,_,_,_,tags,_) -> tags) $ M.filter (\(t,_,_,_,_,_) -> t /= "") final
+             let tagsSet = sort $ nubOrd $ concat $ M.elems $ M.map (\(_,_,_,_,tags,_) -> tags) $ M.filter (\(t,_,_,_,_,_) -> t /= "") final
              Par.mapM_ (\tag -> do directoryP <- doesDirectoryExist ("docs/"++tag++"/")
                                    unless directoryP $ do
                                      let missingTags = M.filter (\(_,_,_,_,tags,_) -> tag`elem`tags) final
                                      error ("Link Annotation Error: tag does not match a directory! " ++ "Bad tag: '" ++ tag ++ "'\nBad annotation: " ++ show missingTags))
                tagsSet
 
-             --let tagParentSet = map
+             -- let tagParentSet = nubOrd $ concatMap (tagParents final) tagsSet
+             -- let annotationWithTagOverlap = M.map (\(t,_,_,_,tags,_) ->(t,tags)) $
+             --       M.filter (\(_,_,_,_,tags,_) -> length tags > 1 &&
+             --                                      any (\(a, b) -> a `elem` tags && b `elem` tags) tagParentSet) final
+             -- unless (null annotationWithTagOverlap) $ printRed "Tag parent/tag child overlap (make more specific): " >> printGreen (show annotationWithTagOverlap)
 
              let tagsOverused = filter (\(c,_) -> c > tagMax) $ tagCount final
              unless (null tagsOverused) $ printRed "Overused tags: " >> printGreen (show tagsOverused)
@@ -243,6 +247,12 @@ readLinkMetadataAndCheck = do
 
 
              return final
+
+-- tagParents :: Metadata -> String -> [(String,String)]
+-- tagParents md tag = let parents = case M.lookup ("/docs/"++tag++"/index") md of
+--                                    Nothing -> []
+--                                    Just (_,_,_,_,tags,_) -> tags
+--                     in if null parents then [] else zip (repeat tag) parents
 
 dateRegex, footnoteRegex, sectionAnonymousRegex, badUrlRegex :: String
 dateRegex             = "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$"
