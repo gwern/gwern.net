@@ -3,7 +3,7 @@ module Utils where
 
 import Control.Monad (when)
 import Data.Char (isSpace)
-import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf)
+import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails)
 -- import Utils (replace)
 import Data.Text.IO as TIO (readFile, writeFile)
 import Data.Time.Calendar (toGregorian)
@@ -143,6 +143,9 @@ hasKeyAL key list = key `elem` map fst list
 
 frequency :: Ord a => [a] -> [(Int,a)]
 frequency list = sort $ map (\l -> (length l, head l)) (group (sort list))
+
+pairs :: [b] -> [(b, b)]
+pairs l = [(x,y) | (x:ys) <- tails l, y <- ys]
 
 host :: T.Text -> T.Text
 host p = case parseURIReference (T.unpack p) of

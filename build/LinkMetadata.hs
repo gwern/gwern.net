@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-17 20:43:49 gwern"
+When:  Time-stamp: "2022-06-18 16:12:17 gwern"
 License: CC-0
 -}
 
@@ -57,7 +57,7 @@ import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink (getSimilarLink, getBackLink)
 import Query (extractURLs, truncateTOCHTML)
-import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split)
+import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split, pairs)
 
 ----
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
@@ -233,15 +233,22 @@ readLinkMetadataAndCheck = do
                                      error ("Link Annotation Error: tag does not match a directory! " ++ "Bad tag: '" ++ tag ++ "'\nBad annotation: " ++ show missingTags))
                tagsSet
 
+             --let tagParentSet = map
+
              let tagsOverused = filter (\(c,_) -> c > tagMax) $ tagCount final
-             unless (null tagsOverused) $ (printRed "Overused tags: " >> printGreen (show tagsOverused))
+             unless (null tagsOverused) $ printRed "Overused tags: " >> printGreen (show tagsOverused)
+
+             let tagPairsOverused = filter (\(c,_) -> c > tagPairMax) $ tagPairsCount final
+             unless (null tagPairsOverused) $ printRed "Overused pairs of tags: " >> printGreen (show tagPairsOverused)
+
+
              return final
 
 dateRegex, footnoteRegex, sectionAnonymousRegex, badUrlRegex :: String
 dateRegex             = "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$"
 footnoteRegex         = "^/?[[:alnum:]-]+#fn[1-9][0-9]*$" -- '/Foo#fn3', 'Foo#fn1', 'Foo-Bar-2020#fn999' etc
 sectionAnonymousRegex = "^#section-[0-9]+$" -- unnamed sections which receive Pandoc positional auto-names like "#section-1", "#section-15"; unstable, should be named if ever to be linked to, etc.
-badUrlRegex           = "http.*http"::String
+badUrlRegex           = "http.*http|docs/.*docs/"::String
 
 -- read a YAML database and look for annotations that need to be paragraphized.
 warnParagraphizeYAML :: FilePath -> IO ()
@@ -452,10 +459,13 @@ findDuplicatesURLsByAffiliation md = let urls  = nubOrd . filter ('.' `elem`) $ 
                                      in M.toList $ M.filter (\v -> length (filter (\v' -> not (anyInfix v' affiliationWhitelist)) v) > 1) affiliationURLs
 
 -- Remind to refine link directory-tags: should be <100. (We count using the annotation database instead of counting files inside each directory because so many are now cross-tagged or virtual.)
-tagMax :: Int
+tagMax, tagPairMax :: Int
 tagMax = 100
+tagPairMax = 11
 tagCount :: Metadata -> [(Int,String)]
 tagCount = frequency . concatMap (\(_,(_,_,_,_,tags,_)) -> tags) . M.toList
+tagPairsCount :: Metadata -> [(Int,(String,String))]
+tagPairsCount md = reverse $ frequency $ concatMap pairs $ M.elems $ M.map (\(_,_,_,_,ts,abst) -> if null abst || null ts then [] else ts) md
 
 -- Compile tags down into a Span containing a list of links to the respective /docs/ directory indexes which will contain a copy of all annotations corresponding to that tag/directory.
 --
@@ -492,6 +502,42 @@ tagsToLinksDiv ts = let tags = sort ts in
                        Div ("", ["link-tags"], []) $
                        [Para $ intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags]
 
+-- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg. '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
+tag2TagsWithDefault :: String -> String -> [String]
+tag2TagsWithDefault path tags = let tags' = map trim $ split ", " $ map toLower tags
+                                    defTag = if ("/docs/" `isPrefixOf` path) && (not ("/docs/link-bibliography"`isPrefixOf`path || "//docs/biology/2000-iapac-norvir"`isPrefixOf`path)) then tag2Default path else ""
+                                in
+                                  if defTag `elem` tags' || defTag == "" || defTag == "/docs" then tags' else defTag:tags'
+
+tag2Default :: String -> String
+tag2Default path = if "/docs/" `isPrefixOf` path && not ("/docs/" `isPrefixOf` path && "/index" `isSuffixOf` path) then replace "/docs/" "" $ takeDirectory path else ""
+
+-- de-duplicate tags: uniquefy, and remove the more general tags in favor of nested (more specific) tags. eg. ["ai", "ai/nn/transformer/gpt", "reinforcement-learning"] → ["ai/nn/transformer/gpt", "reinforcement-learning"]
+uniqTags :: [String] -> [String]
+uniqTags tags = nubOrd $ sort $ filter(\t -> not (any ((t++"/") `isPrefixOf`) tags)) tags
+
+-- guess tag based on URL
+pages2Tags :: String -> [String] -> [String]
+pages2Tags path oldTags = url2Tags path ++ oldTags
+
+-- We also do general-purpose heuristics on the path/URL: any page in a domain might be given a specific tag, or perhaps any URL with the string "deepmind" might be given a 'reinforcement-learning/deepmind' tag—that sort of thing.
+url2Tags :: String -> [String]
+url2Tags p = concat $ map (\(match,tag) -> if match p then [tag] else []) urlTagDB
+ where -- we allow arbitrary string predicates (so one might use regexps as well)
+        urlTagDB :: [((String -> Bool), String)]
+        urlTagDB = [
+            (("https://publicdomainreview.org"`isPrefixOf`),          "history/public-domain-review")
+          , (("https://www.filfre.net/"`isPrefixOf`),                 "technology/digital-antiquarian")
+          , (("https://abandonedfootnotes.blogspot.com"`isPrefixOf`), "sociology/abandoned-footnotes")
+          , (("https://dresdencodak.com"`isPrefixOf`), "humor")
+          , (("https://www.theonion.com"`isPrefixOf`), "humor")
+          , (("https://tvtropes.org"`isPrefixOf`), "fiction")
+          , (("evageeks.org"`isInfixOf`),  "anime/eva")
+          , (("evamonkey.com"`isInfixOf`), "anime/eva")
+          , (("r-project.org"`isInfixOf`), "cs/r")
+          , (("haskell.org"`isInfixOf`), "cs/haskell")
+          ]
+
 -- Abbreviate displayed tag names to make tag lists more readable. For some tags, like 'reinforcement-learning/*' or 'genetics/*', they might be used very heavily and densely, leading to cluttered unreadable tag lists, and discouraging use of meaningful directory names: 'reinforcement-learning/exploration, reinforcement-learning/alphago, reinforcement-learning/meta-learning, reinforcement-learning/...' would be quite difficult to read. But we also would rather not abbreviate the directory-tag itself down to just 'rl/', as that is not machine-readable or explicit. So we can abbreviate them just for display, while rendering the tags to Inline elements.
 abbreviateTag :: T.Text -> T.Text
 abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFixed . replace "/docs/" "" . T.unpack
@@ -506,12 +552,10 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("ai/anime", "anime AI")
           , ("ai/anime/danbooru", "Danbooru AI")
           , ("anime/eva/little-boy", "Little Boy")
-          , ("ai/nn/transformer/gpt", "GPT")
           , ("ai/nn", "neural net")
           , ("ai/nn/rnn", "RNN")
           , ("ai/nn/fully-connected", "MLP NN")
           , ("ai/nn/transformer", "Transformer NN")
-          , ("ai/nn/transformer/gpt/inner-monologue", "inner monologue (AI)")
           , ("ai/nn/vae", "autoencoder NN")
           , ("ai/scaling", "AI scaling")
           , ("ai/scaling/moe", "AI/MoE")
@@ -522,19 +566,21 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("iq/smpy", "SMPY")
           , ("vitamin-d", "Vitamin D")
           , ("dual-n-back", "DNB")
-          , ("ai/nn/transformer/gpt/codex", "Codex")
-          , ("ai/nn/transformer/gpt/lamda", "LaMDA")
           , ("iq/anne-roe", "Anne Roe")
           , ("ai/diffusion", "diffusion model")
           , ("ai/diffusion/discrete ", "discrete diffusion")
           , ("ai/nn/gan", "GAN")
           , ("ai/nn/gan/biggan", "BigGAN")
           , ("ai/nn/gan/stylegan", "StyleGAN")
-          , ("ai/nn/transformer/gpt/dall-e", "DALL·E")
           , ("ai/fiction", "fiction by AI")
-          , ("ai/nn/transformer/gpt/fiction", "GPT fiction")
-          , ("ai/nn/transformer/gpt/poetry", "GPT poetry")
-          , ("ai/nn/transformer/gpt/jukebox", "Jukebox")
+          , ("ai/nn/transformer/gpt",                 "GPT")
+          , ("ai/nn/transformer/gpt/inner-monologue", "inner monologue (AI)")
+          , ("ai/nn/transformer/gpt/codex",           "Codex")
+          , ("ai/nn/transformer/gpt/lamda",           "LaMDA")
+          , ("ai/nn/transformer/gpt/dall-e",          "DALL·E")
+          , ("ai/nn/transformer/gpt/fiction",         "GPT fiction")
+          , ("ai/nn/transformer/gpt/poetry",          "GPT poetry")
+          , ("ai/nn/transformer/gpt/jukebox",         "Jukebox")
           , ("ai/highleyman", "Highleyman")
           , ("existential-risk", "x-risk")
           , ("philosophy/ethics", "ethics")
@@ -584,7 +630,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("technology/google", "Google")
           , ("technology/security", "infosec")
           , ("technology/search", "Google-fu")
-          , ("linkrot/archiving", "archiving")
+          , ("cs/linkrot/archiving", "archiving")
           , ("reinforcement-learning/openai", "OA")
           , ("reinforcement-learning/deepmind", "DM")
           , ("genetics/cloning", "cloning")
@@ -619,7 +665,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("psychiatry/schizophrenia", "SCZ")
           , ("longevity/john-bjorksten", "John Bjorksten")
           , ("genetics/gametogenesis", "gametogenesis")
-          , ("genetics/correlation", "genetic correlation")
+          , ("genetics/heritable/correlation", "genetic correlation")
           , ("genetics/heritable", "heritability")
           , ("longevity/senolytic", "senolytics")
           , ("genetics/microbiome", "microbiome")
@@ -734,42 +780,6 @@ readYaml yaml = do yaml' <- do filep <- doesFileExist yaml
                  convertListToMetadata [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,uniqTags $ pages2Tags u $ tag2TagsWithDefault u ts, s))]
                  convertListToMetadata                       e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
 
--- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg. '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
-tag2TagsWithDefault :: String -> String -> [String]
-tag2TagsWithDefault path tags = let tags' = map trim $ split ", " $ map toLower tags
-                                    defTag = if ("/docs/" `isPrefixOf` path) && (not ("/docs/link-bibliography"`isPrefixOf`path || "//docs/biology/2000-iapac-norvir"`isPrefixOf`path)) then tag2Default path else ""
-                                in
-                                  if defTag `elem` tags' || defTag == "" || defTag == "/docs" then tags' else defTag:tags'
-
-tag2Default :: String -> String
-tag2Default path = if "/docs/" `isPrefixOf` path && not ("/docs/" `isPrefixOf` path && "/index" `isSuffixOf` path) then replace "/docs/" "" $ takeDirectory path else ""
-
--- de-duplicate tags: uniquefy, and remove the more general tags in favor of nested (more specific) tags. eg. ["ai", "ai/nn/transformer/gpt", "reinforcement-learning"] → ["ai/nn/transformer/gpt", "reinforcement-learning"]
-uniqTags :: [String] -> [String]
-uniqTags tags = nubOrd $ sort $ filter(\t -> not (any ((t++"/") `isPrefixOf`) tags)) tags
-
--- guess tag based on URL
-pages2Tags :: String -> [String] -> [String]
-pages2Tags path oldTags = url2Tags path ++ oldTags
-
--- We also do general-purpose heuristics on the path/URL: any page in a domain might be given a specific tag, or perhaps any URL with the string "deepmind" might be given a 'reinforcement-learning/deepmind' tag—that sort of thing.
-url2Tags :: String -> [String]
-url2Tags p = concat $ map (\(match,tag) -> if match p then [tag] else []) urlTagDB
- where -- we allow arbitrary string predicates (so one might use regexps as well)
-        urlTagDB :: [((String -> Bool), String)]
-        urlTagDB = [
-            (("https://publicdomainreview.org"`isPrefixOf`),          "history/public-domain-review")
-          , (("https://www.filfre.net/"`isPrefixOf`),                 "technology/digital-antiquarian")
-          , (("https://abandonedfootnotes.blogspot.com"`isPrefixOf`), "sociology/abandoned-footnotes")
-          , (("https://dresdencodak.com"`isPrefixOf`), "humor")
-          , (("https://www.theonion.com"`isPrefixOf`), "humor")
-          , (("https://tvtropes.org"`isPrefixOf`), "fiction")
-          , (("evageeks.org"`isInfixOf`),  "anime/eva")
-          , (("evamonkey.com"`isInfixOf`), "anime/eva")
-          , (("r-project.org"`isInfixOf`), "cs/r")
-          , (("haskell.org"`isInfixOf`), "cs/haskell")
-          ]
-
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: MetadataList -> MetadataList -> Path -> IO ()
 rewriteLinkMetadata partial custom yaml
@@ -858,7 +868,7 @@ pdf p = do let p' = takeWhile (/='#') p
 filterMeta :: String -> String
 filterMeta ea = if anyInfix ea badSubstrings || elem ea badWholes then "" else ea
  where badSubstrings, badWholes :: [String]
-       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd", "pdftk-java"]
+       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd", "pdftk-java", "OP-ESRJ", "FUJIT S. U.", "JRC5"]
        badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf", "comp", "khan", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo", "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "mchahino"]
 
 -- nested JSON object: eg. 'jq .message.abstract'
