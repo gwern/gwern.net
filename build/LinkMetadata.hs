@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-16 20:00:38 gwern"
+When:  Time-stamp: "2022-06-17 20:43:49 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags) where
+module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags) where
 
 import Control.Monad (unless, void, when, forM_)
 import Data.Aeson (eitherDecode, FromJSON)
@@ -65,12 +65,13 @@ import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, s
 -- link without a file extension (ie. a '.' in the URL - we guarantee that no Markdown essay has a
 -- period inside its URL).
 -- Local links get the 'link-local' class.
-isLocalLinkWalk :: Pandoc -> Pandoc
-isLocalLinkWalk = walk isLocalLink
+addLocalLinkWalk :: Pandoc -> Pandoc
+addLocalLinkWalk = walk addLocalLink
 
-isLocalLink :: Inline -> Inline
-isLocalLink y@(Link (a,b,c) e (f,g)) = if isLocalPath f then Link (a, "link-local" : b, c) e (f, g) else y
-isLocalLink x = x
+addLocalLink :: Inline -> Inline
+addLocalLink y@(Link (a,b,c) e (f,g)) = if "link-local" `elem` b then y else
+                                         if not (isLocalPath f) then y else Link (a, "link-local" : b, c) e (f, g)
+addLocalLink x = x
 
 isLocalPath :: T.Text -> Bool
 isLocalPath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
@@ -254,34 +255,36 @@ minimumAnnotationLength = 200
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Integer -> IO ()
 writeAnnotationFragments am md archived = mapM_ (\(p, mi) -> writeAnnotationFragment am md archived p mi) $ M.toList md
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Integer -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > minimumAnnotationLength) $
+writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = -- when (length e > minimumAnnotationLength) $
                                           do let u' = linkCanonicalize u
                                              bl <- getBackLink u'
                                              sl <- getSimilarLink u'
-                                             let filepath = take 247 $ urlEncode u'
-                                             let filepath' = "metadata/annotations/" ++ filepath ++ ".html"
-                                             when (filepath /= urlEncode u') $ printRed $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
-                                             let titleHtml    = typesetHtmlField "" $ titlecase' a
-                                             let authorHtml   = typesetHtmlField "" b
-                                             -- obviously no point in trying to reformatting date/DOI, so skip those
-                                             let abstractHtml = typesetHtmlField e e
-                                             -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
-                                             let pandoc = Pandoc nullMeta $ generateAnnotationBlock False False True (u', Just (titleHtml,authorHtml,c,d,ts,abstractHtml)) bl sl
-                                             void $ createAnnotations md pandoc
-                                             let annotationPandoc = walk nominalToRealInflationAdjuster $ walk (hasAnnotation md True) $ walk convertInterwikiLinks $ walk linkAuto $ walk (parseRawBlock nullAttr) pandoc
-                                             localizedPandoc <- walkM (localizeLink am archived) annotationPandoc
+                                             -- we prefer annotations which have a fully-written abstract, but we will settle for 'partial' annotations,
+                                             -- which serve as a sort of souped-up tooltip: partials don't get the dotted-underline indicating a full annotation, but it will still pop-up on hover.
+                                             -- Now, tooltips already handle title/author/date, so we only need partials in the case of things with tags, abstracts, backlinks, or similar-links, which cannot be handled by tooltips (since HTML tooltips only let you pop up some raw unstyled Unicode text, not clickable links).
+                                             when (any (not . null) [concat ts, e, bl, sl]) $ do
+                                                 let filepath = take 247 $ urlEncode u'
+                                                 let filepath' = "metadata/annotations/" ++ filepath ++ ".html"
+                                                 when (filepath /= urlEncode u') $ printRed $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
+                                                 let titleHtml    = typesetHtmlField "" $ titlecase' a
+                                                 let authorHtml   = typesetHtmlField "" b
+                                                 -- obviously no point in trying to reformatting date/DOI, so skip those
+                                                 let abstractHtml = typesetHtmlField e e
+                                                 -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
+                                                 let pandoc = Pandoc nullMeta $ generateAnnotationBlock False False True (u', Just (titleHtml,authorHtml,c,d,ts,abstractHtml)) bl sl
+                                                 void $ createAnnotations md pandoc
+                                                 let annotationPandoc = walk nominalToRealInflationAdjuster $ walk (hasAnnotation md True) $ walk convertInterwikiLinks $ walk linkAuto $ walk (parseRawBlock nullAttr) pandoc
+                                                 localizedPandoc <- walkM (localizeLink am archived) annotationPandoc
 
-                                             let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions localizedPandoc
-                                             annotationExisted <- doesFileExist filepath'
-                                             case finalHTMLEither of
-                                               Left er -> error ("Writing annotation fragment failed! " ++ show u ++ " : " ++ show i ++ " : " ++ show er)
-                                               Right finalHTML -> -- let refloated = T.pack $ restoreFigureClass e $ T.unpack finalHTML
-                                                                  let refloated = finalHTML
-                                                                  in writeUpdatedFile "annotation" filepath' refloated -- >>
-                                           -- HACK: the current hakyll.hs assumes that all annotations already exist before compilation begins, although we actually dynamically write as we go.
-                                           -- This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
-                                           -- There is presumably some way for Hakyll to do the metadata file listing *after* compilation is finished, but it's easier to hack around here by forcing 'new' annotation writes to be manually inserted into _site/.
-                                                                    >> if not (annotationExisted) then writeUpdatedFile "annotation" ("./_site/"++filepath') refloated else return ()
+                                                 let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions localizedPandoc
+                                                 annotationExisted <- doesFileExist filepath'
+                                                 case finalHTMLEither of
+                                                   Left er -> error ("Writing annotation fragment failed! " ++ show u ++ " : " ++ show i ++ " : " ++ show er)
+                                                   Right finalHTML -> writeUpdatedFile "annotation" filepath' finalHTML
+                                           --     HACK: the current hakyll.hs assumes that all annotations already exist before compilation begins, although we actually dynamically write as we go.
+                                           --     This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
+                                           --     There is presumably some way for Hakyll to do the metadata file listing *after* compilation is finished, but it's easier to hack around here by forcing 'new' annotation writes to be manually inserted into _site/.
+                                                                        >> if annotationExisted then return () else writeUpdatedFile "annotation" ("./_site/"++filepath') finalHTML
 
 -- HACK: this is a workaround for an edge-case: Pandoc reads complex tables as 'grid tables', which then, when written using the default writer options, will break elements arbitrarily at newlines (breaking links in particular). We set the column width *so* wide that it should never need to break, and also enable 'reference links' to shield links by sticking their definition 'outside' the table. See <https://github.com/jgm/pandoc/issues/7641>.
 safeHtmlWriterOptions :: WriterOptions
@@ -314,7 +317,7 @@ annotateLink md target
      when (head target'' == '/' && not ("/metadata/annotations/" `isPrefixOf` target'')) $
        do isDirectory <- doesDirectoryExist (tail target'')
           when isDirectory $ error ("Attempted to annotate a directory, which is not allowed (links must be to files or $DIRECTORY/index): " ++ target' ++ " : " ++ target)
-          let target''' = (\f -> if not ('.' `elem` f) then f ++ ".page" else f) $ takeWhile (/='#') $ tail target''
+          let target''' = (\f -> if '.' `notElem` f then f ++ ".page" else f) $ takeWhile (/='#') $ tail target''
 
           unless (takeFileName target''' == "index" || takeFileName target''' == "index.page") $
              do exist <- doesFileExist target'''
@@ -345,12 +348,12 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
               let f' = linkCanonicalize $ T.unpack f in
                 case M.lookup f' mdb of
                   Nothing                 -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y
-                  Just ("","","","",_,"") -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y
+                  Just ("","","","",[],"") -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y
                   Just                 mi -> addHasAnnotation idBool False y mi
           hasAnnotationInline _ _ y = y
 
           addHasAnnotation :: Bool -> Bool -> Inline -> MetadataItem -> Inline
-          addHasAnnotation idBool forcep (Link (a,b,c) e (f,g)) (title,aut,dt,_,_,abstrct) =
+          addHasAnnotation idBool forcep x@(Link (a,b,c) e (f,g)) (title,aut,dt,_,_,abstrct) =
            let a'
                  | not idBool = ""
                  | a == ""    = generateID (T.unpack f) aut dt
@@ -364,7 +367,8 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
                  |       title=="" && aut/="" = T.pack $ authorsToCite (T.unpack f) aut dt
                  |                  otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
            in -- erase link ID?
-              if (length abstrct < minimumAnnotationLength) && not forcep then (Link (a',b,c) e (f,g')) -- always add the ID if possible
+              if (length abstrct < minimumAnnotationLength) && not forcep then
+                if "link-local" `elem` b then x else (Link (a',b++["link-annotated-partial"],c) e (f,g')) -- always add the ID if possible
               else
                 -- -- for directory-tags, we can write a header like '/docs/bitcoin/nashx/index' as an annotation,
                 -- -- but this is a special case: we do *not* want to popup just the header, but the whole index page.
@@ -388,10 +392,11 @@ simplifiedHTMLString arg = trim $ T.unpack $ simplified $ parseRawBlock nullAttr
 generateAnnotationBlock :: Bool -> Bool -> Bool -> (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> FilePath -> [Block]
 generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = case ann of
                               Nothing                 -> nonAnnotatedLink
-                              Just ("",   _,_,_,_,_)  -> nonAnnotatedLink
-                              Just (_,    _,_,_,_,"") -> nonAnnotatedLink
+                              -- Just ("",   _,_,_,_,_)  -> nonAnnotatedLink
+                              -- Just (_,    _,_,_,_,"") -> nonAnnotatedLink
                               Just (tle,aut,dt,doi,ts,abst) ->
-                                let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
+                                let tle' = if null tle then f else tle
+                                    lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
                                     authorShort = authorsTruncate aut
                                     authorSpan = if aut/=authorShort then Span ("", ["author"], [("title",T.pack aut)]) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
                                                  else Span ("", ["author"], []) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
@@ -405,11 +410,9 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     linkPrefix = if rawFilep then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else []
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
-                                    link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
+                                    link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
                                     -- make sure every abstract is wrapped in paragraph tags for proper rendering:in
                                     abst' = if anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure"] then abst else "<p>" ++ abst ++ "</p>"
-                                    -- check that float-right hasn't been deleted by Pandoc again:
-                                    abst'' = abst' -- restoreFigureClass abst abst'
                                 in
                                   [Para
                                        (linkPrefix ++ [link,Str ","] ++
@@ -423,7 +426,7 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                                 [Str ")"]
                                          ) ++
                                          [Str ":"]),
-                                       BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
+                                       BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst'))]
                                   ]
                              where
                                nonAnnotatedLink :: [Block]
@@ -531,6 +534,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("ai/fiction", "fiction by AI")
           , ("ai/nn/transformer/gpt/fiction", "GPT fiction")
           , ("ai/nn/transformer/gpt/poetry", "GPT poetry")
+          , ("ai/nn/transformer/gpt/jukebox", "Jukebox")
           , ("ai/highleyman", "Highleyman")
           , ("existential-risk", "x-risk")
           , ("philosophy/ethics", "ethics")
@@ -793,6 +797,7 @@ linkDispatcher l | anyPrefix l ["/metadata/annotations/backlinks/", "/metadata/a
                  -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for directory-tags.
                  | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return $ Right (l, (wikipediaURLToTitle l, "", "", "", [], ""))
                  | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
+                 | "http://arxiv.org/abs/"  `isPrefixOf` l = arxiv l
                  | "https://openreview.net/forum?id=" `isPrefixOf` l || "https://openreview.net/pdf?id=" `isPrefixOf` l = openreview l
                  | anyPrefix l ["https://www.biorxiv.org/content/", "https://www.medrxiv.org/content/"] = biorxiv l
                  | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l = pubmed l
@@ -1060,11 +1065,6 @@ processParagraphizer p a =
 --------------------------------------------
 -- String munging and processing
 --------------------------------------------
-
--- WARNING: Pandoc erases attributes set on `<figure>` like 'float-right', so blindly restore a float-right class to all <figure>s if there was one in the original (it's a hack, but I generally don't use any other classes besides 'float-right', or more than one image per annotation or mixed float/non-float, and it's a lot simpler...):
--- restoreFigureClass :: String -> String -> String
--- restoreFigureClass original final = foldr (\clss string -> if clss`isInfixOf`original then replace "<figure>" clss string else string) final classes
---   where classes = ["<figure class=\"float-right\">", "<figure class=\"invertible-auto float-right\">", "<figure class=\"invertible\">", "<figure class=\"invertible-auto float-right\">", "<figure class=\"width-full invertible-not\">"]
 
 -- so after meditating on it, I think I've decided how duplicate annotation links should be handled:
 --
@@ -2508,6 +2508,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" P &lt;", " <em>p</em> &lt;")
           , (" P &lt;", " <em>p</em> &lt;")
           , ("≤p≤",     " ≤ <em>p</em> ≤ ")
+          , (" d = ", " <em>d</em> = ")
           , ("( d = ", "(<em>d</em> = ")
           , ("(d = ", "(<em>d</em> = ")
           , ("(d < ", "(<em>d</em> < ")

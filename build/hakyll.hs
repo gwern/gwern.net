@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-06-09 18:19:33 gwern"
+When: Time-stamp: "2022-06-17 17:49:13 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -68,7 +68,7 @@ import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack
 -- local custom modules:
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToText, interwikiTestSuite)
-import LinkMetadata (isLocalLinkWalk, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString, tagsToLinksDiv, safeHtmlWriterOptions)
+import LinkMetadata (addLocalLinkWalk, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString, tagsToLinksDiv, safeHtmlWriterOptions)
 import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (linebreakingTransform, typographyTransform, invertImageInline, imageMagickDimensions)
 import LinkAuto (linkAuto)
@@ -283,7 +283,7 @@ pandocTransform md adb archived p = -- linkAuto needs to run before convertInter
                               _ <- createAnnotations md pw
                               let pb = walk (hasAnnotation md True) pw
                               pbt <- fmap typographyTransform . walkM (localizeLink adb archived) $ walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) pb
-                              let pbth = isLocalLinkWalk $ walk headerSelflink pbt
+                              let pbth = addLocalLinkWalk $ walk headerSelflink pbt
                               pbth' <- walkM invertImageInline pbth
                               pbth'' <- walkM imageSrcset pbth'
                               return pbth''
