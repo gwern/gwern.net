@@ -156,7 +156,7 @@ Extracts = {
                 target.removeAttribute("data-attribute-title");
             }
 
-            target.classList.remove("has-content", "has-annotation");
+            target.classList.remove("has-content", "has-annotation", "has-annotation-partial");
         };
 
         Extracts.popFrameProvider.removeTargetsWithin(container, Extracts.targets, restoreTarget);
@@ -1120,8 +1120,9 @@ Extracts = {
         //  Import the class(es) of the target.
         popFrame.classList.add(...target.classList);
         //  We then remove some of the imported classes.
-        popFrame.classList.remove("has-annotation", "has-content", "link-self",
-            "link-local", "spawns-popup", "spawns-popin", "uri");
+        popFrame.classList.remove("has-annotation", "has-annotation-partial", 
+        	"has-content", "link-self", "link-local", 
+        	"spawns-popup", "spawns-popin", "uri");
 
         //  Attempt to fill the popup.
         if (Extracts.fillPopFrame(popFrame) == false)
