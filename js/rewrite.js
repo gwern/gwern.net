@@ -249,8 +249,8 @@ function wrapTables(loadEventInfo) {
 }
 
 /*****************************************************************************/
-/*  Wrap each full-width table in a div.full-width-table-inner-wrapper, and 
-	also move the .collapse class (if any) from the outer wrapper to the table 
+/*  Wrap each full-width table in a div.full-width-table-inner-wrapper, and
+	also move the .collapse class (if any) from the outer wrapper to the table
 	(for consistency).
  */
 function wrapFullWidthTables(loadEventInfo) {
@@ -300,11 +300,11 @@ function wrapImages(loadEventInfo) {
 			return;
 
 		let figure = image.closest("figure");
-		if (   figure 
+		if (   figure
 			&& figure.querySelector("figcaption") != null)
 			return;
 
-		wrapElement(image, null, "FIGURE", true, 
+		wrapElement(image, null, "FIGURE", true,
 			[ "float-left", "float-right", "outline-not", "image-focus-not" ]);
 	}, null, loadEventInfo.document);
 }
@@ -748,10 +748,10 @@ function injectFootnoteSelfLinks(loadEventInfo) {
     let footnotes = Array.from(footnotesSection.querySelector("#footnotes > ol").children);
 
     for (let i = 0; i < footnotes.length; i++)
-        footnotes[i].insertAdjacentHTML("afterbegin", 
-        	`<a 
-        		href="#fn${(i + 1)}" 
-        		title="Link to footnote ${(i + 1)}" 
+        footnotes[i].insertAdjacentHTML("afterbegin",
+        	`<a
+        		href="#fn${(i + 1)}"
+        		title="Link to footnote ${(i + 1)}"
         		class="footnote-self-link"
         			>&nbsp;</a>`);
 }
@@ -787,7 +787,7 @@ function rewriteFootnoteBackLinks(loadEventInfo) {
 
 	/*	Base font size (1rem) is 20px at this time, making a good default.
 		That value might change later, but this’ll still be a fine default;
-		the width/height get adjusted below, anyway, so no big deal if the 
+		the width/height get adjusted below, anyway, so no big deal if the
 		default is not the final value. We mostly care about having _a_ value
 		for the width/height for page load performance reasons.
 	 */
@@ -924,7 +924,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     rewriteFootnoteBackLinks(info);
 }, {
 	phase: "rewrite",
-	condition: (info) => (   info.needsRewrite 
+	condition: (info) => (   info.needsRewrite
 						  && info.isFullPage)
 });
 
@@ -971,15 +971,11 @@ function addSpecialLinkClasses(loadEventInfo) {
         } else if (link.pathname.slice(1).match(/[\.]/) == null) {
             link.swapClasses([ "link-self", "link-local" ], 1);
         }
-
-		//	NOTE: TEMPORARY HACK!
-		if (link.classList.contains("link-annotated-partial"))
-			link.classList.add("link-annotated");
     });
 }
 
 /************************************************************************/
-/*	Assign proper link icons to self-links (directional or otherwise) and 
+/*	Assign proper link icons to self-links (directional or otherwise) and
 	local links.
  */
 function designateSpecialLinkIcons(loadEventInfo) {
@@ -991,10 +987,10 @@ function designateSpecialLinkIcons(loadEventInfo) {
 		link.dataset.linkIcon = "\u{00B6}"; // ¶
 
 		/*  Directional navigation links on self-links: for each self-link like
-			“see [later](#later-identifier)”, find the linked identifier, 
-			whether it’s before or after, and if it is before/previously, 
-			annotate the self-link with ‘↑’ and if after/later, ‘↓’. This helps 
-			the reader know if it’s a backwards link to an identifier already 
+			“see [later](#later-identifier)”, find the linked identifier,
+			whether it’s before or after, and if it is before/previously,
+			annotate the self-link with ‘↑’ and if after/later, ‘↓’. This helps
+			the reader know if it’s a backwards link to an identifier already
 			read, or an unread identifier.
 		 */
         let target = loadEventInfo.document.querySelector(selectorFromHash(link.hash));
@@ -1002,7 +998,7 @@ function designateSpecialLinkIcons(loadEventInfo) {
         	return;
 
         link.dataset.linkIconType = "svg";
-        link.dataset.linkIcon = 
+        link.dataset.linkIcon =
         	(link.compareDocumentPosition(target) == Node.DOCUMENT_POSITION_FOLLOWING
              ? 'arrow-down'
              : 'arrow-up');
@@ -1046,7 +1042,7 @@ function cleanUpImageAltText(loadEventInfo) {
 }
 
 /************************************************************************/
-/*	Prevent line breaks immediately before citations (which “orphans” the 
+/*	Prevent line breaks immediately before citations (which “orphans” the
 	citation on the next line, and looks ugly).
  */
 function noBreakForCitations(loadEventInfo) {
@@ -1342,7 +1338,7 @@ function reportBrokenAnchorLink(link) {
 function brokenAnchorCheck() {
 	GWLog("brokenAnchorCheck", "rewrite.js", 1);
 
-	if (   location.hash > "" 
+	if (   location.hash > ""
 		&& /^#if_slide_([0-9]+)/.test(location.hash) == false
 		&& /^#:~:/.test(location.hash) == false
 		&& document.querySelector(selectorFromHash(location.hash)) == null)
