@@ -958,6 +958,10 @@ function addSpecialLinkClasses(loadEventInfo) {
     GWLog("addSpecialLinkClasses", "rewrite.js", 1);
 
     loadEventInfo.document.querySelectorAll(".markdownBody a[href]").forEach(link => {
+		//	NOTE: TEMPORARY HACK!
+		if (link.classList.contains("link-annotated-partial"))
+			link.classList.add("link-annotated");
+
         if (   link.hostname != location.hostname
             || link.closest("h1, h2, h3, h4, h5, h6")
             || link.closest(".section-self-link, .footnote-ref, .footnote-back, .footnote-self-link, .sidenote-self-link"))
@@ -971,10 +975,6 @@ function addSpecialLinkClasses(loadEventInfo) {
         } else if (link.pathname.slice(1).match(/[\.]/) == null) {
             link.swapClasses([ "link-self", "link-local" ], 1);
         }
-
-		//	NOTE: TEMPORARY HACK!
-		if (link.classList.contains("link-annotated-partial"))
-			link.classList.add("link-annotated");
     });
 }
 
