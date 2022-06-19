@@ -42,7 +42,10 @@
 Extracts.targetTypeDefinitions.insertBefore([
     "ANNOTATION",               // Type name
     "isAnnotatedLink",          // Type predicate function
-    "has-annotation",           // Target classes to add
+    (target) =>           		// Target classes to add
+    	(target.classList.contains("link-annotated-partial")
+    	 ? "has-annotation-partial"
+    	 : "has-annotation"),
     "annotationForTarget",      // Pop-frame fill function
     "annotation"                // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
@@ -158,25 +161,28 @@ Extracts = { ...Extracts, ...{
                                     >${referenceData.titleHTML}</a>`;
 
         //  Similars, backlinks, tags.
-        let auxLinks = ``;
+        let auxLinks = [ ];
         if (referenceData.backlinksHTML == ``) {
             if (referenceData.tagsHTML > ``)
-                auxLinks += `; <span class="data-field link-tags">${referenceData.tagsHTML}</span>`;
+                auxLinks.push(`<span class="data-field link-tags">${referenceData.tagsHTML}</span>`);
         } else {
             if (referenceData.tagsHTML > ``)
-                auxLinks += `; ${referenceData.tagsHTML}`;
+                auxLinks.push(referenceData.tagsHTML);
 
-            auxLinks += `; ${referenceData.backlinksHTML}`;
+            auxLinks.push(referenceData.backlinksHTML);
         }
-        auxLinks += (referenceData.similarHTML
-                     ? `; ${referenceData.similarHTML}`
-                     : ``);
+        if (referenceData.similarHTML) {
+			auxLinks.push(referenceData.similarHTML);
+		}
+		auxLinks = auxLinks.join("; ");
 
-        //  The fully constructed annotation pop-frame contents.
+		//	Special class for the abstract for certain annotation sources.
         let abstractSpecialClass = ``;
         if (isWikipediaLink)
             abstractSpecialClass = "wikipedia-entry";
 
+        //  The fully constructed annotation pop-frame contents.
+        let authorDateAuxSeparator = (referenceData.authorHTML || referenceData.dateHTML) ? "; " : "";
         let constructedAnnotation = Extracts.newDocument(
               `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
             /*  Suppress the author block in WP popups; we have nothing more
@@ -191,9 +197,10 @@ Extracts = { ...Extracts, ...{
              */
             + (isWikipediaLink
                ? ``
-               : `<p class="data-field author-date-aux">${referenceData.authorHTML}${referenceData.dateHTML}${auxLinks}</p>`)
+               : `<p class="data-field author-date-aux">${referenceData.authorHTML}${referenceData.dateHTML}${authorDateAuxSeparator}${auxLinks}</p>`)
             + `<div class="data-field annotation-abstract ${abstractSpecialClass}"></div>`);
-        constructedAnnotation.querySelector(".annotation-abstract").appendChild(referenceData.abstract);
+        if (referenceData.abstract)
+	        constructedAnnotation.querySelector(".annotation-abstract").appendChild(referenceData.abstract);
 
         //  Fire contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {

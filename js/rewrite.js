@@ -971,6 +971,10 @@ function addSpecialLinkClasses(loadEventInfo) {
         } else if (link.pathname.slice(1).match(/[\.]/) == null) {
             link.swapClasses([ "link-self", "link-local" ], 1);
         }
+
+		//	NOTE: TEMPORARY HACK!
+		if (link.classList.contains("link-annotated-partial"))
+			link.classList.add("link-annotated");
     });
 }
 

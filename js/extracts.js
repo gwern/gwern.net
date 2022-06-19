@@ -107,8 +107,12 @@ Extracts = {
                     return false;
 
                 //  Added specified classes to the target.
-                if (targetTypeInfo.targetClasses)
-                    target.classList.add(...(targetTypeInfo.targetClasses.split(" ")));
+                if (targetTypeInfo.targetClasses) {
+                	if (typeof targetTypeInfo.targetClasses == "string")
+	                    target.classList.add(...(targetTypeInfo.targetClasses.split(" ")));
+	                else if (typeof targetTypeInfo.targetClasses == "function")
+	                	target.classList.add(...(targetTypeInfo.targetClasses(target).split(" ")));
+                }
 
                 return true;
             }

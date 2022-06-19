@@ -3165,6 +3165,9 @@ body.index-directory #footer {
 .popframe-body.annotation .data-field.annotation-abstract {
     margin-top: 0.5em;
 }
+.popframe-body.annotation .data-field.annotation-abstract:empty {
+    display: none;
+}
 
 /*  Images (such as the ones in Wikipedia pop-frames).
     */

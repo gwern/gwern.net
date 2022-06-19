@@ -204,11 +204,14 @@ Annotations = {
         // Link Tags
         let tagsElement = referenceEntry.querySelector(".link-tags");
 
-        // the backlinks link (if exists)
+        //	The backlinks link (if exists).
         let backlinksElement = referenceEntry.querySelector(".backlinks");
 
-        // the similar-links link (if exists)
+        //	The similar-links link (if exists).
         let similarElement = referenceEntry.querySelector(".similars");
+
+		//	Abstract (if exists).
+		let abstractElement = referenceEntry.querySelector("blockquote");
 
         return {
             element:        referenceElement,
@@ -220,7 +223,7 @@ Annotations = {
             tagsHTML:       (tagsElement ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>` : ``),
             backlinksHTML:  (backlinksElement ? `<span class="data-field backlinks">${backlinksElement.innerHTML}</span>` : ``),
             similarHTML:    (similarElement ? `<span class="data-field similars" >${similarElement.innerHTML}</span>` : ``),
-            abstract:   	Extracts.newDocument(referenceEntry.querySelector("blockquote").children)
+            abstract:   	(abstractElement ? Extracts.newDocument(abstractElement.children) : null)
         };
     },
 
