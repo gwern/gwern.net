@@ -25,6 +25,8 @@ import Data.List (isPrefixOf)
 import Data.Maybe (isJust, fromJust)
 import System.Environment (getArgs)
 import System.Directory (doesDirectoryExist, doesFileExist)
+import Text.Pandoc (Inline(Link), nullAttr)
+import Data.Text as T (pack)
 
 import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml, MetadataList, MetadataItem)
 
@@ -81,7 +83,7 @@ changeAndWriteTags t i c p a = do let cP = hasItem i c
 -- to work with (and will do auto.yaml → partial.yaml).
 addNewLink :: String -> String -> IO ()
 addNewLink tag p = do md <- readLinkMetadata
-                      _ <- annotateLink md p
+                      _ <- annotateLink md (Link nullAttr [] (T.pack p, T.pack ""))
                       changeOneTag p tag -- if returnValue then changeOneTag p tag else error ("annotateLink returned False! " ++ show tag ++ " : " ++ show p)
 
 changeTag, addTag, removeTag :: String -> MetadataList -> String -> MetadataList

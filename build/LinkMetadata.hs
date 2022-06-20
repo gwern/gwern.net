@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-19 21:23:23 gwern"
+When:  Time-stamp: "2022-06-20 12:42:07 gwern"
 License: CC-0
 -}
 
@@ -69,8 +69,8 @@ addLocalLinkWalk :: Pandoc -> Pandoc
 addLocalLinkWalk = walk addLocalLink
 
 addLocalLink :: Inline -> Inline
-addLocalLink y@(Link (a,b,c) e (f,g)) = if "link-local" `elem` b then y else
-                                         if not (isLocalPath f) then y else Link (a, "link-local" : b, c) e (f, g)
+addLocalLink y@(Link (a,b,c) e (f,g)) = if "link-local" `elem` b || not (isLocalPath f) then y
+                                        else Link (a, "link-local" : b, c) e (f, g)
 addLocalLink x = x
 
 isLocalPath :: T.Text -> Bool
@@ -194,7 +194,7 @@ readLinkMetadataAndCheck = do
              let final = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto) -- left-biased, so 'custom' overrides 'partial' overrides 'auto'
 
              -- check validity of all external links:
-             let urlsAll = filter (\(x@(u:_),_) -> if u == '/' || u == '!' || u == '$' || u == '\8383' ||
+             let urlsAll = filter (\(x@(u:_),_) -> if u `elem` ['/', '!', '$', '\8383'] ||
                                                       "wikipedia.org" `isInfixOf` x || "hoogle.haskell.org" `isInfixOf` x then False
                                                  else not (isURIReference x)) (M.toList final)
              unless (null urlsAll) $ printRed "Invalid URIs?" >> printGreen (ppShow urlsAll)
@@ -208,12 +208,12 @@ readLinkMetadataAndCheck = do
              unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in YAMLs!: " >> printGreen (show (titles \\ nubOrd titles))
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) (M.toList final)
-             Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex) (error $ "Mixed up author & date?: " ++ a) ) authors
+             Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex) (printRed $ "Mixed up author & date?: " ++ a) ) authors
              let authorsSemicolon = filter (';' `elem`) authors
              unless (null authorsSemicolon) (printRed "Semicolons & not comma-separated author list?" >> printGreen (ppShow authorsSemicolon))
 
              let dates = map (\(_,(_,_,dt,_,_,_)) -> dt) (M.toList final) in
-               Par.mapM_ (\d -> unless (null d) $ unless (d =~ dateRegex) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
+               Par.mapM_ (\d -> unless (null d) $ unless (d =~ dateRegex) (printRed $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
 
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.
              let titlesEmpty = M.filter (\(t,_,_,_,_,abst) -> t=="" && length abst > 100) final
@@ -543,7 +543,7 @@ url2Tags p = concat $ map (\(match,tag) -> if match p then [tag] else []) urlTag
           , (("https://dresdencodak.com"`isPrefixOf`), "humor")
           , (("https://www.theonion.com"`isPrefixOf`), "humor")
           , (("https://tvtropes.org"`isPrefixOf`), "fiction")
-          , (("evageeks.org"`isInfixOf`),  "anime/eva")
+          , ((\u -> anyInfix u ["evageeks.org","eva.onegeek.org"]),  "anime/eva")
           , (("evamonkey.com"`isInfixOf`), "anime/eva")
           , (("r-project.org"`isInfixOf`), "cs/r")
           , (("haskell.org"`isInfixOf`), "cs/haskell")
@@ -816,7 +816,7 @@ linkDispatcher :: Inline -> IO (Either Failure (Path, MetadataItem))
 linkDispatcher (Link _ _ (l, tooltip)) = do l' <- linkDispatcherURL (T.unpack l)
                                             case l' of
                                               Right _ -> return l'
-                                              Left Permanent -> let (title,author,date) = tooltipToMetadata (T.unpack tooltip) in
+                                              Left Permanent -> let (title,author,date) = tooltipToMetadata (T.unpack l) (T.unpack tooltip) in
                                                                   if title/="" then return (Right ((T.unpack l),(title,author,date,"",[],""))) else return l'
                                               Left Temporary -> return l'
 linkDispatcher x = error ("linkDispatcher passed a non-Link Inline element: " ++ show x)
@@ -839,19 +839,41 @@ linkDispatcherURL l | anyPrefix l ["/metadata/annotations/backlinks/", "/metadat
                     else return (Left Permanent)
 
 -- Attempt to parse tooltips back into citation metadata:
---
--- "?Title1 Title2's First Word Title3?, Foo et al 2020a" -> ("Title1 Title2's First Word Title3","Foo, et al","2020")
--- "'Title1 Title2's First Word Title3', Foo & Bar 2020a" -> ("Title1 Title2's First Word Title3","Foo, Bar","2020")
--- "'Title1 Title2's First Word Title3', Foo 2020a" -> ("Title1 Title2's First Word Title3","Foo","2020")
--- "'Title1 Title2's First Word Title3', John Smith 2020" -> ("Title1 Title2's First Word Title3","John Smith","2020")
-tooltipToMetadata :: String -> (String,String,String)
-tooltipToMetadata "" = ("","","")
-tooltipToMetadata s = let title  = sed "['‘“](.+)['’”], .*" "\\1" s
-                          author = sed "^Branwen$" "Gwern Branwen" $ replace " et al" ", et al" $ replace " & " ", " $ sed "['‘“].+['’”], ([A-Z].*) [0-9]+[a-z]?" "\\1" s
-                          date   = sed "['‘“].+['’”], [A-Z].* ([0-9]+)[a-z]?" "\\1" s
-                          (a,b,c) = (changed title, changed author, changed date) in
-                        if a==b && b==c then (s,"","") else (a,b,c)
+tooltipToMetadata :: String -> String -> (String,String,String)
+tooltipToMetadata _ "" = ("","","")
+tooltipToMetadata path s | (head s) `elem` ['/', '!', '$', '\8383'] || anyInfix s ["Original URL:"] = ("","","")
+                    | otherwise =
+                        let title  = filterMeta $ sed "['‘“](.*)['’”], .*" "\\1" s
+                            author = filterMeta $  sed "^Branwen$" "Gwern Branwen" $ replace " et al" ", et al" $ replace " & " ", " $
+                                     sed "^([A-Z].*) [0-9][0-9][0-9][0-9][0-9-]*[a-z]?$" "\\1" $
+                                     sed "['‘“].*['’”], ([A-Z].+) [0-9][0-9][0-9][0-9][0-9-]*[a-z]?" "\\1" s
+                            date   = filterMeta $ sed "^[A-Za-z].+ ([0-9][0-9][0-9][0-9][0-9-]*)[a-z]?$" "\\1" $ sed "['‘“].+['’”], [A-Za-z].+ ([0-9][0-9][0-9][0-9][0-9-]*)[a-z]?$" "\\1" s
+                            pageNumber = let n = pageNumberParse path in if null n then "" else " § pg" ++ n
+                            (a,b,c) = ((minLength 6 $ changed title)++pageNumber, changed author, minLength 4 $ changed date) in
+                          if a==b && b==c then (s,"","") else (a,b,c)
                     where changed x = if s==x then "" else x
+                          minLength n x = if length x < n then "" else x
+tooltipToMetadataTest :: [(String,(String,String,String))]
+tooltipToMetadataTest = filter (\(t1, t2) -> tooltipToMetadata "" t1 /= t2)
+    [("‘Title1 Title2's First Word Title3’, Foo et al 2020a",    ("Title1 Title2's First Word Title3","Foo, et al","2020"))
+      , ("“Title1 Title2's First Word Title3”, Foo et al 2020a", ("Title1 Title2's First Word Title3","Foo, et al","2020"))
+      , ("'Title1 Title2's First Word Title3', Foo & Bar 2020a", ("Title1 Title2's First Word Title3","Foo, Bar","2020"))
+      , ("'Title1 Title2's First Word Title3', Foo 2020a",       ("Title1 Title2's First Word Title3","Foo","2020"))
+      , ("'Title1 Title2's First Word Title3', John Smith 2020", ("Title1 Title2's First Word Title3","John Smith","2020"))
+      , ("'Montaillou: The Promised Land of Error: chapter 2, the <em>domus</em>', Le Roy Ladurie 1978", ("Montaillou: The Promised Land of Error: chapter 2, the <em>domus</em>", "Le Roy Ladurie", "1978"))
+      , ("'Meta-meta-blinker', Adam P. Goucher 2016-12-15", ("Meta-meta-blinker", "Adam P. Goucher", "2016-12-15"))
+      , ("'Formal Theory of Creativity & Fun & Intrinsic Motivation (1990-2010)', Jurgen Schmidhuber 2010", ("Formal Theory of Creativity & Fun & Intrinsic Motivation (1990-2010)", "Jurgen Schmidhuber", "2010"))
+      , ( "$5",      ("","",""))
+      , ( "$20, 2g", ("","",""))
+      , ("!W",       ("","",""))
+      , ("₿20",      ("","",""))
+      , ("'LaMDA: Language Models for Dialog Applications', Thoppilan?et?al?2022 (Original URL: https://arxiv.org/abs/2201.08239#google )", ("","",""))
+      , ("'A', John Smith 2020", ("","John Smith","2020"))
+      , ("klynch 2011",     ("","","2011"))
+      , ("Foo 2020",        ("", "Foo", "2020"))
+      , ("Foo 2020-06-12",  ("", "Foo", "2020-06-12"))
+      , ("John Smith 2020", ("", "John Smith", "2020"))
+      ]
 
 gwern, arxiv, biorxiv, pubmed, openreview :: Path -> IO (Either Failure (Path, MetadataItem))
 -- handles both PM & PLOS right now:
@@ -867,9 +889,14 @@ pubmed l = do checkURL l
                              abstract' <- processParagraphizer l $ processPubMedAbstract $ unlines abstrct
                              return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim $ processDOI doi, ts, abstract'))
 
+ -- eg "foo.pdf#page=50&org=openai" → "50"; "foo.pdf" → ""
+pageNumberParse :: String -> String
+pageNumberParse u = let pg = sed ".*\\.pdf#page=([0-9]+).*" "\\1" u
+                    in if u == pg then "" else pg
+
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
 pdf p = do let p' = takeWhile (/='#') p
-           let pageNumber = sed ".*\\.pdf#page=([0-9]+).*" "\\1" p -- eg "foo.pdf#page=50&org=openai" → "50"
+           let pageNumber = pageNumberParse p
            let pageNumber' = if pageNumber == p then "" else pageNumber
 
            (_,_,mbTitle)  <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title",  "-Title",  p']
@@ -902,8 +929,8 @@ pdf p = do let p' = takeWhile (/='#') p
 filterMeta :: String -> String
 filterMeta ea = if anyInfix ea badSubstrings || elem ea badWholes then "" else ea
  where badSubstrings, badWholes :: [String]
-       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd", "pdftk-java", "OP-ESRJ", "FUJIT S. U.", "JRC5"]
-       badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf", "comp", "khan", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo", "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "mchahino"]
+       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd", "pdftk-java", "OP-ESRJ", "FUJIT S. U.", "JRC5", "klynch", "pruich"]
+       badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association", "om", "lhf", "comp", "khan", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo", "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "mchahino"]
 
 -- nested JSON object: eg. 'jq .message.abstract'
 newtype Crossref = Crossref { message :: Message } deriving (Show,Generic)
