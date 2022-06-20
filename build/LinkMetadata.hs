@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-19 11:09:21 gwern"
+When:  Time-stamp: "2022-06-19 19:59:43 gwern"
 License: CC-0
 -}
 
@@ -56,8 +56,8 @@ import Typography (typographyTransform, titlecase', invertImage)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink (getSimilarLink, getBackLink)
-import Query (extractURLs, truncateTOCHTML)
-import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split, pairs)
+import Query (truncateTOCHTML, extractLinksInlines)
+import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split, pairs, anyPrefixT, hasAny)
 
 ----
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
@@ -317,14 +317,15 @@ typesetHtmlField orig t = let fieldPandocMaybe = runPure $ readHtml def{readerEx
 
 -- walk each page, extract the links, and create annotations as necessary for new links
 createAnnotations :: Metadata -> Pandoc -> IO ()
-createAnnotations md (Pandoc _ markdown) = mapM_ (annotateLink md . T.unpack) $ extractURLs (Pandoc nullMeta markdown)
+createAnnotations md (Pandoc _ markdown) = mapM_ (annotateLink md) $ extractLinksInlines (Pandoc nullMeta markdown)
 
-annotateLink :: Metadata -> String -> IO Bool
-annotateLink md target
-  | "/metadata/" `isPrefixOf` target || "#" `isPrefixOf` target || "$" `isPrefixOf` target || "!" `isPrefixOf` target || "\8383" `isPrefixOf` target = return False
+annotateLink :: Metadata -> Inline -> IO Bool
+annotateLink md x@(Link (_,_,_) _ (targetT,_))
+  | anyPrefixT targetT ["/metadata/", "#", "$", "!", "\8383"] = return False
   | otherwise =
-  do when (null target) $ error (show target)
-     when ((reverse $ take 3 $ reverse target) == "%20" || last target == ' ') $ error $ "URL ends in space? " ++ target
+  do let target = T.unpack targetT
+     when (null target) $ error (show x)
+     when ((reverse $ take 3 $ reverse target) == "%20" || last target == ' ') $ error $ "URL ends in space? " ++ target ++ " (" ++ show x ++ ")"
      -- normalize: convert 'https://www.gwern.net/docs/foo.pdf' to '/docs/foo.pdf' and './docs/foo.pdf' to '/docs/foo.pdf'
      -- the leading '/' indicates this is a local Gwern.net file
      let target' = replace "https://www.gwern.net/" "/" target
@@ -333,18 +334,18 @@ annotateLink md target
      -- check local link validity: every local link except tags should exist on-disk:
      when (head target'' == '/' && not ("/metadata/annotations/" `isPrefixOf` target'')) $
        do isDirectory <- doesDirectoryExist (tail target'')
-          when isDirectory $ error ("Attempted to annotate a directory, which is not allowed (links must be to files or $DIRECTORY/index): " ++ target' ++ " : " ++ target)
+          when isDirectory $ error ("Attempted to annotate a directory, which is not allowed (links must be to files or $DIRECTORY/index): " ++ target' ++ " : " ++ target ++ " (" ++ show x ++ ")")
           let target''' = (\f -> if '.' `notElem` f then f ++ ".page" else f) $ takeWhile (/='#') $ tail target''
 
           unless (takeFileName target''' == "index" || takeFileName target''' == "index.page") $
              do exist <- doesFileExist target'''
-                unless exist $ printRed ("Link error in 'annotateLink': file does not exist? " ++ target''' ++ " (" ++target++")")
+                unless exist $ printRed ("Link error in 'annotateLink': file does not exist? " ++ target''' ++ " (" ++target++")" ++ " (" ++ show x ++ ")")
 
      let annotated = M.lookup target'' md
      case annotated of
        -- the link has a valid annotation already defined, so we're done: nothing changed.
        Just _  -> return False
-       Nothing -> do new <- linkDispatcher target''
+       Nothing -> do new <- linkDispatcher x
                      case new of
                        -- some failures we don't want to cache because they may succeed when checked differently or later on or should be fixed:
                        Left Temporary -> return False
@@ -354,13 +355,14 @@ annotateLink md target
                                        when (e=="") $ printGreen (f ++ " : " ++ show target ++ " : " ++ show y)
                                        -- return true because we *did* change the database & need to rebuild:
                                        appendLinkMetadata target'' m >> return True
+annotateLink _ x = error ("annotateLink was passed an Inline which was not a Link: " ++ show x)
 
 -- walk the page, and modify each URL to specify if it has an annotation available or not:
 hasAnnotation :: Metadata -> Bool -> Block -> Block
 hasAnnotation md idp = walk (hasAnnotationInline md idp)
     where hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
           hasAnnotationInline mdb idBool y@(Link (a,classes,c) d (f,g)) =
-            if "link-annotated-not" `elem` classes || "idNot" `elem` classes then y
+            if hasAny ["link-annotated-not", "idNot", "link-annotated-partial", "link-annotated-partial"] classes then y
             else
               let f' = linkCanonicalize $ T.unpack f in
                 case M.lookup f' mdb of
@@ -412,7 +414,7 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                               -- Just ("",   _,_,_,_,_)  -> nonAnnotatedLink
                               -- Just (_,    _,_,_,_,"") -> nonAnnotatedLink
                               Just (tle,aut,dt,doi,ts,abst) ->
-                                let tle' = if null tle then f else tle
+                                let tle' = if null tle then "<code>"++f++"</code>" else tle
                                     lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
                                     authorShort = authorsTruncate aut
                                     authorSpan = if aut/=authorShort then Span ("", ["author"], [("title",T.pack aut)]) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
@@ -811,9 +813,16 @@ appendLinkMetadata l i@(t,a,d,di,ts,abst) = lock $ do printGreen (l ++ " : " ++ 
 
 data Failure = Temporary | Permanent deriving Show
 
-linkDispatcher :: Path -> IO (Either Failure (Path, MetadataItem))
-gwern, arxiv, biorxiv, pubmed, openreview :: Path -> IO (Either Failure (Path, MetadataItem))
-linkDispatcher l | anyPrefix l ["/metadata/annotations/backlinks/", "/metadata/annotations/similars/"] = return (Left Permanent)
+linkDispatcher :: Inline -> IO (Either Failure (Path, MetadataItem))
+linkDispatcher (Link _ _ (l, tooltip)) = do l' <- linkDispatcherURL (T.unpack l)
+                                            case l' of
+                                              Right _ -> return l'
+                                              Left Permanent -> let (title,author,date) = tooltipToMetadata (T.unpack tooltip) in
+                                                                  if title/="" then return (Right ((T.unpack l),(title,author,date,"",[],""))) else return l'
+                                              Left Temporary -> return l'
+linkDispatcher x = error ("linkDispatcher passed a non-Link Inline element: " ++ show x)
+linkDispatcherURL :: Path -> IO (Either Failure (Path, MetadataItem))
+linkDispatcherURL l | anyPrefix l ["/metadata/annotations/backlinks/", "/metadata/annotations/similars/"] = return (Left Permanent)
                  -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for directory-tags.
                  | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return $ Right (l, (wikipediaURLToTitle l, "", "", "", [], ""))
                  | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
@@ -830,6 +839,22 @@ linkDispatcher l | anyPrefix l ["/metadata/annotations/backlinks/", "/metadata/a
                  -- And everything else is unhandled:
                     else return (Left Permanent)
 
+-- Attempt to parse tooltips back into citation metadata:
+--
+-- "?Title1 Title2's First Word Title3?, Foo et al 2020a" -> ("Title1 Title2's First Word Title3","Foo, et al","2020")
+-- "'Title1 Title2's First Word Title3', Foo & Bar 2020a" -> ("Title1 Title2's First Word Title3","Foo, Bar","2020")
+-- "'Title1 Title2's First Word Title3', Foo 2020a" -> ("Title1 Title2's First Word Title3","Foo","2020")
+-- "'Title1 Title2's First Word Title3', John Smith 2020" -> ("Title1 Title2's First Word Title3","John Smith","2020")
+tooltipToMetadata :: String -> (String,String,String)
+tooltipToMetadata "" = ("","","")
+tooltipToMetadata s = let title  = sed "['‘“](.+)['’”], .*" "\\1" s
+                          author = replace " et al" ", et al" $ replace " & " ", " $ sed "['‘“].+['’”], ([A-Z].*) [0-9]+[a-z]?" "\\1" s
+                          date   = sed "['‘“].+['’”], [A-Z].* ([0-9]+)[a-z]?" "\\1" s
+                          (a,b,c) = (changed title, changed author, changed date) in
+                        if a==b && b==c then (s,"","") else (a,b,c)
+                    where changed x = if s==x then "" else x
+
+gwern, arxiv, biorxiv, pubmed, openreview :: Path -> IO (Either Failure (Path, MetadataItem))
 -- handles both PM & PLOS right now:
 pubmed l = do checkURL l
               (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
