@@ -179,7 +179,7 @@ Annotations = {
 	/*	Note on annotation data sources:
 
 		More data sources may be added. Any data source object must have these
-		three properties, each a function with the given signature:
+		four properties, each a function with the given signature:
 
 		matches: (string) => boolean
 		sourceURLForIdentifier: (string) => string
