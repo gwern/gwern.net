@@ -163,3 +163,13 @@ anyInfixT, anyPrefixT, anySuffixT :: T.Text -> [T.Text] -> Bool
 anyInfixT p = any (`T.isInfixOf` p)
 anyPrefixT p = any (`T.isPrefixOf` p)
 anySuffixT p = any (`T.isSuffixOf` p)
+
+
+{- | Returns true if the given list contains any of the elements in the search
+list. -}
+hasAny :: Eq a => [a]           -- ^ List of elements to look for
+       -> [a]                   -- ^ List to search
+       -> Bool                  -- ^ Result
+hasAny [] _          = False             -- An empty search list: always false
+hasAny _ []          = False             -- An empty list to scan: always false
+hasAny search (x:xs) = if x `elem` search then True else hasAny search xs

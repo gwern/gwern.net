@@ -1,12 +1,12 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2022-05-23 20:23:30 gwern"
+When:  Time-stamp: "2022-06-19 18:22:37 gwern"
 License: CC-0
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module Query (extractImages, extractLinks, extractLinksWith, extractURLs, extractURLsWith, extractURL, extractURLWith, extractURLsAndAnchorTooltips, parseMarkdownOrHTML, truncateTOCHTML) where
+module Query (extractImages, extractLinks, extractLinksWith, extractURLs, extractURLsWith, extractURL, extractURLWith, extractURLsAndAnchorTooltips, parseMarkdownOrHTML, truncateTOCHTML, extractLinksInlines) where
 
 import qualified Data.Text as T (append, init, drop, head, last, Text)
 import Text.Pandoc (def, pandocExtensions, queryWith, readerExtensions, readHtml, readMarkdown, Inline(Image, Link), runPure, Pandoc(..), Block(BulletList, OrderedList), nullMeta)
@@ -81,6 +81,12 @@ extractImages = queryWith extractImages'
  where extractImages' :: Inline -> [Inline]
        extractImages' x@Image{} = [x]
        extractImages' _ = []
+
+extractLinksInlines :: Pandoc -> [Inline] -- [Link]
+extractLinksInlines = queryWith extractLinksInlines'
+ where extractLinksInlines' :: Inline -> [Inline]
+       extractLinksInlines' x@Link{} = [x]
+       extractLinksInlines' _ = []
 
 -- testList :: [Block]
 -- testList = [BulletList [[Para [Link ("",[],[]) [Str "Foo"] ("#foo","title")]],[Para [Link ("",[],[]) [Str "Bar"] ("#bar","title")],BulletList[[Plain [Link ("",[],[]) [Str "Quux"] ("#quux","title")]]]],[Para [Link ("",[],[]) [Str "Baz"] ("#baz","title")]]]]
