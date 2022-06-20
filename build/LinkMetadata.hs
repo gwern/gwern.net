@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-18 17:18:42 gwern"
+When:  Time-stamp: "2022-06-19 11:09:21 gwern"
 License: CC-0
 -}
 
@@ -385,7 +385,7 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
                  |                  otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
            in -- erase link ID?
               if (length abstrct < minimumAnnotationLength) && not forcep then
-                if "link-local" `elem` b then x else (Link (a',b++["link-annotated-partial"],c) e (f,g')) -- always add the ID if possible
+                if "link-local" `elem` b then x else (Link (a',nubOrd (b++["link-annotated", "link-annotated-partial"]),c) e (f,g')) -- always add the ID if possible
               else
                 -- -- for directory-tags, we can write a header like '/docs/bitcoin/nashx/index' as an annotation,
                 -- -- but this is a special case: we do *not* want to popup just the header, but the whole index page.
@@ -721,7 +721,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
                              , ("^cs$", "CS")
                              , ("^cs/c$", "C")
                              , ("^cs/r$", "R")
-                             , ("^ai/", "AI/")
+                             -- , ("^ai/", "AI/")
                              , ("^ai$", "AI")
                              , ("^iq/", "IQ/")
                              , ("^iq$", "IQ")

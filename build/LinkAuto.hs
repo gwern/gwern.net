@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-06-09 08:58:04 gwern"
+When:  Time-stamp: "2022-06-18 14:22:48 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -78,8 +78,11 @@ linkAuto = linkAutoFiltered id
 
 -- if we want to run on just a subset of links (eg. remove all resulting links to Wikipedia, or delete a specific regexp match), we can pass in a filter:
 linkAutoFiltered :: ([(T.Text, T.Text)] -> [(T.Text, T.Text)]) -> Pandoc -> Pandoc
-linkAutoFiltered subsetter p = let customDefinitions' = filterMatches p $ filterDefinitions p (customDefinitions subsetter) in
-               if null customDefinitions' then p else topDown cleanUpDivsEmpty $ topDown cleanUpSpansLinkAutoSkipped $ cleanupNestedLinks $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
+linkAutoFiltered subsetter p =
+  let plain = simplifiedDoc p :: T.Text -- cache the plain text of the document
+  in if T.length plain < 1500 then p else
+       let customDefinitions' = filterMatches plain $ filterDefinitions p (customDefinitions subsetter) in
+         if null customDefinitions' then p else topDown cleanUpDivsEmpty $ topDown cleanUpSpansLinkAutoSkipped $ cleanupNestedLinks $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
 
 -----------
 
@@ -123,12 +126,12 @@ cleanupNestedLinks = topDown go
 -- NOTE: might need to generalize this to clean up other Span crud?
 cleanUpSpansLinkAutoSkipped :: [Inline] -> [Inline]
 cleanUpSpansLinkAutoSkipped [] = []
-cleanUpSpansLinkAutoSkipped ((Span (_,["link-auto-skipped"],_) payload):rest) = payload ++ rest
+cleanUpSpansLinkAutoSkipped (Span (_,["link-auto-skipped"],_) payload : rest) = payload ++ rest
 cleanUpSpansLinkAutoSkipped (r:rest) = r : cleanUpSpansLinkAutoSkipped rest
 
 cleanUpDivsEmpty :: [Block] -> [Block]
 cleanUpDivsEmpty [] = []
-cleanUpDivsEmpty ((Div ("",[],[]) payload):rest) = payload ++ rest
+cleanUpDivsEmpty (Div ("",[],[]) payload : rest) = payload ++ rest
 cleanUpDivsEmpty (r:rest) = r : cleanUpDivsEmpty rest -- if it is not a nullAttr, then it is important and carrying a class like "abstract" or something, and must be preserved.
 
 -----------
@@ -209,19 +212,17 @@ filterDefinitions p = let allLinks = S.fromList $ map (T.replace "https://www.gw
 -- list for matching regexps, giving something like 𝑂(log R) passes. Alternately, it may be possible
 -- to create a 'regexp trie' where the leaves are associated with each original regexp, and search
 -- the trie in parallel for all matching leaves.
-filterMatches :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
-filterMatches p definitions  = if False then -- T.length plain < 20000 then
-                                 -- for short texts like annotations, the recursive tree is extremely expensive, so just do the straight-line version:
-                                 if not (matchTest allRegex plain) then []
-                                 else filter (\(_,r,_) -> matchTest r plain) definitions
-                               -- if long (>10k characters), we start the tree slog:
-                               else filterMatch True definitions
+filterMatches :: T.Text -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
+filterMatches plain definitions  = if T.length plain < 10000 then
+                                       -- for short texts like annotations, the recursive tree is extremely expensive, so just do the straight-line version:
+                                       if not (matchTest allRegex plain) then []
+                                       else filter (\(_,r,_) -> matchTest r plain) definitions
+                                       -- if long (>10k characters), we start the tree slog:
+                                     else filterMatch True definitions
   where
-   plain :: T.Text -- cache the plain text of the document
-   plain = simplifiedDoc p
 
-   allRegex :: R.Regex
-   allRegex = masterRegex definitions
+   allRegex :: R.Regex -- in the default case of all regexes are valid (because nothing could be filtered out), use the precompiled top-level all-regex Regex value for efficiency, else, create a new one:
+   allRegex = masterRegex definitions -- if map (\(a,_,_) -> a) definitions == map fst custom then masterRegexAll else masterRegex definitions
 
    threadN :: Int
    threadN = unsafePerformIO getNumCapabilities
@@ -233,8 +234,8 @@ filterMatches p definitions  = if False then -- T.length plain < 20000 then
    -- divide-and-conquer recursion: if we have 1 regexp left to test, test it and return if matches or empty list otherwise;
    -- if we have more than one regexp, test the full list; if none match, return empty list, otherwise, split in half, and recurse on each half.
    filterMatch :: Bool -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
-   filterMatch _ [] = []
-   filterMatch _ [d] = if matchTest (masterRegex [d]) plain then [d] else [] -- only one match left, base case
+   filterMatch _ []  = []
+   filterMatch _ [d] = [d | matchTest (masterRegex [d]) plain] -- only one match left, base case
    -- if none of the regexps match, quit; if any match, then decide whether the remaining list is short enough to check 1 by 1, or if
    -- it is long enough that we should try to split it up into sublists and fork out the recursive call; doing a 'wide' recursion *should* be a lot faster than a binary tree
    filterMatch skipCheck ds
@@ -243,7 +244,7 @@ filterMatches p definitions  = if False then -- T.length plain < 20000 then
     | skipCheck = let subDefinitions = chunksOf ((length ds `div` threadN) `max` 2) ds
                   in concat $ parMap rseq (filterMatch False) subDefinitions
     | not (matchTest (masterRegex ds) plain) = []
-    | length ds < regexpsMax || threadN == 1  = concatMap ((filterMatch False) . return) ds -- in ghci, parallelism doesn't work, so just skip when we have 1 thread (==interpreted)
+    | length ds < regexpsMax || threadN == 1  = concatMap (filterMatch False . return) ds -- in ghci, parallelism doesn't work, so just skip when we have 1 thread (==interpreted)
     | otherwise =
       let subDefinitions = chunksOf ((length ds `div` threadN) `max` 2) ds
         in concat $ parMap rseq (filterMatch False) subDefinitions
@@ -251,6 +252,9 @@ filterMatches p definitions  = if False then -- T.length plain < 20000 then
 -- create a simple heuristic master regexp using alternation out of all possible regexes, for the heuristic check 'filterMatches'. WARNING: Depending on the regex library, just alternating regexes (rather than using a regexp trie) could potentially trigger an exponential explosion in RAM usage...
 masterRegex :: [(T.Text, R.Regex, T.Text)] -> R.Regex
 masterRegex ds = R.makeRegex $ T.intercalate "|" $ map (\(a,_,_) -> a) ds
+
+-- masterRegexAll :: R.Regex
+-- masterRegexAll = masterRegex (customDefinitions id)
 
 -- We want to match our given regexps by making them 'word-level' and matching on punctuation/whitespace delimiters. This avoids subword matches, for example, matching 'GAN' in 'StyleGAN' is undesirable.
 customDefinitionsR :: [(T.Text, T.Text)] -> [(T.Text, R.Regex, T.Text)]
@@ -262,11 +266,10 @@ customDefinitionsR = map (\(a,b) -> (a,
 
 -- validate and error out immediately if there are bad rewrites defined
 definitionsValidate :: [(T.Text, T.Text)] -> [(T.Text, T.Text)]
-definitionsValidate defs = if nub (map fst defs) /= map fst defs
-                    then error $ "Definition keys are not unique! Definitions: " ++ show (map fst defs)
-                    else if nub (map snd defs) /= map snd defs then
-                           error $ "Definition values are not unique! Definitions: " ++ show (map snd defs)
-                         else defs
+definitionsValidate defs
+    | nub (map fst defs) /= map fst defs = error $ "Definition keys are not unique! Definitions: "   ++ show (map fst defs)
+    | nub (map snd defs) /= map snd defs = error $ "Definition values are not unique! Definitions: " ++ show (map snd defs)
+    | otherwise = defs
 
 -- Create sorted (by length) list of (string/compiled-regexp/substitution) tuples.
 -- This can be filtered on the third value to remove redundant matches, and the first value can be
@@ -602,7 +605,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Eleme", "https://en.wikipedia.org/wiki/Ele.me")
         , ("Elo rating system", "https://en.wikipedia.org/wiki/Elo_rating_system")
         , ("Emacs", "https://en.wikipedia.org/wiki/Emacs")
-        , ("Epigrams in Programming", "/docs/cs/1982-perlis.pdf")
+        , ("Epigrams in Programming", "/docs/cs/algorithm/1982-perlis.pdf")
         , ("Equivalence [Pp]rinciple", "https://en.wikipedia.org/wiki/Equivalence_principle")
         , ("Eric S\\. Raymond", "https://en.wikipedia.org/wiki/Eric_S._Raymond")
         , ("Eugene Wigner", "https://en.wikipedia.org/wiki/Eugene_Wigner")
