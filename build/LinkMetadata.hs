@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-19 19:59:43 gwern"
+When:  Time-stamp: "2022-06-19 21:23:23 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags) where
+module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata) where
 
 import Control.Monad (unless, void, when, forM_)
 import Data.Aeson (eitherDecode, FromJSON)
@@ -90,13 +90,12 @@ isLocalPath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
 -- To rewrite a tag, eg 'conscientiousness' → 'psychology/personality/conscientiousness':
 -- > walkAndUpdateLinkMetadata (\(path,(title,author,date,doi,tags,abst)) -> return (path,(title,author,date,doi,
 --      map (\t -> if t/="conscientiousness" then t else "psychology/personality/conscientiousness") tags,  abst)) )
-walkAndUpdateLinkMetadata :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
-walkAndUpdateLinkMetadata f = do walkAndUpdateLinkMetadataYaml f "metadata/custom.yaml"
-                                 walkAndUpdateLinkMetadataYaml f "metadata/partial.yaml"
-                                 walkAndUpdateLinkMetadataYaml f "metadata/auto.yaml"
-                                 void readLinkMetadataAndCheck
-                                 printGreen "Validated all YAML post-update; exiting…"
-                                 return ()
+walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
+walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataYaml f "metadata/custom.yaml"
+                                       walkAndUpdateLinkMetadataYaml f "metadata/partial.yaml"
+                                       walkAndUpdateLinkMetadataYaml f "metadata/auto.yaml"
+                                       when check (readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting…")
+                                       return ()
 walkAndUpdateLinkMetadataYaml :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> Path -> IO ()
 walkAndUpdateLinkMetadataYaml f file = do db <- readYaml file
                                           db' <- mapM f db
@@ -104,7 +103,7 @@ walkAndUpdateLinkMetadataYaml f file = do db <- readYaml file
                                           printGreen $ "Updated " ++ file
 -- This can be run every few months to update abstracts (they generally don't change much).
 updateGwernEntries :: IO ()
-updateGwernEntries = walkAndUpdateLinkMetadata updateGwernEntry
+updateGwernEntries = walkAndUpdateLinkMetadata True updateGwernEntry
   where updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
         updateGwernEntry x@(path,(title,author,date,doi,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)) || "#manual-annotation" `isInfixOf` path then return x -- || not ("index"`isInfixOf` path)
             else do printGreen path
@@ -848,7 +847,7 @@ linkDispatcherURL l | anyPrefix l ["/metadata/annotations/backlinks/", "/metadat
 tooltipToMetadata :: String -> (String,String,String)
 tooltipToMetadata "" = ("","","")
 tooltipToMetadata s = let title  = sed "['‘“](.+)['’”], .*" "\\1" s
-                          author = replace " et al" ", et al" $ replace " & " ", " $ sed "['‘“].+['’”], ([A-Z].*) [0-9]+[a-z]?" "\\1" s
+                          author = sed "^Branwen$" "Gwern Branwen" $ replace " et al" ", et al" $ replace " & " ", " $ sed "['‘“].+['’”], ([A-Z].*) [0-9]+[a-z]?" "\\1" s
                           date   = sed "['‘“].+['’”], [A-Z].* ([0-9]+)[a-z]?" "\\1" s
                           (a,b,c) = (changed title, changed author, changed date) in
                         if a==b && b==c then (s,"","") else (a,b,c)
