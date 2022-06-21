@@ -308,8 +308,12 @@ Popups = {
 		target.popFrame = target.popup = Popups.newPopup(target);
 
 		//  Prepare the newly created popup for spawning.
-		if (!(target.popFrame = target.popup = target.preparePopup(target.popup)))
+		if (!(target.popFrame = target.popup = target.preparePopup(target.popup))) {
+			//	Reset cursor to normal.
+			Popups.clearWaitCursorForTarget(target);
+
 			return;
+		}
 
 		//  If title bar contents are provided, add a title bar (if needed).
 		if (  !target.popup.titleBar
