@@ -503,9 +503,9 @@ function onEventAfterDelayDo(target, triggerEventName, delay, func, cancelEventN
 /*	Causes an element’s contents to become selected.
  */
 function selectElementContents(element) {
-	var range = document.createRange();
+	let range = document.createRange();
 	range.selectNodeContents(element);
-	var selection = window.getSelection();
+	let selection = window.getSelection();
 	selection.removeAllRanges();
 	selection.addRange(range);
 }
