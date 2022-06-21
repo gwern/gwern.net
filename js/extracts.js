@@ -570,6 +570,42 @@ Extracts = {
         };
     },
 
+	//	Called by: Extracts.refreshPopFrameAfterLocalPageLoads
+	//	Called by: Extracts.refreshPopFrameAfterCodeFileLoads
+	//	Called by: Extracts.refreshPopFrameAfterAuxLinksLoad
+	postRefreshSuccessUpdatePopFrameForTarget: (target) => {
+        GWLog("Extracts.postRefreshSuccessUpdatePopFrameForTarget", "extracts.js", 2);
+
+		if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
+			return;
+
+		//  Re-spawn, or fill and rewrite, the pop-frame.
+		if (Extracts.popFrameProvider == Popups) {
+			Popups.spawnPopup(target);
+		} else if (Extracts.popFrameProvider == Popins) {
+			Extracts.fillPopFrame(target.popin);
+			target.popin.classList.toggle("loading", false);
+
+			Extracts.rewritePopinContent(target.popin);
+
+			requestAnimationFrame(() => {
+				Popins.scrollPopinIntoView(target.popin);
+			});
+		}
+	},
+
+	//	Called by: Extracts.refreshPopFrameAfterLocalPageLoads
+	//	Called by: Extracts.refreshPopFrameAfterCodeFileLoads
+	//	Called by: Extracts.refreshPopFrameAfterAuxLinksLoad
+	postRefreshFailureUpdatePopFrameForTarget: (target) => {
+        GWLog("Extracts.postRefreshFailureUpdatePopFrameForTarget", "extracts.js", 2);
+
+		if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
+			return;
+
+		target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+	},
+
     /***************************************************************************/
     /*  The target-testing and pop-frame-filling functions in this section
         come in sets, which define and implement classes of pop-frames
@@ -986,11 +1022,7 @@ Extracts = {
         doAjax({
             location: target.href,
             onSuccess: (event) => {
-                if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
-                    return;
-
 				let page = Extracts.newDocument(event.target.responseText);
-				page.isPage = true;
 
 				//	Get the page thumbnail URL and metadata.
 				let pageThumbnailMetaTag = page.querySelector("meta[property='og:image']");
@@ -1054,31 +1086,16 @@ Extracts = {
                  */
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
                     source: "Extracts.refreshPopFrameAfterLocalPageLoads",
-                    document: page,
+                    document: Extracts.cachedPages[target.pathname],
                     location: Extracts.locationForTarget(target),
                     flags: (  GW.contentDidLoadEventFlags.needsRewrite
                             | GW.contentDidLoadEventFlags.isFullPage)
                 });
 
-                //  Re-spawn, or fill and rewrite, the pop-frame.
-                if (Extracts.popFrameProvider == Popups) {
-                    Popups.spawnPopup(target);
-                } else if (Extracts.popFrameProvider == Popins) {
-                    Extracts.fillPopFrame(target.popin);
-                    target.popin.classList.toggle("loading", false);
-
-                    Extracts.rewritePopinContent(target.popin);
-
-                    requestAnimationFrame(() => {
-                        Popins.scrollPopinIntoView(target.popin);
-                    });
-                }
+				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
             },
             onFailure: (event) => {
-                if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
-                    return;
-
-                target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+                Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
             }
         });
     },

@@ -185,9 +185,6 @@ Extracts = { ...Extracts, ...{
         doAjax({
             location: target.href,
             onSuccess: (event) => {
-                if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
-                    return;
-
                 //  Cache the aux-links source.
                 Extracts.auxLinksCache[target.pathname] = Extracts.newDocument(event.target.responseText);
 
@@ -200,25 +197,10 @@ Extracts = { ...Extracts, ...{
                     flags: GW.contentDidLoadEventFlags.needsRewrite
                 });
 
-                //  Re-spawn, or fill and rewrite, the pop-frame.
-                if (Extracts.popFrameProvider == Popups) {
-                    Popups.spawnPopup(target);
-                } else if (Extracts.popFrameProvider == Popins) {
-                    Extracts.fillPopFrame(target.popin);
-                    target.popin.classList.toggle("loading", false);
-
-                    Extracts.rewritePopinContent(target.popin);
-
-                    requestAnimationFrame(() => {
-                        Popins.scrollPopinIntoView(target.popin);
-                    });
-                }
+				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
             },
             onFailure: (event) => {
-                if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
-                    return;
-
-                target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+                Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
             }
         });
     }
@@ -683,6 +665,8 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts, ...{
+	codeFilesCache: { },
+
     //  Used in: Extracts.isLocalCodeFileLink
     codeFileExtensions: [
         // truncated at 1000 lines for preview
@@ -718,51 +702,48 @@ Extracts = { ...Extracts, ...{
     localCodeFileForTarget: (target) => {
         GWLog("Extracts.localCodeFileForTarget", "extracts-content.js", 2);
 
-        let setPopFrameContent = Extracts.popFrameProvider.setPopFrameContent;
+		if (Extracts.codeFilesCache[target.pathname]) {
+			return Extracts.newDocument(Extracts.codeFilesCache[target.pathname]);
+		} else {
+			Extracts.refreshPopFrameAfterCodeFileLoads(target);
+
+            return Extracts.newDocument();
+		}
+	},
+
+    /*  Refresh (respawn or reload) a pop-frame for a local code file after the
+        code file loads.
+     */
+    //  Called by: Extracts.localCodeFileForTarget
+    refreshPopFrameAfterCodeFileLoads: (target) => {
+        GWLog("Extracts.refreshPopFrameAfterCodeFileLoads", "extracts-content.js", 2);
 
         target.popFrame.classList.toggle("loading", true);
+
         doAjax({
             location: target.href + ".html",
             onSuccess: (event) => {
-                if (!target.popFrame)
-                    return;
+				//	Cache the code file.
+				Extracts.codeFilesCache[target.pathname] = Extracts.newDocument(event.target.responseText);
 
-                target.popFrame.classList.toggle("loading", false);
-                setPopFrameContent(target.popFrame, Extracts.newDocument(event.target.responseText));
-
-                //  Do additional rewriting, if any.
-                if (Extracts.popFrameProvider == Popups)
-                    Extracts.rewritePopupContent(target.popup);
-                else // if (Extracts.popFrameProvider == Popins)
-                    Extracts.rewritePopinContent(target.popin);
+				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
             },
             onFailure: (event) => {
                 doAjax({
                     location: target.href,
                     onSuccess: (event) => {
-                        if (!target.popFrame)
-                            return;
-
-                        target.popFrame.classList.toggle("loading", false);
-
                         let htmlEncodedResponse = event.target.responseText.replace(/[<>]/g, c => ('&#' + c.charCodeAt(0) + ';'));
                         let lines = htmlEncodedResponse.split("\n");
                         htmlEncodedResponse = lines.map(line => `<span class="line">${(line || "&nbsp;")}</span>`).join("\n");
+                        let codeBlock = `<pre class="raw-code"><code>${htmlEncodedResponse}</code></pre>`;
 
-                        setPopFrameContent(target.popFrame, 
-                        	Extracts.newDocument(`<pre class="raw-code"><code>${htmlEncodedResponse}</code></pre>`));
+						//	Cache the code file.
+						Extracts.codeFilesCache[target.pathname] = Extracts.newDocument(codeBlock);
 
-                        //  Do additional rewriting, if any.
-                        if (Extracts.popFrameProvider == Popups)
-                            Extracts.rewritePopupContent(target.popup);
-                        else // if (Extracts.popFrameProvider == Popins)
-                            Extracts.rewritePopinContent(target.popin);
+						Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
                     },
                     onFailure: (event) => {
-                        if (!target.popFrame)
-                            return;
-
-                        target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+						Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
                     }
                 });
             }
@@ -846,8 +827,8 @@ Extracts = { ...Extracts, ...{
                 location: proxyURL.href,
                 params: { url: url.href },
                 onSuccess: (event) => {
-                    if (!target.popFrame)
-                        return;
+					if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
+						return;
 
                     let doc = document.createElement("DIV");
                     doc.innerHTML = event.target.responseText;
@@ -876,8 +857,8 @@ Extracts = { ...Extracts, ...{
                     target.popFrame.classList.toggle("loading", false);
                 },
                 onFailure: (event) => {
-                    if (!target.popFrame)
-                        return;
+					if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
+						return;
 
                     target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
                 }
