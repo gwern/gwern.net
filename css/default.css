@@ -962,13 +962,12 @@ blockquote table {
     padding: 0;
     border: none;
     background-color: inherit;
-    margin: 0;
     font-size: inherit;
     position: relative;
     z-index: 1;
     overflow: visible;
 }
-.epigraph blockquote {
+.epigraph > blockquote {
     width: -moz-fit-content;
     width: fit-content;
     margin: auto;
@@ -990,19 +989,24 @@ blockquote table {
     text-indent: 0;
 }
 
-.epigraph blockquote::before,
-.epigraph blockquote::after {
+.epigraph > blockquote blockquote p,
+.epigraph > blockquote blockquote p:last-child {
+	text-align: justify;
+}
+
+.epigraph > blockquote::before,
+.epigraph > blockquote::after {
     display: block;
     position: absolute;
     font-size: 2.5em;
     color: var(--GW-epigraph-quotation-mark-color);
 }
-.epigraph blockquote::before {
+.epigraph > blockquote::before {
     content: "\201C";
     left: -0.975em;
     top: -0.5em;
 }
-.epigraph blockquote::after {
+.epigraph > blockquote::after {
     content: "\201D";
     right: -0.975em;
     bottom: -1em;
@@ -1015,11 +1019,11 @@ blockquote table {
         font-size: 0.95em;
         overflow: visible;
     }
-    .epigraph blockquote::before {
+    .epigraph > blockquote::before {
         left: -0.375em;
         top: -0.75em;
     }
-    .epigraph blockquote::after {
+    .epigraph > blockquote::after {
         right: -0.375em;
         bottom: -1.25em;
     }

@@ -80,7 +80,7 @@ Sidenotes = {
 	bindSidenoteMouseEvents: () => {
 		GWLog("Sidenotes.bindSidenoteMouseEvents", "sidenotes.js", 1);
 
-		for (var i = 0; i < Sidenotes.citations.length; i++) {
+		for (let i = 0; i < Sidenotes.citations.length; i++) {
 			let citation = Sidenotes.citations[i];
 			let sidenote = Sidenotes.sidenoteDivs[i];
 
@@ -111,7 +111,7 @@ Sidenotes = {
 
 		/*  Identify new target counterpart, if any.
 			*/
-		var counterpart;
+		let counterpart;
 		if (location.hash.match(/#sn[0-9]/)) {
 			counterpart = document.querySelector("#fnref" + Sidenotes.noteNumberFromHash());
 		} else if (location.hash.match(/#fnref[0-9]/) && Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false) {
@@ -131,7 +131,7 @@ Sidenotes = {
 	updateSidenotesInCollapseBlocks: () => {
 		GWLog("Sidenotes.updateSidenotesInCollapseBlocks", "sidenotes.js", 1);
 
-		for (var i = 0; i < Sidenotes.citations.length; i++) {
+		for (let i = 0; i < Sidenotes.citations.length; i++) {
 			let citation = Sidenotes.citations[i];
 			let sidenote = Sidenotes.sidenoteDivs[i];
 
@@ -140,7 +140,7 @@ Sidenotes = {
 	},
 
 	getNextVisibleSidenote: (sidenote) => {
-		var nextSidenoteNumber;
+		let nextSidenoteNumber;
 		for (nextSidenoteNumber = sidenote.id.substr(2) + 2;
 			 (   nextSidenoteNumber <= Sidenotes.citations.length 
 			  && Sidenotes.sidenoteDivs[nextSidenoteNumber - 1].classList.contains("hidden"));
@@ -168,7 +168,7 @@ Sidenotes = {
 		/*  Initial layout (to force browser layout engine to compute sidenotes’
 			height for us).
 			*/
-		for (var i = 0; i < Sidenotes.citations.length; i++) {
+		for (let i = 0; i < Sidenotes.citations.length; i++) {
 			let sidenote = Sidenotes.sidenoteDivs[i];
 
 			/*  Check whether the sidenote is in the hidden sidenote storage (ie.
@@ -196,8 +196,8 @@ Sidenotes = {
 			sidenotes are excluded, by the presence of, eg. a full-width table).
 			NOTE: We assume that proscribed vertical ranges do NOT overlap.
 			*/
-		var proscribedVerticalRangesLeft = [ ];
-		var proscribedVerticalRangesRight = [ ];
+		let proscribedVerticalRangesLeft = [ ];
+		let proscribedVerticalRangesRight = [ ];
 		let leftColumnBoundingRect = Sidenotes.sidenoteColumnLeft.getBoundingClientRect();
 		let rightColumnBoundingRect = Sidenotes.sidenoteColumnRight.getBoundingClientRect();
 
@@ -233,7 +233,7 @@ Sidenotes = {
 			proscribed vertical ranges, such as those associated with full-width
 			tables).
 			*/
-		for (var i = 0; i < Sidenotes.citations.length; i++) {
+		for (let i = 0; i < Sidenotes.citations.length; i++) {
 			let sidenote = Sidenotes.sidenoteDivs[i];
 			let sidenoteNumber = sidenote.id.substr(2);
 
@@ -272,8 +272,8 @@ Sidenotes = {
 				narrowing down the room we have to work with (in which to place this
 				sidenote) from both sides.
 				*/
-			var nextProscribedRangeAfterSidenote = -1;
-			for (var j = 0; j < proscribedVerticalRanges.length; j++) {
+			let nextProscribedRangeAfterSidenote = -1;
+			for (let j = 0; j < proscribedVerticalRanges.length; j++) {
 				let rangeCountingUp = {
 					top:            proscribedVerticalRanges[j].top,
 					bottom:         proscribedVerticalRanges[j].bottom,
@@ -329,7 +329,7 @@ Sidenotes = {
 				will have to move it down, regardless of whether there’s a next
 				sidenote that would be overlapped.
 				*/
-			var overlapWithCeiling = room.ceiling - sidenoteFootprint.top;
+			let overlapWithCeiling = room.ceiling - sidenoteFootprint.top;
 			if (overlapWithCeiling > 0) {
 				GWLog(`Sidenote ${sidenoteNumber} overlaps its ceiling!`, "sidenotes.js", 2);
 
@@ -339,14 +339,14 @@ Sidenotes = {
 			}
 
 			//  Does this sidenote overlap its room’s floor?
-			var overlapWithFloor = sidenoteFootprint.bottom - room.floor;
+			let overlapWithFloor = sidenoteFootprint.bottom - room.floor;
 			if (overlapWithFloor > 0)
 				GWLog(`Sidenote ${sidenoteNumber} overlaps its floor by ${overlapWithFloor} pixels!`, "sidenotes.js", 2);
 
 			/*  Is there a next sidenote, and if so, is there any overlap between
 				it and this one?
 				*/
-			var overlapWithNextSidenote = nextSidenote ?
+			let overlapWithNextSidenote = nextSidenote ?
 										  (sidenoteFootprint.bottom - nextSidenote.offsetTop) :
 										  -1;
 			if (overlapWithNextSidenote > 0)
@@ -355,7 +355,7 @@ Sidenotes = {
 			/*  If the sidenote overlaps the next sidenote AND its room’s floor,
 				we want to know what it overlaps more.
 				*/
-			var overlapBelow = Math.max(overlapWithNextSidenote, overlapWithFloor);
+			let overlapBelow = Math.max(overlapWithNextSidenote, overlapWithFloor);
 
 			/*  If there’s no overlap with the room’s floor, and there’s no overlap
 				with the next sidenote (or there is no next sidenote), then the
@@ -467,7 +467,7 @@ Sidenotes = {
 		Sidenotes.sidenoteDivs = [ ];
 		//  The footnote references (citations).
 		Sidenotes.citations = Array.from(document.querySelectorAll("a.footnote-ref"));
-		for (var i = 0; i < Sidenotes.citations.length; i++) {
+		for (let i = 0; i < Sidenotes.citations.length; i++) {
 			//  Create the sidenote outer containing block...
 			let sidenote = document.createElement("DIV");
 			sidenote.classList.add("sidenote");
@@ -488,7 +488,7 @@ Sidenotes = {
 
 		/*  Create & inject the sidenote self-links (ie. boxed sidenote numbers).
 			*/
-		for (var i = 0; i < Sidenotes.citations.length; i++) {
+		for (let i = 0; i < Sidenotes.citations.length; i++) {
 			let sidenoteSelfLink = document.createElement("A");
 			sidenoteSelfLink.classList.add("sidenote-self-link");
 			sidenoteSelfLink.href = "#sn" + (i + 1);
@@ -575,10 +575,10 @@ Sidenotes = {
 			*/
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteCitationTargetsForCurrentMode", (mediaQuery) => {
-				for (var i = 0; i < Sidenotes.citations.length; i++)
+				for (let i = 0; i < Sidenotes.citations.length; i++)
 					Sidenotes.citations[i].href = (mediaQuery.matches ? "#fn" : "#sn") + (i + 1);
 			}, null, (mediaQuery) => {
-				for (var i = 0; i < Sidenotes.citations.length; i++)
+				for (let i = 0; i < Sidenotes.citations.length; i++)
 					Sidenotes.citations[i].href = "#fn" + (i + 1);
 			});
 		}, { once: true });

@@ -218,11 +218,12 @@ function wrapAll(selector, wrapClassOrFunction, wrapTagName = "DIV", root = docu
 /*	Replace an element with its contents.
  */
 function unwrap(wrapper) {
-	if (wrapper.parentElement) {
-		for (let node of wrapper.childNodes)
-			wrapper.parentElement.insertBefore(node, wrapper);
-		wrapper.remove();
-	}
+	if (wrapper.parentElement == null)
+		return;
+
+	while (wrapper.childNodes.length > 0)
+		wrapper.parentElement.insertBefore(wrapper.firstChild, wrapper);
+	wrapper.remove();
 }
 
 /*******************************************************/
@@ -699,7 +700,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 function stripTOCLinkSpans(loadEventInfo) {
     GWLog("stripTOCLinkSpans", "rewrite.js", 1);
 
-	unwrapAll(".TOC li a span:not([class])", loadEventInfo.document);
+	unwrapAll(".TOC li a > span:not([class])", loadEventInfo.document);
 }
 
 /*************************************************************/
