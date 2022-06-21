@@ -1140,8 +1140,13 @@ Extracts = {
 		  "inlined-styles", 
 		  "inlined-dark-mode-styles", 
 		  "inlined-fonts", 
-		  "graphical-link-icons" ].forEach(styleBlockID => {
-			let styleBlock = document.getElementById(styleBlockID).cloneNode(true);
+		  "graphical-link-icons",
+		  "mathjax-styles" ].forEach(styleBlockID => {
+		  	let existingStyleBlock = document.getElementById(styleBlockID);
+		  	if (existingStyleBlock == null)
+		  		return;
+
+			let styleBlock = existingStyleBlock.cloneNode(true);
 			popFrame.documentElement.insertBefore(styleBlock, popFrame.body);
 		});
 		document.querySelectorAll("link[rel='stylesheet']").forEach(cssLink => {
