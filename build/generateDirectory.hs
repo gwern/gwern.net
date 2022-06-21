@@ -19,7 +19,7 @@ import System.Directory (listDirectory, doesFileExist, doesDirectoryExist)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
-                    Block(BulletList, Header, Para, RawBlock), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline),  Pandoc(Pandoc))
+                    Block(BulletList, Div, Header, Para, RawBlock), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
 import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (append, pack, unpack)
 import System.IO (stderr, hPrint)
@@ -54,7 +54,6 @@ generateDirectory md dir'' = do
                 listDirectory dir''
   let direntries' = sort $ map (\entry -> "/"++dir''++entry) direntries
 
-  -- The 'see also' cross-referenced tag-directories.
   -- We allow tag-directories to be cross-listed, not just children.
   -- So '/docs/exercise/index' can be tagged with 'longevity', and it'll show up in the Directory section (not the Files/Links section!) of '/docs/longevity/index'.
   -- This allows cross-references without requiring deep nesting—'longevity/exercise' might seem OK enough (although it runs roughshod over a lot of the links in there...), but what about if there was a third? Or fourth?
@@ -88,9 +87,10 @@ generateDirectory md dir'' = do
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst)) ++ "\n"
   let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if not (captionText == "") then captionText else if not (altText == "") then altText else "") (head imageFirst))) ++ "'\n"
 
-  let header = generateYAMLHeader dir'' (getNewestDate links) (length dirsChildren + length dirsSeeAlsos, length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
+  let header = generateYAMLHeader dir'' (getNewestDate links) ((length dirsChildren + 1) + length dirsSeeAlsos, length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
   let directorySectionChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
-  let directorySectionSeeAlsos = if null dirsSeeAlsos then [] else generateDirectoryItems Nothing dir'' dirsSeeAlsos
+  let directorySectionSeeAlsos = generateDirectoryItems Nothing dir'' dirsSeeAlsos
+  let directorySection = Div ("see-alsos", ["directory-indexes", "columns", "directorySectionChildren"], []) [BulletList $ directorySectionChildren ++ directorySectionSeeAlsos]
 
   -- A directory-tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at the ID '/docs/foo/index#manual-annotation'
   let abstract = case M.lookup ("/"++dir''++"index#manual-annotation") md of
@@ -99,13 +99,11 @@ generateDirectory md dir'' = do
                    Just (_,_,_,_,_,dirAbstract) -> [parseRawBlock ("",["abstract"],[]) $ RawBlock (Format "html") (T.pack $ "<blockquote>"++dirAbstract++"</blockquote>")]
 
   -- When tag links elsewhere link to this page, they will target `#top-tag`. Should that point at # See Also (if it exists) or # Links?
+  -- TODO: with scraped abstracts of tag-directory indexes, is the top-tag trick necessary anymore? The indirection it helps cut out for live popups seems largely dealt with by the scraped TOC now...
   let (idSeealso, idLinks) = if null dirsSeeAlsos then ("","top-tag") else ("top-tag","")
   let body =   abstract ++
 
-               directorySectionChildren ++
-
-               (if null dirsSeeAlsos then [] else ([Header 1 (idSeealso, ["display-pop-not"], []) [Str "See Also"]] ++
-                                                  directorySectionSeeAlsos)) ++
+               [Header 1 (idSeealso, ["display-pop-not"], []) [Str "See Also"]] ++ [directorySection] ++
 
                (if null titledLinks then [] else
                    -- NOTE: we need a <h1> for proper hierarchical tree, but that <h1> uses up a lot of visual space in popups/popins, and we can't just suppress *all* first-<h1>s, we only want to suppress the ones on directory/tag pages. So we define a new class 'display-pop-not', and the CSS (in default.css's popups section) will suppress that in popups/popins.
@@ -114,7 +112,7 @@ generateDirectory md dir'' = do
                    titledLinksSections) ++
 
                (if null untitledLinks then [] else
-                   [Header 1 nullAttr [Str "Miscellaneous"]] ++
+                   Header 1 nullAttr [Str "Miscellaneous"] :
                    -- for lists, they *may* all be devoid of annotations and short
                    if not allUnannotatedUntitledP then [untitledLinksSection] else
                      [RawBlock (Format "html") "<div id=\"miscellaneous-links-list\" class=\"columns\">\n\n",
@@ -128,7 +126,7 @@ generateDirectory md dir'' = do
   case p of
     Left e   -> hPrint stderr e
     -- compare with the old version, and update if there are any differences:
-    Right p' -> do let contentsNew = (T.pack header) `T.append` p'
+    Right p' -> do let contentsNew = T.pack header `T.append` p'
                    writeUpdatedFile "directory" (dir'' ++ "index.page") contentsNew
 
 generateYAMLHeader :: FilePath -> String -> (Int,Int,Int) -> String -> String
@@ -136,10 +134,10 @@ generateYAMLHeader d date (directoryN,annotationN,linkN) thumbnail
   = concat [ "---\n",
              "title: " ++ T.unpack (abbreviateTag (T.pack (replace "docs/" "" (init d)))) ++ " directory\n",
              "author: 'N/A'\n",
-             "description: 'Annotated bibliography for the tag-directory <code>/" ++ d ++ "</code>, most recent first:" ++
-              " " ++ show directoryN ++ " related tag" ++ pl directoryN ++ ", " ++
-               show annotationN ++ " annotation" ++ pl annotationN ++ ", " ++
-               show linkN ++ " link" ++ pl linkN ++ ".'\n",
+             "description: 'Annotated bibliography for the tag-directory <code>/" ++ d ++ "</code>, most recent first: " ++
+              (if directoryN == 0 then "" else "" ++ show directoryN ++ " <a href=\"/"++d++"index#see-alsos\">related tag" ++ pl directoryN ++ "</a>, ") ++
+               show annotationN ++ " <a href=\"/"++d++"index#links\">annotation" ++ pl annotationN ++ "</a>, " ++
+               show linkN ++ " <a href=\"/"++d++"index#miscellaneous\">link" ++ pl linkN ++ "</a>" ++ ".'\n",
              thumbnail,
              "created: 'N/A'\n",
              if date=="" then "" else "modified: " ++ date ++ "\n",
@@ -156,7 +154,7 @@ generateYAMLHeader d date (directoryN,annotationN,linkN) thumbnail
 listDirectories :: [FilePath] -> IO [FilePath]
 listDirectories direntries' = do
                        directories <- filterM (doesDirectoryExist . tail) $ map (sed "/index$" "/" . replace "/index.page" "/")  direntries'
-                       let directoriesMi = map (replace "//" "/") $ map (++"/index") directories
+                       let directoriesMi = map (replace "//" "/" . (++"/index")) directories
                        filterM (\f -> doesFileExist $ tail (f++".page")) directoriesMi
 
 listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath,FilePath)]
@@ -165,8 +163,8 @@ listFiles m direntries' = do
                    let files'          = (sort . filter (not . ("index"`isSuffixOf`)) . map (replace ".page" "") . filter ('#' `notElem`) . filter (not . isSuffixOf ".tar") ) files
                    let fileAnnotationsMi = map (lookupFallback m) files'
                    -- NOTE: files may be annotated only under a hash, eg. '/docs/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/docs/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/docs/ai/scaling/hardware/2021-norrie.pdf' → `('/docs/ai/scaling/hardware/2021-norrie.pdf#google',_)`
-                   backlinks    <- mapM getBackLink $ map fst fileAnnotationsMi
-                   similarlinks <- mapM getSimilarLink $ map fst fileAnnotationsMi
+                   backlinks    <- mapM (getBackLink . fst) fileAnnotationsMi
+                   similarlinks <- mapM (getSimilarLink . fst) fileAnnotationsMi
 
                    return $
                      zipWith3 (\(a,b) c d -> (a,b,c,d)) fileAnnotationsMi backlinks similarlinks
@@ -218,14 +216,12 @@ lookupFallback m u = case M.lookup u m of
                                                     if snd possibleFallback == ("", "", "", "", [], "") then (u, ("", "", "", "", [], "")) else
                                                       (u',snd possibleFallback))
 
-generateDirectoryItems :: Maybe FilePath -> FilePath -> [FilePath] -> [Block]
+generateDirectoryItems :: Maybe FilePath -> FilePath -> [FilePath] -> [[Block]]
 generateDirectoryItems parent current ds =
   -- all directories have a parent directory with an index (eg. /docs/index has the parent /index), so we always link it.
   -- (We pass in the parent path to write an absolute link instead of the easier '../' relative link, because relative links break inside popups.)
       -- for directories like ./docs/statistics/ where there are 9+ subdirectories, we'd like to multi-column the directory section to make it more compact (we can't for annotated files/links because there are so many annotations & they are too long to work all that nicely):
-     [RawBlock (Format "html") "<div class=\"directory-indexes columns\">\n"] ++
-     [BulletList $ parent'' ++ (filter (not . null) $ map generateDirectoryItem ds)] ++
-     [RawBlock (Format "html") "</div>"]
+     parent'' ++ (filter (not . null) (map generateDirectoryItem ds))
  where
        parent'' = case parent of
                      Nothing -> []
@@ -264,7 +260,7 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_) ->
 
 generateItem :: (FilePath,MetadataItem,FilePath,FilePath) -> [Block]
 generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) = -- no abstracts:
- if ("wikipedia"`isInfixOf`f) then [Para [Link nullAttr [Str "Wikipedia"] (T.pack f, T.pack $ "Wikipedia link about " ++ t)]]
+ if ("https://en.wikipedia.org/wiki/"`isInfixOf`f) then [Para [Link nullAttr [Str "Wikipedia"] (T.pack f, if t=="" then "" else T.pack $ "Wikipedia link about " ++ t)]]
  else
   let
        f'       = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
