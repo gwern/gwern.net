@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-20 12:42:07 gwern"
+When:  Time-stamp: "2022-06-20 17:55:26 gwern"
 License: CC-0
 -}
 
@@ -178,7 +178,7 @@ readLinkMetadataAndCheck = do
              -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such partial annotations can't be put into 'custom.yaml' without destroying all of the checks' validity.
              partial <- readYaml "metadata/partial.yaml"
              let (customPaths,partialPaths) = (map fst custom, map fst partial)
-             let redundantPartials = intersect customPaths partialPaths
+             let redundantPartials = customPaths `intersect` partialPaths
              unless (null redundantPartials) (printRed "Redundant entries in partial.yaml & custom.yaml: " >> printGreen (show redundantPartials))
 
              let urlsCP = map fst (custom ++ partial)
@@ -853,27 +853,27 @@ tooltipToMetadata path s | (head s) `elem` ['/', '!', '$', '\8383'] || anyInfix 
                           if a==b && b==c then (s,"","") else (a,b,c)
                     where changed x = if s==x then "" else x
                           minLength n x = if length x < n then "" else x
-tooltipToMetadataTest :: [(String,(String,String,String))]
-tooltipToMetadataTest = filter (\(t1, t2) -> tooltipToMetadata "" t1 /= t2)
-    [("‘Title1 Title2's First Word Title3’, Foo et al 2020a",    ("Title1 Title2's First Word Title3","Foo, et al","2020"))
-      , ("“Title1 Title2's First Word Title3”, Foo et al 2020a", ("Title1 Title2's First Word Title3","Foo, et al","2020"))
-      , ("'Title1 Title2's First Word Title3', Foo & Bar 2020a", ("Title1 Title2's First Word Title3","Foo, Bar","2020"))
-      , ("'Title1 Title2's First Word Title3', Foo 2020a",       ("Title1 Title2's First Word Title3","Foo","2020"))
-      , ("'Title1 Title2's First Word Title3', John Smith 2020", ("Title1 Title2's First Word Title3","John Smith","2020"))
-      , ("'Montaillou: The Promised Land of Error: chapter 2, the <em>domus</em>', Le Roy Ladurie 1978", ("Montaillou: The Promised Land of Error: chapter 2, the <em>domus</em>", "Le Roy Ladurie", "1978"))
-      , ("'Meta-meta-blinker', Adam P. Goucher 2016-12-15", ("Meta-meta-blinker", "Adam P. Goucher", "2016-12-15"))
-      , ("'Formal Theory of Creativity & Fun & Intrinsic Motivation (1990-2010)', Jurgen Schmidhuber 2010", ("Formal Theory of Creativity & Fun & Intrinsic Motivation (1990-2010)", "Jurgen Schmidhuber", "2010"))
-      , ( "$5",      ("","",""))
-      , ( "$20, 2g", ("","",""))
-      , ("!W",       ("","",""))
-      , ("₿20",      ("","",""))
-      , ("'LaMDA: Language Models for Dialog Applications', Thoppilan?et?al?2022 (Original URL: https://arxiv.org/abs/2201.08239#google )", ("","",""))
-      , ("'A', John Smith 2020", ("","John Smith","2020"))
-      , ("klynch 2011",     ("","","2011"))
-      , ("Foo 2020",        ("", "Foo", "2020"))
-      , ("Foo 2020-06-12",  ("", "Foo", "2020-06-12"))
-      , ("John Smith 2020", ("", "John Smith", "2020"))
-      ]
+-- tooltipToMetadataTest :: [(String,(String,String,String))]
+-- tooltipToMetadataTest = filter (\(t1, t2) -> tooltipToMetadata "" t1 /= t2)
+--     [("‘Title1 Title2's First Word Title3’, Foo et al 2020a",    ("Title1 Title2's First Word Title3","Foo, et al","2020"))
+--       , ("“Title1 Title2's First Word Title3”, Foo et al 2020a", ("Title1 Title2's First Word Title3","Foo, et al","2020"))
+--       , ("'Title1 Title2's First Word Title3', Foo & Bar 2020a", ("Title1 Title2's First Word Title3","Foo, Bar","2020"))
+--       , ("'Title1 Title2's First Word Title3', Foo 2020a",       ("Title1 Title2's First Word Title3","Foo","2020"))
+--       , ("'Title1 Title2's First Word Title3', John Smith 2020", ("Title1 Title2's First Word Title3","John Smith","2020"))
+--       , ("'Montaillou: The Promised Land of Error: chapter 2, the <em>domus</em>', Le Roy Ladurie 1978", ("Montaillou: The Promised Land of Error: chapter 2, the <em>domus</em>", "Le Roy Ladurie", "1978"))
+--       , ("'Meta-meta-blinker', Adam P. Goucher 2016-12-15", ("Meta-meta-blinker", "Adam P. Goucher", "2016-12-15"))
+--       , ("'Formal Theory of Creativity & Fun & Intrinsic Motivation (1990-2010)', Jurgen Schmidhuber 2010", ("Formal Theory of Creativity & Fun & Intrinsic Motivation (1990-2010)", "Jurgen Schmidhuber", "2010"))
+--       , ( "$5",      ("","",""))
+--       , ( "$20, 2g", ("","",""))
+--       , ("!W",       ("","",""))
+--       , ("₿20",      ("","",""))
+--       , ("'LaMDA: Language Models for Dialog Applications', Thoppilan?et?al?2022 (Original URL: https://arxiv.org/abs/2201.08239#google )", ("","",""))
+--       , ("'A', John Smith 2020", ("","John Smith","2020"))
+--       , ("klynch 2011",     ("","","2011"))
+--       , ("Foo 2020",        ("", "Foo", "2020"))
+--       , ("Foo 2020-06-12",  ("", "Foo", "2020-06-12"))
+--       , ("John Smith 2020", ("", "John Smith", "2020"))
+--       ]
 
 gwern, arxiv, biorxiv, pubmed, openreview :: Path -> IO (Either Failure (Path, MetadataItem))
 -- handles both PM & PLOS right now:
@@ -1630,10 +1630,15 @@ gwernTOC footnotesP p' f =
                               replace "<span>" "" $ replace "</span>" "" $ -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right?), we'll remove them.
                               (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then ("<div class=\"columns\" class=\"TOC\">" ++ toc ++ "</div>") else "") else replace "<a href=" "<a class=\"id-not\" href=") $
                               -- NOTE: we strip the `id="TOC"`, and all other link IDs on TOC subentries, deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies
-                              sed " id=\"[a-z0-9-]+\">" ">" $ replace " id=\"TOC\"" "" $
-                               renderTagsOptions renderOptions  ([TagOpen "div" [("class","columns")]] ++
-                                                                 (takeWhile (\e' -> e' /= TagClose "div")  $ dropWhile (\e -> e /=  (TagOpen "div" [("id","TOC"), ("class","TOC")])) f) ++
-                                                                 [TagClose "div"])
+                              sed " id=\"[a-z0-9-]+\">" ">" $ replace " id=\"TOC\"" "" $ index
+                              where
+                                index = if length indexType1 > length indexType2 then indexType1 else indexType2
+                                indexType1 = renderTagsOptions renderOptions $
+                                  takeWhile (\e' -> e' /= TagClose "div") $ dropWhile (\e -> e /=  (TagOpen "div" [("id","markdownBody"),("class","markdownBody directory-indexes columns")])) f
+                                indexType2 = renderTagsOptions renderOptions $
+                                             [TagOpen "div" [("class","columns")]] ++
+                                             (takeWhile (\e' -> e' /= TagClose "div")  $ dropWhile (\e -> e /=  (TagOpen "div" [("id","TOC"), ("class","TOC")])) f) ++
+                                             [TagClose "div"]
 
 
 gwernAbstract :: Bool -> String -> String -> String -> [Tag String] -> (String,String)
