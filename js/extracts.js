@@ -641,8 +641,9 @@ Extracts = {
         	&& (   fullTargetDocument
         		|| forceNarrow
         		|| target.closest(".TOC"))) {
-        	/*	Fall back to loaded and cached full page, if it exists but is
-        		not displayed in a pop-frame.
+        	/*	If the loaded and cached full page exists but is not displayed
+        		in a pop-frame, we get the linked block from there instead
+        		(we still only display the linked block, not the full page).
         	 */
             if (fullTargetDocument == null)
             	fullTargetDocument = Extracts.cachedPages[target.pathname];
@@ -651,7 +652,10 @@ Extracts = {
             	let linkedElement = fullTargetDocument.querySelector(selectorFromHash(target.hash));
 				return Extracts.newDocument(unwrapFunction(Extracts.nearestBlockElement(linkedElement)));
 			} else {
-				//	If the page hasn’t been loaded yet, load it.
+				/*	If the page hasn’t been loaded yet, load it; upon the 
+					reload, we’ll return here but take the previous (true) 
+					branch of this conditional.
+				 */
 				Extracts.refreshPopFrameAfterLocalPageLoads(target);
 
 				return Extracts.newDocument();

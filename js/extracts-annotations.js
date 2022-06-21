@@ -100,7 +100,7 @@ Extracts = { ...Extracts, ...{
             /*  If the annotation has yet to be loaded, we’ll ask for it to load,
                 and meanwhile wait, and do nothing yet.
              */
-            Extracts.refreshPopFrameAfterAnnotationLoads(target);
+            Extracts.refreshPopFrameAfterAnnotationDataLoads(target);
 
             return Extracts.newDocument();
         } else if (referenceData == "LOADING_FAILED") {
@@ -411,8 +411,8 @@ Extracts = { ...Extracts, ...{
         its annotation loads.
         */
     //  Called by: Extracts.annotationForTarget
-    refreshPopFrameAfterAnnotationLoads: (target) => {
-        GWLog("Extracts.refreshPopFrameAfterAnnotationLoads", "extracts-annotations.js", 2);
+    refreshPopFrameAfterAnnotationDataLoads: (target) => {
+        GWLog("Extracts.refreshPopFrameAfterAnnotationDataLoads", "extracts-annotations.js", 2);
 
         target.popFrame.classList.toggle("loading", true);
 
@@ -421,8 +421,8 @@ Extracts = { ...Extracts, ...{
             hasn’t de-spawned already, eg. if the user moused out of the
             target).
             */
-        GW.notificationCenter.addHandlerForEvent("Annotations.annotationDidLoad", target.refreshPopFrameWhenFragmentLoaded = (info) => {
-            GWLog("refreshPopFrameWhenFragmentLoaded", "extracts.js", 2);
+        GW.notificationCenter.addHandlerForEvent("Annotations.annotationDidLoad", target.refreshPopFrameWhenAnnotationDidLoad = (info) => {
+            GWLog("refreshPopFrameWhenAnnotationDidLoad", "extracts.js", 2);
 
             //  If the pop-frame has despawned, don’t respawn it.
             if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
@@ -443,8 +443,8 @@ Extracts = { ...Extracts, ...{
         }, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
 
         //  Add handler for if the annotation load fails.
-        GW.notificationCenter.addHandlerForEvent("Annotations.annotationLoadDidFail", target.updatePopFrameWhenFragmentLoadFails = (info) => {
-            GWLog("updatePopFrameWhenFragmentLoadFails", "extracts.js", 2);
+        GW.notificationCenter.addHandlerForEvent("Annotations.annotationLoadDidFail", target.updatePopFrameWhenAnnotationLoadDidFail = (info) => {
+            GWLog("updatePopFrameWhenAnnotationLoadDidFail", "extracts.js", 2);
 
             //  If the pop-frame has despawned, don’t respawn it.
             if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
