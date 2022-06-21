@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-20 17:55:26 gwern"
+When:  Time-stamp: "2022-06-21 12:21:13 gwern"
 License: CC-0
 -}
 
@@ -1628,12 +1628,12 @@ gwernTOC footnotesP p' f =
                        (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#footnotes\">Footnotes</a></li></ul></div>" tc) $ -- Pandoc declines to add an ID to footnotes section; on Gwern.net, we override this by at compile-time rewriting the <section> to have `#footnotes`
                               replace "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns\" class=\"TOC\">" $ -- add columns class to condense it in popups/tag-directories
                               replace "<span>" "" $ replace "</span>" "" $ -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right?), we'll remove them.
-                              (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then ("<div class=\"columns\" class=\"TOC\">" ++ toc ++ "</div>") else "") else replace "<a href=" "<a class=\"id-not\" href=") $
+                              (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then "<div class=\"columns\" class=\"TOC\">" ++ toc ++ "</div>" else "") else replace "<a href=" "<a class=\"id-not\" href=") $
                               -- NOTE: we strip the `id="TOC"`, and all other link IDs on TOC subentries, deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies
-                              sed " id=\"[a-z0-9-]+\">" ">" $ replace " id=\"TOC\"" "" $ index
+                              sed " id=\"[a-z0-9-]+\">" ">" $ replace " id=\"markdownBody\"" "" $ replace " id=\"TOC\"" "" index
                               where
                                 index = if length indexType1 > length indexType2 then indexType1 else indexType2
-                                indexType1 = renderTagsOptions renderOptions $
+                                indexType1 = replace "markdownBody" "" $ replace "directory-indexes" "" $ replace "columns" "columns TOC" $ renderTagsOptions renderOptions $
                                   takeWhile (\e' -> e' /= TagClose "div") $ dropWhile (\e -> e /=  (TagOpen "div" [("id","markdownBody"),("class","markdownBody directory-indexes columns")])) f
                                 indexType2 = renderTagsOptions renderOptions $
                                              [TagOpen "div" [("class","columns")]] ++
