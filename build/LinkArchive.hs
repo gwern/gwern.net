@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-06-16 10:27:58 gwern"
+When:  Time-stamp: "2022-06-21 08:55:55 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1196,5 +1196,6 @@ whiteList url
       , "https://unminify.com/" -- interactive service
       , "https://www.bulletproof.com/" -- homepage
       , "https://www.google.com/alerts" -- interactive service
+      , "http://darwintunes.org/" -- Soundcloud music embed doesn't preserve
       ] = True
     | otherwise = False

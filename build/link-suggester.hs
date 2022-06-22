@@ -206,7 +206,7 @@ filterAnchors   t = T.length t > anchorLengthMaximum ||
                        "matrix multiplication", "Silk Road 2", "Silk Road 2.0", "online", "Online", "side effects",
                        "status", "transcription/translation", "ADHD", "more difficult", "Johnson", "June 2016", "decline with age",
                        "criminal records", "the appendix", "API", "another page", "at least once", "must be", "expected from their",
-                       "animal welfare", "psychiatry", "the initial screening", "average-case", "go", "been removed", "mystical experience", "research in general", "been examined", "November 2021", "court records", "in a", "The Guardian", "suggests that", "learn faster", "project page", "psychiatry", "lifetime income", "December 2017", "January 2010", "another suggestion", "at all", "how long it takes", "sun", "music generation", "LW", "HN", "survey results", "1kg", "~6", "3D", "Rumi", ">>", "<<", "@9", "for example", "@8", "a laptop", "This paper", "this paper", "The results", "The problem", "Co", "field experiment", "@9", "@7", "@10", "body weight", "pdf", "on average", "one month", "for example", "For example", "into English", "meta", "8 years", "better performance", "more samples", "classifier", "I have", "an example", "scales with model size", "Appendix G", "delusional", "Code is available", "de facto", "the problem", "an article", "increased mortality", "young adults", "at night", "raw data", "into the abdomen", "well-known", "Human Intelligence", "Part 3", "autoregressive", "a new era", "vice-versa", "another example", "struggled for years", "a study", "1990s", "more examples", "Appendix B", "trans", "generalizability", "to test", "shut down"]
+                       "animal welfare", "psychiatry", "the initial screening", "average-case", "go", "been removed", "mystical experience", "research in general", "been examined", "November 2021", "court records", "in a", "The Guardian", "suggests that", "learn faster", "project page", "psychiatry", "lifetime income", "December 2017", "January 2010", "another suggestion", "at all", "how long it takes", "sun", "music generation", "LW", "HN", "survey results", "1kg", "~6", "3D", "Rumi", ">>", "<<", "@9", "for example", "@8", "a laptop", "This paper", "this paper", "The results", "The problem", "Co", "field experiment", "@9", "@7", "@10", "body weight", "pdf", "on average", "one month", "for example", "For example", "into English", "meta", "8 years", "better performance", "more samples", "classifier", "I have", "an example", "scales with model size", "Appendix G", "delusional", "Code is available", "de facto", "the problem", "an article", "increased mortality", "young adults", "at night", "raw data", "into the abdomen", "well-known", "Human Intelligence", "Part 3", "autoregressive", "a new era", "vice-versa", "another example", "struggled for years", "a study", "1990s", "more examples", "Appendix B", "trans", "generalizability", "to test", "shut down",  "English translation", "can influence"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteList :: M.Map T.Text [T.Text]
@@ -243,20 +243,20 @@ whiteList = M.fromList [
   , ( "/docs/anime/eva/2002-takeda-notenkimemoirs#the-daicon-3-decision"
     , [ "DAICON III" ]
     )
-  , ( "/docs/genetics/correlation/2014-mosing.pdf"
+  , ( "/docs/genetics/heritable/correlation/2014-mosing.pdf"
     , [ "Practice Does Not Make Perfect: No Causal Effect of Music Practice on Music Ability"
       ]
     )
-  , ( "/docs/genetics/correlation/2015-krapohl.pdf"
+  , ( "/docs/genetics/heritable/correlation/2015-krapohl.pdf"
     , [ "Krapohl et al 2015"
       , "Phenome-wide analysis of genome-wide polygenic scores"
       ]
     )
-  , ( "/docs/genetics/correlation/2015-pettersson.pdf"
+  , ( "/docs/genetics/heritable/correlation/2015-pettersson.pdf"
     , [ "Common psychiatric disorders [and violent crime] share the same genetic origin: a multivariate sibling study of the Swedish population"
       ]
     )
-  , ( "/docs/genetics/correlation/2015-zhu.pdf"
+  , ( "/docs/genetics/heritable/correlation/2015-zhu.pdf"
     , [ "Educational attainment-related loci identified by GWAS are associated with select personality traits and mathematics and language abilities"
       , "Zhu et al 2015"
       ]

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-21 12:21:13 gwern"
+When:  Time-stamp: "2022-06-21 22:53:50 gwern"
 License: CC-0
 -}
 
@@ -271,7 +271,7 @@ minimumAnnotationLength = 200
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Integer -> IO ()
 writeAnnotationFragments am md archived = mapM_ (\(p, mi) -> writeAnnotationFragment am md archived p mi) $ M.toList md
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Integer -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = -- when (length e > minimumAnnotationLength) $
+writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > minimumAnnotationLength) $ -- TODO: faster path for partials
                                           do let u' = linkCanonicalize u
                                              bl <- getBackLink u'
                                              sl <- getSimilarLink u'
@@ -722,7 +722,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
                              , ("^cs$", "CS")
                              , ("^cs/c$", "C")
                              , ("^cs/r$", "R")
-                             -- , ("^ai/", "AI/")
+                             , ("^ai/", "AI/")
                              , ("^ai$", "AI")
                              , ("^iq/", "IQ/")
                              , ("^iq$", "IQ")

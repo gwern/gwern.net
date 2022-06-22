@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-06-10 18:54:34 gwern"
+When:  Time-stamp: "2022-06-19 09:26:10 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -563,7 +563,7 @@ goodDomainsSimple =
     , "arima.cylab.cmu.edu"
     , "bair.berkeley.edu"
     , "behavioralscientist.org"
-    , "believermag.com"
+    , "culture.org"
     , "bitcoin-otc.com"
     , "bits.blogs.nytimes.com"
     , "blog.8faces.com"
@@ -3902,7 +3902,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://developer.twitter.com/en/docs/twitter-api/v1/rules-and-filtering/search-operators", False)
     , ("https://dharmaoverground.org/web/guest/discussion/-/message_boards/message/2718243#_com_liferay_message_boards_web_portlet_MBPortlet_message_2718243", False)
     , ("https://disease-connect.org/", False)
-    , ("https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3474085.3475293&file=MM21-fp0702.mp4.mp4", False)
+    , ("/images/gan/stylegan/2021-li-dplase-ganlatentspaceeditingvideo.mp4", False)
     , ("https://dnd.wizards.com/articles/news/dungeons-dragons-teams-my-little-pony", False)
     , ("https://docs.microsoft.com/en-us/archive/blogs/larryosterman/one-in-a-million-is-next-tuesday", False)
     , ("https://donate.torproject.org/", False)

@@ -74,7 +74,7 @@ missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, 
                                in map (\u -> (u, fromJust $ M.lookup u md)) missing
 
   where minimumLength :: Int
-        minimumLength = 400 -- how many characters long should metadata be before it is worth trying to embed?
+        minimumLength = 450 -- how many characters long should metadata be before it is worth trying to embed?
 
 -- convert an annotated item into a single text string: concatenate the useful metadata in a OA API-aware way.
 formatDoc :: (String,MetadataItem) -> T.Text
@@ -178,7 +178,7 @@ findN f k e@(p1,_,_) = let results = take bestNEmbeddings $ nub $ filter (\(p2,_
 
 -- some weird cases: for example, “Estimating the effect-size of gene dosage on cognitive ability across the coding genome” is somehow close to *every* embedding...?
 blackList :: String -> Bool
-blackList p = p `elem` ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554v1.full", "/docs/genetics/correlation/2019-kandler.pdf"]
+blackList p = p `elem` ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554v1.full", "/docs/genetics/heritable/correlation/2019-kandler.pdf"]
 
 -- hyperparameterSweep :: Embeddings -> [(Double, (Int,Int,Int))]
 -- hyperparameterSweep edb =
