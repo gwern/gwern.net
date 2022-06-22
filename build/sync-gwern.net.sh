@@ -49,11 +49,11 @@ else
     renice -n 15 "$$" &>/dev/null
 
     ## Parallelization: WARNING: post-2022-03 Hakyll uses parallelism which catastrophically slows down at >= # of physical cores; see <https://groups.google.com/g/hakyll/c/5_evK9wCb7M/m/3oQYlX9PAAAJ>
-    N="$(if [ ${#} == 0 ]; then echo 24; else echo "$1"; fi)"
+    N="$(if [ ${#} == 0 ]; then echo 26; else echo "$1"; fi)"
 
     (cd ~/wiki/ && git status || true) &
     bold "Pulling infrastructure updates…"
-    (cd ./static/ && git status && git pull --verbose 'https://gwern.obormot.net/static/.git/' master || true)
+    (cd ./static/ && git status && timeout 10m git pull --verbose 'https://gwern.obormot.net/static/.git/' master || true)
 
     bold "Executing string rewrite cleanups…" # automatically clean up some Gwern.net bad URL patterns, typos, inconsistencies, house-styles:
     (gwsed 'https://mobile.twitter.com' 'https://twitter.com' & gwsed 'https://twitter.com/' 'https://nitter.hu/' & gwsed 'https://mobile.twitter.com/' 'https://nitter.hu/' & gwsed 'https://www.twitter.com/' 'https://nitter.hu/' & gwsed 'https://www.reddit.com/r/' 'https://old.reddit.com/r/' & gwsed 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/' & gwsed 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts' & gwsed '&hl=en' '' & gwsed '?hl=en&' '?' & gwsed '?hl=en' '' & gwsed '?usp=sharing' '' & gwsed '<p> ' '<p>' & gwsed 'EMBASE' 'Embase' & gwsed 'Medline' 'MEDLINE' & gwsed 'PsychINFO' 'PsycINFO' & gwsed 'http://web.archive.org/web/' 'https://web.archive.org/web/' & gwsed 'https://youtu.be/' 'https://www.youtube.com/watch?v=' & gwsed '.html?pagewanted=all' '.html' & gwsed '(ie,' '(ie.' & gwsed '(ie ' '(ie. ' & gwsed '(i.e.,' '(ie.' & gwsed 'ie., ' 'ie. ' & gwsed '(i.e.' '(ie.' & gwsed '(eg, ' '(eg. ' & gwsed ' eg ' ' eg. ' & gwsed '(eg ' '(eg. ' & gwsed '[eg ' '[eg. ' & gwsed 'e.g. ' 'eg. ' & gwsed ' e.g. ' ' eg. ' & gwsed 'e.g.,' 'eg.' & gwsed 'eg.,' 'eg.' & gwsed ']^[' '] ^[' & gwsed ' et al., ' ' et al ' & gwsed 'et al., ' 'et al ' & gwsed '(cf ' '(cf. ' & gwsed ' cf ' ' cf. ' & gwsed ' _n_s' ' <em>n</em>s' & gwsed ' (n = ' ' (<em>n</em> = ' & gwsed ' (N = ' ' (<em>n</em> = ' & gwsed '<sup>St</sup>' '<sup>st</sup>' & gwsed '<sup>Th</sup>' '<sup>th</sup>' & gwsed '<sup>Rd</sup>' '<sup>rd</sup>' & gwsed ' de novo ' ' <em>de novo</em> ' & gwsed ' De Novo ' ' <em>De Novo</em> '  &  gwsed ', Jr.' ' Junior' & gwsed ' Jr.' ' Junior' & gwsed ', Junior' ' Junior' & gwsed '.full-text' '.full' & gwsed '.full.full' '.full' & gwsed '.full-text' '.full' & gwsed '.full-text.full' '.full' & gwsed '.full.full.full' '.full' & gwsed '.full.full' '.full' & gwsed '#allen#allen' '#allen' & gwsed '#deepmind#deepmind' '#deepmind' & gwsed '&org=deepmind&org=deepmind' '&org=deepmind' &  gwsed '#nvidia#nvidia' '#nvidia' & gwsed '#openai#openai' '#openai' & gwsed '#google#google' '#google' & gwsed '#uber#uber' '#uber' & gwsed 'MSCOCO' 'MS COCO' & gwsed '&feature=youtu.be' '' & gwsed 'Rene Girard' 'René Girard' & gwsed 'facebookok' 'facebook' & gwsed ':443/' '/'  &  gwsed 'border colly' 'border collie'  &  gwsed ':80/' '/'  &  gwsed '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P' & gwsed 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com' & gwsed '?s=r' '' & gwsed 'backlinks-not' 'backlink-not') &> /dev/null
@@ -161,7 +161,7 @@ else
     find _site/ -type f,l -name "*.R" -or -name "*.c" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.diff" -or -name "*.py" -or -name "*.sh" -or -name "*.bash" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.page" -or -name "*.txt" -or -name "*.json" -or -name "*.jsonl" -or -name "*.yaml" -or -name "*.xml" -or -name "*.csv"  | \
         sort |  fgrep -v \
                  `# Pandoc fails on embedded Unicode/regexps in JQuery` \
-                 -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'static/js/tablesorter.js' \
+                 -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' \
                  -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'docs/www/' | parallel  --jobs 25 syntaxHighlight
     set -e
 
@@ -208,7 +208,8 @@ else
             cat "$@" | ~/src/node_modules/mathjax-node-page/bin/mjpage --output CommonHTML --fontURL '/static/font/mathjax' | \
             ## WARNING: experimental CSS optimization: can't figure out where MathJax generates its CSS which is compiled,
             ## but it potentially blocks rendering without a 'font-display: swap;' parameter (which is perfectly safe since the user won't see any math early on)
-                sed -e 's/^\@font-face {/\@font-face {font-display: swap; /' >> "$TARGET";
+                sed -e 's/^\@font-face {/\@font-face {font-display: swap; /' \
+                    -e 's/<style type="text\/css">\.mjx-chtml/<style id="mathjax-styles" type="text\/css">.mjx-chtml/' >> "$TARGET";
 
             if [[ -s "$TARGET" ]]; then
                 mv "$TARGET" "$@" && echo "$@ succeeded";
