@@ -419,6 +419,9 @@ else
     λ(){ gf -e ' significant'  ./metadata/custom.yaml; }
     wrap λ "Misleading language in custom.yaml"
 
+    λ(){ gf -e '/docs/www/'  ./metadata/custom.yaml; }
+    wrap λ "Generated local archive links showing up in manual annotations."
+
     λ(){ gf -e 'backlinks/' -e 'metadata/annotations/' -e '?gi=' -- ./metadata/backlinks.hs; }
     wrap λ "Bad paths in backlinks databases: metadata paths are being annotated when they should not be!"
 
@@ -534,6 +537,8 @@ else
          cr 'https://www.gwern.net/docs/elections/2012-gwern-notes.txt' 'https://www.gwern.net/docs/statistics/prediction/election/2012-gwern-notes.txt'
          cr 'https://www.gwern.net/docs/statistics/peerreview/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf' 'https://www.gwern.net/docs/statistics/peer-review/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf'
          cr 'https://www.gwern.net/docs/longnow/form990-longnowfoundation-2001-12.pdf' 'https://www.gwern.net/docs/long-now/form990-longnowfoundation-2001-12.pdf'
+         cr 'https://www.gwern.net/docs/eva/2011-house' 'https://www.gwern.net/docs/anime/eva/2011-house'
+         cr 'https://www.gwern.net/docs/cs/1955-nash' 'https://www.gwern.net/docs/cs/cryptography/1955-nash'
        }
     wrap λ "Check that some redirects go where they should"
     λ() { cm () { [[ "$1" != $(c --write-out '%{content_type}' "$2") ]] && echo "$1" "$2"; }

@@ -78,13 +78,15 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
   -- !Wikipedia
   (Link nullAttr [Str "Pondicherry"] ("!Wikipedia",""),
     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
-    , (Link nullAttr [Emph [Str "Monty Python's Life of Brian"]] ("!Wikipedia",""),
-    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Monty Python's Life of Brian"]] ("https://en.wikipedia.org/wiki/Monty_Python's_Life_of_Brian", ""))
+  , (Link nullAttr [Emph [Str "Monty Python's Life of Brian"]] ("!Wikipedia",""),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Monty Python's Life of Brian"]] ("https://en.wikipedia.org/wiki/Monty_Python's_Life_of_Brian", ""))
   , (Link nullAttr [Str "SHA-1#Attacks"] ("!Wikipedia",""),
-    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "SHA-1#Attacks"] ("https://en.wikipedia.org/wiki/SHA-1#Attacks", ""))
-    , (Link nullAttr [Str "C++ templates"] ("!Wikipedia","Template (C++)"),
-    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "C++ templates"] ("https://en.wikipedia.org/wiki/Template_(C++)", ""))
-    , (Link nullAttr [Str "Aaahh!!! Real Monsters"] ("!Wikipedia",""),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "SHA-1#Attacks"] ("https://en.wikipedia.org/wiki/SHA-1#Attacks", ""))
+  , (Link nullAttr [Str "Bayesian search theory"] ("!Wikipedia","USS Scorpion (SSN-589)#Search: 1968"),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Bayesian search theory"] ("https://en.wikipedia.org/wiki/USS_Scorpion_(SSN-589)#Search:_1968", ""))
+  , (Link nullAttr [Str "C++ templates"] ("!Wikipedia","Template (C++)"),
+     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "C++ templates"] ("https://en.wikipedia.org/wiki/Template_(C++)", ""))
+  , (Link nullAttr [Str "Aaahh!!! Real Monsters"] ("!Wikipedia",""),
     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Aaahh!!! Real Monsters"] ("https://en.wikipedia.org/wiki/Aaahh%21%21%21_Real_Monsters", ""))
     , (Link nullAttr [Str "Senryū"] ("!Wikipedia",""),
     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Senryū"] ("https://en.wikipedia.org/wiki/Senry%C5%AB", ""))

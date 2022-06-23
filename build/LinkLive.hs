@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-06-19 09:26:10 gwern"
+When:  Time-stamp: "2022-06-22 17:51:50 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -3549,7 +3549,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.psychologytoday.com/us/blog/pristine-inner-experience/201110/not-everyone-conducts-inner-speech", False)
     , ("http://news.bbc.co.uk/2/hi/uk_news/3723839.stm", False)
     , ("https://www.facebook.com/permalink.php?story_fbid=224735391342335&id=100014176268390", False)
-    , ("http://chronopause.com/index.php/2011/02/11/thus-spake-curtis-henderson-part-5/", False)
+    , ("http://chronopause.com/chronopause.com/index.php/2011/02/11/thus-spake-curtis-henderson-part-5/", False)
     , ("https://gist.github.com/SigridK/c16ddc7b0f2a5bc01ea23d69569c6c0b", False)
     , ("https://www.atlasobscura.com/articles/what-bread-did-ancient-egyptians-eat", False)
     , ("https://if50.substack.com/p/1999-king-of-dragon-pass", False)
@@ -3812,7 +3812,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://repec.org/sed2006/up.30684.1139268077.pdf", False)
     , ("https://a16z.com/author/scott-kupor/", False)
     , ("https://about.netflix.com/en/news/2017-on-netflix-a-year-in-bingeing", False)
-    , ("https://adage.com/article/special-report-tv-upfront/fewer-tv-commercials/313183", False)
+    , ("https://adage.com/node/1206366/printable/print", False)
     , ("https://adcohearing.com/bvs_hear_loss.html", False)
     , ("https://advancedfertility.com/2020/08/17/weight-bmi-and-fertility-and-ivf-success/", False)
     , ("https://ai-alignment.com/", False)
@@ -4092,7 +4092,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://rd.springer.com/chapter/10.1007/978-3-030-42504-3_15", False)
     , ("https://repository.si.edu/bitstream/handle/10088/18355/nzp_changing_world_mcshea.pdf", False)
     , ("https://repository.uel.ac.uk/download/489cc10ec6c30da0e7bbdfb33898364c46ac9dcc727169bd1850016053e45278/347037/2013_Dawkins_e-cig_survey.pdf", False)
-    , ("https://research.facebook.com/do-jobs-run-in-families/", False)
+    , ("https://research.facebook.com/blog/2016/03/do-jobs-run-in-families/", False)
     , ("https://research.vu.nl/en/publications/sports-participation-during-adolescence-a-shift-from-environmenta", False)
     , ("https://reset.me/story/benefits-of-microdosing-with-lsd-and-psilocybin-mushrooms/", False)
     , ("https://risk-engineering.org/concept/Rasmussen-practical-drift", False)
