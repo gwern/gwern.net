@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-23 16:31:30 gwern"
+When:  Time-stamp: "2022-06-24 11:14:06 gwern"
 License: CC-0
 -}
 
@@ -113,7 +113,7 @@ updateGwernEntries = walkAndUpdateLinkMetadata True updateGwernEntry
                     case newEntry of
                       Left Temporary -> return x
                       Left Permanent -> return (path,(title,author,date,doi,tags,"")) -- zero out the abstract but preserve the other metadata; if we mistakenly scraped a page before and generated a pseudo-abstract, and have fixed that mistake so now it returns an error rather than pseudo-abstract, we want to erase that pseudo-abstract until such time as it returns a 'Right' (a successful real-abstract)
-                      Right (path', (title',author',date',doi',tags',abstract')) -> return (path', (title',author',date',doi',tags',abstract'))
+                      Right (path', (title',author',date',doi',_,abstract')) -> return (path', (title',author',date',doi',tags,abstract'))
 
 -- read the annotation base (no checks, >8× faster)
 readLinkMetadata :: IO Metadata
@@ -271,10 +271,14 @@ minimumAnnotationLength :: Int
 minimumAnnotationLength = 200
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Integer -> IO ()
-writeAnnotationFragments am md archived = Par.mapM_ (\(p, mi) -> writeAnnotationFragment am md archived p mi) $ M.toList md
+writeAnnotationFragments am md archived = mapM_ (mapM_ (\(p, mi) -> writeAnnotationFragment am md archived p mi)) $ chunksOf 50 $ M.toList md
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Integer -> Path -> MetadataItem -> IO ()
+writeAnnotationFragment _ _ _ _ ("","","","",[],"") = return ()
 writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) =
-                                          do let u' = linkCanonicalize u
+      if ("/index#" `isInfixOf` u && ("#section" `isInfixOf` u || "-section" `isSuffixOf` u)) ||
+         anyInfix u ["/index#see-also", "/index#links", "/index#miscellaneous", "/index#top-tag", "/index#manual-annotation"] ||
+         ("/" `isPrefixOf` u && "." `isInfixOf` u && null e) then return ()
+      else                                do let u' = linkCanonicalize u
                                              bl <- getBackLink u'
                                              sl <- getSimilarLink u'
                                              -- we prefer annotations which have a fully-written abstract, but we will settle for 'partial' annotations,
@@ -301,14 +305,15 @@ writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) =
                                                                     walk (parseRawBlock nullAttr) pandoc
 
                                                  let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
-                                                 annotationExisted <- doesFileExist filepath'
+
                                                  case finalHTMLEither of
                                                    Left er -> error ("Writing annotation fragment failed! " ++ show u ++ " : " ++ show i ++ " : " ++ show er)
-                                                   Right finalHTML -> writeUpdatedFile "annotation" filepath' finalHTML
-                                           --     HACK: the current hakyll.hs assumes that all annotations already exist before compilation begins, although we actually dynamically write as we go.
-                                           --     This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
-                                           --     There is presumably some way for Hakyll to do the metadata file listing *after* compilation is finished, but it's easier to hack around here by forcing 'new' annotation writes to be manually inserted into _site/.
-                                                                        >> if annotationExisted then return () else writeUpdatedFile "annotation" ("./_site/"++filepath') finalHTML
+                                                   Right finalHTML -> do annotationExisted <- doesFileExist filepath'
+                                                                         writeUpdatedFile "annotation" filepath' finalHTML
+                                           -- HACK: the current hakyll.hs assumes that all annotations already exist before compilation begins, although we actually dynamically write as we go.
+                                           -- This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
+                                           -- There is presumably some way for Hakyll to do the metadata file listing *after* compilation is finished, but it's easier to hack around here by forcing 'new' annotation writes to be manually inserted into _site/.
+                                                                         unless annotationExisted $ writeUpdatedFile "annotation" ("./_site/"++filepath') finalHTML
 
 -- HACK: this is a workaround for an edge-case: Pandoc reads complex tables as 'grid tables', which then, when written using the default writer options, will break elements arbitrarily at newlines (breaking links in particular). We set the column width *so* wide that it should never need to break, and also enable 'reference links' to shield links by sticking their definition 'outside' the table. See <https://github.com/jgm/pandoc/issues/7641>.
 safeHtmlWriterOptions :: WriterOptions
@@ -1593,7 +1598,8 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let date = let dateTmp = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dc.date.issued" then snd $ head w else "") metas
                                        in if dateTmp=="N/A" || dateTmp=="2009-01-01" || not (dateTmp =~ dateRegex) then "" else dateTmp
                         let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
-                        let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then Utils.split ", " $ snd $ head y else []) metas
+                        let keywordTags = if "#" `isInfixOf` p then [] else
+                                            concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then Utils.split ", " $ snd $ head y else []) metas
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas
@@ -1616,12 +1622,12 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
 
                         let title' = if null sectTitle then title else title ++ " § " ++ sectTitle
 
-                        let combinedAnnotation = (if "</figure>" `isInfixOf` gabstract || "<img>" `isInfixOf` gabstract then "" else thumbnailFigure) ++ -- some pages like /Questions have an image inside the abstract; preserve that if it's there
+                        let combinedAnnotation = (if "</figure>" `isInfixOf` gabstract || "<img>" `isInfixOf` gabstract || null gabstract then "" else thumbnailFigure) ++ -- some pages like /Questions have an image inside the abstract; preserve that if it's there
                                                  gabstract
 
-                        if gabstract == "404 Not Found Error: no page by this name!" || title' == "404 Not Found" then
+                        if gabstract == "404 Not Found Error: no page by this name!" || title' == "404 Not Found" || (null keywordTags && null gabstract) then
                           return (Left Permanent) -- NOTE: special-case: if a new essay or a tag-directory hasn't been uploaded yet, make a stub entry; the stub entry will eventually be updated via a `updateGwernEntries` scrape. (A Temporary error has the drawback that it throws changeTag.hs into an infinite loop as it keeps trying to fix the temporary error.)
-                          else return $ Right (p, (title', author, date, doi, keywords, combinedAnnotation))
+                          else return $ Right (p, (title', author, date, doi, keywordTags, combinedAnnotation))
         where
           filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
           filterThumbnail _ = False
@@ -1668,7 +1674,8 @@ gwernAbstract shortAllowed p' description toc f =
                          abstractRaw = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
                          restofpageAbstract = trim $ renderTags $ filter filterAbstract abstractRaw
                          in (titleClean, abstractRaw, restofpageAbstract)
-      abstrct'  = (if anyPrefix abstrct ["<p>", "<p>", "<figure>"] then abstrct else if null abstrct then "" else "<p>"++abstrct++"</p>") ++ " " ++ toc
+      abstrct'  = (if anyPrefix abstrct ["<p>", "<p>", "<figure>"] then abstrct
+                    else if null abstrct then "" else "<p>"++abstrct++"</p>") ++ " " ++ toc
       -- combine description + abstract; if there's no abstract, settle for the description:
       abstrct'' = if description /= "" && abstrct' /= "" then "<p>"++description++"</p>"++abstrct'
                                       else if description == "" && abstrct' /= "" then abstrct'
@@ -1676,7 +1683,9 @@ gwernAbstract shortAllowed p' description toc f =
                                                 else ""
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
       abstrct'''' = sed " id=\"fnref[0-9]+\"" "" abstrct''' -- rm footnote IDs - cause problems when transcluded
-  in if "scrape-abstract-not" `isInfixOf` (renderTags abstrctRw) then (t,"") else if shortAllowed then (t,abstrct'''') else (t,abstrct'''')
+  in if (("#" `isInfixOf` p') && null abstrct) then (t,"") else
+       if "scrape-abstract-not" `isInfixOf` (renderTags abstrctRw) then (t,"") else
+         if shortAllowed then (t,abstrct'''') else (t,abstrct'''')
 dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd, dropToLink, dropToLinkEnd, dropToText :: Tag String -> Bool
 dropToClass, dropToID :: String -> Tag String -> Bool
 dropToClass    i (TagOpen "div" attrs) = case lookup "class" attrs of
