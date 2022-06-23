@@ -3009,7 +3009,7 @@ body.index-directory #footer {
 .popframe-body p + p,
 .popframe-body p + figure[class^='float-'] + p,
 .popframe-body div[class^='drop-cap-'] + p,
-.popframe-body .abstract.scrape-abstract-not + p, {
+.popframe-body .abstract.scrape-abstract-not + p {
     text-indent: 1.75em;
 }
 
