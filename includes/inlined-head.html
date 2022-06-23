@@ -916,7 +916,6 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     text-indent: 0;
     padding: 0;
     overflow: unset;
-/*     break-inside: avoid-column; */
 }
 
 .TOC ul ul {
@@ -932,6 +931,10 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     padding-left: 1.125em;
     position: relative;
     overflow-wrap: break-word;
+}
+
+.TOC li:first-child {
+    break-before: avoid-column;
 }
 
 .TOC li li {
