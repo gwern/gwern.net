@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-21 22:53:50 gwern"
+When:  Time-stamp: "2022-06-22 22:20:46 gwern"
 License: CC-0
 -}
 
@@ -29,6 +29,7 @@ import Data.IORef (IORef)
 import Data.FileStore.Utils (runShellCommand)
 import Data.Function (on)
 import Data.List (intercalate, intersect, intersperse, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, sortBy, (\\))
+import Data.List.Split (chunksOf)
 import Data.Maybe (fromJust, fromMaybe)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
 import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) -- NOTE: from 'yaml' package, *not* 'HsYaml'
@@ -48,7 +49,7 @@ import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA ((=~)) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
 import Text.Show.Pretty (ppShow)
 
-import qualified Control.Monad.Parallel as Par (mapM_)
+import qualified Control.Monad.Parallel as Par (mapM, mapM_)
 
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
@@ -97,9 +98,10 @@ walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataYaml f "metadata
                                        when check (readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting…")
                                        return ()
 walkAndUpdateLinkMetadataYaml :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> Path -> IO ()
-walkAndUpdateLinkMetadataYaml f file = do db <- readYaml file
-                                          db' <- mapM f db
-                                          writeYaml file db'
+walkAndUpdateLinkMetadataYaml f file = do db <- readYaml file -- TODO: refactor this to take a list of URLs to update, then I can do it incrementally & avoid the mysterious space leaks
+                                          let db' = chunksOf 500 db
+                                          db'' <- mapM (traverse f) db'
+                                          writeYaml file (concat db'')
                                           printGreen $ "Updated " ++ file
 -- This can be run every few months to update abstracts (they generally don't change much).
 updateGwernEntries :: IO ()
@@ -597,7 +599,9 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("philosophy/ethics", "ethics")
           , ("philosophy/brethren-of-purity", "Brethren of Purity")
           , ("psychology/okcupid", "OKCupid")
+          , ("longevity/tirzepatide", "tirzepatide")
           , ("longevity/semaglutide", "glutide")
+          , ("exercise/gravitostat", "the gravitostat")
           , ("tominaga-nakamoto", "Tominaga Nakamoto")
           , ("conscientiousness", "Conscientiousness")
           , ("ai/text-style-transfer", "text style transfer")
@@ -694,7 +698,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("cat/psychology", "cat psychology")
           , ("modafinil/survey", "modafinil survey")
           , ("lesswrong-survey", "LW survey")
-          , ("genetics/editing", "genetic engineering")
+          , ("genetics/editing", "gene editing")
           , ("japanese/zeami", "Zeami")
           , ("history/medici", "Medici")
           , ("biology/portia", "Portia spider")
@@ -929,7 +933,7 @@ pdf p = do let p' = takeWhile (/='#') p
 filterMeta :: String -> String
 filterMeta ea = if anyInfix ea badSubstrings || elem ea badWholes then "" else ea
  where badSubstrings, badWholes :: [String]
-       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd", "pdftk-java", "OP-ESRJ", "FUJIT S. U.", "JRC5", "klynch", "pruich"]
+       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd", "pdftk-java", "OP-ESRJ", "FUJIT S. U.", "JRC5", "klynch", "pruich", "Micron"]
        badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association", "om", "lhf", "comp", "khan", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo", "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "mchahino"]
 
 -- nested JSON object: eg. 'jq .message.abstract'
@@ -1595,21 +1599,22 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                               let imgClass = if color then "class=\"invertible-auto float-right\"" else "class=\"float-right\""
                               return ("<figure><img " ++ imgClass ++ " height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\" /></figure>")
 
-                        let doi = ""
+                        let doi = "" -- I explored the idea but DOIs are too expensive & ultimately do little useful
                         let footnotesP = "<section class=\"footnotes\"" `isInfixOf` b
 
                         let toc = gwernTOC footnotesP p' f
                         let toc' = if toc == "<div class=\"columns\" class=\"TOC\"></div>" then "" else toc
 
                         let (sectTitle,gabstract) = gwernAbstract ("/index" `isSuffixOf` p' || "newsletter/" `isPrefixOf` p') p' description toc' f
+
                         let title' = if null sectTitle then title else title ++ " § " ++ sectTitle
+
                         let combinedAnnotation = (if "</figure>" `isInfixOf` gabstract || "<img>" `isInfixOf` gabstract then "" else thumbnailFigure) ++ -- some pages like /Questions have an image inside the abstract; preserve that if it's there
                                                  gabstract
 
                         if gabstract == "404 Not Found Error: no page by this name!" || title' == "404 Not Found" then
                           return (Left Permanent) -- NOTE: special-case: if a new essay or a tag-directory hasn't been uploaded yet, make a stub entry; the stub entry will eventually be updated via a `updateGwernEntries` scrape. (A Temporary error has the drawback that it throws changeTag.hs into an infinite loop as it keeps trying to fix the temporary error.)
-                          else if gabstract `elem` ["", "<p></p>", "<p></p> "] then return (Left Permanent) else
-                                 return $ Right (p, (title', author, date, doi, keywords, combinedAnnotation))
+                          else return $ Right (p, (title', author, date, doi, keywords, combinedAnnotation))
         where
           filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
           filterThumbnail _ = False
@@ -1664,7 +1669,7 @@ gwernAbstract shortAllowed p' description toc f =
                                                 else ""
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
       abstrct'''' = sed " id=\"fnref[0-9]+\"" "" abstrct''' -- rm footnote IDs - cause problems when transcluded
-  in if "scrape-abstract-not" `isInfixOf` (renderTags abstrctRw) then (t,"") else if shortAllowed then (t,abstrct'''') else if length abstrct < minimumAnnotationLength then ("","") else (t,abstrct'''')
+  in if "scrape-abstract-not" `isInfixOf` (renderTags abstrctRw) then (t,"") else if shortAllowed then (t,abstrct'''') else (t,abstrct'''')
 dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd, dropToLink, dropToLinkEnd, dropToText :: Tag String -> Bool
 dropToClass, dropToID :: String -> Tag String -> Bool
 dropToClass    i (TagOpen "div" attrs) = case lookup "class" attrs of
