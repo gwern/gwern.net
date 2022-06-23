@@ -1350,11 +1350,8 @@ function injectBackToTopLink(loadEventInfo) {
         `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M6.1 422.3l209.4-209.4c4.7-4.7 12.3-4.7 17 0l209.4 209.4c4.7 4.7 4.7 12.3 0 17l-19.8 19.8c-4.7 4.7-12.3 4.7-17 0L224 278.4 42.9 459.1c-4.7 4.7-12.3 4.7-17 0L6.1 439.3c-4.7-4.7-4.7-12.3 0-17zm0-143l19.8 19.8c4.7 4.7 12.3 4.7 17 0L224 118.4l181.1 180.7c4.7 4.7 12.3 4.7 17 0l19.8-19.8c4.7-4.7 4.7-12.3 0-17L232.5 52.9c-4.7-4.7-12.3-4.7-17 0L6.1 262.3c-4.7 4.7-4.7 12.3 0 17z"/></svg>`
         + `</a></div>`);
 
-    //  On mobile, show/hide the back-to-top link on scroll up/down.
-    addScrollListener(updateBackToTopLinkVisibility, "updateBackToTopLinkVisibilityScrollListener");
-
-    //  Update state immediately.
-    updateBackToTopLinkVisibility();
+	//  Show/hide the back-to-top link on scroll up/down.
+	addScrollListener(updateBackToTopLinkVisibility, "updateBackToTopLinkVisibilityScrollListener", true);
 }
 
 /***********************************************************/
@@ -1375,7 +1372,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     Called by the ‘updateBackToTopLinkVisibilityScrollListener’ scroll listener.
  */
 function updateBackToTopLinkVisibility(event) {
-    GWLog("updateBackToTopLinkVisibility", "rewrite.js", 3);
+    GWLog("updateBackToTopLinkVisibility", "rewrite.js", 0);
 
     /*  Show back-to-top link on ANY scroll up, or when scrolling a full page
         down from the top.

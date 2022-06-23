@@ -444,7 +444,18 @@ function addUIElement(element_html) {
 GW.scrollListeners = { };
 /*  Adds a scroll event listener to the page.
  */
-function addScrollListener(fn, name) {
+function addScrollListener(fn, name, defer = false, ifDeferCallWhenAdd = true) {
+	if (defer) {
+		doWhenPageLoaded(() => {
+			requestAnimationFrame(() => {
+				if (ifDeferCallWhenAdd)
+					fn();
+				addScrollListener(fn, name, false);
+			});
+		});
+		return;
+	}
+
     let wrapper = (event) => {
         requestAnimationFrame(() => {
             fn(event);
@@ -1117,7 +1128,7 @@ GW.notificationCenter.prefireProcessors["GW.contentDidLoad"] = (eventInfo) => {
 /****************/
 
 GW.scrollState = {
-    lastScrollTop:              (window.pageYOffset || document.documentElement.scrollTop),
+    lastScrollTop:              0,
     unbrokenDownScrollDistance: 0,
     unbrokenUpScrollDistance:   0
 };
@@ -1125,16 +1136,16 @@ GW.scrollState = {
 function updateScrollState(event) {
     GWLog("updateScrollState", "gw.js", 3);
 
-    let newScrollTop = (window.pageYOffset || document.documentElement.scrollTop);
-    GW.scrollState.unbrokenDownScrollDistance = (newScrollTop > GW.scrollState.lastScrollTop)
-        ? (GW.scrollState.unbrokenDownScrollDistance + newScrollTop - GW.scrollState.lastScrollTop)
+    GW.newScrollTop = (window.pageYOffset || document.documentElement.scrollTop);
+    GW.scrollState.unbrokenDownScrollDistance = (GW.newScrollTop > GW.scrollState.lastScrollTop)
+        ? (GW.scrollState.unbrokenDownScrollDistance + GW.newScrollTop - GW.scrollState.lastScrollTop)
         : 0;
-    GW.scrollState.unbrokenUpScrollDistance = (newScrollTop < GW.scrollState.lastScrollTop)
-        ? (GW.scrollState.unbrokenUpScrollDistance + GW.scrollState.lastScrollTop - newScrollTop)
+    GW.scrollState.unbrokenUpScrollDistance = (GW.newScrollTop < GW.scrollState.lastScrollTop)
+        ? (GW.scrollState.unbrokenUpScrollDistance + GW.scrollState.lastScrollTop - GW.newScrollTop)
         : 0;
-    GW.scrollState.lastScrollTop = newScrollTop;
+    GW.scrollState.lastScrollTop = GW.newScrollTop;
 }
-addScrollListener(updateScrollState, "updateScrollStateScrollListener");
+addScrollListener(updateScrollState, "updateScrollStateScrollListener", true);
 
 /*  Toggles whether the page is scrollable.
  */

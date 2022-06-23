@@ -187,7 +187,7 @@ ReaderMode = { ...ReaderMode, ...{
 		if (modeSelector == ReaderMode.modeSelector) {
 			//	Show/hide the button on scroll up/down.
 			addScrollListener(ReaderMode.updateModeSelectorVisibility,
-				"ReaderMode.updateModeSelectorVisibilityScrollListener");
+				"ReaderMode.updateModeSelectorVisibilityScrollListener", true, false);
 		}
 	},
 

@@ -87,7 +87,7 @@ function injectModeSelector() {
 
 	/*	Add listeners to update mode selector visibility on scroll and on hover.
 	 */
-    addScrollListener(updateModeSelectorVisibility, "GW.darkMode.updateModeSelectorVisibilityScrollListener");
+    addScrollListener(updateModeSelectorVisibility, "GW.darkMode.updateModeSelectorVisibilityScrollListener", true, false);
     GW.darkMode.modeSelector.addEventListener("mouseenter", () => { showModeSelector(); });
 
 	/*	Add active media query to update mode selector state when system dark
