@@ -569,9 +569,9 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	hyphenate(info);
 }, {
 	phase: "rewrite",
-	condition: (info) => (   info.isMainDocument == false
-						  || (   info.needsRewrite
-						  	  && GW.isMobile()))
+	condition: (info) => (   info.needsRewrite
+						  && (   info.isMainDocument == false
+						      || GW.isMobile()))
 });
 GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", GW.rewriteFunctions.typographyStyles = (info) => {
     GWLog("GW.rewriteFunctions.typographyStyles", "rewrite.js", 2);
