@@ -21,6 +21,16 @@ if (typeof window.GW == "undefined")
 		}
 		Fired when the browser DOMContentLoaded event fires. Loaded content is
 		the full page itself.
+
+	GW.contentDidInject {
+			source: "DOMContentLoaded"
+			document:
+				The global document object (window.document).
+		}
+		Fired when the browser DOMContentLoaded event fires. “Injected” content
+		is the full page itself.
+
+		(This event is fired immediately after the GW.contentDidLoad event.)
  */
 
 /*****************/
@@ -1187,6 +1197,10 @@ window.addEventListener("DOMContentLoaded", () => {
         		| GW.contentDidLoadEventFlags.isFullPage
         		| GW.contentDidLoadEventFlags.fullWidthPossible)
     });
+    GW.notificationCenter.fireEvent("GW.contentDidInject", {
+    	source: "DOMContentLoaded",
+    	document: document
+	});
 });
 window.addEventListener("load", () => {
     GWLog("window.load", "browser event");
