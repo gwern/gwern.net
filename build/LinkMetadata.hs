@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-22 22:20:46 gwern"
+When:  Time-stamp: "2022-06-23 16:31:30 gwern"
 License: CC-0
 -}
 
@@ -16,7 +16,7 @@ License: CC-0
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata) where
 
-import Control.Monad (unless, void, when, forM_)
+import Control.Monad (unless, void, when)
 import Data.Aeson (eitherDecode, FromJSON)
 import Data.Char (isAlpha, isAlphaNum, isPunctuation, toLower)
 import qualified Data.ByteString as B (appendFile, readFile, intercalate, split, ByteString)
@@ -49,7 +49,7 @@ import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA ((=~)) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
 import Text.Show.Pretty (ppShow)
 
-import qualified Control.Monad.Parallel as Par (mapM, mapM_)
+import qualified Control.Monad.Parallel as Par (mapM_)
 
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
@@ -146,7 +146,7 @@ readLinkMetadataAndCheck = do
 
              let brokenUrlsC = filter (\u -> null u || not (head u == 'h' || head u == '/') || "//" `isPrefixOf` u || ' ' `elem` u || '\'' `elem` u) urlsC in when (brokenUrlsC /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrlsC
 
-             let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> '–' `elem` doi || '—' `elem` doi || ' ' `elem` doi || ',' `elem` doi || "http" `isInfixOf` doi) custom in
+             let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> anyInfix doi ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'"] || "http" `isInfixOf` doi) custom in
                  unless (null badDoisDash) $ error $ "Bad DOIs (bad punctuation): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
              -- Thus far, I have not run into any real DOIs which omit numbers, so we'll include that as a check for accidental tags inserted into the DOI field.
@@ -185,9 +185,9 @@ readLinkMetadataAndCheck = do
 
              let urlsCP = map fst (custom ++ partial)
              let files = map (takeWhile (/='#') . tail) $ filter (\u -> head u == '/') urlsCP
-             forM_ files (\f -> let f' = if '.' `elem` f then f else f ++ ".page" in
+             Par.mapM_ (\f -> let f' = if '.' `elem` f then f else f ++ ".page" in
                                     do exist <- doesFileExist f'
-                                       unless exist $ printRed ("Custom annotation error: file does not exist? " ++ f ++ " (checked file name: " ++ f' ++ ")"))
+                                       unless exist $ printRed ("Custom annotation error: file does not exist? " ++ f ++ " (checked file name: " ++ f' ++ ")")) files
 
              -- auto-generated cached definitions; can be deleted if gone stale
              rewriteLinkMetadata partial custom "metadata/auto.yaml" -- do auto-cleanup  first
@@ -271,9 +271,9 @@ minimumAnnotationLength :: Int
 minimumAnnotationLength = 200
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Integer -> IO ()
-writeAnnotationFragments am md archived = mapM_ (\(p, mi) -> writeAnnotationFragment am md archived p mi) $ M.toList md
+writeAnnotationFragments am md archived = Par.mapM_ (\(p, mi) -> writeAnnotationFragment am md archived p mi) $ M.toList md
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Integer -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > minimumAnnotationLength) $ -- TODO: faster path for partials
+writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) =
                                           do let u' = linkCanonicalize u
                                              bl <- getBackLink u'
                                              sl <- getSimilarLink u'
@@ -284,17 +284,23 @@ writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > min
                                                  let filepath = take 247 $ urlEncode u'
                                                  let filepath' = "metadata/annotations/" ++ filepath ++ ".html"
                                                  when (filepath /= urlEncode u') $ printRed $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
-                                                 let titleHtml    = typesetHtmlField "" $ titlecase' a
-                                                 let authorHtml   = typesetHtmlField "" b
+                                                 let titleHtml    = typesetHtmlField $ titlecase' a
+                                                 let authorHtml   = typesetHtmlField b
                                                  -- obviously no point in trying to reformatting date/DOI, so skip those
-                                                 let abstractHtml = typesetHtmlField e e
+                                                 let abstractHtml = typesetHtmlField e
                                                  -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
                                                  let pandoc = Pandoc nullMeta $ generateAnnotationBlock False False True (u', Just (titleHtml,authorHtml,c,d,ts,abstractHtml)) bl sl
-                                                 void $ createAnnotations md pandoc
-                                                 let annotationPandoc = walk nominalToRealInflationAdjuster $ walk (hasAnnotation md True) $ walk convertInterwikiLinks $ walk linkAuto $ walk (parseRawBlock nullAttr) pandoc
-                                                 localizedPandoc <- walkM (localizeLink am archived) annotationPandoc
+                                                 -- for partials, we skip the heavyweight processing:
+                                                 unless (null e) $ void $ createAnnotations md pandoc
+                                                 pandoc' <- if null e then return pandoc
+                                                               else walkM (localizeLink am archived) $
+                                                                    walk nominalToRealInflationAdjuster $
+                                                                    walk (hasAnnotation md True) $
+                                                                    walk convertInterwikiLinks $
+                                                                    walk linkAuto $
+                                                                    walk (parseRawBlock nullAttr) pandoc
 
-                                                 let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions localizedPandoc
+                                                 let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
                                                  annotationExisted <- doesFileExist filepath'
                                                  case finalHTMLEither of
                                                    Left er -> error ("Writing annotation fragment failed! " ++ show u ++ " : " ++ show i ++ " : " ++ show er)
@@ -308,13 +314,14 @@ writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > min
 safeHtmlWriterOptions :: WriterOptions
 safeHtmlWriterOptions = def{writerColumns = 9999, writerExtensions = (enableExtension Ext_shortcut_reference_links pandocExtensions)}
 
-typesetHtmlField :: String -> String -> String
-typesetHtmlField orig t = let fieldPandocMaybe = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack t) in
-                       case fieldPandocMaybe of
-                         Left errr -> error $ show orig ++ " : " ++ t ++ show errr
-                         Right fieldPandoc -> let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
-                                                let (Right fieldHtml) = runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta fieldPandoc') in
-                           T.unpack fieldHtml -- restoreFigureClass orig $ T.unpack fieldHtml
+typesetHtmlField :: String -> String
+typesetHtmlField "" = ""
+typesetHtmlField  t = let fieldPandocMaybe = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack t) in
+                        case fieldPandocMaybe of
+                          Left errr -> error $ " : " ++ t ++ show errr
+                          Right fieldPandoc -> let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
+                                                 let (Right fieldHtml) = runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta fieldPandoc') in
+                            T.unpack fieldHtml
 
 -- walk each page, extract the links, and create annotations as necessary for new links
 createAnnotations :: Metadata -> Pandoc -> IO ()
@@ -1116,7 +1123,7 @@ paragraphized f a = f `elem` whitelist ||
    paragraphsHtml :: String -> [(T.Text,T.Text)]
    paragraphsHtml b = T.breakOnAll "<p>" (T.pack b)
    whitelist :: [String]
-   whitelist = ["/docs/cs/1980-rytter.pdf", "/docs/economics/1998-delong.pdf"]
+   whitelist = ["/docs/cs/1980-rytter.pdf", "/docs/economics/1998-delong.pdf", "/docs/cs/algorithm/1980-rytter.pdf"]
 
 -- If a String (which is not HTML!) is a single long paragraph (has no double-linebreaks), call out to paragraphizer.py, which will use GPT-3 to try to break it up into multiple more-readable paragraphs.
 -- This is quite tricky to use: it wants non-HTML plain text (any HTML will break GPT-3), but everything else wants HTML

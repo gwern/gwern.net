@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-06-18 14:22:48 gwern"
+When:  Time-stamp: "2022-06-23 12:57:02 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -49,10 +49,7 @@ import Data.List (nub, sortBy)
 import Data.List.Split (chunksOf)
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
 import qualified Data.Text as T (append, head, intercalate, length, last, replace, singleton, tail, init, Text)
-import Control.Concurrent (getNumCapabilities)
-import Control.Parallel.Strategies (parMap, rseq)
 import Control.Monad.State (evalState, get, put, State)
-import System.IO.Unsafe (unsafePerformIO)
 
 import Text.Pandoc (topDown, nullAttr, Pandoc(..), Inline(Link,Image,Code,Space,Span,Str), Block(Div))
 import Text.Pandoc.Walk (walkM, walk)
@@ -225,7 +222,7 @@ filterMatches plain definitions  = if T.length plain < 10000 then
    allRegex = masterRegex definitions -- if map (\(a,_,_) -> a) definitions == map fst custom then masterRegexAll else masterRegex definitions
 
    threadN :: Int
-   threadN = unsafePerformIO getNumCapabilities
+   threadN = 1 -- unsafePerformIO getNumCapabilities
 
    regexpsMax :: Int
    regexpsMax = 32
@@ -242,12 +239,12 @@ filterMatches plain definitions  = if T.length plain < 10000 then
     -- for the very first iteration (called from `filterMatches`), we want to skip the master regex because it will be huge and slow.
     -- So, immediately break up the regexp list and descend
     | skipCheck = let subDefinitions = chunksOf ((length ds `div` threadN) `max` 2) ds
-                  in concat $ parMap rseq (filterMatch False) subDefinitions
+                  in concat $ map (filterMatch False) subDefinitions
     | not (matchTest (masterRegex ds) plain) = []
     | length ds < regexpsMax || threadN == 1  = concatMap (filterMatch False . return) ds -- in ghci, parallelism doesn't work, so just skip when we have 1 thread (==interpreted)
     | otherwise =
       let subDefinitions = chunksOf ((length ds `div` threadN) `max` 2) ds
-        in concat $ parMap rseq (filterMatch False) subDefinitions
+        in concat $ map (filterMatch False) subDefinitions
 
 -- create a simple heuristic master regexp using alternation out of all possible regexes, for the heuristic check 'filterMatches'. WARNING: Depending on the regex library, just alternating regexes (rather than using a regexp trie) could potentially trigger an exponential explosion in RAM usage...
 masterRegex :: [(T.Text, R.Regex, T.Text)] -> R.Regex

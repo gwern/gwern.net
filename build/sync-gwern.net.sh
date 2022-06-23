@@ -49,7 +49,7 @@ else
     renice -n 15 "$$" &>/dev/null
 
     ## Parallelization: WARNING: post-2022-03 Hakyll uses parallelism which catastrophically slows down at >= # of physical cores; see <https://groups.google.com/g/hakyll/c/5_evK9wCb7M/m/3oQYlX9PAAAJ>
-    N="$(if [ ${#} == 0 ]; then echo 26; else echo "$1"; fi)"
+    N="$(if [ ${#} == 0 ]; then echo 21; else echo "$1"; fi)"
 
     (cd ~/wiki/ && git status || true) &
     bold "Pulling infrastructure updates…"
@@ -264,7 +264,7 @@ else
                                 -e '%2Fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index' -e '/Coin-flip' \
                                 -e '/nootropics/Magnesium' -e '/Selection' -e 'docs/statistics/bayes/1994-falk' -e '/Zeo' \
                                 -e '/Mail-delivery' -e 'docs/link-bibliography/Complexity-vs-AI' -e 'docs/link-bibliography/newsletter/2021/04' \
-                                -e '/docs/math/humor/index' -e '/docs/ai/index' -e '/docs/statistics/bias/index' -e '/Variables';
+                                -e '/docs/math/humor/index' -e '/docs/ai/index' -e '/docs/statistics/bias/index' -e '/Variables' -e '1400861560180858880';
        }
     wrap λ "Warning: unauthorized LaTeX users somewhere"
 
@@ -464,7 +464,7 @@ else
     λ(){ find . -not -name "*#*" -xtype l -printf 'Broken symbolic link: %p\n'; }
     wrap λ "Broken symbolic links"
 
-    λ(){ gwa | fgrep -- '[]' | fgrep -v -e '/newsletter/' | sort; } # we exclude future newsletter issues as deliberately untagged to avoid appearing at the top of the newsletter tag
+    λ(){ gwa | fgrep -- '[]' | fgrep -v -e '/newsletter/' | sort; } # we exclude future newsletter issues as deliberately untagged to avoid appearing at the top of the newsletter tag # | egrep -v -P '\e\[36ma\e\[0m: '
     wrap λ "Untagged annotations."
 
     ## Is the Internet up?
@@ -554,7 +554,7 @@ else
           cm "application/msaccess" 'https://www.gwern.net/docs/touhou/2013-06-08-acircle-tohoarrange.mdb'
           cm "application/msword" 'https://www.gwern.net/docs/iq/2014-tenijenhuis-supplement.doc'
           cm "application/octet-stream" 'https://www.gwern.net/docs/zeo/firmware-v2.6.3R-zeo.img'
-          cm "application/pdf" 'https://www.gwern.net/docs/cs/2010-bates.pdf'
+          cm "application/pdf" 'https://www.gwern.net/docs/cs/hardware/2010-bates.pdf'
           cm "application/pdf" 'https://www.gwern.net/docs/history/1694-gregory.pdf'
           cm "application/vnd.ms-excel" 'https://www.gwern.net/docs/dual-n-back/2012-05-30-kundu-dnbrapm.xls'
           cm "application/vnd.oasis.opendocument.spreadsheet" 'https://www.gwern.net/docs/genetics/heritable/1980-osborne-twinsblackandwhite-appendix.ods'
@@ -579,7 +579,7 @@ else
           cm "image/x-icon" 'https://www.gwern.net/static/img/favicon.ico'
           cm "image/x-ms-bmp" 'https://www.gwern.net/docs/rotten.com/library/bio/hackers/robert-morris/morris.bmp'
           cm "image/x-xcf" 'https://www.gwern.net/docs/personal/businesscard-front-draft.xcf'
-          cm "message/rfc822" 'https://www.gwern.net/docs/linkrot/2009-08-20-b3ta-fujitsuhtml.mht'
+          cm "message/rfc822" 'https://www.gwern.net/docs/cs/linkrot/2009-08-20-b3ta-fujitsuhtml.mht'
           cm "text/css; charset=utf-8" 'https://www.gwern.net/docs/gwern.net-gitstats/gitstats.css'
           cm "text/css; charset=utf-8" 'https://www.gwern.net/docs/statistics/order/beanmachine-multistage/offsets.css'
           cm "text/css; charset=utf-8" 'https://www.gwern.net/docs/statistics/order/beanmachine-multistage/style.css'
