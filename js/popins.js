@@ -15,6 +15,14 @@ License: public domain ("And some people have asked me about a license for this 
 
 	Popins.popinDidInject
 		Fired after a popin has been spawned and injected into the page.
+
+	GW.contentDidInject {
+			source: "Popups.injectPopinForTarget"
+			document:
+				The documentElement of the popin.
+		}
+		Fired immediately after a popin has first been injected into the page 
+		(but NOT when, e.g., popping a popin stack).
  */
 
 Popins = {
@@ -362,6 +370,12 @@ Popins = {
 			containingDocument.popin.parentElement.insertBefore(target.popin, containingDocument.popin);
 		} else {
 			target.parentElement.insertBefore(target.popin, target.nextSibling);
+
+			//	Fire event.
+			GW.notificationCenter.fireEvent("GW.contentDidInject", {
+				source: "Popins.injectPopinForTarget",
+				document: target.popin.documentElement
+			});
 		}
 
 		//  Mark target as having an open popin associated with it.

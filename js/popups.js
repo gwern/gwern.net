@@ -19,6 +19,14 @@ License: public domain ("And some people have asked me about a license for this 
 
 	Popups.popupWillDespawn
 		Fired when a popup is about to be removed from the page and discarded.
+
+	GW.contentDidInject {
+			source: "Popups.injectPopup"
+			document:
+				The documentElement of the popup.
+		}
+		Fired immediately after a popup has been injected into the page (but
+		NOT when an existing popup has merely been brought to the front).
  */
 
 Popups = {
@@ -365,6 +373,12 @@ Popups = {
 
 		//  Inject popup into page.
 		Popups.popupContainer.appendChild(popup);
+
+		//	Fire event.
+		GW.notificationCenter.fireEvent("GW.contentDidInject", {
+			source: "Popups.injectPopup",
+			document: popup.documentElement
+		});
 
 		//  Bring popup to front.
 		Popups.bringPopupToFront(popup);
