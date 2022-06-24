@@ -1029,6 +1029,6 @@ linkIconTestUnitsLink = [(Link ("", ["directory-indexes-upwards"],     []) [Str 
                            "arrow-up-left", "svg")
                         , (Link ("", ["directory-indexes-downwards"],  []) [Str "Test"] ("/docs/zeo/index", "Link to child directory zeo (descending)"),
                            "arrow-down-right", "svg")
-                          , (Link ("", ["directory-indexes-sideways"], []) [Str "Test"] ("/docs/ai/alphafold/index", "Link to other directory ai/alphafold (descending)"),
+                          , (Link ("", ["directory-indexes-sideways"], []) [Str "Test"] ("/docs/ai/nn/transformer/alphafold/index", "Link to other directory ai/nn/transformer/alphafold (descending)"),
                            "arrow-right", "svg")
                           ]

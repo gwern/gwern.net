@@ -18,6 +18,7 @@ import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure))
 import qualified Data.Binary as DB (decodeFileOrFail, encodeFile)
 import Network.HTTP (urlEncode)
+import System.FilePath (takeBaseName)
 
 import qualified Data.Vector as V (toList, Vector)
 import Control.Monad.Identity (runIdentity, Identity)
@@ -35,7 +36,7 @@ singleShotRecommendations html =
   do md  <- readLinkMetadata
      edb <- readEmbeddings
 
-     newEmbedding <- embed ("",("","","","",[],html))
+     newEmbedding <- embed [] ("",("","","","",[],html))
      let ddb  = embeddings2Forest (newEmbedding:edb)
      let (_,n) = (findN ddb (2*bestNEmbeddings) newEmbedding) :: (String,[(String,Double)])
 
@@ -46,7 +47,9 @@ singleShotRecommendations html =
 bestNEmbeddings :: Int
 bestNEmbeddings = 15
 
-type Embedding  = (String, String, [Double]) -- NOTE: 'Float' in Haskell is 32-bit single-precision float (FP32); OA API apparently returns 64-bit double-precision (FP64), so we use 'Double' instead. (Given the very small magnitude of the Doubles, it is probably a bad idea to try to save space/compute by casting to Float.)
+type Embedding  = (String, -- URL/path
+                    String, -- OA API model embedding (important because comparing embeddings from different models is nonsense)
+                    [Double]) -- the actual embedding vector; NOTE: 'Float' in Haskell is 32-bit single-precision float (FP32); OA API apparently returns 64-bit double-precision (FP64), so we use 'Double' instead. (Given the very small magnitude of the Doubles, it is probably a bad idea to try to save space/compute by casting to Float.)
 type Embeddings = [Embedding]
 
 embeddingsPath :: String
@@ -107,11 +110,17 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
     maxLength :: Int
     maxLength = 7900 -- how long is too long? OA guesstimates 1 BPE = 4 characters on average (https://beta.openai.com/tokenizer), so 2047 BPEs ~ 8192 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
 
-embed :: (String,MetadataItem) -> IO Embedding
-embed i@(p,_) = do
-  let doc = formatDoc i
-  (modelType,embedding) <- oaAPIEmbed doc
-  return (p,modelType,embedding)
+embed :: Embeddings -> (String,MetadataItem) -> IO Embedding
+embed edb i@(p,_) = do
+  -- an embedding may already exist for this, and the embedding firing because of a rename. As a heuristic, we check for any existing embedding with the same base filename, to catch cases of '/docs/foo/bar.pdf' → 'docs/foo/baz/bar.pdf'; when we bulk-rename large directories of annotated files, the false-positive embeddings can get expensive!
+  if not (null olds) then let (_,b,c) = head olds in return (p,b,c)
+    else do let doc = formatDoc i
+            (modelType,embedding) <- oaAPIEmbed doc
+            return (p,modelType,embedding)
+ where new = takeBaseName p
+       olds = filter (\(pold,_,_) -> if head pold == '/' then new == takeBaseName pold
+                                      else dehttp new == dehttp pold) edb
+       dehttp = replace "http://" "" . replace "https://" ""
 
 -- we shell out to a Bash script `similar.sh` to do the actual curl + JSON processing; see it for details.
 oaAPIEmbed :: T.Text -> IO (String,[Double])

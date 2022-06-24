@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-24 11:14:06 gwern"
+When:  Time-stamp: "2022-06-24 12:10:51 gwern"
 License: CC-0
 -}
 
@@ -606,6 +606,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("ai/nn/transformer/gpt/fiction",         "GPT fiction")
           , ("ai/nn/transformer/gpt/poetry",          "GPT poetry")
           , ("ai/nn/transformer/gpt/jukebox",         "Jukebox")
+          , ("ai/nn/transformer/alphafold", "AlphaFold")
           , ("ai/highleyman", "Highleyman")
           , ("existential-risk", "x-risk")
           , ("philosophy/ethics", "ethics")
