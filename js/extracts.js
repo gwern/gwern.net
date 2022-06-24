@@ -382,20 +382,6 @@ Extracts = {
                && Extracts.targetTypeInfo(targetA).typeName == Extracts.targetTypeInfo(targetB).typeName;
     },
 
-    /*  This function qualifies anchorlinks in transcluded content (ie. other
-        pages on the site, as well as annotations describing other pages on the
-        site), by rewriting their href attributes to include the path of the
-        target (link) that spawned the pop-frame that contains the transcluded
-        content.
-     */
-    //  Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
-    //  Called by: extracts-annotations.js
-    qualifyLinksInPopFrame: (popFrame) => {
-        popFrame.body.querySelectorAll("a[href^='#']").forEach(anchorLink => {
-            anchorLink.pathname = popFrame.spawningTarget.pathname;
-        });
-    },
-
     //  Called by: Extracts.localTranscludeForTarget
     //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
     nearestBlockElement: (element) => {
@@ -844,9 +830,6 @@ Extracts = {
 
         let target = popFrame.spawningTarget;
 
-        //  Qualify internal links in the pop-frame.
-        Extracts.qualifyLinksInPopFrame(target.popFrame);
-
         //  Rectify margin note style.
         popFrame.body.querySelectorAll(".marginnote").forEach(marginNote => {
             marginNote.swapClasses([ "inline", "sidenote" ], 0);
@@ -869,7 +852,7 @@ Extracts = {
 // 		}
 
         //  Scroll to the target.
-        if (target.hash > ""
+        if (   target.hash > ""
         	&& popFrame.classList.contains("local-transclude")) {
             requestAnimationFrame(() => {
             	let element = null;

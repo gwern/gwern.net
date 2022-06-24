@@ -430,7 +430,7 @@ Annotations.dataSources.wikipedia = {
 				}
 			}
 
-			//  Mark self-links.
+			//  Mark self-links (anchorlinks within the same article).
 			if (link.pathname == articleURL.pathname)
 				link.classList.add("link-self");
 		});

@@ -312,10 +312,6 @@ Extracts = { ...Extracts, ...{
         if (popFrame.body.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
             Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "wikipedia-entry");
 
-        //  Qualify internal links.
-        if (target.hostname == location.hostname)
-            Extracts.qualifyLinksInPopFrame(popFrame);
-
         /*  Allow for floated figures at the start of abstract
             (only on sufficiently wide viewports).
             */

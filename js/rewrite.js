@@ -67,8 +67,9 @@
 			pop-frames and the like, the represented URL will be the `href`
 			attribute of the spawning target. For local annotations, this will
 			be the URL of the annotation resource on the local server (NOT the
-			URL of the annotated link!). For Wikipedia annotations, this will be
-			the URL of the API request to retrieve the annotation data.
+			URL of the annotated link!). For annotations from other data 
+			sources, this will be the URL of the API request to retrieve the 
+			annotation data.
 
 		‘flags’ (key)
 			Bit field containing various flags (combined via bitwise OR). The
@@ -1036,9 +1037,22 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /* LINKS */
 /*********/
 
+/*****************************************************************************/
+/*  Qualify anchorlinks in transcluded local content (ie. other pages on the 
+	site), by rewriting their href attributes to include the path of the 
+	location of the transcluded content.
+ */
+function qualifyLocalAnchorLinks(loadEventInfo) {
+    GWLog("qualifyLocalAnchorLinks", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll(".markdownBody a[href^='#']").forEach(link => {
+		link.pathname = loadEventInfo.location.pathname;
+	});
+}
+
 /********************************************************************/
 /*  Designate self-links (a.k.a. anchorlinks) and local links (a.k.a.
-    within-site links) as such.
+    within-site links) as such, via CSS classes.
  */
 function addSpecialLinkClasses(loadEventInfo) {
     GWLog("addSpecialLinkClasses", "rewrite.js", 1);
@@ -1105,6 +1119,9 @@ function designateSpecialLinkIcons(loadEventInfo) {
  */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processLinks = (info) => {
     GWLog("GW.rewriteFunctions.processLinks", "rewrite.js", 2);
+
+	if (info.needsRewrite)
+		qualifyLocalAnchorLinks(info);
 
     addSpecialLinkClasses(info);
     designateSpecialLinkIcons(info);
