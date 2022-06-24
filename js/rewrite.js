@@ -463,7 +463,7 @@ function hyphenate(loadEventInfo) {
 	if (GW.isX11())
 		return;
 
-	let selector = ".markdownBody p";
+	let selector = (loadEventInfo.mainPageContent ? ".markdownBody p" : "p");
 
 	if (Hyphenopoly.hyphenators)
 		Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
@@ -563,18 +563,12 @@ function rectifyLineHeights(loadEventInfo) {
 /********************************************/
 /*  Add content load handlers for typography.
  */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.typographyRewrite = (info) => {
-    GWLog("GW.rewriteFunctions.typographyRewrite", "rewrite.js", 2);
+GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", GW.rewriteFunctions.postInjectTypography = (info) => {
+    GWLog("GW.rewriteFunctions.postInjectTypography", "rewrite.js", 2);
 
-	hyphenate(info);
-}, {
-	phase: "rewrite",
-	condition: (info) => (   info.needsRewrite
-						  && (   info.isMainDocument == false
-						      || GW.isMobile()))
-});
-GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", GW.rewriteFunctions.typographyStyles = (info) => {
-    GWLog("GW.rewriteFunctions.typographyStyles", "rewrite.js", 2);
+	if (   !info.mainPageContent
+		||  GW.isMobile())
+		hyphenate(info);
 
 	rectifyLineHeights(info);
 });
@@ -1372,7 +1366,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     Called by the ‘updateBackToTopLinkVisibilityScrollListener’ scroll listener.
  */
 function updateBackToTopLinkVisibility(event) {
-    GWLog("updateBackToTopLinkVisibility", "rewrite.js", 0);
+    GWLog("updateBackToTopLinkVisibility", "rewrite.js", 2);
 
     /*  Show back-to-top link on ANY scroll up, or when scrolling a full page
         down from the top.
