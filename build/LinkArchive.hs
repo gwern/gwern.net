@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-06-22 11:26:09 gwern"
+When:  Time-stamp: "2022-06-24 12:53:18 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -102,8 +102,6 @@ import Data.Maybe (isNothing, fromMaybe)
 import Text.Read (readMaybe)
 import qualified Data.Text.IO as TIO (readFile)
 import qualified Data.Text as T (pack, unpack)
-import Data.Time.Calendar (toModifiedJulianDay)
-import Data.Time.Clock (getCurrentTime, utctDay)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure, ExitSuccess))
 import System.Posix.Files (getFileStatus, fileSize)
@@ -116,7 +114,7 @@ import Crypto.Hash.SHA1 (hash) -- cryptohash
 import Data.ByteString.Char8 (pack, unpack)
 import System.FilePath (takeFileName)
 
-import Utils (writeUpdatedFile, printGreen, printRed, sed, addClass, anyInfix, anyPrefix, anySuffix)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, addClass, anyInfix, anyPrefix, anySuffix, currentDay)
 
 archiveDelay, archivePerRunN :: Integer
 archiveDelay = 60
@@ -212,9 +210,6 @@ insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
 insertLinkIntoDB a url = do adb <- readArchiveMetadata
                             let adb' = M.insert url a adb
                             writeUpdatedFile "archive-metadata-auto.db.hs" "metadata/archive.hs" (T.pack $ ppShow $ M.toAscList adb')
-
-currentDay :: IO Integer
-currentDay = fmap (toModifiedJulianDay . utctDay) Data.Time.Clock.getCurrentTime
 
 -- take a URL, archive it, and if successful return the hashed path
 archiveURL :: String -> IO (Maybe Path)

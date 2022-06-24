@@ -26,7 +26,7 @@ main = do md  <- readLinkMetadata
           edb'' <- if null todo then printGreen "All databases up to date." >> return edb else
                      do
                        printGreen $ "Embedding…\n" ++ unlines (map show todo)
-                       newEmbeddings <- mapM embed todo
+                       newEmbeddings <- mapM (embed edb) todo
                        printGreen "Generated embeddings."
                        let edb' = nubOrd (edb ++ newEmbeddings)
                        writeEmbeddings edb'

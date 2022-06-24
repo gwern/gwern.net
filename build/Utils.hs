@@ -6,7 +6,7 @@ import Data.Char (isSpace)
 import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails)
 -- import Utils (replace)
 import Data.Text.IO as TIO (readFile, writeFile)
-import Data.Time.Calendar (toGregorian)
+import Data.Time.Calendar (toGregorian, toModifiedJulianDay)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import Network.URI (parseURIReference, uriAuthority, uriRegName)
 import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
@@ -26,6 +26,9 @@ import Text.Pandoc (def, nullMeta, runPure,
 {-# NOINLINE currentYear #-}
 currentYear :: Int
 currentYear = unsafePerformIO $ fmap ((\(year,_,_) -> fromInteger year) . toGregorian . utctDay) Data.Time.Clock.getCurrentTime
+
+currentDay :: IO Integer
+currentDay = fmap (toModifiedJulianDay . utctDay) Data.Time.Clock.getCurrentTime
 
 -- Write only when changed, to reduce sync overhead; creates parent directories as necessary; writes
 -- to a temp file in /tmp/ (at a specified template name), and does an atomic rename to the final

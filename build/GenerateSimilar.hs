@@ -28,7 +28,7 @@ import Data.Conduit.List (sourceList)
 
 import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, safeHtmlWriterOptions)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
@@ -48,7 +48,9 @@ bestNEmbeddings :: Int
 bestNEmbeddings = 15
 
 type Embedding  = (String, -- URL/path
-                    String, -- OA API model embedding (important because comparing embeddings from different models is nonsense)
+                    Integer, -- Age: date created -- ModifiedJulianDay, eg. 2019-11-22 = 58810. Enables expiring
+                    String, -- the as-embedded (mangled by 'formatDoc') text
+                    String, -- OA API model embedding version/ID (important because comparing embeddings from different models is nonsense)
                     [Double]) -- the actual embedding vector; NOTE: 'Float' in Haskell is 32-bit single-precision float (FP32); OA API apparently returns 64-bit double-precision (FP64), so we use 'Double' instead. (Given the very small magnitude of the Doubles, it is probably a bad idea to try to save space/compute by casting to Float.)
 type Embeddings = [Embedding]
 
@@ -72,7 +74,7 @@ writeEmbeddings es = do tempf <- emptySystemTempFile "hakyll-embeddings"
 
 missingEmbeddings :: Metadata -> Embeddings -> [(String, MetadataItem)]
 missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, tags, abst) -> length (t++aut++show tags++abst) > minimumLength) md
-                               urlsEmbedded = map (\(u,_,_) -> u) edb :: [String]
+                               urlsEmbedded = map (\(u,_,_,_,_) -> u) edb :: [String]
                                missing      = urlsToCheck \\ urlsEmbedded
                                in map (\u -> (u, fromJust $ M.lookup u md)) missing
 
@@ -113,13 +115,14 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
 embed :: Embeddings -> (String,MetadataItem) -> IO Embedding
 embed edb i@(p,_) = do
   -- an embedding may already exist for this, and the embedding firing because of a rename. As a heuristic, we check for any existing embedding with the same base filename, to catch cases of '/docs/foo/bar.pdf' → 'docs/foo/baz/bar.pdf'; when we bulk-rename large directories of annotated files, the false-positive embeddings can get expensive!
-  if not (null olds) then let (_,b,c) = head olds in return (p,b,c)
+  if not (null olds) then let (_,b,c,d,e) = head olds in return (p,b,c,d,e)
     else do let doc = formatDoc i
             (modelType,embedding) <- oaAPIEmbed doc
-            return (p,modelType,embedding)
+            today <- currentDay
+            return (p,today,(T.unpack doc),modelType,embedding)
  where new = takeBaseName p
-       olds = filter (\(pold,_,_) -> if head pold == '/' then new == takeBaseName pold
-                                      else dehttp new == dehttp pold) edb
+       olds = filter (\(pold,_,_,_,_) -> if head pold == '/' then new == takeBaseName pold
+                                         else dehttp new == dehttp pold) edb
        dehttp = replace "http://" "" . replace "https://" ""
 
 -- we shell out to a Bash script `similar.sh` to do the actual curl + JSON processing; see it for details.
@@ -153,7 +156,7 @@ embeddings2ForestConfigurable ls nt pvd es =
   let minLeafSize = ls -- ???
       cfg = rpTreeCfg minLeafSize
               (length es) -- data N
-              (length $ (\(_,_,embedding) -> embedding) $ head es) -- dimension of each datapoint (eg. 1024 for ada-similarity embeddings, 12288 for davinci)
+              (length $ (\(_,_,_,_,embedding) -> embedding) $ head es) -- dimension of each datapoint (eg. 1024 for ada-similarity embeddings, 12288 for davinci)
       nTrees = nt -- ???
       projectionVectorDimension = pvd -- ???
       randSeed = 8
@@ -163,11 +166,11 @@ embeddings2ForestConfigurable ls nt pvd es =
     embeddings2Conduit es
  where
    embeddings2Conduit :: Embeddings -> ConduitT () (Embed DVector Double String) Identity ()
-   embeddings2Conduit = sourceList . map (\(p,_,embedding) -> Embed (fromListDv embedding) p)
+   embeddings2Conduit = sourceList . map (\(p,_,_,_,embedding) -> Embed (fromListDv embedding) p)
 
 
 knnEmbedding :: Forest -> Int -> Embedding -> [(Double, Embed DVector Double String)]
-knnEmbedding f k (_,_,embd) = V.toList $
+knnEmbedding f k (_,_,_,_,embd) = V.toList $
                                -- NOTE: 'metricL2' *seems* to be the L2-normalized Euclidean distance? which is *proportional* to cosine similarity/distance: not identical, but produces the same ranking, and so just as good for my purpose here? or so claims https://stats.stackexchange.com/a/146279/16897
                                -- 'inner' also works, type-wise, but produces terrible results on the GPT-3-ada embeddings; this is apparently due to the extremely similar magnitude of the embeddings, and dot-product not working as well as cosine similarity on language model embeddings is apparently common and expected.
                               -- 'knn', 'knnH', 'knnPQ': knnH/knnPQ always perform way worse for me.
@@ -178,7 +181,7 @@ findNearest f k e = map (\(dist,Embed _ p) -> (p,dist)) $ knnEmbedding f k e
 
 -- we'll keep the distance to insert into the metadata for debugging purposes.
 findN :: Forest -> Int -> Embedding -> (String,[(String,Double)])
-findN f k e@(p1,_,_) = let results = take bestNEmbeddings $ nub $ filter (\(p2,_) -> p1 /= p2 && not (blackList p2)) $ findNearest f k e in
+findN f k e@(p1,_,_,_,_) = let results = take bestNEmbeddings $ nub $ filter (\(p2,_) -> p1 /= p2 && not (blackList p2)) $ findNearest f k e in
                  -- NOTE: 'knn' is the fastest (and most accurate?), but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
                  -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed…)
                  -- If that happens, back off and request more k up to a max of 50.
