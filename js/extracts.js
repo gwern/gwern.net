@@ -607,6 +607,29 @@ Extracts = {
         }
     },
 
+    //  Make anchorlinks scroll pop-frame instead of opening normally.
+	constrainLinkClickBehaviorInPopFrame: (popFrame, extraCondition = (link => true)) => {
+        let target = popFrame.spawningTarget;
+
+        popFrame.body.querySelectorAll("a").forEach(link => {
+            if (   link.hostname == target.hostname
+                && link.pathname == target.pathname
+                && link.hash > ""
+                && extraCondition(link)) {
+                link.onclick = () => { return false; };
+                link.addActivateEvent((event) => {
+                    let hashTarget = popFrame.body.querySelector(selectorFromHash(link.hash));
+                    if (hashTarget) {
+                        Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(hashTarget);
+                        return false;
+                    } else {
+                        return true;
+                    }
+                });
+            }
+        });
+	},
+
     /***************************************************************************/
     /*  The target-testing and pop-frame-filling functions in this section
         come in sets, which define and implement classes of pop-frames
@@ -939,28 +962,10 @@ Extracts = {
 
         Extracts.rewritePopFrameContent_LOCAL_PAGE(popin);
 
-        let target = popin.spawningTarget;
-
-        /*  Make non-popin-spawning anchorlinks scroll popin instead of opening
-            normally.
+        /*  Make anchorlinks scroll popin instead of opening normally
+        	(but only for non-popin-spawning anchorlinks).
          */
-        popin.body.querySelectorAll("a").forEach(link => {
-            if (   link.hostname == target.hostname
-                && link.pathname == target.pathname
-                && link.hash > ""
-                && link.classList.contains("no-popin")) {
-                link.onclick = () => { return false; };
-                link.addActivateEvent((event) => {
-                    let hashTarget = popin.body.querySelector(selectorFromHash(link.hash));
-                    if (hashTarget) {
-                        Popins.scrollElementIntoViewInPopFrame(hashTarget);
-                        return false;
-                    } else {
-                        return true;
-                    }
-                });
-            }
-        });
+		Extracts.constrainLinkClickBehaviorInPopFrame(popin, (link => link.classList.contains("no-popin")));
     },
 
     //  Called by: Extracts.rewritePopupContent (as `rewritePopupContent_${targetTypeName}`)
@@ -979,22 +984,7 @@ Extracts = {
 		}
 
         //  Make anchorlinks scroll popup instead of opening normally.
-        popup.body.querySelectorAll("a").forEach(link => {
-            if (   link.hostname == target.hostname
-                && link.pathname == target.pathname
-                && link.hash > "") {
-                link.onclick = () => { return false; };
-                link.addActivateEvent((event) => {
-                    let hashTarget = popup.body.querySelector(selectorFromHash(link.hash));
-                    if (hashTarget) {
-                        Popups.scrollElementIntoViewInPopFrame(hashTarget);
-                        return false;
-                    } else {
-                        return true;
-                    }
-                });
-            }
-        });
+		Extracts.constrainLinkClickBehaviorInPopFrame(popup);
     },
 
     //  Other site pages.
