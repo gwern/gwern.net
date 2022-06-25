@@ -133,7 +133,6 @@ Popins = {
 		*/
 
 	//	Called by: extracts.js
-	//	Called by: extracts-content.js
 	scrollElementIntoViewInPopFrame: (element) => {
 		let popin = Popins.containingPopFrame(element);
 		popin.scrollView.scrollTop = element.getBoundingClientRect().top - popin.body.getBoundingClientRect().top;

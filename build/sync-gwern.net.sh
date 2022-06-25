@@ -49,7 +49,7 @@ else
     renice -n 15 "$$" &>/dev/null
 
     ## Parallelization: WARNING: post-2022-03 Hakyll uses parallelism which catastrophically slows down at >= # of physical cores; see <https://groups.google.com/g/hakyll/c/5_evK9wCb7M/m/3oQYlX9PAAAJ>
-    N="$(if [ ${#} == 0 ]; then echo 21; else echo "$1"; fi)"
+    N="$(if [ ${#} == 0 ]; then echo 24; else echo "$1"; fi)"
 
     (cd ~/wiki/ && git status || true) &
     bold "Pulling infrastructure updates…"
@@ -251,13 +251,9 @@ else
     # Testing compilation results:
     set +e
 
-    bold "Checking annotations…"
-    λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs  -e 'readLinkMetadataAndCheck' 2>&1 >/dev/null; }
-    wrap λ "Metadata lint checks fired."
-
     λ(){ PAGES="$(find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotations/ -type f -name '*.html' | sort)"
          echo "$PAGES" | xargs fgrep -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
-                                     fgrep --invert-match -e '/docs/cs/1955-nash' -e '/Backstop' -e '/Death-Note-Anonymity' -e '/Differences' \
+                                     fgrep --invert-match -e '/1955-nash' -e '/Backstop' -e '/Death-Note-Anonymity' -e '/Differences' \
                                                           -e '/Lorem' -e '/Modus' -e '/Order-statistics' -e '/Conscientiousness-and-online-education' \
                                 -e 'docs%2Fmath%2Fhumor%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
                                 -e '/The-Existential-Risk-of-Mathematical-Error' -e '/Replication' \

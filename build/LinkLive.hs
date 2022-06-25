@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-06-22 17:51:50 gwern"
+When:  Time-stamp: "2022-06-23 16:33:26 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -2093,7 +2093,6 @@ badDomainsSimple = ["1d4chan.org",
     , "www.oreilly.com"
     , "www.osti.gov"
     , "www.overthinkingit.com"
-    , "www.oxbridgenotes.com"
     , "www.packtpub.com"
     , "www.petcarerx.com"
     , "www.petco.com"
@@ -3055,7 +3054,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("http://www.davidbordwell.net/blog/2012/02/13/pandoras-digital-box-pix-and-pixels/", True)
     , ("https://www.dagbladet.no/nyheter/politiet-mener-fire-norske-narkoselgere-har-omsatt-for-millioner-i-virtuell-valuta-pa-morkenettet/60700845", True)
     , ("https://www.daemonology.net/blog/2011-06-03-insecurity-in-the-jungle.html", True)
-    , ("https://www.cs.odu.edu/~fmccown/research/lazy/", True)
+    , ("https://www.cs.odu.edu/~mln/pubs/widm-2006/lazyp-widm06.pdf", True)
     , ("https://www.cs.dartmouth.edu/~sergey/wm/", True)
     , ("https://www.couriermail.com.au/remote/check_cookie.html?url=https%3a%2f%2fwww.couriermail.com.au%2fnews%2fqueensland%2fgladstone%2fnews-story%2ff5bd03cfa834aad581b828fba8c07af2", True)
     , ("https://www.hbs.edu/faculty/Pages/default.aspx", True)
@@ -3353,7 +3352,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://anidb.net/perl-bin/animedb.pl?show=lexicon&mode=character&vtype=ctag&relid=2296", False)
     , ("https://antilop.cc/sr/vendors/24bb54ca7e.htm", False)
     , ("https://app.inferkit.com/demo", False)
-    , ("https://apps.ankiweb.net/docs/manual.html#filtered", False)
+    , ("https://docs.ankiweb.net/filtered-decks.html#filtered-decks--cramming", False)
     , ("https://archive.is/", False)
     , ("https://arstechnica.com/information-technology/2013/04/the-rise-and-fall-of-amd-how-an-underdog-stuck-it-to-intel/3/", False)
     , ("https://aur.archlinux.org/packages/anki20-bin/", False)
@@ -3822,7 +3821,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://animesuperhero.com/forums/install/index.php?upgrade/", False)
     , ("https://apastyle.apa.org/products/publication-manual-7th-edition", False)
     , ("https://api.research-repository.uwa.edu.au/ws/portalfiles/portal/11790041/Flematti_MS.pdf", False)
-    , ("https://apps.ankiweb.net/docs/manual.html#filtered", False)
+    , ("https://docs.ankiweb.net/filtered-decks.html#filtered-decks--cramming", False)
     , ("https://apps.dtic.mil/dtic/tr/fulltext/u2/a224049.pdf", False)
     , ("https://archive.ilr.cornell.edu/download/9851", False)
     , ("https://archiveofourown.org/works/3673335", False)
@@ -4093,7 +4092,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://repository.si.edu/bitstream/handle/10088/18355/nzp_changing_world_mcshea.pdf", False)
     , ("https://repository.uel.ac.uk/download/489cc10ec6c30da0e7bbdfb33898364c46ac9dcc727169bd1850016053e45278/347037/2013_Dawkins_e-cig_survey.pdf", False)
     , ("https://research.facebook.com/blog/2016/03/do-jobs-run-in-families/", False)
-    , ("https://research.vu.nl/en/publications/sports-participation-during-adolescence-a-shift-from-environmenta", False)
     , ("https://reset.me/story/benefits-of-microdosing-with-lsd-and-psilocybin-mushrooms/", False)
     , ("https://risk-engineering.org/concept/Rasmussen-practical-drift", False)
     , ("https://royalsocietypublishing.org/doi/10.1098/rsos.170988", False)
@@ -4121,7 +4119,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://store.steampowered.com/app/497780/Recursed/", False)
     , ("https://studenttheses.universiteitleiden.nl/handle/1887/52994", False)
     , ("https://subterraneanpress.com/magazine/fall_2013/the_truth_of_fact_the_truth_of_feeling_by_ted_chiang", False)
-    , ("https://suffolk.onthehub.com/2014/03/11/serious-an-lpti-supported-project-to-improve-students-learning-and-bar-performance/", False)
+    , ("https://sites.suffolk.edu/legaltech/2014/03/11/serious-an-lpti-supported-project-to-improve-students-learning-and-bar-performance/", False)
     , ("https://summerofcode.withgoogle.com/", False)
     , ("https://sundhedsdatastyrelsen.dk/da/404/?item=%2fda%2ftal-og-analyser%2fanalyser-og-rapporter%2fandre-analyser-og-rapporter%2fassisteret-reproduktion&user=extranet%5cAnonymous&site=sds", False)
     , ("https://superuser.com/questions/1633073/why-are-tar-xz-files-15x-smaller-when-using-pythons-tar-library-compared-to-mac", False)
@@ -4140,7 +4138,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://themorningnews.org/article/the-heretic", False)
     , ("https://thesession.org/", False)
     , ("https://thetakeout.com/inside-black-market-vintage-kool-aid-packet-collectors-1835123510", False)
-    , ("https://thewebconf.org/www2019/", False)
+    , ("http://www2003.org/cdrom/papers/refereed/p097/P97%20sources/p97-fetterly.html", False)
     , ("https://thomasbarker.com/13/06/bitcoin-little-slice-future-shock", False)
     , ("https://thoughtbot.com/blog/arduino-bathroom-occupancy-detector", False)
     , ("https://timarit.is/page/131542", False)
@@ -4412,7 +4410,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.oreilly.com/library/view/cjkv-information-processing/9780596156114/", False)
     , ("https://www.osti.gov/biblio/10172219", False)
     , ("https://www.overthinkingit.com/2012/11/08/my-little-pony-plato/", False)
-    , ("https://www.oxbridgenotes.com/articles/autodidactism/note_taking", False)
+    , ("https://www.jackkinsella.ie/articles/autodidactism", False)
     , ("https://www.packtpub.com/product/exploring-gpt-3/9781800563193", False)
     , ("https://www.petcarerx.com/pcrx/ProductPages/Product.aspx?pid=10983", False)
     , ("https://www.petco.com/shop/en/petcostore/product/friskies-salmon-canned-cat-food", False)

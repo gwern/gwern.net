@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-06-24 18:00:48 gwern"
+When:  Time-stamp: "2022-06-24 20:30:22 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -228,7 +228,7 @@ filterMatches plain definitions  = if T.length plain < 10000 then
    threadN = unsafePerformIO getNumCapabilities - 1
 
    regexpsMax :: Int
-   regexpsMax = 64
+   regexpsMax = 16
 
    -- Optimization: we can glue together regexps to binary search the list for matching regexps, giving something like 𝑂(log R) passes.
    -- divide-and-conquer recursion: if we have 1 regexp left to test, test it and return if matches or empty list otherwise;

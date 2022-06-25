@@ -65,11 +65,7 @@
 			which specifies the URL from which the loaded content was loaded.
 			For the main page, the represented URL will be `location.href`. For
 			pop-frames and the like, the represented URL will be the `href`
-			attribute of the spawning target. For local annotations, this will
-			be the URL of the annotation resource on the local server (NOT the
-			URL of the annotated link!). For annotations from other data 
-			sources, this will be the URL of the API request to retrieve the 
-			annotation data.
+			attribute of the spawning target.
 
 		‘flags’ (key)
 			Bit field containing various flags (combined via bitwise OR). The
@@ -1038,14 +1034,13 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /*********/
 
 /*****************************************************************************/
-/*  Qualify anchorlinks in transcluded local content (ie. other pages on the 
-	site), by rewriting their href attributes to include the path of the 
-	location of the transcluded content.
+/*  Qualify anchorlinks in transcluded content, by rewriting their href 
+	attributes to include the path of the location of the transcluded content.
  */
-function qualifyLocalAnchorLinks(loadEventInfo) {
-    GWLog("qualifyLocalAnchorLinks", "rewrite.js", 1);
+function qualifyAnchorLinks(loadEventInfo) {
+    GWLog("qualifyAnchorLinks", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll(".markdownBody a[href^='#']").forEach(link => {
+	loadEventInfo.document.querySelectorAll("a[href^='#']").forEach(link => {
 		link.pathname = loadEventInfo.location.pathname;
 	});
 }
@@ -1063,8 +1058,7 @@ function addSpecialLinkClasses(loadEventInfo) {
             || link.closest(".section-self-link, .footnote-ref, .footnote-back, .footnote-self-link, .sidenote-self-link"))
             return;
 
-        if (   loadEventInfo.location
-            && link.pathname == loadEventInfo.location.pathname
+        if (   link.pathname == loadEventInfo.location.pathname
             && (   loadEventInfo.isFullPage
             	|| null != loadEventInfo.document.querySelector(selectorFromHash(link.hash)))) {
             link.swapClasses([ "link-self", "link-local" ], 0);
@@ -1121,7 +1115,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     GWLog("GW.rewriteFunctions.processLinks", "rewrite.js", 2);
 
 	if (info.needsRewrite)
-		qualifyLocalAnchorLinks(info);
+		qualifyAnchorLinks(info);
 
     addSpecialLinkClasses(info);
     designateSpecialLinkIcons(info);

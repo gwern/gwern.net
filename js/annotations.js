@@ -313,7 +313,7 @@ Annotations.dataSources.wikipedia = {
 		let responseHTML, titleHTML;
 		if (articleURL.hash > "") {
 			let targetSection = response["remaining"]["sections"].find(section =>
-				section["anchor"] == decodeURIComponent(articleURL.hash).slice(1)
+				section["anchor"] == selectorFromHash(articleURL.hash).slice(1)
 			);
 
 			/*	Check whether we have tried to load a page section which does

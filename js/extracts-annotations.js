@@ -328,16 +328,6 @@ Extracts = { ...Extracts, ...{
             location: Extracts.locationForTarget(target),
             flags: 0
         });
-
-        //  Scroll to the target.
-        if (target.hash > "") {
-            requestAnimationFrame(() => {
-                let element = null;
-                if (   popFrame
-                    && (element = popFrame.body.querySelector(selectorFromHash(target.hash))))
-                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
-            });
-        }
     },
 
     /*=----------------------=*/

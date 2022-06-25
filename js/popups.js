@@ -244,7 +244,6 @@ Popups = {
 	},
 
 	//	Called by: extracts.js
-	//	Called by: extracts-content.js
 	scrollElementIntoViewInPopFrame: (element) => {
 		let popup = Popups.containingPopFrame(element);
 		popup.scrollView.scrollTop = element.getBoundingClientRect().top - popup.body.getBoundingClientRect().top;

@@ -355,13 +355,9 @@ Extracts = { ...Extracts, ...{
             targetedCitation.classList.remove("targeted");
         });
         //  In the popup, the citation for which context is being shown.
-        let citationInPopup = popup.body.querySelector(decodeURIComponent(target.hash));
+        let citationInPopup = popup.body.querySelector(selectorFromHash(target.hash));
         //  Highlight the citation.
         citationInPopup.classList.add("targeted");
-        //  Scroll to the citation.
-        requestAnimationFrame(() => {
-            Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(citationInPopup, popup);
-        });
 
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
@@ -370,6 +366,9 @@ Extracts = { ...Extracts, ...{
             location: Extracts.locationForTarget(target),
             flags: 0
         });
+
+        //  Scroll to the citation.
+		Extracts.scrollToTargetedElementInPopFrame(target, popup);
     }
 }};
 
