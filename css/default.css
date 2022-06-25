@@ -3175,7 +3175,7 @@ body.index-directory #footer {
 
 /*  Images (such as the ones in Wikipedia pop-frames).
     */
-.popframe-body.annotation.markdownBody > figure.float-right {
+.popframe-body.annotation > figure.float-right {
     margin: 0.125em 0 0.125em 1.5em;
     max-width: calc(50% - 1.5em);
     float: right;
@@ -4575,12 +4575,10 @@ body.index-directory #footer {
 /*└────────────────────┘*/
 
 @media only screen and (max-width: 649px) {
-	/*	TODO: check this!
-	 */
-    .annotation-abstract figure:first-child {
+    .popin-body figure:first-child {
         margin-top: 1.75em;
     }
-    .annotation-abstract.wikipedia-entry figure:first-child {
+    .popin-body.wikipedia-entry figure:first-child {
         margin-top: 1.5em;
     }
 }

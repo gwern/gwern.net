@@ -177,11 +177,6 @@ Extracts = { ...Extracts, ...{
 		}
 		auxLinks = auxLinks.join("; ");
 
-		//	Special class for the abstract for certain annotation sources.
-        let abstractSpecialClass = ``;
-        if (isWikipediaLink)
-            abstractSpecialClass = "wikipedia-entry";
-
         //  The fully constructed annotation pop-frame contents.
         let authorDateAuxSeparator = (referenceData.authorHTML || referenceData.dateHTML) ? "; " : "";
         let constructedAnnotation = Extracts.newDocument(
@@ -199,7 +194,11 @@ Extracts = { ...Extracts, ...{
             + (isWikipediaLink
                ? ``
                : `<p class="data-field author-date-aux">${referenceData.authorHTML}${referenceData.dateHTML}${authorDateAuxSeparator}${auxLinks}</p>`)
-            + `<div class="data-field annotation-abstract ${abstractSpecialClass}"></div>`);
+            + `<div class="data-field annotation-abstract"`
+            + (isWikipediaLink
+               ? ` data-source-class="wikipedia-entry"`
+               : ``)
+            + `></div>`);
         if (referenceData.abstract)
 	        constructedAnnotation.querySelector(".annotation-abstract").appendChild(referenceData.abstract);
 
@@ -308,9 +307,10 @@ Extracts = { ...Extracts, ...{
 
         let target = popFrame.spawningTarget;
 
-        //  Mark Wikipedia entries.
-        if (popFrame.body.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
-            Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "wikipedia-entry");
+        //  Mark annotations from non-local data sources.
+        let dataSourceClass = popFrame.body.querySelector(".annotation-abstract").dataset.sourceClass;
+        if (dataSourceClass)
+            Extracts.popFrameProvider.addClassesToPopFrame(popFrame, dataSourceClass.split(" "));
 
         /*  Allow for floated figures at the start of abstract
             (only on sufficiently wide viewports).
