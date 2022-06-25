@@ -313,7 +313,7 @@ Annotations.dataSources.wikipedia = {
 		let responseHTML, titleHTML;
 		if (articleURL.hash > "") {
 			let targetSection = response["remaining"]["sections"].find(section =>
-				section["anchor"] == selectorFromHash(articleURL.hash);
+				section["anchor"] == selectorFromHash(articleURL.hash).slice(1)
 			);
 
 			/*	Check whether we have tried to load a page section which does
@@ -342,7 +342,7 @@ Annotations.dataSources.wikipedia = {
 					if (newHeadingLevel < headingLevel)
 						responseHTML += `</ul>`;
 
-					responseHTML += `<li><a href='${articleURL}${section["anchor"]}'>${section["line"]}</a>`;
+					responseHTML += `<li><a href='${articleURL}#${section["anchor"]}'>${section["line"]}</a>`;
 
 					headingLevel = newHeadingLevel;
 				}
