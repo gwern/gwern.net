@@ -852,8 +852,15 @@ Extracts = {
 // 		}
 
         //  Scroll to the target.
-        if (   target.hash > ""
-        	&& popFrame.classList.contains("local-transclude")) {
+        Extracts.scrollToTargetedElementInPopFrame(target, popFrame);
+    },
+
+	//	Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
+	//	Called by: Extracts.rewritePopupContent_CITATION_BACK_LINK
+    scrollToTargetedElementInPopFrame: (target, popFrame) => {
+        GWLog("Extracts.scrollToTargetedElementInPopFrame", "extracts.js", 3);
+
+        if (target.hash > "") {
             requestAnimationFrame(() => {
             	let element = null;
                 if (   popFrame
