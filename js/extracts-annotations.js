@@ -342,7 +342,7 @@ Extracts = { ...Extracts, ...{
         GWLog("Extracts.setUpAnnotationLoadEventWithin", "extracts-annotations.js", 1);
 
         //  Get all the annotated targets in the container.
-        let allAnnotatedTargetsInContainer = Array.from(container.querySelectorAll(Extracts.annotatedTargetSelectors.join(", ")));
+        let allAnnotatedTargetsInContainer = container.querySelectorAll(Extracts.annotatedTargetSelectors.join(", "));
 
         if (Extracts.popFrameProvider == Popups) {
             //  Add hover event listeners to all the annotated targets.
