@@ -133,7 +133,6 @@ blackList f
   | anyInfixT f ["/backlinks/", "/link-bibliography/", "/similars/", "wikipedia.org/wiki/"] = False
   | anyPrefixT f ["/images", "/docs/www/", "/newsletter/", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem",
                    -- WARNING: do not filter out 'metadata/annotations' because that leads to empty databases & infinite loops
-                   "https://www.youtube.com/", "/static/404",
-                   "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = False
+                   "/static/404", "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = False
   | anySuffixT f ["/index"] = False
   | otherwise = True

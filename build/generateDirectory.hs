@@ -135,9 +135,9 @@ generateYAMLHeader d date (directoryN,annotationN,linkN) thumbnail
              "title: " ++ T.unpack (abbreviateTag (T.pack (replace "docs/" "" (init d)))) ++ " directory\n",
              "author: 'N/A'\n",
              "description: \"Annotated bibliography for the tag-directory <code>/" ++ d ++ "</code>, most recent first: " ++
-              (if directoryN == 0 then "" else "" ++ show directoryN ++ " <a href='/"++d++"index#see-alsos'>related tag" ++ pl directoryN ++ "</a>, ") ++
-              (if annotationN == 0 then "" else show annotationN ++ " <a href='/"++d++"index#links'>annotation" ++ pl annotationN ++ "</a>, ") ++
-              (if linkN == 0 then "" else show linkN ++ " <a href='/"++d++"index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
+              (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class=\"no-icon\" href='/"++d++"index#see-alsos'>related tag" ++ pl directoryN ++ "</a>, ") ++
+              (if annotationN == 0 then "" else show annotationN ++ " <a class=\"no-icon\" href='/"++d++"index#links'>annotation" ++ pl annotationN ++ "</a>, ") ++
+              (if linkN == 0 then ""       else show linkN ++ " <a class=\"no-icon\" href='/"++d++"index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
                ".\"\n",
              thumbnail,
              "created: 'N/A'\n",
