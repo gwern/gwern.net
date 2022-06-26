@@ -807,54 +807,59 @@ Extracts = {
         GWLog("Extracts.titleForPopFrame_LOCAL_PAGE", "extracts.js", 2);
 
         let target = popFrame.spawningTarget;
+		let targetDocument = Extracts.targetDocument(target) || Extracts.cachedPages[target.pathname];
+		let nearestBlockElement = ((targetDocument != null) && (target.hash > "")
+								   ? Extracts.nearestBlockElement(targetDocument.querySelector(selectorFromHash(target.hash)))
+								   : null);
 
-        let popFrameTitleText;
-        if (target.pathname == location.pathname) {
-            //  Sections of the current page.
-            let nearestBlockElement = Extracts.nearestBlockElement(document.querySelector(selectorFromHash(target.hash)));
-            popFrameTitleText = nearestBlockElement.tagName == "SECTION"
-                                ? nearestBlockElement.firstElementChild.textContent
-                                : target.hash;
-			/*	Special case for the Footnotes section, which has no heading 
-				associated with it, and thus no text to use as a section title.
-			 */
-			if (nearestBlockElement.id == "footnotes")
-				popFrameTitleText = "Footnotes";
-        } else {
-            if (popFrame.classList.contains("external-page-embed")) {
-                //  Entire other pages.
-                popFrameTitleText = Extracts.cachedPageTitles[target.pathname] || target.pathname;
-            } else {
-                //  Sections of other pages.
-                let targetDocument = Extracts.targetDocument(target) || Extracts.cachedPages[target.pathname];
-                if (targetDocument) {
-					let nearestBlockElement = Extracts.nearestBlockElement(targetDocument.querySelector(selectorFromHash(target.hash)));
-					let pageTitleOrPath = Extracts.cachedPageTitles[target.pathname] || target.pathname;
-					popFrameTitleText = nearestBlockElement.tagName == "SECTION"
-										? `${nearestBlockElement.firstElementChild.textContent} (${pageTitleOrPath})`
-										: `${target.hash} (${pageTitleOrPath})`;
-					/*	Special case for the Footnotes section, which has no
-						heading associated with it, and thus no text to use as
-						a section title.
+        let popFrameTitleText = ((() => {
+        	//	Designate section embeds with a section mark (§).
+        	return ((   target.hash > ""
+            		 && nearestBlockElement
+           			 && nearestBlockElement.tagName == "SECTION"
+        			 && !popFrame.classList.contains("external-page-embed"))
+           			? "&#x00a7; "
+           			: "");
+        })() + (() => {
+			if (target.pathname == location.pathname) {
+				//  Sections of the current page.
+				if (nearestBlockElement.id == "footnotes") {
+					/*	Special case for the Footnotes section, which has no heading 
+						associated with it, and thus no text to use as a section
+						title.
 					 */
-					if (nearestBlockElement.id == "footnotes")
-						popFrameTitleText = `Footnotes (${pageTitleOrPath})`;
-                } else {
-                	popFrameTitleText = target.pathname + target.hash;
-                }
-            }
-        }
-
-        //  Mark sections with ‘§’ symbol.
-        if (    target.hash > ""
-            /*  The following condition will be false (i.e., popFrameTitleText
-                WILL start with a ‘#’) if the hash points not to a section, but
-                to a link or some other element. In that case, we don’t want a
-                section mark!
-             */
-            && !popFrameTitleText.startsWith("#")
-            && !popFrame.classList.contains("external-page-embed"))
-            popFrameTitleText = "&#x00a7; " + popFrameTitleText;
+					return "Footnotes";
+				} else {
+					return (nearestBlockElement.tagName == "SECTION"
+							? nearestBlockElement.firstElementChild.textContent
+							: target.hash);
+				}
+			} else {
+				//	Other pages (whole pages or sections).
+				if (popFrame.classList.contains("external-page-embed")) {
+					//  Entire other pages.
+					return (Extracts.cachedPageTitles[target.pathname] || target.pathname);
+				} else {
+					//  Sections of other pages.
+					if (targetDocument) {
+						let pageTitleOrPath = Extracts.cachedPageTitles[target.pathname] || target.pathname;
+						if (nearestBlockElement.id == "footnotes") {
+							/*	Special case for the Footnotes section, which has no
+								heading associated with it, and thus no text to use 
+								as a section title.
+							 */
+							return `Footnotes (${pageTitleOrPath})`;
+						} else {
+							return (nearestBlockElement.tagName == "SECTION"
+									? `${nearestBlockElement.firstElementChild.textContent} (${pageTitleOrPath})`
+									: `${target.hash} (${pageTitleOrPath})`);
+						}
+					} else {
+						return (target.pathname + target.hash);
+					}
+				}
+			}
+        })());
 
         return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
     },

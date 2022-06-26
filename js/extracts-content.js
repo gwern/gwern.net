@@ -413,15 +413,17 @@ Extracts = { ...Extracts, ...{
     videoForTarget: (target) => {
         GWLog("Extracts.videoForTarget", "extracts-content.js", 2);
 
+        let srcdocStyles = 
+        	  `<style>` 
+        	+ `* { padding: 0; margin: 0; overflow: hidden; } ` 
+        	+ `html, body { height: 100%; } ` 
+            + `img, span { position: absolute; width: 100%; top: 0; bottom: 0; margin: auto; } ` 
+            + `span { height: 1.5em; text-align: center; font: 48px/1.5 sans-serif; color: white; text-shadow: 0 0 0.5em black; }` 
+            + `</style>`;
+
         let videoId = Extracts.youtubeId(target.href);
         let videoEmbedURL = new URL(`https://www.youtube.com/embed/${videoId}`);
         let placeholderImgSrc = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-        let srcdocStyles = `<style>` +
-            `* { padding: 0; margin: 0; overflow: hidden; }` +
-            `html, body { height: 100%; } ` +
-            `img, span { position: absolute; width: 100%; top: 0; bottom: 0; margin: auto; } ` +
-            `span { height: 1.5em; text-align: center; font: 48px/1.5 sans-serif; color: white; text-shadow: 0 0 0.5em black; }` +
-            `</style>`;
         let playButtonHTML = `<span class='video-embed-play-button'>&#x25BA;</span>`;
         let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
@@ -567,7 +569,8 @@ Extracts = { ...Extracts, ...{
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_IMAGE: (popFrame) => {
         //  Remove extraneous classes from images in image pop-frames.
-        popFrame.body.querySelector("img").classList.remove("has-annotation", "has-annotation-partial", "has-content", "link-self", "link-local");
+        popFrame.body.querySelector("img").classList.remove("link-local", "link-self", 
+        	"has-annotation", "has-annotation-partial", "has-content");
 
         //  Loading spinner.
         Extracts.setLoadingSpinner(popFrame);
