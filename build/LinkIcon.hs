@@ -76,6 +76,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  -- .link-icon-type="svg"}` by specifying the attributes directly), or define a global URL/(link
  -- icon, link icon type) rewrite:
  | "no-icon" `elem` cl = x
+ -- NOTE: 'gwern': the Fraktur '𝔊' for local essay links (where 'local' is defined as '/' but with no '.' in it) is set dynamically clientside by rewrite.js:l1075 (`designateSpecialLinkIcons`) and so we do not handle it here
  | hasIcon x           = x
  | hasKeyAL u overrideLinkIcons = let (i,it) = fromJust $ lookup u overrideLinkIcons in addIcon x i it
 
@@ -498,7 +499,7 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                      "bmk.sh","www.jstatsoft.org","www.japantimes.co.jp","www.impactcybertrust.org", "www.ex.org", "www.eetimes.com",
                      "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com",
                      "palladiummag.com", "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "www.silcom.com", "esolangs.org",
-                     "www.aiweirdness.com"]
+                     "www.aiweirdness.com", "etherscan.io"]
         linkIconMin = 4 :: Int
 
 -- Test suite:
@@ -928,7 +929,7 @@ linkIconTestUnitsText =
          , ("https://theconversation.com/altruism-in-birds-magpies-have-outwitted-scientists-by-helping-each-other-remove-tracking-devices-175246", "🗨", "text")
          , ("https://patch.com/california/davis/davis-pair-arrested-after-cops-intercept-3-000-suspected-ecstasy-pills-mail-serve", "P", "text,sans")
          , ("http://www.jstor.org/stable/10.1086/468061", "JTOR", "text,quad")
-         , ("https://scp-wiki.wikidot.com/antimemetics-division-hub#toc1", "SCP", "text,tri,sans")
+         , ("https://scp-wiki.wikidot.com/antimemetics-division-hub", "SCP", "text,tri,sans")
          , ("https://www.ieee-security.org/TC/SPW2014/papers/5103a209.PDF", "pdf", "svg")
          , ("https://thisanimedoesnotexist.ai/", "TADE", "text,quad,sans")
          , ("https://www.thiswaifudoesnotexist.net/", "TWDE", "text,quad,sans")

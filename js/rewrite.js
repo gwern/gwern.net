@@ -471,10 +471,10 @@ function hyphenate(loadEventInfo) {
 }
 
 /*******************************************************************************/
-/*	Set line height of element to its computed line height, rounded to the 
+/*	Set line height of element to its computed line height, rounded to the
 	nearest pixel.
 
-	(Actually, the value of the CSS `line-height` property is set to a unitless 
+	(Actually, the value of the CSS `line-height` property is set to a unitless
 	 value computed to result in the rendered line height being an integer pixel
 	 value.)
 
@@ -486,10 +486,10 @@ function hyphenate(loadEventInfo) {
 function rectifyLineHeight(elementOrSelector, root = document, returnOnly = false) {
 	if (typeof elementOrSelector == "string")
 		elementOrSelector = root.querySelector(elementOrSelector);
-	
+
 	if (elementOrSelector == null)
 		return null;
-	
+
 	let e = elementOrSelector;
 	let style = getComputedStyle(e);
 	let fontSize = parseFloat(style.fontSize);
@@ -508,21 +508,21 @@ function rectifyLineHeight(elementOrSelector, root = document, returnOnly = fals
 function rectifyLineHeights(loadEventInfo) {
     GWLog("rectifyLineHeights", "rewrite.js", 1);
 
-	/*	Note: these selectors should be “all block elements on which the font 
-		size is adjusted”. It seems possible but code-complex and 
+	/*	Note: these selectors should be “all block elements on which the font
+		size is adjusted”. It seems possible but code-complex and
 		runtime-expensive to find all such elements dynamically; using a fixed
 		selector list is simpler and faster but, of course, has the downside of
 		many likely false negatives. (False positives can also occur but should
-		be mostly harmless, or, at any rate, no more harmful than true 
+		be mostly harmless, or, at any rate, no more harmful than true
 		positives. Possible sources of harm from true or false positives include
-		render time penalty [minor] and failure to recalculate line heights in 
+		render time penalty [minor] and failure to recalculate line heights in
 		response to changes in computed values caused by, e.g., viewport shifts
 		[major]. The latter could perhaps be addressed by calling this function
-		from a window resize listener [inefficient] or from some sort of 
-		mutation observer or some other low-overhead observer/listener that 
+		from a window resize listener [inefficient] or from some sort of
+		mutation observer or some other low-overhead observer/listener that
 		watches for changes in CSS in response to various transformations and
-		events.) The selector list may also become stale as changes to HTML 
-		structure and to the CSS codebase are not reliably propagated to parts 
+		events.) The selector list may also become stale as changes to HTML
+		structure and to the CSS codebase are not reliably propagated to parts
 		of the code such as this.
 
 		The current implementation should thus be considered a prototype, and
@@ -531,13 +531,13 @@ function rectifyLineHeights(loadEventInfo) {
 	 */
 	let selectors = [
 		"#page-description",
-		"blockquote", 
+		"blockquote",
 		".sidenote"
 	];
 
-	/*	On the first pass, compute the adjusted values for line-height of all 
+	/*	On the first pass, compute the adjusted values for line-height of all
 		affected elements; on the second pass, actually set the values. (This is
-		done to prevent cascades of deviations from ideal [fractional] values 
+		done to prevent cascades of deviations from ideal [fractional] values
 		due to rounding, in nested line-height-adjusted elements.)
 	 */
 	let elements = [ ];
@@ -545,13 +545,13 @@ function rectifyLineHeights(loadEventInfo) {
 		if (element.style.lineHeight > "")
 			return;
 		let lineHeight = rectifyLineHeight(element, loadEventInfo.document, true);
-		elements.push({ 
-			element: 	element, 
-			lineHeight:	lineHeight 
+		elements.push({
+			element: 	element,
+			lineHeight:	lineHeight
 		});
 	});
 	elements.forEach(e => {
-		if (   null != e.element 
+		if (   null != e.element
 			&& null != e.lineHeight)
 			e.element.style.lineHeight = e.lineHeight;
 	});
@@ -1034,7 +1034,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /*********/
 
 /*****************************************************************************/
-/*  Qualify anchorlinks in transcluded content, by rewriting their href 
+/*  Qualify anchorlinks in transcluded content, by rewriting their href
 	attributes to include the path of the location of the transcluded content.
  */
 function qualifyAnchorLinks(loadEventInfo) {
@@ -1099,7 +1099,7 @@ function designateSpecialLinkIcons(loadEventInfo) {
 	});
 
 	//	Local links (to other pages on the site).
-	loadEventInfo.document.querySelectorAll(".link-local").forEach(link => {
+	loadEventInfo.document.querySelectorAll(".link-local:not(.no-icon)").forEach(link => {
 		if (link.dataset.linkIcon)
 			return;
 

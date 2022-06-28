@@ -200,11 +200,11 @@ Extracts = { ...Extracts, ...{
 			}
 			auxLinks = auxLinks.join("; ");
 
-			return (`<p class="data-field author-date-aux">` 
-					 + referenceData.authorHTML 
-					 + referenceData.dateHTML 
-					 + ((referenceData.authorHTML || referenceData.dateHTML) ? "; " : "") 
-					 + auxLinks 
+			return (`<p class="data-field author-date-aux">`
+					 + referenceData.authorHTML
+					 + referenceData.dateHTML
+					 + ((referenceData.authorHTML || referenceData.dateHTML) ? "; " : "")
+					 + auxLinks
 					 + `</p>`);
 		})() + (() => {
 			//	Abstract (data field). (Empty for now; content injected below.)
@@ -267,8 +267,8 @@ Extracts = { ...Extracts, ...{
 				//	This block is relevant only to annotated anchorlinks.
 
 				if (   target.hash > ""
-					/*  For links to sections of Wikipedia articles, show the 
-						page title and the section title, separated by the ‘§’ 
+					/*  For links to sections of Wikipedia articles, show the
+						page title and the section title, separated by the ‘§’
 						symbol (see below).
 					 */
 					&& Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))
@@ -292,15 +292,15 @@ Extracts = { ...Extracts, ...{
 								  "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr",
 								  "github", "google", "googledeepmind", "google-graphcore", "graphcore", "huawei", "intel", "jd", "kako", "laion",
 								  "lighton", "microsoft", "microsoftnvidia", "miri", "naver",
-								  "nvidia", "openai", "pdf", "salesforce", "sberbank", "sensetime",
+								  "nvidia", "openai", "pinterest", "pdf", "salesforce", "sberbank", "sensetime",
 								  "snapchat", "spotify", "tencent", "tensorfork", "uber", "yandex"
 							  ].includes(target.hash.slice(1))))) {
 					return "&#x00a7; ";
 				} else if (   target.hash > ""
 						   && Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))
 						   && Extracts.popFrameHasLoaded(popFrame)) {
-					/*  For links to sections of Wikipedia articles, show the 
-						page title and the section title, (see above), separated 
+					/*  For links to sections of Wikipedia articles, show the
+						page title and the section title, (see above), separated
 						by the ‘§’ symbol.
 					 */
 					return " &#x00a7; ";
@@ -313,7 +313,7 @@ Extracts = { ...Extracts, ...{
 				return (Extracts.popFrameHasLoaded(popFrame)
 						? popFrame.body.querySelector(".data-field.title").textContent
 						: (Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))
-						   ? target.href 
+						   ? target.href
 						   : target.pathname + target.hash));
 			})());
 
