@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-28 16:21:52 gwern"
+When:  Time-stamp: "2022-06-28 18:02:58 gwern"
 License: CC-0
 -}
 
@@ -371,9 +371,9 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
             else
               let f' = linkCanonicalize $ T.unpack f in
                 case M.lookup f' mdb of
-                  Nothing                 -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y
+                  Nothing                  -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y
                   Just ("","","","",[],"") -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y
-                  Just                 mi -> addHasAnnotation idBool False y mi
+                  Just                 mi  -> addHasAnnotation idBool False y mi
           hasAnnotationInline _ _ y = y
 
           addHasAnnotation :: Bool -> Bool -> Inline -> MetadataItem -> Inline
@@ -527,7 +527,7 @@ tag2TagsWithDefault path tags = let tags' = map trim $ split ", " $ map toLower 
                                   if defTag `elem` tags' || defTag == "" || defTag == "/docs" then tags' else defTag:tags'
 
 tag2Default :: String -> String
-tag2Default path = if "/docs/" `isPrefixOf` path && not ("/docs/" `isPrefixOf` path && "/index" `isSuffixOf` path) then replace "/docs/" "" $ takeDirectory path else ""
+tag2Default path = if "/docs/" `isPrefixOf` path && not ("/docs/" `isPrefixOf` path && ("/index" `isSuffixOf` path || "/index#" `isInfixOf` path)) then replace "/docs/" "" $ takeDirectory path else ""
 
 -- de-duplicate tags: uniquefy, and remove the more general tags in favor of nested (more specific) tags. eg. ["ai", "ai/nn/transformer/gpt", "reinforcement-learning"] → ["ai/nn/transformer/gpt", "reinforcement-learning"]
 uniqTags :: [String] -> [String]

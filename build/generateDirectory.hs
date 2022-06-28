@@ -100,16 +100,16 @@ generateDirectory md dir'' = do
 
   let body = abstract ++
 
-             [Header 1 ("", ["display-pop-not"], []) [Str "See Also"]] ++ [directorySection] ++
+             [Header 1 ("", ["display-pop-not", "link-annotated-not"], []) [Str "See Also"]] ++ [directorySection] ++
 
              (if null titledLinks then [] else
                  -- NOTE: we need a <h1> for proper hierarchical tree, but that <h1> uses up a lot of visual space in popups/popins, and we can't just suppress *all* first-<h1>s, we only want to suppress the ones on directory/tag pages. So we define a new class 'display-pop-not', and the CSS (in default.css's popups section) will suppress that in popups/popins.
                  [Para []] ++
-                 [Header 1 ("", ["display-pop-not"], []) [Str "Links"]] ++
+                 [Header 1 ("", ["display-pop-not", "link-annotated-not"], []) [Str "Links"]] ++
                  titledLinksSections) ++
 
              (if null untitledLinks then [] else
-                 Header 1 nullAttr [Str "Miscellaneous"] :
+                 Header 1 ("", ["link-annotated-not"], []) [Str "Miscellaneous"] :
                  -- for lists, they *may* all be devoid of annotations and short
                  if not allUnannotatedUntitledP then [untitledLinksSection] else
                    [RawBlock (Format "html") "<div id=\"miscellaneous-links-list\" class=\"columns\">\n\n",
@@ -253,7 +253,7 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_) ->
                                     sectionTitle = T.pack $ if "wikipedia"`isInfixOf`f then t else "“"++titlecase t++"”" ++
                                                      (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt)
                                 in
-                                 [Header 2 (sectionID, [], []) [RawInline (Format "html") sectionTitle]]
+                                 [Header 2 (sectionID, ["link-annotated-not"], []) [RawInline (Format "html") sectionTitle]]
                                  ++ generateItem p)
 
 generateItem :: (FilePath,MetadataItem,FilePath,FilePath) -> [Block]
