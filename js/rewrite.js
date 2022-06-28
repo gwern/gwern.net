@@ -1433,7 +1433,7 @@ function brokenAnchorCheck() {
 	GWLog("brokenAnchorCheck", "rewrite.js", 1);
 
 	if (   location.hash > ""
-		&& /^#if_slide_([0-9]+)/.test(location.hash) == false
+		&& /^#if_slide/.test(location.hash) == false
 		&& /^#:~:/.test(location.hash) == false
 		&& document.querySelector(selectorFromHash(location.hash)) == null)
 		reportBrokenAnchorLink(location);
