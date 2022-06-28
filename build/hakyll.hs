@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-06-24 22:43:55 gwern"
+When: Time-stamp: "2022-06-27 18:59:05 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -99,7 +99,7 @@ main = hakyll $ do
              meta <- preprocess readLinkMetadataAndCheck
              preprocess $ printGreen ("Writing annotations…" :: String)
              hasArchivedOnce <- preprocess $ newIORef archivePerRunN
-             preprocess $ writeAnnotationFragments am meta hasArchivedOnce
+             preprocess $ writeAnnotationFragments am meta hasArchivedOnce True
              preprocess $ printGreen ("Begin site compilation…" :: String)
              match "**.page" $ do
                  -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens

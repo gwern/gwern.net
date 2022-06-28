@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-24 21:24:01 gwern"
+When:  Time-stamp: "2022-06-27 19:03:50 gwern"
 License: CC-0
 -}
 
@@ -89,7 +89,7 @@ isLocalPath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
 --
 -- > walkAndUpdateLinkMetadata (\x@(path,(title,author,date,doi,tags,abstrct)) -> if not ("https://arxiv.org" `isPrefixOf` path) || (doi /= "") then return x else return (path,(title,author,date,processDOIArxiv path,tags,abstrct)))
 -- To rewrite a tag, eg 'conscientiousness' → 'psychology/personality/conscientiousness':
--- > walkAndUpdateLinkMetadata (\(path,(title,author,date,doi,tags,abst)) -> return (path,(title,author,date,doi,
+-- > walkAndUpdateLinkMetadata True (\(path,(title,author,date,doi,tags,abst)) -> return (path,(title,author,date,doi,
 --      map (\t -> if t/="conscientiousness" then t else "psychology/personality/conscientiousness") tags,  abst)) )
 walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
 walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataYaml f "metadata/custom.yaml"
@@ -144,7 +144,8 @@ readLinkMetadataAndCheck = do
              let normalizedUrlsC = map (replace "https://" "" . replace "http://" "") urlsC
              when (length (nub (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
 
-             let brokenUrlsC = filter (\u -> null u || not (head u == 'h' || head u == '/') || "//" `isPrefixOf` u || ' ' `elem` u || '\'' `elem` u) urlsC in when (brokenUrlsC /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrlsC
+             let brokenUrlsC = filter (\u -> null u || not (head u == 'h' || head u == '/') || (head u == '/' && "//" `isInfixOf` u) || ' ' `elem` u || '\'' `elem` u) urlsC
+             when (brokenUrlsC /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrlsC
 
              let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> anyInfix doi ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'"] || "http" `isInfixOf` doi) custom in
                  unless (null badDoisDash) $ error $ "Bad DOIs (bad punctuation): " ++ show badDoisDash
@@ -234,12 +235,6 @@ readLinkMetadataAndCheck = do
                                      error ("Link Annotation Error: tag does not match a directory! " ++ "Bad tag: '" ++ tag ++ "'\nBad annotation: " ++ show missingTags))
                tagsSet
 
-             -- let tagParentSet = nubOrd $ concatMap (tagParents final) tagsSet
-             -- let annotationWithTagOverlap = M.map (\(t,_,_,_,tags,_) ->(t,tags)) $
-             --       M.filter (\(_,_,_,_,tags,_) -> length tags > 1 &&
-             --                                      any (\(a, b) -> a `elem` tags && b `elem` tags) tagParentSet) final
-             -- unless (null annotationWithTagOverlap) $ printRed "Tag parent/tag child overlap (make more specific): " >> printGreen (show annotationWithTagOverlap)
-
              let tagsOverused = filter (\(c,_) -> c > tagMax) $ tagCount final
              unless (null tagsOverused) $ printRed "Overused tags: " >> printGreen (show tagsOverused)
 
@@ -248,12 +243,6 @@ readLinkMetadataAndCheck = do
 
 
              return final
-
--- tagParents :: Metadata -> String -> [(String,String)]
--- tagParents md tag = let parents = case M.lookup ("/docs/"++tag++"/index") md of
---                                    Nothing -> []
---                                    Just (_,_,_,_,tags,_) -> tags
---                     in if null parents then [] else zip (repeat tag) parents
 
 dateRegex, footnoteRegex, sectionAnonymousRegex, badUrlRegex :: String
 dateRegex             = "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$"
@@ -270,50 +259,53 @@ warnParagraphizeYAML path = do yaml <- readYaml path
 minimumAnnotationLength :: Int
 minimumAnnotationLength = 200
 
-writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Integer -> IO ()
-writeAnnotationFragments am md archived = mapM_ (mapM_ (\(p, mi) -> writeAnnotationFragment am md archived p mi)) $ chunksOf 50 $ M.toList md
-writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Integer -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment _ _ _ _ ("","","","",[],"") = return ()
-writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) =
+writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Integer -> Bool -> IO ()
+writeAnnotationFragments am md archived writeOnlyMissing = mapM_ (\(p, mi) -> writeAnnotationFragment am md archived writeOnlyMissing p mi) $ M.toList md
+writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Integer -> Bool -> Path -> MetadataItem -> IO ()
+writeAnnotationFragment _ _ _ _ _ ("","","","",[],"") = return ()
+writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,e) =
       if ("/index#" `isInfixOf` u && ("#section" `isInfixOf` u || "-section" `isSuffixOf` u)) ||
          anyInfix u ["/index#see-also", "/index#links", "/index#miscellaneous", "/index#top-tag", "/index#manual-annotation"] ||
          ("/" `isPrefixOf` u && "." `isInfixOf` u && null e) then return ()
-      else                                do let u' = linkCanonicalize u
-                                             bl <- getBackLink u'
-                                             sl <- getSimilarLink u'
-                                             -- we prefer annotations which have a fully-written abstract, but we will settle for 'partial' annotations,
-                                             -- which serve as a sort of souped-up tooltip: partials don't get the dotted-underline indicating a full annotation, but it will still pop-up on hover.
-                                             -- Now, tooltips already handle title/author/date, so we only need partials in the case of things with tags, abstracts, backlinks, or similar-links, which cannot be handled by tooltips (since HTML tooltips only let you pop up some raw unstyled Unicode text, not clickable links).
-                                             when (any (not . null) [concat ts, e, bl, sl]) $ do
-                                                 let filepath = take 247 $ urlEncode u'
-                                                 let filepath' = "metadata/annotations/" ++ filepath ++ ".html"
-                                                 when (filepath /= urlEncode u') $ printRed $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
-                                                 let titleHtml    = typesetHtmlField $ titlecase' a
-                                                 let authorHtml   = typesetHtmlField b
-                                                 -- obviously no point in trying to reformatting date/DOI, so skip those
-                                                 let abstractHtml = typesetHtmlField e
-                                                 -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
-                                                 let pandoc = Pandoc nullMeta $ generateAnnotationBlock False False True (u', Just (titleHtml,authorHtml,c,d,ts,abstractHtml)) bl sl
-                                                 -- for partials, we skip the heavyweight processing:
-                                                 unless (null e) $ void $ createAnnotations md pandoc
-                                                 pandoc' <- if null e then return pandoc
-                                                               else walkM (localizeLink am archived) $
-                                                                    walk nominalToRealInflationAdjuster $
-                                                                    walk (hasAnnotation md True) $
-                                                                    walk convertInterwikiLinks $
-                                                                    walk linkAuto $
-                                                                    walk (parseRawBlock nullAttr) pandoc
+      else do let u' = linkCanonicalize u
+              let filepath = take 247 $ urlEncode u'
+              let filepath' = "metadata/annotations/" ++ filepath ++ ".html"
+              annotationExisted <- doesFileExist filepath'
+              when (not onlyMissing || (onlyMissing && not annotationExisted)) $ do
 
-                                                 let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
+                  bl <- getBackLink u'
+                  sl <- getSimilarLink u'
+                  -- we prefer annotations which have a fully-written abstract, but we will settle for 'partial' annotations,
+                  -- which serve as a sort of souped-up tooltip: partials don't get the dotted-underline indicating a full annotation, but it will still pop-up on hover.
+                  -- Now, tooltips already handle title/author/date, so we only need partials in the case of things with tags, abstracts, backlinks, or similar-links, which cannot be handled by tooltips (since HTML tooltips only let you pop up some raw unstyled Unicode text, not clickable links).
+                  when (any (not . null) [concat ts, e, bl, sl]) $ do
+                      let titleHtml    = typesetHtmlField $ titlecase' a
+                      let authorHtml   = typesetHtmlField b
+                      -- obviously no point in trying to reformatting date/DOI, so skip those
+                      let abstractHtml = typesetHtmlField e
+                      -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
+                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock False False True (u', Just (titleHtml,authorHtml,c,d,ts,abstractHtml)) bl sl
+                      -- for partials, we skip the heavyweight processing:
+                      unless (null e) $ void $ createAnnotations md pandoc
+                      pandoc' <- if null e then return pandoc
+                                    else walkM (localizeLink am archived) $
+                                         walk nominalToRealInflationAdjuster $
+                                         walk (hasAnnotation md True) $
+                                         walk convertInterwikiLinks $
+                                         walk linkAuto $
+                                         walk (parseRawBlock nullAttr) pandoc
 
-                                                 case finalHTMLEither of
-                                                   Left er -> error ("Writing annotation fragment failed! " ++ show u ++ " : " ++ show i ++ " : " ++ show er)
-                                                   Right finalHTML -> do annotationExisted <- doesFileExist filepath'
-                                                                         writeUpdatedFile "annotation" filepath' finalHTML
-                                           -- HACK: the current hakyll.hs assumes that all annotations already exist before compilation begins, although we actually dynamically write as we go.
-                                           -- This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
-                                           -- There is presumably some way for Hakyll to do the metadata file listing *after* compilation is finished, but it's easier to hack around here by forcing 'new' annotation writes to be manually inserted into _site/.
-                                                                         unless annotationExisted $ writeUpdatedFile "annotation" ("./_site/"++filepath') finalHTML
+                      let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
+                      when (filepath /= urlEncode u') $ printRed $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
+
+                      case finalHTMLEither of
+                        Left er -> error ("Writing annotation fragment failed! " ++ show u ++ " : " ++ show i ++ " : " ++ show er)
+                        Right finalHTML -> do
+                                              writeUpdatedFile "annotation" filepath' finalHTML
+             -- HACK: the current hakyll.hs assumes that all annotations already exist before compilation begins, although we actually dynamically write as we go.
+             -- This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
+             -- There is presumably some way for Hakyll to do the metadata file listing *after* compilation is finished, but it's easier to hack around here by forcing 'new' annotation writes to be manually inserted into _site/.
+                                              unless annotationExisted $ writeUpdatedFile "annotation" ("./_site/"++filepath') finalHTML
 
 -- HACK: this is a workaround for an edge-case: Pandoc reads complex tables as 'grid tables', which then, when written using the default writer options, will break elements arbitrarily at newlines (breaking links in particular). We set the column width *so* wide that it should never need to break, and also enable 'reference links' to shield links by sticking their definition 'outside' the table. See <https://github.com/jgm/pandoc/issues/7641>.
 safeHtmlWriterOptions :: WriterOptions
@@ -471,7 +463,7 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 -- WARNING: update the list in /static/js/extracts-annotation.js L218 if you change this list!
 affiliationAnchors :: [String]
-affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "graphcore", "huawei", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pdf", "salesforce", "sberbank", "sensetime", "snapchat", "spotify", "tencent", "tensorfork", "uber", "yandex"]
+affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "graphcore", "huawei", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pinterest", "pdf", "salesforce", "sberbank", "sensetime", "snapchat", "spotify", "tencent", "tensorfork", "uber", "yandex"]
 
 -- find all instances where I link "https://arxiv.org/abs/1410.5401" when it should be "https://arxiv.org/abs/1410.5401#deepmind", where they are inconsistent and the hash matches a whitelist of orgs.
 findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]
@@ -690,6 +682,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("statistics/power-analysis", "power analysis")
           , ("statistics/bayes", "Bayes")
           , ("statistics/order", "order statistics")
+          , ("statistics/decision", "decision theory")
           , ("psychiatry/schizophrenia", "SCZ")
           , ("longevity/john-bjorksten", "John Bjorksten")
           , ("genetics/gametogenesis", "gametogenesis")
@@ -1578,7 +1571,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
         | ".pdf" `isInfixOf` p = pdf p
         | anyInfix p [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
         | anyPrefix p ["docs/link-bibliography/"] ||
-          anySuffix p ["#external-links", "#see-also", "#see-also-1", "#see-also-2", "#footnotes", "#links", "#top-tag", "#misc", "#miscellaneous", "#appendix", "#appendices", "#conclusion", "#conclusion-1", "#conclusion-2", "#media", "#writings", "#filmtv", "#music", "#books"] ||
+          anySuffix p ["#external-links", "#see-also", "#see-also", "#see-alsos", "#see-also-1", "#see-also-2", "#footnotes", "#links", "#top-tag", "#misc", "#miscellaneous", "#appendix", "#appendices", "#conclusion", "#conclusion-1", "#conclusion-2", "#media", "#writings", "#filmtv", "#music", "#books"] ||
           anyInfix p ["index.html", "/index#"] ||
           ("/index#" `isInfixOf` p && "-section" `isSuffixOf` p)  = return (Left Permanent)
         | "/newsletter/" `isPrefixOf` p && '#' `elem` p = return (Left Permanent) -- newsletter sections like '/newsletter/2022/01#fiction' do not have abstracts
@@ -2091,6 +2084,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(F: Y \\rightarrow X\\)</span>", "<em>F : Y → X</em>")
           , ("<span class=\"math inline\">\\(F(G(X)) \\approx X\\)</span>", "<em>F(G(X)) ≈ X</em>")
           , ("<span class=\"math inline\">\\(\\boldsymbol{sponge} \\sim\\boldsymbol{examples}\\)</span>", "<strong>sponge examples</strong>")
+          , ("<span class=\"math inline\">\\(\\kappa\\)</span>", "𝜅")
           , ("O((log n log log n)^2)", "𝑂(log<sup>2</sup> <em>n</em> log log <em>n</em>)")
           , ("O(m log^2 n)", "𝑂(<em>m</em> log <em>n</em> + <em>n</em> log<sup>2</sup> <em>n</em>)")
           , ("O(N) ", "𝑂(<em>N</em>) ")
@@ -2102,13 +2096,13 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("$(x_0,\\gamma)$", "<em>(x<sub>0</sub>, γ)</em>")
           , ("$e=mc^2$", "<em>e</em> = <em>mc</em><sup>2</sup>")
           , ("$\frac{4}{3} \\cdot \\pi \\cdot r^3$", "4⁄3 × π × _r_^3^")
-          , (" Lp", " <em>L</em><sub><em>p</em></sub>")
-          , (" L2", " <em>L</em><sub>2</sub>")
-          , (" L1", " <em>L</em><sub>1</sub>")
-          , (" L0", " <em>L</em><sub>0</sub>")
-          , (" L-infinity", " <em>L</em><sub>∞</sub>")
-          , (" L-∞", " <em>L</em><sub>∞</sub>")
-          , (" L∞", " <em>L</em><sub>∞</sub>")
+          , (" Lp", " 𝓁<sub><em>p</em></sub>")
+          , (" L2", " 𝓁<sub>2</sub>")
+          , (" L1", " 𝓁<sub>1</sub>")
+          , (" L0", " 𝓁<sub>0</sub>")
+          , (" L-infinity", " 𝓁<sub>∞</sub>")
+          , (" L-∞", " 𝓁<sub>∞</sub>")
+          , (" L∞", " 𝓁<sub>∞</sub>")
           -- rest:
           , ("(PsycINFO Database Record", "")
           , ("</p> <p>", "</p>\n<p>")
