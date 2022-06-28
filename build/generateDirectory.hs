@@ -98,26 +98,23 @@ generateDirectory md dir'' = do
                    Just (_,_,_,_,_,"") -> []
                    Just (_,_,_,_,_,dirAbstract) -> [parseRawBlock ("",["abstract"],[]) $ RawBlock (Format "html") (T.pack $ "<blockquote>"++dirAbstract++"</blockquote>")]
 
-  -- When tag links elsewhere link to this page, they will target `#top-tag`. Should that point at # See Also (if it exists) or # Links?
-  -- TODO: with scraped abstracts of tag-directory indexes, is the top-tag trick necessary anymore? The indirection it helps cut out for live popups seems largely dealt with by the scraped TOC now...
-  let (idSeealso, idLinks) = if null dirsSeeAlsos then ("","top-tag") else ("top-tag","")
-  let body =   abstract ++
+  let body = abstract ++
 
-               [Header 1 (idSeealso, ["display-pop-not"], []) [Str "See Also"]] ++ [directorySection] ++
+             [Header 1 ("", ["display-pop-not"], []) [Str "See Also"]] ++ [directorySection] ++
 
-               (if null titledLinks then [] else
-                   -- NOTE: we need a <h1> for proper hierarchical tree, but that <h1> uses up a lot of visual space in popups/popins, and we can't just suppress *all* first-<h1>s, we only want to suppress the ones on directory/tag pages. So we define a new class 'display-pop-not', and the CSS (in default.css's popups section) will suppress that in popups/popins.
-                   [Para []] ++
-                   [Header 1 (idLinks, ["display-pop-not"], []) [Str "Links"]] ++
-                   titledLinksSections) ++
+             (if null titledLinks then [] else
+                 -- NOTE: we need a <h1> for proper hierarchical tree, but that <h1> uses up a lot of visual space in popups/popins, and we can't just suppress *all* first-<h1>s, we only want to suppress the ones on directory/tag pages. So we define a new class 'display-pop-not', and the CSS (in default.css's popups section) will suppress that in popups/popins.
+                 [Para []] ++
+                 [Header 1 ("", ["display-pop-not"], []) [Str "Links"]] ++
+                 titledLinksSections) ++
 
-               (if null untitledLinks then [] else
-                   Header 1 nullAttr [Str "Miscellaneous"] :
-                   -- for lists, they *may* all be devoid of annotations and short
-                   if not allUnannotatedUntitledP then [untitledLinksSection] else
-                     [RawBlock (Format "html") "<div id=\"miscellaneous-links-list\" class=\"columns\">\n\n",
-                      untitledLinksSection,
-                      RawBlock (Format "html") "</div>"])
+             (if null untitledLinks then [] else
+                 Header 1 nullAttr [Str "Miscellaneous"] :
+                 -- for lists, they *may* all be devoid of annotations and short
+                 if not allUnannotatedUntitledP then [untitledLinksSection] else
+                   [RawBlock (Format "html") "<div id=\"miscellaneous-links-list\" class=\"columns\">\n\n",
+                    untitledLinksSection,
+                    RawBlock (Format "html") "</div>"])
 
   let document = Pandoc nullMeta body
   let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} $
