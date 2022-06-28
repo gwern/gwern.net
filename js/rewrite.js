@@ -1076,7 +1076,7 @@ function designateSpecialLinkIcons(loadEventInfo) {
     GWLog("designateSpecialLinkIcons", "rewrite.js", 1);
 
 	//	Self-links (anchorlinks to the current page).
-	loadEventInfo.document.querySelectorAll(".link-self").forEach(link => {
+	loadEventInfo.document.querySelectorAll(".link-self:not(.no-icon)").forEach(link => {
 		link.dataset.linkIconType = "text";
 		link.dataset.linkIcon = "\u{00B6}"; // ¶
 
