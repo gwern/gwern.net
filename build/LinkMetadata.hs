@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-28 18:02:58 gwern"
+When:  Time-stamp: "2022-06-29 12:41:44 gwern"
 License: CC-0
 -}
 
@@ -922,7 +922,7 @@ pdf p = do let p' = takeWhile (/='#') p
                 -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
                 let ecreator = filterMeta $ U.toString mbCreator
                 let eauthor' = filterMeta  $ U.toString mbAuthor
-                let author = initializeAuthors $ trim $ if length eauthor' > length ecreator then eauthor' else ecreator
+                let author = cleanAbstractsHTML $ initializeAuthors $ trim $ if length eauthor' > length ecreator then eauthor' else ecreator
                 let ts = [] -- TODO: replace with ML call to infer tags
                 printGreen $ "PDF: " ++ p ++" DOI: " ++ edoi'
                 at <- fmap (fromMaybe "") $ doi2Abstract edoi'
@@ -1578,8 +1578,9 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
         | p =~ sectionAnonymousRegex = return (Left Permanent) -- unnamed sections are unstable, and also will never have abstracts because they would've gotten a name as part of writing it.
         | p =~ footnoteRegex= return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
         | otherwise =
-            let p' = sed "^/" "" $ replace "https://www.gwern.net/" "" p in
-            do printGreen p'
+            do let p' = sed "^/" "" $ replace "https://www.gwern.net/" "" p
+               let indexP = "docs/" `isPrefixOf` p' && "/index" `isInfixOf` p'
+               printGreen p'
                checkURL p
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--silent", "https://www.gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"] -- we strip `--location` because we do *not* want to follow redirects. Redirects creating duplicate annotations is a problem.
                case status of
@@ -1609,7 +1610,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let doi = "" -- I explored the idea but DOIs are too expensive & ultimately do little useful
                         let footnotesP = "<section class=\"footnotes\"" `isInfixOf` b
 
-                        let toc = gwernTOC footnotesP p' f
+                        let toc = gwernTOC footnotesP indexP p' f
                         let toc' = if toc == "<div class=\"columns\" class=\"TOC\"></div>" then "" else toc
 
                         let (sectTitle,gabstract) = gwernAbstract ("/index" `isSuffixOf` p' || "newsletter/" `isPrefixOf` p') p' description toc' f
@@ -1627,31 +1628,6 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
           filterThumbnail _ = False
           filterThumbnailText (TagOpen "meta" [("property", "og:image:alt"), _]) = True
           filterThumbnailText _ = False
-
-truncateTOC :: String -> String -> String
-truncateTOC p' toc = let pndc = truncateTOCHTML (T.pack (sed ".*#" "" p')) (T.pack toc) in
-                       if null pndc then "" else
-                           case (runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta (init pndc))) of
-                             Left e -> error ("Failed to compile truncated ToC: " ++ show p' ++ show toc ++ show e)
-                             Right text -> T.unpack text
-
-gwernTOC :: Bool -> String -> [Tag String] -> String
-gwernTOC footnotesP p' f =
-                       (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#footnotes\">Footnotes</a></li></ul></div>" tc) $ -- Pandoc declines to add an ID to footnotes section; on Gwern.net, we override this by at compile-time rewriting the <section> to have `#footnotes`
-                              replace "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns\" class=\"TOC\">" $ -- add columns class to condense it in popups/tag-directories
-                              replace "<span>" "" $ replace "</span>" "" $ -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right?), we'll remove them.
-                              (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then "<div class=\"columns\" class=\"TOC\">" ++ toc ++ "</div>" else "") else replace "<a href=" "<a class=\"id-not\" href=") $
-                              -- NOTE: we strip the `id="TOC"`, and all other link IDs on TOC subentries, deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies
-                              sed " id=\"[a-z0-9-]+\">" ">" $ replace " id=\"markdownBody\"" "" $ replace " id=\"TOC\"" "" index
-                              where
-                                index = if length indexType1 > length indexType2 then indexType1 else indexType2
-                                indexType1 = replace "markdownBody" "" $ replace "directory-indexes" "" $ replace "columns" "columns TOC" $ renderTagsOptions renderOptions $
-                                  takeWhile (\e' -> e' /= TagClose "div") $ dropWhile (\e -> e /=  (TagOpen "div" [("id","markdownBody"),("class","markdownBody directory-indexes columns")])) f
-                                indexType2 = renderTagsOptions renderOptions $
-                                             [TagOpen "div" [("class","columns")]] ++
-                                             (takeWhile (\e' -> e' /= TagClose "div")  $ dropWhile (\e -> e /=  (TagOpen "div" [("id","TOC"), ("class","TOC")])) f) ++
-                                             [TagClose "div"]
-
 
 gwernAbstract :: Bool -> String -> String -> String -> [Tag String] -> (String,String)
 gwernAbstract shortAllowed p' description toc f =
@@ -1711,6 +1687,40 @@ dropToText (TagText _) = False
 dropToText (TagOpen "em" _) = False
 dropToText (TagClose "em") = False
 dropToText _ = True
+
+gwernTOC :: Bool -> Bool -> String -> [Tag String] -> String
+gwernTOC footnotesP indexP p' f =
+ -- for tag-directories, condense the ToC by removing the See Also & Miscellaneous <h1>s, and the Links wrapper around the individual entries:
+ (\tc' -> if not indexP then tc'
+   else sedMany [("</li>\n          \n        </ul>",""),
+                 ("<li>\n            <a class=\"id-not\" href=\"#miscellaneous\">Miscellaneous</a>\n          </li>", ""),
+                 ("<li>\n            <a class=\"id-not\" href=\"#links\">Links</a>\n            <ul>", ""),
+                 ("<li>\n            <a class=\"id-not\" href=\"#see-also\">See Also</a>\n          </li>", "")
+                ] tc') $
+ -- Pandoc declines to add an ID to footnotes section; on Gwern.net, we override this by at compile-time rewriting the <section> to have `#footnotes`:
+ (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#footnotes\">Footnotes</a></li></ul></div>" tc) $
+        -- add columns class to condense it in popups/tag-directories
+        replace "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns\" class=\"TOC\">" $
+        -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right?), we'll remove them.
+        replace "<span>" "" $ replace "</span>" "" $
+        (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then "<div class=\"columns\" class=\"TOC\">" ++ toc ++ "</div>" else "") else replace "<a href=" "<a class=\"id-not\" href=") $
+        -- NOTE: we strip the `id="TOC"`, and all other link IDs on TOC subentries, deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies
+        sed " id=\"[a-z0-9-]+\">" ">" $ replace " id=\"markdownBody\"" "" $ replace " id=\"TOC\"" "" index
+        where
+          index = if length indexType1 > length indexType2 then indexType1 else indexType2
+          indexType1 = replace "markdownBody" "" $ replace "directory-indexes" "" $ replace "columns" "columns TOC" $ renderTagsOptions renderOptions $
+            takeWhile (\e' -> e' /= TagClose "div") $ dropWhile (\e -> e /=  (TagOpen "div" [("id","markdownBody"),("class","markdownBody directory-indexes columns")])) f
+          indexType2 = renderTagsOptions renderOptions $
+                       [TagOpen "div" [("class","columns")]] ++
+                       (takeWhile (\e' -> e' /= TagClose "div")  $ dropWhile (\e -> e /=  (TagOpen "div" [("id","TOC"), ("class","TOC")])) f) ++
+                       [TagClose "div"]
+
+truncateTOC :: String -> String -> String
+truncateTOC p' toc = let pndc = truncateTOCHTML (T.pack (sed ".*#" "" p')) (T.pack toc) in
+                       if null pndc then "" else
+                           case (runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta (init pndc))) of
+                             Left e -> error ("Failed to compile truncated ToC: " ++ show p' ++ show toc ++ show e)
+                             Right text -> T.unpack text
 
 -- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
 initializeAuthors :: String -> String
@@ -2840,6 +2850,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("Oamp#x02019;", "O’")
           , ("Camp#x000ED;", "Cí")
           , ("amp#x000E9", "é")
+          , ("amp#x000E9,", "é")
           , ("\\aka", "a.k.a.")
           , ("\160", " ") -- NO BREAK SPACE
             ]
