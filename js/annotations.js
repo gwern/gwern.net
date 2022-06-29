@@ -251,7 +251,8 @@ Annotations = {
 				//	Abstract (if exists).
 				let abstractElement = referenceEntry.querySelector("blockquote");
 				//	Unwrap extraneous <div>, if present.
-				if (   abstractElement.firstElementChild == abstractElement.lastElementChild
+				if (   abstractElement
+					&& abstractElement.firstElementChild == abstractElement.lastElementChild
 					&& abstractElement.firstElementChild.tagName == "DIV")
 					unwrap(abstractElement.firstElementChild);
 
