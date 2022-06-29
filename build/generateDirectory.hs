@@ -87,7 +87,7 @@ generateDirectory md dir'' = do
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst)) ++ "\n"
   let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if not (captionText == "") then captionText else if not (altText == "") then altText else "") (head imageFirst))) ++ "'\n"
 
-  let header = generateYAMLHeader dir'' (getNewestDate links) ((length dirsChildren + 1) + length dirsSeeAlsos, length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
+  let header = generateYAMLHeader dir'' (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
   let directorySectionChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
   let directorySectionSeeAlsos = generateDirectoryItems Nothing dir'' dirsSeeAlsos
   let directorySection = Div ("see-alsos", ["directory-indexes", "columns", "directorySectionChildren"], []) [BulletList $ directorySectionChildren ++ directorySectionSeeAlsos]
@@ -132,8 +132,8 @@ generateYAMLHeader d date (directoryN,annotationN,linkN) thumbnail
              "title: " ++ T.unpack (abbreviateTag (T.pack (replace "docs/" "" (init d)))) ++ " directory\n",
              "author: 'N/A'\n",
              "description: \"Annotated bibliography for the tag-directory <code>/" ++ d ++ "</code>, most recent first: " ++
-              (if directoryN > 1 then ""  else "" ++ show directoryN ++ " <a class='no-icon link-annotated-not' href='/"++d++"index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
-              (if annotationN == 0 then "" else ", " ++ show annotationN ++ " <a class='no-icon link-annotated-not' href='/"++d++"index#links'>annotation" ++ pl annotationN ++ "</a>") ++
+              (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='no-icon link-annotated-not' href='/"++d++"index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
+              (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='no-icon link-annotated-not' href='/"++d++"index#links'>annotation" ++ pl annotationN ++ "</a>") ++
               (if linkN == 0 then ""       else (if (directoryN+annotationN) > 0 then ", & " else ", ") ++ show linkN ++ " <a class='no-icon link-annotated-not' href='/"++d++"index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
                ".\"\n",
              thumbnail,
