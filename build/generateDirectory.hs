@@ -40,7 +40,7 @@ main = do dirs <- getArgs
 
           meta <- readLinkMetadata
 
-          Par.mapM_ (generateDirectory meta) dirs' -- because of the expense of searching the annotation database for each directory-tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
+          Par.mapM_ (generateDirectory meta) dirs' -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
 
 generateDirectory :: Metadata -> FilePath -> IO ()
 generateDirectory md dir'' = do
@@ -54,7 +54,7 @@ generateDirectory md dir'' = do
                 listDirectory dir''
   let direntries' = sort $ map (\entry -> "/"++dir''++entry) direntries
 
-  -- We allow tag-directories to be cross-listed, not just children.
+  -- We allow tags to be cross-listed, not just children.
   -- So '/docs/exercise/index' can be tagged with 'longevity', and it'll show up in the Directory section (not the Files/Links section!) of '/docs/longevity/index'.
   -- This allows cross-references without requiring deep nesting—'longevity/exercise' might seem OK enough (although it runs roughshod over a lot of the links in there...), but what about if there was a third? Or fourth?
   let taggedDirs = sort $ map (\(f,_,_,_) -> f) $ filter (\(f,_,_,_) -> "/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f && f `notElem` direntries') tagged
@@ -87,12 +87,12 @@ generateDirectory md dir'' = do
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst)) ++ "\n"
   let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if not (captionText == "") then captionText else if not (altText == "") then altText else "") (head imageFirst))) ++ "'\n"
 
-  let header = generateYAMLHeader dir'' (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
+  let header = generateYAMLHeader tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
   let directorySectionChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
   let directorySectionSeeAlsos = generateDirectoryItems Nothing dir'' dirsSeeAlsos
   let directorySection = Div ("see-alsos", ["directory-indexes", "columns", "directorySectionChildren"], []) [BulletList $ directorySectionChildren ++ directorySectionSeeAlsos]
 
-  -- A directory-tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at the ID '/docs/foo/index#manual-annotation'
+  -- A tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at the ID '/docs/foo/index#manual-annotation'
   let abstract = case M.lookup ("/"++dir''++"index#manual-annotation") md of
                    Nothing -> []
                    Just (_,_,_,_,_,"") -> []
@@ -129,12 +129,12 @@ generateDirectory md dir'' = do
 generateYAMLHeader :: FilePath -> String -> (Int,Int,Int) -> String -> String
 generateYAMLHeader d date (directoryN,annotationN,linkN) thumbnail
   = concat [ "---\n",
-             "title: " ++ T.unpack (abbreviateTag (T.pack (replace "docs/" "" (init d)))) ++ " directory\n",
+             "title: " ++ T.unpack (abbreviateTag (T.pack (replace "docs/" "" d))) ++ " directory\n",
              "author: 'N/A'\n",
-             "description: \"Annotated bibliography for the tag-directory <code>/" ++ d ++ "</code>, most recent first: " ++
-              (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='no-icon link-annotated-not' href='/"++d++"index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
-              (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='no-icon link-annotated-not' href='/"++d++"index#links'>annotation" ++ pl annotationN ++ "</a>") ++
-              (if linkN == 0 then ""       else (if (directoryN+annotationN) > 0 then ", & " else ", ") ++ show linkN ++ " <a class='no-icon link-annotated-not' href='/"++d++"index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
+             "description: \"Bibliography for tag <em>" ++ d ++ "</em>, most recent first: " ++
+              (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='no-icon link-annotated-not' href='/docs/" ++ d ++ "/index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
+              (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='no-icon link-annotated-not' href='/docs/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++
+              (if linkN == 0 then ""       else (if (directoryN+annotationN) > 0 then ", & " else ", ") ++ show linkN ++ " <a class='no-icon link-annotated-not' href='/docs/" ++ d ++ "/index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
                ".\"\n",
              thumbnail,
              "created: 'N/A'\n",
@@ -169,7 +169,7 @@ listFiles m direntries' = do
 
 -- Fetch URLs/file 'tagged' with the current directory but not residing in it.
 --
--- tag-dirs are only in "docs/*", so "haskell/" etc is out. Tags drop the docs/ prefix, and we want to avoid
+-- tags are only in "docs/*", so "haskell/" etc is out. Tags drop the docs/ prefix, and we want to avoid
 -- the actual files inside the current directory, because they'll be covered by the `listFiles` version, of course.
 listTagged :: Metadata -> FilePath -> IO [(FilePath,MetadataItem,FilePath,FilePath)]
 listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else
@@ -227,7 +227,7 @@ generateDirectoryItems parent current ds =
                                                                ["link-tag", "directory-indexes-upwards"],
                                                                [("rel","tag")]
                                                              )
-                                                               [Str "Parent"] (T.pack p, "Link to parent directory '" `T.append`  (T.pack $ takeDirectory p) `T.append` "' (ascending)")]]]]
+                                                               [Str "Parent"] (T.pack p, "Link to parent directory '" `T.append`  (T.pack $ takeDirectory p) `T.append` "/' (ascending)")]]]]
 
        generateDirectoryItem :: FilePath -> [Block]
        -- arrow symbolism: subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')
@@ -275,7 +275,7 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) = -- no abstracts:
        similar  = if sl=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["aux-links", "link-local", "similar"],[]) [Str "similar"] (T.pack sl,"Similar links (by text embedding).")]]
   in
   if (tgs==[] && bl=="" && dt=="") then [Para (prefix ++ Link nullAttr title (T.pack f, "") : (author))]
-  else [Para (prefix  ++ Link nullAttr title (T.pack f, "") : (author ++ [Space, Str "("] ++ date ++ tags ++ backlink ++ similar ++ [Str ")"]))]
+  else [Para (Link nullAttr title (T.pack f, "") : (author ++ [Space, Str "("] ++ date ++ tags ++ backlink ++ similar ++ [Str ")"]))]
 -- long abstracts:
 generateItem (f,a,bl,sl) =
   -- render annotation as: (skipping DOIs)

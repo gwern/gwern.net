@@ -6,7 +6,7 @@
 
 -- This supports multiple mixed arguments; if there are multiple links and/or multiple tags
 -- specified (as identified by links starting with '/' or 'http', and tags not starting with those &
--- also the necessary tag-directory existing on disk), then we change all tags on all links (order
+-- also the necessary tag existing on disk), then we change all tags on all links (order
 -- irrelevant).
 --
 -- eg. 'changeTag.hs "https://en.wikipedia.org/wiki/Experience_curve_effects"

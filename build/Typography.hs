@@ -226,7 +226,7 @@ rulersCycle modulus doc = evalState (walkM addHrNth doc) 0
          return $ Div ("", [nthClass], []) [HorizontalRule]
        addHrNth x = return x
 
--- Walk a document, and de-duplicate overlapping IDs by appending "-n" for the nth use. This should not be used on regular content pages, where duplicate links should either be de-linked (replaced by a within-page anchor link, say) or given unique IDs by hand. This is useful for auto-generated pages like link-bibliographies or tag-directories, where arbitrarily many different annotations will be inserted and it would be difficult or impossible to remove duplicates or override. So, somewhat analogous to `gensym`, we walk the doc and simply assign new IDs on demand.
+-- Walk a document, and de-duplicate overlapping IDs by appending "-n" for the nth use. This should not be used on regular content pages, where duplicate links should either be de-linked (replaced by a within-page anchor link, say) or given unique IDs by hand. This is useful for auto-generated pages like link-bibliographies or tags, where arbitrarily many different annotations will be inserted and it would be difficult or impossible to remove duplicates or override. So, somewhat analogous to `gensym`, we walk the doc and simply assign new IDs on demand.
 identUniquefy :: Pandoc -> Pandoc
 identUniquefy doc = evalState (walkM addIdentNth doc) M.empty
  where addIdentNth :: Inline -> State (M.Map T.Text Int) Inline

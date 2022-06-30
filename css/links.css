@@ -280,7 +280,7 @@ body.index a.link-local::after,
 }
 
 /*=----------------------------------------------------=*/
-/*= Cross-directory links on tag-directory index pages =*/
+/*= Cross-directory links on tag index pages =*/
 /*=----------------------------------------------------=*/
 
 a[data-link-icon='arrow-up-left']::after,

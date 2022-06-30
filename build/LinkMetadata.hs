@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-29 12:41:44 gwern"
+When:  Time-stamp: "2022-06-30 19:37:31 gwern"
 License: CC-0
 -}
 
@@ -394,9 +394,9 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
               if (length abstrct < minimumAnnotationLength) && not forcep then
                 if "link-local" `elem` b then x else (Link (a',nubOrd (b++["link-annotated", "link-annotated-partial"]),c) e (f,g')) -- always add the ID if possible
               else
-                -- -- for directory-tags, we can write a header like '/docs/bitcoin/nashx/index' as an annotation,
+                -- -- for tags, we can write a header like '/docs/bitcoin/nashx/index' as an annotation,
                 -- -- but this is a special case: we do *not* want to popup just the header, but the whole index page.
-                -- -- so we check for directory-tags and force them to not popup.
+                -- -- so we check for tags and force them to not popup.
                 -- if "/docs/"`isPrefixOf`f' && "/index"`isSuffixOf` f' then
                 --   Link (a', nubOrd (b++["link-annotated-not"]), c) e (f,g')
                 -- else
@@ -475,7 +475,7 @@ findDuplicatesURLsByAffiliation md = let urls  = nubOrd . filter ('.' `elem`) $ 
                                          affiliationURLs = M.filter (\vs -> any (\v -> anyInfix v affiliationURLPatterns) vs) urlDB
                                      in M.toList $ M.filter (\v -> length (filter (\v' -> not (anyInfix v' affiliationWhitelist)) v) > 1) affiliationURLs
 
--- Remind to refine link directory-tags: should be <100. (We count using the annotation database instead of counting files inside each directory because so many are now cross-tagged or virtual.)
+-- Remind to refine link tags: should be <100. (We count using the annotation database instead of counting files inside each directory because so many are now cross-tagged or virtual.)
 tagMax, tagPairMax :: Int
 tagMax = 100
 tagPairMax = 11
@@ -555,15 +555,13 @@ url2Tags p = concat $ map (\(match,tag) -> if match p then [tag] else []) urlTag
           , (("haskell.org"`isInfixOf`), "cs/haskell")
           ]
 
--- Abbreviate displayed tag names to make tag lists more readable. For some tags, like 'reinforcement-learning/*' or 'genetics/*', they might be used very heavily and densely, leading to cluttered unreadable tag lists, and discouraging use of meaningful directory names: 'reinforcement-learning/exploration, reinforcement-learning/alphago, reinforcement-learning/meta-learning, reinforcement-learning/...' would be quite difficult to read. But we also would rather not abbreviate the directory-tag itself down to just 'rl/', as that is not machine-readable or explicit. So we can abbreviate them just for display, while rendering the tags to Inline elements.
+-- Abbreviate displayed tag names to make tag lists more readable. For some tags, like 'reinforcement-learning/*' or 'genetics/*', they might be used very heavily and densely, leading to cluttered unreadable tag lists, and discouraging use of meaningful directory names: 'reinforcement-learning/exploration, reinforcement-learning/alphago, reinforcement-learning/meta-learning, reinforcement-learning/...' would be quite difficult to read. But we also would rather not abbreviate the tag itself down to just 'rl/', as that is not machine-readable or explicit. So we can abbreviate them just for display, while rendering the tags to Inline elements.
 abbreviateTag :: T.Text -> T.Text
 abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFixed . replace "/docs/" "" . T.unpack
   where tagRewritesFixed :: [(String,String)]
         tagRewritesFixed = [
           ("reinforcement-learning", "RL")
-          , ("psychology/personality/conscientiousness", "Conscientiousness")
           , ("music-distraction", "music distraction")
-          , ("psychology/chess", "chess psychology")
           , ("reinforcement-learning/chess", "AI chess")
           , ("ai/tabular", "tabular ML")
           , ("ai/anime", "anime AI")
@@ -603,7 +601,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("existential-risk", "x-risk")
           , ("philosophy/ethics", "ethics")
           , ("philosophy/brethren-of-purity", "Brethren of Purity")
-          , ("psychology/okcupid", "OKCupid")
+
           , ("longevity/tirzepatide", "tirzepatide")
           , ("longevity/semaglutide", "glutide")
           , ("exercise/gravitostat", "the gravitostat")
@@ -653,11 +651,6 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("cs/linkrot/archiving", "archiving")
           , ("reinforcement-learning/openai", "OA")
           , ("reinforcement-learning/deepmind", "DM")
-          , ("genetics/cloning", "cloning")
-          , ("genetics/cloning/dog", "dog cloning")
-          , ("genetics/heritable/adoption", "adoption")
-          , ("genetics/selection/artificial/apple", "apple breeding")
-          , ("genetics/selection/artificial/index-selection", "index selection")
           , ("reinforcement-learning/meta-learning", "meta-learning")
           , ("reinforcement-learning/preference-learning", "preference learning")
           , ("reinforcement-learning/multi-agent", "MARL")
@@ -667,16 +660,19 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("reinforcement-learning/robot", "robotics")
           , ("reinforcement-learning/safe", "AI safety")
           , ("statistics/prediction/election", "election forecast")
+          , ("psychology/okcupid", "OKCupid")
+          , ("psychology/personality/conscientiousness", "Conscientiousness")
+          , ("psychology/chess", "chess psychology")
+          , ("psychology/novelty", "novelty U-curve")
+          , ("psychology/energy", "mental energy")
           , ("psychology/illusion-of-depth", "illusion of depth")
           , ("psychology/neuroscience", "neuroscience")
           , ("psychology/european-journal-of-parapsychology", "EJP")
+          , ("psychology/spaced-repetition", "spaced repetition")
           , ("psychiatry/traumatic-brain-injury", "TBI")
-          , ("genetics/heritable/rare-variants", "rare gene")
-          , ("genetics/heritable/emergenesis", "emergenesis")
           , ("sociology/abandoned-footnotes", "Abandoned Footnotes")
           , ("statistics/survival-analysis", "survival analysis")
           , ("statistics/variance-component", "variance components")
-          , ("genetics/selection/natural/human/dysgenics", "dysgenics")
           , ("philosophy/ethics/ethicists", "ethicists")
           , ("statistics/meta-analysis", "meta-analysis")
           , ("statistics/power-analysis", "power analysis")
@@ -685,17 +681,23 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("statistics/decision", "decision theory")
           , ("psychiatry/schizophrenia", "SCZ")
           , ("longevity/john-bjorksten", "John Bjorksten")
+          , ("longevity/senolytic", "senolytics")
+          , ("genetics/editing", "gene editing")
+          , ("genetics/cloning", "cloning")
+          , ("genetics/cloning/dog", "dog cloning")
+          , ("genetics/heritable", "heritability")
+          , ("genetics/heritable/adoption", "adoption")
+          , ("genetics/selection/artificial/apple", "apple breeding")
+          , ("genetics/selection/artificial/index-selection", "index selection")
+          , ("genetics/heritable/rare-variants", "rare genes")
+          , ("genetics/heritable/emergenesis", "emergenesis")
+          , ("genetics/selection/natural/human/dysgenics", "dysgenics")
           , ("genetics/gametogenesis", "gametogenesis")
           , ("genetics/heritable/correlation", "genetic correlation")
-          , ("genetics/heritable", "heritability")
-          , ("longevity/senolytic", "senolytics")
           , ("genetics/microbiome", "microbiome")
           , ("economics/georgism", "Georgism")
           , ("bitcoin/pirateat40", "Pirateat40")
-          , ("psychology/novelty", "novelty U-curve")
-          , ("psychology/energy", "mental energy")
           , ("psychiatry/meditation", "meditation")
-          , ("psychology/spaced-repetition", "spaced repetition")
           , ("fiction/criticism", "literary criticism")
           , ("fiction/text-game", "text game")
           , ("fiction/gene-wolfe", "Gene Wolfe")
@@ -704,7 +706,6 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("cat/psychology", "cat psychology")
           , ("modafinil/survey", "modafinil survey")
           , ("lesswrong-survey", "LW survey")
-          , ("genetics/editing", "gene editing")
           , ("japanese/zeami", "Zeami")
           , ("history/medici", "Medici")
           , ("biology/portia", "Portia spider")
@@ -724,6 +725,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("bitcoin", "Bitcoin")
           , ("touhou", "Touhou")
           , ("zeo", "sleep")
+          , ("zeo/short-sleeper", "short-sleepers")
           , ("co2", "CO₂")
           , ("traffic", "web traffic")
           ]
@@ -832,7 +834,7 @@ linkDispatcher (Link _ _ (l, tooltip)) = do l' <- linkDispatcherURL (T.unpack l)
 linkDispatcher x = error ("linkDispatcher passed a non-Link Inline element: " ++ show x)
 linkDispatcherURL :: Path -> IO (Either Failure (Path, MetadataItem))
 linkDispatcherURL l | anyPrefix l ["/metadata/annotations/backlinks/", "/metadata/annotations/similars/"] = return (Left Permanent)
-                 -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for directory-tags.
+                 -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for tags.
                  | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return $ Right (l, (wikipediaURLToTitle l, "", "", "", [], ""))
                  | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
                  | "http://arxiv.org/abs/"  `isPrefixOf` l = arxiv l
@@ -1621,7 +1623,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                                                  gabstract
 
                         if gabstract == "404 Not Found Error: no page by this name!" || title' == "404 Not Found" || (null keywordTags && null gabstract) then
-                          return (Left Permanent) -- NOTE: special-case: if a new essay or a tag-directory hasn't been uploaded yet, make a stub entry; the stub entry will eventually be updated via a `updateGwernEntries` scrape. (A Temporary error has the drawback that it throws changeTag.hs into an infinite loop as it keeps trying to fix the temporary error.)
+                          return (Left Permanent) -- NOTE: special-case: if a new essay or a tag hasn't been uploaded yet, make a stub entry; the stub entry will eventually be updated via a `updateGwernEntries` scrape. (A Temporary error has the drawback that it throws changeTag.hs into an infinite loop as it keeps trying to fix the temporary error.)
                           else return $ Right (p, (title', author, date, doi, keywordTags, combinedAnnotation))
         where
           filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
@@ -1690,7 +1692,7 @@ dropToText _ = True
 
 gwernTOC :: Bool -> Bool -> String -> [Tag String] -> String
 gwernTOC footnotesP indexP p' f =
- -- for tag-directories, condense the ToC by removing the See Also & Miscellaneous <h1>s, and the Links wrapper around the individual entries:
+ -- for tags, condense the ToC by removing the See Also & Miscellaneous <h1>s, and the Links wrapper around the individual entries:
  (\tc' -> if not indexP then tc'
    else sedMany [("</li>\n          \n        </ul>",""),
                  ("<li>\n            <a class=\"id-not\" href=\"#miscellaneous\">Miscellaneous</a>\n          </li>", ""),
@@ -1699,12 +1701,12 @@ gwernTOC footnotesP indexP p' f =
                 ] tc') $
  -- Pandoc declines to add an ID to footnotes section; on Gwern.net, we override this by at compile-time rewriting the <section> to have `#footnotes`:
  (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#footnotes\">Footnotes</a></li></ul></div>" tc) $
-        -- add columns class to condense it in popups/tag-directories
+        -- add columns class to condense it in popups/tags
         replace "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns\" class=\"TOC\">" $
         -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right?), we'll remove them.
         replace "<span>" "" $ replace "</span>" "" $
         (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then "<div class=\"columns\" class=\"TOC\">" ++ toc ++ "</div>" else "") else replace "<a href=" "<a class=\"id-not\" href=") $
-        -- NOTE: we strip the `id="TOC"`, and all other link IDs on TOC subentries, deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies
+        -- NOTE: we strip the `id="TOC"`, and all other link IDs on TOC subentries, deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tags/link-bibliographies
         sed " id=\"[a-z0-9-]+\">" ">" $ replace " id=\"markdownBody\"" "" $ replace " id=\"TOC\"" "" index
         where
           index = if length indexType1 > length indexType2 then indexType1 else indexType2
