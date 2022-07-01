@@ -21,7 +21,7 @@ License: public domain ("And some people have asked me about a license for this 
 			document:
 				The documentElement of the popin.
 		}
-		Fired immediately after a popin has first been injected into the page 
+		Fired immediately after a popin has first been injected into the page
 		(but NOT when, e.g., popping a popin stack).
  */
 
@@ -155,9 +155,9 @@ Popins = {
 	//	Called by: Popins.addTitleBarToPopin
 	popinStackNumber: (popin) => {
 		//  If there’s another popin in the ‘stack’ below this one…
-		let popinBelow = (   popin.nextElementSibling 
-						  && popin.nextElementSibling.classList.contains("popin")) 
-						 ? popin.nextElementSibling 
+		let popinBelow = (   popin.nextElementSibling
+						  && popin.nextElementSibling.classList.contains("popin"))
+						 ? popin.nextElementSibling
 						 : null;
 		if (popinBelow)
 			return parseInt(popinBelow.titleBar.stackCounter.textContent) + 1;
@@ -245,7 +245,7 @@ Popins = {
 		let footerTitleLink = document.createElement("A");
 		footerTitleLink.classList.add("popframe-title-link");
 		footerTitleLink.href = popinTitleLink.href;
-		footerTitleLink.title = `Open ${footerTitleLink.href} in a new window.`;
+		footerTitleLink.title = `Open ${footerTitleLink.href} in a new tab.`;
 		footerTitleLink.target = "_blank";
 		footerTitleLink.textContent = "Continue reading…";
 		popin.footerBar.appendChild(footerTitleLink);
@@ -361,7 +361,7 @@ Popins = {
 
 		//  Inject the popin.
 		if (containingDocument.popin) {
-			/*  Save the parent popup’s scroll state when pushing it down the 
+			/*  Save the parent popup’s scroll state when pushing it down the
 				‘stack’.
 				*/
 			containingDocument.popin.lastScrollTop = containingDocument.popin.scrollView.scrollTop;
@@ -416,9 +416,9 @@ Popins = {
 		GWLog("Popins.removePopin", "popins.js", 2);
 
 		//  If there’s another popin in the ‘stack’ below this one…
-		let popinBelow = (   popin.nextElementSibling 
-						  && popin.nextElementSibling.classList.contains("popin")) 
-						 ? popin.nextElementSibling 
+		let popinBelow = (   popin.nextElementSibling
+						  && popin.nextElementSibling.classList.contains("popin"))
+						 ? popin.nextElementSibling
 						 : null;
 
 		//  Remove popin from page.
