@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-06-24 20:30:22 gwern"
+When:  Time-stamp: "2022-06-25 22:20:48 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -1296,7 +1296,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ee]ntropy", "https://en.wikipedia.org/wiki/Entropy_(information_theory)") -- doesn't look like most of my uses are physics but information theory
         , ("(([Rr]andomi[zs]ed )?[Cc]ontrol(led)? ((clinical[ -])?[Tt]rials?|[Ee]xperiment)|RCTs?)", "https://en.wikipedia.org/wiki/Randomized_controlled_trial")
         , ("(GPU|[Gg]raphics [Pp]rocessing [Uu]nit)", "https://en.wikipedia.org/wiki/Graphics_processing_unit")
-        , ("(F<sub>st</sub>|F~st~|Fst)", "https://en.wikipedia.org/wiki/Fixation_index")
         , ("LaMDA", "https://blog.google/technology/ai/lamda/")
         , ("[Aa](llometric growth|llometric scaling|llometry)", "https://en.wikipedia.org/wiki/Allometry")
         , ("[Pp]edigree", "https://en.wikipedia.org/wiki/Pedigree_chart")

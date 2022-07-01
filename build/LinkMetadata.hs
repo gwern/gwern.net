@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-30 19:43:17 gwern"
+When:  Time-stamp: "2022-06-30 20:08:34 gwern"
 License: CC-0
 -}
 
@@ -661,6 +661,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("reinforcement-learning/safe", "AI safety")
           , ("statistics/prediction/election", "election forecast")
           , ("psychology/okcupid", "OKCupid")
+          , ("psychology/personality", "personality")
           , ("psychology/personality/conscientiousness", "Conscientiousness")
           , ("psychology/chess", "chess psychology")
           , ("psychology/novelty", "novelty U-curve")

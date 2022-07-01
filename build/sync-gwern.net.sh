@@ -49,7 +49,7 @@ else
     renice -n 15 "$$" &>/dev/null
 
     ## Parallelization: WARNING: post-2022-03 Hakyll uses parallelism which catastrophically slows down at >= # of physical cores; see <https://groups.google.com/g/hakyll/c/5_evK9wCb7M/m/3oQYlX9PAAAJ>
-    N="$(if [ ${#} == 0 ]; then echo 24; else echo "$1"; fi)"
+    N="$(if [ ${#} == 0 ]; then echo 31; else echo "$1"; fi)"
 
     (cd ~/wiki/ && git status || true) &
     bold "Pulling infrastructure updates…"
@@ -340,7 +340,7 @@ else
     λ(){ eg '  - .*[a-z]–[a-Z]' ./metadata/custom.yaml ./metadata/partial.yaml; }
     wrap λ "Look for en-dash abuse."
 
-    λ(){ fgrep -v -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -- ./metadata/custom.yaml | \
+    λ(){ fgrep -v -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -- ./metadata/custom.yaml ./metadata/partial.yaml | \
              eg -e ',[A-Za-z]'; }
     wrap λ "Look for run-together commas (but exclude chemical names where that's correct)."
 

@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-06-23 16:33:26 gwern"
+When:  Time-stamp: "2022-06-30 20:55:00 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -148,7 +148,6 @@ goodDomainsSimple =
     , "en.wiktionary.org"
     , "equilibriabook.com"
     , "eurekamaga.com"
-    , "everything2.com"
     , "explorabl.es"
     , "feeds.feedburner.com"
     , "files.eric.ed.gov"
@@ -1510,7 +1509,6 @@ badDomainsSimple = ["1d4chan.org",
     , "collider.com"
     , "comicsalliance.com"
     , "community.arm.com"
-    , "community.nytimes.com"
     , "console.aws.amazon.com"
     , "console.cloud.google.com"
     , "corante.com"
@@ -2281,7 +2279,6 @@ badDomainsSimple = ["1d4chan.org",
     , "www.infinityplus.co.uk"
     , "www.industrydocuments.ucsf.edu"
     , "www.highbeam.com"
-    , "www.evidencebasedcryonics.org"
     , "www.evalegend.com"
     , "www.ditext.com"
     , "www.jacurutu.com"
@@ -2453,6 +2450,7 @@ badDomainsSimple = ["1d4chan.org",
     , "www.mangaupdates.com"
     , "www.microsoft.com"
     , "www.research.va.gov"
+    , "everything2.com"
    ]
 
 url :: T.Text -> Inline
@@ -2630,7 +2628,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://www.equator-network.org/reporting-guidelines/", True)
     , ("https://www.equestriadaily.com/search/label/Music", True)
     , ("https://www.evamonkey.com/ask-john/has-evangelion-influenced-contemporary-gundam-anime.php", True)
-    , ("https://everything2.com/title/A+crow+shook+down+on+me", True)
+    , ("https://everything2.com/title/A+crow+shook+down+on+me", False)
     , ("https://www.filfre.net/2020/01/master-of-orion/", True)
     , ("https://www.find-more-books.com/", True)
     , ("https://www.frontiersin.org/articles/10.3389/fendo.2019.00845/full", True)
@@ -3033,7 +3031,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://www.mcall.com/news/police/mc-n-east-stroudsburg-dark-web-lsd-20160505-story.html", True)
     , ("http://www.koreatimes.co.kr/www/news/nation/2008/05/117_24521.html", True)
     , ("https://www.kooslooijesteijn.net/blog/semantic-sidenotes", True)
-    , ("https://www.khara.co.jp/hideakianno/personal-biography.html", True)
+    , ("https://www.khara.co.jp/hideakianno/personal-biography/", True)
     , ("https://www.justinpinkney.com/stylegan-network-blending/", True)
     , ("https://www.johnsonessays.com/the-rambler/no-21-the-anxieties-of-literature-not-less-than-those-of-publick-stations-the-inequality-of-authors-writings/", True)
     , ("https://www.inkandswitch.com/index.html", True)
@@ -3093,7 +3091,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("http://www.sciencemadness.org/talk/viewthread.php?tid=6401", True)
     , ("https://abcnews.go.com/Business/steve-jobs-death-billions-remain-private-topic/story?id=14682218", True)
     , ("https://www.washingtontimes.com/news/2018/jun/2/minnesota-girl-who-cant-feel-pain-battles-insuranc/", True)
-    , ("http://abcnotation.com/wiki/abc:standard:v2.1#comments_and_remarks", True)
+    , ("https://abcnotation.com/wiki/abc:standard:v2.1#comments_and_remarks", True)
     , ("https://www.princeton.edu/~graphicarts/2012/04/feuillets_dart.html", True)
     , ("http://r6.ca/blog/20090522T015739Z.html", True)
     , ("https://www.technologyreview.com/2020/02/17/844721/ai-openai-moonshot-elon-musk-sam-altman-greg-brockman-messy-secretive-reality/", True)
@@ -3878,7 +3876,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://collider.com/hideaki-anno-evangelion-interview/", False)
     , ("https://comicsalliance.com/ask-chris-45-my-little-pony-meets-the-justice-league/", False)
     , ("https://community.arm.com/arm-community-blogs/b/high-performance-computing-blog/posts/deep-learning-episode-4-supercomputer-vs-pong-ii", False)
-    , ("https://community.nytimes.com/comments/www.nytimes.com/2010/07/11/magazine/11cryonics-t.html?permid=44#comment44", False)
     , ("https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:ami=ami-b36981d8", False)
     , ("https://console.cloud.google.com/bigquery?project=danbooru1", False)
     , ("https://corante.com/drug-prices/erooms-law/", False)
@@ -4626,7 +4623,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://www.infinityplus.co.uk/stories/colderwar.htm", False)
     , ("https://www.industrydocuments.ucsf.edu/tobacco/docs/#id=ssnl0112", False)
     , ("http://www.highbeam.com/doc/1P2-869220.html", False)
-    , ("http://www.evidencebasedcryonics.org/2008/02/25/better-biostasis-through-chemosuspension/", False)
     , ("http://www.evalegend.com/interview_anno97.php", False)
     , ("http://www.ditext.com/moore/common-sense.html", False)
     , ("http://www.jacurutu.com/viewtopic.php?t=2690", False)

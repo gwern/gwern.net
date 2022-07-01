@@ -633,7 +633,7 @@ linkIconTestUnitsText =
          , ("https://web.archive.org/web/20151106005148/http://www.evacommentary.org/appendix/character-names.html", "EG", "text")
          , ("http://evaotaku.com/html/programbooks.html",  "NGE","text,tri")
          , ("http://gainax.co.jp/",  "NGE","text,tri")
-         , ("https://www.khara.co.jp/hideakianno/personal-biography.html",  "NGE","text,tri")
+         , ("https://www.khara.co.jp/hideakianno/personal-biography/",  "NGE","text,tri")
          , ("https://eva-fan.com/blog-entry-1198.html",  "NGE","text,tri")
          , ("https://eva.onegeek.org/",  "NGE","text,tri")
          , ("https://web.archive.org/web/20080127001226/https://web.archive.org/web/20080127001226/http://johakyu.net/lib/2007/07/2007-07-27-000535.php", "NGE","text,tri")

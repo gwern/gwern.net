@@ -4,7 +4,6 @@ module Utils where
 import Control.Monad (when)
 import Data.Char (isSpace)
 import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails)
--- import Utils (replace)
 import Data.Text.IO as TIO (readFile, writeFile)
 import Data.Time.Calendar (toGregorian, toModifiedJulianDay)
 import Data.Time.Clock (getCurrentTime, utctDay)
