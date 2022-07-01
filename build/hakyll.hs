@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-06-27 18:59:05 gwern"
+When: Time-stamp: "2022-06-30 20:14:16 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -99,7 +99,7 @@ main = hakyll $ do
              meta <- preprocess readLinkMetadataAndCheck
              preprocess $ printGreen ("Writing annotations…" :: String)
              hasArchivedOnce <- preprocess $ newIORef archivePerRunN
-             preprocess $ writeAnnotationFragments am meta hasArchivedOnce True
+             preprocess $ writeAnnotationFragments am meta hasArchivedOnce False
              preprocess $ printGreen ("Begin site compilation…" :: String)
              match "**.page" $ do
                  -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
@@ -281,7 +281,7 @@ pandocTransform :: Metadata -> ArchiveMetadata -> IORef Integer -> Pandoc -> IO 
 pandocTransform md adb archived p = -- linkAuto needs to run before convertInterwikiLinks so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary
                            do let pw = walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
                               _ <- createAnnotations md pw
-                              let pb = walk (hasAnnotation md True) pw
+                              let pb = walk (hasAnnotation md True) $ addLocalLinkWalk pw -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overriden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
                               pbt <- fmap typographyTransform . walkM (localizeLink adb archived) $ walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) pb
                               let pbth = addLocalLinkWalk $ walk headerSelflink pbt
                               pbth' <- walkM invertImageInline pbth
