@@ -70,7 +70,7 @@ generateDirectory md dir'' = do
   let links = nub $ reverse $ sortByDate $ triplets++tagged' -- newest first, to show recent additions
 
   -- remove the tag for *this* directory; it is redundant to display 'cat/catnip' on every doc/link inside '/docs/cat/catnip/index.page', after all.
-  let tagSelf = init $ replace "docs/" "" dir'' -- "docs/cat/catnip/" → 'cat/catnip'
+  let tagSelf = if dir'' == "docs/" then "" else init $ replace "docs/" "" dir'' -- "docs/cat/catnip/" → 'cat/catnip'
   let links' = map (\(y,(a,b,c,d,tags,f),z,zz) -> (y,(a,b,c,d, filter (/= tagSelf) tags,f),z,zz)) links
 
   -- a very long List can be hard to browse, and doesn't provide a useful ToC. If we have titles, we can use those as section headers.
@@ -129,9 +129,9 @@ generateDirectory md dir'' = do
 generateYAMLHeader :: FilePath -> String -> (Int,Int,Int) -> String -> String
 generateYAMLHeader d date (directoryN,annotationN,linkN) thumbnail
   = concat [ "---\n",
-             "title: " ++ T.unpack (abbreviateTag (T.pack (replace "docs/" "" d))) ++ " directory\n",
+             "title: " ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (replace "docs/" "" d)))) ++ " directory\n",
              "author: 'N/A'\n",
-             "description: \"Bibliography for tag <em>" ++ d ++ "</em>, most recent first: " ++
+             "description: \"Bibliography for tag <em>" ++ (if d=="" then "docs" else d) ++ "</em>, most recent first: " ++
               (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='no-icon link-annotated-not' href='/docs/" ++ d ++ "/index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
               (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='no-icon link-annotated-not' href='/docs/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++
               (if linkN == 0 then ""       else (if (directoryN+annotationN) > 0 then ", & " else ", ") ++ show linkN ++ " <a class='no-icon link-annotated-not' href='/docs/" ++ d ++ "/index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
@@ -263,7 +263,7 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) = -- no abstracts:
   let
        f'       = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
        title    = if t=="" then [Code nullAttr (T.pack f')] else [Str (T.pack $ "“"++t++"”")]
-       prefix   = if t=="" then [] else [Code nullAttr (T.pack f'), Str ": "]
+       -- prefix   = if t=="" then [] else [Code nullAttr (T.pack f'), Str ": "]
        -- we display short authors by default, but we keep a tooltip of the full author list for on-hover should the reader need it.
        authorShort = authorsTruncate aut
        authorSpan  = if authorShort/=aut then Span ("",["full-authors-list"],[("title", T.pack aut)]) [Str (T.pack $ authorsTruncate aut)]
@@ -274,7 +274,7 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) = -- no abstracts:
        backlink = if bl=="" then [] else (if dt=="" && tgs==[] then [] else [Str ";", Space]) ++ [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-local", "backlinks"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]
        similar  = if sl=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["aux-links", "link-local", "similar"],[]) [Str "similar"] (T.pack sl,"Similar links (by text embedding).")]]
   in
-  if (tgs==[] && bl=="" && dt=="") then [Para (prefix ++ Link nullAttr title (T.pack f, "") : (author))]
+  if (tgs==[] && bl=="" && dt=="") then [Para (Link nullAttr title (T.pack f, "") : (author))]
   else [Para (Link nullAttr title (T.pack f, "") : (author ++ [Space, Str "("] ++ date ++ tags ++ backlink ++ similar ++ [Str ")"]))]
 -- long abstracts:
 generateItem (f,a,bl,sl) =
@@ -283,4 +283,4 @@ generateItem (f,a,bl,sl) =
   -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philosophy/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
   -- >
   -- > > A poem on the Epicurean model of the world...
-  walk cleanUpDivsEmpty $ walk (parseRawBlock nullAttr) $ generateAnnotationBlock ("/"`isPrefixOf`f) True False (f,Just a) bl sl
+  walk cleanUpDivsEmpty $ walk (parseRawBlock nullAttr) $ generateAnnotationBlock True False (f,Just a) bl sl

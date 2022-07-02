@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-06-30 20:08:34 gwern"
+When:  Time-stamp: "2022-07-02 18:11:20 gwern"
 License: CC-0
 -}
 
@@ -44,7 +44,7 @@ import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderOption
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span), HTMLMathMethod(MathJax),
                     defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String, WrapOption(WrapNone), runPure, pandocExtensions,
                     readHtml, writerExtensions, nullAttr, nullMeta, writerColumns, Extension(Ext_shortcut_reference_links), enableExtension, WriterOptions,
-                    Inline(Code, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div), Attr)
+                    Inline(Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div), Attr)
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA ((=~)) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
 import Text.Show.Pretty (ppShow)
@@ -284,7 +284,7 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,e) =
                       -- obviously no point in trying to reformatting date/DOI, so skip those
                       let abstractHtml = typesetHtmlField e
                       -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
-                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock False False True (u', Just (titleHtml,authorHtml,c,d,ts,abstractHtml)) bl sl
+                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock False True (u', Just (titleHtml,authorHtml,c,d,ts,abstractHtml)) bl sl
                       -- for partials, we skip the heavyweight processing:
                       unless (null e) $ void $ createAnnotations md pandoc
                       pandoc' <- if null e then return pandoc
@@ -413,8 +413,8 @@ parseRawBlock _ x = x
 simplifiedHTMLString :: String -> String
 simplifiedHTMLString arg = trim $ T.unpack $ simplified $ parseRawBlock nullAttr (RawBlock (Text.Pandoc.Format "html") (T.pack arg))
 
-generateAnnotationBlock :: Bool -> Bool -> Bool -> (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> FilePath -> [Block]
-generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = case ann of
+generateAnnotationBlock :: Bool -> Bool -> (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> FilePath -> [Block]
+generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                               Nothing                 -> nonAnnotatedLink
                               -- Just ("",   _,_,_,_,_)  -> nonAnnotatedLink
                               -- Just (_,    _,_,_,_,"") -> nonAnnotatedLink
@@ -432,14 +432,13 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                     similarlink = if slp=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["aux-links", "link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
                                     tags = if ts==[] then [] else (if dt=="" then [] else [Str ";", Space]) ++ [tagsToLinksSpan $ map T.pack ts]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
-                                    linkPrefix = if rawFilep then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else []
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
                                     link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
                                     -- make sure every abstract is wrapped in paragraph tags for proper rendering:in
                                     abst' = if anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure"] then abst else "<p>" ++ abst ++ "</p>"
                                 in
                                   [Para
-                                       (linkPrefix ++ [link,Str ","] ++
+                                       ([link,Str ","] ++
                                          author ++
                                          (if (date++tags++backlink)==[] then []
                                            else [Str " ("] ++
@@ -1778,6 +1777,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         ("<p> *", "<p>"),
         (" *</p>", "</p>"),
         ("<em>R</em>  *<sup>2</sup>", "<em>R</em><sup>2</sup>"),
+
         -- regexp substitutions:
         -- rewrite *Markdown italics* to <em>HTML italics</em>, and strong/bold:
         ("(.*)\\*(.+)\\*(.*)", "\\1<em>\\2</em>\\3"),
@@ -1868,7 +1868,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         ("<span class=\"math inline\">\\\\\\(\\\\texttt\\{([A-Za-z]+)\\}\\\\\\)</span>", "<code>\\1</code>"), -- 'we present the <span class=\"math inline\">\\(\\texttt{GamePhysics}\\)</span> dataset'
         ("<span class=\"math inline\">\\\\\\(\\\\textbf\\{([A-Za-z]+)\\}\\\\\\)</span>", "<strong>\\1</strong>"), -- 'We dub ρ the <span class="math inline">\(\textbf{polarity}\)</span> parameter'
         ("<span class=\"math inline\">\\\\\\(\\\\times\\\\\\)</span>", "×"), -- '<span class="math inline">\(\times\)</span>'
-        ("<span class=\"math inline\">\\\\\\(([0-9]*)\\^([0-9{}]*)\\\\\\)</span>", "\\1<sup>\\2</sup>"), -- '<span class="math inline">\(10^4\)</span>'
+        ("<span class=\"math inline\">\\\\\\(([0-9]*)\\^([0-9]*)\\\\\\)</span>", "\\1<sup>\\2</sup>"), -- '<span class="math inline">\(10^4\)</span>'
+        ("<span class=\"math inline\">\\\\\\(([0-9]*)\\^{([0-9]*)}\\\\\\)</span>", "\\1<sup>\\2</sup>"), -- '<span class="math inline">\(10^{40}\)</span>'
         ("([A-z][a-z]+) ?et ?al ?\\(([0-9][0-9][0-9][0-9])\\)", "\\1 et al \\2"), -- 'Dette et al (2013)'
         ("([A-Z][a-z]+) and ([A-Z][a-z]+),? ([0-9]+)", "\\1 & \\2 \\3"), -- 'Foo and Bar 1999', 'Foo and Bar, 1999' → 'Foo & Bar 1999'; 'et al' is handled by Pandoc already
         ("<br/>    <strong>([a-zA-Z]+)</strong><br/><p>", "<p><strong>\\1</strong>: "),

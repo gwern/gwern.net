@@ -98,7 +98,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
               Str ":" : Space :
               Link nullAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
 -- long items:
-generateLinkBibliographyItem (f,a,bl,sl) = walk cleanUpDivsEmpty $ walk (parseRawBlock nullAttr) $ generateAnnotationBlock ("/"`isPrefixOf`f) True False (f,Just a) bl sl
+generateLinkBibliographyItem (f,a,bl,sl) = walk cleanUpDivsEmpty $ walk (parseRawBlock nullAttr) $ generateAnnotationBlock True False (f,Just a) bl sl
 
 extractLinksFromPage :: String -> IO [String]
 extractLinksFromPage path = do f <- TIO.readFile path
