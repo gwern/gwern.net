@@ -283,6 +283,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | aU'' ["dl.acm.org", "queue.acm.org", "cacm.acm.org"] = aI "acm" "text,tri,sans" -- <https://en.wikipedia.org/wiki/File:Association_for_Computing_Machinery_(ACM)_logo.svg> 'acm' sans in a circle inside a diamond; can't fake it with Unicode joiners (they'd only put one character into a circle+diamond), and I probably don't want to bother with a SVG.
  | u' "www.cs.utexas.edu/~EWD/" = aI "EWD" "text,tri,sans" -- Edsger W. Dijkstra, of course, wrote in sans
  | u'' "iopscience.iop.org" = aI "IOP" "text,tri,sans" -- <https://en.wikipedia.org/wiki/IOP_Publishing> Institute of Physics Publishing
+ | u'' "https://80000hours.org/" = aI "80k" "text,tri,sans" -- 80,000 Hours (Centre for Effective Altruism, FHI, Oxford)
 
  -- Quad-letter-square icons.
  | aU'' ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
@@ -1023,6 +1024,7 @@ linkIconTestUnitsText =
          , ("http://libgen.rs/", "raven", "svg")
          , ("https://library.bz/main/upload/", "raven", "svg")
          , ("https://www.hoover.org/research/optimistic-thought-experiment", "hoover-institution", "svg")
+         , ("https://80000hours.org/podcast/episodes/sam-bankman-fried-high-risk-approach-to-crypto-and-doing-good/", "80k", "text,tri,sans")
         ]
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
