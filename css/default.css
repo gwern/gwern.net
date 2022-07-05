@@ -991,7 +991,7 @@ blockquote table {
 
 .epigraph > blockquote blockquote p,
 .epigraph > blockquote blockquote p:last-child {
-	text-align: justify;
+    text-align: justify;
 }
 
 .epigraph > blockquote::before,
@@ -3438,15 +3438,15 @@ body.index-directory #footer {
 /*┌─────────────────┐*/
 /*│ Tag pop-frames. │*/
 /*└─────────────────┘*/
-/*	On tag/directory index pop-frames, we want to hide the initial ‘# Links’
-	<h1> because it takes up way too much space and adds nothing.
+/*  On tag/directory index pop-frames, we want to hide the initial ‘# Links’
+    <h1> because it takes up way too much space and adds nothing.
  */
 .popframe-body h1.display-pop-not {
     display: none;
 }
 
-/*	We also want to squeeze the directory list because the default
-	unordered-list padding of 2em bottom uses up too much of a pop-frame.
+/*  We also want to squeeze the directory list because the default
+    unordered-list padding of 2em bottom uses up too much of a pop-frame.
  */
 .popframe-body #directory-indexes ul {
     margin-top: 0.5em;
@@ -4391,7 +4391,7 @@ body.index-directory #footer {
 /*└───────────────────┘*/
 
 .popin.has-footer-bar {
-	margin-bottom: calc(1em + var(--GW-popins-popin-border-width) + var(--GW-popins-popin-footer-bar-height));
+    margin-bottom: calc(1em + var(--GW-popins-popin-border-width) + var(--GW-popins-popin-footer-bar-height));
 }
 
 .popin .popin-footer-bar {
@@ -4700,39 +4700,39 @@ section.highlight-fading::before {
 /* Mobile only.      */
 
 @media only screen and (max-width: 649px) {
-	#footer {
+    #footer {
         --footer-decoration-spacing: 3.5em;
 
         position: relative;
         margin: calc(1em + var(--footer-decoration-spacing)) 0 2em 0;
-	}
-	#footer::after {
-		content: "";
-		background-color: var(--GW-body-background-color);
-		background-image: url('/static/img/logo/logo-smooth.svg');
-		display: block;
-		position: absolute;
-		bottom: var(--footer-decoration-spacing);
-		width: 22px;
-		height: 30px;
-		background-size: contain;
-		background-position: center;
-		background-repeat: no-repeat;
-		left: 0;
-		right: 0;
-		margin: auto;
-		padding: 0 10px 0 11px;
-		z-index: 1;
-	}
-	#footer::before {
-		content: "";
-		display: block;
-		position: absolute;
-		bottom: calc(var(--footer-decoration-spacing) + 15px);
-		height: 1px;
-		border-bottom: 1px dotted var(--GW-index-page-bottom-ornament-line-color);
-		width: 100%;
-	}
+    }
+    #footer::after {
+        content: "";
+        background-color: var(--GW-body-background-color);
+        background-image: url('/static/img/logo/logo-smooth.svg');
+        display: block;
+        position: absolute;
+        bottom: var(--footer-decoration-spacing);
+        width: 22px;
+        height: 30px;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        left: 0;
+        right: 0;
+        margin: auto;
+        padding: 0 10px 0 11px;
+        z-index: 1;
+    }
+    #footer::before {
+        content: "";
+        display: block;
+        position: absolute;
+        bottom: calc(var(--footer-decoration-spacing) + 15px);
+        height: 1px;
+        border-bottom: 1px dotted var(--GW-index-page-bottom-ornament-line-color);
+        width: 100%;
+    }
 }
 
 /*********************/
@@ -5217,4 +5217,30 @@ section.highlight-fading::before {
         width: 2.25em;
         height: 2.25em;
     }
+}
+
+/* EXPERIMENTAL */
+/* Citation formatting: ellipsis'd "et al", subscripted date; see /Subscripts & /Lorem#citation-variants */
+/* This is variant #6, 'HORIZONTAL ELLIPSIS/​subscripted year'. */
+/* This relies on the 'citefyInline' pass in Typography.hs: the author ('Foo', or 'Foo & Bar') is put in span.cite-author, the 'et al' joiner (if any) in span.cite-joiner, and the year date in span.cite-date. For 'Foo 2020' or 'Foo & Bar 2020', there is no joiner, only for 'et al'; this lets us replace the et al with an ellipsis while subscripting the year in all cases. */
+.cite-author::after { content: "...";
+                      font-size: 0.65em; }
+.cite-date {
+    vertical-align: -0.35ex;
+    margin-left: -0.3em;
+    position: relative;
+    display: inline-block;
+    font-size: 0.75em;
+    line-height: 0.7;
+}
+/* Much more complicated than simply `display: none;` to try to make copy-paste work normally without hacking the copy-listener. */
+.cite-joiner {
+    width: 0;
+    height: 0;
+    display: inline-block;
+    word-break: keep-all;
+    overflow-wrap: normal;
+    white-space: nowrap;
+    opacity: 0;
+    margin-left: -0.75ch;
 }

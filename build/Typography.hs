@@ -21,7 +21,7 @@ import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
 import System.Directory (doesFileExist, getModificationTime, removeFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.Posix.Temp (mkstemp)
-import qualified Data.Text as T (any, append, isSuffixOf, pack, unpack, replace, splitOn, Text)
+import qualified Data.Text as T (any, append, concat, isSuffixOf, pack, unpack, replace, splitOn, strip, Text)
 import Text.Read (readMaybe)
 import Text.Regex.TDFA ((=~), Regex, makeRegex, match) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
 import System.IO (stderr, hPrint)
@@ -63,27 +63,26 @@ citefyInline x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x else
   where
     go :: T.Text -> [Inline]
     go "" = []
-    go a = let matched   = match citefyRegexSingle a :: [[T.Text]]
+    go a = let matched'' = match citefyRegexMultiple a :: [[T.Text]]
                matched'  = match citefyRegexDouble a :: [[T.Text]]
-               matched'' = match citefyRegexMultiple a :: [[T.Text]]
-               matchAll  = matched ++ matched' ++ matched''
+               matched   = match citefyRegexSingle a :: [[T.Text]]
+               matchAll  = matched'' ++ matched' ++ matched
            in if null matchAll then [Str a] -- no citation anywhere
               else
                 let (fullMatch:first:second:third:_) = head matchAll
-                    (before:after:[]) = T.splitOn fullMatch a in
+                    (before:after) = T.splitOn fullMatch a in
                           [Str before] ++
-                          [Span ("", ["cite"], []) [Span ("", ["cite-author"], []) [Str first],
-                                                    Span ("", ["cite-joiner"], []) [Str second],
-                                                    Span ("", ["cite-date"],   []) [Str third]
-                                                   ]
+                          [Span ("", ["cite"], []) ([Span ("", ["cite-author"], []) [Str first]] ++
+                                                    (if T.strip second == "" then [] else [Span ("", ["cite-joiner"], []) [Str second]]) ++
+                                                    [Span ("", ["cite-date"],   []) [Str third]])
                           ] ++
-                          go after
+                          go (T.concat after)
 citefyInline x = x
 
 citefyRegexSingle, citefyRegexDouble, citefyRegexMultiple :: Regex
-citefyRegexSingle = makeRegex ("([A-Z][a-z[:punct:]]+)([    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text) -- match one-author citations like "Foo 2020" or "Foo 2020a"
-citefyRegexDouble = makeRegex ("([A-Z][a-z[:punct:]]+[    \8203]+&[    \8203]+[A-Z][a-z[:punct:]]+)([    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text) -- match two-author citations like "Foo & Bar 2020"
-citefyRegexMultiple = makeRegex ("([A-Z][a-z[:punct:]]+)([    \8203]+et al[    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text)
+citefyRegexSingle = makeRegex ("([A-Z][a-z-]+)([    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text) -- match one-author citations like "Foo 2020" or "Foo 2020a"; we avoid using [:punct:] to avoid matching on en-dashes in date ranges
+citefyRegexDouble = makeRegex ("([A-Z][a-z-]+[    \8203]+&[    \8203]+[A-Z][a-z-]+)([    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text) -- match two-author citations like "Foo & Bar 2020"
+citefyRegexMultiple = makeRegex ("([A-Z][a-z-]+)([    \8203]+et al[    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text)
 
 -------------------------------------------
 
