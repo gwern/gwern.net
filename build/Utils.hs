@@ -16,7 +16,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Text.Show.Pretty (ppShow)
 import qualified Data.Text as T (Text, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf, replace)
 
-import Text.Regex (subRegex, mkRegex) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors: `$ cabal install regex-compat-tdfa && ghc-pkg --user hide regex-compat-0.95.2.1`
+import Text.Regex (subRegex, mkRegex, Regex) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors: `$ cabal install regex-compat-tdfa && ghc-pkg --user hide regex-compat-0.95.2.1`
 
 import Text.Pandoc (def, nullMeta, runPure,
                     writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Code, Image, Link, Span, Str), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions)
@@ -96,17 +96,23 @@ printRed s = hPutStrLn stderr $ "\x1b[41m" ++ s ++ "\x1b[0m"
 -- Repeatedly apply `f` to an input until the input stops changing. Show constraint for better error
 -- reporting on the occasional infinite loop.
 fixedPoint :: (Show a, Eq a) => (a -> a) -> a -> a
-fixedPoint = fixedPoint' 100000
+fixedPoint = fixedPoint' 10000
  where fixedPoint' :: (Show a, Eq a) => Int -> (a -> a) -> a -> a
-       fixedPoint' 0 _ i = error $ "Hit recursion limit: still changing after 100,000 iterations! Infinite loop? Final result: " ++ show i
+       fixedPoint' 0 _ i = error $ "Hit recursion limit: still changing after 10,000 iterations! Infinite loop? Last result: " ++ show i
        fixedPoint' n f i = let i' = f i in if i' == i then i else fixedPoint' (n-1) f i'
 
 sed :: String -> String -> String -> String
-sed before after s = subRegex (mkRegex before) s after
+sed before after s = sedR (mkRegex before) s after
+
+sedR :: Regex -> String -> String -> String
+sedR before after s = subRegex before s after
 
 -- list of regexp string rewrites
 sedMany :: [(String,String)] -> (String -> String)
 sedMany regexps s = foldr (uncurry sed) s regexps
+
+sedRMany :: [(Regex,String)] -> (String -> String)
+sedRMany regexps s = foldr (uncurry sedR) s regexps
 
 -- list of fixed string rewrites
 replaceMany :: [(String,String)] -> (String -> String)

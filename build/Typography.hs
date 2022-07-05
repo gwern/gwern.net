@@ -9,7 +9,7 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (invertImage, invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase', identUniquefy) where
+module Typography (invertImage, invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase', identUniquefy, mergeSpaces) where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Control.Monad (void, when)
@@ -21,9 +21,9 @@ import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
 import System.Directory (doesFileExist, getModificationTime, removeFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.Posix.Temp (mkstemp)
-import qualified Data.Text as T (any, append, isSuffixOf, pack, unpack, replace, Text)
+import qualified Data.Text as T (any, append, isSuffixOf, pack, unpack, replace, splitOn, Text)
 import Text.Read (readMaybe)
-import Text.Regex.TDFA ((=~)) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
+import Text.Regex.TDFA ((=~), Regex, makeRegex, match) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
 import System.IO (stderr, hPrint)
 import System.IO.Temp (emptySystemTempFile)
 import qualified Data.Map.Strict as M
@@ -41,12 +41,49 @@ import LinkLive (linkLive)
 import Utils (addClass, sed, printRed)
 
 typographyTransform :: Pandoc -> Pandoc
-typographyTransform = walk (linkLive . linkIcon) .
+typographyTransform = walk (citefyInline . linkLive . linkIcon) .
                       linebreakingTransform .
                       rulersCycle 3
 
 linebreakingTransform :: Pandoc -> Pandoc
 linebreakingTransform = walk (breakSlashes . breakEquals)
+
+-- Pandoc breaks up strings as much as possible, like [Str "ABC", Space, "notation"], which makes it impossible to match on them, so we remove Space
+mergeSpaces :: [Inline] -> [Inline]
+mergeSpaces []                     = []
+mergeSpaces (Str x:Str y:xs)       = mergeSpaces (Str (x`T.append`y) : xs)
+mergeSpaces (Space:Str x:Space:xs) = mergeSpaces (Str (" "`T.append`x`T.append`" "):xs)
+mergeSpaces (Space:Str x:xs)       = mergeSpaces (Str (" "`T.append`x):xs)
+mergeSpaces (Str x:Space:xs)       = mergeSpaces (Str (x`T.append`" "):xs)
+mergeSpaces (Str "":xs)            = mergeSpaces xs
+mergeSpaces (x:xs)                 = x:mergeSpaces xs
+
+citefyInline :: Inline -> Inline
+citefyInline x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x else Span nullAttr rewrite
+  where
+    go :: T.Text -> [Inline]
+    go "" = []
+    go a = let matched   = match citefyRegexSingle a :: [[T.Text]]
+               matched'  = match citefyRegexDouble a :: [[T.Text]]
+               matched'' = match citefyRegexMultiple a :: [[T.Text]]
+               matchAll  = matched ++ matched' ++ matched''
+           in if null matchAll then [Str a] -- no citation anywhere
+              else
+                let (fullMatch:first:second:third:_) = head matchAll
+                    (before:after:[]) = T.splitOn fullMatch a in
+                          [Str before] ++
+                          [Span ("", ["cite"], []) [Span ("", ["cite-author"], []) [Str first],
+                                                    Span ("", ["cite-joiner"], []) [Str second],
+                                                    Span ("", ["cite-date"],   []) [Str third]
+                                                   ]
+                          ] ++
+                          go after
+citefyInline x = x
+
+citefyRegexSingle, citefyRegexDouble, citefyRegexMultiple :: Regex
+citefyRegexSingle = makeRegex ("([A-Z][a-z[:punct:]]+)([    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text) -- match one-author citations like "Foo 2020" or "Foo 2020a"
+citefyRegexDouble = makeRegex ("([A-Z][a-z[:punct:]]+[    \8203]+&[    \8203]+[A-Z][a-z[:punct:]]+)([    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text) -- match two-author citations like "Foo & Bar 2020"
+citefyRegexMultiple = makeRegex ("([A-Z][a-z[:punct:]]+)([    \8203]+et al[    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text)
 
 -------------------------------------------
 

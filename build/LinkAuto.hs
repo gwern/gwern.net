@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-06-25 22:20:48 gwern"
+When:  Time-stamp: "2022-07-04 19:12:23 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -61,6 +61,7 @@ import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa s
 import Utils (addClass, simplifiedDoc)
 import Query (extractURLs)
 import Interwiki (inlinesToText)
+import Typography (mergeSpaces)
 
 -- test,test2 :: [Inline]
 -- -- test3 = [Link ("",[],[]) [Quoted DoubleQuote [Str "Self-improving",Space,Str "reactive",Space,Str "agents",Space,Str "based",Space,Str "on",Space,Str "reinforcement",Space,Str "learning,",Space,Str "planning",Space,Str "and",Space,Str "teaching"]] ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.7884&rep=rep1&type=pdf",""),Str ",",Space,Str "Lin",Space,Str "1992"]
@@ -175,16 +176,6 @@ findRegexMatch :: [(T.Text, R.Regex, T.Text)] -> T.Text -> Maybe (T.Text, T.Text
 findRegexMatch [] _ = Nothing
 findRegexMatch ((_,r,u):rs) s = let (a,b,c) = R.match r s in
                                    if b/="" then Just (a,b,c,u) else findRegexMatch rs s
-
--- Pandoc breaks up strings as much as possible, like [Str "ABC", Space, "notation"], which makes it impossible to match on them, so we remove Space
-mergeSpaces :: [Inline] -> [Inline]
-mergeSpaces []                     = []
-mergeSpaces (Str x:Str y:xs)       = mergeSpaces (Str (x`T.append`y) : xs)
-mergeSpaces (Space:Str x:Space:xs) = mergeSpaces (Str (" "`T.append`x`T.append`" "):xs)
-mergeSpaces (Space:Str x:xs)       = mergeSpaces (Str (" "`T.append`x):xs)
-mergeSpaces (Str x:Space:xs)       = mergeSpaces (Str (x`T.append`" "):xs)
-mergeSpaces (Str "":xs)            = mergeSpaces xs
-mergeSpaces (x:xs)                 = x:mergeSpaces xs
 
 -- Optimization: take a set of definitions, and a document; query document for existing URLs; if a
 -- URL is already present, drop it from the definition list.
