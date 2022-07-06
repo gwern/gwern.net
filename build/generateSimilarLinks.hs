@@ -3,7 +3,7 @@
 
 module Main where
 
-import Control.Monad (when)
+import Control.Monad (when, unless)
 import Data.Containers.ListUtils (nubOrd)
 import Data.List (sort)
 import qualified Control.Monad.Parallel as Par (mapM_)
@@ -53,8 +53,8 @@ main = do md  <- readLinkMetadata
             -- rp-tree supports serializing the tree to disk, but unclear how to update it, and it's fast enough to construct that it's not a bottleneck, so we recompute it from the embeddings every time.
             let ddb  = embeddings2Forest edb''
             printGreen "Begin computing & writing out missing similarity-rankings…"
-            Par.mapM_ (\(f,a,e) -> (do exists <- similaritemExistsP f
-                                       when (not exists) $ writeOutMatch md $ findN ddb bestNEmbeddings (f,a,e)))
+            Par.mapM_ (\e@(f,_,_,_,_) -> (do exists <- similaritemExistsP f
+                                             unless exists $ writeOutMatch md $ findN ddb bestNEmbeddings e))
               edb''
             printGreen "Wrote out missing. Now writing out changed…"
             Par.mapM_ (writeOutMatch md . findN ddb bestNEmbeddings) edb''
