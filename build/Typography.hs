@@ -72,8 +72,12 @@ citefyInline x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x else
                 let (fullMatch:first:second:third:_) = head matchAll
                     (before:after) = T.splitOn fullMatch a in
                           [Str before] ++
-                          [Span ("", ["cite"], []) ([Span ("", ["cite-author"], []) [Str first]] ++
-                                                    (if T.strip second == "" then [] else [Span ("", ["cite-joiner"], []) [Str second]]) ++
+                          [Span ("", ["cite"], []) ((if T.strip second == "" then
+                                                       -- the easy single/double author case (we only mess with the date, nothing else)
+                                                       [Span ("", ["cite-author"], []) [Str first]]
+                                                       -- et-al case: different span class to select on, stash the et al joiner in a span to suppress:
+                                                       else [Span ("", ["cite-author-plural"], []) [Str first]] ++
+                                                             [Span ("", ["cite-joiner"], []) [Str second]]) ++
                                                     [Span ("", ["cite-date"],   []) [Str third]])
                           ] ++
                           go (T.concat after)
