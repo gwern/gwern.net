@@ -74,11 +74,11 @@ citefyInline x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x else
                           [Str before] ++
                           [Span ("", ["cite"], []) ((if T.strip second == "" then
                                                        -- the easy single/double author case (we only mess with the date, nothing else)
-                                                       [Span ("", ["cite-author"], []) [Str first]]
+                                                       [Span ("", ["cite-author"], []) [Str $ T.replace " " " " first]] -- condense with THIN SPACE
                                                        -- et-al case: different span class to select on, stash the et al joiner in a span to suppress:
-                                                       else [Span ("", ["cite-author-plural"], []) [Str first]] ++
-                                                             [Span ("", ["cite-joiner"], []) [Str second]]) ++
-                                                    [Span ("", ["cite-date"],   []) [Str third]])
+                                                       else [Span ("", ["cite-author-plural"], [("title","et al")]) [Str first]] ++
+                                                             [Span ("", ["cite-joiner"], []) [Str $ T.strip second]]) ++
+                                                    [Span ("", ["cite-date"], []) [Str third]])
                           ] ++
                           go (T.concat after)
 citefyInline x = x

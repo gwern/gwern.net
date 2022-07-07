@@ -5226,11 +5226,11 @@ section.highlight-fading::before {
 .cite-author-plural::after { content: "..."; }
 .cite-date {
     vertical-align: -0.35ex;
-    margin-left: -0.05em;
     position: relative;
     display: inline-block;
     font-size: 0.75em;
     line-height: 0.7;
+    font-variant-numeric: tabular-nums;
 }
 /* Much more complicated than simply `display: none;` to try to make copy-paste work normally without hacking the copy-listener. */
 .cite-joiner {
@@ -5241,5 +5241,4 @@ section.highlight-fading::before {
     overflow-wrap: normal;
     white-space: nowrap;
     opacity: 0;
-    margin-left: -0.75ch;
 }
