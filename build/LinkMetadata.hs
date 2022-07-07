@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-02 18:11:20 gwern"
+When:  Time-stamp: "2022-07-03 17:16:54 gwern"
 License: CC-0
 -}
 
@@ -899,7 +899,7 @@ pubmed l = do checkURL l
                           do let (title:author:date:doi:abstrct) = parsed
                              let ts = [] -- TODO: replace with ML call to infer tags
                              abstract' <- processParagraphizer l $ processPubMedAbstract $ unlines abstrct
-                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim $ processDOI doi, ts, abstract'))
+                             return $ Right (l, (cleanAbstractsHTML $ trimTitle title, initializeAuthors $ trim author, trim date, trim $ processDOI doi, ts, abstract'))
 
  -- eg "foo.pdf#page=50&org=openai" → "50"; "foo.pdf" → ""
 pageNumberParse :: String -> String
@@ -2019,6 +2019,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(\\infty\\)</span>", "∞")
           , ("<span class=\"math inline\">\\(1/2 H_n\\)</span>", "1⁄2<em>H<sub>n</sub></em>")
           , ("<span class=\"math inline\">\\(H_n \\sim \\ln n\\)</span>", "<em>H<sub>n</sub></em> ln <em>n</em>")
+          , ("<span class=\"math inline\">\\(f_\\theta\\)</span>", "<em>f</em><sub>θ</sub>")
           , ("<math>A</math>", "<em>A</em>")
           , ("<math>B</math>", "<em>B</em>")
           , ("<math>C</math>", "<em>C</em>")

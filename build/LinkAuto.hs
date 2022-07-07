@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-07-04 19:12:23 gwern"
+When:  Time-stamp: "2022-07-04 21:01:51 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -54,7 +54,7 @@ import Control.Parallel.Strategies (parMap, rseq)
 import Control.Monad.State (evalState, get, put, State)
 import System.IO.Unsafe (unsafePerformIO)
 
-import Text.Pandoc (topDown, nullAttr, Pandoc(..), Inline(Link,Image,Code,Space,Span,Str), Block(Div))
+import Text.Pandoc (topDown, nullAttr, Pandoc(..), Inline(Link,Image,Code,Span,Str), Block(Div))
 import Text.Pandoc.Walk (walkM, walk)
 import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness/segfault/strange-closure issues (native Text, and useful splitting), so to save my sanity... BUG: TDFA seems to have slow Text instances: https://github.com/haskell-hvr/regex-tdfa/issues/9
 
@@ -756,7 +756,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Meta[Mm]ath", "https://en.wikipedia.org/wiki/Metamath")
         , ("Michael Nielsen", "https://michaelnielsen.org/")
         , ("Mike Darwin", "https://en.wikipedia.org/wiki/Mike_Darwin")
-        , ("Mike Power", "http://mikepower.pressfolios.com/")
+        , ("Mike Power", "https://mikepower.pressfolios.com/")
         , ("Mind Sparke", "http://www.mindsparke.com/")
         , ("Minecraft", "https://en.wikipedia.org/wiki/Minecraft")
         , ("Mnemosyne", "https://en.wikipedia.org/wiki/Mnemosyne_%28software%29")

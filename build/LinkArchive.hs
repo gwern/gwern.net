@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-06-24 12:53:18 gwern"
+When:  Time-stamp: "2022-07-06 15:43:49 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -118,7 +118,7 @@ import Utils (writeUpdatedFile, printGreen, printRed, sed, addClass, anyInfix, a
 
 archiveDelay, archivePerRunN :: Integer
 archiveDelay = 60
-archivePerRunN = 20
+archivePerRunN = 30
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg. 2019-11-22 = 58810

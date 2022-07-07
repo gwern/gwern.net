@@ -16,7 +16,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Text.Show.Pretty (ppShow)
 import qualified Data.Text as T (Text, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf, replace)
 
-import Text.Regex (subRegex, mkRegex, Regex) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors: `$ cabal install regex-compat-tdfa && ghc-pkg --user hide regex-compat-0.95.2.1`
+import Text.Regex (subRegex, mkRegex) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors: `$ cabal install regex-compat-tdfa && ghc-pkg --user hide regex-compat-0.95.2.1`
 
 import Text.Pandoc (def, nullMeta, runPure,
                     writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Code, Image, Link, Span, Str), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions)
@@ -102,17 +102,11 @@ fixedPoint = fixedPoint' 10000
        fixedPoint' n f i = let i' = f i in if i' == i then i else fixedPoint' (n-1) f i'
 
 sed :: String -> String -> String -> String
-sed before after s = sedR (mkRegex before) s after
-
-sedR :: Regex -> String -> String -> String
-sedR before after s = subRegex before s after
+sed before after s = subRegex (mkRegex before) s after
 
 -- list of regexp string rewrites
 sedMany :: [(String,String)] -> (String -> String)
 sedMany regexps s = foldr (uncurry sed) s regexps
-
-sedRMany :: [(Regex,String)] -> (String -> String)
-sedRMany regexps s = foldr (uncurry sedR) s regexps
 
 -- list of fixed string rewrites
 replaceMany :: [(String,String)] -> (String -> String)
