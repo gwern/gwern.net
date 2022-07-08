@@ -77,7 +77,7 @@ citefyInline x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x else
                                                        [Span ("", ["cite-author"], []) [Str $ T.replace " " " " first]] -- condense with THIN SPACE
                                                        -- et-al case: different span class to select on, stash the et al joiner in a span to suppress:
                                                        else [Span ("", ["cite-author-plural"], [("title","et al")]) [Str first]] ++
-                                                             [Span ("", ["cite-joiner"], []) [Str $ " " `T.append` (T.replace " " " " $ T.strip second) `T.append` " "]]) ++
+                                                             [Span ("", ["cite-joiner"], []) [Str $ "\8288" `T.append` (T.replace " " " " $ T.strip second) `T.append` "\8288"]]) ++
                                                     [Span ("", ["cite-date"], []) [Str third]])
                           ] ++
                           go (T.concat after)

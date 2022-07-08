@@ -74,7 +74,7 @@ Annotations = {
 	//	Called by: Annotations.referenceDataFromParsedAPIResponse
 	dataSourceForIdentifier: (identifier) => {
 		for ([ sourceName, dataSource ] of Object.entries(Annotations.dataSources))
-			if (   sourceName != "local" 
+			if (   sourceName != "local"
 				&& dataSource.matches(identifier))
 				return dataSource;
 
@@ -140,7 +140,7 @@ Annotations = {
 			}
 		};
 
-		/*	Retrieve, parse, and cache the annotation resource; or use an 
+		/*	Retrieve, parse, and cache the annotation resource; or use an
 			already-cached API response.
 		 */
 		let response = Annotations.cachedAPIResponseForIdentifier(identifier);
@@ -228,12 +228,12 @@ Annotations = {
 
 				//  Author list.
 				let authorElement = referenceEntry.querySelector(".author");
-				//	Generate comma-separated author list; truncate with “et al” @ > 3.
+				//	Generate comma-separated author list; truncate with “…” abbreviation for 'et al' @ > 3.
 				let authorList;
 				if (authorElement) {
 					authorList = authorElement.textContent.split(", ").slice(0, 3).join(", ");
 					if (authorList.length < authorElement.textContent.length)
-						authorList += " et al";
+						authorList += "…";
 				}
 
 				//  Date.
@@ -290,7 +290,7 @@ Annotations.dataSources.wikipedia = {
 
 		let url = new URL(identifier);
 
-		return (   url 
+		return (   url
 				&& /(.+?)\.wikipedia\.org/.test(url.hostname)
 				&& !(url.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:" ]))));
 	},
@@ -467,7 +467,7 @@ Annotations.dataSources.wikipedia = {
 
 		//  Separate out the thumbnail and float it.
 		let thumbnail = referenceEntry.querySelector("img");
-		if (   thumbnail 
+		if (   thumbnail
 			&& thumbnail.closest("table")) {
 			//  Save reference to the thumbnail’s containing element.
 			let thumbnailContainer = thumbnail.parentElement;
@@ -479,7 +479,7 @@ Annotations.dataSources.wikipedia = {
 
 			//  Create the caption, if need be.
 			let caption = referenceEntry.querySelector(".mw-default-size + div");
-			if (   caption 
+			if (   caption
 				&& caption.textContent > "") {
 				let figcaption = document.createElement("FIGCAPTION");
 				figcaption.innerHTML = caption.innerHTML;
@@ -494,7 +494,7 @@ Annotations.dataSources.wikipedia = {
 
 			//  Remove the whole row where the thumbnail was.
 			thumbnailContainer.closest("tr").remove();
-		} else if (   thumbnail 
+		} else if (   thumbnail
 				   && thumbnail.closest("figure")) {
 			let figure = thumbnail.closest("figure");
 
