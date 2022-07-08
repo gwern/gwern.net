@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-07 22:07:10 gwern"
+When:  Time-stamp: "2022-07-08 12:22:57 gwern"
 License: CC-0
 -}
 
@@ -19,7 +19,7 @@ module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMe
 import Control.Monad (unless, void, when)
 import Data.Aeson (eitherDecode, FromJSON)
 import Data.Char (isAlpha, isAlphaNum, isPunctuation, toLower)
-import qualified Data.ByteString as B (appendFile, readFile, intercalate, split, ByteString)
+import qualified Data.ByteString as B (appendFile, readFile)
 import qualified Data.ByteString.Lazy as BL (length, concat)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, toList, lookup, map, union, Map) -- traverseWithKey, union, Map
@@ -771,21 +771,13 @@ readYamlFast :: Path -> IO MetadataList
 readYamlFast yamlp = do file <- B.readFile yamlp
                         let yaml = Y.decodeEither' file :: Either ParseException [[String]]
                         case yaml of
-                           Left  _ -> let y = recoverYamlAttempt 25 yamlp file in printGreen (show y) >> (return $ concatMap convertListToMetadataFast y) :: IO MetadataList
+                           Left  e -> error (show e)
                            Right y -> (return $ concatMap convertListToMetadataFast y) :: IO MetadataList
                 where
                  convertListToMetadataFast :: [String] -> MetadataList
                  convertListToMetadataFast [u, t, a, d, di,     s] = [(u, (t,a,d,di,tag2TagsWithDefault u "", s))]
                  convertListToMetadataFast [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,tag2TagsWithDefault u ts, s))]
                  convertListToMetadataFast                        e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
-
-recoverYamlAttempt :: Int -> Path -> B.ByteString -> [[String]]
-recoverYamlAttempt 0 yamlp _ = error $ "YAML file failed to parse; attempt to recover working YAML by dropping last lines failed. " ++ "File: "++ yamlp
-recoverYamlAttempt maxAttempts yamlp broken = let shrunken = B.intercalate "\n" $ init $ B.split 10 broken in
-                                                let yaml = Y.decodeEither' shrunken :: Either ParseException [[String]] in
-                                                  case yaml of
-                                                    Left  _ -> recoverYamlAttempt (maxAttempts - 1) yamlp shrunken
-                                                    Right y -> y
 
 readYaml :: Path -> IO MetadataList
 readYaml yaml = do yaml' <- do filep <- doesFileExist yaml
