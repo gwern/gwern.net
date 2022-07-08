@@ -22,7 +22,6 @@ import Text.Pandoc (def, nullMeta, runPure,
                     writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Code, Image, Link, Span, Str), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions)
 
 -- Auto-update the current year.
-{-# NOINLINE currentYear #-}
 currentYear :: Int
 currentYear = unsafePerformIO $ fmap ((\(year,_,_) -> fromInteger year) . toGregorian . utctDay) Data.Time.Clock.getCurrentTime
 

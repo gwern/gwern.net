@@ -22,6 +22,7 @@ import System.Directory (doesFileExist, getModificationTime, removeFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.Posix.Temp (mkstemp)
 import qualified Data.Text as T (any, append, concat, isSuffixOf, pack, unpack, replace, splitOn, strip, Text)
+import Data.Text.Read (decimal)
 import Text.Read (readMaybe)
 import Text.Regex.TDFA ((=~), Regex, makeRegex, match) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
 import System.IO (stderr, hPrint)
@@ -38,12 +39,13 @@ import Text.Pandoc.Walk (walk, walkM)
 import LinkIcon (linkIcon)
 import LinkLive (linkLive)
 
-import Utils (addClass, sed, printRed)
+import Utils (addClass, sed, printRed, currentYear)
 
 typographyTransform :: Pandoc -> Pandoc
-typographyTransform = walk (citefyInline . linkLive . linkIcon) .
-                      linebreakingTransform .
-                      rulersCycle 3
+typographyTransform = let year = currentYear in
+                        walk (citefyInline year . linkLive . linkIcon) .
+                        linebreakingTransform .
+                        rulersCycle 3
 
 linebreakingTransform :: Pandoc -> Pandoc
 linebreakingTransform = walk (breakSlashes . breakEquals)
@@ -58,8 +60,8 @@ mergeSpaces (Str x:Space:xs)       = mergeSpaces (Str (x`T.append`" "):xs)
 mergeSpaces (Str "":xs)            = mergeSpaces xs
 mergeSpaces (x:xs)                 = x:mergeSpaces xs
 
-citefyInline :: Inline -> Inline
-citefyInline x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x else Span nullAttr rewrite
+citefyInline :: Int -> Inline -> Inline
+citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x else Span nullAttr rewrite
   where
     go :: T.Text -> [Inline]
     go "" = []
@@ -70,7 +72,15 @@ citefyInline x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x else
            in if null matchAll then [Str a] -- no citation anywhere
               else
                 let (fullMatch:first:second:third:_) = head matchAll
-                    (before:after) = T.splitOn fullMatch a in
+                    (before:after) = T.splitOn fullMatch a
+                    citeYear = case decimal third :: Either String (Int, T.Text) of
+                                  Left _ -> 0
+                                  Right (y,_) -> y
+                in
+                  if citeYear > year+3 || -- sanity-check the cite year: generally, a citation can't be for more than 2 years ahead: ie on 31 December 2020, a paper may well have an official date anywhere in 2021, but it would be *highly* unusual for it to be pushed all the way out to 2022 (only the most sluggish of periodicals like annual reviews might do that), so ≥2023 *should* be right out. If we have a 'year' bigger than that, it is probably a false positive, eg. 'Atari 2600' is a video game console and not a paper published by Dr. Atari 6 centuries hence.
+                     first `elem` ["Accurate", "Aesthetics", "Africa", "After", "Alert", "America", "An", "Apr", "April", "At", "Atari", "Atlas", "August", "Autumn", "Before", "British", "Challenge", "Chat", "Codex", "Cohort", "Commodore", "Competition", "Considered", "Copyright", "Counterfactual", "Crypto", "Daily", "Dear", "Dec", "December", "Diaries", "Differences", "Early", "Enterprise", "Esthetics", "Evolution", "Expo", "Fair", "Fall", "Fanime", "Fanimecon", "Feb", "February", "First", "For", "Friday", "Impacts", "Jan", "January", "Jul", "July", "June", "Last", "Late", "Library", "Making", "Mar", "March", "May", "Memoirs", "Monday", "Monthly", "Ms", "Nov", "November", "Oct", "October", "Original", "Otakon", "Our", "Ours", "Over", "Predicting", "Reviews", "Sample", "Saturday", "Sci", "Security", "Sep", "September", "Since", "Since", "Spring", "Standard", "Statistics", "Suisse", "Summer", "Sunday", "Surface", "Survey", "Syntheses", "Than", "The", "Things", "Throughout", "Thursday", "Tuesday", "Until", "Wednesday", "Weekly", "Winter", "Writing", "Year", "Yearly", "Zilch"] then -- dates like "January 2020" are false positives, although unfortunately there are real surnames like 'May', where 'May 2020' is just ambiguous and this will have a false negative.
+                    [Str before] ++ go (T.concat after)
+                  else
                           [Str before] ++
                           [Span ("", ["cite"], []) ((if T.strip second == "" then
                                                        -- the easy single/double author case (we only mess with the date, nothing else)
@@ -81,7 +91,7 @@ citefyInline x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x else
                                                     [Span ("", ["cite-date"], []) [Str third]])
                           ] ++
                           go (T.concat after)
-citefyInline x = x
+citefyInline _ x = x
 
 citefyRegexSingle, citefyRegexDouble, citefyRegexMultiple :: Regex
 citefyRegexSingle = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]+)([    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text) -- match one-author citations like "Foo 2020" or "Foo 2020a"; we avoid using [:punct:] to avoid matching on en-dashes in date ranges
