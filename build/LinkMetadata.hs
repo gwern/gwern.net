@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-03 17:16:54 gwern"
+When:  Time-stamp: "2022-07-07 22:07:10 gwern"
 License: CC-0
 -}
 
@@ -1556,7 +1556,7 @@ citeToID = filter (\c -> c/='.' && c/='\'' && c/='’'&& c/='('&&c/=')') . map t
 -- for link bibliographies / tag pages, better truncate author lists at a reasonable length.
 -- (We can make it relatively short because the full author list will be preserved as part of it.)
 authorsTruncate :: String -> String
-authorsTruncate a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after) ++ " et al")
+authorsTruncate a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after) ++ "…")
 
 dateTruncateBad :: String -> String
  -- we assume that dates are guaranteed to be 'YYYY[-MM[-DD]]' format because of the validation in readLinkMetadataAndCheck enforcing this
