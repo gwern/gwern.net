@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-07-09 12:39:20 gwern"
+When: Time-stamp: "2022-07-09 15:28:02 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -41,8 +41,9 @@ import Data.Char (toLower)
 import Data.IORef (newIORef, IORef)
 import Data.List (intercalate, isInfixOf, isSuffixOf, isPrefixOf, nubBy, sort)
 import qualified Data.Map.Strict as M (lookup)
-import Data.Maybe (isNothing)
+import Data.Maybe (isNothing, fromMaybe)
 import System.Directory (doesFileExist)
+import System.Environment (lookupEnv)
 import System.FilePath (takeExtension)
 import Data.FileStore.Utils (runShellCommand)
 import Hakyll (compile, composeRoutes, constField,
@@ -50,7 +51,7 @@ import Hakyll (compile, composeRoutes, constField,
                defaultHakyllWriterOptions, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
                loadAndApplyTemplate, match, modificationTimeField, mapContext,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess, boolField, toFilePath,
-               templateCompiler, version, Compiler, Context, Item, unsafeCompiler, noResult)
+               templateCompiler, version, Compiler, Context, Item, unsafeCompiler, noResult, complement, (.&&.))
 import System.Exit (ExitCode(ExitFailure))
 import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
 import Text.Read (readMaybe)
@@ -68,7 +69,7 @@ import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack
 -- local custom modules:
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToText, interwikiTestSuite)
-import LinkMetadata (addLocalLinkWalk, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString, tagsToLinksDiv, safeHtmlWriterOptions)
+import LinkMetadata (addLocalLinkWalk, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString, tagsToLinksDiv, safeHtmlWriterOptions)
 import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (linebreakingTransform, typographyTransform, invertImageInline, imageMagickDimensions)
 import LinkAuto (linkAuto)
@@ -77,92 +78,95 @@ import LinkLive (linkLiveTest, linkLivePrioritize)
 import Utils (printGreen, printRed, replace)
 
 main :: IO ()
-main = hakyll $ do
+main =
+ do arg <- lookupEnv "SLOW" -- whether to do the more expensive stuff; Hakyll eats the CLI arguments, so we pass it in as an environment variable instead
+    let slow = "--slow" == fromMaybe "" arg
+    hakyll $ do
+               when slow $ do preprocess $ printGreen ("Testing link icon matches & updating inlined CSS…" :: String)
+                              preprocess rebuildSVGIconCSS
 
-             preprocess $ printGreen ("Testing link icon matches & updating inlined CSS…" :: String)
-             preprocess rebuildSVGIconCSS
+                              preprocess $ printGreen ("Testing live-link-popup rules…" :: String)
+                              let livelinks = linkLiveTest
+                              unless (null livelinks) $ preprocess $ printRed ("Live link pop rules have errors in: " ++ show livelinks)
+                              _ <- preprocess linkLivePrioritize -- generate testcases for new live-link targets
 
-             preprocess $ printGreen ("Testing live-link-popup rules…" :: String)
-             let livelinks = linkLiveTest
-             unless (null livelinks) $ preprocess $ printRed ("Live link pop rules have errors in: " ++ show livelinks)
-             _ <- preprocess linkLivePrioritize -- generate testcases for new live-link targets
+                              preprocess $ printGreen ("Testing interwiki rewrite rules…" :: String)
+                              let interwikiPopupTestCases = interwikiTestSuite
+                              unless (null interwikiPopupTestCases) $ preprocess $ printRed ("Interwiki rules have errors in: " ++ show interwikiPopupTestCases)
 
-             preprocess $ printGreen ("Testing interwiki rewrite rules…" :: String)
-             let interwikiPopupTestCases = interwikiTestSuite
-             unless (null interwikiPopupTestCases) $ preprocess $ printRed ("Interwiki rules have errors in: " ++ show interwikiPopupTestCases)
+               preprocess $ printGreen ("Local archives parsing…" :: String)
+               am           <- preprocess readArchiveMetadata
+               hasArchivedN <- preprocess $ if slow then newIORef archivePerRunN else newIORef 0
 
-             preprocess $ printGreen ("Local archives parsing…" :: String)
-             am <- preprocess readArchiveMetadata
+               preprocess $ printGreen ("Popup annotations parsing…" :: String)
+               meta <- preprocess $ if slow then readLinkMetadataAndCheck else readLinkMetadata
+               when slow $ preprocess $ do printGreen ("Writing annotations…" :: String)
+                                           writeAnnotationFragments am meta hasArchivedN False
 
-             -- popup metadata:
-             preprocess $ printGreen ("Annotations parsing…" :: String)
-             meta <- preprocess readLinkMetadataAndCheck
-             preprocess $ printGreen ("Writing annotations…" :: String)
-             hasArchivedOnce <- preprocess $ newIORef archivePerRunN
-             preprocess $ writeAnnotationFragments am meta hasArchivedOnce False
-             preprocess $ printGreen ("Begin site compilation…" :: String)
-             match "**.page" $ do
-                 -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
-                 -- as people keep screwing them up endlessly:
-                 route $ gsubRoute "," (const "") `composeRoutes` gsubRoute "'" (const "") `composeRoutes` gsubRoute " " (const "-") `composeRoutes`
-                          setExtension ""
-                 -- https://groups.google.com/forum/#!topic/pandoc-discuss/HVHY7-IOLSs
-                 let readerOptions = defaultHakyllReaderOptions
-                 compile $ pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am hasArchivedOnce)
-                     >>= loadAndApplyTemplate "static/templates/default.html" (postCtx meta)
-                     >>= imgUrls
+               preprocess $ printGreen ("Begin site compilation…" :: String)
+               let pages = if slow then "**.page" else "**.page" .&&. complement "docs/**.page" .&&. complement "newsletter/**.page"
+               match pages $ do
+                   -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
+                   -- as people keep screwing them up endlessly:
+                   route $ gsubRoute "," (const "") `composeRoutes` gsubRoute "'" (const "") `composeRoutes` gsubRoute " " (const "-") `composeRoutes`
+                            setExtension ""
+                   -- https://groups.google.com/forum/#!topic/pandoc-discuss/HVHY7-IOLSs
+                   let readerOptions = defaultHakyllReaderOptions
+                   compile $ pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am hasArchivedN)
+                       >>= loadAndApplyTemplate "static/templates/default.html" (postCtx meta)
+                       >>= imgUrls
 
-             -- handle the simple static non-.page files; we define this after the pages because the pages' compilation has side-effects which may create new static files (archives & downsized images)
-             let static = route idRoute >> compile symlinkFileCompiler -- WARNING: custom optimization requiring forked Hakyll installation; see https://github.com/jaspervdj/hakyll/issues/786
-             version "static" $ mapM_ (`match` static) [
-                                     "docs/**",
-                                     "images/**",
-                                     "**.hs",
-                                     "**.sh",
-                                     "**.txt",
-                                     "**.html",
-                                     "**.page",
-                                     "**.css",
-                                     "**.R",
-                                     "**.conf",
-                                     "**.php",
-                                     "**.svg",
-                                     "**.png",
-                                     "**.jpg",
-                                     -- skip "static/build/**" because of the temporary files
-                                     "static/css/**",
-                                     "static/font/**",
-                                     "static/img/**",
-                                     "static/includes/**",
-                                     "static/nginx/**",
-                                     "static/redirects/**",
-                                     "static/templates/**",
-                                     "static/**.conf",
-                                     "static/**.css",
-                                     "static/**.gif",
-                                     "static/**.git",
-                                     "static/**.gitignore",
-                                     "static/**.hs",
-                                     "static/**.html",
-                                     "static/**.ico",
-                                     "static/**.js",
-                                     "static/**.net",
-                                     "static/**.png",
-                                     "static/**.png-768px",
-                                     "static/**.R",
-                                     "static/**.sh",
-                                     "static/**.svg",
-                                     "static/**.ttf",
-                                     "static/**.otf",
-                                     "static/**.php",
-                                     "static/**.py",
-                                     "static/**.wasm",
-                                     "**.yaml",
-                                     "metadata/**",
-                                     "static/build/.htaccess",
-                                     "atom.xml"] -- copy stub of deprecated RSS feed
+               -- handle the simple static non-.page files; we define this after the pages because the pages' compilation has side-effects which may create new static files (archives & downsized images)
+               let static = route idRoute >> compile symlinkFileCompiler -- WARNING: custom optimization requiring forked Hakyll installation; see https://github.com/jaspervdj/hakyll/issues/786
+               version "static" $ mapM_ (`match` static) [
+                                       "docs/**",
+                                       "images/**",
+                                       "**.hs",
+                                       "**.sh",
+                                       "**.txt",
+                                       "**.html",
+                                       "**.page",
+                                       "**.css",
+                                       "**.R",
+                                       "**.conf",
+                                       "**.php",
+                                       "**.svg",
+                                       "**.png",
+                                       "**.jpg",
+                                       -- skip "static/build/**" because of the temporary files
+                                       "static/css/**",
+                                       "static/font/**",
+                                       "static/img/**",
+                                       "static/includes/**",
+                                       "static/nginx/**",
+                                       "static/redirects/**",
+                                       "static/templates/**",
+                                       "static/**.conf",
+                                       "static/**.css",
+                                       "static/**.gif",
+                                       "static/**.git",
+                                       "static/**.gitignore",
+                                       "static/**.hs",
+                                       "static/**.html",
+                                       "static/**.ico",
+                                       "static/**.js",
+                                       "static/**.net",
+                                       "static/**.png",
+                                       "static/**.png-768px",
+                                       "static/**.R",
+                                       "static/**.sh",
+                                       "static/**.svg",
+                                       "static/**.ttf",
+                                       "static/**.otf",
+                                       "static/**.php",
+                                       "static/**.py",
+                                       "static/**.wasm",
+                                       "**.yaml",
+                                       "metadata/**",
+                                       "static/build/.htaccess",
+                                       "atom.xml"] -- copy stub of deprecated RSS feed
 
-             match "static/templates/*.html" $ compile templateCompiler
+               match "static/templates/*.html" $ compile templateCompiler
 
 woptions :: WriterOptions
 woptions = defaultHakyllWriterOptions{ writerSectionDivs = True,

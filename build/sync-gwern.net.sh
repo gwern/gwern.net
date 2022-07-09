@@ -49,7 +49,9 @@ else
     renice -n 15 "$$" &>/dev/null
 
     ## Parallelization: WARNING: post-2022-03 Hakyll uses parallelism which catastrophically slows down at >= # of physical cores; see <https://groups.google.com/g/hakyll/c/5_evK9wCb7M/m/3oQYlX9PAAAJ>
-    N="$(if [ ${#} == 0 ]; then echo 31; else echo "$1"; fi)"
+    N="30" # "$(if [ ${#} == 0 ]; then echo 31; else echo "$1"; fi)"
+    if [ "$1" == "--slow" ]; then SLOW="--slow"; else SLOW=""; fi
+    echo "SLOW: $SLOW"
 
     (cd ~/wiki/ && git status || true) &
     bold "Pulling infrastructure updates…"
@@ -72,12 +74,15 @@ else
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" || true # backup in case of corruption
     cp ./metadata/archive.hs "/tmp/archive-$(date +%s).hs.bak"
+
+  if [ "$SLOW" ]; then
     bold "Checking embeddings database…"
     ghci -i/home/gwern/wiki/static/build/ static/build/GenerateSimilar.hs  -e 'e <- readEmbeddings' &>/dev/null && cp ./metadata/embeddings.bin "/tmp/embeddings-$(date +%s).bin.bak"
 
     # duplicates a later check but if we have a fatal link error, we'd rather find out now rather than 30 minutes later while generating annotations:
     λ(){ fgrep -e 'href=""' -- ./metadata/*.yaml || true; }
     wrap λ "Malformed empty link in annotations?"
+  fi
 
     # We update the linkSuggestions.el in a cron job because too expensive, and vastly slows down build.
 
@@ -248,6 +253,7 @@ else
     footnotesIDAdd () { sed -i -e 's/<section class="footnotes footnotes-end-of-document" role="doc-endnotes">/<section class="footnotes" role="doc-endnotes" id="footnotes">/' "$@"; }; export -f footnotesIDAdd
     find ./ -path ./_site -prune -type f -o -name "*.page" | fgrep -v -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 footnotesIDAdd || true
 
+  if [ "$SLOW" ]; then
     # Testing compilation results:
     set +e
 
@@ -379,7 +385,7 @@ else
     λ(){ fgrep --color=always -e '🙰' -e 'ꭁ' -e 'ﬀ' -e 'ﬃ' -e 'ﬄ' -e 'ﬁ' -e 'ﬂ' -e 'ﬅ' -e 'ﬆ ' -e 'ᵫ' -e 'ꭣ' -e ']9h' -e ']9/' \
             -e ']https' -e 'STRONG>' -e '\1' -e '\2' -e '\3' -e ']($' -e '](₿' -e 'M age' -e '….' -e '((' -e ' %' \
             -e '<h1' -e '</h1>' -e '<h2' -e '</h2>' -e '<h3' -e '</h3>' -e '<h4' -e '</h4>' -e '<h5' -e '</h5>' \
-            -e '</strong>::' -e ' bya ' -e '?gi=' -e ' ]' -e '<span class="cit' -e 'gwsed' -e 'full.full' -e ',,' \
+            -e '</strong>::' -e ' bya ' -e '?gi=' -e ' ]' -e 'gwsed' -e 'full.full' -e ',,' \
             -e '"!"' -e '</sub<' -e 'xref>' -e '<xref' -e '<e>' -e '\\$' -e 'title="http' -e '%3Csup%3E' -e 'sup%3E' -e ' et la ' \
             -e '<strong>Abstract' -e ' ]' -e "</a>’s" -e 'title="&#39; ' -e 'collapseAbstract' -e 'utm_' \
             -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -e ' : ' -e " ' " -e '>/>a' -e '</a></a>' -e '(, ' \
@@ -467,6 +473,7 @@ else
     ping -q -c 5 google.com  &>/dev/null
 
     # Testing complete.
+  fi
 
     # Sync:
     ## make sure nginx user can list all directories (x) and read all files (r)
@@ -484,7 +491,7 @@ else
     rsync --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
     ## Randomize sync type—usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
     bold "Syncing everything else…"
-    SPEED=""; if ((RANDOM % 100 < 99)); then SPEED="--size-only"; else SPEED="--delete --checksum"; fi;
+    SPEED=""; if [ "$SLOW" ]; then if ((RANDOM % 100 < 99)); then SPEED="--size-only"; else SPEED="--delete --checksum"; fi; else SPEED="--size-only"; fi
     rsync --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
     set +e
 
@@ -502,6 +509,7 @@ else
     done
     echo
 
+ if [ "$SLOW" ]; then
     # test a random page modified in the past month for W3 validation & dead-link/anchor errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
     CHECK_RANDOM=$(find . -type f -mtime -31 -name "*.page" | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/www\.gwern\.net\/\1/' \
                        | shuf | head -1 | xargs urlencode)
@@ -625,10 +633,12 @@ else
     ## - traffic checks/alerts are done in Google Analytics: alerts on <900 pageviews/daily, <40s average session length/daily.
     ## - latency/downtime checks are done in `updown.io` (every 1h, 1s response-time for /index)
     set +e
+  fi
 
     # Cleanup post:
     rm --recursive --force -- ~/wiki/_cache/ ~/wiki/_site/ || true
 
+  if [ "$SLOW" ]; then
     # Testing files, post-sync
     bold "Checking for file anomalies…"
     λ(){ fdupes --quiet --sameline --size --nohidden $(find ~/wiki/ -type d | egrep -v -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotations/backlinks' -e 'metadata/annotations/similar') | fgrep --invert-match -e 'bytes each' -e 'trimfill.png'  ; }
@@ -790,6 +800,7 @@ else
             if [[ "$MIME" == "" ]]; then red "redirect! $URL"; fi;
         done
     fi
+  fi
 
     rm static/build/generateLinkBibliography static/build/*.hi static/build/*.o &>/dev/null || true
 
