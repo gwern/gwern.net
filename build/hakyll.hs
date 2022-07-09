@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-07-08 10:06:10 gwern"
+When: Time-stamp: "2022-07-09 12:39:20 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -201,6 +201,7 @@ postCtx md =
     -- similarly, 'author': default.html has a conditional to set 'Gwern Branwen' as the author in the HTML metadata if 'author' is not defined, but if it is, then the HTML metadata switches to the defined author & the non-default author is exposed in the visible page metadata as well for the human readers.
     defaultContext <>
     boolField "backlinksNo" backlinkCheck <>
+    boolField "similarsNo" similarCheck <>
     dateField "created" "%F" <>
     -- if no manually set last-modified time, fall back to checking file modification time:
     dateField "modified" "%F" <>
@@ -239,6 +240,8 @@ fieldsTagPlain m = field "tagsPlain" $ \item -> do
 -- HACK: uses unsafePerformIO. Not sure how to check up front without IO... Read the backlinks DB and thread it all the way through `postCtx`, and `main`?
 backlinkCheck :: Item a -> Bool
 backlinkCheck i = let p = toFilePath (itemIdentifier i) in unsafePerformIO (doesFileExist (("metadata/annotations/backlinks/" ++ replace "/" "%2F" (replace ".page" "" ("/"++p))) ++ ".html")) && not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
+similarCheck :: Item a -> Bool
+similarCheck i = let p = toFilePath (itemIdentifier i) in unsafePerformIO (doesFileExist (("metadata/annotations/similars/" ++ replace "/" "%2F" (replace ".page" "" ("/"++p))) ++ ".html")) && not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
 
 imageDimensionWidth :: String -> Context a
 imageDimensionWidth d = field d $ \item -> do

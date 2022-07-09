@@ -115,6 +115,7 @@
               <span id="page-confidence"><a href="/About#confidence-tags" title="Explanation of 'confidence' metadata: probability of overall being meaningfully correct, expressed as Kesselman Estimative Words (ranging 0–100%: 'certain'/'highly likely'/'likely'/'possible'/'unlikely'/'highly unlikely'/'remote'/'impossible')">certainty</a>: <em>$confidence$</em></span>
               <span id="page-importance"><a href="/About#importance-tags" title="Explanation of 'importance' metadata: rating 1–10 about how much a topic matters to the world.">importance</a>: <em>$importance$</em></span> <br>
               $if(backlinksNo)$<span class="backlinks"><a id="backlinks" class="backlinks" href="/metadata/annotations/backlinks/$escapedURL$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page).">backlinks</a></span>$endif$
+              $if(similarsNo)$<span class="similars"><a id="similars" class="similars" href="/metadata/annotations/similars/$escapedURL$" title="Similar links for this link (by text embedding).">similar</a></span>$endif$
               <span class="link-bibliography"><a id="link-bibliography-link" href="/docs/link-bibliography$url$" title="Bibliography of links cited in this page (forward citations).">bibliography</a></span>
           </div>
         </div>
