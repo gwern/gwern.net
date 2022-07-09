@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-07-07 19:34:20 gwern"
+When: Time-stamp: "2022-07-08 10:06:10 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -278,7 +278,7 @@ descField d = field d $ \item -> do
                          Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
 
 pandocTransform :: Metadata -> ArchiveMetadata -> IORef Integer -> Pandoc -> IO Pandoc
-pandocTransform md adb archived p = -- linkAuto needs to run before convertInterwikiLinks so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary
+pandocTransform md adb archived p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
                            do let pw = walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
                               _ <- createAnnotations md pw
                               let pb = walk (hasAnnotation md True) $ addLocalLinkWalk pw -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overriden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
