@@ -244,7 +244,8 @@ generateMatches md p abst matches =
                -- We require a title, to display as a link; and an abstract, to make it worth recommending (if it has no abstract, the embedding will also probably be garbage):
                Just ("",_,_,_,_,_)  -> []
                Just (_,_,_,_,_,"")  -> []
-               Just (title,_,_,doi,_,_) -> let doiQuery = "doi:" ++ doi
+               Just (title,_,_,doi,_,_) -> let doiEscaped = urlEncode doi -- TEST: this is to work around /docs/sunk-cost/2001-nolet.pdf's crazy DOI '10.1890/0012-9658(2001)082[1655:SVITDB]2.0.CO;2' but might break other DOIs?
+                                               doiQuery = "doi:" ++ doiEscaped
                                                title' = simplifiedString title -- need to strip out HTML formatting like "<em>Peep Show</em>—The Most Realistic Portrayal of Evil Ever Made"
                                                titleQuery = urlEncode $ "\"" ++ title' ++ "\""
                                                query = if null title' && not (null doi) then doiQuery else if null doi && not (null title) then titleQuery else doiQuery ++ "+OR+" ++ titleQuery
@@ -260,8 +261,8 @@ generateMatches md p abst matches =
                                               Str "; "]
                                                ++
                                                (if null doi then [] else [Link linkMetadataCP
-                                                                          [Str "CP"] (T.pack ("https://www.connectedpapers.com/api/redirect/doi/" ++ doi),
-                                                                                      T.pack ("Connected Papers lookup for DOI ‘" ++ doi ++ "’.")),
+                                                                          [Str "CP"] (T.pack ("https://www.connectedpapers.com/api/redirect/doi/" ++ doiEscaped),
+                                                                                      T.pack ("Connected Papers lookup for DOI ‘" ++ doiEscaped ++ "’.")),
                                                                          Str "; "])
                                                ++
                                                [Link linkMetadataG
@@ -269,7 +270,7 @@ generateMatches md p abst matches =
                                                                   T.pack ("Google search engine hits for ‘" ++ title' ++ "’.")),
                                                  Str "; ",
                                                  Link linkMetadataG
-                                                 [Str "site-wide"] (T.pack ("https://www.google.com/search?q=site:www.gwern.net+-site:www.gwern.net/metadata/+" ++ urlEncode title'),
+                                                 [Str "site-wide"] (T.pack ("https://www.google.com/search?q=site:www.gwern.net+-site:www.gwern.net/metadata/" ++ urlEncode title'),
                                                                     T.pack ("Gwern.net site search hits for ‘" ++ title' ++ "’."))
                                                ]]]
 
