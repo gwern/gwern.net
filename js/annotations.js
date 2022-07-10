@@ -408,6 +408,13 @@ Annotations.dataSources.wikipedia = {
 			locmap.closest("tr").remove();
 		});
 
+		//	Remove other maps.
+		referenceEntry.querySelectorAll("img").forEach(image => {
+			let imageSourceURL = new URL(image.src);
+			if (imageSourceURL.hostname == "maps.wikimedia.org")
+				image.remove();
+		});
+
 		//  Remove empty paragraphs.
 		referenceEntry.querySelectorAll("p:empty").forEach(emptyGraf => {
 			emptyGraf.remove();
