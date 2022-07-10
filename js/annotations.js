@@ -318,7 +318,8 @@ Annotations.dataSources.wikipedia = {
 		let responseHTML, titleHTML;
 		if (articleURL.hash > "") {
 			let targetSection = response["remaining"]["sections"].find(section =>
-				section["anchor"] == selectorFromHash(articleURL.hash).slice(1)
+				//	This MUST be decodeURIComponent, and NOT selectorFromHash!!!
+				section["anchor"] == decodeURIComponent(articleURL.hash).slice(1)
 			);
 
 			/*	Check whether we have tried to load a page section which does
@@ -347,7 +348,9 @@ Annotations.dataSources.wikipedia = {
 					if (newHeadingLevel < headingLevel)
 						responseHTML += `</ul>`;
 
-					responseHTML += `<li><a href='${articleURL}#${section["anchor"]}'>${section["line"]}</a>`;
+					//	We must encode, because the anchor might contain quotes.
+					let urlEncodedAnchor = fixedEncodeURIComponent(section["anchor"]);
+					responseHTML += `<li><a href='${articleURL}#${urlEncodedAnchor}'>${section["line"]}</a>`;
 
 					headingLevel = newHeadingLevel;
 				}
