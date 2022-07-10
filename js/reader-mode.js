@@ -389,7 +389,7 @@ ReaderMode = { ...ReaderMode, ...{
 			ReaderMode.activate. If that function has never been called, then
 			ReaderMode.maskedLinks will be null).
 		 */
-		ReaderMode.maskedLinks.forEach(link => {
+		(ReaderMode.maskedLinks || [ ]).forEach(link => {
 			//	Extract hooks.
 // 			link.querySelectorAll(".icon-hook").forEach(hook => { hook.remove() });
 
