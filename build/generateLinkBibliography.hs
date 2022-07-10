@@ -57,7 +57,7 @@ generateLinkBibliography md page = do links <- extractLinksFromPage page
                                       case markdown of
                                         Left e   -> hPrint stderr e
                                         -- compare with the old version, and update if there are any differences:
-                                        Right p' -> do let contentsNew = generateYAMLHeader (replace ".page" "" page) ++ T.unpack p'
+                                        Right p' -> do let contentsNew = generateYAMLHeader (replace ".page" "" page) ++ T.unpack p' ++ "\n\n"
                                                        writeUpdatedFile "link-bibliography" ("docs/link-bibliography/" ++ page) (T.pack contentsNew)
 
 generateYAMLHeader :: FilePath -> String

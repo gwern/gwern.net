@@ -129,12 +129,13 @@ generateDirectory md dir'' = do
 generateYAMLHeader :: FilePath -> String -> (Int,Int,Int) -> String -> String
 generateYAMLHeader d date (directoryN,annotationN,linkN) thumbnail
   = concat [ "---\n",
-             "title: " ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (replace "docs/" "" d)))) ++ " directory\n",
+             "title: " ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (replace "docs/" "" d)))) ++ " tag\n",
              "author: 'N/A'\n",
              "description: \"Bibliography for tag <em>" ++ (if d=="" then "docs" else d) ++ "</em>, most recent first: " ++
               (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='no-icon link-annotated-not' href='/docs/" ++ d ++ "/index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
               (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='no-icon link-annotated-not' href='/docs/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++
               (if linkN == 0 then ""       else (if (directoryN+annotationN) > 0 then ", & " else ", ") ++ show linkN ++ " <a class='no-icon link-annotated-not' href='/docs/" ++ d ++ "/index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
+              " (<a href='../index' class='link-local link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>)" ++
                ".\"\n",
              thumbnail,
              "created: 'N/A'\n",

@@ -50,8 +50,7 @@ else
 
     ## Parallelization: WARNING: post-2022-03 Hakyll uses parallelism which catastrophically slows down at >= # of physical cores; see <https://groups.google.com/g/hakyll/c/5_evK9wCb7M/m/3oQYlX9PAAAJ>
     N="30" # "$(if [ ${#} == 0 ]; then echo 31; else echo "$1"; fi)"
-    if [ "$1" == "--slow" ]; then SLOW="--slow"; else SLOW=""; fi
-    echo "SLOW: $SLOW"
+    if [ "$1" == "--slow" ]; then export SLOW="--slow"; else SLOW=""; fi
 
     (cd ~/wiki/ && git status || true) &
     bold "Pulling infrastructure updates…"

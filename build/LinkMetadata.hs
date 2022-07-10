@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-08 12:22:57 gwern"
+When:  Time-stamp: "2022-07-09 22:11:31 gwern"
 License: CC-0
 -}
 
@@ -296,7 +296,8 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,e) =
                                          walk (parseRawBlock nullAttr) pandoc
 
                       let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
-                      when (filepath /= urlEncode u') $ printRed $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
+                      when (filepath /= urlEncode u') (printRed "Warning, annotation fragment path → URL truncated!" >>
+                                                          print (" Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"))
 
                       case finalHTMLEither of
                         Left er -> error ("Writing annotation fragment failed! " ++ show u ++ " : " ++ show i ++ " : " ++ show er)
@@ -574,13 +575,15 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("ai/scaling", "AI scaling")
           , ("ai/scaling/moe", "AI/MoE")
           , ("iq/ses", "IQ/SES")
+          , ("iq/high/smpy", "SMPY")
+          , ("iq/high/munich", "Munich Giftedness Study")
+          , ("iq/high/fullerton", "Fullerton Longitudinal Study")
+          , ("iq/high/anne-roe", "Anne Roe's Scientists")
           , ("ai/clip", "CLIP")
           , ("design/typography", "typography")
           , ("design/visualization", "data visualization")
-          , ("iq/smpy", "SMPY")
           , ("vitamin-d", "Vitamin D")
           , ("dual-n-back", "DNB")
-          , ("iq/anne-roe", "Anne Roe")
           , ("ai/diffusion", "diffusion model")
           , ("ai/diffusion/discrete ", "discrete diffusion")
           , ("ai/nn/gan", "GAN")
@@ -738,6 +741,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
                              , ("^ai$", "AI")
                              , ("^iq/", "IQ/")
                              , ("^iq$", "IQ")
+                             , ("^iq/high$", "high IQ")
                              , ("^anime/eva$", "NGE")
                              , ("^tcs$", "TDCS")
                              , ("^gan$", "GAN")
@@ -2832,6 +2836,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("co- occurring", "co-occurring")
           , ("</sup><br/>", "</sup>")
           , (" < jats:sub>", "<sub>")
+          , ("<italic toggle=\"yes\">", "<em>")
           , ("\n            <jats:italic>k</jats:italic>\n            ", "<em>k</em>")
           , ("\n            <jats:sup>–6</jats:sup>\n            ", "<sup>–6</sup>")
           , ("\n            <jats:italic>in vitro</jats:italic>\n", " <em>in vitro</em>")
