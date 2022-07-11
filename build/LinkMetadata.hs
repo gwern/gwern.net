@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-09 22:11:31 gwern"
+When:  Time-stamp: "2022-07-11 13:59:32 gwern"
 License: CC-0
 -}
 
@@ -16,7 +16,7 @@ License: CC-0
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad) where
 
-import Control.Monad (unless, void, when)
+import Control.Monad (unless, void, when, foldM_)
 import Data.Aeson (eitherDecode, FromJSON)
 import Data.Char (isAlpha, isAlphaNum, isPunctuation, toLower)
 import qualified Data.ByteString as B (appendFile, readFile)
@@ -29,7 +29,6 @@ import Data.IORef (IORef)
 import Data.FileStore.Utils (runShellCommand)
 import Data.Function (on)
 import Data.List (intercalate, intersect, intersperse, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, sortBy, (\\))
-import Data.List.Split (chunksOf)
 import Data.Maybe (fromJust, fromMaybe)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
 import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) -- NOTE: from 'yaml' package, *not* 'HsYaml'
@@ -99,21 +98,41 @@ walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataYaml f "metadata
                                        return ()
 walkAndUpdateLinkMetadataYaml :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> Path -> IO ()
 walkAndUpdateLinkMetadataYaml f file = do db <- readYaml file -- TODO: refactor this to take a list of URLs to update, then I can do it incrementally & avoid the mysterious space leaks
-                                          let db' = chunksOf 500 db
-                                          db'' <- mapM (traverse f) db'
-                                          writeYaml file (concat db'')
+                                          db' <-  mapM f db
+                                          writeYaml file db'
                                           printGreen $ "Updated " ++ file
+
 -- This can be run every few months to update abstracts (they generally don't change much).
 updateGwernEntries :: IO ()
-updateGwernEntries = walkAndUpdateLinkMetadata True updateGwernEntry
-  where updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
-        updateGwernEntry x@(path,(title,author,date,doi,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)) || "#manual-annotation" `isInfixOf` path then return x -- || not ("index"`isInfixOf` path)
-            else do printGreen path
-                    newEntry <- gwern path
-                    case newEntry of
-                      Left Temporary -> return x
-                      Left Permanent -> return (path,(title,author,date,doi,tags,"")) -- zero out the abstract but preserve the other metadata; if we mistakenly scraped a page before and generated a pseudo-abstract, and have fixed that mistake so now it returns an error rather than pseudo-abstract, we want to erase that pseudo-abstract until such time as it returns a 'Right' (a successful real-abstract)
-                      Right (path', (title',author',date',doi',_,abstract')) -> return (path', (title',author',date',doi',tags,abstract'))
+updateGwernEntries = do rescrapeYAML gwernEntries "metadata/custom.yaml"
+                        rescrapeYAML gwernEntries "metadata/partial.yaml"
+                        rescrapeYAML gwernEntries "metadata/auto.yaml"
+                        readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting…"
+  where gwernEntries path = ("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path || "#manual-annotation" `isInfixOf` path)
+
+rescrapeYAML :: (Path -> Bool) -> Path -> IO ()
+rescrapeYAML filterF yamlpath = do dbl <- readYaml yamlpath
+                                   let paths = filter filterF $ map fst dbl
+                                   foldM_ (rescrapeItem yamlpath) dbl paths
+
+rescrapeItem :: Path -> [(Path, MetadataItem)] -> Path -> IO MetadataList
+rescrapeItem yaml dblist path =
+  case lookup path dblist of
+   Just old -> do new <- updateGwernEntry (path,old)
+                  if (path,old) /= new then do let dblist' = new : filter ((/=) path . fst) dblist
+                                               writeYaml yaml dblist'
+                                               readYaml yaml
+                   else return dblist
+   Nothing -> return dblist
+
+updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
+updateGwernEntry x@(path,(title,author,date,doi,tags,_)) = if False then return x -- || not ("index"`isInfixOf` path)
+    else do printGreen path
+            newEntry <- gwern path
+            case newEntry of
+              Left Temporary -> return x
+              Left Permanent -> return (path,(title,author,date,doi,tags,"")) -- zero out the abstract but preserve the other metadata; if we mistakenly scraped a page before and generated a pseudo-abstract, and have fixed that mistake so now it returns an error rather than pseudo-abstract, we want to erase that pseudo-abstract until such time as it returns a 'Right' (a successful real-abstract)
+              Right (path', (title',author',date',doi',_,abstract')) -> return (path', (title',author',date',doi',tags,abstract'))
 
 -- read the annotation base (no checks, >8× faster)
 readLinkMetadata :: IO Metadata
@@ -136,7 +155,7 @@ readLinkMetadataAndCheck = do
              -- - URLs/keys must exist, be unique, and either be a remote URL (starting with 'h') or a local filepath (starting with '/') which exists on disk (auto.yaml may have stale entries, but custom.yaml should never! This indicates a stale annotation, possibly due to a renamed or accidentally-missing file, which means the annotation can never be used and the true URL/filepath will be missing the hard-earned annotation). We strip http/https because so many websites now redirect and that's an easy way for duplicate annotations to exist.
              -- - titles must exist & be unique (overlapping annotations to pages are disambiguated by adding the section title or some other description)
              -- - authors must exist (if only as 'Anonymous' or 'N/A'), but are non-unique
-             -- - dates are non-unique & optional/NA for always-updated things like Wikipedia. If they exist, they should be of the format 'YYY[-MM[-DD]]'.
+             -- - dates are non-unique & optional/NA for always-updated things like Wikipedia. If they exist, they should be of the format 'YYYY[-MM[-DD]]'.
              -- - DOIs are optional since they usually don't exist, and non-unique (there might be annotations for separate pages/anchors for the same PDF and thus same DOI; DOIs don't have any equivalent of `#page=n` I am aware of unless the DOI creator chose to mint such DOIs, which they never (?) do). DOIs sometimes use hyphens and so are subject to the usual problems of em/en-dashes sneaking in by 'smart' systems screwing up.
              -- - tags are optional, but all tags should exist on-disk as a directory of the form "docs/$TAG/"
              -- - annotations must exist and be unique inside custom.yaml (overlap in auto.yaml can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
@@ -151,7 +170,7 @@ readLinkMetadataAndCheck = do
                  unless (null badDoisDash) $ error $ "Bad DOIs (bad punctuation): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
              -- Thus far, I have not run into any real DOIs which omit numbers, so we'll include that as a check for accidental tags inserted into the DOI field.
-             let badDois = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else '/' `notElem` doi || null (intersect "0123456789" doi)) custom in
+             let badDois = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else '/' `notElem` doi || null ("0123456789" `intersect` doi)) custom in
                unless (null badDois) $ error $ "Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
 
              let emptyCheck = filter (\(u,(t,a,_,_,_,s)) ->  "" `elem` [u,t,a,s]) custom
@@ -1733,7 +1752,11 @@ initializeAuthors = trim . replaceMany [(",,", ","), (",,", ","), (", ,", ", "),
                          ("([A-Z]\\.)([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3 \\4"), -- "C.A.B. Smith" → "C. A. B. Smith"
                          (" ([A-Z])([A-Z])([A-Z]) ", " \\1. \\2. \\3. "),                   -- "John HAB Smith" → "John H. A. B. Smith"
                          (" ([A-Z])([A-Z]) ", " \\1. \\2. "),                               -- "John HA Smith"  → "John H. A. Smith"
-                         (" ([A-Z]) ", " \\1. ")                                            -- "John H Smith"   → "John H. Smith"
+                         (" ([A-Z]) ", " \\1. "),                                           -- "John H Smith"   → "John H. Smith"
+                         ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3, \\6 \\5, \\8 \\7"), -- 4-author, and I won't try for more
+                         ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3, \\6 \\5"), -- 3-author
+                         ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3"), -- likewise, but for the 2-author case: 'Smith, J.; Doe, J.'
+                         ("^([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1") -- "Smith, J." → "J. Smith"; for single words followed by a single letter, we can assume that it is a 'surname, initial' rather than 2 authors, 'surname1, surname2'
                          ]
 
 wikipediaURLToTitle :: String -> String
@@ -1752,6 +1775,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
  where cleanAbstractsHTML' :: String -> String
        cleanAbstractsHTML' = trim . sedMany [
          -- add newlines for readability
+         ("<p><strong>\nAuthor summary\n</strong>:</p>\n<p>\n", "<p><strong>\nAuthor summary\n</strong>: "),
           ("<strong>Abstract</strong>: ", ""),
           ("<p><strong>Abstract</strong>: <strong>Objective</strong>: ", "<p><strong>Objective</strong>: "),
           ("<strong>Abstract</strong>\n<p>", "<p>"),
