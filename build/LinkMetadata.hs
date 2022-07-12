@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-11 13:59:32 gwern"
+When:  Time-stamp: "2022-07-11 20:16:22 gwern"
 License: CC-0
 -}
 
@@ -166,11 +166,13 @@ readLinkMetadataAndCheck = do
              let brokenUrlsC = filter (\u -> null u || not (head u == 'h' || head u == '/') || (head u == '/' && "//" `isInfixOf` u) || ' ' `elem` u || '\'' `elem` u || '–' `elem` u || '—' `elem` u) urlsC
              when (brokenUrlsC /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrlsC
 
+             let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,ts,_)) -> ts) custom
+
              let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> anyInfix doi ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'"] || "http" `isInfixOf` doi) custom in
                  unless (null badDoisDash) $ error $ "Bad DOIs (bad punctuation): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
              -- Thus far, I have not run into any real DOIs which omit numbers, so we'll include that as a check for accidental tags inserted into the DOI field.
-             let badDois = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else '/' `notElem` doi || null ("0123456789" `intersect` doi)) custom in
+             let badDois = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else doi `elem` tagsAllC || head doi `elem` ['a'..'z'] || '/' `notElem` doi || null ("0123456789" `intersect` doi)) custom in
                unless (null badDois) $ error $ "Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
 
              let emptyCheck = filter (\(u,(t,a,_,_,_,s)) ->  "" `elem` [u,t,a,s]) custom
