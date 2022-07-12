@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-11 20:16:22 gwern"
+When:  Time-stamp: "2022-07-12 17:51:39 gwern"
 License: CC-0
 -}
 
@@ -462,9 +462,9 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                   [Para
                                        ([link,Str ","] ++
                                          author ++
-                                         (if (date++tags++backlink)==[] then []
+                                         date ++
+                                         (if (tags++backlink++similarlink)==[] then []
                                            else [Str " ("] ++
-                                                date ++
                                                 tags ++
                                                 backlink ++
                                                 similarlink ++
