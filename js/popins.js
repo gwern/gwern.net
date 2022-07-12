@@ -247,7 +247,7 @@ Popins = {
 		footerTitleLink.href = popinTitleLink.href;
 		footerTitleLink.title = `Open ${footerTitleLink.href} in a new tab.`;
 		footerTitleLink.target = "_blank";
-		footerTitleLink.textContent = "Continue reading…";
+		footerTitleLink.textContent = "Open in new tab…";
 		popin.footerBar.appendChild(footerTitleLink);
 	},
 
