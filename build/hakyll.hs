@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-07-09 17:12:50 gwern"
+When: Time-stamp: "2022-07-13 09:29:55 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -100,8 +100,9 @@ main =
 
                preprocess $ printGreen ("Popup annotations parsing…" :: String)
                meta <- preprocess $ if slow then readLinkMetadataAndCheck else readLinkMetadata
-               when slow $ preprocess $ do printGreen ("Writing annotations…" :: String)
-                                           writeAnnotationFragments am meta hasArchivedN False
+               preprocess $ do printGreen ("Writing annotations…" :: String)
+                               if slow then writeAnnotationFragments am meta hasArchivedN False
+                                       else writeAnnotationFragments am meta hasArchivedN True
 
                preprocess $ printGreen ("Begin site compilation…" :: String)
                let pages = if slow then "**.page" else "**.page" .&&. complement "docs/**.page" .&&. complement "newsletter/**.page"
