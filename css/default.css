@@ -4855,7 +4855,7 @@ section.highlight-fading::before {
     display: flex;
     background-color: var(--GW-mode-selector-background-color);
     padding: 0.1em 0.25em 0.3em 0.25em;
-    border: 3px solid transparent;
+    border: 1px dotted var(--GW-TOC-border-color);
     opacity: 0.3;
     transition:
         opacity 2s ease;
