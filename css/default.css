@@ -5227,7 +5227,6 @@ section.highlight-fading::before {
 .cite-date {
     vertical-align: -0.35ex;
     position: relative;
-    display: inline-block;
     font-size: 0.8em;
     line-height: 0.7;
     font-variant-numeric: tabular-nums;
