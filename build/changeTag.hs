@@ -28,14 +28,15 @@ import System.Directory (doesDirectoryExist, doesFileExist)
 import Text.Pandoc (Inline(Link), nullAttr)
 import Data.Text as T (pack)
 
-import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml, MetadataList, MetadataItem)
+import LinkMetadata (annotateLink, guessTagFromShort, readLinkMetadata, readYaml, writeYaml, MetadataList, MetadataItem)
 
 main :: IO ()
 main = do args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://www.gwern.net/" "/") getArgs
           when (length args < 2) $ error "Error: Insufficient arguments (<2)."
 
           let links = filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) args
-          let tags = map (filter (/=',')) $ -- we store tags comma-separated so sometimes we might leave in a stray tag when copy-pasting
+          md <- readLinkMetadata
+          let tags = map (guessTagFromShort md) $ map (filter (/=',')) $ -- we store tags comma-separated so sometimes we might leave in a stray tag when copy-pasting
                 filter (`notElem` links) args
 
           when (null tags) $ error ("Error: Forgot tags? " ++ show args)

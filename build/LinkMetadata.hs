@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-16 11:09:07 gwern"
+When:  Time-stamp: "2022-07-16 17:42:57 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad) where
+module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad, guessTagFromShort) where
 
 import Control.Monad (unless, void, when, foldM_)
 import Data.Aeson (eitherDecode, FromJSON)
@@ -578,9 +578,40 @@ url2Tags p = concat $ map (\(match,tag) -> if match p then [tag] else []) urlTag
 
 -- Abbreviate displayed tag names to make tag lists more readable. For some tags, like 'reinforcement-learning/*' or 'genetics/*', they might be used very heavily and densely, leading to cluttered unreadable tag lists, and discouraging use of meaningful directory names: 'reinforcement-learning/exploration, reinforcement-learning/alphago, reinforcement-learning/meta-learning, reinforcement-learning/...' would be quite difficult to read. But we also would rather not abbreviate the tag itself down to just 'rl/', as that is not machine-readable or explicit. So we can abbreviate them just for display, while rendering the tags to Inline elements.
 abbreviateTag :: T.Text -> T.Text
-abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFixed . replace "/docs/" "" . T.unpack
-  where tagRewritesFixed :: [(String,String)]
-        tagRewritesFixed = [
+abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagsLong2Short . replace "/docs/" "" . T.unpack
+  where
+        tagRewritesRegexes  :: [(String,String)]
+        tagRewritesRegexes = [("^cs/", "CS/")
+                             , ("^cs$", "CS")
+                             , ("^cs/c$", "C")
+                             , ("^cs/r$", "R")
+                             , ("^ai/", "AI/")
+                             , ("^ai$", "AI")
+                             , ("^iq/", "IQ/")
+                             , ("^iq$", "IQ")
+                             , ("^iq/high$", "high IQ")
+                             , ("^anime/eva$", "<em>NGE</em>")
+                             , ("^tcs$", "TDCS")
+                             , ("^gan$", "GAN")
+                             , ("^psychology/", "psych/")
+                             , ("^technology/", "tech/")
+                             ]
+
+-- try to infer a long tag from a short tag, first by exact match, then by suffix, then by prefix, then by infix, then give up.
+-- so eg 'sr1' → 'SR1' → 'darknet-markets/silk-road/1', 'road/1' → 'darknet-markets/silk-road/1', 'darknet-markets/silk' → 'darknet-markets/silk-road', 'silk-road' → 'darknet-markets/silk-road'
+guessTagFromShort :: Metadata -> String -> String
+guessTagFromShort m t = let allTags = nubOrd $ concat $ M.map (\(_,_,_,_,ts,_) -> ts) m in
+  case lookup t tagsShort2Long of
+    Just tl -> tl
+    Nothing -> let shortFallbacks = filter (\(short,_) -> t `isSuffixOf` short) tagsShort2Long ++ filter (\(short,_) -> t `isPrefixOf` short) tagsShort2Long ++ filter (\(short,_) -> t `isInfixOf` short) tagsShort2Long
+               in if not (null shortFallbacks) then fst $ head shortFallbacks else
+                    let longFallbacks = filter (t `isSuffixOf`) allTags ++ filter (t `isPrefixOf`) allTags ++ filter (t `isInfixOf`) allTags in
+                      if not (null longFallbacks) then head longFallbacks else t
+
+
+tagsLong2Short, tagsShort2Long :: [(String,String)]
+tagsShort2Long = map (\(a,b) -> (map toLower b,a)) tagsLong2Short ++ [] -- custom tag shortcuts
+tagsLong2Short = [
           ("reinforcement-learning", "RL")
           , ("music-distraction", "music distraction")
           , ("reinforcement-learning/chess", "AI chess")
@@ -624,7 +655,6 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("existential-risk", "x-risk")
           , ("philosophy/ethics", "ethics")
           , ("philosophy/brethren-of-purity", "Brethren of Purity")
-
           , ("longevity/tirzepatide", "tirzepatide")
           , ("longevity/semaglutide", "glutide")
           , ("exercise/gravitostat", "the gravitostat")
@@ -757,22 +787,6 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("co2", "CO<sub>2</sub>")
           , ("traffic", "web traffic")
           ]
-        tagRewritesRegexes  :: [(String,String)]
-        tagRewritesRegexes = [("^cs/", "CS/")
-                             , ("^cs$", "CS")
-                             , ("^cs/c$", "C")
-                             , ("^cs/r$", "R")
-                             , ("^ai/", "AI/")
-                             , ("^ai$", "AI")
-                             , ("^iq/", "IQ/")
-                             , ("^iq$", "IQ")
-                             , ("^iq/high$", "high IQ")
-                             , ("^anime/eva$", "<em>NGE</em>")
-                             , ("^tcs$", "TDCS")
-                             , ("^gan$", "GAN")
-                             , ("^psychology/", "psych/")
-                             , ("^technology/", "tech/")
-                             ]
 
 -------------------------------------------------------------------------------------------------------------------------------
 
