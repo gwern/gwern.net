@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-15 22:25:56 gwern"
+When:  Time-stamp: "2022-07-16 11:09:07 gwern"
 License: CC-0
 -}
 
@@ -530,7 +530,7 @@ tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = sort ts in
                        Span ("", ["link-tags"], []) $
-                       intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
+                       intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
 -- Ditto; but since a Div is a Block element, we copy-paste a separate function:
 tagsToLinksDiv :: [T.Text] -> Block
@@ -538,7 +538,7 @@ tagsToLinksDiv [] = Div nullAttr []
 tagsToLinksDiv [""] = Div nullAttr []
 tagsToLinksDiv ts = let tags = sort ts in
                        Div ("", ["link-tags"], []) $
-                       [Para $ intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags]
+                       [Para $ intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags]
 
 -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg. '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
 tag2TagsWithDefault :: String -> String -> [String]
@@ -587,7 +587,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("ai/tabular", "tabular ML")
           , ("ai/anime", "anime AI")
           , ("ai/anime/danbooru", "Danbooru AI")
-          , ("anime/eva/little-boy", "Little Boy")
+          , ("anime/eva/little-boy", "<em>Little Boy</em>")
           , ("ai/nn", "neural net")
           , ("ai/nn/rnn", "RNN")
           , ("ai/nn/fully-connected", "MLP NN")
@@ -633,7 +633,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("ai/text-style-transfer", "text style transfer")
           , ("modafinil/darknet-market", "modafinil DNM")
           , ("history/s-l-a-marshall", "SLAM")
-          , ("lesswrong-survey/hpmor", "HP:MoR")
+          , ("lesswrong-survey/hpmor", "<em>HP:MoR</em>")
           , ("cs/cellular-automaton", "cellular automata")
           , ("cs/shell", "shell")
           , ("cs/scheme", "Scheme")
@@ -664,10 +664,10 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("reinforcement-learning/model-free/alphastar", "AlphaStar")
           , ("reinforcement-learning/model-free/oa5", "OA5")
           , ("history/uighur", "Uighur genocide")
-          , ("history/public-domain-review", "Public Domain Review")
+          , ("history/public-domain-review", "<em>Public Domain Review</em>")
           , ("technology", "tech")
           , ("technology/carbon-capture", "carbon capture")
-          , ("technology/digital-antiquarian", "Filfre")
+          , ("technology/digital-antiquarian", "<em>Filfre</em>")
           , ("technology/google", "Google")
           , ("technology/security", "infosec")
           , ("technology/search", "Google-fu")
@@ -677,8 +677,8 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("reinforcement-learning/meta-learning", "meta-learning")
           , ("reinforcement-learning/preference-learning", "preference learning")
           , ("reinforcement-learning/multi-agent", "MARL")
-          , ("reinforcement-learning/imperfect-information/diplomacy", "Diplomacy AI")
-          , ("reinforcement-learning/imperfect-information/hanabi", "Hanabi AI")
+          , ("reinforcement-learning/imperfect-information/diplomacy", "<em>Diplomacy</em> AI")
+          , ("reinforcement-learning/imperfect-information/hanabi", "<em>Hanabi</em> AI")
           , ("reinforcement-learning/imperfect-information/poker", "poker AI")
           , ("reinforcement-learning/robot", "robotics")
           , ("reinforcement-learning/safe", "AI safety")
@@ -691,10 +691,10 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("psychology/energy", "mental energy")
           , ("psychology/illusion-of-depth", "illusion of depth")
           , ("psychology/neuroscience", "neuroscience")
-          , ("psychology/european-journal-of-parapsychology", "EJP")
+          , ("psychology/european-journal-of-parapsychology", "<em>EJP</em>")
           , ("psychology/spaced-repetition", "spaced repetition")
           , ("psychiatry/traumatic-brain-injury", "TBI")
-          , ("sociology/abandoned-footnotes", "Abandoned Footnotes")
+          , ("sociology/abandoned-footnotes", "<em>Abandoned Footnotes</em>")
           , ("statistics/survival-analysis", "survival analysis")
           , ("statistics/variance-component", "variance components")
           , ("philosophy/ethics/ethicists", "ethicists")
@@ -708,6 +708,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("psychiatry/depression", "MDD")
           , ("longevity/johan-bjorksten", "Johan Bjorksten")
           , ("longevity/senolytic", "senolytics")
+          , ("genetics/sequencing", "gene sequencing")
           , ("genetics/editing", "gene editing")
           , ("genetics/cloning", "cloning")
           , ("genetics/cloning/dog", "dog cloning")
@@ -717,6 +718,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("genetics/selection/artificial/index-selection", "index selection")
           , ("genetics/heritable/rare-variants", "rare genes")
           , ("genetics/heritable/emergenesis", "emergenesis")
+          , ("genetics/selection/natural/human", "human evolution")
           , ("genetics/selection/natural/human/dysgenics", "dysgenics")
           , ("genetics/gametogenesis", "gametogenesis")
           , ("genetics/heritable/correlation", "genetic correlation")
@@ -734,7 +736,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("lesswrong-survey", "LW survey")
           , ("japanese/zeami", "Zeami")
           , ("history/medici", "Medici")
-          , ("biology/portia", "Portia spider")
+          , ("biology/portia", "<em>Portia</em> spider")
           , ("bitcoin/nashx", "Nash eXchange")
           , ("fiction/opera", "opera")
           , ("fiction/poetry", "poetry")
@@ -742,7 +744,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("insight-porn", "insight porn")
           , ("wikipedia", "Wikipedia")
           , ("sunk-cost", "sunk cost")
-          , ("radiance", "Radiance")
+          , ("radiance", "<em>Radiance</em>")
           , ("long-now", "Long Now")
           , ("japanese", "Japan")
           , ("algernon", "Algernon's Law")
@@ -752,7 +754,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("touhou", "Touhou")
           , ("zeo", "sleep")
           , ("zeo/short-sleeper", "short-sleepers")
-          , ("co2", "CO₂")
+          , ("co2", "CO<sub>2</sub>")
           , ("traffic", "web traffic")
           ]
         tagRewritesRegexes  :: [(String,String)]
@@ -765,7 +767,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
                              , ("^iq/", "IQ/")
                              , ("^iq$", "IQ")
                              , ("^iq/high$", "high IQ")
-                             , ("^anime/eva$", "NGE")
+                             , ("^anime/eva$", "<em>NGE</em>")
                              , ("^tcs$", "TDCS")
                              , ("^gan$", "GAN")
                              , ("^psychology/", "psych/")
