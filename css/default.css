@@ -4700,13 +4700,13 @@ section.highlight-fading::before {
 /* Mobile only.      */
 
 @media only screen and (max-width: 649px) {
-    #footer {
+    #footer-logo {
         --footer-decoration-spacing: 3.5em;
 
         position: relative;
         margin: calc(1em + var(--footer-decoration-spacing)) 0 2em 0;
     }
-    #footer::after {
+    #footer-logo::after {
         content: "";
         background-color: var(--GW-body-background-color);
         background-image: url('/static/img/logo/logo-smooth.svg');
@@ -4724,7 +4724,7 @@ section.highlight-fading::before {
         padding: 0 10px 0 11px;
         z-index: 1;
     }
-    #footer::before {
+    #footer-logo::before {
         content: "";
         display: block;
         position: absolute;

@@ -4,7 +4,7 @@ ReaderMode = { ...ReaderMode, ...{
 	 */
 	maskedLinksSelector: "p a, li a",
 
-	deactivateTriggerElementSelector: "#reader-mode-disable-when-here, #see-also, #external-links, #appendix, #appendices, #navigation, #footer",
+	deactivateTriggerElementSelector: "#reader-mode-disable-when-here, #see-also, #external-links, #appendix, #appendices, #navigation, #footer, #footer-logo",
 
 	showMaskedLinksDelay: 250,
 
@@ -110,12 +110,12 @@ ReaderMode = { ...ReaderMode, ...{
 							  : "");
 				if (name == currentMode)
 					desc += ReaderMode.selectedModeOptionNote;
-				return `<button 
+				return `<button
 							type="button"
 							class="select-mode-${name}${selected}${active}"
-							${disabled} 
+							${disabled}
 							tabindex="-1"
-							data-name="${name}" 
+							data-name="${name}"
 							title="${desc}"
 								>${label}</button>`;
 			  }).join("")
@@ -244,7 +244,7 @@ ReaderMode = { ...ReaderMode, ...{
 			On mobile, show mode selector on ANY scroll up.
 		 */
 		if (GW.isMobile()) {
-			if (   GW.scrollState.unbrokenUpScrollDistance > 0 
+			if (   GW.scrollState.unbrokenUpScrollDistance > 0
 				|| GW.scrollState.lastScrollTop <= 0)
 				ReaderMode.showModeSelector();
 		} else if (   GW.scrollState.unbrokenUpScrollDistance > (0.8 * window.innerHeight)
@@ -307,7 +307,7 @@ ReaderMode = { ...ReaderMode, ...{
 				};
 			}
 
-			/*	Add custom link click behavior 
+			/*	Add custom link click behavior
 				(Save the existing handler, if any. Required for popin support.)
 			 */
 			link.savedOnClick = link.onclick;
@@ -508,7 +508,7 @@ ReaderMode = { ...ReaderMode, ...{
 
 GW.notificationCenter.fireEvent("ReaderMode.didLoad");
 
-/*	Ensure that we run setup only after Extracts and Popups/Popins have 
+/*	Ensure that we run setup only after Extracts and Popups/Popins have
 	completed their setups. (This is so that the onclick handlers and so on are
 	already in place.)
  */
