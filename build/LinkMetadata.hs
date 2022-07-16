@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-12 17:51:39 gwern"
+When:  Time-stamp: "2022-07-15 22:25:56 gwern"
 License: CC-0
 -}
 
@@ -450,9 +450,9 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                     date = if dt=="" then [] else [Span ("", ["date"],
                                                                           if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
                                                                     [Str (T.pack $ dateTruncateBad dt)]]
-                                    backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
-                                    similarlink = if slp=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["aux-links", "link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
-                                    tags = if ts==[] then [] else (if dt=="" then [] else [Str ";", Space]) ++ [tagsToLinksSpan $ map T.pack ts]
+                                    tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
+                                    backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
+                                    similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
                                     link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
@@ -462,7 +462,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                   [Para
                                        ([link,Str ","] ++
                                          author ++
-                                         date ++
+                                         [Str " "] ++ date ++
                                          (if (tags++backlink++similarlink)==[] then []
                                            else [Str " ("] ++
                                                 tags ++
@@ -484,7 +484,7 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 -- WARNING: update the list in /static/js/extracts-annotation.js L218 if you change this list!
 affiliationAnchors :: [String]
-affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "graphcore", "huawei", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pinterest", "pdf", "salesforce", "sberbank", "sensetime", "snapchat", "spotify", "tencent", "tensorfork", "uber", "yandex"]
+affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "graphcore", "huawei", "ibm", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pinterest", "pdf", "salesforce", "sberbank", "sensetime", "snapchat", "spotify", "tencent", "tensorfork", "twitter", "uber", "yandex"]
 
 -- find all instances where I link "https://arxiv.org/abs/1410.5401" when it should be "https://arxiv.org/abs/1410.5401#deepmind", where they are inconsistent and the hash matches a whitelist of orgs.
 findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]
@@ -704,7 +704,9 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("statistics/order", "order statistics")
           , ("statistics/decision", "decision theory")
           , ("psychiatry/schizophrenia", "SCZ")
-          , ("longevity/john-bjorksten", "John Bjorksten")
+          , ("psychiatry/bipolar", "BPD")
+          , ("psychiatry/depression", "MDD")
+          , ("longevity/johan-bjorksten", "Johan Bjorksten")
           , ("longevity/senolytic", "senolytics")
           , ("genetics/editing", "gene editing")
           , ("genetics/cloning", "cloning")
@@ -1546,7 +1548,7 @@ authorsToCite url author date =
   let year = if date=="" then show currentYear else take 4 date -- YYYY-MM-DD
       authors = split ", " $ sedMany [(" \\([A-Za-z ]+\\)", "")] author -- affiliations like "Schizophrenia Working Group of the Psychiatric Genomics Consortium (PGC), Stephan Foo" or "Foo Bar (Atlas Obscura)" would break the later string-munging & eventually the HTML
       authorCount = length authors
-      firstAuthorSurname = if authorCount==0 then "" else filter (\c -> isAlphaNum c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse $ head authors
+      firstAuthorSurname = if authorCount==0 then "" else filter (\c -> isAlphaNum c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse $ replaceMany [(" Senior",""), (" Junior" ,"")] $ head authors -- 'John Smith Junior 2020' is a weird cite if it turns into 'Junior 2020'! easiest fix is to just delete it, so as to get the expected 'Smith 2020'.
   in
        if authorCount == 0 then "" else
            let
@@ -1834,7 +1836,13 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         (" 2\\) (.*) 3\\)", " (2) \\1 (3)"),
         ("\\(1\\) (.*) 2\\)", " (1) \\1 (2)"),
         (" 1\\) (.*) 2\\)", " (1) \\1 (2)"),
-
+        -- citations: eg '...biochemical programs (preconditioning)2,3,4. Under...'; we require 2 because 1 number is ambiguous & collides with chemistry/genetics.
+        ("([a-z[:punct:]])([0-9]+,[0-9]+)\\.", "\\1<sup>\\2</sup>."),
+        ("([a-z[:punct:]])([0-9]+,[0-9]+,[0-9]+)\\.", "\\1<sup>\\2</sup>."), -- '2,3,4.'
+        ("([a-z[:punct:]])([0-9]+,[0-9]+,[0-9]+,[0-9]+)\\.", "\\1<sup>\\2</sup>."),
+        ("([a-z[:punct:]])([0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+)\\.", "\\1<sup>\\2</sup>."),
+        ("([a-z[:punct:]])([0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+)\\.", "\\1<sup>\\2</sup>."),
+        ("([a-z[:punct:]])([0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+)\\.", "\\1<sup>\\2</sup>."),
         -- common spelling error, 'a' → 'an':
         (" a ([aeio][a-z]+)", " an \\1"),
         -- - comma-separate at thousands for consistency:
