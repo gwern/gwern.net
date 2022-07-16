@@ -52,13 +52,16 @@ linebreakingTransform = walk (breakSlashes . breakEquals)
 
 -- Pandoc breaks up strings as much as possible, like [Str "ABC", Space, "notation"], which makes it impossible to match on them, so we remove Space
 mergeSpaces :: [Inline] -> [Inline]
-mergeSpaces []                     = []
-mergeSpaces (Str x:Str y:xs)       = mergeSpaces (Str (x`T.append`y) : xs)
-mergeSpaces (Space:Str x:Space:xs) = mergeSpaces (Str (" "`T.append`x`T.append`" "):xs)
-mergeSpaces (Space:Str x:xs)       = mergeSpaces (Str (" "`T.append`x):xs)
-mergeSpaces (Str x:Space:xs)       = mergeSpaces (Str (x`T.append`" "):xs)
-mergeSpaces (Str "":xs)            = mergeSpaces xs
-mergeSpaces (x:xs)                 = x:mergeSpaces xs
+mergeSpaces []                         = []
+mergeSpaces (Str x:Str y:xs)           = mergeSpaces (Str (x`T.append`y) : xs)
+mergeSpaces (Space:Str x:Space:xs)     = mergeSpaces (Str (" "`T.append`x`T.append`" "):xs)
+mergeSpaces (Space:Str x:xs)           = mergeSpaces (Str (" "`T.append`x):xs)
+mergeSpaces (Str x:Space:xs)           = mergeSpaces (Str (x`T.append`" "):xs)
+mergeSpaces (Str "":xs)                = mergeSpaces xs
+mergeSpaces (Str x:SoftBreak:Str y:xs) = mergeSpaces (Str (x`T.append`" "`T.append`y):xs)
+mergeSpaces (SoftBreak:Str x:xs)       = mergeSpaces (Str (" "`T.append`x):xs)
+mergeSpaces (SoftBreak:xs)             = mergeSpaces (Space:xs)
+mergeSpaces (x:xs)                     = x:mergeSpaces xs
 
 citefyInline :: Int -> Inline -> Inline
 citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x else Span nullAttr rewrite
@@ -78,7 +81,7 @@ citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x
                                   Right (y,_) -> y
                 in
                   if citeYear > year+3 || -- sanity-check the cite year: generally, a citation can't be for more than 2 years ahead: ie on 31 December 2020, a paper may well have an official date anywhere in 2021, but it would be *highly* unusual for it to be pushed all the way out to 2022 (only the most sluggish of periodicals like annual reviews might do that), so ≥2023 *should* be right out. If we have a 'year' bigger than that, it is probably a false positive, eg. 'Atari 2600' is a video game console and not a paper published by Dr. Atari 6 centuries hence.
-                     first `elem` ["Accurate", "Aesthetics", "Africa", "After", "Alert", "America", "An", "Apr", "April", "At", "Atari", "Atlas", "August", "Autumn", "Before", "British", "Challenge", "Chat", "Codex", "Cohort", "Commodore", "Competition", "Considered", "Copyright", "Counterfactual", "Crypto", "Daily", "Dear", "Dec", "December", "Diaries", "Differences", "Early", "Enterprise", "Esthetics", "Evolution", "Expo", "Fair", "Fall", "Fanime", "Fanimecon", "Feb", "February", "First", "For", "Friday", "Impacts", "Jan", "January", "Jul", "July", "June", "Last", "Late", "Library", "Making", "Mar", "March", "May", "Memoirs", "Monday", "Monthly", "Ms", "Nov", "November", "Oct", "October", "Original", "Otakon", "Our", "Ours", "Over", "Predicting", "Reviews", "Sample", "Saturday", "Sci", "Security", "Sep", "September", "Since", "Since", "Spring", "Standard", "Statistics", "Suisse", "Summer", "Sunday", "Surface", "Survey", "Syntheses", "Than", "The", "Things", "Throughout", "Thursday", "Tuesday", "Until", "Wednesday", "Weekly", "Winter", "Writing", "Year", "Yearly", "Zilch"] then -- dates like "January 2020" are false positives, although unfortunately there are real surnames like 'May', where 'May 2020' is just ambiguous and this will have a false negative.
+                     first `elem` ["Accurate", "Aesthetics", "Africa", "After", "Alert", "America", "An", "Apr", "April", "At", "Atari", "Atlas", "August", "Autumn", "Before", "British", "Challenge", "Chat", "Codex", "Cohort", "Commodore", "Competition", "Considered", "Copyright", "Counterfactual", "Crypto", "Daily", "Dear", "Dec", "December", "Diaries", "Differences", "Early", "Enterprise", "Esthetics", "Evolution", "Expo", "Fair", "Fall", "Fanime", "Fanimecon", "Feb", "February", "First", "For", "Friday", "Impacts", "Jan", "January", "Jul", "July", "June", "Last", "Late", "Library", "Making", "Mar", "March", "May", "Memoirs", "Monday", "Monthly", "Ms", "Nov", "November", "Oct", "October", "Original", "Otakon", "Our", "Ours", "Over", "Predicting", "Reviews", "Sample", "Saturday", "Sci", "Security", "Sep", "September", "Since", "Since", "Spring", "Standard", "Statistics", "Suisse", "Summer", "Sunday", "Surface", "Survey", "Syntheses", "Than", "The", "Things", "Throughout", "Thursday", "Tuesday", "Until", "Wednesday", "Weekly", "Winter", "Writing", "Year", "Yearly", "Zilch", "In"] then -- dates like "January 2020" are false positives, although unfortunately there are real surnames like 'May', where 'May 2020' is just ambiguous and this will have a false negative.
                     [Str a]
                   else
                           [Str before] ++
