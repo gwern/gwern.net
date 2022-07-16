@@ -201,11 +201,11 @@ Extracts = { ...Extracts, ...{
             auxLinks = auxLinks.join("; ");
 
             return (`<p class="data-field author-date-aux">`
-                     + referenceData.authorHTML
-                     + referenceData.dateHTML
-                     + ((referenceData.authorHTML || referenceData.dateHTML) ? "; " : "")
-                     + auxLinks
-                     + `</p>`);
+                    + referenceData.authorHTML
+                    + referenceData.dateHTML
+                    + " ("
+                    + auxLinks
+                    + `)</p>`);
         })() + (() => {
             //  Abstract (data field). (Empty for now; content injected below.)
             return `<div class="data-field annotation-abstract"`
@@ -288,12 +288,12 @@ Extracts = { ...Extracts, ...{
                             for link icons (eg. 'https://arxiv.org/abs/2006.07159#google')
                             should not get a section mark.
                          */
-                            && !(["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baidu", "bair", "bytedance",
+                            && !(["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance",
                                   "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr",
-                                  "github", "google", "googledeepmind", "google-graphcore", "graphcore", "huawei", "intel", "jd", "kako", "laion",
+                                  "github", "google", "googledeepmind", "google-graphcore", "graphcore", "huawei", "ibm", "intel", "jd", "kako", "laion",
                                   "lighton", "microsoft", "microsoftnvidia", "miri", "naver",
                                   "nvidia", "openai", "pinterest", "pdf", "salesforce", "sberbank", "sensetime",
-                                  "snapchat", "spotify", "tencent", "tensorfork", "uber", "yandex"
+                                  "snapchat", "spotify", "tencent", "tensorfork", "twitter", "uber", "yandex"
                               ].includes(target.hash.slice(1))))) {
                     return "&#x00a7; ";
                 } else if (   target.hash > ""
