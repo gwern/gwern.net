@@ -15,7 +15,7 @@ import Control.Monad (filterM)
 import Data.List (isPrefixOf, isInfixOf, isSuffixOf, nub, sort, sortBy)
 import Utils (replace)
 import Data.Text.Titlecase (titlecase)
-import System.Directory (listDirectory, doesFileExist, doesDirectoryExist)
+import System.Directory (listDirectory, doesFileExist)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
@@ -25,15 +25,14 @@ import qualified Data.Text as T (append, pack, unpack)
 import System.IO (stderr, hPrint)
 import Control.Monad.Parallel as Par (mapM_)
 import Text.Pandoc.Walk (walk)
-import System.Directory.Recursive (getSubdirsRecursive) -- dir-traverse
 
 import Interwiki (inlinesToText)
 import LinkAuto (cleanUpDivsEmpty)
-import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag, hasAnnotation, dateTruncateBad)
+import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag, hasAnnotation, dateTruncateBad, listTagDirectories)
 import LinkBacklink (getBackLink, getSimilarLink)
 import Query (extractImages)
 import Typography (identUniquefy)
-import Utils (writeUpdatedFile, sed)
+import Utils (writeUpdatedFile)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -63,8 +62,8 @@ generateDirectory md dir'' = do
   -- we suppress what would be duplicate entries in the File/Links section
   let tagged' = filter (\(f,_,_,_) -> not ("/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
 
-  dirsChildren   <- listDirectories [dir'']
-  dirsSeeAlsos   <- listDirectories taggedDirs
+  dirsChildren   <- listTagDirectories [dir'']
+  dirsSeeAlsos   <- listTagDirectories taggedDirs
 
   triplets  <- listFiles md direntries'
 
@@ -149,15 +148,6 @@ generateYAMLHeader parent d date (directoryN,annotationN,linkN) thumbnail
              "...\n",
              "\n"]
   where pl n = if n > 1 || n == 0 then "s" else "" -- pluralize helper: "2 links", "1 link", "0 links".
-
--- given a list of ["docs/foo/index.page"] directories, convert them to what will be the final absolute path ("/docs/foo/index"), while checking they exist (typos are easy, eg. dropping 'docs/' is common).
-listDirectories :: [FilePath] -> IO [FilePath]
-listDirectories direntries' = do
-                       print "direntries'"
-                       print direntries'
-                       directories <- mapM getSubdirsRecursive $ map (sed "^/" "" . sed "/index$" "/" . replace "/index.page" "/")  direntries'
-                       let directoriesMi = map (replace "//" "/" . (++"/index")) (concat directories)
-                       filterM (\f -> doesFileExist (f++".page")) directoriesMi
 
 listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath,FilePath)]
 listFiles m direntries' = do

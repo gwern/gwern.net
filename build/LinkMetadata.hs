@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-17 17:21:58 gwern"
+When:  Time-stamp: "2022-07-17 19:14:02 gwern"
 License: CC-0
 -}
 
@@ -14,9 +14,9 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad, guessTagFromShort) where
+module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad, guessTagFromShort, listTagDirectories) where
 
-import Control.Monad (unless, void, when, foldM_)
+import Control.Monad (unless, void, when, foldM_, filterM)
 import Data.Aeson (eitherDecode, FromJSON)
 import Data.Char (isAlpha, isAlphaNum, isPunctuation, toLower)
 import qualified Data.ByteString as B (appendFile, readFile)
@@ -36,6 +36,7 @@ import GHC.Generics (Generic)
 import Network.HTTP (urlDecode, urlEncode)
 import Network.URI (isURIReference, uriFragment, parseURIReference)
 import System.Directory (doesFileExist, doesDirectoryExist)
+import System.Directory.Recursive (getSubdirsRecursive) -- dir-traverse
 import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeDirectory, takeExtension, takeFileName)
 import System.GlobalLock (lock)
@@ -683,6 +684,7 @@ tagsLong2Short = [
           , ("darknet-markets/blackmarket-reloaded", "BMR DNM")
           , ("darknet-markets/evolution", "Evolution DNM")
           , ("darknet-markets/sheep-marketplace", "Sheep DNM")
+          , ("darknet-markets/silk-road", "SR DNMs")
           , ("darknet-markets/silk-road/1", "SR1 DNM")
           , ("darknet-markets/silk-road/2", "SR2 DNM")
           , ("darknet-markets/william-pickard", "William Pickard")
@@ -754,7 +756,6 @@ tagsLong2Short = [
           , ("genetics/heritable/correlation", "genetic correlation")
           , ("genetics/microbiome", "microbiome")
           , ("economics/georgism", "Georgism")
-          , ("bitcoin/pirateat40", "Pirateat40")
           , ("psychiatry/meditation", "meditation")
           , ("fiction/criticism", "literary criticism")
           , ("fiction/text-game", "text game")
@@ -767,7 +768,6 @@ tagsLong2Short = [
           , ("japanese/zeami", "Zeami")
           , ("history/medici", "Medici")
           , ("biology/portia", "<em>Portia</em> spider")
-          , ("bitcoin/nashx", "Nash eXchange")
           , ("fiction/opera", "opera")
           , ("fiction/poetry", "poetry")
           , ("fiction/science-fiction", "sci-fi")
@@ -781,6 +781,8 @@ tagsLong2Short = [
           , ("cs/haskell", "Haskell")
           , ("borges", "J. L. Borges")
           , ("bitcoin", "Bitcoin")
+          , ("bitcoin/nashx", "Nash eXchange")
+          , ("bitcoin/pirateat40", "Pirateat40")
           , ("touhou", "Touhou")
           , ("zeo", "sleep")
           , ("zeo/short-sleeper", "short-sleepers")
@@ -1603,7 +1605,16 @@ linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://
                    -- | head l == '#' = l
                    | otherwise = l
 
+
+-- given a list of ["docs/foo/index.page"] directories, convert them to what will be the final absolute path ("/docs/foo/index"), while checking they exist (typos are easy, eg. dropping 'docs/' is common).
+listTagDirectories :: [FilePath] -> IO [FilePath]
+listTagDirectories direntries' = do
+                       directories <- mapM getSubdirsRecursive $ map (sed "^/" "" . sed "/index$" "/" . replace "/index.page" "/")  direntries'
+                       let directoriesMi = map (replace "//" "/" . (++"/index")) (concat directories)
+                       filterM (\f -> doesFileExist (f++".page")) directoriesMi
+
 -- gwern :: Path -> IO (Either Failure (Path, MetadataItem))
+gwern "/docs/index" = gwerntoplevelDocAbstract -- special-case ToC generation of all subdirectories for a one-stop shop
 gwern p | p == "/" || p == "" = return (Left Permanent)
         | ".pdf" `isInfixOf` p = pdf p
         | anyInfix p [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
@@ -1665,6 +1676,13 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
           filterThumbnail _ = False
           filterThumbnailText (TagOpen "meta" [("property", "og:image:alt"), _]) = True
           filterThumbnailText _ = False
+
+
+-- skip the complex gwernAbstract logic: /docs/index is special because it has only subdirectories, is not tagged, and is the entry point. We just generate the ToC directly from a recursive tree of subdirectories with 'index.page' entries:
+gwerntoplevelDocAbstract :: IO (Either Failure (Path, MetadataItem))
+gwerntoplevelDocAbstract = do allDirs <- listTagDirectories ["docs/"]
+                              let allDirLinks = unlines $ map (\d -> "<li><a class='link-local link-tag directory-indexes-downwards link-annotated link-annotated-partial' data-link-icon='arrow-down' data-link-icon-type='svg' rel='tag' href=\"/" ++ d ++ "\">" ++ (T.unpack $ abbreviateTag (T.pack (replace "docs/" "" $ takeDirectory d))) ++ "</a></li>") allDirs
+                              return $ Right ("/docs/index", ("docs tag","N/A","","",[],"<p>Bibliography for tag <em>docs</em>, most recent first: " ++ show (length allDirs) ++ " <a class='no-icon link-annotated-not' href='/docs/index#see-alsos'>related tags</a> (<a href='/index' class='link-local link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>).</p> <div class=\"columns\" class=\"TOC\"> <ul>" ++ allDirLinks ++ "</ul> </div>"))
 
 gwernAbstract :: Bool -> String -> String -> String -> [Tag String] -> (String,String)
 gwernAbstract shortAllowed p' description toc f =
