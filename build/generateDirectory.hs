@@ -25,6 +25,7 @@ import qualified Data.Text as T (append, pack, unpack)
 import System.IO (stderr, hPrint)
 import Control.Monad.Parallel as Par (mapM_)
 import Text.Pandoc.Walk (walk)
+import System.Directory.Recursive (getSubdirsRecursive) -- dir-traverse
 
 import Interwiki (inlinesToText)
 import LinkAuto (cleanUpDivsEmpty)
@@ -62,7 +63,7 @@ generateDirectory md dir'' = do
   -- we suppress what would be duplicate entries in the File/Links section
   let tagged' = filter (\(f,_,_,_) -> not ("/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
 
-  dirsChildren   <- listDirectories direntries'
+  dirsChildren   <- listDirectories [dir'']
   dirsSeeAlsos   <- listDirectories taggedDirs
 
   triplets  <- listFiles md direntries'
@@ -152,9 +153,11 @@ generateYAMLHeader parent d date (directoryN,annotationN,linkN) thumbnail
 -- given a list of ["docs/foo/index.page"] directories, convert them to what will be the final absolute path ("/docs/foo/index"), while checking they exist (typos are easy, eg. dropping 'docs/' is common).
 listDirectories :: [FilePath] -> IO [FilePath]
 listDirectories direntries' = do
-                       directories <- filterM (doesDirectoryExist . tail) $ map (sed "/index$" "/" . replace "/index.page" "/")  direntries'
-                       let directoriesMi = map (replace "//" "/" . (++"/index")) directories
-                       filterM (\f -> doesFileExist $ tail (f++".page")) directoriesMi
+                       print "direntries'"
+                       print direntries'
+                       directories <- mapM getSubdirsRecursive $ map (sed "^/" "" . sed "/index$" "/" . replace "/index.page" "/")  direntries'
+                       let directoriesMi = map (replace "//" "/" . (++"/index")) (concat directories)
+                       filterM (\f -> doesFileExist (f++".page")) directoriesMi
 
 listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath,FilePath)]
 listFiles m direntries' = do
@@ -237,7 +240,7 @@ generateDirectoryItems parent current ds =
                                                ["link-tag", if downP then "directory-indexes-downwards" else "directory-indexes-sideways"],
                                                [("rel","tag")]
                                              )
-                                               [Emph [RawInline (Format "html") $ abbreviateTag $ T.pack $ takeDirectory d]] (T.pack d, "")]
+                                               [Emph [RawInline (Format "html") $ abbreviateTag $ T.pack $ replace "docs/" "" $ takeDirectory d]] (T.pack d, "")]
                                  ]
        directoryPrefixDown :: FilePath -> FilePath -> Bool
        directoryPrefixDown currentd d' = ("/"++currentd) `isPrefixOf` d'
