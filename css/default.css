@@ -3154,6 +3154,7 @@ body.index-directory #footer {
 }
 .popframe-body.annotation .data-field.author {
     font-style: italic;
+    margin-right: 0.075em; /* add a bit of separation from the subscripted date: the italics making the author name 'lean right' means the regular subscript CSS isn't *quite* correct */
 }
 .popframe-body.annotation .date-plus-cites {
     display: inline-block;
