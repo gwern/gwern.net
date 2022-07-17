@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-16 17:42:57 gwern"
+When:  Time-stamp: "2022-07-17 17:21:58 gwern"
 License: CC-0
 -}
 
@@ -318,7 +318,7 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,e) =
 
                       let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
                       when (filepath /= urlEncode u') (printRed "Warning, annotation fragment path → URL truncated!" >>
-                                                          print (" Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"))
+                                                          putStrLn ("Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"))
 
                       case finalHTMLEither of
                         Left er -> error ("Writing annotation fragment failed! " ++ show u ++ " : " ++ show i ++ " : " ++ show er)
@@ -444,10 +444,10 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                 let tle' = if null tle then "<code>"++f++"</code>" else tle
                                     lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
                                     authorShort = authorsTruncate aut
-                                    authorSpan = if aut/=authorShort then Span ("", ["author"], [("title",T.pack aut)]) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
-                                                 else Span ("", ["author"], []) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
+                                    authorSpan = if aut/=authorShort then Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
+                                                 else Span ("", ["author", "cite-author"], []) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
                                     author = if aut=="" || aut=="N/A" || aut=="N/\8203A" then [Space] else [Space, authorSpan]
-                                    date = if dt=="" then [] else [Span ("", ["date"],
+                                    date = if dt=="" then [] else [Span ("", ["date", "cite-date"],
                                                                           if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
                                                                     [Str (T.pack $ dateTruncateBad dt)]]
                                     tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
