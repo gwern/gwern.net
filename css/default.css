@@ -4699,37 +4699,37 @@ section.highlight-fading::before {
 /* BOTTOM DECORATION */
 /*********************/
 /* Mobile only.      */
-
 @media only screen and (max-width: 649px) {
+    #footer {
+    padding-top: 3.5em;
+   }
     #footer-logo {
-        --footer-decoration-spacing: 3.5em;
+        --footer-decoration-spacing: 3.9em;
 
         position: relative;
-        margin: calc(1em + var(--footer-decoration-spacing)) 0 2em 0;
+        margin: calc(2em + var(--footer-decoration-spacing)) 0 2em 0;
     }
     #footer-logo::after {
         content: "";
         background-color: var(--GW-body-background-color);
         background-image: url('/static/img/logo/logo-smooth.svg');
         display: block;
-        position: absolute;
+        position: relative;
         bottom: var(--footer-decoration-spacing);
         width: 22px;
         height: 30px;
         background-size: contain;
         background-position: center;
         background-repeat: no-repeat;
-        left: 0;
-        right: 0;
         margin: auto;
-        padding: 0 10px 0 11px;
+        padding: 0 10px 0 10px;
         z-index: 1;
     }
     #footer-logo::before {
         content: "";
         display: block;
-        position: absolute;
-        bottom: calc(var(--footer-decoration-spacing) + 15px);
+        position: relative;
+        bottom: calc(var(--footer-decoration-spacing) - 15px);
         height: 1px;
         border-bottom: 1px dotted var(--GW-index-page-bottom-ornament-line-color);
         width: 100%;
