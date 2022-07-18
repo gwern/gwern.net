@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-07-09 23:11:38 gwern"
+When:  Time-stamp: "2022-07-17 21:34:36 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -118,7 +118,7 @@ import Utils (writeUpdatedFile, printGreen, printRed, sed, addClass, anyInfix, a
 
 archiveDelay, archivePerRunN :: Integer
 archiveDelay = 60
-archivePerRunN = 30
+archivePerRunN = 40
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg. 2019-11-22 = 58810
@@ -1194,5 +1194,6 @@ whiteList url
       , "http://darwintunes.org/" -- Soundcloud music embed doesn't preserve
       , "https://danlark.org/2022/04/20/changing-stdsort-at-googles-scale-and-beyond/" -- low quality: video embeds
       , "http://relative-attention-music-nips-2018.s3-website-us-west-1.amazonaws.com/" -- low quality: sound embeds
+      , "https://sites.google.com/view/nips2017-one-shot-imitation/home" -- low quality (video embeds)
       ] = True
     | otherwise = False

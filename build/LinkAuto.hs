@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-07-04 21:01:51 gwern"
+When:  Time-stamp: "2022-07-12 15:49:18 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -366,6 +366,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Richard Hamming|Hamming)", "https://en.wikipedia.org/wiki/Richard_Hamming")
         , ("(SAD|Seasonal [Aa]ffective [Dd]isorder)", "https://en.wikipedia.org/wiki/Seasonal_affective_disorder")
         , ("(SCZ|[Ss]chizophreni[ac]s?)", "https://en.wikipedia.org/wiki/Schizophrenia")
+        , ("(BPD|[Bb]ipolar [Dd]isorder|[Bb]ipolar)", "https://en.wikipedia.org/wiki/Bipolar_disorder")
         , ("(SGD|[Ss]tochastic [Gg]radient [Dd]escent)", "https://en.wikipedia.org/wiki/Stochastic_gradient_descent")
         , ("(SMPY|Study [Oo]f Mathematically Precocious Youth)", "/SMPY")
         , ("(SNP|[Ss]ingle[ -][Nn]ucleotide [Pp]olymorphism)", "https://en.wikipedia.org/wiki/Single-nucleotide_polymorphism")
@@ -534,7 +535,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Clever Hans", "https://en.wikipedia.org/wiki/Clever_Hans")
         , ("Clock [Oo]f [Tt]he Long Now", "https://en.wikipedia.org/wiki/Clock_of_the_Long_Now")
         , ("Clune 2019", "https://arxiv.org/abs/1905.10985#uber")
-        , ("CogView", "https://arxiv.org/abs/2105.13290")
+        , ("CogView", "https://arxiv.org/abs/2105.13290#baai")
         , ("Comiket", "https://en.wikipedia.org/wiki/Comiket")
         , ("ConViT", "https://arxiv.org/abs/2103.10697#facebook")
         , ("Conceptual Captions", "/docs/ai/diffusion/2018-sharma.pdf#google")

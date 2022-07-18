@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-06-30 20:55:00 gwern"
+When:  Time-stamp: "2022-07-14 19:55:27 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -4154,7 +4154,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://undark.org/2016/05/25/the-death-of-a-study-national-childrens-study/", False)
     , ("https://understandinguncertainty.org/what-does-13-increased-risk-death-mean", False)
     , ("https://www.super-memory.com/articles/theory.htm", False)
-    , ("https://us.dantelabs.com/collections/best-seller/products/whole-genome-sequencing-wgs-full-dna-analysis", False)
     , ("https://vault.si.com/vault/2009/03/23/how-and-why-athletes-go-broke", False)
     , ("https://vgl.ucdavis.edu/tests?field_species_target_id=216", False)
     , ("https://vgmdb.net/product/9", False)
@@ -4255,7 +4254,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.cs.york.ac.uk/fp/ART/download.html", False)
     , ("https://www.dailystar.co.uk/news/weird-news/billionaires-cloned-dog-saves-lives-20895267", False)
     , ("https://www.dantelabs.com/collections/our-tests/products/whole-genome-sequencing", False)
-    , ("https://www.darkowl.com/blog-content/darknet-whackamole", False)
+    , ("https://www.darkowl.com/blog-content/darknet-whackamole/", False)
     , ("https://www.dea.gov/druginfo/ftp3.shtml", False)
     , ("https://www.delawareonline.com/story/news/local/2015/01/13/doctor-sentenced-months-silk-road-drug-case/21716135/", False)
     , ("https://www.derbytelegraph.co.uk/Derby-worker-Toyota-bought-drugs-dark-web/story-29112765-detail/story.html", False)
@@ -4539,7 +4538,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://www.dailyfinance.com/2010/02/06/girl-scout-cookies-by-the-numbers-just-where-do-all-those-dolla/", False)
     , ("http://www.ecns.cn/news/cns-wire/2019-03-19/detail-ifzfmzhu2193677.shtml", False)
     , ("http://www.elon.edu/docs/e-web/academics/business/economics/faculty/rouse/2011-02-14%20The%20Impact%20of%20year%20round%20schooling.pdf", False)
-    , ("http://www.e-sanitas.edu.co/Diplomados/endocrino/modulo_11/Biblioteca/Record%20trial%20Ca%20%20Vit%20D%20Lancet%20April%2005.pdf", False)
+    , ("/docs/vitamin-d/2005-grant.pdf", False)
     , ("http://www.expert-reviews.com/doi/full/10.1586/ern.12.36", False)
     , ("http://www.faqs.org/faqs/compression-faq/", False)
     , ("http://www.foxcarolina.com/story/28631102/teen-arrested-after-allegedly-buying-lsd-online", False)
