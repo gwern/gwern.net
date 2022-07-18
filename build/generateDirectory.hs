@@ -230,7 +230,7 @@ generateDirectoryItems parent current ds =
                                                ["link-tag", if downP then "directory-indexes-downwards" else "directory-indexes-sideways"],
                                                [("rel","tag")]
                                              )
-                                               [Emph [RawInline (Format "html") $ abbreviateTag $ T.pack $ replace "docs/" "" $ takeDirectory d]] (T.pack d, "")]
+                                               [Emph [RawInline (Format "html") $ abbreviateTag $ T.pack $ replace "/docs/" "" $ takeDirectory d]] (T.pack d, "")]
                                  ]
        directoryPrefixDown :: FilePath -> FilePath -> Bool
        directoryPrefixDown currentd d' = ("/"++currentd) `isPrefixOf` d'
@@ -269,7 +269,7 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) = -- no abstracts:
        similar  = if sl=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["aux-links", "link-local", "similar"],[]) [Str "similar"] (T.pack sl,"Similar links (by text embedding).")]]
   in
   if (tgs==[] && bl=="" && dt=="") then [Para (Link nullAttr title (T.pack f, "") : (author))]
-  else [Para (Link nullAttr title (T.pack f, "") : (author ++ [Space, Str "("] ++ date ++ tags ++ backlink ++ similar ++ [Str ")"]))]
+  else [Para (Link nullAttr title (T.pack f, "") : (author ++ date ++ [Space, Str "("] ++ tags ++ backlink ++ similar ++ [Str ")"]))]
 -- long abstracts:
 generateItem (f,a,bl,sl) =
   -- render annotation as: (skipping DOIs)

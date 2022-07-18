@@ -92,7 +92,7 @@ else
                 $(find docs/ fiction/ haskell/ newsletter/ nootropics/ notes/ reviews/ zeo/ -type d \
                       | sort | fgrep -v -e 'docs/www' -e 'docs/rotten.com' -e 'docs/genetics/selection/www.mountimprobable.com' \
                                         -e 'docs/biology/2000-iapac-norvir' -e 'docs/gwern.net-gitstats' -e 'docs/rl/armstrong-controlproblem' \
-                                        -e 'docs/statistics/order/beanmachine-multistage' \
+                                        -e 'docs/statistics/order/beanmachine-multistage' -e 'docs/personal/2011-gwern-yourmorals.org/' \
                 -e 'docs/link-bibliography' | shuf) # we want to generate all directories first before running Hakyll in case a new tag was created
 
     bold "Updating link bibliographies…"

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-17 19:14:02 gwern"
+When:  Time-stamp: "2022-07-18 15:28:02 gwern"
 License: CC-0
 -}
 
@@ -463,7 +463,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                   [Para
                                        ([link,Str ","] ++
                                          author ++
-                                         [Str " "] ++ date ++
+                                         date ++
                                          (if (tags++backlink++similarlink)==[] then []
                                            else [Str " ("] ++
                                                 tags ++
@@ -644,6 +644,7 @@ tagsLong2Short = [
           , ("ai/nn/gan/stylegan", "StyleGAN")
           , ("ai/fiction", "fiction by AI")
           , ("ai/nn/transformer/gpt",                 "GPT")
+          , ("ai/nn/transformer/gpt/non-fiction",     "GPT non-fiction")
           , ("ai/nn/transformer/gpt/inner-monologue", "inner monologue (AI)")
           , ("ai/nn/transformer/gpt/codex",           "Codex")
           , ("ai/nn/transformer/gpt/lamda",           "LaMDA")
@@ -752,6 +753,7 @@ tagsLong2Short = [
           , ("genetics/heritable/emergenesis", "emergenesis")
           , ("genetics/selection/natural/human", "human evolution")
           , ("genetics/selection/natural/human/dysgenics", "dysgenics")
+          , ("genetics/genome-synthesis/virus-proof", "virus-proof cells")
           , ("genetics/gametogenesis", "gametogenesis")
           , ("genetics/heritable/correlation", "genetic correlation")
           , ("genetics/microbiome", "microbiome")
@@ -1593,7 +1595,7 @@ citeToID = filter (\c -> c/='.' && c/='\'' && c/='’'&& c/='('&&c/=')') . map t
 -- for link bibliographies / tag pages, better truncate author lists at a reasonable length.
 -- (We can make it relatively short because the full author list will be preserved as part of it.)
 authorsTruncate :: String -> String
-authorsTruncate a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after) ++ "…")
+authorsTruncate a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after))
 
 dateTruncateBad :: String -> String
  -- we assume that dates are guaranteed to be 'YYYY[-MM[-DD]]' format because of the validation in readLinkMetadataAndCheck enforcing this
@@ -1611,10 +1613,12 @@ listTagDirectories :: [FilePath] -> IO [FilePath]
 listTagDirectories direntries' = do
                        directories <- mapM getSubdirsRecursive $ map (sed "^/" "" . sed "/index$" "/" . replace "/index.page" "/")  direntries'
                        let directoriesMi = map (replace "//" "/" . (++"/index")) (concat directories)
-                       filterM (\f -> doesFileExist (f++".page")) directoriesMi
+                       directoriesVerified <- filterM (\f -> doesFileExist (f++".page")) directoriesMi
+                       return $ map ("/"++) directoriesVerified
 
 -- gwern :: Path -> IO (Either Failure (Path, MetadataItem))
 gwern "/docs/index" = gwerntoplevelDocAbstract -- special-case ToC generation of all subdirectories for a one-stop shop
+gwern "docs/index"  = gwerntoplevelDocAbstract
 gwern p | p == "/" || p == "" = return (Left Permanent)
         | ".pdf" `isInfixOf` p = pdf p
         | anyInfix p [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
@@ -1677,12 +1681,11 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
           filterThumbnailText (TagOpen "meta" [("property", "og:image:alt"), _]) = True
           filterThumbnailText _ = False
 
-
 -- skip the complex gwernAbstract logic: /docs/index is special because it has only subdirectories, is not tagged, and is the entry point. We just generate the ToC directly from a recursive tree of subdirectories with 'index.page' entries:
 gwerntoplevelDocAbstract :: IO (Either Failure (Path, MetadataItem))
 gwerntoplevelDocAbstract = do allDirs <- listTagDirectories ["docs/"]
-                              let allDirLinks = unlines $ map (\d -> "<li><a class='link-local link-tag directory-indexes-downwards link-annotated link-annotated-partial' data-link-icon='arrow-down' data-link-icon-type='svg' rel='tag' href=\"/" ++ d ++ "\">" ++ (T.unpack $ abbreviateTag (T.pack (replace "docs/" "" $ takeDirectory d))) ++ "</a></li>") allDirs
-                              return $ Right ("/docs/index", ("docs tag","N/A","","",[],"<p>Bibliography for tag <em>docs</em>, most recent first: " ++ show (length allDirs) ++ " <a class='no-icon link-annotated-not' href='/docs/index#see-alsos'>related tags</a> (<a href='/index' class='link-local link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>).</p> <div class=\"columns\" class=\"TOC\"> <ul>" ++ allDirLinks ++ "</ul> </div>"))
+                              let allDirLinks = unlines $ map (\d -> "<li><a class='link-local link-tag directory-indexes-downwards link-annotated link-annotated-partial' data-link-icon='arrow-down' data-link-icon-type='svg' rel='tag' href=\"" ++ d ++ "\">" ++ (T.unpack $ abbreviateTag (T.pack (replace "/docs/" "" $ takeDirectory d))) ++ "</a></li>") allDirs
+                              return $ Right ("/docs/index", ("docs tag","N/A","","",[],"<p>Bibliography for tag <em>docs</em>, most recent first: " ++ show (length allDirs) ++ " <a class='no-icon link-annotated-not' href='/docs/index#see-alsos'>related tags</a> (<a href='/index' class='link-local link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>).</p> <div class=\"columns TOC\"> <ul>" ++ allDirLinks ++ "</ul> </div>"))
 
 gwernAbstract :: Bool -> String -> String -> String -> [Tag String] -> (String,String)
 gwernAbstract shortAllowed p' description toc f =
@@ -2151,6 +2154,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(m^{1+o(1)}\\)</span>", "<em>m</em><sup>1+<em>o</em>(1)</sup>")
           , ("<span class=\"math inline\">\\(1,000\\times\\)</span>", "1,000×")
           , ("<span class=\"math inline\">\\(10^5\\times\\)</span>", "10<sup>5</sup>×")
+          , ("<span class=\"math inline\">\\(4\\sim 16\\times\\)</span>", "4–16×")
           , ("<span class=\"math inline\">\\(\\exp({\\Omega}(d))\\)</span>", "exp(Ω(<em>d</em>))")
           , ("<span class=\"math inline\">\\(\\exp({\\mathcal{O}}(k))\\)</span>", "exp(𝑂(<em>k</em>))")
           , ("<span class=\"math inline\">\\(k \\ll d\\)</span>", "<em>k</em> ≪ <em>d</em>")
