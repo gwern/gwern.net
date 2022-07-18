@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2022-05-23 20:19:10 gwern"
+-- When:  Time-stamp: "2022-07-18 15:36:59 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -140,7 +140,8 @@ inflationRatesUS = let -- CPI: http://www.usinflationcalculator.com/inflation/co
     pce19592018 = [5.7,2.7,2.1,4.9,4.1,6.0,6.3,5.7,3.0,5.8,3.7,2.4,3.8,6.1,4.9,-0.8,2.3,5.6,4.2,4.4,2.4,-0.3,1.4,1.5,5.7,5.3,5.2,4.1,3.4,4.2,2.9,2.0,0.2,3.7,3.5,3.9,3.0,3.5,3.8,5.3,5.3,5.1,2.5,2.6,3.2,3.8,3.6,3.1,2.2,-0.2,-1.3,1.7,1.9,1.5,1.5,3.0,3.7,2.7,2.6,3.0]
     -- <https://fred.stlouisfed.org/series/DPCERG3A086NBEA> downloaded CSV to diff 2019-2018, 2020-2019, and 2021-2020 by hand, can't find convenient rates anywhere easily
     pce20192021 = [1.6, 1.3, 4.3]
-    in (cpi19131958 ++ pce19592018 ++ pce20192021) ++ repeat (last pce20192021)
+    pce2022 = [9.0] -- rough ballpark estimate of cumulative inflation over 2022, given its ~0.9%/month inflation & exceeding forecasts repeatedly
+    in (cpi19131958 ++ pce19592018 ++ pce20192021) ++ pce20192021 ++ repeat (last pce2022)
 
 -- inflationAdjustUS 1 1950 2019 → 10.88084
 -- inflationAdjustUS 5.50 1950 2019 → 59.84462
