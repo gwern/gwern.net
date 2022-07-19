@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-19 11:55:39 gwern"
+When:  Time-stamp: "2022-07-19 16:34:52 gwern"
 License: CC-0
 -}
 
@@ -606,7 +606,7 @@ guessTagFromShort m t = let allTags = sort $ nubOrd $ concat $ M.map (\(_,_,_,_,
    case lookup t tagsShort2Long of
      Just tl -> tl -- is an existing short/petname
      Nothing -> let shortFallbacks =
-                      (map (\t->(t,"")) $ filter (\tag -> ("/"++t) `isSuffixOf` tag || (t++"/") `isInfixOf` tag) allTags) ++ -- look for matches by path segment eg 'transformer' → 'ai/nn/transformer' (but not 'ai/nn/transformer/alphafold' or 'ai/nn/transformer/gpt')
+                      (map (\a->(a,"")) $ filter (\tag -> ("/"++t) `isSuffixOf` tag || (t++"/") `isInfixOf` tag) allTags) ++ -- look for matches by path segment eg 'transformer' → 'ai/nn/transformer' (but not 'ai/nn/transformer/alphafold' or 'ai/nn/transformer/gpt')
                       filter (\(short,_) -> t `isSuffixOf` short) tagsShort2Long ++
                       filter (\(short,_) -> t `isPrefixOf` short) tagsShort2Long ++
                       filter (\(short,_) -> t `isInfixOf` short) tagsShort2Long
@@ -1676,7 +1676,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let footnotesP = "<section class=\"footnotes\"" `isInfixOf` b
 
                         let toc = gwernTOC footnotesP indexP p' f
-                        let toc' = if toc == "<div class=\"columns\" class=\"TOC\"></div>" then "" else toc
+                        let toc' = if toc == "<div class=\"columns TOC\"></div>" then "" else toc
 
                         let (sectTitle,gabstract) = gwernAbstract ("/index" `isSuffixOf` p' || "newsletter/" `isPrefixOf` p') p' description toc' f
 
@@ -1711,7 +1711,7 @@ gwernAbstract shortAllowed p' description toc f =
                          beginning = dropWhile (dropToID anchor) $ dropWhile dropToBody f
                          -- complicated titles like `## Loehlin & Nichols 1976: _A Study of 850 Sets of Twins_` won't be just a single TagText, so grab everything inside the <a></a>:
                          title = renderTags $ takeWhile dropToLinkEnd $ dropWhile dropToText $ drop 1 $ dropWhile dropToLink beginning
-                         titleClean = trim $ replaceMany [("<span>", ""), ("</span>",""), ("\n", " "), ("<span class=\"smallcaps\">",""), ("<span class=\"link-auto-skipped\">",""), ("<span class=\"link-auto-first\">","")] title
+                         titleClean = trim $ sed "<span>(.*)</span>" "\\1" $ replaceMany [("\n", " "), ("<span class=\"smallcaps\">",""), ("<span class=\"link-auto-skipped\">",""), ("<span class=\"link-auto-first\">","")] title
                          abstractRaw = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
                          restofpageAbstract = trim $ renderTags $ filter filterAbstract abstractRaw
                          in (titleClean, abstractRaw, restofpageAbstract)
@@ -1771,10 +1771,10 @@ gwernTOC footnotesP indexP p' f =
  -- Pandoc declines to add an ID to footnotes section; on Gwern.net, we override this by at compile-time rewriting the <section> to have `#footnotes`:
  (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#footnotes\">Footnotes</a></li></ul></div>" tc) $
         -- add columns class to condense it in popups/tags
-        replace "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns\" class=\"TOC\">" $
-        -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right?), we'll remove them.
-        replace "<span>" "" $ replace "</span>" "" $
-        (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then "<div class=\"columns\" class=\"TOC\">" ++ toc ++ "</div>" else "") else replace "<a href=" "<a class=\"id-not\" href=") $
+        replace "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns TOC\">" $
+        -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right? [EDIT: no, the subscript citations are]), we'll remove them.
+        -- sed "<span>(.*)</span>" "" $
+        (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then "<div class=\"columns TOC\">" ++ toc ++ "</div>" else "") else replace "<a href=" "<a class=\"id-not\" href=") $
         -- NOTE: we strip the `id="TOC"`, and all other link IDs on TOC subentries, deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tags/link-bibliographies
         sed " id=\"[a-z0-9-]+\">" ">" $ replace " id=\"markdownBody\"" "" $ replace " id=\"TOC\"" "" index
         where
