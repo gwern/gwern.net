@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-18 15:28:02 gwern"
+When:  Time-stamp: "2022-07-19 11:10:16 gwern"
 License: CC-0
 -}
 
@@ -626,7 +626,7 @@ tagsLong2Short = [
           , ("ai/nn/transformer", "Transformer NN")
           , ("ai/nn/vae", "autoencoder NN")
           , ("ai/scaling", "AI scaling")
-          , ("ai/scaling/moe", "AI/MoE")
+          , ("ai/scaling/moe", "MoE NN")
           , ("iq/ses", "IQ/SES")
           , ("iq/high/smpy", "SMPY")
           , ("iq/high/munich", "Munich Giftedness Study")
@@ -658,14 +658,13 @@ tagsLong2Short = [
           , ("philosophy/ethics", "ethics")
           , ("philosophy/brethren-of-purity", "Brethren of Purity")
           , ("longevity/tirzepatide", "tirzepatide")
-          , ("longevity/semaglutide", "glutide")
+          , ("longevity/semaglutide", "-glutides")
           , ("exercise/gravitostat", "the gravitostat")
           , ("tominaga-nakamoto", "Tominaga Nakamoto")
           , ("conscientiousness", "Conscientiousness")
           , ("ai/text-style-transfer", "text style transfer")
           , ("modafinil/darknet-market", "modafinil DNM")
           , ("history/s-l-a-marshall", "SLAM")
-          , ("lesswrong-survey/hpmor", "<em>HP:MoR</em>")
           , ("cs/cellular-automaton", "cellular automata")
           , ("cs/shell", "shell")
           , ("cs/scheme", "Scheme")
@@ -699,6 +698,7 @@ tagsLong2Short = [
           , ("history/uighur", "Uighur genocide")
           , ("history/public-domain-review", "<em>Public Domain Review</em>")
           , ("technology", "tech")
+          , ("technology/stevensinstituteoftechnology-satmnewsletter", "<em>SATM</em> archives")
           , ("technology/carbon-capture", "carbon capture")
           , ("technology/digital-antiquarian", "<em>Filfre</em>")
           , ("technology/google", "Google")
@@ -728,6 +728,7 @@ tagsLong2Short = [
           , ("psychology/spaced-repetition", "spaced repetition")
           , ("psychiatry/traumatic-brain-injury", "TBI")
           , ("sociology/abandoned-footnotes", "<em>Abandoned Footnotes</em>")
+          , ("sociology/preference-falsification", "preference falsification")
           , ("statistics/survival-analysis", "survival analysis")
           , ("statistics/variance-component", "variance components")
           , ("philosophy/ethics/ethicists", "ethicists")
@@ -746,6 +747,7 @@ tagsLong2Short = [
           , ("genetics/cloning", "cloning")
           , ("genetics/cloning/dog", "dog cloning")
           , ("genetics/heritable", "heritability")
+          , ("genetics/heritable/dog", "dog genetics")
           , ("genetics/heritable/adoption", "adoption")
           , ("genetics/selection/artificial/apple", "apple breeding")
           , ("genetics/selection/artificial/index-selection", "index selection")
@@ -758,27 +760,34 @@ tagsLong2Short = [
           , ("genetics/heritable/correlation", "genetic correlation")
           , ("genetics/microbiome", "microbiome")
           , ("economics/georgism", "Georgism")
+          , ("economics/experience-curve", "experience curves")
           , ("psychiatry/meditation", "meditation")
           , ("fiction/criticism", "literary criticism")
           , ("fiction/text-game", "text game")
           , ("fiction/gene-wolfe", "Gene Wolfe")
+          , ("cat/valerian", "Valerian (cats)")
+          , ("cat/tartarian-honeysuckle", "Tartarian honeysuckle (cats)")
+          , ("cat/catnip", "catnip")
           , ("cat/catnip/survey", "catnip survey")
           , ("cat/genetics", "cat genetics")
           , ("cat/psychology", "cat psychology")
-          , ("modafinil/survey", "modafinil survey")
-          , ("lesswrong-survey", "LW survey")
-          , ("japanese/zeami", "Zeami")
+          , ("cat/earwax", "cats & earwax")
+          , ("crime/terrorism", "terrorism")
+          , ("modafinil/survey", "modafinil surveys")
+          , ("lesswrong-survey", "LW surveys")
+          , ("lesswrong-survey/hpmor", "<em>HP:MoR</em> surveys")
           , ("history/medici", "Medici")
           , ("biology/portia", "<em>Portia</em> spider")
           , ("fiction/opera", "opera")
           , ("fiction/poetry", "poetry")
-          , ("fiction/science-fiction", "sci-fi")
+          , ("fiction/science-fiction", "Sci-Fi")
           , ("insight-porn", "insight porn")
           , ("wikipedia", "Wikipedia")
           , ("sunk-cost", "sunk cost")
           , ("radiance", "<em>Radiance</em>")
           , ("long-now", "Long Now")
           , ("japanese", "Japan")
+          , ("japanese/zeami", "Zeami")
           , ("algernon", "Algernon's Law")
           , ("cs/haskell", "Haskell")
           , ("borges", "J. L. Borges")
@@ -787,7 +796,7 @@ tagsLong2Short = [
           , ("bitcoin/pirateat40", "Pirateat40")
           , ("touhou", "Touhou")
           , ("zeo", "sleep")
-          , ("zeo/short-sleeper", "short-sleepers")
+          , ("zeo/short-sleeper", "short sleepers")
           , ("co2", "CO<sub>2</sub>")
           , ("traffic", "web traffic")
           ]
@@ -1614,7 +1623,7 @@ listTagDirectories direntries' = do
                        directories <- mapM getSubdirsRecursive $ map (sed "^/" "" . sed "/index$" "/" . replace "/index.page" "/")  direntries'
                        let directoriesMi = map (replace "//" "/" . (++"/index")) (concat directories)
                        directoriesVerified <- filterM (\f -> doesFileExist (f++".page")) directoriesMi
-                       return $ map ("/"++) directoriesVerified
+                       return $ sort $ map ("/"++) directoriesVerified
 
 -- gwern :: Path -> IO (Either Failure (Path, MetadataItem))
 gwern "/docs/index" = gwerntoplevelDocAbstract -- special-case ToC generation of all subdirectories for a one-stop shop
@@ -1685,7 +1694,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
 gwerntoplevelDocAbstract :: IO (Either Failure (Path, MetadataItem))
 gwerntoplevelDocAbstract = do allDirs <- listTagDirectories ["docs/"]
                               let allDirLinks = unlines $ map (\d -> "<li><a class='link-local link-tag directory-indexes-downwards link-annotated link-annotated-partial' data-link-icon='arrow-down' data-link-icon-type='svg' rel='tag' href=\"" ++ d ++ "\">" ++ (T.unpack $ abbreviateTag (T.pack (replace "/docs/" "" $ takeDirectory d))) ++ "</a></li>") allDirs
-                              return $ Right ("/docs/index", ("docs tag","N/A","","",[],"<p>Bibliography for tag <em>docs</em>, most recent first: " ++ show (length allDirs) ++ " <a class='no-icon link-annotated-not' href='/docs/index#see-alsos'>related tags</a> (<a href='/index' class='link-local link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>).</p> <div class=\"columns TOC\"> <ul>" ++ allDirLinks ++ "</ul> </div>"))
+                              return $ Right ("/docs/index", ("docs tag","N/A","","",[],"<p>Bibliography for tag <em>docs</em>, most recent first: " ++ show (length allDirs) ++ " tags (<a href='/index' class='link-local link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>).</p> <div class=\"columns TOC\"> <ul>" ++ allDirLinks ++ "</ul> </div>"))
 
 gwernAbstract :: Bool -> String -> String -> String -> [Tag String] -> (String,String)
 gwernAbstract shortAllowed p' description toc f =
