@@ -688,8 +688,8 @@ Extracts = { ...Extracts, ...{
             return false;
 
         let codeFileURLRegExp = new RegExp(
-              '('
-            + Extracts.codeFileExtensions.map(ext => `\\.${ext}`).join("|")
+              '\\.('
+            + Extracts.codeFileExtensions.join("|")
             + ')$'
         , 'i');
         return (target.pathname.match(codeFileURLRegExp) != null);
