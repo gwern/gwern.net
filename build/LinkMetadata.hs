@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-19 11:10:16 gwern"
+When:  Time-stamp: "2022-07-19 11:55:39 gwern"
 License: CC-0
 -}
 
@@ -601,14 +601,18 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagsLong2Short
 -- try to infer a long tag from a short tag, first by exact match, then by suffix, then by prefix, then by infix, then give up.
 -- so eg 'sr1' → 'SR1' → 'darknet-markets/silk-road/1', 'road/1' → 'darknet-markets/silk-road/1', 'darknet-markets/silk' → 'darknet-markets/silk-road', 'silk-road' → 'darknet-markets/silk-road'
 guessTagFromShort :: Metadata -> String -> String
-guessTagFromShort m t = let allTags = nubOrd $ concat $ M.map (\(_,_,_,_,ts,_) -> ts) m in
-  case lookup t tagsShort2Long of
-    Just tl -> tl
-    Nothing -> let shortFallbacks = filter (\(short,_) -> t `isSuffixOf` short) tagsShort2Long ++ filter (\(short,_) -> t `isPrefixOf` short) tagsShort2Long ++ filter (\(short,_) -> t `isInfixOf` short) tagsShort2Long
-               in if not (null shortFallbacks) then fst $ head shortFallbacks else
-                    let longFallbacks = filter (t `isSuffixOf`) allTags ++ filter (t `isPrefixOf`) allTags ++ filter (t `isInfixOf`) allTags in
-                      if not (null longFallbacks) then head longFallbacks else t
-
+guessTagFromShort m t = let allTags = sort $ nubOrd $ concat $ M.map (\(_,_,_,_,ts,_) -> ts) m in
+  if t `elem` allTags then t else -- exact match, no guessing required
+   case lookup t tagsShort2Long of
+     Just tl -> tl -- is an existing short/petname
+     Nothing -> let shortFallbacks =
+                      (map (\t->(t,"")) $ filter (\tag -> ("/"++t) `isSuffixOf` tag || (t++"/") `isInfixOf` tag) allTags) ++ -- look for matches by path segment eg 'transformer' → 'ai/nn/transformer' (but not 'ai/nn/transformer/alphafold' or 'ai/nn/transformer/gpt')
+                      filter (\(short,_) -> t `isSuffixOf` short) tagsShort2Long ++
+                      filter (\(short,_) -> t `isPrefixOf` short) tagsShort2Long ++
+                      filter (\(short,_) -> t `isInfixOf` short) tagsShort2Long
+                in if not (null shortFallbacks) then fst $ head shortFallbacks else
+                     let longFallbacks = filter (t `isSuffixOf`) allTags ++ filter (t `isPrefixOf`) allTags ++ filter (t `isInfixOf`) allTags in
+                       if not (null longFallbacks) then head longFallbacks else t
 
 tagsLong2Short, tagsShort2Long :: [(String,String)]
 tagsShort2Long = map (\(a,b) -> (map toLower b,a)) tagsLong2Short ++ [] -- custom tag shortcuts
