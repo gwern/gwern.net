@@ -13,7 +13,7 @@ module Main where
 
 import Control.Monad (filterM)
 import Data.List (isPrefixOf, isInfixOf, isSuffixOf, nub, sort, sortBy)
-import Utils (replace)
+import Data.List.Utils (countElem)
 import Data.Text.Titlecase (titlecase)
 import System.Directory (listDirectory, doesFileExist)
 import System.Environment (getArgs)
@@ -32,7 +32,7 @@ import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, auth
 import LinkBacklink (getBackLink, getSimilarLink)
 import Query (extractImages)
 import Typography (identUniquefy)
-import Utils (writeUpdatedFile)
+import Utils (replace, writeUpdatedFile)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -260,12 +260,12 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) = -- no abstracts:
        -- prefix   = if t=="" then [] else [Code nullAttr (T.pack f'), Str ": "]
        -- we display short authors by default, but we keep a tooltip of the full author list for on-hover should the reader need it.
        authorShort = authorsTruncate aut
-       authorSpan  = if authorShort/=aut then Span ("",["full-authors-list"],[("title", T.pack aut)]) [Str (T.pack $ authorsTruncate aut)]
-                     else Str (T.pack $ authorShort)
+       authorSpan  = if authorShort/=aut || ", et al" `isSuffixOf` aut then Span ("",["full-authors-list", "cite-author-plural"],[("title", T.pack aut)]) [Str (T.pack $ authorShort)]
+                     else Str (T.pack $ if countElem ',' aut == 1 then replace ", " " & " authorShort else  authorShort)
        author   = if aut=="" || aut=="N/A" then [] else [Str ",", Space, authorSpan]
        date     = if dt=="" then [] else [Span ("", ["cite-date"], []) [Str (T.pack (dateTruncateBad dt))]]
        tags     = if tgs==[] then [] else [tagsToLinksSpan $ map T.pack tgs]
-       backlink = if bl=="" then [] else (if dt=="" && tgs==[] then [] else [Str ";", Space]) ++ [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-local", "backlinks"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]
+       backlink = if bl=="" then [] else (if null tgs then [] else [Str ";", Space]) ++ [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-local", "backlinks"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]
        similar  = if sl=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["aux-links", "link-local", "similar"],[]) [Str "similar"] (T.pack sl,"Similar links (by text embedding).")]]
   in
   if (tgs==[] && bl=="" && dt=="") then [Para (Link nullAttr title (T.pack f, "") : (author))]
