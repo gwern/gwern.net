@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-07-13 09:29:55 gwern"
+When: Time-stamp: "2022-07-21 17:53:16 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -278,7 +278,7 @@ descField d = field d $ \item -> do
                     Just desc ->
                      let cleanedDesc = runPure $ do
                               pandocDesc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack desc)
-                              let pandocDesc' = linebreakingTransform pandocDesc
+                              let pandocDesc' = walk convertInterwikiLinks $ linebreakingTransform pandocDesc
                               htmlDesc <- writeHtml5String def pandocDesc' -- NOTE: we can skip 'safeHtmlWriterOptions' use here because descriptions are always very simple & will never have anything complex like tables
                               return $ T.unpack htmlDesc
                       in case cleanedDesc of
