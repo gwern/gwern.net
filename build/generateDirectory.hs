@@ -28,7 +28,7 @@ import Text.Pandoc.Walk (walk)
 
 import Interwiki (inlinesToText)
 import LinkAuto (cleanUpDivsEmpty)
-import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag, hasAnnotation, dateTruncateBad, listTagDirectories)
+import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag, hasAnnotation, dateTruncateBad, listTagDirectories, parseRawInline)
 import LinkBacklink (getBackLink, getSimilarLink)
 import Query (extractImages)
 import Typography (identUniquefy)
@@ -247,7 +247,7 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_) ->
                                     sectionTitle = T.pack $ if "wikipedia"`isInfixOf`f then t else "“"++titlecase t++"”" ++
                                                      (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt)
                                 in
-                                 [Header 2 (sectionID, ["link-annotated-not"], []) [RawInline (Format "html") sectionTitle]]
+                                 [Header 2 (sectionID, ["link-annotated-not"], []) [parseRawInline nullAttr $ RawInline (Format "html") sectionTitle]]
                                  ++ generateItem p)
 
 generateItem :: (FilePath,MetadataItem,FilePath,FilePath) -> [Block]
@@ -260,7 +260,7 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) = -- no abstracts:
        -- prefix   = if t=="" then [] else [Code nullAttr (T.pack f'), Str ": "]
        -- we display short authors by default, but we keep a tooltip of the full author list for on-hover should the reader need it.
        authorShort = authorsTruncate aut
-       authorSpan  = if authorShort/=aut || ", et al" `isSuffixOf` aut then Span ("",["full-authors-list", "cite-author-plural"],[("title", T.pack aut)]) [Str (T.pack $ authorShort)]
+       authorSpan  = if authorShort/=aut || ", et al" `isSuffixOf` aut then Span ("",["full-authors-list", "cite-author-plural"],[("title", T.pack aut)]) [Str (T.pack $ replace ", et al" "" authorShort)]
                      else Str (T.pack $ if countElem ',' aut == 1 then replace ", " " & " authorShort else  authorShort)
        author   = if aut=="" || aut=="N/A" then [] else [Str ",", Space, authorSpan]
        date     = if dt=="" then [] else [Span ("", ["cite-date"], []) [Str (T.pack (dateTruncateBad dt))]]
