@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-21 10:28:20 gwern"
+When:  Time-stamp: "2022-07-22 21:14:15 gwern"
 License: CC-0
 -}
 
@@ -162,42 +162,42 @@ readLinkMetadataAndCheck = do
              -- - annotations must exist and be unique inside custom.yaml (overlap in auto.yaml can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
              let urlsC = map fst custom
              let normalizedUrlsC = map (replace "https://" "" . replace "http://" "") urlsC
-             when (length (nub (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
+             when (length (nub (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "custom.yaml: Duplicate URLs!" ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
 
              let brokenUrlsC = filter (\u -> null u || not (head u == 'h' || head u == '/') || (head u == '/' && "//" `isInfixOf` u) || ' ' `elem` u || '\'' `elem` u || '–' `elem` u || '—' `elem` u) urlsC
-             when (brokenUrlsC /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrlsC
+             when (brokenUrlsC /= []) $ error $ "custom.yaml: Broken URLs: " ++ unlines brokenUrlsC
 
              let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,ts,_)) -> ts) custom
 
              let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> anyInfix doi ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'"] || "http" `isInfixOf` doi) custom in
-                 unless (null badDoisDash) $ error $ "Bad DOIs (bad punctuation): " ++ show badDoisDash
+                 unless (null badDoisDash) $ error $ "custom.yaml: Bad DOIs (bad punctuation): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
              -- Thus far, I have not run into any real DOIs which omit numbers, so we'll include that as a check for accidental tags inserted into the DOI field.
              let badDois = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else doi `elem` tagsAllC || head doi `elem` ['a'..'z'] || '/' `notElem` doi || null ("0123456789" `intersect` doi)) custom in
-               unless (null badDois) $ error $ "Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
+               unless (null badDois) $ error $ "custom.yaml: Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
 
              let emptyCheck = filter (\(u,(t,a,_,_,_,s)) ->  "" `elem` [u,t,a,s]) custom
-             unless (null emptyCheck) $ error $ "Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
+             unless (null emptyCheck) $ error $ "custom.yaml: Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
 
              let annotations = map (\(_,(_,_,_,_,_,s)) -> s) custom in
                when (length (nub (sort annotations)) /= length annotations) $ error $
-               "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
+               "custom.yaml:  Duplicate annotations: " ++ unlines (annotations \\ nubOrd annotations)
 
              let balancedQuotes = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (=='"') abst in
                                              count > 0 && (count `mod` 2 == 1) ) custom
-             unless (null balancedQuotes) $ error $ "Link Annotation Error: unbalanced double quotes! " ++ show balancedQuotes
+             unless (null balancedQuotes) $ error $ "custom.yaml: Link Annotation Error: unbalanced double quotes! " ++ show balancedQuotes
 
              let balancedBracketsCurly = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '{' || c == '}') abst in
                                                                      count > 0 && (count `mod` 2 == 1) ) custom
-             unless (null balancedBracketsCurly) $ error $ "Link Annotation Error: unbalanced curly brackets! " ++ show balancedBracketsCurly
+             unless (null balancedBracketsCurly) $ error $ "custom.yaml: Link Annotation Error: unbalanced curly brackets! " ++ show balancedBracketsCurly
 
              let balancedBracketsSquare = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '[' || c == ']') abst in
                                                                      count > 0 && (count `mod` 2 == 1) ) custom
-             unless (null balancedBracketsSquare) $ error $ "Link Annotation Error: unbalanced square brackets! " ++ show balancedBracketsSquare
+             unless (null balancedBracketsSquare) $ error $ "custom.yaml: Link Annotation Error: unbalanced square brackets! " ++ show balancedBracketsSquare
 
              let balancedParens = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '(' || c == ')') abst in
                                                                      count > 0 && (count `mod` 2 == 1) ) custom
-             unless (null balancedParens) $ error $ "Link Annotation Error: unbalanced parentheses! " ++ show (map fst balancedParens)
+             unless (null balancedParens) $ error $ "custom.yaml: Link Annotation Error: unbalanced parentheses! " ++ show (map fst balancedParens)
 
              -- intermediate link annotations: not finished, like 'custom.yaml' entries, but also not fully auto-generated.
              -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such partial annotations can't be put into 'custom.yaml' without destroying all of the checks' validity.
@@ -1062,7 +1062,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                                  else replace "https://arxiv.org/abs/" "" url
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?search_query=id:"++arxivid++"&start=0&max_results=1", "--user-agent", "gwern+arxivscraping@gwern.net"]
                case status of
-                 ExitFailure _ -> printRed ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return (Left Temporary)
+                 ExitFailure _ -> printRed ("Error: curl API call failed on Arxiv ID: " ++ arxivid ++ "; Result: " ++ show bs) >> return (Left Temporary)
                  _ -> do let (tags,_) = element "entry" $ parseTags $ U.toString bs
                          -- compile the title string because it may include math (usually a superscript, like "S$^2$-MLP: Spatial-Shift MLP Architecture for Vision" or "RL$^2$" etc)
                          let title = replace "<p>" "" $ replace "</p>" "" $ cleanAbstractsHTML $ processArxivAbstract $ trimTitle $ findTxt $ fst $ element "title" tags
@@ -1072,10 +1072,12 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          let doiTmp = processDOI $ findTxt $ fst $ element "arxiv:doi" tags
                          let doi = if null doiTmp then processDOIArxiv url else doiTmp
                          abst <- fmap cleanAbstractsHTML $ processParagraphizer url $ cleanAbstractsHTML $ processArxivAbstract $ findTxt $ fst $ element "summary" tags
-                         let ts = [] -- TODO: replace with ML call to infer tags
+                         let ts = [] :: [String] -- TODO: replace with ML call to infer tags
                          -- the API sometimes lags the website, and a valid Arxiv URL may not yet have obtainable abstracts, so it's a temporary failure:
-                         if abst=="" then return (Left Temporary) else
-                                          return $ Right (url, (title,authors,published,doi,ts,abst))
+                         if abst=="" then do printRed "Error: Arxiv parsing failed!"
+                                             printGreen ("Error details: failure on Arxiv URL "++url ++"; Arxiv ID: " ++ arxivid ++ "; raw response: " ++ show bs ++ "; parsed data: " ++ show [show tags, title, authors, published, doiTmp, doi, abst, show ts])
+                                             return (Left Temporary)
+                                      else return $ Right (url, (title,authors,published,doi,ts,abst))
 -- NOTE: we inline Tagsoup convenience code from Network.Api.Arxiv (https://hackage.haskell.org/package/arxiv-0.0.1/docs/src/Network-Api-Arxiv.html); because that library is unmaintained & silently corrupts data (https://github.com/toschoo/Haskell-Libs/issues/1), we keep the necessary code close at hand so at least we can easily patch it when errors come up
 -- Get the content of a 'TagText'
 findTxt :: [Tag String] -> String
@@ -1773,8 +1775,11 @@ gwernTOC footnotesP indexP p' f =
  -- for tags, condense the ToC by removing the See Also & Miscellaneous <h1>s, and the Links wrapper around the individual entries:
  (\tc' -> if not indexP then tc'
    else sedMany [("</li>\n          \n        </ul>",""),
+                 ("<li>\n            <a class=\"id-not\" href=\"#miscellaneous\"><span>Miscellaneous</span></a>\n          </li>", ""),
                  ("<li>\n            <a class=\"id-not\" href=\"#miscellaneous\">Miscellaneous</a>\n          </li>", ""),
+                 ("<li>\n            <a class=\"id-not\" href=\"#links\"><span>Links</span></a>\n            <ul>", ""),
                  ("<li>\n            <a class=\"id-not\" href=\"#links\">Links</a>\n            <ul>", ""),
+                 ("<li>\n            <a class=\"id-not\" href=\"#see-also\"><span>See Also</span></a>\n          </li>", ""),
                  ("<li>\n            <a class=\"id-not\" href=\"#see-also\">See Also</a>\n          </li>", "")
                 ] tc') $
  -- Pandoc declines to add an ID to footnotes section; on Gwern.net, we override this by at compile-time rewriting the <section> to have `#footnotes`:
