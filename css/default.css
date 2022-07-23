@@ -556,6 +556,7 @@ hr::after,
  */
 .link-tags {
     font-style: italic;
+    margin-left: 0.1em; /* tags are enclosed in ()s, but as links with the text-shadow trick, the italic slant leads to the usual 'chomp' without additional margin. */
 }
 
 blockquote .TOC {
