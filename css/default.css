@@ -5231,6 +5231,7 @@ section.highlight-fading::before {
     font-size: 0.8em;
     line-height: 0.7;
     font-variant-numeric: tabular-nums;
+    margin-left: 0.05em;
 }
 /* Much more complicated than simply `display: none;` to try to make copy-paste work normally without hacking the copy-listener. */
 .cite-joiner {
