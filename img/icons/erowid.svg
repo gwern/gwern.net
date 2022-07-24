@@ -1,17 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6.212 6.357">
-	<defs id="defs25" />
-	<g transform="matrix(0.05 0 0 0.05 0 0)" id="g19">
-		<path d="M113.676 91.87l-43.86 25.155-43.734-25.37.125-50.525 43.86-25.155 43.734 25.37z" fill="none" stroke="#a7a7a7" stroke-width="5" id="path2" style="stroke:#999999;stroke-opacity:1" />
-		<g transform="matrix(.553554 .958784 -.958784 .553554 93.105284 -39.366724)" id="A">
-			<circle cx="71.5" cy="30.5" r="14" id="circle4" style="fill:#ffffff;stroke:#000000;stroke-width:4.96789699;stroke-miterlimit:4;stroke-dasharray:none" />
-			<path d="M73.025 9.913l-3.176 1.54.38 40.064 3.174-.03z" dominant-baseline="auto" fill-rule="evenodd" id="path6" />
-			<circle cx="71.5" cy="30.5" r="6" id="circle8" style="fill:#ffffff;stroke:#999999;stroke-width:4.064643;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-		</g>
-		<use transform="rotate(60 71 66)" id="B" href="#A" />
-		<use transform="rotate(60 71 66)" id="C" href="#B" />
-		<use transform="rotate(60 71 66)" id="D" href="#C" />
-		<use transform="rotate(60 71 66)" id="E" href="#D" />
-		<use transform="scale(0)" href="#E" id="use15" />
-		<use transform="rotate(300 71 66)" href="#A" id="use17" />
-	</g>
-</svg> 
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.3 0 6.25 6.6"><defs id="defs25" /><g transform="matrix(0.05 0 0 0.05 0 0)" id="g19"><path d="M113.676 91.87l-43.86 25.155-43.734-25.37.125-50.525 43.86-25.155 43.734 25.37z" fill="none" stroke="#a7a7a7" stroke-width="5" id="path2" style="stroke:#999999;stroke-opacity:1" /><g transform="matrix(.553554 .958784 -.958784 .553554 93.105284 -39.366724)" id="A"><circle cx="71.5" cy="30.5" r="14" id="circle4" style="fill:#ffffff;stroke:#000000;stroke-width:4.96789699;stroke-miterlimit:4;stroke-dasharray:none" /><path d="M73.025 9.913l-3.176 1.54.38 40.064 3.174-.03z" dominant-baseline="auto" fill-rule="evenodd" id="path6" /><circle cx="71.5" cy="30.5" r="6" id="circle8" style="fill:#ffffff;stroke:#999999;stroke-width:4.064643;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" /></g><use transform="rotate(60 71 66)" id="B" href="#A" /><use transform="rotate(60 71 66)" id="C" href="#B" /><use transform="rotate(60 71 66)" id="D" href="#C" /><use transform="rotate(60 71 66)" id="E" href="#D" /><use transform="scale(0)" href="#E" id="use15" /><use transform="rotate(300 71 66)" href="#A" id="use17" /></g></svg> 
