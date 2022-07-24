@@ -238,7 +238,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "github.com/huggingface/" || u' "medium.com/huggingface/" || u'' "huggingface.co" = aI "\129303" "text" -- "🤗" HUGGING FACE U+1F917
  | u'' "quantifiedself.com" || u'' "forum.quantifiedself.com" || u' "old.reddit.com/r/QuantifiedSelf/" = aI "QS" "text,sans"
  | u'' "www.pragmatic.ml" = aI "𝕄" "text" -- Madison May, machine learning blog
- | aU'' ["thepiratebay.org", "rss.thepiratebay.se", "thepiratebay.se",  "thepiratebay.sx"] = aI "🏴\8205☠️" "text,sans" -- BLACK FLAG + SKULL AND CROSSBONES + ZWJ = PIRATE FLAG <https://emojipedia.org/pirate-flag/>  And if that doesn't work try adding U+FE0F to the end
+ | aU'' ["thepiratebay.org", "rss.thepiratebay.se", "thepiratebay.se",  "thepiratebay.sx"] = aI "the-pirate-bay" "svg" -- in theory, you can get a skull & crossbones by Unicode Emoji: BLACK FLAG + SKULL AND CROSSBONES + ZWJ = PIRATE FLAG <https://emojipedia.org/pirate-flag/> (and if that doesn't work try adding U+FE0F to the end). This turns out to be too unreliable across systems (fonts? OSes? browser versions?) that we replaced it with a proper SVG version of The Pirate Bay's cassette-tape (yes, really) + cross-bones.
  | u'' "www.research.va.gov" = aI "VA" "text,sans" -- US Department of Veterans Affair (mostly linked for Million Veteran Project)
 
  -- Tri/triple TLAs
@@ -1001,7 +1001,7 @@ linkIconTestUnitsText =
          , ("https://www.spiegel.de/panorama/justiz/amokschuetze-von-muenchen-tatwaffe-aus-dem-darknet-a-1104461.html", "SPGL", "text,quad")
          , ("https://www.pragmatic.ml/sparse-sinkhorn-attention/", "𝕄", "text")
          , ("https://hbr.org/2019/12/can-you-know-too-much-about-your-organization", "HBR", "text,tri,sans")
-         , ("https://thepiratebay.org/description.php?id=14045031", "🏴\8205☠️", "text,sans")
+         , ("https://thepiratebay.org/description.php?id=14045031", "the-pirate-bay", "svg")
          , ("https://history.nasa.gov/rogersrep/v2appf.htm",                                    "nasa", "svg")
          , ("https://science.nasa.gov/science-news/science-at-nasa/2005/03jun_naps/",           "nasa", "svg")
          , ("https://www.nasa.gov/mission_pages/station/expeditions/expedition30/tryanny.html", "nasa", "svg")
