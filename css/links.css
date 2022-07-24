@@ -579,8 +579,8 @@ a[data-link-icon='bitcoin']::after {
 }
 
 a[data-link-icon='chi-dna']::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.1em;
+    --link-icon-size: 0.58em;
+    --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.25em;
 
     opacity: 0.75;
@@ -601,8 +601,8 @@ a[data-link-icon='deepmind']:hover::after {
 }
 
 a[data-link-icon='distillpub']::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.05em;
+    --link-icon-size: 0.45em;
+    --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.15em;
 
     opacity: 0.6;
@@ -660,9 +660,9 @@ a[data-link-icon='google']::after {
 }
 
 a[data-link-icon='google-scholar']::after {
-    --link-icon-size: 1em;
-    --link-icon-offset-x: 0.05em;
-    --link-icon-offset-y: 0.3em;
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.4em;
 
     opacity: 0.60;
 }
@@ -725,9 +725,9 @@ a[data-link-icon='nautilus']::after {
 }
 
 a[data-link-icon='newyorktimes']::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.05em;
-    --link-icon-offset-y: 0.10em;
+    --link-icon-size: 0.65em;
+    --link-icon-offset-x: 0.1em;
+    --link-icon-offset-y: 0.15em;
 
     opacity: 0.6;
 }
@@ -736,22 +736,22 @@ a[data-link-icon='newyorktimes']:hover::after {
 }
 
 a[data-link-icon='nlm-ncbi']::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.10em;
-    --link-icon-offset-y: 0.05em;
+    --link-icon-size: 0.6em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.2em;
 
-    opacity: 0.85;
+    opacity: 0.9;
 }
 a[data-link-icon='nlm-ncbi']:hover::after {
-    opacity: 0.45;
+    opacity: 0.5;
 }
 
 a[data-link-icon='openai']::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.1em;
-    --link-icon-offset-y: 0.2em;
+    --link-icon-size: 0.7em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.25em;
 
-    opacity: 0.70;
+    opacity: 0.7;
 }
 a[data-link-icon='openai']:hover::after {
     opacity: 0.4;
@@ -781,9 +781,9 @@ a[data-link-icon='reddit']::after {
 }
 
 a[data-link-icon='springerlink']::after {
-    --link-icon-size: 0.85em;
+    --link-icon-size: 0.9em;
     --link-icon-offset-x: 0.1em;
-    --link-icon-offset-y: 0.05em;
+    --link-icon-offset-y: 0.1em;
 
     opacity: 0.8;
 }
@@ -792,8 +792,8 @@ a[data-link-icon='springerlink']:hover::after {
 }
 
 a[data-link-icon='stackexchange']::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.1em;
+    --link-icon-size: 0.6em;
+    --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.25em;
 
     opacity: 0.55;
@@ -815,11 +815,11 @@ a[data-link-icon='theguardian']::after {
 }
 
 a[data-link-icon='thenewyorker']::after {
-    --link-icon-size: 0.8em;
+    --link-icon-size: 0.65em;
     --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.25em;
+    --link-icon-offset-y: 0.15em;
 
-    opacity: 0.55;
+    opacity: 0.6
 }
 a[data-link-icon='thenewyorker']:hover::after {
     opacity: 0.45;
@@ -895,9 +895,11 @@ a[data-link-icon='yud']::after {
 }
 
 a[data-link-icon='the-telegraph']::after { /* Darken & shift left */
+    --link-icon-size: 0.6em;
     --link-icon-offset-x: 0.1em;
+    --link-icon-offset-y: 0.2em;
 
-    opacity: 0.77;
+    opacity: 0.75;
 }
 
 a[data-link-icon='open-philanthropy']::after { /* Darken & shift left/up */
@@ -955,25 +957,28 @@ a[data-link-icon='tensorflow']::after {
 }
 
 a[data-link-icon='alcor']::after {
-    --link-icon-size: 0.7em;
-    --link-icon-offset-y: 0.1em;
-    --link-icon-offset-x: 0.1em;
+    --link-icon-size: 0.75em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-offset-x: 0.15em;
 
     opacity: 0.65;
 }
 
 a[data-link-icon='cochrane-collaboration']::after {
-    --link-icon-size: 0.85em;
-    --link-icon-offset-y: 0.1em;
-    --link-icon-offset-x: 0.1em;
+    --link-icon-size: 0.8em;
+    --link-icon-offset-y: 0.2em;
+    --link-icon-offset-x: 0.2em;
 
     opacity: 0.75;
 }
+a[data-link-icon='cochrane-collaboration']:hover::after {
+    opacity: 0.45;
+}
 
 a[data-link-icon='connected-papers']::after {
-    --link-icon-size: 0.85em;
+    --link-icon-size: 0.6em;
     --link-icon-offset-y: 0.1em;
-    --link-icon-offset-x: 0.05em;
+    --link-icon-offset-x: 0.2em;
 
     opacity: 0.65;
 }
@@ -988,7 +993,7 @@ a[data-link-icon='raven']::after {
 }
 
 a[data-link-icon='hoover-institution']::after {
-    --link-icon-size: 0.45em;
+    --link-icon-size: 0.5em;
     --link-icon-offset-y: 0.0em;
     --link-icon-offset-x: 0.15em;
 
@@ -1001,6 +1006,14 @@ a[data-link-icon='wandb']::after {
     --link-icon-offset-x: 0.15em;
 
     opacity: 0.65;
+}
+
+a[data-link-icon='the-pirate-bay']::after {
+    --link-icon-size: 0.9em;
+    --link-icon-offset-y: 0.3em;
+    --link-icon-offset-x: 0.2em;
+
+    opacity: 0.75;
 }
 
 /*=------------------=*/
