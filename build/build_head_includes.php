@@ -25,7 +25,7 @@ $includes = [
 	[ 'initial.css', 'id="inlined-styles"' ],
 	[ 'dark-mode-GENERATED.css', 'id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)"' ],
 	[ 'gw-inline.js' ],
-	[ 'darkmode-inline.js' ],
+	[ 'dark-mode-inline.js' ],
 	[ 'reader-mode-inline.js' ],
 ];
 

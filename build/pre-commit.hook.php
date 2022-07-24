@@ -22,7 +22,7 @@ $head_includes = [
 	"{$static_dir}/css/include/colors.css",
 	"{$static_dir}/css/include/dark-mode-GENERATED.css",
 	"{$static_dir}/css/include/initial.css",
-	"{$static_dir}/js/darkmode-inline.js",
+	"{$static_dir}/js/dark-mode-inline.js",
 	"{$static_dir}/js/gw-inline.js",
 	"{$static_dir}/js/reader-mode-inline.js",
 ];
@@ -66,7 +66,7 @@ $versioned_files = [
 	"{$static_dir}/css/links.css",
 	"{$static_dir}/js/annotations.js",
 	"{$static_dir}/js/collapse.js",
-	"{$static_dir}/js/darkmode.js",
+	"{$static_dir}/js/dark-mode.js",
 	"{$static_dir}/js/extracts.js",
 	"{$static_dir}/js/extracts-annotations.js",
 	"{$static_dir}/js/extracts-content.js",
