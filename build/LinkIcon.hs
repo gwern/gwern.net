@@ -299,7 +299,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.imdb.com" = aI "IMDb" "text,sans,quad"
  | u'' "www.nejm.org" = aI "NEJM" "text,quad"
  | u'' "spectrum.ieee.org" || u'' "ieeexplore.ieee.org" = aI "IEEE" "text,mono,quad"
- | u'' "rjlipton.wordpress.com" = aI "P = NP" "text,quad" -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULL WIDTH EQUAL SIGN' turns out to be *too* big and stack up three high.
+ | u'' "rjlipton.wordpress.com" = aI "P = NP" "text,quad" -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULLWIDTH EQUALs SIGN' turns out to be *too* big and stack up three high. using 2 HAIR SPACE will separate the '=' slightly from the 'P' while not causing the 3-layer layout.
  | u' "mitpress.mit.edu/sites/default/files/sicp/" = aI "SI CP" "text,quad,sans"
  | u' "mitpress.mit.edu/books/" = aI "MIT" "text,tri,mono" -- if it's not _SICP_, fall back.x
  | u'' "jaspervdj.be" = aI "JVDJ" "text,quad,mono"
@@ -874,7 +874,7 @@ linkIconTestUnitsText =
          , ("https://www.odt.co.nz/news/dunedin/student-drug-dealer-jailed", "ODT", "text,tri")
          , ("https://www.independent.co.uk/news/uk/this-britain/the-jousting-accident-that-turned-henry-viii-into-a-tyrant-1670421.html", "TI", "text")
          , ("https://www.fastcompany.com/40438376/after-a-comeback-23andme-faces-its-next-test", "FC", "text")
-         , ("https://rjlipton.wordpress.com/2015/07/28/playing-chess-with-the-devil/", "P = NP", "text,quad")
+         , ("https://rjlipton.wordpress.com/2015/07/28/playing-chess-with-the-devil/", "P = NP", "text,quad")
          , ("https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SI CP", "text,quad,sans")
          , ("https://mitpress.mit.edu/books/book-ground", "MIT", "text,tri,mono")
          , ("https://blog.eleuther.ai/announcing-20b/", "eleutherai", "svg")
