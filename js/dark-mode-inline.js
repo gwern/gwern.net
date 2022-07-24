@@ -1,5 +1,5 @@
-/*	This code is part of darkmode.js by Said Achmiz.
-	See the file `darkmode.js` for license and more information.
+/*	This code is part of dark-mode.js by Said Achmiz.
+	See the file `dark-mode.js` for license and more information.
  */
 
 /*	Dark mode: before anything else loads, check browser localStorage for dark 
@@ -15,10 +15,10 @@
 /*  Set specified color mode (auto, light, dark).
 
 	Called by: this file (immediately upon load)
-	Called by: GW.darkMode.modeSelectButtonClicked (darkmode.js)
+	Called by: GW.darkMode.modeSelectButtonClicked (dark-mode.js)
  */
 function setMode(modeOption) {
-    GWLog("setMode", "darkmode.js", 1);
+    GWLog("setMode", "dark-mode.js", 1);
 
     //	The style block should be inlined (and already loaded).
     let darkModeStyles = document.querySelector("#inlined-dark-mode-styles");
@@ -34,7 +34,7 @@ function setMode(modeOption) {
         darkModeStyles.media = "not all";
     }
 
-    /*	Update selector state (if darkmode.js has been loaded; if it has not, 
+    /*	Update selector state (if dark-mode.js has been loaded; if it has not, 
     	then the selector also doesn’t exist yet, and thus needn’t be updated).
      */
     if (window.updateModeSelectorState)

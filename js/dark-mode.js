@@ -1,4 +1,4 @@
-// darkmode.js: Javascript library for controlling page appearance, toggling between regular white and ‘dark mode’
+// dark-mode.js: Javascript library for controlling page appearance, toggling between regular white and ‘dark mode’
 // Author: Said Achmiz
 // Date: 2020-03-20
 // When: Time-stamp: "2022-01-05 11:31:32 gwern"
@@ -51,7 +51,7 @@ GW.darkMode.modeOptions = [
 /*	Called on page load (doWhenPageLoaded, this file).
  */
 function injectModeSelector() {
-    GWLog("injectModeSelector", "darkmode.js", 1);
+    GWLog("injectModeSelector", "dark-mode.js", 1);
 
     //	Get saved mode setting (or default).
     let currentMode = localStorage.getItem("selected-mode") || 'auto';
@@ -69,7 +69,7 @@ function injectModeSelector() {
 	//	Activate mode selector widget buttons.
     GW.darkMode.modeSelector.querySelectorAll("button").forEach(button => {
         button.addActivateEvent(GW.darkMode.modeSelectButtonClicked = (event) => {
-            GWLog("GW.darkMode.modeSelectButtonClicked", "darkmode.js", 2);
+            GWLog("GW.darkMode.modeSelectButtonClicked", "dark-mode.js", 2);
 
             // Determine which setting was chosen (ie. which button was clicked).
             let selectedMode = event.target.dataset.name;
@@ -102,7 +102,7 @@ function injectModeSelector() {
     scroll listener.
  */
 function updateModeSelectorVisibility(event) {
-    GWLog("updateModeSelectorVisibility", "darkmode.js", 3);
+    GWLog("updateModeSelectorVisibility", "dark-mode.js", 3);
 
     /*	Hide mode selector when scrolling a full page down (or one PgDn’s
     	worth of scroll distance, anyhow).
@@ -128,7 +128,7 @@ function updateModeSelectorVisibility(event) {
 /*	Called by: updateModeSelectorVisibility()
  */
 function hideModeSelector() {
-    GWLog("hideModeSelector", "darkmode.js", 3);
+    GWLog("hideModeSelector", "dark-mode.js", 3);
 
     GW.darkMode.modeSelector.classList.toggle("hidden", true);
 }
@@ -137,18 +137,18 @@ function hideModeSelector() {
 	Called by: updateModeSelectorVisibility()
  */
 function showModeSelector() {
-    GWLog("showModeSelector", "darkmode.js", 3);
+    GWLog("showModeSelector", "dark-mode.js", 3);
 
     GW.darkMode.modeSelector.classList.toggle("hidden", false);
 }
 
 /*  Update the states of the mode selector buttons.
 
-	Called by: setMode() (darkmode-inline.js)
+	Called by: setMode() (dark-mode-inline.js)
 	Called by: updateModeSelectorStateForSystemDarkMode active media query
  */
 function updateModeSelectorState() {
-    GWLog("updateModeSelectorState", "darkmode.js", 2);
+    GWLog("updateModeSelectorState", "dark-mode.js", 2);
 
 	/*	If the mode selector has not yet been injected (i.e. if we’re calling
 		this function on initial page load), then do nothing.
