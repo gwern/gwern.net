@@ -115,13 +115,16 @@ ReaderMode = {
         and the selected mode.
      */
     //  Called by: this file (doWhenBodyExists)
-    //  Called by: ReaderMode.modeSelectButtonClicked
+    //  Called by: ReaderMode.modeSelectButtonClicked (reader-mode.js)
     setMode: (selectedMode = ReaderMode.currentMode()) => {
         GWLog("ReaderMode.setMode", "reader-mode.js", 1);
 
         //  Activate (if needed).
         if (ReaderMode.enabled() == true)
             ReaderMode.activate();
+
+		//	Fire event.
+		GW.notificationCenter.fireEvent("ReaderMode.didSetMode");
     },
 
     /*  Returns true if reader mode is set to be enabled for the current page,

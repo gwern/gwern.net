@@ -12,37 +12,41 @@
 	bed and must lie in it.)
  */
 
-/*  Set specified color mode (auto, light, dark).
+DarkMode = {
+	/*  Set specified color mode (auto, light, dark).
 
-	Called by: this file (immediately upon load)
-	Called by: GW.darkMode.modeSelectButtonClicked (dark-mode.js)
- */
-function setMode(modeOption) {
-    GWLog("setMode", "dark-mode.js", 1);
+		Called by: this file (immediately upon load)
+		Called by: DarkMode.modeSelectButtonClicked (dark-mode.js)
+	 */
+	setMode: (selectedMode = DarkMode.currentMode()) => {
+		GWLog("DarkMode.setMode", "dark-mode.js", 1);
 
-    //	The style block should be inlined (and already loaded).
-    let darkModeStyles = document.querySelector("#inlined-dark-mode-styles");
-    if (darkModeStyles == null)
-    	return;
+		//	The style block should be inlined (and already loaded).
+		let darkModeStyles = document.querySelector("#inlined-dark-mode-styles");
+		if (darkModeStyles == null)
+			return;
 
-	//	Set `media` attribute of style block to match requested mode.
-    if (modeOption == 'auto') {
-        darkModeStyles.media = "all and (prefers-color-scheme: dark)";
-    } else if (modeOption == 'dark') {
-        darkModeStyles.media = "all";
-    } else {
-        darkModeStyles.media = "not all";
-    }
+		//	Set `media` attribute of style block to match requested mode.
+		if (selectedMode == 'auto') {
+			darkModeStyles.media = "all and (prefers-color-scheme: dark)";
+		} else if (selectedMode == 'dark') {
+			darkModeStyles.media = "all";
+		} else {
+			darkModeStyles.media = "not all";
+		}
 
-    /*	Update selector state (if dark-mode.js has been loaded; if it has not, 
-    	then the selector also doesn’t exist yet, and thus needn’t be updated).
+		//	Fire event.
+		GW.notificationCenter.fireEvent("DarkMode.didSetMode");
+	},
+
+    /*  Returns current (saved) mode (light, dark, or auto).
      */
-    if (window.updateModeSelectorState)
-	    updateModeSelectorState();
-}
-
-//	Get saved mode setting (or default).
-let currentMode = localStorage.getItem("selected-mode") || 'auto';
+    currentMode: () => {
+    	//	Remove the `selected-mode` part when enough time has passed.
+    	//	—SA 2022-07-23
+        return (localStorage.getItem("dark-mode-setting") || localStorage.getItem("selected-mode") || "auto");
+    },
+};
 
 //	Activate saved mode.
-setMode(currentMode);
+DarkMode.setMode();
