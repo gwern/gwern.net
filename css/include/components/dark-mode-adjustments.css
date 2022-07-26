@@ -20,6 +20,10 @@
     /*  Reader mode.
      */
     --GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.85);
+
+	/*	Mode selectors.
+	 */
+	--GW-mode-selector-mobile-background-color: rgba(18, 18, 18, 0.75);
 }
 
 /*  The ‘fill’ attribute of the SVGs is modified in dark mode.
