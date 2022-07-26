@@ -5002,13 +5002,6 @@ section.highlight-fading::before {
 .mode-selector {
     padding: 0 0.125em 0.125em 0.125em;
     background-color: var(--GW-mode-selector-background-color);
-    opacity: 0.3;
-    transition:
-        opacity 2s ease;
-}
-.mode-selector:hover {
-    transition: none;
-    opacity: 1.0;
 }
 
 /*	Mode selector buttons.
@@ -5078,9 +5071,10 @@ section.highlight-fading::before {
 .mode-selector-inline {
     --GW-mode-selector-background-color: var(--GW-link-underline-background-color);
 
-	position: static;
     display: inline;
-    margin: 0 -0.25em;
+    position: relative;
+    bottom: 0.125em;
+    margin: 0 -0.125em 0 0;
 }
 
 .mode-selector-inline button {
@@ -5098,6 +5092,13 @@ section.highlight-fading::before {
     display: flex;
     box-sizing: content-box;
     margin: 3px;
+    opacity: 0.3;
+    transition:
+        opacity 2s ease;
+}
+#ui-elements-container .mode-selector:hover {
+    transition: none;
+    opacity: 1.0;
 }
 #ui-elements-container .mode-selector.hidden {
     opacity: 0;
