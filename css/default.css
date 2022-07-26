@@ -4991,7 +4991,7 @@ section.highlight-fading::before {
 /******************/
 
 .mode-selector {
-    padding: 0.1em 0.25em 0.3em 0.25em;
+    padding: 0 0.125em 0.125em 0.125em;
     background-color: var(--GW-mode-selector-background-color);
     opacity: 0.3;
     transition:
@@ -5111,7 +5111,7 @@ section.highlight-fading::before {
 @media only screen and (max-width: 1534px) {
     #ui-elements-container .mode-selector {
         flex-flow: column;
-        padding: 0.1em 0.1em 0.2em 0.15em;
+        padding: 0.15em 0.1em;
         align-items: flex-start;
     }
     #ui-elements-container .mode-selector button + button {
@@ -5120,7 +5120,6 @@ section.highlight-fading::before {
 }
 @media only screen and (max-width: 1279px) {
     #ui-elements-container .mode-selector {
-        padding: 0.1em 0.1em 0.25em 0.15em;
         background-color: var(--GW-mode-selector-mobile-background-color);
         opacity: 1.0;
     }
@@ -5154,6 +5153,7 @@ section.highlight-fading::before {
 @media only screen and (max-width: 649px) {
     #ui-elements-container .mode-selector {
         top: unset;
+        padding: 0.2em 0.15em;
     }
     #ui-elements-container .mode-selector button {
         width: 2.25em;
