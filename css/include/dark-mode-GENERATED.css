@@ -594,3 +594,10 @@ a[data-link-icon-type*='svg']::after {
 .footnotes .footnote-back img:hover {
     filter: invert(1);
 }
+
+
+/*	Math in Wikipedia pop-frames.
+ */
+.popframe-body.wikipedia-entry .mwe-math-element img {
+	filter: invert(1);
+}
