@@ -503,60 +503,61 @@ img:not(.invertible):not(.invertible-auto):hover {
     opacity: 0.4;
 }
 
-/*  The mode selector is adjusted to be better visible in dark mode, and its
-    button icons inverted.
- */
-/*	TEMPORARILY DISABLED
-/* 
-div.mode-selector {
-    opacity: 0.6;
-}
-div.mode-selector button::before {
-    opacity: 0.45;
-}
-div.mode-selector button.select-mode-light::before {
-    opacity: 0.55;
-}
- */
-
-/*  Reader mode selector, same as above.
+/*	All mode selectors.
  */
 div.mode-selector button::before,
 span.mode-selector button::before {
     filter: invert(1);
 }
-/*	TEMPORARILY DISABLED
-/* 
-/* 
+
+/*	Inline mode selectors.
+ */
+span.mode-selector {
+	opacity: 0.45;
+}
+span.mode-selector button::before {
+	opacity: 0.55;
+}
+span.dark-mode-selector button.select-mode-light::before {
+	opacity: 0.6;
+}
+
+/*	Fixed mode selectors.
+ */
 @media only screen and (min-width: 1280px) {
-    div#reader-mode-selector {
-        opacity: 0.6;
-    }
-    div#reader-mode-selector button::before {
-        opacity: 0.45;
-    }
+	div.mode-selector {
+		opacity: 0.45;
+	}
+	div.mode-selector button::before {
+		opacity: 0.55;
+	}
+	div.dark-mode-selector button.select-mode-light::before {
+		opacity: 0.6;
+	}
 }
 @media only screen and (max-width: 1279px) {
-    div#reader-mode-selector button {
+    #ui-elements-container div.mode-selector button {
         opacity: 0.3;
     }
-    div#reader-mode-selector button.select-mode-off {
+    #ui-elements-container div.dark-mode-selector button.select-mode-light {
         opacity: 0.35;
     }
-    div#reader-mode-selector button:hover,
-    div#reader-mode-selector button.selected {
-        opacity: 0.9;
+    #ui-elements-container div.reader-mode-selector button.select-mode-off {
+        opacity: 0.35;
     }
-    div#reader-mode-selector button.select-mode-on:hover,
-    div#reader-mode-selector button.select-mode-on.selected {
+    #ui-elements-container div.mode-selector button:hover,
+    #ui-elements-container div.mode-selector button.selected {
+        opacity: 0.85;
+    }
+    #ui-elements-container div.reader-mode-selector button.select-mode-on:hover,
+    #ui-elements-container div.reader-mode-selector button.select-mode-on.selected {
         opacity: 0.75;
     }
-    div#reader-mode-selector button.select-mode-off:hover,
-    div#reader-mode-selector button.select-mode-off.selected {
-        opacity: 1.0;
+    #ui-elements-container div.reader-mode-selector button.select-mode-off:hover,
+    #ui-elements-container div.reader-mode-selector button.select-mode-off.selected {
+        opacity: 0.9;
     }
 }
- */
 
 /*  Masked links key toggle info alert panel.
  */
