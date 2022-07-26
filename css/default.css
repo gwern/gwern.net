@@ -4882,6 +4882,12 @@ section.highlight-fading::before {
     #ui-elements-container .dark-mode-selector {
         bottom: 4em;
     }
+    #ui-elements-container .dark-mode-selector button {
+        border-width: 3px;
+    }
+    #ui-elements-container .dark-mode-selector button:last-child {
+        margin-bottom: 1px;
+    }
 }
 
 /***************/
@@ -4982,7 +4988,10 @@ section.highlight-fading::before {
 }
 @media only screen and (max-width: 649px) {
     #ui-elements-container .reader-mode-selector {
-        bottom: 11em;
+        bottom: 12em;
+    }
+    #ui-elements-container .reader-mode-selector button {
+        border-width: 5px 3px 1px 3px;
     }
 }
 
@@ -5153,11 +5162,16 @@ section.highlight-fading::before {
 @media only screen and (max-width: 649px) {
     #ui-elements-container .mode-selector {
         top: unset;
-        padding: 0.2em 0.15em;
+        padding: 0;
     }
     #ui-elements-container .mode-selector button {
-        width: 2.25em;
-        height: 2.25em;
+        width: 3em;
+        height: 3em;
+        border-style: solid;
+        border-color: transparent;
+    }
+    #ui-elements-container .mode-selector button + button {
+        margin-top: 0;
     }
 }
 
