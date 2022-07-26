@@ -94,7 +94,7 @@ ReaderMode = { ...ReaderMode, ...{
 	modeSelectorHTML: (inline = false) => {
 		let selectorTagName = (inline ? "span" : "div");
 		let selectorId = (inline ? "" : " id='reader-mode-selector'");
-		let selectorClass = (" class='reader-mode-selector" + (inline ? " reader-mode-selector-inline" : "") + "'");
+		let selectorClass = (" class='reader-mode-selector mode-selector" + (inline ? " mode-selector-inline" : "") + "'");
 
 		//	Get saved mode setting (or default).
 		let currentMode = ReaderMode.currentMode();
@@ -143,39 +143,36 @@ ReaderMode = { ...ReaderMode, ...{
 				button.addActivateEvent(ReaderMode.modeSelectButtonClicked = (event) => {
 					GWLog("ReaderMode.modeSelectButtonClicked", "reader-mode.js", 2);
 
-					/*	We don’t want clicks to go through if the transition between
-						modes has not completed yet.
+					/*	We don’t want clicks to go through if the transition 
+						between modes has not completed yet, so we disable the 
+						button temporarily while we’re transitioning between 
+						modes.
 					 */
-					if (ReaderMode.modeSelectorInteractable == false)
-						return;
+					doIfAllowed(() => {
+						// Determine which setting was chosen (ie. which button was clicked).
+						let selectedMode = event.target.dataset.name;
 
-					/*	Disable the button temporarily while we’re transitioning
-						between modes.
-					 */
-					ReaderMode.modeSelectorInteractable = false;
+						// Save the new setting.
+						if (selectedMode == "auto")
+							localStorage.removeItem("reader-mode-setting");
+						else
+							localStorage.setItem("reader-mode-setting", selectedMode);
 
-					// Determine which setting was chosen (ie. which button was clicked).
-					let selectedMode = event.target.dataset.name;
-
-					// Save the new setting.
-					if (selectedMode == "auto")
-						localStorage.removeItem("reader-mode-setting");
-					else
-						localStorage.setItem("reader-mode-setting", selectedMode);
-
-					// Actually change the mode.
-					ReaderMode.setMode(selectedMode);
-
-					//	Re-enable button after the mode switch is complete.
-					requestAnimationFrame(() => {
-						ReaderMode.modeSelectorInteractable = true;
-					});
+						// Actually change the mode.
+						ReaderMode.setMode(selectedMode);
+					}, ReaderMode, "modeSelectorInteractable");
 				});
 			});
 
 			if (modeSelector == ReaderMode.modeSelector) {
 				//	Show the button on hover (if it’s hid via scroll-down).
-				ReaderMode.modeSelector.addEventListener("mouseenter", () => { ReaderMode.showModeSelector(); });
+				ReaderMode.modeSelector.addEventListener("mouseenter", () => {
+					//	Fire event.
+					GW.notificationCenter.fireEvent("GW.modeSelectorMouseEnter");
+				});
+				GW.notificationCenter.addHandlerForEvent("GW.modeSelectorMouseEnter", (info) => {
+					ReaderMode.showModeSelector();
+				});
 			}
 		});
 

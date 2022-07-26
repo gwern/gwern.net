@@ -4850,151 +4850,44 @@ section.highlight-fading::before {
 /* DARK MODE */
 /*************/
 
-#mode-selector {
-    position: absolute;
-    right: 0;
-    display: flex;
-    background-color: var(--GW-mode-selector-background-color);
-    padding: 0.1em 0.25em 0.3em 0.25em;
-    border: 1px dotted var(--GW-TOC-border-color);
-    opacity: 0.3;
-    transition:
-        opacity 2s ease;
+.dark-mode-selector {
+	--mode-selector-button-base-left-margin: 1.375em;
+	--mode-selector-button-base-left-spacing: 1.125em;
 }
-#mode-selector.hidden {
-    opacity: 0;
+
+.dark-mode-selector button.select-mode-auto::before {
+    content: url('/static/img/icons/adjust-solid.svg');
 }
-#mode-selector:hover {
-    transition: none;
-    opacity: 1.0;
-    border: 3px double var(--GW-mode-selector-border-hover-color);
+.dark-mode-selector button.select-mode-light::before {
+    content: url('/static/img/icons/sun-solid.svg');
 }
-#mode-selector button {
-    -moz-appearance: none;
-    appearance: none;
-    border: none;
-    background-color: transparent;
-    padding: 0.5em;
-    margin: 0 0 0 1.375em;
-    line-height: 1;
-    font-family: var(--GW-sans-serif-font-stack);
-    font-size: 0.75rem;
-    text-align: center;
-    color: var(--GW-mode-selector-button-text-color);
-    position: relative;
-    display: flex;
+.dark-mode-selector button.select-mode-dark::before {
+    content: url('/static/img/icons/moon-solid.svg');
 }
-#mode-selector button::before {
-    width: 1.2em;
-    position: absolute;
-    left: -15px;
-    opacity: 0.35;
-    padding: 1px 0 0 0;
+
+.dark-mode-selector button.select-mode-dark {
+	--mode-selector-button-left-adjust: -0.125em;
 }
-#mode-selector button.select-mode-auto::before {
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M8 256c0 136.966 111.033 248 248 248s248-111.034 248-248S392.966 8 256 8 8 119.033 8 256zm248 184V72c101.705 0 184 82.311 184 184 0 101.705-82.311 184-184 184z"></path></svg>');
+
+@media only screen and (min-width: 1535px) {
+	#ui-elements-container .dark-mode-selector {
+		right: 0;
+		top: 0;
+	}
 }
-#mode-selector button.select-mode-light::before {
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 160c-52.9 0-96 43.1-96 96s43.1 96 96 96 96-43.1 96-96-43.1-96-96-96zm246.4 80.5l-94.7-47.3 33.5-100.4c4.5-13.6-8.4-26.5-21.9-21.9l-100.4 33.5-47.4-94.8c-6.4-12.8-24.6-12.8-31 0l-47.3 94.7L92.7 70.8c-13.6-4.5-26.5 8.4-21.9 21.9l33.5 100.4-94.7 47.4c-12.8 6.4-12.8 24.6 0 31l94.7 47.3-33.5 100.5c-4.5 13.6 8.4 26.5 21.9 21.9l100.4-33.5 47.3 94.7c6.4 12.8 24.6 12.8 31 0l47.3-94.7 100.4 33.5c13.6 4.5 26.5-8.4 21.9-21.9l-33.5-100.4 94.7-47.3c13-6.5 13-24.7.2-31.1zm-155.9 106c-49.9 49.9-131.1 49.9-181 0-49.9-49.9-49.9-131.1 0-181 49.9-49.9 131.1-49.9 181 0 49.9 49.9 49.9 131.1 0 181z"></path></svg>');
-    opacity: 0.45;
-    width: 1.3em;
-    padding: 0;
-    left: -15px;
-}
-#mode-selector button.select-mode-dark {
-    margin-left: 1.125em;
-}
-#mode-selector button.select-mode-dark::before {
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M283.211 512c78.962 0 151.079-35.925 198.857-94.792 7.068-8.708-.639-21.43-11.562-19.35-124.203 23.654-238.262-71.576-238.262-196.954 0-72.222 38.662-138.635 101.498-174.394 9.686-5.512 7.25-20.197-3.756-22.23A258.156 258.156 0 0 0 283.211 0c-141.309 0-256 114.511-256 256 0 141.309 114.511 256 256 256z"></path></svg>');
-    width: 1.15em;
-    left: -12px;
-}
-#mode-selector button:not(.selected):hover::before {
-    opacity: 1.0;
-}
-#mode-selector button:hover,
-#mode-selector button.selected {
-    box-shadow:
-        0 2px 0 6px var(--GW-mode-selector-background-color) inset,
-        0 1px 0 6px currentColor inset;
-}
-#mode-selector button:not(:disabled):hover {
-    color: var(--GW-mode-selector-button-hover-text-color);
-    cursor: pointer;
-}
-#mode-selector button:not(:disabled):active {
-    transform: translateY(2px);
-    box-shadow:
-        0 0px 0 6px var(--GW-mode-selector-background-color) inset,
-        0 -1px 0 6px currentColor inset;
-}
-#mode-selector button.active:not(:hover)::after {
-    content: "";
-    position: absolute;
-    bottom: 0.25em;
-    left: 0;
-    right: 0;
-    border-bottom: 1px dotted currentColor;
-    width: calc(100% - 12px);
-    margin: auto;
-}
-@media only screen and (max-width: 1535px) {
-    #mode-selector {
-        flex-flow: column;
-        padding: 0.1em 0.1em 0.2em 0.15em;
-        align-items: flex-start;
-    }
-    #mode-selector button + button {
-        margin-top: 0.25em;
-    }
-    #mode-selector button.select-mode-light::before {
-        left: -16px;
-    }
-    #mode-selector button.select-mode-dark {
-        margin-left: 1.375em;
-    }
-    #mode-selector button.select-mode-dark::before {
-        left: -15px;
-    }
+@media only screen and (max-width: 1534px) {
+	#ui-elements-container .dark-mode-selector {
+		right: 0;
+	}
 }
 @media only screen and (max-width: 1279px) {
-    #mode-selector {
-        padding: 0.1em 0.1em 0.25em 0.15em;
-    }
-    #mode-selector button[class^='select-mode-'] {
-        color: transparent;
-        margin: 0;
-        padding: 0;
-        width: 2em;
-        height: 2em;
-        align-items: center;
-        box-shadow: none;
-        opacity: 0.55;
-    }
-    #mode-selector  button[class^='select-mode-'] + button {
-        margin-top: 0.5em;
-    }
-    #mode-selector button[class^='select-mode-']::before {
-        left: 12.5%;
-        width: 75%;
-        height: 75%;
-    }
-    #mode-selector button:not(:disabled):hover {
-        color: transparent;
-    }
-    #mode-selector button:hover,
-    #mode-selector button.selected {
-        opacity: 1.0;
+    #ui-elements-container .dark-mode-selector button.select-mode-light {
+        opacity: 0.15;
     }
 }
 @media only screen and (max-width: 649px) {
-    #mode-selector {
-        top: unset;
+    #ui-elements-container .dark-mode-selector {
         bottom: 4em;
-    }
-    #mode-selector button[class^='select-mode-'] {
-        width: 2.25em;
-        height: 2.25em;
     }
 }
 
@@ -5053,9 +4946,59 @@ section.highlight-fading::before {
 /*│ Reader mode selector. │*/
 /*└───────────────────────┘*/
 
-#reader-mode-selector {
+.reader-mode-selector {
+	--mode-selector-button-base-left-margin: 1.875em;
+	--mode-selector-button-base-left-spacing: 1.25em;
+}
+
+.reader-mode-selector button.select-mode-auto::before {
+    content: url('/static/img/icons/book-with-gear.svg');
+}
+.reader-mode-selector button.select-mode-on::before {
+    content: url('/static/img/icons/book-open-solid.svg');
+}
+.reader-mode-selector button.select-mode-off::before {
+    content: url('/static/img/icons/book-open.svg');
+}
+
+@media only screen and (min-width: 1800px) {
+	#ui-elements-container .reader-mode-selector {
+		right: 11em;
+		top: 0;
+	}
+}
+@media only screen and (max-width: 1799px) {
+    #ui-elements-container .reader-mode-selector {
+        right: 0;
+        top: 2em;
+    }
+}
+@media only screen and (max-width: 1534px) {
+    #ui-elements-container .reader-mode-selector {
+        top: 7em;
+    }
+}
+@media only screen and (max-width: 1279px) {
+    #ui-elements-container .reader-mode-selector button.select-mode-off {
+        opacity: 0.15;
+    }
+    #ui-elements-container .reader-mode-selector button.select-mode-off:hover,
+    #ui-elements-container .reader-mode-selector button.select-mode-off.selected {
+        opacity: 0.6;
+    }
+}
+@media only screen and (max-width: 649px) {
+    #ui-elements-container .reader-mode-selector {
+        bottom: 11em;
+    }
+}
+
+/******************/
+/* MODE SELECTORS */
+/******************/
+
+.mode-selector {
     position: absolute;
-    right: 11em;
     display: flex;
     padding: 0.1em 0.25em 0.3em 0.25em;
     background-color: var(--GW-mode-selector-background-color);
@@ -5064,29 +5007,29 @@ section.highlight-fading::before {
     transition:
         opacity 2s ease;
 }
-#reader-mode-selector.hidden {
+#ui-elements-container .mode-selector.hidden {
     opacity: 0;
 }
-#reader-mode-selector:hover {
+#ui-elements-container .mode-selector:hover {
     transition: none;
     opacity: 1.0;
     border: 3px double var(--GW-mode-selector-border-hover-color);
 }
 
-.reader-mode-selector-inline {
+.mode-selector-inline {
     --GW-mode-selector-background-color: var(--GW-link-underline-background-color);
 
+	position: static;
     display: inline;
     margin: 0 -0.25em;
 }
 
-.reader-mode-selector button {
+.mode-selector button {
     -moz-appearance: none;
     appearance: none;
     border: none;
     background-color: transparent;
     padding: 0.5em;
-    margin: 0 0 0 1.875em;
     line-height: 1;
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.75rem;
@@ -5095,42 +5038,51 @@ section.highlight-fading::before {
     position: relative;
     display: flex;
 }
-.reader-mode-selector-inline button {
-    margin: 0 0 0 1.625em;
+.mode-selector-inline button {
     display: inline-block;
 }
 
-.reader-mode-selector button::before {
-    width: calc(7/5 * 1em);
-    height: calc(7/5 * 1em);
-    position: absolute;
-    left: calc(1px + -4/3 * 1em);
+.mode-selector button::before {
     opacity: 0.4;
-    top: 0.5em;
 }
-.reader-mode-selector button.select-mode-auto::before {
-    content: url('/static/img/icons/book-with-gear.svg');
-    top: 0.4em;
+.mode-selector button::before {
+    position: absolute;
 }
-.reader-mode-selector button.select-mode-on::before {
-    content: url('/static/img/icons/book-open-solid.svg');
+
+.mode-selector button {
+	--mode-selector-button-left-adjust: 0px;
+
+    margin: 0 0 0 calc(  var(--mode-selector-button-base-left-margin) 
+    				   + var(--mode-selector-button-left-adjust));
 }
-.reader-mode-selector button.select-mode-off::before {
-    content: url('/static/img/icons/book-open.svg');
+.mode-selector.mode-selector-inline button {
+    margin: 0 0 0 calc(  var(--mode-selector-button-base-left-margin) 
+    				   + var(--mode-selector-button-left-adjust) 
+    				   - 0.25em);
 }
-.reader-mode-selector button:not(.selected):hover::before {
+.mode-selector button::before {
+    width: 1.4em;
+    height: 1.4em;
+    left: calc(-1 * (  var(--mode-selector-button-base-left-spacing) 
+    			     + var(--mode-selector-button-left-adjust)));
+}
+
+
+.mode-selector button:not(.selected):hover::before {
     opacity: 1.0;
 }
-.reader-mode-selector button:not(:disabled):hover {
+.mode-selector button:not(:disabled):hover {
     color: var(--GW-mode-selector-button-hover-text-color);
     cursor: pointer;
 }
-.reader-mode-selector button:not(:disabled):active {
+
+.mode-selector button:not(:disabled):active {
     transform: translateY(2px);
 }
-.reader-mode-selector button:hover::after,
-.reader-mode-selector button.selected::after,
-.reader-mode-selector button.active:not(:hover)::after {
+
+.mode-selector button:hover::after,
+.mode-selector button.selected::after,
+.mode-selector button.active:not(:hover)::after {
     content: "";
     position: absolute;
     bottom: 0.25em;
@@ -5139,40 +5091,43 @@ section.highlight-fading::before {
     width: calc(100% - 12px);
     margin: auto;
 }
-.reader-mode-selector button:not(:disabled):active::after {
+.mode-selector button:not(:disabled):active::after {
     transform: translateY(-2px);
 }
-.reader-mode-selector button:hover::after,
-.reader-mode-selector button.selected::after {
+.mode-selector button:hover::after,
+.mode-selector button.selected::after {
     border-bottom: 1px solid currentColor;
 }
-.reader-mode-selector button.active:not(:hover)::after {
+.mode-selector button.active:not(:hover)::after {
     border-bottom: 1px dotted currentColor;
 }
-@media only screen and (max-width: 1799px) {
-    #reader-mode-selector {
-        right: 0;
-        top: 2em;
-    }
-}
+
 @media only screen and (max-width: 1534px) {
-    #reader-mode-selector {
+    #ui-elements-container .mode-selector {
         flex-flow: column;
         padding: 0.1em 0.1em 0.2em 0.15em;
         align-items: flex-start;
-        top: 7em;
     }
-    #reader-mode-selector button + button {
+    #ui-elements-container .mode-selector button + button {
         margin-top: 0.25em;
     }
 }
 @media only screen and (max-width: 1279px) {
-    #reader-mode-selector {
-        padding: 0.1em 0.1em 0.25em 0.15em;
+    #ui-elements-container .mode-selector {
         background-color: var(--GW-mode-selector-mobile-background-color);
         opacity: 1.0;
     }
-    #reader-mode-selector button {
+    #ui-elements-container .mode-selector button {
+        opacity: 0.1;
+    }
+    #ui-elements-container .mode-selector button:hover,
+    #ui-elements-container .mode-selector button.selected {
+        opacity: 0.5;
+    }
+    #ui-elements-container .mode-selector {
+        padding: 0.1em 0.1em 0.25em 0.15em;
+    }
+    #ui-elements-container .mode-selector button {
         color: transparent;
         margin: 0;
         padding: 0;
@@ -5180,45 +5135,31 @@ section.highlight-fading::before {
         height: 2em;
         align-items: center;
         box-shadow: none;
-        opacity: 0.25;
     }
-    #reader-mode-selector button.select-mode-off {
-        opacity: 0.3;
-    }
-    #reader-mode-selector button + button {
+    #ui-elements-container .mode-selector button + button {
         margin-top: 0.5em;
     }
-    #reader-mode-selector button::before {
+    #ui-elements-container .mode-selector button::before {
         left: 12.5%;
         width: 75%;
         height: 75%;
+        opacity: 1.0;
     }
-    #reader-mode-selector button:not(:disabled):hover {
+    #ui-elements-container .mode-selector button:not(:disabled):hover {
         color: transparent;
-    }
-    #reader-mode-selector button:hover,
-    #reader-mode-selector button.selected {
-        opacity: 0.75;
-    }
-    #reader-mode-selector button.select-mode-on:hover,
-    #reader-mode-selector button.select-mode-on.selected {
-        opacity: 0.55;
-    }
-    #reader-mode-selector button.select-mode-off:hover,
-    #reader-mode-selector button.select-mode-off.selected {
-        opacity: 0.85;
     }
 }
 @media only screen and (max-width: 649px) {
-    #reader-mode-selector {
+    #ui-elements-container .mode-selector {
         top: unset;
-        bottom: 11em;
     }
-    #reader-mode-selector button[class^='select-mode-'] {
+    #ui-elements-container .mode-selector button {
         width: 2.25em;
         height: 2.25em;
     }
 }
+
+
 
 /* EXPERIMENTAL */
 /* Citation formatting: ellipsis'd "et al", subscripted date; see /Subscripts & /Lorem#citation-variants */

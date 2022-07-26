@@ -191,23 +191,28 @@ img:not(.invertible):not(.invertible-auto):hover {
 /*  The mode selector is adjusted to be better visible in dark mode, and its
     button icons inverted.
  */
-div#mode-selector {
+/*	TEMPORARILY DISABLED
+/* 
+div.mode-selector {
     opacity: 0.6;
 }
-div#mode-selector button::before {
-    filter: invert(1);
+div.mode-selector button::before {
     opacity: 0.45;
 }
-div#mode-selector button.select-mode-light::before {
+div.mode-selector button.select-mode-light::before {
     opacity: 0.55;
 }
+ */
 
 /*  Reader mode selector, same as above.
  */
-div.reader-mode-selector button::before,
-span.reader-mode-selector button::before {
+div.mode-selector button::before,
+span.mode-selector button::before {
     filter: invert(1);
 }
+/*	TEMPORARILY DISABLED
+/* 
+/* 
 @media only screen and (min-width: 1280px) {
     div#reader-mode-selector {
         opacity: 0.6;
@@ -236,6 +241,7 @@ span.reader-mode-selector button::before {
         opacity: 1.0;
     }
 }
+ */
 
 /*  Masked links key toggle info alert panel.
  */
