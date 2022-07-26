@@ -556,6 +556,7 @@ hr::after,
  */
 .link-tags {
     font-style: italic;
+    margin-left: 0.1em; /* tags are enclosed in ()s, but as links with the text-shadow trick, the italic slant leads to the usual 'chomp' without additional margin. */
 }
 
 blockquote .TOC {
@@ -569,10 +570,6 @@ blockquote .TOC {
     clear: both;
     display: inline-block;
     width: calc(100% - 1.25em);    /* Subtract side padding. */
-}
-
-blockquote .TOC > ul {
-    column-width: 12em;
 }
 
 blockquote .TOC a:hover::after {
@@ -2231,7 +2228,7 @@ span.link-bibliography a {
 /* Currently limited to lists due to issues with hidden:overflow in FF and sidenotes.js in Chrome. */
 .columns > ul,
 .columns > ol {
-    column-width: 15em;
+    column-width: 12em;
     column-gap: 3em;
     margin-bottom: 2em;
 
@@ -2988,10 +2985,6 @@ body.index-directory #footer {
     clear: both;
     display: inline-block;
     width: calc(100% - 1.25em);    /* Subtract side padding. */
-}
-
-.popframe-body .TOC > ul {
-    column-width: 12em;
 }
 
 .popframe-body .TOC a:hover::after {

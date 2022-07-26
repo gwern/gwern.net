@@ -238,7 +238,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "github.com/huggingface/" || u' "medium.com/huggingface/" || u'' "huggingface.co" = aI "\129303" "text" -- "🤗" HUGGING FACE U+1F917
  | u'' "quantifiedself.com" || u'' "forum.quantifiedself.com" || u' "old.reddit.com/r/QuantifiedSelf/" = aI "QS" "text,sans"
  | u'' "www.pragmatic.ml" = aI "𝕄" "text" -- Madison May, machine learning blog
- | aU'' ["thepiratebay.org", "rss.thepiratebay.se", "thepiratebay.se",  "thepiratebay.sx"] = aI "🏴\8205☠️" "text,sans" -- BLACK FLAG + SKULL AND CROSSBONES + ZWJ = PIRATE FLAG <https://emojipedia.org/pirate-flag/>  And if that doesn't work try adding U+FE0F to the end
+ | aU'' ["thepiratebay.org", "rss.thepiratebay.se", "thepiratebay.se",  "thepiratebay.sx"] = aI "the-pirate-bay" "svg" -- in theory, you can get a skull & crossbones by Unicode Emoji: BLACK FLAG + SKULL AND CROSSBONES + ZWJ = PIRATE FLAG <https://emojipedia.org/pirate-flag/> (and if that doesn't work try adding U+FE0F to the end). This turns out to be too unreliable across systems (fonts? OSes? browser versions?) that we replaced it with a proper SVG version of The Pirate Bay's cassette-tape (yes, really) + cross-bones.
  | u'' "www.research.va.gov" = aI "VA" "text,sans" -- US Department of Veterans Affair (mostly linked for Million Veteran Project)
 
  -- Tri/triple TLAs
@@ -299,7 +299,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.imdb.com" = aI "IMDb" "text,sans,quad"
  | u'' "www.nejm.org" = aI "NEJM" "text,quad"
  | u'' "spectrum.ieee.org" || u'' "ieeexplore.ieee.org" = aI "IEEE" "text,mono,quad"
- | u'' "rjlipton.wordpress.com" = aI "P = NP" "text,quad" -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULL WIDTH EQUAL SIGN' turns out to be *too* big and stack up three high.
+ | u'' "rjlipton.wordpress.com" = aI "P = NP" "text,quad" -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULLWIDTH EQUALs SIGN' turns out to be *too* big and stack up three high. using 2 HAIR SPACE will separate the '=' slightly from the 'P' while not causing the 3-layer layout.
  | u' "mitpress.mit.edu/sites/default/files/sicp/" = aI "SI CP" "text,quad,sans"
  | u' "mitpress.mit.edu/books/" = aI "MIT" "text,tri,mono" -- if it's not _SICP_, fall back.x
  | u'' "jaspervdj.be" = aI "JVDJ" "text,quad,mono"
@@ -874,7 +874,7 @@ linkIconTestUnitsText =
          , ("https://www.odt.co.nz/news/dunedin/student-drug-dealer-jailed", "ODT", "text,tri")
          , ("https://www.independent.co.uk/news/uk/this-britain/the-jousting-accident-that-turned-henry-viii-into-a-tyrant-1670421.html", "TI", "text")
          , ("https://www.fastcompany.com/40438376/after-a-comeback-23andme-faces-its-next-test", "FC", "text")
-         , ("https://rjlipton.wordpress.com/2015/07/28/playing-chess-with-the-devil/", "P = NP", "text,quad")
+         , ("https://rjlipton.wordpress.com/2015/07/28/playing-chess-with-the-devil/", "P = NP", "text,quad")
          , ("https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SI CP", "text,quad,sans")
          , ("https://mitpress.mit.edu/books/book-ground", "MIT", "text,tri,mono")
          , ("https://blog.eleuther.ai/announcing-20b/", "eleutherai", "svg")
@@ -1001,7 +1001,7 @@ linkIconTestUnitsText =
          , ("https://www.spiegel.de/panorama/justiz/amokschuetze-von-muenchen-tatwaffe-aus-dem-darknet-a-1104461.html", "SPGL", "text,quad")
          , ("https://www.pragmatic.ml/sparse-sinkhorn-attention/", "𝕄", "text")
          , ("https://hbr.org/2019/12/can-you-know-too-much-about-your-organization", "HBR", "text,tri,sans")
-         , ("https://thepiratebay.org/description.php?id=14045031", "🏴\8205☠️", "text,sans")
+         , ("https://thepiratebay.org/description.php?id=14045031", "the-pirate-bay", "svg")
          , ("https://history.nasa.gov/rogersrep/v2appf.htm",                                    "nasa", "svg")
          , ("https://science.nasa.gov/science-news/science-at-nasa/2005/03jun_naps/",           "nasa", "svg")
          , ("https://www.nasa.gov/mission_pages/station/expeditions/expedition30/tryanny.html", "nasa", "svg")
