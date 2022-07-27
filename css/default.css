@@ -5193,6 +5193,7 @@ section.highlight-fading::before {
 .cite-joiner {
     width: 0;
     height: 0;
+    overflow: hidden;
     display: inline-block;
     word-break: keep-all;
     overflow-wrap: normal;
