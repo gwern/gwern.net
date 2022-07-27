@@ -9,15 +9,6 @@
 /**********/
 /* colors are now in /static/css/colors.css or dark-mode.css */
 
-/****************/
-/* FIXED COLORS */
-/****************/
-/* Not to be inverted in dark mode! */
-
-:root {
-    --GW-object-popup-background-color: #fff;
-}
-
 /*******************/
 /* OTHER VARIABLES */
 /*******************/
@@ -871,6 +862,7 @@ img::before {
     padding: 0.5em 0.75em;
     background-color: var(--GW-body-background-color);
     text-align: left;
+    height: 100%;
 }
 
 /***************/
@@ -3350,7 +3342,7 @@ body.index-directory #footer {
 
 .popframe.object .popframe-content-view {
     padding: 0;
-    background-color: var(--GW-object-popup-background-color);
+    background-color: var(--GW-popups-object-popup-background-color);
 }
 
 .popframe-body.object img,

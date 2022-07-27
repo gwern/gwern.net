@@ -225,6 +225,8 @@
     --GW-popups-body-background-color: var(--GW-body-background-color);
     --GW-popups-popup-background-color: var(--GW-body-background-color);
 
+    --GW-popups-object-popup-background-color: #fff;
+
     --GW-popups-popup-border-color: #ccc;
     --GW-popups-box-shadow-color: #ccc;
     --GW-popups-popup-border-focused-color: #aaa;
