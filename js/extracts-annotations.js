@@ -205,7 +205,6 @@ Extracts = { ...Extracts, ...{
                                                                                                     + referenceData.dateHTML
                                                                                                     + ((auxLinks == "") ? "" : " (" + auxLinks + ")")
                                                                                                     + "</p>");
-            console.log("Change: " + result);
 
             return result;
         })() + (() => {
