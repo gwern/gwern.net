@@ -200,14 +200,15 @@ Extracts = { ...Extracts, ...{
             }
             auxLinks = auxLinks.join("; ");
 
-            let result = ((referenceData.authorHTML+referenceData.dateHTML+auxLinks) == "") ? "" : (`<p class="data-field author-date-aux">`
-                                                                                                    + referenceData.authorHTML
-                                                                                                    + referenceData.dateHTML
-                                                                                                    + ((auxLinks == "") ? "" : " (" + auxLinks + ")")
-                                                                                                    + "</p>");
-            console.log("Change: " + result);
-
-            return result;
+            return ((referenceData.authorHTML || referenceData.dateHTML || auxLinks) 
+            		? (`<p class="data-field author-date-aux">`
+            		   + referenceData.authorHTML
+            		   + referenceData.dateHTML
+            		   + (auxLinks == ""
+            		      ? `` 
+            		      : ` (${auxLinks})`)
+            		   + `</p>`)
+            		: "");
         })() + (() => {
             //  Abstract (data field). (Empty for now; content injected below.)
             return `<div class="data-field annotation-abstract"`
