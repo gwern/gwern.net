@@ -2275,7 +2275,6 @@ span.link-bibliography a {
     --admonition-background-color: var(--GW-admonition-tip-background-color);
     --admonition-left-border-color: var(--GW-admonition-tip-left-border-color);
 }
-.admonition.warn,
 .admonition.warning {
     --admonition-background-color: var(--GW-admonition-warning-background-color);
     --admonition-left-border-color: var(--GW-admonition-warning-left-border-color);
@@ -2304,7 +2303,6 @@ span.link-bibliography a {
     content: url('/static/img/icons/arrow-right-white.svg');
     padding: 0.85em;
 }
-.admonition.warn::before,
 .admonition.warning::before {
     content: url('/static/img/icons/exclamation-triangle-white.svg');
     padding-top: 0.75em;
@@ -2330,26 +2328,22 @@ span.link-bibliography a {
     text-shadow: none;
 }
 
-.admonition.warn,
 .admonition.warning,
 .admonition.error {
     --GW-link-underline-gradient-line-color: var(--GW-admonition-reversed-link-underline-gradient-line-color);
     --GW-link-underline-gradient-line-color-hover: var(--GW-admonition-reversed-link-underline-gradient-line-color-hover);
     --GW-footnote-ref-highlight-background-color: var(--GW-admonition-reversed-footnote-ref-highlight-background-color);
 }
-.admonition.warn,
 .admonition.warning {
     --GW-dotted-underline-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMZqamv///ywAAAAABAACAAACBEwAhgUAOw==');
 }
 .admonition.error {
     --GW-dotted-underline-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMVpaWv///ywAAAAABAACAAACBEwAhgUAOw==');
 }
-.admonition.warn a,
 .admonition.warning a,
 .admonition.error a {
     color: var(--GW-admonition-reversed-link-color);
 }
-.admonition.warn a:hover,
 .admonition.warning a:hover,
 .admonition.error a:hover {
     color: var(--GW-admonition-reversed-link-color-hover);

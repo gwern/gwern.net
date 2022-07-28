@@ -89,15 +89,10 @@ hr::after,
 
 /*  Admonition icons.
  */
-.admonition.tip::before,
-.admonition.note::before,
-.admonition.warn::before,
-.admonition.warning::before,
-.admonition.error::before {
+.admonition::before {
     filter: invert(1);
 }
 
-div.admonition.warn,
 div.admonition.warning,
 div.admonition.error {
     --GW-dotted-underline-background-image: var(--GW-dotted-underline-hover-dark-background-image);
