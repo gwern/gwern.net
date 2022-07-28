@@ -583,10 +583,10 @@ a[data-link-icon='chi-dna']::after {
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.25em;
 
-    opacity: 0.75;
+    opacity: 0.85;
 }
 a[data-link-icon='chi-dna']:hover::after {
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 a[data-link-icon='deepmind']::after {
@@ -625,11 +625,11 @@ a[data-link-icon='econlib']::after { /* torch */
 }
 
 a[data-link-icon='erowid']::after {
-    --link-icon-size: 1em;
+    --link-icon-size: 0.95em;
     --link-icon-offset-x: 0.1em;
-    --link-icon-offset-y: 0.05em;
+    --link-icon-offset-y: 0.1em;
 
-    opacity: 0.8;
+    opacity: 0.9;
 }
 a[data-link-icon='erowid']:hover::after {
     opacity: 0.7;
@@ -640,7 +640,10 @@ a[data-link-icon='facebook']::after {
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.1em;
 
-    opacity: 0.50;
+    opacity: 0.6;
+}
+a[data-link-icon='facebook']:hover::after {
+    opacity: 0.35;
 }
 
 a[data-link-icon='github']::after {
@@ -656,7 +659,7 @@ a[data-link-icon='google']::after {
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.3em;
 
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 a[data-link-icon='google-scholar']::after {
@@ -933,11 +936,14 @@ a[data-link-icon='apple']::after { /* Darken, enlarge, & shift left/up */
 }
 
 a[data-link-icon='quanta']::after { /* Darken, enlarge, & shift left/up */
-    --link-icon-size: 1em;
-    --link-icon-offset-y: 0em;
+    --link-icon-size: 0.9em;
+    --link-icon-offset-y: 0.1em;
     --link-icon-offset-x: 0.1em;
 
-    opacity: 1;
+    opacity: 0.9;
+}
+a[data-link-icon='quanta']:hover::after {
+    opacity: 0.5;
 }
 
 a[data-link-icon='creative-commons']::after {
@@ -1014,6 +1020,17 @@ a[data-link-icon='the-pirate-bay']::after {
     --link-icon-offset-x: 0.2em;
 
     opacity: 0.75;
+}
+
+a[data-link-icon='metaculus']::after {
+    --link-icon-size: 0.55em;
+    --link-icon-offset-y: 0.2em;
+    --link-icon-offset-x: 0.2em;
+
+    opacity: 0.75;
+}
+a[data-link-icon='metaculus']:hover::after {
+    opacity: 0.45;
 }
 
 /*=------------------=*/
