@@ -104,6 +104,8 @@ ReaderMode = {
         }
     `,
 
+	readerModeTitleNote: " (reader mode)",
+
     /*  Inject a style block with the given content and element ID.
      */
     //  Called by: this file (immediately on load)
@@ -154,6 +156,9 @@ ReaderMode = {
 
         //  Add body classes.
         document.body.classList.add("reader-mode-active", "masked-links-hidden");
+
+		//	Update document title.
+		document.title += ReaderMode.readerModeTitleNote;
     },
 };
 

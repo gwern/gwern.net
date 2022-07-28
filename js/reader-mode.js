@@ -337,6 +337,10 @@ ReaderMode = { ...ReaderMode, ...{
 
 		//	Update visual state.
 		ReaderMode.updateVisibility({ maskedLinksVisible: false, maskedLinksKeyToggleInfoAlertVisible: false });
+
+		//	Update document title.
+		if (document.title.endsWith(ReaderMode.readerModeTitleNote) == false)
+			document.title += ReaderMode.readerModeTitleNote;
 	},
 
 	//	Called by: ReaderMode.activate
@@ -373,6 +377,10 @@ ReaderMode = { ...ReaderMode, ...{
 		GWLog("ReaderMode.deactivate", "reader-mode.js", 1);
 
 		ReaderMode.active = false;
+
+		//	Update document title.
+		if (document.title.endsWith(ReaderMode.readerModeTitleNote))
+			document.title = document.title.slice(0, (-1 * ReaderMode.readerModeTitleNote.length));
 
 		//	Remove body classes.
 		document.body.classList.remove("reader-mode-active", "masked-links-hidden");
