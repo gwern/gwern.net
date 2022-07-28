@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-22 21:14:15 gwern"
+When:  Time-stamp: "2022-07-27 16:03:14 gwern"
 License: CC-0
 -}
 
@@ -671,7 +671,7 @@ tagsLong2Short = [
           , ("philosophy/ethics", "ethics")
           , ("philosophy/brethren-of-purity", "Brethren of Purity")
           , ("longevity/tirzepatide", "tirzepatide")
-          , ("longevity/semaglutide", "-glutides")
+          , ("longevity/semaglutide", "glutides")
           , ("exercise/gravitostat", "the gravitostat")
           , ("tominaga-nakamoto", "Tominaga Nakamoto")
           , ("conscientiousness", "Conscientiousness")
@@ -2928,6 +2928,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("questiongeneration", "question generation")
           , ("wethen", "we then")
           , ("successfullylearns", "successfully learns")
+          , ("n-of-1", "<em>n</em>-of-1")
           , ("“ ", "“")
           , ("\t", "")
           , ("\t\t", "")
@@ -2953,5 +2954,41 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("amp#x000E9", "é")
           , ("amp#x000E9,", "é")
           , ("\\aka", "a.k.a.")
+          , (" three ", " 3 ")
+          , (" Three ", " 3 ")
+          , (" four ", " 4 ")
+          , (" Four ", " 4 ")
+          , (" five ", " 5 ")
+          , (" Five ", " 5 ")
+          , (" six ", " 6 ")
+          , (" Six ", " 6 ")
+          , (" seven ", " 7 ")
+          , (" Seven ", " 7 ")
+          , (" eight ", " 8 ")
+          , (" Eight ", " 8 ")
+          , (" nine ", " 9 ")
+          , (" Nine ", " 9 ")
+          , (" ten ", " 10 ")
+          , (" Ten ", " 10 ")
+          , (" eleven", " 11")
+          , (" Eleven", " 11")
+          , (" twelve", " 12")
+          , (" Twelve", " 12")
+          , (" thirteen", " 13")
+          , (" Thirteen", " 13")
+          , (" fourteen", " 14")
+          , (" Fourteen", " 14")
+          , (" fifteen", " 15")
+          , (" Fifteen", " 15")
+          , (" sixteen", " 16")
+          , (" Sixteen", " 16")
+          , (" seventeen", " 17")
+          , (" Seventeen", " 17")
+          , (" eighteen", " 18")
+          , (" Eighteen", " 18")
+          , (" nineteen", " 19")
+          , (" Nineteen", " 19")
+          , (" twenty", " 20")
+          , (" Twenty", " 20")
           , ("\160", " ") -- NO BREAK SPACE
             ]

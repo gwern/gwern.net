@@ -289,7 +289,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | aU'' ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
  | u'' "www.cell.com" = aI "CELL" "text,quad,sans" -- Cell: their logo is unrecognizable (and dumb)
  | u'' "mlp.fandom.com" = aI "MLPW" "text,quad,sans" -- NOTE: override Fandom catch-all
- | u'' "www.fimfiction.net" = aI "FIMF" "text,quad,sans"
+ | u'' "www.fimfiction.net" = aI "FIMF" "text,quad,mono"
  | u'' "www.nber.org" && (extension u /= ".pdf") = aI "NBER" "text,quad"
  | u'' "www.pnas.org" = aI "PNAS" "text,quad" -- PNAS: they don’t have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (but just as black text on white background, per our monochrome theme) [On second thought, all of the icons using background squares, like HN/YC, are very intense and hard to visually balance. It's probably better to leave PNAS as just a quad-letter.]
  | u'' "www.rand.org" = aI "RAND" "text,quad,sans"
@@ -941,7 +941,7 @@ linkIconTestUnitsText =
          , ("https://old.reddit.com/r/AIDungeon/comments/i1qhg0/the_dragon_ai_just_got_worse/", "AID", "text,tri,sans")
          , ("https://old.reddit.com/r/AIDungeon/comments/i1qhg0/the_dragon_ai_just_got_worse/", "AID", "text,tri,sans")
          , ("https://www.patreon.com/AIDungeon", "AID", "text,tri,sans")
-         , ("https://www.fimfiction.net/story/62074/Friendship-is-Optimal", "FIMF", "text,quad,sans")
+         , ("https://www.fimfiction.net/story/62074/Friendship-is-Optimal", "FIMF", "text,quad,mono")
          , ("https://magenta.tensorflow.org/music-transformer", "google", "svg")
          , ("https://www.gq.com/story/the-last-true-hermit?printable=true", "GQ", "text,sans")
          , ("https://bls.gov/news.release/archives/ecec_031986.pdf", "BLS", "text,sans")
