@@ -226,6 +226,8 @@
     --GW-popups-body-background-color: var(--GW-body-background-color);
     --GW-popups-popup-background-color: var(--GW-body-background-color);
 
+    --GW-popups-object-popup-background-color: #fff;
+
     --GW-popups-popup-border-color: #ccc;
     --GW-popups-box-shadow-color: #ccc;
     --GW-popups-popup-border-focused-color: #aaa;
@@ -1713,6 +1715,8 @@ span.smallcaps {
     --GW-popups-body-background-color: var(--GW-body-background-color);
     --GW-popups-popup-background-color: var(--GW-body-background-color);
 
+    --GW-popups-object-popup-background-color: #000;
+
     --GW-popups-popup-border-color: #5c5c5c;
     --GW-popups-box-shadow-color: #5c5c5c;
     --GW-popups-popup-border-focused-color: #7c7c7c;
@@ -1974,6 +1978,30 @@ img:not(.invertible):not(.invertible-auto):hover {
     filter: none;
     transition: filter 0s ease 0.25s;
 }
+/*	Image alt-text.
+ */
+img.invertible::before,
+img.invertible-auto::before {
+	filter: invert(1);
+}
+img.invertible:hover::before,
+img.invertible-auto:hover::before {
+	filter: none;
+}
+@supports (-moz-user-focus: normal) {
+	/*	Only Firefox supports styling the image alt-text, but that interferes 
+		with the transitions. (We include non-class’d `img` in this selector for
+		consistency.)
+	 */
+	img,
+	img:hover,
+	img.invertible,
+	img.invertible:hover,
+	img.invertible-auto,
+	img.invertible-auto:hover {
+		transition: none;
+	}
+}
 /*  For images which have been manually marked up with ‘.invertible-not’, we
     avoid any filtering at all. If they are manually marked up (artwork,
     diagrams with multiple subtly-different colors matched to a legend/caption),
@@ -2092,6 +2120,12 @@ a[data-link-icon-type*='svg']::after {
  */
 .popframe-body.wikipedia-entry .mwe-math-element img {
 	filter: invert(1);
+}
+
+/*	Popups-disabled icon/button.
+ */
+div#popups-disabled-show-popup-options-dialog-button {
+    opacity: 0.5;
 }
 </style>
 <script>
