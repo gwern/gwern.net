@@ -1980,15 +1980,18 @@ img:not(.invertible):not(.invertible-auto):hover {
 }
 /*	Image alt-text.
  */
-img::before {
+img.invertible::before,
+img.invertible-auto::before {
 	filter: invert(1);
 }
-img:hover::before {
+img.invertible:hover::before,
+img.invertible-auto:hover::before {
 	filter: none;
 }
 @supports (-moz-user-focus: normal) {
 	/*	Only Firefox supports styling the image alt-text, but that interferes 
-		with the transitions.
+		with the transitions. (We include non-class’d `img` in this selector for
+		consistency.)
 	 */
 	img,
 	img:hover,
