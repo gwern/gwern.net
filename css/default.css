@@ -1657,6 +1657,11 @@ table td > code {
 .table-wrapper::-webkit-scrollbar-thumb:hover {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAP///ywAAAAABAAEAAACBgQShqgJBQA7');
 }
+@media only screen and (max-width: 649px) {
+    .table-wrapper::-webkit-scrollbar {
+        height: 6px;
+    }
+}
 
 /*  Horizontal scroll bar styles (for Firefox).
     */
@@ -1763,6 +1768,11 @@ pre::-webkit-scrollbar-thumb {
 }
 pre::-webkit-scrollbar-thumb:hover {
     background-color: var(--GW-pre-element-scrollbar-thumb-hover-color);
+}
+@media only screen and (max-width: 649px) {
+    pre::-webkit-scrollbar {
+        height: 10px;
+    }
 }
 
 /*  Horizontal scroll bar styles (for Firefox).
@@ -1897,6 +1907,11 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     box-shadow:
         0 0 0 2px var(--GW-math-block-scrollbar-track-color) inset,
         0 0 0 8px var(--GW-math-block-scrollbar-thumb-hover-color) inset;
+}
+@media only screen and (max-width: 649px) {
+    .mjpage__block::-webkit-scrollbar {
+        height: 10px;
+    }
 }
 
 /*  Horizontal scroll bar styles (for Firefox).
@@ -4421,7 +4436,7 @@ body.index-directory #footer {
 /*  Scroll bar styles (for WebKit/Blink).
     */
 .popin .popframe-scroll-view::-webkit-scrollbar {
-    width: 14px;
+    width: 10px;
 }
 .popin .popframe-scroll-view::-webkit-scrollbar-thumb {
     background-color: var(--GW-popins-popin-scrollbar-thumb-color);
