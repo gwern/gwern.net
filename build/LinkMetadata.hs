@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-27 16:03:14 gwern"
+When:  Time-stamp: "2022-07-29 15:58:59 gwern"
 License: CC-0
 -}
 
@@ -38,7 +38,7 @@ import Network.URI (isURIReference, uriFragment, parseURIReference)
 import System.Directory (doesFileExist, doesDirectoryExist)
 import System.Directory.Recursive (getSubdirsRecursive) -- dir-traverse
 import System.Exit (ExitCode(ExitFailure))
-import System.FilePath (takeDirectory, takeExtension, takeFileName)
+import System.FilePath (takeDirectory, takeExtension, takeFileName, takeBaseName)
 import System.GlobalLock (lock)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderOptions, renderTags, renderTagsOptions, Tag(TagClose, TagOpen, TagText))
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span), HTMLMathMethod(MathJax),
@@ -220,7 +220,7 @@ readLinkMetadataAndCheck = do
 
              -- check validity of all external links:
              let urlsAll = filter (\(x@(u:_),_) -> if u `elem` ['/', '!', '$', '\8383'] ||
-                                                      "wikipedia.org" `isInfixOf` x || "hoogle.haskell.org" `isInfixOf` x then False
+                                                      "wikipedia.org" `isInfixOf` x || "hoogle.haskell.org" `isInfixOf` x || "ttps://" `isPrefixOf` x || "ttp://" `isPrefixOf` x then False
                                                  else not (isURIReference x)) (M.toList final)
              unless (null urlsAll) $ printRed "Invalid URIs?" >> printGreen (ppShow urlsAll)
 
@@ -860,9 +860,23 @@ readYaml yaml = do yaml' <- do filep <- doesFileExist yaml
                      Right y -> (return $ concatMap convertListToMetadata y) :: IO MetadataList
                 where
                  convertListToMetadata :: [String] -> MetadataList
-                 convertListToMetadata [u, t, a, d, di,     s] = [(u, (t,a,d,di,uniqTags $ pages2Tags u $ tag2TagsWithDefault u "", s))]
-                 convertListToMetadata [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,uniqTags $ pages2Tags u $ tag2TagsWithDefault u ts, s))]
+                 convertListToMetadata [u, t, a, d, di,     s] = [(u, (t,a,guessDateFromLocalSchema u d,di,uniqTags $ pages2Tags u $ tag2TagsWithDefault u "", s))]
+                 convertListToMetadata [u, t, a, d, di, ts, s] = [(u, (t,a,guessDateFromLocalSchema u d,di,uniqTags $ pages2Tags u $ tag2TagsWithDefault u ts, s))]
                  convertListToMetadata                       e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
+
+-- If no accurate date is available, attempt to guess date from the local file schema of 'YYYY-surname-[title, disambiguation, etc].ext' or 'YYYY-MM-DD-...'
+-- This is useful for PDFs with bad metadata, or data files with no easy way to extract metadata (like HTML files with hopelessly inconsistent dirty metadata fields like `<meta>` tags) or where it's not yet supported (image files usually have a reliable creation date).
+--  > guessDateFromLocalSchema "/docs/ai/2020-10-10-barr.png" ""
+-- → "2020-10-10"
+-- > guessDateFromLocalSchema "/docs/ai/2020-barr.pdf" ""
+-- → "2020"
+-- > guessDateFromLocalSchema "http://cnn.com" ""
+-- → ""
+guessDateFromLocalSchema :: String -> String -> String
+guessDateFromLocalSchema url date = if head url /= '/' || date /= "" then date
+                                    else let f = takeBaseName url in
+                                           if not (head f == '1' || head f == '2') -- I don't have any documents from the future or from <1000 AD, so all viable matches start with '1' or '2', I think...
+                                           then date else sed "^([12][0-9][0-9][0-9])(-[0-9][0-9])?(-[0-9][0-9])?-.*" "\\1\\2\\3" f
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: MetadataList -> MetadataList -> Path -> IO ()
