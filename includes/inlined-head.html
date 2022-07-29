@@ -3498,6 +3498,23 @@ ReaderMode = {
         body.reader-mode-active.masked-links-hidden a:link * {
             text-shadow: none;
         }
+        /*	Citations.
+         */
+		body.reader-mode-active.masked-links-hidden .cite-joiner {
+			display: initial;
+		}
+		body.reader-mode-active.masked-links-hidden .cite-author-plural::after {
+			content: none;
+		}
+		body.reader-mode-active.masked-links-hidden .cite-date {
+			vertical-align: unset;
+			font-size: unset;
+			line-height: unset;
+			font-variant-numeric: unset;
+			margin-left: unset;
+		}
+        /*	Mobile layout adjustments.
+         */
         @media only screen and (max-width: 649px) {
             body.reader-mode-active #sidebar {
                 position: relative;
