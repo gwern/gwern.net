@@ -500,20 +500,21 @@ img.invertible:hover::before,
 img.invertible-auto:hover::before {
 	filter: none;
 }
-@supports (-moz-user-focus: normal) {
-	/*	Only Firefox supports styling the image alt-text, but that interferes 
-		with the transitions. (We include non-class’d `img` in this selector for
-		consistency.)
-	 */
-	img,
-	img:hover,
-	img.invertible,
-	img.invertible:hover,
-	img.invertible-auto,
-	img.invertible-auto:hover {
-		transition: none;
-	}
+/*	Styling the image alt-text interferes with the transitions in dark mode.
+	(We include non-class’d `img` in this selector for consistency.)
+
+	TEMPORARY until we transition to a color-based instead of filter-based
+	scheme for this. —SA 2022-07-29
+ */
+img,
+img:hover,
+img.invertible,
+img.invertible:hover,
+img.invertible-auto,
+img.invertible-auto:hover {
+	transition: none;
 }
+
 /*  For images which have been manually marked up with ‘.invertible-not’, we
     avoid any filtering at all. If they are manually marked up (artwork,
     diagrams with multiple subtly-different colors matched to a legend/caption),

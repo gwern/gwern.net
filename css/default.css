@@ -857,8 +857,9 @@ figure.width-full {
 /*  Image alt-text.
     */
 img::before {
-    display: block;
+	content: attr(alt);
     font-family: var(--GW-sans-serif-font-stack);
+    display: block;
     padding: 0.5em 0.75em;
     background-color: var(--GW-body-background-color);
     text-align: left;
