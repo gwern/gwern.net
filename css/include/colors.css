@@ -187,18 +187,16 @@
 
     /*  Admonitions.
      */
-    --GW-admonition-default-left-border-color: #909090;
-    --GW-admonition-default-background-color: #d8d8d8;
+    --GW-admonition-note-left-border-color: #909090;
+    --GW-admonition-note-background-color: #d8d8d8;
     --GW-admonition-tip-left-border-color: #d8d8d8;
     --GW-admonition-tip-background-color: #f0f0f0;
     --GW-admonition-warning-left-border-color: #5a5a5a;
     --GW-admonition-warning-background-color: #9a9a9a;
     --GW-admonition-warning-text-color: #fff;
-    --GW-admonition-warning-icon-color: #fff;
     --GW-admonition-error-left-border-color: #2d2d2d;
     --GW-admonition-error-background-color: #5a5a5a;
     --GW-admonition-error-text-color: #fff;
-    --GW-admonition-error-icon-color: #fff;
     --GW-admonition-reversed-link-color: #ddd;
     --GW-admonition-reversed-link-color-hover: #ccc;
     --GW-admonition-reversed-link-underline-gradient-line-color: #ccc;

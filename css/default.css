@@ -2252,8 +2252,6 @@ span.link-bibliography a {
 /* - <div class="admonition warning"><div class="admonition-title">Warning title (*)</div> text</div> */
 /* - <div class="admonition error"><div class="admonition-title">Error title (*)</div> text</div> */
 .admonition {
-    --admonition-background-color: var(--GW-admonition-default-background-color);
-    --admonition-left-border-color: var(--GW-admonition-default-left-border-color);
     --admonition-text-color: currentColor;
 
     --GW-link-underline-background-color: var(--admonition-background-color);
@@ -2271,6 +2269,10 @@ span.link-bibliography a {
     font-weight: bold;
 }
 
+.admonition.note {
+    --admonition-background-color: var(--GW-admonition-note-background-color);
+    --admonition-left-border-color: var(--GW-admonition-note-left-border-color);
+}
 .admonition.tip {
     --admonition-background-color: var(--GW-admonition-tip-background-color);
     --admonition-left-border-color: var(--GW-admonition-tip-left-border-color);
@@ -2347,6 +2349,11 @@ span.link-bibliography a {
 .admonition.warning a:hover,
 .admonition.error a:hover {
     color: var(--GW-admonition-reversed-link-color-hover);
+}
+
+.admonition.warning a[data-link-icon-type='svg']::after,
+.admonition.error a[data-link-icon-type='svg']::after {
+    filter: invert(1);
 }
 
 /*  Admonitions in/as page abstracts (e.g. /Archiving-GitHub).

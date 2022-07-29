@@ -188,18 +188,16 @@
 
     /*  Admonitions.
      */
-    --GW-admonition-default-left-border-color: #909090;
-    --GW-admonition-default-background-color: #d8d8d8;
+    --GW-admonition-note-left-border-color: #909090;
+    --GW-admonition-note-background-color: #d8d8d8;
     --GW-admonition-tip-left-border-color: #d8d8d8;
     --GW-admonition-tip-background-color: #f0f0f0;
     --GW-admonition-warning-left-border-color: #5a5a5a;
     --GW-admonition-warning-background-color: #9a9a9a;
     --GW-admonition-warning-text-color: #fff;
-    --GW-admonition-warning-icon-color: #fff;
     --GW-admonition-error-left-border-color: #2d2d2d;
     --GW-admonition-error-background-color: #5a5a5a;
     --GW-admonition-error-text-color: #fff;
-    --GW-admonition-error-icon-color: #fff;
     --GW-admonition-reversed-link-color: #ddd;
     --GW-admonition-reversed-link-color-hover: #ccc;
     --GW-admonition-reversed-link-underline-gradient-line-color: #ccc;
@@ -1677,18 +1675,16 @@ span.smallcaps {
 
     /*  Admonitions.
      */
-    --GW-admonition-default-left-border-color: #929292;
-    --GW-admonition-default-background-color: #4f4f4f;
+    --GW-admonition-note-left-border-color: #929292;
+    --GW-admonition-note-background-color: #4f4f4f;
     --GW-admonition-tip-left-border-color: #4f4f4f;
     --GW-admonition-tip-background-color: #303030;
     --GW-admonition-warning-left-border-color: #bdbdbd;
     --GW-admonition-warning-background-color: #8a8a8a;
     --GW-admonition-warning-text-color: #000;
-    --GW-admonition-warning-icon-color: #000;
     --GW-admonition-error-left-border-color: #e1e1e1;
     --GW-admonition-error-background-color: #bdbdbd;
     --GW-admonition-error-text-color: #000;
-    --GW-admonition-error-icon-color: #000;
     --GW-admonition-reversed-link-color: #494949;
     --GW-admonition-reversed-link-color-hover: #5c5c5c;
     --GW-admonition-reversed-link-underline-gradient-line-color: #5c5c5c;
@@ -1896,13 +1892,22 @@ hr::after,
 
 /*  Admonition icons.
  */
-.admonition::before {
+div.admonition::before {
     filter: invert(1);
 }
 
+/*	Dotted link underlines in admonitions.
+ */
 div.admonition.warning,
 div.admonition.error {
     --GW-dotted-underline-background-image: var(--GW-dotted-underline-hover-dark-background-image);
+}
+
+/*	SVG icons in the two darker styles of admonitions.
+ */
+div.admonition.warning a[data-link-icon-type='svg']::after,
+div.admonition.error a[data-link-icon-type='svg']::after {
+    filter: none;
 }
 
 /*  List bullets are SVGs and have to be inverted.

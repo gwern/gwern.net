@@ -89,13 +89,22 @@ hr::after,
 
 /*  Admonition icons.
  */
-.admonition::before {
+div.admonition::before {
     filter: invert(1);
 }
 
+/*	Dotted link underlines in admonitions.
+ */
 div.admonition.warning,
 div.admonition.error {
     --GW-dotted-underline-background-image: var(--GW-dotted-underline-hover-dark-background-image);
+}
+
+/*	SVG icons in the two darker styles of admonitions.
+ */
+div.admonition.warning a[data-link-icon-type='svg']::after,
+div.admonition.error a[data-link-icon-type='svg']::after {
+    filter: none;
 }
 
 /*  List bullets are SVGs and have to be inverted.
