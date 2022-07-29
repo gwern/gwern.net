@@ -5198,14 +5198,6 @@ section.highlight-fading::before {
     font-variant-numeric: tabular-nums;
     margin-left: 0.05em;
 }
-/* Much more complicated than simply `display: none;` to try to make copy-paste work normally without hacking the copy-listener. */
 .cite-joiner {
-    width: 0;
-    height: 0;
-    overflow: hidden;
-    display: inline-block;
-    word-break: keep-all;
-    overflow-wrap: normal;
-    white-space: nowrap;
-    opacity: 0;
+    display: none;
 }
