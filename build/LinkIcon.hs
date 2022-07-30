@@ -240,6 +240,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.pragmatic.ml" = aI "𝕄" "text" -- Madison May, machine learning blog
  | aU'' ["thepiratebay.org", "rss.thepiratebay.se", "thepiratebay.se",  "thepiratebay.sx"] = aI "the-pirate-bay" "svg" -- in theory, you can get a skull & crossbones by Unicode Emoji: BLACK FLAG + SKULL AND CROSSBONES + ZWJ = PIRATE FLAG <https://emojipedia.org/pirate-flag/> (and if that doesn't work try adding U+FE0F to the end). This turns out to be too unreliable across systems (fonts? OSes? browser versions?) that we replaced it with a proper SVG version of The Pirate Bay's cassette-tape (yes, really) + cross-bones.
  | u'' "www.research.va.gov" = aI "VA" "text,sans" -- US Department of Veterans Affair (mostly linked for Million Veteran Project)
+ | u'' "retractionwatch.com" = aI "🔍" "text" -- Retraction Watch <https://en.wikipedia.org/wiki/Retraction_Watch> LEFT-POINTING HOUR GLASS
 
  -- Tri/triple TLAs
  | u' "animenewsnetwork.com" = aI "ANN" "text,tri"
@@ -1025,6 +1026,7 @@ linkIconTestUnitsText =
          , ("https://library.bz/main/upload/", "raven", "svg")
          , ("https://www.hoover.org/research/optimistic-thought-experiment", "hoover-institution", "svg")
          , ("https://80000hours.org/podcast/episodes/sam-bankman-fried-high-risk-approach-to-crypto-and-doing-good/", "80k", "text,tri,sans")
+         , ("https://retractionwatch.com/2011/02/28/crystal-myth-11-more-retractions-from-crystallography-journal-after-2010-fakery/", "🔍", "text")
         ]
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
