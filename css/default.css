@@ -5189,7 +5189,10 @@ section.highlight-fading::before {
 /* Citation formatting: ellipsis'd "et al", subscripted date; see /Subscripts & /Lorem#citation-variants */
 /* This is variant #6, 'HORIZONTAL ELLIPSIS/​subscripted year'. */
 /* This relies on the 'citefyInline' pass in Typography.hs: the author ('Foo', or 'Foo & Bar') is put in span.cite-author, the 'et al' joiner (if any) in span.cite-joiner, and the year date in span.cite-date. For 'Foo 2020' or 'Foo & Bar 2020', there is no joiner, only for 'et al'; this lets us replace the et al with an ellipsis while subscripting the year in all cases. */
-.cite-author-plural::after { content: "..."; }
+.cite-author-plural::after {
+    content: "...";
+    margin-left: 0.05em;
+}
 .cite-date {
     vertical-align: -0.35ex;
     position: relative;
