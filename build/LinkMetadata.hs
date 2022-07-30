@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-07-29 15:58:59 gwern"
+When:  Time-stamp: "2022-07-30 17:46:45 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad, guessTagFromShort, listTagDirectories) where
+module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad, guessTagFromShort, listTagsAll, listTagDirectories) where
 
 import Control.Monad (unless, void, when, foldM_, filterM)
 import Data.Aeson (eitherDecode, FromJSON)
@@ -36,7 +36,7 @@ import GHC.Generics (Generic)
 import Network.HTTP (urlDecode, urlEncode)
 import Network.URI (isURIReference, uriFragment, parseURIReference)
 import System.Directory (doesFileExist, doesDirectoryExist)
-import System.Directory.Recursive (getSubdirsRecursive) -- dir-traverse
+import System.Directory.Recursive (getSubdirsRecursive, getDirFiltered) -- dir-traverse
 import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeDirectory, takeExtension, takeFileName, takeBaseName)
 import System.GlobalLock (lock)
@@ -220,7 +220,7 @@ readLinkMetadataAndCheck = do
 
              -- check validity of all external links:
              let urlsAll = filter (\(x@(u:_),_) -> if u `elem` ['/', '!', '$', '\8383'] ||
-                                                      "wikipedia.org" `isInfixOf` x || "hoogle.haskell.org" `isInfixOf` x || "ttps://" `isPrefixOf` x || "ttp://" `isPrefixOf` x then False
+                                                      "wikipedia.org" `isInfixOf` x || "hoogle.haskell.org" `isInfixOf` x || not ("ttps://" `isPrefixOf` x || "ttp://" `isPrefixOf` x || "/wiki" `isPrefixOf` x || "wiki/" `isPrefixOf` x) then False
                                                  else not (isURIReference x)) (M.toList final)
              unless (null urlsAll) $ printRed "Invalid URIs?" >> printGreen (ppShow urlsAll)
 
@@ -251,11 +251,10 @@ readLinkMetadataAndCheck = do
 
              -- check tags (not just custom but all of them, including partials)
              let tagsSet = sort $ nubOrd $ concat $ M.elems $ M.map (\(_,_,_,_,tags,_) -> tags) $ M.filter (\(t,_,_,_,_,_) -> t /= "") final
-             Par.mapM_ (\tag -> do directoryP <- doesDirectoryExist ("docs/"++tag++"/")
-                                   unless directoryP $ do
-                                     let missingTags = M.filter (\(_,_,_,_,tags,_) -> tag`elem`tags) final
-                                     error ("Link Annotation Error: tag does not match a directory! " ++ "Bad tag: '" ++ tag ++ "'\nBad annotation: " ++ show missingTags))
-               tagsSet
+             tagsAll <- listTagsAll
+             let tagsBad = tagsSet \\ tagsAll
+             let annotationsWithBadTags = M.filter (\(_,_,_,_,ts,_) -> hasAny ts tagsBad) final
+             unless (null annotationsWithBadTags) $ error $ "Link Annotation Error: tag does not match a directory! Bad annotations: " ++ show annotationsWithBadTags
 
              let tagsOverused = filter (\(c,_) -> c > tagMax) $ tagCount final
              unless (null tagsOverused) $ printRed "Overused tags: " >> printGreen (show tagsOverused)
@@ -553,7 +552,7 @@ tagsToLinksDiv ts = let tags = sort ts in
 -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg. '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
 tag2TagsWithDefault :: String -> String -> [String]
 tag2TagsWithDefault path tags = let tags' = map trim $ split ", " $ map toLower tags
-                                    defTag = if ("/docs/" `isPrefixOf` path) && (not ("/docs/link-bibliography"`isPrefixOf`path || "//docs/biology/2000-iapac-norvir"`isPrefixOf`path)) then tag2Default path else ""
+                                    defTag = if ("/docs/" `isPrefixOf` path) && (not ("/docs/link-bibliography"`isPrefixOf`path || "/docs/biology/2000-iapac-norvir"`isPrefixOf`path || "/docs/rotten.com/"`isPrefixOf`path || "/docs/statistics/order/beanmachine-multistage"`isPrefixOf`path||"/docs/www/"`isPrefixOf`path)) then tag2Default path else ""
                                 in
                                   if defTag `elem` tags' || defTag == "" || defTag == "/docs" then tags' else defTag:tags'
 
@@ -607,10 +606,14 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagsLong2Short
                              , ("^technology/", "tech/")
                              ]
 
+listTagsAll :: IO [String]
+listTagsAll = fmap (map (replace "docs/" "") . sort . filter (\f' -> not $ anyInfix f' ["personal/2011-gwern-yourmorals.org", "rotten.com", "2000-iapac-norvir", "beanmachine-multistage", "docs/www/"]) ) $ getDirFiltered (\f -> doesFileExist (f++"/index.page")) "docs/"
+
 -- try to infer a long tag from a short tag, first by exact match, then by suffix, then by prefix, then by infix, then give up.
 -- so eg 'sr1' → 'SR1' → 'darknet-markets/silk-road/1', 'road/1' → 'darknet-markets/silk-road/1', 'darknet-markets/silk' → 'darknet-markets/silk-road', 'silk-road' → 'darknet-markets/silk-road'
-guessTagFromShort :: Metadata -> String -> String
-guessTagFromShort m t = let allTags = sort $ nubOrd $ concat $ M.map (\(_,_,_,_,ts,_) -> ts) m in
+guessTagFromShort :: [String] -> String -> String
+guessTagFromShort _ "" = ""
+guessTagFromShort m t = let allTags = nubOrd $ sort m in
   if t `elem` allTags then t else -- exact match, no guessing required
    case lookup t tagsShort2Long of
      Just tl -> tl -- is an existing short/petname
@@ -623,8 +626,11 @@ guessTagFromShort m t = let allTags = sort $ nubOrd $ concat $ M.map (\(_,_,_,_,
                      let longFallbacks = filter (t `isSuffixOf`) allTags ++ filter (t `isPrefixOf`) allTags ++ filter (t `isInfixOf`) allTags in
                        if not (null longFallbacks) then head longFallbacks else t
 
+-- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
 tagsLong2Short, tagsShort2Long :: [(String,String)]
-tagsShort2Long = map (\(a,b) -> (map toLower b,a)) tagsLong2Short ++ [] -- custom tag shortcuts
+tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot")] ++ -- custom tag shortcuts, to fix typos etc
+                 -- attempt to infer short->long rewrites from the displayed tag names, which are long->short; but note that many of them are inherently invalid and the mapping only goes one way.
+                  (map (\(a,b) -> (map toLower b,a)) $ filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
 tagsLong2Short = [
           ("reinforcement-learning", "RL")
           , ("music-distraction", "music distraction")
@@ -1017,7 +1023,7 @@ filterMeta :: String -> String
 filterMeta ea = if anyInfix ea badSubstrings || elem ea badWholes then "" else ea
  where badSubstrings, badWholes :: [String]
        badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd", "pdftk-java", "OP-ESRJ", "FUJIT S. U.", "JRC5", "klynch", "pruich", "Micron", "Anonymous Submission", "Asterisk"]
-       badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association", "om", "lhf", "comp", "khan", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo", "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "mchahino"]
+       badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association", "om", "lhf", "comp", "khan", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo", "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "mchahino", "LaTeX2e"]
 
 -- nested JSON object: eg. 'jq .message.abstract'
 newtype Crossref = Crossref { message :: Message } deriving (Show,Generic)
