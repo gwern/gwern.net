@@ -24,7 +24,8 @@ Typography = {
 			[ Typography.replacementTypes.ELLIPSES,		Typography.replacementDefinitionGroups.ellipses		],
 			[ Typography.replacementTypes.ARROWS,		Typography.replacementDefinitionGroups.arrows		],
 			[ Typography.replacementTypes.WORDBREAKS,	Typography.replacementDefinitionGroups.wordbreaks	],
-			[ Typography.replacementTypes.MISC,			Typography.replacementDefinitionGroups.misc			]
+			[ Typography.replacementTypes.MISC,			Typography.replacementDefinitionGroups.misc			],
+			[ Typography.replacementTypes.SOFTHYPHENS,	Typography.replacementDefinitionGroups.softHyphens	]
 		];
 		for ([ replacementTypeCode, replacementGroup ] of replacementTypeDefinitions) {
 			if (types & replacementTypeCode)
@@ -34,79 +35,84 @@ Typography = {
 		return allReplacements;
 	},
 	replacementTypes: {
-		QUOTES:		0x0001,
-		HYPHENS:	0x0002,
-		ELLIPSES:	0x0004,
-		ARROWS:		0x0008,
-		WORDBREAKS:	0x0010,
-		MISC:		0x0020,
-		ALL: 		(0x0001 + 0x0002 + 0x0004 + 0x0008 + 0x0010 + 0x0020)
+		QUOTES:			0x0001,
+		HYPHENS:		0x0002,
+		ELLIPSES:		0x0004,
+		ARROWS:			0x0008,
+		WORDBREAKS:		0x0010,
+		MISC:			0x0020,
+		SOFTHYPHENS:	0x0040,
+		ALL: 			(0x0001 + 0x0002 + 0x0004 + 0x0008 + 0x0010 + 0x0020 + 0x0040)
 	},
 	replacementDefinitionGroups: {
 		quotes: [
 			// triple prime
-			[/'''/g, '\u2034'],
+			[ /'''/g, '\u2034' ],
 			// beginning "
-			[/([\s([]|^)"([^\s?!.,;\/)])/g, '$1\u201c$2'],
+			[ /([\s([]|^)"([^\s?!.,;\/)])/g, '$1\u201c$2' ],
 			// ending "
-			[/(\u201c[^"]*)"([^"]*$|[^\u201c"]*\u201c)/g, '$1\u201d$2'],
+			[ /(\u201c[^"]*)"([^"]*$|[^\u201c"]*\u201c)/g, '$1\u201d$2' ],
 			// remaining " at end of word
-			[/([^0-9])"/g, '$1\u201d'],
+			[ /([^0-9])"/g, '$1\u201d' ],
 			// double quotes
 			// NOTE: This rule cannot be used until the code is de-localized.
-// 			[/"(.+?)"/g, '\u201c$1\u201d'],
+// 			[ /"(.+?)"/g, '\u201c$1\u201d' ],
 			// double prime as two single quotes
-			[/''/g, '\u2033'],
+			[ /''/g, '\u2033' ],
 			// beginning '
-			[/(\W|^)'(\S)/g, '$1\u2018$2'],
+			[ /(\W|^)'(\S)/g, '$1\u2018$2' ],
 			// conjunction's possession
-			[/([a-z])'([a-z])/ig, '$1\u2019$2'],
+			[ /([a-z])'([a-z])/ig, '$1\u2019$2' ],
 			// abbrev. years like '93
-			[/(\u2018)([0-9]{2}[^\u2019]*)(\u2018([^0-9]|$)|$|\u2019[a-z])/ig, '\u2019$2$3'],
+			[ /(\u2018)([0-9]{2}[^\u2019]*)(\u2018([^0-9]|$)|$|\u2019[a-z])/ig, '\u2019$2$3' ],
 			// ending '
-			[/((\u2018[^']*)|[a-z])'([^0-9]|$)/ig, '$1\u2019$3'],
+			[ /((\u2018[^']*)|[a-z])'([^0-9]|$)/ig, '$1\u2019$3' ],
 			// backwards apostrophe
-			[/(\B|^)\u2018(?=([^\u2018\u2019]*\u2019\b)*([^\u2018\u2019]*\B\W[\u2018\u2019]\b|[^\u2018\u2019]*$))/ig, '$1\u2019'],
+			[ /(\B|^)\u2018(?=([^\u2018\u2019]*\u2019\b)*([^\u2018\u2019]*\B\W[\u2018\u2019]\b|[^\u2018\u2019]*$))/ig, '$1\u2019' ],
 			// double prime
-			[/"/g, '\u2033'],
+			[ /"/g, '\u2033' ],
 			// prime
-			[/'/g, '\u2032']
+			[ /'/g, '\u2032' ]
 		],
 		hyphens: [
 			// turn a hyphen surrounded by spaces, between words, into an em-dash
-			[/([a-z\u201d]) - ([a-z\u201c])/ig, '$1\u2014$2'],
+			[ /([a-z\u201d]) - ([a-z\u201c])/ig, '$1\u2014$2' ],
 			// turn a hyphen between a space and a quote, into an em-dash
-			[/([a-z]) -(\u201d)/ig, '$1\u2014$2'],
-			[/(\u201c)- ([a-z])/ig, '$1\u2014$2'],
+			[ /([a-z]) -(\u201d)/ig, '$1\u2014$2' ],
+			[ /(\u201c)- ([a-z])/ig, '$1\u2014$2' ],
 			// turn a double or triple hyphen, optionally surrounded by spaces, between words, or at the start of a line, into an em-dash
-			[/([a-z"'“”‘’]|\n) ?---? ?([a-z"'“”‘’])/ig, '$1\u2014$2'],
+			[ /([a-z"'“”‘’]|\n) ?---? ?([a-z"'“”‘’])/ig, '$1\u2014$2' ],
 			// turn a hyphen surrounded by spaces, between decimal digits, into an en-dash
-			[/([0-9]) - ([0-9])/g, '$1\u2013$2' ]
+			[ /([0-9]) - ([0-9])/g, '$1\u2013$2' ]
 		],
 		ellipses: [
-			// ellipsis rectification
-			[/(^|\s)\.\.\./g, '$1…'],
-			[/\.\.\.(\s|$)/g, '…$1']
+			// Ellipsis rectification.
+			[ /(^|\s)\.\.\./g, '$1…' ],
+			[ /\.\.\.(\s|$)/g, '…$1' ]
 		],
 		arrows: [
-			// Arrows
-			[/(\s)->(\s)/g, '$1\u2192$2'],
-			[/(\s)<-(\s)/g, '$1\u2190$2'],
-			[/(\s)=>(\s)/g, '$1\u21d2$2'],
-			[/(\s)<=(\s)/g, '$1\u21d0$2'],
-			[/(\s)<=>(\s)/g, '$1\u21d4$2']
+			// Arrowss
+			[ /(\s)->(\s)/g, '$1\u2192$2' ],
+			[ /(\s)<-(\s)/g, '$1\u2190$2' ],
+			[ /(\s)=>(\s)/g, '$1\u21d2$2' ],
+			[ /(\s)<=(\s)/g, '$1\u21d0$2' ],
+			[ /(\s)<=>(\s)/g, '$1\u21d4$2' ]
 		],
 		wordbreaks: [
-			// word-breaks after slashes (for long URLs etc.)
-			[/.\/+/g, '$&\u200b'],
+			// Word-breaks after slashes (for long URLs etc.).
+			[ /.\/+/g, '$&\u200b' ],
 		],
 		misc: [
-			// convert nbsp to regular space
-			[/\xa0/g, ' '],
+			// cConvert nbsp to regular space.
+			[ /\xa0/g, ' ' ],
 			// Two spaces after a period is INCORRECT.
-			[ /(\w[\.\?\!])[ \u00a0]{2}(\w)/g, '$1 $2'],
-			// Hyphen followed by a numeral (with an optional space first), becomes an actual minus sign
-			[/(\s)-( ?)([0-9])/g, '$1\u2212$2$3']
+			[ /(\w[\.\?\!])[ \u00a0]{2}(\w)/g, '$1 $2' ],
+			// Hyphen followed by a numeral (with an optional space first), becomes an actual minus sign.
+			[ /(\s)-( ?)([0-9])/g, '$1\u2212$2$3' ]
+		],
+		softHyphens: [
+			// Strip soft hyphens.
+			[ /\u00ad/g, '' ]
 		]
 	},
 	processString: (str, replacementTypes = Typography.replacementTypes.ALL) => {

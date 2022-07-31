@@ -423,16 +423,6 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /* TYPOGRAPHY */
 /**************/
 
-/*****************************************/
-/*  Returns the current selection as HTML.
- */
-//	NOTE: This function appears to currently be unused. —SA, 2022-01-31
-// function getSelectionHTML() {
-//     let container = document.createElement("DIV");
-//     container.appendChild(window.getSelection().getRangeAt(0).cloneContents());
-//     return container.innerHTML;
-// }
-
 /******************************************************************/
 /*	Configure Hyphenopoly.
 
@@ -445,7 +435,7 @@ Hyphenopoly.config({
 	setup: {
 		hide: "none",
 		keepAlive: true,
-		safeCopy: true
+		safeCopy: false
 	}
 });
 
@@ -568,6 +558,33 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", GW.rewriteFuncti
 		hyphenate(info);
 
 	rectifyLineHeights(info);
+});
+
+/****************************************/
+/*	Remove soft hyphens from copied text.
+ */
+addCopyProcessor((event, selection) => {
+	//	Passing `true` for the third argument also removes zero-width spaces.
+	Typography.processElement(selection, Typography.replacementTypes.SOFTHYPHENS, true);
+
+	return true;
+});
+
+/*****************************************************************************/
+/*	Makes it so that copying an author-date citation (e.g. `Foo et al 2001`)
+	interact properly with copy-paste when rendered with pseudo-element ellipses
+	(`Foo...2001`).
+ */
+addCopyProcessor((event, selection) => {
+	/*	Set `display` of all `span.cite-joiner` to `initial` (overriding the
+		default of `none`) so that their contents are included in the 
+		content properties of the selection).
+	 */
+	selection.querySelectorAll(".cite-joiner").forEach(citeJoiner => {
+		citeJoiner.style.display = "initial";
+	});
+
+	return true;
 });
 
 /*********************/
@@ -1247,26 +1264,27 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	the LaTeX source, instead of the useless gibberish that is the contents of
 	the text nodes of the HTML representation of the equation.
  */
-function addCopyListenersToMathBlocks(loadEventInfo) {
-    GWLog("addCopyListenersToMathBlocks", "rewrite.js", 1);
+addCopyProcessor((event, selection) => {
+	if (event.target.closest(".mjx-math")) {
+		selection.replaceChildren(event.target.closest(".mjx-math").getAttribute("aria-label"));
 
-	loadEventInfo.document.querySelectorAll(".mjx-chtml").forEach(mathBlock => {
-		mathBlock.addEventListener("copy", (event) => {
-			event.preventDefault();
-			let latexSource = event.target.closest(".mjx-math").getAttribute("aria-label");
-			event.clipboardData.setData("text/plain", latexSource);
-			event.clipboardData.setData("text/html", latexSource);
-		});
+		return false;
+	}
+
+	selection.querySelectorAll(".mjx-chtml").forEach(mathBlock => {
+		mathBlock.innerHTML = mathBlock.querySelector(".mjx-math").getAttribute("aria-label");
 	});
-}
+
+	return true;
+});
 
 /******************************************************************************/
 /*	Makes double-clicking on a math element select the entire math element.
 	(This actually makes no difference to the behavior of the copy listener
-	 [see `addCopyListenersToMathBlocks`], which copies the entire LaTeX source
-	 of the full equation no matter how much of said equation is selected when
-	 the copy command is sent; however, it ensures that the UI communicates the
-	 actual behavior in a more accurate and understandable way.)
+	 [see the `addCopyProcessor` call above], which copies the entire LaTeX 
+	 source of the full equation no matter how much of said equation is selected 
+	 when the copy command is sent; however, it ensures that the UI communicates 
+	 the actual behavior in a more accurate and understandable way.)
  */
 function addDoubleClickListenersToMathBlocks(loadEventInfo) {
     GWLog("addDoubleClickListenersToMathBlocks", "rewrite.js", 1);
@@ -1325,7 +1343,6 @@ function addBlockButtonsToMathBlocks(loadEventInfo) {
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processMathElements = (info) => {
     GWLog("GW.rewriteFunctions.processMathElements", "rewrite.js", 2);
 
-    addCopyListenersToMathBlocks(info);
     addDoubleClickListenersToMathBlocks(info);
 }, {
 	phase: "eventListeners"
@@ -1340,6 +1357,72 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	condition: (info) => info.needsRewrite
 });
 
+
+/*************/
+/* CLIPBOARD */
+/*************/
+
+/***************************************************************/
+/*  Returns a DocumentFragment containing the current selection.
+ */
+function getSelectionAsDocument(doc = document) {
+	let docFrag = new DocumentFragment();
+	docFrag.append(doc.getSelection().getRangeAt(0).cloneContents());
+	return docFrag;
+}
+
+/*****************************************************************************/
+/*	Adds the given copy processor, appending it to the existing array thereof.
+
+	Each copy processor should take two arguments: the copy event, and the 
+	DocumentFragment which holds the selection as it is being processed by each
+	successive copy processor.
+
+	A copy processor should return true if processing should continue after it’s
+	done, false otherwise (e.g. if it has entirely replaced the contents of the 
+	selection object with what the final clipboard contents should be).
+ */
+function addCopyProcessor(processor) {
+	if (GW.copyProcessors == null)
+		GW.copyProcessors = [ ];
+
+	GW.copyProcessors.push(processor);
+}
+
+/****************************************************************************/
+/*	Set up the copy processor system by registering a ‘copy’ event handler to
+	call copy processors.
+ */
+function registerCopyProcessors(loadEventInfo) {
+    GWLog("registerCopyProcessors", "rewrite.js", 1);
+
+	loadEventInfo.document.addEventListener("copy", (event) => {
+		event.preventDefault();
+		event.stopPropagation();
+
+		let selection = getSelectionAsDocument(loadEventInfo.document);
+
+		let i = 0;
+		while (   i < GW.copyProcessors.length 
+			   && GW.copyProcessors[i++](event, selection));
+
+		event.clipboardData.setData("text/plain", selection.textContent);
+		event.clipboardData.setData("text/html", selection.innerHTML);
+	});
+}
+
+/*******************************************************/
+/*  Add content load handlers to set up copy processing.
+ */
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.copyProcessors = (info) => {
+    GWLog("GW.rewriteFunctions.copyProcessors", "rewrite.js", 2);
+
+    registerCopyProcessors(info);
+}, {
+	phase: "eventListeners",
+	condition: (info) => (   info.document instanceof Document
+		  				  || info.document instanceof ShadowRoot)
+});
 
 /********************/
 /* BACK TO TOP LINK */
