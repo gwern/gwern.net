@@ -1172,16 +1172,21 @@ Extracts = {
     //  (See Extracts.addTargetsWithin)
 	preparePopinTarget: (target) => {
 		target.adjustPopinWidth = (popin) => {
+			let leftMargin, rightMargin;
+			let popinRect = popin.getBoundingClientRect();
 			if (GW.mediaQueries.mobileWidth.matches) {
 				//	Make popin take up entire content column width.
-				let popinRect = popin.getBoundingClientRect();
 				let bodyRect = document.body.getBoundingClientRect();
-				let leftMargin = (bodyRect.left - popinRect.left);
-				let rightMargin = (popinRect.right - bodyRect.right);
-				popin.style = `margin-left: ${leftMargin}px; `
-							+ `margin-right: ${rightMargin}px; `
-							+ `width: calc(100% + ${(-1 * (leftMargin + rightMargin))}px)`;
+				leftMargin = (bodyRect.left - popinRect.left);
+				rightMargin = (popinRect.right - bodyRect.right);
+			} else {
+				let markdownBodyRect = document.querySelector("#markdownBody").getBoundingClientRect();
+				leftMargin = (markdownBodyRect.left - popinRect.left);
+				rightMargin = (popinRect.right - markdownBodyRect.right);
 			}
+			popin.style = `margin-left: ${leftMargin}px; `
+						+ `margin-right: ${rightMargin}px; `
+						+ `width: calc(100% + ${(-1 * (leftMargin + rightMargin))}px)`;
 		};
 	},
 
@@ -1378,7 +1383,9 @@ Extracts = {
 GW.notificationCenter.fireEvent("Extracts.didLoad");
 
 //  Set pop-frame type (mode) - popups or popins.
-let mobileMode = (localStorage.getItem("extracts-force-popins") == "true") || GW.isMobile() || matchMedia("(max-height: 949px)").matches;
+let mobileMode =    (localStorage.getItem("extracts-force-popins") == "true") 
+				 || GW.isMobile() 
+				 || matchMedia("(max-width: 1279px) and (max-height: 959px)").matches;
 Extracts.popFrameProviderName = mobileMode ? "Popins" : "Popups";
 GWLog(`${(mobileMode ? "Mobile" : "Non-mobile")} client detected. Activating ${(mobileMode ? "popins" : "popups")}.`, "extracts.js", 1);
 
