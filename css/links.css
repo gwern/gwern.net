@@ -1033,6 +1033,21 @@ a[data-link-icon='metaculus']:hover::after {
     opacity: 0.45;
 }
 
+a[data-link-icon='stat-news']::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-y: 0em;
+    --link-icon-offset-x: 0.15em;
+
+    opacity: 1;
+}
+a[data-link-icon='magnifying-glass']::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-y: 0em;
+    --link-icon-offset-x: -0.1em;
+
+    opacity: 0.75;
+}
+
 /*=------------------=*/
 /*= Wikipedia links. =*/
 /*=------------------=*/
