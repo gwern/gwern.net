@@ -5031,14 +5031,14 @@ section.highlight-fading::before {
     color: var(--GW-mode-selector-button-text-color);
     position: relative;
     display: flex;
-    margin: 0 0 0 calc(  var(--mode-selector-button-base-left-margin) 
+    margin: 0 0 0 calc(  var(--mode-selector-button-base-left-margin)
     				   + var(--mode-selector-button-left-adjust));
 }
 .mode-selector button::before {
     position: absolute;
     width: 1.4em;
     height: 1.4em;
-    left: calc(-1 * (  var(--mode-selector-button-base-left-spacing) 
+    left: calc(-1 * (  var(--mode-selector-button-base-left-spacing)
     			     + var(--mode-selector-button-left-adjust)));
     opacity: 0.4;
 }
@@ -5088,8 +5088,8 @@ section.highlight-fading::before {
 
 .mode-selector-inline button {
     display: inline-block;
-    margin: 0 0 0 calc(  var(--mode-selector-button-base-left-margin) 
-    				   + var(--mode-selector-button-left-adjust) 
+    margin: 0 0 0 calc(  var(--mode-selector-button-base-left-margin)
+    				   + var(--mode-selector-button-left-adjust)
     				   - 0.25em);
 }
 
@@ -5204,3 +5204,4 @@ section.highlight-fading::before {
 .cite-joiner {
     display: none;
 }
+a .cite { margin-left: 2px;}
