@@ -334,7 +334,7 @@ Annotations.dataSources.wikipedia = {
 			responseHTML = response["lead"]["sections"][0]["text"];
 			let sections = response["remaining"]["sections"];
 			if (sections > []) {
-				responseHTML += `<div class="TOC"><ul>`;
+				responseHTML += `<div class="TOC columns"><ul>`;
 				let headingLevel = 2;
 				for (let i = 0; i < sections.length; i++) {
 					let section = sections[i];
