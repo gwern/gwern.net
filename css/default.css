@@ -936,6 +936,9 @@ blockquote table {
     font-size: 0.7em;
 }
 
+/* EPITAPH (eg /LARPing) */
+.text-center { text-align: center; }
+
 /*************/
 /* EPIGRAPHS */
 /*************/
