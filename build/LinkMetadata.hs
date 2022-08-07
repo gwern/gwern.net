@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-08-07 12:21:34 gwern"
+When:  Time-stamp: "2022-08-07 16:28:27 gwern"
 License: CC-0
 -}
 
@@ -1828,17 +1828,19 @@ initializeAuthors = trim . replaceMany [(",,", ","), (",,", ","), (", ,", ", "),
                          ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2"), -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
                          (",$", ""),
                          (", +", ", "),
+                         ("^([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1"), -- "Smith, J." → "J. Smith"; for single words followed by a single letter, we can assume that it is a 'surname, initial' rather than 2 authors, 'surname1, surname2'
+                         ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3"), -- likewise, but for the 2-author case: 'Smith, J.; Doe, J.'
+                         ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3, \\6 \\5"), -- 3-author
+                         ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3, \\6 \\5, \\8 \\7"), -- 4-author, and I won't try for more
                          ("([A-Z]\\.)([A-Za-z]+)", "\\1 \\2"),                              -- "A.Smith"      → "A. Smith"
                          ("[ ^]?([A-Z])([A-Z]) ([A-Za-z]+)", " \\1. \\2. \\3"),             -- " LK Barnes"   → " L. K. Barnes"
                          ("([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3"),               -- "A.B. Smith"   → "A. B. Smith"
                          ("([A-Z]\\.)([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3 \\4"), -- "C.A.B. Smith" → "C. A. B. Smith"
                          (" ([A-Z])([A-Z])([A-Z]) ", " \\1. \\2. \\3. "),                   -- "John HAB Smith" → "John H. A. B. Smith"
                          (" ([A-Z])([A-Z]) ", " \\1. \\2. "),                               -- "John HA Smith"  → "John H. A. Smith"
-                         (" ([A-Z]) ", " \\1. "),                                           -- "John H Smith"   → "John H. Smith"
-                         ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3, \\6 \\5, \\8 \\7"), -- 4-author, and I won't try for more
-                         ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3, \\6 \\5"), -- 3-author
-                         ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3"), -- likewise, but for the 2-author case: 'Smith, J.; Doe, J.'
-                         ("^([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1") -- "Smith, J." → "J. Smith"; for single words followed by a single letter, we can assume that it is a 'surname, initial' rather than 2 authors, 'surname1, surname2'
+                         (" ([A-Z]\\.) ([A-Z]) ", " \\1 \\2. "),                            -- "John H. A Smith"  → "John H. A. Smith"
+                         (" ([A-Z]) ([A-Z]\\.) ", " \\1. \\2 "),                            -- "John H A. Smith"  → "John H. A. Smith"
+                         (" ([A-Z]) ", " \\1. ")                                             -- "John H Smith"   → "John H. Smith"
                          ]
 
 wikipediaURLToTitle :: String -> String
@@ -2943,6 +2945,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("withits", "with its")
           , ("languagemodel", "language model")
           , ("questiongeneration", "question generation")
+          , ("genomewide", "genome-wide")
+          , ("regularise", "regularize")
           , ("wethen", "we then")
           , ("successfullylearns", "successfully learns")
           , ("n-of-1", "<em>n</em>-of-1")
