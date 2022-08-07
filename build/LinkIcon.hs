@@ -502,7 +502,7 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                      "bmk.sh","www.jstatsoft.org","www.japantimes.co.jp","www.impactcybertrust.org", "www.ex.org", "www.eetimes.com",
                      "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com",
                      "palladiummag.com", "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "www.silcom.com", "esolangs.org",
-                     "www.aiweirdness.com", "etherscan.io"]
+                     "www.aiweirdness.com", "etherscan.io", "www.theringer.com"]
         linkIconMin = 4 :: Int
 
 -- Test suite:
@@ -987,7 +987,7 @@ linkIconTestUnitsText =
          , ("https://www.fast.ai/2018/04/30/dawnbench-fastai/", "F.ai", "text,tri")
          , ("https://github.com/fastai/numerical-linear-algebra/blob/master/README.md","F.ai", "text,tri")
          , ("https://www.esquire.com/entertainment/a36439327/planet-hollywood-origin-story-history-interview/", "ℰ", "text")
-         , ("https://denver.cbslocal.com/2014/11/20/man-allegedly-bought-pot-from-colorado-to-sell-in-maryland/", "CBS", "text,tri,sans")
+         , ("https://www.cbsnews.com/colorado/news/man-allegedly-bought-pot-from-colorado-to-sell-in-maryland/", "CBS", "text,tri,sans")
          , ("https://www.cbsnews.com/news/california-biobank-dna-babies-who-has-access/", "CBS", "text,tri,sans")
          , ("https://nypost.com/2019/06/27/north-carolina-couple-paid-25k-to-clone-their-beloved-pet-cat/", "NYP", "text,tri,sans,italic")
          , ("https://longreads.com/2015/01/28/friendship-is-complicated/", "Long", "text,quad")
