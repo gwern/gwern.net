@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-08-07 10:47:29 gwern"
+When:  Time-stamp: "2022-08-07 12:21:34 gwern"
 License: CC-0
 -}
 
@@ -234,11 +234,11 @@ readLinkMetadataAndCheck = do
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) (M.toList final)
              Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex) (printRed $ "Mixed up author & date?: " ++ a) ) authors
-             let authorsSemicolon = filter (';' `elem`) authors
-             unless (null authorsSemicolon) (printRed "Semicolons & not comma-separated author list?" >> printGreen (ppShow authorsSemicolon))
+             let authorsBadChars = filter (\a -> anyInfix a [";", "&", "?", "!"]) authors
+             unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
-             let dates = map (\(_,(_,_,dt,_,_,_)) -> dt) (M.toList final) in
-               Par.mapM_ (\d -> unless (null d) $ unless (d =~ dateRegex) (printRed $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
+             let datesBad = filter (\(_,(_,_,dt,_,_,_)) -> not (dt =~ dateRegex || null dt)) (M.toList final)
+             unless (null datesBad) (printRed "Malformed date (not 'YYYY[-MM[-DD]]'): ") >> putStrLn (ppShow datesBad)
 
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.
              let titlesEmpty = M.filter (\(t,_,_,_,_,abst) -> t=="" && length abst > 100) final
@@ -261,7 +261,6 @@ readLinkMetadataAndCheck = do
 
              let tagPairsOverused = filter (\(c,_) -> c > tagPairMax) $ tagPairsCount final
              unless (null tagPairsOverused) $ printRed "Overused pairs of tags: " >> printGreen (show tagPairsOverused)
-
 
              return final
 
