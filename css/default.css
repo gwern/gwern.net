@@ -5195,6 +5195,7 @@ section.highlight-fading::before {
 .cite-author-plural::after {
     content: "...";
     margin-left: 0.05em;
+    margin-right: -0.20em;
 }
 .cite-date {
     vertical-align: -0.35ex;
