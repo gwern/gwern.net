@@ -857,7 +857,7 @@ figure.width-full {
 /*  Image alt-text.
     */
 img::before {
-	content: attr(alt);
+    content: attr(alt);
     font-family: var(--GW-sans-serif-font-stack);
     display: block;
     padding: 0.5em 0.75em;
@@ -4856,8 +4856,8 @@ section.highlight-fading::before {
 /*************/
 
 .dark-mode-selector {
-	--mode-selector-button-base-left-margin: 1.375em;
-	--mode-selector-button-base-left-spacing: 1.125em;
+    --mode-selector-button-base-left-margin: 1.375em;
+    --mode-selector-button-base-left-spacing: 1.125em;
 }
 
 .dark-mode-selector button.select-mode-auto::before {
@@ -4871,19 +4871,19 @@ section.highlight-fading::before {
 }
 
 .dark-mode-selector button.select-mode-dark {
-	--mode-selector-button-left-adjust: -0.125em;
+    --mode-selector-button-left-adjust: -0.125em;
 }
 
 @media only screen and (min-width: 1535px) {
-	#ui-elements-container .dark-mode-selector {
-		right: 0;
-		top: 0;
-	}
+    #ui-elements-container .dark-mode-selector {
+        right: 0;
+        top: 0;
+    }
 }
 @media only screen and (max-width: 1534px) {
-	#ui-elements-container .dark-mode-selector {
-		right: 0;
-	}
+    #ui-elements-container .dark-mode-selector {
+        right: 0;
+    }
 }
 @media only screen and (max-width: 1279px) {
     #ui-elements-container .dark-mode-selector button.select-mode-light {
@@ -4958,8 +4958,8 @@ section.highlight-fading::before {
 /*└───────────────────────┘*/
 
 .reader-mode-selector {
-	--mode-selector-button-base-left-margin: 1.875em;
-	--mode-selector-button-base-left-spacing: 1.25em;
+    --mode-selector-button-base-left-margin: 1.875em;
+    --mode-selector-button-base-left-spacing: 1.25em;
 }
 
 .reader-mode-selector button.select-mode-auto::before {
@@ -4973,10 +4973,10 @@ section.highlight-fading::before {
 }
 
 @media only screen and (min-width: 1800px) {
-	#ui-elements-container .reader-mode-selector {
-		right: 11em;
-		top: 0;
-	}
+    #ui-elements-container .reader-mode-selector {
+        right: 11em;
+        top: 0;
+    }
 }
 @media only screen and (max-width: 1799px) {
     #ui-elements-container .reader-mode-selector {
@@ -5016,11 +5016,11 @@ section.highlight-fading::before {
     background-color: var(--GW-mode-selector-background-color);
 }
 
-/*	Mode selector buttons.
+/*  Mode selector buttons.
  */
 
 .mode-selector button {
-	--mode-selector-button-left-adjust: 0px;
+    --mode-selector-button-left-adjust: 0px;
 
     -moz-appearance: none;
     appearance: none;
@@ -5035,14 +5035,14 @@ section.highlight-fading::before {
     position: relative;
     display: flex;
     margin: 0 0 0 calc(  var(--mode-selector-button-base-left-margin)
-    				   + var(--mode-selector-button-left-adjust));
+                       + var(--mode-selector-button-left-adjust));
 }
 .mode-selector button::before {
     position: absolute;
     width: 1.4em;
     height: 1.4em;
     left: calc(-1 * (  var(--mode-selector-button-base-left-spacing)
-    			     + var(--mode-selector-button-left-adjust)));
+                     + var(--mode-selector-button-left-adjust)));
     opacity: 0.4;
 }
 .mode-selector button:not(.selected):hover::before {
@@ -5077,7 +5077,7 @@ section.highlight-fading::before {
     border-bottom: 1px dotted currentColor;
 }
 
-/*	Inline mode selectors.
+/*  Inline mode selectors.
  */
 
 .mode-selector-inline {
@@ -5092,11 +5092,11 @@ section.highlight-fading::before {
 .mode-selector-inline button {
     display: inline-block;
     margin: 0 0 0 calc(  var(--mode-selector-button-base-left-margin)
-    				   + var(--mode-selector-button-left-adjust)
-    				   - 0.25em);
+                       + var(--mode-selector-button-left-adjust)
+                       - 0.25em);
 }
 
-/*	Fixed mode selectors.
+/*  Fixed mode selectors.
  */
 
 #ui-elements-container .mode-selector {
@@ -5117,17 +5117,17 @@ section.highlight-fading::before {
 }
 
 @media only screen and (hover: hover) {
-	#ui-elements-container .mode-selector {
-		outline: 3px solid transparent;
-	}
-	#ui-elements-container .mode-selector:hover {
-		outline: 3px double var(--GW-mode-selector-border-hover-color);
-	}
+    #ui-elements-container .mode-selector {
+        outline: 3px solid transparent;
+    }
+    #ui-elements-container .mode-selector:hover {
+        outline: 3px double var(--GW-mode-selector-border-hover-color);
+    }
 }
 @media only screen and (hover: none) {
-	#ui-elements-container .mode-selector {
-		outline: 1px dotted var(--GW-mode-selector-border-hover-color);
-	}
+    #ui-elements-container .mode-selector {
+        outline: 1px dotted var(--GW-mode-selector-border-hover-color);
+    }
 }
 
 @media only screen and (max-width: 1534px) {
@@ -5195,7 +5195,7 @@ section.highlight-fading::before {
 .cite-author-plural::after {
     content: "...";
     margin-left: 0.05em;
-    margin-right: -0.20em;
+    margin-right: -0.05em;
 }
 .cite-date {
     vertical-align: -0.35ex;
