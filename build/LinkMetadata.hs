@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-08-03 17:07:14 gwern"
+When:  Time-stamp: "2022-08-07 10:47:29 gwern"
 License: CC-0
 -}
 
@@ -2189,7 +2189,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(rho &lt; 0\\)</span>", "ρ < 0")
           , ("<span class=\"math inline\">\\(N\\)</span>", "<em>N</em>")
           , ("O(<span class=\"math inline\">\\(L\\log L\\)</span>", "𝑂(<em>L</em> log <em>L</em>)")
-          , ("<span class=\"math inline\">\\(\\Delta^0_n\\)</span>", "Δ<span class=\"supsub\"><sup>0</sup><sub><em>n</em></sub></span>")
+          , ("<span class=\"math inline\">\\(\\Delta^0_n\\)</span>", "Δ<span class=\"subsup\"><sup>0</sup><sub><em>n</em></sub></span>")
           , ("<span class=\"math inline\">\\(\\tt KRISS\\)</span>", "<code>KRISS</code>")
           , ("<span class=\"math inline\">\\(\\tt KRISSBERT\\)</span>", "<code>KRISSBERT</code>")
           , ("<span class=\"math inline\">\\(X_1,\\ldots,X_p\\)</span>", "<em>X</em><sub>1</sub>,...,<em>X</em><sub><em>p</em></sub>")

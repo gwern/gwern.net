@@ -11,7 +11,7 @@ ReaderMode = {
                 "#navigation",
                 "#sidenote-column-left",
                 "#sidenote-column-right",
-                ".inflationAdjusted .supsub",
+                ".inflationAdjusted .subsup",
                 ".footnote-ref"
                 ]
               ).join(",\n"))} {

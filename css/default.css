@@ -2041,21 +2041,21 @@ p {
     margin-right: 0.1em;
 }
 
-/*  SUPERSCRIPT+SUBSCRIPT (necessary for inflation adjuster, and other math)
+/*  SUBSCRIPT+SUPERSCRIPT (necessary for inflation adjuster, and other math)
     */
-.supsub {
+.subsup {
     display: inline-block;
     margin-left: 0.1em;
     text-indent: initial; /* override the `p + p { text-indent: 2.5em; }` */
 }
-.supsub sup,
-.supsub sub {
+.subsup sup,
+.subsup sub {
     position: relative;
     display: block;
     font-size: 0.7em;
     line-height: 0.7;
 }
-.supsub sub {
+.subsup sub {
     top: .2em;
 }
 /*  Make sure that adjusted prices move as a block: no breaking in the middle between the price & sup/sub; this works better than trying to use no-break Unicode entities
