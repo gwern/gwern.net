@@ -139,8 +139,6 @@
 				be “full-width”).
  */
 
-GW.rewriteFunctions = { };
-
 
 /***********/
 /* HELPERS */
@@ -232,6 +230,17 @@ function unwrapAll(selector, root = document) {
 	});
 }
 
+/*****************************************************************************/
+/*	Add content load handler (i.e., an event handler for the GW.contentDidLoad
+	event).
+ */
+function addContentLoadHandler(handler, phase, condition = null) {
+	let options = { phase: phase };
+	if (condition)
+		options.condition = condition;
+	GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", handler, options);
+}
+
 
 /**********/
 /* TABLES */
@@ -245,6 +254,8 @@ function wrapTables(loadEventInfo) {
 
 	wrapAll("table", "table-wrapper", "DIV", loadEventInfo.document, true)
 }
+
+addContentLoadHandler(wrapTables, "rewrite", (info) => info.needsRewrite);
 
 /*****************************************************************************/
 /*  Wrap each full-width table in a div.full-width-table-inner-wrapper, and
@@ -263,19 +274,8 @@ function wrapFullWidthTables(loadEventInfo) {
 	});
 }
 
-/**********************************************/
-/*  Add content load handler to process tables.
- */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processTables = (info) => {
-    GWLog("GW.rewriteFunctions.processTables", "rewrite.js", 2);
-
-    wrapTables(info);
-    if (info.fullWidthPossible)
-        wrapFullWidthTables(info);
-}, {
-	phase: "rewrite",
-	condition: (info) => info.needsRewrite
-});
+addContentLoadHandler(wrapFullWidthTables, "rewrite", (info) => (   info.needsRewrite 
+																 && info.fullWidthPossible));
 
 
 /***********/
@@ -306,6 +306,8 @@ function wrapImages(loadEventInfo) {
 			[ "float-left", "float-right", "outline-not", "image-focus-not" ]);
 	}, null, loadEventInfo.document);
 }
+
+addContentLoadHandler(wrapImages, "rewrite", (info) => info.needsRewrite);
 
 /********************************/
 /*  Inject wrappers into figures.
@@ -346,6 +348,8 @@ function wrapFigures(loadEventInfo) {
     });
 }
 
+addContentLoadHandler(wrapFigures, "rewrite", (info) => info.needsRewrite);
+
 /********************************************************************/
 /*  Designate full-width figures as such (with a ‘width-full’ class).
  */
@@ -372,20 +376,8 @@ function markFullWidthFigures(loadEventInfo) {
     });
 }
 
-/***********************************************/
-/*  Add content load handler to process figures.
- */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFigures = (info) => {
-    GWLog("GW.rewriteFunctions.processFigures", "rewrite.js", 2);
-
-	wrapImages(info);
-    wrapFigures(info);
-    if (info.fullWidthPossible)
-        markFullWidthFigures(info);
-}, {
-	phase: "rewrite",
-	condition: (info) => info.needsRewrite
-});
+addContentLoadHandler(markFullWidthFigures, "rewrite", (info) => (   info.needsRewrite 
+																  && info.fullWidthPossible));
 
 
 /***************/
@@ -405,18 +397,8 @@ function wrapFullWidthPreBlocks(loadEventInfo) {
 	}, null, loadEventInfo.document);
 }
 
-/***************************************************/
-/*  Add content load handler to process code blocks.
- */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processCodeBlocks = (info) => {
-    GWLog("GW.rewriteFunctions.processCodeBlocks", "rewrite.js", 2);
-
-    if (info.fullWidthPossible)
-        wrapFullWidthPreBlocks(info);
-}, {
-	phase: "rewrite",
-	condition: (info) => info.needsRewrite
-});
+addContentLoadHandler(wrapFullWidthPreBlocks, "rewrite", (info) => (   info.needsRewrite 
+																	&& info.fullWidthPossible));
 
 
 /**************/
@@ -547,12 +529,10 @@ function rectifyLineHeights(loadEventInfo) {
 	});
 }
 
-/********************************************/
-/*  Add content load handlers for typography.
+/**********************************************/
+/*  Add content inject handlers for typography.
  */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", GW.rewriteFunctions.postInjectTypography = (info) => {
-    GWLog("GW.rewriteFunctions.postInjectTypography", "rewrite.js", 2);
-
+GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 	if (   !info.mainPageContent
 		||  GW.isMobile())
 		hyphenate(info);
@@ -586,6 +566,7 @@ addCopyProcessor((event, selection) => {
 
 	return true;
 });
+
 
 /*********************/
 /* FULL-WIDTH BLOCKS */
@@ -639,6 +620,7 @@ function createFullWidthBlockLayoutStyles() {
     //  Add listener to update layout variables on window resize.
     window.addEventListener("resize", updateFullWidthBlockLayoutStyles);
 }
+
 doWhenPageLoaded(createFullWidthBlockLayoutStyles);
 
 /************************************/
@@ -681,14 +663,7 @@ function setMarginsOnFullWidthBlocks(loadEventInfo) {
     });
 }
 
-/*********************************************************/
-/*  Add content load handler to process full-width blocks.
- */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFullWidthBlocks = (info) => {
-    GWLog("GW.rewriteFunctions.processFullWidthBlocks", "rewrite.js", 2);
-
-    setMarginsOnFullWidthBlocks(info);
-}, { phase: ">rewrite" });
+addContentLoadHandler(setMarginsOnFullWidthBlocks, ">rewrite");
 
 
 /***************/
@@ -716,6 +691,9 @@ function rectifyTypographyInAnnotation(loadEventInfo) {
     });
 }
 
+addContentLoadHandler(rectifyTypographyInAnnotation, "rewrite", (info) => (   info.needsRewrite
+						  												   && info.source == "Extracts.annotationForTarget"));
+
 /*****************************************************************************/
 /*  Sets, in CSS, the image dimensions that are specified in HTML.
     (This is to ensure no reflow when annotation popups are spawned.)
@@ -728,19 +706,8 @@ function setImageDimensionsInAnnotation(loadEventInfo) {
     });
 }
 
-/**************************************************************************/
-/*  Add content load handler for processing a loaded annotation (fragment).
- */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processAnnotation = (info) => {
-    GWLog("GW.rewriteFunctions.processAnnotation", "rewrite.js", 2);
-
-    rectifyTypographyInAnnotation(info);
-    setImageDimensionsInAnnotation(info);
-}, {
-	phase: "rewrite",
-	condition: (info) => (   info.needsRewrite
-						  && info.source == "Extracts.annotationForTarget")
-});
+addContentLoadHandler(setImageDimensionsInAnnotation, "rewrite", (info) => (   info.needsRewrite
+																			&& info.source == "Extracts.annotationForTarget"));
 
 /******************************************************************************/
 /*  Bind mouse hover events to, when hovering over an annotated link, highlight
@@ -779,14 +746,7 @@ function bindSectionHighlightEventsToAnnotatedLinks(loadEventInfo) {
     });
 }
 
-/***********************************************************/
-/*  Add content load handler for processing annotated links.
- */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processAnnotatedLinks = (info) => {
-    GWLog("GW.rewriteFunctions.processAnnotatedLinks", "rewrite.js", 2);
-
-    bindSectionHighlightEventsToAnnotatedLinks(info);
-}, { phase: "eventListeners" });
+addContentLoadHandler(bindSectionHighlightEventsToAnnotatedLinks, "eventListeners");
 
 
 /*********************/
@@ -802,17 +762,7 @@ function stripTOCLinkSpans(loadEventInfo) {
 	unwrapAll(".TOC li a > span:not([class])", loadEventInfo.document);
 }
 
-/*************************************************************/
-/*  Add content load handler for processing table of contents.
- */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processTOC = (info) => {
-    GWLog("GW.rewriteFunctions.processTOC", "rewrite.js", 2);
-
-    stripTOCLinkSpans(info);
-}, {
-	phase: "rewrite",
-	condition: (info) => (info.needsRewrite)
-});
+addContentLoadHandler(stripTOCLinkSpans, "rewrite", (info) => (info.needsRewrite));
 
 
 /*************/
@@ -835,6 +785,38 @@ function addFootnoteClassToFootnotes(loadEventInfo) {
 	});
 }
 
+addContentLoadHandler(addFootnoteClassToFootnotes, "rewrite", (info) => (   info.needsRewrite
+						  												 && info.isFullPage));
+
+/*****************************************************/
+/*  Inject self-link for the footnotes section itself.
+ */
+function injectFootnoteSectionSelfLink(loadEventInfo) {
+    GWLog("injectFootnoteSectionSelfLink", "rewrite.js", 1);
+
+    let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
+    if (!footnotesSection)
+        return;
+
+    let footnotesSectionSelfLink = document.createElement("A");
+    footnotesSectionSelfLink.href = "#footnotes";
+    footnotesSectionSelfLink.title = "Link to section: § ‘Footnotes’";
+    footnotesSectionSelfLink.classList.add("section-self-link");
+
+    footnotesSection.insertBefore(footnotesSectionSelfLink, footnotesSection.firstElementChild.nextElementSibling);
+
+    //  Highlight on hover.
+    footnotesSectionSelfLink.addEventListener("mouseenter", (event) => {
+        footnotesSectionSelfLink.previousElementSibling.classList.toggle("highlighted", true);
+    });
+    footnotesSectionSelfLink.addEventListener("mouseleave", (event) => {
+        footnotesSectionSelfLink.previousElementSibling.classList.toggle("highlighted", false);
+    });
+}
+
+addContentLoadHandler(injectFootnoteSectionSelfLink, "rewrite", (info) => (   info.needsRewrite
+						  												   && info.isFullPage));
+
 /******************************/
 /*  Inject footnote self-links.
  */
@@ -856,22 +838,8 @@ function injectFootnoteSelfLinks(loadEventInfo) {
         			>&nbsp;</a>`);
 }
 
-/******************************************/
-/*	Highlight footnote self-links on hover.
- */
-function bindHighlightEventsToFootnoteSelfLinks(loadEventInfo) {
-    GWLog("bindHighlightEventsToFootnoteSelfLinks", "rewrite.js", 1);
-
-    //  Highlight footnote on hover over self-link.
-    loadEventInfo.document.querySelectorAll(".footnote-self-link").forEach(footnoteSelfLink => {
-        footnoteSelfLink.addEventListener("mouseenter", (event) => {
-            footnoteSelfLink.parentElement.classList.toggle("highlighted", true);
-        });
-        footnoteSelfLink.addEventListener("mouseleave", (event) => {
-            footnoteSelfLink.parentElement.classList.toggle("highlighted", false);
-        });
-    });
-}
+addContentLoadHandler(injectFootnoteSelfLinks, "rewrite", (info) => (   info.needsRewrite
+						  											 && info.isFullPage));
 
 /*****************************************************************/
 /*	Rewrite footnote back-to-citation links (generated by Pandoc).
@@ -904,8 +872,26 @@ function rewriteFootnoteBackLinks(loadEventInfo) {
 	});
 }
 
-/***********************************************************************/
-/*	Set size properly, after setting default value in previous function.
+addContentLoadHandler(rewriteFootnoteBackLinks, "rewrite", (info) => (   info.needsRewrite
+						  											  && info.isFullPage));
+
+/*******************************************/
+/*  Add a TOC link to the footnotes section.
+ */
+function injectFootnotesTOCLink(loadEventInfo) {
+    GWLog("injectFootnotesTOCLink", "rewrite.js", 1);
+
+    let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
+    let TOCList = loadEventInfo.document.querySelector("#TOC > ul");
+    if (   TOCList
+    	&& footnotesSection)
+        TOCList.insertAdjacentHTML("beforeend", `<li><a href="#footnotes">Footnotes</a></li>\n`);
+}
+
+addContentLoadHandler(injectFootnotesTOCLink, "rewrite", (info) => info.isMainDocument);
+
+/******************************************************************************/
+/*	Set size properly, after setting default value in rewriteFootnoteBackLinks.
  */
 function rectifyFootnoteBackLinkArrowSize(loadEventInfo) {
     GWLog("rectifyFootnoteBackLinkArrowSize", "rewrite.js", 1);
@@ -928,31 +914,7 @@ function rectifyFootnoteBackLinkArrowSize(loadEventInfo) {
 	});
 }
 
-/*****************************************************/
-/*  Inject self-link for the footnotes section itself.
- */
-function injectFootnoteSectionSelfLink(loadEventInfo) {
-    GWLog("injectFootnoteSectionSelfLink", "rewrite.js", 1);
-
-    let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
-    if (!footnotesSection)
-        return;
-
-    let footnotesSectionSelfLink = document.createElement("A");
-    footnotesSectionSelfLink.href = "#footnotes";
-    footnotesSectionSelfLink.title = "Link to section: § ‘Footnotes’";
-    footnotesSectionSelfLink.classList.add("section-self-link");
-
-    footnotesSection.insertBefore(footnotesSectionSelfLink, footnotesSection.firstElementChild.nextElementSibling);
-
-    //  Highlight on hover.
-    footnotesSectionSelfLink.addEventListener("mouseenter", (event) => {
-        footnotesSectionSelfLink.previousElementSibling.classList.toggle("highlighted", true);
-    });
-    footnotesSectionSelfLink.addEventListener("mouseleave", (event) => {
-        footnotesSectionSelfLink.previousElementSibling.classList.toggle("highlighted", false);
-    });
-}
+addContentLoadHandler(rectifyFootnoteBackLinkArrowSize, "eventListeners");
 
 /**************************************************************************/
 /*  Return all {side|foot}note elements associated with the given citation.
@@ -998,52 +960,26 @@ function bindNoteHighlightEventsToCitations(loadEventInfo) {
     });
 }
 
-/*******************************************/
-/*  Add a TOC link to the footnotes section.
- */
-function injectFootnotesTOCLink(loadEventInfo) {
-    GWLog("injectFootnotesTOCLink", "rewrite.js", 1);
+addContentLoadHandler(bindHighlightEventsToFootnoteSelfLinks, "eventListeners");
 
-    let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
-    let TOCList = loadEventInfo.document.querySelector("#TOC > ul");
-    if (   TOCList
-    	&& footnotesSection)
-        TOCList.insertAdjacentHTML("beforeend", `<li><a href="#footnotes">Footnotes</a></li>\n`);
+/******************************************/
+/*	Highlight footnote self-links on hover.
+ */
+function bindHighlightEventsToFootnoteSelfLinks(loadEventInfo) {
+    GWLog("bindHighlightEventsToFootnoteSelfLinks", "rewrite.js", 1);
+
+    //  Highlight footnote on hover over self-link.
+    loadEventInfo.document.querySelectorAll(".footnote-self-link").forEach(footnoteSelfLink => {
+        footnoteSelfLink.addEventListener("mouseenter", (event) => {
+            footnoteSelfLink.parentElement.classList.toggle("highlighted", true);
+        });
+        footnoteSelfLink.addEventListener("mouseleave", (event) => {
+            footnoteSelfLink.parentElement.classList.toggle("highlighted", false);
+        });
+    });
 }
 
-/**************************************************************/
-/*  Add content load handlers for processing footnotes section.
- */
-
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFootnotes = (info) => {
-    GWLog("GW.rewriteFunctions.processFootnotes", "rewrite.js", 2);
-
-    addFootnoteClassToFootnotes(info);
-    injectFootnoteSectionSelfLink(info);
-    injectFootnoteSelfLinks(info);
-    rewriteFootnoteBackLinks(info);
-}, {
-	phase: "rewrite",
-	condition: (info) => (   info.needsRewrite
-						  && info.isFullPage)
-});
-
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.injectFootnotesTOCLink = (info) => {
-    GWLog("GW.rewriteFunctions.injectFootnotesTOCLink", "rewrite.js", 2);
-
-    injectFootnotesTOCLink(info);
-}, {
-	phase: "rewrite",
-	condition: (info) => info.isMainDocument
-});
-
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processCitations = (info) => {
-    GWLog("GW.rewriteFunctions.processCitations", "rewrite.js", 2);
-
-	rectifyFootnoteBackLinkArrowSize(info);
-	bindHighlightEventsToFootnoteSelfLinks(info);
-    bindNoteHighlightEventsToCitations(info);
-}, { phase: "eventListeners" });
+addContentLoadHandler(bindNoteHighlightEventsToCitations, "eventListeners");
 
 
 /*********/
@@ -1061,6 +997,8 @@ function qualifyAnchorLinks(loadEventInfo) {
 		link.pathname = loadEventInfo.location.pathname;
 	});
 }
+
+addContentLoadHandler(qualifyAnchorLinks, "rewrite", (info) => info.needsRewrite);
 
 /********************************************************************/
 /*  Designate self-links (a.k.a. anchorlinks) and local links (a.k.a.
@@ -1084,6 +1022,8 @@ function addSpecialLinkClasses(loadEventInfo) {
         }
     });
 }
+
+addContentLoadHandler(addSpecialLinkClasses, "rewrite");
 
 /************************************************************************/
 /*	Assign proper link icons to self-links (directional or otherwise) and
@@ -1125,18 +1065,7 @@ function designateSpecialLinkIcons(loadEventInfo) {
 	});
 }
 
-/************************************************/
-/*  Add content load handler for link processing.
- */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processLinks = (info) => {
-    GWLog("GW.rewriteFunctions.processLinks", "rewrite.js", 2);
-
-	if (info.needsRewrite)
-		qualifyAnchorLinks(info);
-
-    addSpecialLinkClasses(info);
-    designateSpecialLinkIcons(info);
-}, { phase: "rewrite" });
+addContentLoadHandler(designateSpecialLinkIcons, "rewrite");
 
 
 /*********/
@@ -1163,6 +1092,8 @@ function cleanUpImageAltText(loadEventInfo) {
     });
 }
 
+addContentLoadHandler(cleanUpImageAltText, "rewrite", (info) => info.needsRewrite);
+
 /************************************************************************/
 /*	Prevent line breaks immediately before citations (which “orphans” the
 	citation on the next line, and looks ugly).
@@ -1177,18 +1108,7 @@ function noBreakForCitations(loadEventInfo) {
 	});
 }
 
-/**************************************************************/
-/*  Add content load handler for doing miscellaneous rewriting.
- */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processMiscellaneousRewrites = (info) => {
-    GWLog("GW.rewriteFunctions.processMiscellaneousRewrites", "rewrite.js", 2);
-
-    cleanUpImageAltText(info);
-    noBreakForCitations(info);
-}, {
-	phase: "rewrite",
-	condition: (info) => info.needsRewrite
-});
+addContentLoadHandler(noBreakForCitations, "rewrite", (info) => info.needsRewrite);
 
 /***************************************************************************/
 /*	Call the given function when the element specified by the given selector
@@ -1196,18 +1116,18 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	NOTE: This function is currently unused. (It was used to load Disqus.)
 		—SA 2022-04-21
  */
-function lazyLoadObserver(f, selector) {
-	let observer = new IntersectionObserver((entries) => {
-		if (entries[0].intersectionRatio <= 0)
-			return;
-		f();
-		observer.disconnect();
-	});
-
-	let target = document.querySelector(selector);
-	if (target)
-		observer.observe(target);
-}
+// function lazyLoadObserver(f, selector) {
+// 	let observer = new IntersectionObserver((entries) => {
+// 		if (entries[0].intersectionRatio <= 0)
+// 			return;
+// 		f();
+// 		observer.disconnect();
+// 	});
+// 
+// 	let target = document.querySelector(selector);
+// 	if (target)
+// 		observer.observe(target);
+// }
 
 
 /*************/
@@ -1250,17 +1170,7 @@ function applyDropCapsClasses(loadEventInfo) {
 	});
 }
 
-/******************************************/
-/*  Add content load handler for drop caps.
- */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processDropCaps = (info) => {
-    GWLog("GW.rewriteFunctions.processDropCaps", "rewrite.js", 2);
-
-    applyDropCapsClasses(info);
-}, {
-	phase: "rewrite",
-	condition: (info) => info.isMainDocument
-});
+addContentLoadHandler(applyDropCapsClasses, "rewrite", (info) => info.isMainDocument);
 
 
 /********/
@@ -1307,6 +1217,8 @@ function addDoubleClickListenersToMathBlocks(loadEventInfo) {
 	});
 }
 
+addContentLoadHandler(addDoubleClickListenersToMathBlocks, "eventListeners");
+
 /****************************************************************/
 /*	Add block buttons (copy) to block (not inline) math elements.
  */
@@ -1345,25 +1257,7 @@ function addBlockButtonsToMathBlocks(loadEventInfo) {
 	});
 }
 
-/***********************************************/
-/*  Add content load handlers for math elements.
- */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processMathElements = (info) => {
-    GWLog("GW.rewriteFunctions.processMathElements", "rewrite.js", 2);
-
-    addDoubleClickListenersToMathBlocks(info);
-}, {
-	phase: "eventListeners"
-});
-
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.rewriteMathElements = (info) => {
-    GWLog("GW.rewriteFunctions.processMathElements", "rewrite.js", 2);
-
-    addBlockButtonsToMathBlocks(info);
-}, {
-	phase: "rewrite",
-	condition: (info) => info.needsRewrite
-});
+addContentLoadHandler(addBlockButtonsToMathBlocks, "rewrite", (info) => info.needsRewrite);
 
 
 /*************/
@@ -1419,48 +1313,13 @@ function registerCopyProcessors(loadEventInfo) {
 	});
 }
 
-/*******************************************************/
-/*  Add content load handlers to set up copy processing.
- */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.copyProcessors = (info) => {
-    GWLog("GW.rewriteFunctions.copyProcessors", "rewrite.js", 2);
+addContentLoadHandler(registerCopyProcessors, "eventListeners", (info) => (   info.document instanceof Document
+		  				  												   || info.document instanceof ShadowRoot));
 
-    registerCopyProcessors(info);
-}, {
-	phase: "eventListeners",
-	condition: (info) => (   info.document instanceof Document
-		  				  || info.document instanceof ShadowRoot)
-});
 
 /********************/
 /* BACK TO TOP LINK */
 /********************/
-
-/***********************************************************************/
-/*  Injects the “back to top” link. (Called only for the main document.)
- */
-function injectBackToTopLink(loadEventInfo) {
-    GWLog("injectBackToTopLink", "rewrite.js", 1);
-
-    GW.backToTop = addUIElement(`<div id="back-to-top"><a href="#top" tabindex="-1" title="Back to top">` +
-        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M6.1 422.3l209.4-209.4c4.7-4.7 12.3-4.7 17 0l209.4 209.4c4.7 4.7 4.7 12.3 0 17l-19.8 19.8c-4.7 4.7-12.3 4.7-17 0L224 278.4 42.9 459.1c-4.7 4.7-12.3 4.7-17 0L6.1 439.3c-4.7-4.7-4.7-12.3 0-17zm0-143l19.8 19.8c4.7 4.7 12.3 4.7 17 0L224 118.4l181.1 180.7c4.7 4.7 12.3 4.7 17 0l19.8-19.8c4.7-4.7 4.7-12.3 0-17L232.5 52.9c-4.7-4.7-12.3-4.7-17 0L6.1 262.3c-4.7 4.7-4.7 12.3 0 17z"/></svg>`
-        + `</a></div>`);
-
-	//  Show/hide the back-to-top link on scroll up/down.
-	addScrollListener(updateBackToTopLinkVisibility, "updateBackToTopLinkVisibilityScrollListener", true);
-}
-
-/***********************************************************/
-/*  Add content load handler to inject the back-to-top link.
- */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.injectBackToTopLink = (info) => {
-    GWLog("GW.rewriteFunctions.injectBackToTopLink", "rewrite.js", 2);
-
-    injectBackToTopLink(info);
-}, {
-	phase: "rewrite",
-	condition: (info) => info.isMainDocument
-});
 
 /*******************************************************************************/
 /*  Show/hide the back-to-top link in response to scrolling.
@@ -1481,6 +1340,22 @@ function updateBackToTopLinkVisibility(event) {
     if (GW.scrollState.lastScrollTop <= 0)
         GW.backToTop.classList.toggle("hidden", true);
 }
+
+/***********************************************************************/
+/*  Injects the “back to top” link. (Called only for the main document.)
+ */
+function injectBackToTopLink(loadEventInfo) {
+    GWLog("injectBackToTopLink", "rewrite.js", 1);
+
+    GW.backToTop = addUIElement(`<div id="back-to-top"><a href="#top" tabindex="-1" title="Back to top">` +
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M6.1 422.3l209.4-209.4c4.7-4.7 12.3-4.7 17 0l209.4 209.4c4.7 4.7 4.7 12.3 0 17l-19.8 19.8c-4.7 4.7-12.3 4.7-17 0L224 278.4 42.9 459.1c-4.7 4.7-12.3 4.7-17 0L6.1 439.3c-4.7-4.7-4.7-12.3 0-17zm0-143l19.8 19.8c4.7 4.7 12.3 4.7 17 0L224 118.4l181.1 180.7c4.7 4.7 12.3 4.7 17 0l19.8-19.8c4.7-4.7 4.7-12.3 0-17L232.5 52.9c-4.7-4.7-12.3-4.7-17 0L6.1 262.3c-4.7 4.7-4.7 12.3 0 17z"/></svg>`
+        + `</a></div>`);
+
+	//  Show/hide the back-to-top link on scroll up/down.
+	addScrollListener(updateBackToTopLinkVisibility, "updateBackToTopLinkVisibilityScrollListener", true);
+}
+
+addContentLoadHandler(injectBackToTopLink, "rewrite", (info) => info.isMainDocument);
 
 
 /*****************/
@@ -1529,6 +1404,7 @@ function brokenAnchorCheck() {
 		&& document.querySelector(selectorFromHash(location.hash)) == null)
 		reportBrokenAnchorLink(location);
 }
+
 doWhenPageLoaded(brokenAnchorCheck);
 
 
@@ -1564,6 +1440,7 @@ function realignHash() {
         GW.hashRealignValue = null;
     }
 }
+
 doWhenDOMContentLoaded(realignHash);
 doWhenPageLoaded(() => {
     requestAnimationFrame(realignHash);

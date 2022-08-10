@@ -120,7 +120,6 @@ function isWithinCollapsedBlock(element) {
 /***********************************************************************/
 /*  Inject disclosure buttons and otherwise prepare the collapse blocks.
  */
-//	Called by: GW.rewriteFunctions.processCollapseBlocks (content load handler)
 function prepareCollapseBlocks(loadEventInfo) {
 	GWLog("prepareCollapseBlocks", "collapse.js", 1);
 
@@ -199,10 +198,12 @@ function prepareCollapseBlocks(loadEventInfo) {
 	});
 }
 
+addContentLoadHandler(prepareCollapseBlocks, ">rewrite", (info) => (   info.needsRewrite 
+																	&& info.collapseAllowed));
+
 /**********************************************************/
 /*	Removes disclosure buttons and expands collapse blocks.
  */
-//	Called by: GW.rewriteFunctions.processCollapseBlocks (content load handler)
 function expandLockCollapseBlocks(loadEventInfo) {
 	GWLog("expandLockCollapseBlocks", "collapse.js", 2);
 
@@ -217,22 +218,7 @@ function expandLockCollapseBlocks(loadEventInfo) {
 	});
 }
 
-/******************************************************************/
-/*	Add handler for processing collapse blocks in injected content.
- */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processCollapseBlocks = (info) => {
-	GWLog("GW.rewriteFunctions.processCollapseBlocks", "collapse.js", 2);
-
-	if (!info.collapseAllowed) {
-		expandLockCollapseBlocks(info);
-	} else if (info.needsRewrite) {
-		prepareCollapseBlocks(info);
-	}
-}, { 
-	phase: ">rewrite", 
-	condition: (info) => (  !info.collapseAllowed 
-						  || info.needsRewrite) 
-});
+addContentLoadHandler(expandLockCollapseBlocks, ">rewrite", (info) => !info.collapseAllowed);
 
 /*******************************************************************************/
 /*	Ensure that the given element is scrolled into view when layout is complete.
