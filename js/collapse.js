@@ -218,7 +218,8 @@ function expandLockCollapseBlocks(loadEventInfo) {
 	});
 }
 
-addContentLoadHandler(expandLockCollapseBlocks, ">rewrite", (info) => !info.collapseAllowed);
+addContentLoadHandler(expandLockCollapseBlocks, ">rewrite", (info) => (    info.needsRewrite 
+																	   && !info.collapseAllowed));
 
 /*******************************************************************************/
 /*	Ensure that the given element is scrolled into view when layout is complete.
