@@ -1150,6 +1150,14 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 function cleanUpImageAltText(loadEventInfo) {
     GWLog("cleanUpImageAltText", "rewrite.js", 1);
 
+	/*	If an image has no alt text, use the value of the ‘title’ attribute,
+		if present; otherwise, a default string (“Image”).
+	 */
+	loadEventInfo.document.querySelectorAll("img:not([alt])").forEach(image => {
+		image.alt = (image.title || "Image");
+	});
+
+	//	URL-encode ‘%’ signs in image alt text.
     loadEventInfo.document.querySelectorAll("img[alt]").forEach(image => {
         image.alt = decodeURIComponent(image.alt.replace(/%(?![A-Fa-f0-9]{2})/g, "%25"));
     });

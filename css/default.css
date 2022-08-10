@@ -863,6 +863,7 @@ img::before {
     padding: 0.5em 0.75em;
     background-color: var(--GW-body-background-color);
     text-align: left;
+    box-sizing: border-box;
     height: 100%;
 }
 
