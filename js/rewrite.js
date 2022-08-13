@@ -60,9 +60,17 @@
 			`document.firstElementChild`, i.e. the <html> element of the page.
 			For pop-frames, this is the documentElement of the pop-frame.)
 
-		‘location’ (key)
+		‘loadLocation’ (key)
 			URL object (https://developer.mozilla.org/en-US/docs/Web/API/URL)
 			which specifies the URL from which the loaded content was loaded.
+			For the main page, the represented URL will be `location.href`. For
+			pop-frames and the like, the represented URL may be the URL of the
+			annotation resource, or the URL of a locally archived version of a
+			website, or something else.
+
+		‘baseLocation’ (key)
+			URL object which specifies the URL associated with the document to 
+			which the loaded content belongs, after loading.
 			For the main page, the represented URL will be `location.href`. For
 			pop-frames and the like, the represented URL will be the `href`
 			attribute of the spawning target.
@@ -120,14 +128,6 @@
 				the loaded content will be automatically expanded (if present)
 				or simply not enabled in the first place, and all content in
 				collapsible sections will be visible at all times.
-
-			‘isFullPage’
-				Specifies whether the loaded content is a whole local page. True
-				for the main page load, and also for loads of whole other local
-				pages (for embedding into a pop-frame); false in all other cases
-				(fragments of a page, e.g. footnotes; annotations; etc.)
-
-				If true, the loaded content may include a footnotes section.
 
 			‘fullWidthPossible’
 				Specifies whether full-width elements are permitted in the
@@ -297,35 +297,38 @@ function addContentLoadHandler(handler, phase, condition = null) {
  */
 
 function includeContent(includeLink, content) {
+    GWLog("includeContent", "rewrite.js", 2);
+
 	//	Inject.
 	let wrapper = newElement("SPAN", { "class": "include-wrapper" });
 	wrapper.appendChild(content);
 	includeLink.parentElement.insertBefore(wrapper, includeLink);
 
-	//	Qualify.
-
 	//	Process.
 	let flags = (  GW.contentDidLoadEventFlags.needsRewrite
 				 | GW.contentDidLoadEventFlags.fullWidthPossible
 				 | GW.contentDidLoadEventFlags.collapseAllowed);
-	if (includeLink.hash == "")
-		flags |= GW.contentDidLoadEventFlags.isFullPage;
 
 	GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 		source: "transclude",
 		document: wrapper,
-		location: includeLink,
+		loadLocation: new URL(includeLink.href),
+		baseLocation: includeLink.baseLocation,
 		flags: flags
 	});
+
+	//	Are we including into the main page, or into a pop-frame or something?
+	let includingIntoMainPage = (includeLink.baseLocation.pathname == location.pathname);
 
 	GW.notificationCenter.fireEvent("GW.contentDidInject", {
 		source: "transclude",
 		document: wrapper,
-		mainPageContent: true
+		mainPageContent: includingIntoMainPage
 	});
 
-	//	Update.
-	updatePageTOC(wrapper);
+	//	Update TOC, if need be.
+	if (includingIntoMainPage)
+		updatePageTOCAfterInclusion(wrapper);
 
 	//	Unwrap.
 	unwrap(wrapper);
@@ -334,7 +337,9 @@ function includeContent(includeLink, content) {
 
 /*	Takes either a Node or an HTMLCollection.
  */
-function updatePageTOC(newContent) {
+function updatePageTOCAfterInclusion(newContent) {
+    GWLog("updatePageTOCAfterInclusion", "rewrite.js", 2);
+
 	if (!(TOC ?? (TOC = document.querySelector("#TOC"))))
 		return;
 
@@ -457,7 +462,7 @@ function handleTranscludes(loadEventInfo) {
 		}
 
 		//	Store the location of the included-into document.
-		includeLink.intoLocation = loadEventInfo.location;
+		includeLink.baseLocation = loadEventInfo.baseLocation;
 
 		/*	By default, includes within collapse blocks only get transcluded 
 			if/when the collapse block is expanded.
@@ -1005,7 +1010,7 @@ function stripTOCLinkSpans(loadEventInfo) {
 	unwrapAll(".TOC li a > span:not([class])", loadEventInfo.document);
 }
 
-addContentLoadHandler(stripTOCLinkSpans, "rewrite", (info) => (info.needsRewrite));
+addContentLoadHandler(stripTOCLinkSpans, "rewrite", (info) => info.needsRewrite);
 
 
 /*************/
@@ -1028,8 +1033,7 @@ function addFootnoteClassToFootnotes(loadEventInfo) {
 	});
 }
 
-addContentLoadHandler(addFootnoteClassToFootnotes, "rewrite", (info) => (   info.needsRewrite
-						  												 && info.isFullPage));
+addContentLoadHandler(addFootnoteClassToFootnotes, "rewrite", (info) => info.needsRewrite);
 
 /*****************************************************/
 /*  Inject self-link for the footnotes section itself.
@@ -1057,8 +1061,7 @@ function injectFootnoteSectionSelfLink(loadEventInfo) {
     });
 }
 
-addContentLoadHandler(injectFootnoteSectionSelfLink, "rewrite", (info) => (   info.needsRewrite
-						  												   && info.isFullPage));
+addContentLoadHandler(injectFootnoteSectionSelfLink, "rewrite", (info) => info.needsRewrite);
 
 /******************************/
 /*  Inject footnote self-links.
@@ -1081,8 +1084,7 @@ function injectFootnoteSelfLinks(loadEventInfo) {
         			>&nbsp;</a>`);
 }
 
-addContentLoadHandler(injectFootnoteSelfLinks, "rewrite", (info) => (   info.needsRewrite
-						  											 && info.isFullPage));
+addContentLoadHandler(injectFootnoteSelfLinks, "rewrite", (info) => info.needsRewrite);
 
 /*****************************************************************/
 /*	Rewrite footnote back-to-citation links (generated by Pandoc).
@@ -1115,8 +1117,7 @@ function rewriteFootnoteBackLinks(loadEventInfo) {
 	});
 }
 
-addContentLoadHandler(rewriteFootnoteBackLinks, "rewrite", (info) => (   info.needsRewrite
-						  											  && info.isFullPage));
+addContentLoadHandler(rewriteFootnoteBackLinks, "rewrite", (info) => info.needsRewrite);
 
 /*******************************************/
 /*  Add a TOC link to the footnotes section.
@@ -1131,7 +1132,8 @@ function injectFootnotesTOCLink(loadEventInfo) {
         TOCList.insertAdjacentHTML("beforeend", `<li><a href="#footnotes">Footnotes</a></li>\n`);
 }
 
-addContentLoadHandler(injectFootnotesTOCLink, "rewrite", (info) => info.isMainDocument);
+addContentLoadHandler(injectFootnotesTOCLink, "rewrite", (info) => (   info.needsRewrite
+																	&& info.isMainDocument));
 
 /******************************************************************************/
 /*	Set size properly, after setting default value in rewriteFootnoteBackLinks.
@@ -1229,15 +1231,22 @@ addContentLoadHandler(bindNoteHighlightEventsToCitations, "eventListeners");
 /* LINKS */
 /*********/
 
-/*****************************************************************************/
-/*  Qualify anchorlinks in transcluded content, by rewriting their href
-	attributes to include the path of the location of the transcluded content.
+/**********************************************************************/
+/*  Qualify anchorlinks in loaded content by rewriting their `pathname` 
+	attributes.
  */
 function qualifyAnchorLinks(loadEventInfo) {
     GWLog("qualifyAnchorLinks", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll("a[href^='#']").forEach(link => {
-		link.pathname = loadEventInfo.location.pathname;
+	loadEventInfo.document.querySelectorAll(".markdownBody a[href]").forEach(link => {
+		if (   (   link.getAttribute("href").startsWith("#")
+				|| link.pathname == loadEventInfo.loadLocation.pathname)
+			&& (   loadEventInfo.isMainDocument
+				|| null != loadEventInfo.document.querySelector(selectorFromHash(link.hash)))) {
+			link.pathname = loadEventInfo.baseLocation.pathname;
+		} else if (link.getAttribute("href").startsWith("#")) {
+			link.pathname = loadEventInfo.loadLocation.pathname;
+		}
 	});
 }
 
@@ -1256,8 +1265,8 @@ function addSpecialLinkClasses(loadEventInfo) {
             || link.closest(".section-self-link, .footnote-ref, .footnote-back, .footnote-self-link, .sidenote-self-link"))
             return;
 
-        if (   link.pathname == loadEventInfo.location.pathname
-            && (   loadEventInfo.isFullPage
+        if (   link.pathname == loadEventInfo.baseLocation.pathname
+            && (   loadEventInfo.isMainDocument
             	|| null != loadEventInfo.document.querySelector(selectorFromHash(link.hash)))) {
             link.swapClasses([ "link-self", "link-local" ], 0);
         } else if (link.pathname.slice(1).match(/[\.]/) == null) {

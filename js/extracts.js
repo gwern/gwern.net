@@ -30,8 +30,11 @@
 			document:
 				The `document` property of the GW.contentDidLoad event that
 				triggered the Extracts.processTargetsOnContentLoad handler.
-            location:
-                The `location` property of the GW.contentDidLoad event that
+            loadLocation:
+                The `loadLocation` property of the GW.contentDidLoad event that
+				triggered the Extracts.processTargetsOnContentLoad handler.
+            baseLocation:
+                The `baseLocation` property of the GW.contentDidLoad event that
 				triggered the Extracts.processTargetsOnContentLoad handler.
 			flags:
 				The `flags` property of the GW.contentDidLoad event that
@@ -44,8 +47,10 @@
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE"
             document:
                 The documentElement of the local transclude pop-frame.
-            location:
+            loadLocation:
                 URL of the local page (including anchor, if any).
+            baseLocation:
+            	Same as loadLocation.
             flags:
                 0 (no flags set)
         }
@@ -60,10 +65,11 @@
             source: "Extracts.refreshPopFrameAfterLocalPageLoads"
             document:
                 A DocumentFragment containing the embedded page elements.
-            location:
+            loadLocation:
                 URL of the local page (including anchor, if any).
-            flags: (  GW.contentDidLoadEventFlags.needsRewrite
-                    | GW.contentDidLoadEventFlags.isFullPage)
+            baseLocation:
+            	Same as loadLocation.
+            flags: GW.contentDidLoadEventFlags.needsRewrite
         }
         Fired at the last stage of preparing a local page embed pop-frame for
         spawning (after the pop-frame’s content has been freshly loaded via
@@ -253,7 +259,8 @@ Extracts = {
 			//	Fire targets-processed event.
 			GW.notificationCenter.fireEvent("Extracts.targetsDidProcessOnContentLoad", {
 				source: "Extracts.processTargetsOnContentLoad",
-				location: info.location,
+				loadLocation: info.loadLocation,
+				baseLocation: info.baseLocation,
 				document: info.document,
 				flags: info.flags
 			});
@@ -882,7 +889,8 @@ Extracts = {
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
             document: popFrame.documentElement,
-            location: Extracts.locationForTarget(target),
+            loadLocation: Extracts.locationForTarget(target),
+            baseLocation: Extracts.locationForTarget(target),
             flags: 0
         });
 
@@ -925,7 +933,8 @@ Extracts = {
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.loadAdjacentSections",
 				document: popFrame.body.firstElementChild,
-				location: Extracts.locationForTarget(target),
+				loadLocation: Extracts.locationForTarget(target),
+				baseLocation: Extracts.locationForTarget(target),
 				flags: 0
 			});
 		}
@@ -938,7 +947,8 @@ Extracts = {
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.loadAdjacentSections",
 				document: popFrame.body.firstElementChild,
-				location: Extracts.locationForTarget(target),
+				loadLocation: Extracts.locationForTarget(target),
+				baseLocation: Extracts.locationForTarget(target),
 				flags: 0
 			});
 
@@ -953,7 +963,8 @@ Extracts = {
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.loadAdjacentSections",
 				document: popFrame.body.lastElementChild,
-				location: Extracts.locationForTarget(target),
+				loadLocation: Extracts.locationForTarget(target),
+				baseLocation: Extracts.locationForTarget(target),
 				flags: 0
 			});
 
@@ -1072,9 +1083,9 @@ Extracts = {
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
                     source: "Extracts.refreshPopFrameAfterLocalPageLoads",
                     document: Extracts.cachedPages[target.pathname],
-                    location: Extracts.locationForTarget(target),
-                    flags: (  GW.contentDidLoadEventFlags.needsRewrite
-                            | GW.contentDidLoadEventFlags.isFullPage)
+					loadLocation: Extracts.locationForTarget(target),
+					baseLocation: Extracts.locationForTarget(target),
+                    flags: GW.contentDidLoadEventFlags.needsRewrite
                 });
 
 				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);

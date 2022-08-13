@@ -5,9 +5,10 @@
             source: "Extracts.annotationForTarget"
             document:
                 A DocumentFragment containing the constructed annotation.
-            location:
-                URL of the annotated target (NOT the URL of the annotation
-                resource!).
+            loadLocation:
+            	URL of the annotation resource.
+            baseLocation:
+                URL of the annotated target.
             flags:
                 GW.contentDidLoadEventFlags.needsRewrite
         }
@@ -21,9 +22,10 @@
             source: "Extracts.rewritePopFrameContent_ANNOTATION"
             document:
                 The documentElement of the annotation pop-frame.
-            location:
-                URL of the annotated target (NOT the URL of the annotation
-                resource!).
+            loadLocation:
+            	URL of the annotation resource.
+            baseLocation:
+                URL of the annotated target.
             flags:
                 0 (no flags set)
         }
@@ -226,7 +228,8 @@ Extracts = { ...Extracts, ...{
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.annotationForTarget",
             document: constructedAnnotation,
-            location: Extracts.locationForTarget(target),
+            loadLocation: Annotations.sourceURLForIdentifier(annotationIdentifier),
+            baseLocation: Extracts.locationForTarget(target),
             flags: GW.contentDidLoadEventFlags.needsRewrite
         });
 
@@ -383,7 +386,8 @@ Extracts = { ...Extracts, ...{
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_ANNOTATION",
             document: popFrame.documentElement,
-            location: Extracts.locationForTarget(target),
+            loadLocation: Annotations.sourceURLForIdentifier(Extracts.targetIdentifier(target)),
+            baseLocation: Extracts.locationForTarget(target),
             flags: 0
         });
     },

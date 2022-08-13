@@ -10,13 +10,14 @@ if (typeof window.GW == "undefined")
 			source: "DOMContentLoaded"
 			document:
 				The global document object (window.document).
-			location:
+			loadLocation:
+				URL of the main page, as loaded.
+			baseLocation:
 				URL of the main page, as loaded.
 			flags: (  GW.contentDidLoadEventFlags.isMainDocument
 					| GW.contentDidLoadEventFlags.needsRewrite
 					| GW.contentDidLoadEventFlags.clickable
 					| GW.contentDidLoadEventFlags.collapseAllowed
-					| GW.contentDidLoadEventFlags.isFullPage
 					| GW.contentDidLoadEventFlags.fullWidthPossible)
 		}
 		Fired when the browser DOMContentLoaded event fires. Loaded content is
@@ -1125,8 +1126,7 @@ GW.contentDidLoadEventFlags = {
 	needsRewrite:		1 << 1,
 	clickable:			1 << 2,
 	collapseAllowed:	1 << 3,
-	isFullPage:			1 << 4,
-	fullWidthPossible:	1 << 5
+	fullWidthPossible:	1 << 4
 };
 
 /*	Event-specific pre-fire processing for the ‘GW.contentDidLoad’ event.
@@ -1215,12 +1215,12 @@ window.addEventListener("DOMContentLoaded", () => {
     GW.notificationCenter.fireEvent("GW.contentDidLoad", {
         source: "DOMContentLoaded",
         document: document,
-        location: new URL(location.href),
+        loadLocation: new URL(location.href),
+        baseLocation: new URL(location.href),
         flags: (  GW.contentDidLoadEventFlags.isMainDocument
         		| GW.contentDidLoadEventFlags.needsRewrite
         		| GW.contentDidLoadEventFlags.clickable
         		| GW.contentDidLoadEventFlags.collapseAllowed
-        		| GW.contentDidLoadEventFlags.isFullPage
         		| GW.contentDidLoadEventFlags.fullWidthPossible)
     });
     GW.notificationCenter.fireEvent("GW.contentDidInject", {

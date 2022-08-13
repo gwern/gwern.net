@@ -666,7 +666,11 @@ Sidenotes = {
 			*/
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Sidenotes.constructSidenotesWhenMainContentLoads = (info) => {
 			Sidenotes.constructSidenotes();
-		}, { phase: "<eventListeners", once: true, condition: (info) => info.isMainDocument });
+		}, { 
+			phase: "<eventListeners", 
+			once: true, 
+			condition: (info) => info.isMainDocument 
+		});
 
 		GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");
 	}

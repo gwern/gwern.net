@@ -5,12 +5,14 @@
             source: "Extracts.rewritePopFrameContent_CITATION"
             document:
                 The documentElement of the citation pop-frame.
-            location:
+            loadLocation:
                 URL of (i.e., anchor-link to) the footnote (or sidenote; this
                 depends on whether the page in which the citation appears -
                 which may not necessarily be the main page, as citations may
                 also occur in embedded pages - is currently in sidenotes mode
                 or not).
+            baseLocation:
+            	Same as loadLocation.
             flags:
                 0 (no flags set)
         }
@@ -25,11 +27,13 @@
             source: "Extracts.rewritePopupContent_CITATION_BACK_LINK"
             document:
                 The documentElement of the citation back-link popup.
-            location:
+            loadLocation:
                 URL of (i.e., anchor-link to) the citation which references the
                 footnote/sidenote which spawned the popup. (If there are
                 multiple instances of the citation on the page, this will be the
                 URL of the first one, and that is what the popup will contain.)
+            baseLocation:
+            	Same as loadLocation.
             flags:
                 0 (no flags set)
         }
@@ -45,8 +49,10 @@
             source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK"
             document:
                 The documentElement of the aux-links pop-frame.
-            location:
+            loadLocation:
                 URL of the aux-links source file.
+            baseLocation:
+            	Same as loadLocation.
             flags:
                 0 (no flags set)
         }
@@ -61,8 +67,10 @@
             source: "Extracts.refreshPopFrameAfterAuxLinksLoad"
             document:
                 A DocumentFragment containing the aux-links elements.
-            location:
+            loadLocation:
                 URL of the aux-links source file.
+            baseLocation:
+            	Same as loadLocation.
             flags: GW.contentDidLoadEventFlags.needsRewrite
         }
         Fired when the content of the aux-links pop-frame has been constructed,
@@ -146,7 +154,8 @@ Extracts = { ...Extracts, ...{
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK",
             document: popFrame.documentElement,
-            location: Extracts.locationForTarget(target),
+            loadLocation: Extracts.locationForTarget(target),
+            baseLocation: Extracts.locationForTarget(target),
             flags: 0
         });
     },
@@ -193,7 +202,8 @@ Extracts = { ...Extracts, ...{
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
                     source: "Extracts.refreshPopFrameAfterAuxLinksLoad",
                     document: Extracts.auxLinksCache[target.pathname],
-                    location: Extracts.locationForTarget(target),
+					loadLocation: Extracts.locationForTarget(target),
+					baseLocation: Extracts.locationForTarget(target),
                     flags: GW.contentDidLoadEventFlags.needsRewrite
                 });
 
@@ -285,7 +295,8 @@ Extracts = { ...Extracts, ...{
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_CITATION",
             document: popFrame.documentElement,
-            location: Extracts.locationForTarget(target),
+            loadLocation: Extracts.locationForTarget(target),
+            baseLocation: Extracts.locationForTarget(target),
             flags: 0
         });
     },
@@ -363,7 +374,8 @@ Extracts = { ...Extracts, ...{
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopupContent_CITATION_BACK_LINK",
             document: popup.documentElement,
-            location: Extracts.locationForTarget(target),
+            loadLocation: Extracts.locationForTarget(target),
+            baseLocation: Extracts.locationForTarget(target),
             flags: 0
         });
 

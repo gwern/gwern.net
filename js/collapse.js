@@ -209,7 +209,13 @@ function expandLockCollapseBlocks(loadEventInfo) {
 
 	//  Permanently expand collapse blocks (by making them into regular blocks).
 	loadEventInfo.document.querySelectorAll(".collapse").forEach(collapseBlock => {
+		let wasCollapsed = !collapseBlock.classList.contains("expanded");
+
 		collapseBlock.classList.remove("collapse", "expanded");
+
+		if (wasCollapsed)
+	    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", { source: "Collapse.expandLockCollapseBlocks" });
+
 	});
 }
 
@@ -277,9 +283,7 @@ function revealTarget() {
 
 	revealElement(target);
 
-	/*	Fire notification event. Pass handlers the revealElement() function,
-		so that they can reveal other elements, if desired.
-	 */
+	//	Fire notification event.
 	GW.notificationCenter.fireEvent("Collapse.targetDidRevealOnHashUpdate");
 }
 /*	We don’t need to do this unconditionally (e.g. on DOMContentLoaded) because
