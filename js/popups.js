@@ -23,7 +23,7 @@ License: public domain ("And some people have asked me about a license for this 
 	GW.contentDidInject {
 			source: "Popups.injectPopup"
 			document:
-				The documentElement of the popup.
+				The `document` property of the popup.
 		}
 		Fired immediately after a popup has been injected into the page (but
 		NOT when an existing popup has merely been brought to the front).
@@ -264,14 +264,14 @@ Popups = {
 		popup.contentView = popup.querySelector(".popframe-content-view");
 
 		popup.contentView.attachShadow({ mode: "open" });
-		popup.documentElement = popup.contentView.shadowRoot;
-		popup.documentElement.appendChild(document.createElement("DIV"));
-		popup.body = popup.shadowBody = popup.documentElement.firstElementChild;
+		popup.document = popup.contentView.shadowRoot;
+		popup.document.appendChild(document.createElement("DIV"));
+		popup.body = popup.shadowBody = popup.document.firstElementChild;
 		popup.body.classList.add("popframe-body", "popup-body", "shadow-body");
 
 		let styleReset = document.createElement("STYLE");
 		styleReset.innerHTML = `.shadow-body { all: initial; }`;
-		popup.documentElement.insertBefore(styleReset, popup.body);
+		popup.document.insertBefore(styleReset, popup.body);
 
 		popup.body.popup = popup.contentView.popup = popup.scrollView.popup = popup;
 
@@ -376,7 +376,7 @@ Popups = {
 		//	Fire event.
 		GW.notificationCenter.fireEvent("GW.contentDidInject", {
 			source: "Popups.injectPopup",
-			document: popup.documentElement
+			document: popup.document
 		});
 
 		//  Bring popup to front.

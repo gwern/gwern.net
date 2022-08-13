@@ -19,7 +19,7 @@ License: public domain ("And some people have asked me about a license for this 
 	GW.contentDidInject {
 			source: "Popups.injectPopinForTarget"
 			document:
-				The documentElement of the popin.
+				The `document` property of the popin.
 		}
 		Fired immediately after a popin has first been injected into the page
 		(but NOT when, e.g., popping a popin stack).
@@ -301,14 +301,14 @@ Popins = {
 		popin.contentView = popin.querySelector(".popframe-content-view");
 
 		popin.contentView.attachShadow({ mode: "open" });
-		popin.documentElement = popin.contentView.shadowRoot;
-		popin.documentElement.appendChild(document.createElement("DIV"));
-		popin.body = popin.shadowBody = popin.documentElement.firstElementChild;
+		popin.document = popin.contentView.shadowRoot;
+		popin.document.appendChild(document.createElement("DIV"));
+		popin.body = popin.shadowBody = popin.document.firstElementChild;
 		popin.body.classList.add("popframe-body", "popin-body", "shadow-body");
 
 		let styleReset = document.createElement("STYLE");
 		styleReset.innerHTML = `.shadow-body { all: initial; }`;
-		popin.documentElement.insertBefore(styleReset, popin.body);
+		popin.document.insertBefore(styleReset, popin.body);
 
 		popin.body.popin = popin.contentView.popin = popin.scrollView.popin = popin;
 
@@ -373,7 +373,7 @@ Popins = {
 			//	Fire event.
 			GW.notificationCenter.fireEvent("GW.contentDidInject", {
 				source: "Popins.injectPopinForTarget",
-				document: target.popin.documentElement
+				document: target.popin.document
 			});
 		}
 

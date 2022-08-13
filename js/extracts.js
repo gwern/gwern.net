@@ -46,7 +46,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE"
             document:
-                The documentElement of the local transclude pop-frame.
+                The `document` property of the local transclude pop-frame.
             loadLocation:
                 URL of the local page (including anchor, if any).
             baseLocation:
@@ -888,7 +888,7 @@ Extracts = {
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
-            document: popFrame.documentElement,
+            document: popFrame.document,
             loadLocation: Extracts.locationForTarget(target),
             baseLocation: Extracts.locationForTarget(target),
             flags: 0
@@ -901,6 +901,16 @@ Extracts = {
 // 				Extracts.loadAdjacentSections(popFrame, "next,prev");
 // 			});
 // 		}
+
+		//	Add content update handler.
+		let contentUpdateHandler = ((info) => {
+			GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", contentUpdateHandler);
+
+			Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
+		});
+		GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", contentUpdateHandler, { 
+			condition: (info) => (info.baseLocation.pathname == target.pathname)
+		});
 
         //  Scroll to the target.
         Extracts.scrollToTargetedElementInPopFrame(target, popFrame);
@@ -1133,10 +1143,10 @@ Extracts = {
 		  		return;
 
 			let styleBlock = existingStyleBlock.cloneNode(true);
-			popFrame.documentElement.insertBefore(styleBlock, popFrame.body);
+			popFrame.document.insertBefore(styleBlock, popFrame.body);
 		});
 		document.querySelectorAll("link[rel='stylesheet']").forEach(cssLink => {
-			popFrame.documentElement.insertBefore(cssLink.cloneNode(true), popFrame.body);
+			popFrame.document.insertBefore(cssLink.cloneNode(true), popFrame.body);
 		});
 
         return popFrame;

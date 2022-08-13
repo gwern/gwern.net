@@ -57,8 +57,9 @@
 		‘document’ (key)
 			DOM object containing the loaded content. (For the GW.contentDidLoad
 			event fired on the initial page load, the value of this key is
-			`document.firstElementChild`, i.e. the <html> element of the page.
-			For pop-frames, this is the documentElement of the pop-frame.)
+			`document`, i.e. the root document of the page. For pop-frames, this
+			may be the `document` property of the pop-frame, or a 
+			DocumentFragment containing the embedded page elements.)
 
 		‘loadLocation’ (key)
 			URL object (https://developer.mozilla.org/en-US/docs/Web/API/URL)
@@ -332,7 +333,19 @@ function includeContent(includeLink, content) {
 
 	//	Unwrap.
 	unwrap(wrapper);
+
+	//	Document into which the transclusion was done.
+	let doc = includeLink.getRootNode();
+
+	//	Cleanup.
 	includeLink.remove();
+
+	//	Fire event.
+	GW.notificationCenter.fireEvent("Rewrite.contentDidChange", { 
+		source: "transclude", 
+		baseLocation: includeLink.baseLocation,
+		document: doc
+	});
 }
 
 /*	Takes either a Node or an HTMLCollection.

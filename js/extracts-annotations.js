@@ -21,7 +21,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_ANNOTATION"
             document:
-                The documentElement of the annotation pop-frame.
+                The `document` property of the annotation pop-frame.
             loadLocation:
             	URL of the annotation resource.
             baseLocation:
@@ -385,7 +385,7 @@ Extracts = { ...Extracts, ...{
         //  Fire contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_ANNOTATION",
-            document: popFrame.documentElement,
+            document: popFrame.document,
             loadLocation: Annotations.sourceURLForIdentifier(Extracts.targetIdentifier(target)),
             baseLocation: Extracts.locationForTarget(target),
             flags: 0

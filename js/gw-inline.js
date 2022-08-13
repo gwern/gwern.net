@@ -1028,9 +1028,7 @@ GW.notificationCenter = {
 		Values are functions that take the event info as an argument, and return
 		modified event info.
 	*/
-	prefireProcessors: {
-
-	},
+	prefireProcessors: { },
 
     /*	Fire an event with the given name and event info dictionary.
 

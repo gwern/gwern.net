@@ -4,7 +4,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_CITATION"
             document:
-                The documentElement of the citation pop-frame.
+                The `document` property of the citation pop-frame.
             loadLocation:
                 URL of (i.e., anchor-link to) the footnote (or sidenote; this
                 depends on whether the page in which the citation appears -
@@ -26,7 +26,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopupContent_CITATION_BACK_LINK"
             document:
-                The documentElement of the citation back-link popup.
+                The `document` property of the citation back-link popup.
             loadLocation:
                 URL of (i.e., anchor-link to) the citation which references the
                 footnote/sidenote which spawned the popup. (If there are
@@ -48,7 +48,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK"
             document:
-                The documentElement of the aux-links pop-frame.
+                The `document` property of the aux-links pop-frame.
             loadLocation:
                 URL of the aux-links source file.
             baseLocation:
@@ -153,7 +153,7 @@ Extracts = { ...Extracts, ...{
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK",
-            document: popFrame.documentElement,
+            document: popFrame.document,
             loadLocation: Extracts.locationForTarget(target),
             baseLocation: Extracts.locationForTarget(target),
             flags: 0
@@ -294,7 +294,7 @@ Extracts = { ...Extracts, ...{
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_CITATION",
-            document: popFrame.documentElement,
+            document: popFrame.document,
             loadLocation: Extracts.locationForTarget(target),
             baseLocation: Extracts.locationForTarget(target),
             flags: 0
@@ -373,7 +373,7 @@ Extracts = { ...Extracts, ...{
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopupContent_CITATION_BACK_LINK",
-            document: popup.documentElement,
+            document: popup.document,
             loadLocation: Extracts.locationForTarget(target),
             baseLocation: Extracts.locationForTarget(target),
             flags: 0
