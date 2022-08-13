@@ -343,6 +343,7 @@ function updatePageTOC(newContent) {
 		return;
 	}
 
+	//	Find where to insert the new TOC entries.
 	let parentSection = newContent.closest("section") ?? document.querySelector("#markdownBody");
 	let previousSection = Array.from(parentSection.children).findLast(child => 
 		   child.tagName == "SECTION" 
@@ -356,6 +357,7 @@ function updatePageTOC(newContent) {
 							  ? parentTOCElement.querySelector(`a[href$='#${previousSection.id}']`).parentElement
 							  : null;
 
+	//	TOC entry insertion function, called recursively.
 	function addToPageTOC(newContent, parentTOCElement, precedingTOCElement) {
 		let insertBeforeElement = precedingTOCElement 
 								  ? precedingTOCElement.nextElementSibling
@@ -364,15 +366,20 @@ function updatePageTOC(newContent) {
 		let addedEntries = [ ];
 
 		newContent.querySelectorAll("section").forEach(section => {
+			/*	We may have already added this section in a recursive call from
+				a previous section.
+			 */
 			if (parentTOCElement.querySelector(`a[href$='#${section.id}']`) != null)
 				return;
 
+			//	Construct entry.
 			let entry = newElement("LI");
 			let entryText = section.id == "footnotes"
 							? "Footnotes"
 							: section.firstElementChild.textContent;
 			entry.innerHTML = `<a href='#${section.id}'>${entryText}</a>`;
 
+			//	Get or construct the <ul> element.
 			let subList = Array.from(parentTOCElement.childNodes).find(child => child.tagName == "UL");
 			if (!subList) {
 				subList = newElement("UL");
@@ -382,14 +389,17 @@ function updatePageTOC(newContent) {
 			subList.insertBefore(entry, insertBeforeElement);
 			addedEntries.push(entry);
 
+			//	Recursive call, to added sections nested within this one.
 			addToPageTOC(section, entry, null);
 		});
 
 		return addedEntries;
 	}
 
+	//	Add the new entries.
 	let newEntries = addToPageTOC(newContent, parentTOCElement, precedingTOCElement);
 
+	//	Process the new entries to activate pop-frame spawning.
 	newEntries.forEach(Extracts.addTargetsWithin);
 }
 
