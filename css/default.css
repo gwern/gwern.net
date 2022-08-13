@@ -5224,3 +5224,15 @@ a .cite-author-plural::after {
     font-variant-numeric: tabular-nums;
     margin-left: 0.05em;
 }
+
+/*	EXPERIMENTAL */
+/*	Transclusion.
+ */
+a.include {
+	margin: 0;
+}
+a.include .indicator-hook,
+a.include::after {
+	display: none;
+}
+

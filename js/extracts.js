@@ -679,7 +679,7 @@ Extracts = {
     localTranscludeForTarget: (target, unwrapFunction, forceNarrow) => {
         GWLog("Extracts.localTranscludeForTarget", "extracts.js", 2);
 
-		unwrapFunction = unwrapFunction || ((blockElement) => {
+		unwrapFunction = unwrapFunction || (blockElement => {
 			return ((   blockElement.tagName == "SECTION" 
 					 && blockElement.id != "footnotes")
 					? blockElement.children 
@@ -710,7 +710,7 @@ Extracts = {
 
             if (fullTargetDocument) {
             	let linkedElement = fullTargetDocument.querySelector(selectorFromHash(target.hash));
-				return Extracts.newDocument(unwrapFunction(Extracts.nearestBlockElement(linkedElement)));
+				return newDocument(unwrapFunction(Extracts.nearestBlockElement(linkedElement)));
 			} else {
 				/*	If the page hasn’t been loaded yet, load it; upon the 
 					reload, we’ll return here but take the previous (true) 
@@ -718,7 +718,7 @@ Extracts = {
 				 */
 				Extracts.refreshPopFrameAfterLocalPageLoads(target);
 
-				return Extracts.newDocument();
+				return newDocument();
 			}
         } else {
             /*  Otherwise, display the entire linked page.
@@ -736,11 +736,11 @@ Extracts = {
 				//  Give the pop-frame an identifying class.
 				Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "page-" + target.pathname.slice(1));
 
-				return Extracts.newDocument(Extracts.cachedPages[target.pathname]);
+				return newDocument(Extracts.cachedPages[target.pathname]);
 			} else {
 				Extracts.refreshPopFrameAfterLocalPageLoads(target);
 
-				return Extracts.newDocument();
+				return newDocument();
 			}
         }
     },
@@ -932,7 +932,7 @@ Extracts = {
 
 		let prevSection = popFrame.firstSection.previousElementSibling;
 		if (prev && prevSection) {
-			popFrame.body.insertBefore(Extracts.newDocument(prevSection), popFrame.body.firstElementChild);
+			popFrame.body.insertBefore(newDocument(prevSection), popFrame.body.firstElementChild);
 
 			//  Fire a contentDidLoad event.
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
@@ -947,7 +947,7 @@ Extracts = {
 
 		let nextSection = popFrame.lastSection.nextElementSibling;
 		if (next && nextSection) {
-			popFrame.body.insertBefore(Extracts.newDocument(nextSection), null);
+			popFrame.body.insertBefore(newDocument(nextSection), null);
 
 			//  Fire a contentDidLoad event.
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
@@ -1007,7 +1007,7 @@ Extracts = {
         doAjax({
             location: target.href,
             onSuccess: (event) => {
-				let page = Extracts.newDocument(event.target.responseText);
+				let page = newDocument(event.target.responseText);
 
 				//	Get the page thumbnail URL and metadata.
 				let pageThumbnailMetaTag = page.querySelector("meta[property='og:image']");
@@ -1084,33 +1084,6 @@ Extracts = {
             }
         });
     },
-
-	//	Called by: Extracts.externalPageEmbedForTarget
-	//	Called by: Extracts.localTranscludeForTarget
-	//	Called by: Extracts.refreshPopFrameAfterLocalPageLoads
-	//	Called by: Extracts.annotationForTarget (extracts-annotations.js)
-	newDocument: (content) => {
-		let docFrag = new DocumentFragment();
-
-		if (content == null)
-			return docFrag;
-
-		if (content instanceof DocumentFragment) {
-			content = content.children;
-		} else if (typeof content == "string") {
-			let wrapper = document.createElement("DIV");
-			wrapper.innerHTML = content;
-			content = wrapper.children;
-		}
-
-		if (content instanceof Node) {
-			docFrag.append(document.importNode(content, true));
-		} else if (content instanceof HTMLCollection) {
-			docFrag.append(...(Array.from(content).map(node => document.importNode(node, true))));
-		}
-
-		return docFrag;
-	},
 
     /***************************/
     /*  Pop-frames (in general).

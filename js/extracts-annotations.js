@@ -87,7 +87,7 @@ Extracts = { ...Extracts, ...{
 
         //  Use cached constructed annotation, if available.
         if (Extracts.cachedAnnotations[annotationIdentifier])
-            return Extracts.newDocument(Extracts.cachedAnnotations[annotationIdentifier]);
+            return newDocument(Extracts.cachedAnnotations[annotationIdentifier]);
 
         //  Get annotation reference data (if it’s been loaded).
         let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
@@ -97,7 +97,7 @@ Extracts = { ...Extracts, ...{
              */
             Extracts.refreshPopFrameAfterAnnotationDataLoads(target);
 
-            return Extracts.newDocument();
+            return newDocument();
         } else if (referenceData == "LOADING_FAILED") {
             /*  If we’ve already tried and failed to load the annotation, we
                 will not try loading again, and just show the “loading failed”
@@ -105,13 +105,13 @@ Extracts = { ...Extracts, ...{
              */
             target.popFrame.classList.add("loading-failed");
 
-            return Extracts.newDocument();
+            return newDocument();
         }
 
         //  Wikipedia (external) annotations get special treatment.
         let isWikipediaLink = Annotations.isWikipediaArticleLink(annotationIdentifier);
 
-        let constructedAnnotation = Extracts.newDocument((() => {
+        let constructedAnnotation = newDocument((() => {
             //  Title (data field).
 
             //  Open links in same tab on mobile, new tab on desktop.
@@ -233,7 +233,7 @@ Extracts = { ...Extracts, ...{
         //  Cache constructed and processed annotation.
         Extracts.cachedAnnotations[annotationIdentifier] = constructedAnnotation;
 
-        return Extracts.newDocument(constructedAnnotation);
+        return newDocument(constructedAnnotation);
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)

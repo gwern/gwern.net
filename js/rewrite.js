@@ -94,6 +94,10 @@
 				GW.contentDidLoad event is called from a listener for the
 				DOMContentLoaded browser event).
 
+				If true, the loaded content will contain a main content element
+				(`#markdownBody`) as well as a page metadata block
+				(`#page-metadata`) and a table of contents (`#TOC`).
+
 			‘needsRewrite’
 				Specifies whether the loaded content needs to be processed
 				through a rewrite pass (i.e., to have its typography rectified,
@@ -117,18 +121,13 @@
 				or simply not enabled in the first place, and all content in
 				collapsible sections will be visible at all times.
 
-			‘isCollapseBlock’
-				Currently unused. Reserved for future use.
-
 			‘isFullPage’
 				Specifies whether the loaded content is a whole local page. True
 				for the main page load, and also for loads of whole other local
 				pages (for embedding into a pop-frame); false in all other cases
 				(fragments of a page, e.g. footnotes; annotations; etc.)
 
-				If true, the loaded content will contain a main content element
-				(`#markdownBody`) as well as a page metadata block
-				(`#page-metadata`).
+				If true, the loaded content may include a footnotes section.
 
 			‘fullWidthPossible’
 				Specifies whether full-width elements are permitted in the
@@ -153,6 +152,49 @@ function newElement(tagName, attributes = { }) {
 		if (attributes.hasOwnProperty(attrName))
 			element.setAttribute(attrName, attributes[attrName]);
 	return element;
+}
+
+/*	Create and return a DocumentFragment containing the given content.
+
+	The content can be any of the following (yielding the listed return value):
+	
+	null
+		an empty DocumentFragment
+
+	a DocumentFragment
+		a DocumentFragment containing the given DocumentFragment’s children
+
+	a string
+		a DocumentFragment containing the HTML content that results from parsing
+		the string
+
+	a Node
+		a DocumentFragment containing the Node
+
+	an HTMLCollection
+		a DocumentFragment containing the members of the collection
+ */
+function newDocument(content) {
+	let docFrag = new DocumentFragment();
+
+	if (content == null)
+		return docFrag;
+
+	if (content instanceof DocumentFragment) {
+		content = content.children;
+	} else if (typeof content == "string") {
+		let wrapper = document.createElement("DIV");
+		wrapper.innerHTML = content;
+		content = wrapper.children;
+	}
+
+	if (content instanceof Node) {
+		docFrag.append(document.importNode(content, true));
+	} else if (content instanceof HTMLCollection) {
+		docFrag.append(...(Array.from(content).map(node => document.importNode(node, true))));
+	}
+
+	return docFrag;
 }
 
 /*****************************************************/
@@ -240,6 +282,197 @@ function addContentLoadHandler(handler, phase, condition = null) {
 		options.condition = condition;
 	GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", handler, options);
 }
+
+
+/****************/
+/* TRANSCLUSION */
+/****************/
+
+/*	
+	include
+	include-unwrap
+	include-lazy
+	include-eager
+	include-when-collapsed
+ */
+
+function includeContent(includeLink, content) {
+	//	Inject.
+	let wrapper = newElement("SPAN", { "class": "include-wrapper" });
+	wrapper.appendChild(content);
+	includeLink.parentElement.insertBefore(wrapper, includeLink);
+
+	//	Qualify.
+
+	//	Process.
+	let flags = (  GW.contentDidLoadEventFlags.needsRewrite
+				 | GW.contentDidLoadEventFlags.fullWidthPossible
+				 | GW.contentDidLoadEventFlags.collapseAllowed);
+	if (includeLink.hash == "")
+		flags |= GW.contentDidLoadEventFlags.isFullPage;
+
+	GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+		source: "transclude",
+		document: wrapper,
+		location: includeLink,
+		flags: flags
+	});
+
+	GW.notificationCenter.fireEvent("GW.contentDidInject", {
+		source: "transclude",
+		document: wrapper,
+		mainPageContent: true
+	});
+
+	//	Update.
+	updatePageTOC(wrapper);
+
+	//	Unwrap.
+	unwrap(wrapper);
+	includeLink.remove();
+}
+
+/*	Takes either a Node or an HTMLCollection.
+ */
+function updatePageTOC(newContent) {
+	if (!(TOC ?? (TOC = document.querySelector("#TOC"))))
+		return;
+
+	if (newContent instanceof HTMLCollection) {
+		newContent.forEach(updatePageTOC);
+		return;
+	}
+
+	let parentSection = newContent.closest("section") ?? document.querySelector("#markdownBody");
+	let previousSection = Array.from(parentSection.children).findLast(child => 
+		   child.tagName == "SECTION" 
+		&& child.compareDocumentPosition(newContent) == Node.DOCUMENT_POSITION_FOLLOWING
+	) ?? null;
+
+	let parentTOCElement = parentSection.id == "markdownBody"
+						   ? TOC
+						   : TOC.querySelector(`a[href$='#${parentSection.id}']`).parentElement;
+	let precedingTOCElement = previousSection 
+							  ? parentTOCElement.querySelector(`a[href$='#${previousSection.id}']`).parentElement
+							  : null;
+
+	function addToPageTOC(newContent, parentTOCElement, precedingTOCElement) {
+		let insertBeforeElement = precedingTOCElement 
+								  ? precedingTOCElement.nextElementSibling
+								  : null;
+
+		let addedEntries = [ ];
+
+		newContent.querySelectorAll("section").forEach(section => {
+			if (parentTOCElement.querySelector(`a[href$='#${section.id}']`) != null)
+				return;
+
+			let entry = newElement("LI");
+			let entryText = section.id == "footnotes"
+							? "Footnotes"
+							: section.firstElementChild.textContent;
+			entry.innerHTML = `<a href='#${section.id}'>${entryText}</a>`;
+
+			let subList = Array.from(parentTOCElement.childNodes).find(child => child.tagName == "UL");
+			if (!subList) {
+				subList = newElement("UL");
+				parentTOCElement.appendChild(subList);
+			}
+
+			subList.insertBefore(entry, insertBeforeElement);
+			addedEntries.push(entry);
+
+			addToPageTOC(section, entry, null);
+		});
+
+		return addedEntries;
+	}
+
+	let newEntries = addToPageTOC(newContent, parentTOCElement, precedingTOCElement);
+
+	newEntries.forEach(Extracts.addTargetsWithin);
+}
+
+function transclude(includeLink, lazy = false) {
+    GWLog("transclude", "rewrite.js", 2);
+
+	if (lazy) {
+		doWhenPageLoaded(() => {
+			transclude(includeLink);
+		});
+
+		return;
+	}
+
+	doAjax({
+		location: includeLink.href,
+		onSuccess: (event) => {
+			//	Extract.
+			let content = newDocument(event.target.responseText);
+			let selector = includeLink.hash > "" 
+						   ? selectorFromHash(includeLink.hash)
+						   : "#markdownBody";
+			let section = content.querySelector(selector);
+			content = section 
+					  ? ((   selector == "#markdownBody" 
+					  	  || includeLink.classList.contains("include-unwrap"))
+					     ? newDocument(section.children)
+					     : newDocument(section)) 
+					  : content;
+
+			//	Include.
+			includeContent(includeLink, content);
+		}
+	});
+}
+
+function handleTranscludes(loadEventInfo) {
+    GWLog("handleTranscludes", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll("a.include").forEach(includeLink => {
+		/*	NOTE: We exclude cross-origin transclusion for security reasons, but
+			from a technical standpoint there’s no reason it shouldn’t work.
+			Simply comment out this check to enable cross-origin transcludes.
+			—SA 2022-08-12
+		 */
+		if (includeLink.hostname != location.hostname)
+			return;
+
+		//	Transclusion is eager (non-delayed) by default.
+		let lazy = false;
+		if (includeLink.classList.contains("include-lazy")) {
+			lazy = true;
+		} else if (includeLink.classList.contains("include-eager")) {
+			lazy = false;
+		}
+
+		//	Store the location of the included-into document.
+		includeLink.intoLocation = loadEventInfo.location;
+
+		/*	By default, includes within collapse blocks only get transcluded 
+			if/when the collapse block is expanded.
+		 */
+		if (    isWithinCollapsedBlock(includeLink) 
+			&& !(includeLink.classList.contains("include-when-collapsed"))) {
+			let uncollapseHandler = ((info) => {
+				if (isWithinCollapsedBlock(includeLink))
+					return;
+
+				GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", uncollapseHandler);
+				GW.notificationCenter.removeHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", uncollapseHandler);
+
+				transclude(includeLink, lazy);
+			});
+
+			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", uncollapseHandler);
+			GW.notificationCenter.addHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", uncollapseHandler);
+		} else {
+			transclude(includeLink, lazy);
+		}
+	});
+}
+
+addContentLoadHandler(handleTranscludes, "rewrite", (info) => info.needsRewrite);
 
 
 /**********/

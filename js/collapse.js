@@ -123,10 +123,11 @@ function isWithinCollapsedBlock(element) {
 function prepareCollapseBlocks(loadEventInfo) {
 	GWLog("prepareCollapseBlocks", "collapse.js", 1);
 
-	let hashTarget = getHashTargetedElement();
-	let prepareCollapseBlock = (collapseBlock) => {
-		let checked = collapseBlock.contains(hashTarget) ? " checked='checked'" : "";
+	//  Expand all collapse blocks.
+	loadEventInfo.document.querySelectorAll(".collapse").forEach(collapseBlock => {
+		let checked = collapseBlock.contains(getHashTargetedElement()) ? " checked='checked'" : "";
 		let disclosureButtonHTML = `<input type='checkbox' class='disclosure-button' aria-label='Open/close collapsed section'${checked}>`;
+
 		if (collapseBlock.tagName == "SECTION") {
 			//  Inject the disclosure button.
 			collapseBlock.children[0].insertAdjacentHTML("afterend", disclosureButtonHTML);
@@ -135,6 +136,8 @@ function prepareCollapseBlocks(loadEventInfo) {
 		} else if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].includes(collapseBlock.tagName)) {
 			//  Remove the ‘collapse’ class and do nothing else.
 			collapseBlock.classList.remove("collapse");
+			if (collapseBlock.className == "")
+				collapseBlock.removeAttribute("class");
 		} else if (   collapseBlock.parentElement.tagName == "DIV" 
 				   && collapseBlock.parentElement.children.length == 1) {
 			//  Use parent div as collapse block wrapper.
@@ -156,17 +159,9 @@ function prepareCollapseBlocks(loadEventInfo) {
 			collapseBlock.classList.remove("collapse");
 			realCollapseBlock.appendChild(collapseBlock);
 		}
-	};
+	});
 
-	//  Expand the containing document itself, if it’s also a collapse block.
-	if (loadEventInfo.isCollapseBlock)
-		prepareCollapseBlock(loadEventInfo.document);
-
-	//  Expand all collapse blocks in the containing document.
-	loadEventInfo.document.querySelectorAll(".collapse").forEach(prepareCollapseBlock);
-
-    /*  Add listeners to toggle ‘expanded’ class of collapse blocks.
-	 */
+    //  Add listeners to toggle ‘expanded’ class of collapse blocks.
 	loadEventInfo.document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
 		updateDisclosureButtonTitle(disclosureButton);
 
@@ -218,8 +213,7 @@ function expandLockCollapseBlocks(loadEventInfo) {
 	});
 }
 
-addContentLoadHandler(expandLockCollapseBlocks, ">rewrite", (info) => (    info.needsRewrite 
-																	   && !info.collapseAllowed));
+addContentLoadHandler(expandLockCollapseBlocks, ">rewrite", (info) => !info.collapseAllowed);
 
 /*******************************************************************************/
 /*	Ensure that the given element is scrolled into view when layout is complete.

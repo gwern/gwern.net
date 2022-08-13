@@ -219,7 +219,7 @@ Annotations = {
 
 			//	Called by: Annotations.processedAPIResponseForIdentifier
 			processAPIResponse: (response) => {
-				return Extracts.newDocument(response);
+				return newDocument(response);
 			},
 
 			//	Called by: Annotations.referenceDataFromParsedAPIResponse
@@ -266,7 +266,7 @@ Annotations = {
 					tagsHTML:       (tagsElement ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>` : ``),
 					backlinksHTML:  (backlinksElement ? `<span class="data-field backlinks">${backlinksElement.innerHTML}</span>` : ``),
 					similarHTML:    (similarElement ? `<span class="data-field similars" >${similarElement.innerHTML}</span>` : ``),
-					abstract:   	(abstractElement ? Extracts.newDocument(abstractElement.children) : null)
+					abstract:   	(abstractElement ? newDocument(abstractElement.children) : null)
 				};
 			},
 
@@ -360,7 +360,7 @@ Annotations.dataSources.wikipedia = {
 			titleHTML = response["lead"]["displaytitle"];
 		}
 
-		let referenceEntry = Extracts.newDocument(responseHTML);
+		let referenceEntry = newDocument(responseHTML);
 
 		Annotations.dataSources.wikipedia.postProcessReferenceEntry(referenceEntry, identifier);
 

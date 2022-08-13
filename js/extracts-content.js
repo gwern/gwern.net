@@ -130,11 +130,11 @@ Extracts = { ...Extracts, ...{
         GWLog("Extracts.auxLinksForTarget", "extracts-content.js", 2);
 
         if (Extracts.auxLinksCache[target.pathname]) {
-            return Extracts.newDocument(Extracts.auxLinksCache[target.pathname]);
+            return newDocument(Extracts.auxLinksCache[target.pathname]);
         } else {
             Extracts.refreshPopFrameAfterAuxLinksLoad(target);
 
-            return Extracts.newDocument();
+            return newDocument();
         }
     },
 
@@ -186,7 +186,7 @@ Extracts = { ...Extracts, ...{
             location: target.href,
             onSuccess: (event) => {
                 //  Cache the aux-links source.
-                Extracts.auxLinksCache[target.pathname] = Extracts.newDocument(event.target.responseText);
+                Extracts.auxLinksCache[target.pathname] = newDocument(event.target.responseText);
 
                 /*  Trigger the rewrite pass by firing the requisite event.
                     */
@@ -428,7 +428,7 @@ Extracts = { ...Extracts, ...{
         let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
         //  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-        return Extracts.newDocument(Extracts.objectHTMLForURL(videoEmbedURL, 
+        return newDocument(Extracts.objectHTMLForURL(videoEmbedURL, 
 			`srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`));
     }
 }};
@@ -471,7 +471,7 @@ Extracts = { ...Extracts, ...{
     localVideoForTarget: (target) => {
         GWLog("Extracts.localVideoForTarget", "extracts-content.js", 2);
 
-        return Extracts.newDocument(
+        return newDocument(
         	  `<video controls="controls" preload="none">` 
         	+ `<source src="${target.href}">` 
         	+ `</video>`);
@@ -548,12 +548,12 @@ Extracts = { ...Extracts, ...{
             styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
 
         //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.
-        return Extracts.newDocument(`<img 
-        								${styles} 
-        								class="${target.classList}" 
-        								src="${target.href}" 
-        								loading="lazy"
-        									>`);
+        return newDocument(`<img 
+								${styles} 
+								class="${target.classList}" 
+								src="${target.href}" 
+								loading="lazy"
+									>`);
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -624,7 +624,7 @@ Extracts = { ...Extracts, ...{
     localDocumentForTarget: (target) => {
         GWLog("Extracts.localDocumentForTarget", "extracts-content.js", 2);
 
-		return Extracts.newDocument(Extracts.objectHTMLForURL(target,
+		return newDocument(Extracts.objectHTMLForURL(target,
 			`sandbox="allow-same-origin" referrerpolicy="same-origin"`));
     },
 
@@ -705,11 +705,11 @@ Extracts = { ...Extracts, ...{
         GWLog("Extracts.localCodeFileForTarget", "extracts-content.js", 2);
 
 		if (Extracts.codeFilesCache[target.pathname]) {
-			return Extracts.newDocument(Extracts.codeFilesCache[target.pathname]);
+			return newDocument(Extracts.codeFilesCache[target.pathname]);
 		} else {
 			Extracts.refreshPopFrameAfterCodeFileLoads(target);
 
-            return Extracts.newDocument();
+            return newDocument();
 		}
 	},
 
@@ -726,7 +726,7 @@ Extracts = { ...Extracts, ...{
             location: target.href + ".html",
             onSuccess: (event) => {
 				//	Cache the code file.
-				Extracts.codeFilesCache[target.pathname] = Extracts.newDocument(event.target.responseText);
+				Extracts.codeFilesCache[target.pathname] = newDocument(event.target.responseText);
 
 				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
             },
@@ -740,7 +740,7 @@ Extracts = { ...Extracts, ...{
                         let codeBlock = `<pre class="raw-code"><code>${htmlEncodedResponse}</code></pre>`;
 
 						//	Cache the code file.
-						Extracts.codeFilesCache[target.pathname] = Extracts.newDocument(codeBlock);
+						Extracts.codeFilesCache[target.pathname] = newDocument(codeBlock);
 
 						Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
                     },
@@ -751,7 +751,7 @@ Extracts = { ...Extracts, ...{
             }
         });
 
-        return Extracts.newDocument();
+        return newDocument();
     },
 }};
 
@@ -866,7 +866,7 @@ Extracts = { ...Extracts, ...{
                 }
             });
 
-            return Extracts.newDocument(`<iframe frameborder="0" sandbox="allow-scripts allow-popups"></iframe>`);
+            return newDocument(`<iframe frameborder="0" sandbox="allow-scripts allow-popups"></iframe>`);
         }
         //  END EXPERIMENTAL SECTION
 
@@ -879,7 +879,7 @@ Extracts = { ...Extracts, ...{
 			}
 		}
 
-		return Extracts.newDocument(Extracts.objectHTMLForURL(url, "sandbox"));
+		return newDocument(Extracts.objectHTMLForURL(url, "sandbox"));
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
