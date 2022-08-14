@@ -89,6 +89,7 @@ Extracts = {
     targets: {
         targetElementsSelector: "a[href]",
         excludedElementsSelector: [
+        	".include",
             ".section-self-link",
             ".footnote-self-link",
             ".sidenote-self-link",

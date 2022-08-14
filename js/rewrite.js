@@ -320,6 +320,7 @@ function lazyLoadObserver(f, target, ratio = 0) {
 	include-unwrap
 	include-lazy
 	include-when-collapsed
+	include-no-spinner
  */
 
 function includeContent(includeLink, content) {
@@ -702,6 +703,11 @@ function handleTranscludes(loadEventInfo) {
 		if (includeLink.hostname != location.hostname)
 			return;
 
+		//	Include-links should be unclickable, and have a loading spinner.
+		includeLink.classList.add("no-icon");
+		includeLink.title = "Content is loading. Please wait.";
+        includeLink.onclick = () => { return false; };
+
 		//	Store the location of the included-into document.
 		includeLink.baseLocation = loadEventInfo.baseLocation;
 
@@ -710,7 +716,7 @@ function handleTranscludes(loadEventInfo) {
 	});
 }
 
-addContentLoadHandler(handleTranscludes, "<", (info) => info.needsRewrite);
+addContentLoadHandler(handleTranscludes, "<rewrite", (info) => info.needsRewrite);
 
 
 /**********/
