@@ -317,9 +317,10 @@ function lazyLoadObserver(f, target, ratio = 0) {
 
 /*	
 	include
-	include-unwrap
 	include-lazy
 	include-when-collapsed
+	include-unwrap
+	include-replace-container
 	include-no-spinner
  */
 
@@ -329,7 +330,10 @@ function includeContent(includeLink, content) {
 	//	Inject.
 	let wrapper = newElement("SPAN", { "class": "include-wrapper" });
 	wrapper.appendChild(content);
-	includeLink.parentElement.insertBefore(wrapper, includeLink);
+	let insertWhere = includeLink.classList.contains("include-replace-container")
+					  ? includeLink.parentElement
+					  : includeLink;
+	insertWhere.parentElement.insertBefore(wrapper, insertWhere);
 
 	//	Document into which the transclusion is being done.
 	let doc = includeLink.getRootNode();
@@ -370,7 +374,11 @@ function includeContent(includeLink, content) {
 	unwrap(wrapper);
 
 	//	Cleanup.
-	includeLink.remove();
+	if (includeLink.classList.contains("include-replace-container")) {
+		includeLink.parentElement.remove();
+	} else {
+		includeLink.remove();
+	}
 
 	//	Fire event, if need be.
 	if (includeLink.needsRewrite) {
