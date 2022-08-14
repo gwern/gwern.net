@@ -206,6 +206,28 @@ Element.prototype.swapClasses = function (classes, whichToAdd) {
     this.classList.remove(classes[1 - whichToAdd]);
 };
 
+/*	The first item of the array (or null if array is empty).
+ */
+Object.defineProperty(Array.prototype, "first", {
+	get() {
+		if (this.length == 0)
+			return null;
+
+		return this[0];
+	}
+});
+
+/*	The last item of the array (or null if array is empty).
+ */
+Object.defineProperty(Array.prototype, "last", {
+	get() {
+		if (this.length == 0)
+			return null;
+
+		return this[(this.length - 1)];
+	}
+});
+
 /*	The first text node of a node or element (or null if an element contains no
 	text nodes).
  */

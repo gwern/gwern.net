@@ -435,18 +435,135 @@ function transclude(includeLink, lazy = false) {
 	doAjax({
 		location: includeLink.href,
 		onSuccess: (event) => {
-			//	Extract.
-			let content = newDocument(event.target.responseText);
-			let selector = includeLink.hash > "" 
-						   ? selectorFromHash(includeLink.hash)
-						   : "#markdownBody";
-			let section = content.querySelector(selector);
-			content = section 
-					  ? ((   selector == "#markdownBody" 
-					  	  || includeLink.classList.contains("include-unwrap"))
-					     ? newDocument(section.children)
-					     : newDocument(section)) 
-					  : content;
+			let content = ((content) => {
+				//	If it’s a full page, extract just the page content.
+				content = content.querySelector("#markdownBody") ?? content;
+
+				//	If the hash specifies part of the page, extract that.
+				let anchors = includeLink.hash.match(/#[^#]*/g) ?? [ ];
+				if (anchors.length == 1) {
+					//	Simple element tranclude.
+
+					let section = content.querySelector(selectorFromHash(includeLink.hash));
+					if (section)
+						content = includeLink.classList.contains("include-unwrap")
+								  ? newDocument(section.children)
+								  : newDocument(section);
+				} else if (anchors.length == 2) {
+					//	PmWiki-like transclude range syntax.
+
+					let startElement = anchors[0].length > 1
+									   ? content.querySelector(selectorFromHash(anchors[0]))
+									   : null;
+					let endElement = anchors[1].length > 1
+									 ? content.querySelector(selectorFromHash(anchors[1]))
+									 : null;
+
+					/*	If both ends of the range are null, we return the entire
+						content.
+					 */
+					if (   startElement == null
+						&& endElement == null)
+						return content;
+
+					/*	If both ends of the range exist, but the end element 
+						doesn’t follow the start element, we return nothing.
+					 */
+					if (   startElement 
+						&& endElement 
+						&& (   startElement == endElement
+							|| startElement.compareDocumentPosition(endElement) == Node.DOCUMENT_POSITION_PRECEDING))
+						return newDocument();
+
+					//	Slice.
+					let slicedContent = newDocument();
+
+					if (startElement == null) {
+						//	From start to id.
+						slicedContent.appendChild(content);
+
+						let currentNode = endElement;
+						while (currentNode != slicedContent) {
+							while (currentNode.nextSibling) {
+								currentNode.nextSibling.remove();
+							}
+							currentNode = currentNode.parentNode;
+						}
+						endElement.remove();
+					} else if (endElement == null) {
+						//	From id to end.
+						let nodesToAppend = [ startElement ];
+
+						let currentNode = startElement;
+						while (currentNode.parentNode) {
+							while (currentNode.nextSibling) {
+								nodesToAppend.push(currentNode.nextSibling);
+								currentNode = currentNode.nextSibling;
+							}
+							currentNode = currentNode.parentNode;
+						}
+
+						nodesToAppend.forEach(node => { slicedContent.appendChild(node); });
+					} else {
+						//	From id to id.
+						let nodesToAppend = [ ];
+
+						/*	Node which contains both start and end elements
+							(which might be the root DocumentFragment).
+						 */
+						let sharedAncestor = startElement.parentNode;
+						while (!sharedAncestor.contains(endElement))
+							sharedAncestor = sharedAncestor.parentNode;
+
+						let currentNode = startElement;
+
+						/*	The branch of the tree containing the start element
+							(if it does not also contain the end element).
+						 */
+						while (currentNode.parentNode != sharedAncestor) {
+							while (currentNode.nextSibling) {
+								nodesToAppend.push(currentNode.nextSibling);
+								currentNode = currentNode.nextSibling;
+							}
+							currentNode = currentNode.parentNode;
+						}
+
+						//	There might be intervening branches.
+						if (!currentNode.contains(endElement)) {
+							while (!currentNode.nextSibling.contains(endElement)) {
+								currentNode = currentNode.nextSibling;
+								nodesToAppend.push(currentNode);
+							}
+							currentNode = currentNode.nextSibling;
+						}
+
+						//	The branch of the tree containing the end element.
+						if (currentNode != endElement) {
+							let endBranchOrigin = currentNode;
+							currentNode = endElement;
+							while (currentNode != endBranchOrigin) {
+								while (currentNode.nextSibling) {
+									currentNode.nextSibling.remove();
+								}
+								currentNode = currentNode.parentNode;
+							}
+							endElement.remove();
+							nodesToAppend.push(endBranchOrigin);
+						}
+
+						//	Insert the start element, if not there already.
+						if (!nodesToAppend.last.contains(startElement))
+							nodesToAppend.splice(0, 0, startElement);
+
+						//	Assemble.
+						nodesToAppend.forEach(node => { slicedContent.appendChild(node); });
+					}
+
+					content = slicedContent;
+				}
+
+				return content;
+			})(newDocument(event.target.responseText));
 
 			//	Include.
 			includeContent(includeLink, content);
