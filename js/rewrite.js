@@ -284,6 +284,32 @@ function addContentLoadHandler(handler, phase, condition = null) {
 	GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", handler, options);
 }
 
+/*****************************************************************************/
+/*	Call the given function when the given element (if `target` is an element),
+	or the element specified by the given selector (if `target` is a string),
+	intersects the viewport.
+	Optionally specify the interaction ratio.
+ */
+function lazyLoadObserver(f, target, ratio = 0) {
+	if (typeof target == "string")
+		target = document.querySelector(target);
+
+	if (isOnScreen(target)) {
+		f();
+		return;
+	}
+
+	let observer = new IntersectionObserver((entries) => {
+		if (entries[0].intersectionRatio <= ratio)
+			return;
+		f();
+		observer.disconnect();
+	});
+
+	if (target)
+		observer.observe(target);
+}
+
 
 /****************/
 /* TRANSCLUSION */
@@ -293,7 +319,6 @@ function addContentLoadHandler(handler, phase, condition = null) {
 	include
 	include-unwrap
 	include-lazy
-	include-eager
 	include-when-collapsed
  */
 
@@ -305,10 +330,19 @@ function includeContent(includeLink, content) {
 	wrapper.appendChild(content);
 	includeLink.parentElement.insertBefore(wrapper, includeLink);
 
+	//	Document into which the transclusion is being done.
+	let doc = includeLink.getRootNode();
+
+	//	Are we including into the main page, or into a pop-frame or something?
+	let includingIntoMainPage = (doc == document);
+
 	//	Process.
-	let flags = (  GW.contentDidLoadEventFlags.needsRewrite
-				 | GW.contentDidLoadEventFlags.fullWidthPossible
-				 | GW.contentDidLoadEventFlags.collapseAllowed);
+	let flags = 0;
+	if (includingIntoMainPage)
+		flags |= (  GW.contentDidLoadEventFlags.fullWidthPossible
+				  | GW.contentDidLoadEventFlags.collapseAllowed)
+	if (includeLink.needsRewrite)
+		flags |= GW.contentDidLoadEventFlags.needsRewrite;
 
 	GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 		source: "transclude",
@@ -318,14 +352,14 @@ function includeContent(includeLink, content) {
 		flags: flags
 	});
 
-	//	Are we including into the main page, or into a pop-frame or something?
-	let includingIntoMainPage = (includeLink.baseLocation.pathname == location.pathname);
-
-	GW.notificationCenter.fireEvent("GW.contentDidInject", {
-		source: "transclude",
-		document: wrapper,
-		mainPageContent: includingIntoMainPage
-	});
+	//	Fire event, if need be.
+	if (includeLink.needsRewrite) {
+		GW.notificationCenter.fireEvent("GW.contentDidInject", {
+			source: "transclude",
+			document: wrapper,
+			mainPageContent: includingIntoMainPage
+		});
+	}
 
 	//	Update TOC, if need be.
 	if (includingIntoMainPage)
@@ -334,18 +368,17 @@ function includeContent(includeLink, content) {
 	//	Unwrap.
 	unwrap(wrapper);
 
-	//	Document into which the transclusion was done.
-	let doc = includeLink.getRootNode();
-
 	//	Cleanup.
 	includeLink.remove();
 
-	//	Fire event.
-	GW.notificationCenter.fireEvent("Rewrite.contentDidChange", { 
-		source: "transclude", 
-		baseLocation: includeLink.baseLocation,
-		document: doc
-	});
+	//	Fire event, if need be.
+	if (includeLink.needsRewrite) {
+		GW.notificationCenter.fireEvent("Rewrite.contentDidChange", { 
+			source: "transclude", 
+			baseLocation: includeLink.baseLocation,
+			document: doc
+		});
+	}
 }
 
 /*	Takes either a Node or an HTMLCollection.
@@ -421,178 +454,173 @@ function updatePageTOCAfterInclusion(newContent) {
 	newEntries.forEach(Extracts.addTargetsWithin);
 }
 
-function transclude(includeLink, lazy = false) {
-    GWLog("transclude", "rewrite.js", 2);
+Transclude = {
+	cachedDocuments: { },
 
-	if (lazy) {
-		doWhenPageLoaded(() => {
-			transclude(includeLink);
-		});
+	cachedDocumentForLink: (includeLink) => {
+		if (  includeLink.hostname == location.hostname
+			&& includeLink.pathname == location.pathname)
+			return document;
 
-		return;
-	}
+		let noHashURL = new URL(includeLink.href);
+		noHashURL.hash = "";
 
-	doAjax({
-		location: includeLink.href,
-		onSuccess: (event) => {
-			let content = ((content) => {
-				//	If it’s a full page, extract just the page content.
-				content = content.querySelector("#markdownBody") ?? content;
+		return Transclude.cachedDocuments[noHashURL.href];
+	},
 
-				//	If the hash specifies part of the page, extract that.
-				let anchors = includeLink.hash.match(/#[^#]*/g) ?? [ ];
-				if (anchors.length == 1) {
-					//	Simple element tranclude.
-
-					let section = content.querySelector(selectorFromHash(includeLink.hash));
-					if (section)
-						content = includeLink.classList.contains("include-unwrap")
-								  ? newDocument(section.children)
-								  : newDocument(section);
-				} else if (anchors.length == 2) {
-					//	PmWiki-like transclude range syntax.
-
-					let startElement = anchors[0].length > 1
-									   ? content.querySelector(selectorFromHash(anchors[0]))
-									   : null;
-					let endElement = anchors[1].length > 1
-									 ? content.querySelector(selectorFromHash(anchors[1]))
-									 : null;
-
-					/*	If both ends of the range are null, we return the entire
-						content.
-					 */
-					if (   startElement == null
-						&& endElement == null)
-						return content;
-
-					/*	If both ends of the range exist, but the end element 
-						doesn’t follow the start element, we return nothing.
-					 */
-					if (   startElement 
-						&& endElement 
-						&& (   startElement == endElement
-							|| startElement.compareDocumentPosition(endElement) == Node.DOCUMENT_POSITION_PRECEDING))
-						return newDocument();
-
-					//	Slice.
-					let slicedContent = newDocument();
-
-					if (startElement == null) {
-						//	From start to id.
-						slicedContent.appendChild(content);
-
-						let currentNode = endElement;
-						while (currentNode != slicedContent) {
-							while (currentNode.nextSibling) {
-								currentNode.nextSibling.remove();
-							}
-							currentNode = currentNode.parentNode;
-						}
-						endElement.remove();
-					} else if (endElement == null) {
-						//	From id to end.
-						let nodesToAppend = [ startElement ];
-
-						let currentNode = startElement;
-						while (currentNode.parentNode) {
-							while (currentNode.nextSibling) {
-								nodesToAppend.push(currentNode.nextSibling);
-								currentNode = currentNode.nextSibling;
-							}
-							currentNode = currentNode.parentNode;
-						}
-
-						nodesToAppend.forEach(node => { slicedContent.appendChild(node); });
-					} else {
-						//	From id to id.
-						let nodesToAppend = [ ];
-
-						/*	Node which contains both start and end elements
-							(which might be the root DocumentFragment).
-						 */
-						let sharedAncestor = startElement.parentNode;
-						while (!sharedAncestor.contains(endElement))
-							sharedAncestor = sharedAncestor.parentNode;
-
-						let currentNode = startElement;
-
-						/*	The branch of the tree containing the start element
-							(if it does not also contain the end element).
-						 */
-						while (currentNode.parentNode != sharedAncestor) {
-							while (currentNode.nextSibling) {
-								nodesToAppend.push(currentNode.nextSibling);
-								currentNode = currentNode.nextSibling;
-							}
-							currentNode = currentNode.parentNode;
-						}
-
-						//	There might be intervening branches.
-						if (!currentNode.contains(endElement)) {
-							while (!currentNode.nextSibling.contains(endElement)) {
-								currentNode = currentNode.nextSibling;
-								nodesToAppend.push(currentNode);
-							}
-							currentNode = currentNode.nextSibling;
-						}
-
-						//	The branch of the tree containing the end element.
-						if (currentNode != endElement) {
-							let endBranchOrigin = currentNode;
-							currentNode = endElement;
-							while (currentNode != endBranchOrigin) {
-								while (currentNode.nextSibling) {
-									currentNode.nextSibling.remove();
-								}
-								currentNode = currentNode.parentNode;
-							}
-							endElement.remove();
-							nodesToAppend.push(endBranchOrigin);
-						}
-
-						//	Insert the start element, if not there already.
-						if (!nodesToAppend.last.contains(startElement))
-							nodesToAppend.splice(0, 0, startElement);
-
-						//	Assemble.
-						nodesToAppend.forEach(node => { slicedContent.appendChild(node); });
-					}
-
-					content = slicedContent;
-				}
-
-				return content;
-			})(newDocument(event.target.responseText));
-
-			//	Include.
-			includeContent(includeLink, content);
-		}
-	});
-}
-
-function handleTranscludes(loadEventInfo) {
-    GWLog("handleTranscludes", "rewrite.js", 1);
-
-	loadEventInfo.document.querySelectorAll("a.include").forEach(includeLink => {
-		/*	NOTE: We exclude cross-origin transclusion for security reasons, but
-			from a technical standpoint there’s no reason it shouldn’t work.
-			Simply comment out this check to enable cross-origin transcludes.
-			—SA 2022-08-12
-		 */
-		if (includeLink.hostname != location.hostname)
+	setCachedDocumentForLink: (doc, includeLink) => {
+		if (  includeLink.hostname == location.hostname
+			&& includeLink.pathname == location.pathname)
 			return;
 
-		//	Transclusion is eager (non-delayed) by default.
-		let lazy = false;
-		if (includeLink.classList.contains("include-lazy")) {
-			lazy = true;
-		} else if (includeLink.classList.contains("include-eager")) {
-			lazy = false;
+		let noHashURL = new URL(includeLink.href);
+		noHashURL.hash = "";
+
+		Transclude.cachedDocuments[noHashURL.href] = doc;
+	},
+
+	cachedContent: { },
+
+	cachedContentForLink: (includeLink) => {
+		return Transclude.cachedContent[includeLink.href];
+	},
+
+	setCachedContentForLink: (content, includeLink) => {
+		Transclude.cachedContent[includeLink.href] = content;
+	},
+
+	sliceContentFromDocument: (sourceDocument, includeLink) => {
+		//	If it’s a full page, extract just the page content.
+		let content = sourceDocument.querySelector("#markdownBody") ?? sourceDocument;
+
+		//	If the hash specifies part of the page, extract that.
+		let anchors = includeLink.hash.match(/#[^#]*/g) ?? [ ];
+		if (anchors.length == 1) {
+			//	Simple element tranclude.
+
+			let section = content.querySelector(selectorFromHash(includeLink.hash));
+			if (section)
+				content = includeLink.classList.contains("include-unwrap")
+						  ? newDocument(section.children)
+						  : newDocument(section);
+		} else if (anchors.length == 2) {
+			//	PmWiki-like transclude range syntax.
+
+			let startElement = anchors[0].length > 1
+							   ? content.querySelector(selectorFromHash(anchors[0]))
+							   : null;
+			let endElement = anchors[1].length > 1
+							 ? content.querySelector(selectorFromHash(anchors[1]))
+							 : null;
+
+			/*	If both ends of the range are null, we return the entire
+				content.
+			 */
+			if (   startElement == null
+				&& endElement == null)
+				return content;
+
+			/*	If both ends of the range exist, but the end element 
+				doesn’t follow the start element, we return nothing.
+			 */
+			if (   startElement 
+				&& endElement 
+				&& (   startElement == endElement
+					|| startElement.compareDocumentPosition(endElement) == Node.DOCUMENT_POSITION_PRECEDING))
+				return newDocument();
+
+			//	Slice.
+			let slicedContent = newDocument();
+
+			if (startElement == null) {
+				//	From start to id.
+				slicedContent.appendChild(content);
+
+				let currentNode = endElement;
+				while (currentNode != slicedContent) {
+					while (currentNode.nextSibling) {
+						currentNode.nextSibling.remove();
+					}
+					currentNode = currentNode.parentNode;
+				}
+				endElement.remove();
+			} else if (endElement == null) {
+				//	From id to end.
+				let nodesToAppend = [ startElement ];
+
+				let currentNode = startElement;
+				while (currentNode.parentNode) {
+					while (currentNode.nextSibling) {
+						nodesToAppend.push(currentNode.nextSibling);
+						currentNode = currentNode.nextSibling;
+					}
+					currentNode = currentNode.parentNode;
+				}
+
+				nodesToAppend.forEach(node => { slicedContent.appendChild(node); });
+			} else {
+				//	From id to id.
+				let nodesToAppend = [ ];
+
+				/*	Node which contains both start and end elements
+					(which might be the root DocumentFragment).
+				 */
+				let sharedAncestor = startElement.parentNode;
+				while (!sharedAncestor.contains(endElement))
+					sharedAncestor = sharedAncestor.parentNode;
+
+				let currentNode = startElement;
+
+				/*	The branch of the tree containing the start element
+					(if it does not also contain the end element).
+				 */
+				while (currentNode.parentNode != sharedAncestor) {
+					while (currentNode.nextSibling) {
+						nodesToAppend.push(currentNode.nextSibling);
+						currentNode = currentNode.nextSibling;
+					}
+					currentNode = currentNode.parentNode;
+				}
+
+				//	There might be intervening branches.
+				if (!currentNode.contains(endElement)) {
+					while (!currentNode.nextSibling.contains(endElement)) {
+						currentNode = currentNode.nextSibling;
+						nodesToAppend.push(currentNode);
+					}
+					currentNode = currentNode.nextSibling;
+				}
+
+				//	The branch of the tree containing the end element.
+				if (currentNode != endElement) {
+					let endBranchOrigin = currentNode;
+					currentNode = endElement;
+					while (currentNode != endBranchOrigin) {
+						while (currentNode.nextSibling) {
+							currentNode.nextSibling.remove();
+						}
+						currentNode = currentNode.parentNode;
+					}
+					endElement.remove();
+					nodesToAppend.push(endBranchOrigin);
+				}
+
+				//	Insert the start element, if not there already.
+				if (!nodesToAppend.last.contains(startElement))
+					nodesToAppend.splice(0, 0, startElement);
+
+				//	Assemble.
+				nodesToAppend.forEach(node => { slicedContent.appendChild(node); });
+			}
+
+			content = slicedContent;
 		}
 
-		//	Store the location of the included-into document.
-		includeLink.baseLocation = loadEventInfo.baseLocation;
+		return content;
+	},
+
+	transclude: (includeLink, now = false) => {
+		GWLog("Transclude.transclude", "rewrite.js", 2);
 
 		/*	By default, includes within collapse blocks only get transcluded 
 			if/when the collapse block is expanded.
@@ -606,18 +634,83 @@ function handleTranscludes(loadEventInfo) {
 				GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", uncollapseHandler);
 				GW.notificationCenter.removeHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", uncollapseHandler);
 
-				transclude(includeLink, lazy);
+				Transclude.transclude(includeLink);
 			});
+
+			includeLink.needsRewrite = true;
 
 			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", uncollapseHandler);
 			GW.notificationCenter.addHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", uncollapseHandler);
-		} else {
-			transclude(includeLink, lazy);
+
+			return;
 		}
+
+		//	Transclusion is eager (non-delayed) by default.
+		if (   now == false
+			&& includeLink.classList.contains("include-lazy")) {
+			includeLink.needsRewrite = true;
+			requestAnimationFrame(() => {
+				lazyLoadObserver(() => {
+					Transclude.transclude(includeLink, true);
+				}, includeLink);
+			});
+
+			return;
+		}
+
+		let content = Transclude.cachedContentForLink(includeLink);
+		if (content) {
+			includeContent(includeLink, content);
+
+			return;
+		}
+
+		let doc = Transclude.cachedDocumentForLink(includeLink);
+		if (doc) {
+			Transclude.setCachedContentForLink(Transclude.sliceContentFromDocument(doc, includeLink), includeLink);
+			Transclude.transclude(includeLink, true);
+
+			return;
+		}
+
+		includeLink.needsRewrite = true;
+		doAjax({
+			location: includeLink.href,
+			onSuccess: (event) => {
+				Transclude.setCachedDocumentForLink(newDocument(event.target.responseText), includeLink);
+				Transclude.transclude(includeLink, true);
+			}
+		});
+	},
+
+	triggerTranscludesInContainer: (container) => {
+		container.querySelectorAll("a.include").forEach(includeLink => {
+			Transclude.transclude(includeLink, true);
+		});
+	}
+};
+
+function handleTranscludes(loadEventInfo) {
+    GWLog("handleTranscludes", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll("a.include").forEach(includeLink => {
+		/*	We exclude cross-origin transclusion for security reasons, but
+			from a technical standpoint there’s no reason it shouldn’t work.
+			Simply comment out this check to enable cross-origin transcludes.
+			—SA 2022-08-12
+		 */
+		if (includeLink.hostname != location.hostname)
+			return;
+
+		//	Store the location of the included-into document.
+		includeLink.baseLocation = loadEventInfo.baseLocation;
+
+		//	Transclude now or maybe later.
+		Transclude.transclude(includeLink);
 	});
 }
 
-addContentLoadHandler(handleTranscludes, "rewrite", (info) => info.needsRewrite);
+addContentLoadHandler(handleTranscludes, "<", (info) => info.needsRewrite);
 
 
 /**********/
@@ -1491,25 +1584,6 @@ function noBreakForCitations(loadEventInfo) {
 }
 
 addContentLoadHandler(noBreakForCitations, "rewrite", (info) => info.needsRewrite);
-
-/***************************************************************************/
-/*	Call the given function when the element specified by the given selector
-	intersects the viewport.
-	NOTE: This function is currently unused. (It was used to load Disqus.)
-		—SA 2022-04-21
- */
-// function lazyLoadObserver(f, selector) {
-// 	let observer = new IntersectionObserver((entries) => {
-// 		if (entries[0].intersectionRatio <= 0)
-// 			return;
-// 		f();
-// 		observer.disconnect();
-// 	});
-// 
-// 	let target = document.querySelector(selector);
-// 	if (target)
-// 		observer.observe(target);
-// }
 
 
 /*************/

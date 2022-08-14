@@ -717,6 +717,10 @@ Extracts = {
 
             if (fullTargetDocument) {
             	let linkedElement = fullTargetDocument.querySelector(selectorFromHash(target.hash));
+
+				//	Trigger transcludes.
+				Transclude.triggerTranscludesInContainer(linkedElement);
+
 				return newDocument(unwrapFunction(Extracts.nearestBlockElement(linkedElement)));
 			} else {
 				/*	If the page hasn’t been loaded yet, load it; upon the 
@@ -742,6 +746,9 @@ Extracts = {
 			if (Extracts.cachedPages[target.pathname]) {
 				//  Give the pop-frame an identifying class.
 				Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "page-" + target.pathname.slice(1));
+
+				//	Trigger transcludes.
+				Transclude.triggerTranscludesInContainer(Extracts.cachedPages[target.pathname]);
 
 				return newDocument(Extracts.cachedPages[target.pathname]);
 			} else {
