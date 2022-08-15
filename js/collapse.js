@@ -97,6 +97,7 @@ function isCollapsed(collapseBlock) {
 //	Called by: isWithinCollapsedBlock (recursively)
 //	Called by: expandCollapseBlocksToReveal
 //	Called by: sidenotes.js
+//	Called by: rewrite.js
 function isWithinCollapsedBlock(element) {
     /*  If the element is not within a collapse block at all, it obviously can't
         be within a *currently-collapsed* collapse block.

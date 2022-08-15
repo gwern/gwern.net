@@ -5,6 +5,57 @@
 /******************************/
 /*	Events fired by rewrite.js:
 
+	GW.contentDidLoad {
+			source: "transclude"
+			document:
+				The temporary wrapper element in which the transcluded content
+				is contained. (The transcluded content is unwrapped, and the
+				wrapper discarded, immediately after this event and the 
+				following one [GW.contentDidInject] have fired.)
+			loadLocation:
+				The URL of the include-link.
+			baseLocation:
+				The baseLocation of the document into which the transclusion is
+				being done.
+			flags:
+				GW.contentDidLoadEventFlags.fullWidthPossible
+					(This flag is set only if transcluding into the main page.)
+				GW.contentDidLoadEventFlags.collapseAllowed
+					(This flag is set only if transcluding into the main page.)
+				GW.contentDidLoadEventFlags.needsRewrite
+					(This flag is set only if the transclusion is done *after* 
+					 the transcluded-into document has already undergone its 
+					 own rewrite pass. This will be the case often, but not 
+					 always, due to caching.)
+		}
+		Fired after a transclusion.
+
+	GW.contentDidInject {
+			source: "transclude"
+			document:
+				The temporary wrapper element in which the transcluded content
+				is contained. (The transcluded content is unwrapped, and the
+				wrapper discarded, immediately after this event has fired.)
+			mainPageContent:
+				True if transcluding into the main page, false otherwise.
+		}
+		Fired immediately after the previous event [GW.contentDidLoad], but only
+		if that event’s `needsRewrite` flag is set.
+
+	Rewrite.contentDidChange {
+			source: "transclude"
+			baseLocation:
+				The baseLocation of the document into which the transclusion was
+				done.
+			document:
+				The document into which the transclusion was done (either the
+				window’s `document` object, or a DocumentFragment, or a shadow 
+				root).
+		}
+		Fired after transclusion has occurred and all unwrapping and cleanup has
+		taken place, but only if the GW.contentDidLoad event’s `needsRewrite`
+		flag is set (see above).
+
 	Rewrite.fullWidthMediaDidLoad
 		Fired when a full-width image or video is loaded. This event is only
 		fired after the initial page load completes (i.e., it is triggered by
@@ -315,15 +366,134 @@ function lazyLoadObserver(f, target, ratio = 0) {
 /* TRANSCLUSION */
 /****************/
 
-/*	
-	include
+/*	Transclusion is dynamic insertion, into a document, of part or all of 
+	a different document.
+
+
+	I. BASICS
+
+	Put an include-link into the page, and at load time, the link will be 
+	replaced by the content it specifies.
+
+	An include-link is a link (<a> tag) which has the `include` class, e.g.:
+
+		<a class="include" href="/Sidenotes#comparisons"></a>
+
+	At load time, this tag will be replaced with the `#comparisons` section of
+	the /Sidenotes page.
+
+	If the include-link’s URL (i.e., the value of its `href` attribute) has no
+	hash (a.k.a. fragment identifier), then the entire page content will be 
+	transcluded. (If the page contains an element with the `markdownBody` ID,
+	then only the contents of that element will be transcluded; otherwise, the
+	contents of the `body` element will be transcluded; if neither element is
+	present, then the complete contents of the page will be transcluded.)
+
+	If the include-link’s URL has a hash, and the page content contains an 
+	element with an ID matching the hash, then only that element (or that
+	element’s contents; see the `include-unwrap` option, below) will be 
+	transcluded. (If the URL has a hash but the hash does not identify any 
+	element contained in the page content, then behavior is as if there were
+	no hash.)
+
+	(See the ADVANCED section, below, for other ways to use an include-link’s
+	 URL hash to specify parts of a page to transclude.)
+
+
+	II. OPTIONS
+
+	Several optional classes modify the behavior of include-links:
+
 	include-lazy
+		A lazy-loaded include-link will not trigger (i.e., transclude its 
+		content) immediately at load time. Instead, it will wait until the user 
+		scrolls down to the part of the page where the link is located, or pops 
+		up a popup that contains that part of the page, or otherwise “looks” at 
+		the include-link’s surrounding context. Only then will the transclusion 
+		take place.
+
 	include-when-collapsed
+		Normally, an include-link that is inside a collapsed block will not 
+		trigger at load time, even if it is not marked with the `include-lazy`
+		class; instead, it will trigger only when it is revealed by expansion of
+		its containing collapse block(s). The `include-when-collapsed` class 
+		disables this delay, forcing the include-link to trigger at load time
+		(if it is not marked as `include-lazy`!) even if, when loaded, it is 
+		within a collapsed block.
+
+		Note that the `include-lazy` and `include-when-collapsed` options are 
+		not mutually exclusive, and do not do the same thing.
+
 	include-unwrap
+		Normally, when an include-link’s URL specifies an element ID to 
+		transclude, the element with that ID is transcluded in its entirety.
+		When the `include-unwrap` option is used, the element itself is 
+		discarded, and only the element’s contents are transcluded.
+
+		(This option has no effect unless the include-link’s URL hash specifies
+		 a single element ID to transclude.)
+
 	include-replace-container
+		Normally, when transclusion occurs, the transcluded content replaces the
+		include-link in the page, leaving any surrounding elements untouched.
+		When the `include-replace-container` option is used, the include-link’s
+		parent element, instead of just the include-link itself, is replaced by 
+		the transcluded content. (This means that any other contents of the 
+		include-link’s parent element are also discarded.)
+
 	include-no-spinner
+		Hides the “loading spinner” that is normally shown at the site of the
+		include-link while content to be transcluded is being retrieved.
+
+
+	III. ADVANCED
+
+	The transclusion feature supports PmWiki-style transclude range syntax, 
+	very similar to the one described here: 
+	https://www.pmwiki.org/wiki/PmWiki/IncludeOtherPages#includeanchor
+
+	To use transclude range syntax, an include-link’s URL should have a “double”
+	hash, i.e. a hash consisting of two ‘#’-prefixed parts:
+
+		<a class="include" href="/Sidenotes#tufte-css#tables"></a>
+
+	This will include all parts of the "/Sidenotes" page’s content starting from
+	the element with ID `tufte-css`, all the way up to (but *not* including!) the
+	element with ID `tables`.
+
+	Either the first or the second identifier (the parts after the ‘#’) may 
+	instead be empty. The possibilities are:
+
+	#foo#bar
+		Include everything starting from element `#foo` up to (but not 
+		including) element `#bar`.
+
+	##bar
+		Include everything from the start of the page content up to (but not
+		including) element `#bar`.
+
+	#foo#
+		Include everything starting from element `#foo` to the end of the page.
+
+	##
+		Include the entire page content (same as not having a hash at all).
+
+	In all cases, only the page content is considered, not any “page furniture”
+	(i.e., only the contents of `#markdownBody`, if present; or only the 
+	 contents of `<body>`, if present; or the whole page, otherwise).
+
+	If an element of one of the specified IDs is not found in the page, the 
+	transclusion proceeds as if that identifier were empty.
+
+	If both elements are present, but the end element does not follow the start
+	element in the page order (i.e., if the start element comes after the end 
+	element, or if they are the same), then the transcluded content is empty.
  */
 
+/***********************************************************************/
+/*	Replace an include-link with the given content (a DocumentFragment).
+ */
+//	Called by: Transclude.transclude
 function includeContent(includeLink, content) {
     GWLog("includeContent", "rewrite.js", 2);
 
@@ -390,8 +560,12 @@ function includeContent(includeLink, content) {
 	}
 }
 
-/*	Takes either a Node or an HTMLCollection.
+/******************************************************************************/
+/*	Updates the page TOC after transclusion has modified the main page content.
+
+	Takes either a Node or an HTMLCollection. 
  */
+//	Called by: includeContent
 function updatePageTOCAfterInclusion(newContent) {
     GWLog("updatePageTOCAfterInclusion", "rewrite.js", 2);
 
@@ -463,9 +637,13 @@ function updatePageTOCAfterInclusion(newContent) {
 	newEntries.forEach(Extracts.addTargetsWithin);
 }
 
+/***********************************************************************/
+/*	Handles interactions between include-links and content at locations.
+ */
 Transclude = {
 	cachedDocuments: { },
 
+	//	Called by: Transclude.transclude
 	cachedDocumentForLink: (includeLink) => {
 		if (  includeLink.hostname == location.hostname
 			&& includeLink.pathname == location.pathname)
@@ -477,6 +655,7 @@ Transclude = {
 		return Transclude.cachedDocuments[noHashURL.href];
 	},
 
+	//	Called by: Transclude.transclude
 	setCachedDocumentForLink: (doc, includeLink) => {
 		if (  includeLink.hostname == location.hostname
 			&& includeLink.pathname == location.pathname)
@@ -490,17 +669,21 @@ Transclude = {
 
 	cachedContent: { },
 
+	//	Called by: Transclude.transclude
 	cachedContentForLink: (includeLink) => {
 		return Transclude.cachedContent[includeLink.href];
 	},
 
+	//	Called by: Transclude.transclude
 	setCachedContentForLink: (content, includeLink) => {
 		Transclude.cachedContent[includeLink.href] = content;
 	},
 
+	//	Called by: Transclude.transclude
 	sliceContentFromDocument: (sourceDocument, includeLink) => {
 		//	If it’s a full page, extract just the page content.
-		let content = sourceDocument.querySelector("#markdownBody") ?? sourceDocument;
+		let pageContent = sourceDocument.querySelector("#markdownBody") ?? sourceDocument.querySelector("body");
+		let content = pageContent ? newDocument(pageContent.children) : sourceDocument;
 
 		//	If the hash specifies part of the page, extract that.
 		let anchors = includeLink.hash.match(/#[^#]*/g) ?? [ ];
@@ -628,6 +811,9 @@ Transclude = {
 		return content;
 	},
 
+	//	Called by: Transclude.transclude
+	//	Called by: Transclude.triggerTranscludesInContainer
+	//	Called by: handleTranscludes (rewrite function)
 	transclude: (includeLink, now = false) => {
 		GWLog("Transclude.transclude", "rewrite.js", 2);
 
@@ -692,6 +878,7 @@ Transclude = {
 		});
 	},
 
+	//	Called by: Extracts.localTranscludeForTarget (extracts.js)
 	triggerTranscludesInContainer: (container) => {
 		container.querySelectorAll("a.include").forEach(includeLink => {
 			Transclude.transclude(includeLink, true);
@@ -699,6 +886,9 @@ Transclude = {
 	}
 };
 
+/****************************/
+/*	Process transclude-links.
+ */
 function handleTranscludes(loadEventInfo) {
     GWLog("handleTranscludes", "rewrite.js", 1);
 
