@@ -656,10 +656,12 @@ Sidenotes = {
 			window.addEventListener("resize", Sidenotes.windowResized = (event) => {
 				GWLog("Sidenotes.windowResized", "sidenotes.js", 2);
 
-				requestAnimationFrame(() => {
-					Sidenotes.updateSidenotePositions();
-				});
+				requestAnimationFrame(Sidenotes.updateSidenotePositions);
 			});
+
+			GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (info) => {
+				requestAnimationFrame(Sidenotes.updateSidenotePositions);
+			}, { condition: (info) => (info.document == document) });
 		}, { once: true });
 
 		/*  Construct the sidenotes as soon as the HTML content is fully loaded.
