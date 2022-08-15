@@ -690,7 +690,7 @@ Extracts = {
 		unwrapFunction = unwrapFunction || (blockElement => {
 			return ((   blockElement.tagName == "SECTION" 
 					 && blockElement.id != "footnotes")
-					? blockElement.children 
+					? blockElement.childNodes 
 					: blockElement);
 		});
 
@@ -718,11 +718,12 @@ Extracts = {
 
             if (fullTargetDocument) {
             	let linkedElement = fullTargetDocument.querySelector(selectorFromHash(target.hash));
+				let nearestBlock = Extracts.nearestBlockElement(linkedElement);
 
 				//	Trigger transcludes.
-				Transclude.triggerTranscludesInContainer(linkedElement);
+				Transclude.triggerTranscludesInContainer(nearestBlock);
 
-				return newDocument(unwrapFunction(Extracts.nearestBlockElement(linkedElement)));
+				return newDocument(unwrapFunction(nearestBlock));
 			} else {
 				/*	If the page hasn’t been loaded yet, load it; upon the 
 					reload, we’ll return here but take the previous (true) 
@@ -909,16 +910,6 @@ Extracts = {
 // 				Extracts.loadAdjacentSections(popFrame, "next,prev");
 // 			});
 // 		}
-
-		//	Add content update handler.
-		let contentUpdateHandler = ((info) => {
-			GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", contentUpdateHandler);
-
-			Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
-		});
-		GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", contentUpdateHandler, { 
-			condition: (info) => (info.baseLocation.pathname == target.pathname)
-		});
 
         //  Scroll to the target.
         Extracts.scrollToTargetedElementInPopFrame(target, popFrame);
@@ -1155,6 +1146,16 @@ Extracts = {
 		});
 		document.querySelectorAll("link[rel='stylesheet']").forEach(cssLink => {
 			popFrame.document.insertBefore(cssLink.cloneNode(true), popFrame.body);
+		});
+
+		//	Add content update handler.
+		let contentUpdateHandler = ((info) => {
+			GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", contentUpdateHandler);
+
+			Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
+		});
+		GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", contentUpdateHandler, { 
+			condition: (info) => (info.baseLocation.pathname == target.pathname)
 		});
 
         return popFrame;

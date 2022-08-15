@@ -18,17 +18,15 @@
 				The baseLocation of the document into which the transclusion is
 				being done.
 			flags:
+				GW.contentDidLoadEventFlags.needsRewrite
 				GW.contentDidLoadEventFlags.fullWidthPossible
 					(This flag is set only if transcluding into the main page.)
 				GW.contentDidLoadEventFlags.collapseAllowed
 					(This flag is set only if transcluding into the main page.)
-				GW.contentDidLoadEventFlags.needsRewrite
-					(This flag is set only if the transclusion is done *after* 
-					 the transcluded-into document has already undergone its 
-					 own rewrite pass. This will be the case often, but not 
-					 always, due to caching.)
 		}
-		Fired after a transclusion.
+		Fired after a transclusion, but only if the transclusion is done *after* 
+		the transcluded-into document has already undergone its own rewrite 
+		pass. (This will be the case often, but not always, due to caching.)
 
 	GW.contentDidInject {
 			source: "transclude"
@@ -223,8 +221,8 @@ function newElement(tagName, attributes = { }) {
 	a Node
 		a DocumentFragment containing the Node
 
-	an HTMLCollection
-		a DocumentFragment containing the members of the collection
+	a NodeList
+		a DocumentFragment containing the nodes
  */
 function newDocument(content) {
 	let docFrag = new DocumentFragment();
@@ -233,16 +231,16 @@ function newDocument(content) {
 		return docFrag;
 
 	if (content instanceof DocumentFragment) {
-		content = content.children;
+		content = content.childNodes;
 	} else if (typeof content == "string") {
 		let wrapper = document.createElement("DIV");
 		wrapper.innerHTML = content;
-		content = wrapper.children;
+		content = wrapper.childNodes;
 	}
 
 	if (content instanceof Node) {
 		docFrag.append(document.importNode(content, true));
-	} else if (content instanceof HTMLCollection) {
+	} else if (content instanceof NodeList) {
 		docFrag.append(...(Array.from(content).map(node => document.importNode(node, true))));
 	}
 
@@ -511,37 +509,59 @@ function includeContent(includeLink, content) {
 	//	Are we including into the main page, or into a pop-frame or something?
 	let includingIntoMainPage = (doc == document);
 
-	//	Process.
-	let flags = 0;
+	//	Update TOC, if need be.
 	if (includingIntoMainPage)
-		flags |= (  GW.contentDidLoadEventFlags.fullWidthPossible
-				  | GW.contentDidLoadEventFlags.collapseAllowed)
-	if (includeLink.needsRewrite)
-		flags |= GW.contentDidLoadEventFlags.needsRewrite;
+		updatePageTOCAfterInclusion(wrapper, includeLink);
 
-	GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-		source: "transclude",
-		document: wrapper,
-		loadLocation: new URL(includeLink.href),
-		baseLocation: includeLink.baseLocation,
-		flags: flags
-	});
+	//	Update footnotes, if need be.
+	let newFootnotesWrapper = updateFootnotesAfterInclusion(wrapper, includeLink);
 
-	//	Fire event, if need be.
+	//	Fire events, if need be.
 	if (includeLink.needsRewrite) {
+		let flags = GW.contentDidLoadEventFlags.needsRewrite;
+		if (includingIntoMainPage)
+			flags |= (  GW.contentDidLoadEventFlags.fullWidthPossible
+					  | GW.contentDidLoadEventFlags.collapseAllowed)
+
+		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			source: "transclude",
+			document: wrapper,
+			loadLocation: new URL(includeLink.href),
+			baseLocation: includeLink.baseLocation,
+			flags: flags
+		});
+
 		GW.notificationCenter.fireEvent("GW.contentDidInject", {
 			source: "transclude",
 			document: wrapper,
 			mainPageContent: includingIntoMainPage
 		});
-	}
 
-	//	Update TOC, if need be.
-	if (includingIntoMainPage)
-		updatePageTOCAfterInclusion(wrapper);
+		if (newFootnotesWrapper) {
+			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+				source: "transclude",
+				document: newFootnotesWrapper,
+				loadLocation: new URL(includeLink.href),
+				baseLocation: includeLink.baseLocation,
+				flags: flags
+			});
+
+			GW.notificationCenter.fireEvent("GW.contentDidInject", {
+				source: "transclude",
+				document: newFootnotesWrapper,
+				mainPageContent: includingIntoMainPage
+			});
+		}
+	}
 
 	//	Unwrap.
 	unwrap(wrapper);
+
+	//	Merge in added footnotes, if any.
+	if (newFootnotesWrapper) {
+		doc.querySelector("#footnotes > ol").append(...(Array.from(newFootnotesWrapper.children)));
+		newFootnotesWrapper.remove();
+	}
 
 	//	Cleanup.
 	if (includeLink.classList.contains("include-replace-container")) {
@@ -560,22 +580,72 @@ function includeContent(includeLink, content) {
 	}
 }
 
-/******************************************************************************/
-/*	Updates the page TOC after transclusion has modified the main page content.
+/**************************************************************************/
+/*	Updates footnotes section after transclusion.
 
-	Takes either a Node or an HTMLCollection. 
+	Returns wrapper element of the added footnotes, if any; null otherwise.
  */
 //	Called by: includeContent
-function updatePageTOCAfterInclusion(newContent) {
+function updateFootnotesAfterInclusion(newContent, includeLink) {
+    GWLog("updateFootnotesAfterInclusion", "rewrite.js", 2);
+
+	let citationsInNewContent = newContent.querySelectorAll(".footnote-ref");
+	let footnotesSectionInSourceDocument = Transclude.cachedDocumentForLink(includeLink).querySelector("#footnotes");
+	if (   citationsInNewContent.length == 0
+		|| footnotesSectionInSourceDocument == null)
+		return null;
+
+	let footnotesSection = newContent.getRootNode().querySelector("#footnotes");
+	if (!footnotesSection) {
+		//	TODO: Make one!
+		return null;
+	}
+
+	let newFootnotesWrapper = newElement("OL", { "class": "include-wrapper" });
+	let newFootnoteNumber = footnotesSection.querySelector("ol").children.length + 1;
+
+	citationsInNewContent.forEach(citation => {
+		//	Footnote.
+		let footnote = footnotesSectionInSourceDocument.querySelector(citation.hash);
+
+		//	#fnN
+		citation.hash = citation.hash.slice(0, 3) + newFootnoteNumber;
+
+		//	fnrefN
+		citation.id = citation.id.slice(0, 5) + newFootnoteNumber;
+
+		//	Link text.
+		citation.firstElementChild.textContent = newFootnoteNumber;
+
+		//	Copy the footnote.
+		let newFootnote = newFootnotesWrapper.appendChild(document.importNode(footnote, true));
+
+		//	fnN
+		newFootnote.id = newFootnote.id.slice(0, 2) + newFootnoteNumber;
+
+		//	#fnrefN
+		let newFootnoteBackLink = newFootnote.querySelector("a.footnote-back");
+		newFootnoteBackLink.hash = newFootnoteBackLink.hash.slice(0, 6) + newFootnoteNumber;
+
+		//	Increment.
+		newFootnoteNumber++;
+	});
+
+	footnotesSection.appendChild(newFootnotesWrapper);
+
+	return newFootnotesWrapper;
+}
+
+/******************************************************************************/
+/*	Updates the page TOC after transclusion has modified the main page content.
+ */
+//	Called by: includeContent
+function updatePageTOCAfterInclusion(newContent, includeLink) {
     GWLog("updatePageTOCAfterInclusion", "rewrite.js", 2);
 
-	if (!(TOC ?? (TOC = document.querySelector("#TOC"))))
+	let TOC = document.querySelector("#TOC");
+	if (!TOC)
 		return;
-
-	if (newContent instanceof HTMLCollection) {
-		newContent.forEach(updatePageTOC);
-		return;
-	}
 
 	//	Find where to insert the new TOC entries.
 	let parentSection = newContent.closest("section") ?? document.querySelector("#markdownBody");
@@ -683,7 +753,7 @@ Transclude = {
 	sliceContentFromDocument: (sourceDocument, includeLink) => {
 		//	If it’s a full page, extract just the page content.
 		let pageContent = sourceDocument.querySelector("#markdownBody") ?? sourceDocument.querySelector("body");
-		let content = pageContent ? newDocument(pageContent.children) : sourceDocument;
+		let content = pageContent ? newDocument(pageContent.childNodes) : sourceDocument;
 
 		//	If the hash specifies part of the page, extract that.
 		let anchors = includeLink.hash.match(/#[^#]*/g) ?? [ ];
@@ -693,7 +763,7 @@ Transclude = {
 			let section = content.querySelector(selectorFromHash(includeLink.hash));
 			if (section)
 				content = includeLink.classList.contains("include-unwrap")
-						  ? newDocument(section.children)
+						  ? newDocument(section.childNodes)
 						  : newDocument(section);
 		} else if (anchors.length == 2) {
 			//	PmWiki-like transclude range syntax.
@@ -1449,13 +1519,8 @@ addContentLoadHandler(stripTOCLinkSpans, "rewrite", (info) => info.needsRewrite)
  */
 function addFootnoteClassToFootnotes(loadEventInfo) {
     GWLog("addFootnoteClassToFootnotes", "rewrite.js", 1);
-    let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
-    if (!footnotesSection)
-        return;
 
-    let footnotes = Array.from(footnotesSection.querySelector("#footnotes > ol").children);
-
-	footnotes.forEach(footnote => {
+	loadEventInfo.document.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
 		footnote.classList.add("footnote");
 	});
 }
@@ -1496,19 +1561,18 @@ addContentLoadHandler(injectFootnoteSectionSelfLink, "rewrite", (info) => info.n
 function injectFootnoteSelfLinks(loadEventInfo) {
     GWLog("injectFootnoteSelfLinks", "rewrite.js", 1);
 
-    let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
-    if (!footnotesSection)
-        return;
+	loadEventInfo.document.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
+		if (footnote.querySelector(".footnote-self-link"))
+			return;
 
-    let footnotes = Array.from(footnotesSection.querySelector("#footnotes > ol").children);
-
-    for (let i = 0; i < footnotes.length; i++)
-        footnotes[i].insertAdjacentHTML("afterbegin",
+		let footnoteNumber = footnote.id.slice(2);
+        footnote.insertAdjacentHTML("afterbegin",
         	`<a
-        		href="#fn${(i + 1)}"
-        		title="Link to footnote ${(i + 1)}"
+        		href="#fn${footnoteNumber}"
+        		title="Link to footnote ${footnoteNumber}"
         		class="footnote-self-link"
         			>&nbsp;</a>`);
+	});
 }
 
 addContentLoadHandler(injectFootnoteSelfLinks, "rewrite", (info) => info.needsRewrite);
@@ -1519,12 +1583,6 @@ addContentLoadHandler(injectFootnoteSelfLinks, "rewrite", (info) => info.needsRe
 function rewriteFootnoteBackLinks(loadEventInfo) {
     GWLog("rewriteFootnoteBackLinks", "rewrite.js", 1);
 
-    let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
-    if (!footnotesSection)
-        return;
-
-    let footnotes = Array.from(footnotesSection.querySelector("#footnotes > ol").children);
-
 	/*	Base font size (1rem) is 20px at this time, making a good default.
 		That value might change later, but this’ll still be a fine default;
 		the width/height get adjusted below, anyway, so no big deal if the
@@ -1532,8 +1590,11 @@ function rewriteFootnoteBackLinks(loadEventInfo) {
 		for the width/height for page load performance reasons.
 	 */
 	let defaultSize = 20;
-	footnotes.forEach(footnote => {
+	loadEventInfo.document.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
 		let backlink = footnote.querySelector(".footnote-back");
+		if (backlink.querySelector("img"))
+			return;
+
 		backlink.textContent = "";
 		backlink.appendChild(newElement("IMG", {
 			width: defaultSize,
@@ -1568,18 +1629,20 @@ addContentLoadHandler(injectFootnotesTOCLink, "rewrite", (info) => (   info.need
 function rectifyFootnoteBackLinkArrowSize(loadEventInfo) {
     GWLog("rectifyFootnoteBackLinkArrowSize", "rewrite.js", 1);
 
-    let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
-    if (!footnotesSection)
+    let footnotesList = loadEventInfo.document.querySelector("#footnotes > ol");
+    if (!footnotesList)
         return;
 
-    let footnotes = Array.from(footnotesSection.querySelector("#footnotes > ol").children);
-
 	requestIdleCallback(() => {
-		let size = parseInt(getComputedStyle(footnotesSection).fontSize);
+		let size = parseInt(getComputedStyle(footnotesList).fontSize);
 		if (!size)
 			return;
-		footnotes.forEach(footnote => {
+
+		loadEventInfo.document.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
 			let arrow = footnote.querySelector(".footnote-back img");
+			if (!arrow)
+				return;
+
 			arrow.width = size;
 			arrow.height = size;
 		});
@@ -1600,7 +1663,7 @@ function allNotesForCitation(citation) {
         page as the citation (to distinguish between main document and any
         full-page embeds that may be spawned).
      */
-    return Array.from(document.querySelectorAll(`#fn${citationNumber}, #sn${citationNumber}`)).filter(note => note.querySelector(".footnote-back").pathname == citation.pathname);
+    return Array.from(citation.getRootNode().querySelectorAll(`#fn${citationNumber}, #sn${citationNumber}`)).filter(note => note.querySelector(".footnote-back").pathname == citation.pathname);
 }
 
 /***************************************************************************/

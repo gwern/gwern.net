@@ -240,8 +240,8 @@ Extracts = { ...Extracts, ...{
 
         return Extracts.localTranscludeForTarget(target, (blockElement) => {
             return target.hash.startsWith("#sn")
-                   ? blockElement.querySelector(".sidenote-inner-wrapper").children
-                   : blockElement.children;
+                   ? blockElement.querySelector(".sidenote-inner-wrapper").childNodes
+                   : blockElement.childNodes;
         }, true);
     },
 
