@@ -97,7 +97,7 @@ function isCollapsed(collapseBlock) {
 //	Called by: isWithinCollapsedBlock (recursively)
 //	Called by: expandCollapseBlocksToReveal
 //	Called by: sidenotes.js
-//	Called by: rewrite.js
+//	Called by: transclude.js
 function isWithinCollapsedBlock(element) {
     /*  If the element is not within a collapse block at all, it obviously can't
         be within a *currently-collapsed* collapse block.
@@ -317,7 +317,7 @@ window.addEventListener("hashchange", GW.hashUpdated = () => {
 	“Search Again” key command.)
  */
 document.addEventListener("selectionchange", GW.selectionChanged = (event) => {
-	GWLog("GW.selectionChangedCheckForCollapsedContainer", "rewrite.js", 3);
+	GWLog("GW.selectionChangedCheckForCollapsedContainer", "collapse.js", 3);
 
 	let newSelection = document.getSelection();
 	if (   newSelection 

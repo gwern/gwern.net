@@ -78,6 +78,7 @@ $versioned_files = [
 	"{$static_dir}/js/rewrite.js",
 // 	"{$static_dir}/js/sidenotes.js",
 	"{$static_dir}/js/tablesorter.js",
+	"{$static_dir}/js/transclude.js",
 	"{$static_dir}/js/typography.js",
 	"{$static_dir}/templates/inlined-fonts-template.html",
 	"{$static_dir}/templates/inlined-foot-template.html",
