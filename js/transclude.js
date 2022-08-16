@@ -289,10 +289,24 @@ function updateFootnotesAfterInclusion(newContent, includeLink) {
 		|| footnotesSectionInSourceDocument == null)
 		return null;
 
-	let footnotesSection = newContent.getRootNode().querySelector("#footnotes");
+	let newContentDocument = newContent.getRootNode();
+	let footnotesSection = newContentDocument.querySelector("#footnotes");
 	if (!footnotesSection) {
-		//	TODO: Make one!
-		return null;
+		footnotesSection = newElement("SECTION", { "id": "footnotes", "class": "footnotes", "role": "doc-endnotes" });
+		footnotesSection.append(newElement("HR"));
+		footnotesSection.append(newElement("OL"));
+
+		let markdownBody = newContentDocument.querySelector(".markdownBody");
+		markdownBody.append(footnotesSection);
+
+		//	Fire event to trigger rewrite pass.
+		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			source: "transclude",
+			document: footnotesSection,
+			loadLocation: new URL(includeLink.href),
+			baseLocation: includeLink.baseLocation,
+			flags: GW.contentDidLoadEventFlags.needsRewrite
+		});
 	}
 
 	let newFootnotesWrapper = newElement("OL", { "class": "include-wrapper" });

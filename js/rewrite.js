@@ -838,19 +838,6 @@ addContentLoadHandler(stripTOCLinkSpans, "rewrite", (info) => info.needsRewrite)
 /* FOOTNOTES */
 /*************/
 
-/*****************************************/
-/*	Add footnote class to footnote blocks.
- */
-function addFootnoteClassToFootnotes(loadEventInfo) {
-    GWLog("addFootnoteClassToFootnotes", "rewrite.js", 1);
-
-	loadEventInfo.document.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
-		footnote.classList.add("footnote");
-	});
-}
-
-addContentLoadHandler(addFootnoteClassToFootnotes, "rewrite", (info) => info.needsRewrite);
-
 /*****************************************************/
 /*  Inject self-link for the footnotes section itself.
  */
@@ -878,6 +865,34 @@ function injectFootnoteSectionSelfLink(loadEventInfo) {
 }
 
 addContentLoadHandler(injectFootnoteSectionSelfLink, "rewrite", (info) => info.needsRewrite);
+
+/*******************************************/
+/*  Add a TOC link to the footnotes section.
+ */
+function injectFootnoteSectionTOCLink(loadEventInfo) {
+    GWLog("injectFootnoteSectionTOCLink", "rewrite.js", 1);
+
+    let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
+    let TOCList = loadEventInfo.document.getRootNode().querySelector("#TOC > ul");
+    if (   TOCList
+    	&& footnotesSection)
+        TOCList.insertAdjacentHTML("beforeend", `<li><a href="#footnotes">Footnotes</a></li>\n`);
+}
+
+addContentLoadHandler(injectFootnoteSectionTOCLink, "rewrite", (info) => info.needsRewrite);
+
+/*****************************************/
+/*	Add footnote class to footnote blocks.
+ */
+function addFootnoteClassToFootnotes(loadEventInfo) {
+    GWLog("addFootnoteClassToFootnotes", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
+		footnote.classList.add("footnote");
+	});
+}
+
+addContentLoadHandler(addFootnoteClassToFootnotes, "rewrite", (info) => info.needsRewrite);
 
 /******************************/
 /*  Inject footnote self-links.
@@ -930,22 +945,6 @@ function rewriteFootnoteBackLinks(loadEventInfo) {
 }
 
 addContentLoadHandler(rewriteFootnoteBackLinks, "rewrite", (info) => info.needsRewrite);
-
-/*******************************************/
-/*  Add a TOC link to the footnotes section.
- */
-function injectFootnotesTOCLink(loadEventInfo) {
-    GWLog("injectFootnotesTOCLink", "rewrite.js", 1);
-
-    let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
-    let TOCList = loadEventInfo.document.querySelector("#TOC > ul");
-    if (   TOCList
-    	&& footnotesSection)
-        TOCList.insertAdjacentHTML("beforeend", `<li><a href="#footnotes">Footnotes</a></li>\n`);
-}
-
-addContentLoadHandler(injectFootnotesTOCLink, "rewrite", (info) => (   info.needsRewrite
-																	&& info.isMainDocument));
 
 /******************************************************************************/
 /*	Set size properly, after setting default value in rewriteFootnoteBackLinks.
