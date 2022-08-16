@@ -986,7 +986,9 @@ function allNotesForCitation(citation) {
         page as the citation (to distinguish between main document and any
         full-page embeds that may be spawned).
      */
-    return Array.from(citation.getRootNode().querySelectorAll(`#fn${citationNumber}, #sn${citationNumber}`)).filter(note => note.querySelector(".footnote-back").pathname == citation.pathname);
+    let selector = `#fn${citationNumber}, #sn${citationNumber}`;
+    let allCitations = Array.from(document.querySelectorAll(selector)).concat(Array.from(citation.getRootNode().querySelectorAll(selector)));
+    return allCitations.filter(note => note.querySelector(".footnote-back").pathname == citation.pathname);
 }
 
 /***************************************************************************/
