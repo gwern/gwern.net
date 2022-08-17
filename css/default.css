@@ -1389,7 +1389,7 @@ section.footnotes > hr:first-child.highlighted::before {
 /*  Outer wrapper (scrolls).
     */
 .sidenote-outer-wrapper {
-    /* max-height is set inline, in sidenotes.js */
+    max-height: 600px;
     overflow: hidden;
     position: relative;
     z-index: 1;
@@ -1401,8 +1401,7 @@ section.footnotes > hr:first-child.highlighted::before {
     overflow-y: auto;
     overscroll-behavior: none;
     width: 100%;
-    padding: 0 1px 0 0;
-    padding-right: 0.5em;
+    padding: 0 0.5em 0 0;
 }
 
 /*  Scroll bar styles (for WebKit/Chromium).
