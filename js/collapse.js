@@ -150,11 +150,8 @@ function prepareCollapseBlocks(loadEventInfo) {
 			collapseBlock.classList.remove("collapse");
 		} else {
 			//  Construct collapse block wrapper and inject the disclosure button.
-			let realCollapseBlock = document.createElement("DIV");
-			realCollapseBlock.classList.add("collapse");
+			let realCollapseBlock = newElement("DIV", { "class": `collapse${(checked > "" ? " expanded" : "")}` });
 			realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
-			if (checked > "")
-				realCollapseBlock.classList.add("expanded");
 			//  Move block-to-be-collapsed into wrapper.
 			collapseBlock.parentElement.insertBefore(realCollapseBlock, collapseBlock);
 			collapseBlock.classList.remove("collapse");

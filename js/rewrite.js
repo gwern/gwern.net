@@ -184,7 +184,7 @@ function newDocument(content) {
 	if (content instanceof DocumentFragment) {
 		content = content.childNodes;
 	} else if (typeof content == "string") {
-		let wrapper = document.createElement("DIV");
+		let wrapper = newElement("DIV");
 		wrapper.innerHTML = content;
 		content = wrapper.childNodes;
 	}
@@ -209,7 +209,7 @@ function wrapElement(element, wrapClass, wrapTagName = "DIV", useExistingWrapper
 		if (wrapClass > "")
 			element.parentElement.classList.add(...(wrapClass.split(" ")));
 	} else {
-		let wrapper = document.createElement(wrapTagName);
+		let wrapper = newElement(wrapTagName);
 		if (wrapClass > "")
 			wrapper.classList.add(...(wrapClass.split(" ")));
 		element.parentElement.insertBefore(wrapper, element);
@@ -392,13 +392,11 @@ function wrapFigures(loadEventInfo) {
             return;
 
         //  Create an inner wrapper for the figure contents.
-        let innerWrapper = document.createElement("SPAN");
-        innerWrapper.classList.add("figure-inner-wrapper");
+        let innerWrapper = newElement("SPAN", { "class": "figure-inner-wrapper" });
         figure.appendChild(innerWrapper);
 
         //  Wrap the caption in the wrapper span.
-        let wrapper = document.createElement("SPAN");
-        wrapper.classList.add("caption-wrapper");
+        let wrapper = newElement("SPAN", { "class": "caption-wrapper" });
         wrapper.appendChild(caption);
 
         //  Get the media, or (if any) the image wrapper.
@@ -848,10 +846,11 @@ function injectFootnoteSectionSelfLink(loadEventInfo) {
     if (!footnotesSection)
         return;
 
-    let footnotesSectionSelfLink = document.createElement("A");
-    footnotesSectionSelfLink.href = "#footnotes";
-    footnotesSectionSelfLink.title = "Link to section: § ‘Footnotes’";
-    footnotesSectionSelfLink.classList.add("section-self-link");
+    let footnotesSectionSelfLink = newElement("A", { 
+    	"class": "section-self", 
+    	"href": "#footnotes", 
+    	"title": "Link to section: § ‘Footnotes’" 
+    });
 
     footnotesSection.insertBefore(footnotesSectionSelfLink, footnotesSection.firstElementChild.nextElementSibling);
 
