@@ -1052,7 +1052,7 @@ addContentLoadHandler(bindNoteHighlightEventsToCitations, "eventListeners");
 function qualifyAnchorLinks(loadEventInfo) {
     GWLog("qualifyAnchorLinks", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll(".markdownBody a[href]").forEach(link => {
+	loadEventInfo.document.querySelectorAll("a[href]").forEach(link => {
 		if (   (   link.getAttribute("href").startsWith("#")
 				|| link.pathname == loadEventInfo.loadLocation.pathname)
 			&& (   loadEventInfo.isMainDocument
