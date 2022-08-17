@@ -847,7 +847,7 @@ function injectFootnoteSectionSelfLink(loadEventInfo) {
         return;
 
     let footnotesSectionSelfLink = newElement("A", { 
-    	"class": "section-self", 
+    	"class": "section-self-link", 
     	"href": "#footnotes", 
     	"title": "Link to section: § ‘Footnotes’" 
     });
