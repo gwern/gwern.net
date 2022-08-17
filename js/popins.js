@@ -373,7 +373,8 @@ Popins = {
 			//	Fire event.
 			GW.notificationCenter.fireEvent("GW.contentDidInject", {
 				source: "Popins.injectPopinForTarget",
-				document: target.popin.document
+				document: target.popin.document,
+				mainPageContent: false
 			});
 		}
 

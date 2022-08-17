@@ -376,7 +376,8 @@ Popups = {
 		//	Fire event.
 		GW.notificationCenter.fireEvent("GW.contentDidInject", {
 			source: "Popups.injectPopup",
-			document: popup.document
+			document: popup.document,
+			mainPageContent: false
 		});
 
 		//  Bring popup to front.

@@ -1313,6 +1313,7 @@ section.footnotes > hr:first-child.highlighted::before {
 #sidenote-column-left,
 #sidenote-column-right {
     position: absolute;
+    width: calc(50vw - (50% + 96px));
     max-width: var(--GW-sidenotes-max-width);
     font-size: 0.85em;
     z-index: 1;
@@ -1324,15 +1325,13 @@ section.footnotes > hr:first-child.highlighted::before {
 }
 #sidenote-column-left {
     height: calc(100% - 10rem);
-    width: calc(50vw - (50% + 92px));
     top: 10rem;
     right: calc(100% + 64px);
 }
 #sidenote-column-right {
     height: 100%;
-    width: calc(50vw - (50% + 104px));
     top: 0;
-    left: calc(100% + 60px);
+    left: calc(100% + 64px);
 }
 
 /*=-----------------=*/

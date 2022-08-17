@@ -496,17 +496,29 @@ Hyphenopoly.config({
 function hyphenate(loadEventInfo) {
     GWLog("hyphenate", "rewrite.js", 1);
 
+	if (!(Hyphenopoly.hyphenators))
+		return;
+
 	if (GW.isX11())
 		return;
 
-	let selector = (loadEventInfo.mainPageContent ? ".markdownBody p" : "p");
-
-	if (Hyphenopoly.hyphenators)
+	let doHyphenation = (selector) => {
 		Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
 			loadEventInfo.document.querySelectorAll(selector).forEach(block => {
 				hyphenate(block);
 			});
+		});	
+	};
+
+	if (   GW.isMobile() 
+		|| loadEventInfo.mainPageContent == false) {
+		doHyphenation(loadEventInfo.mainPageContent ? ".markdownBody p" : "p");
+	} else {
+		doHyphenation(".sidenote p");
+		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
+			doHyphenation(".sidenote p");
 		});
+	}
 }
 
 /*******************************************************************************/
@@ -600,10 +612,7 @@ function rectifyLineHeights(loadEventInfo) {
 /*  Add content inject handlers for typography.
  */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-	if (   !info.mainPageContent
-		||  GW.isMobile())
-		hyphenate(info);
-
+	hyphenate(info);
 	rectifyLineHeights(info);
 });
 

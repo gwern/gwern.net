@@ -59,7 +59,7 @@ html {
 }
 
 body {
-    max-width: 1120px;
+    max-width: 1080px;
 }
 
 @media only screen and (min-width: 650px) {
@@ -67,9 +67,9 @@ body {
         padding: 0 25px 0 10px;
         margin: 0 auto;
     }
-    @media only screen and (min-width: 1185px) {
+    @media only screen and (min-width: 1160px) {
         body {
-            padding: 0 60px 0 5px;
+            padding: 0 75px 0 5px;
         }
     }
     main {
