@@ -465,33 +465,33 @@ Sidenotes = {
 		Sidenotes.sidenoteDivs = [ ];
 		//  The footnote references (citations).
 		Sidenotes.citations = Array.from(document.querySelectorAll("a.footnote-ref"));
-		for (let i = 0; i < Sidenotes.citations.length; i++) {
+		for (let i = 1; i <= Sidenotes.citations.length; i++) {
 			//  Create the sidenote outer containing block...
-			let sidenote = document.createElement("DIV");
-			sidenote.classList.add("sidenote");
-			let sidenoteNumber = "" + (i + 1);
-			sidenote.id = "sn" + sidenoteNumber;
+			let sidenote = newElement("DIV", { "class": "sidenote", "id": `sn${i}` });
+
 			//  Wrap the contents of the footnote in two wrapper divs...
-			let referencedFootnote = document.querySelector("#fn" + sidenoteNumber);
-			sidenote.innerHTML = `<div class="sidenote-outer-wrapper"><div class="sidenote-inner-wrapper">` +
-								 (referencedFootnote ? referencedFootnote.innerHTML : "Loading sidenote contents, please wait…")
-								 + `</div></div>`;
+			let referencedFootnote = document.querySelector(`#fn${i}`);
+			sidenote.innerHTML = `<div class="sidenote-outer-wrapper"><div class="sidenote-inner-wrapper">` 
+							   + (referencedFootnote 
+							   	  ? referencedFootnote.innerHTML 
+							   	  : "Loading sidenote contents, please wait…")
+							   + `</div></div>`;
+
+			/*  Create & inject the sidenote self-links (ie. boxed sidenote 
+				numbers).
+				*/
+			let sidenoteSelfLink = newElement("A", { "class": "sidenote-self-link", "href": `#sn${i}` });
+			sidenoteSelfLink.textContent = i;
+			sidenote.appendChild(sidenoteSelfLink);
+
 			//  Add the sidenote to the sidenotes array...
 			Sidenotes.sidenoteDivs.push(sidenote);
-			//  On which side should the sidenote go? Odd - right; even - left.
-			let side = (i % 2) ? Sidenotes.sidenoteColumnLeft : Sidenotes.sidenoteColumnRight;
+
+			//  On which side should the sidenote go? Odd - left; even - right.
+			let side = (i % 2) ? Sidenotes.sidenoteColumnRight : Sidenotes.sidenoteColumnLeft;
+
 			//  Inject the sidenote into the page.
 			side.appendChild(sidenote);
-		}
-
-		/*  Create & inject the sidenote self-links (ie. boxed sidenote numbers).
-			*/
-		for (let i = 0; i < Sidenotes.citations.length; i++) {
-			let sidenoteSelfLink = document.createElement("A");
-			sidenoteSelfLink.classList.add("sidenote-self-link");
-			sidenoteSelfLink.href = "#sn" + (i + 1);
-			sidenoteSelfLink.textContent = (i + 1);
-			Sidenotes.sidenoteDivs[i].appendChild(sidenoteSelfLink);
 		}
 
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
