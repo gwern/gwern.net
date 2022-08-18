@@ -237,7 +237,7 @@ Annotations = {
 				return {
 					element:        referenceElement,
 					titleHTML:      referenceElement.innerHTML.trimQuotes(),
-					authorHTML:     (authorElement ? `<span class="data-field author author-cite">${authorList}</span>` : ``),
+					authorHTML:     (authorElement ? `<span class="data-field author cite-author">${authorList}</span>` : ``),
 					dateHTML:       (dateElement ? `<span class="data-field cite-date" title="${dateElement.textContent}">` +
 									 dateElement.textContent.replace(/-[0-9][0-9]-[0-9][0-9]$/, "") +
 									 `</span>` : ``),
