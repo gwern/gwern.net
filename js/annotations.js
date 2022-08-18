@@ -4,12 +4,6 @@
 	Annotations.didLoad
 		Fired when the Annotations object has loaded.
 
-	Annotations.setupDidComplete
-		Fired just before the ‘setup’ function returns.
-
-	Annotations.cleanupDidComplete
-		Fired just before the ‘cleanup’ function returns.
-
 	Annotations.annotationDidLoad {
 			identifier:
 				The identifier string for the annotation. (See the
@@ -30,22 +24,6 @@ Annotations = {
     /***********/
     /*  General.
         */
-
-	//	Called in: nowhere
-    cleanup: () => {
-        GWLog("Annotations.cleanup", "annotations.js", 1);
-
-        //  Fire cleanup-complete event.
-        GW.notificationCenter.fireEvent("Annotations.cleanupDidComplete");
-    },
-
-	//	Called in: this file (doWhenPageLoaded)
-    setup: () => {
-        GWLog("Annotations.setup", "annotations.js", 1);
-
-        //  Fire setup-complete event.
-        GW.notificationCenter.fireEvent("Annotations.setupDidComplete");
-    },
 
     /*  Storage for retrieved and cached annotations.
         */
@@ -528,10 +506,3 @@ Annotations.isWikipediaArticleLink = (identifier) => {
 };
 
 GW.notificationCenter.fireEvent("Annotations.didLoad");
-
-/******************/
-/*  Initialization.
-    */
-doWhenPageLoaded(() => {
-    Annotations.setup();
-});
