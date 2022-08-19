@@ -443,6 +443,8 @@ function updatePageTOCAfterInclusion(newContent, includeLink) {
 Transclude = {
 	transcludeAnnotationsByDefault: true,
 
+	permittedContentTypes: [ "text/html" ],
+
 	isAnnotationTransclude: (includeLink) => {
 		if (includeLink.classList.contains("link-annotated") == false)
 			return false;
@@ -767,6 +769,13 @@ Transclude = {
 			doAjax({
 				location: includeLink.href,
 				onSuccess: (event) => {
+					let contentType = event.target.getResponseHeader("Content-Type").match(/(.+?)(?:;|$)/)[1];
+					if (Transclude.permittedContentTypes.includes(contentType) == false) {
+						GWServerLogError(includeLink.href + `--transclude-bad-content-type`, "bad transclude content type");
+						includeLink.classList.add("loading-failed");
+						return;
+					}
+
 					Transclude.setCachedDocumentForLink(newDocument(event.target.responseText), includeLink);
 					Transclude.transclude(includeLink, true);
 				}
