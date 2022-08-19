@@ -647,6 +647,22 @@ Transclude = {
 	transclude: (includeLink, now = false) => {
 		GWLog("Transclude.transclude", "transclude.js", 2);
 
+		//	We don’t retry failed loads.
+		if (includeLink.classList.contains("include-loading-failed"))
+			return;
+
+		if (   includeLink.hostname != location.hostname
+			&& Transclude.isAnnotationTransclude(includeLink) == false) {
+			/*	We exclude cross-origin transclusion for security reasons, but
+				from a technical standpoint there’s no reason it shouldn’t work.
+				Simply comment out these two statements to enable cross-origin
+				transcludes.
+				—SA 2022-08-18
+			 */
+			Transclude.setLinkStateLoadingFailed(includeLink);
+			return;
+		}
+
 		/*	By default, includes within collapse blocks only get transcluded 
 			if/when the collapse block is expanded.
 		 */
@@ -683,6 +699,9 @@ Transclude = {
 			return;
 		}
 
+		//	Set loading state (for visual/interaction purposes).
+		Transclude.setLinkStateLoading(includeLink);
+
 		/*	Check whether provider objects for annotation extracts are loaded;
 			if not, then wait until they load to attempt transclusion.
 		 */
@@ -708,6 +727,7 @@ Transclude = {
 			return;
 		}
 
+		//	Check includable content cache (managed by Transclude in all cases).
 		let content = Transclude.cachedContentForLink(includeLink);
 		if (content) {
 			if (   Transclude.isAnnotationTransclude(includeLink)
@@ -723,6 +743,7 @@ Transclude = {
 			return;
 		}
 
+		//	Check source document caches (depending on include type).
 		if (Transclude.isAnnotationTransclude(includeLink)) {
 			//  Get annotation reference data (if it’s been loaded).
 			let annotationIdentifier = Extracts.targetIdentifier(includeLink);
@@ -732,7 +753,8 @@ Transclude = {
 					will not try loading again, and just show a “loading failed”
 					message.
 				 */
-				includeLink.classList.add("loading-failed");
+				Transclude.setLinkStateLoadingFailed(includeLink);
+
 				return;
 			} else if (referenceData) {
 				Transclude.setCachedContentForLink(Transclude.reformatAnnotation(Extracts.annotationForTarget(includeLink)), includeLink);
@@ -750,6 +772,7 @@ Transclude = {
 			}
 		}
 
+		//	No cached documents or content; time for a network load.
 		includeLink.needsRewrite = true;
 		if (Transclude.isAnnotationTransclude(includeLink)) {
 			let annotationIdentifier = Extracts.targetIdentifier(includeLink);
@@ -771,12 +794,16 @@ Transclude = {
 					let contentType = event.target.getResponseHeader("Content-Type").match(/(.+?)(?:;|$)/)[1];
 					if (Transclude.permittedContentTypes.includes(contentType) == false) {
 						GWServerLogError(includeLink.href + `--transclude-bad-content-type`, "bad transclude content type");
-						includeLink.classList.add("loading-failed");
+						Transclude.setLinkStateLoadingFailed(includeLink);
+
 						return;
 					}
 
 					Transclude.setCachedDocumentForLink(newDocument(event.target.responseText), includeLink);
 					Transclude.transclude(includeLink, true);
+				},
+				onFailure: (event) => {
+					Transclude.setLinkStateLoadingFailed(includeLink);
 				}
 			});
 		}
@@ -787,6 +814,43 @@ Transclude = {
 		container.querySelectorAll("a.include").forEach(includeLink => {
 			Transclude.transclude(includeLink, true);
 		});
+	},
+
+	//	Called by: Transclude.transclude
+	setLinkStateLoading: (includeLink) => {
+		if (includeLink.classList.contains("include") == false)
+			return;
+
+		includeLink.classList.add("include-loading");
+		if (includeLink.textContent > "")
+			includeLink.classList.add("no-icon");
+        includeLink.onclick = () => { return false; };
+		includeLink.savedTitle = includeLink.title ?? "";
+		includeLink.title = "Content is loading. Please wait.";
+	},
+
+	//	Called by: Transclude.transclude
+	setLinkStateLoadingFailed: (includeLink) => {
+		if (includeLink.classList.contains("include") == false)
+			return;
+
+		includeLink.swapClasses([ "include-loading", "include-loading-failed" ], 1);
+		if (includeLink.textContent > "")
+			includeLink.classList.remove("no-icon");
+        includeLink.onclick = null;
+		if (includeLink.savedTitle != null) {
+			includeLink.title = includeLink.savedTitle;
+			includeLink.savedTitle = null;		
+		}
+
+		//	Fire event, if need be.
+		if (includeLink.needsRewrite) {
+			GW.notificationCenter.fireEvent("Rewrite.contentDidChange", { 
+				source: "transclude", 
+				baseLocation: includeLink.baseLocation,
+				document: includeLink.getRootNode()
+			});
+		}
 	}
 };
 
@@ -797,23 +861,6 @@ function handleTranscludes(loadEventInfo) {
     GWLog("handleTranscludes", "transclude.js", 1);
 
 	loadEventInfo.document.querySelectorAll("a.include").forEach(includeLink => {
-		if (   includeLink.hostname != location.hostname
-			&& Transclude.isAnnotationTransclude(includeLink)== false) {
-			/*	We exclude cross-origin transclusion for security reasons, but
-				from a technical standpoint there’s no reason it shouldn’t work.
-				Simply comment out these two statements to enable cross-origin
-				transcludes.
-				—SA 2022-08-18
-			 */
-			includeLink.classList.add("loading-failed");
-			return;
-		}
-
-		//	Include-links should be unclickable, and have a loading spinner.
-		includeLink.classList.add("no-icon");
-		includeLink.title = "Content is loading. Please wait.";
-        includeLink.onclick = () => { return false; };
-
 		//	Store the location of the included-into document.
 		includeLink.baseLocation = loadEventInfo.baseLocation;
 
