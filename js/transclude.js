@@ -650,7 +650,6 @@ Transclude = {
 		/*	By default, includes within collapse blocks only get transcluded 
 			if/when the collapse block is expanded.
 		 */
-		console.log(includeLink);
 		if (    isWithinCollapsedBlock(includeLink) 
 			&& !(includeLink.classList.contains("include-when-collapsed"))) {
 			let uncollapseHandler = ((info) => {
