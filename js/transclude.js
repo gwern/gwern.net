@@ -379,10 +379,10 @@ function updatePageTOCAfterInclusion(newContent, includeLink) {
 
 	//	Find where to insert the new TOC entries.
 	let parentSection = newContent.closest("section") ?? document.querySelector("#markdownBody");
-	let previousSection = Array.from(parentSection.children).findLast(child => 
+	let previousSection = Array.from(parentSection.children).filter(child => 
 		   child.tagName == "SECTION" 
 		&& child.compareDocumentPosition(newContent) == Node.DOCUMENT_POSITION_FOLLOWING
-	) ?? null;
+	).last;
 
 	let parentTOCElement = parentSection.id == "markdownBody"
 						   ? TOC
