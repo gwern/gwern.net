@@ -96,24 +96,38 @@
 
 	Several optional classes modify the behavior of include-links:
 
-	include-lazy
-		A lazy-loaded include-link will not trigger (i.e., transclude its 
-		content) immediately at load time. Instead, it will wait until the user 
-		scrolls down to the part of the page where the link is located, or pops 
-		up a popup that contains that part of the page, or otherwise “looks” at 
-		the include-link’s surrounding context. Only then will the transclusion 
-		take place.
+	include-annotation
+	include-content
+		If the include-link is an annotated link (`link-annotated` class), then 
+		instead of transcluding the linked content, the annotation for the 
+		linked content may be transcluded. The default behavior is set via the
+		Transclude.transcludeAnnotationsByDefault property. If this is set to
+		`true`, then annotated links transclude the annotation unless the
+		`include-content` class is set (in which case they transclude their 
+		linked content). If it is set to `false`, then annotated links 
+		transclude the annotation only if the `include-annotation` class is set
+		(otherwise they transclude their linked content).
+
+	include-instant
+		By default, include-linked are lazy-loaded. A lazy-loaded include-link 
+		will not trigger (i.e., transclude its content) immediately at load 
+		time. Instead, it will wait until the user scrolls down to the part of
+		the page where the link is located, or pops up a popup that contains 
+		that part of the page, or otherwise “looks” at the include-link’s 
+		surrounding context. Only then will the transclusion take place.
+		An instant include-link, on the other hand, triggers immediately at 
+		load time.
 
 	include-when-collapsed
 		Normally, an include-link that is inside a collapsed block will not 
-		trigger at load time, even if it is not marked with the `include-lazy`
+		trigger at load time, even if it is marked with the `include-instant`
 		class; instead, it will trigger only when it is revealed by expansion of
 		its containing collapse block(s). The `include-when-collapsed` class 
 		disables this delay, forcing the include-link to trigger at load time
-		(if it is not marked as `include-lazy`!) even if, when loaded, it is 
+		(if it is marked as `include-instant`!) even if, when loaded, it is 
 		within a collapsed block.
 
-		Note that the `include-lazy` and `include-when-collapsed` options are 
+		Note that the `include-instant` and `include-when-collapsed` options are 
 		not mutually exclusive, and do not do the same thing.
 
 	include-unwrap
@@ -208,14 +222,19 @@ function includeContent(includeLink, content) {
 		updatePageTOCAfterInclusion(wrapper, includeLink);
 
 	//	Update footnotes, if need be.
-	let newFootnotesWrapper = updateFootnotesAfterInclusion(wrapper, includeLink);
+	let newFootnotesWrapper = Transclude.isAnnotationTransclude(includeLink)
+							  ? null
+							  : updateFootnotesAfterInclusion(wrapper, includeLink);
 
 	//	Fire events, if need be.
 	if (includeLink.needsRewrite) {
-		let flags = GW.contentDidLoadEventFlags.needsRewrite;
-		if (includingIntoMainPage)
-			flags |= (  GW.contentDidLoadEventFlags.fullWidthPossible
-					  | GW.contentDidLoadEventFlags.collapseAllowed)
+		let flags = 0;
+		if (Transclude.isAnnotationTransclude(includeLink) == false) {
+			flags |= GW.contentDidLoadEventFlags.needsRewrite;
+			if (includingIntoMainPage)
+				flags |= (  GW.contentDidLoadEventFlags.fullWidthPossible
+						  | GW.contentDidLoadEventFlags.collapseAllowed)
+		}
 
 		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 			source: "transclude",
@@ -261,6 +280,9 @@ function includeContent(includeLink, content) {
 	if (includeLink.classList.contains("include-replace-container")) {
 		includeLink.parentElement.remove();
 	} else {
+		if (includeLink.nextSibling.nodeType == Node.TEXT_NODE)
+			includeLink.nextSibling.parentNode.removeChild(includeLink.nextSibling);
+
 		includeLink.remove();
 	}
 
@@ -419,6 +441,17 @@ function updatePageTOCAfterInclusion(newContent, includeLink) {
 /*	Handles interactions between include-links and content at locations.
  */
 Transclude = {
+	transcludeAnnotationsByDefault: true,
+
+	isAnnotationTransclude: (includeLink) => {
+		if (includeLink.classList.contains("link-annotated") == false)
+			return false;
+
+		return (Transclude.transcludeAnnotationsByDefault
+				? includeLink.classList.contains("include-content") == false
+				: includeLink.classList.contains("include-annotation"));
+	},
+
 	cachedDocuments: { },
 
 	//	Called by: Transclude.transclude
@@ -455,6 +488,23 @@ Transclude = {
 	//	Called by: Transclude.transclude
 	setCachedContentForLink: (content, includeLink) => {
 		Transclude.cachedContent[includeLink.href] = content;
+	},
+
+	//	Called by: Transclude.transclude
+	reformatAnnotation: (annotation) => {
+		let firstGraf = newElement("P");
+		firstGraf.append(...(annotation.querySelector(".data-field.title").childNodes));
+		firstGraf.append(new Text(", "));
+		firstGraf.append(...(annotation.querySelector(".data-field.author-date-aux").childNodes));
+		firstGraf.lastTextNode.textContent = "):";
+
+		let blockquote = newElement("BLOCKQUOTE");
+		blockquote.append(...(annotation.querySelector(".data-field.annotation-abstract").childNodes));
+
+		annotation.querySelectorAll(".data-field").forEach(field => { field.remove(); });
+		annotation.append(firstGraf, blockquote);
+
+		return annotation;
 	},
 
 	//	Called by: Transclude.transclude
@@ -598,6 +648,7 @@ Transclude = {
 		/*	By default, includes within collapse blocks only get transcluded 
 			if/when the collapse block is expanded.
 		 */
+		console.log(includeLink);
 		if (    isWithinCollapsedBlock(includeLink) 
 			&& !(includeLink.classList.contains("include-when-collapsed"))) {
 			let uncollapseHandler = ((info) => {
@@ -620,7 +671,7 @@ Transclude = {
 
 		//	Transclusion is eager (non-delayed) by default.
 		if (   now == false
-			&& includeLink.classList.contains("include-lazy")) {
+			&& includeLink.classList.contains("include-instant") == false) {
 			includeLink.needsRewrite = true;
 			requestAnimationFrame(() => {
 				lazyLoadObserver(() => {
@@ -631,29 +682,96 @@ Transclude = {
 			return;
 		}
 
+		/*	Check whether provider objects for annotation extracts are loaded;
+			if not, then wait until they load to attempt transclusion.
+		 */
+		if (   Transclude.isAnnotationTransclude(includeLink)
+			&& (   window.Annotations == null
+				|| window.Extracts == null)) {
+			let loadHandler = ((info) => {
+				if (   window.Annotations == null
+					|| window.Extracts == null)
+					return;
+			
+				GW.notificationCenter.removeHandlerForEvent("Annotations.didLoad", loadHandler);
+				GW.notificationCenter.removeHandlerForEvent("Extracts.didLoad", loadHandler);
+
+				Transclude.transclude(includeLink, true);
+			});
+
+			includeLink.needsRewrite = true;
+
+			GW.notificationCenter.addHandlerForEvent("Annotations.didLoad", loadHandler);
+			GW.notificationCenter.addHandlerForEvent("Extracts.didLoad", loadHandler);
+			
+			return;
+		}
+
 		let content = Transclude.cachedContentForLink(includeLink);
 		if (content) {
-			includeContent(includeLink, content);
+			if (   Transclude.isAnnotationTransclude(includeLink)
+				&& includeLink.needsRewrite == false) {
+				includeLink.needsRewrite = true;
+				requestAnimationFrame(() => {
+					includeContent(includeLink, content);
+				});
+			} else {
+				includeContent(includeLink, content);
+			}
 
 			return;
 		}
 
-		let doc = Transclude.cachedDocumentForLink(includeLink);
-		if (doc) {
-			Transclude.setCachedContentForLink(Transclude.sliceContentFromDocument(doc, includeLink), includeLink);
-			Transclude.transclude(includeLink, true);
+		if (Transclude.isAnnotationTransclude(includeLink)) {
+			//  Get annotation reference data (if it’s been loaded).
+			let annotationIdentifier = Extracts.targetIdentifier(includeLink);
+			let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
+			if (referenceData == "LOADING_FAILED") {
+				/*  If we’ve already tried and failed to load the annotation, we
+					will not try loading again, and just show a “loading failed”
+					message.
+				 */
+				includeLink.classList.add("loading-failed");
+				return;
+			} else if (referenceData) {
+				Transclude.setCachedContentForLink(Transclude.reformatAnnotation(Extracts.annotationForTarget(includeLink)), includeLink);
+				Transclude.transclude(includeLink, true);
 
-			return;
+				return;
+			}
+		} else {
+			let doc = Transclude.cachedDocumentForLink(includeLink);
+			if (doc) {
+				Transclude.setCachedContentForLink(Transclude.sliceContentFromDocument(doc, includeLink), includeLink);
+				Transclude.transclude(includeLink, true);
+
+				return;
+			}
 		}
 
 		includeLink.needsRewrite = true;
-		doAjax({
-			location: includeLink.href,
-			onSuccess: (event) => {
-				Transclude.setCachedDocumentForLink(newDocument(event.target.responseText), includeLink);
+		if (Transclude.isAnnotationTransclude(includeLink)) {
+			let annotationIdentifier = Extracts.targetIdentifier(includeLink);
+
+			//	Add load/fail handlers.
+			GW.notificationCenter.addHandlerForEvent("Annotations.annotationDidLoad", (info) => {
 				Transclude.transclude(includeLink, true);
-			}
-		});
+			}, { once: true, condition: (info) => info.identifier == annotationIdentifier });
+			GW.notificationCenter.addHandlerForEvent("Annotations.annotationLoadDidFail", (info) => {
+				Transclude.transclude(includeLink, true);
+			}, { once: true, condition: (info) => info.identifier == annotationIdentifier });
+
+			//	Request annotation load.
+			Annotations.loadAnnotation(annotationIdentifier);
+		} else {
+			doAjax({
+				location: includeLink.href,
+				onSuccess: (event) => {
+					Transclude.setCachedDocumentForLink(newDocument(event.target.responseText), includeLink);
+					Transclude.transclude(includeLink, true);
+				}
+			});
+		}
 	},
 
 	//	Called by: Extracts.localTranscludeForTarget (extracts.js)
@@ -671,13 +789,17 @@ function handleTranscludes(loadEventInfo) {
     GWLog("handleTranscludes", "transclude.js", 1);
 
 	loadEventInfo.document.querySelectorAll("a.include").forEach(includeLink => {
-		/*	We exclude cross-origin transclusion for security reasons, but
-			from a technical standpoint there’s no reason it shouldn’t work.
-			Simply comment out this check to enable cross-origin transcludes.
-			—SA 2022-08-12
-		 */
-		if (includeLink.hostname != location.hostname)
+		if (   includeLink.hostname != location.hostname
+			&& Transclude.isAnnotationTransclude(includeLink)== false) {
+			/*	We exclude cross-origin transclusion for security reasons, but
+				from a technical standpoint there’s no reason it shouldn’t work.
+				Simply comment out these two statements to enable cross-origin
+				transcludes.
+				—SA 2022-08-18
+			 */
+			includeLink.classList.add("loading-failed");
 			return;
+		}
 
 		//	Include-links should be unclickable, and have a loading spinner.
 		includeLink.classList.add("no-icon");

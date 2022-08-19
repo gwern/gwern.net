@@ -44,7 +44,7 @@
 Extracts.targetTypeDefinitions.insertBefore([
     "ANNOTATION",               // Type name
     "isAnnotatedLink",          // Type predicate function
-    (target) =>                  // Target classes to add
+    (target) =>                 // Target classes to add
         ((   target.classList.contains("link-annotated-partial")
           && !(Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))))
          ? "has-annotation-partial"
