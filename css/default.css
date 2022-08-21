@@ -1311,6 +1311,11 @@ section.footnotes > hr:first-child.highlighted::before {
 /* SIDENOTES */
 /*************/
 
+.sidenote-layout-cell {
+	position: absolute;
+	width: 100%;
+}
+
 #sidenote-column-left,
 #sidenote-column-right {
     position: absolute;
