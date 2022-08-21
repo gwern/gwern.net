@@ -5,7 +5,10 @@
 /******************************/
 /*	Events fired by rewrite.js:
 
-	Rewrite.fullWidthMediaDidLoad
+	Rewrite.fullWidthMediaDidLoad {
+			mediaElement:
+				the <img> or <video> element that loaded
+		}
 		Fired when a full-width image or video is loaded. This event is only
 		fired after the initial page load completes (i.e., it is triggered by
 		lazy-loading of media elements).
@@ -455,7 +458,9 @@ function markFullWidthFigures(loadEventInfo) {
     doWhenPageLoaded(() => {
         allFullWidthMedia.forEach(fullWidthMedia => {
             fullWidthMedia.addEventListener("load", (event) => {
-                GW.notificationCenter.fireEvent("Rewrite.fullWidthMediaDidLoad");
+                GW.notificationCenter.fireEvent("Rewrite.fullWidthMediaDidLoad", {
+                	mediaElement: fullWidthMedia
+                });
             });
         });
     });
