@@ -5,7 +5,10 @@
 /******************************/
 /*	Events fired by rewrite.js:
 
-	Rewrite.fullWidthMediaDidLoad
+	Rewrite.fullWidthMediaDidLoad {
+			mediaElement:
+				the <img> or <video> element that loaded
+		}
 		Fired when a full-width image or video is loaded. This event is only
 		fired after the initial page load completes (i.e., it is triggered by
 		lazy-loading of media elements).
@@ -351,6 +354,24 @@ addContentLoadHandler(wrapFullWidthTables, "rewrite", (info) => (   info.needsRe
 /* FIGURES */
 /***********/
 
+/*****************************************************************************/
+/*  Sets, in CSS, the image dimensions that are specified in HTML.
+    (This is to ensure no reflow.)
+ */
+function setImageDimensions(loadEventInfo) {
+    GWLog("setImageDimensions", "rewrite.js", 1);
+
+    loadEventInfo.document.querySelectorAll("figure img[width]").forEach(image => {
+		if (image.classList.contains("width-full")) {
+			return;
+		} else {
+	        image.style.width = image.getAttribute("width") + "px";
+		}
+    });
+}
+
+addContentLoadHandler(setImageDimensions, "rewrite", (info) => info.needsRewrite);
+
 /*******************************/
 /*  Wrap bare images in figures.
  */
@@ -437,7 +458,9 @@ function markFullWidthFigures(loadEventInfo) {
     doWhenPageLoaded(() => {
         allFullWidthMedia.forEach(fullWidthMedia => {
             fullWidthMedia.addEventListener("load", (event) => {
-                GW.notificationCenter.fireEvent("Rewrite.fullWidthMediaDidLoad");
+                GW.notificationCenter.fireEvent("Rewrite.fullWidthMediaDidLoad", {
+                	mediaElement: fullWidthMedia
+                });
             });
         });
     });
@@ -769,21 +792,6 @@ function rectifyTypographyInAnnotation(loadEventInfo) {
 
 addContentLoadHandler(rectifyTypographyInAnnotation, "rewrite", (info) => (   info.needsRewrite
 						  												   && info.source == "Extracts.annotationForTarget"));
-
-/*****************************************************************************/
-/*  Sets, in CSS, the image dimensions that are specified in HTML.
-    (This is to ensure no reflow when annotation popups are spawned.)
- */
-function setImageDimensionsInAnnotation(loadEventInfo) {
-    GWLog("setImageDimensionsInAnnotation", "rewrite.js", 1);
-
-    loadEventInfo.document.querySelectorAll("figure img[width]").forEach(image => {
-        image.style.width = image.getAttribute("width") + "px";
-    });
-}
-
-addContentLoadHandler(setImageDimensionsInAnnotation, "rewrite", (info) => (   info.needsRewrite
-																			&& info.source == "Extracts.annotationForTarget"));
 
 /******************************************************************************/
 /*  Bind mouse hover events to, when hovering over an annotated link, highlight

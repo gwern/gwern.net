@@ -753,6 +753,7 @@ figure + figure {
     margin: auto;
     width: -moz-fit-content;
     width: fit-content;
+    max-width: 100%;
 }
 
 figure img {
@@ -1309,6 +1310,11 @@ section.footnotes > hr:first-child.highlighted::before {
 /*************/
 /* SIDENOTES */
 /*************/
+
+.sidenote-layout-cell {
+	position: absolute;
+	width: 100%;
+}
 
 #sidenote-column-left,
 #sidenote-column-right {
