@@ -359,7 +359,7 @@ function setImageDimensions(loadEventInfo) {
     GWLog("setImageDimensions", "rewrite.js", 1);
 
     loadEventInfo.document.querySelectorAll("figure img[width]").forEach(image => {
-		if (image.closest("figure.width-full")) {
+		if (image.classList.contains("width-full")) {
 			return;
 		} else {
 	        image.style.width = image.getAttribute("width") + "px";

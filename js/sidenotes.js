@@ -214,12 +214,14 @@ Sidenotes = {
 			if (!(   elementBoundingRect.left > leftColumnBoundingRect.right 
 				  || elementBoundingRect.right < leftColumnBoundingRect.left))
 				proscribedVerticalRangesLeft.push({ top: (elementBoundingRect.top - Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top,
-													bottom: (elementBoundingRect.bottom + Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top });
+													bottom: (elementBoundingRect.bottom + Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top,
+													element: potentiallyOverlappingElement });
 
 			if (!(   elementBoundingRect.left > rightColumnBoundingRect.right 
 				  || elementBoundingRect.right < rightColumnBoundingRect.left))
 				proscribedVerticalRangesRight.push({ top: (elementBoundingRect.top - Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top,
-													 bottom: (elementBoundingRect.bottom + Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top });
+													 bottom: (elementBoundingRect.bottom + Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top,
+													 element: potentiallyOverlappingElement });
 		});
 
 		/*  The bottom edges of each column are also “proscribed vertical ranges”.
@@ -232,6 +234,8 @@ Sidenotes = {
 			top:    Sidenotes.sidenoteColumnRight.clientHeight,
 			bottom: Sidenotes.sidenoteColumnRight.clientHeight
 		});
+		console.log(proscribedVerticalRangesLeft);
+		return;
 		//	TODO: Do these need to be sorted?
 
 		//	Compute layout cells.
@@ -322,6 +326,8 @@ Sidenotes = {
 			return ((noteA.posInCell + noteA.lastKnownHeight + Sidenotes.sidenoteSpacing) - noteB.posInCell);
 		};
 
+		console.log(layoutCells);
+
 		//	Position sidenotes within layout cells.
 		layoutCells.forEach(cell => {
 			if (cell.sidenotes.length == 0)
@@ -346,6 +352,7 @@ Sidenotes = {
 			};
 
 			let pushNotesUp = (pushUpWhich, pushUpForce) => {
+				console.log("Pushing " + pushUpWhich + " with force " + pushUpForce);
 				let roomToPush = pushUpWhich.first == 0
 								 ? cell.sidenotes[pushUpWhich.first].posInCell
 								 : getDistance(cell.sidenotes[pushUpWhich.first - 1], cell.sidenotes[pushUpWhich.first]);
@@ -364,6 +371,12 @@ Sidenotes = {
 				}
 			};
 
+			console.log("Note positions in cell:");
+			cell.sidenotes.forEach(note => {
+				console.log(note.posInCell);
+			});
+			console.log("------------------------");
+
 			for (let i = 1; i < cell.sidenotes.length; i++) {
 				let prevNote = cell.sidenotes[i - 1];
 				let thisNote = cell.sidenotes[i];
@@ -375,8 +388,8 @@ Sidenotes = {
 				if (overlapAbove == 0)
 					continue;
 
-				let pushUp = Math.round(overlapAbove / 2);
-				thisNote.posInCell += ((overlapAbove - pushUp) + pushNotesUp([ (i - 1) ], pushUp));
+				let pushUpForce = Math.round(overlapAbove / 2);
+				thisNote.posInCell += ((overlapAbove - pushUpForce) + pushNotesUp([ (i - 1) ], pushUpForce));
 			}
 
 			let overlapOfBottom = Math.max(0, (cell.sidenotes.last.posInCell + cell.sidenotes.last.lastKnownHeight) - (cell.bottom - cell.top));
@@ -386,6 +399,12 @@ Sidenotes = {
 			cell.sidenotes.forEach(sidenote => {
 				sidenote.style.top = sidenote.posInCell + "px";
 			});
+
+			console.log("Note positions in cell:");
+			cell.sidenotes.forEach(note => {
+				console.log(note.posInCell);
+			});
+			console.log("************************");
 
 			cell.container.append(...cell.sidenotes);
 		});
