@@ -351,6 +351,20 @@ addContentLoadHandler(wrapFullWidthTables, "rewrite", (info) => (   info.needsRe
 /* FIGURES */
 /***********/
 
+/*****************************************************************************/
+/*  Sets, in CSS, the image dimensions that are specified in HTML.
+    (This is to ensure no reflow.)
+ */
+function setImageDimensions(loadEventInfo) {
+    GWLog("setImageDimensions", "rewrite.js", 1);
+
+    loadEventInfo.document.querySelectorAll("figure img[width]").forEach(image => {
+        image.style.width = image.getAttribute("width") + "px";
+    });
+}
+
+addContentLoadHandler(setImageDimensions, "rewrite", (info) => info.needsRewrite);
+
 /*******************************/
 /*  Wrap bare images in figures.
  */
@@ -769,21 +783,6 @@ function rectifyTypographyInAnnotation(loadEventInfo) {
 
 addContentLoadHandler(rectifyTypographyInAnnotation, "rewrite", (info) => (   info.needsRewrite
 						  												   && info.source == "Extracts.annotationForTarget"));
-
-/*****************************************************************************/
-/*  Sets, in CSS, the image dimensions that are specified in HTML.
-    (This is to ensure no reflow when annotation popups are spawned.)
- */
-function setImageDimensionsInAnnotation(loadEventInfo) {
-    GWLog("setImageDimensionsInAnnotation", "rewrite.js", 1);
-
-    loadEventInfo.document.querySelectorAll("figure img[width]").forEach(image => {
-        image.style.width = image.getAttribute("width") + "px";
-    });
-}
-
-addContentLoadHandler(setImageDimensionsInAnnotation, "rewrite", (info) => (   info.needsRewrite
-																			&& info.source == "Extracts.annotationForTarget"));
 
 /******************************************************************************/
 /*  Bind mouse hover events to, when hovering over an annotated link, highlight
