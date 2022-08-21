@@ -172,10 +172,10 @@ Sidenotes = {
 				continue;
 
 			//  What side is this sidenote on?
-			let side = (i % 2) ? Sidenotes.sidenoteColumnLeft : Sidenotes.sidenoteColumnRight;
+// 			let side = (i % 2) ? Sidenotes.sidenoteColumnLeft : Sidenotes.sidenoteColumnRight;
 
 			//  Default position (vertically aligned with the footnote reference).
-			sidenote.style.top = Math.round(((Sidenotes.citations[i].getBoundingClientRect().top) - side.getBoundingClientRect().top) + 4) + "px";
+// 			sidenote.style.top = Math.round(((Sidenotes.citations[i].getBoundingClientRect().top) - side.getBoundingClientRect().top) + 4) + "px";
 
 			/*  Mark sidenotes which are cut off vertically.
 				*/
@@ -195,18 +195,31 @@ Sidenotes = {
 		/*  Examine all potentially overlapping elements (ie. non-sidenote
 			elements that may appear in, or extend into, the side columns).
 			*/
+// 		document.querySelectorAll(Sidenotes.potentiallyOverlappingElementsSelector).forEach(potentiallyOverlappingElement => {
+// 			let elementBoundingRect = potentiallyOverlappingElement.getBoundingClientRect();
+// 
+// 			if (!(   elementBoundingRect.left > leftColumnBoundingRect.right 
+// 				  || elementBoundingRect.right < leftColumnBoundingRect.left))
+// 				proscribedVerticalRangesLeft.push({ top: elementBoundingRect.top - leftColumnBoundingRect.top,
+// 													bottom: elementBoundingRect.bottom - leftColumnBoundingRect.top });
+// 
+// 			if (!(   elementBoundingRect.left > rightColumnBoundingRect.right 
+// 				  || elementBoundingRect.right < rightColumnBoundingRect.left))
+// 				proscribedVerticalRangesRight.push({ top: elementBoundingRect.top - rightColumnBoundingRect.top,
+// 													 bottom: elementBoundingRect.bottom - rightColumnBoundingRect.top });
+// 		});
 		document.querySelectorAll(Sidenotes.potentiallyOverlappingElementsSelector).forEach(potentiallyOverlappingElement => {
 			let elementBoundingRect = potentiallyOverlappingElement.getBoundingClientRect();
 
 			if (!(   elementBoundingRect.left > leftColumnBoundingRect.right 
 				  || elementBoundingRect.right < leftColumnBoundingRect.left))
-				proscribedVerticalRangesLeft.push({ top: elementBoundingRect.top - leftColumnBoundingRect.top,
-													bottom: elementBoundingRect.bottom - leftColumnBoundingRect.top });
+				proscribedVerticalRangesLeft.push({ top: (elementBoundingRect.top - Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top,
+													bottom: (elementBoundingRect.bottom + Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top });
 
 			if (!(   elementBoundingRect.left > rightColumnBoundingRect.right 
 				  || elementBoundingRect.right < rightColumnBoundingRect.left))
-				proscribedVerticalRangesRight.push({ top: elementBoundingRect.top - rightColumnBoundingRect.top,
-													 bottom: elementBoundingRect.bottom - rightColumnBoundingRect.top });
+				proscribedVerticalRangesRight.push({ top: (elementBoundingRect.top - Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top,
+													 bottom: (elementBoundingRect.bottom + Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top });
 		});
 
 		/*  The bottom edges of each column are also “proscribed vertical ranges”.
@@ -219,6 +232,171 @@ Sidenotes = {
 			top:    Sidenotes.sidenoteColumnRight.clientHeight,
 			bottom: Sidenotes.sidenoteColumnRight.clientHeight
 		});
+		//	TODO: Do these need to be sorted?
+
+		//	Compute layout cells.
+		let layoutCells = [ ];
+		//	On left.
+		let prevRangeBottom = 0;
+		proscribedVerticalRangesLeft.forEach(range => {
+			layoutCells.push({
+				container: Sidenotes.sidenoteColumnLeft,
+				containerRect: leftColumnBoundingRect,
+				top: prevRangeBottom,
+				bottom: range.top,
+				room: range.top - prevRangeBottom,
+				sidenotes: [ ]
+			});
+			prevRangeBottom = range.bottom;
+		});
+		//	On right.
+		prevRangeBottom = 0;
+		proscribedVerticalRangesRight.forEach(range => {
+			layoutCells.push({
+				container: Sidenotes.sidenoteColumnRight,
+				containerRect: rightColumnBoundingRect,
+				top: prevRangeBottom,
+				bottom: range.top,
+				room: range.top - prevRangeBottom,
+				sidenotes: [ ]
+			});
+			prevRangeBottom = range.bottom;
+		});
+
+		//	Assign sidenotes to layout cells.
+		for (let i = 0; i < Sidenotes.citations.length; i++) {
+			let citation = Sidenotes.citations[i];
+			let citationBoundingRect = citation.getBoundingClientRect();
+
+			let sidenote = Sidenotes.sidenoteDivs[i];
+			let sidenoteNumber = sidenote.id.substr(2);
+
+			/*  Is this sidenote even displayed? Or is it hidden (ie. within
+				a currently-collapsed collapse block)? If so, skip it.
+				*/
+			if (sidenote.classList.contains("hidden"))
+				continue;
+
+			let fittingLayoutCells = layoutCells.filter(cell => cell.room >= sidenote.offsetHeight);
+			if (fittingLayoutCells.length == 0) {
+				GWLog("TOO MUCH SIDENOTES. GIVING UP. :(", "sidenotes.js");
+				Sidenotes.sidenoteDivs.forEach(sidenote => {
+					sidenote.remove();
+				});
+				return;
+			}
+
+			let vDistanceToCell = (cell) => {
+				let realCellTop = cell.containerRect.top + cell.top;
+				let realCellBottom = cell.containerRect.top + cell.bottom;
+				if (   citationBoundingRect.top > realCellTop 
+					&& citationBoundingRect.top < realCellBottom)
+					return 0;
+				return (citationBoundingRect.top < realCellTop
+						? Math.abs(citationBoundingRect.top - realCellTop)
+						: Math.abs(citationBoundingRect.top - realCellBottom));
+			};
+			let hDistanceToCell = (cell) => {
+				return Math.abs(citationBoundingRect.left - (cell.containerRect.left + (cell.containerRect.width / 2)));
+			};
+			fittingLayoutCells.sort((cellA, cellB) => {
+				return (   (vDistanceToCell(cellA) - vDistanceToCell(cellB)) 
+						|| (hDistanceToCell(cellA) - hDistanceToCell(cellB)));
+			});
+			let closestFittingLayoutCell = fittingLayoutCells[0];
+
+			closestFittingLayoutCell.room -= (sidenote.offsetHeight + Sidenotes.sidenoteSpacing);
+			closestFittingLayoutCell.sidenotes.push(sidenote);
+		};
+
+		/*	Remove sidenotes from page, so that we can set their positions
+			without causing reflow.
+		 */
+		Sidenotes.sidenoteDivs.forEach(sidenote => {
+			sidenote.lastKnownHeight = sidenote.offsetHeight;
+			sidenote.remove();
+		});
+
+		//	Function to compute distance between two successive sidenotes.
+		let getDistance = (noteA, noteB) => {
+			return ((noteA.posInCell + noteA.lastKnownHeight + Sidenotes.sidenoteSpacing) - noteB.posInCell);
+		};
+
+		//	Position sidenotes within layout cells.
+		layoutCells.forEach(cell => {
+			if (cell.sidenotes.length == 0)
+				return;
+
+			cell.sidenotes.forEach(sidenote => {
+				let sidenoteNumber = parseInt(sidenote.id.substr(2));
+				let citation = Sidenotes.citations[(sidenoteNumber - 1)];
+				//  Default position (vertically aligned with the footnote reference).
+				sidenote.posInCell = Math.round((citation.getBoundingClientRect().top - cell.containerRect.top) + 4);
+			});
+
+			cell.sidenotes.sort((noteA, noteB) => {
+				return (   (noteA.posInCell - noteB.posInCell)
+						|| (parseInt(noteA.id.substr(2)) - parseInt(noteB.id.substr(2))));
+			});
+
+			let shiftNotesUp = (noteIndexes, shiftUpDistance) => {
+				noteIndexes.forEach(idx => {
+					cell.sidenotes[idx].posInCell -= shiftUpDistance;
+				});
+			};
+
+			let pushNotesUp = (pushUpWhich, pushUpForce) => {
+				let roomToPush = pushUpWhich.first == 0
+								 ? cell.sidenotes[pushUpWhich.first].posInCell
+								 : getDistance(cell.sidenotes[pushUpWhich.first - 1], cell.sidenotes[pushUpWhich.first]);
+
+				let pushUpDistance = Math.floor(pushUpForce / pushUpWhich.length);
+				if (pushUpDistance <= roomToPush) {
+					shiftNotesUp(pushUpWhich, pushUpDistance);
+					return (pushUpForce - pushUpDistance);
+				} else {
+					shiftNotesUp(pushUpWhich, roomToPush);
+					if (pushUpWhich.first == 0)
+						return (pushUpForce - roomToPush);					
+
+					pushUpWhich.splice(0, 0, pushUpWhich.first - 1);
+					return pushNotesUp(pushUpWhich, (pushUpForce - roomToPush));
+				}
+			};
+
+			for (let i = 1; i < cell.sidenotes.length; i++) {
+				let prevNote = cell.sidenotes[i - 1];
+				let thisNote = cell.sidenotes[i];
+				let nextNote = (i == cell.sidenotes.length - 1)
+							   ? null
+							   : cell.sidenotes[i + 1];
+
+				let overlapAbove = Math.max(0, getDistance(prevNote, thisNote));
+				if (overlapAbove == 0)
+					continue;
+
+				let pushUp = Math.round(overlapAbove / 2);
+				thisNote.posInCell += ((overlapAbove - pushUp) + pushNotesUp([ (i - 1) ], pushUp));
+			}
+
+			let overlapOfBottom = Math.max(0, (cell.sidenotes.last.posInCell + cell.sidenotes.last.lastKnownHeight) - (cell.bottom - cell.top));
+			if (overlapOfBottom > 0)
+				pushNotesUp([ (cell.sidenotes.length - 1) ], overlapOfBottom);
+
+			cell.sidenotes.forEach(sidenote => {
+				sidenote.style.top = sidenote.posInCell + "px";
+			});
+
+			cell.container.append(...cell.sidenotes);
+		});
+
+		//  Show the sidenote columns.
+		Sidenotes.sidenoteColumnLeft.style.visibility = "";
+		Sidenotes.sidenoteColumnRight.style.visibility = "";
+
+		GW.notificationCenter.fireEvent("Sidenotes.sidenotePositionsDidUpdate");
+
+		return;
 
 		/*  Correct for overlap (both between sidenotes, and of sidenotes with
 			proscribed vertical ranges, such as those associated with full-width
