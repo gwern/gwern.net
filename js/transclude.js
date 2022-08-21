@@ -280,7 +280,8 @@ function includeContent(includeLink, content) {
 	if (includeLink.classList.contains("include-replace-container")) {
 		includeLink.parentElement.remove();
 	} else {
-		if (includeLink.nextSibling.nodeType == Node.TEXT_NODE)
+		if (   includeLink.nextSibling 
+			&& includeLink.nextSibling.nodeType == Node.TEXT_NODE)
 			includeLink.nextSibling.parentNode.removeChild(includeLink.nextSibling);
 
 		includeLink.remove();
