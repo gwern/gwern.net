@@ -31,6 +31,9 @@ license: MIT (derivative of footnotes.js, which is PD)
 		viewport dimensions.
  */
 
+/*****************/
+/*	Configuration.
+ */
 Sidenotes = {
 	/*  The `sidenoteSpacing` constant defines the minimum vertical space that
 		is permitted between adjacent sidenotes; any less, and they are
@@ -54,21 +57,34 @@ Sidenotes = {
 		".marginnote"
 	],
 
+	/*	The greatest width (in CSS dimensions) at which sidenotes will _not_ be
+		shown. If the viewport is wider than this, then sidenotes are enabled.
+	 */
+	sidenotesIfViewportWiderThan: "1760px"
+};
+
+/******************/
+/*	Implementation.
+ */
+Sidenotes = { ...Sidenotes,
 	/*  Media query objects (for checking and attaching listeners).
 		*/
 	mediaQueries: {
-		viewportWidthBreakpoint: matchMedia("(max-width: 1760px)")
+		viewportWidthBreakpoint: matchMedia(`(max-width: ${Sidenotes.sidenotesIfViewportWiderThan})`)
 	},
 
 	/*****************/
 	/* Infrastructure.
-		*/
+	 */
 	sidenoteDivs: null,
 	citations: null,
 
 	sidenoteColumnLeft: null,
 	sidenoteColumnRight: null,
 
+	/*	Get the (side|foot)note number from the URL hash (which might point to a 
+		footnote, a sidenote, or a citation).
+	 */
 	noteNumberFromHash: () => {
 		if (location.hash.match(/#[sf]n[0-9]/))
 			return location.hash.substr(3);
@@ -227,7 +243,9 @@ Sidenotes = {
 		});
 
 		/*	Remove sidenotes from page, so that we can set their positions
-			without causing reflow.
+			without causing reflow. Store their layout heights (which cannot
+			be retrieved in the normal way while the sidenotes aren’t part of
+			the DOM).
 		 */
 		Sidenotes.sidenoteDivs.forEach(sidenote => {
 			sidenote.lastKnownHeight = sidenote.offsetHeight;
@@ -421,20 +439,21 @@ Sidenotes = {
 			if (overlapOfBottom > 0)
 				pushNotesUp([ (cell.sidenotes.length - 1) ], overlapOfBottom, true);
 
+			//	Set the sidenote positions via inline styles.
 			cell.sidenotes.forEach(sidenote => {
 				sidenote.style.top = Math.round(sidenote.posInCell) + "px";
 			});
 
+			//	Re-inject the sidenotes into the page.
 			cell.append(...cell.sidenotes);
 		});
 
-		//  Show the sidenote columns.
+		//  Un-hide the sidenote columns.
 		Sidenotes.sidenoteColumnLeft.style.visibility = "";
 		Sidenotes.sidenoteColumnRight.style.visibility = "";
 
+		//	Fire event.
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotePositionsDidUpdate");
-
-		return;
 	},
 
 	/*  Destroys the HTML structure of the sidenotes.
@@ -445,9 +464,12 @@ Sidenotes = {
 		Sidenotes.sidenoteDivs = null;
 		Sidenotes.citations = null;
 
-		Sidenotes.sidenoteColumnLeft.remove();
+		if (Sidenotes.sidenoteColumnLeft)
+			Sidenotes.sidenoteColumnLeft.remove();
 		Sidenotes.sidenoteColumnLeft = null;
-		Sidenotes.sidenoteColumnRight.remove();
+
+		if (Sidenotes.sidenoteColumnRight)
+			Sidenotes.sidenoteColumnRight.remove();
 		Sidenotes.sidenoteColumnRight = null;
 	},
 
@@ -464,15 +486,17 @@ Sidenotes = {
 		if (!markdownBody)
 			return;
 
-		/*  Add the sidenote columns (removing them first if they already exist).
-			*/
-		if (Sidenotes.sidenoteColumnLeft) Sidenotes.sidenoteColumnLeft.remove();
-		if (Sidenotes.sidenoteColumnRight) Sidenotes.sidenoteColumnRight.remove();
-		markdownBody.insertAdjacentHTML("beforeend",
-			"<div id='sidenote-column-left' class='footnotes' style='visibility:hidden'></div>" +
-			"<div id='sidenote-column-right' class='footnotes' style='visibility:hidden'></div>");
-		Sidenotes.sidenoteColumnLeft = document.querySelector("#sidenote-column-left");
-		Sidenotes.sidenoteColumnRight = document.querySelector("#sidenote-column-right");
+		//	Destroy before creating.
+		Sidenotes.deconstructSidenotes();
+
+		//  Add the sidenote columns.
+		Sidenotes.sidenoteColumnLeft = newElement("DIV", { "id": "sidenote-column-left" });
+		Sidenotes.sidenoteColumnRight = newElement("DIV", { "id": "sidenote-column-right" });
+		[ Sidenotes.sidenoteColumnLeft, Sidenotes.sidenoteColumnRight ].forEach(column => {
+			column.classList.add("footnotes");
+			column.style.visibility = "hidden";
+			markdownBody.append(column);
+		});
 
 		/*  Create and inject the sidenotes.
 			*/
