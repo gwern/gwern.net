@@ -148,13 +148,17 @@
 /***********/
 
 /******************************************************************************/
-/*	Create and return a new element with the specified tag name and attributes.
+/*	Create and return a new element with the specified tag name, attributes, and
+	object properties.
  */
-function newElement(tagName, attributes = { }) {
+function newElement(tagName, attributes = { }, properties = { }) {
 	let element = document.createElement(tagName);
 	for (const attrName in attributes)
 		if (attributes.hasOwnProperty(attrName))
 			element.setAttribute(attrName, attributes[attrName]);
+	for (const propName in properties)
+		if (properties.hasOwnProperty(propName))
+			element[propName] = properties[propName];
 	return element;
 }
 

@@ -268,12 +268,12 @@ Sidenotes = { ...Sidenotes,
 			ranges.forEach(range => {
 				let cell = newElement("DIV", {
 					"class": "sidenote-layout-cell"
+				}, {
+					"sidenotes": [ ],
+					"container": column,
+					"room": (range.top - prevRangeBottom),
+					"style": `top: ${prevRangeBottom + "px"}; height: ${(range.top - prevRangeBottom) + "px"}`
 				});
-				cell.sidenotes = [ ];
-				cell.container = column;
-				cell.room = (range.top - prevRangeBottom);
-				cell.style.top = prevRangeBottom + "px";
-				cell.style.height = cell.room + "px";
 
 				column.append(cell);
 				cell.rect = cell.getBoundingClientRect();
@@ -518,9 +518,12 @@ Sidenotes = { ...Sidenotes,
 			/*  Create & inject the sidenote self-links (ie. boxed sidenote 
 				numbers).
 				*/
-			let sidenoteSelfLink = newElement("A", { "class": "sidenote-self-link", "href": `#sn${i}` });
-			sidenoteSelfLink.textContent = i;
-			sidenote.appendChild(sidenoteSelfLink);
+			sidenote.appendChild(newElement("A", { 
+				"class": "sidenote-self-link",
+				"href": `#sn${i}` 
+			}, { 
+				"textContent": i 
+			}));
 
 			//  Add the sidenote to the sidenotes array...
 			Sidenotes.sidenoteDivs.push(sidenote);
