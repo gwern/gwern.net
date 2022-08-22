@@ -271,27 +271,31 @@ function includeContent(includeLink, content) {
 	if (   Transclude.isAnnotationTransclude(includeLink)
 		&& includeLink.classList.contains("include-replace-container") == false) {
 		let allowedParentTags = [ "SECTION", "DIV" ];
-		while (false == allowedParentTags.includes(wrapper.parentElement.tagName))
+		while (false == allowedParentTags.includes(wrapper.parentElement.tagName)) {
 			unwrap(wrapper.parentElement);
 
-		//	Reconstruct lists.
-		let list = null, insertBefore = null;
-		for (let i = 0; i < wrapper.parentElement.children.length; i++) {
-			let child = wrapper.parentElement.children[i];
-			if (child.tagName == "LI") {
-				if (list == null)
-					list = newElement("UL");
-				if (insertBefore == null)
-					insertBefore = child.nextElementSibling;
-				list.appendChild(child);
-			} else if (list && list.children.length > 0) {
-				wrapper.parentElement.insertBefore(list, insertBefore);
-				list = null;
-				insertBefore = null;
+			if (wrapper.parentElement.tagName != "UL")
+				continue;
+
+			//	Reconstruct lists.
+			let list = null, insertBefore = null;
+			for (let i = 0; i < wrapper.parentElement.children.length; i++) {
+				let child = wrapper.parentElement.children[i];
+				if (child.tagName == "LI") {
+					if (list == null)
+						list = newElement("UL");
+					if (insertBefore == null)
+						insertBefore = child.nextElementSibling;
+					list.appendChild(child);
+				} else if (list && list.children.length > 0) {
+					wrapper.parentElement.insertBefore(list, insertBefore);
+					list = null;
+					insertBefore = null;
+				}
 			}
+			if (list && list.children.length > 0)
+				wrapper.parentElement.insertBefore(list, null);
 		}
-		if (list && list.children.length > 0)
-			wrapper.parentElement.insertBefore(list, null);
 	}
 
 	//	Unwrap.
