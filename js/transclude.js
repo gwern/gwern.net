@@ -267,34 +267,49 @@ function includeContent(includeLink, content) {
 		}
 	}
 
+	//	Save reference for potential removal later.
+	let includeLinkParentElement = includeLink.parentElement;
+
+	//	Remove link.
+	if (   includeLink.classList.contains("include-replace-container") == false
+		&& includeLink.nextSibling 
+		&& includeLink.nextSibling.nodeType == Node.TEXT_NODE
+		&& isNodeEmpty(includeLink.nextSibling))
+		includeLink.nextSibling.parentNode.removeChild(includeLink.nextSibling);
+	includeLink.remove();
+
 	//	Intelligent rectification of surrounding HTML structure.
 	if (   Transclude.isAnnotationTransclude(includeLink)
 		&& includeLink.classList.contains("include-replace-container") == false) {
 		let allowedParentTags = [ "SECTION", "DIV" ];
 		while (false == allowedParentTags.includes(wrapper.parentElement.tagName)) {
-			unwrap(wrapper.parentElement);
+			let nextNode = wrapper.nextSibling;
 
-			if (wrapper.parentElement.tagName != "UL")
+			wrapper.parentElement.parentElement.insertBefore(wrapper, wrapper.parentElement.nextSibling);
+
+			if (isNodeEmpty(wrapper.previousSibling)) {
+				wrapper.previousSibling.remove();
+				continue;
+			}
+
+			if (nextNode == null)
 				continue;
 
-			//	Reconstruct lists.
-			let list = null, insertBefore = null;
-			for (let i = 0; i < wrapper.parentElement.children.length; i++) {
-				let child = wrapper.parentElement.children[i];
-				if (child.tagName == "LI") {
-					if (list == null)
-						list = newElement("UL");
-					if (insertBefore == null)
-						insertBefore = child.nextElementSibling;
-					list.appendChild(child);
-				} else if (list && list.children.length > 0) {
-					wrapper.parentElement.insertBefore(list, insertBefore);
-					list = null;
-					insertBefore = null;
-				}
+			let firstPart = wrapper.previousSibling;
+			let secondPart = newElement(firstPart.tagName);
+			if (firstPart.className > "")
+				secondPart.className = firstPart.className;
+			while (nextNode) {
+				let thisNode = nextNode;
+				nextNode = nextNode.nextSibling;
+				secondPart.appendChild(thisNode);
 			}
-			if (list && list.children.length > 0)
-				wrapper.parentElement.insertBefore(list, null);
+
+			if (isNodeEmpty(firstPart) == true)
+				firstPart.remove();
+
+			if (isNodeEmpty(secondPart) == false)
+				wrapper.parentElement.insertBefore(secondPart, wrapper.nextSibling);
 		}
 	}
 
@@ -307,16 +322,9 @@ function includeContent(includeLink, content) {
 		newFootnotesWrapper.remove();
 	}
 
-	//	Cleanup.
-	if (includeLink.classList.contains("include-replace-container")) {
-		includeLink.parentElement.remove();
-	} else {
-		if (   includeLink.nextSibling 
-			&& includeLink.nextSibling.nodeType == Node.TEXT_NODE)
-			includeLink.nextSibling.parentNode.removeChild(includeLink.nextSibling);
-
-		includeLink.remove();
-	}
+	//	Cleanup, part II.
+	if (includeLink.classList.contains("include-replace-container"))
+		includeLinkParentElement.remove();
 
 	//	Fire event, if need be.
 	if (includeLink.needsRewrite) {
@@ -326,6 +334,20 @@ function includeContent(includeLink, content) {
 			document: doc
 		});
 	}
+}
+
+function isNodeEmpty(node) {
+	if (node.nodeType == Node.TEXT_NODE)
+		return (node.textContent.match(/\S/) == null);
+
+	if (node.childNodes.length == 0)
+		return true;
+
+	for (childNode of node.childNodes)
+		if (isNodeEmpty(childNode) == false)
+			return false;
+
+	return true;
 }
 
 /**************************************************************************/
