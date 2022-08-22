@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-08-07 11:10:39 gwern"
+When:  Time-stamp: "2022-08-18 09:12:44 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1097,7 +1097,7 @@ whiteList url
       , "https://www.teaandabsinthe.com/" -- homepage
       , "https://www.limeadery.com/" -- homepage
       , "https://taooftea.com/" -- homepage
-      , "https://ooo.ghostbows.ooo/" -- interactive/music
+      , "https://ooo.ghostbows.ooo/" -- interactive/sound
       , "https://www.jetbrains.com/lp/mono/" -- low quality
       , "linusakesson.net" -- low quality (YT embed breaks)
       , "https://willcrichton.net/nota/" -- interactive
@@ -1191,7 +1191,7 @@ whiteList url
       , "https://unminify.com/" -- interactive service
       , "https://www.bulletproof.com/" -- homepage
       , "https://www.google.com/alerts" -- interactive service
-      , "http://darwintunes.org/" -- Soundcloud music embed doesn't preserve
+      , "http://darwintunes.org/" -- Soundcloud music sound embed doesn't preserve
       , "https://danlark.org/2022/04/20/changing-stdsort-at-googles-scale-and-beyond/" -- low quality: video embeds
       , "http://relative-attention-music-nips-2018.s3-website-us-west-1.amazonaws.com/" -- low quality: sound embeds
       , "https://sites.google.com/view/nips2017-one-shot-imitation/home" -- low quality (video embeds)
@@ -1199,5 +1199,7 @@ whiteList url
       , "https://sites.google.com/view/hybridmrca" -- low quality (video embeds)
       , "https://roboturk.stanford.edu/realrobotdataset" -- low quality (video embeds)
       , "https://wenlong.page/modular-rl/" -- low quality (video embeds)
+      , "https://retinagan.github.io/" -- low quality (entire page broken?)
+      , "https://speechresearch.github.io/deepsinger/" -- low quality (sound embeds)
       ] = True
     | otherwise = False

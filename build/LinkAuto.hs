@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-07-12 15:49:18 gwern"
+When:  Time-stamp: "2022-08-09 11:22:26 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -216,7 +216,7 @@ filterMatches plain definitions  = if T.length plain < 10000 then
    allRegex = masterRegex definitions -- if map (\(a,_,_) -> a) definitions == map fst custom then masterRegexAll else masterRegex definitions
 
    threadN :: Int
-   threadN = unsafePerformIO getNumCapabilities - 1
+   threadN = 1 `max` (unsafePerformIO getNumCapabilities - 1)
 
    regexpsMax :: Int
    regexpsMax = 16

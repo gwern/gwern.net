@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-08-07 16:28:27 gwern"
+When:  Time-stamp: "2022-08-18 09:38:36 gwern"
 License: CC-0
 -}
 
@@ -2003,6 +2003,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("β=", "β = ")
           , ("\8217=", "\8217 = ")
           , (" the the ", " the ")
+          , (" a imbalance", " an imbalance")
           , (",”", "”,")
           , ("<span style=\"display:inline-block;vertical-align:-0.4em;font-size:80%;text-align:left\"><sup></sup><br /><sub>", "")
           , ("<sup>+</sup>", "⁺")
@@ -2955,6 +2956,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\t\t", "")
           , ("\t\t\t\t\t", "")
           , ("co- occurring", "co-occurring")
+          , ("CLIP- based", "CLIP-based")
           , ("</sup><br/>", "</sup>")
           , (" < jats:sub>", "<sub>")
           , ("<italic toggle=\"yes\">", "<em>")
@@ -2962,6 +2964,19 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\n            <jats:sup>–6</jats:sup>\n            ", "<sup>–6</sup>")
           , ("\n            <jats:italic>in vitro</jats:italic>\n", " <em>in vitro</em>")
           , ("\n            <jats:italic>R</jats:italic>\n", "<em>R</em>")
+          , ("_X_s", "<em>X</em>s")
+          , ("Yann Le Cun", "Yann LeCun")
+          , ("Oliver Bryne", "Oliver Byrne")
+          , ("UCF-101", "UCF101")
+          , (" an universe", " a universe")
+          , ("eyetracking", "eye tracking")
+          , ("PsychINFO", "PsycINFO")
+          , (" an universe", " a universe")
+          , ("Norbert Weiner",  "Norbert Wiener")
+          , ("mulitple",  "multiple")
+          , ("statistically statistically-significant", "statistically-significant")
+          , ("de Novo", "De Novo")
+          , ("small saple", "small sample")
           , ("\8201", " ")
           , ("Fr’echet", "Fréchet")
           , ("Frechet", "Fréchet")
