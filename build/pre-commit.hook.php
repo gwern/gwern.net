@@ -81,8 +81,7 @@ $versioned_files = [
 	"{$static_dir}/js/transclude.js",
 	"{$static_dir}/js/typography.js",
 	"{$static_dir}/templates/inlined-fonts-template.html",
-	"{$static_dir}/templates/inlined-foot-template.html",
-	"{$static_dir}/templates/inlined-foot-extra-template.html"
+	"{$static_dir}/templates/inlined-foot-template.html"
 ];
 $versioned_files = implode(" ", $versioned_files);
 if ($force || (`git diff-index --cached HEAD -- {$versioned_files}`)) {

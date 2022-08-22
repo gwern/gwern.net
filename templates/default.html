@@ -145,13 +145,6 @@
     <!-- SSI: Versioned external CSS/JS assets -->
     <!-- INLINED-FOOT-BEGIN --><!--#include virtual="/static/includes/inlined-foot.html" --><!-- INLINED-FOOT-END -->
 
-    $if(index)$ <!-- Stuff we don’t need on /index gets conditionally loaded: --> $else$
-
-    <!-- SSI: More versioned external CSS/JS assets -->
-    <!-- INLINED-FOOT-EXTRA-BEGIN --><!--#include virtual="/static/includes/inlined-foot-extra.html" --><!-- INLINED-FOOT-EXTRA-END -->
-
-    $endif$
-
     <script async fetchpriority="low" id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" onload="GW.googleAnalyticsLoaded = true;"></script>
     <script>
       window.dataLayer = window.dataLayer || [];

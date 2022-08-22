@@ -25,3 +25,17 @@
 
     <!-- Reader Mode theme switcher (lets users toggle distraction-free ‘reader mode’ on and off) -->
     <script src="/static/js/reader-mode.js" defer></script>
+    <!-- JS library for clickable/zoomable images, for images larger than can be displayed in -->
+    <!-- the body: /static/js/image-focus.js -->
+    <!-- not lazy-loaded due to various bugs -->
+    <script src="/static/js/image-focus.js" defer></script>
+
+    <!-- sort tables: https://mottie.github.io/tablesorter/docs/ ; requires JQuery, which has been prepended to avoid multiple JS page loads & race conditions -->
+    <script>
+    if (document.querySelector("table")) {
+        var js = document.createElement("script");
+        js.type = "text/javascript";
+        js.src = "/static/js/tablesorter.js";
+        document.body.appendChild(js);
+    }
+    </script>
