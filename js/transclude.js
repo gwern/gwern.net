@@ -497,15 +497,34 @@ Transclude = {
 	reformatAnnotation: (annotation) => {
 		let firstGraf = newElement("P");
 		firstGraf.append(...(annotation.querySelector(".data-field.title").childNodes));
-		firstGraf.append(new Text(", "));
-		firstGraf.append(...(annotation.querySelector(".data-field.author-date-aux").childNodes));
-		firstGraf.lastTextNode.textContent = "):";
+		let authorDateAux = annotation.querySelector(".data-field.author-date-aux");
+		if (authorDateAux) {
+			firstGraf.append(new Text(", "));
+			firstGraf.append(...(authorDateAux.childNodes));
+			firstGraf.lastTextNode.textContent = "):";
+			firstGraf.classList.add("data-field", "title", "author-date-aux");
+		} else {
+			firstGraf.classList.add("data-field", "title");
+		}
 
+		let abstract = annotation.querySelector(".data-field.annotation-abstract");
+		let dataSourceClass = abstract.dataset.sourceClass;
 		let blockquote = newElement("BLOCKQUOTE");
-		blockquote.append(...(annotation.querySelector(".data-field.annotation-abstract").childNodes));
+		blockquote.append(...(abstract.childNodes));
 
-		annotation.querySelectorAll(".data-field").forEach(field => { field.remove(); });
-		annotation.append(firstGraf, blockquote);
+		annotation.replaceChildren();
+
+		if (dataSourceClass == "wikipedia-entry") {
+			if (   blockquote.firstChild.tagName == "FIGURE"
+				&& blockquote.firstChild.classList.contains("float-right"))
+				blockquote.insertBefore(firstGraf, blockquote.firstChild.nextSibling);
+			else
+				blockquote.insertBefore(firstGraf, blockquote.firstChild);
+
+			annotation.append(blockquote);
+		} else {
+			annotation.append(firstGraf, blockquote);
+		}
 
 		return annotation;
 	},
