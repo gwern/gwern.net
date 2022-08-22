@@ -268,7 +268,8 @@ function includeContent(includeLink, content) {
 	}
 
 	//	Intelligent rectification of surrounding HTML structure.
-	if (Transclude.isAnnotationTransclude(includeLink)) {
+	if (   Transclude.isAnnotationTransclude(includeLink)
+		&& includeLink.classList.contains("include-replace-container") == false) {
 		let allowedParentTags = [ "SECTION", "DIV" ];
 		while (false == allowedParentTags.includes(wrapper.parentElement.tagName))
 			unwrap(wrapper.parentElement);
