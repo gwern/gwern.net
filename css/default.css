@@ -3147,141 +3147,6 @@ body.index-directory #footer {
 /*│ Annotation pop-frames. │*/
 /*└────────────────────────┘*/
 
-/*  Data fields.
-    */
-.popframe-body.annotation .data-field {
-    text-align: left;
-    text-indent: 0;
-}
-.popframe-body.annotation .data-field + .data-field {
-    margin-top: 0.25em;
-}
-
-.popframe-body.annotation .data-field.title {
-    font-weight: bold;
-    font-size: 1.125em;
-    line-height: 1.35;
-}
-.popframe-body.annotation .data-field.author {
-    font-style: italic;
-    margin-right: 0.075em; /* add a bit of separation from the subscripted date: the italics making the author name 'lean right' means the regular subscript CSS isn't *quite* correct */
-}
-.popframe-body.annotation .date-plus-cites {
-    display: inline-block;
-}
-.popframe-body.annotation .originalURL {
-    font-variant-caps: small-caps;
-    margin: 0 0.5em 0 0;
-    font-size: 0.875em;
-}
-.popframe-body.annotation .iaMirror {
-    padding-right: 0.3em;
-}
-.popframe-body.annotation .data-field.annotation-abstract {
-    margin-top: 0.5em;
-}
-.popframe-body.annotation .data-field.annotation-abstract:empty {
-    display: none;
-}
-
-/*  Images (such as the ones in Wikipedia pop-frames).
-    */
-.popframe-body.annotation > figure.float-right {
-    margin: 0.125em 0 0.125em 1.5em;
-    max-width: calc(50% - 1.5em);
-    float: right;
-}
-.popframe-body.annotation figure.float-left .image-wrapper,
-.popframe-body.annotation figure.float-right .image-wrapper {
-    max-width: 100%;
-}
-.popframe-body.annotation figure img {
-    width: 100%;
-}
-
-/*  Wikipedia entries.
- */
-.popframe-body.wikipedia-entry .table-wrapper {
-    margin: 1.5em 0 1.5em 0;
-    clear: both;
-}
-.popframe-body.wikipedia-entry .infobox {
-    font-size: 0.9em;
-}
-.popframe-body.wikipedia-entry .infobox tbody tr:hover {
-    outline: none;
-}
-.popframe-body.wikipedia-entry .infobox th[colspan="2"],
-.popframe-body.wikipedia-entry .infobox td[colspan="2"],
-.popframe-body.wikipedia-entry .infobox th.sidebar-title,
-.popframe-body.wikipedia-entry .infobox th.sidebar-heading {
-    text-align: center;
-}
-.popframe-body.wikipedia-entry .infobox th {
-    border-top: 1px solid var(--GW-table-row-horizontal-border-color);
-}
-.popframe-body.wikipedia-entry .infobox tr:first-of-type th {
-    font-size: 1.25em;
-}
-.popframe-body.wikipedia-entry .infobox td:first-child {
-    font-weight: bold;
-}
-.popframe-body.wikipedia-entry .infobox td ul {
-    margin: 0.25em 0;
-    padding: 0 0 0 1.5em;
-}
-.popframe-body.wikipedia-entry > figure.float-right {
-    margin: 0.125em 0 0.75em 1.5em;
-}
-.popframe-body.wikipedia-entry #Timeline-row {
-    display: flex;
-    width: -moz-fit-content;
-    width: fit-content;
-    margin: 0.25em auto;
-}
-.popframe-body.wikipedia-entry th br ~ * {
-    font-weight: normal;
-    font-size: calc((1 / 1.25) * 1em);
-}
-.popframe-body.wikipedia-entry .hatnote {
-    margin: 0 0 0.75em 0;
-    font-style: italic;
-}
-.popframe-body.wikipedia-entry .chemf {
-    word-break: break-all;
-}
-
-/*  Special case for inline math in Wikipedia pop-frames.
-    */
-.popframe-body.wikipedia-entry .mwe-math-element {
-    display: inline-block;
-    height: 1.25em;
-    line-height: 1;
-    margin: 0;
-    vertical-align: bottom;
-    padding: 0;
-    text-indent: 0;
-}
-.popframe-body.wikipedia-entry .mwe-math-element img {
-    display: inline-block;
-    height: 100%;
-}
-/*  Ditto, but block math.
- */
-.popframe-body.wikipedia-entry dl .mwe-math-element {
-    display: block;
-    height: unset;
-}
-.popframe-body.wikipedia-entry dl .mwe-math-element img {
-    display: block;
-}
-
-/* WP wraps references entirely in <cite> elements; <cite> is styled by browsers (Chrome/FF) by default in italics. No one wants their entire reference in italics, so WP resets the font to the default style (whatever that is), and styles italics bits (like book titles) manually. We need to replicate that, or else references sections in our WP popups will be entirely italics! */
-.popframe-body.wikipedia-entry cite,
-.popframe-body.wikipedia-entry dfn {
-    font-style: inherit;
-}
-
 /*┌──────────────────────┐*/
 /*│ Footnote pop-frames. │*/
 /*└──────────────────────┘*/
@@ -4703,6 +4568,151 @@ section.highlighted::before {
 }
 section.highlight-fading::before {
     outline: 3px double transparent;
+}
+
+/*  Data fields.
+    */
+.annotation .data-field {
+    text-align: left;
+    text-indent: 0;
+}
+.annotation .data-field + .data-field {
+    margin-top: 0.25em;
+}
+
+.annotation .data-field.title {
+    font-weight: bold;
+    font-size: 1.125em;
+    line-height: 1.35;
+    margin-bottom: 0.375em;
+}
+.annotation .data-field.title + p {
+	text-indent: 0;
+}
+.annotation .data-field.author {
+    font-style: italic;
+    margin-right: 0.075em; /* add a bit of separation from the subscripted date: the italics making the author name 'lean right' means the regular subscript CSS isn't *quite* correct */
+}
+.annotation .date-plus-cites {
+    display: inline-block;
+}
+.annotation .originalURL {
+    font-variant-caps: small-caps;
+    margin: 0 0.5em 0 0;
+    font-size: 0.875em;
+}
+.annotation .iaMirror {
+    padding-right: 0.3em;
+}
+.annotation .data-field.annotation-abstract {
+    margin-top: 0.5em;
+}
+.annotation .data-field.annotation-abstract:empty {
+    display: none;
+}
+
+/*	In indexes and such.
+ */
+.data-field.title {
+	text-indent: 0;
+}
+
+/*  Images (such as the ones in Wikipedia annotations).
+    */
+.annotation > figure.float-right {
+    margin: 0.125em 0 0.125em 1.5em;
+    max-width: calc(50% - 1.5em);
+    float: right;
+}
+.annotation figure.float-left .image-wrapper,
+.annotation figure.float-right .image-wrapper {
+    max-width: 100%;
+}
+.annotation figure img {
+    width: 100%;
+}
+
+/*  Wikipedia entries.
+ */
+.annotation.wikipedia-entry .table-wrapper {
+    margin: 1.5em 0 1.5em 0;
+    clear: both;
+}
+.annotation.wikipedia-entry .infobox {
+    font-size: 0.9em;
+}
+.annotation.wikipedia-entry .infobox tbody tr:hover {
+    outline: none;
+}
+.annotation.wikipedia-entry .infobox th[colspan="2"],
+.annotation.wikipedia-entry .infobox td[colspan="2"],
+.annotation.wikipedia-entry .infobox th.sidebar-title,
+.annotation.wikipedia-entry .infobox th.sidebar-heading {
+    text-align: center;
+}
+.annotation.wikipedia-entry .infobox th {
+    border-top: 1px solid var(--GW-table-row-horizontal-border-color);
+}
+.annotation.wikipedia-entry .infobox tr:first-of-type th {
+    font-size: 1.25em;
+}
+.annotation.wikipedia-entry .infobox td:first-child {
+    font-weight: bold;
+}
+.annotation.wikipedia-entry .infobox td ul {
+    margin: 0.25em 0;
+    padding: 0 0 0 1.5em;
+}
+.annotation.wikipedia-entry > figure.float-right {
+    margin: 0.125em 0 0.75em 1.5em;
+}
+.annotation.wikipedia-entry #Timeline-row {
+    display: flex;
+    width: -moz-fit-content;
+    width: fit-content;
+    margin: 0.25em auto;
+}
+.annotation.wikipedia-entry th br ~ * {
+    font-weight: normal;
+    font-size: calc((1 / 1.25) * 1em);
+}
+.annotation.wikipedia-entry .hatnote {
+    margin: 0 0 0.75em 0;
+    font-style: italic;
+}
+.annotation.wikipedia-entry .chemf {
+    word-break: break-all;
+}
+
+/*  Special case for inline math in Wikipedia pop-frames.
+    */
+.annotation.wikipedia-entry .mwe-math-element {
+    display: inline-block;
+    height: 1.25em;
+    line-height: 1;
+    margin: 0;
+    vertical-align: bottom;
+    padding: 0;
+    text-indent: 0;
+}
+.annotation.wikipedia-entry .mwe-math-element img {
+    display: inline-block;
+    height: 100%;
+}
+/*  Ditto, but block math.
+ */
+.annotation.wikipedia-entry dl .mwe-math-element {
+    display: block;
+    height: unset;
+}
+.annotation.wikipedia-entry dl .mwe-math-element img {
+    display: block;
+}
+
+/* WP wraps references entirely in <cite> elements; <cite> is styled by browsers (Chrome/FF) by default in italics. No one wants their entire reference in italics, so WP resets the font to the default style (whatever that is), and styles italics bits (like book titles) manually. We need to replicate that, or else references sections in our WP popups will be entirely italics! */
+.annotation.wikipedia-entry cite,
+.annotation.wikipedia-entry dfn {
+    font-style: inherit;
 }
 
 /*********************/

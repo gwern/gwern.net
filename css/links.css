@@ -1072,8 +1072,8 @@ a[data-link-icon='wikipedia'].has-annotation::after {
     content: none;
 }
 
-/*  TOC-links in Wikipedia pop-frames.
+/*  TOC-links in Wikipedia annotations.
  */
-.popframe-body.wikipedia-entry .TOC a.has-annotation:hover {
+.wikipedia-entry .TOC a.has-annotation:hover {
     background-image: none;
 }

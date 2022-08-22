@@ -631,7 +631,7 @@ a[data-link-icon-type*='svg']::after {
 
 /*	Math in Wikipedia pop-frames.
  */
-.popframe-body.wikipedia-entry .mwe-math-element img {
+.annotation.wikipedia-entry .mwe-math-element img {
 	filter: invert(1);
 }
 

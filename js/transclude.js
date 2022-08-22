@@ -495,35 +495,65 @@ Transclude = {
 
 	//	Called by: Transclude.transclude
 	reformatAnnotation: (annotation) => {
-		let firstGraf = newElement("P");
-		firstGraf.append(...(annotation.querySelector(".data-field.title").childNodes));
+		let title = annotation.querySelector(".data-field.title");
 		let authorDateAux = annotation.querySelector(".data-field.author-date-aux");
-		if (authorDateAux) {
-			firstGraf.append(new Text(", "));
-			firstGraf.append(...(authorDateAux.childNodes));
-			firstGraf.lastTextNode.textContent = "):";
-			firstGraf.classList.add("data-field", "title", "author-date-aux");
-		} else {
-			firstGraf.classList.add("data-field", "title");
-		}
-
 		let abstract = annotation.querySelector(".data-field.annotation-abstract");
 		let dataSourceClass = abstract.dataset.sourceClass;
-		let blockquote = newElement("BLOCKQUOTE");
-		blockquote.append(...(abstract.childNodes));
 
-		annotation.replaceChildren();
+		/*	We select the format for the annotation transclude on the basis of
+			the annotation’s data source. (An empty data source class indicates
+			a local annotation. See annotations.js for more information on 
+			annotation data sources.)
+		 */
+		let format = dataSourceClass > ""
+					 ? "pop-frame"
+					 : "index-entry";
 
-		if (dataSourceClass == "wikipedia-entry") {
-			if (   blockquote.firstChild.tagName == "FIGURE"
-				&& blockquote.firstChild.classList.contains("float-right"))
-				blockquote.insertBefore(firstGraf, blockquote.firstChild.nextSibling);
-			else
-				blockquote.insertBefore(firstGraf, blockquote.firstChild);
+		/*	In any transclude format, the body of the annotation goes inside a
+			blockquote.
+		 */
+		let blockquote = newElement("BLOCKQUOTE", { "class": "annotation" });
+		if (dataSourceClass)
+			blockquote.classList.add(...(dataSourceClass.split(" ")));
+
+		if (format == "pop-frame") {
+			/*	In the `pop-frame` annotation transclude format, the title and
+				the author-date-aux fields (if present) go on separate lines, 
+				and both go inside the blockquote.
+			 */
+
+			blockquote.append(...(annotation.childNodes));
+
+			/*  Allow for floated figures at the start of abstract
+				(only on sufficiently wide viewports).
+				*/
+			if (!(GW.mediaQueries.mobileWidth.matches)) {
+				let initialFigure = blockquote.querySelector(".annotation-abstract > figure.float-right:first-child");
+				if (initialFigure)
+					blockquote.insertBefore(initialFigure, blockquote.firstElementChild);
+			}
 
 			annotation.append(blockquote);
-		} else {
-			annotation.append(firstGraf, blockquote);
+		} else if (format == "index-entry") {
+			/*	In the `index-entry` annotation transclude format, the title and
+				author-date-aux fields (if present) go on the same line, which 
+				is outside the blockquote.
+			 */
+
+			let firstGraf = newElement("P");
+			firstGraf.append(...(title.childNodes));
+			if (authorDateAux) {
+				firstGraf.append(new Text(", "));
+				firstGraf.append(...(authorDateAux.childNodes));
+				firstGraf.lastTextNode.textContent = "):";
+				firstGraf.classList.add("data-field", "title", "author-date-aux");
+			} else {
+				firstGraf.classList.add("data-field", "title");
+			}
+
+			blockquote.append(...(abstract.childNodes));
+
+			annotation.replaceChildren(firstGraf, blockquote);
 		}
 
 		return annotation;
