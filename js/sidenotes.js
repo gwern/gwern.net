@@ -571,32 +571,21 @@ Sidenotes = { ...Sidenotes,
 		GWLog("Sidenotes.setup", "sidenotes.js", 1);
 
 		/*  If the page was loaded with a hash that points to a footnote, but
-			sidenotes are enabled (or vice-versa), rewrite the hash in accordance
-			with the current mode (this will also cause the page to end up scrolled
-			to the appropriate element - footnote or sidenote). Add an active media
-			query to rewrite the hash whenever the viewport width media query changes.
+			sidenotes are enabled (or vice-versa), rewrite the hash in 
+			accordance with the current mode (this will also cause the page to 
+			end up scrolled to the appropriate element - footnote or sidenote). 
+			Add an active media query to rewrite the hash whenever the viewport 
+			width media query changes.
 			*/
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteHashForCurrentMode", (mediaQuery) => {
-			let regex = new RegExp(mediaQuery.matches ? "#sn[0-9]" : "#fn[0-9]");
+			let regex = new RegExp(mediaQuery.matches ? "^#sn[0-9]" : "^#fn[0-9]");
 			let prefix = (mediaQuery.matches ? "#fn" : "#sn");
 
-			if (location.hash.match(regex)) {
-				GW.hashRealignValue = prefix + Sidenotes.noteNumberFromHash();
-
-				if (document.readyState == "complete") {
-					history.replaceState(null, null, GW.hashRealignValue);
-					GW.hashRealignValue = null;
-				}
-			}
+			if (location.hash.match(regex))
+				relocate(prefix + Sidenotes.noteNumberFromHash());
 		}, null, (mediaQuery) => {
-			if (location.hash.match(/#sn[0-9]/)) {
-				GW.hashRealignValue = "#fn" + Sidenotes.noteNumberFromHash();
-
-				if (document.readyState == "complete") {
-					history.replaceState(null, null, GW.hashRealignValue);
-					GW.hashRealignValue = null;
-				}
-			}
+			if (location.hash.match(/^#sn[0-9]/))
+				relocate("#fn" + Sidenotes.noteNumberFromHash());
 		});
 
 		/*	We do not bother to construct sidenotes on mobile clients, and so
@@ -728,7 +717,7 @@ GW.notificationCenter.fireEvent("Sidenotes.didLoad");
 /*	Update the margin note style, and add event listener to re-update it
 	when the viewport width changes.
 	*/
-doWhenPageLoaded (() => {
+doWhenDOMContentLoaded(() => {
 	doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
 		document.querySelectorAll(".marginnote").forEach(marginNote => {
 			marginNote.swapClasses([ "inline", "sidenote" ], (mediaQuery.matches ? 0 : 1));
