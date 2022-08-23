@@ -244,12 +244,10 @@ addContentLoadHandler(expandLockCollapseBlocks, ">rewrite", (info) => !info.coll
 function scrollElementIntoView(element, offset = 0) {
     GWLog("scrollElementIntoView", "collapse.js", 2);
 
-	doWhenPageLoaded(() => {
-		requestAnimationFrame(() => {
-			element.scrollIntoView();
-			if (offset != 0)
-				window.scrollBy(0, offset);
-		});
+	GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", (info) => {
+		element.scrollIntoView();
+		if (offset != 0)
+			window.scrollBy(0, offset);
 	});
 }
 
