@@ -816,6 +816,23 @@ GW.notificationCenter = {
 		(even if it has different handler options than the existing handler).
 	 */
     addHandlerForEvent: (eventName, f, options = { }) => {
+		/*	If this event is currently firing, do not add the handler yet.
+			Instead, add it to the waiting list. It will be added once the event
+			has finished firing.
+		 */
+		if (GW.notificationCenter.currentEvents.includes(eventName)) {
+			console.log("DEFERRING HANDLER ADD TO WAIT LIST: " + eventName);
+			console.log(f);
+			console.log(options);
+
+			if (GW.notificationCenter.waitingHandlers[eventName] == null)
+				GW.notificationCenter.waitingHandlers[eventName] = [ ];
+
+			GW.notificationCenter.waitingHandlers[eventName].push({ f: f, options: options });
+
+			return;
+		}
+
     	/*	If there’s not already a handlers array for the given event (which
     		may be, e.g., because no event handlers have yet been registered
     		for this event), create the array.
@@ -1052,6 +1069,28 @@ GW.notificationCenter = {
 	*/
 	prefireProcessors: { },
 
+	/*	Array of events that are currently being fired. Used to avoid adding a
+		handler to an event while it’s firing.
+	 */
+	currentEvents: [ ],
+
+	/*	Array of event handlers waiting to be added. A handler waits here if its
+		addHandlerForEvent() call happened while the target event was firing. 
+		The handler will be added once the event has finished firing.
+	 */
+	waitingHandlers: { },
+
+	/*	Add all waiting handlers for the event, if any.
+	 */
+	addWaitingHandlersForEvent: (eventName) => {
+		if (GW.notificationCenter.waitingHandlers[eventName]) {
+			GW.notificationCenter.waitingHandlers[eventName].forEach(handler => {
+				GW.notificationCenter.addHandlerForEvent(eventName, handler.f, handler.options);
+			});
+			GW.notificationCenter.waitingHandlers[eventName] = [ ];
+		}
+	},
+
     /*	Fire an event with the given name and event info dictionary.
 
     	In addition to printing a console log message (if the log level is set
@@ -1080,6 +1119,10 @@ GW.notificationCenter = {
 		if (!eventName)
 			return;
 
+		//	Register this event as currently being fired.
+		if (GW.notificationCenter.currentEvents.includes(eventName) == false)
+			GW.notificationCenter.currentEvents.push(eventName);
+
 		/*	Store event name in info dictionary, so that event handlers can
 			access it. (This permits, e.g., the same handler to handle multiple
 			events, and conditionally select behavior based on which event is
@@ -1100,47 +1143,49 @@ GW.notificationCenter = {
         		  : ""
 				 )}`, "notification");
 
-		/*	If no handlers have been registered for this event, we do nothing.
-		 */
-        if (   GW.notificationCenter.eventHandlers[eventName] == null
-        	|| GW.notificationCenter.eventHandlers[eventName] == [ ])
-            return;
-
 		/*	If event-specific pre-fire processing is needed, do it.
 		 */
 		if (GW.notificationCenter.prefireProcessors[eventName])
 			eventInfo = GW.notificationCenter.prefireProcessors[eventName](eventInfo);
 
-		/*	Call all registered handlers, in order.
+		/*	Call all registered handlers (if any), in order.
 		 */
-        for (let i = 0; i < GW.notificationCenter.eventHandlers[eventName].length; i++) {
-            let handler = GW.notificationCenter.eventHandlers[eventName][i];
-            /*	If a condition function is provided, call it to determine
-            	whether the handler function should be called.
-             */
-            if (   handler.options.condition
-            	&& handler.options.condition(eventInfo) == false)
-                continue;
+		if (GW.notificationCenter.eventHandlers[eventName]) {
+			for (let i = 0; i < GW.notificationCenter.eventHandlers[eventName].length; i++) {
+				let handler = GW.notificationCenter.eventHandlers[eventName][i];
+				/*	If a condition function is provided, call it to determine
+					whether the handler function should be called.
+				 */
+				if (   handler.options.condition
+					&& handler.options.condition(eventInfo) == false)
+					continue;
 
-            /*	If the condition function evaluated true, or if no condition
-            	function was provided, we call the handler.
-             */
-            handler.f(eventInfo);
+				/*	If the condition function evaluated true, or if no condition
+					function was provided, we call the handler.
+				 */
+				handler.f(eventInfo);
 
-        	/*	If the handler options specified a true value for the ‘once’
-        		key, we unregister this handler after having called it once.
+				/*	If the handler options specified a true value for the ‘once’
+					key, we unregister this handler after having called it once.
 
-        		(Note that in the case of an once-only handler that’s called
-        		 conditionally, i.e. one with a specified condition function,
-        		 regardless of how many times the named event fires, the handler
-        		 is never automatically removed until its condition evaluates
-        		 true and the handler actually gets called once.)
-        	 */
-            if (handler.options.once) {
-                GW.notificationCenter.eventHandlers[eventName].splice(i, 1);
-                i--;
-            }
-        }
+					(Note that in the case of an once-only handler that’s called
+					 conditionally, i.e. one with a specified condition function,
+					 regardless of how many times the named event fires, the handler
+					 is never automatically removed until its condition evaluates
+					 true and the handler actually gets called once.)
+				 */
+				if (handler.options.once) {
+					GW.notificationCenter.eventHandlers[eventName].splice(i, 1);
+					i--;
+				}
+			}
+		}
+
+		//	Unregister this event from the list of events currently being fired.
+		GW.notificationCenter.currentEvents.remove(eventName);
+
+		//	Add any handlers that are waiting to be added.
+		GW.notificationCenter.addWaitingHandlersForEvent(eventName);
     }
 };
 
