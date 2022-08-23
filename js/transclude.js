@@ -769,8 +769,9 @@ Transclude = {
 		/*	By default, includes within collapse blocks only get transcluded 
 			if/when the collapse block is expanded.
 		 */
-		if (    isWithinCollapsedBlock(includeLink) 
-			&& !(includeLink.classList.contains("include-when-collapsed"))) {
+		if (   now == false
+			&& isWithinCollapsedBlock(includeLink) 
+			&& includeLink.classList.contains("include-when-collapsed") == false) {
 			includeLink.needsRewrite = true;
 			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (info) => {
 				if (isWithinCollapsedBlock(includeLink))
