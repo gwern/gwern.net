@@ -1395,7 +1395,7 @@ addContentLoadHandler(registerCopyProcessors, "eventListeners", (info) => (   in
     Called by the ‘updateBackToTopLinkVisibilityScrollListener’ scroll listener.
  */
 function updateBackToTopLinkVisibility(event) {
-    GWLog("updateBackToTopLinkVisibility", "rewrite.js", 2);
+    GWLog("updateBackToTopLinkVisibility", "rewrite.js", 3);
 
     /*  Show back-to-top link on ANY scroll up, or when scrolling a full page
         down from the top.
