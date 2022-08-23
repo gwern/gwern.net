@@ -1509,6 +1509,20 @@ function realignHash() {
     }
 }
 
+/*	Remove “#top” or “#” from the URL hash (e.g. after user clicks on the 
+	back-to-top link).
+ */
+window.addEventListener("hashchange", GW.cleanURLHashAfterHashChange = () => {
+	GWLog("GW.cleanURLHashAfterHashChange", "collapse.js", 1);
+
+	//	Clean URL hash.
+	if (   location.hash == "#top"
+		|| (   location.hash == "" 
+			&& location.href.endsWith("#"))) {
+		history.replaceState("", null, location.pathname);
+	}
+});
+
 doWhenDOMContentLoaded(realignHash);
 doWhenPageLoaded(() => {
     requestAnimationFrame(realignHash);

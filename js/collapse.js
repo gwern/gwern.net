@@ -291,17 +291,10 @@ function revealTarget() {
 	hashchange event to fire, so that Collapse.targetDidRevealOnHashUpdate fires
 	if need be and triggers any auxiliary element reveals.)
  */
-window.addEventListener("hashchange", GW.hashUpdated = () => {
-	GWLog("GW.hashUpdated", "collapse.js", 1);
+window.addEventListener("hashchange", GW.revealTargetOnHashUpdate = () => {
+	GWLog("GW.revealTargetOnHashUpdate", "collapse.js", 1);
 
 	revealTarget();
-
-	//	Clean URL hash.
-	if (   location.hash == "#top"
-		|| (   location.hash == "" 
-			&& location.href.endsWith("#"))) {
-		history.replaceState("", null, location.pathname);
-	}
 });
 
 /*******************************************************************************/
