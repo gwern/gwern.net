@@ -16,6 +16,14 @@
 		response to a navigation action that takes the user to an element that 
 		was within a collapsed block.
 
+	Collapse.collapseStateDidChange {
+			source: "prepareCollapseBlocks"
+		}
+		Fired at load time if a collapse block starts out expanded, due to it,
+		or some element within it, being pointed to by the URL hash. (The state
+		change is from the default state, i.e. collapsed, to the expanded state
+		specified by the hash.)
+
 	Collapse.targetDidRevealOnHashUpdate
 		Fired when an element targeted by the URL hash is revealed (i.e., 
 		scrolled to, causing it to end up within the viewport) as a result of
@@ -124,10 +132,15 @@ function isWithinCollapsedBlock(element) {
 function prepareCollapseBlocks(loadEventInfo) {
 	GWLog("prepareCollapseBlocks", "collapse.js", 1);
 
-	//  Expand all collapse blocks.
+	let aBlockDidStartExpanded = false;
+
+	//  Construct all collapse blocks (in correct final state).
 	loadEventInfo.document.querySelectorAll(".collapse").forEach(collapseBlock => {
 		let checked = collapseBlock.contains(getHashTargetedElement()) ? " checked='checked'" : "";
 		let disclosureButtonHTML = `<input type='checkbox' class='disclosure-button' aria-label='Open/close collapsed section'${checked}>`;
+
+		if (checked > "")
+			aBlockDidStartExpanded = true;
 
 		if (collapseBlock.tagName == "SECTION") {
 			//  Inject the disclosure button.
@@ -158,6 +171,9 @@ function prepareCollapseBlocks(loadEventInfo) {
 			realCollapseBlock.appendChild(collapseBlock);
 		}
 	});
+
+	if (aBlockDidStartExpanded)
+		GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", { source: "prepareCollapseBlocks" });
 
     //  Add listeners to toggle ‘expanded’ class of collapse blocks.
 	loadEventInfo.document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
@@ -260,9 +276,9 @@ function revealElement(element, scrollIntoView = true) {
 //	Called by: prepareCollapseBlocks
 //	Called by: sidenotes.js
 function getHashTargetedElement() {
-	return (location.hash.length > 1)
-			? document.querySelector(selectorFromHash(location.hash))
-			: null;
+	return (location.hash.length > 1
+		    ? document.querySelector(selectorFromHash(location.hash))
+		    : null);
 }
 
 /***************************************************************************/
@@ -279,10 +295,11 @@ function revealTarget() {
     if (!target)
     	return;
 
-	revealElement(target);
+	let didReveal = revealElement(target);
 
 	//	Fire notification event.
-	GW.notificationCenter.fireEvent("Collapse.targetDidRevealOnHashUpdate");
+	if (didReveal)
+		GW.notificationCenter.fireEvent("Collapse.targetDidRevealOnHashUpdate");
 }
 /*	We don’t need to do this unconditionally (e.g. on DOMContentLoaded) because
 	the hashchange event will be triggered by the realignHash() function in

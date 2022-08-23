@@ -771,20 +771,13 @@ Transclude = {
 		 */
 		if (    isWithinCollapsedBlock(includeLink) 
 			&& !(includeLink.classList.contains("include-when-collapsed"))) {
-			let uncollapseHandler = ((info) => {
+			includeLink.needsRewrite = true;
+			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (info) => {
 				if (isWithinCollapsedBlock(includeLink))
 					return;
 
-				GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", uncollapseHandler);
-				GW.notificationCenter.removeHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", uncollapseHandler);
-
 				Transclude.transclude(includeLink);
-			});
-
-			includeLink.needsRewrite = true;
-
-			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", uncollapseHandler);
-			GW.notificationCenter.addHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", uncollapseHandler);
+			}, { once: true });
 
 			return;
 		}
