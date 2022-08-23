@@ -5261,36 +5261,38 @@ a.include-loading {
 /*  Loading spinner.
  */
 a.include-loading::after {
-    content: var(--spinner-image);
 	display: inline-block;
-	width: 1.25em;
-    height: 1.25em;
     animation: fa-spin 2s infinite linear;
     position: relative;
     opacity: 0.5;
-}
-a.include-loading:empty::after {
     top: 0.25em;
+}
+
+a.include-loading:empty::after {
+    content: var(--spinner-image);
+	width: 1.25em;
+    height: 1.25em;
     margin: 0;
+}
+
+a.include-loading:not(:empty)::after,
+a.include-loading[data-link-icon]:not(:empty)::after {
+    background-image: var(--spinner-image);
 }
 a.include-loading:not(:empty)::after {
     --spinner-size: var(--link-icon-size, 0.85em);
     
-    content: "";
-    margin: 0 0 0 0.15em;
     background-size: var(--spinner-size);
+    content: "";
     width: var(--spinner-size);
     height: var(--spinner-size);
+    margin: 0 0 0 0.15em;
 }
 a.include-loading[data-link-icon]:not(:empty)::after {
     padding: 0;
     background-position: 0 0;
     position: relative;
     bottom: 0.1em;
-}
-a.include-loading:not(:empty)::after,
-a.include-loading[data-link-icon]:not(:empty)::after {
-    background-image: var(--spinner-image);
 }
 
 a.include-loading.include-no-spinner::after {
