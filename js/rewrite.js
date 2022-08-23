@@ -13,11 +13,11 @@
 		fired after the initial page load completes (i.e., it is triggered by
 		lazy-loading of media elements).
 
-	Rewrite.pageLayoutWillComplete
+	GW.pageLayoutWillComplete
 		Fired just before the page layout process completes. The value of the
 		`GW.pageLayoutComplete` flag is false at this point.
 
-	Rewrite.pageLayoutDidComplete
+	GW.pageLayoutDidComplete
 		Fired just after the page layout process completes. The value of the
 		`GW.pageLayoutComplete` flag is true at this point.
  */
@@ -1431,10 +1431,10 @@ addContentLoadHandler(injectBackToTopLink, "rewrite", (info) => info.isMainDocum
 /*****************/
 
 doWhenPageLoaded(() => {
-    GW.notificationCenter.fireEvent("Rewrite.pageLayoutWillComplete");
+    GW.notificationCenter.fireEvent("GW.pageLayoutWillComplete");
     requestAnimationFrame(() => {
         GW.pageLayoutComplete = true;
-        GW.notificationCenter.fireEvent("Rewrite.pageLayoutDidComplete");
+        GW.notificationCenter.fireEvent("GW.pageLayoutDidComplete");
     });
 }, { once: true });
 
@@ -1463,77 +1463,70 @@ function reportBrokenAnchorLink(link) {
 	GWServerLogError(fixedEncodeURIComponent(link.pathname) + "--" + fixedEncodeURIComponent(link.hash.substr(1)), "broken hash-anchor");
 }
 
-function brokenAnchorCheck() {
-	GWLog("brokenAnchorCheck", "rewrite.js", 1);
+/*	Check for broken anchor (location hash not pointing to any element on the
+	page) both at page load time and whenever the hash changes.
+ */
+GW.notificationCenter.addHandlerForEvent("GW.hashHandlingSetupDidComplete", GW.brokenAnchorCheck = (info) => {
+	GWLog("GW.brokenAnchorCheck", "rewrite.js", 1);
 
 	if (   location.hash > ""
 		&& /^#if_slide/.test(location.hash) == false
 		&& /^#:~:/.test(location.hash) == false
 		&& document.querySelector(selectorFromHash(location.hash)) == null)
 		reportBrokenAnchorLink(location);
+});
+GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", GW.brokenAnchorCheck);
+
+
+/**************************/
+/* LOCATION HASH HANDLING */
+/**************************/
+
+function cleanLocationHash() {
+	GWLog("cleanLocationHash", "rewrite.js", 2);
+
+	if (   location.hash == "#top"
+		|| (   location.hash == "" 
+			&& location.href.endsWith("#"))) {
+		history.replaceState("", null, location.pathname);
+	}
 }
 
-
-/********************/
-/* HASH REALIGNMENT */
-/********************/
-
-/*  This is necessary to defeat a bug where if the page is loaded with the URL
-    hash targeting some element, the element does not match the :target CSS
-    pseudo-class.
- */
-function realignHash() {
-    GWLog("realignHash", "rewrite.js", 1);
+GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayoutCompleteHashHandlingSetup = (info) => {
+	GWLog("GW.pageLayoutCompleteHashHandlingSetup", "rewrite.js", 1);
 
     //  Chrome’s fancy new “scroll to text fragment”. Deal with it in Firefox.
     if (GW.isFirefox()) {
         if (location.hash.startsWith("#:~:")) {
-            GW.hashRealignValue = (GW.hashRealignValue || "#");
+            history.replaceState("", null, location.pathname);
         } else if (location.hash.includes(":~:")) {
-            GW.hashRealignValue = (GW.hashRealignValue || location.hash.replace(/:~:.*$/, ""));
+        	history.replaceState("", null, location.hash.replace(/:~:.*$/, ""));
         }
     }
 
-    let hash = (GW.hashRealignValue || location.hash);
-    if (hash > "") {
-        //  Strip hash.
-        history.replaceState(null, null, "#");
+	//	Clean location hash.
+	cleanLocationHash();
 
-        //  Reset hash.
-        location.hash = hash;
+	//	Save hash, for change tracking.
+	GW.locationHash = location.hash;
 
-        //  Prevent redundant realignment.
-        GW.hashRealignValue = null;
-    }
-
-	//	Fire event.
-	GW.notificationCenter.fireEvent("Rewrite.hashDidRealign");
-}
-
-doWhenDOMContentLoaded(realignHash);
-doWhenPageLoaded(() => {
 	/*	Remove “#top” or “#” from the URL hash (e.g. after user clicks on the 
 		back-to-top link).
 	 */
-	window.addEventListener("hashchange", GW.cleanURLHashAfterHashChange = () => {
-		GWLog("GW.cleanURLHashAfterHashChange", "collapse.js", 1);
+	window.addEventListener("hashchange", GW.handleBrowserHashChangeEvent = () => {
+		GWLog("GW.handleBrowserHashChangeEvent", "rewrite.js", 1);
 
-		//	Clean URL hash.
-		if (   location.hash == "#top"
-			|| (   location.hash == "" 
-				&& location.href.endsWith("#"))) {
-			history.replaceState("", null, location.pathname);
+		//	Clean location hash.
+		cleanLocationHash();
+
+		//	If hash really changed, update saved hash and fire event.
+		if (GW.locationHash != location.hash) {
+			GW.notificationCenter.fireEvent("GW.hashDidChange", { oldHash: GW.locationHash });
+			GW.locationHash = location.hash;
 		}
 	});
 
-	window.addEventListener("hashchange", GW.brokenAnchorCheckAfterHashCHange = () => {
-		GWLog("GW.brokenAnchorCheckAfterHashCHange", "collapse.js", 1);
-
-		//	Check for broken anchor.
-		brokenAnchorCheck();
-	});
-
-    requestAnimationFrame(realignHash);
+	GW.notificationCenter.fireEvent("GW.hashHandlingSetupDidComplete");
 });
 
 

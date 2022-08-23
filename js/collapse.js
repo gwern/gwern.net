@@ -281,15 +281,12 @@ function getHashTargetedElement() {
 		    : null);
 }
 
-/***************************************************************************/
-/*  Reveal the element targeted by the URL hash. Do the same on hash change.
+/***********************************************/
+/*  Reveal the element targeted by the URL hash.
  */
 //	Called by: GW.hashUpdated (event handler)
 function revealTarget() {
     GWLog("revealTarget", "collapse.js", 1);
-
-    if (!location.hash)
-    	return;
 
     let target = getHashTargetedElement();
     if (!target)
@@ -299,22 +296,19 @@ function revealTarget() {
 
 	//	Fire notification event.
 	if (didReveal)
-		GW.notificationCenter.fireEvent("Collapse.targetDidRevealOnHashUpdate");
+		GW.notificationCenter.fireEvent("Collapse.targetDidReveal");
 }
-/*	We don’t need to do this unconditionally (e.g. on DOMContentLoaded) because
-	the hashchange event will be triggered by the realignHash() function in
-	rewrite.js (and in any case we inject the collapse disclosure buttons in the
-	correct state to begin with). (We do still want realignHash() to cause the
-	hashchange event to fire, so that Collapse.targetDidRevealOnHashUpdate fires
-	if need be and triggers any auxiliary element reveals.)
- */
-window.addEventListener("hashchange", GW.revealTargetOnHashUpdate = () => {
-	GWLog("GW.revealTargetOnHashUpdate", "collapse.js", 1);
+
+GW.notificationCenter.addHandlerForEvent("GW.hashHandlingSetupDidComplete", GW.revealTargetOnPageLayoutComplete = (info) => {
+    GWLog("GW.revealTargetOnPageLayoutComplete", "collapse.js", 1);
 
 	revealTarget();
-}, { once: true });
-doWhenPageLoaded(() => {
-	window.addEventListener("hashchange", GW.revealTargetOnHashUpdate);
+
+	GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", GW.revealTargetOnHashChange = (info) => {
+ 		GWLog("GW.revealTargetOnHashChange", "collapse.js", 1);
+
+		revealTarget();
+	});
 });
 
 /*******************************************************************************/

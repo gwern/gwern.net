@@ -737,4 +737,4 @@ doWhenPageLoaded (() => {
 });
 
 //  LET... THERE... BE... SIDENOTES!!!
-Sidenotes.setup();
+// Sidenotes.setup();
