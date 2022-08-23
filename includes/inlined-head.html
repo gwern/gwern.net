@@ -3252,8 +3252,7 @@ GW.notificationCenter = {
 			return;
 
 		//	Register this event as currently being fired.
-		if (GW.notificationCenter.currentEvents.includes(eventName) == false)
-			GW.notificationCenter.currentEvents.push(eventName);
+		GW.notificationCenter.currentEvents.push(eventName);
 
 		/*	Store event name in info dictionary, so that event handlers can
 			access it. (This permits, e.g., the same handler to handle multiple
