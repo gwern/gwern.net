@@ -1496,13 +1496,17 @@ GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", GW.brokenAnchorChec
 /* LOCATION HASH HANDLING */
 /**************************/
 
+function relocate(s) {
+	history.replaceState(null, null, s);
+}
+
 function cleanLocationHash() {
 	GWLog("cleanLocationHash", "rewrite.js", 2);
 
 	if (   location.hash == "#top"
 		|| (   location.hash == "" 
 			&& location.href.endsWith("#"))) {
-		history.replaceState("", null, location.pathname);
+		relocate(location.pathname);
 	}
 }
 
@@ -1512,9 +1516,9 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
     //  Chrome’s fancy new “scroll to text fragment”. Deal with it in Firefox.
     if (GW.isFirefox()) {
         if (location.hash.startsWith("#:~:")) {
-            history.replaceState("", null, location.pathname);
+            relocate(location.pathname);
         } else if (location.hash.includes(":~:")) {
-        	history.replaceState("", null, location.hash.replace(/:~:.*$/, ""));
+        	relocate(location.hash.replace(/:~:.*$/, ""));
         }
     }
 

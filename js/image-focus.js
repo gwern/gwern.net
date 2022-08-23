@@ -388,7 +388,7 @@ function focusImage(imageToFocus) {
 	//  Replace the hash.
 	if (!location.hash.startsWith("#if_slide_"))
 	    GW.imageFocus.savedHash = location.hash;
-	history.replaceState(null, null, "#if_slide_" + (indexOfFocusedImage + 1));
+	relocate("#if_slide_" + (indexOfFocusedImage + 1));
 
 	//  Set the caption.
 	setImageFocusCaption();
@@ -482,7 +482,7 @@ function unfocusImageOverlay() {
 
 	//  Reset the hash, if needed.
 	if (location.hash.startsWith("#if_slide_")) {
-		history.replaceState(null, null, (GW.imageFocus.savedHash || "#"));
+		relocate(GW.imageFocus.savedHash || "#");
 		GW.imageFocus.savedHash = null;
 	}
 }
@@ -533,7 +533,7 @@ function focusNextImage(next = true) {
 	//  Set the caption.
 	setImageFocusCaption();
 	//  Replace the hash.
-	history.replaceState(null, null, "#if_slide_" + (indexOfFocusedImage + 1));
+	relocate("#if_slide_" + (indexOfFocusedImage + 1));
 }
 
 function setImageFocusCaption() {
