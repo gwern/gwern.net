@@ -85,31 +85,13 @@ Sidenotes = { ...Sidenotes,
 	/*	Get the (side|foot)note number from the URL hash (which might point to a 
 		footnote, a sidenote, or a citation).
 	 */
-	noteNumberFromHash: () => {
-		if (location.hash.match(/#[sf]n[0-9]/))
-			return location.hash.substr(3);
-		else if (location.hash.match(/#fnref[0-9]/))
-			return location.hash.substr(6);
+	noteNumberFromHash: (hash = location.hash) => {
+		if (hash.match(/#[sf]n[0-9]/))
+			return hash.substr(3);
+		else if (hash.match(/#fnref[0-9]/))
+			return hash.substr(6);
 		else
 			return "";
-	},
-
-	/*	Bind event listeners to highlight citation when sidenote is hovered over.
-		*/
-	bindSidenoteMouseEvents: () => {
-		GWLog("Sidenotes.bindSidenoteMouseEvents", "sidenotes.js", 1);
-
-		for (let i = 0; i < Sidenotes.citations.length; i++) {
-			let citation = Sidenotes.citations[i];
-			let sidenote = Sidenotes.sidenoteDivs[i];
-
-			sidenote.addEventListener("mouseenter", sidenote.sidenoteover = (event) => {
-				citation.classList.toggle("highlighted", true);
-			});
-			sidenote.addEventListener("mouseleave", sidenote.sidenoteout = (event) => {
-				citation.classList.toggle("highlighted", false);
-			});
-		}
 	},
 
 	/*  The “target counterpart” is the element associated with the target, i.e.:
@@ -595,11 +577,16 @@ Sidenotes = { ...Sidenotes,
 			return;
 
 		/*  In footnote mode (ie. on viewports too narrow to support sidenotes),
-			footnote reference links (ie. citations) should point down to footnotes
-			(this is the default state).
-			But in sidenote mode, footnote reference links should point to sidenotes.
-			This function rewrites all footnote reference links appropriately to the
-			current mode (based on viewport width).
+			footnote reference links (i.e., citations) should point down to 
+			footnotes (this is the default state). But in sidenote mode, 
+			footnote reference links should point to sidenotes.
+
+			We therefore rewrite all footnote reference links appropriately to
+			the current mode (based on viewport width).
+
+			We also add an active media query to rewrite the links if a change
+			in viewport width results in switching modes, as well as an event
+			handler to rewrite footnote reference links in transcluded content.
 			*/
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteCitationTargetsForCurrentMode", (mediaQuery) => {
@@ -609,12 +596,36 @@ Sidenotes = { ...Sidenotes,
 				for (let i = 0; i < Sidenotes.citations.length; i++)
 					Sidenotes.citations[i].href = "#fn" + (i + 1);
 			});
+
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
+				info.document.querySelectorAll("a.footnote-ref").forEach(citation => {
+					if (citation.pathname == location.pathname)
+						citation.href = (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches ? "#fn" : "#sn") 
+										+ Sidenotes.noteNumberFromHash(citation.hash);
+				});
+			}, { 
+				phase: "rewrite",
+				condition: (info) => (   info.needsRewrite 
+									  && info.baseLocation.pathname == location.pathname) 
+			});
 		}, { once: true });
 
 		/*  Bind sidenote mouse-hover events.
 			*/
-		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
-			Sidenotes.bindSidenoteMouseEvents();
+		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", Sidenotes.bindSidenoteMouseEvents = (info) => {
+			GWLog("Sidenotes.bindSidenoteMouseEvents", "sidenotes.js", 2);
+
+			for (let i = 0; i < Sidenotes.citations.length; i++) {
+				let citation = Sidenotes.citations[i];
+				let sidenote = Sidenotes.sidenoteDivs[i];
+
+				sidenote.addEventListener("mouseenter", sidenote.sidenoteover = (event) => {
+					citation.classList.toggle("highlighted", true);
+				});
+				sidenote.addEventListener("mouseleave", sidenote.sidenoteout = (event) => {
+					citation.classList.toggle("highlighted", false);
+				});
+			}
 		}, { once: true });
 
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
@@ -675,18 +686,8 @@ Sidenotes = { ...Sidenotes,
 		/*	Once the sidenotes are constructed, lay them out.
 			*/
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
-			/*  Lay out the sidenotes as soon as the document is loaded.
-				*/
-			Sidenotes.updateSidenotePositions();
-
-			/*	If layout remains to be done, queue up another reposition for
-				when all layout is complete.
-				*/
-			if (!GW.pageLayoutComplete) {
-				GW.notificationCenter.addHandlerForEvent("Rewrite.pageLayoutDidComplete", (info) => {
-					requestAnimationFrame(Sidenotes.updateSidenotePositions);
-				}, { once: true });
-			}
+			//	Lay out sidenotes once page layout is complete.
+			doWhenPageLayoutComplete(Sidenotes.updateSidenotePositions);
 
 			/*  Add a resize listener so that sidenote positions are recalculated when
 				the window is resized.
@@ -701,6 +702,8 @@ Sidenotes = { ...Sidenotes,
 		/*  Construct the sidenotes as soon as the HTML content is fully loaded.
 			*/
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Sidenotes.constructSidenotesWhenMainContentLoads = (info) => {
+			GWLog("Sidenotes.constructSidenotesWhenMainContentLoads", "sidenotes.js", 1);
+
 			Sidenotes.constructSidenotes();
 		}, { 
 			phase: "<eventListeners", 

@@ -1441,7 +1441,7 @@ function doWhenPageLayoutComplete(f) {
     else
         GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", (info) => {
 			f();
-        });
+        }, { once: true });
 }
 
 doWhenPageLoaded(() => {
@@ -1488,7 +1488,7 @@ GW.notificationCenter.addHandlerForEvent("GW.hashHandlingSetupDidComplete", GW.b
 		&& /^#:~:/.test(location.hash) == false
 		&& document.querySelector(selectorFromHash(location.hash)) == null)
 		reportBrokenAnchorLink(location);
-});
+}, { once: true });
 GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", GW.brokenAnchorCheck);
 
 
@@ -1545,7 +1545,7 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
 	});
 
 	GW.notificationCenter.fireEvent("GW.hashHandlingSetupDidComplete");
-});
+}, { once: true });
 
 
 /*****************************************************************************************/
