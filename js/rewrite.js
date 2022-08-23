@@ -456,10 +456,10 @@ function markFullWidthFigures(loadEventInfo) {
     });
 
     /*  Add ‘load’ listener for lazy-loaded media (as it might cause re-layout
-        of eg. sidenotes). Do this only after page loads, to avoid spurious
-        re-layout at initial page load.
+        of eg. sidenotes). Do this only after page layout is complete, to avoid
+        spurious re-layout at initial page load.
      */
-    doWhenPageLoaded(() => {
+    doWhenPageLayoutComplete(() => {
         allFullWidthMedia.forEach(fullWidthMedia => {
             fullWidthMedia.addEventListener("load", (event) => {
                 GW.notificationCenter.fireEvent("Rewrite.fullWidthMediaDidLoad", {
@@ -724,7 +724,9 @@ function createFullWidthBlockLayoutStyles() {
     window.addEventListener("resize", updateFullWidthBlockLayoutStyles);
 }
 
-doWhenPageLoaded(createFullWidthBlockLayoutStyles);
+GW.notificationCenter.addHandlerForEvent("GW.pageLayoutWillComplete", (info) => {
+	createFullWidthBlockLayoutStyles();
+});
 
 /************************************/
 /*  Set margins of full-width blocks.
@@ -1430,13 +1432,25 @@ addContentLoadHandler(injectBackToTopLink, "rewrite", (info) => info.isMainDocum
 /* END OF LAYOUT */
 /*****************/
 
+/*  Run the given function immediately if page layout has completed, or add an
+	event handler to run it as soon as page layout completes.
+ */
+function doWhenPageLayoutComplete(f) {
+    if (GW.pageLayoutComplete == true)
+        f();
+    else
+        GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", (info) => {
+			f();
+        });
+}
+
 doWhenPageLoaded(() => {
     GW.notificationCenter.fireEvent("GW.pageLayoutWillComplete");
     requestAnimationFrame(() => {
         GW.pageLayoutComplete = true;
         GW.notificationCenter.fireEvent("GW.pageLayoutDidComplete");
     });
-}, { once: true });
+});
 
 
 /**************************/
