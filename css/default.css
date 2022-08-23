@@ -2392,6 +2392,45 @@ span.link-bibliography a {
     left: 0;
 }
 
+/*************/
+/* CITATIONS */
+/*************/
+
+/* Citation formatting: ellipsis'd "et al", subscripted date; see /Subscripts & /Lorem#citation-variants */
+/* This is variant #6, 'HORIZONTAL ELLIPSIS/​subscripted year'. */
+/* This relies on the 'citefyInline' pass in Typography.hs: the author ('Foo', or 'Foo & Bar') is put in span.cite-author, the 'et al' joiner (if any) in span.cite-joiner, and the year date in span.cite-date. For 'Foo 2020' or 'Foo & Bar 2020', there is no joiner, only for 'et al'; this lets us replace the et al with an ellipsis while subscripting the year in all cases. */
+a .cite {
+	margin-left: 2px;
+}
+
+/*	Author
+ */
+.cite-author-plural::after {
+    content: "...";
+    margin-left: 0.05em;
+    margin-right: -0.05em;
+}
+a .cite-author-plural::after {
+    margin-right: 0;
+}
+
+/*	“et al”
+ */
+.cite-joiner {
+    display: none;
+}
+
+/*	Date
+ */
+.cite-date {
+    vertical-align: -0.35ex;
+    position: relative;
+    font-size: 0.8em;
+    line-height: 0.7;
+    font-variant-numeric: tabular-nums;
+    margin-left: 0.05em;
+}
+
 /*******************************/
 /* PAGE-SPECIFIC MODIFICATIONS */
 /*******************************/
@@ -5203,45 +5242,10 @@ section.highlight-fading::before {
     }
 }
 
-/* EXPERIMENTAL */
-/* Citation formatting: ellipsis'd "et al", subscripted date; see /Subscripts & /Lorem#citation-variants */
-/* This is variant #6, 'HORIZONTAL ELLIPSIS/​subscripted year'. */
-/* This relies on the 'citefyInline' pass in Typography.hs: the author ('Foo', or 'Foo & Bar') is put in span.cite-author, the 'et al' joiner (if any) in span.cite-joiner, and the year date in span.cite-date. For 'Foo 2020' or 'Foo & Bar 2020', there is no joiner, only for 'et al'; this lets us replace the et al with an ellipsis while subscripting the year in all cases. */
-a .cite {
-	margin-left: 2px;
-}
+/****************/
+/* TRANSCLUSION */
+/****************/
 
-/*	Author
- */
-.cite-author-plural::after {
-    content: "...";
-    margin-left: 0.05em;
-    margin-right: -0.05em;
-}
-a .cite-author-plural::after {
-    margin-right: 0;
-}
-
-/*	“et al”
- */
-.cite-joiner {
-    display: none;
-}
-
-/*	Date
- */
-.cite-date {
-    vertical-align: -0.35ex;
-    position: relative;
-    font-size: 0.8em;
-    line-height: 0.7;
-    font-variant-numeric: tabular-nums;
-    margin-left: 0.05em;
-}
-
-/*	EXPERIMENTAL */
-/*	Transclusion.
- */
 a.include:empty {
 	margin: 0;
 }
@@ -5292,3 +5296,5 @@ a.include-loading[data-link-icon]:not(:empty)::after {
 a.include-loading.include-no-spinner::after {
 	display: none;
 }
+
+
