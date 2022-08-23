@@ -414,6 +414,10 @@ ReaderMode = { ...ReaderMode, ...{
 			link.savedOnClick = null;
 		});
 
+		//	Re-layout sidenotes.
+		if (window.Sidenotes)
+			Sidenotes.updateSidenotePositions();
+
 		if (GW.isMobile() == false) {
 			//	Remove key down/up listeners (for the Alt key toggle).
 			document.removeEventListener("keydown", ReaderMode.altKeyDownOrUp);
