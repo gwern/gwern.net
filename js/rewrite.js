@@ -1473,8 +1473,6 @@ function brokenAnchorCheck() {
 		reportBrokenAnchorLink(location);
 }
 
-doWhenPageLoaded(brokenAnchorCheck);
-
 
 /********************/
 /* HASH REALIGNMENT */
@@ -1507,24 +1505,34 @@ function realignHash() {
         //  Prevent redundant realignment.
         GW.hashRealignValue = null;
     }
+
+	//	Fire event.
+	GW.notificationCenter.fireEvent("Rewrite.hashDidRealign");
 }
-
-/*	Remove “#top” or “#” from the URL hash (e.g. after user clicks on the 
-	back-to-top link).
- */
-window.addEventListener("hashchange", GW.cleanURLHashAfterHashChange = () => {
-	GWLog("GW.cleanURLHashAfterHashChange", "collapse.js", 1);
-
-	//	Clean URL hash.
-	if (   location.hash == "#top"
-		|| (   location.hash == "" 
-			&& location.href.endsWith("#"))) {
-		history.replaceState("", null, location.pathname);
-	}
-});
 
 doWhenDOMContentLoaded(realignHash);
 doWhenPageLoaded(() => {
+	/*	Remove “#top” or “#” from the URL hash (e.g. after user clicks on the 
+		back-to-top link).
+	 */
+	window.addEventListener("hashchange", GW.cleanURLHashAfterHashChange = () => {
+		GWLog("GW.cleanURLHashAfterHashChange", "collapse.js", 1);
+
+		//	Clean URL hash.
+		if (   location.hash == "#top"
+			|| (   location.hash == "" 
+				&& location.href.endsWith("#"))) {
+			history.replaceState("", null, location.pathname);
+		}
+	});
+
+	window.addEventListener("hashchange", GW.brokenAnchorCheckAfterHashCHange = () => {
+		GWLog("GW.brokenAnchorCheckAfterHashCHange", "collapse.js", 1);
+
+		//	Check for broken anchor.
+		brokenAnchorCheck();
+	});
+
     requestAnimationFrame(realignHash);
 });
 

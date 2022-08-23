@@ -312,6 +312,9 @@ window.addEventListener("hashchange", GW.revealTargetOnHashUpdate = () => {
 	GWLog("GW.revealTargetOnHashUpdate", "collapse.js", 1);
 
 	revealTarget();
+}, { once: true });
+doWhenPageLoaded(() => {
+	window.addEventListener("hashchange", GW.revealTargetOnHashUpdate);
 });
 
 /*******************************************************************************/
