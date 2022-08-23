@@ -244,7 +244,7 @@ addContentLoadHandler(expandLockCollapseBlocks, ">rewrite", (info) => !info.coll
 function scrollElementIntoView(element, offset = 0) {
     GWLog("scrollElementIntoView", "collapse.js", 2);
 
-	GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", (info) => {
+	doWhenPageLayoutComplete(() => {
 		element.scrollIntoView();
 		if (offset != 0)
 			window.scrollBy(0, offset);

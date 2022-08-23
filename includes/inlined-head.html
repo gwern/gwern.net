@@ -2948,6 +2948,23 @@ GW.notificationCenter = {
 		(even if it has different handler options than the existing handler).
 	 */
     addHandlerForEvent: (eventName, f, options = { }) => {
+		/*	If this event is currently firing, do not add the handler yet.
+			Instead, add it to the waiting list. It will be added once the event
+			has finished firing.
+		 */
+		if (GW.notificationCenter.currentEvents.includes(eventName)) {
+			console.log("DEFERRING HANDLER ADD TO WAIT LIST: " + eventName);
+			console.log(f);
+			console.log(options);
+
+			if (GW.notificationCenter.waitingHandlers[eventName] == null)
+				GW.notificationCenter.waitingHandlers[eventName] = [ ];
+
+			GW.notificationCenter.waitingHandlers[eventName].push({ f: f, options: options });
+
+			return;
+		}
+
     	/*	If there’s not already a handlers array for the given event (which
     		may be, e.g., because no event handlers have yet been registered
     		for this event), create the array.
@@ -3184,6 +3201,17 @@ GW.notificationCenter = {
 	*/
 	prefireProcessors: { },
 
+	/*	Array of events that are currently being fired. Used to avoid adding a
+		handler to an event while it’s firing.
+	 */
+	currentEvents: [ ],
+
+	/*	Array of event handlers waiting to be added. A handler waits here if its
+		addHandlerForEvent() call happened while the target event was firing. 
+		The handler will be added once the event has finished firing.
+	 */
+	waitingHandlers: { },
+
     /*	Fire an event with the given name and event info dictionary.
 
     	In addition to printing a console log message (if the log level is set
@@ -3211,6 +3239,10 @@ GW.notificationCenter = {
     fireEvent: (eventName, eventInfo = { }) => {
 		if (!eventName)
 			return;
+
+		//	Register this event as currently being fired.
+		if (GW.notificationCenter.currentEvents.includes(eventName) == false)
+			GW.notificationCenter.currentEvents.push(eventName);
 
 		/*	Store event name in info dictionary, so that event handlers can
 			access it. (This permits, e.g., the same handler to handle multiple
@@ -3273,6 +3305,17 @@ GW.notificationCenter = {
                 i--;
             }
         }
+
+		//	Unregister this event from the list of events currently being fired.
+		GW.notificationCenter.currentEvents.remove(eventName);
+
+		//	Add any handlers that are waiting to be added.
+		if (GW.notificationCenter.waitingHandlers[eventName] > [ ]) {
+			GW.notificationCenter.waitingHandlers[eventName].forEach(handler => {
+				GW.notificationCenter.addHandlerForEvent(eventName, handler.f, handler.options);
+			});
+			GW.notificationCenter.waitingHandlers[eventName] = [ ];
+		}
     }
 };
 
