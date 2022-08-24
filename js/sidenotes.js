@@ -60,7 +60,10 @@ Sidenotes = {
 	/*	The greatest width (in CSS dimensions) at which sidenotes will _not_ be
 		shown. If the viewport is wider than this, then sidenotes are enabled.
 	 */
-	sidenotesIfViewportWiderThan: "1760px"
+	sidenotesIfViewportWiderThan: "1760px",
+
+	useLeftColumn: () => true,
+	useRightColumn: () => (document.querySelector(".marginnote") == null)
 };
 
 /******************/
@@ -275,10 +278,13 @@ Sidenotes = { ...Sidenotes,
 
 		//	Construct new layout cells.
 		let layoutCells = [ ];
-		[ [ Sidenotes.sidenoteColumnLeft, leftColumnBoundingRect, proscribedVerticalRangesLeft ], 
-		  [ Sidenotes.sidenoteColumnRight, rightColumnBoundingRect, proscribedVerticalRangesRight ]
-		  ].forEach(side => {
-		  	let [ column, rect, ranges ] = side;
+		let sides = [ ];
+		if (Sidenotes.useLeftColumn())
+			sides.push([ Sidenotes.sidenoteColumnLeft, leftColumnBoundingRect, proscribedVerticalRangesLeft ]);
+		if (Sidenotes.useRightColumn())
+			sides.push([ Sidenotes.sidenoteColumnRight, rightColumnBoundingRect, proscribedVerticalRangesRight ]);
+		sides.forEach(side => {
+			let [ column, rect, ranges ] = side;
 			let prevRangeBottom = 0;
 
 			ranges.forEach(range => {

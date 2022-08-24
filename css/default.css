@@ -1335,8 +1335,8 @@ section.footnotes > hr:first-child.highlighted::before {
     pointer-events: auto;
 }
 #sidenote-column-left {
-    height: calc(100% - 10rem);
-    top: 10rem;
+    height: calc(100% - 7rem);
+    top: 7rem;
     right: calc(100% + 64px);
 }
 #sidenote-column-right {
