@@ -609,7 +609,9 @@ Extracts = {
             	let element = null;
                 if (   popFrame
                 	&& (element = popFrame.body.querySelector(selectorFromHash(target.hash))))
-                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
+                	requestAnimationFrame(() => {
+	                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
+	                });
             });
         }
     },
@@ -887,11 +889,6 @@ Extracts = {
         GWLog("Extracts.rewritePopFrameContent_LOCAL_PAGE", "extracts.js", 2);
 
         let target = popFrame.spawningTarget;
-
-        //  Rectify margin note style.
-        popFrame.body.querySelectorAll(".marginnote").forEach(marginNote => {
-            marginNote.swapClasses([ "inline", "sidenote" ], 0);
-        });
 
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
