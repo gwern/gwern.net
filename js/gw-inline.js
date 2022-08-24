@@ -584,6 +584,20 @@ function valMinMax(val, min, max) {
     return Math.max(Math.min(val, max), min);
 }
 
+/*	Returns a URL object with no hash, and otherwise the `href` equal to that
+	represented by the passed object (either a string, or some object that has
+	the `href` property, such as an <A> element, or the `location` object).
+ */
+function urlSansHash(url) {
+	let fixedURL = null;
+	if (typeof url == "string")
+		fixedURL = new URL(url);
+	else
+		fixedURL = new URL(url.href);
+	fixedURL.hash = "";
+	return fixedURL;
+}
+
 /************************/
 /* ACTIVE MEDIA QUERIES */
 /************************/
@@ -821,10 +835,6 @@ GW.notificationCenter = {
 			has finished firing.
 		 */
 		if (GW.notificationCenter.currentEvents.includes(eventName)) {
-			console.log("DEFERRING HANDLER ADD TO WAIT LIST: " + eventName);
-			console.log(f);
-			console.log(options);
-
 			if (GW.notificationCenter.waitingHandlers[eventName] == null)
 				GW.notificationCenter.waitingHandlers[eventName] = [ ];
 

@@ -67,17 +67,17 @@
 		‘loadLocation’ (key)
 			URL object (https://developer.mozilla.org/en-US/docs/Web/API/URL)
 			which specifies the URL from which the loaded content was loaded.
-			For the main page, the represented URL will be `location.href`. For
-			pop-frames and the like, the represented URL may be the URL of the
-			annotation resource, or the URL of a locally archived version of a
-			website, or something else.
+			For the main page, the represented URL will be the value of 
+			`location.href`. For pop-frames and the like, the represented URL 
+			may be the URL of the annotation resource, or the URL of a locally 
+			archived version of a website, or something else.
 
 		‘baseLocation’ (key)
 			URL object which specifies the URL associated with the document to 
 			which the loaded content belongs, after loading.
-			For the main page, the represented URL will be `location.href`. For
-			pop-frames and the like, the represented URL will be the `href`
-			attribute of the spawning target.
+			For the main page, the represented URL will be the value of 
+			`location.href`. For pop-frames and the like, the represented URL 
+			will be the value of the `href` attribute of the spawning target.
 
 		‘flags’ (key)
 			Bit field containing various flags (combined via bitwise OR). The
@@ -85,7 +85,7 @@
 
 			(Note that event handlers for the ‘GW.contentDidLoad’ event can
 			 access the values of these flags directly via property access on
-			 the event, e.g. the following two expressions are equivalent:
+			 the event info, e.g. the following two expressions are equivalent:
 
 			   eventInfo.flags & GW.contentDidLoadEventFlags.needsRewrite != 0
 
@@ -542,9 +542,6 @@ function hyphenate(loadEventInfo) {
 		doHyphenation(loadEventInfo.mainPageContent ? ".markdownBody p" : "p");
 	} else {
 		doHyphenation(".sidenote p");
-		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
-			doHyphenation(".sidenote p");
-		});
 	}
 }
 

@@ -82,6 +82,8 @@ Sidenotes = { ...Sidenotes,
 	sidenoteColumnLeft: null,
 	sidenoteColumnRight: null,
 
+	hiddenSidenoteStorage: null,
+
 	/*	Get the (side|foot)note number from the URL hash (which might point to a 
 		footnote, a sidenote, or a citation).
 	 */
@@ -112,16 +114,20 @@ Sidenotes = { ...Sidenotes,
 
 		/*  Identify new target counterpart, if any.
 			*/
-		let counterpart;
+		let target, counterpart;
 		if (location.hash.match(/#sn[0-9]/)) {
+			target = document.querySelector("#sn" + Sidenotes.noteNumberFromHash());
 			counterpart = document.querySelector("#fnref" + Sidenotes.noteNumberFromHash());
 		} else if (location.hash.match(/#fnref[0-9]/) && Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false) {
+			target = document.querySelector("#fnref" + Sidenotes.noteNumberFromHash());
 			counterpart = document.querySelector("#sn" + Sidenotes.noteNumberFromHash());
 		}
-		/*  If a target counterpart exists, mark it as such.
+		/*  Mark the target and the counterpart, if any.
 			*/
+		if (target)
+			target.classList.add("targeted");
 		if (counterpart)
-			counterpart.classList.toggle("targeted", true);
+			counterpart.classList.add("targeted");
 	},
 
 	/*  Hide sidenotes within currently-collapsed collapse blocks. Show
@@ -154,11 +160,18 @@ Sidenotes = { ...Sidenotes,
 
 		//	Check for cut-off sidenotes.
 		Sidenotes.sidenoteDivs.forEach(sidenote => {
-			/*  Check whether the sidenote is in the hidden sidenote storage (ie.
-				within a currently-collapsed collapse block. If so, skip it.
+			/*  Check whether the sidenote is currently hidden (i.e., within a 
+				currently-collapsed collapse block or similar). If so, skip it.
 				*/
 			if (sidenote.classList.contains("hidden"))
 				return;
+
+			//  On which side should the sidenote go? Odd - right; even - left.
+			let sidenoteNumber = Sidenotes.noteNumberFromHash("#" + sidenote.id);
+			let side = (sidenoteNumber % 2) ? Sidenotes.sidenoteColumnRight : Sidenotes.sidenoteColumnLeft;
+
+			//  Inject the sidenote into the column (provisionally).
+			side.appendChild(sidenote);
 
 			/*  Mark sidenotes which are cut off vertically.
 				*/
@@ -453,12 +466,16 @@ Sidenotes = { ...Sidenotes,
 		if (Sidenotes.sidenoteColumnRight)
 			Sidenotes.sidenoteColumnRight.remove();
 		Sidenotes.sidenoteColumnRight = null;
+
+		if (Sidenotes.hiddenSidenoteStorage)
+			Sidenotes.hiddenSidenoteStorage.remove();
+		Sidenotes.hiddenSidenoteStorage = null;
 	},
 
 	/*  Constructs the HTML structure, and associated listeners and auxiliaries,
 		of the sidenotes.
 		*/
-	constructSidenotes: () => {
+	constructSidenotes: (loadEventInfo) => {
 		GWLog("Sidenotes.constructSidenotes", "sidenotes.js", 1);
 
 		/*  Do nothing if constructSidenotes() somehow gets run extremely early 
@@ -467,6 +484,8 @@ Sidenotes = { ...Sidenotes,
 		let markdownBody = document.querySelector("#markdownBody");
 		if (!markdownBody)
 			return;
+
+		//	
 
 		//	Destroy before creating.
 		Sidenotes.deconstructSidenotes();
@@ -479,6 +498,13 @@ Sidenotes = { ...Sidenotes,
 			column.style.visibility = "hidden";
 			markdownBody.append(column);
 		});
+
+		//	Add the hidden sidenote storage.
+		markdownBody.append(Sidenotes.hiddenSidenoteStorage = newElement("DIV", {
+			"id": "hidden-sidenote-storage", 
+			"class": "footnotes",
+			"style": "display:none" 
+		}));
 
 		/*  Create and inject the sidenotes.
 			*/
@@ -510,14 +536,53 @@ Sidenotes = { ...Sidenotes,
 			//  Add the sidenote to the sidenotes array...
 			Sidenotes.sidenoteDivs.push(sidenote);
 
-			//  On which side should the sidenote go? Odd - right; even - left.
-			let side = (i % 2) ? Sidenotes.sidenoteColumnRight : Sidenotes.sidenoteColumnLeft;
+			//	Inject the sidenote into the page.
+			Sidenotes.hiddenSidenoteStorage.append(sidenote);
+		}
 
-			//  Inject the sidenote into the page.
-			side.appendChild(sidenote);
+		/*  Bind sidenote mouse-hover events.
+			*/
+		for (let i = 0; i < Sidenotes.citations.length; i++) {
+			let citation = Sidenotes.citations[i];
+			let sidenote = Sidenotes.sidenoteDivs[i];
+
+			//	Unbind existing events, if any.
+			if (sidenote.sidenoteEnter)
+				sidenote.removeEventListener("mouseenter", sidenote.sidenoteEnter);
+			if (sidenote.sidenoteLeave)
+				sidenote.removeEventListener("mouseleave", sidenote.sidenoteLeave);
+
+			//	Bind new events.
+			sidenote.addEventListener("mouseenter", sidenote.sidenoteEnter = (event) => {
+				citation.classList.toggle("highlighted", true);
+			});
+			sidenote.addEventListener("mouseleave", sidenote.sidenoteLeave = (event) => {
+				citation.classList.toggle("highlighted", false);
+			});
 		}
 
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
+
+		/*	If re-constructing (i.e., if this function is being called after the
+			initial page load), fire events.
+		 */
+		if (loadEventInfo.isMainDocument != true) {
+			let mainPageLocation = urlSansHash(location);
+
+			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+				source: "Sidenotes.constructSidenotes",
+				document: Sidenotes.hiddenSidenoteStorage,
+				loadLocation: mainPageLocation,
+				baseLocation: mainPageLocation,
+				flags: 0
+			});
+
+			GW.notificationCenter.fireEvent("GW.contentDidInject", {
+				source: "Sidenotes.constructSidenotes",
+				document: Sidenotes.hiddenSidenoteStorage,
+				mainPageContent: true
+			});
+		}
 	},
 
 	cleanup: () => {
@@ -527,7 +592,6 @@ Sidenotes = { ...Sidenotes,
 			*/
 		cancelDoWhenMatchMedia("Sidenotes.rewriteHashForCurrentMode");
 		cancelDoWhenMatchMedia("Sidenotes.rewriteCitationTargetsForCurrentMode");
-		cancelDoWhenMatchMedia("Sidenotes.bindOrUnbindEventListenersForCurrentMode");
 		cancelDoWhenMatchMedia("Sidenotes.addOrRemoveEventHandlersForCurrentMode");
 
 		/*	Remove sidenotes & auxiliaries from HTML.
@@ -576,6 +640,32 @@ Sidenotes = { ...Sidenotes,
 		if (GW.isMobile())
 			return;
 
+		/*	Update the margin note style, and add event listener to re-update it
+			when the viewport width changes. Also add event handler to update
+			margin note style in transcluded content.
+			*/
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
+			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
+				document.querySelectorAll(".marginnote").forEach(marginNote => {
+					marginNote.swapClasses([ "inline", "sidenote" ], (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches ? 0 : 1));
+				});
+			});
+		}, { 
+			phase: "rewrite",
+			condition: (info) => (   info.needsRewrite 
+								  && info.isMainDocument),
+			once: true
+		});
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
+			info.document.querySelectorAll(".marginnote").forEach(marginNote => {
+				marginNote.swapClasses([ "inline", "sidenote" ], (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches ? 0 : 1));
+			});
+		}, { 
+			phase: "rewrite",
+			condition: (info) => (   info.needsRewrite 
+								  && info.baseLocation.pathname == location.pathname) 
+		});
+
 		/*  In footnote mode (ie. on viewports too narrow to support sidenotes),
 			footnote reference links (i.e., citations) should point down to 
 			footnotes (this is the default state). But in sidenote mode, 
@@ -610,45 +700,51 @@ Sidenotes = { ...Sidenotes,
 			});
 		}, { once: true });
 
-		/*  Bind sidenote mouse-hover events.
-			*/
-		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", Sidenotes.bindSidenoteMouseEvents = (info) => {
-			GWLog("Sidenotes.bindSidenoteMouseEvents", "sidenotes.js", 2);
-
-			for (let i = 0; i < Sidenotes.citations.length; i++) {
-				let citation = Sidenotes.citations[i];
-				let sidenote = Sidenotes.sidenoteDivs[i];
-
-				sidenote.addEventListener("mouseenter", sidenote.sidenoteover = (event) => {
-					citation.classList.toggle("highlighted", true);
-				});
-				sidenote.addEventListener("mouseleave", sidenote.sidenoteout = (event) => {
-					citation.classList.toggle("highlighted", false);
+		/*	What happens if the page loads with a URL hash that points to a 
+			sidenote or footnote or citation? We need to scroll appropriately,
+			and do other adjustments, just as we do when the hash updates.
+		 */
+		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotePositionsDidUpdate", Sidenotes.updateStateAfterHashChange = (info) => {
+			if (location.hash.match(/#sn[0-9]/)) {
+				revealElement(document.querySelector("#fnref" + Sidenotes.noteNumberFromHash()), false);
+				requestAnimationFrame(() => {
+					scrollElementIntoView(getHashTargetedElement(), (-1 * Sidenotes.sidenotePadding));
 				});
 			}
+
+			/*	Hide mode selectors, as they would otherwise overlap a 
+				sidenote that’s on the top-right.
+			 */
+			if (Sidenotes.noteNumberFromHash() > "") {
+				requestAnimationFrame(() => {
+					setTimeout(() => {
+						DarkMode.hideModeSelector();
+						ReaderMode.hideModeSelector();
+					}, 25);
+				});
+			}
+
+			//	Update highlighted state of sidenote and citation, if need be.
+			requestAnimationFrame(() => {
+				Sidenotes.updateTargetCounterpart();
+			});
 		}, { once: true });
 
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.addOrRemoveEventHandlersForCurrentMode", (mediaQuery) => {
 				/*	Deactivate notification handlers.
 					*/
-				GW.notificationCenter.removeHandlerForEvent("Rewrite.hashDidRealign", Sidenotes.updateStateAfterHashDidRealign);
+				GW.notificationCenter.removeHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
 				GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
 				GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
 				GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
+				window.removeEventListener("resize", Sidenotes.windowResized);
 			}, (mediaQuery) => {
 				/*  After the hash updates, properly highlight everything, if needed.
 					Also, if the hash points to a sidenote whose citation is in a
 					collapse block, expand it and all collapse blocks enclosing it.
 					*/
-				GW.notificationCenter.addHandlerForEvent("Rewrite.hashDidRealign", Sidenotes.updateStateAfterHashDidRealign = (info) => {
-					if (location.hash.match(/#sn[0-9]/)) {
-						revealElement(document.querySelector("#fnref" + Sidenotes.noteNumberFromHash()), false);
-						scrollElementIntoView(getHashTargetedElement(), (-1 * Sidenotes.sidenotePadding));
-					}
-
-					Sidenotes.updateTargetCounterpart();
-				});
+				GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
 
 				/*	Add event handler to (asynchronously) recompute sidenote positioning
 					when full-width media lazy-loads.
@@ -673,13 +769,23 @@ Sidenotes = { ...Sidenotes,
 				GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange = (info) => {
 					requestAnimationFrame(Sidenotes.updateSidenotePositions);
 				}, { condition: (info) => (info.document == document) });
+
+				/*  Add a resize listener so that sidenote positions are recalculated when
+					the window is resized.
+					*/
+				window.addEventListener("resize", Sidenotes.windowResized = (event) => {
+					GWLog("Sidenotes.windowResized", "sidenotes.js", 2);
+
+					requestAnimationFrame(Sidenotes.updateSidenotePositions);
+				});
 			}, (mediaQuery) => {
 				/*	Deactivate notification handlers.
 					*/
-				GW.notificationCenter.removeHandlerForEvent("Rewrite.hashDidRealign", Sidenotes.updateStateAfterHashDidRealign);
+				GW.notificationCenter.removeHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
 				GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
 				GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
 				GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
+				window.removeEventListener("resize", Sidenotes.windowResized);
 			});
 		}, { once: true });
 
@@ -688,23 +794,14 @@ Sidenotes = { ...Sidenotes,
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
 			//	Lay out sidenotes once page layout is complete.
 			doWhenPageLayoutComplete(Sidenotes.updateSidenotePositions);
-
-			/*  Add a resize listener so that sidenote positions are recalculated when
-				the window is resized.
-				*/
-			window.addEventListener("resize", Sidenotes.windowResized = (event) => {
-				GWLog("Sidenotes.windowResized", "sidenotes.js", 2);
-
-				requestAnimationFrame(Sidenotes.updateSidenotePositions);
-			});
 		}, { once: true });
 
-		/*  Construct the sidenotes as soon as the HTML content is fully loaded.
+		/*  Construct the sidenotes when the main page content loads.
 			*/
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Sidenotes.constructSidenotesWhenMainContentLoads = (info) => {
 			GWLog("Sidenotes.constructSidenotesWhenMainContentLoads", "sidenotes.js", 1);
 
-			Sidenotes.constructSidenotes();
+			Sidenotes.constructSidenotes(info);
 		}, { 
 			phase: "<eventListeners", 
 			once: true, 
@@ -716,17 +813,6 @@ Sidenotes = { ...Sidenotes,
 };
 
 GW.notificationCenter.fireEvent("Sidenotes.didLoad");
-
-/*	Update the margin note style, and add event listener to re-update it
-	when the viewport width changes.
-	*/
-doWhenDOMContentLoaded(() => {
-	doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
-		document.querySelectorAll(".marginnote").forEach(marginNote => {
-			marginNote.swapClasses([ "inline", "sidenote" ], (mediaQuery.matches ? 0 : 1));
-		});
-	});
-});
 
 //  LET... THERE... BE... SIDENOTES!!!
 Sidenotes.setup();
