@@ -890,11 +890,6 @@ Extracts = {
 
         let target = popFrame.spawningTarget;
 
-        //  Rectify margin note style.
-        popFrame.body.querySelectorAll(".marginnote").forEach(marginNote => {
-            marginNote.swapClasses([ "inline", "sidenote" ], 0);
-        });
-
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",

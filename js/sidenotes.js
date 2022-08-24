@@ -667,7 +667,7 @@ Sidenotes = { ...Sidenotes,
 
 		/*	Update the margin note style, and add event listener to re-update it
 			when the viewport width changes. Also add event handler to update
-			margin note style in transcluded content.
+			margin note style in transcluded content and pop-frames.
 			*/
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
@@ -681,14 +681,10 @@ Sidenotes = { ...Sidenotes,
 								  && info.isMainDocument),
 			once: true
 		});
-		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 			info.document.querySelectorAll(".marginnote").forEach(marginNote => {
-				marginNote.swapClasses([ "inline", "sidenote" ], (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches ? 0 : 1));
+				marginNote.swapClasses([ "inline", "sidenote" ], ((Sidenotes.mediaQueries.viewportWidthBreakpoint.matches || info.mainPageContent != true) ? 0 : 1));
 			});
-		}, { 
-			phase: "rewrite",
-			condition: (info) => (   info.needsRewrite 
-								  && info.baseLocation.pathname == location.pathname) 
 		});
 
 		/*  In footnote mode (ie. on viewports too narrow to support sidenotes),
