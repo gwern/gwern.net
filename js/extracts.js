@@ -609,7 +609,9 @@ Extracts = {
             	let element = null;
                 if (   popFrame
                 	&& (element = popFrame.body.querySelector(selectorFromHash(target.hash))))
-                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
+                	requestAnimationFrame(() => {
+	                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
+	                });
             });
         }
     },
