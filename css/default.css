@@ -1317,11 +1317,16 @@ section.footnotes > hr:first-child.highlighted::before {
 }
 
 #sidenote-column-left,
-#sidenote-column-right {
-    position: absolute;
+#sidenote-column-right,
+#hidden-sidenote-storage {
+    font-size: 0.85em;
     width: calc(50vw - (50% + 96px));
     max-width: var(--GW-sidenotes-max-width);
-    font-size: 0.85em;
+}
+
+#sidenote-column-left,
+#sidenote-column-right {
+    position: absolute;
     z-index: 1;
     pointer-events: none;
 }

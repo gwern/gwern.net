@@ -1148,13 +1148,11 @@ Extracts = {
 		});
 
 		//	Add content update handler.
-		let contentUpdateHandler = ((info) => {
-			GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", contentUpdateHandler);
-
+		GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (info) => {
 			Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
-		});
-		GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", contentUpdateHandler, { 
-			condition: (info) => (info.baseLocation.pathname == target.pathname)
+		}, { 
+			condition: (info) => (info.baseLocation.pathname == target.pathname),
+			once: true
 		});
 
         return popFrame;
