@@ -217,6 +217,11 @@ function includeContent(includeLink, content) {
 	//	Are we including into the main page, or into a pop-frame or something?
 	let includingIntoMainPage = (doc == document);
 
+	//	Delete footnotes section, if any.
+	let newContentFootnotesSection = wrapper.querySelector("#footnotes");
+	if (newContentFootnotesSection)
+		newContentFootnotesSection.remove();
+
 	//	Update TOC, if need be.
 	if (includingIntoMainPage)
 		updatePageTOCAfterInclusion(wrapper, includeLink);
@@ -366,7 +371,7 @@ function updateFootnotesAfterInclusion(newContent, includeLink) {
 		return null;
 
 	let newContentDocument = newContent.getRootNode();
-	let footnotesSection = newContentDocument.querySelector("#footnotes");
+	let footnotesSection = newContentDocument.querySelector(".markdownBody > #footnotes");
 	if (!footnotesSection) {
 		footnotesSection = newElement("SECTION", { "id": "footnotes", "class": "footnotes", "role": "doc-endnotes" });
 		footnotesSection.append(newElement("HR"));
