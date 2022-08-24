@@ -1,4 +1,4 @@
-ReaderMode = { ...ReaderMode, ...{
+ReaderMode = { ...ReaderMode, 
 	/*****************/
 	/*	Configuration.
 	 */
@@ -513,7 +513,7 @@ ReaderMode = { ...ReaderMode, ...{
 			}
 		}
 	},
-}};
+};
 
 GW.notificationCenter.fireEvent("ReaderMode.didLoad");
 

@@ -32,7 +32,7 @@
 	by providing a widget at the top of the page.
  */
 
-DarkMode = { ...DarkMode, ...{
+DarkMode = { ...DarkMode, 
 	/*****************/
 	/*	Configuration.
 	 */
@@ -253,11 +253,10 @@ DarkMode = { ...DarkMode, ...{
 
 		DarkMode.modeSelector.classList.add("hidden");
 	}
-}};
+};
 
 GW.notificationCenter.fireEvent("DarkMode.didLoad");
 
 doWhenPageLoaded(() => {
     DarkMode.setup();
 });
-s

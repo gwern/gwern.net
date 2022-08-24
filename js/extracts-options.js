@@ -1,4 +1,4 @@
-Extracts = { ...Extracts, ...{
+Extracts = { ...Extracts, 
 	/**********/
 	/*	Popins.
 	 */
@@ -277,7 +277,7 @@ Extracts = { ...Extracts, ...{
 		Extracts.popupsDisabledShowPopupOptionsDialogButton.remove();
 		Extracts.popupsDisabledShowPopupOptionsDialogButton = null;
 	}
-}};
+};
 
 //  Inject “popups disabled” icon/button, if need be.
 if (!Extracts.popupsEnabled())

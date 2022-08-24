@@ -80,7 +80,7 @@
          GW.contentDidLoad event.)
 */
 
-Extracts = { ...Extracts, ...{
+Extracts = { ...Extracts, 
 	//	Called by: Extracts.videoForTarget
 	//	Called by: Extracts.localDocumentForTarget
 	//	Called by: Extracts.foreignSiteForTarget
@@ -98,7 +98,7 @@ Extracts = { ...Extracts, ...{
             				></iframe>`;
         }
 	},
-}};
+};
 
 /*=-----------------=*/
 /*= AUXILIARY LINKS =*/
@@ -112,7 +112,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "aux-links"             // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, ...{
+Extracts = { ...Extracts, 
     auxLinksCache: { },
 
     //  Called by: Extracts.isAuxLinksLink
@@ -214,7 +214,7 @@ Extracts = { ...Extracts, ...{
             }
         });
     }
-}};
+};
 
 /*=-----------=*/
 /*= CITATIONS =*/
@@ -228,7 +228,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "footnote"              // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, ...{
+Extracts = { ...Extracts, 
     //  Called by: extracts.js (as `predicateFunctionName`)
     isCitation: (target) => {
         return target.classList.contains("footnote-ref");
@@ -300,7 +300,7 @@ Extracts = { ...Extracts, ...{
             flags: 0
         });
     },
-}};
+};
 
 /*=---------------------=*/
 /*= CITATIONS BACKLINKS =*/
@@ -314,7 +314,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "citation-context"                  // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, ...{
+Extracts = { ...Extracts, 
     //  Called by: extracts.js (as `predicateFunctionName`)
     isCitationBackLink: (target) => {
         return target.classList.contains("footnote-back");
@@ -382,7 +382,7 @@ Extracts = { ...Extracts, ...{
         //  Scroll to the citation.
 		Extracts.scrollToTargetedElementInPopFrame(target, popup);
     }
-}};
+};
 
 /*=---------------=*/
 /*= REMOTE VIDEOS =*/
@@ -396,7 +396,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "video object"          // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, ...{
+Extracts = { ...Extracts, 
     // Called by: Extracts.isVideoLink
     // Called by: Extracts.videoForTarget
     youtubeId: (href) => {
@@ -443,7 +443,7 @@ Extracts = { ...Extracts, ...{
         return newDocument(Extracts.objectHTMLForURL(videoEmbedURL, 
 			`srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`));
     }
-}};
+};
 
 /*=-----------------------=*/
 /*= LOCALLY HOSTED VIDEOS =*/
@@ -457,7 +457,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "video object"              // Pop-frame class
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, ...{
+Extracts = { ...Extracts, 
     //  Used in: Extracts.isLocalVideoLink
     videoFileExtensions: [ "mp4" ],
 
@@ -502,7 +502,7 @@ Extracts = { ...Extracts, ...{
         //  Loading spinner.
         Extracts.setLoadingSpinner(popFrame);
     }
-}};
+};
 
 /*=-----------------------=*/
 /*= LOCALLY HOSTED IMAGES =*/
@@ -516,7 +516,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "image object"              // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, ...{
+Extracts = { ...Extracts, 
     //  Used in: Extracts.isLocalImageLink
     imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ],
 
@@ -606,7 +606,7 @@ Extracts = { ...Extracts, ...{
         if (popup.body.querySelector("img[width][height]"))
             popup.classList.add("dimensions-specified");
     },
-}};
+};
 
 /*=--------------------------=*/
 /*= LOCALLY HOSTED DOCUMENTS =*/
@@ -620,7 +620,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "local-document object"         // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, ...{
+Extracts = { ...Extracts, 
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalDocumentLink: (target) => {
         if (   target.hostname != location.hostname
@@ -664,7 +664,7 @@ Extracts = { ...Extracts, ...{
         //  Loading spinner.
         Extracts.setLoadingSpinner(popFrame);
     }
-}};
+};
 
 /*=---------------------------=*/
 /*= LOCALLY HOSTED CODE FILES =*/
@@ -678,7 +678,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "local-code-file"               // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, ...{
+Extracts = { ...Extracts, 
 	codeFilesCache: { },
 
     //  Used in: Extracts.isLocalCodeFileLink
@@ -765,7 +765,7 @@ Extracts = { ...Extracts, ...{
 
         return newDocument();
     },
-}};
+};
 
 /*=----------------=*/
 /*= OTHER WEBSITES =*/
@@ -779,7 +779,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "foreign-site object"       // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, ...{
+Extracts = { ...Extracts, 
     //  Called by: extracts.js (as `predicateFunctionName`)
     isForeignSiteLink: (target) => {
         if (   target.hostname == location.hostname
@@ -899,4 +899,4 @@ Extracts = { ...Extracts, ...{
         //  Loading spinner.
         Extracts.setLoadingSpinner(popFrame);
     }
-}};
+};

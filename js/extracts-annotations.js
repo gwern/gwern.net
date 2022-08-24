@@ -53,7 +53,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "annotation"                // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, ...{
+Extracts = { ...Extracts, 
     //  Used in: Extracts.setUpAnnotationLoadEventWithin
     annotatedTargetSelectors: [ "a.link-annotated" ],
 
@@ -478,4 +478,4 @@ Extracts = { ...Extracts, ...{
             Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
         }, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
     }
-}};
+};
