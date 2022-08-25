@@ -827,7 +827,6 @@ Sidenotes = { ...Sidenotes,
 
 			Sidenotes.constructSidenotes(info);
 		}, { 
-			phase: "<eventListeners", 
 			condition: (info) => (   info.mainPageContent == true
 								  && info.source != "Sidenotes.constructSidenotes")
 		});

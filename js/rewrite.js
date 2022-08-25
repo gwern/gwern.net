@@ -456,7 +456,7 @@ function markFullWidthFigures(loadEventInfo) {
     });
 
     /*  Add ‘load’ listener for lazy-loaded media (as it might cause re-layout
-        of eg. sidenotes). Do this only after page layout is complete, to avoid
+        of e.g. sidenotes). Do this only after page layout is complete, to avoid
         spurious re-layout at initial page load.
      */
     doWhenPageLayoutComplete(() => {
@@ -1017,7 +1017,9 @@ function allNotesForCitation(citation) {
 function bindNoteHighlightEventsToCitations(loadEventInfo) {
     GWLog("bindNoteHighlightEventsToCitations", "rewrite.js", 1);
 
-    loadEventInfo.document.querySelectorAll(".footnote-ref").forEach(citation => {
+	let allCitations = loadEventInfo.document.querySelectorAll(".footnote-ref");
+
+	let bindEventsToCitation = (citation) => {
         //  Unbind existing events, if any.
         if (citation.citationMouseEnter)
         	citation.removeEventListener("mouseenter", citation.citationMouseEnter);
@@ -1036,6 +1038,16 @@ function bindNoteHighlightEventsToCitations(loadEventInfo) {
                 note.classList.toggle("highlighted", false);
             });
         });
+	};
+
+	//	Bind events.
+    allCitations.forEach(bindEventsToCitation);
+
+	//	Add handler to re-bind events if more notes are injected.
+    GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+	    allCitations.forEach(bindEventsToCitation);
+    }, { condition: (info) => (   info.mainPageContent 
+    						   || info.baseLocation == loadEventInfo.baseLocation)
     });
 }
 
