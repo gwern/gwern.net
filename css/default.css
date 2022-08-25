@@ -1312,8 +1312,8 @@ section.footnotes > hr:first-child.highlighted::before {
 /*************/
 
 .sidenote-layout-cell {
-	position: absolute;
-	width: 100%;
+    position: absolute;
+    width: 100%;
 }
 
 #sidenote-column-left,
@@ -1730,6 +1730,17 @@ th.tablesorter-headerDesc:hover {
 .markdownBody table tbody tr:hover {
     outline: 1px dotted var(--GW-table-row-hover-outline-color);
 }
+
+/* Floating tables: float small by default because if they are 'small', they don't need the full body column */
+.table-small { float: left;
+               max-width: calc(50% - 1.5em);
+               margin: 0 1.5em 1em 0;
+             }
+/* We may wish to alternate side for many small tables in success: */
+.table-small.float-right { float: right;
+               max-width: calc(50% - 1.5em);
+               margin: 0 0 1.5em 1em;
+             }
 
 /*  Tables in blockquotes.
     */
@@ -2405,10 +2416,10 @@ span.link-bibliography a {
 /* This is variant #6, 'HORIZONTAL ELLIPSIS/​subscripted year'. */
 /* This relies on the 'citefyInline' pass in Typography.hs: the author ('Foo', or 'Foo & Bar') is put in span.cite-author, the 'et al' joiner (if any) in span.cite-joiner, and the year date in span.cite-date. For 'Foo 2020' or 'Foo & Bar 2020', there is no joiner, only for 'et al'; this lets us replace the et al with an ellipsis while subscripting the year in all cases. */
 a .cite {
-	margin-left: 2px;
+    margin-left: 2px;
 }
 
-/*	Author
+/*  Author
  */
 .cite-author-plural::after {
     content: "...";
@@ -2419,13 +2430,13 @@ a .cite-author-plural::after {
     margin-right: 0;
 }
 
-/*	“et al”
+/*  “et al”
  */
 .cite-joiner {
     display: none;
 }
 
-/*	Date
+/*  Date
  */
 .cite-date {
     vertical-align: -0.35ex;
@@ -4631,7 +4642,7 @@ section.highlight-fading::before {
     margin-bottom: 0.375em;
 }
 .annotation .data-field.title + p {
-	text-indent: 0;
+    text-indent: 0;
 }
 .annotation .data-field.author {
     font-style: italic;
@@ -4655,10 +4666,10 @@ section.highlight-fading::before {
     display: none;
 }
 
-/*	In indexes and such.
+/*  In indexes and such.
  */
 .data-field.title {
-	text-indent: 0;
+    text-indent: 0;
 }
 
 /*  Images (such as the ones in Wikipedia annotations).
@@ -5252,21 +5263,21 @@ section.highlight-fading::before {
 /****************/
 
 a.include:empty {
-	margin: 0;
+    margin: 0;
 }
 .markdownBody a.include:empty {
-	background: none;
+    background: none;
 }
 
 a.include-loading {
-	pointer-events: none;
-	--spinner-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M222.7 32.15C227.7 49.08 218.1 66.9 201.1 71.94C121.8 95.55 64 169.1 64 255.1C64 362 149.1 447.1 256 447.1C362 447.1 448 362 448 255.1C448 169.1 390.2 95.55 310.9 71.94C293.9 66.9 284.3 49.08 289.3 32.15C294.4 15.21 312.2 5.562 329.1 10.6C434.9 42.07 512 139.1 512 255.1C512 397.4 397.4 511.1 256 511.1C114.6 511.1 0 397.4 0 255.1C0 139.1 77.15 42.07 182.9 10.6C199.8 5.562 217.6 15.21 222.7 32.15V32.15z"/></svg>');
+    pointer-events: none;
+    --spinner-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M222.7 32.15C227.7 49.08 218.1 66.9 201.1 71.94C121.8 95.55 64 169.1 64 255.1C64 362 149.1 447.1 256 447.1C362 447.1 448 362 448 255.1C448 169.1 390.2 95.55 310.9 71.94C293.9 66.9 284.3 49.08 289.3 32.15C294.4 15.21 312.2 5.562 329.1 10.6C434.9 42.07 512 139.1 512 255.1C512 397.4 397.4 511.1 256 511.1C114.6 511.1 0 397.4 0 255.1C0 139.1 77.15 42.07 182.9 10.6C199.8 5.562 217.6 15.21 222.7 32.15V32.15z"/></svg>');
 }
 
 /*  Loading spinner.
  */
 a.include-loading::after {
-	display: inline-block;
+    display: inline-block;
     animation: fa-spin 2s infinite linear;
     position: relative;
     opacity: 0.5;
@@ -5275,7 +5286,7 @@ a.include-loading::after {
 
 a.include-loading:empty::after {
     content: var(--spinner-image);
-	width: 1.25em;
+    width: 1.25em;
     height: 1.25em;
     margin: 0;
 }
@@ -5286,7 +5297,7 @@ a.include-loading[data-link-icon]:not(:empty)::after {
 }
 a.include-loading:not(:empty)::after {
     --spinner-size: var(--link-icon-size, 0.85em);
-    
+
     background-size: var(--spinner-size);
     content: "";
     width: var(--spinner-size);
@@ -5301,7 +5312,5 @@ a.include-loading[data-link-icon]:not(:empty)::after {
 }
 
 a.include-loading.include-no-spinner::after {
-	display: none;
+    display: none;
 }
-
-

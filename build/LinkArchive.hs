@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-08-18 09:12:44 gwern"
+When:  Time-stamp: "2022-08-23 13:20:43 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -93,11 +93,10 @@ frustration, and a considerable waste of my time every month dealing with the la
 {-# LANGUAGE OverloadedStrings #-}
 module LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata) where
 
-import Control.Monad (filterM)
+import Control.Monad (filterM, unless)
 import Data.IORef (IORef, readIORef, writeIORef)
 import qualified Data.Map.Strict as M (fromList, insert, lookup, toAscList, Map)
 import Data.List (isInfixOf, isPrefixOf)
-import Utils (replace)
 import Data.Maybe (isNothing, fromMaybe)
 import Text.Read (readMaybe)
 import qualified Data.Text.IO as TIO (readFile)
@@ -113,12 +112,13 @@ import Data.ByteString.Base16 (encode) -- base16-bytestring
 import Crypto.Hash.SHA1 (hash) -- cryptohash
 import Data.ByteString.Char8 (pack, unpack)
 import System.FilePath (takeFileName)
+import System.Directory (doesFileExist)
 
-import Utils (writeUpdatedFile, printGreen, printRed, sed, addClass, anyInfix, anyPrefix, anySuffix, currentDay)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, addClass, anyInfix, anyPrefix, anySuffix, currentDay, replace)
 
 archiveDelay, archivePerRunN :: Integer
 archiveDelay = 60
-archivePerRunN = 40
+archivePerRunN = 5
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg. 2019-11-22 = 58810
@@ -161,7 +161,10 @@ readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/ar
                                                         else
                                                           if isNothing (parseTLD p) then
                                                            printRed ("Error! Invalid URI link in archive? ") >> print (show p ++ show u ++ show ami) >> return False
-                                                          else do size <- getFileStatus (takeWhile (/='#') $ tail u) >>= \s -> return $ fileSize s
+                                                          else do let filepath = takeWhile (/='#') $ tail u
+                                                                  exists <- doesFileExist filepath
+                                                                  unless exists $ error ("Archive file not found: " ++ filepath ++ " (original path: " ++ show (p,ami) ++ ")")
+                                                                  size <- getFileStatus filepath >>= \s -> return $ fileSize s
                                                                   if size == 0 then
                                                                     printRed "Error! Empty archive file. Not using: " >> print (show p ++ show u ++ show ami) >> return False
                                                                     else if size > 1024 then return True else return False
@@ -194,16 +197,19 @@ rewriteLink adb archivedN url = do
   fromMaybe url <$> if whiteList url then return Nothing else
     case M.lookup url adb of
       Nothing -> Nothing <$ insertLinkIntoDB (Left today) url
-      Just (Left firstSeen) -> if (today - firstSeen < archiveDelay) && not ("pdf" `isInfixOf` url)
+      Just (Left firstSeen) -> if ((today - firstSeen) < archiveDelay) && not ("pdf" `isInfixOf` url)
         then return Nothing
         else do
-          -- have we already done a link archive this run? If so, skip all additional link archives
-          archivedAlreadyP <- readIORef archivedN
-          if archivedAlreadyP > 0 then (do archive <- archiveURL (transformURLsForArchiving url)
-                                           insertLinkIntoDB (Right archive) url
-                                           writeIORef archivedN (archivedAlreadyP - 1)
-                                           return archive)
-          else return Nothing
+                 let url' = transformURLsForArchiving url
+                 archivedP <- archiveURLCheck url'
+                 if archivedP then archiveURL url'
+                 else do archivedNAlreadyP <- readIORef archivedN
+                         -- have we already used up our link archive 'budget' this run? If so, skip all additional link archives
+                         if archivedNAlreadyP > 0 then do archive <- archiveURL url'
+                                                          insertLinkIntoDB (Right archive) url
+                                                          writeIORef archivedN (archivedNAlreadyP - 1)
+                                                          return archive
+                         else return Nothing
       Just (Right archive) -> if archive == Just "" then printRed "Error! Tried to return a link to a non-existent archive! " >> print url >> return Nothing else return archive
 
 insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
@@ -211,13 +217,21 @@ insertLinkIntoDB a url = do adb <- readArchiveMetadata
                             let adb' = M.insert url a adb
                             writeUpdatedFile "archive-metadata-auto.db.hs" "metadata/archive.hs" (T.pack $ ppShow $ M.toAscList adb')
 
+-- has a URL been archived already (ie. does a hashed file exist?)
+archiveURLCheck :: String -> IO Bool
+archiveURLCheck l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArchive.sh" [l, "--check"]
+                       case exit of
+                         ExitSuccess -> return $ stdout /= ""
+                         ExitFailure _ -> printRed (l ++ " : archiving script existence-check failed to run correctly: ") >> print (U.toString stderr') >> return False
+
 -- take a URL, archive it, and if successful return the hashed path
 archiveURL :: String -> IO (Maybe Path)
 archiveURL l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArchive.sh" [l]
                   case exit of
-                     ExitSuccess -> do printGreen ( "Archiving (LinkArchive.hs): " ++ l ++ " returned: " ++ U.toString stdout)
-                                       return $ Just $ U.toString stdout
-                     ExitFailure _ -> printRed (l ++ " : archiving failed: ") >> print (U.toString stderr') >> return Nothing
+                     ExitSuccess -> do let result = U.toString stdout
+                                       printGreen ( "Archiving (LinkArchive.hs): " ++ l ++ " returned: " ++ result)
+                                       if result == "" then return Nothing else return $ Just $ "/" ++ result
+                     ExitFailure _ -> printRed (l ++ " : archiving script failed to run correctly: ") >> print (U.toString stderr') >> return Nothing
 
 -- sometimes we may want to do automated transformations of a URL *before* we check any whitelists. In the case of
 -- Arxiv, we want to generate the PDF equivalent of the HTML abstract landing page, so the PDF gets archived, but then
@@ -1201,5 +1215,7 @@ whiteList url
       , "https://wenlong.page/modular-rl/" -- low quality (video embeds)
       , "https://retinagan.github.io/" -- low quality (entire page broken?)
       , "https://speechresearch.github.io/deepsinger/" -- low quality (sound embeds)
+      , "https://sites.google.com/view/efficient-robotic-manipulation" -- low quality (video embeds)
+      , "https://next-week-tonight.github.io/NWT/" -- low quality (video embeds)
       ] = True
     | otherwise = False

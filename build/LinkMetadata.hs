@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-08-18 09:38:36 gwern"
+When:  Time-stamp: "2022-08-24 20:41:46 gwern"
 License: CC-0
 -}
 
@@ -2203,6 +2203,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(4\\sim 16\\times\\)</span>", "4–16×")
           , ("<span class=\"math inline\">\\(\\exp({\\Omega}(d))\\)</span>", "exp(Ω(<em>d</em>))")
           , ("<span class=\"math inline\">\\(\\exp({\\mathcal{O}}(k))\\)</span>", "exp(𝑂(<em>k</em>))")
+          , ("<span class=\"math inline\">\\(\\mathcal{M}\\)</span>", "𝓜")
+          , ("<span class=\"math inline\">\\(p_T\\)</span>", "<em>p<sub>T</sub></em>")
+          , ("<span class=\"math inline\">\\(\\nabla \\log p_t\\)</span>", "∇ log <em>p<sub>t</sub></em>")
           , ("<span class=\"math inline\">\\(k \\ll d\\)</span>", "<em>k</em> ≪ <em>d</em>")
           , ("<span class=\"math inline\">\\(a^nb^mc^{n+m}\\)</span>", "<em>a<sup>n</sup>b<sup>m</sup>c<sup>n+m</sup>")
           , ("<span class=\"math inline\">\\(a^nb^{2n}\\)</span>", "<em>a<sup>n</sup>b<sup>2n</sup>")
