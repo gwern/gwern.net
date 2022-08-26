@@ -756,7 +756,22 @@ Sidenotes = { ...Sidenotes,
 				Sidenotes.slideLockSidenote(sidenote);
 
 				requestAnimationFrame(() => {
-					scrollElementIntoView(getHashTargetedElement(), (-1 * Sidenotes.sidenotePadding));
+					scrollElementIntoView(sidenote, (-1 * Sidenotes.sidenotePadding));
+
+					Sidenotes.unSlideLockSidenote(sidenote);
+				});
+			} else if (location.hash.match(/#fnref[0-9]/)) {
+				let citation = getHashTargetedElement();
+				let sidenote = Sidenotes.counterpart(citation);
+
+				Sidenotes.slideLockSidenote(sidenote);
+
+				requestAnimationFrame(() => {
+					let sidenoteRect = sidenote.getBoundingClientRect();
+					let citationRect = citation.getBoundingClientRect();
+					if (   sidenoteRect.top < Sidenotes.sidenotePadding
+						&& citationRect.bottom + (-1 * (sidenoteRect.top - Sidenotes.sidenotePadding)) < window.innerHeight)
+						scrollElementIntoView(sidenote, (-1 * Sidenotes.sidenotePadding));
 
 					Sidenotes.unSlideLockSidenote(sidenote);
 				});
