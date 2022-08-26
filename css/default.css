@@ -1356,23 +1356,36 @@ section.footnotes > hr:first-child.highlighted::before {
     opacity: 0.85;
     line-height: 1.5;
     padding: 2em 0 0 0;
+    transition: 
+    	opacity 0.25s ease-in,
+        transform 0.25s ease-in;
+}
+.sidenote.displaced {
+    transition: 
+    	opacity 0.25s ease-out,
+        transform 0.25s ease-out;
 }
 .sidenote.hidden {
     display: none;
 }
+.sidenote.displaced,
 .sidenote.highlighted,
 .sidenote:hover,
 .sidenote:target,
 .sidenote.targeted {
     background-color: var(--GW-sidenote-highlight-background-color);
     opacity: 1.0;
+    box-shadow: 0 0 0 16px var(--GW-sidenote-highlight-background-color);
 }
 .sidenote:target {
     z-index: 1;
 }
+.sidenote.displaced {
+	z-index: 2;
+}
 .sidenote.highlighted,
 .sidenote:hover {
-    z-index: 2;
+    z-index: 3;
 }
 
 /*  This provides a solid hover margin.
@@ -1385,6 +1398,7 @@ section.footnotes > hr:first-child.highlighted::before {
     top: -13px;
     left: -13px;
 }
+.sidenote.displaced::after,
 .sidenote.highlighted::after,
 .sidenote:hover::after,
 .sidenote:target::after,

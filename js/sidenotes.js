@@ -572,17 +572,36 @@ Sidenotes = { ...Sidenotes,
 			let sidenote = Sidenotes.counterpart(citation);
 
 			//	Unbind existing events, if any.
-			if (sidenote.sidenoteEnter)
-				sidenote.removeEventListener("mouseenter", sidenote.sidenoteEnter);
-			if (sidenote.sidenoteLeave)
-				sidenote.removeEventListener("mouseleave", sidenote.sidenoteLeave);
+			if (sidenote.onSidenoteMouseEnterHighlightCitation)
+				sidenote.removeEventListener("mouseenter", sidenote.onSidenoteMouseEnterHighlightCitation);
+			if (sidenote.onSidenoteMouseLeaveUnhighlightCitation)
+				sidenote.removeEventListener("mouseleave", sidenote.onSidenoteMouseLeaveUnhighlightCitation);
+
+			if (citation.onCitationMouseEnterSlideSidenote)
+				citation.removeEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote);
+			if (sidenote.onSidenoteMouseEnterSlideSidenote)
+				sidenote.removeEventListener("mouseenter", sidenote.onSidenoteMouseEnterSlideSidenote);
+			if (sidenote.onSidenoteMouseLeaveUnslideSidenote)
+				sidenote.removeEventListener("mouseleave", sidenote.onSidenoteMouseLeaveUnslideSidenote);
 
 			//	Bind new events.
-			sidenote.addEventListener("mouseenter", sidenote.sidenoteEnter = (event) => {
+			sidenote.addEventListener("mouseenter", sidenote.onSidenoteMouseEnterHighlightCitation = (event) => {
 				citation.classList.toggle("highlighted", true);
 			});
-			sidenote.addEventListener("mouseleave", sidenote.sidenoteLeave = (event) => {
+			sidenote.addEventListener("mouseleave", sidenote.onSidenoteMouseLeaveUnhighlightCitation = (event) => {
 				citation.classList.toggle("highlighted", false);
+			});
+
+			citation.addEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote = (event) => {
+				Sidenotes.putAllSidenotesBack(sidenote);
+				Sidenotes.slideSidenoteIntoView(sidenote, true);
+			});
+			sidenote.addEventListener("mouseenter", sidenote.onSidenoteMouseEnterSlideSidenote = (event) => {
+				Sidenotes.putAllSidenotesBack(sidenote);
+				Sidenotes.slideSidenoteIntoView(sidenote, false);
+			});
+			sidenote.addEventListener("mouseleave", sidenote.onSidenoteMouseLeaveUnslideSidenote = (event) => {
+				Sidenotes.putSidenoteBack(sidenote);
 			});
 		});
 
@@ -729,23 +748,40 @@ Sidenotes = { ...Sidenotes,
 		 */
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotePositionsDidUpdate", Sidenotes.updateStateAfterHashChange = (info) => {
 			if (location.hash.match(/#sn[0-9]/)) {
-				revealElement(document.querySelector("#fnref" + Sidenotes.noteNumberFromHash()), false);
+				let citation = document.querySelector("#fnref" + Sidenotes.noteNumberFromHash());
+				let sidenote = Sidenotes.counterpart(citation);
+
+				revealElement(citation, false);
+
+				Sidenotes.slideLockSidenote(sidenote);
+
 				requestAnimationFrame(() => {
-					scrollElementIntoView(getHashTargetedElement(), (-1 * Sidenotes.sidenotePadding));
+					scrollElementIntoView(sidenote, (-1 * Sidenotes.sidenotePadding));
+
+					Sidenotes.unSlideLockSidenote(sidenote);
+				});
+			} else if (location.hash.match(/#fnref[0-9]/)) {
+				let citation = getHashTargetedElement();
+				let sidenote = Sidenotes.counterpart(citation);
+
+				Sidenotes.slideLockSidenote(sidenote);
+
+				requestAnimationFrame(() => {
+					let sidenoteRect = sidenote.getBoundingClientRect();
+					let citationRect = citation.getBoundingClientRect();
+					if (   sidenoteRect.top < Sidenotes.sidenotePadding
+						&& citationRect.bottom + (-1 * (sidenoteRect.top - Sidenotes.sidenotePadding)) < window.innerHeight)
+						scrollElementIntoView(sidenote, (-1 * Sidenotes.sidenotePadding));
+
+					Sidenotes.unSlideLockSidenote(sidenote);
 				});
 			}
 
 			/*	Hide mode selectors, as they would otherwise overlap a 
 				sidenote that’s on the top-right.
 			 */
-			if (Sidenotes.noteNumberFromHash() > "") {
-				requestAnimationFrame(() => {
-					setTimeout(() => {
-						DarkMode.hideModeSelector();
-						ReaderMode.hideModeSelector();
-					}, 25);
-				});
-			}
+			if (Sidenotes.noteNumberFromHash() > "")
+				Sidenotes.hideInterferingUIElements();
 
 			//	Update highlighted state of sidenote and citation, if need be.
 			requestAnimationFrame(() => {
@@ -755,13 +791,15 @@ Sidenotes = { ...Sidenotes,
 
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.addOrRemoveEventHandlersForCurrentMode", (mediaQuery) => {
-				/*	Deactivate notification handlers.
+				/*	Deactivate event handlers.
 					*/
 				GW.notificationCenter.removeHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
 				GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
 				GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
 				GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
 				window.removeEventListener("resize", Sidenotes.windowResized);
+				GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents);
+				removeScrollListener("Sidenotes.unSlideSidenotesOnScroll");
 			}, (mediaQuery) => {
 				/*  After the hash updates, properly highlight everything, if needed.
 					Also, if the hash points to a sidenote whose citation is in a
@@ -801,14 +839,38 @@ Sidenotes = { ...Sidenotes,
 
 					requestAnimationFrame(Sidenotes.updateSidenotePositions);
 				});
+
+				/*	Add handler to bind more sidenote-slide events if more 
+					citations are injected (e.g., in a popup).
+				 */
+				GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents = (info) => {
+					info.document.querySelectorAll("a.footnote-ref").forEach(citation => {
+						if (citation.pathname != location.pathname)
+							return;
+
+						let sidenote = Sidenotes.counterpart(citation);
+						citation.addEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote = (event) => {
+							Sidenotes.putAllSidenotesBack(sidenote);
+							Sidenotes.slideSidenoteIntoView(sidenote, false);
+						});
+					});
+				}, { condition: (info) => (info.mainPageContent == false) });
+
+				/*	Add a scroll listener to un-slide all sidenotes on scroll.
+				 */
+				addScrollListener((event) => {
+					Sidenotes.putAllSidenotesBack();
+				}, "Sidenotes.unSlideSidenotesOnScroll", true, false);
 			}, (mediaQuery) => {
-				/*	Deactivate notification handlers.
+				/*	Deactivate event handlers.
 					*/
 				GW.notificationCenter.removeHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
 				GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
 				GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
 				GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
 				window.removeEventListener("resize", Sidenotes.windowResized);
+				GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents);
+				removeScrollListener("Sidenotes.unSlideSidenotesOnScroll");
 			});
 		}, { once: true });
 
@@ -832,7 +894,110 @@ Sidenotes = { ...Sidenotes,
 		});
 
 		GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");
-	}
+	},
+
+	hideInterferingUIElements: () => {
+		requestAnimationFrame(() => {
+			setTimeout(() => {
+				DarkMode.hideModeSelector();
+				ReaderMode.hideModeSelector();
+
+				GW.backToTop.classList.toggle("hidden", true)
+			}, 25);
+		});
+	},
+
+	/**************/
+	/*	Slidenotes.
+	 */
+
+	displacedSidenotes: [ ],
+
+	/*	If the sidenote is offscreen, slide it onto the screen.
+	 */
+	slideSidenoteIntoView: (sidenote, toCitation) => {
+		GWLog("Sidenotes.slideSidenoteIntoView", "sidenotes.js", 3);
+
+		Sidenotes.hideInterferingUIElements();
+
+		if (sidenote.style.transform == "none")
+			return;
+
+		let sidenoteRect = sidenote.getBoundingClientRect();
+		if (   sidenoteRect.top >= Sidenotes.sidenotePadding
+			&& sidenoteRect.bottom <= window.innerHeight - Sidenotes.sidenotePadding)
+			return;
+
+		let newSidenoteTop = sidenoteRect.top;
+		if (toCitation) {
+			let citationTop = Sidenotes.counterpart(sidenote).getBoundingClientRect().top;
+			newSidenoteTop = Math.max(Math.max(citationTop, Sidenotes.sidenotePadding), 
+									  sidenoteRect.top);
+			newSidenoteTop = Math.min(citationTop + sidenoteRect.height, 
+									  Math.min(newSidenoteTop + sidenoteRect.height, 
+									  		   window.innerHeight - Sidenotes.sidenotePadding)) 
+						   - sidenoteRect.height;
+		} else {
+			newSidenoteTop = Math.max(Sidenotes.sidenotePadding, sidenoteRect.top);
+			newSidenoteTop = Math.min(newSidenoteTop + sidenoteRect.height, 
+									  window.innerHeight - Sidenotes.sidenotePadding) 
+						   - sidenoteRect.height;		
+		}
+
+		let delta = newSidenoteTop - sidenoteRect.top;
+		if (delta) {
+			sidenote.style.transform = `translateY(${delta}px)`;
+			sidenote.classList.toggle("displaced", true);
+			if (Sidenotes.displacedSidenotes.includes(sidenote) == false)
+				Sidenotes.displacedSidenotes.push(sidenote);
+		}
+	},
+
+	/*	Un-slide a slid-onto-the-screen sidenote.
+	 */
+	putSidenoteBack: (sidenote) => {
+		GWLog("Sidenotes.putSidenoteBack", "sidenotes.js", 3);
+
+		if (sidenote.style.transform == "none")
+			return;
+
+		sidenote.style.transform = "";
+		sidenote.classList.toggle("displaced", false);
+	},
+
+	/*	Un-slide all sidenotes (possibly except one).
+	 */
+	putAllSidenotesBack: (exceptOne = null) => {
+		GWLog("Sidenotes.putAllSidenotesBack", "sidenotes.js", 3);
+
+		Sidenotes.displacedSidenotes.forEach(sidenote => {
+			if (sidenote == exceptOne)
+				return;
+
+			Sidenotes.putSidenoteBack(sidenote);
+		});
+		Sidenotes.displacedSidenotes = exceptOne ? [ exceptOne ] : [ ];
+	},
+
+	/*	Instantly un-slide sidenote and make it un-slidable.
+	 */
+	slideLockSidenote: (sidenote) => {
+		GWLog("Sidenotes.slideLockSidenote", "sidenotes.js", 3);
+
+		sidenote.style.transition = "none";
+		sidenote.style.transform = "none";
+		sidenote.classList.toggle("displaced", false);
+	},
+
+	/*	Instantly un-slide sidenote and make it slidable.
+	 */
+	unSlideLockSidenote: (sidenote) => {
+		GWLog("Sidenotes.unSlideLockSidenote", "sidenotes.js", 3);
+
+		sidenote.style.transform = "";
+		sidenote.style.transition = "";
+		sidenote.classList.toggle("displaced", false);
+	},
 };
 
 GW.notificationCenter.fireEvent("Sidenotes.didLoad");

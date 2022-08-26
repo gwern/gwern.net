@@ -1047,7 +1047,7 @@ function bindNoteHighlightEventsToCitations(loadEventInfo) {
     GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 	    allCitations.forEach(bindEventsToCitation);
     }, { condition: (info) => (   info.mainPageContent 
-    						   || info.baseLocation == loadEventInfo.baseLocation)
+    						   || info.document == loadEventInfo.document)
     });
 }
 
