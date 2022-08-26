@@ -1095,9 +1095,12 @@ GW.notificationCenter = {
 	addWaitingHandlersForEvent: (eventName) => {
 		if (GW.notificationCenter.waitingHandlers[eventName]) {
 			GW.notificationCenter.waitingHandlers[eventName].forEach(handler => {
-				GW.notificationCenter.addHandlerForEvent(eventName, handler.f, handler.options);
+				if (handler.f) {
+					GW.notificationCenter.addHandlerForEvent(eventName, handler.f, handler.options);
+					handler.f = null;
+				}
 			});
-			GW.notificationCenter.waitingHandlers[eventName] = [ ];
+			GW.notificationCenter.waitingHandlers[eventName] = GW.notificationCenter.waitingHandlers[eventName].filter(handler => handler.f);
 		}
 	},
 

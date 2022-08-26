@@ -791,13 +791,14 @@ Sidenotes = { ...Sidenotes,
 
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.addOrRemoveEventHandlersForCurrentMode", (mediaQuery) => {
-				/*	Deactivate notification handlers.
+				/*	Deactivate event handlers.
 					*/
 				GW.notificationCenter.removeHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
 				GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
 				GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
 				GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
 				window.removeEventListener("resize", Sidenotes.windowResized);
+				GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents);
 				removeScrollListener("Sidenotes.unSlideSidenotesOnScroll");
 			}, (mediaQuery) => {
 				/*  After the hash updates, properly highlight everything, if needed.
@@ -839,19 +840,36 @@ Sidenotes = { ...Sidenotes,
 					requestAnimationFrame(Sidenotes.updateSidenotePositions);
 				});
 
+				/*	Add handler to bind more sidenote-slide events if more 
+					citations are injected (e.g., in a popup).
+				 */
+				GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents = (info) => {
+					info.document.querySelectorAll("a.footnote-ref").forEach(citation => {
+						if (citation.pathname != location.pathname)
+							return;
+
+						let sidenote = Sidenotes.counterpart(citation);
+						citation.addEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote = (event) => {
+							Sidenotes.putAllSidenotesBack(sidenote);
+							Sidenotes.slideSidenoteIntoView(sidenote, false);
+						});
+					});
+				}, { condition: (info) => (info.mainPageContent == false) });
+
 				/*	Add a scroll listener to un-slide all sidenotes on scroll.
 				 */
 				addScrollListener((event) => {
 					Sidenotes.putAllSidenotesBack();
 				}, "Sidenotes.unSlideSidenotesOnScroll", true, false);
 			}, (mediaQuery) => {
-				/*	Deactivate notification handlers.
+				/*	Deactivate event handlers.
 					*/
 				GW.notificationCenter.removeHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
 				GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
 				GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
 				GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
 				window.removeEventListener("resize", Sidenotes.windowResized);
+				GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents);
 				removeScrollListener("Sidenotes.unSlideSidenotesOnScroll");
 			});
 		}, { once: true });
