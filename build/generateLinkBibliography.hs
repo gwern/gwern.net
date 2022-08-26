@@ -34,7 +34,7 @@ import Text.Pandoc.Walk (walk)
 
 import LinkAuto (cleanUpDivsEmpty)
 import LinkBacklink (getBackLink, getSimilarLink)
-import LinkMetadata (generateAnnotationBlock, parseRawBlock, readLinkMetadata, authorsTruncate, hasAnnotation, Metadata, MetadataItem)
+import LinkMetadata (generateAnnotationTransclusionBlock, parseRawBlock, readLinkMetadata, authorsTruncate, hasAnnotation, Metadata, MetadataItem)
 import Query (extractURLs)
 import Typography (identUniquefy)
 import Utils (writeUpdatedFile)
@@ -50,7 +50,7 @@ generateLinkBibliography md page = do links <- extractLinksFromPage page
                                       similarlinks <- mapM getSimilarLink links
                                       let pairs = linksToAnnotations md links
                                           pairs' = zipWith3 (\(a,b) c d -> (a,b,c,d)) pairs backlinks similarlinks
-                                          body = Header 1 ("", ["display-pop-not", "link-annotated-not"], []) [Str "Link Bibliography"] :
+                                          body = Header 1 nullAttr [Str "Link Bibliography"] :
                                                  [generateLinkBibliographyItems pairs']
                                           document = Pandoc nullMeta body
                                           markdown = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} $
@@ -91,13 +91,13 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
     if t=="" then
-      [Para (Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author)]
+      [Para (Link ("",["include-annotation"],[]) [Code nullAttr (T.pack f')] (T.pack f, "") : author)]
     else
       [Para (Code nullAttr (T.pack f') :
               Str ":" : Space :
-              Link nullAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
+              Link ("",["include-annotation"],[]) [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
 -- long items:
-generateLinkBibliographyItem (f,a,bl,sl) = walk cleanUpDivsEmpty $ walk (parseRawBlock nullAttr) $ generateAnnotationBlock True False (f,Just a) bl sl
+generateLinkBibliographyItem (f,a,bl,sl) = generateAnnotationTransclusionBlock True False (f,Just a) bl sl
 
 extractLinksFromPage :: String -> IO [String]
 extractLinksFromPage path = do f <- TIO.readFile path

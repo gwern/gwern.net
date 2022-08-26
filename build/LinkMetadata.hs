@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-08-24 20:41:46 gwern"
+When:  Time-stamp: "2022-08-26 08:43:46 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad, guessTagFromShort, listTagsAll, listTagDirectories) where
+module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateID, generateAnnotationBlock, generateAnnotationTransclusionBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad, guessTagFromShort, listTagsAll, listTagDirectories) where
 
 import Control.Monad (unless, void, when, foldM_, filterM)
 import Data.Aeson (eitherDecode, FromJSON)
@@ -480,6 +480,45 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                nonAnnotatedLink :: [Block]
                                nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]]
 
+generateAnnotationTransclusionBlock :: Bool -> Bool -> (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> FilePath -> [Block]
+generateAnnotationTransclusionBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
+                              Nothing                 -> nonAnnotatedLink
+                              Just (tle,aut,dt,doi,ts,abst) ->
+                                let tle' = if null tle then "<code>"++f++"</code>" else tle
+                                    lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
+                                    authorShort = authorsTruncate aut
+                                    authorSpan = if aut/=authorShort then Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
+                                                 else Span ("", ["author", "cite-author"], []) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
+                                    author = if aut=="" || aut=="N/A" || aut=="N/\8203A" then [Space] else [Space, authorSpan]
+                                    date = if dt=="" then [] else [Span ("", ["date", "cite-date"],
+                                                                          if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
+                                                                    [Str (T.pack $ dateTruncateBad dt)]]
+                                    tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
+                                    backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
+                                    similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
+                                    values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
+                                    -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
+                                    link = Link (lid, (if annotationP then ["link-annotated"] else ["link-annotated-not"]) ++ ["include-annotation", "include-replace-container"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
+                                    -- make sure every abstract is wrapped in paragraph tags for proper rendering:in
+                                    abst' = if anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure"] then abst else "<p>" ++ abst ++ "</p>"
+                                in
+                                  [Para
+                                       ([link,Str ","] ++
+                                         author ++
+                                         date ++
+                                         (if (tags++backlink++similarlink)==[] then []
+                                           else [Str " ("] ++
+                                                tags ++
+                                                backlink ++
+                                                similarlink ++
+                                                [Str ")"]
+                                         ))
+                                  ]
+                             where
+                               nonAnnotatedLink :: [Block]
+                               nonAnnotatedLink = [Para [Link ("",["include-annotation", "include-replace-container"],[]) [Str (T.pack f)] (T.pack f, "")]]
+
+
 -- annotations, like /Faces, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/Faces#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
 -- WARNING: because of the usual RawHtml issues, reading with Pandoc doesn't help - it just results in RawInlines which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
 rewriteAnchors :: FilePath -> T.Text -> T.Text
@@ -622,7 +661,7 @@ guessTagFromShort m t = let allTags = nubOrd $ sort m in
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
 tagsLong2Short, tagsShort2Long :: [(String,String)]
-tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple") ] ++ -- custom tag shortcuts, to fix typos etc
+tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5")] ++ -- custom tag shortcuts, to fix typos etc
                  -- attempt to infer short->long rewrites from the displayed tag names, which are long->short; but note that many of them are inherently invalid and the mapping only goes one way.
                   (map (\(a,b) -> (map toLower b,a)) $ filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
 tagsLong2Short = [
@@ -666,6 +705,7 @@ tagsLong2Short = [
           , ("ai/nn/transformer/gpt/poetry",          "GPT poetry")
           , ("ai/nn/transformer/gpt/jukebox",         "Jukebox")
           , ("ai/nn/transformer/alphafold", "AlphaFold")
+          , ("ai/nn/transformer/t5", "T5 Transformer")
           , ("ai/highleyman", "Highleyman")
           , ("existential-risk", "x-risk")
           , ("philosophy/ethics", "ethics")
@@ -2184,6 +2224,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(_{16}\\)</span>", "<sub>16</sub>")
           , ("<span class=\"math inline\">\\(&gt;\\)</span>", "&gt;")
           , ("<span class=\"math inline\">\\(O(k\\cdot n\\log (n/k))\\)</span>", " 𝑂(<em>k</em> × log(<em>n</em>⁄<em>k</em>))")
+          , ("<span class=\"math inline\">\\(O(D^3)\\)</span>", "𝑂(<em>D</em><sup>3</sup>)")
+          , ("<span class=\"math inline\">\\(O(C)\\)</span>", "𝑂(<em>C</em>)")
           , ("O(<span class=\"math inline\">\\(L^2\\)</span>", "𝑂(<em>L</em><sup>2</sup>)")
           , ("<span class=\"math inline\">\\(L\\)</span>", "<em>L</em>")
           , ("<span class=\"math inline\">\\(rho\\)</span>", "ρ")
@@ -2848,6 +2890,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("Fifty-five years", "55 years")
           , ("<p> ", "<p>")
           , ("+/-", "±")
+          , (" +- ", "±")
           , ("<sup>~</sup>", "~")
           , ("one-third", "1⁄3<sup>rd</sup>")
           , ("one-quarter", "1⁄4<sup>th</sup>")

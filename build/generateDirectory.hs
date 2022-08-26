@@ -28,7 +28,7 @@ import Text.Pandoc.Walk (walk)
 
 import Interwiki (inlinesToText)
 import LinkAuto (cleanUpDivsEmpty)
-import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag, hasAnnotation, dateTruncateBad, listTagDirectories, parseRawInline)
+import LinkMetadata (readLinkMetadata, generateAnnotationTransclusionBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag, hasAnnotation, dateTruncateBad, listTagDirectories, parseRawInline)
 import LinkBacklink (getBackLink, getSimilarLink)
 import Query (extractImages)
 import Typography (identUniquefy)
@@ -100,7 +100,7 @@ generateDirectory md dir'' = do
 
   let body = abstract ++
 
-             [Header 1 ("", ["display-pop-not", "link-annotated-not"], []) [Str "See Also"]] ++ [directorySection] ++
+             [Header 1 nullAttr [Str "See Also"]] ++ [directorySection] ++
 
              (if null titledLinks then [] else
                  -- NOTE: we need a <h1> for proper hierarchical tree, but that <h1> uses up a lot of visual space in popups/popins, and we can't just suppress *all* first-<h1>s, we only want to suppress the ones on directory/tag pages. So we define a new class 'display-pop-not', and the CSS (in default.css's popups section) will suppress that in popups/popins.
@@ -277,4 +277,4 @@ generateItem (f,a,bl,sl) =
   -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philosophy/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
   -- >
   -- > > A poem on the Epicurean model of the world...
-  walk cleanUpDivsEmpty $ walk (parseRawBlock nullAttr) $ generateAnnotationBlock True False (f,Just a) bl sl
+  walk cleanUpDivsEmpty $ walk (parseRawBlock nullAttr) $ generateAnnotationTransclusionBlock True False (f,Just a) bl sl

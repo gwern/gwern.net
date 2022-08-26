@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-07-21 18:19:44 gwern"
+When: Time-stamp: "2022-08-26 08:57:58 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -105,8 +105,7 @@ main =
                                        else writeAnnotationFragments am meta hasArchivedN True
 
                preprocess $ printGreen ("Begin site compilation…" :: String)
-               let pages = if slow then "**.page" else "**.page" .&&. complement "docs/**.page" .&&. complement "newsletter/**.page"
-               match pages $ do
+               match "**.page" $ do
                    -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
                    -- as people keep screwing them up endlessly:
                    route $ gsubRoute "," (const "") `composeRoutes` gsubRoute "'" (const "") `composeRoutes` gsubRoute " " (const "-") `composeRoutes`
