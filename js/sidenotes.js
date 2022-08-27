@@ -62,8 +62,8 @@ Sidenotes = {
 	 */
 	sidenotesIfViewportWiderThan: "1760px",
 
-	useLeftColumn: () => true,
-	useRightColumn: () => (document.querySelector(".marginnote") == null)
+	useLeftColumn: () => (document.querySelector(".marginnote") == null),
+	useRightColumn: () => true
 };
 
 /******************/
