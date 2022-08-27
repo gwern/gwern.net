@@ -91,13 +91,13 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
     if t=="" then
-      [Para (Link ("",["include-annotation"],[]) [Code nullAttr (T.pack f')] (T.pack f, "") : author)]
+      [Para (Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author)]
     else
       [Para (Code nullAttr (T.pack f') :
               Str ":" : Space :
-              Link ("",["include-annotation"],[]) [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
+              Link nullAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
 -- long items:
-generateLinkBibliographyItem (f,a,bl,sl) = generateAnnotationTransclusionBlock True False (f,Just a) bl sl
+generateLinkBibliographyItem (f,a,bl,sl) = generateAnnotationTransclusionBlock True True (f,Just a) bl sl
 
 extractLinksFromPage :: String -> IO [String]
 extractLinksFromPage path = do f <- TIO.readFile path

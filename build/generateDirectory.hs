@@ -277,4 +277,4 @@ generateItem (f,a,bl,sl) =
   -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philosophy/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
   -- >
   -- > > A poem on the Epicurean model of the world...
-  walk cleanUpDivsEmpty $ walk (parseRawBlock nullAttr) $ generateAnnotationTransclusionBlock True False (f,Just a) bl sl
+  generateAnnotationTransclusionBlock True True (f,Just a) bl sl

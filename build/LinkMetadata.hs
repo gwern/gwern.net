@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-08-26 08:43:46 gwern"
+When:  Time-stamp: "2022-08-26 22:16:25 gwern"
 License: CC-0
 -}
 
@@ -516,7 +516,7 @@ generateAnnotationTransclusionBlock truncAuthorsp annotationP (f, ann) blp slp =
                                   ]
                              where
                                nonAnnotatedLink :: [Block]
-                               nonAnnotatedLink = [Para [Link ("",["include-annotation", "include-replace-container"],[]) [Str (T.pack f)] (T.pack f, "")]]
+                               nonAnnotatedLink = [Para [Link ("",["include", "include-annotation", "include-replace-container"],[]) [Str (T.pack f)] (T.pack f, "")]]
 
 
 -- annotations, like /Faces, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/Faces#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
