@@ -3633,7 +3633,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.japantimes.co.jp/news/2017/09/12/national/social-issues/1-20-infants-born-vitro-fertilization-japan-survey/", False)
     , ("https://www.huffpost.com/entry/photographs-redheads-of-color_n_55db9929e4b0a40aa3abf017", False)
     , ("https://www.hindawi.com/journals/ijg/2018/5121540/", False)
-    , ("https://www.girlscouts.org/program/gs_cookies/cookie_faqs.asp#bestselling", False)
+    , ("https://www.girlscouts.org/en/cookies/how-to-buy-cookies/cookies-frequently-asked-questions.html#bestselling", False)
     , ("https://www.esquire.com/news-politics/a20903/hugh-hefner-interview-0413/", False)
     , ("https://www.eetimes.com/document.asp?doc_id=1333422", False)
     , ("http://www.dcscience.net/2015/12/11/placebo-effects-are-weak-regression-to-the-mean-is-the-main-reason-ineffective-treatments-appear-to-work/", False)
