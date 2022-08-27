@@ -218,23 +218,25 @@ DarkMode = { ...DarkMode,
 		if (DarkMode.modeSelector == null)
 			return;
 
-		/*	Hide mode selector when scrolling a full page down (or one PgDn’s
-			worth of scroll distance, anyhow).
+		//	One PgDn’s worth of scroll distance, approximately.
+		let onePageScrollDistance = (0.8 * window.innerHeight);
+
+		/*	Hide mode selector when scrolling a full page down.
 		 */
-		if (GW.scrollState.unbrokenDownScrollDistance > (0.8 * window.innerHeight)) {
+		if (GW.scrollState.unbrokenDownScrollDistance > onePageScrollDistance) {
 			DarkMode.hideModeSelector();
 		}
 
 		/*	On desktop, show mode selector when scrolling to top of page, or a full
-			page up (or one PgUp’s worth of scroll distance).
+			page up.
 			On mobile, show mode selector on ANY scroll up.
 		 */
 		if (GW.isMobile()) {
 			if (   GW.scrollState.unbrokenUpScrollDistance > 0 
 				|| GW.scrollState.lastScrollTop <= 0)
 				DarkMode.showModeSelector();
-		} else if (   GW.scrollState.unbrokenUpScrollDistance > (0.8 * window.innerHeight)
-				   || GW.scrollState.lastScrollTop == 0) {
+		} else if (   GW.scrollState.unbrokenUpScrollDistance > onePageScrollDistance
+				   || GW.scrollState.lastScrollTop <= 0) {
 			DarkMode.showModeSelector();
 		}
 	},

@@ -354,6 +354,7 @@ Extracts = { ...Extracts,
         if (targetAnalogueInLinkBibliography) {
             let containingSection = targetAnalogueInLinkBibliography.closest("section");
             if (   containingSection
+                && containingSection.querySelector("blockquote")
                 && Popups.isVisible(containingSection)) {
                 return null;
             }
