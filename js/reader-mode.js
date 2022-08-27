@@ -82,6 +82,7 @@ ReaderMode = { ...ReaderMode,
 			&& ReaderMode.deactivateOnScrollDownObserver != null) {
 			ReaderMode.despawnObserver();
 		} else if (   selectedMode == "auto"
+				   && ReaderMode.active == true
 				   && ReaderMode.deactivateOnScrollDownObserver == null) {
 			ReaderMode.spawnObserver();
 		}
@@ -348,6 +349,8 @@ ReaderMode = { ...ReaderMode,
 	//	Called by: ReaderMode.activate
 	//	Called by: ReaderMode.setMode
 	spawnObserver: () => {
+		GWLog("ReaderMode.spawnObserver", "reader-mode.js", 2);
+
 		//	Create the observer.
 		ReaderMode.deactivateOnScrollDownObserver = new IntersectionObserver((entries, observer) => {
 			entries.forEach(entry => {
@@ -366,6 +369,8 @@ ReaderMode = { ...ReaderMode,
 
 	//	Called by: ReaderMode.setMode
 	despawnObserver: () => {
+		GWLog("ReaderMode.despawnObserver", "reader-mode.js", 2);
+
 		ReaderMode.deactivateOnScrollDownObserver.disconnect();
 		ReaderMode.deactivateOnScrollDownObserver = null;
 	},

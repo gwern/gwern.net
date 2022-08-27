@@ -519,6 +519,25 @@ addContentLoadHandler(wrapMarginNotes, "rewrite", (info) => info.needsRewrite);
 /* TYPOGRAPHY */
 /**************/
 
+/******************************************************************************/
+/*	Remove extraneous whitespace-only text nodes from between the element parts
+	of a .cite (citation element).
+ */
+function removeExtraneousWhitespaceFromCitations(loadEventInfo) {
+    GWLog("removeExtraneousWhitespaceFromCitations", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll(".cite").forEach(citation => {
+		Array.from(citation.children).forEach(citationPart => {
+			if (   citationPart.nextSibling
+				&& citationPart.nextSibling.nodeType == Node.TEXT_NODE
+				&& isNodeEmpty(citationPart.nextSibling))
+				citationPart.nextSibling.remove();
+		});
+	});
+}
+
+addContentLoadHandler(removeExtraneousWhitespaceFromCitations, "rewrite", (info) => info.needsRewrite);
+
 /******************************************************************/
 /*	Configure Hyphenopoly.
 
