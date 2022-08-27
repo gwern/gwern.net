@@ -29,12 +29,12 @@ import qualified Data.Text as T (pack, unpack)
 
 import Control.Monad.Parallel as Par (mapM_)
 
-import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(Para, OrderedList), Pandoc(..))
+import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(Header, Para, OrderedList), Pandoc(..))
 import Text.Pandoc.Walk (walk)
 
 import LinkAuto (cleanUpDivsEmpty)
 import LinkBacklink (getBackLink, getSimilarLink)
-import LinkMetadata (generateAnnotationBlock, parseRawBlock, readLinkMetadata, authorsTruncate, hasAnnotation, Metadata, MetadataItem)
+import LinkMetadata (generateAnnotationTransclusionBlock, parseRawBlock, readLinkMetadata, authorsTruncate, hasAnnotation, Metadata, MetadataItem)
 import Query (extractURLs)
 import Typography (identUniquefy)
 import Utils (writeUpdatedFile)
@@ -50,8 +50,9 @@ generateLinkBibliography md page = do links <- extractLinksFromPage page
                                       similarlinks <- mapM getSimilarLink links
                                       let pairs = linksToAnnotations md links
                                           pairs' = zipWith3 (\(a,b) c d -> (a,b,c,d)) pairs backlinks similarlinks
-                                          body = generateLinkBibliographyItems pairs'
-                                          document = Pandoc nullMeta [body]
+                                          body = Header 1 nullAttr [Str "Link Bibliography"] :
+                                                 [generateLinkBibliographyItems pairs']
+                                          document = Pandoc nullMeta body
                                           markdown = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} $
                                             walk identUniquefy $ walk (hasAnnotation md True) document -- global rewrite to de-duplicate all of the inserted URLs
                                       case markdown of
@@ -71,8 +72,6 @@ generateYAMLHeader d = "---\n" ++
                        "cssExtension: drop-caps-de-zs\n" ++
                        "index: true\n" ++
                        "...\n" ++
-                       "\n" ++
-                       "<strong><a href=\"" ++ "/"++d ++ "\">\"" ++ d ++ "\"</a></strong> links:\n" ++
                        "\n"
 
 generateLinkBibliographyItems :: [(String,MetadataItem,FilePath,FilePath)] -> Block
@@ -98,7 +97,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
               Str ":" : Space :
               Link nullAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
 -- long items:
-generateLinkBibliographyItem (f,a,bl,sl) = walk cleanUpDivsEmpty $ walk (parseRawBlock nullAttr) $ generateAnnotationBlock True False (f,Just a) bl sl
+generateLinkBibliographyItem (f,a,bl,sl) = generateAnnotationTransclusionBlock True True (f,Just a) bl sl
 
 extractLinksFromPage :: String -> IO [String]
 extractLinksFromPage path = do f <- TIO.readFile path

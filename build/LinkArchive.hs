@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-08-23 13:20:43 gwern"
+When:  Time-stamp: "2022-08-26 16:01:38 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -202,7 +202,9 @@ rewriteLink adb archivedN url = do
         else do
                  let url' = transformURLsForArchiving url
                  archivedP <- archiveURLCheck url'
-                 if archivedP then archiveURL url'
+                 if archivedP then do archive <- archiveURL url'
+                                      insertLinkIntoDB (Right archive) url
+                                      return archive
                  else do archivedNAlreadyP <- readIORef archivedN
                          -- have we already used up our link archive 'budget' this run? If so, skip all additional link archives
                          if archivedNAlreadyP > 0 then do archive <- archiveURL url'
