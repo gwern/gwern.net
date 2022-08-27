@@ -12,8 +12,9 @@ module Main where
 -- directory (mostly showing random snippets).
 
 import Control.Monad (filterM)
-import Data.List (isPrefixOf, isInfixOf, isSuffixOf, nub, sort, sortBy)
+import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, nub, sort, sortBy)
 import Data.List.Utils (countElem)
+import Data.Maybe (fromJust)
 import Data.Text.Titlecase (titlecase)
 import System.Directory (listDirectory, doesFileExist)
 import System.Environment (getArgs)
@@ -35,14 +36,22 @@ import Utils (replace, writeUpdatedFile)
 
 main :: IO ()
 main = do dirs <- getArgs
-          let dirs' = map (\dir -> replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
+          let dirs' = map (\dir -> replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) $ sort dirs
 
           meta <- readLinkMetadata
 
-          Par.mapM_ (generateDirectory meta) dirs' -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
+          Par.mapM_ (generateDirectory meta dirs') dirs' -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
 
-generateDirectory :: Metadata -> FilePath -> IO ()
-generateDirectory md dir'' = do
+generateDirectory :: Metadata -> [FilePath] -> FilePath -> IO ()
+generateDirectory md dirs dir'' = do
+
+  -- for the arabesque navbar 'previous'/'next', we want to fill more useful than the default values, but also not be too redundant with the up/sideways/downwards tag-directory links; so we pass in the (lexicographically) sorted list of all tag-directories being created this run, and try to provide previous/next links to the 'previous' and the 'next' directory, which may be a parent, sibling, or nothing at all.
+  -- so eg. /docs/cryonics/index will point to `previous: /docs/crime/terrorism/index \n next: /docs/cs/index`
+  let i = fromJust $ elemIndex dir'' dirs
+  let (before,after) = splitAt i dirs
+  let (previous,next) = if length dirs < 2 || before==after then ("","") else
+                            (if null before || last before == dir'' then "" else "previous: /"++last before++"index",
+                              if length after < 2 || head (drop 1 after) == dir'' then "" else "next: /"++head (drop 1 after)++"index")
 
   tagged <- listTagged md (init dir'')
 
@@ -86,7 +95,7 @@ generateDirectory md dir'' = do
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst)) ++ "\n"
   let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if not (captionText == "") then captionText else if not (altText == "") then altText else "") (head imageFirst))) ++ "'\n"
 
-  let header = generateYAMLHeader parentDirectory' tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
+  let header = generateYAMLHeader parentDirectory' previous next tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
   let directorySectionChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
   let directorySectionSeeAlsos = generateDirectoryItems Nothing dir'' dirsSeeAlsos
   let directorySection = Div ("see-alsos", ["directory-indexes", "columns", "directorySectionChildren"], []) [BulletList $ directorySectionChildren ++ directorySectionSeeAlsos]
@@ -125,8 +134,8 @@ generateDirectory md dir'' = do
     Right p' -> do let contentsNew = T.pack header `T.append` p'
                    writeUpdatedFile "directory" (dir'' ++ "index.page") contentsNew
 
-generateYAMLHeader :: FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String
-generateYAMLHeader parent d date (directoryN,annotationN,linkN) thumbnail
+generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String
+generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail
   = concat [ "---\n",
              "title: " ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (replace "docs/" "" d)))) ++ " tag\n",
              "author: 'N/A'\n",
@@ -140,6 +149,8 @@ generateYAMLHeader parent d date (directoryN,annotationN,linkN) thumbnail
              "created: 'N/A'\n",
              if date=="" then "" else "modified: " ++ date ++ "\n",
              "status: in progress\n",
+             previous++"\n",
+             next++"\n",
              "confidence: log\n",
              "importance: 0\n",
              "cssExtension: drop-caps-de-zs\n",
