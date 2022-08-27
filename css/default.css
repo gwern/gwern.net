@@ -1314,6 +1314,10 @@ section.footnotes > hr:first-child.highlighted::before {
 .sidenote-layout-cell {
     position: absolute;
     width: 100%;
+    pointer-events: none;
+}
+.sidenote-layout-cell > * {
+	pointer-events: auto;
 }
 
 #sidenote-column-left,
@@ -1329,10 +1333,6 @@ section.footnotes > hr:first-child.highlighted::before {
     position: absolute;
     z-index: 1;
     pointer-events: none;
-}
-#sidenote-column-left > *,
-#sidenote-column-right > * {
-    pointer-events: auto;
 }
 #sidenote-column-left {
     height: calc(100% - 7rem);
@@ -1558,7 +1558,8 @@ section.footnotes > hr:first-child.highlighted::before {
     color: inherit;
 }
 .marginnote.sidenote {
-    display: initial;
+	display: flex;
+	justify-content: right;
     /*  925px because that’s the width of #markdownBody at the widths where we
         get margin notes. Someday, find a way to auto-compute this (but note
         that `50%` doesn’t work in place of `(925px / 2)`; it breaks when the
@@ -1567,7 +1568,8 @@ section.footnotes > hr:first-child.highlighted::before {
      */
     width: calc(50vw - ((925px / 2) + 96px));
     max-width: var(--GW-sidenotes-max-width);
-    left: calc(100% + 64px);
+    right: calc(100% + 64px);
+    left: unset;
 
     /*  We inherit left and right padding from .sidenote class. */
     padding-top: 0.5em;
@@ -1582,6 +1584,12 @@ section.footnotes > hr:first-child.highlighted::before {
     opacity: 0.85;
     z-index: 1;
 }
+.marginnote.sidenote .marginnote-inner-wrapper {
+	display: block;
+	width: -moz-fit-content;
+	width: fit-content;
+}
+
 .marginnote.sidenote:hover {
     box-shadow: none;
 }
@@ -1594,7 +1602,7 @@ section.footnotes > hr:first-child.highlighted::before {
     This is based on the width of the admonition icon area.
     */
 .admonition .marginnote.sidenote {
-    width: calc(50vw - ((100% + (2.875em / (0.85/0.875)))/2 + 104px));
+    width: calc(50vw - ((100% + (2.875em / (0.85/0.875)))/2 + 96px));
 }
 
 /**********/
@@ -1831,6 +1839,8 @@ code {
 
     border: 1px solid var(--GW-code-element-border-color);
     background-color: var(--GW-code-element-background-color);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
 
     padding: 0 4px;
 

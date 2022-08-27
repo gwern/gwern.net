@@ -495,6 +495,26 @@ addContentLoadHandler(wrapFullWidthPreBlocks, "rewrite", (info) => (   info.need
 																	&& info.fullWidthPossible));
 
 
+/****************/
+/* MARGIN NOTES */
+/****************/
+
+/*************************************************************/
+/*	Wrap the contents of all margin notes in an inner wrapper.
+ */
+function wrapMarginNotes(loadEventInfo) {
+    GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll(".marginnote").forEach(marginnote => {
+		let innerWrapper = newElement("SPAN", { "class": "marginnote-inner-wrapper" });
+		innerWrapper.append(...(marginnote.childNodes));
+		marginnote.append(innerWrapper);
+	});
+}
+
+addContentLoadHandler(wrapMarginNotes, "rewrite", (info) => info.needsRewrite);
+
+
 /**************/
 /* TYPOGRAPHY */
 /**************/
