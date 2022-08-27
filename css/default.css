@@ -2469,6 +2469,7 @@ a .cite-author-plural::after {
     line-height: 0.7;
     font-variant-numeric: tabular-nums;
     margin-left: 0.05em;
+    white-space: nowrap;
 }
 
 /*******************************/

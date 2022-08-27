@@ -3537,28 +3537,30 @@ ReaderMode = {
         body.reader-mode-active #TOC ul li {
             padding-left: 0.125em;
         }
-        ${(_π("body.reader-mode-active .spawns-",
+        ${(_π("body.reader-mode-active #markdownBody .spawns-",
               [ "popup", "popin" ]
               ).join(",\n"))} {
             margin: 0;
+            padding: 0;
         }
-        ${(_π("body.reader-mode-active .spawns-",
-              [ "popup", "popin" ],
-              " .indicator-hook"
-              ).join(",\n"))} {
-            padding-left: 0;
-        }
-        ${(_π("body.reader-mode-active .spawns-",
+        ${(_π("body.reader-mode-active #markdownBody .spawns-",
               [ "popup", "popin" ],
               " .indicator-hook::before"
               ).join(",\n"))} {
-            left: -0.3em;
+            padding-left: 0.3em;
             box-shadow:
                 -0.17em 0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
                 -0.17em -0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
                 -0.17em 0 0 0 var(--GW-reader-mode-masked-link-bracket-background-color);
+			background-image:        
+				linear-gradient(var(--GW-link-underline-gradient-line-color), 
+								var(--GW-link-underline-gradient-line-color)),
+				linear-gradient(var(--GW-link-underline-gradient-line-color), 
+								var(--GW-link-underline-gradient-line-color));
+			background-size: 100% 1px, 1px calc(100% - 0.1em);
+			background-position: 0 calc(100% - 0.1em);
         }
-        ${(_π("body.reader-mode-active.masked-links-hidden .spawns-",
+        ${(_π("body.reader-mode-active.masked-links-hidden #markdownBody .spawns-",
               [ "popup", "popin" ],
               " .indicator-hook"
               ).join(",\n"))},
@@ -3577,19 +3579,25 @@ ReaderMode = {
             background: none;
             cursor: text;
         }
-        body.reader-mode-active.masked-links-hidden a:link,
-        body.reader-mode-active.masked-links-hidden a:link * {
+        body.reader-mode-active.masked-links-hidden #markdownBody a:link,
+        body.reader-mode-active.masked-links-hidden #markdownBody a:link * {
             text-shadow: none;
+        }
+        body.reader-mode-active.masked-links-hidden #markdownBody a code {
+            border-bottom-width: 1px;  
         }
         /*	Citations.
          */
-		body.reader-mode-active.masked-links-hidden .cite-joiner {
+		body.reader-mode-active .cite-joiner {
 			display: initial;
 		}
-		body.reader-mode-active.masked-links-hidden .cite-author-plural::after {
+		body.reader-mode-active .cite-author + .cite-date::before {
+			content: " ";	
+		}
+		body.reader-mode-active .cite-author-plural::after {
 			content: none;
 		}
-		body.reader-mode-active.masked-links-hidden .cite-date {
+		body.reader-mode-active .cite-date {
 			vertical-align: unset;
 			font-size: unset;
 			line-height: unset;

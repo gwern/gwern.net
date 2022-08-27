@@ -14,12 +14,16 @@
 /* We exclude it on the homepage because every linked page has a description/abstract, and the triangles everywhere add a lot of visual clutter. */
 .has-content {
     margin: 0 0.08em;
-    position: relative;
-    z-index: 1;
-}
-.has-content .indicator-hook {
     padding-left: 0.3em;
     position: relative;
+    z-index: 1;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+.has-content .indicator-hook {
+    position: relative;
+    padding-left: 0.3em;
+    margin-left: -0.3em;
     z-index: -1;
 }
 .has-content .indicator-hook::before {
