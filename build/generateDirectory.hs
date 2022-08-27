@@ -27,7 +27,6 @@ import Control.Monad.Parallel as Par (mapM_)
 import Text.Pandoc.Walk (walk)
 
 import Interwiki (inlinesToText)
-import LinkAuto (cleanUpDivsEmpty)
 import LinkMetadata (readLinkMetadata, generateAnnotationTransclusionBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag, hasAnnotation, dateTruncateBad, listTagDirectories, parseRawInline)
 import LinkBacklink (getBackLink, getSimilarLink)
 import Query (extractImages)
@@ -277,4 +276,4 @@ generateItem (f,a,bl,sl) =
   -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philosophy/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
   -- >
   -- > > A poem on the Epicurean model of the world...
-  generateAnnotationTransclusionBlock True True (f,Just a) bl sl
+  generateAnnotationTransclusionBlock (f,a) bl sl

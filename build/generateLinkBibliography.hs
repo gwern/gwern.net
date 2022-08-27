@@ -17,7 +17,6 @@ module Main where
 -- link in the page metadata block, paired with the backlinks.
 
 import Data.List (isPrefixOf, isSuffixOf, nub)
-import Utils (replace)
 import Data.Text.Titlecase (titlecase)
 import qualified Data.Map as M (lookup)
 import System.Environment (getArgs)
@@ -32,12 +31,11 @@ import Control.Monad.Parallel as Par (mapM_)
 import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(Header, Para, OrderedList), Pandoc(..))
 import Text.Pandoc.Walk (walk)
 
-import LinkAuto (cleanUpDivsEmpty)
 import LinkBacklink (getBackLink, getSimilarLink)
-import LinkMetadata (generateAnnotationTransclusionBlock, parseRawBlock, readLinkMetadata, authorsTruncate, hasAnnotation, Metadata, MetadataItem)
+import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, authorsTruncate, hasAnnotation, Metadata, MetadataItem)
 import Query (extractURLs)
 import Typography (identUniquefy)
-import Utils (writeUpdatedFile)
+import Utils (writeUpdatedFile, replace)
 
 main :: IO ()
 main = do pages <- getArgs
@@ -97,7 +95,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
               Str ":" : Space :
               Link nullAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
 -- long items:
-generateLinkBibliographyItem (f,a,bl,sl) = generateAnnotationTransclusionBlock True True (f,Just a) bl sl
+generateLinkBibliographyItem (f,a,bl,sl) = generateAnnotationTransclusionBlock (f,a) bl sl
 
 extractLinksFromPage :: String -> IO [String]
 extractLinksFromPage path = do f <- TIO.readFile path

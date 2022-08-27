@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-08-26 22:16:25 gwern"
+When:  Time-stamp: "2022-08-27 15:15:08 gwern"
 License: CC-0
 -}
 
@@ -480,15 +480,14 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                nonAnnotatedLink :: [Block]
                                nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]]
 
-generateAnnotationTransclusionBlock :: Bool -> Bool -> (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> FilePath -> [Block]
-generateAnnotationTransclusionBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
-                              Nothing                 -> nonAnnotatedLink
-                              Just (tle,aut,dt,doi,ts,abst) ->
+-- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime; but for backwards compatibility with non-JS readers (such as NoScript users, bots, tools etc), we still provide the title/author/date/backlinks/similar-links along with the transcluded-URL. For JS users, that all will be replaced by the proper popups annotation, and is mostly irrelevant to them. As such, this is a simplified version of `generateAnnotationBlock`.
+generateAnnotationTransclusionBlock :: (FilePath, LinkMetadata.MetadataItem) -> FilePath -> FilePath -> [Block]
+generateAnnotationTransclusionBlock (f, (tle,aut,dt,doi,ts,_)) blp slp =
                                 let tle' = if null tle then "<code>"++f++"</code>" else tle
                                     lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
                                     authorShort = authorsTruncate aut
-                                    authorSpan = if aut/=authorShort then Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
-                                                 else Span ("", ["author", "cite-author"], []) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
+                                    authorSpan = if aut/=authorShort then Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) [Str (T.pack authorShort)]
+                                                 else Span ("", ["author", "cite-author"], []) [Str (T.pack authorShort)]
                                     author = if aut=="" || aut=="N/A" || aut=="N/\8203A" then [Space] else [Space, authorSpan]
                                     date = if dt=="" then [] else [Span ("", ["date", "cite-date"],
                                                                           if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
@@ -497,10 +496,7 @@ generateAnnotationTransclusionBlock truncAuthorsp annotationP (f, ann) blp slp =
                                     backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
-                                    -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
-                                    link = Link (lid, (if annotationP then ["link-annotated"] else ["link-annotated-not"]) ++ ["include-annotation", "include-replace-container"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
-                                    -- make sure every abstract is wrapped in paragraph tags for proper rendering:in
-                                    abst' = if anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure"] then abst else "<p>" ++ abst ++ "</p>"
+                                    link = Link (lid, ["link-annotated", "include-annotation", "include-replace-container"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
                                 in
                                   [Para
                                        ([link,Str ","] ++
@@ -514,10 +510,6 @@ generateAnnotationTransclusionBlock truncAuthorsp annotationP (f, ann) blp slp =
                                                 [Str ")"]
                                          ))
                                   ]
-                             where
-                               nonAnnotatedLink :: [Block]
-                               nonAnnotatedLink = [Para [Link ("",["include", "include-annotation", "include-replace-container"],[]) [Str (T.pack f)] (T.pack f, "")]]
-
 
 -- annotations, like /Faces, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/Faces#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
 -- WARNING: because of the usual RawHtml issues, reading with Pandoc doesn't help - it just results in RawInlines which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
