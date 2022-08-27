@@ -3396,6 +3396,9 @@ body.index-directory #footer {
 .popframe-body h1.display-pop-not {
     display: none;
 }
+.popframe-body section.display-pop-not {
+	margin-top: 2.75em;
+}
 
 /*  We also want to squeeze the directory list because the default
     unordered-list padding of 2em bottom uses up too much of a pop-frame.
