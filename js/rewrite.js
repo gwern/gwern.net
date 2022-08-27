@@ -811,9 +811,10 @@ function bindSectionHighlightEventsToAnnotatedLinks(loadEventInfo) {
         	annotatedLink.removeEventListener("mouseleave", annotatedLink.annotatedLinkMouseLeave);
 
         //  Bind events.
-        let linkURL = fixedEncodeURIComponent(annotatedLink.href);
+        let linkURL = CSS.escape(annotatedLink.href);
         let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='${linkURL}']`);
-        if (targetAnalogueInLinkBibliography) {
+        if (   targetAnalogueInLinkBibliography
+        	&& targetAnalogueInLinkBibliography != annotatedLink) {
         	let containingSection = targetAnalogueInLinkBibliography.closest("section");
         	if (containingSection) {
 				annotatedLink.addEventListener("mouseenter", annotatedLink.annotatedLinkMouseEnter = (event) => {
@@ -1408,11 +1409,14 @@ addContentLoadHandler(registerCopyProcessors, "eventListeners", (info) => (   in
 function updateBackToTopLinkVisibility(event) {
     GWLog("updateBackToTopLinkVisibility", "rewrite.js", 3);
 
+	//	One PgDn’s worth of scroll distance, approximately.
+	let onePageScrollDistance = (0.8 * window.innerHeight);
+
     /*  Show back-to-top link on ANY scroll up, or when scrolling a full page
         down from the top.
      */
     if (   GW.scrollState.unbrokenUpScrollDistance > 0
-    	|| GW.scrollState.unbrokenDownScrollDistance > window.innerHeight)
+    	|| GW.scrollState.unbrokenDownScrollDistance > onePageScrollDistance)
         GW.backToTop.classList.toggle("hidden", false);
 
     //  Hide back-to-top link when scrolling to top.
