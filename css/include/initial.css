@@ -293,6 +293,10 @@ header h1 {
     white-space: nowrap;
 }
 
+#page-source a {
+	font-variant-numeric: oldstyle-nums;
+}
+
 /*	Interpunct separators for the metadata fields; looks nicer than semicolons 
 	or slashes
  */
