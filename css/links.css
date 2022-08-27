@@ -46,17 +46,12 @@
 #sidebar .has-content,
 body.index .has-content {
     margin: 0;
+    padding-left: 0;
 }
 .TOC .has-content .indicator-hook,
 #sidebar .has-content .indicator-hook,
 body.index .has-content .indicator-hook {
-    padding-left: 0;
-    position: static;
-}
-.TOC .has-content .indicator-hook::before,
-#sidebar .has-content .indicator-hook::before,
-body.index .has-content .indicator-hook::before {
-    content: none;
+	display: none;
 }
 
 .markdownBody a.has-annotation {
