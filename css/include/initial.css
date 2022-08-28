@@ -293,6 +293,10 @@ header h1 {
     white-space: nowrap;
 }
 
+#page-source a {
+	font-variant-numeric: oldstyle-nums;
+}
+
 /*	Interpunct separators for the metadata fields; looks nicer than semicolons 
 	or slashes
  */
@@ -540,7 +544,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
         font-size: 1rem;
     }
     #TOC {
-		padding: 0.5em;
+		padding: 0.5em 0.5em 0.5em 0.625em;
 	}
 	#TOC li {
 		padding-left: 0;
