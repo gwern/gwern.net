@@ -448,17 +448,23 @@ Popups = {
     despawnPopup: (popup) => {
 		GWLog("Popups.despawnPopup", "popups.js", 2);
 
+		if (popup.isDespawned)
+			return;
+
 		GW.notificationCenter.fireEvent("Popups.popupWillDespawn", { popup: popup });
 
 		//  Detach popup from its spawning target.
-        Popups.detachPopupFromTarget(popup);
+		Popups.detachPopupFromTarget(popup);
 
 		//  Remove popup from the page.
-        popup.remove();
+		popup.remove();
 
 		//  Remove popup from its popup stack.
-        popup.popupStack.remove(popup);
-        popup.popupStack = null;
+		popup.popupStack.remove(popup);
+		popup.popupStack = null;
+
+		//	Mark popup as despawned.
+		popup.isDespawned = true;
 
 		//  Update z-indexes of all popups.
 		Popups.updatePopupsZOrder();
