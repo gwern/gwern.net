@@ -5073,6 +5073,7 @@ section.highlight-fading::before {
 }
 .reader-mode-selector button.select-mode-off::before {
     content: url('/static/img/icons/book-open.svg');
+    bottom: 0.15em;
 }
 
 @media only screen and (min-width: 1800px) {
@@ -5189,7 +5190,6 @@ section.highlight-fading::before {
     display: inline;
     position: relative;
     bottom: 0.125em;
-    margin: 0 -0.125em 0 0;
 }
 
 .mode-selector-inline button {
