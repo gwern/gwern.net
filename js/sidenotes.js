@@ -930,10 +930,11 @@ Sidenotes = { ...Sidenotes,
 
 		let newSidenoteTop = sidenoteRect.top;
 		if (toCitation) {
-			let citationTop = Sidenotes.counterpart(sidenote).getBoundingClientRect().top;
-			newSidenoteTop = Math.max(Math.max(citationTop, Sidenotes.sidenotePadding), 
-									  sidenoteRect.top);
-			newSidenoteTop = Math.min(citationTop + sidenoteRect.height, 
+			let citationRect = Sidenotes.counterpart(sidenote).getBoundingClientRect()
+			newSidenoteTop = Math.max(sidenoteRect.top, Sidenotes.sidenotePadding);
+			if (newSidenoteTop + sidenoteRect.height < citationRect.bottom)
+				newSidenoteTop = citationRect.top;
+			newSidenoteTop = Math.min(citationRect.top + sidenoteRect.height, 
 									  Math.min(newSidenoteTop + sidenoteRect.height, 
 									  		   window.innerHeight - Sidenotes.sidenotePadding)) 
 						   - sidenoteRect.height;
