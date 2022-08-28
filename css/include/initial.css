@@ -728,6 +728,22 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     font-variant-numeric: tabular-nums;
 }
 
+/*=-------------------=*/
+/*= Directory indexes =*/
+/*=-------------------=*/
+
+@media only screen and (min-width: 650px) {
+	body[class*='-index'] #TOC {
+		float: unset;
+		max-width: unset;
+		margin-right: unset;
+	}
+	body[class='docs-index'] #TOC,
+	body[class='docs-index'] #see-also h1 {
+		display: none;
+	}
+}
+
 /****************/
 /* MAIN CONTENT */
 /****************/
