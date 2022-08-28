@@ -1440,10 +1440,22 @@ addContentLoadHandler(registerCopyProcessors, "eventListeners", (info) => (   in
 /* BACK TO TOP LINK */
 /********************/
 
-/*******************************************************************************/
+/***************************************************************************/
+/*  On mobile, update the scroll position indicator in the back-to-top link.
+
+    Called by the ‘updateBackToTopLinkScrollListener’ scroll listener.
+ */
+function updateBackToTopLinkScrollPositionIndicator(event) {
+    GWLog("updateBackToTopLinkScrollPositionIndicator", "rewrite.js", 3);
+
+	GW.backToTop.dataset.scrollPosition = Math.round(100 * (window.pageYOffset / (document.documentElement.offsetHeight - window.innerHeight)));
+	GW.backToTop.style.backgroundSize = `100% ${GW.backToTop.dataset.scrollPosition}%`;
+}
+
+/*********************************************************************/
 /*  Show/hide the back-to-top link in response to scrolling.
 
-    Called by the ‘updateBackToTopLinkVisibilityScrollListener’ scroll listener.
+    Called by the ‘updateBackToTopLinkScrollListener’ scroll listener.
  */
 function updateBackToTopLinkVisibility(event) {
     GWLog("updateBackToTopLinkVisibility", "rewrite.js", 3);
@@ -1451,12 +1463,15 @@ function updateBackToTopLinkVisibility(event) {
 	//	One PgDn’s worth of scroll distance, approximately.
 	let onePageScrollDistance = (0.8 * window.innerHeight);
 
-    /*  Show back-to-top link on ANY scroll up, or when scrolling a full page
-        down from the top.
-     */
-    if (   GW.scrollState.unbrokenUpScrollDistance > 0
-    	|| GW.scrollState.unbrokenDownScrollDistance > onePageScrollDistance)
-        GW.backToTop.classList.toggle("hidden", false);
+    if (GW.isMobile()) {
+		//  Show back-to-top link on ANY scroll down.
+		if (GW.scrollState.unbrokenDownScrollDistance > 0)
+			GW.backToTop.classList.toggle("hidden", false);
+    } else {
+		//  Show back-to-top link when scrolling a full page down from the top.
+		if (GW.scrollState.unbrokenDownScrollDistance > onePageScrollDistance)
+			GW.backToTop.classList.toggle("hidden", false);
+    }
 
     //  Hide back-to-top link when scrolling to top.
     if (GW.scrollState.lastScrollTop <= 0)
@@ -1473,8 +1488,25 @@ function injectBackToTopLink(loadEventInfo) {
         `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M6.1 422.3l209.4-209.4c4.7-4.7 12.3-4.7 17 0l209.4 209.4c4.7 4.7 4.7 12.3 0 17l-19.8 19.8c-4.7 4.7-12.3 4.7-17 0L224 278.4 42.9 459.1c-4.7 4.7-12.3 4.7-17 0L6.1 439.3c-4.7-4.7-4.7-12.3 0-17zm0-143l19.8 19.8c4.7 4.7 12.3 4.7 17 0L224 118.4l181.1 180.7c4.7 4.7 12.3 4.7 17 0l19.8-19.8c4.7-4.7 4.7-12.3 0-17L232.5 52.9c-4.7-4.7-12.3-4.7-17 0L6.1 262.3c-4.7 4.7-4.7 12.3 0 17z"/></svg>`
         + `</a></div>`);
 
+	if (GW.isMobile());
+		updateBackToTopLinkScrollPositionIndicator();
+
 	//  Show/hide the back-to-top link on scroll up/down.
-	addScrollListener(updateBackToTopLinkVisibility, "updateBackToTopLinkVisibilityScrollListener", true);
+	addScrollListener((event) => {
+		updateBackToTopLinkVisibility(event);
+
+		if (GW.isMobile())
+			updateBackToTopLinkScrollPositionIndicator(event);
+	}, "updateBackToTopLinkScrollListener", true);
+
+	//	Show the back-to-top link on mouseover.
+	GW.backToTop.addEventListener("mouseenter", (event) => {
+		GW.backToTop.style.transition = "none";
+		GW.backToTop.classList.toggle("hidden", false);
+	});
+	GW.backToTop.addEventListener("mouseleave", (event) => {
+		GW.backToTop.style.transition = "";
+	});
 }
 
 addContentLoadHandler(injectBackToTopLink, "rewrite", (info) => info.isMainDocument);

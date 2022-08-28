@@ -147,7 +147,7 @@ DarkMode = { ...DarkMode,
 
 			if (modeSelector == DarkMode.modeSelector) {
 				//	Show the button on hover (if it’s hid via scroll-down).
-				DarkMode.modeSelector.addEventListener("mouseenter", () => {
+				DarkMode.modeSelector.addEventListener("mouseenter", (event) => {
 					//	Fire event.
 					GW.notificationCenter.fireEvent("GW.modeSelectorMouseEnter");
 				});

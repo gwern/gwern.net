@@ -1458,7 +1458,8 @@ pre {
 /***********/
 
 figure img,
-figure video {
+figure video,
+figure svg {
     display: block;
     max-height: calc(100vh - 8em);
     max-width: 100%;
@@ -3559,8 +3560,7 @@ ReaderMode = {
 								var(--GW-link-underline-gradient-line-color)),
 				linear-gradient(var(--GW-link-underline-gradient-line-color), 
 								var(--GW-link-underline-gradient-line-color));
-			background-size: 100% 1px, 1px calc(100% - 0.1em);
-			background-position: 0 calc(100% - 0.1em);
+			background-size: 100% 1px, 1px calc(0.75em - 0.1em);
         }
         ${(_π("body.reader-mode-active.masked-links-hidden #markdownBody .spawns-",
               [ "popup", "popin" ],

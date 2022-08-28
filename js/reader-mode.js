@@ -167,7 +167,7 @@ ReaderMode = { ...ReaderMode,
 
 			if (modeSelector == ReaderMode.modeSelector) {
 				//	Show the button on hover (if it’s hid via scroll-down).
-				ReaderMode.modeSelector.addEventListener("mouseenter", () => {
+				ReaderMode.modeSelector.addEventListener("mouseenter", (event) => {
 					//	Fire event.
 					GW.notificationCenter.fireEvent("GW.modeSelectorMouseEnter");
 				});
