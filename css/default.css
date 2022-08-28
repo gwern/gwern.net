@@ -488,9 +488,17 @@ section:target > :first-child a::after {
 /**********/
 
 #footer {
-    padding-top: 2em;
     text-align: center;
-    margin: 0 0 2em 0;
+    margin: 3em 0 0 0;
+}
+@media only screen and (max-width: 649px) {
+	#footer {
+	    margin: 3em 0 2em 0;
+	}
+}
+
+#footer p {
+	margin: 1em 0;
 }
 
 /*********************/
@@ -2530,19 +2538,19 @@ body.index #markdownBody section > h1:first-child a::after {
 
 /*  Back-to-top link on home page.
     */
-@media only screen and (max-width: 1184px) {
+@media only screen and (max-width: 1144px) {
     body.index #back-to-top {
         left: 4rem;
     }
 }
-@media only screen and (min-width: 1185px) {
+@media only screen and (min-width: 1145px) {
     body.index #back-to-top {
-        left: calc(120px + (100% - 1185px)/2);
+        left: calc(108px + (100% - 1145px)/2);
     }
 }
 @media only screen and (min-width: 1761px) {
     body.index #back-to-top {
-        left: calc(80px + (100% - 1185px)/2);
+        left: calc(64px + (100% - 1145px)/2);
     }
 }
 @media only screen and (max-width: 649px) {
@@ -4799,14 +4807,8 @@ section.highlight-fading::before {
 /*********************/
 /* Mobile only.      */
 @media only screen and (max-width: 649px) {
-    #footer {
-    padding-top: 3.5em;
-   }
     #footer-logo {
-        --footer-decoration-spacing: 3.9em;
-
         position: relative;
-        margin: calc(2em + var(--footer-decoration-spacing)) 0 2em 0;
     }
     #footer-logo::after {
         content: "";
@@ -4814,7 +4816,6 @@ section.highlight-fading::before {
         background-image: url('/static/img/logo/logo-smooth.svg');
         display: block;
         position: relative;
-        bottom: var(--footer-decoration-spacing);
         width: 22px;
         height: 30px;
         background-size: contain;
@@ -4827,11 +4828,11 @@ section.highlight-fading::before {
     #footer-logo::before {
         content: "";
         display: block;
-        position: relative;
-        bottom: calc(var(--footer-decoration-spacing) - 15px);
+        position: absolute;
+        bottom: 15px;
         height: 1px;
         border-bottom: 1px dotted var(--GW-index-page-bottom-ornament-line-color);
-        width: 100%;
+        width: 200%;
     }
 }
 
@@ -4891,12 +4892,10 @@ section.highlight-fading::before {
     opacity: 1.0;
     visibility: visible;
     transition:
-        opacity 2s ease,
-        visibility 2s ease;
+        opacity 2s ease;
 }
 #back-to-top.hidden {
     opacity: 0;
-    visibility: hidden;
 }
 #back-to-top a {
     display: block;
@@ -4915,12 +4914,12 @@ section.highlight-fading::before {
     width: 100%;
 }
 
-@media only screen and (max-width: 1184px) {
+@media only screen and (max-width: 1144px) {
     #back-to-top {
         left: 4rem;
     }
 }
-@media only screen and (min-width: 1185px) {
+@media only screen and (min-width: 1145px) {
     #back-to-top {
         right: 1rem;
     }
@@ -4928,7 +4927,7 @@ section.highlight-fading::before {
 @media only screen and (min-width: 1761px) {
     #back-to-top {
         left: unset;
-        right: calc(60px + (100% - 1185px) / 2);
+        right: calc(64px + (100% - 1145px) / 2);
     }
 }
 @media only screen and (max-width: 649px) {
