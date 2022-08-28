@@ -3501,9 +3501,7 @@ DarkMode = {
     /*  Returns current (saved) mode (light, dark, or auto).
      */
     currentMode: () => {
-    	//	Remove the `selected-mode` part when enough time has passed.
-    	//	—SA 2022-07-23
-        return (localStorage.getItem("dark-mode-setting") || localStorage.getItem("selected-mode") || "auto");
+        return (localStorage.getItem("dark-mode-setting") || "auto");
     },
 };
 
