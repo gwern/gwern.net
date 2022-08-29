@@ -97,9 +97,9 @@ citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x
 citefyInline _ x = x
 
 citefyRegexSingle, citefyRegexDouble, citefyRegexMultiple :: Regex
-citefyRegexSingle = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]+)([    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text) -- match one-author citations like "Foo 2020" or "Foo 2020a"; we avoid using [:punct:] to avoid matching on en-dashes in date ranges
-citefyRegexDouble = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]+[    \8203]+&[    \8203]+[A-Z][a-z-]+)([    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text) -- match two-author citations like "Foo & Bar 2020"
-citefyRegexMultiple = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]+)([    \8203]+[Ee]t[    \8203][Aa]l[    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text)
+citefyRegexSingle = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]?[A-Z]?[" `T.append`  lowercaseUnicode `T.append`  "-]+)([    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text) -- match one-author citations like "Foo 2020" or "Foo 2020a"; we avoid using [:punct:] to avoid matching on en-dashes in date ranges; need to also handle mixed-case like 'McDermot'
+citefyRegexDouble = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]?[A-Z]?[" `T.append`  lowercaseUnicode `T.append`  "-]+[    \8203]+&[    \8203]+[A-Z][a-z-]+)([    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text) -- match two-author citations like "Foo & Bar 2020"
+citefyRegexMultiple = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]?[A-Z]?[" `T.append`  lowercaseUnicode `T.append`  "-]+)([    \8203]+[Ee]t[    \8203][Aa]l[    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text)
 
 -- sourced from /Lorem#unicode-characters - this *should* be pretty much all the lowercase Unicode characters which might turn up in a surname:
 lowercaseUnicode :: T.Text
