@@ -483,6 +483,10 @@ section:target > :first-child a::after {
     height: 100%;
 }
 
+.markdownBody .TOC.columns > ul {
+	margin-bottom: 0;
+}
+
 /**********/
 /* FOOTER */
 /**********/
@@ -2300,6 +2304,14 @@ span.link-bibliography a {
      */
     clear: both;
 }
+.columns:first-child > ul,
+.columns:first-child > ol {
+    margin-top: 1em;
+}
+.columns:last-child > ul,
+.columns:last-child > ol {
+    margin-bottom: 1em;
+}
 .markdownBody .columns li,
 .markdownBody .columns li p {
     text-align: left;
@@ -3111,11 +3123,6 @@ body.index-directory #footer {
 .popframe-body p + ol {
     margin-top: 0.2em;
     margin-bottom: 0.2em;
-}
-
-.popframe-body .columns ul:last-child,
-.popframe-body .columns ol:last-child {
-    margin-bottom: 1em;
 }
 
 .popframe-body li {
