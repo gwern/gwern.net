@@ -234,12 +234,11 @@ function includeContent(includeLink, content) {
 	//	Fire events, if need be.
 	if (includeLink.needsRewrite) {
 		let flags = 0;
-		if (Transclude.isAnnotationTransclude(includeLink) == false) {
+		if (Transclude.isAnnotationTransclude(includeLink) == false)
 			flags |= GW.contentDidLoadEventFlags.needsRewrite;
-			if (includingIntoMainPage)
-				flags |= (  GW.contentDidLoadEventFlags.fullWidthPossible
-						  | GW.contentDidLoadEventFlags.collapseAllowed)
-		}
+		if (includingIntoMainPage)
+			flags |= (  GW.contentDidLoadEventFlags.fullWidthPossible
+					  | GW.contentDidLoadEventFlags.collapseAllowed);
 
 		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 			source: "transclude",

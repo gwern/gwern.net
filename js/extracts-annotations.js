@@ -230,7 +230,8 @@ Extracts = { ...Extracts,
             document: constructedAnnotation,
             loadLocation: Annotations.sourceURLForIdentifier(annotationIdentifier),
             baseLocation: Extracts.locationForTarget(target),
-            flags: GW.contentDidLoadEventFlags.needsRewrite
+            flags: (  GW.contentDidLoadEventFlags.needsRewrite
+            		| GW.contentDidLoadEventFlags.collapseAllowed)
         });
 
         //  Cache constructed and processed annotation.

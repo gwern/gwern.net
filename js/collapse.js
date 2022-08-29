@@ -144,7 +144,7 @@ function prepareCollapseBlocks(loadEventInfo) {
 
 		if (collapseBlock.tagName == "SECTION") {
 			//  Inject the disclosure button.
-			collapseBlock.children[0].insertAdjacentHTML("afterend", disclosureButtonHTML);
+			collapseBlock.firstElementChild.insertAdjacentHTML("afterend", disclosureButtonHTML);
 			if (checked > "")
 				collapseBlock.classList.add("expanded");
 		} else if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].includes(collapseBlock.tagName)) {
@@ -152,35 +152,64 @@ function prepareCollapseBlocks(loadEventInfo) {
 			collapseBlock.classList.remove("collapse");
 			if (collapseBlock.className == "")
 				collapseBlock.removeAttribute("class");
+		} else if (collapseBlock.tagName == "DIV") {
+			//	Inject the disclosure button.
+			collapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
+			if (checked > "")
+				collapseBlock.classList.add("expanded");
 		} else if (   collapseBlock.parentElement.tagName == "DIV" 
 				   && collapseBlock.parentElement.children.length == 1) {
 			//  Use parent div as collapse block wrapper.
 			let realCollapseBlock = collapseBlock.parentElement;
 			realCollapseBlock.classList.add("collapse");
+
+			//	Inject the disclosure button.
 			realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
 			if (checked > "")
 				realCollapseBlock.classList.add("expanded");
+
+			//  Remove the ‘collapse’ class.
 			collapseBlock.classList.remove("collapse");
+			if (collapseBlock.className == "")
+				collapseBlock.removeAttribute("class");
 		} else {
 			//  Construct collapse block wrapper and inject the disclosure button.
 			let realCollapseBlock = newElement("DIV", { "class": `collapse${(checked > "" ? " expanded" : "")}` });
 			realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
+
 			//  Move block-to-be-collapsed into wrapper.
 			collapseBlock.parentElement.insertBefore(realCollapseBlock, collapseBlock);
-			collapseBlock.classList.remove("collapse");
 			realCollapseBlock.appendChild(collapseBlock);
+
+			//  Remove the ‘collapse’ class.
+			collapseBlock.classList.remove("collapse");
+			if (collapseBlock.className == "")
+				collapseBlock.removeAttribute("class");
 		}
 	});
 
 	if (aBlockDidStartExpanded)
 		GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", { source: "prepareCollapseBlocks" });
+}
+
+addContentLoadHandler(prepareCollapseBlocks, ">rewrite", (info) => (   info.needsRewrite 
+																	&& info.collapseAllowed));
+
+/*************************************************/
+/*  Add event listeners to the disclosure buttons.
+ */
+function activateCollapseBlockDisclosureButtons(loadEventInfo) {
+	GWLog("activateCollapseBlockDisclosureButtons", "collapse.js", 1);
 
     //  Add listeners to toggle ‘expanded’ class of collapse blocks.
 	loadEventInfo.document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
 		updateDisclosureButtonTitle(disclosureButton);
 
 		let collapseBlock = disclosureButton.closest(".collapse");
-		disclosureButton.addEventListener("change", (event) => {
+		if (disclosureButton.stateChangedHandler)
+			return;
+
+		disclosureButton.addEventListener("change", disclosureButton.stateChangedHandler = (event) => {
 			GWLog("Collapse.collapseBlockDisclosureButtonStateChanged", "collapse.js", 2);
 
 			collapseBlock.classList.toggle("expanded", disclosureButton.checked);
@@ -207,8 +236,7 @@ function prepareCollapseBlocks(loadEventInfo) {
 	});
 }
 
-addContentLoadHandler(prepareCollapseBlocks, ">rewrite", (info) => (   info.needsRewrite 
-																	&& info.collapseAllowed));
+addContentLoadHandler(activateCollapseBlockDisclosureButtons, "eventListeners", (info) => info.collapseAllowed);
 
 /**********************************************************/
 /*	Removes disclosure buttons and expands collapse blocks.
