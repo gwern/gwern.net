@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-08-27 15:15:08 gwern"
+When:  Time-stamp: "2022-08-29 12:50:43 gwern"
 License: CC-0
 -}
 
@@ -53,7 +53,7 @@ import qualified Control.Monad.Parallel as Par (mapM_)
 
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
-import Typography (typographyTransform, titlecase', invertImage)
+import Typography (typographyTransform, titlecase', invertImage, imageSrcset)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink (getSimilarLink, getBackLink)
@@ -307,13 +307,13 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                       -- for partials, we skip the heavyweight processing:
                       unless (null abst) $ void $ createAnnotations md pandoc
                       pandoc' <- if null abst then return pandoc
-                                    else walkM (localizeLink am archived) $
-                                         walk nominalToRealInflationAdjuster $
-                                         walk (hasAnnotation md True) $
-                                         walk convertInterwikiLinks $
-                                         walk linkAuto $
-                                         walk (parseRawBlock nullAttr) pandoc
-
+                                    else do
+                                          let p = walk (convertInterwikiLinks . nominalToRealInflationAdjuster) $
+                                                  walk (hasAnnotation md True) $
+                                                  walk linkAuto $
+                                                  walk (parseRawBlock nullAttr) pandoc
+                                          p' <- walkM (localizeLink am archived) p
+                                          walkM imageSrcset p'
                       let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
                       when (filepath /= urlEncode u') (printRed "Warning, annotation fragment path → URL truncated!" >>
                                                           putStrLn ("Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"))
@@ -496,7 +496,7 @@ generateAnnotationTransclusionBlock (f, (tle,aut,dt,doi,ts,_)) blp slp =
                                     backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
-                                    link = Link (lid, ["link-annotated", "include-annotation", "include-replace-container"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
+                                    link = Link (lid, ["link-annotated", "include", "include-annotation", "include-replace-container"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
                                 in
                                   [Para
                                        ([link,Str ","] ++
@@ -1726,7 +1726,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         when (null thumbnailText) $ printRed ("Warning: no thumbnailText alt text defined for URL " ++ p)
                         thumbnailFigure <- if thumbnail'=="" then return "" else do
                               (color,h,w) <- invertImage thumbnail'
-                              let imgClass = if color then "class=\"invertible-auto float-right\"" else "class=\"float-right\""
+                              let imgClass = if color then "class=\"invertible-auto float-right page-thumbnail\"" else "class=\"float-right page-thumbnail\""
                               return ("<figure><img " ++ imgClass ++ " height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\" /></figure>")
 
                         let doi = "" -- I explored the idea but DOIs are too expensive & ultimately do little useful
