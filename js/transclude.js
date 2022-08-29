@@ -257,7 +257,7 @@ function includeContent(includeLink, content) {
 
 		if (newFootnotesWrapper) {
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-				source: "transclude",
+				source: "transclude.footnotes",
 				document: newFootnotesWrapper,
 				loadLocation: new URL(includeLink.href),
 				baseLocation: includeLink.baseLocation,
@@ -265,7 +265,7 @@ function includeContent(includeLink, content) {
 			});
 
 			GW.notificationCenter.fireEvent("GW.contentDidInject", {
-				source: "transclude",
+				source: "transclude.footnotes",
 				document: newFootnotesWrapper,
 				mainPageContent: includingIntoMainPage
 			});
@@ -275,13 +275,16 @@ function includeContent(includeLink, content) {
 	//	Save reference for potential removal later.
 	let includeLinkParentElement = includeLink.parentElement;
 
-	//	Remove link.
+	//	Remove extraneous text node after link, if any.
 	if (   includeLink.classList.contains("include-replace-container") == false
 		&& includeLink.nextSibling 
 		&& includeLink.nextSibling.nodeType == Node.TEXT_NODE
 		&& isNodeEmpty(includeLink.nextSibling))
-		includeLink.nextSibling.parentNode.removeChild(includeLink.nextSibling);
-	includeLink.remove();
+		includeLink.parentNode.removeChild(includeLink.nextSibling);
+
+	//	Remove link.
+	if (includeLink.classList.contains("include-replace-container") == false)
+		includeLink.remove();
 
 	//	Intelligent rectification of surrounding HTML structure.
 	if (   Transclude.isAnnotationTransclude(includeLink)
@@ -327,7 +330,7 @@ function includeContent(includeLink, content) {
 		newFootnotesWrapper.remove();
 	}
 
-	//	Cleanup, part II.
+	//	Remove include-link’s container, if specified.
 	if (includeLink.classList.contains("include-replace-container"))
 		includeLinkParentElement.remove();
 
@@ -382,7 +385,7 @@ function updateFootnotesAfterInclusion(newContent, includeLink) {
 
 		//	Fire event to trigger rewrite pass.
 		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-			source: "transclude",
+			source: "transclude.footnotesSection",
 			document: footnotesSection,
 			loadLocation: new URL(includeLink.href),
 			baseLocation: includeLink.baseLocation,
@@ -517,7 +520,7 @@ Transclude = {
 
 	//	Called by: Transclude.transclude
 	cachedDocumentForLink: (includeLink) => {
-		if (  includeLink.hostname == location.hostname
+		if (   includeLink.hostname == location.hostname
 			&& includeLink.pathname == location.pathname)
 			return document;
 
@@ -830,8 +833,9 @@ Transclude = {
 		}
 
 		//	Check includable content cache (managed by Transclude in all cases).
-		let content = Transclude.cachedContentForLink(includeLink);
-		if (content) {
+		let cachedContent = Transclude.cachedContentForLink(includeLink);
+		if (cachedContent) {
+			let content = newDocument(cachedContent);
 			if (   Transclude.isAnnotationTransclude(includeLink)
 				&& includeLink.needsRewrite == false) {
 				includeLink.needsRewrite = true;
@@ -948,7 +952,7 @@ Transclude = {
 		//	Fire event, if need be.
 		if (includeLink.needsRewrite) {
 			GW.notificationCenter.fireEvent("Rewrite.contentDidChange", { 
-				source: "transclude", 
+				source: "transclude.loadingFailed", 
 				baseLocation: includeLink.baseLocation,
 				document: includeLink.getRootNode()
 			});
@@ -971,4 +975,4 @@ function handleTranscludes(loadEventInfo) {
 	});
 }
 
-addContentLoadHandler(handleTranscludes, "<rewrite", (info) => info.needsRewrite);
+addContentLoadHandler(handleTranscludes, "<rewrite");

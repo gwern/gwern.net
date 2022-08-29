@@ -721,9 +721,6 @@ Extracts = {
             	let linkedElement = fullTargetDocument.querySelector(selectorFromHash(target.hash));
 				let nearestBlock = Extracts.nearestBlockElement(linkedElement);
 
-				//	Trigger transcludes.
-				Transclude.triggerTranscludesInContainer(nearestBlock);
-
 				return newDocument(unwrapFunction(nearestBlock));
 			} else {
 				/*	If the page hasn’t been loaded yet, load it; upon the 
@@ -749,9 +746,6 @@ Extracts = {
 			if (Extracts.cachedPages[target.pathname]) {
 				//  Give the pop-frame an identifying class.
 				Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "page-" + target.pathname.slice(1));
-
-				//	Trigger transcludes.
-				Transclude.triggerTranscludesInContainer(Extracts.cachedPages[target.pathname]);
 
 				return newDocument(Extracts.cachedPages[target.pathname]);
 			} else {
@@ -1144,13 +1138,43 @@ Extracts = {
 			popFrame.document.insertBefore(cssLink.cloneNode(true), popFrame.body);
 		});
 
-		//	Add content update handler.
+		/*	For local content embed pop-frames, add handler to trigger 
+			transcludes in source document when they trigger in the pop-frame.
+		 */
+		if (Extracts.isLocalPageLink(target)) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
+				let identifiedAncestor = info.document.parentElement;
+				while (   identifiedAncestor
+					   && identifiedAncestor.id == ""
+					   && identifiedAncestor.parentElement != null) {
+					identifiedAncestor = identifiedAncestor.parentElement;
+				}
+				let containerSelector = null;
+				if (identifiedAncestor.id) {
+					containerSelector = "#" + identifiedAncestor.id;
+				} else if (popFrame.titleBar) {
+					let popFrameTitleLink = popFrame.titleBar.querySelector(".popframe-title-link");
+					if (popFrameTitleLink)
+						containerSelector = popFrameTitleLink.hash;
+				}
+				let sourceDocument = Extracts.cachedPages[target.pathname] || Extracts.rootDocument;
+				let containerInSourceDocument = containerSelector 
+												? sourceDocument.querySelector(containerSelector)
+												: sourceDocument;
+
+				//	Trigger transcludes.
+				Transclude.triggerTranscludesInContainer(containerInSourceDocument);
+			}, { 
+				condition: (info) => (   info.source == "transclude" 
+									  && info.document.getRootNode() == popFrame.document)
+			});
+		}
+
+		//	Add handler to update popup position when content changes.
 		GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (info) => {
-			Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
-		}, { 
-			condition: (info) => (info.baseLocation.pathname == target.pathname),
-			once: true
-		});
+			if (Extracts.popFrameProvider == Popups)
+				Popups.positionPopup(popFrame);
+		}, { condition: (info) => (info.document == popFrame.document) });
 
         return popFrame;
     },
