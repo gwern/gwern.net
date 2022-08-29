@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-08-26 08:57:58 gwern"
+When: Time-stamp: "2022-08-28 21:38:55 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -51,7 +51,7 @@ import Hakyll (compile, composeRoutes, constField,
                defaultHakyllWriterOptions, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
                loadAndApplyTemplate, match, modificationTimeField, mapContext,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess, boolField, toFilePath,
-               templateCompiler, version, Compiler, Context, Item, unsafeCompiler, noResult, complement, (.&&.))
+               templateCompiler, version, Compiler, Context, Item, unsafeCompiler, noResult)
 import System.Exit (ExitCode(ExitFailure))
 import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
 import Text.Read (readMaybe)
@@ -59,7 +59,7 @@ import Text.Pandoc.Shared (blocksToInlines)
 import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
                     def, pandocExtensions, readerExtensions, readMarkdown, writeHtml5String,
                     Block(..), HTMLMathMethod(MathJax), defaultMathJaxURL, Inline(..),
-                    ObfuscationMethod(NoObfuscation), Pandoc(..), WriterOptions(..), nullMeta)
+                    ObfuscationMethod(NoObfuscation), Pandoc(..), WriterOptions(..), nullMeta, unMeta, MetaValue(MetaBool))
 import Text.Pandoc.Walk (walk, walkM)
 import Network.HTTP (urlDecode, urlEncode)
 import System.IO.Unsafe (unsafePerformIO)
@@ -285,9 +285,16 @@ descField d = field d $ \item -> do
                          Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
 
 pandocTransform :: Metadata -> ArchiveMetadata -> IORef Integer -> Pandoc -> IO Pandoc
-pandocTransform md adb archived p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
-                           do let pw = walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
-                              _ <- createAnnotations md pw
+pandocTransform md adb archived p@(Pandoc metadata _) = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
+                           -- tag-directories/link-bibliographies special-case: we don't need to run all the heavyweight passes, and LinkAuto has a regrettable tendency to screw up section headers, so we check to see if we are processing a document with 'index: true' set in the YAML metadata, and if we are, we slip several of the rewrite transformations:
+                           do let metadataMap = unMeta metadata
+                              let indexp = case M.lookup "index" metadataMap of
+                                                Just (MetaBool False) -> False
+                                                Just (MetaBool True) -> True
+                                                Just e -> error ("`pandocTransform` error: the 'index' metadata value parsed to something other than a boolean, which is an error. Value: " ++ show e ++ "; metadata: " ++ show metadataMap ++ "; full Pandoc AST: " ++ show p)
+                                                Nothing -> False
+                              let pw = if indexp then p else walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
+                              _ <- unless indexp $ createAnnotations md pw
                               let pb = walk (hasAnnotation md True) $ addLocalLinkWalk pw -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overriden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
                               pbt <- fmap typographyTransform . walkM (localizeLink adb archived) $ walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) pb
                               let pbth = addLocalLinkWalk $ walk headerSelflink pbt
