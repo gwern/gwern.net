@@ -935,7 +935,7 @@ function injectFootnoteSectionTOCLink(loadEventInfo) {
     let TOCList = loadEventInfo.document.getRootNode().querySelector("#TOC > ul");
     if (   TOCList
     	&& footnotesSection)
-        TOCList.insertAdjacentHTML("beforeend", `<li><a href="#footnotes">Footnotes</a></li>\n`);
+        TOCList.insertAdjacentHTML("beforeend", `<li><a id="toc-footnotes" href="#footnotes">Footnotes</a></li>\n`);
 }
 
 addContentLoadHandler(injectFootnoteSectionTOCLink, "rewrite", (info) => info.needsRewrite);
