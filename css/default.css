@@ -5336,19 +5336,21 @@ a.include-loading[data-link-icon]:not(:empty)::after {
     background-image: var(--spinner-image);
 }
 a.include-loading:not(:empty)::after {
-    --spinner-size: var(--link-icon-size, 0.85em);
+    --spinner-size: 0.9em;
 
     background-size: var(--spinner-size);
     content: "";
+    font-size: var(--spinner-size);
     width: var(--spinner-size);
     height: var(--spinner-size);
-    margin: 0 0 0 0.15em;
+    margin: 0 0.1em 0 0.2em;
 }
 a.include-loading[data-link-icon]:not(:empty)::after {
     padding: 0;
     background-position: 0 0;
     position: relative;
-    bottom: 0.1em;
+    top: unset;
+    bottom: 0;
 }
 
 a.include-loading.include-no-spinner::after {
