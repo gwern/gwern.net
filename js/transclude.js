@@ -445,9 +445,9 @@ function updatePageTOCAfterInclusion(newContent, includeLink) {
 
 	let parentTOCElement = parentSection.id == "markdownBody"
 						   ? TOC
-						   : TOC.querySelector(`a[href$='#${parentSection.id}']`).parentElement;
+						   : TOC.querySelector(`#toc-${parentSection.id}`).parentElement;
 	let precedingTOCElement = previousSection 
-							  ? parentTOCElement.querySelector(`a[href$='#${previousSection.id}']`).parentElement
+							  ? parentTOCElement.querySelector(`#toc-${previousSection.id}`).parentElement
 							  : null;
 
 	//	TOC entry insertion function, called recursively.
@@ -470,7 +470,7 @@ function updatePageTOCAfterInclusion(newContent, includeLink) {
 			let entryText = section.id == "footnotes"
 							? "Footnotes"
 							: section.firstElementChild.textContent;
-			entry.innerHTML = `<a href='#${section.id}'>${entryText}</a>`;
+			entry.innerHTML = `<a id='toc-${section.id}' href='#${fixedEncodeURIComponent(section.id)}'>${entryText}</a>`;
 
 			//	Get or construct the <ul> element.
 			let subList = Array.from(parentTOCElement.childNodes).find(child => child.tagName == "UL");
