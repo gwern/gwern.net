@@ -3307,6 +3307,8 @@ GW.notificationCenter = {
         		   + eventInfo.source)
         		  : ""
 				 )}`, "notification");
+		if (GW.logLevel >= 2)
+			console.log(eventInfo)
 
 		/*	If event-specific pre-fire processing is needed, do it.
 		 */

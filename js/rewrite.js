@@ -1507,6 +1507,9 @@ function injectBackToTopLink(loadEventInfo) {
 	GW.backToTop.addEventListener("mouseleave", (event) => {
 		GW.backToTop.style.transition = "";
 	});
+	GW.backToTop.addEventListener("click", (event) => {
+		GW.backToTop.style.transition = "";
+	});
 }
 
 addContentLoadHandler(injectBackToTopLink, "rewrite", (info) => info.isMainDocument);
