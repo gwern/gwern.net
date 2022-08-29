@@ -9,7 +9,7 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (invertImage, invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase', identUniquefy, mergeSpaces) where
+module Typography (invertImage, invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase', identUniquefy, mergeSpaces, addImgDimensions, imageSrcset) where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Control.Monad (void, when)
@@ -21,13 +21,21 @@ import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
 import System.Directory (doesFileExist, getModificationTime, removeFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.Posix.Temp (mkstemp)
-import qualified Data.Text as T (any, append, concat, isSuffixOf, pack, unpack, replace, splitOn, strip, Text)
+import qualified Data.Text as T (any, append, concat, isSuffixOf, pack, unpack, replace, splitOn, strip, Text, isPrefixOf)
 import Data.Text.Read (decimal)
 import Text.Read (readMaybe)
 import Text.Regex.TDFA ((=~), Regex, makeRegex, match) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
 import System.IO (stderr, hPrint)
 import System.IO.Temp (emptySystemTempFile)
 import qualified Data.Map.Strict as M
+import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
+import System.FilePath (takeExtension)
+import Control.Concurrent (forkIO)
+import Data.Char (toLower)
+import Data.Maybe (isNothing)
+import Network.HTTP (urlDecode)
+import Control.Exception (onException)
+import Data.List (nubBy, sort)
 
 import Data.Text.Titlecase (titlecase)
 
@@ -43,6 +51,7 @@ import Utils (addClass, sed, printRed, currentYear)
 
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = let year = currentYear in
+                        walk mergeSpaces .
                         walk (citefyInline year . linkLive . linkIcon) .
                         linebreakingTransform .
                         rulersCycle 3
@@ -97,9 +106,9 @@ citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x
 citefyInline _ x = x
 
 citefyRegexSingle, citefyRegexDouble, citefyRegexMultiple :: Regex
-citefyRegexSingle = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]+)([    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text) -- match one-author citations like "Foo 2020" or "Foo 2020a"; we avoid using [:punct:] to avoid matching on en-dashes in date ranges
-citefyRegexDouble = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]+[    \8203]+&[    \8203]+[A-Z][a-z-]+)([    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text) -- match two-author citations like "Foo & Bar 2020"
-citefyRegexMultiple = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]+)([    \8203]+[Ee]t[    \8203][Aa]l[    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text)
+citefyRegexSingle = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]?[A-Z]?[" `T.append`  lowercaseUnicode `T.append`  "-]+)([    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text) -- match one-author citations like "Foo 2020" or "Foo 2020a"; we avoid using [:punct:] to avoid matching on en-dashes in date ranges; need to also handle mixed-case like 'McDermot'
+citefyRegexDouble = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]?[A-Z]?[" `T.append`  lowercaseUnicode `T.append`  "-]+[    \8203]+&[    \8203]+[A-Z][a-z-]+)([    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text) -- match two-author citations like "Foo & Bar 2020"
+citefyRegexMultiple = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]?[A-Z]?[" `T.append`  lowercaseUnicode `T.append`  "-]+)([    \8203]+[Ee]t[    \8203][Aa]l[    \8203]+)([12][0-9][0-9][0-9][a-z]?)" :: T.Text)
 
 -- sourced from /Lorem#unicode-characters - this *should* be pretty much all the lowercase Unicode characters which might turn up in a surname:
 lowercaseUnicode :: T.Text
@@ -257,6 +266,94 @@ imageMagickDimensions f =
              ExitFailure exit -> error $ f ++ ":" ++ f' ++ ":" ++ show exit ++ ":" ++ B8.unpack bs
              _             -> do let [height, width] = words $ head $ lines $ B8.unpack bs
                                  return (height, width)
+
+-- Example: Image ("",["width-full"],[]) [Str "..."] ("/images/gan/thiswaifudoesnotexist.png","fig:")
+-- type Text.Pandoc.Definition.Attr = (T.Text, [T.Text], [(T.Text, T.Text)])
+-- WARNING: image hotlinking is a bad practice: hotlinks will often break, sometimes just because of hotlinking. We assume that all images are locally hosted! Woe betide the cheapskate parasite who fails to heed this.
+imageSrcset :: Inline -> IO Inline
+imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
+  if not (".png" `T.isSuffixOf` target || ".jpg" `T.isSuffixOf` target) then return x else
+  do let ext = takeExtension $ T.unpack target
+     let target' = replace "%2F" "/" $ T.unpack target
+     exists <- doesFileExist $ tail $ T.unpack target
+     if not exists then printRed ("imageSrcset (Image): " ++ show x ++ " does not exist?") >> return x else
+      do (_,w) <- imageMagickDimensions $ tail target'
+         if w=="" || (read w :: Int) <= 768 then return x else do
+             let smallerPath = (tail target')++"-768px"++ext
+             notExist <- fmap not $ doesFileExist smallerPath
+             when notExist $ do
+               (status,_,bs) <-  runShellCommand "./" Nothing "convert" [tail target', "-resize", "768x768", smallerPath]
+               case status of
+                 ExitFailure _ -> error $ show status ++ show bs
+                 _ -> void $ forkIO $ if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
+                                        void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [smallerPath]
+                                      else
+                                        void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/compressJPG" [smallerPath]
+             let srcset = T.pack ("/"++smallerPath++" 768w, " ++ target'++" "++w++"w")
+             return $ Image (c, t, pairs++[("srcset", srcset), ("sizes", T.pack ("(max-width: 768px) 100vw, "++w++"px"))])
+                            inlines (target, title)
+-- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
+imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = if (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p) &&
+                                                          ("https://www.gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
+                                                         do exists <- doesFileExist $ tail $ replace "https://www.gwern.net" "" $ T.unpack  p
+                                                            if not exists then printRed ("imageSrcset (Link): " ++ show x ++ " does not exist?") >> return x else
+                                                              do (h,w) <- imageMagickDimensions $ T.unpack p
+                                                                 return (Link (htmlid, classes,
+                                                                               kvs++[("image-height",T.pack h),
+                                                                                      ("image-width",T.pack w)])
+                                                                         xs (p,t))
+                                                       else return x
+imageSrcset x = return x
+
+-- FASTER HTML RENDERING BY STATICLY SPECIFYING ALL IMAGE DIMENSIONS
+-- read HTML string with TagSoup, process `<img>` tags to read the file's dimensions, and hardwire them;
+-- this optimizes HTML rendering since browsers know before downloading the image how to layout the page.
+-- Further, specify 'async' decoding & 'lazy-loading' for all images: the lazy attribute was introduced by Chrome 76 ~August 2019, and adopted by Firefox 75 ~February 2020 (<https://bugzilla.mozilla.org/show_bug.cgi?id=1542784>), standardized as <https://html.spec.whatwg.org/multipage/urls-and-fetching.html#lazy-loading-attributes> with >63% global availability + backwards compatibility (<https://caniuse.com/#feat=loading-lazy-attr> <https://github.com/whatwg/html/pull/3752> <https://web.dev/native-lazy-loading/>).
+-- Async decoding: when an image *does* load, can it be decoded to pixels in parallel with the text? For us, yes. Docs: <https://html.spec.whatwg.org/multipage/images.html#decoding-images> <https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/decoding>.
+-- Pandoc feature request to push the lazy loading upstream: <https://github.com/jgm/pandoc/issues/6197>
+addImgDimensions :: String -> IO String
+addImgDimensions = fmap (renderTagsOptions renderOptions{optMinimize=whitelist, optRawTag = (`elem` ["script", "style"]) . map toLower}) . mapM staticImg . parseTags
+                 where whitelist s = s /= "div" && s /= "script" && s /= "style"
+
+{- example illustration:
+ TagOpen "img" [("src","/images/traffic/201201-201207-traffic-history.png")
+                ("alt","Plot of page-hits (y-axis) versus date (x-axis)")],
+ TagOpen "figcaption" [],TagText "Plot of page-hits (y-axis) versus date (x-axis)",
+ TagClose "figcaption",TagText "\n",TagClose "figure" -}
+staticImg :: Tag String -> IO (Tag String)
+staticImg x@(TagOpen "img" xs) = do
+  let h = lookup "height" xs
+  let w = lookup "width" xs
+  let lazy = lookup "loading" xs
+  let Just p = lookup "src" xs
+  if (isNothing h || isNothing w || isNothing lazy) &&
+     not ("//" `isPrefixOf` p || "http" `isPrefixOf` p) &&
+     ("/" `isPrefixOf` p && not ("data:image/" `isPrefixOf` p)) then
+    if (takeExtension p == ".svg") then
+      -- for SVGs, only set the lazy-loading attribute, since height/width is not necessarily meaningful for vector graphics
+            return (TagOpen "img" (uniq (("loading", "lazy"):xs)))
+    else
+       do
+         let p' = urlDecode $ if head p == '/' then tail p else p
+         exists <- doesFileExist p'
+         if not exists then printRed ("staticImg: File does not exist: " ++ p') >> return x else
+          do (height,width) <- imageMagickDimensions p' `onException` printRed p
+             -- body max-width is 1600 px, sidebar is 150px, so any image wider than ~1400px
+             -- will wind up being reflowed by the 'img { max-width: 100%; }' responsive-image CSS declaration;
+             -- let's avoid that specific case by lying about its width, although this doesn't fix all the reflowing.
+             -- No images should be more than a screen in height either, so we'll set a maximum of 1400
+             let width' =  readMaybe width  ::Maybe Int
+             let height' = readMaybe height ::Maybe Int
+             case width' of
+                Nothing       -> printRed ("staticImg: Image width can't be read: " ++ show x) >> return x
+                Just width'' -> case height' of
+                                 Nothing       -> printRed ("staticImg: Image height can't be read: " ++ show x) >> return x
+                                 Just height'' -> return (TagOpen "img" (uniq ([("loading", "lazy"), -- lazy load & async render all images
+                                                                                ("decoding", "async"),
+                                                                                ("height", show (height'' `min` 1400)), ("width", show (width'' `min` 1400))]++xs)))
+      else return x
+  where uniq = nubBy (\a b -> fst a == fst b) . sort
+staticImg x = return x
 
 -------------------------------------------
 

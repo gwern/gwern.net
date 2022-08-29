@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-08-26 08:57:58 gwern"
+When: Time-stamp: "2022-08-29 12:42:54 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -34,44 +34,37 @@ Explanations:
 - the 'echo' calls are there to ring the terminal bell and notify the user that he needs to edit the Modafinil file or that the whole thing is done
 -}
 
-import Control.Concurrent (forkIO)
-import Control.Exception (onException)
-import Control.Monad (when, unless, void)
+import Control.Monad (when, unless)
 import Data.Char (toLower)
 import Data.IORef (newIORef, IORef)
-import Data.List (intercalate, isInfixOf, isSuffixOf, isPrefixOf, nubBy, sort)
+import Data.List (intercalate, isInfixOf, isSuffixOf)
 import qualified Data.Map.Strict as M (lookup)
-import Data.Maybe (isNothing, fromMaybe)
+import Data.Maybe (fromMaybe)
 import System.Directory (doesFileExist)
 import System.Environment (lookupEnv)
-import System.FilePath (takeExtension)
-import Data.FileStore.Utils (runShellCommand)
 import Hakyll (compile, composeRoutes, constField,
                symlinkFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, getMetadataField, lookupString,
                defaultHakyllWriterOptions, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
                loadAndApplyTemplate, match, modificationTimeField, mapContext,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess, boolField, toFilePath,
-               templateCompiler, version, Compiler, Context, Item, unsafeCompiler, noResult, complement, (.&&.))
-import System.Exit (ExitCode(ExitFailure))
-import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
-import Text.Read (readMaybe)
+               templateCompiler, version, Compiler, Context, Item, unsafeCompiler, noResult, getUnderlying)
 import Text.Pandoc.Shared (blocksToInlines)
 import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
                     def, pandocExtensions, readerExtensions, readMarkdown, writeHtml5String,
                     Block(..), HTMLMathMethod(MathJax), defaultMathJaxURL, Inline(..),
                     ObfuscationMethod(NoObfuscation), Pandoc(..), WriterOptions(..), nullMeta)
 import Text.Pandoc.Walk (walk, walkM)
-import Network.HTTP (urlDecode, urlEncode)
+import Network.HTTP (urlEncode)
 import System.IO.Unsafe (unsafePerformIO)
 
-import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack, unpack, length)
+import qualified Data.Text as T (append, isInfixOf, pack, unpack, length)
 
 -- local custom modules:
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToText, interwikiTestSuite)
 import LinkMetadata (addLocalLinkWalk, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString, tagsToLinksDiv, safeHtmlWriterOptions)
 import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata)
-import Typography (linebreakingTransform, typographyTransform, invertImageInline, imageMagickDimensions)
+import Typography (linebreakingTransform, typographyTransform, invertImageInline, imageMagickDimensions, addImgDimensions, imageSrcset)
 import LinkAuto (linkAuto)
 import LinkIcon (rebuildSVGIconCSS)
 import LinkLive (linkLiveTest, linkLivePrioritize)
@@ -112,9 +105,13 @@ main =
                             setExtension ""
                    -- https://groups.google.com/forum/#!topic/pandoc-discuss/HVHY7-IOLSs
                    let readerOptions = defaultHakyllReaderOptions
-                   compile $ pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am hasArchivedN)
-                       >>= loadAndApplyTemplate "static/templates/default.html" (postCtx meta)
-                       >>= imgUrls
+                   compile $ do
+                              ident <- getUnderlying
+                              indexpM <- getMetadataField ident "index"
+                              let indexp = fromMaybe "" indexpM
+                              pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am hasArchivedN indexp)
+                                >>= loadAndApplyTemplate "static/templates/default.html" (postCtx meta)
+                                >>= imgUrls
 
                -- handle the simple static non-.page files; we define this after the pages because the pages' compilation has side-effects which may create new static files (archives & downsized images)
                let static = route idRoute >> compile symlinkFileCompiler -- WARNING: custom optimization requiring forked Hakyll installation; see https://github.com/jaspervdj/hakyll/issues/786
@@ -284,10 +281,12 @@ descField d = field d $ \item -> do
                          Left _          -> noResult "no description field"
                          Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
 
-pandocTransform :: Metadata -> ArchiveMetadata -> IORef Integer -> Pandoc -> IO Pandoc
-pandocTransform md adb archived p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
-                           do let pw = walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
-                              _ <- createAnnotations md pw
+pandocTransform :: Metadata -> ArchiveMetadata -> IORef Integer -> String -> Pandoc -> IO Pandoc
+pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
+                           -- tag-directories/link-bibliographies special-case: we don't need to run all the heavyweight passes, and LinkAuto has a regrettable tendency to screw up section headers, so we check to see if we are processing a document with 'index: true' set in the YAML metadata, and if we are, we slip several of the rewrite transformations:
+                           do let indexp = indexp' == "true"
+                              let pw = if indexp then p else walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
+                              _ <- unless indexp $ createAnnotations md pw
                               let pb = walk (hasAnnotation md True) $ addLocalLinkWalk pw -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overriden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
                               pbt <- fmap typographyTransform . walkM (localizeLink adb archived) $ walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) pb
                               let pbth = addLocalLinkWalk $ walk headerSelflink pbt
@@ -295,43 +294,6 @@ pandocTransform md adb archived p = -- linkAuto needs to run before `convertInte
                               pbth'' <- walkM imageSrcset pbth'
                               return pbth''
 
--- Example: Image ("",["width-full"],[]) [Str "..."] ("/images/gan/thiswaifudoesnotexist.png","fig:")
--- type Text.Pandoc.Definition.Attr = (T.Text, [T.Text], [(T.Text, T.Text)])
--- WARNING: image hotlinking is a bad practice: hotlinks will often break, sometimes just because of hotlinking. We assume that all images are locally hosted! Woe betide the cheapskate parasite who fails to heed this.
-imageSrcset :: Inline -> IO Inline
-imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
-  if not (".png" `T.isSuffixOf` target || ".jpg" `T.isSuffixOf` target) then return x else
-  do let ext = takeExtension $ T.unpack target
-     let target' = replace "%2F" "/" $ T.unpack target
-     exists <- doesFileExist $ tail $ T.unpack target
-     if not exists then printRed ("imageSrcset (Image): " ++ show x ++ " does not exist?") >> return x else
-      do (_,w) <- imageMagickDimensions $ tail target'
-         if w=="" || (read w :: Int) <= 768 then return x else do
-             let smallerPath = (tail target')++"-768px"++ext
-             notExist <- fmap not $ doesFileExist smallerPath
-             when notExist $ do
-               (status,_,bs) <-  runShellCommand "./" Nothing "convert" [tail target', "-resize", "768x768", smallerPath]
-               case status of
-                 ExitFailure _ -> error $ show status ++ show bs
-                 _ -> void $ forkIO $ if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
-                                        void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [smallerPath]
-                                      else
-                                        void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/compressJPG" [smallerPath]
-             let srcset = T.pack ("/"++smallerPath++" 768w, " ++ target'++" "++w++"w")
-             return $ Image (c, t, pairs++[("srcset", srcset), ("sizes", T.pack ("(max-width: 768px) 100vw, "++w++"px"))])
-                            inlines (target, title)
--- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
-imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = if (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p) &&
-                                                          ("https://www.gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
-                                                         do exists <- doesFileExist $ tail $ replace "https://www.gwern.net" "" $ T.unpack  p
-                                                            if not exists then printRed ("imageSrcset (Link): " ++ show x ++ " does not exist?") >> return x else
-                                                              do (h,w) <- imageMagickDimensions $ T.unpack p
-                                                                 return (Link (htmlid, classes,
-                                                                               kvs++[("image-height",T.pack h),
-                                                                                      ("image-width",T.pack w)])
-                                                                         xs (p,t))
-                                                       else return x
-imageSrcset x = return x
 
 -- For Amazon links, there are two scenarios: there are parameters (denoted by a
 -- '?' in the URL), or there are not. In the former, we need to append the tag as
@@ -353,56 +315,6 @@ headerSelflink :: Block -> Block
 headerSelflink (Header a (href,b,c) d) = Header a (href,b,c) [Link nullAttr d ("#"`T.append`href,
                                                                                "Link to section: § '" `T.append` inlinesToText d `T.append` "'")]
 headerSelflink x = x
-
--- FASTER HTML RENDERING BY STATICLY SPECIFYING ALL IMAGE DIMENSIONS
--- read HTML string with TagSoup, process `<img>` tags to read the file's dimensions, and hardwire them;
--- this optimizes HTML rendering since browsers know before downloading the image how to layout the page.
--- Further, specify 'async' decoding & 'lazy-loading' for all images: the lazy attribute was introduced by Chrome 76 ~August 2019, and adopted by Firefox 75 ~February 2020 (<https://bugzilla.mozilla.org/show_bug.cgi?id=1542784>), standardized as <https://html.spec.whatwg.org/multipage/urls-and-fetching.html#lazy-loading-attributes> with >63% global availability + backwards compatibility (<https://caniuse.com/#feat=loading-lazy-attr> <https://github.com/whatwg/html/pull/3752> <https://web.dev/native-lazy-loading/>).
--- Async decoding: when an image *does* load, can it be decoded to pixels in parallel with the text? For us, yes. Docs: <https://html.spec.whatwg.org/multipage/images.html#decoding-images> <https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/decoding>.
--- Pandoc feature request to push the lazy loading upstream: <https://github.com/jgm/pandoc/issues/6197>
-addImgDimensions :: String -> IO String
-addImgDimensions = fmap (renderTagsOptions renderOptions{optMinimize=whitelist, optRawTag = (`elem` ["script", "style"]) . map toLower}) . mapM staticImg . parseTags
-                 where whitelist s = s /= "div" && s /= "script" && s /= "style"
-
-{- example illustration:
- TagOpen "img" [("src","/images/traffic/201201-201207-traffic-history.png")
-                ("alt","Plot of page-hits (y-axis) versus date (x-axis)")],
- TagOpen "figcaption" [],TagText "Plot of page-hits (y-axis) versus date (x-axis)",
- TagClose "figcaption",TagText "\n",TagClose "figure" -}
-staticImg :: Tag String -> IO (Tag String)
-staticImg x@(TagOpen "img" xs) = do
-  let h = lookup "height" xs
-  let w = lookup "width" xs
-  let lazy = lookup "loading" xs
-  let Just p = lookup "src" xs
-  if (isNothing h || isNothing w || isNothing lazy) &&
-     not ("//" `isPrefixOf` p || "http" `isPrefixOf` p) &&
-     ("/" `isPrefixOf` p && not ("data:image/" `isPrefixOf` p)) then
-    if (takeExtension p == ".svg") then
-      -- for SVGs, only set the lazy-loading attribute, since height/width is not necessarily meaningful for vector graphics
-            return (TagOpen "img" (uniq (("loading", "lazy"):xs)))
-    else
-       do
-         let p' = urlDecode $ if head p == '/' then tail p else p
-         exists <- doesFileExist p'
-         if not exists then printRed ("staticImg: File does not exist: " ++ p') >> return x else
-          do (height,width) <- imageMagickDimensions p' `onException` printRed p
-             -- body max-width is 1600 px, sidebar is 150px, so any image wider than ~1400px
-             -- will wind up being reflowed by the 'img { max-width: 100%; }' responsive-image CSS declaration;
-             -- let's avoid that specific case by lying about its width, although this doesn't fix all the reflowing.
-             -- No images should be more than a screen in height either, so we'll set a maximum of 1400
-             let width' =  readMaybe width  ::Maybe Int
-             let height' = readMaybe height ::Maybe Int
-             case width' of
-                Nothing       -> printRed ("staticImg: Image width can't be read: " ++ show x) >> return x
-                Just width'' -> case height' of
-                                 Nothing       -> printRed ("staticImg: Image height can't be read: " ++ show x) >> return x
-                                 Just height'' -> return (TagOpen "img" (uniq ([("loading", "lazy"), -- lazy load & async render all images
-                                                                                ("decoding", "async"),
-                                                                                ("height", show (height'' `min` 1400)), ("width", show (width'' `min` 1400))]++xs)))
-      else return x
-  where uniq = nubBy (\a b -> fst a == fst b) . sort
-staticImg x = return x
 
 -- https://edwardtufte.github.io/tufte-css/#sidenotes
 -- support Tufte-CSS-style margin notes with a syntax like
