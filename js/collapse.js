@@ -209,9 +209,16 @@ function activateCollapseBlockDisclosureButtons(loadEventInfo) {
 
 			collapseBlock.classList.toggle("expanded", disclosureButton.checked);
 
-			/*	Update the tooltip.
-			 */
+			//	Update the tooltip.
 			updateDisclosureButtonTitle(disclosureButton);
+
+			//	Correct for CSS transition aberration.
+			if (!disclosureButton.checked) {
+				disclosureButton.style.transition = "none";
+				setTimeout(() => {
+					disclosureButton.style.transition = "";
+				}, 100);
+			}
 
 			/*	If a collapse block was collapsed from the bottom, it might now
 				be up off the screen. Scroll it into view.

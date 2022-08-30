@@ -39,6 +39,7 @@
     --GW-popins-popin-footer-bar-height: 1.75rem;
 }
 
+
 /*********************/
 /* ARTICLE CONTAINER */
 /*********************/
@@ -47,6 +48,7 @@
 /*  Nothing!
     */
 
+
 /************/
 /* SECTIONS */
 /************/
@@ -54,7 +56,7 @@
     for sections where I want a summary/abstract of that (eg. in Notes.page/Statistical-notes.page),
     one annotate summaries to keep uncollapsed with '<div class="abstract-collapse">summary</div>'.
     (Pandoc Markdown does support a native div syntax, but it's long and ugly.)
-    */
+ */
 
 .collapse {
     min-height: 5rem;
@@ -63,6 +65,10 @@
     padding: 0 0 2rem 0;
     box-sizing: border-box;
     margin: 1em 0;
+}
+.collapse.expanded > :not(.disclosure-button) {
+    position: relative;
+    z-index: 13;
 }
 .collapse:not(.expanded) > .disclosure-button ~ :not(.abstract-collapse) {
     max-height: 0;
@@ -76,8 +82,21 @@
     overflow: visible;
 }
 
+.collapse::before {
+    content: "";
+    position: absolute;
+    left: 0.5em;
+    top: 3rem;
+    bottom: 2rem;
+    right: 0;
+    background-color: var(--GW-body-background-color);
+}
+.collapse.expanded::before {
+    z-index: 12;
+}
+
 /*  Collapse summary.
-    */
+ */
 .collapse .abstract-collapse {
     margin: 0;
     position: relative;
@@ -89,7 +108,6 @@
 .collapse:not(.expanded) > .abstract-collapse {
     pointer-events: none;
     position: relative;
-    z-index: 3;
 }
 .collapse:not(.expanded) > .abstract-collapse blockquote {
     margin: 0;
@@ -99,8 +117,10 @@
 }
 
 /*  Disclosure button.
-    */
+ */
 .disclosure-button {
+	--button-color: var(--GW-collapse-disclosure-button-color);
+
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
@@ -116,47 +136,40 @@
     font-size: 0.875em;
     font-family: var(--GW-sans-serif-font-stack);
     box-shadow:
-        0.5em 0 0 0 var(--GW-collapse-disclosure-button-color) inset;
+        0.5em 0 0 0 var(--button-color) inset;
     transition:
         box-shadow 0.1s ease;
 }
-.collapse.expanded > :not(.disclosure-button) {
-    position: relative;
-    z-index: 13;
-}
 .disclosure-button:hover {
+	--button-color: var(--GW-collapse-disclosure-button-hover-color);
+
     z-index: 11;
-    box-shadow:
-        0.5em 0 0 0 var(--GW-collapse-disclosure-button-hover-color) inset;
-}
-.disclosure-button:checked {
-    pointer-events: none;
-    background-color: transparent;
 }
 .disclosure-button:focus {
     outline: none;
 }
+/* 
+.disclosure-button:checked {
+	pointer-events: none;
+}
+.disclosure-button:checked::before,
+.disclosure-button:checked::after {
+	pointer-events: auto;
+}
+ */
 
 /*  Top and bottom parts of disclosure button.
-    */
+ */
 .disclosure-button::before,
 .disclosure-button::after {
-    background-color: var(--GW-collapse-disclosure-button-color);
+    background-color: var(--button-color);
     transition:
         color 0.1s ease,
         background-color 0.1s ease;
 }
-.disclosure-button:hover::before,
-.disclosure-button:hover::after {
-    background-color: var(--GW-collapse-disclosure-button-hover-color);
-}
-.disclosure-button:checked::before,
-.disclosure-button:checked::after {
-    pointer-events: auto;
-}
 
 /*  Top part of disclosure button.
-    */
+ */
 .disclosure-button::before {
     content: "";
     position: absolute;
@@ -185,7 +198,7 @@
 }
 
 /*  Bottom part of disclosure button.
-    */
+ */
 .disclosure-button::after {
     width: 100%;
     height: 2rem;
@@ -207,7 +220,7 @@
 }
 
 /*  Collapsible sections (the <section> element).
-    */
+ */
 section.collapse {
     padding-left: 1em;
     margin: 2.5em 0 2.25em -1em;
@@ -248,7 +261,7 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
 }
 
 /*  Collapsible non-section blocks.
-    */
+ */
 :not(section).collapse {
     margin-left: -1em;
 }
@@ -258,12 +271,42 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
 :not(section).collapse:not(.expanded) > .disclosure-button ~ :not(.abstract-collapse) {
     max-height: 5rem;
 }
-:not(section).collapse:not(.expanded) > .disclosure-button::before,
-:not(section).collapse:not(.expanded) > .disclosure-button::after {
-    opacity: 0.95;
+
+:not(section).collapse:not(.expanded) > .disclosure-button {
+    --button-color: var(--GW-collapse-disclosure-button-color-15-percent-transparent);
+
+    background-color: var(--button-color);
 }
 :not(section).collapse > .disclosure-button {
-    transition: none;
+    transition:
+        box-shadow 0.1s ease,
+        color 0.1s ease,
+        background-color 0.1s ease;
+}
+:not(section).collapse:not(.expanded) > .disclosure-button:hover {
+    --button-color: var(--GW-collapse-disclosure-button-hover-color-15-percent-transparent);
+}
+:not(section).collapse:not(.expanded) > .disclosure-button::before,
+:not(section).collapse:not(.expanded) > .disclosure-button::after {
+    --button-color: var(--GW-collapse-disclosure-button-color);
+}
+:not(section).collapse:not(.expanded) > .disclosure-button:hover::before,
+:not(section).collapse:not(.expanded) > .disclosure-button:hover::after {
+    --button-color: var(--GW-collapse-disclosure-button-hover-color);
+}
+:not(section).collapse:not(.expanded) > .disclosure-button::before {
+    width: 3.25em;
+    height: 3.25em;
+    top: 0;
+    right: 0;
+    padding: 0;
+}
+:not(section).collapse:not(.expanded) > .disclosure-button::after {
+    width: 10em;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
 }
 :not(section).collapse:not(.expanded) > .disclosure-button {
     box-shadow: none;
@@ -279,7 +322,7 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
 }
 
 /*  Collapsible code blocks.
-    */
+ */
 .sourceCode .collapse,
 .sourceCode.collapse {
     margin: 1.75em auto;
@@ -296,21 +339,65 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
 .sourceCode.collapse:not(.expanded) > .disclosure-button {
     width: calc(100% - (1em + 2px));
 }
-.sourceCode :not(section).collapse:not(.expanded) > .disclosure-button::before,
-.sourceCode :not(section).collapse:not(.expanded) > .disclosure-button::after,
-.sourceCode:not(section).collapse:not(.expanded) > .disclosure-button::before,
+.sourceCode :not(section).collapse:not(.expanded) > .disclosure-button,
+.sourceCode:not(section).collapse:not(.expanded) > .disclosure-button {
+    --button-color: var(--GW-collapse-disclosure-button-color-30-percent-transparent);
+}
+.sourceCode :not(section).collapse:not(.expanded) > .disclosure-button:hover,
+.sourceCode:not(section).collapse:not(.expanded) > .disclosure-button:hover {
+    --button-color: var(--GW-collapse-disclosure-button-hover-color-30-percent-transparent);
+}
+.sourceCode:not(section).collapse:not(.expanded) > .disclosure-button::before {
+    top: 1px;
+    right: 1px;
+}
 .sourceCode:not(section).collapse:not(.expanded) > .disclosure-button::after {
-    opacity: 0.7;
-    text-shadow: none;
+    bottom: 1px;
 }
 
 /*  Collapsible tables.
-    */
+ */
 .table-wrapper > .collapse {
     margin: 0;
+    min-height: unset;
 }
 .table-wrapper > .collapse:not(.expanded) {
-    max-height: 5rem;
+    max-height: calc(4.75rem + 1px);
+    margin-left: 1em;
+    padding: 0;
+}
+.table-wrapper > .collapse:not(.expanded) > .disclosure-button::before {
+	top: 2px;
+}
+.table-wrapper > .collapse:not(.expanded) > .disclosure-button::after {
+	bottom: 1px;
+}
+
+/*	Collapses in blockquotes.
+ */
+blockquote .collapse::before {
+	background-color: var(--GW-blockquote-background-color);
+}
+blockquote .collapse:not(.expanded) > .disclosure-button {
+    --button-color: var(--GW-collapse-in-blockquote-disclosure-button-color-15-percent-transparent);
+}
+blockquote .collapse:not(.expanded) > .disclosure-button:hover {
+    --button-color: var(--GW-collapse-in-blockquote-disclosure-button-hover-color-15-percent-transparent);
+}
+blockquote :not(section).collapse:not(.expanded) > .disclosure-button::before,
+blockquote :not(section).collapse:not(.expanded) > .disclosure-button::after {
+    --button-color: var(--GW-collapse-in-blockquote-disclosure-button-color);
+}
+blockquote :not(section).collapse:not(.expanded) > .disclosure-button:hover::before,
+blockquote :not(section).collapse:not(.expanded) > .disclosure-button:hover::after {
+    --button-color: var(--GW-collapse-in-blockquote-disclosure-button-hover-color);
+}
+blockquote .disclosure-button::before {
+    color: var(--GW-collapse-in-blockquote-disclosure-button-top-part-text-color);
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23AAA"/></svg>');
+}
+blockquote .disclosure-button::after {
+    color: var(--GW-collapse-in-blockquote-disclosure-button-bottom-part-text-color);
 }
 
 /************/
