@@ -888,6 +888,9 @@ Transclude = {
 			}, { once: true, condition: (info) => info.identifier == annotationIdentifier });
 			GW.notificationCenter.addHandlerForEvent("Annotations.annotationLoadDidFail", (info) => {
 				Transclude.transclude(includeLink, true);
+
+				//	Send request to record failure in server logs.
+				GWServerLogError(includeLink.href + `--annotation-transclude-failed`, "failed annotation transclude");
 			}, { once: true, condition: (info) => info.identifier == annotationIdentifier });
 
 			//	Request annotation load.
