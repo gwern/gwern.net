@@ -51,8 +51,8 @@ import Utils (addClass, sed, printRed, currentYear)
 
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = let year = currentYear in
-                        walk mergeSpaces .
                         walk (citefyInline year . linkLive . linkIcon) .
+                        walk mergeSpaces .
                         linebreakingTransform .
                         rulersCycle 3
 
@@ -71,7 +71,6 @@ mergeSpaces (Str x:SoftBreak:Str y:xs) = mergeSpaces (Str (x`T.append`" "`T.appe
 mergeSpaces (SoftBreak:Str x:xs)       = mergeSpaces (Str (" "`T.append`x):xs)
 mergeSpaces (SoftBreak:xs)             = mergeSpaces (Space:xs)
 mergeSpaces (x:xs)                     = x:mergeSpaces xs
-
 citefyInline :: Int -> Inline -> Inline
 citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x else Span nullAttr rewrite
   where

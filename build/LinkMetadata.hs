@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-08-29 12:50:43 gwern"
+When:  Time-stamp: "2022-08-29 20:48:07 gwern"
 License: CC-0
 -}
 
@@ -53,7 +53,7 @@ import qualified Control.Monad.Parallel as Par (mapM_)
 
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
-import Typography (typographyTransform, titlecase', invertImage, imageSrcset)
+import Typography (typographyTransform, titlecase', invertImage, imageSrcset, addImgDimensions)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink (getSimilarLink, getBackLink)
@@ -313,15 +313,15 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                                                   walk linkAuto $
                                                   walk (parseRawBlock nullAttr) pandoc
                                           p' <- walkM (localizeLink am archived) p
-                                          walkM imageSrcset p'
+                                          walkM imageSrcset p' -- add 'srcset' HTML <img> property - helps toggle between the small/large image versions for mobile vs desktop
                       let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
                       when (filepath /= urlEncode u') (printRed "Warning, annotation fragment path → URL truncated!" >>
                                                           putStrLn ("Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"))
 
                       case finalHTMLEither of
                         Left er -> error ("Writing annotation fragment failed! " ++ show u ++ " : " ++ show i ++ " : " ++ show er)
-                        Right finalHTML -> do
-                                              writeUpdatedFile "annotation" filepath' finalHTML
+                        Right finalHTML -> do finalHTML' <- fmap T.pack $ addImgDimensions $ T.unpack finalHTML -- add image height/width for faster rendering
+                                              writeUpdatedFile "annotation" filepath' finalHTML'
              -- HACK: the current hakyll.hs assumes that all annotations already exist before compilation begins, although we actually dynamically write as we go.
              -- This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
              -- There is presumably some way for Hakyll to do the metadata file listing *after* compilation is finished, but it's easier to hack around here by forcing 'new' annotation writes to be manually inserted into _site/.
