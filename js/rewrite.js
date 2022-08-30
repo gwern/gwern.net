@@ -850,8 +850,8 @@ function bindSectionHighlightEventsToAnnotatedLinks(loadEventInfo) {
         	annotatedLink.removeEventListener("mouseleave", annotatedLink.annotatedLinkMouseLeave);
 
         //  Bind events.
-        let linkURL = CSS.escape(annotatedLink.href);
-        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='${linkURL}']`);
+        let escapedLinkURL = CSS.escape(decodeURIComponent(annotatedLink.href));
+        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='${escapedLinkURL}']`);
         if (   targetAnalogueInLinkBibliography
         	&& targetAnalogueInLinkBibliography != annotatedLink) {
         	let containingSection = targetAnalogueInLinkBibliography.closest("section");

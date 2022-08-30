@@ -351,7 +351,8 @@ Extracts = { ...Extracts,
             spawned from a backlinks popup for this same annotation as viewed on
             a tag index page, for example.)
          */
-        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='` + CSS.escape(target.href) + `']`);
+        let escapedLinkURL = CSS.escape(decodeURIComponent(target.href));
+        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='${escapedLinkURL}']`);
         if (targetAnalogueInLinkBibliography) {
             let containingSection = targetAnalogueInLinkBibliography.closest("section");
             if (   containingSection

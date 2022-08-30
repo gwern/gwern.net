@@ -1151,11 +1151,11 @@ Extracts = {
 				}
 				let containerSelector = null;
 				if (identifiedAncestor.id) {
-					containerSelector = "#" + identifiedAncestor.id;
+					containerSelector = "#" + CSS.escape(decodeURIComponent(identifiedAncestor.id));
 				} else if (popFrame.titleBar) {
 					let popFrameTitleLink = popFrame.titleBar.querySelector(".popframe-title-link");
 					if (popFrameTitleLink)
-						containerSelector = popFrameTitleLink.hash;
+						containerSelector = selectorFromHash(popFrameTitleLink.hash);
 				}
 				let sourceDocument = Extracts.cachedPages[target.pathname] || Extracts.rootDocument;
 				let containerInSourceDocument = containerSelector 
