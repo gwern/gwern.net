@@ -120,6 +120,10 @@
     transition:
         box-shadow 0.1s ease;
 }
+.collapse.expanded > :not(.disclosure-button) {
+    position: relative;
+    z-index: 13;
+}
 .disclosure-button:hover {
     z-index: 11;
     box-shadow:
@@ -249,11 +253,20 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
     margin-left: -1em;
 }
 :not(section).collapse:not(.expanded) {
-    padding: 3rem 0 2rem 1em;
+    padding: 0 0 0 1em;
+}
+:not(section).collapse:not(.expanded) > .disclosure-button ~ :not(.abstract-collapse) {
+    max-height: 5rem;
 }
 :not(section).collapse:not(.expanded) > .disclosure-button::before,
 :not(section).collapse:not(.expanded) > .disclosure-button::after {
     opacity: 0.95;
+}
+:not(section).collapse > .disclosure-button {
+    transition: none;
+}
+:not(section).collapse:not(.expanded) > .disclosure-button {
+    box-shadow: none;
 }
 :not(section).collapse.expanded {
     padding-top: 3.5rem;
@@ -278,6 +291,10 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
 .collapse:not(.expanded) > .disclosure-button ~ pre:not(.abstract-collapse) {
     border: 1px solid var(--GW-pre-element-border-color);
     box-sizing: border-box;
+}
+.sourceCode .collapse:not(.expanded) > .disclosure-button,
+.sourceCode.collapse:not(.expanded) > .disclosure-button {
+    width: calc(100% - (1em + 2px));
 }
 .sourceCode :not(section).collapse:not(.expanded) > .disclosure-button::before,
 .sourceCode :not(section).collapse:not(.expanded) > .disclosure-button::after,

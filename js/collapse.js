@@ -152,11 +152,6 @@ function prepareCollapseBlocks(loadEventInfo) {
 			collapseBlock.classList.remove("collapse");
 			if (collapseBlock.className == "")
 				collapseBlock.removeAttribute("class");
-		} else if (collapseBlock.tagName == "DIV") {
-			//	Inject the disclosure button.
-			collapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
-			if (checked > "")
-				collapseBlock.classList.add("expanded");
 		} else if (   collapseBlock.parentElement.tagName == "DIV" 
 				   && collapseBlock.parentElement.children.length == 1) {
 			//  Use parent div as collapse block wrapper.
