@@ -36,8 +36,8 @@ $working_color_space = @$argv[3] ?: "Lab";
 $gamma = @$argv[4] ?: 0.5;
 
 ## Process and print.
-$stylesheet = preg_replace_callback("/(#[0-9abcdef]+)([,; ])/i", 'ProcessColorValue', $stylesheet);
-$stylesheet = preg_replace_callback("/rgba\\(\\s*([0-9]+),\\s*([0-9]+),\\s*([0-9]+),\\s*([0-9\.]+)\\s*\\)/i", 'ProcessColorValue_RGBA', $stylesheet);
+$stylesheet = preg_replace_callback('/(#[0-9abcdef]+)([,; ])/i', 'ProcessColorValue', $stylesheet);
+$stylesheet = preg_replace_callback('/rgba\(\s*([0-9]+),\s*([0-9]+),\s*([0-9]+),\s*(.+)\s*\)/i', 'ProcessColorValue_RGBA', $stylesheet);
 echo $stylesheet;
 
 /******************/
