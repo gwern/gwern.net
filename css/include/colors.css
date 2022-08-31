@@ -60,10 +60,10 @@
 	--GW-collapse-disclosure-button-hover-color-15-percent-transparent: rgba(221, 221, 221, 0.85);
 	--GW-collapse-disclosure-button-color-30-percent-transparent: rgba(238, 238, 238, 0.70);
 	--GW-collapse-disclosure-button-hover-color-30-percent-transparent: rgba(221, 221, 221, 0.70);
-	--GW-collapse-in-blockquote-disclosure-button-color: #ccc;
-	--GW-collapse-in-blockquote-disclosure-button-hover-color: #bbb;
-	--GW-collapse-in-blockquote-disclosure-button-color-15-percent-transparent: rgba(204, 204, 204, 0.85);
-	--GW-collapse-in-blockquote-disclosure-button-hover-color-15-percent-transparent: rgba(187, 187, 187, 0.85);
+	--GW-collapse-in-blockquote-disclosure-button-color: #ddd;
+	--GW-collapse-in-blockquote-disclosure-button-hover-color: #ccc;
+	--GW-collapse-in-blockquote-disclosure-button-color-30-percent-transparent: rgba(221, 221, 221, 0.70);
+	--GW-collapse-in-blockquote-disclosure-button-hover-color-30-percent-transparent: rgba(204, 204, 204, 0.70);
 	--GW-collapse-disclosure-button-top-part-text-color: #bbb;
 	--GW-collapse-disclosure-button-bottom-part-text-color: #aaa;
 	--GW-collapse-in-blockquote-disclosure-button-top-part-text-color: #aaa;
