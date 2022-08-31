@@ -132,6 +132,8 @@ function isWithinCollapsedBlock(element) {
 function prepareCollapseBlocks(loadEventInfo) {
 	GWLog("prepareCollapseBlocks", "collapse.js", 1);
 
+	let classesToImport = [ "annotation-see-also" ];
+
 	let aBlockDidStartExpanded = false;
 
 	//  Construct all collapse blocks (in correct final state).
@@ -163,6 +165,14 @@ function prepareCollapseBlocks(loadEventInfo) {
 			if (checked > "")
 				realCollapseBlock.classList.add("expanded");
 
+			//	Import specified classes, if present.
+			classesToImport.forEach(cssClass => {
+				if (collapseBlock.classList.contains(cssClass)) {
+					realCollapseBlock.classList.add(cssClass);
+					collapseBlock.classList.remove(cssClass);
+				}
+			});
+
 			//  Remove the ‘collapse’ class.
 			collapseBlock.classList.remove("collapse");
 			if (collapseBlock.className == "")
@@ -175,6 +185,14 @@ function prepareCollapseBlocks(loadEventInfo) {
 			//  Move block-to-be-collapsed into wrapper.
 			collapseBlock.parentElement.insertBefore(realCollapseBlock, collapseBlock);
 			realCollapseBlock.appendChild(collapseBlock);
+
+			//	Import specified classes, if present.
+			classesToImport.forEach(cssClass => {
+				if (collapseBlock.classList.contains(cssClass)) {
+					realCollapseBlock.classList.add(cssClass);
+					collapseBlock.classList.remove(cssClass);
+				}
+			});
 
 			//  Remove the ‘collapse’ class.
 			collapseBlock.classList.remove("collapse");
