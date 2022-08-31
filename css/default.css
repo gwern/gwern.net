@@ -375,12 +375,18 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
 
 /*	Collapses in blockquotes.
  */
-blockquote :not(section).collapse {
+blockquote :not(section).collapse:not(.expanded),
+blockquote :not(section).collapse.expanded {
+    padding-left: 1.25em;
+    padding-right: 1.25em;
     margin-left: -1.25em;
+    margin-right: -1.25em;
 }
-blockquote :not(section).collapse:not(.expanded) {
-    padding: 0 0 0 1.25em;
+
+blockquote > :not(section).collapse:last-child {
+    margin-bottom: -1em;
 }
+
 blockquote .collapse::before {
 	background-color: var(--GW-blockquote-background-color);
 }
