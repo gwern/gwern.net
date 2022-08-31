@@ -150,7 +150,7 @@
 .disclosure-button:focus {
     outline: none;
 }
-/* 
+/*
 .disclosure-button:checked {
 	pointer-events: none;
 }
@@ -720,7 +720,7 @@ blockquote .TOC a:hover::after {
     opacity: unset;
 }
 
-blockquote .collapse:not(.expanded) .see-also-separator > p:first-child {
+blockquote .collapse:not(.expanded) .annotation-see-also > p:first-child {
 	margin-top: 0.5em;
 }
 
@@ -1510,12 +1510,12 @@ section.footnotes > hr:first-child.highlighted::before {
     opacity: 0.85;
     line-height: 1.5;
     padding: 2em 0 0 0;
-    transition: 
+    transition:
     	opacity 0.25s ease-in,
         transform 0.25s ease-in;
 }
 .sidenote.displaced {
-    transition: 
+    transition:
     	opacity 0.25s ease-out,
         transform 0.25s ease-out;
 }
@@ -5095,7 +5095,7 @@ section.highlight-fading::before {
     }
 	#back-to-top {
         background-color: var(--GW-body-background-color);
-		background-image: linear-gradient(var(--GW-back-to-top-link-color), 
+		background-image: linear-gradient(var(--GW-back-to-top-link-color),
 										  var(--GW-back-to-top-link-color));
 		background-position: 0 0;
 		background-repeat: no-repeat;
