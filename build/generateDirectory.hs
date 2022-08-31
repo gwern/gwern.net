@@ -262,7 +262,7 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_) ->
 
 generateItem :: (FilePath,MetadataItem,FilePath,FilePath) -> [Block]
 generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) = -- no abstracts:
- if ("https://en.wikipedia.org/wiki/"`isInfixOf`f) then [Para [Link nullAttr [Str "Wikipedia"] (T.pack f, if t=="" then "" else T.pack $ "Wikipedia link about " ++ t)]]
+ if ("https://en.wikipedia.org/wiki/"`isInfixOf`f) then [Para [Link ("",["include","include-annotation"],[]) [Str "Wikipedia"] (T.pack f, if t=="" then "" else T.pack $ "Wikipedia link about " ++ t)]]
  else
   let
        f'       = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
