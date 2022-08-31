@@ -375,14 +375,20 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
 
 /*	Collapses in blockquotes.
  */
+blockquote :not(section).collapse {
+    margin-left: -1.25em;
+}
+blockquote :not(section).collapse:not(.expanded) {
+    padding: 0 0 0 1.25em;
+}
 blockquote .collapse::before {
 	background-color: var(--GW-blockquote-background-color);
 }
 blockquote .collapse:not(.expanded) > .disclosure-button {
-    --button-color: var(--GW-collapse-in-blockquote-disclosure-button-color-15-percent-transparent);
+    --button-color: var(--GW-collapse-in-blockquote-disclosure-button-color-30-percent-transparent);
 }
 blockquote .collapse:not(.expanded) > .disclosure-button:hover {
-    --button-color: var(--GW-collapse-in-blockquote-disclosure-button-hover-color-15-percent-transparent);
+    --button-color: var(--GW-collapse-in-blockquote-disclosure-button-hover-color-30-percent-transparent);
 }
 blockquote :not(section).collapse:not(.expanded) > .disclosure-button::before,
 blockquote :not(section).collapse:not(.expanded) > .disclosure-button::after {
@@ -687,6 +693,10 @@ blockquote .TOC a:hover::after {
     bottom: unset;
     font-size: inherit;
     opacity: unset;
+}
+
+blockquote .collapse:not(.expanded) .see-also-separator > p:first-child {
+	margin-top: 0.5em;
 }
 
 /*************************/
