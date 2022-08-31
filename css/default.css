@@ -95,6 +95,7 @@
     z-index: 12;
 }
 
+/********************/
 /*  Collapse summary.
  */
 .collapse .abstract-collapse {
@@ -116,6 +117,7 @@
     background-color: var(--GW-collapse-summary-blockquote-hover-color);
 }
 
+/*********************/
 /*  Disclosure button.
  */
 .disclosure-button {
@@ -219,6 +221,7 @@
     content: "Click to collapse";
 }
 
+/************************************************/
 /*  Collapsible sections (the <section> element).
  */
 section.collapse {
@@ -260,6 +263,7 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
     margin-bottom: 0;
 }
 
+/**********************************/
 /*  Collapsible non-section blocks.
  */
 :not(section).collapse {
@@ -321,6 +325,7 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
     margin: 0.5em 0;
 }
 
+/***************************/
 /*  Collapsible code blocks.
  */
 .sourceCode .collapse,
@@ -355,6 +360,7 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
     bottom: 1px;
 }
 
+/**********************/
 /*  Collapsible tables.
  */
 .table-wrapper > .collapse {
@@ -373,6 +379,7 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
 	bottom: 1px;
 }
 
+/****************************/
 /*	Collapses in blockquotes.
  */
 blockquote :not(section).collapse:not(.expanded),
@@ -382,9 +389,21 @@ blockquote :not(section).collapse.expanded {
     margin-left: -1.25em;
     margin-right: -1.25em;
 }
-
 blockquote > :not(section).collapse:last-child {
     margin-bottom: -1em;
+}
+
+@media only screen and (max-width: 649px) {
+    blockquote :not(section).collapse:not(.expanded),
+	blockquote :not(section).collapse.expanded {
+		padding-left: 1em;
+		padding-right: 1em;
+		margin-left: -1em;
+		margin-right: -1em;
+	}
+	blockquote > :not(section).collapse:last-child {
+		margin-bottom: -0.75em;
+	}
 }
 
 blockquote .collapse::before {
