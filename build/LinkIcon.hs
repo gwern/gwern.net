@@ -86,6 +86,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
 
  -- organizational mentions or affiliations take precedence over domain or filetypes; typically matches anywhere in the URL.
  | u' "deepmind"  = aI "deepmind" "svg" -- DeepMind; match articles or anchors about DM too. Primary user: deepmind.com, DM papers on Arxiv
+ | u' "schmidhuber" || u' "people.idsia.ch/~juergen/" = aI "SMDH" "text,quad,sans" -- Jürgen Schmidhuber homepage & tagged links; should override Arxiv, Bloomberg, NYT, Facebook etc
  | u' "facebook" || u' ".fb.com"  = aI "facebook" "svg"
  | u' "sites.google.com/berkeley.edu" || aU'' ["ml.berkeley.edu", "people.eecs.berkeley.edu", "bair.berkeley.edu"] = aI "BAIR" "text,quad,mono" -- Berkeley AI Research: Chelsea Finn, Sergey Levine, robotics, Decision Transformer, etc. Overrides Google Sites.
  | u'' "groups.google.com" = aI "✉" "text"
@@ -101,7 +102,6 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "unsongbook.com" = aI "ℵ" "text" -- SSC’s book: (ℵ) ALEF SYMBOL (We use the math symbol instead of the Hebrew deliberately, to avoid triggering bizarre Hebrew bidirectional text-related layout bugs on Mac Firefox.)
  | u'' "andrewgelman.com" || u'' "statmodeling.stat.columbia.edu" = aI "▅▇▃" "text" -- Favicon is a little normal distribution/histogram (▅▇▃) LOWER FIVE EIGHTHS BLOCK, LOWER SEVEN EIGHTHS BLOCK, LOWER THREE EIGHTHS BLOCK
  | u'' "meltingasphalt.com" = aI "▲" "text" -- Kevin Simler’s Melting Asphalt blog uses 3 triangles but that's too many, so we just use one. (▲) BLACK UP-POINTING TRIANGLE
- | u' ".bloomberg.com" || u'' "www.businessweek.com" = aI "𝐁" "text" -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B
  | u'' "www.tinyletter.com" = aI "✉" "text" -- TinyLetter’s icon, without color, isn’t memorable enough; throw in the other email services (✉) ENVELOPE
  | aU'' ["blog.givewell.org", "www.givewell.org", "files.givewell.org"] || u' "groups.yahoo.com/group/givewell/" = aI "GW" "text"
  | u'' "groups.yahoo.com" = aI "✉" "text"
@@ -113,6 +113,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.forbes.com" = aI "F" "text"
  | (u' "haskell.org" && (extension u /= ".hs")) || u' "haskellers.com" = aI "𝛌" "text" -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
  | u'' "arxiv.org" || u'' "ar5iv.labs.arxiv.org" = aI "𝛘" "text" --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny)
+ | u' ".bloomberg.com" || u'' "www.businessweek.com" = aI "𝐁" "text" -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B
  | u' "theatlantic.com" = aI "A" "text,italic" -- The Atlantic: replicate sloping by italics
  | u' "alignmentforum.org" || (u'' "www.greaterwrong.com" && u' "view=alignment-forum") = aI "AF" "text,sans"
  | u'' "boingboing.net" = aI "bb" "text,mono"
@@ -1031,6 +1032,12 @@ linkIconTestUnitsText =
          , ("https://retractionwatch.com/2011/02/28/crystal-myth-11-more-retractions-from-crystallography-journal-after-2010-fakery/", "magnifying-glass", "svg")
          , ("https://www.statnews.com/2021/11/09/largest-psilocybin-trial-finds-psychedelic-effective-treating-serious-depression/", "stat-news", "svg")
          , ("https://apnews.com/269b3de1af34e17c1941a514f78d764c", "AP", "text,sans")
+         , ("https://people.idsia.ch/~juergen/creativity.html", "SMDH", "text,quad,sans")
+         , ("https://arxiv.org/abs/1404.7828#schmidhuber", "SMDH", "text,quad,sans")
+         , ("https://innsbigdata.wordpress.com/2015/02/09/interview-with-juergen-schmidhuber/", "SMDH", "text,quad,sans")
+         , ("/docs/ai/rnn/1991-schmidhuber.pdf", "SMDH", "text,quad,sans")
+         , ("https://www.bloomberg.com/news/features/2018-05-15/google-amazon-and-facebook-owe-j-rgen-schmidhuber-a-fortune","SMDH", "text,quad,sans")
+         , ("https://www.nytimes.com/2016/11/27/technology/artificial-intelligence-pioneer-jurgen-schmidhuber-overlooked.html", "SMDH", "text,quad,sans")
         ]
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-08-29 20:48:07 gwern"
+When:  Time-stamp: "2022-08-31 13:08:06 gwern"
 License: CC-0
 -}
 
@@ -23,7 +23,7 @@ import qualified Data.ByteString as B (appendFile, readFile)
 import qualified Data.ByteString.Lazy as BL (length, concat)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, toList, lookup, map, union, Map) -- traverseWithKey, union, Map
-import qualified Data.Text as T (append, breakOnAll, pack, unpack, Text)
+import qualified Data.Text as T (append, breakOnAll, isInfixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.IORef (IORef)
 import Data.FileStore.Utils (runShellCommand)
@@ -320,7 +320,7 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
 
                       case finalHTMLEither of
                         Left er -> error ("Writing annotation fragment failed! " ++ show u ++ " : " ++ show i ++ " : " ++ show er)
-                        Right finalHTML -> do finalHTML' <- fmap T.pack $ addImgDimensions $ T.unpack finalHTML -- add image height/width for faster rendering
+                        Right finalHTML -> do finalHTML' <- if not ("<img " `T.isInfixOf` finalHTML) then return finalHTML else fmap T.pack $ addImgDimensions $ T.unpack finalHTML -- try to add image height=/width= attributes to `<img>` elements for faster rendering for annotations
                                               writeUpdatedFile "annotation" filepath' finalHTML'
              -- HACK: the current hakyll.hs assumes that all annotations already exist before compilation begins, although we actually dynamically write as we go.
              -- This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
@@ -518,7 +518,7 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 -- WARNING: update the list in /static/js/extracts-annotation.js L218 if you change this list!
 affiliationAnchors :: [String]
-affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "graphcore", "huawei", "ibm", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pinterest", "pdf", "salesforce", "sberbank", "sensetime", "snapchat", "spotify", "tencent", "tensorfork", "twitter", "uber", "yandex"]
+affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "graphcore", "huawei", "ibm", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pinterest", "pdf", "salesforce", "sberbank", "schmidhuber", "sensetime", "snapchat", "spotify", "tencent", "tensorfork", "twitter", "uber", "yandex"]
 
 -- find all instances where I link "https://arxiv.org/abs/1410.5401" when it should be "https://arxiv.org/abs/1410.5401#deepmind", where they are inconsistent and the hash matches a whitelist of orgs.
 findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]
@@ -2256,6 +2256,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("O(m log^2 n)", "𝑂(<em>m</em> log <em>n</em> + <em>n</em> log<sup>2</sup> <em>n</em>)")
           , ("O(N) ", "𝑂(<em>N</em>) ")
           , (" O(N)", " 𝑂(<em>N</em>)")
+          , ("<span class=\"math inline\">\\(n^{O(k)}\\)</span>", "<em>n</em><sup>𝑂(<em>k</em>)</sup>")
           , (" N pixels", " <em>N</em> pixels")
           , ("a n layer", "a <em>n</em> layer")
           , (" n-step", " <em>n</em>-step")
@@ -2326,6 +2327,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<p></p>", "")
           , ("<p></li> </ul> </p>", "</li> </ul>")
           , ("</li><br/>", "</li>")
+          , ("<jats:sec>", "")
+          , ("<jats:sec>\n ", "")
           , ("</p>\n\n<jats:sec>\n<strong>", "</p> <p><strong>")
           , ("</p>\n \n <jats:sec><p>", "</p> <p>")
           , ("</p>\n \n <jats:sec>\n<p>", "</p> <p>")
@@ -2923,10 +2926,12 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" et al ", " et al ") -- et al: try to ensure no linebreaking of citations
           , (" et al. ", " et al ")
           , (" et al., ", " et al ")
+          , ("<em>i</em>.<em>e</em>.,", "ie.")
           , ("(ie, ", "(ie. ")
           , ("(ie ", "(ie. ")
           , ("(i.e.,", "(ie.")
           , ("(i.e.", "(ie.")
+          , ("<em>e</em>.<em>g</em>.,", "eg.")
           , (" e.g.", " eg.")
           , ("(e.g.", "(eg.")
           , ("(eg ", "(eg.")
@@ -2940,6 +2945,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("totall ", "total ")
           , ("minimis", "minimiz")
           , ("maximis", "maximiz")
+          , (" Escherichia coli", " <em>Escherichia coli</em>")
+          , (" Saccharomyces cerevisiae", " <em>Saccharomyces cerevisiae</em>")
           , ("(Calcarius lapponicus) ", "(<em>Calcarius lapponicus)</em> ")
           , ("(Corvus brachyrhynchos) ", "(<em>Corvus brachyrhynchos)</em> ")
           , ("(Felis catus)", "(<em>Felis catus</em>)")
