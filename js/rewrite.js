@@ -940,7 +940,8 @@ function injectFootnoteSectionTOCLink(loadEventInfo) {
     let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
     let TOCList = loadEventInfo.document.getRootNode().querySelector("#TOC > ul");
     if (   TOCList
-    	&& footnotesSection)
+    	&& footnotesSection
+    	&& TOCList.querySelector("#toc-footnotes") == null)
         TOCList.insertAdjacentHTML("beforeend", `<li><a id="toc-footnotes" href="#footnotes">Footnotes</a></li>\n`);
 }
 
