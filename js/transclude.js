@@ -224,7 +224,7 @@ function includeContent(includeLink, content) {
 
 	//	Update TOC, if need be.
 	if (includingIntoMainPage)
-		updatePageTOCAfterInclusion(wrapper, includeLink);
+		updatePageTOCAfterInclusion(wrapper);
 
 	//	Update footnotes, if need be.
 	let newFootnotesWrapper = Transclude.isAnnotationTransclude(includeLink)
@@ -375,21 +375,33 @@ function updateFootnotesAfterInclusion(newContent, includeLink) {
 	let newContentDocument = newContent.getRootNode();
 	let footnotesSection = newContentDocument.querySelector(".markdownBody > #footnotes");
 	if (!footnotesSection) {
+		//	Construct footnotes section.
 		footnotesSection = newElement("SECTION", { "id": "footnotes", "class": "footnotes", "role": "doc-endnotes" });
 		footnotesSection.append(newElement("HR"));
 		footnotesSection.append(newElement("OL"));
 
-		let markdownBody = newContentDocument.querySelector(".markdownBody");
-		markdownBody.append(footnotesSection);
+		//	Wrap.
+		let footnotesSectionWrapper = newElement("SPAN", { "class": "include-wrapper" });
+		footnotesSectionWrapper.append(footnotesSection);
+
+		//	Inject.
+		let markdownBody = (newContentDocument.querySelector("#markdownBody") ?? newContentDocument.querySelector(".markdownBody"));
+		markdownBody.append(footnotesSectionWrapper);
 
 		//	Fire event to trigger rewrite pass.
 		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 			source: "transclude.footnotesSection",
-			document: footnotesSection,
+			document: footnotesSectionWrapper,
 			loadLocation: new URL(includeLink.href),
 			baseLocation: includeLink.baseLocation,
 			flags: GW.contentDidLoadEventFlags.needsRewrite
 		});
+
+		//	Update page TOC to add footnotes section entry.
+		updatePageTOCAfterInclusion(footnotesSectionWrapper);
+
+		//	Unwrap.
+		unwrap(footnotesSectionWrapper);
 	}
 
 	let newFootnotesWrapper = newElement("OL", { "class": "include-wrapper" });
@@ -431,7 +443,7 @@ function updateFootnotesAfterInclusion(newContent, includeLink) {
 /*	Updates the page TOC after transclusion has modified the main page content.
  */
 //	Called by: includeContent
-function updatePageTOCAfterInclusion(newContent, includeLink) {
+function updatePageTOCAfterInclusion(newContent) {
     GWLog("updatePageTOCAfterInclusion", "transclude.js", 2);
 
 	let TOC = document.querySelector("#TOC");
