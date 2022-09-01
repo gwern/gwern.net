@@ -2642,6 +2642,7 @@ a .cite-author-plural::after {
     margin-left: 0.1em;
     white-space: nowrap;
 }
+a .cite-date { margin-left: 0em; }
 
 /*******************************/
 /* PAGE-SPECIFIC MODIFICATIONS */
