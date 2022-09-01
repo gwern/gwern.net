@@ -115,10 +115,13 @@
           </div>
         </div>
 
-        <noscript><div id="noscriptWarning" class="admonition warning"><div class="admonition-title"><p>[JS Disabled!]</p></div> <p>[For support of <a href="/Design" title="About: Gwern.net Design: principles, features, links, tricks">website features</a> (tablesorting, collapsible sections, image zooming, link annotation popups/popins, sidenotes), please enable JavaScript.]</p></div></noscript>
+        <noscript><div id="noscriptWarning" class="admonition warning"><div class="admonition-title"><p>[JS Disabled!]</p></div> <p>[For support of <a href="/Design" title="About: Gwern.net Design: principles, features, links, tricks">website features</a> (tablesorting, collapsible sections, image zooming, link annotation popups/popins & transclusions, sidenotes), please enable JavaScript.]</p></div></noscript>
         $endif$
 
         $body$
+
+        $if(index)$ $else$<div id="link-bibliography-transclusion"><a id="link-bibliography-link-footer-transclusion" href="/docs/link-bibliography$url$" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include include-replace-container">bibliography</a></div>$endif$
+        </div> <!-- NOTE: unmatched, because it closes the opening <div> from $body$ Pandoc template */ -->
 
         <nav id="navigation">
           <a id="navigation-previous" class="link-local-not" rel="prev" href="$previous$" title="Link to previous page by topic, ‘$previous$’"

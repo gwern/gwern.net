@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-08-31 18:17:24 gwern"
+When: Time-stamp: "2022-09-01 15:12:36 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -93,9 +93,10 @@ main =
 
                preprocess $ printGreen ("Popup annotations parsing…" :: String)
                meta <- preprocess $ if slow then readLinkMetadataAndCheck else readLinkMetadata
-               preprocess $ do printGreen ("Writing annotations…" :: String)
-                               if slow then writeAnnotationFragments am meta hasArchivedN False
-                                       else writeAnnotationFragments am meta hasArchivedN True
+               preprocess $ if slow then do printGreen ("Writing all annotations…" :: String)
+                                            writeAnnotationFragments am meta hasArchivedN False
+                                       else do printGreen ("Writing only missing annotations…" :: String)
+                                               writeAnnotationFragments am meta hasArchivedN True
 
                preprocess $ printGreen ("Begin site compilation…" :: String)
                match "**.page" $ do
@@ -181,8 +182,7 @@ woptions = defaultHakyllWriterOptions{ writerSectionDivs = True,
     tocTemplate =
         either error id $ either (error . show) id $
         runPure $ runWithDefaultPartials $
-        compileTemplate "" "<div id=\"TOC\" class=\"TOC\">$toc$</div>\n<div id=\"markdownBody\" class=\"markdownBody\">$body$ $if(index)$ $else$<div id=\"link-bibliography-transclusion\"><a id=\"link-bibliography-link-footer-transclusion\" href=\"/docs/link-bibliography$url$\" title=\"Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling.\" class=\"include include-replace-container\">bibliography</a></div>$endif$</div>"
-
+        compileTemplate "" "<div id=\"TOC\" class=\"TOC\">$toc$</div> <div id=\"markdownBody\" class=\"markdownBody\">$body$" -- we do the main $body$ substitution inside default.html so we can inject stuff inside the #markdownBody wrapper; the div is closed there
 
 imgUrls :: Item String -> Compiler (Item String)
 imgUrls item = do
