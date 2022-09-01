@@ -506,6 +506,8 @@ Transclude = {
 
 	permittedContentTypes: [ "text/html" ],
 
+	lazyLoadViewportMargin: "100%",
+
 	isAnnotationTransclude: (includeLink) => {
 		if (includeLink.classList.contains("link-annotated") == false)
 			return false;
@@ -797,7 +799,7 @@ Transclude = {
 			requestAnimationFrame(() => {
 				lazyLoadObserver(() => {
 					Transclude.transclude(includeLink, true);
-				}, includeLink, { rootMargin: "50%" });
+				}, includeLink, { rootMargin: Transclude.lazyLoadViewportMargin });
 			});
 
 			return;
