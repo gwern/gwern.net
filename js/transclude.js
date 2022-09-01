@@ -797,7 +797,7 @@ Transclude = {
 			requestAnimationFrame(() => {
 				lazyLoadObserver(() => {
 					Transclude.transclude(includeLink, true);
-				}, includeLink);
+				}, includeLink, { rootMargin: "50%" });
 			});
 
 			return;

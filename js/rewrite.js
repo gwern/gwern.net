@@ -297,24 +297,30 @@ function addContentLoadHandler(handler, phase, condition = null) {
 	intersects the viewport.
 	Optionally specify the interaction ratio.
  */
-function lazyLoadObserver(f, target, ratio = 0) {
+function lazyLoadObserver(f, target, options = { }) {
 	if (typeof target == "string")
 		target = document.querySelector(target);
 
-	if (isOnScreen(target)) {
+	if (target == null)
+		return;
+
+	if (   options.root == null
+		&& (options.threshold ?? 0) == 0 
+		&& (options.rootMargin ?? "0px") == "0px"
+		&& isOnScreen(target)) {
 		f();
 		return;
 	}
 
 	let observer = new IntersectionObserver((entries) => {
-		if (entries[0].intersectionRatio <= ratio)
+		if (entries.first.isIntersecting == false)
 			return;
+
 		f();
 		observer.disconnect();
-	});
+	}, options);
 
-	if (target)
-		observer.observe(target);
+	observer.observe(target);
 }
 
 
