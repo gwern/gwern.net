@@ -192,8 +192,14 @@ listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else
 
 -- sort a list of entries in ascending order using the annotation date when available (as 'YYYY[-MM[-DD]]', which string-sorts correctly), and falling back to sorting on the filenames ('YYYY-author.pdf').
 -- We generally prefer to reverse this to descending order, to show newest-first.
+-- For cases where only alphabetic sorting is available, we fall back to alphabetical order on the URL.
 sortByDate :: [(FilePath,MetadataItem,FilePath,FilePath)] -> [(FilePath,MetadataItem,FilePath,FilePath)]
-sortByDate = sortBy (\(f,(_,_,d,_,_,_),_,_) (f',(_,_,d',_,_,_),_,_) -> if not (null d && null d') then (if d > d' then GT else LT) else (if f > f' then GT else LT))
+sortByDate = sortBy (\(f,(_,_,d,_,_,_),_,_) (f',(_,_,d',_,_,_),_,_) ->
+                       if not (null d && null d') then (if d > d' then GT else LT)
+                       else (if head f == '/' && head f' == '/' then (if f > f' then GT else LT) else
+                                if head f == '/' && head f' /= '/' then GT else
+                                  if head f /= '/' && head f' == '/' then LT else
+                                    (if f > f' then LT else GT)))
 
 -- assuming already-descending-sorted input from `sortByDate`, output the date of the first (ie. newest) item:
 getNewestDate :: [(FilePath,MetadataItem,FilePath,FilePath)] -> String
@@ -262,7 +268,7 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_) ->
 
 generateItem :: (FilePath,MetadataItem,FilePath,FilePath) -> [Block]
 generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) = -- no abstracts:
- if ("https://en.wikipedia.org/wiki/"`isInfixOf`f) then [Para [Link ("",["include","include-annotation"],[]) [Str "Wikipedia"] (T.pack f, if t=="" then "" else T.pack $ "Wikipedia link about " ++ t)]]
+ if ("https://en.wikipedia.org/wiki/"`isPrefixOf`f) then [Para [Link ("",["include","include-annotation"],[]) [Str "Wikipedia"] (T.pack f, if t=="" then "" else T.pack $ "Wikipedia link about " ++ t)]]
  else
   let
        f'       = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
