@@ -2731,32 +2731,30 @@ body.index #markdownBody section > h1:first-child a::after {
 /*=----------------=*/
 
 body.reviews-books #markdownBody blockquote {
-  clear: none;
-}
-body.reviews-books #markdownBody ol {
-  overflow: unset;
+    clear: none;
+	overflow: auto;
 }
 
-body.reviews-books #markdownBody h2 + p {
+body.reviews-books #markdownBody .book-review-meta {
     margin: -0.5em 0 1.5em 0;
     display: flex;
     flex-flow: row;
     justify-content: flex-start;
     max-width: 100%;
 }
-body.reviews-books h2 + p span {
+body.reviews-books .book-review-meta span {
     white-space: nowrap;
 }
-body.reviews-books h2 + p span + span {
+body.reviews-books .book-review-meta span + span {
     margin-left: 1em;
 }
-body.reviews-books h2 + p span:first-of-type {
+body.reviews-books .book-review-meta span:first-of-type {
     flex: 0 1 auto;
     max-width: 100%;
     text-overflow: ellipsis;
     overflow: hidden;
 }
-body.reviews-books h2 + p span:first-of-type:hover {
+body.reviews-books .book-review-meta span:first-of-type:hover {
     overflow: visible;
     white-space: normal;
     text-align: left;
