@@ -140,12 +140,18 @@
 		 a single element ID to transclude.)
 
 	include-replace-container
+	include-replace-container-not
 		Normally, when transclusion occurs, the transcluded content replaces the
 		include-link in the page, leaving any surrounding elements untouched.
 		When the `include-replace-container` option is used, the include-link’s
 		parent element, instead of just the include-link itself, is replaced by 
 		the transcluded content. (This means that any other contents of the 
 		include-link’s parent element are also discarded.)
+
+		NOTE: This container-replacing functionality happens by default (i.e.,
+		even when `include-replace-container` is not set) in the case where the
+		include-link is the only non-empty child node of its parent. To disable
+		this behavior, use the `include-replace-container-not` option.
 
 	include-no-spinner
 		Hides the “loading spinner” that is normally shown at the site of the
@@ -206,7 +212,10 @@ function includeContent(includeLink, content) {
 	//	Inject.
 	let wrapper = newElement("SPAN", { "class": "include-wrapper" });
 	wrapper.appendChild(content);
-	let insertWhere = includeLink.classList.contains("include-replace-container")
+	let replaceContainer = (   includeLink.classList.contains("include-replace-container")
+							|| (   isOnlyChild(includeLink)
+								&& includeLink.classList.contains("include-replace-container-not") == false));
+	let insertWhere = replaceContainer
 					  ? includeLink.parentElement
 					  : includeLink;
 	insertWhere.parentElement.insertBefore(wrapper, insertWhere);
@@ -275,19 +284,19 @@ function includeContent(includeLink, content) {
 	let includeLinkParentElement = includeLink.parentElement;
 
 	//	Remove extraneous text node after link, if any.
-	if (   includeLink.classList.contains("include-replace-container") == false
+	if (   replaceContainer == false
 		&& includeLink.nextSibling 
 		&& includeLink.nextSibling.nodeType == Node.TEXT_NODE
 		&& isNodeEmpty(includeLink.nextSibling))
 		includeLink.parentNode.removeChild(includeLink.nextSibling);
 
 	//	Remove link.
-	if (includeLink.classList.contains("include-replace-container") == false)
+	if (replaceContainer == false)
 		includeLink.remove();
 
 	//	Intelligent rectification of surrounding HTML structure.
 	if (   Transclude.isAnnotationTransclude(includeLink)
-		&& includeLink.classList.contains("include-replace-container") == false) {
+		&& replaceContainer == false) {
 		let allowedParentTags = [ "SECTION", "DIV" ];
 		while (false == allowedParentTags.includes(wrapper.parentElement.tagName)) {
 			let nextNode = wrapper.nextSibling;
@@ -330,7 +339,7 @@ function includeContent(includeLink, content) {
 	}
 
 	//	Remove include-link’s container, if specified.
-	if (includeLink.classList.contains("include-replace-container"))
+	if (replaceContainer)
 		includeLinkParentElement.remove();
 
 	//	Fire event, if need be.
@@ -343,9 +352,29 @@ function includeContent(includeLink, content) {
 	}
 }
 
+function isOnlyChild(node) {
+	if (node.parentElement == null)
+		return undefined;
+
+	if (node.parentElement.childNodes.length == 1)
+		return true;
+
+	let nonemptySiblingsExist = false;
+	node.parentElement.childNodes.forEach(child => {
+		if (   child != node 
+			&& isNodeEmpty(child) == false)
+			nonemptySiblingsExist = true;
+	});
+	return (nonemptySiblingsExist == false);
+}
+
 function isNodeEmpty(node) {
 	if (node.nodeType == Node.TEXT_NODE)
 		return (node.textContent.match(/\S/) == null);
+
+	if (   node.nodeType == Node.ELEMENT_NODE
+		&& [ "IMG", "VIDEO", "AUDIO", "IFRAME", "OBJECT" ].includes(node.tagName))
+		return false;
 
 	if (node.childNodes.length == 0)
 		return true;
