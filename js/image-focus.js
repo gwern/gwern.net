@@ -13,163 +13,431 @@
 		Fired just before the ‘imageFocusSetup’ function returns.
  */
 
-/***************/
-/* IMAGE FOCUS */
-/***************/
+ImageFocus = {
+	/****************/
+	/* Configuration.
+	 ****************/
 
-function imageFocusSetup() {
-	GWLog("imageFocusSetup", "image-focus.js", 1);
+	contentImagesSelector: "#markdownBody img",
 
-	if (typeof GW.imageFocus == "undefined")
-		GW.imageFocus = {
-			contentImagesSelector:	"#markdownBody img",
-			focusedImageSelector:	"#markdownBody img.focused",
-			shrinkRatio:			0.975,
-			hideUITimer:			null,
-			hideUITimerDuration:	1500,
-			hideUITimerExpired:		() => {
-				GWLog("GW.imageFocus.hideUITimerExpired", "image-focus.js", 3);
+	focusedImageSelector: "#markdownBody img.focused",
 
-				let timeSinceLastMouseMove = (new Date()) - GW.imageFocus.mouseLastMovedAt;
-				if (timeSinceLastMouseMove < GW.imageFocus.hideUITimerDuration) {
-					GW.imageFocus.hideUITimer = setTimeout(GW.imageFocus.hideUITimerExpired, (GW.imageFocus.hideUITimerDuration - timeSinceLastMouseMove));
-				} else {
-					hideImageFocusUI();
-					cancelImageFocusHideUITimer();
-				}
-			},
-			overlay:				null
-		};
+	shrinkRatio: 0.975,
 
-	//  Create event listener for clicking on images to focus them.
-	GW.imageClickedToFocus = (event) => {
-		GWLog("GW.imageClickedToFocus", "image-focus.js", 2);
+	hideUITimerDuration: 1500,
 
-		focusImage(event.target);
+	dropShadowFilterForImages: " drop-shadow(10px 10px 10px #000) drop-shadow(0 0 10px #444)",
 
-		if (!GW.isMobile()) {
-			//  Set timer to hide the image focus UI.
-			unhideImageFocusUI();
-			GW.imageFocus.hideUITimer = setTimeout(GW.imageFocus.hideUITimerExpired, GW.imageFocus.hideUITimerDuration);
-		}
-	};
-	//  Add the listener to all content images.
-	document.querySelectorAll(GW.imageFocus.contentImagesSelector).forEach(image => {
-		//	NOTE: temporary hack!
-		if (image.closest("a, button"))
-			return;
+	/*****************/
+	/* Infrastructure.
+	 *****************/
 
-		//	NOTE: unlike the above, this one is probably not a temporary hack
-		if (image.closest("figure.image-focus-not"))
-			return;
+	hideUITimer: null,
 
-		image.addEventListener("click", GW.imageClickedToFocus);
-	});
+	overlay: null,
 
-	//  Wrap all images in figures in a span.
-	document.querySelectorAll("figure img").forEach(image => {
-		//	NOTE: unlike the above, this one is probably not a temporary hack
-		if (image.closest("figure.image-focus-not"))
-			return;
+	mouseLastMovedAt: 0,
 
-		let imageContainer = image.parentElement;
+	currentlyFocusedImage: null,
 
-		let wrapper = document.createElement("SPAN");
-		wrapper.classList.add("image-wrapper");
-		wrapper.appendChild(image);
-		imageContainer.insertBefore(wrapper, imageContainer.firstChild);
+	/************/
+	/* Functions.
+	 ************/
 
-		//  Set ‘focusable’ class, for CSS to apply the hover style and tooltip.
-		image.classList.toggle("focusable", true);
-		wrapper.classList.toggle("focusable", true);
-	});
+	setup: () => {
+		GWLog("ImageFocus.setup", "image-focus.js", 1);
 
-	//  Create the image focus overlay.
-	GW.imageFocus.overlay = addUIElement(`<div id="image-focus-overlay">` +
-	`<div class="help-overlay">
-		<p class="slideshow-help-text"><strong>Arrow keys:</strong> Next/previous image</p>
-		<p><strong>Escape</strong> or <strong>click</strong>: Hide zoomed image</p>
-		<p><strong>Space bar:</strong> Reset image size & position</p>
-		<p><strong>Scroll</strong> to zoom in/out</p>
-		<p>(When zoomed in, <strong>drag</strong> to pan; <br/><strong>double-click</strong> to close)</p>
-	</div>
-	<div class="image-number"></div>
-	<div class="slideshow-buttons">
-		<button type="button" class="slideshow-button previous" tabindex="-1" title="Previous image">
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-				<path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z"/>
-			</svg>
-		</button>
-		<button type="button" class="slideshow-button next" tabindex="-1" title="Next image">
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-				<path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/>
-			</svg>
-		</button>
-	</div>
-	<div class="caption"></div>` +
-	`</div>`);
-	GW.imageFocus.dropShadowFilterForImages = " drop-shadow(10px 10px 10px #000) drop-shadow(0 0 10px #444)";
+		//  Create the image focus overlay.
+		ImageFocus.overlay = addUIElement(`<div id="image-focus-overlay">` +
+		`<div class="help-overlay">
+			<p class="slideshow-help-text"><strong>Arrow keys:</strong> Next/previous image</p>
+			<p><strong>Escape</strong> or <strong>click</strong>: Hide zoomed image</p>
+			<p><strong>Space bar:</strong> Reset image size & position</p>
+			<p><strong>Scroll</strong> to zoom in/out</p>
+			<p>(When zoomed in, <strong>drag</strong> to pan; <br/><strong>double-click</strong> to close)</p>
+		</div>
+		<div class="image-number"></div>
+		<div class="slideshow-buttons">
+			<button type="button" class="slideshow-button previous" tabindex="-1" title="Previous image">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+					<path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z"/>
+				</svg>
+			</button>
+			<button type="button" class="slideshow-button next" tabindex="-1" title="Next image">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+					<path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/>
+				</svg>
+			</button>
+		</div>
+		<div class="caption"></div>` +
+		`</div>`);
 
-	//  On orientation change, reset the size & position.
-	GW.mediaQueries.portraitOrientation.addListener(() => { setTimeout(resetFocusedImagePosition, 0); });
+		//  On orientation change, reset the size & position.
+		GW.mediaQueries.portraitOrientation.addListener((event) => { requestAnimationFrame(ImageFocus.resetFocusedImagePosition); });
 
-	//  Accesskey-L starts the slideshow.
-	(document.querySelector(GW.imageFocus.contentImagesSelector)||{}).accessKey = "l";
+		//  Add click listeners to the buttons.
+		ImageFocus.overlay.querySelectorAll(".slideshow-button").forEach(button => {
+			button.addActivateEvent(ImageFocus.slideshowButtonClicked = (event) => {
+				GWLog("ImageFocus.slideshowButtonClicked", "image-focus.js", 2);
 
-	//  Count how many images there are in the post, and set the “… of X” label to that.
-	GW.imageFocus.overlay.querySelector(".image-number").dataset.numberOfImages = document.querySelectorAll(GW.imageFocus.contentImagesSelector).length;
-
-	//  Add click listeners to the buttons.
-	GW.imageFocus.overlay.querySelectorAll(".slideshow-button").forEach(button => {
-		button.addActivateEvent(GW.imageFocus.slideshowButtonClicked = (event) => {
-			GWLog("GW.imageFocus.slideshowButtonClicked", "image-focus.js", 2);
-
-			focusNextImage(event.target.classList.contains("next"));
-			event.target.blur();
+				ImageFocus.focusNextImage(event.target.classList.contains("next"));
+				event.target.blur();
+			});
 		});
-	});
 
-	//  UI starts out hidden.
-	hideImageFocusUI();
+		//  UI starts out hidden.
+		ImageFocus.hideImageFocusUI();
 
-	GW.notificationCenter.fireEvent("ImageFocus.setupDidComplete");
-}
+		ImageFocus.processImagesWithin(document);
 
-function focusImage(imageToFocus) {
-	GWLog("focusImage", "image-focus.js", 1);
+		GW.notificationCenter.fireEvent("ImageFocus.setupDidComplete");
+	},
 
-	//  Clear ‘last-focused’ class of last focused image.
-	let lastFocusedImage = document.querySelector(GW.imageFocus.focusedImageSelector);
-	if (lastFocusedImage) {
-		lastFocusedImage.classList.remove("last-focused");
-		lastFocusedImage.removeAttribute("accesskey");
-	}
+	processImagesWithin: (container) => {
+		GWLog("ImageFocus.processImagesWithin", "image-focus.js", 1);
 
-	//  Create the focused version of the image.
-	imageToFocus.classList.toggle("focused", true);
-	let clonedImage = imageToFocus.cloneNode(true);
-	clonedImage.style = "";
-	clonedImage.removeAttribute("width");
-	clonedImage.removeAttribute("height");
-	clonedImage.style.filter = imageToFocus.style.filter + GW.imageFocus.dropShadowFilterForImages;
+		//  Add the listener to all content images.
+		container.querySelectorAll(ImageFocus.contentImagesSelector).forEach(image => {
+			//	NOTE: temporary hack!
+			if (image.closest("a, button"))
+				return;
 
-	//  Add the image to the overlay.
-	GW.imageFocus.overlay.appendChild(clonedImage);
-	GW.imageFocus.overlay.classList.toggle("engaged", true);
+			//	NOTE: unlike the above, this one is probably not a temporary hack
+			if (image.closest("figure.image-focus-not"))
+				return;
 
-	//  Save a reference to the image, so we don’t have to querySelector each time.
-	GW.currentlyFocusedImage = clonedImage;
+			image.addEventListener("click", ImageFocus.imageClickedToFocus);
+		});
 
-	//  Set image to default size and position.
-	resetFocusedImagePosition();
+		//  Wrap all images in figures in a span.
+		container.querySelectorAll("figure img").forEach(image => {
+			//	NOTE: unlike the above, this one is probably not a temporary hack
+			if (image.closest("figure.image-focus-not"))
+				return;
 
-	//  Add listener to zoom image with scroll wheel.
-	window.addEventListener("wheel", GW.imageFocus.scrollEvent = (event) => {
-		GWLog("GW.imageFocus.scrollEvent", "image-focus.js", 3);
+			let imageContainer = image.parentElement;
+
+			let wrapper = document.createElement("SPAN");
+			wrapper.classList.add("image-wrapper");
+			wrapper.appendChild(image);
+			imageContainer.insertBefore(wrapper, imageContainer.firstChild);
+
+			//  Set ‘focusable’ class, for CSS to apply the hover style and tooltip.
+			image.classList.toggle("focusable", true);
+			wrapper.classList.toggle("focusable", true);
+		});
+
+		if (container == document) {
+			//  Count how many images there are in the post, and set the “… of X” label to that.
+			ImageFocus.overlay.querySelector(".image-number").dataset.numberOfImages = container.querySelectorAll(ImageFocus.contentImagesSelector).length;
+
+			//  Accesskey-L starts the slideshow.
+			(container.querySelector(ImageFocus.contentImagesSelector)||{}).accessKey = "l";
+		}
+	},
+
+	focusImage: (imageToFocus) => {
+		GWLog("ImageFocus.focusImage", "image-focus.js", 1);
+
+		//  Clear ‘last-focused’ class of last focused image.
+		let lastFocusedImage = document.querySelector(ImageFocus.focusedImageSelector);
+		if (lastFocusedImage) {
+			lastFocusedImage.classList.remove("last-focused");
+			lastFocusedImage.removeAttribute("accesskey");
+		}
+
+		//  Create the focused version of the image.
+		imageToFocus.classList.toggle("focused", true);
+		let clonedImage = imageToFocus.cloneNode(true);
+		clonedImage.removeAttribute("width");
+		clonedImage.removeAttribute("height");
+		clonedImage.style = "";
+		clonedImage.style.filter = imageToFocus.style.filter + ImageFocus.dropShadowFilterForImages;
+
+		//  Add the image to the overlay.
+		ImageFocus.overlay.appendChild(clonedImage);
+		ImageFocus.overlay.classList.toggle("engaged", true);
+
+		//  Save a reference to the image, so we don’t have to querySelector each time.
+		ImageFocus.currentlyFocusedImage = clonedImage;
+
+		//  Set image to default size and position.
+		ImageFocus.resetFocusedImagePosition();
+
+		//  Add listener to zoom image with scroll wheel.
+		window.addEventListener("wheel", ImageFocus.scrollEvent, { passive: false });
+
+		//  If image is bigger than viewport, it’s draggable. Otherwise, click unfocuses.
+		window.addEventListener("mouseup", ImageFocus.mouseUp);
+		window.addEventListener("mousedown", ImageFocus.mouseDown);
+
+		//  Double-click on the image unfocuses.
+		clonedImage.addEventListener("dblclick", ImageFocus.doubleClick);
+
+		//  Escape key unfocuses, spacebar resets.
+		document.addEventListener("keyup", ImageFocus.keyUp);
+
+		requestAnimationFrame(() => {
+			//  Prevent spacebar or arrow keys from scrolling page when image focused.
+			togglePageScrolling(false);
+		});
+
+		//  Mark the overlay as being in slide show mode (to show buttons/count).
+		ImageFocus.overlay.classList.add("slideshow");
+
+		//  Set state of next/previous buttons.
+		let images = document.querySelectorAll(ImageFocus.contentImagesSelector);
+		let indexOfFocusedImage = ImageFocus.getIndexOfFocusedImage();
+		ImageFocus.overlay.querySelector(".slideshow-button.previous").disabled = (indexOfFocusedImage == 0);
+		ImageFocus.overlay.querySelector(".slideshow-button.next").disabled = (indexOfFocusedImage == images.length - 1);
+
+		//  Set the image number.
+		ImageFocus.overlay.querySelector(".image-number").textContent = (indexOfFocusedImage + 1);
+
+		//  Replace the hash.
+		if (!location.hash.startsWith("#if_slide_"))
+			ImageFocus.savedHash = location.hash;
+		relocate("#if_slide_" + (indexOfFocusedImage + 1));
+
+		//  Set the caption.
+		ImageFocus.setImageFocusCaption();
+
+		//  Moving mouse unhides image focus UI.
+		window.addEventListener("mousemove", ImageFocus.mouseMoved);
+	},
+
+	resetFocusedImagePosition: () => {
+		GWLog("ImageFocus.resetFocusedImagePosition", "image-focus.js", 2);
+
+		let focusedImage = ImageFocus.currentlyFocusedImage;
+		if (!focusedImage)
+			return;
+
+		let sourceImage = document.querySelector(ImageFocus.focusedImageSelector);
+
+		//  Make sure that initially, the image fits into the viewport.
+		let constrainedWidth = Math.min(sourceImage.naturalWidth, window.innerWidth * ImageFocus.shrinkRatio);
+		let widthShrinkRatio = constrainedWidth / sourceImage.naturalWidth;
+		let constrainedHeight = Math.min(sourceImage.naturalHeight, window.innerHeight * ImageFocus.shrinkRatio);
+		let heightShrinkRatio = constrainedHeight / sourceImage.naturalHeight;
+		let shrinkRatio = Math.min(widthShrinkRatio, heightShrinkRatio);
+		focusedImage.style.width = (sourceImage.naturalWidth * shrinkRatio) + "px";
+		focusedImage.style.height = (sourceImage.naturalHeight * shrinkRatio) + "px";
+
+		//  Remove modifications to position.
+		focusedImage.style.left = "";
+		focusedImage.style.top = "";
+
+		//  Set the cursor appropriately.
+		ImageFocus.setFocusedImageCursor();
+	},
+
+	setFocusedImageCursor: () => {
+		GWLog("ImageFocus.setFocusedImageCursor", "image-focus.js", 2);
+
+		let focusedImage = ImageFocus.currentlyFocusedImage;
+		if (!focusedImage)
+			return;
+		focusedImage.style.cursor = (   focusedImage.height >= window.innerHeight
+									 || focusedImage.width >= window.innerWidth)
+									? "move"
+									: "";
+	},
+
+	unfocusImageOverlay: () => {
+		GWLog("ImageFocus.unfocusImageOverlay", "image-focus.js", 1);
+
+		//  Remove event listeners.
+		window.removeEventListener("wheel", ImageFocus.scrollEvent);
+		//  NOTE: The double-click listener does not need to be removed manually,
+		//  because the focused (cloned) image will be removed anyway.
+		document.removeEventListener("keyup", ImageFocus.keyUp);
+		window.removeEventListener("mousemove", ImageFocus.mouseMoved);
+		window.removeEventListener("mousedown", ImageFocus.mouseDown);
+		window.removeEventListener("mouseup", ImageFocus.mouseUp);
+
+		//  Set accesskey of currently focused image.
+		let currentlyFocusedImage = document.querySelector(ImageFocus.focusedImageSelector)
+		if (currentlyFocusedImage) {
+			currentlyFocusedImage.classList.toggle("last-focused", true);
+			currentlyFocusedImage.accessKey = "l";
+		}
+
+		//  Remove focused image and hide overlay.
+		ImageFocus.overlay.classList.remove("engaged");
+		ImageFocus.currentlyFocusedImage.remove();
+		ImageFocus.currentlyFocusedImage = null;
+
+		//  Unset ‘focused’ class of focused image.
+		document.querySelector(ImageFocus.focusedImageSelector).classList.remove("focused");
+
+		requestAnimationFrame(() => {
+			//  Re-enable page scrolling.
+			togglePageScrolling(true);
+		});
+
+		//  Reset the hash, if needed.
+		if (location.hash.startsWith("#if_slide_")) {
+			relocate(ImageFocus.savedHash || "#");
+			ImageFocus.savedHash = null;
+		}
+	},
+
+	getIndexOfFocusedImage: () => {
+		let images = document.querySelectorAll(ImageFocus.contentImagesSelector);
+		let indexOfFocusedImage = -1;
+		for (i = 0; i < images.length; i++) {
+			if (images[i].classList.contains("focused")) {
+				indexOfFocusedImage = i;
+				break;
+			}
+		}
+		return indexOfFocusedImage;
+	},
+
+	focusNextImage: (next = true) => {
+		GWLog("ImageFocus.focusNextImage", "image-focus.js", 1);
+
+		let images = document.querySelectorAll(ImageFocus.contentImagesSelector);
+		let indexOfFocusedImage = ImageFocus.getIndexOfFocusedImage();
+
+		if (next ? (++indexOfFocusedImage == images.length) : (--indexOfFocusedImage == -1))
+			return;
+
+		//  Remove existing image.
+		ImageFocus.currentlyFocusedImage.remove();
+		//  Unset ‘focused’ class of just-removed image.
+		document.querySelector(ImageFocus.focusedImageSelector).classList.remove("focused");
+
+		//  Create the focused version of the image.
+		images[indexOfFocusedImage].classList.toggle("focused", true);
+		let clonedImage = images[indexOfFocusedImage].cloneNode(true);
+		clonedImage.style = "";
+		clonedImage.removeAttribute("width");
+		clonedImage.removeAttribute("height");
+		clonedImage.style.filter = images[indexOfFocusedImage].style.filter + ImageFocus.dropShadowFilterForImages;
+		ImageFocus.overlay.appendChild(clonedImage);
+		ImageFocus.currentlyFocusedImage = clonedImage;
+		ImageFocus.overlay.classList.toggle("engaged", true);
+		//  Set image to default size and position.
+		ImageFocus.resetFocusedImagePosition();
+		//  Set state of next/previous buttons.
+		ImageFocus.overlay.querySelector(".slideshow-button.previous").disabled = (indexOfFocusedImage == 0);
+		ImageFocus.overlay.querySelector(".slideshow-button.next").disabled = (indexOfFocusedImage == images.length - 1);
+		//  Set the image number display.
+		ImageFocus.overlay.querySelector(".image-number").textContent = (indexOfFocusedImage + 1);
+		//  Set the caption.
+		ImageFocus.setImageFocusCaption();
+		//  Replace the hash.
+		relocate("#if_slide_" + (indexOfFocusedImage + 1));
+	},
+
+	setImageFocusCaption: () => {
+		GWLog("ImageFocus.setImageFocusCaption", "image-focus.js", 2);
+
+		let T = { }; //  Temporary storage.
+
+		//  Clear existing caption, if any.
+		let captionContainer = ImageFocus.overlay.querySelector(".caption");
+		captionContainer.replaceChildren();
+
+		//  Determine caption.
+		let currentlyFocusedImage = document.querySelector(ImageFocus .focusedImageSelector);
+		let captionHTML;
+		if (   (T.enclosingFigure = currentlyFocusedImage.closest("figure"))
+			&& (T.figcaption = T.enclosingFigure.querySelector("figcaption"))) {
+			captionHTML = T.figcaption.querySelector("p") 
+						  ? T.figcaption.innerHTML 
+						  : "<p>" + T.figcaption.innerHTML + "</p>";
+		} else if (currentlyFocusedImage.title != "") {
+			captionHTML = `<p>${currentlyFocusedImage.title}</p>`;
+		}
+		//  Insert the caption, if any.
+		if (captionHTML)
+			captionContainer.insertAdjacentHTML("beforeend", captionHTML);
+	},
+
+	focusImageSpecifiedByURL: () => {
+		GWLog("ImageFocus.focusImageSpecifiedByURL", "image-focus.js", 1);
+
+		if (location.hash.startsWith("#if_slide_")) {
+			doWhenPageLoaded(() => {
+				let images = document.querySelectorAll(ImageFocus.contentImagesSelector);
+				let imageToFocus = (/#if_slide_([0-9]+)/.exec(location.hash)||{})[1];
+				if (   imageToFocus > 0
+					&& imageToFocus <= images.length) {
+					ImageFocus.focusImage(images[imageToFocus - 1]);
+
+					//  Set timer to hide the image focus UI.
+					if (GW.isMobile() == false)
+						ImageFocus.unhideImageFocusUI();
+				}
+			});
+		}
+	},
+
+	/************************************/
+	/* Image gallery UI showing / hiding.
+	 ************************************/
+
+	hideImageFocusUI: () => {
+		GWLog("ImageFocus.hideImageFocusUI", "image-focus.js", 3);
+
+		ImageFocus.overlay.querySelectorAll(".slideshow-button, .help-overlay, .image-number, .caption").forEach(element => {
+			element.classList.toggle("hidden", true);
+		});
+	},
+
+	hideUITimerExpired: () => {
+		GWLog("ImageFocus.hideUITimerExpired", "image-focus.js", 3);
+
+		let timeSinceLastMouseMove = (new Date()) - ImageFocus.mouseLastMovedAt;
+		if (timeSinceLastMouseMove < ImageFocus.hideUITimerDuration) {
+			ImageFocus.hideUITimer = setTimeout(ImageFocus.hideUITimerExpired, (ImageFocus.hideUITimerDuration - timeSinceLastMouseMove));
+		} else {
+			ImageFocus.hideImageFocusUI();
+			ImageFocus.cancelImageFocusHideUITimer();
+		}
+	},
+
+	unhideImageFocusUI: () => {
+		GWLog("ImageFocus.unhideImageFocusUI", "image-focus.js", 3);
+
+		ImageFocus.overlay.querySelectorAll(".slideshow-button, .help-overlay, .image-number, .caption").forEach(element => {
+			element.classList.toggle("hidden", false);
+		});
+
+		ImageFocus.hideUITimer = setTimeout(ImageFocus.hideUITimerExpired, ImageFocus.hideUITimerDuration);
+	},
+
+	cancelImageFocusHideUITimer: () => {
+		GWLog("ImageFocus.cancelImageFocusHideUITimer", "image-focus.js", 3);
+
+		clearTimeout(ImageFocus.hideUITimer);
+		ImageFocus.hideUITimer = null;
+	},
+
+	/*********/
+	/* Events.
+	 *********/
+
+	//  Event listener for clicking on images to focus them.
+	imageClickedToFocus: (event) => {
+		GWLog("ImageFocus.imageClickedToFocus", "image-focus.js", 2);
+
+		ImageFocus.focusImage(event.target);
+
+		//  Set timer to hide the image focus UI.
+		if (GW.isMobile() == false)
+			ImageFocus.unhideImageFocusUI();
+	},
+
+	scrollEvent: (event) => {
+		GWLog("ImageFocus.scrollEvent", "image-focus.js", 3);
 
 		event.preventDefault();
 
-		let image = GW.currentlyFocusedImage;
+		let image = ImageFocus.currentlyFocusedImage;
 
 		//  Remove the filter.
 		image.savedFilter = image.style.filter;
@@ -179,7 +447,7 @@ function focusImage(imageToFocus) {
 		let imageBoundingBox = image.getBoundingClientRect();
 
 		//  Calculate resize factor.
-		var factor = ((image.height > 10 && image.width > 10) || event.deltaY < 0)
+		let factor = ((image.height > 10 && image.width > 10) || event.deltaY < 0)
 					 ? 1 + Math.sqrt(Math.abs(event.deltaY))/100.0
 					 : 1;
 
@@ -191,7 +459,7 @@ function focusImage(imageToFocus) {
 		image.style.height = "";
 
 		//  Designate zoom origin.
-		var zoomOrigin;
+		let zoomOrigin;
 
 		//  Zoom from cursor if we’re zoomed in to where image exceeds screen, AND
 		//  the cursor is over the image.
@@ -251,12 +519,11 @@ function focusImage(imageToFocus) {
 		image.style.filter = image.savedFilter;
 
 		//  Set the cursor appropriately.
-		setFocusedImageCursor();
-	}, { passive: false });
+		ImageFocus.setFocusedImageCursor();
+	},
 
-	//  If image is bigger than viewport, it’s draggable. Otherwise, click unfocuses.
-	window.addEventListener("mouseup", GW.imageFocus.mouseUp = (event) => {
-		GWLog("GW.imageFocus.mouseUp", "image-focus.js", 2);
+	mouseUp: (event) => {
+		GWLog("ImageFocus.mouseUp", "image-focus.js", 2);
 
 		window.onmousemove = "";
 
@@ -272,7 +539,7 @@ function focusImage(imageToFocus) {
 		if (event.target.closest(".help-overlay"))
 			return;
 
-		let focusedImage = GW.currentlyFocusedImage;
+		let focusedImage = ImageFocus.currentlyFocusedImage;
 		if (   (   event.target == focusedImage
 				|| event.target.tagName == "HTML")
 			&& (   focusedImage.height >= window.innerHeight
@@ -281,12 +548,13 @@ function focusImage(imageToFocus) {
 			//  put the filter back; do not unfocus.
 			focusedImage.style.filter = focusedImage.savedFilter;
 		} else if (event.target.tagName != "HTML") {
-			unfocusImageOverlay();
+			ImageFocus.unfocusImageOverlay();
 			return;
 		}
-	});
-	window.addEventListener("mousedown", GW.imageFocus.mouseDown = (event) => {
-		GWLog("GW.imageFocus.mouseDown", "image-focus.js", 2);
+	},
+
+	mouseDown: (event) => {
+		GWLog("ImageFocus.mouseDown", "image-focus.js", 2);
 
 		//  We only want to do anything on left-clicks.
 		if (event.button != 0)
@@ -294,7 +562,7 @@ function focusImage(imageToFocus) {
 
 		event.preventDefault();
 
-		let focusedImage = GW.currentlyFocusedImage;
+		let focusedImage = ImageFocus.currentlyFocusedImage;
 		if (   focusedImage.height >= window.innerHeight
 			|| focusedImage.width >= window.innerWidth) {
 			let mouseCoordX = event.clientX;
@@ -314,11 +582,10 @@ function focusImage(imageToFocus) {
 			};
 			return false;
 		}
-	});
+	},
 
-	//  Double-click on the image unfocuses.
-	clonedImage.addEventListener("dblclick", GW.imageFocus.doubleClick = (event) => {
-		GWLog("GW.imageFocus.doubleClick", "image-focus.js", 2);
+	doubleClick: (event) => {
+		GWLog("ImageFocus.doubleClick", "image-focus.js", 2);
 
 		//  Don’t unfocus if click was on a slideshow next/prev button!
 		if (event.target.closest(".slideshow-button"))
@@ -328,16 +595,15 @@ function focusImage(imageToFocus) {
 		if (event.target.closest(".help-overlay"))
 			return;
 
-		unfocusImageOverlay();
-	});
+		ImageFocus.unfocusImageOverlay();
+	},
 
-	//  Escape key unfocuses, spacebar resets.
-	document.addEventListener("keyup", GW.imageFocus.keyUp = (event) => {
-		GWLog("GW.imageFocus.keyUp", "image-focus.js", 3);
+	keyUp: (event) => {
+		GWLog("ImageFocus.keyUp", "image-focus.js", 3);
 
 		let allowedKeys = [ " ", "Spacebar", "Escape", "Esc", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Up", "Down", "Left", "Right" ];
 		if (   !allowedKeys.includes(event.key)
-			|| getComputedStyle(GW.imageFocus.overlay).display == "none")
+			|| getComputedStyle(ImageFocus.overlay).display == "none")
 			return;
 
 		event.preventDefault();
@@ -345,264 +611,44 @@ function focusImage(imageToFocus) {
 		switch (event.key) {
 		case "Escape":
 		case "Esc":
-			unfocusImageOverlay();
+			ImageFocus.unfocusImageOverlay();
 			break;
 		case " ":
 		case "Spacebar":
-			resetFocusedImagePosition();
+			ImageFocus.resetFocusedImagePosition();
 			break;
 		case "ArrowDown":
 		case "Down":
 		case "ArrowRight":
 		case "Right":
-			if (document.querySelector(GW.imageFocus.focusedImageSelector))
-				focusNextImage(true);
+			if (document.querySelector(ImageFocus.focusedImageSelector))
+				ImageFocus.focusNextImage(true);
 			break;
 		case "ArrowUp":
 		case "Up":
 		case "ArrowLeft":
 		case "Left":
-			if (document.querySelector(GW.imageFocus.focusedImageSelector))
-				focusNextImage(false);
+			if (document.querySelector(ImageFocus.focusedImageSelector))
+				ImageFocus.focusNextImage(false);
 			break;
 		}
-	});
+	},
 
-	setTimeout(() => {
-		//  Prevent spacebar or arrow keys from scrolling page when image focused.
-		togglePageScrolling(false);
-	});
-
-	//  Mark the overlay as being in slide show mode (to show buttons/count).
-	GW.imageFocus.overlay.classList.add("slideshow");
-
-	//  Set state of next/previous buttons.
-	let images = document.querySelectorAll(GW.imageFocus.contentImagesSelector);
-	var indexOfFocusedImage = getIndexOfFocusedImage();
-	GW.imageFocus.overlay.querySelector(".slideshow-button.previous").disabled = (indexOfFocusedImage == 0);
-	GW.imageFocus.overlay.querySelector(".slideshow-button.next").disabled = (indexOfFocusedImage == images.length - 1);
-
-	//  Set the image number.
-	GW.imageFocus.overlay.querySelector(".image-number").textContent = (indexOfFocusedImage + 1);
-
-	//  Replace the hash.
-	if (!location.hash.startsWith("#if_slide_"))
-	    GW.imageFocus.savedHash = location.hash;
-	relocate("#if_slide_" + (indexOfFocusedImage + 1));
-
-	//  Set the caption.
-	setImageFocusCaption();
-
-	//  Moving mouse unhides image focus UI.
-	window.addEventListener("mousemove", GW.imageFocus.mouseMoved = (event) => {
-		GWLog("GW.imageFocus.mouseMoved", "image-focus.js", 3);
+	mouseMoved: (event) => {
+		GWLog("ImageFocus.mouseMoved", "image-focus.js", 3);
 
 		let currentDateTime = new Date();
-		if (!(   event.target == GW.imageFocus.currentlyFocusedImage
-			  || event.target == GW.imageFocus.overlay)) {
-			cancelImageFocusHideUITimer();
+		if (!(   event.target == ImageFocus.currentlyFocusedImage
+			  || event.target == ImageFocus.overlay)) {
+			ImageFocus.cancelImageFocusHideUITimer();
 		} else {
-			if (!GW.imageFocus.hideUITimer) {
-				unhideImageFocusUI();
-				GW.imageFocus.hideUITimer = setTimeout(GW.imageFocus.hideUITimerExpired, GW.imageFocus.hideUITimerDuration);
-			}
-			GW.imageFocus.mouseLastMovedAt = currentDateTime;
-		}
-	});
-}
+			if (ImageFocus.hideUITimer == null)
+				ImageFocus.unhideImageFocusUI();
 
-function resetFocusedImagePosition() {
-	GWLog("resetFocusedImagePosition", "image-focus.js", 2);
-
-	let focusedImage = GW.currentlyFocusedImage;
-	if (!focusedImage)
-		return;
-
-	let sourceImage = document.querySelector(GW.imageFocus.focusedImageSelector);
-
-	//  Make sure that initially, the image fits into the viewport.
-	let constrainedWidth = Math.min(sourceImage.naturalWidth, window.innerWidth * GW.imageFocus.shrinkRatio);
-	let widthShrinkRatio = constrainedWidth / sourceImage.naturalWidth;
-	var constrainedHeight = Math.min(sourceImage.naturalHeight, window.innerHeight * GW.imageFocus.shrinkRatio);
-	let heightShrinkRatio = constrainedHeight / sourceImage.naturalHeight;
-	let shrinkRatio = Math.min(widthShrinkRatio, heightShrinkRatio);
-	focusedImage.style.width = (sourceImage.naturalWidth * shrinkRatio) + "px";
-	focusedImage.style.height = (sourceImage.naturalHeight * shrinkRatio) + "px";
-
-	//  Remove modifications to position.
-	focusedImage.style.left = "";
-	focusedImage.style.top = "";
-
-	//  Set the cursor appropriately.
-	setFocusedImageCursor();
-}
-function setFocusedImageCursor() {
-	GWLog("setFocusedImageCursor", "image-focus.js", 2);
-
-	let focusedImage = GW.currentlyFocusedImage;
-	if (!focusedImage)
-		return;
-	focusedImage.style.cursor = (   focusedImage.height >= window.innerHeight
-								 || focusedImage.width >= window.innerWidth)
-								? "move"
-								: "";
-}
-
-function unfocusImageOverlay() {
-	GWLog("unfocusImageOverlay", "image-focus.js", 1);
-
-	//  Remove event listeners.
-	window.removeEventListener("wheel", GW.imageFocus.scrollEvent);
-	//  NOTE: The double-click listener does not need to be removed manually,
-	//  because the focused (cloned) image will be removed anyway.
-	document.removeEventListener("keyup", GW.imageFocus.keyUp);
-	window.removeEventListener("mousemove", GW.imageFocus.mouseMoved);
-	window.removeEventListener("mousedown", GW.imageFocus.mouseDown);
-	window.removeEventListener("mouseup", GW.imageFocus.mouseUp);
-
-	//  Set accesskey of currently focused image.
-	let currentlyFocusedImage = document.querySelector(GW.imageFocus.focusedImageSelector)
-	if (currentlyFocusedImage) {
-		currentlyFocusedImage.classList.toggle("last-focused", true);
-		currentlyFocusedImage.accessKey = "l";
-	}
-
-	//  Remove focused image and hide overlay.
-	GW.imageFocus.overlay.classList.remove("engaged");
-	GW.currentlyFocusedImage.remove();
-	GW.currentlyFocusedImage = null;
-
-	//  Unset ‘focused’ class of focused image.
-	document.querySelector(GW.imageFocus.focusedImageSelector).classList.remove("focused");
-
-	setTimeout(() => {
-		//  Re-enable page scrolling.
-		togglePageScrolling(true);
-	});
-
-	//  Reset the hash, if needed.
-	if (location.hash.startsWith("#if_slide_")) {
-		relocate(GW.imageFocus.savedHash || "#");
-		GW.imageFocus.savedHash = null;
-	}
-}
-
-function getIndexOfFocusedImage() {
-	let images = document.querySelectorAll(GW.imageFocus.contentImagesSelector);
-	var indexOfFocusedImage = -1;
-	for (i = 0; i < images.length; i++) {
-		if (images[i].classList.contains("focused")) {
-			indexOfFocusedImage = i;
-			break;
+			ImageFocus.mouseLastMovedAt = currentDateTime;
 		}
 	}
-	return indexOfFocusedImage;
-}
-
-function focusNextImage(next = true) {
-	GWLog("focusNextImage", "image-focus.js", 1);
-
-	let images = document.querySelectorAll(GW.imageFocus.contentImagesSelector);
-	var indexOfFocusedImage = getIndexOfFocusedImage();
-
-	if (next ? (++indexOfFocusedImage == images.length) : (--indexOfFocusedImage == -1))
-		return;
-
-	//  Remove existing image.
-	GW.currentlyFocusedImage.remove();
-	//  Unset ‘focused’ class of just-removed image.
-	document.querySelector(GW.imageFocus.focusedImageSelector).classList.remove("focused");
-
-	//  Create the focused version of the image.
-	images[indexOfFocusedImage].classList.toggle("focused", true);
-	let clonedImage = images[indexOfFocusedImage].cloneNode(true);
-	clonedImage.style = "";
-	clonedImage.removeAttribute("width");
-	clonedImage.removeAttribute("height");
-	clonedImage.style.filter = images[indexOfFocusedImage].style.filter + GW.imageFocus.dropShadowFilterForImages;
-	GW.imageFocus.overlay.appendChild(clonedImage);
-	GW.currentlyFocusedImage = clonedImage;
-	GW.imageFocus.overlay.classList.toggle("engaged", true);
-	//  Set image to default size and position.
-	resetFocusedImagePosition();
-	//  Set state of next/previous buttons.
-	GW.imageFocus.overlay.querySelector(".slideshow-button.previous").disabled = (indexOfFocusedImage == 0);
-	GW.imageFocus.overlay.querySelector(".slideshow-button.next").disabled = (indexOfFocusedImage == images.length - 1);
-	//  Set the image number display.
-	GW.imageFocus.overlay.querySelector(".image-number").textContent = (indexOfFocusedImage + 1);
-	//  Set the caption.
-	setImageFocusCaption();
-	//  Replace the hash.
-	relocate("#if_slide_" + (indexOfFocusedImage + 1));
-}
-
-function setImageFocusCaption() {
-	GWLog("setImageFocusCaption", "image-focus.js", 2);
-
-	var T = { }; //  Temporary storage.
-
-	//  Clear existing caption, if any.
-	let captionContainer = GW.imageFocus.overlay.querySelector(".caption");
-	Array.from(captionContainer.children).forEach(child => { child.remove(); });
-
-	//  Determine caption.
-	let currentlyFocusedImage = document.querySelector(GW.imageFocus.focusedImageSelector);
-	var captionHTML;
-	if ((T.enclosingFigure = currentlyFocusedImage.closest("figure")) &&
-		(T.figcaption = T.enclosingFigure.querySelector("figcaption"))) {
-		captionHTML = (T.figcaption.querySelector("p")) ?
-					  T.figcaption.innerHTML :
-					  "<p>" + T.figcaption.innerHTML + "</p>";
-	} else if (currentlyFocusedImage.title != "") {
-		captionHTML = `<p>${currentlyFocusedImage.title}</p>`;
-	}
-	//  Insert the caption, if any.
-	if (captionHTML) captionContainer.insertAdjacentHTML("beforeend", captionHTML);
-}
-
-function hideImageFocusUI() {
-	GWLog("hideImageFocusUI", "image-focus.js", 3);
-
-	GW.imageFocus.overlay.querySelectorAll(".slideshow-button, .help-overlay, .image-number, .caption").forEach(element => {
-		element.classList.toggle("hidden", true);
-	});
-}
-
-function unhideImageFocusUI() {
-	GWLog("unhideImageFocusUI", "image-focus.js", 3);
-
-	GW.imageFocus.overlay.querySelectorAll(".slideshow-button, .help-overlay, .image-number, .caption").forEach(element => {
-		element.classList.remove("hidden");
-	});
-}
-
-function cancelImageFocusHideUITimer() {
-	GWLog("cancelImageFocusHideUITimer", "image-focus.js", 3);
-
-	clearTimeout(GW.imageFocus.hideUITimer);
-	GW.imageFocus.hideUITimer = null;
-}
-
-function focusImageSpecifiedByURL() {
-	GWLog("focusImageSpecifiedByURL", "image-focus.js", 1);
-
-	if (location.hash.startsWith("#if_slide_")) {
-		doWhenPageLoaded(() => {
-			let images = document.querySelectorAll(GW.imageFocus.contentImagesSelector);
-			let imageToFocus = (/#if_slide_([0-9]+)/.exec(location.hash)||{})[1];
-			if (   imageToFocus > 0
-				&& imageToFocus <= images.length) {
-				focusImage(images[imageToFocus - 1]);
-
-				if (!GW.isMobile()) {
-					//  Set timer to hide the image focus UI.
-					unhideImageFocusUI();
-					GW.imageFocus.hideUITimer = setTimeout(GW.imageFocus.hideUITimerExpired, GW.imageFocus.hideUITimerDuration);
-				}
-			}
-		});
-	}
-}
+};
 
 GW.notificationCenter.fireEvent("ImageFocus.didLoad");
 
@@ -610,8 +656,8 @@ GW.notificationCenter.fireEvent("ImageFocus.didLoad");
 /* INITIALIZATION */
 /******************/
 
-doWhenDOMContentLoaded(imageFocusSetup);
-doWhenDOMContentLoaded(focusImageSpecifiedByURL);
+doWhenDOMContentLoaded(ImageFocus.setup);
+doWhenDOMContentLoaded(ImageFocus.focusImageSpecifiedByURL);
 
 //  TODO: re-enable this once imageFocusSetup() is refactored to be repeatable
 //  GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
