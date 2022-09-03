@@ -53,7 +53,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "annotation"                // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, 
+Extracts = { ...Extracts,
     //  Used in: Extracts.setUpAnnotationLoadEventWithin
     annotatedTargetSelectors: [ "a.link-annotated" ],
 
@@ -299,7 +299,7 @@ Extracts = { ...Extracts,
                                   "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr",
                                   "github", "google", "googledeepmind", "google-graphcore", "graphcore", "huawei", "ibm", "intel", "jd", "kako", "laion",
                                   "lighton", "microsoft", "microsoftnvidia", "miri", "naver",
-                                  "nvidia", "openai", "pinterest", "pdf", "salesforce", "sberbank", "sensetime",
+                                  "nvidia", "openai", "pinterest", "pdf", "salesforce", "sberbank", "schmidhuber", "sensetime",
                                   "snapchat", "spotify", "tencent", "tensorfork", "twitter", "uber", "yandex"
                               ].includes(target.hash.slice(1))))) {
                     return "&#x00a7; ";

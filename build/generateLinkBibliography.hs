@@ -88,12 +88,14 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
                  [Str ",", Space, authorSpan]
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
+    let linkAttr = if ("https://en.wikipedia.org/wiki/"`isPrefixOf`f) then ("",["include","include-annotation"],[]) else nullAttr
+    in
     if t=="" then
-      [Para (Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author)]
+      [Para (Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author)]
     else
       [Para (Code nullAttr (T.pack f') :
               Str ":" : Space :
-              Link nullAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
+              Link linkAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
 -- long items:
 generateLinkBibliographyItem (f,a,bl,sl) = generateAnnotationTransclusionBlock (f,a) bl sl
 

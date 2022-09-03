@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-08-29 12:42:54 gwern"
+When: Time-stamp: "2022-09-01 15:12:36 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -93,9 +93,10 @@ main =
 
                preprocess $ printGreen ("Popup annotations parsing…" :: String)
                meta <- preprocess $ if slow then readLinkMetadataAndCheck else readLinkMetadata
-               preprocess $ do printGreen ("Writing annotations…" :: String)
-                               if slow then writeAnnotationFragments am meta hasArchivedN False
-                                       else writeAnnotationFragments am meta hasArchivedN True
+               preprocess $ if slow then do printGreen ("Writing all annotations…" :: String)
+                                            writeAnnotationFragments am meta hasArchivedN False
+                                       else do printGreen ("Writing only missing annotations…" :: String)
+                                               writeAnnotationFragments am meta hasArchivedN True
 
                preprocess $ printGreen ("Begin site compilation…" :: String)
                match "**.page" $ do
@@ -181,8 +182,7 @@ woptions = defaultHakyllWriterOptions{ writerSectionDivs = True,
     tocTemplate =
         either error id $ either (error . show) id $
         runPure $ runWithDefaultPartials $
-        compileTemplate "" "<div id=\"TOC\" class=\"TOC\">$toc$</div>\n<div id=\"markdownBody\" class=\"markdownBody\">$body$</div>"
-
+        compileTemplate "" "<div id=\"TOC\" class=\"TOC\">$toc$</div> <div id=\"markdownBody\" class=\"markdownBody\">$body$" -- we do the main $body$ substitution inside default.html so we can inject stuff inside the #markdownBody wrapper; the div is closed there
 
 imgUrls :: Item String -> Compiler (Item String)
 imgUrls item = do
@@ -285,7 +285,7 @@ pandocTransform :: Metadata -> ArchiveMetadata -> IORef Integer -> String -> Pan
 pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
                            -- tag-directories/link-bibliographies special-case: we don't need to run all the heavyweight passes, and LinkAuto has a regrettable tendency to screw up section headers, so we check to see if we are processing a document with 'index: true' set in the YAML metadata, and if we are, we slip several of the rewrite transformations:
                            do let indexp = indexp' == "true"
-                              let pw = if indexp then p else walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
+                              let pw = if indexp then walk convertInterwikiLinks p else walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
                               _ <- unless indexp $ createAnnotations md pw
                               let pb = walk (hasAnnotation md True) $ addLocalLinkWalk pw -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overriden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
                               pbt <- fmap typographyTransform . walkM (localizeLink adb archived) $ walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) pb
