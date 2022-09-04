@@ -1590,10 +1590,6 @@ GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", GW.brokenAnchorChec
 /* LOCATION HASH HANDLING */
 /**************************/
 
-function relocate(s) {
-	history.replaceState(null, null, s);
-}
-
 function cleanLocationHash() {
 	GWLog("cleanLocationHash", "rewrite.js", 2);
 
