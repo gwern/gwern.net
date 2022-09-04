@@ -1573,6 +1573,28 @@ section.footnotes > hr:first-child.highlighted::before {
     border: 3px double var(--GW-sidenote-highlight-box-shadow-color);
 }
 
+.sidenote.cut-off::before {
+	content: "…";
+	position: absolute;
+	border: 1px dotted var(--GW-sidenote-border-color);
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+	width: -moz-fit-content;
+	width: fit-content;
+	z-index: 2;
+	background-color: var(--GW-body-background-color);
+	padding: 0.125em 0.5em 0.5em 0.5em;
+	font-size: 1.25em;
+	font-weight: 600;
+	line-height: 0.5;
+	pointer-events: none;
+}
+.sidenote.cut-off.hide-more-indicator::before {
+	visibility: hidden;
+}
+
 /*=-------------------=*/
 /*= Sidenote wrappers =*/
 /*=-------------------=*/
