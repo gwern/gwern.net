@@ -1035,7 +1035,7 @@ linkIconTestUnitsText =
          , ("https://people.idsia.ch/~juergen/creativity.html", "SMDH", "text,quad,sans")
          , ("https://arxiv.org/abs/1404.7828#schmidhuber", "SMDH", "text,quad,sans")
          , ("https://innsbigdata.wordpress.com/2015/02/09/interview-with-juergen-schmidhuber/", "SMDH", "text,quad,sans")
-         , ("/docs/ai/rnn/1991-schmidhuber.pdf", "SMDH", "text,quad,sans")
+         , ("/docs/ai/nn/rnn/1991-schmidhuber.pdf", "SMDH", "text,quad,sans")
          , ("https://www.bloomberg.com/news/features/2018-05-15/google-amazon-and-facebook-owe-j-rgen-schmidhuber-a-fortune","SMDH", "text,quad,sans")
          , ("https://www.nytimes.com/2016/11/27/technology/artificial-intelligence-pioneer-jurgen-schmidhuber-overlooked.html", "SMDH", "text,quad,sans")
         ]

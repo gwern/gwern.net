@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-08-26 16:01:38 gwern"
+When:  Time-stamp: "2022-09-03 10:50:11 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1219,5 +1219,8 @@ whiteList url
       , "https://speechresearch.github.io/deepsinger/" -- low quality (sound embeds)
       , "https://sites.google.com/view/efficient-robotic-manipulation" -- low quality (video embeds)
       , "https://next-week-tonight.github.io/NWT/" -- low quality (video embeds)
+      , "https://magenta.tensorflow.org/perceiver-ar" -- low quality (audio embeds)
+      , "https://hazyresearch.stanford.edu/sashimi-examples/" -- low quality (audio embeds)
+      , "https://carolineec.github.io/informative_drawings/" -- low quality (video embeds)
       ] = True
     | otherwise = False

@@ -58,7 +58,7 @@ else
     (cd ./static/ && git status && timeout 10m git pull --verbose 'https://gwern.obormot.net/static/.git/' master || true)
 
     bold "Executing string rewrite cleanups…" # automatically clean up some Gwern.net bad URL patterns, typos, inconsistencies, house-styles:
-    (gwsed 'https://mobile.twitter.com' 'https://twitter.com' && gwsed 'https://twitter.com/' 'https://nitter.hu/' && gwsed 'https://mobile.twitter.com/' 'https://nitter.hu/' && gwsed 'https://www.twitter.com/' 'https://nitter.hu/' && gwsed 'https://www.reddit.com/r/' 'https://old.reddit.com/r/' && gwsed 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/' && gwsed 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts' && gwsed '&hl=en' '' && gwsed '?hl=en&' '?' && gwsed '?hl=en' '' && gwsed '?usp=sharing' '' && gwsed '<p> ' '<p>' && gwsed 'EMBASE' 'Embase' && gwsed 'Medline' 'MEDLINE' && gwsed 'PsychINFO' 'PsycINFO' && gwsed 'http://web.archive.org/web/' 'https://web.archive.org/web/' && gwsed 'https://youtu.be/' 'https://www.youtube.com/watch?v=' && gwsed '?via%3Dihub' '' && gwsed 'http://arxiv.org' 'https://arxiv.org' && gwsed '.html?pagewanted=all' '.html' && gwsed '(ie,' '(ie.' && gwsed '(ie ' '(ie. ' && gwsed '(i.e.,' '(ie.' && gwsed 'ie., ' 'ie. ' && gwsed '(i.e.' '(ie.' && gwsed '(eg, ' '(eg. ' && gwsed ' eg ' ' eg. ' && gwsed '(eg ' '(eg. ' && gwsed '[eg ' '[eg. ' && gwsed 'e.g. ' 'eg. ' && gwsed ' e.g. ' ' eg. ' && gwsed 'e.g.,' 'eg.' && gwsed 'eg.,' 'eg.' && gwsed ']^[' '] ^[' && gwsed ' et al., ' ' et al ' && gwsed 'et al., ' 'et al ' && gwsed '(cf ' '(cf. ' && gwsed ' cf ' ' cf. ' && gwsed ' _n_s' ' <em>n</em>s' && gwsed ' (n = ' ' (<em>n</em> = ' && gwsed ' (N = ' ' (<em>n</em> = ' && gwsed '<sup>St</sup>' '<sup>st</sup>' && gwsed '<sup>Th</sup>' '<sup>th</sup>' && gwsed '<sup>Rd</sup>' '<sup>rd</sup>' && gwsed ' de novo ' ' <em>de novo</em> ' && gwsed ' De Novo ' ' <em>De Novo</em> ' && gwsed ', Jr.' ' Junior' && gwsed ' Jr.' ' Junior' && gwsed ', Junior' ' Junior' && gwsed '.full-text' '.full' && gwsed '.full.full' '.full' && gwsed '.full-text' '.full' && gwsed '.full-text.full' '.full' && gwsed '.full.full.full' '.full' && gwsed '.full.full' '.full' && gwsed '#allen#allen' '#allen' && gwsed '#deepmind#deepmind' '#deepmind' && gwsed '&org=deepmind&org=deepmind' '&org=deepmind' && gwsed '#nvidia#nvidia' '#nvidia' && gwsed '#openai#openai' '#openai' && gwsed '#google#google' '#google' && gwsed '#uber#uber' '#uber' && gwsed 'MSCOCO' 'MS COCO' && gwsed '&feature=youtu.be' '' && gwsed 'Rene Girard' 'René Girard' && gwsed 'facebookok' 'facebook' && gwsed ':443/' '/' && gwsed 'border colly' 'border collie' && gwsed ':80/' '/' && gwsed '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P' && gwsed 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com' && gwsed '?s=r' '' && gwsed '?sd=pf' '' && gwsed 'backlinks-not' 'backlink-not' && gwsed ' <<a href' ' <a href' && gwsed 'Yann Le Cun' 'Yann LeCun' && gwsed '_X_s' '<em>X</em>s' && gwsed '_r_s' '<em>r</em>s' && gwsed 'Jorges Luis Borges' 'Jorge Luis Borges' && gwsed 'genomewide' 'genome-wide' && gwsed 'regularise' 'regularize' && gwsed ' VQVAE' ' VQ-VAE' ) &> /dev/null &
+    (gwsed 'https://mobile.twitter.com' 'https://twitter.com' && gwsed 'https://twitter.com/' 'https://nitter.hu/' && gwsed 'https://mobile.twitter.com/' 'https://nitter.hu/' && gwsed 'https://www.twitter.com/' 'https://nitter.hu/' && gwsed 'https://www.reddit.com/r/' 'https://old.reddit.com/r/' && gwsed 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/' && gwsed 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts' && gwsed '&hl=en' '' && gwsed '?hl=en&' '?' && gwsed '?hl=en' '' && gwsed '?usp=sharing' '' && gwsed '<p> ' '<p>' && gwsed 'EMBASE' 'Embase' && gwsed 'Medline' 'MEDLINE' && gwsed 'PsychINFO' 'PsycINFO' && gwsed 'http://web.archive.org/web/' 'https://web.archive.org/web/' && gwsed 'https://youtu.be/' 'https://www.youtube.com/watch?v=' && gwsed '?via%3Dihub' '' && gwsed 'http://arxiv.org' 'https://arxiv.org' && gwsed '.html?pagewanted=all' '.html' && gwsed '(ie,' '(ie.' && gwsed '(ie ' '(ie. ' && gwsed '(i.e.,' '(ie.' && gwsed 'ie., ' 'ie. ' && gwsed '(i.e.' '(ie.' && gwsed '(eg, ' '(eg. ' && gwsed ' eg ' ' eg. ' && gwsed '(eg ' '(eg. ' && gwsed '[eg ' '[eg. ' && gwsed 'e.g. ' 'eg. ' && gwsed ' e.g. ' ' eg. ' && gwsed 'e.g.,' 'eg.' && gwsed 'eg.,' 'eg.' && gwsed ']^[' '] ^[' && gwsed 'et al. (' 'et al (' && gwsed ' et al. 1'  ' et al 1' && gwsed ' et al. 2'  ' et al 2' && gwsed ' et al., ' ' et al ' && gwsed 'et al., ' 'et al ' && sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' metadata/*.yaml  `find . -name "*.page" -or -name "*.yaml"` && sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g'  `find . -name "*.page" -or -name "*.yaml"` && gwsed '(cf ' '(cf. ' && gwsed ' cf ' ' cf. ' && gwsed ' _n_s' ' <em>n</em>s' && gwsed ' (n = ' ' (<em>n</em> = ' && gwsed ' (N = ' ' (<em>n</em> = ' && gwsed '<sup>St</sup>' '<sup>st</sup>' && gwsed '<sup>Th</sup>' '<sup>th</sup>' && gwsed '<sup>Rd</sup>' '<sup>rd</sup>' && gwsed ' de novo ' ' <em>de novo</em> ' && gwsed ' De Novo ' ' <em>De Novo</em> ' && gwsed ', Jr.' ' Junior' && gwsed ' Jr.' ' Junior' && gwsed ', Junior' ' Junior' && gwsed '.full-text' '.full' && gwsed '.full.full' '.full' && gwsed '.full-text' '.full' && gwsed '.full-text.full' '.full' && gwsed '.full.full.full' '.full' && gwsed '.full.full' '.full' && gwsed '#allen#allen' '#allen' && gwsed '#deepmind#deepmind' '#deepmind' && gwsed '&org=deepmind&org=deepmind' '&org=deepmind' && gwsed '#nvidia#nvidia' '#nvidia' && gwsed '#openai#openai' '#openai' && gwsed '#google#google' '#google' && gwsed '#uber#uber' '#uber' && gwsed 'MSCOCO' 'MS COCO' && gwsed '&feature=youtu.be' '' && gwsed 'Rene Girard' 'René Girard' && gwsed 'facebookok' 'facebook' && gwsed ':443/' '/' && gwsed 'border colly' 'border collie' && gwsed ':80/' '/' && gwsed '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P' && gwsed 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com' && gwsed '?s=r' '' && gwsed '?sd=pf' '' && gwsed 'backlinks-not' 'backlink-not' && gwsed ' <<a href' ' <a href' && gwsed 'Yann Le Cun' 'Yann LeCun' && gwsed '_X_s' '<em>X</em>s' && gwsed '_r_s' '<em>r</em>s' && gwsed 'Jorges Luis Borges' 'Jorge Luis Borges' && gwsed 'genomewide' 'genome-wide' && gwsed 'regularise' 'regularize' && gwsed ' VQVAE' ' VQ-VAE' && gwsed '# External links' '# External Links' && gwsed '# See also' '# See Also' && gwsed '"abstract-collapse abstract"' '"abstract abstract-collapse"' ) &> /dev/null &
 
     bold "Compiling…"
     cd ./static/build
@@ -312,7 +312,7 @@ else
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '<div>' | fgrep -v -e 'I got around this by adding in the Hakyll template an additional'; }
     wrap λ "Stray <div>?"
 
-    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '.invertible-not}{' -e '.invertibleNot' -e '.invertible-Not' -e '{.sallcaps}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}'; }
+    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '.invertible-not}{' -e '.invertibleNot' -e '.invertible-Not' -e '{.sallcaps}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating"; }
     wrap λ "Misspelled/outdated classes in Markdown/HTML."
 
      λ(){ find ./ -type f -name "*.page" | fgrep -v '/Variables' | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '{#'; }
@@ -327,10 +327,10 @@ else
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | fgrep -v 'Lorem.page' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 "fgrep --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out Lorem.page's deliberate CSS test-case use of it
     wrap λ "Broken code in Markdown."
 
-    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 "fgrep --with-filename -- -e '<span class=\"supsub\">' -e 'class=\"subsup\"><sup>'"; }
+    λ(){ find ./ -type f -name "*.page" | parallel --max-args=100 "fgrep --with-filename -e '<span class=\"supsub\">' -e 'class=\"subsup\"><sup>' --"; }
     wrap λ "Incorrect use of 'supsub' name (should be 'subsup')."
 
-    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 "fgrep --with-filename -- -e 'class=\"subsup\"><sup>'"; }
+    λ(){ find ./ -type f -name "*.page" | parallel --max-args=100 "fgrep --with-filename -e 'class=\"subsup\"><sup>'"; }
     wrap λ "Incorrect ordering of '<sup>' (the superscript '<sup>' must come second, or else risk Pandoc misinterpreting as footnote while translating HTML↔Markdown)."
 
     λ(){ eg -e '<div class="admonition .*">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' **/*.page; }
@@ -345,7 +345,7 @@ else
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=100 "fgrep --color=always --with-filename -- '————–'"; }
     wrap λ "Broken tables in HTML."
 
-    λ(){ eg -e '^"~/' -e '\$";$' -e '$" "docs' -e '|' ./static/redirects/nginx*.conf; }
+    λ(){ eg -e '^"~/' -e '\$";$' -e '$" "docs' -e '\|' ./static/redirects/nginx*.conf; }
     wrap λ "Warning: caret/tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
 
     λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeYAML "metadata/custom.yaml"'; }
@@ -403,7 +403,7 @@ else
             -e '"!"' -e '</sub<' -e 'xref>' -e '<xref' -e '<e>' -e '\\$' -e 'title="http' -e '%3Csup%3E' -e 'sup%3E' -e ' et la ' \
             -e '<strong>Abstract' -e ' ]' -e "</a>’s" -e 'title="&#39; ' -e 'collapseAbstract' -e 'utm_' \
             -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -e ' : ' -e " ' " -e '>/>a' -e '</a></a>' -e '(, ' \
-            -e '&lt;figcaption' -e '{.}' -- ./metadata/*.yaml;
+            -e '&lt;figcaption' -e '{.}' -e ' ?' -- ./metadata/*.yaml;
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
 
@@ -499,7 +499,7 @@ else
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. docs/*), just force a hash-based sync every time:
     bold "Syncing static/…"
-    rsync --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='generateSimilar' --exclude='hakyll' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
+    rsync --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='generateSimilar' --exclude='hakyll' --exclude='guessTag' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie. non-generated files):
     bold "Syncing pages…"
     rsync --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
@@ -708,7 +708,8 @@ else
                   -e 'See discussions, stats, and author profiles for this publication at' \
                   -e 'This article appeared in a journal published by Elsevier. The attached' \
                   -e 'The user has requested enhancement of the downloaded file' \
-                  -e 'See discussions, stats, and author profiles for this publication at: https://www.researchgate.net' )
+                  -e 'See discussions, stats, and author profiles for this publication at: https://www.researchgate.net' \
+                  -e 'This paper has been accepted for publication in ')
             if [ "$HEADER" != "" ]; then echo "Header: $@"; fi;
         }
         export -f checkSpamHeader

@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2022-08-23 14:05:18 gwern"
+# When:  Time-stamp: "2022-08-31 21:03:08 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -73,7 +73,7 @@ else
                 mv "$TARGET" "./docs/www/$DOMAIN/$HASH.pdf"
                 echo -n "/docs/www/$DOMAIN/$HASH.pdf$ANCHOR"
                 ## use my local custom installation of recent ocrmypdf + JBIG2 encoder to OCR & optimize PDFs I'm hosting:
-                (source activate fastai && ocrmypdf --skip-text --optimize 3 --jbig2-lossy "./docs/www/$DOMAIN/$HASH.pdf" "./docs/www/$DOMAIN/$HASH.pdf")
+                (source activate fastai && ocrmypdf --skip-text --optimize 3 --jbig2-lossy "./docs/www/$DOMAIN/$HASH.pdf" "./docs/www/$DOMAIN/$HASH.pdf" &)
                 $WWW_BROWSER "./docs/www/$DOMAIN/$HASH.pdf"
             else
                 echo "Unsuccessful: $1 $HASH" 1>&2

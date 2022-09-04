@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-08-09 11:22:26 gwern"
+When:  Time-stamp: "2022-08-30 20:27:56 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -934,7 +934,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Toshio Okada", "https://en.wikipedia.org/wiki/Toshio_Okada")
         , ("Touhou", "https://en.wikipedia.org/wiki/Touhou_Project")
         , ("TransGAN", "https://arxiv.org/abs/2102.07074")
-        , ("Transformer-XLs?", "https://arxiv.org/abs/1901.02860")
+        , ("Transformer[ -]XLs?", "https://arxiv.org/abs/1901.02860")
         , ("Transformers?", "https://arxiv.org/abs/1706.03762#google")
         , ("Trithemius", "https://en.wikipedia.org/wiki/Johannes_Trithemius")
         , ("True[Tt]ype", "https://en.wikipedia.org/wiki/TrueType")
@@ -1287,7 +1287,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Cc]ross[ -]entropy", "https://en.wikipedia.org/wiki/Cross_entropy")
         , ("[Ee]ntropy", "https://en.wikipedia.org/wiki/Entropy_(information_theory)") -- doesn't look like most of my uses are physics but information theory
         , ("(([Rr]andomi[zs]ed )?[Cc]ontrol(led)? ((clinical[ -])?[Tt]rials?|[Ee]xperiment)|RCTs?)", "https://en.wikipedia.org/wiki/Randomized_controlled_trial")
-        , ("(GPU|[Gg]raphics [Pp]rocessing [Uu]nit)", "https://en.wikipedia.org/wiki/Graphics_processing_unit")
         , ("LaMDA", "https://blog.google/technology/ai/lamda/")
         , ("[Aa](llometric growth|llometric scaling|llometry)", "https://en.wikipedia.org/wiki/Allometry")
         , ("[Pp]edigree", "https://en.wikipedia.org/wiki/Pedigree_chart")

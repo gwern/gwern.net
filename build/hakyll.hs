@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-09-01 15:12:36 gwern"
+When: Time-stamp: "2022-09-03 11:47:16 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -287,13 +287,13 @@ pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `con
                            do let indexp = indexp' == "true"
                               let pw = if indexp then walk convertInterwikiLinks p else walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
                               _ <- unless indexp $ createAnnotations md pw
-                              let pb = walk (hasAnnotation md True) $ addLocalLinkWalk pw -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overriden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
-                              pbt <- fmap typographyTransform . walkM (localizeLink adb archived) $ walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) pb
+                              let pb = walk (hasAnnotation md True) $ addLocalLinkWalk pw -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
+                              pbt <- fmap typographyTransform . walkM (localizeLink adb archived) $ if indexp then pb else walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) pb
                               let pbth = addLocalLinkWalk $ walk headerSelflink pbt
-                              pbth' <- walkM invertImageInline pbth
-                              pbth'' <- walkM imageSrcset pbth'
-                              return pbth''
-
+                              if indexp then return pbth else do
+                                pbth' <- walkM invertImageInline pbth
+                                pbth'' <- walkM imageSrcset pbth'
+                                return pbth''
 
 -- For Amazon links, there are two scenarios: there are parameters (denoted by a
 -- '?' in the URL), or there are not. In the former, we need to append the tag as
