@@ -1511,6 +1511,10 @@ section.footnotes > hr:first-child.highlighted::before {
     top: 0;
     left: calc(100% + 64px);
 }
+#sidenote-column-left:empty,
+#sidenote-column-right:empty {
+	display: none;
+}
 
 /*=-----------------=*/
 /*= Sidenote blocks =*/
