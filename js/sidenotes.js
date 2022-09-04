@@ -548,6 +548,8 @@ Sidenotes = { ...Sidenotes,
 							   	  ? referencedFootnote.innerHTML 
 							   	  : "Loading sidenote contents, please wait…")
 							   + `</div></div>`;
+			sidenote.outerWrapper = sidenote.querySelector(".sidenote-outer-wrapper");
+			sidenote.innerWrapper = sidenote.querySelector(".sidenote-inner-wrapper");
 
 			/*  Create & inject the sidenote self-links (ie. boxed sidenote 
 				numbers).
@@ -584,6 +586,9 @@ Sidenotes = { ...Sidenotes,
 			if (sidenote.onSidenoteMouseLeaveUnslideSidenote)
 				sidenote.removeEventListener("mouseleave", sidenote.onSidenoteMouseLeaveUnslideSidenote);
 
+			if (sidenote.scrollListener)
+				sidenote.outerWrapper.removeEventListener("scroll", sidenote.scrollListener);
+
 			//	Bind new events.
 			sidenote.addEventListener("mouseenter", sidenote.onSidenoteMouseEnterHighlightCitation = (event) => {
 				citation.classList.toggle("highlighted", true);
@@ -603,6 +608,10 @@ Sidenotes = { ...Sidenotes,
 			sidenote.addEventListener("mouseleave", sidenote.onSidenoteMouseLeaveUnslideSidenote = (event) => {
 				Sidenotes.putSidenoteBack(sidenote);
 			});
+
+			sidenote.scrollListener = addScrollListener((event) => {
+				sidenote.classList.toggle("hide-more-indicator", sidenote.outerWrapper.scrollTop + sidenote.outerWrapper.clientHeight == sidenote.outerWrapper.scrollHeight);
+			}, null, { }, sidenote.outerWrapper);
 		});
 
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
