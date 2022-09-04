@@ -2582,6 +2582,12 @@ function _π(...args) {
 	return product;
 }
 
+/*	Changes the page location to the given URL string (or path or hash).
+ */
+function relocate(s) {
+	history.replaceState(null, null, s);
+}
+
 /*  Run the given function immediately if the page is already loaded, or add
     a listener to run it as soon as the page loads.
  */
