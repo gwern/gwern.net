@@ -2665,6 +2665,8 @@ function addScrollListener(fn, name, options = { }, target = document) {
      */
     if (name)
         GW.scrollListeners[name] = { wrapper: wrapper, target: target };
+
+	return wrapper;
 }
 /*  Removes a named scroll event listener from the page.
  */
