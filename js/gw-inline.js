@@ -468,13 +468,13 @@ function addUIElement(element_html) {
 GW.scrollListeners = { };
 /*  Adds a scroll event listener to the page.
  */
-function addScrollListener(fn, name, defer = false, ifDeferCallWhenAdd = true) {
-	if (defer) {
+function addScrollListener(fn, name, options = { }, target = document) {
+	if (options.defer) {
 		doWhenPageLoaded(() => {
 			requestAnimationFrame(() => {
-				if (ifDeferCallWhenAdd)
+				if (options.ifDeferCallWhenAdd)
 					fn();
-				addScrollListener(fn, name, false);
+				addScrollListener(fn, name, { defer: false }, target);
 			});
 		});
 		return;
@@ -483,10 +483,10 @@ function addScrollListener(fn, name, defer = false, ifDeferCallWhenAdd = true) {
     let wrapper = (event) => {
         requestAnimationFrame(() => {
             fn(event);
-            document.addEventListener("scroll", wrapper, { once: true, passive: true });
+            target.addEventListener("scroll", wrapper, { once: true, passive: true });
         });
     }
-    document.addEventListener("scroll", wrapper, { once: true, passive: true });
+    target.addEventListener("scroll", wrapper, { once: true, passive: true });
 
     /*	Retain a reference to the scroll listener, if a name is provided.
      */
@@ -1244,7 +1244,7 @@ function updateScrollState(event) {
         : 0;
     GW.scrollState.lastScrollTop = GW.newScrollTop;
 }
-addScrollListener(updateScrollState, "updateScrollStateScrollListener", true);
+addScrollListener(updateScrollState, "updateScrollStateScrollListener", { defer: true });
 
 /*  Toggles whether the page is scrollable.
  */

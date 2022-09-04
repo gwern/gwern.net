@@ -165,7 +165,7 @@ DarkMode = { ...DarkMode,
 		if (modeSelector == DarkMode.modeSelector) {
 			//	Show/hide the button on scroll up/down.
 			addScrollListener(DarkMode.updateModeSelectorVisibility,
-				"DarkMode.updateModeSelectorVisibilityScrollListener", true, false);
+				"DarkMode.updateModeSelectorVisibilityScrollListener", { defer: true });
 		}
 
 		/*	Add active media query to update mode selector state when system dark

@@ -860,7 +860,7 @@ Sidenotes = { ...Sidenotes,
 				 */
 				addScrollListener((event) => {
 					Sidenotes.putAllSidenotesBack();
-				}, "Sidenotes.unSlideSidenotesOnScroll", true, false);
+				}, "Sidenotes.unSlideSidenotesOnScroll", { defer: true });
 			}, (mediaQuery) => {
 				/*	Deactivate event handlers.
 					*/
