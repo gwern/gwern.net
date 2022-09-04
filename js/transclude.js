@@ -298,6 +298,11 @@ function includeContent(includeLink, content) {
 	if (   Transclude.isAnnotationTransclude(includeLink)
 		&& replaceContainer == false) {
 		let allowedParentTags = [ "SECTION", "DIV" ];
+
+		//	Special handling for annotation transcludes in link bibliographies.
+		if ((wrapper.closest("section")||{}).id == "link-bibliography")
+			allowedParentTags.push("LI");
+
 		while (false == allowedParentTags.includes(wrapper.parentElement.tagName)) {
 			let nextNode = wrapper.nextSibling;
 
