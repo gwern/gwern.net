@@ -491,15 +491,15 @@ function addScrollListener(fn, name, options = { }, target = document) {
     /*	Retain a reference to the scroll listener, if a name is provided.
      */
     if (typeof name != "undefined") {
-        GW.scrollListeners[name] = wrapper;
+        GW.scrollListeners[name] = { wrapper: wrapper, target: target };
     }
 }
 /*  Removes a named scroll event listener from the page.
  */
 function removeScrollListener(name) {
-    let wrapper = GW.scrollListeners[name];
-    if (wrapper) {
-        document.removeEventListener("scroll", wrapper);
+    let listener = GW.scrollListeners[name];
+    if (listener) {
+        listener.target.removeEventListener("scroll", listener.wrapper);
         GW.scrollListeners[name] = null;
     }
 }
