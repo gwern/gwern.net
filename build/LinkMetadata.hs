@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-08-31 16:04:44 gwern"
+When:  Time-stamp: "2022-09-05 20:20:49 gwern"
 License: CC-0
 -}
 
@@ -474,7 +474,8 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                                 [Str ")"]
                                          ) ++
                                          [Str ":"]),
-                                       BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst'))]
+                                       BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
+                                                                            if blp=="" then "" else "<div class=\"backlinks-append\">\n\n<p><strong>Backlinks</strong>:</p>\n<p><a class=\"backlinks-transclusion include\" href=\"" `T.append` (T.pack blp) `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>")]
                                   ]
                              where
                                nonAnnotatedLink :: [Block]
@@ -2209,6 +2210,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(\\textit{Magic: The Gathering}\\)</span>", "<em>Magic: The Gathering</em>")
           , ("<span class=\"math inline\">\\(\\textit{Magic}\\)</span>", "<em>Magic</em>")
           , ("<span class=\"math inline\">\\(O(n \\sqrt{n})\\)</span>", "𝑂(<em>n</em> √<em>n</em>)")
+          , ("<span class=\"math inline\">\\(O(\\sqrt{T})\\)</span>", "𝑂(√<em>T</em>)")
           , ("<span class=\"math inline\">\\(\\textit{Embedded agents}\\)</span>", "<em>Embedded agents</em>")
           , ("<span class=\"math inline\">\\(\\textit{wirehead}\\)</span>", "<em>wirehead</em>")
           , ("<span class=\"math inline\">\\(L\\)</span>", "<em>L</em>")
@@ -3030,6 +3032,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("₂", "<sub>2</sub>")
           , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
           , ("‰", "%") -- PER MILLE SIGN https://en.wikipedia.org/wiki/Per_mille - only example I've ever seen was erroneous
+          , ("FROH", "<em>F<sub>ROH</sub></em>")
+          , (" Ne ", " <em>N<sub>e</sub></em> ")
           , ("Oamp#x02019;", "O’")
           , ("Camp#x000ED;", "Cí")
           , ("amp#x000E9", "é")
