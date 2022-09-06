@@ -85,7 +85,7 @@ generateDirectory md dirs dir'' = do
   -- (Entries without even a title must be squashed into a list and chucked at the end.)
   let titledLinks   = filter (\(_,(t,_,_,_,_,_),_,_) -> t /= "") links'
   let untitledLinks = filter (\(_,(t,_,_,_,_,_),_,_) -> t == "") links'
-  let allUnannotatedUntitledP = all (=="") $ map (\(_,(_,_,_,_,_,annotation),_,_) -> annotation) untitledLinks -- whether to be compact columns
+  let allUnannotatedUntitledP = (length untitledLinks > 2) && all (=="") $ map (\(_,(_,_,_,_,_,annotation),_,_) -> annotation) untitledLinks -- whether to be compact columns
 
   let titledLinksSections   = generateSections titledLinks
   let untitledLinksSection  = generateListItems untitledLinks

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-05 20:20:49 gwern"
+When:  Time-stamp: "2022-09-06 12:18:44 gwern"
 License: CC-0
 -}
 
@@ -22,13 +22,14 @@ import Data.Char (isAlpha, isAlphaNum, isPunctuation, toLower)
 import qualified Data.ByteString as B (appendFile, readFile)
 import qualified Data.ByteString.Lazy as BL (length, concat)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
-import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, toList, lookup, map, union, Map) -- traverseWithKey, union, Map
+import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, Map) -- traverseWithKey, union, Map
 import qualified Data.Text as T (append, breakOnAll, isInfixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.IORef (IORef)
 import Data.FileStore.Utils (runShellCommand)
 import Data.Function (on)
 import Data.List (intercalate, intersect, intersperse, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, sortBy, (\\))
+import Data.List.HT (search)
 import Data.Maybe (fromJust, fromMaybe)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
 import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) -- NOTE: from 'yaml' package, *not* 'HsYaml'
@@ -261,6 +262,10 @@ readLinkMetadataAndCheck = do
 
              let tagPairsOverused = filter (\(c,_) -> c > tagPairMax) $ tagPairsCount final
              unless (null tagPairsOverused) $ printRed "Overused pairs of tags: " >> printGreen (show tagPairsOverused)
+
+             -- See-Alsos in annotations get put in multi-columns due to their typical length, but if I cut them down to 1–2 items, the default columns will look bad. `preprocess-markdown.hs` can't do a length check because it has no idea how I will edit the list of similar-links down, so I can't remove the .columns class *there*; only way to do it is check finished annotations for having .columns set but also too few similar-links:
+             let badSeeAlsoColumnsUse = M.keys $ M.filterWithKey (\_ (_,_,_,_,_,abst) -> let count = length (Data.List.HT.search "data-embeddingdistance" abst) in (count == 1 || count == 2) && "<div class=\"columns\">" `isInfixOf` abst ) final
+             unless (null badSeeAlsoColumnsUse) $ printRed "Remove columns from skimpy See-Also annotations: " >> printGreen (show badSeeAlsoColumnsUse)
 
              return final
 
