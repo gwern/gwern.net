@@ -501,6 +501,25 @@ addContentLoadHandler(wrapFullWidthPreBlocks, "rewrite", (info) => (   info.need
 																	&& info.fullWidthPossible));
 
 
+/***********/
+/* COLUMNS */
+/***********/
+
+/*****************************************/
+/*	Disable columns if only one list item.
+ */
+function disableSingleItemColumnBlocks(loadEventInfo) {
+    GWLog("disableSingleItemColumnBlocks", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll(".columns > ul").forEach(columnList => {
+		if (columnList.children.length == 1)
+			columnList.parentElement.classList.remove("columns");
+	});
+}
+
+addContentLoadHandler(disableSingleItemColumnBlocks, "rewrite", (info) => info.needsRewrite);
+
+
 /****************/
 /* MARGIN NOTES */
 /****************/
