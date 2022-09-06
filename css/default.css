@@ -703,7 +703,7 @@ hr::after,
 }
 
 blockquote .TOC {
-    margin: 1em 0 0 0;
+    margin: 1.25em 0 0 0;
     padding: 0.5em 0.5em 0.75em 0.75em;
 
     /*  The following three properties are to prevent both overlap and
@@ -1073,7 +1073,7 @@ blockquote blockquote {
 }
 
 /*  Special case for tables in blockquotes.
-    */
+ */
 .markdownBody blockquote > table:last-child,
 .markdownBody blockquote > :last-child > table:last-child,
 .markdownBody blockquote > :last-child > :last-child > table:last-child,
@@ -1088,7 +1088,7 @@ blockquote blockquote {
 }
 
 /*  Interviews (e.g. https://www.gwern.net/Morning-writing#examples).
-    */
+ */
 blockquote p > code:first-child,
 blockquote p > a:first-child code:first-child {
     border: none;
@@ -1100,12 +1100,19 @@ blockquote p > a:first-child code:first-child {
 }
 
 /*  Tables in blockquotes.
-    */
+ */
 blockquote table {
     font-size: 0.7em;
 }
 
-/* EPITAPH (eg /LARPing) */
+/*	Lists in blockquotes.
+ */
+.markdownBody blockquote li {
+	text-align: left;
+}
+
+/*	EPITAPH (eg /LARPing)
+ */
 .text-center { text-align: center; }
 
 /*************/
@@ -4820,6 +4827,7 @@ body.index-directory #footer {
     text-align: unset;
 }
 
+
 /***************/
 /* ANNOTATIONS */
 /***************/
@@ -4989,10 +4997,33 @@ section.highlight-fading::before {
     font-style: inherit;
 }
 
+/*	“Backlinks” section of annotations.
+ */
+
+.backlinks-append {
+	margin-top: 1em;
+	padding-bottom: 0.375em;
+}
+
+.backlinks-append .columns ul {
+	margin-top: 0.5em;
+}
+
+p + .backlinks-append {
+	border-top: 1px solid var(--GW-TOC-border-color);
+	margin-top: 1.25em;
+	padding-top: 1em;
+}
+.TOC + .backlinks-append {
+	margin-top: 0.75em;
+}
+
+
 /*********************/
 /* BOTTOM DECORATION */
 /*********************/
 /* Mobile only.      */
+
 @media only screen and (max-width: 649px) {
     #footer-logo {
         position: relative;
@@ -5022,6 +5053,7 @@ section.highlight-fading::before {
         width: 200%;
     }
 }
+
 
 /*********************/
 /* SEQUENTIAL NAV UI */
