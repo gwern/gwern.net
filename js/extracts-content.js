@@ -559,7 +559,7 @@ Extracts = { ...Extracts,
             && height > 0)
             styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
 
-        //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.
+        //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invert’.
         return newDocument(`<img 
 								${styles} 
 								class="${target.classList}" 

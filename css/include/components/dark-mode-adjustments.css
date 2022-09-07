@@ -152,37 +152,37 @@ table th.tablesorter-headerDesc {
 /*  Images that are marked as invertible by the server are inverted,
     hue-rotated, and desaturated. Other (non-invertible) images are merely
     desaturated. Hovering over an image restores it to its original state.
-    Hierarchy: ‘.invertible-not’: no inversion or grayscale;
-    ‘.invertible’/‘.invertible-auto’: inverted (uninverted upon mouse hover);
+    Hierarchy: ‘.invert-not’: no inversion or grayscale;
+    ‘.invert’/‘.invert-auto’: inverted (uninverted upon mouse hover);
     none: grayscaled (ungrayscaled on hover).
  */
-img.invertible,
-img.invertible-auto {
+img.invert,
+img.invert-auto {
     filter: grayscale(50%) invert(100%) brightness(95%) hue-rotate(180deg);
 }
-img:not(.invertible):not(.invertible-auto) {
+img:not(.invert):not(.invert-auto) {
     filter: grayscale(50%);
 }
 img,
-img.invertible,
-img.invertible-auto {
+img.invert,
+img.invert-auto {
     transition: filter 0.25s ease;
 }
 img:hover,
-img.invertible:hover,
-img.invertible-auto:hover,
-img:not(.invertible):not(.invertible-auto):hover {
+img.invert:hover,
+img.invert-auto:hover,
+img:not(.invert):not(.invert-auto):hover {
     filter: none;
     transition: filter 0s ease 0.25s;
 }
 /*	Image alt-text.
  */
-img.invertible::before,
-img.invertible-auto::before {
+img.invert::before,
+img.invert-auto::before {
 	filter: invert(1);
 }
-img.invertible:hover::before,
-img.invertible-auto:hover::before {
+img.invert:hover::before,
+img.invert-auto:hover::before {
 	filter: none;
 }
 /*	Styling the image alt-text interferes with the transitions in dark mode.
@@ -193,19 +193,19 @@ img.invertible-auto:hover::before {
  */
 img,
 img:hover,
-img.invertible,
-img.invertible:hover,
-img.invertible-auto,
-img.invertible-auto:hover {
+img.invert,
+img.invert:hover,
+img.invert-auto,
+img.invert-auto:hover {
 	transition: none;
 }
 
-/*  For images which have been manually marked up with ‘.invertible-not’, we
+/*  For images which have been manually marked up with ‘.invert-not’, we
     avoid any filtering at all. If they are manually marked up (artwork,
     diagrams with multiple subtly-different colors matched to a legend/caption),
     the color is important and shouldn’t be faded out by default.
  */
-#markdownBody img.invertible-not { filter: none; }
+#markdownBody img.invert-not { filter: none; }
 
 /*  The loading spinner for object popups (image, iframe, object) is inverted
     and made more visible in dark mode.
