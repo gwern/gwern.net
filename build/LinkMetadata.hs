@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-07 17:31:44 gwern"
+When:  Time-stamp: "2022-09-07 17:58:18 gwern"
 License: CC-0
 -}
 
@@ -480,7 +480,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                          ) ++
                                          [Str ":"]),
                                        BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
-                                                                            if blp=="" then "" else "<div class=\"backlinks-append\">\n\n<p><strong>Backlinks</strong>:</p>\n<p><a class=\"backlinks-transclusion include include-instant\" href=\"" `T.append` (T.pack blp) `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>")]
+                                                                            if blp=="" then "" else "<div class=\"backlinks-append\">\n\n<p><strong>Backlinks</strong>:</p>\n<p><a class=\"backlinks-transclusion include include-strict\" href=\"" `T.append` (T.pack blp) `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>")]
                                   ]
                              where
                                nonAnnotatedLink :: [Block]
@@ -1732,7 +1732,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         when (null thumbnailText) $ printRed ("Warning: no thumbnailText alt text defined for URL " ++ p)
                         thumbnailFigure <- if thumbnail'=="" then return "" else do
                               (color,h,w) <- invertImage thumbnail'
-                              let imgClass = if color then "class=\"invertible-auto float-right page-thumbnail\"" else "class=\"float-right page-thumbnail\""
+                              let imgClass = if color then "class=\"invert-auto float-right page-thumbnail\"" else "class=\"float-right page-thumbnail\""
                               return ("<figure><img " ++ imgClass ++ " height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\" /></figure>")
 
                         let doi = "" -- I explored the idea but DOIs are too expensive & ultimately do little useful

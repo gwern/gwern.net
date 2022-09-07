@@ -173,21 +173,21 @@ breakEqualsInline x = x
 
 -- Look at mean color of image, 0-1: if it's close to 0, then it's a monochrome-ish white-heavy
 -- image. Such images look better in HTML/CSS dark mode when inverted, so we can use this to check
--- every image for color, and set an 'invertible-auto' HTML class on the ones which are low. We can
--- manually specify a 'invertible' class on images which don't pass the heuristic but should.
+-- every image for color, and set an 'invert-auto' HTML class on the ones which are low. We can
+-- manually specify a 'invert' class on images which don't pass the heuristic but should.
 invertImageInline :: Inline -> IO Inline
 invertImageInline x@(Image (htmlid, classes, kvs) xs (p,t)) =
-  if notInvertibleP classes then
+  if notInvertP classes then
     return x else do
                    (color,_,_) <- invertFile p
                    if not color then return x else
-                     return (Image (htmlid, "invertible-auto":classes, kvs++[("loading","lazy")]) xs (p,t))
+                     return (Image (htmlid, "invert-auto":classes, kvs++[("loading","lazy")]) xs (p,t))
 invertImageInline x@(Link (htmlid, classes, kvs) xs (p, t)) =
-  if notInvertibleP classes || not (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p)  then
+  if notInvertP classes || not (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p)  then
                                                           return x else
                                                             do (color,_,_) <- invertFile p
                                                                if not color then return x else
-                                                                 return $ addClass "invertible-auto" $ Link (htmlid, classes, kvs) xs (p, t)
+                                                                 return $ addClass "invert-auto" $ Link (htmlid, classes, kvs) xs (p, t)
 invertImageInline x = return x
 
 invertFile :: T.Text -> IO (Bool, String, String)
@@ -195,12 +195,12 @@ invertFile p = do let p' = T.unpack p
                   let p'' = if head p' == '/' then tail p' else p'
                   invertImage p''
 
-notInvertibleP :: [T.Text] -> Bool
-notInvertibleP classes = "invertible-not" `elem` classes
+notInvertP :: [T.Text] -> Bool
+notInvertP classes = "invert-not" `elem` classes
 
-invertImage :: FilePath -> IO (Bool, String, String) -- invertible / height / width
+invertImage :: FilePath -> IO (Bool, String, String) -- invert / height / width
 invertImage f | "https://www.gwern.net/" `isPrefixOf` f = invertImageLocal $ Utils.replace "https://www.gwern.net/" "" f
-              | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-invertible"
+              | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-invert"
                                            -- NOTE: while wget preserves it, curl erases the original modification time reported by server in favor of local file creation; this is useful for `invertImagePreview` --- we want to check downloaded images manually before their annotation gets stored permanently.
                                            (status,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", f, "--output", temp]
                                            case status of
