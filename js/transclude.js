@@ -108,26 +108,26 @@
 		transclude the annotation only if the `include-annotation` class is set
 		(otherwise they transclude their linked content).
 
-	include-instant
+	include-strict
 		By default, include-linked are lazy-loaded. A lazy-loaded include-link 
 		will not trigger (i.e., transclude its content) immediately at load 
 		time. Instead, it will wait until the user scrolls down to the part of
 		the page where the link is located, or pops up a popup that contains 
 		that part of the page, or otherwise “looks” at the include-link’s 
 		surrounding context. Only then will the transclusion take place.
-		An instant include-link, on the other hand, triggers immediately at 
+		A strict include-link, on the other hand, triggers immediately at 
 		load time.
 
 	include-when-collapsed
 		Normally, an include-link that is inside a collapsed block will not 
-		trigger at load time, even if it is marked with the `include-instant`
+		trigger at load time, even if it is marked with the `include-strict`
 		class; instead, it will trigger only when it is revealed by expansion of
 		its containing collapse block(s). The `include-when-collapsed` class 
 		disables this delay, forcing the include-link to trigger at load time
-		(if it is marked as `include-instant`!) even if, when loaded, it is 
+		(if it is marked as `include-strict`!) even if, when loaded, it is 
 		within a collapsed block.
 
-		Note that the `include-instant` and `include-when-collapsed` options are 
+		Note that the `include-strict` and `include-when-collapsed` options are 
 		not mutually exclusive, and do not do the same thing.
 
 	include-unwrap
@@ -840,7 +840,7 @@ Transclude = {
 
 		//	Transclusion is eager (non-delayed) by default.
 		if (   now == false
-			&& includeLink.classList.contains("include-instant") == false) {
+			&& includeLink.classList.contains("include-strict") == false) {
 			includeLink.needsRewrite = true;
 			requestAnimationFrame(() => {
 				lazyLoadObserver(() => {
