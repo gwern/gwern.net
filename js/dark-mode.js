@@ -17,8 +17,8 @@
 	https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme
 
 	Images are handled specially: images are *not* inverted/negated by default; 
-	images with a special class, `.invertible-auto` (set on images by automated 
-	tools like ImageMagick scripts counting colors) or `.invertible` 
+	images with a special class, `.invert-auto` (set on images by automated 
+	tools like ImageMagick scripts counting colors) or `.invert` 
 	(set manually), will be inverted. (This is intended to allow inversion of 
 	images which would invert well, like statistical graphs or charts, which are
 	typically black-on-white, and are much more pleasant to read in dark mode

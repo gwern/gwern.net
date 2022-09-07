@@ -4102,8 +4102,8 @@ body.index-directory #footer {
     object-fit: contain;
     background-color: var(--GW-popups-popup-border-color);
 }
-.popup-body.image img.invertible,
-.popup-body.image img.invertible-auto {
+.popup-body.image img.invert,
+.popup-body.image img.invert-auto {
     background-color: var(--GW-body-background-color);
 }
 
