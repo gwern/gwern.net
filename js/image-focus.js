@@ -18,9 +18,7 @@ ImageFocus = {
 	/* Configuration.
 	 ****************/
 
-	contentImagesSelector: "#markdownBody img",
-
-	focusedImageSelector: "#markdownBody img.focused",
+	contentImagesSelector: ".markdownBody figure img",
 
 	shrinkRatio: 0.975,
 
@@ -31,6 +29,10 @@ ImageFocus = {
 	/*****************/
 	/* Infrastructure.
 	 *****************/
+
+	focusableImagesSelector: null,
+	focusedImageSelector: null,
+	galleryImagesSelector: null,
 
 	hideUITimer: null,
 
@@ -48,29 +50,29 @@ ImageFocus = {
 		GWLog("ImageFocus.setup", "image-focus.js", 1);
 
 		//  Create the image focus overlay.
-		ImageFocus.overlay = addUIElement(`<div id="image-focus-overlay">` +
-		`<div class="help-overlay">
-			<p class="slideshow-help-text"><strong>Arrow keys:</strong> Next/previous image</p>
-			<p><strong>Escape</strong> or <strong>click</strong>: Hide zoomed image</p>
-			<p><strong>Space bar:</strong> Reset image size & position</p>
-			<p><strong>Scroll</strong> to zoom in/out</p>
-			<p>(When zoomed in, <strong>drag</strong> to pan; <br/><strong>double-click</strong> to close)</p>
-		</div>
-		<div class="image-number"></div>
-		<div class="slideshow-buttons">
-			<button type="button" class="slideshow-button previous" tabindex="-1" title="Previous image">
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-					<path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z"/>
-				</svg>
-			</button>
-			<button type="button" class="slideshow-button next" tabindex="-1" title="Next image">
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-					<path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/>
-				</svg>
-			</button>
-		</div>
-		<div class="caption"></div>` +
-		`</div>`);
+		ImageFocus.overlay = addUIElement(`<div id="image-focus-overlay">
+			<div class="help-overlay">
+				<p class="slideshow-help-text"><strong>Arrow keys:</strong> Next/previous image</p>
+				<p><strong>Escape</strong> or <strong>click</strong>: Hide zoomed image</p>
+				<p><strong>Space bar:</strong> Reset image size & position</p>
+				<p><strong>Scroll</strong> to zoom in/out</p>
+				<p>(When zoomed in, <strong>drag</strong> to pan; <br/><strong>double-click</strong> to close)</p>
+			</div>
+			<div class="image-number"></div>
+			<div class="slideshow-buttons">
+				<button type="button" class="slideshow-button previous" tabindex="-1" title="Previous image">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+						<path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z"/>
+					</svg>
+				</button>
+				<button type="button" class="slideshow-button next" tabindex="-1" title="Next image">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+						<path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/>
+					</svg>
+				</button>
+			</div>
+			<div class="caption"></div>
+		</div>`);
 
 		//  On orientation change, reset the size & position.
 		GW.mediaQueries.portraitOrientation.addListener((event) => { requestAnimationFrame(ImageFocus.resetFocusedImagePosition); });
@@ -88,6 +90,20 @@ ImageFocus = {
 		//  UI starts out hidden.
 		ImageFocus.hideImageFocusUI();
 
+		//	Selector-suffixing function.
+		function suffixedSelector(selector, suffix) {
+			return selector.split(", ").map(part => part + suffix).join(", ");
+		}
+
+		/*	Create auxiliary selectors by suffixing provided content images
+			selector with appropriate classes.
+		 */
+		ImageFocus.focusableImagesSelector = suffixedSelector(ImageFocus.contentImagesSelector, ".focusable");
+		ImageFocus.focusedImageSelector = suffixedSelector(ImageFocus.contentImagesSelector, ".focused");
+		ImageFocus.galleryImagesSelector = suffixedSelector(ImageFocus.contentImagesSelector, ".gallery-image");
+
+		//	Process images in main document.
+		//	TODO: extend
 		ImageFocus.processImagesWithin(document);
 
 		GW.notificationCenter.fireEvent("ImageFocus.setupDidComplete");
@@ -96,23 +112,34 @@ ImageFocus = {
 	processImagesWithin: (container) => {
 		GWLog("ImageFocus.processImagesWithin", "image-focus.js", 1);
 
-		//  Add the listener to all content images.
+		/*	Add ‘focusable’ class to all focusable images; add ‘gallery-image’
+			class to all focusable images that are to be included in the main
+			image gallery.
+		 */
 		container.querySelectorAll(ImageFocus.contentImagesSelector).forEach(image => {
-			//	NOTE: temporary hack!
 			if (image.closest("a, button"))
 				return;
 
-			//	NOTE: unlike the above, this one is probably not a temporary hack
 			if (image.closest("figure.image-focus-not"))
 				return;
 
+			image.classList.add("focusable");
+
+			if (   image.closest("#markdownBody") == null
+				|| image.closest("div.footnotes") != null)
+				return;
+
+			image.classList.add("gallery-image");
+		});
+
+		//  Add the listener to all focusable images.
+		container.querySelectorAll(ImageFocus.focusableImagesSelector).forEach(image => {
 			image.addEventListener("click", ImageFocus.imageClickedToFocus);
 		});
 
 		//  Wrap all images in figures in a span.
-		container.querySelectorAll("figure img").forEach(image => {
-			//	NOTE: unlike the above, this one is probably not a temporary hack
-			if (image.closest("figure.image-focus-not"))
+		container.querySelectorAll(ImageFocus.focusableImagesSelector).forEach(image => {
+			if (image.closest("figure") == null)
 				return;
 
 			let imageContainer = image.parentElement;
@@ -122,17 +149,18 @@ ImageFocus = {
 			wrapper.appendChild(image);
 			imageContainer.insertBefore(wrapper, imageContainer.firstChild);
 
-			//  Set ‘focusable’ class, for CSS to apply the hover style and tooltip.
-			image.classList.toggle("focusable", true);
+			/*  Set ‘focusable’ class on the wrapper, for CSS to apply the hover 
+				style and tooltip.
+			 */
 			wrapper.classList.toggle("focusable", true);
 		});
 
 		if (container == document) {
 			//  Count how many images there are in the post, and set the “… of X” label to that.
-			ImageFocus.overlay.querySelector(".image-number").dataset.numberOfImages = container.querySelectorAll(ImageFocus.contentImagesSelector).length;
+			ImageFocus.overlay.querySelector(".image-number").dataset.numberOfImages = container.querySelectorAll(ImageFocus.galleryImagesSelector).length;
 
 			//  Accesskey-L starts the slideshow.
-			(container.querySelector(ImageFocus.contentImagesSelector)||{}).accessKey = "l";
+			(container.querySelector(ImageFocus.galleryImagesSelector)||{}).accessKey = "l";
 		}
 	},
 
@@ -186,7 +214,7 @@ ImageFocus = {
 		ImageFocus.overlay.classList.add("slideshow");
 
 		//  Set state of next/previous buttons.
-		let images = document.querySelectorAll(ImageFocus.contentImagesSelector);
+		let images = document.querySelectorAll(ImageFocus.galleryImagesSelector);
 		let indexOfFocusedImage = ImageFocus.getIndexOfFocusedImage();
 		ImageFocus.overlay.querySelector(".slideshow-button.previous").disabled = (indexOfFocusedImage == 0);
 		ImageFocus.overlay.querySelector(".slideshow-button.next").disabled = (indexOfFocusedImage == images.length - 1);
@@ -206,23 +234,37 @@ ImageFocus = {
 		window.addEventListener("mousemove", ImageFocus.mouseMoved);
 	},
 
-	resetFocusedImagePosition: () => {
+	resetFocusedImagePosition: (useSelf = false) => {
 		GWLog("ImageFocus.resetFocusedImagePosition", "image-focus.js", 2);
 
 		let focusedImage = ImageFocus.currentlyFocusedImage;
 		if (!focusedImage)
 			return;
 
-		let sourceImage = document.querySelector(ImageFocus.focusedImageSelector);
+		let sourceImage = useSelf 
+						  ? focusedImage 
+						  : document.querySelector(ImageFocus.focusedImageSelector);
 
 		//  Make sure that initially, the image fits into the viewport.
-		let constrainedWidth = Math.min(sourceImage.naturalWidth, window.innerWidth * ImageFocus.shrinkRatio);
-		let widthShrinkRatio = constrainedWidth / sourceImage.naturalWidth;
-		let constrainedHeight = Math.min(sourceImage.naturalHeight, window.innerHeight * ImageFocus.shrinkRatio);
-		let heightShrinkRatio = constrainedHeight / sourceImage.naturalHeight;
+		let recompute = false;
+		let imageWidth = sourceImage.naturalWidth;
+		let imageHeight = sourceImage.naturalHeight;
+		if (imageWidth == 0 || imageHeight == 0) {
+			focusedImage.addEventListener("load", (event) => {
+				ImageFocus.resetFocusedImagePosition(true);
+			}, { once: true });
+		}
+
+		//	Constrain dimensions proportionally.
+		let constrainedWidth = Math.min(imageWidth, window.innerWidth * ImageFocus.shrinkRatio);
+		let widthShrinkRatio = constrainedWidth / imageWidth;
+		let constrainedHeight = Math.min(imageHeight, window.innerHeight * ImageFocus.shrinkRatio);
+		let heightShrinkRatio = constrainedHeight / imageHeight;
 		let shrinkRatio = Math.min(widthShrinkRatio, heightShrinkRatio);
-		focusedImage.style.width = (sourceImage.naturalWidth * shrinkRatio) + "px";
-		focusedImage.style.height = (sourceImage.naturalHeight * shrinkRatio) + "px";
+
+		//	Set dimensions via CSS.
+		focusedImage.style.width = (imageWidth * shrinkRatio) + "px";
+		focusedImage.style.height = (imageHeight * shrinkRatio) + "px";
 
 		//  Remove modifications to position.
 		focusedImage.style.left = "";
@@ -284,7 +326,7 @@ ImageFocus = {
 	},
 
 	getIndexOfFocusedImage: () => {
-		let images = document.querySelectorAll(ImageFocus.contentImagesSelector);
+		let images = document.querySelectorAll(ImageFocus.galleryImagesSelector);
 		let indexOfFocusedImage = -1;
 		for (i = 0; i < images.length; i++) {
 			if (images[i].classList.contains("focused")) {
@@ -298,7 +340,7 @@ ImageFocus = {
 	focusNextImage: (next = true) => {
 		GWLog("ImageFocus.focusNextImage", "image-focus.js", 1);
 
-		let images = document.querySelectorAll(ImageFocus.contentImagesSelector);
+		let images = document.querySelectorAll(ImageFocus.galleryImagesSelector);
 		let indexOfFocusedImage = ImageFocus.getIndexOfFocusedImage();
 
 		if (next ? (++indexOfFocusedImage == images.length) : (--indexOfFocusedImage == -1))
@@ -321,6 +363,8 @@ ImageFocus = {
 		ImageFocus.overlay.classList.toggle("engaged", true);
 		//  Set image to default size and position.
 		ImageFocus.resetFocusedImagePosition();
+		//  Double-click on the image unfocuses.
+		clonedImage.addEventListener("dblclick", ImageFocus.doubleClick);
 		//  Set state of next/previous buttons.
 		ImageFocus.overlay.querySelector(".slideshow-button.previous").disabled = (indexOfFocusedImage == 0);
 		ImageFocus.overlay.querySelector(".slideshow-button.next").disabled = (indexOfFocusedImage == images.length - 1);
@@ -342,7 +386,7 @@ ImageFocus = {
 		captionContainer.replaceChildren();
 
 		//  Determine caption.
-		let currentlyFocusedImage = document.querySelector(ImageFocus .focusedImageSelector);
+		let currentlyFocusedImage = document.querySelector(ImageFocus.focusedImageSelector);
 		let captionHTML;
 		if (   (T.enclosingFigure = currentlyFocusedImage.closest("figure"))
 			&& (T.figcaption = T.enclosingFigure.querySelector("figcaption"))) {
@@ -362,7 +406,7 @@ ImageFocus = {
 
 		if (location.hash.startsWith("#if_slide_")) {
 			doWhenPageLoaded(() => {
-				let images = document.querySelectorAll(ImageFocus.contentImagesSelector);
+				let images = document.querySelectorAll(ImageFocus.galleryImagesSelector);
 				let imageToFocus = (/#if_slide_([0-9]+)/.exec(location.hash)||{})[1];
 				if (   imageToFocus > 0
 					&& imageToFocus <= images.length) {
