@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-06 12:18:44 gwern"
+When:  Time-stamp: "2022-09-07 17:31:44 gwern"
 License: CC-0
 -}
 
@@ -480,7 +480,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                          ) ++
                                          [Str ":"]),
                                        BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
-                                                                            if blp=="" then "" else "<div class=\"backlinks-append\">\n\n<p><strong>Backlinks</strong>:</p>\n<p><a class=\"backlinks-transclusion include\" href=\"" `T.append` (T.pack blp) `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>")]
+                                                                            if blp=="" then "" else "<div class=\"backlinks-append\">\n\n<p><strong>Backlinks</strong>:</p>\n<p><a class=\"backlinks-transclusion include include-instant\" href=\"" `T.append` (T.pack blp) `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>")]
                                   ]
                              where
                                nonAnnotatedLink :: [Block]
@@ -2067,6 +2067,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(2^S \\to \\mathbb{R}\\)</span>", "2<sup><em>S</em></sup> ⟶ ℝ")
           , ("<span class=\"math inline\">\\(μ\\)</span>", "𝜇")
           , ("<span class=\"math inline\">\\(e^{-kq^2}.\\)</span>", "<em>e</em><sup>−<em>kq</em><sup>2</sup></sup>")
+          , ("<span class=\"math inline\">\\(\\approx\\)</span>", "~")
           , ("<span class=\"math inline\">\\(1.644934\\approx \\pi^2/6\\)</span>", "1.644934 ≈ π<sup>2</sup>⁄6")
           , ("<span class=\"math inline\">\\(\\operatorname{bessel0}(10)\\approx \\frac{\\sin(10)+\\cos(10)}{\\sqrt{\\pi x}}\\)</span>", "<code>bessel0(<em>x</em>) ≈ sin(<em>x</em>)+cos(<em>x</em>) / √π<em>x</em>")
           , ("<span class=\"math inline\">\\(P_B(f\\mid S)\\)</span>", "<em>P</em><sub><em>b</em></sub>(<em>f</em>|<em>S</em>)")
