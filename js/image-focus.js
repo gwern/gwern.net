@@ -20,6 +20,13 @@ ImageFocus = {
 
 	contentImagesSelector: ".markdownBody figure img",
 
+	excludedContainerElementsSelector: "a, button, figure.image-focus-not",
+
+	imageGalleryInclusionTest: (image) => {
+		return (   image.closest("#markdownBody") != null
+				&& image.closest("div.footnotes") == null);
+	},
+
 	shrinkRatio: 0.975,
 
 	hideUITimerDuration: 1500,
@@ -117,19 +124,13 @@ ImageFocus = {
 			image gallery.
 		 */
 		container.querySelectorAll(ImageFocus.contentImagesSelector).forEach(image => {
-			if (image.closest("a, button"))
-				return;
-
-			if (image.closest("figure.image-focus-not"))
+			if (image.closest(ImageFocus.excludedContainerElementsSelector))
 				return;
 
 			image.classList.add("focusable");
 
-			if (   image.closest("#markdownBody") == null
-				|| image.closest("div.footnotes") != null)
-				return;
-
-			image.classList.add("gallery-image");
+			if (ImageFocus.imageGalleryInclusionTest(image))
+				image.classList.add("gallery-image");
 		});
 
 		//  Add the listener to all focusable images.
