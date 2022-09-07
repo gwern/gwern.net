@@ -4897,6 +4897,7 @@ section.highlight-fading::before {
  */
 .data-field.title {
     text-indent: 0;
+	text-align: left;
 }
 
 /*  Images (such as the ones in Wikipedia annotations).
@@ -5005,7 +5006,8 @@ section.highlight-fading::before {
 	padding-bottom: 0.375em;
 }
 
-.backlinks-append .columns ul {
+.annotation-see-also > div > div > ul,
+.backlinks-append > div > ul {
 	margin-top: 0.5em;
 }
 
