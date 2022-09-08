@@ -584,7 +584,7 @@ Hyphenopoly.config({
 
     Requires Hyphenopoly_Loader.js to be loaded prior to this file.
  */
-function hyphenate(loadEventInfo) {
+function hyphenate(injectEventInfo) {
     GWLog("hyphenate", "rewrite.js", 1);
 
 	if (!(Hyphenopoly.hyphenators))
@@ -595,15 +595,15 @@ function hyphenate(loadEventInfo) {
 
 	let doHyphenation = (selector) => {
 		Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
-			loadEventInfo.document.querySelectorAll(selector).forEach(block => {
+			injectEventInfo.document.querySelectorAll(selector).forEach(block => {
 				hyphenate(block);
 			});
 		});	
 	};
 
 	if (   GW.isMobile() 
-		|| loadEventInfo.mainPageContent == false) {
-		doHyphenation(loadEventInfo.mainPageContent ? ".markdownBody p" : "p");
+		|| injectEventInfo.mainPageContent == false) {
+		doHyphenation(injectEventInfo.mainPageContent ? ".markdownBody p" : "p");
 	} else {
 		doHyphenation(".sidenote p");
 	}
@@ -644,7 +644,7 @@ function rectifyLineHeight(elementOrSelector, root = document, returnOnly = fals
 /**********************************************************************/
 /*	Rectify line heights of elements matching a given set of selectors.
  */
-function rectifyLineHeights(loadEventInfo) {
+function rectifyLineHeights(injectEventInfo) {
     GWLog("rectifyLineHeights", "rewrite.js", 1);
 
 	/*	Note: these selectors should be “all block elements on which the font
@@ -680,10 +680,10 @@ function rectifyLineHeights(loadEventInfo) {
 		due to rounding, in nested line-height-adjusted elements.)
 	 */
 	let elements = [ ];
-	loadEventInfo.document.querySelectorAll(selectors.join(", ")).forEach(element => {
+	injectEventInfo.document.querySelectorAll(selectors.join(", ")).forEach(element => {
 		if (element.style.lineHeight > "")
 			return;
-		let lineHeight = rectifyLineHeight(element, loadEventInfo.document, true);
+		let lineHeight = rectifyLineHeight(element, injectEventInfo.document, true);
 		elements.push({
 			element: 	element,
 			lineHeight:	lineHeight
