@@ -93,7 +93,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                   in case htmlEither of
                                                               Left e -> error $ show target ++ show callers ++ show e
                                                               Right output -> output
-                                       let backLinksHtmlFragment = if length calls' < 3 then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
+                                       let backLinksHtmlFragment = if length calls' <= 3 then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
                                        writeUpdatedFile "backlink" f backLinksHtmlFragment
 
 parseAnnotationForLinks :: T.Text -> MetadataItem -> [(T.Text,T.Text)]
