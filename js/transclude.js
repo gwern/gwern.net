@@ -209,6 +209,13 @@
 function includeContent(includeLink, content) {
     GWLog("includeContent", "transclude.js", 2);
 
+	//	Just in case, do nothing if the link isn’t attached to anything.
+	if (includeLink.parentElement == null)
+		return;
+
+	//	Prevent race condition, part I.
+	includeLink.classList.add("include-in-progress");
+
 	//	Inject.
 	let wrapper = newElement("SPAN", { "class": "include-wrapper" });
 	wrapper.appendChild(content);
@@ -346,6 +353,10 @@ function includeContent(includeLink, content) {
 	//	Remove include-link’s container, if specified.
 	if (replaceContainer)
 		includeLinkParentElement.remove();
+
+	//	Prevent race condition, part II.
+	includeLink.classList.add("include-complete");
+	includeLink.classList.remove("include-in-progress");
 
 	//	Fire event, if need be.
 	if (includeLink.needsRewrite) {
@@ -853,9 +864,17 @@ Transclude = {
 	transclude: (includeLink, now = false) => {
 		GWLog("Transclude.transclude", "transclude.js", 2);
 
-		//	We don’t retry failed loads.
-		if (includeLink.classList.contains("include-loading-failed"))
-			return;
+		/*	We don’t retry failed loads. We also skip include-links for which a
+			transclude operation is already in progress or has completed (which
+			might happen if we’re given an include-link to process, but that
+			link has already been replaced by its transcluded content and has 
+			been removed from the document).
+		 */
+		if (includeLink.classList.containsAnyOf([
+			"include-loading-failed",
+			"include-in-progress",
+			"include-complete"
+		])) return;
 
 		if (   includeLink.hostname != location.hostname
 			&& Transclude.isAnnotationTransclude(includeLink) == false) {
@@ -1082,3 +1101,4 @@ function handleTranscludes(loadEventInfo) {
 }
 
 addContentLoadHandler(handleTranscludes, "<rewrite");
+

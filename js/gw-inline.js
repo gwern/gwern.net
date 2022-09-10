@@ -270,6 +270,15 @@ Object.defineProperty(Node.prototype, "lastTextNode", {
     }
 });
 
+/*  Returns true if the list contains any of the tokens in the given array.
+ */
+DOMTokenList.prototype.containsAnyOf = function (tokens) {
+    for (token of tokens)
+        if (this.contains(token))
+            return true;
+    return false;
+}
+
 /*	Returns true if the point is within the given rect, false otherwise.
  */
 function pointWithinRect(point, rect) {

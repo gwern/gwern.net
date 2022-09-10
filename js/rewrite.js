@@ -1139,6 +1139,27 @@ function bindHighlightEventsToFootnoteSelfLinks(loadEventInfo) {
 addContentLoadHandler(bindNoteHighlightEventsToCitations, "eventListeners");
 
 
+/*********************/
+/* LINK BIBLIOGRAPHY */
+/*********************/
+
+/*******************************************/
+/*  Add a TOC link to the link bibliography.
+ */
+function injectLinkBibliographyTOCLink(loadEventInfo) {
+    GWLog("injectLinkBibliographyTOCLink", "rewrite.js", 1);
+
+    let linkBibliographySection = loadEventInfo.document.querySelector("#link-bibliography");
+    let TOCList = loadEventInfo.document.getRootNode().querySelector("#TOC > ul");
+    if (   TOCList
+    	&& linkBibliographySection
+    	&& TOCList.querySelector("#toc-link-bibliography") == null)
+        TOCList.insertAdjacentHTML("beforeend", `<li><a id="toc-link-bibliography" href="#link-bibliography">Link Bibliography</a></li>\n`);
+}
+
+addContentLoadHandler(injectLinkBibliographyTOCLink, "rewrite", (info) => info.needsRewrite);
+
+
 /*********/
 /* LINKS */
 /*********/
