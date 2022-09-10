@@ -5516,10 +5516,12 @@ p + .backlinks-append {
 /* TRANSCLUSION */
 /****************/
 
-a.include:empty {
+a.include-loading:empty,
+a.include-loading-failed:empty {
     margin: 0;
 }
-.markdownBody a.include:empty {
+.markdownBody a.include-loading:empty,
+.markdownBody a.include-loading-failed:empty {
     background: none;
 }
 

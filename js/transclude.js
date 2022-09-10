@@ -357,6 +357,11 @@ function includeContent(includeLink, content) {
 	}
 }
 
+/*******************************************************************************/
+/*	Returns true if the node’s parent has just one child (i.e., the given node), 
+	or if all siblings are empty nodes. (Note that the given node *itself* being 
+	empty does not prevent this function from returning true!)
+ */
 function isOnlyChild(node) {
 	if (node.parentElement == null)
 		return undefined;
@@ -373,6 +378,9 @@ function isOnlyChild(node) {
 	return (nonemptySiblingsExist == false);
 }
 
+/******************************************************************************/
+/*	Returns true if the node contains only whitespace and/or other empty nodes.
+ */
 function isNodeEmpty(node) {
 	if (node.nodeType == Node.TEXT_NODE)
 		return (node.textContent.match(/\S/) == null);
@@ -548,11 +556,39 @@ function updatePageTOCAfterInclusion(newContent) {
 /*	Handles interactions between include-links and content at locations.
  */
 Transclude = {
+	/*****************/
+	/*	Configuration.
+	 */
+
+	permittedClassNames: [
+		"include",
+		"include-annotation",
+		"include-content",
+		"include-strict",
+		"include-when-collapsed",
+		"include-unwrap",
+		"include-replace-container",
+		"include-replace-container-not",
+		"include-no-spinner"
+	],
+
 	transcludeAnnotationsByDefault: true,
 
 	permittedContentTypes: [ "text/html" ],
 
 	lazyLoadViewportMargin: "100%",
+
+	/******************************/
+	/*	Detection of include-links.
+	 */
+
+	isIncludeLink: (link) => {
+		return (Transclude.permittedClassNames.filter(className => link.classList.contains(className)).length > 0);
+	},
+
+	allIncludeLinksInContainer: (container) => {
+		return Array.from(container.querySelectorAll("a[class*='include']")).filter(link => Transclude.isIncludeLink(link));
+	},
 
 	isAnnotationTransclude: (includeLink) => {
 		if (includeLink.classList.contains("link-annotated") == false)
@@ -562,6 +598,10 @@ Transclude = {
 				? includeLink.classList.contains("include-content") == false
 				: includeLink.classList.contains("include-annotation"));
 	},
+
+	/***********/
+	/*	Caching.
+	 */
 
 	cachedDocuments: { },
 
@@ -600,6 +640,10 @@ Transclude = {
 	setCachedContentForLink: (content, includeLink) => {
 		Transclude.cachedContent[includeLink.href] = content;
 	},
+
+	/********************************/
+	/*	Retrieved content processing.
+	 */
 
 	//	Called by: Transclude.transclude
 	reformatAnnotation: (annotation) => {
@@ -799,6 +843,10 @@ Transclude = {
 		return content;
 	},
 
+	/*************************/
+	/*	Include-link handling.
+	 */
+
 	//	Called by: Transclude.transclude
 	//	Called by: Transclude.triggerTranscludesInContainer
 	//	Called by: handleTranscludes (rewrite function)
@@ -965,46 +1013,54 @@ Transclude = {
 		}
 	},
 
+	/*****************/
+	/*	Misc. helpers.
+	 */
+
 	//	Called by: Extracts.localTranscludeForTarget (extracts.js)
 	triggerTranscludesInContainer: (container) => {
-		container.querySelectorAll("a.include").forEach(includeLink => {
+		Transclude.allIncludeLinksInContainer(container).forEach(includeLink => {
 			Transclude.transclude(includeLink, true);
 		});
 	},
 
+	/********************/
+	/*	Loading spinners.
+	 */
+
 	//	Called by: Transclude.transclude
-	setLinkStateLoading: (includeLink) => {
-		if (includeLink.classList.contains("include") == false)
+	setLinkStateLoading: (link) => {
+		if (Transclude.isIncludeLink(link) == false)
 			return;
 
-		includeLink.classList.add("include-loading");
-		if (includeLink.textContent > "")
-			includeLink.classList.add("no-icon");
-        includeLink.onclick = () => { return false; };
-		includeLink.savedTitle = includeLink.title ?? "";
-		includeLink.title = "Content is loading. Please wait.";
+		link.classList.add("include-loading");
+		if (link.textContent > "")
+			link.classList.add("no-icon");
+        link.onclick = () => { return false; };
+		link.savedTitle = link.title ?? "";
+		link.title = "Content is loading. Please wait.";
 	},
 
 	//	Called by: Transclude.transclude
-	setLinkStateLoadingFailed: (includeLink) => {
-		if (includeLink.classList.contains("include") == false)
+	setLinkStateLoadingFailed: (link) => {
+		if (Transclude.isIncludeLink(link) == false)
 			return;
 
-		includeLink.swapClasses([ "include-loading", "include-loading-failed" ], 1);
-		if (includeLink.textContent > "")
-			includeLink.classList.remove("no-icon");
-        includeLink.onclick = null;
-		if (includeLink.savedTitle != null) {
-			includeLink.title = includeLink.savedTitle;
-			includeLink.savedTitle = null;		
+		link.swapClasses([ "include-loading", "include-loading-failed" ], 1);
+		if (link.textContent > "")
+			link.classList.remove("no-icon");
+        link.onclick = null;
+		if (link.savedTitle != null) {
+			link.title = link.savedTitle;
+			link.savedTitle = null;		
 		}
 
 		//	Fire event, if need be.
-		if (includeLink.needsRewrite) {
+		if (link.needsRewrite) {
 			GW.notificationCenter.fireEvent("Rewrite.contentDidChange", { 
 				source: "transclude.loadingFailed", 
-				baseLocation: includeLink.baseLocation,
-				document: includeLink.getRootNode()
+				baseLocation: link.baseLocation,
+				document: link.getRootNode()
 			});
 		}
 	}
@@ -1016,7 +1072,7 @@ Transclude = {
 function handleTranscludes(loadEventInfo) {
     GWLog("handleTranscludes", "transclude.js", 1);
 
-	loadEventInfo.document.querySelectorAll("a.include").forEach(includeLink => {
+	Transclude.allIncludeLinksInContainer(loadEventInfo.document).forEach(includeLink => {
 		//	Store the location of the included-into document.
 		includeLink.baseLocation = loadEventInfo.baseLocation;
 
