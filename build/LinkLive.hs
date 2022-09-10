@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-07-14 19:55:27 gwern"
+When:  Time-stamp: "2022-09-10 18:52:20 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -1346,7 +1346,6 @@ badDomainsSimple = ["1d4chan.org",
     , "www.bulletproof.com"
     , "www.bayesianinvestor.com"
     , "www.avclub.com"
-    , "www.animevice.com"
     , "www.animenewsservice.com"
     , "www.anandtech.com"
     , "www.afp.gov.au"
@@ -3369,7 +3368,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://derpibooru.org/tags/artist-colon-thisponydoesnotexist", False)
     , ("https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme", False)
     , ("https://discord.com/invite/7RgdJZy", False)
-    , ("https://drive.google.com/file/d/1Ovgl5bIwoIV5xDZvPcmOKUYwKNTaf88P/view", False)
+    , ("https://drive.google.com/drive/folders/1NY3MTkOSodz_5eCkjtoHUGYSulR25QGU", False)
     , ("https://elifesciences.org/articles/66920", False)
     , ("https://examine.com/supplements/Piracetam/", False)
     , ("https://f1000research.com/articles/3-82/v1", False)
@@ -3430,7 +3429,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://scholar.google.com/scholar?q=cat%20earwax%20OR%20%22ear%20wax%22%20smell%20OR%20taste%20%2D%22CAT%20scan%22", False)
     , ("https://scienceblogs.com/cognitivedaily/2009/04/16/a-quick-eye-exercise-can-impro", False)
     , ("https://scp-wiki.wikidot.com/scp-988", False)
-    , ("https://deepmind.com/blog/agents-imagine-and-plan/", False)
+    , ("https://www.deepmind.com/blog/agents-that-imagine-and-plan", False)
     , ("https://slashdot.org/story/07/11/18/1319201/do-tiny-url-services-weaken-net-architecture", False)
     , ("https://slate.com/articles/life/seed/2001/04/the_rise_of_the_smart_sperm_shopper.single.html", False)
     , ("https://soundcloud.com/leggysalad/girls-afternoon-appointments", False)
@@ -3697,7 +3696,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.bulletproof.com/why-you-are-suffering-from-a-modafinil-deficiency/", False)
     , ("http://www.bayesianinvestor.com/blog/index.php/2008/11/13/automated-market-maker-results/", False)
     , ("https://www.avclub.com/ducktales-invented-a-new-animated-wonderland-that-quick-1798236288", False)
-    , ("http://www.animevice.com/death-note-hollywood-live-action/13-1374/rumor-alert-death-note-movie-script-leaked/97-207040/#js-post-body-116650", False)
     , ("http://www.animenewsservice.com/archives/dec13.htm", False)
     , ("https://www.anandtech.com/show/12535/power-outage-at-samsungs-fab-destroys-3-percent-of-global-nand-flash-output", False)
     , ("https://www.afp.gov.au/media-centre/news/afp/2015/may/four-australians-charged-in-international-illegal-firearm-sting", False)

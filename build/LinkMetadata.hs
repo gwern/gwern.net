@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-10 18:43:45 gwern"
+When:  Time-stamp: "2022-09-10 19:21:51 gwern"
 License: CC-0
 -}
 
@@ -89,15 +89,21 @@ isLocalPath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
 -- For example, to use `processDOIArxiv` to add inferred-DOIs to all Arxiv annotations prior to Arxiv adding official DOIs, one could run a command like:
 --
 -- > walkAndUpdateLinkMetadata (\x@(path,(title,author,date,doi,tags,abstrct)) -> if not ("https://arxiv.org" `isPrefixOf` path) || (doi /= "") then return x else return (path,(title,author,date,processDOIArxiv path,tags,abstrct)))
+--
 -- To rewrite a tag, eg 'conscientiousness' → 'psychology/personality/conscientiousness':
+--
 -- > walkAndUpdateLinkMetadata True (\(path,(title,author,date,doi,tags,abst)) -> return (path,(title,author,date,doi,
 --      map (\t -> if t/="conscientiousness" then t else "psychology/personality/conscientiousness") tags,  abst)) )
+--
+-- To rerun LinkAuto.hs (perhaps because some rules were added):
+--
+-- > walkAndUpdateLinkMetadata True (\(a,(b,c,d,e,f,abst)) -> return (a,(b,c,d,e,f, linkAutoHtml5String abst)))
 walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
 walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataYaml f "metadata/custom.yaml"
                                        walkAndUpdateLinkMetadataYaml f "metadata/partial.yaml"
                                        walkAndUpdateLinkMetadataYaml f "metadata/auto.yaml"
                                        when check (readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting…")
-                                       return ()
+
 walkAndUpdateLinkMetadataYaml :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> Path -> IO ()
 walkAndUpdateLinkMetadataYaml f file = do db <- readYaml file -- TODO: refactor this to take a list of URLs to update, then I can do it incrementally & avoid the mysterious space leaks
                                           db' <-  mapM f db

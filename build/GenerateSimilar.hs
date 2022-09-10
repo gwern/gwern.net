@@ -290,7 +290,7 @@ generateItem md (p2,distance) = case M.lookup p2 md of
                                   Just ("",_,_,_,_,_) -> []
                                   Just (_,_,_,_,_,"") -> []
                                   Just (t,_,_,_,tags,_) ->
-                                    [Para
+                                    [Para -- NOTE: we set .backlink-not because similar-links suggestions, even curated ones, can be quite tangential & distant, so we don't want to clutter up backlinks with them.
                                       [Link ("", ["link-annotated", "backlink-not", "id-not"], [("embedding-distance", T.pack $ take 7 $ show distance)] ++
                                               if null tags then [] else [("link-tags", T.pack $ unwords tags) ]
                                             ) [RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
