@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-10 17:04:04 gwern"
+When:  Time-stamp: "2022-09-10 18:43:45 gwern"
 License: CC-0
 -}
 
@@ -56,7 +56,7 @@ import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase', invertImage, imageSrcset, addImgDimensions)
 import LinkArchive (localizeLink, ArchiveMetadata)
-import LinkAuto (linkAuto)
+import LinkAuto (linkAutoHtml5String)
 import LinkBacklink (getSimilarLink, getBackLink)
 import Query (truncateTOCHTML, extractLinksInlines)
 import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split, pairs, anyPrefixT, hasAny)
@@ -315,7 +315,6 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                                     else do
                                           let p = walk (convertInterwikiLinks . nominalToRealInflationAdjuster) $
                                                   walk (hasAnnotation md True) $
-                                                  walk linkAuto $
                                                   walk (parseRawBlock nullAttr) pandoc
                                           p' <- walkM (localizeLink am archived) p
                                           walkM imageSrcset p' -- add 'srcset' HTML <img> property - helps toggle between the small/large image versions for mobile vs desktop
@@ -950,7 +949,6 @@ linkDispatcherURL l | anyPrefix l ["/metadata/annotations/backlinks/", "/metadat
                  -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for tags.
                  | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return $ Right (l, (wikipediaURLToTitle l, "", "", "", [], ""))
                  | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
-                 | "http://arxiv.org/abs/"  `isPrefixOf` l = arxiv l
                  | "https://openreview.net/forum?id=" `isPrefixOf` l || "https://openreview.net/pdf?id=" `isPrefixOf` l = openreview l
                  | anyPrefix l ["https://www.biorxiv.org/content/", "https://www.medrxiv.org/content/"] = biorxiv l
                  | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l = pubmed l
@@ -1011,7 +1009,7 @@ pubmed l = do checkURL l
                         if length parsed < 5 then return (Left Permanent) else
                           do let (title:author:date:doi:abstrct) = parsed
                              let ts = [] -- TODO: replace with ML call to infer tags
-                             abstract' <- processParagraphizer l $ processPubMedAbstract $ unlines abstrct
+                             abstract' <- fmap linkAutoHtml5String $ processParagraphizer l $ processPubMedAbstract $ unlines abstrct
                              return $ Right (l, (cleanAbstractsHTML $ trimTitle title, initializeAuthors $ trim author, trim date, trim $ processDOI doi, ts, abstract'))
 
  -- eg "foo.pdf#page=50&org=openai" → "50"; "foo.pdf" → ""
@@ -1037,7 +1035,7 @@ pdf p = do let p' = takeWhile (/='#') p
                 -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
                 let ecreator = filterMeta $ U.toString mbCreator
                 let eauthor' = filterMeta  $ U.toString mbAuthor
-                let author = cleanAbstractsHTML $ initializeAuthors $ trim $ if length eauthor' > length ecreator then eauthor' else ecreator
+                let author = linkAutoHtml5String $ cleanAbstractsHTML $ initializeAuthors $ trim $ if length eauthor' > length ecreator then eauthor' else ecreator
                 let ts = [] -- TODO: replace with ML call to infer tags
                 printGreen $ "PDF: " ++ p ++" DOI: " ++ edoi'
                 at <- fmap (fromMaybe "") $ doi2Abstract edoi'
@@ -1092,7 +1090,7 @@ biorxiv p = do checkURL p
                                  let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
                                  let author  = initializeAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
                                  abstrct <- fmap (replace "9s" "s") $ -- BUG: Biorxiv's abstracts have broken quote encoding. I reported this to them 2 years ago and they still have not fixed it.
-                                   fmap cleanAbstractsHTML $ processParagraphizer p $ cleanAbstractsHTML $ concat $ parseMetadataTagsoupSecond "citation_abstract" metas
+                                   fmap (linkAutoHtml5String . cleanAbstractsHTML) $ processParagraphizer p $ cleanAbstractsHTML $ concat $ parseMetadataTagsoupSecond "citation_abstract" metas
                                  let ts = [] -- TODO: replace with ML call to infer tags
                                  if abstrct == "" then return (Left Temporary) else
                                                    return $ Right (p, (title, author, date, doi, ts, abstrct))
@@ -1123,7 +1121,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          -- NOTE: Arxiv used to not provide its own DOIs; that changed in 2022: <https://blog.arxiv.org/2022/02/17/new-arxiv-articles-are-now-automatically-assigned-dois/>; so look for DOI and if not set, try to construct it automatically using their schema `10.48550/arXiv.2202.01037`
                          let doiTmp = processDOI $ findTxt $ fst $ element "arxiv:doi" tags
                          let doi = if null doiTmp then processDOIArxiv url else doiTmp
-                         abst <- fmap cleanAbstractsHTML $ processParagraphizer url $ cleanAbstractsHTML $ processArxivAbstract $ findTxt $ fst $ element "summary" tags
+                         abst <- fmap (linkAutoHtml5String . cleanAbstractsHTML) $ processParagraphizer url $ cleanAbstractsHTML $ processArxivAbstract $ findTxt $ fst $ element "summary" tags
                          let ts = [] :: [String] -- TODO: replace with ML call to infer tags
                          -- the API sometimes lags the website, and a valid Arxiv URL may not yet have obtainable abstracts, so it's a temporary failure:
                          if abst=="" then do printRed "Error: Arxiv parsing failed!"
@@ -1173,7 +1171,7 @@ openreview p = do checkURL p
                                                else "[Keywords: " ++ concat keywords ++ "]"
                              let tldr' = cleanAbstractsHTML $ processArxivAbstract tldr
                              let desc' = cleanAbstractsHTML $ processArxivAbstract desc
-                             let abstractCombined = trim $ intercalate "\n" [tldr', desc', cleanAbstractsHTML $ processArxivAbstract keywords']
+                             let abstractCombined = trim $ intercalate "\n" [tldr', desc', linkAutoHtml5String $ cleanAbstractsHTML $ processArxivAbstract keywords']
                              return $ Right (p, (trimTitle title, initializeAuthors $ trim author, date, "", [],
                                                  -- due to pseudo-LaTeX
                                                    abstractCombined))
@@ -1200,7 +1198,7 @@ processPubMedAbstract abst = let clean = runPure $ do
                                    return $ T.unpack html
                              in case clean of
                                   Left e -> error $ ppShow e ++ " : " ++ abst
-                                  Right output -> cleanAbstractsHTML $ trim $ replace "<br/>" "" $ cleanAbstractsHTML output
+                                  Right output -> linkAutoHtml5String $ cleanAbstractsHTML $ trim $ replace "<br/>" "" $ cleanAbstractsHTML output
 
 -- Arxiv makes multi-paragraph abstracts hard because the 'HTML' is actually LaTeX, so we need to special Pandoc preprocessing (for paragraph breaks, among other issues):
 processArxivAbstract :: String -> String
@@ -1786,7 +1784,7 @@ gwernAbstract shortAllowed p' description toc f =
                                            else if description /= "" && abstrct' == "" then "<p>"++description++"</p>"
                                                 else ""
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
-      abstrct'''' = sed " id=\"fnref[0-9]+\"" "" abstrct''' -- rm footnote IDs - cause problems when transcluded
+      abstrct'''' = linkAutoHtml5String $ sed " id=\"fnref[0-9]+\"" "" abstrct''' -- rm footnote IDs - cause problems when transcluded
   in if (("#" `isInfixOf` p') && null abstrct) then (t,"") else
        if "scrape-abstract-not" `isInfixOf` (renderTags abstrctRw) then (t,"") else
          if shortAllowed then (t,abstrct'''') else (t,abstrct'''')
