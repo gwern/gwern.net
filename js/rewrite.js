@@ -1143,6 +1143,10 @@ addContentLoadHandler(bindNoteHighlightEventsToCitations, "eventListeners");
 /* LINK BIBLIOGRAPHY */
 /*********************/
 
+/**********************************************************************/
+/*	Add IDs to the <li> elements for each entry of link bibliographies.
+	(This makes lazy transclusion triggering much more performant.)
+ */
 function uniquelyIdentifyLinkBibliographyEntries(loadEventInfo) {
     GWLog("uniquelyIdentifyLinkBibliographyEntries", "rewrite.js", 1);
 
