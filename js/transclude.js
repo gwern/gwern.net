@@ -322,7 +322,8 @@ function includeContent(includeLink, content) {
 		if ((wrapper.closest("section")||{}).id == "link-bibliography")
 			allowedParentTags.push("LI");
 
-		while (false == allowedParentTags.includes(wrapper.parentElement.tagName)) {
+		while (   false == allowedParentTags.includes(wrapper.parentElement.tagName)
+			   && wrapper.parentElement.parentElement != null) {
 			let nextNode = wrapper.nextSibling;
 
 			wrapper.parentElement.parentElement.insertBefore(wrapper, wrapper.parentElement.nextSibling);
