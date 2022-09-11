@@ -2305,7 +2305,7 @@ p {
 }
 /*  Make sure that adjusted prices move as a block: no breaking in the middle between the price & sup/sub; this works better than trying to use no-break Unicode entities
     */
-span.inflationAdjusted {
+span.inflation-adjusted {
     white-space: nowrap;
 }
 

@@ -11,7 +11,7 @@ ReaderMode = {
                 "#navigation",
                 "#sidenote-column-left",
                 "#sidenote-column-right",
-                ".inflationAdjusted .subsup",
+                ".inflation-adjusted .subsup",
                 ".footnote-ref"
                 ]
               ).join(",\n"))} {
@@ -44,17 +44,17 @@ ReaderMode = {
                 -0.17em -0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
                 -0.17em 0 0 0 var(--GW-reader-mode-masked-link-bracket-background-color);
 			background-image:
-				linear-gradient(var(--GW-link-underline-background-color), 
+				linear-gradient(var(--GW-link-underline-background-color),
 								var(--GW-link-underline-background-color)),
-				linear-gradient(var(--GW-link-underline-gradient-line-color), 
+				linear-gradient(var(--GW-link-underline-gradient-line-color),
 								var(--GW-link-underline-gradient-line-color)),
-				linear-gradient(var(--GW-link-underline-gradient-line-color), 
+				linear-gradient(var(--GW-link-underline-gradient-line-color),
 								var(--GW-link-underline-gradient-line-color));
-			background-size: 
+			background-size:
        			1px  0.5em,
-				100% 1px, 
+				100% 1px,
 				1px  calc(0.75em - 0.1em);
-			background-position: 
+			background-position:
 				0 0.1em,
 				0 calc(100% - 0.1em),
 				0 calc(100% - 0.1em);
@@ -83,7 +83,7 @@ ReaderMode = {
             text-shadow: none;
         }
         body.reader-mode-active.masked-links-hidden #markdownBody a code {
-            border-bottom-width: 1px;  
+            border-bottom-width: 1px;
         }
         /*	Citations.
          */
@@ -91,7 +91,7 @@ ReaderMode = {
 			display: initial;
 		}
 		body.reader-mode-active .cite-author + .cite-date::before {
-			content: " ";	
+			content: " ";
 		}
 		body.reader-mode-active .cite-author-plural::after {
 			content: none;
