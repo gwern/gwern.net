@@ -23,7 +23,7 @@ Links = {
         let newLinkIcons = [ ];
 
         doc.querySelectorAll("a").forEach(link => {
-            if (link.classList.contains("no-icon"))
+            if (link.classList.contains("icon-not"))
                 return;
 
             let iconInfo = Links.linkIconInfo(link);

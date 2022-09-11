@@ -71,11 +71,11 @@ rebuildSVGIconCSS = do unless (null linkIconTest) $ error ("Error! Link icons fa
 -- maybe that's a vestigial concern?
 linkIcon :: Inline -> Inline
 linkIcon x@(Link (_,cl,attributes) _ (u, _))
- -- Short-circuits for manual control (one can either disable icons with a `[Foo](URL){.no-icon}`
+ -- Short-circuits for manual control (one can either disable icons with a `[Foo](URL){.icon-not}`
  -- class, or specify a preferred icon on a link, like `[Foo](URL){.link-icon="deepmind"
  -- .link-icon-type="svg"}` by specifying the attributes directly), or define a global URL/(link
  -- icon, link icon type) rewrite:
- | "no-icon" `elem` cl = x
+ | "icon-not" `elem` cl = x
  -- NOTE: 'gwern': the Fraktur '𝔊' for local essay links (where 'local' is defined as '/' but with no '.' in it) is set dynamically clientside by rewrite.js:l1075 (`designateSpecialLinkIcons`) and so we do not handle it here
  | hasIcon x           = x
  | hasKeyAL u overrideLinkIcons = let (i,it) = fromJust $ lookup u overrideLinkIcons in addIcon x i it

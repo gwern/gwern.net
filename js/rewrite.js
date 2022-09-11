@@ -1240,7 +1240,7 @@ function designateSpecialLinkIcons(loadEventInfo) {
     GWLog("designateSpecialLinkIcons", "rewrite.js", 1);
 
 	//	Self-links (anchorlinks to the current page).
-	loadEventInfo.document.querySelectorAll(".link-self:not(.no-icon)").forEach(link => {
+	loadEventInfo.document.querySelectorAll(".link-self:not(.icon-not)").forEach(link => {
 		link.dataset.linkIconType = "text";
 		link.dataset.linkIcon = "\u{00B6}"; // ¶
 
@@ -1263,7 +1263,7 @@ function designateSpecialLinkIcons(loadEventInfo) {
 	});
 
 	//	Local links (to other pages on the site).
-	loadEventInfo.document.querySelectorAll(".link-local:not(.no-icon)").forEach(link => {
+	loadEventInfo.document.querySelectorAll(".link-local:not(.icon-not)").forEach(link => {
 		if (link.dataset.linkIcon)
 			return;
 

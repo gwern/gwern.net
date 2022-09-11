@@ -1065,7 +1065,7 @@ Transclude = {
 
 		link.classList.add("include-loading");
 		if (link.textContent > "")
-			link.classList.add("no-icon");
+			link.classList.add("icon-not");
         link.onclick = () => { return false; };
 		link.savedTitle = link.title ?? "";
 		link.title = "Content is loading. Please wait.";
@@ -1078,7 +1078,7 @@ Transclude = {
 
 		link.swapClasses([ "include-loading", "include-loading-failed" ], 1);
 		if (link.textContent > "")
-			link.classList.remove("no-icon");
+			link.classList.remove("icon-not");
         link.onclick = null;
 		if (link.savedTitle != null) {
 			link.title = link.savedTitle;
