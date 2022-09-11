@@ -219,10 +219,11 @@ function includeContent(includeLink, content) {
 	//	Inject.
 	let wrapper = newElement("SPAN", { "class": "include-wrapper" });
 	wrapper.appendChild(content);
-	let replaceContainer = (   includeLink.classList.contains("include-replace-container")
-							|| (   isOnlyChild(includeLink)
-								&& includeLink.classList.contains("include-replace-container-not") == false));
-	let insertWhere = replaceContainer
+	let replaceContainer = (includeLink.parentElement.parentElement != null
+							&& (   includeLink.classList.contains("include-replace-container")
+								|| (   isOnlyChild(includeLink)
+									&& includeLink.classList.contains("include-replace-container-not") == false)));
+	let insertWhere = replaceContainer 
 					  ? includeLink.parentElement
 					  : includeLink;
 	insertWhere.parentElement.insertBefore(wrapper, insertWhere);
