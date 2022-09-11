@@ -275,16 +275,25 @@ else
     wrap λ "Sanity-check number-of-public-site-files in sitemap.xml failed"
 
     λ(){ COMPILED_N="$(find -L ./_site/ -type f | wc --lines)"
-         [ "$COMPILED_N" -le 21000 ] && echo "File count: $COMPILED_N" && exit 1;
+         [ "$COMPILED_N" -le 97000 ] && echo "File count: $COMPILED_N" && exit 1;
          COMPILED_BYTES="$(du --summarize --total --dereference --bytes ./_site/ | tail --lines=1 | cut --field=1)"
-         [ "$COMPILED_BYTES" -le 41000000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
+         [ "$COMPILED_BYTES" -le 741000000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
     wrap λ "Sanity-check: number of files & file-size"
 
-    λ(){ SUGGESTIONS_N=$(cat ./metadata/linkSuggestions.el | wc --lines); [ "$SUGGESTIONS_N" -le 17000 ] && echo "$SUGGESTIONS_N"; }
+    λ(){ SUGGESTIONS_N=$(cat ./metadata/linkSuggestions.el | wc --lines); [ "$SUGGESTIONS_N" -le 32000 ] && echo "$SUGGESTIONS_N"; }
     wrap λ "Link-suggestion database broken?"
-
-    λ(){ BACKLINKS_N=$(cat ./metadata/backlinks.hs | wc --lines); [ "$BACKLINKS_N" -le 57000 ] && echo "$BACKLINKS_N"; }
+    λ(){ BACKLINKS_N=$(cat ./metadata/backlinks.hs | wc --lines);         [ "$BACKLINKS_N"   -le 70000 ] && echo "$BACKLINKS_N"; }
     wrap λ "Backlinks database broken?"
+
+    λ(){ ANNOTATION_FILES_N=$(find ./metadata/annotations/ -maxdepth 1 -type f | wc --lines);
+         [ "$ANNOTATION_FILES_N"   -le 24900 ] && echo "$ANNOTATION_FILES_N"; }
+    wrap λ "Annotation files are missing?"
+    λ(){ BACKLINKS_FILES_N=$(find ./metadata/annotations/backlinks/ -type f | wc --lines);
+         [ "$BACKLINKS_FILES_N"    -le 24900 ] && echo "$BACKLINKS_FILES_N"; }
+    wrap λ "Backlinks files are missing?"
+    λ(){ SIMILARLINKS_FILES_N=$(find ./metadata/annotations/similars/ -type f | wc --lines);
+         [ "$SIMILARLINKS_FILES_N" -le 24900 ] && echo "$SIMILARLINKS_FILES_N"; }
+    wrap λ "Similar-links files are missing?"
 
     λ(){ egrep -e '#[[:alnum:]-]+#' -e '[[:alnum:]-]+##[[:alnum:]-]+' metadata/*.yaml metadata/*.hs; }
     wrap λ "Broken double-hash anchors in links somewhere?"
