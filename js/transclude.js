@@ -319,7 +319,7 @@ function includeContent(includeLink, content) {
 		let allowedParentTags = [ "SECTION", "DIV" ];
 
 		//	Special handling for annotation transcludes in link bibliographies.
-		if ((wrapper.closest("section")||{}).id == "link-bibliography")
+		if (wrapper.parentElement.closest("#link-bibliography") != null)
 			allowedParentTags.push("LI");
 
 		while (   false == allowedParentTags.includes(wrapper.parentElement.tagName)

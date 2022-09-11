@@ -3294,6 +3294,10 @@ body.index-directory #footer {
     opacity: unset;
 }
 
+.popframe-body > section:only-child {
+	display: contents;
+}
+
 .popframe-body ul,
 .popframe-body ol {
     overflow: unset;
@@ -3568,12 +3572,12 @@ body.index-directory #footer {
     overflow-x: hidden;
 }
 
-.popframe-body > h1:first-child,
-.popframe-body > h2:first-child,
-.popframe-body > h3:first-child,
-.popframe-body > h4:first-child,
-.popframe-body > h5:first-child,
-.popframe-body > h6:first-child {
+.popframe-body > section:only-child > h1,
+.popframe-body > section:only-child > h2,
+.popframe-body > section:only-child > h3,
+.popframe-body > section:only-child > h4,
+.popframe-body > section:only-child > h5,
+.popframe-body > section:only-child > h6 {
     margin-top: 0;
 }
 

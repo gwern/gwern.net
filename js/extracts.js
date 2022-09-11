@@ -688,12 +688,7 @@ Extracts = {
     localTranscludeForTarget: (target, unwrapFunction, forceNarrow) => {
         GWLog("Extracts.localTranscludeForTarget", "extracts.js", 2);
 
-		unwrapFunction = unwrapFunction || (blockElement => {
-			return ((   blockElement.tagName == "SECTION" 
-					 && blockElement.id != "footnotes")
-					? blockElement.childNodes 
-					: blockElement);
-		});
+		unwrapFunction = unwrapFunction ?? (blockElement => blockElement);
 
         /*  Check to see if the target location matches an already-displayed
             page (which can be the root page of the window).
@@ -1056,11 +1051,6 @@ Extracts = {
 
                 //  The content is the page body plus the metadata block.
                 let pageContent = page.querySelector("#markdownBody");
-
-				//	If there’s only one solitary section, unwrap it.
-                let onlySection = page.querySelector("#markdownBody > section:only-child");
-                if (onlySection)
-                	pageContent = onlySection;
 
 				//	Add the page metadata block.
                 let pageMetadata = page.querySelector("#page-metadata");
