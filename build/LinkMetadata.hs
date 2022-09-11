@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-10 19:21:51 gwern"
+When:  Time-stamp: "2022-09-11 13:09:14 gwern"
 License: CC-0
 -}
 
@@ -81,7 +81,7 @@ isLocalPath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
         not ("/" `isPrefixOf` f') ||
       ("/images/" `isPrefixOf` f' || "/static/" `isPrefixOf` f')
      then False else
-       (if takeExtension f' /= "" then False else True))
+       takeExtension f' == "")
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -102,7 +102,7 @@ walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, Metadata
 walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataYaml f "metadata/custom.yaml"
                                        walkAndUpdateLinkMetadataYaml f "metadata/partial.yaml"
                                        walkAndUpdateLinkMetadataYaml f "metadata/auto.yaml"
-                                       when check (readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting…")
+                                       when check (printGreen "Checking…" >> readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting.")
 
 walkAndUpdateLinkMetadataYaml :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> Path -> IO ()
 walkAndUpdateLinkMetadataYaml f file = do db <- readYaml file -- TODO: refactor this to take a list of URLs to update, then I can do it incrementally & avoid the mysterious space leaks
@@ -177,7 +177,7 @@ readLinkMetadataAndCheck = do
              let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,ts,_)) -> ts) custom
 
              let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> anyInfix doi ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'"] || "http" `isInfixOf` doi) custom in
-                 unless (null badDoisDash) $ error $ "custom.yaml: Bad DOIs (bad punctuation): " ++ show badDoisDash
+                 unless (null badDoisDash) $ error $ "custom.yaml: Bad DOIs (invalid punctuation in DOI): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
              -- Thus far, I have not run into any real DOIs which omit numbers, so we'll include that as a check for accidental tags inserted into the DOI field.
              let badDois = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else doi `elem` tagsAllC || head doi `elem` ['a'..'z'] || '/' `notElem` doi || null ("0123456789" `intersect` doi)) custom in
@@ -189,22 +189,6 @@ readLinkMetadataAndCheck = do
              let annotations = map (\(_,(_,_,_,_,_,s)) -> s) custom in
                when (length (nub (sort annotations)) /= length annotations) $ error $
                "custom.yaml:  Duplicate annotations: " ++ unlines (annotations \\ nubOrd annotations)
-
-             let balancedQuotes = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (=='"') abst in
-                                             count > 0 && (count `mod` 2 == 1) ) custom
-             unless (null balancedQuotes) $ error $ "custom.yaml: Link Annotation Error: unbalanced double quotes! " ++ show balancedQuotes
-
-             let balancedBracketsCurly = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '{' || c == '}') abst in
-                                                                     count > 0 && (count `mod` 2 == 1) ) custom
-             unless (null balancedBracketsCurly) $ error $ "custom.yaml: Link Annotation Error: unbalanced curly brackets! " ++ show balancedBracketsCurly
-
-             let balancedBracketsSquare = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '[' || c == ']') abst in
-                                                                     count > 0 && (count `mod` 2 == 1) ) custom
-             unless (null balancedBracketsSquare) $ error $ "custom.yaml: Link Annotation Error: unbalanced square brackets! " ++ show balancedBracketsSquare
-
-             let balancedParens = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '(' || c == ')') abst in
-                                                                     count > 0 && (count `mod` 2 == 1) ) custom
-             unless (null balancedParens) $ error $ "custom.yaml: Link Annotation Error: unbalanced parentheses! " ++ show (map fst balancedParens)
 
              -- intermediate link annotations: not finished, like 'custom.yaml' entries, but also not fully auto-generated.
              -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such partial annotations can't be put into 'custom.yaml' without destroying all of the checks' validity.
@@ -224,11 +208,28 @@ readLinkMetadataAndCheck = do
              auto <- readYaml "metadata/auto.yaml"
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto) -- left-biased, so 'custom' overrides 'partial' overrides 'auto'
+             let finalL = M.toList final
+
+             let balancedQuotes = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (=='"') abst in
+                                             count > 0 && (count `mod` 2 == 1) ) finalL
+             unless (null balancedQuotes) $ error $ "YAML: Link Annotation Error: unbalanced double quotes! " ++ show balancedQuotes
+
+             let balancedBracketsCurly = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '{' || c == '}') abst in
+                                                                     count > 0 && (count `mod` 2 == 1) ) finalL
+             unless (null balancedBracketsCurly) $ error $ "YAML: Link Annotation Error: unbalanced curly brackets! " ++ show balancedBracketsCurly
+
+             let balancedBracketsSquare = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '[' || c == ']') abst in
+                                                                     count > 0 && (count `mod` 2 == 1) ) finalL
+             unless (null balancedBracketsSquare) $ error $ "YAML: Link Annotation Error: unbalanced square brackets! " ++ show balancedBracketsSquare
+
+             let balancedParens = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '(' || c == ')') abst in
+                                                                     count > 0 && (count `mod` 2 == 1) ) finalL
+             unless (null balancedParens) $ error $ "YAML: Link Annotation Error: unbalanced parentheses! " ++ show (map fst balancedParens)
 
              -- check validity of all external links:
              let urlsAll = filter (\(x@(u:_),_) -> if u `elem` ['/', '!', '$', '\8383'] ||
                                                       "wikipedia.org" `isInfixOf` x || "hoogle.haskell.org" `isInfixOf` x || not ("ttps://" `isPrefixOf` x || "ttp://" `isPrefixOf` x || "/wiki" `isPrefixOf` x || "wiki/" `isPrefixOf` x) then False
-                                                 else not (isURIReference x)) (M.toList final)
+                                                 else not (isURIReference x)) finalL
              unless (null urlsAll) $ printRed "Invalid URIs?" >> printGreen (ppShow urlsAll)
 
              -- look for duplicates due to missing affiliation:
@@ -239,12 +240,12 @@ readLinkMetadataAndCheck = do
              let titles = filter (not . null) $ map snd titlesSimilar
              unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in YAMLs!: " >> printGreen (show (titles \\ nubOrd titles))
 
-             let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) (M.toList final)
+             let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) finalL
              Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex) (printRed $ "Mixed up author & date?: " ++ a) ) authors
              let authorsBadChars = filter (\a -> anyInfix a [";", "&", "?", "!"]) authors
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
-             let datesBad = filter (\(_,(_,_,dt,_,_,_)) -> not (dt =~ dateRegex || null dt)) (M.toList final)
+             let datesBad = filter (\(_,(_,_,dt,_,_,_)) -> not (dt =~ dateRegex || null dt)) finalL
              unless (null datesBad) (printRed "Malformed date (not 'YYYY[-MM[-DD]]'): ") >> putStrLn (ppShow datesBad)
 
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.
@@ -664,7 +665,7 @@ guessTagFromShort m t = let allTags = nubOrd $ sort m in
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
 tagsLong2Short, tagsShort2Long :: [(String,String)]
-tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5")] ++ -- custom tag shortcuts, to fix typos etc
+tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/samples")] ++ -- custom tag shortcuts, to fix typos etc
                  -- attempt to infer short->long rewrites from the displayed tag names, which are long->short; but note that many of them are inherently invalid and the mapping only goes one way.
                   (map (\(a,b) -> (map toLower b,a)) $ filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
 tagsLong2Short = [
@@ -687,7 +688,8 @@ tagsLong2Short = [
           , ("iq/high/munich", "Munich Giftedness Study")
           , ("iq/high/fullerton", "Fullerton Longitudinal Study")
           , ("iq/high/anne-roe", "Anne Roe's Scientists")
-          , ("ai/clip", "CLIP")
+          , ("ai/nn/transformer/clip", "CLIP")
+          , ("ai/nn/transformer/clip/samples", "CLIP samples")
           , ("design/typography", "typography")
           , ("design/visualization", "data visualization")
           , ("vitamin-d", "Vitamin D")
@@ -1985,6 +1987,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         ("<p><strong>([A-Z][a-z]+ [A-Za-z]+ [A-Za-z]+ [A-Za-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: "),
         ("<xref rid=\"sec[0-9]+\" ref-type=\"sec\">([A-Za-z]+ [0-9]+)</xref>", "<strong>\\1</strong>"), -- PLOS: '<xref rid="sec022" ref-type="sec">Experiment 3</xref>' etc.
         ("^en$", ""),
+        (" ([0-9]) h ", " \\1h "), -- hour abbreviation
         ("([0-9%]) – ([0-9])", "\\1–\\2"), -- space-separated en-dash ranges eg. "with a range of ~0.60 – 0.71 for height"
         ("([0-9%]) – ([a-z])", "\\1—\\2"), -- a number-alphabet en-dash is usually an em-dash eg. "a Fréchet Inception Distance (FID) of 10.59 – beating the baseline BigGAN model—at"
         ("([a-zA-Z]) – ([[:punct:]])", "\\1—\\2"), -- en dash errors in WP abstracts: usually meant em-dash. eg. 'disc format – <a href="https://en.wikipedia.org/wiki/Universal_Media_Disc">Universal'
@@ -2279,6 +2282,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" Lp", " 𝓁<sub><em>p</em></sub>")
           , (" L2", " 𝓁<sub>2</sub>")
           , (" L1", " 𝓁<sub>1</sub>")
+          , ("L1-penalized", "𝓁<sub>1</sub>-penalized")
+          , ("L1-regularized", "𝓁<sub>1</sub>-regularized")
+          , ("L1 loss", "𝓁<sub>1</sub> loss")
           , (" L0", " 𝓁<sub>0</sub>")
           , (" L-infinity", " 𝓁<sub>∞</sub>")
           , ("<span class=\"math inline\">\\(L_\\infty\\)</span>", "𝓁<sub>∞</sub>")
