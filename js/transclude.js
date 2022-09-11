@@ -607,7 +607,7 @@ Transclude = {
 	 */
 
 	isIncludeLink: (link) => {
-		return (Transclude.permittedClassNames.filter(className => link.classList.contains(className)).length > 0);
+		return link.classList.containsAnyOf(Transclude.permittedClassNames);
 	},
 
 	allIncludeLinksInContainer: (container) => {
