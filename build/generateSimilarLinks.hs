@@ -3,22 +3,25 @@
 
 module Main where
 
-import Control.Monad (when, unless)
+import Control.Monad (unless)
 import Data.Containers.ListUtils (nubOrd)
 import Data.List (sort)
 import qualified Control.Monad.Parallel as Par (mapM_)
 import System.Environment (getArgs)
+import Data.Map.Strict as M (fromList, lookup, keys, filter)
 
-import GenerateSimilar (bestNEmbeddings, embed, embeddings2Forest, findN, missingEmbeddings, readEmbeddings, similaritemExistsP, writeEmbeddings, writeOutMatch)
+import GenerateSimilar (bestNEmbeddings, iterationLimit, embed, embeddings2Forest, findN, missingEmbeddings, readEmbeddings, similaritemExistsP, writeEmbeddings, writeOutMatch, pruneEmbeddings)
 import LinkMetadata (readLinkMetadata)
 import Utils (printGreen)
 
 maxEmbedAtOnce :: Int
-maxEmbedAtOnce = 100
+maxEmbedAtOnce = 50
 
 main :: IO ()
 main = do md  <- readLinkMetadata
+          let mdl = sort $ M.keys $ M.filter (\(_,_,_,_,_,abst) -> abst /= "") md -- to iterate over the annotation database's URLs, and skip outdated URLs still in the embedding database
           edb <- readEmbeddings
+          let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
           printGreen "Read databases."
 
           -- update for any missing embeddings, and return updated DB for computing distances & writing out fragments:
@@ -29,9 +32,11 @@ main = do md  <- readLinkMetadata
                        newEmbeddings <- mapM (embed edb) todo
                        printGreen "Generated embeddings."
                        let edb' = nubOrd (edb ++ newEmbeddings)
-                       writeEmbeddings edb'
+                       -- clean up by removing any outdated embeddings whose path/URL no longer corresponds to any annotations (typically because renamed):
+                       let edb'' = pruneEmbeddings md edb'
+                       writeEmbeddings edb''
                        printGreen "Wrote embeddings."
-                       return edb'
+                       return edb''
 
           -- if we are only updating the embeddings, then we stop there and do nothing more. (This
           -- is useful for using `inotifywait` (from 'inotifytools' Debian package) to 'watch' the
@@ -48,14 +53,24 @@ main = do md  <- readLinkMetadata
           -- whenever one is modified, kill the monitor, wait 10s, and check for new annotations to
           -- embed & save; if nothing, exit & restart the monitoring.']
           args <- getArgs
-          when (args /= ["--update-only-embeddings"]) $ do
+          unless (args == ["--update-only-embeddings"]) $ do
             -- Otherwise, we keep going & compute all the suggestions.
             -- rp-tree supports serializing the tree to disk, but unclear how to update it, and it's fast enough to construct that it's not a bottleneck, so we recompute it from the embeddings every time.
-            let ddb  = embeddings2Forest edb''
+            ddb <- embeddings2Forest edb''
             printGreen "Begin computing & writing out missing similarity-rankings…"
-            Par.mapM_ (\e@(f,_,_,_,_) -> (do exists <- similaritemExistsP f
-                                             unless exists $ writeOutMatch md $ findN ddb bestNEmbeddings e))
-              edb''
+            Par.mapM_ (\f -> do exists <- similaritemExistsP f
+                                unless exists $
+                                             case M.lookup f edbDB of
+                                               Nothing        -> return ()
+                                               Just (b,c,d,e) -> do let nmatches = findN ddb bestNEmbeddings iterationLimit (f,b,c,d,e)
+                                                                    writeOutMatch md nmatches
+                      )
+              mdl
             printGreen "Wrote out missing. Now writing out changed…"
-            Par.mapM_ (writeOutMatch md . findN ddb bestNEmbeddings) edb''
+            Par.mapM_ (writeOutMatch md . findN ddb bestNEmbeddings iterationLimit) edb''
+            Par.mapM_ (\f -> case M.lookup f edbDB of
+                                   Nothing        -> return ()
+                                   Just (b,c,d,e) -> writeOutMatch md (findN ddb bestNEmbeddings iterationLimit (f,b,c,d,e))
+                                  )
+              mdl
             printGreen "Done."
