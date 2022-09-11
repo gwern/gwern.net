@@ -1143,6 +1143,22 @@ addContentLoadHandler(bindNoteHighlightEventsToCitations, "eventListeners");
 /* LINK BIBLIOGRAPHY */
 /*********************/
 
+function uniquelyIdentifyLinkBibliographyEntries(loadEventInfo) {
+    GWLog("uniquelyIdentifyLinkBibliographyEntries", "rewrite.js", 1);
+
+	if (loadEventInfo.document.parentElement == null)
+		return;
+
+	let bodyClass = loadEventInfo.baseLocation.pathname.slice(1);
+	loadEventInfo.document.querySelectorAll("#link-bibliography > ol").forEach(list => {
+		for (let i = 0; i < list.children.length; i++) {
+			list.children[i].id = `${CSS.escape(bodyClass)}-link-bibliography-entry-${(i + 1)}`;
+		}
+	});
+}
+
+addContentLoadHandler(uniquelyIdentifyLinkBibliographyEntries, "rewrite", (info) => info.needsRewrite);
+
 /*******************************************/
 /*  Add a TOC link to the link bibliography.
  */
@@ -1175,7 +1191,8 @@ function qualifyAnchorLinks(loadEventInfo) {
 		if (   (   link.getAttribute("href").startsWith("#")
 				|| link.pathname == loadEventInfo.loadLocation.pathname)
 			&& (   loadEventInfo.isMainDocument
-				|| null != loadEventInfo.document.querySelector(selectorFromHash(link.hash)))) {
+				|| null != loadEventInfo.document.querySelector(selectorFromHash(link.hash))
+				|| loadEventInfo.document == loadEventInfo.document.closest(selectorFromHash(link.hash)))) {
 			link.pathname = loadEventInfo.baseLocation.pathname;
 		} else if (link.getAttribute("href").startsWith("#")) {
 			link.pathname = loadEventInfo.loadLocation.pathname;

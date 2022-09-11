@@ -216,9 +216,20 @@ function includeContent(includeLink, content) {
 	//	Prevent race condition, part I.
 	includeLink.classList.add("include-in-progress");
 
-	//	Inject.
+	//	Wrap (unwrapping first, if need be).
 	let wrapper = newElement("SPAN", { "class": "include-wrapper" });
-	wrapper.appendChild(content);
+	if (   includeLink.classList.contains("include-unwrap")
+		&& includeLink.hash > "") {
+		let section = content.querySelector(selectorFromHash(includeLink.hash));
+		if (section) {
+			wrapper.append(...(section.childNodes));
+			wrapper.id = section.id;
+		}
+	} else {
+		wrapper.append(content);
+	}
+
+	//	Inject.
 	let replaceContainer = (includeLink.parentElement.parentElement != null
 							&& (   includeLink.classList.contains("include-replace-container")
 								|| (   isOnlyChild(includeLink)
@@ -736,9 +747,7 @@ Transclude = {
 
 			let section = content.querySelector(selectorFromHash(includeLink.hash));
 			if (section)
-				content = includeLink.classList.contains("include-unwrap")
-						  ? newDocument(section.childNodes)
-						  : newDocument(section);
+				content = newDocument(section);
 		} else if (anchors.length == 2) {
 			//	PmWiki-like transclude range syntax.
 
