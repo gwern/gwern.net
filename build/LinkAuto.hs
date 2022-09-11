@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-09-10 18:40:09 gwern"
+When:  Time-stamp: "2022-09-11 17:11:22 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -75,10 +75,12 @@ import Typography (mergeSpaces)
 
 -- turn first instance of a list of regex matches into hyperlinks in a Pandoc document. NOTE: this is best run as early as possible, because it is doing raw string matching, and any formatting or changing of phrases may break a match, but after running link syntax rewrites like the interwiki links (otherwise you'll wind up inserting WP links into pages that already have that WP link, just linked as `[foo](!W)`.)
 linkAuto :: Pandoc -> Pandoc
-linkAuto = linkAutoFiltered id
+linkAuto p@(Pandoc _ []) = p
+linkAuto p = linkAutoFiltered id p
 
 -- wrapper convenience function: run LA over a HTML string, return HTML string
 linkAutoHtml5String :: String -> String
+linkAutoHtml5String "" = ""
 linkAutoHtml5String s = let clean = runPure $ do
                                    pandoc <- readHtml def{readerExtensions=pandocExtensions} (T.pack s)
                                    let pandoc' = linkAuto pandoc
@@ -1144,7 +1146,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Mm]ultiple discover(y|ies)", "https://en.wikipedia.org/wiki/Multiple_discovery")
         , ("([Gg]enerali([zs]ed)? [Ll]inear [Mm]odels?|GLMs?)", "https://en.wikipedia.org/wiki/Generalized_linear_model")
         , ("[Mm]ultivariate linear model", "https://en.wikipedia.org/wiki/Multivariate_linear_model")
-        , ("[Mm]utation load", "https://en.wikipedia.org/wiki/Mutation_load")
+        , ("([Mm]utation load|[Gg]enetic load)", "https://en.wikipedia.org/wiki/Genetic_load")
         , ("[Mm]yxoma virus", "https://en.wikipedia.org/wiki/Myxoma_virus")
         , ("[Nn]-grams?", "https://en.wikipedia.org/wiki/N-grams")
         , ("[Nn][- ]?body problems?", "https://en.wikipedia.org/wiki/N-body_problem")
@@ -1318,4 +1320,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("fMRIs?( machine| study| experiment| data| task| responses)", "https://en.wikipedia.org/wiki/Functional_magnetic_resonance_imaging")
         , ("MuJoCo", "https://mujoco.org/")
         , ("VQGAN", "https://compvis.github.io/taming-transformers/")
+        , ("(JAX|Jax)", "https://en.wikipedia.org/wiki/Google_JAX")
+        , ("([Ee]volution [Ss]trategy|[Ee]volution [Ss]trategies)", "https://en.wikipedia.org/wiki/Evolution_strategy")
+        , ("Rainbow DQN", "https://arxiv.org/abs/1710.02298#deepmind")
         ]

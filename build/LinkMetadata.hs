@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-11 13:09:14 gwern"
+When:  Time-stamp: "2022-09-11 15:44:04 gwern"
 License: CC-0
 -}
 
@@ -2118,7 +2118,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(\\log n\\)</span>", "log <em>n</em>")
           , ("$\\mathcal{O}(log n)$", "𝒪(log <em>n</em>)")
           , ("<span class=\"math inline\">\\(\\mathcal{O}(L^2)\\)</span>", "𝑂(<em>L</em><sup>2</sup>)")
-          , ("<span class=\"math inline\">\\(\\mathcal{O}(L\\log(L))\\)</span>", "𝑂(log(<em>L</em>))")
+          , ("<span class=\"math inline\">\\(\\mathcal{O}(L\\log(L))\\)</span>", "𝑂(log <em>L</em>)")
           , ("<span class=\"math inline\">\\(\\mathcal{O}(L\\sqrt{L})\\)</span>", "𝑂(√<em>L</em>)")
           , ("<span class=\"math inline\">\\(\\mathcal{O}(1/\\sqrt{d})\\)</span>", "𝑂(1⁄√<em>d</em>)")
           , ("<span class=\"math inline\">\\(\\mathcal{O}(n\\log n)\\)</span>", "𝒪(<em>n</em> log <em>n</em>)")
@@ -3044,6 +3044,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("Fr’echet", "Fréchet")
           , ("Frechet", "Fréchet")
           , ("h20ttps://", "https://")
+          , ("mm(2)", "mm<sup>2</sup>")
           , ("²", "<sup>2</sup>")
           , ("₂", "<sub>2</sub>")
           , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
