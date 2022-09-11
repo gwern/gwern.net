@@ -1196,7 +1196,8 @@ function qualifyAnchorLinks(loadEventInfo) {
 				|| link.pathname == loadEventInfo.loadLocation.pathname)
 			&& (   loadEventInfo.isMainDocument
 				|| null != loadEventInfo.document.querySelector(selectorFromHash(link.hash))
-				|| loadEventInfo.document == loadEventInfo.document.closest(selectorFromHash(link.hash)))) {
+				|| (   loadEventInfo.document instanceof Element
+					&& loadEventInfo.document == loadEventInfo.document.closest(selectorFromHash(link.hash))))) {
 			link.pathname = loadEventInfo.baseLocation.pathname;
 		} else if (link.getAttribute("href").startsWith("#")) {
 			link.pathname = loadEventInfo.loadLocation.pathname;
