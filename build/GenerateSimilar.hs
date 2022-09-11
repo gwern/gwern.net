@@ -8,7 +8,7 @@ import qualified Data.Text as T  (append, intercalate, length, pack, strip, take
 import Data.List ((\\), intercalate,  nub)
 import Utils (replace, replaceManyT)
 import Data.Maybe (fromJust)
-import qualified Data.Map.Strict as M (filter, keys, lookup)
+import qualified Data.Map.Strict as M (filter, keys, lookup, fromList, toList, difference, withoutKeys)
 import System.Directory (doesFileExist, renameFile)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Read (readMaybe)
@@ -19,10 +19,12 @@ import System.Exit (ExitCode(ExitFailure))
 import qualified Data.Binary as DB (decodeFileOrFail, encodeFile)
 import Network.HTTP (urlEncode)
 import System.FilePath (takeBaseName)
+import Control.Monad (when)
+import Data.Set as S (fromList)
 
 import qualified Data.Vector as V (toList, Vector)
 import Control.Monad.Identity (runIdentity, Identity)
-import Data.RPTree (knn, forest, metricL2, rpTreeCfg, fpMaxTreeDepth, fpDataChunkSize, fpProjNzDensity, fromListDv, DVector, Embed(..), RPForest)
+import Data.RPTree (knn, forest, metricL2, rpTreeCfg, fpMaxTreeDepth, fpDataChunkSize, fpProjNzDensity, fromListDv, DVector, Embed(..), RPForest, serialiseRPForest)
 import Data.Conduit (ConduitT)
 import Data.Conduit.List (sourceList)
 
@@ -37,15 +39,19 @@ singleShotRecommendations html =
      edb <- readEmbeddings
 
      newEmbedding <- embed [] ("",("","","","",[],html))
-     let ddb  = embeddings2Forest (newEmbedding:edb)
-     let (_,n) = (findN ddb (2*bestNEmbeddings) newEmbedding) :: (String,[(String,Double)])
+     ddb <- embeddings2Forest (newEmbedding:edb)
+     let (_,n) = findN ddb (2*bestNEmbeddings) iterationLimit newEmbedding :: (String,[(String,Double)])
 
-     let matchListHtml = (generateMatches md "" html n) :: T.Text
+     let matchListHtml = generateMatches md "" html n :: T.Text
      return matchListHtml
 
 -- how many results do we want?
 bestNEmbeddings :: Int
 bestNEmbeddings = 15
+
+-- prevent pathological loops by requesting no more than i times:
+iterationLimit :: Int
+iterationLimit = 4
 
 type Embedding  = (String, -- URL/path
                     Integer, -- Age: date created -- ModifiedJulianDay, eg. 2019-11-22 = 58810. Enables expiring
@@ -72,6 +78,14 @@ writeEmbeddings es = do tempf <- emptySystemTempFile "hakyll-embeddings"
                         es' <- readEmbeddingsPath tempf
                         if length es' < 1 then error "Embeddings corrupted! Not writing out." else renameFile tempf embeddingsPath
 
+-- remove all embeddings without a corresponding Metadata entry; this generally means that it is a 'stale' embedding, corresponding to an outdated
+-- URL, and so is a false positive or bloating the embeddings database.
+pruneEmbeddings :: Metadata -> Embeddings -> Embeddings
+pruneEmbeddings md edb = let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
+                             invalidEmbeddings = S.fromList $ M.keys $ M.difference edbDB md
+                             validEdbDB = M.withoutKeys edbDB invalidEmbeddings
+                             in map (\(a,(b,c,d,e)) -> (a,b,c,d,e)) $ M.toList validEdbDB
+
 missingEmbeddings :: Metadata -> Embeddings -> [(String, MetadataItem)]
 missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, tags, abst) -> length (t++aut++show tags++abst) > minimumLength) md
                                urlsEmbedded = map (\(u,_,_,_,_) -> u) edb :: [String]
@@ -90,7 +104,7 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
           if aut=="" then "" else ", by "++authorsTruncate aut ++
           if dt==""then "." else" ("++dt++").",
 
-          if null tags then "" else "Subject: "++(intercalate ", " tags) ++ ".",
+          if null tags then "" else "Subject: " ++ intercalate ", " tags ++ ".",
 
           replace "<hr />" "" abst]
         parsedEither = let parsed = runPure $ readHtml def{readerExtensions = pandocExtensions } document
@@ -148,8 +162,12 @@ type Forest = RPForest Double (V.Vector (Embed DVector Double String))
 -- > hyperparameterSweep edb
 -- [(0.8555555555555556,(60,1,32)),(0.46888888888888886,(21,5,12))]
 -- TODO: I am not sure why it keeps picking '1' tree as optimum, and that seems like it might be related to the instances where no hits are returned?
-embeddings2Forest :: Embeddings -> Forest
-embeddings2Forest = embeddings2ForestConfigurable 60 2 32
+embeddings2Forest :: Embeddings -> IO Forest
+embeddings2Forest e = do let f = embeddings2ForestConfigurable 60 2 32 e
+                         let fl = serialiseRPForest f
+                         print ("Forest length: " ++ show (length fl))
+                         when (null fl) $ error "embeddings2Forest: serialiseRPForest returned an invalid empty result on the output of embeddings2ForestConfigurable‽"
+                         return f
 
 embeddings2ForestConfigurable :: Int -> Int -> Int -> Embeddings -> Forest
 embeddings2ForestConfigurable ls nt pvd es =
@@ -159,7 +177,7 @@ embeddings2ForestConfigurable ls nt pvd es =
               (length $ (\(_,_,_,_,embedding) -> embedding) $ head es) -- dimension of each datapoint (eg. 1024 for ada-similarity embeddings, 12288 for davinci)
       nTrees = nt -- ???
       projectionVectorDimension = pvd -- ???
-      randSeed = 8
+      randSeed = 10
   in
     runIdentity $
     forest randSeed (fpMaxTreeDepth cfg) minLeafSize nTrees (fpDataChunkSize cfg) (fpProjNzDensity cfg) projectionVectorDimension $
@@ -180,17 +198,19 @@ findNearest :: Forest -> Int -> Embedding -> [(String,Double)]
 findNearest f k e = map (\(dist,Embed _ p) -> (p,dist)) $ knnEmbedding f k e
 
 -- we'll keep the distance to insert into the metadata for debugging purposes.
-findN :: Forest -> Int -> Embedding -> (String,[(String,Double)])
-findN f k e@(p1,_,_,_,_) = let results = take bestNEmbeddings $ nub $ filter (\(p2,_) -> p1 /= p2 && not (blackList p2)) $ findNearest f k e in
+findN :: Forest -> Int -> Int -> Embedding -> (String,[(String,Double)])
+findN _ 0 _ e = error ("findN called for k=0; embedding target: " ++ show e)
+findN _ _ 0 e = error ("findN failed to return enough candidates within iteration loop limit. Something went wrong! Embedding target: " ++ show e)
+findN f k iter e@(p1,_,_,_,_) = let results = take bestNEmbeddings $ nub $ filter (\(p2,_) -> p1 /= p2 && not (blackList p2)) $ findNearest f k e in
                  -- NOTE: 'knn' is the fastest (and most accurate?), but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
                  -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed…)
                  -- If that happens, back off and request more k up to a max of 50.
                  if k>50 then (p1, [])
-                 else if length results < bestNEmbeddings then findN f (k*2) e else (p1,results)
+                 else if length results < bestNEmbeddings then findN f (k*2) (iter - 1) e else (p1,results)
 
 -- some weird cases: for example, “Estimating the effect-size of gene dosage on cognitive ability across the coding genome” is somehow close to *every* embedding...?
 blackList :: String -> Bool
-blackList p = p `elem` ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554v1.full", "/docs/genetics/heritable/correlation/2019-kandler.pdf"]
+blackList p = p `elem` ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554v3.full", "/docs/genetics/heritable/correlation/2019-kandler.pdf"]
 
 -- hyperparameterSweep :: Embeddings -> [(Double, (Int,Int,Int))]
 -- hyperparameterSweep edb =
@@ -215,7 +235,7 @@ Data.RPTree.recallWith metricL2 f1 20 $ (\(_,_,embd) -> ((fromListDv embd)::DVec
 Data.RPTree.recallWith metricL2 f2 20 $ (\(_,_,embd) -> ((fromListDv embd)::DVector Double)) $ head edb
 
 findNearest f 20 $ head edb
-findN f 20 $ head edb
+findN f 20 iterationLimit $ head edb
 -}
 
 similaritemExistsP :: String -> IO Bool
