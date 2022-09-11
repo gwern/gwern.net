@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-09-03 10:50:11 gwern"
+When:  Time-stamp: "2022-09-06 15:43:42 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1222,5 +1222,11 @@ whiteList url
       , "https://magenta.tensorflow.org/perceiver-ar" -- low quality (audio embeds)
       , "https://hazyresearch.stanford.edu/sashimi-examples/" -- low quality (audio embeds)
       , "https://carolineec.github.io/informative_drawings/" -- low quality (video embeds)
+      , "https://parti.research.google/" -- low-quality (initial image carousel doesn't work)
+      , "https://unconventionality.github.io/" -- low-quality (interactive app breaks)
+      , "https://elicit.org/" -- homepage
+      , "https://yzqin.github.io/dexmv/" -- low-quality (video, GIF embeds break)
+      , "https://nitter.hu/hausman_k/status/1511152160695730181" -- low quality (video embeds)
+      , "https://say-can.github.io/" -- low quality (video embeds)
       ] = True
     | otherwise = False

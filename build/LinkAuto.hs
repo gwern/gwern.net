@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
-module LinkAuto (linkAuto, linkAutoFiltered, cleanUpDivsEmpty) where
+module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmpty) where
 
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-08-30 20:27:56 gwern"
+When:  Time-stamp: "2022-09-10 18:40:09 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -48,13 +48,13 @@ import Data.Char (isPunctuation)
 import Data.List (nub, sortBy)
 import Data.List.Split (chunksOf)
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
-import qualified Data.Text as T (append, head, intercalate, length, last, replace, singleton, tail, init, Text)
+import qualified Data.Text as T (append, head, intercalate, length, last, replace, singleton, tail, init, pack, unpack, Text)
 import Control.Concurrent (getNumCapabilities)
 import Control.Parallel.Strategies (parMap, rseq)
 import Control.Monad.State (evalState, get, put, State)
 import System.IO.Unsafe (unsafePerformIO)
 
-import Text.Pandoc (topDown, nullAttr, Pandoc(..), Inline(Link,Image,Code,Span,Str), Block(Div))
+import Text.Pandoc (topDown, nullAttr, readerExtensions, def, writeHtml5String, pandocExtensions, runPure, readHtml, Pandoc(..), Inline(Link,Image,Code,Span,Str), Block(Div))
 import Text.Pandoc.Walk (walkM, walk)
 import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness/segfault/strange-closure issues (native Text, and useful splitting), so to save my sanity... BUG: TDFA seems to have slow Text instances: https://github.com/haskell-hvr/regex-tdfa/issues/9
 
@@ -77,11 +77,21 @@ import Typography (mergeSpaces)
 linkAuto :: Pandoc -> Pandoc
 linkAuto = linkAutoFiltered id
 
+-- wrapper convenience function: run LA over a HTML string, return HTML string
+linkAutoHtml5String :: String -> String
+linkAutoHtml5String s = let clean = runPure $ do
+                                   pandoc <- readHtml def{readerExtensions=pandocExtensions} (T.pack s)
+                                   let pandoc' = linkAuto pandoc
+                                   fmap T.unpack $ writeHtml5String def pandoc'
+                             in case clean of
+                                  Left e -> error $ show e ++ " : " ++ s
+                                  Right output -> output
+
 -- if we want to run on just a subset of links (eg. remove all resulting links to Wikipedia, or delete a specific regexp match), we can pass in a filter:
 linkAutoFiltered :: ([(T.Text, T.Text)] -> [(T.Text, T.Text)]) -> Pandoc -> Pandoc
 linkAutoFiltered subsetter p =
   let plain = simplifiedDoc p :: T.Text -- cache the plain text of the document
-  in if T.length plain < 1500 then p else
+  in
        let customDefinitions' = filterMatches plain $ filterDefinitions p (customDefinitions subsetter) in
          if null customDefinitions' then p else topDown cleanUpDivsEmpty $ topDown cleanUpSpansLinkAutoSkipped $ cleanupNestedLinks $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
 
@@ -162,6 +172,7 @@ defineLinks dict is = concatMap go $ mergeSpaces is
                        let frst = T.head matched in let lst = T.last matched in
                         (if frst == ' ' || isPunctuation frst then
                                         if lst == ' ' || isPunctuation lst then
+                                          -- NOTE: we do *not* set .backlink-not because we want automatic links to count just as much as a hand-written link (eg if an Arxiv abstract mentions GPT-3, then when it gets auto-linked to Brown et al 2020, then that should count just as much as if I had edited the abstract by hand - both mentions are relevant and should show up in Brown et al 2020's backlinks); cases where backlinks are not desirable from a link should be handled elsewhere, like Wikipedia links where backlinks are undesirable & that is already handled by the interwiki code
                                           [Str $ T.singleton frst, Link ("",["link-auto"],[]) [Str $ T.init $ T.tail matched] (defn, ""), Str $ T.singleton lst] else
                                           [Str $ T.singleton frst, Link ("",["link-auto"],[]) [Str $ T.tail matched] (defn, "")]
                                       else if lst == ' ' || isPunctuation lst then

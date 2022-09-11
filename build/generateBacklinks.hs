@@ -79,7 +79,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                           callers
                                        let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-local"] else ["link-annotated"]) callers
                                        let callers' = zip3 callers callerClasses callerTitles
-                                       let content = BulletList $
+                                       let content = BulletList $ -- critical to insert .backlink-not or we might get weird recursive blowup!
                                             map (\(u,c,t) -> [Para [Link ("", "id-not":"backlink-not":c, [])
                                                                   [RawInline (Format "html") t]
                                                                   (if isLocalPath u then u`T.append`selfIdent else u, "")]
@@ -93,7 +93,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                   in case htmlEither of
                                                               Left e -> error $ show target ++ show callers ++ show e
                                                               Right output -> output
-                                       let backLinksHtmlFragment = if length calls' <= 3 then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
+                                       let backLinksHtmlFragment = if length callers' <= 3 then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
                                        writeUpdatedFile "backlink" f backLinksHtmlFragment
 
 parseAnnotationForLinks :: T.Text -> MetadataItem -> [(T.Text,T.Text)]
