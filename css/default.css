@@ -2475,6 +2475,7 @@ span.link-bibliography a {
     }
 }
 
+
 /*****************/
 /* MULTI-COLUMNS */
 /*****************/
@@ -2509,6 +2510,11 @@ span.link-bibliography a {
 .columns > ul figure {
     margin: 0 0 1.5em 0;
 }
+
+.columns ul {
+	padding-left: 1.5em;
+}
+
 
 /***************/
 /* ADMONITIONS */

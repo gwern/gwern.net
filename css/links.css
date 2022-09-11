@@ -169,7 +169,7 @@ a[data-link-icon-type*='text']::after {
     --link-icon-font-sans: Noto Emoji, Quivira, var(--GW-sans-serif-font-stack);
     --link-icon-font-mono: Noto Emoji, Quivira, var(--GW-monospaced-font-stack);
 
-    content: attr(data-link-icon);
+    content: "\2060" attr(data-link-icon);
     font-size: var(--link-icon-size);
     font-weight: 600;
     font-style: normal;
