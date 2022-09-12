@@ -6,7 +6,6 @@ module GenerateSimilar where
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str, Strong), Format(..), runPure, Pandoc(..))
 import qualified Data.Text as T  (append, intercalate, length, pack, strip, take, unlines, unpack, Text)
 import Data.List ((\\), intercalate,  nub)
-import Utils (replace, replaceManyT)
 import Data.Maybe (fromJust)
 import qualified Data.Map.Strict as M (filter, keys, lookup, fromList, toList, difference, withoutKeys)
 import System.Directory (doesFileExist, renameFile)
@@ -30,7 +29,7 @@ import Data.Conduit.List (sourceList)
 
 import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, safeHtmlWriterOptions)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, replaceManyT)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text

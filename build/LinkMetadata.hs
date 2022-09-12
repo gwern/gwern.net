@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-11 15:44:04 gwern"
+When:  Time-stamp: "2022-09-11 22:44:07 gwern"
 License: CC-0
 -}
 
@@ -508,7 +508,7 @@ generateAnnotationTransclusionBlock (f, (tle,aut,dt,doi,ts,_)) blp slp =
                                     backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
-                                    link = Link (lid, ["link-annotated", "include-annotation", "include-replace-container"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
+                                    link = Link (lid, ["link-annotated", "include-annotation", "include-replace-container", "include-no-spinner"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
                                 in
                                   [Para
                                        ([link,Str ","] ++
