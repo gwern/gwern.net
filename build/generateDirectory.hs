@@ -96,9 +96,9 @@ generateDirectory md dirs dir'' = do
   let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if not (captionText == "") then captionText else if not (altText == "") then altText else "") (head imageFirst))) ++ "'\n"
 
   let header = generateYAMLHeader parentDirectory' previous next tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
-  let directorySectionChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
-  let directorySectionSeeAlsos = generateDirectoryItems Nothing dir'' dirsSeeAlsos
-  let directorySection = Div ("see-alsos", ["directory-indexes", "columns", "directorySectionChildren"], []) [BulletList $ directorySectionChildren ++ directorySectionSeeAlsos]
+  let sectionDirectoryChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
+  let sectionDirectorySeeAlsos = generateDirectoryItems Nothing dir'' dirsSeeAlsos
+  let sectionDirectory = Div ("see-alsos", ["directory-indexes", "columns", "section-directory-children"], []) [BulletList $ sectionDirectoryChildren ++ sectionDirectorySeeAlsos]
 
   -- A tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at the ID '/docs/foo/index#manual-annotation'
   let abstract = case M.lookup ("/"++dir''++"index#manual-annotation") md of
@@ -108,7 +108,7 @@ generateDirectory md dirs dir'' = do
 
   let body = abstract ++
 
-             [Header 1 nullAttr [Str "See Also"]] ++ [directorySection] ++
+             [Header 1 nullAttr [Str "See Also"]] ++ [sectionDirectory] ++
 
              (if null titledLinks then [] else
                  -- NOTE: we need a <h1> for proper hierarchical tree, but that <h1> uses up a lot of visual space in popups/popins, and we can't just suppress *all* first-<h1>s, we only want to suppress the ones on directory/tag pages. So we define a new class 'display-pop-not', and the CSS (in default.css's popups section) will suppress that in popups/popins.
