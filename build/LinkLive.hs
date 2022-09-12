@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-09-10 18:52:20 gwern"
+When:  Time-stamp: "2022-09-12 11:45:24 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -923,6 +923,7 @@ goodDomainsSimple =
     , "www.unf.edu"
     , "palmerlab.org"
     , "jetpress.org"
+    , "mmlab.ie.cuhk.edu.hk"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com",
@@ -3292,6 +3293,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://jetpress.org/volume1/moravec.htm", True)
     , ("https://en.wikipedia.org/wiki/User:Gwern", True)
     , ("https://en.wikipedia.org/wiki/Talk:Small_caps", True)
+    , ("http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html", True)
     ]
 
 badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", False)

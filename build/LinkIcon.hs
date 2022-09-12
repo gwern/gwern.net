@@ -38,8 +38,8 @@ import Utils (host, writeUpdatedFile, hasKeyAL)
 -- precedence/overriding—while still generating CSS code from normal data (the test suite entries).
 rebuildSVGIconCSS :: IO ()
 rebuildSVGIconCSS = do unless (null linkIconTest) $ error ("Error! Link icons failed match! : " ++ show linkIconTest)
-                       let svgs1 = nubOrd $ map (\(_,icon,_) -> T.unpack icon) $ filter (\(_, _, icontype) -> icontype == "svg") (linkIconTestUnitsText)
-                       let svgs2 = nubOrd $ map (\(_,icon,_) -> T.unpack icon) $ filter (\(_, _, icontype) -> icontype == "svg") (linkIconTestUnitsLink)
+                       let svgs1 = nubOrd $ map (\(_,icon,_) -> T.unpack icon) $ filter (\(_, _, icontype) -> icontype == "svg") linkIconTestUnitsText
+                       let svgs2 = nubOrd $ map (\(_,icon,_) -> T.unpack icon) $ filter (\(_, _, icontype) -> icontype == "svg") linkIconTestUnitsLink
                        let svg = svgs1++svgs2
                        mapM_ (\s -> do existsP <- doesFileExist $ "static/img/icons/" ++ s ++ ".svg"
                                        unless existsP (error ("ERROR: SVG icon " ++ s ++ " does not exist!")))
@@ -283,6 +283,8 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "www.cs.utexas.edu/~EWD/" = aI "EWD" "text,tri,sans" -- Edsger W. Dijkstra, of course, wrote in sans
  | u'' "iopscience.iop.org" = aI "IOP" "text,tri,sans" -- <https://en.wikipedia.org/wiki/IOP_Publishing> Institute of Physics Publishing
  | u'' "80000hours.org" = aI "80k" "text,tri,sans" -- 80,000 Hours (Centre for Effective Altruism, FHI, Oxford)
+ | u' "www.ssc.wisc.edu/wlsresearch/" = aI "WLS" "text,tri,sans" -- Wisconsin Longitudinal Study
+ | u' "host.robots.ox.ac.uk/pascal/VOC" = aI "VOC" "text,tri,sans" -- PASCAL VOC (Visual Object Classes) machine learning image dataset/competition
 
  -- Quad-letter-square icons.
  | aU'' ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
@@ -466,6 +468,15 @@ isHostOrArchive :: T.Text -> T.Text -> Bool
 isHostOrArchive domain url = let h = host url in
                                 h == domain || ("/docs/www/"`T.append`domain) `T.isPrefixOf` url
 
+linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
+linkIconTestUnitsLink = [(Link ("", ["directory-indexes-upwards"],     []) [Str "Test"] ("/docs/index", "Link to parent directory (ascending)"),
+                           "arrow-up-left", "svg")
+                        , (Link ("", ["directory-indexes-downwards"],  []) [Str "Test"] ("/docs/zeo/index", "Link to child directory zeo (descending)"),
+                           "arrow-down-right", "svg")
+                          , (Link ("", ["directory-indexes-sideways"], []) [Str "Test"] ("/docs/ai/nn/transformer/alphafold/index", "Link to other directory ai/nn/transformer/alphafold (descending)"),
+                           "arrow-right", "svg")
+                          ]
+
 -- to find URLs worth defining new link icons for, pass through a list of URLs (perhaps extracted
 -- from the backlinks database) and return domains with at least `linkIconMin` matches. (Link icons
 -- are enough work that below a certain level of prevalence, they are not worthwhile even if completely
@@ -504,7 +515,7 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                      "bmk.sh","www.jstatsoft.org","www.japantimes.co.jp","www.impactcybertrust.org", "www.ex.org", "www.eetimes.com",
                      "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com",
                      "palladiummag.com", "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "www.silcom.com", "esolangs.org",
-                     "www.aiweirdness.com", "etherscan.io", "www.theringer.com"]
+                     "www.aiweirdness.com", "etherscan.io", "www.theringer.com", "cs.stanford.edu"]
         linkIconMin = 4 :: Int
 
 -- Test suite:
@@ -1038,13 +1049,6 @@ linkIconTestUnitsText =
          , ("/docs/ai/nn/rnn/1991-schmidhuber.pdf", "SMDH", "text,quad,sans")
          , ("https://www.bloomberg.com/news/features/2018-05-15/google-amazon-and-facebook-owe-j-rgen-schmidhuber-a-fortune","SMDH", "text,quad,sans")
          , ("https://www.nytimes.com/2016/11/27/technology/artificial-intelligence-pioneer-jurgen-schmidhuber-overlooked.html", "SMDH", "text,quad,sans")
+         , ("https://www.ssc.wisc.edu/wlsresearch/about/description.php", "WLS", "text,tri,sans")
+         , ("http://host.robots.ox.ac.uk/pascal/VOC/", "VOC", "text,tri,sans")
         ]
-
-linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
-linkIconTestUnitsLink = [(Link ("", ["directory-indexes-upwards"],     []) [Str "Test"] ("/docs/index", "Link to parent directory (ascending)"),
-                           "arrow-up-left", "svg")
-                        , (Link ("", ["directory-indexes-downwards"],  []) [Str "Test"] ("/docs/zeo/index", "Link to child directory zeo (descending)"),
-                           "arrow-down-right", "svg")
-                          , (Link ("", ["directory-indexes-sideways"], []) [Str "Test"] ("/docs/ai/nn/transformer/alphafold/index", "Link to other directory ai/nn/transformer/alphafold (descending)"),
-                           "arrow-right", "svg")
-                          ]

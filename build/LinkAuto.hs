@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-09-11 17:11:22 gwern"
+When:  Time-stamp: "2022-09-12 12:54:16 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -375,7 +375,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Pretty Good Privacy|PGP)", "https://en.wikipedia.org/wiki/Pretty_Good_Privacy")
         , ("(PubMed|PMC)", "https://en.wikipedia.org/wiki/PubMed")
         , ("(RNN|[Rr]ecurrent [Nn]eural [Nn]etwork|[Rr]ecurrent network)", "https://en.wikipedia.org/wiki/Recurrent_neural_network")
-        , ("(ResNet-(18|34|50|101|152)|[Rr]es[Nn]et|[Rr]esidual[ -][Nn]etwork)s?", "https://arxiv.org/abs/1512.03385#microsoft")
+        , ("(ResNet-?(18|34|50|101|152)|[Rr]es[Nn]et|[Rr]esidual[ -][Nn]etwork)s?", "https://arxiv.org/abs/1512.03385#microsoft")
         , ("(Richard Hamming|Hamming)", "https://en.wikipedia.org/wiki/Richard_Hamming")
         , ("(SAD|Seasonal [Aa]ffective [Dd]isorder)", "https://en.wikipedia.org/wiki/Seasonal_affective_disorder")
         , ("(SCZ|[Ss]chizophreni[ac]s?)", "https://en.wikipedia.org/wiki/Schizophrenia")
@@ -964,7 +964,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Unsong", "https://unsongbook.com/")
         , ("Usenet", "https://en.wikipedia.org/wiki/Usenet")
         , ("V100", "https://en.wikipedia.org/wiki/Volta_(microarchitecture)#Products")
-        , ("VGG(-?16)", "https://arxiv.org/abs/1409.1556")
+        , ("VGG(-?1[169])", "https://arxiv.org/abs/1409.1556") -- VGG-11/VGG-16/VGG-19
         , ("([Vv]ector [Qq]uantized [Vv]ariational [Aa]uto[Ee]ncoder|VQ-VAE)(-?[:graph:]+)?.?", "https://arxiv.org/abs/1906.00446#deepmind")
         , ("Vi[Zz][Dd]oom", "https://arxiv.org/abs/1605.02097")
         , ("VideoGPT", "https://arxiv.org/abs/2104.10157")
@@ -1323,4 +1323,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(JAX|Jax)", "https://en.wikipedia.org/wiki/Google_JAX")
         , ("([Ee]volution [Ss]trategy|[Ee]volution [Ss]trategies)", "https://en.wikipedia.org/wiki/Evolution_strategy")
         , ("Rainbow DQN", "https://arxiv.org/abs/1710.02298#deepmind")
+        , ("CIFAR-10", "https://en.wikipedia.org/wiki/CIFAR-10")
+        , ("CIFAR-100", "https://www.cs.toronto.edu/~kriz/cifar.html")
         ]

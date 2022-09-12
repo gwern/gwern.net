@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-11 22:44:07 gwern"
+When:  Time-stamp: "2022-09-12 12:44:32 gwern"
 License: CC-0
 -}
 
@@ -2267,6 +2267,14 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(\\boldsymbol{sponge} \\sim\\boldsymbol{examples}\\)</span>", "<strong>sponge examples</strong>")
           , ("<span class=\"math inline\">\\(\\kappa\\)</span>", "𝜅")
           , (" <span class=\"math inline\">\\(\\unicode{x2014}\\)</span> ", "—")
+          , ("<span class=\"math inline\">\\(x_i \\in {\\mathbb R}^p\\)</span>", "<em>x<sub>i</sub></em> ∈ ℝ<sup><em>p</em></sup>")
+          , ("<span class=\"math inline\">\\(x_i = \\Sigma^{1/2} z_i\\)</span>", "<em>x<sub>i</sub></em> = ∑<sup>1⁄2</sup><em>z<sub>i</sub></em>")
+          , ("<span class=\"math inline\">\\(z_i \\in {\\mathbb R}^p\\)</span>", "<em>z<sub>i</sub></em> ∈ ℝ<sup><em>p</em></sup>")
+          , ("<span class=\"math inline\">\\(x_i = \\varphi(W z_i)\\)</span>", "<em>x<sub>i</sub></em> = ϕ(<em>Wz<sub>i</sub></em>")
+          , ("<span class=\"math inline\">\\(z_i \\in {\\mathbb R}^d\\)</span>", "<em>z<sub>i</sub></em> ∈ ℝ<sup><em>d</em></sup>")
+          , ("<span class=\"math inline\">\\(W \\in {\\mathbb R}^{p \\times d}\\)</span>", "<em>W</em> ∈ ℝ<sup><em>p</em>×<em>d</em></sup>")
+          , ("<span class=\"math inline\">\\(\\varphi\\)</span>", "ϕ")
+          , ("<span class=\"math inline\">\\(W z_i\\)</span>", "<em>Wz<sub>i</sub></em>")
           , ("O((log n log log n)^2)", "𝑂(log<sup>2</sup> <em>n</em> log log <em>n</em>)")
           , ("O(m log^2 n)", "𝑂(<em>m</em> log <em>n</em> + <em>n</em> log<sup>2</sup> <em>n</em>)")
           , ("O(N) ", "𝑂(<em>N</em>) ")

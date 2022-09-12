@@ -58,7 +58,7 @@ else
     (cd ./static/ && git status && timeout 10m git pull --verbose 'https://gwern.obormot.net/static/.git/' master || true)
 
     bold "Executing string rewrite cleanups…" # automatically clean up some Gwern.net bad URL patterns, typos, inconsistencies, house-styles:
-    (gwsed 'https://mobile.twitter.com' 'https://twitter.com' && gwsed 'https://twitter.com/' 'https://nitter.hu/' && gwsed 'https://mobile.twitter.com/' 'https://nitter.hu/' && gwsed 'https://www.twitter.com/' 'https://nitter.hu/' && gwsed 'https://www.reddit.com/r/' 'https://old.reddit.com/r/' && gwsed 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/' && gwsed 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts' && gwsed '&hl=en' '' && gwsed '?hl=en&' '?' && gwsed '?hl=en' '' && gwsed '?usp=sharing' '' && gwsed '<p> ' '<p>' && gwsed 'EMBASE' 'Embase' && gwsed 'Medline' 'MEDLINE' && gwsed 'PsychINFO' 'PsycINFO' && gwsed 'http://web.archive.org/web/' 'https://web.archive.org/web/' && gwsed 'https://youtu.be/' 'https://www.youtube.com/watch?v=' && gwsed '?via%3Dihub' '' && gwsed 'http://arxiv.org' 'https://arxiv.org' && gwsed '.html?pagewanted=all' '.html' && gwsed '(ie,' '(ie.' && gwsed '(ie ' '(ie. ' && gwsed '(i.e.,' '(ie.' && gwsed 'ie., ' 'ie. ' && gwsed '(i.e.' '(ie.' && gwsed '(eg, ' '(eg. ' && gwsed ' eg ' ' eg. ' && gwsed '(eg ' '(eg. ' && gwsed '[eg ' '[eg. ' && gwsed 'e.g. ' 'eg. ' && gwsed ' e.g. ' ' eg. ' && gwsed 'e.g.,' 'eg.' && gwsed 'eg.,' 'eg.' && gwsed ']^[' '] ^[' && gwsed 'et al. (' 'et al (' && gwsed ' et al. 1'  ' et al 1' && gwsed ' et al. 2'  ' et al 2' && gwsed ' et al., ' ' et al ' && gwsed 'et al., ' 'et al ' && sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' metadata/*.yaml  `find . -name "*.page" -or -name "*.yaml"` && sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g'  `find . -name "*.page" -or -name "*.yaml"` && gwsed '(cf ' '(cf. ' && gwsed ' cf ' ' cf. ' && gwsed ' _n_s' ' <em>n</em>s' && gwsed ' (n = ' ' (<em>n</em> = ' && gwsed ' (N = ' ' (<em>n</em> = ' && gwsed '<sup>St</sup>' '<sup>st</sup>' && gwsed '<sup>Th</sup>' '<sup>th</sup>' && gwsed '<sup>Rd</sup>' '<sup>rd</sup>' && gwsed ' de novo ' ' <em>de novo</em> ' && gwsed ' De Novo ' ' <em>De Novo</em> ' && gwsed ', Jr.' ' Junior' && gwsed ' Jr.' ' Junior' && gwsed ', Junior' ' Junior' && gwsed '.full-text' '.full' && gwsed '.full.full' '.full' && gwsed '.full-text' '.full' && gwsed '.full-text.full' '.full' && gwsed '.full.full.full' '.full' && gwsed '.full.full' '.full' && gwsed '#allen#allen' '#allen' && gwsed '#deepmind#deepmind' '#deepmind' && gwsed '&org=deepmind&org=deepmind' '&org=deepmind' && gwsed '#nvidia#nvidia' '#nvidia' && gwsed '#openai#openai' '#openai' && gwsed '#google#google' '#google' && gwsed '#uber#uber' '#uber' && gwsed 'MSCOCO' 'MS COCO' && gwsed '&feature=youtu.be' '' && gwsed 'Rene Girard' 'René Girard' && gwsed 'facebookok' 'facebook' && gwsed ':443/' '/' && gwsed 'border colly' 'border collie' && gwsed ':80/' '/' && gwsed '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P' && gwsed 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com' && gwsed '?s=r' '' && gwsed '?sd=pf' '' && gwsed 'backlinks-not' 'backlink-not' && gwsed ' <<a href' ' <a href' && gwsed 'Yann Le Cun' 'Yann LeCun' && gwsed ' GPT2' ' GPT-2' && gwsed '_X_s' '<em>X</em>s' && gwsed '_r_s' '<em>r</em>s' && gwsed 'Jorges Luis Borges' 'Jorge Luis Borges' && gwsed 'genomewide' 'genome-wide' && gwsed 'regularise' 'regularize' && gwsed ' VQVAE' ' VQ-VAE' && gwsed '# External links' '# External Links' && gwsed '# See also' '# See Also' && gwsed '"abstract-collapse abstract"' '"abstract abstract-collapse"' && gwsed 'cite-Author' 'cite-author' && gwsed 'cite-Date' 'cite-date' && gwsed 'cite-Joiner' 'cite-joiner' ) &> /dev/null &
+    (gwsed 'https://mobile.twitter.com' 'https://twitter.com' && gwsed 'https://twitter.com/' 'https://nitter.hu/' && gwsed 'https://mobile.twitter.com/' 'https://nitter.hu/' && gwsed 'https://www.twitter.com/' 'https://nitter.hu/' && gwsed 'https://www.reddit.com/r/' 'https://old.reddit.com/r/' && gwsed 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/' && gwsed 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts' && gwsed '&hl=en' '' && gwsed '?hl=en&' '?' && gwsed '?hl=en' '' && gwsed '?usp=sharing' '' && gwsed '<p> ' '<p>' && gwsed 'EMBASE' 'Embase' && gwsed 'Medline' 'MEDLINE' && gwsed 'PsychINFO' 'PsycINFO' && gwsed 'http://web.archive.org/web/' 'https://web.archive.org/web/' && gwsed 'https://youtu.be/' 'https://www.youtube.com/watch?v=' && gwsed '?via%3Dihub' '' && gwsed 'http://arxiv.org' 'https://arxiv.org' && gwsed '.html?pagewanted=all' '.html' && gwsed '(ie,' '(ie.' && gwsed '(ie ' '(ie. ' && gwsed '(i.e.,' '(ie.' && gwsed 'ie., ' 'ie. ' && gwsed '(i.e.' '(ie.' && gwsed '(eg, ' '(eg. ' && gwsed ' eg ' ' eg. ' && gwsed '(eg ' '(eg. ' && gwsed '[eg ' '[eg. ' && gwsed 'e.g. ' 'eg. ' && gwsed ' e.g. ' ' eg. ' && gwsed 'e.g.,' 'eg.' && gwsed 'eg.,' 'eg.' && gwsed ']^[' '] ^[' && gwsed 'et al. (' 'et al (' && gwsed ' et al. 1'  ' et al 1' && gwsed ' et al. 2'  ' et al 2' && gwsed ' et al., ' ' et al ' && gwsed 'et al., ' 'et al ' && sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' metadata/*.yaml  `find . -name "*.page" -or -name "*.yaml"` && sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g'  `find . -name "*.page" -or -name "*.yaml"` && gwsed '(cf ' '(cf. ' && gwsed ' cf ' ' cf. ' && gwsed ' _n_s' ' <em>n</em>s' && gwsed ' (n = ' ' (<em>n</em> = ' && gwsed ' (N = ' ' (<em>n</em> = ' && gwsed '<sup>St</sup>' '<sup>st</sup>' && gwsed '<sup>Th</sup>' '<sup>th</sup>' && gwsed '<sup>Rd</sup>' '<sup>rd</sup>' && gwsed ' de novo ' ' <em>de novo</em> ' && gwsed ' De Novo ' ' <em>De Novo</em> ' && gwsed ', Jr.' ' Junior' && gwsed ' Jr.' ' Junior' && gwsed ', Junior' ' Junior' && gwsed '.full-text' '.full' && gwsed '.full.full' '.full' && gwsed '.full-text' '.full' && gwsed '.full-text.full' '.full' && gwsed '.full.full.full' '.full' && gwsed '.full.full' '.full' && gwsed '#allen#allen' '#allen' && gwsed '#deepmind#deepmind' '#deepmind' && gwsed '&org=deepmind&org=deepmind' '&org=deepmind' && gwsed '#nvidia#nvidia' '#nvidia' && gwsed '#openai#openai' '#openai' && gwsed '#google#google' '#google' && gwsed '#uber#uber' '#uber' && gwsed 'MSCOCO' 'MS COCO' && gwsed '&feature=youtu.be' '' && gwsed 'Rene Girard' 'René Girard' && gwsed 'facebookok' 'facebook' && gwsed ':443/' '/' && gwsed 'border colly' 'border collie' && gwsed ':80/' '/' && gwsed '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P' && gwsed 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com' && gwsed '?s=r' '' && gwsed '?sd=pf' '' && gwsed 'backlinks-not' 'backlink-not' && gwsed ' <<a href' ' <a href' && gwsed 'Yann Le Cun' 'Yann LeCun' && gwsed ' GPT2' ' GPT-2' && gwsed '_X_s' '<em>X</em>s' && gwsed '_r_s' '<em>r</em>s' && gwsed 'Jorges Luis Borges' 'Jorge Luis Borges' && gwsed 'genomewide' 'genome-wide' && gwsed 'regularise' 'regularize' && gwsed ' VQVAE' ' VQ-VAE' && gwsed '# External links' '# External Links' && gwsed '# See also' '# See Also' && gwsed '"abstract-collapse abstract"' '"abstract abstract-collapse"' && gwsed 'cite-Author' 'cite-author' && gwsed 'cite-Date' 'cite-date' && gwsed 'cite-Joiner' 'cite-joiner' && gwsed ' residualis' ' residualiz' && gwsed 'CIFAR 10' 'CIFAR-10' ) &> /dev/null &
 
     bold "Compiling…"
     cd ./static/build
@@ -286,13 +286,13 @@ else
     wrap λ "Backlinks database broken?"
 
     λ(){ ANNOTATION_FILES_N=$(find ./metadata/annotations/ -maxdepth 1 -type f | wc --lines);
-         [ "$ANNOTATION_FILES_N"   -le 24900 ] && echo "$ANNOTATION_FILES_N"; }
+         [ "$ANNOTATION_FILES_N"   -le 25000 ] && echo "$ANNOTATION_FILES_N"; }
     wrap λ "Annotation files are missing?"
     λ(){ BACKLINKS_FILES_N=$(find ./metadata/annotations/backlinks/ -type f | wc --lines);
-         [ "$BACKLINKS_FILES_N"    -le 24900 ] && echo "$BACKLINKS_FILES_N"; }
+         [ "$BACKLINKS_FILES_N"    -le 24-00 ] && echo "$BACKLINKS_FILES_N"; }
     wrap λ "Backlinks files are missing?"
     λ(){ SIMILARLINKS_FILES_N=$(find ./metadata/annotations/similars/ -type f | wc --lines);
-         [ "$SIMILARLINKS_FILES_N" -le 24900 ] && echo "$SIMILARLINKS_FILES_N"; }
+         [ "$SIMILARLINKS_FILES_N" -le 9600 ] && echo "$SIMILARLINKS_FILES_N"; }
     wrap λ "Similar-links files are missing?"
 
     λ(){ egrep -e '#[[:alnum:]-]+#' -e '[[:alnum:]-]+##[[:alnum:]-]+' metadata/*.yaml metadata/*.hs; }
@@ -309,7 +309,7 @@ else
        }
     wrap λ "Stray or bad URL links in Markdown/HTML."
 
-    λ(){ (find metadata/annotations/ -name "*.html"; find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') \
+    λ(){ find metadata/annotations/ -name "*.html" \
              | shuf | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort -u | \
              egrep -v -e '^annotation-see-also$' -e '^archive-local$' -e '^archive-not$' -e '^author$' -e '^aux-links$' -e '^backlink-not$' \
                    -e '^backlinks$' -e '^backlinks-append$' -e '^backlinks-transclusion$' -e '^bash$' -e '^book-review-author$' \
@@ -324,7 +324,22 @@ else
                    -e '^link-auto-skipped$' -e '^link-live-not$' -e '^logotype-tex$' -e '^math$' -e '^icon-no$' -e '^odd$' -e '^page-thumbnail$' \
                    -e '^pascal$' -e '^python$' -e '^reader-mode-selector-inline$' -e '^smallcaps$' -e '^sourceCode$' -e '^subsup$' \
                    -e '^table-small$' -e '^TOC$' -e '^uri$' -e '^width-full$' -e '^at$' -e '^bu$' -e '^c1$' -e '^c2$' -e '^c3$' -e '^c4$' \
-                   -e '^c5$' -e '^c6$' -e '^c7$' -e '^cf$' -e '^co$' -e '^dv$' -e '^fu$' -e '^kw$' -e '^op$' -e '^s1$' -e '^st$'; }
+                   -e '^c5$' -e '^c6$' -e '^c7$' -e '^cf$' -e '^co$' -e '^dv$' -e '^fu$' -e '^kw$' -e '^op$' -e '^s1$' -e '^st$' -e '^reader-mode$' \
+                   -e '^scrape-abstract-not$'  -e '^abstract$' -e '^abstract-collapse$' -e '^adonition$' -e '^admonition-title$' \
+                   -e '^book-review-meta$' -e '^book-review-review$' -e '^tip$' -e '^xml$' -e '^warning$' -e '^al$' -e '^an$' -e '^bn$' \
+                   -e '^cn$' -e '^cv$' -e '^do$' -e '^dt$' -e '^er$' -e '^error$' -e '^ex$' -e '^fl$' -e '^im$' -e '^in$' -e '^ot$' -e '^pp$' \
+                   -e '^re$' -e '^sc$' -e '^ss$' -e '^va$' -e '^citation$' -e '^directory-indexes$' -e '^directory-indexes-sideways$' \
+                   -e '^display-pop-not$' -e '^footnote-back$' -e '^footnotes$' -e '^image-focus-not$' -e '^include-annotation$' \
+                   -e '^include-no-spinner$' -e '^include-replace-container$' -e '^include-replace-container-not$' -e '^include-unwrap$' \
+                   -e '^marginnote$' -e '^markdownBody$' -e '^mjpage$' -e '^mjpage__block$' -e '^mjx-base$' -e '^mjx-box$' -e '^MJXc-display$' \
+                   -e '^mjx-cell$' -e '^mjx-char$' -e '^mjx-charbox$' -e '^mjx-chtml$' -e '^MJXc-space1$' -e '^MJXc-space2$' -e '^MJXc-space3$' \
+                   -e '^MJXc-stacked$' -e '^MJXc-TeX-ams-R$' -e '^MJXc-TeX-cal-R$' -e '^MJXc-TeX-main-R$' -e '^MJXc-TeX-math-I$' \
+                   -e '^MJXc-TeX-size1-R$' -e '^MJXc-TeX-size2-R$' -e '^MJXc-TeX-size3-R$' -e '^MJXc-TeX-size4-R$' -e '^mjx-delim-h$' \
+                   -e '^mjx-delim-v$' -e '^mjx-denominator$' -e '^mjx-itable$' -e '^mjx-line$' -e '^mjx-math$' -e '^mjx-mfrac$' -e '^mjx-mi$' \
+                   -e '^mjx-mn$' -e '^mjx-mo$' -e '^mjx-mrow$' -e '^mjx-mspace$' -e '^mjx-msqrt$' -e '^mjx-mstyle$' -e '^mjx-msubsup$' \
+                   -e '^mjx-msup$' -e '^mjx-mtext$' -e '^mjx-munderover$' -e '^mjx-numerator$' -e '^mjx-op$' -e '^mjx-over$' -e '^mjx-row$' \
+                   -e '^mjx-stack$' -e '^mjx-sub$' -e '^mjx-sup$' -e '^mjx-surd$' -e '^mjx-texatom$' -e '^mjx-TeXmathchoice$' -e '^mjx-under$' \
+                   -e '^mjx-vsize$' -e '^new$' -e '^outline-not$' -e '^warning$' -e '^markdown-body$'; }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
@@ -339,7 +354,7 @@ else
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '<div>' | fgrep -v -e 'I got around this by adding in the Hakyll template an additional'; }
     wrap λ "Stray <div>?"
 
-    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.sallcaps}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating"; }
+    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"'; }
     wrap λ "Misspelled/outdated classes in Markdown/HTML."
 
      λ(){ find ./ -type f -name "*.page" | fgrep -v '/Variables' | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '{#'; }
@@ -412,7 +427,7 @@ else
 
     λ(){ fgrep --color=always -e ']{' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
             -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' -e '>>' \
-            -e '<abstract' -e '<em<' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' \
+            -e '<abstract' -e '<em<' -e '< em>' -e '<em.' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' \
             -e '</i></i>' -e '<i><i>' -e 'font-style:italic' -e '<p><p>' -e '</p></p>' -e 'fnref' \
             -e '<figure class="invertible">' -e '</a<' -e 'href="%5Bhttps' -e '<jats:inline-graphic' \
             -e '<figure-inline' -e '<small></small>' -e '<inline-formula' -e '<inline-graphic' -e '<ahref=' \
@@ -433,7 +448,7 @@ else
             -e '"!"' -e '</sub<' -e 'xref>' -e '<xref' -e '<e>' -e '\\$' -e 'title="http' -e '%3Csup%3E' -e 'sup%3E' -e ' et la ' \
             -e '<strong>Abstract' -e ' ]' -e "</a>’s" -e 'title="&#39; ' -e 'collapseAbstract' -e 'utm_' \
             -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -e ' : ' -e " ' " -e '>/>a' -e '</a></a>' -e '(, ' \
-            -e '&lt;figcaption' -e '{.}' -e ' ?' -- ./metadata/*.yaml;
+            -e '&lt;figcaption' -e '{.}' -e ' ?' -e ' ’’' -- ./metadata/*.yaml;
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
 
