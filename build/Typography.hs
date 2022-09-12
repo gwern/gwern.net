@@ -4,7 +4,7 @@
 -- 1. add link-live (cross-domain iframe popups) & link icon classes to links
 -- 2. adding line-break tags (`<wbr>` as Unicode ZERO WIDTH SPACE) to slashes so web browsers break at slashes in text
 -- 3. Adding classes to horizontal rulers (nth ruler modulo 3, allowing CSS to decorate it in a
---    cycling pattern, like `<div class="horizontalRule-nth-0"><hr></div>`/`class="horizontalRule-nth-1"`/`class="horizontalRule-nth-2"`/`class="horizontalRule-nth-0"`..., (the div wrapper is necessary because Pandoc's 'HorizontalRule' Block element supports no attributes)
+--    cycling pattern, like `<div class="horizontal-rule-nth-0"><hr></div>`/`class="horizontal-rule-nth-1"`/`class="horizontal-rule-nth-2"`/`class="horizontal-rule-nth-0"`..., (the div wrapper is necessary because Pandoc's 'HorizontalRule' Block element supports no attributes)
 --    like a repeating pattern of stars/moon/sun/stars/moon/sun... CSS can do this with :nth, but only
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
@@ -376,7 +376,7 @@ rulersCycle modulus doc = evalState (walkM addHrNth doc) 0
          count <- get
          put (count + 1)
          let nth = count `mod` modulus
-         let nthClass = T.pack $ "horizontalRule" ++ "-nth-" ++ show nth
+         let nthClass = T.pack $ "horizontal-rule" ++ "-nth-" ++ show nth
          return $ Div ("", [nthClass], []) [HorizontalRule]
        addHrNth x = return x
 

@@ -656,7 +656,7 @@ hr {
     display: flex;
 }
 
-[class^='horizontalRule'] {
+[class^='horizontal-rule'] {
     clear: both;
 }
 
@@ -665,14 +665,14 @@ hr::after {
     margin: auto;
 }
 hr::after,
-.horizontalRule-nth-0 hr::after {
+.horizontal-rule-nth-0 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg */
     content: url('/static/img/icons/sun-verginasun-black.svg');
     opacity: 0.87;
     width: 40px;
     height: 40px;
 }
-.horizontalRule-nth-1 hr::after {
+.horizontal-rule-nth-1 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg */
     /* NOTE: alternative moon icon is /static/img/icons/japanesecrest-oookashippouofoookatadasuke-sun.svg modified from https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg - while nice, it lacks the intense moire effect of the Vergina Sun */
     content: url('/static/img/icons/japanesecrest-tsukinihoshi-dottedmoon.svg');
@@ -680,12 +680,12 @@ hr::after,
     width: 25px;
     height: 25px;
 }
-.horizontalRule-nth-2 hr::after {
+.horizontal-rule-nth-2 hr::after {
     content: url('/static/img/icons/asterism-triplewhitestar.svg');
     width: 36px;
     height: 30px;
 }
-.horizontalRule-nth-2 {
+.horizontal-rule-nth-2 {
     filter: drop-shadow(0 0 0 currentColor);
 }
 
@@ -2738,7 +2738,7 @@ body.index #markdownBody section > h1:first-child a::after {
     body.index hr {
         margin: 1.5em 0 0;
     }
-    body.index [class^='horizontalRule'] {
+    body.index [class^='horizontal-rule'] {
         display: none;
     }
 }

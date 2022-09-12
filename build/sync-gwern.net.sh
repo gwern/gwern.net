@@ -119,7 +119,7 @@ else
     ## on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for
     ## making the rule a block dividing the two halves just doesn't work in any other way, but
     ## Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
-    sed -i -e 's/section id=\"statistics\"/hr class="horizontalRule-nth-1" \/> <section id="statistics"/' ./_site/index
+    sed -i -e 's/section id=\"statistics\"/hr class="horizontal-rule-nth-1" \/> <section id="statistics"/' ./_site/index
 
     bold "Building sitemap.xml…"
     ## generate a sitemap file for search engines:
