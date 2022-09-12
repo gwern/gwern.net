@@ -98,7 +98,7 @@ generateDirectory md dirs dir'' = do
   let header = generateYAMLHeader parentDirectory' previous next tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
   let sectionDirectoryChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
   let sectionDirectorySeeAlsos = generateDirectoryItems Nothing dir'' dirsSeeAlsos
-  let sectionDirectory = Div ("see-alsos", ["directory-indexes", "columns", "section-directory-children"], []) [BulletList $ sectionDirectoryChildren ++ sectionDirectorySeeAlsos]
+  let sectionDirectory = Div ("see-alsos", ["directory-indexes", "columns"], []) [BulletList $ sectionDirectoryChildren ++ sectionDirectorySeeAlsos]
 
   -- A tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at the ID '/docs/foo/index#manual-annotation'
   let abstract = case M.lookup ("/"++dir''++"index#manual-annotation") md of
