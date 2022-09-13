@@ -883,6 +883,14 @@ Extracts = { ...Extracts,
         //  END EXPERIMENTAL SECTION
 
 		//	Transform URL for embedding.
+		/*	NOTE: the protocol *must* be https, not http; attempting to load 
+			http URLs from a page loaded over https, even in a shadow-root, will
+			fail with a “Mixed Content” error. This way, we force https, in the
+			hopes that the foreign site supports TLS, despite that the URL we’ve
+			got is http. Unfortunately, some sites do not in fact support TLS;
+			those sites will fail to load. This is unavoidable, and means that
+			such sites cannot be live-embedded.
+		 */
 		url.protocol = "https:";
 		for ([ test, transform ] of Extracts.foreignSiteEmbedURLTransforms) {
 			if (test(url)) {
