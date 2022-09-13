@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-12 16:56:15 gwern"
+When:  Time-stamp: "2022-09-12 21:20:23 gwern"
 License: CC-0
 -}
 
@@ -171,9 +171,6 @@ readLinkMetadataAndCheck = do
              let normalizedUrlsC = map (replace "https://" "" . replace "http://" "") urlsC
              when (length (nub (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "custom.yaml: Duplicate URLs!" ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
 
-             let brokenUrlsC = filter (\u -> null u || not (head u == 'h' || head u == '/') || (head u == '/' && "//" `isInfixOf` u) || ' ' `elem` u || '\'' `elem` u || '–' `elem` u || '—' `elem` u) urlsC
-             when (brokenUrlsC /= []) $ error $ "custom.yaml: Broken URLs: " ++ unlines brokenUrlsC
-
              let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,ts,_)) -> ts) custom
 
              let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> anyInfix doi ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'"] || "http" `isInfixOf` doi) custom in
@@ -209,6 +206,16 @@ readLinkMetadataAndCheck = do
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto) -- left-biased, so 'custom' overrides 'partial' overrides 'auto'
              let finalL = M.toList final
+
+             let urlsFinal = M.keys final
+             let brokenUrlsFinal = filter (\u -> null u ||
+                                            not (head u == 'h' || head u == '/' || anyPrefix u ["mailto:", "irc://", "rsync://"]) ||
+                                            (head u == '/' && "//" `isInfixOf` u) ||
+                                            ' ' `elem` u ||
+                                            ('—' `elem` u) -- EM DASH
+                                          )
+                                   urlsFinal
+             unless (null brokenUrlsFinal) $ error $ "YAML: Broken URLs: " ++ show brokenUrlsFinal
 
              let balancedQuotes = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (=='"') abst in
                                              count > 0 && (count `mod` 2 == 1) ) finalL
@@ -845,7 +852,9 @@ tagsLong2Short = [
           , ("radiance", "<em>Radiance</em>")
           , ("long-now", "Long Now")
           , ("japan", "Japan")
-          , ("japan/zeami", "Zeami")
+          , ("japan/poetry/zeami",    "Zeami Motokiyo")
+          , ("japan/poetry/shotetsu", "Shōtetsu")
+          , ("japan/poetry/teika",    "Fujiwara no Teika")
           , ("algernon", "Algernon's Law")
           , ("cs/haskell", "Haskell")
           , ("borges", "J. L. Borges")
@@ -953,7 +962,7 @@ linkDispatcher (Link _ _ (l, tooltip)) = do l' <- linkDispatcherURL (T.unpack l)
                                               Left Temporary -> return l'
 linkDispatcher x = error ("linkDispatcher passed a non-Link Inline element: " ++ show x)
 linkDispatcherURL :: Path -> IO (Either Failure (Path, MetadataItem))
-linkDispatcherURL l | anyPrefix l ["/metadata/annotations/backlinks/", "/metadata/annotations/similars/"] = return (Left Permanent)
+linkDispatcherURL l | anyPrefix l ["/metadata/annotations/backlinks/", "/metadata/annotations/similars/", "/docs/www/"] = return (Left Permanent)
                  -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for tags.
                  | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return $ Right (l, (wikipediaURLToTitle l, "", "", "", [], ""))
                  | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
@@ -1352,8 +1361,8 @@ generateID url author date
        , ("/docs/iq/2013-rietveld.pdf", "rietveld-et-al-2013-2")
        , ("/docs/iq/ses/2011-gensowski.pdf", "gensowski-et-al-2011-2")
        , ("/docs/iq/ses/2018-gensowski.pdf", "gensowski-2018-2")
-       , ("/docs/japanese/1999-keene-seedsintheheart-teika.pdf", "keene-1999-shotetsu")
-       , ("/docs/japanese/1999-keene-seedsintheheart-teika.pdf", "keene-1999-teika")
+       , ("/docs/japanese/poetry/teika/1999-keene-seedsintheheart-teika.pdf", "keene-1999-shotetsu")
+       , ("/docs/japanese/poetry/teika/1999-keene-seedsintheheart-teika.pdf", "keene-1999-teika")
        , ("/docs/japanese/2002-gibson", "gibson-mud-2")
        , ("/docs/longevity/2021-zhang.pdf", "zhang-et-al-2021-hair")
        , ("/docs/music-distraction/2012-perham.pdf", "perham-sykora-2012-2")
