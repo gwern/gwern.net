@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-09-12 12:54:16 gwern"
+When:  Time-stamp: "2022-09-13 11:02:15 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -313,7 +313,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Big [Ff]ive|OCEAN|Big 5)", "https://en.wikipedia.org/wiki/Big_Five_personality_traits")
         , ("(BigGAN(-deep)s?|Brock et al 2018)", "https://arxiv.org/abs/1809.11096#deepmind")
         , ("(CBT|[Cc]ognitive[ -][Bb]ehaviou?r(al)? [Tt]herap(y|ies))", "https://en.wikipedia.org/wiki/Cognitive_behavioral_therapy")
-        , ("(CNN|[Cc]onvolutional [Nn]eural [Nn]etwork)", "https://en.wikipedia.org/wiki/Convolutional_neural_network")
+        , ("(CNNs?|[Cc]onvolutional [Nn]eural [Nn]etworks?)", "https://en.wikipedia.org/wiki/Convolutional_neural_network")
         , ("(COCO|MS[- ]?COCO)", "https://arxiv.org/abs/1405.0312#microsoft")
         , ("(CURL|Curl|curl)", "https://en.wikipedia.org/wiki/CURL")
         , ("(Czeslaw Milosz|Czesław Miłosz|Miłosz|Milosz)", "https://en.wikipedia.org/wiki/Czeslaw_Milosz")
@@ -472,7 +472,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Aldous Huxley", "https://en.wikipedia.org/wiki/Aldous_Huxley")
         , ("Alexander Shulgin", "https://en.wikipedia.org/wiki/Alexander_Shulgin")
         , ("Alfred W. McCoy", "https://en.wikipedia.org/wiki/Alfred_W._McCoy")
-        , ("Allegrini et al 2018", "https://www.biorxiv.org/content/10.1101/418210v1.full")
+        , ("Allegrini et al 2018", "https://www.biorxiv.org/content/10.1101/418210.full")
         , ("Alpha ?Go", "https://en.wikipedia.org/wiki/AlphaGo")
         , ("AlphaGo Master", "https://en.wikipedia.org/wiki/Master_(software)")
         , ("Amanda Knox", "https://en.wikipedia.org/wiki/Amanda_Knox")
@@ -538,7 +538,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Carmen", "https://en.wikipedia.org/wiki/Carmen")
         , ("Catch-22", "https://en.wikipedia.org/wiki/Catch-22")
         , ("Catherynne M. Valente", "https://en.wikipedia.org/wiki/Catherynne_M._Valente")
-        , ("CelebA", "http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html")
+        , ("CelebA", "https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html")
         , ("Char Aznable", "https://en.wikipedia.org/wiki/Char_Aznable")
         , ("Charles Murray", "https://en.wikipedia.org/wiki/Charles_Murray_%28political_scientist%29")
         , ("Christopher Murray", "https://en.wikipedia.org/wiki/Christopher_J.L._Murray")
@@ -654,7 +654,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Galton's [Pp]roblem", "https://en.wikipedia.org/wiki/Galton%27s_problem")
         , ("Gary Drescher", "https://en.wikipedia.org/wiki/Gary_Drescher")
         , ("Gaussian process", "https://en.wikipedia.org/wiki/Gaussian_process")
-        , ("Ge et al 2016", "https://www.biorxiv.org/content/10.1101/070177v1.full")
+        , ("Ge et al 2016", "https://www.biorxiv.org/content/10.1101/070177.full")
         , ("Gene Wolfe", "https://en.wikipedia.org/wiki/Gene_Wolfe")
         , ("Genshiken", "https://en.wikipedia.org/wiki/Genshiken")
         , ("Geocities", "https://en.wikipedia.org/wiki/Geocities")

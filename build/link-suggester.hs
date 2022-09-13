@@ -389,7 +389,7 @@ whiteList = M.fromList [
       , "catnip GWAS"
       ]
     )
-  , ( "http://www.cs.toronto.edu/~fritz/absps/imagenet.pdf"
+  , ( "https://papers.nips.cc/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf"
     , [ "AlexNet"
       , "ImageNet Classification with Deep Convolutional Neural Networks', Krizhevsky et al 2012"
       ]
@@ -1073,21 +1073,21 @@ whiteList = M.fromList [
     , ( "https://www.amazon.com/Turings-Cathedral-Origins-Digital-Universe/dp/1400075998/"
       , [ "Turing\8217s Cathedral" ]
       )
-    , ( "https://www.biorxiv.org/content/10.1101/016477v2.full"
+    , ( "https://www.biorxiv.org/content/10.1101/016477.full"
       , [ "Eight thousand years of [human] natural selection in Europe" ]
       )
-    , ( "https://www.biorxiv.org/content/10.1101/078014v1.full"
+    , ( "https://www.biorxiv.org/content/10.1101/078014.full"
       , [ "Educational attainment and personality are genetically intertwined"
         ]
     )
-    , ( "https://www.biorxiv.org/content/10.1101/106203v1.full"
+    , ( "https://www.biorxiv.org/content/10.1101/106203.full"
     , [ "Genomic analysis of family data reveals additional genetic effects on intelligence and personality"
       , "Hill et al 2017"
       ]
-    ), ( "https://www.biorxiv.org/content/10.1101/106203v2.full"
+    ), ( "https://www.biorxiv.org/content/10.1101/106203.full"
     , [ "Genomic analysis of family data reveals additional genetic effects on intelligence and personality"
       ]
-    ), ( "https://www.biorxiv.org/content/10.1101/190124v3.full"
+    ), ( "https://www.biorxiv.org/content/10.1101/190124.full"
     , [ "Accurate Genomic Prediction Of Human Height"
       , "Lello et al 2017"
       ]

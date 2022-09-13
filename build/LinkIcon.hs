@@ -497,7 +497,7 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                      "forums.animesuki.com", "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.theregister.com",
                      "www.thedailybeast.com", "www.teanobi.com", "www.straighttalkonevidence.org", "www.joelonsoftware.com",
                      "www.jstage.jst.go.jp", "blog.codinghorror.com", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am",
-                     "ascii.textfiles.com", "blog.johantibell.com", "cardcaptor.moekaku.com", "humanvarieties.org", "ilovetypography.com",
+                     "ascii.textfiles.com", "blog.johantibell.com", "humanvarieties.org", "ilovetypography.com",
                      "new.cognitivefun.net", "findarticles.com", "dataprivacylab.org", "www.thefreelibrary.com", "www.unitedpharmacies-uk.md",
                      "www.petforums.co.uk", "www.e-codices.unifr.ch", "www.bartleby.com", "wellcomecollection.org", "darcs.net",
                      "annals.org", "www.smh.com.au", "www.rrauction.com", "www.replicatedtypo.com", "www.mangaupdates.com",
@@ -515,7 +515,7 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                      "bmk.sh","www.jstatsoft.org","www.japantimes.co.jp","www.impactcybertrust.org", "www.ex.org", "www.eetimes.com",
                      "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com",
                      "palladiummag.com", "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "www.silcom.com", "esolangs.org",
-                     "www.aiweirdness.com", "etherscan.io", "www.theringer.com", "cs.stanford.edu"]
+                     "www.aiweirdness.com", "etherscan.io", "www.theringer.com", "cs.stanford.edu", "mmlab.ie.cuhk.edu.hk"]
         linkIconMin = 4 :: Int
 
 -- Test suite:
@@ -547,8 +547,8 @@ linkIconTestUnitsText =
          , ("https://ar5iv.labs.arxiv.org/html/2112.11848",  "\120536","text")
          , ("https://www.bbc.com/news/business-43365710",  "BBC","text,tri,sans")
          , ("http://news.bbc.co.uk/2/hi/8448731.stm",  "BBC","text,tri,sans")
-         , ("https://www.biorxiv.org/content/10.1101/013896v2.full",  "chi-dna","svg")
-         , ("https://www.medrxiv.org/content/10.1101/2020.05.18.20100685v2.full",  "chi-dna","svg")
+         , ("https://www.biorxiv.org/content/10.1101/013896.full",  "chi-dna","svg")
+         , ("https://www.medrxiv.org/content/10.1101/2020.05.18.20100685.full",  "chi-dna","svg")
          , ("https://en.bitcoin.it/wiki/Witcoin",  "bitcoin","svg")
          , ("https://bitcointalk.org/index.php?topic=82952.0;all",  "bitcoin","svg")
          , ("https://www.blockchain.com/btc/address/15bD6fYs6p9D9wmniDtTBcQSyWXDYNDCwv", "bitcoin","svg")
@@ -683,7 +683,7 @@ linkIconTestUnitsText =
          , ("https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1000451",  "plos","svg")
          , ("https://speakingofmedicine.plos.org/2012/06/25/less-research-is-needed/",  "plos","svg")
          , ("https://journals.plos.org/plosmedicine/article/fetchObject.action?uri=info:doi/10.1371/journal.pmed.0020124.t004&representation=PNG_M",  "plos","svg")
-         , ("https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0023175&type=printable",  "plos","svg")
+         , ("https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0023175",  "plos","svg")
          , ("https://www.pnas.org/content/104/18/7582",  "PNAS","text,quad")
          , ("https://predictionbook.com/",  "?","text,sans,bold")
          , ("https://publicdomainreview.org/essay/the-lost-world-of-the-london-coffeehouse/",  "TPDR","text,quad")
@@ -880,7 +880,7 @@ linkIconTestUnitsText =
          , ("https://www.atlasobscura.com/articles/cyoa-choose-your-own-adventure-maps", "atlas-obscura", "svg")
          , ("http://www.antipope.org/charlie/blog-static/2007/03/why_the_commercial_ebook_marke.html", "C.S.", "text,sans")
          , ("http://rspb.royalsocietypublishing.org/content/284/1851/20162562", "RS", "text")
-         , ("http://rsta.royalsocietypublishing.org/content/369/1956/4913", "RS", "text")
+         , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3270388/", "RS", "text")
          , ("http://rstb.royalsocietypublishing.org/content/365/1537/73.full", "RS", "text")
          , ("https://royalsocietypublishing.org/doi/10.1098/rsos.181393", "RS", "text")
          , ("https://nautil.us/mapping-the-human-exposome-10595/", "nautilus", "svg")
