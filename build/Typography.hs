@@ -295,9 +295,9 @@ imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
 imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = let p' = T.takeWhile (/='#') p in -- it is possible to have links which have '.png' or '.jpg' infix, but are not actually images, such as, in tag-directories, section headers for images: '/docs/statistics/survival-analysis/index#filenewbie-survival-by-semester-rows.png'; special-case that
                                                          if (".png" `T.isSuffixOf` p' || ".jpg" `T.isSuffixOf` p') &&
                                                           ("https://www.gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
-                                                         do exists <- doesFileExist $ tail $ replace "https://www.gwern.net" "" $ T.unpack  p
+                                                         do exists <- doesFileExist $ tail $ replace "https://www.gwern.net" "" $ T.unpack  p'
                                                             if not exists then printRed ("imageSrcset (Link): " ++ show x ++ " does not exist?") >> return x else
-                                                              do (h,w) <- imageMagickDimensions $ T.unpack p
+                                                              do (h,w) <- imageMagickDimensions $ T.unpack p'
                                                                  return (Link (htmlid, classes,
                                                                                kvs++[("image-height",T.pack h),
                                                                                       ("image-width",T.pack w)])
