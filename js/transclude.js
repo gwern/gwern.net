@@ -615,10 +615,11 @@ Transclude = {
 	},
 
 	isAnnotationTransclude: (includeLink) => {
-		if (includeLink.classList.contains("link-annotated") == false)
+		if (includeLink.classList.containsAnyOf([ "link-annotated", "include-annotation" ]) == false)
 			return false;
 
-		return (Transclude.transcludeAnnotationsByDefault
+		return ((   Transclude.transcludeAnnotationsByDefault 
+				 && includeLink.classList.contains("link-annotated"))
 				? includeLink.classList.contains("include-content") == false
 				: includeLink.classList.contains("include-annotation"));
 	},
