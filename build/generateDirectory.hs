@@ -140,7 +140,7 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
              "title: " ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (replace "docs/" "" d)))) ++ " tag\n",
              "author: 'N/A'\n",
              "description: \"Bibliography for tag <em>" ++ (if d=="" then "docs" else d) ++ "</em>, most recent first: " ++
-              (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not link-annotated-not' href='/docs/" ++ d ++ "/index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
+              (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not link-annotated-not' href='/docs/" ++ (if d=="" then "" else d++"/") ++ "index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
               (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='icon-not link-annotated-not' href='/docs/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++
               (if linkN == 0 then ""       else (if (directoryN+annotationN) > 0 then ", & " else "") ++ show linkN ++ " <a class='icon-not link-annotated-not' href='/docs/" ++ d ++ "/index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
               " (<a href='" ++ parent ++ "' class='link-local link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>)" ++
@@ -237,7 +237,7 @@ generateDirectoryItems parent current ds =
                                                                ["link-tag", "directory-indexes-upwards"],
                                                                [("rel","tag")]
                                                              )
-                                                               [Str "Parent"] (T.pack p, "Link to parent directory '" `T.append`  (T.pack $ takeDirectory p) `T.append` "/' (ascending)")]]]]
+                                                               [Str "Parent"] (T.pack p, "Link to parent directory '" `T.append`  (T.pack $ init $ takeDirectory p) `T.append` "/' (ascending)")]]]]
 
        generateDirectoryItem :: FilePath -> [Block]
        -- arrow symbolism: subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')
