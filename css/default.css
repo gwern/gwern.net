@@ -1954,15 +1954,15 @@ th.tablesorter-headerDesc:hover {
 }
 
 /* Floating tables: float small by default because if they are 'small', they don't need the full body column */
-.table-small { float: left;
-               max-width: calc(50% - 1.5em);
-               margin: 0 1.5em 1em 0;
-             }
+.table-small.float-left { float: left;
+                          max-width: calc(50% - 1.5em);
+                          margin: 0 1.5em 1em 0;
+                        }
 /* We may wish to alternate side for many small tables in success: */
 .table-small.float-right { float: right;
-               max-width: calc(50% - 1.5em);
-               margin: 0 0 1.5em 1em;
-             }
+                           max-width: calc(50% - 1.5em);
+                           margin: 0 0 1.5em 1em;
+                         }
 
 /*  Tables in blockquotes.
     */
