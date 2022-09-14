@@ -14,7 +14,7 @@
 -- manually checked & all skinny lists correctly annotated, and skipped to avoid unnecessary
 -- reporting of false-positives.
 
-module Columns (listsTooLong, main) where
+module Columns (listsTooLong, listLengthMaxN, sublistsLengthMinN, listLength, main) where
 
 import Text.Pandoc (def, queryWith, readerExtensions, readHtml, readMarkdown, runPure,
                     pandocExtensions, Block(BulletList, OrderedList), Pandoc(Pandoc))
@@ -39,26 +39,26 @@ printLists printfilenamep file = do
   input <- TIO.readFile file
   let preexisting = T.isInfixOf "<div class=\"columns" input
   unless preexisting $
-    do let long = getLongLists (".html"`isSuffixOf`file) input
+    do let long = getLongLists listLengthMaxN (".html"`isSuffixOf`file) input
        unless (null long) $ do
          when printfilenamep $ putStrLn $ file ++ ":"
          TIO.putStrLn $ T.unlines $ map simplified long
 
-listLengthMax, sublistsLengthMin :: Int
-listLengthMax = 75
-sublistsLengthMin = 8
+listLengthMaxN, sublistsLengthMinN :: Int
+listLengthMaxN = 75
+sublistsLengthMinN = 8
 
-getLongLists :: Bool -> T.Text -> [Block]
-getLongLists htmlp txt = let parsedEither = if htmlp then runPure $ readHtml def{readerExtensions = pandocExtensions } txt else runPure $ readMarkdown def{readerExtensions = pandocExtensions } txt
+getLongLists :: Int -> Bool -> T.Text -> [Block]
+getLongLists conf htmlp txt = let parsedEither = if htmlp then runPure $ readHtml def{readerExtensions = pandocExtensions } txt else runPure $ readMarkdown def{readerExtensions = pandocExtensions } txt
                         -- if we don't explicitly enable footnotes, Pandoc interprets the footnotes
                         -- as broken links, which throws many spurious warnings to stdout
                    in case parsedEither of
                               Left _ -> []
-                              Right (Pandoc _ pnd) -> listsTooLong pnd
+                              Right (Pandoc _ pnd) -> listsTooLong conf pnd
 
-listsTooLong :: [Block] -> [Block]
-listsTooLong ls = let lists = extractLists ls in
-                                             filter (\x -> listLength x < listLengthMax) lists
+listsTooLong :: Int -> [Block] -> [Block]
+listsTooLong c ls = let lists = extractLists ls in
+                                             filter (\x -> listLength x < c) lists
 
 extractLists :: [Block] -> [Block]
 extractLists = queryWith extractList
@@ -69,21 +69,24 @@ extractLists = queryWith extractList
    extractList _ = []
 
 -- > listLength $ BulletList [[Para [Str "test"]],[Para [Str "test2"],Para [Str "Continuation"]],[Para [Link ("",[],[]) [Str "WP"] ("https://en.wikipedia.org/wiki/Foo","")]],[Para [Str "Final",Space,Str "line"]]]
--- → 7
+-- → 13
+-- > listLength $ BulletList [[Para [Str "testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"]],[Para [Str "test2"],Para [Str "Continuation"]],[Para [Link ("",[],[]) [Str "WP"] ("https://en.wikipedia.org/wiki/Foo","")]],[Para [Str "Final",Space,Str "line"]]]
+-- → 53
 listLength :: Block -> Int
-listLength (OrderedList _ list) = listLengthAvg list
-listLength (BulletList    list) = listLengthAvg list
+listLength (OrderedList _ list) = listLengthLongest list
+listLength (BulletList    list) = listLengthLongest list
 listLength _                    = maxBound
-listLengthAvg :: [[Block]] -> Int
-listLengthAvg list = if length list < sublistsLengthMin then maxBound else
-                       let lengths = map listItemLength list in maximum lengths
+listLengthLongest :: [[Block]] -> Int
+listLengthLongest = maximum . map listItemLength
 
--- > listItemLength $ [Para [Str "Foo", Link nullAttr [Str "bar"] ("https://en.wikipedia.org/wiki/Bar", "Wikipedia link")], Para [Str "Continued Line"]]
+-- > listItemLength [Para [Str "Foo", Link nullAttr [Str "bar"] ("https://en.wikipedia.org/wiki/Bar", "Wikipedia link")], Para [Str "Continued Line"]]
 -- → 15
--- > listItemLength $ [Para [Str "Foo", Link nullAttr [Str "bar"] ("https://en.wikipedia.org/wiki/Bar", "Wikipedia link")]]
+-- > listItemLength [Para [Str "Foo", Link nullAttr [Str "bar"] ("https://en.wikipedia.org/wiki/Bar", "Wikipedia link")]]
 -- → 7
--- > listItemLength $ [Para [Str "Continued Line"]]
+-- > listItemLength [Para [Str "Continued Line"]]
 -- → 15
+-- > map listItemLength [[Para [Str "test"]],[Para [Str "test2"],Para [Str "Continuation"]],[Para [Link ("",[],[]) [Str "WP"] ("https://en.wikipedia.org/wiki/Foo","")]],[Para [Str "Final",Space,Str "line"]]]
+-- → [5,13,3,11]
 listItemLength :: [Block] -> Int
 listItemLength is = let lengths = map listSubItemLength is in maximum lengths
 

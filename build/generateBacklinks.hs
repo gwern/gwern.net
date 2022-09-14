@@ -23,6 +23,7 @@ import LinkMetadata (hasAnnotation, isLocalPath, readLinkMetadata, generateID, M
 import LinkBacklink (readBacklinksDB, writeBacklinksDB,)
 import Query (extractLinksWith)
 import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed, replace)
+import Columns as C (listLength)
 
 main :: IO ()
 main = do
@@ -94,7 +95,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                   in case htmlEither of
                                                               Left e -> error $ show target ++ show callers ++ show e
                                                               Right output -> output
-                                       let backLinksHtmlFragment = if length callers' <= 3 then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
+                                       let backLinksHtmlFragment = if (C.listLength content > 40 || length callers' < 4) then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
                                        writeUpdatedFile "backlink" f backLinksHtmlFragment
 
 parseAnnotationForLinks :: T.Text -> MetadataItem -> [(T.Text,T.Text)]
