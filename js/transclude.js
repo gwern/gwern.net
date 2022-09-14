@@ -147,7 +147,14 @@
 		the transcluded content. (This means that any other contents of the 
 		include-link’s parent element are also discarded.)
 
-	include-no-spinner
+	include-identify-not
+		Normally, if the include-link has a nonempty ‘id’ attribute, and that
+		ID does not occur in the transcluded content (after any unwrapping; see
+		‘include-unwrap’, above, for details), the content will be wrapped in a
+		DIV element, which will be given the ID of the include-link. When the
+		`include-identify-not` option is used, this will not be done.
+
+	include-spinner-not
 		Hides the “loading spinner” that is normally shown at the site of the
 		include-link while content to be transcluded is being retrieved.
 
@@ -348,6 +355,7 @@ function includeContent(includeLink, content) {
 
 	//	ID transplantation.
 	if (   includeLink.id > ""
+		&& includeLink.classList.contains("include-identify-not") == false
 		&& wrapper.querySelector("#" + includeLink.id) == null) {
 		let idBearerBlock = newElement("DIV", { "id": includeLink.id, "class": "include-wrapper-block" });
 		idBearerBlock.append(...(wrapper.childNodes));
@@ -521,7 +529,8 @@ Transclude = {
 		"include-when-collapsed",
 		"include-unwrap",
 		"include-replace-container",
-		"include-no-spinner"
+		"include-identify-not",
+		"include-spinner-not"
 	],
 
 	transcludeAnnotationsByDefault: true,
