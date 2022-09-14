@@ -222,8 +222,8 @@ function includeContent(includeLink, content) {
 		&& includeLink.hash > "") {
 		let section = content.querySelector(selectorFromHash(includeLink.hash));
 		if (section) {
-			wrapper.append(...(section.childNodes));
 			wrapper.id = section.id;
+			wrapper.append(...(section.childNodes));
 		}
 	} else {
 		wrapper.append(content);
@@ -352,6 +352,14 @@ function includeContent(includeLink, content) {
 			if (isNodeEmpty(secondPart) == false)
 				wrapper.parentElement.insertBefore(secondPart, wrapper.nextSibling);
 		}
+	}
+
+	//	ID transplantation.
+	if (   includeLink.id > ""
+		&& wrapper.querySelector("#" + includeLink.id) == null) {
+		let idBearerBlock = newElement("DIV", { "id": includeLink.id, "class": "include-wrapper-block" });
+		idBearerBlock.append(...(wrapper.childNodes));
+		wrapper.append(idBearerBlock);
 	}
 
 	//	Unwrap.
