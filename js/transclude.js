@@ -147,7 +147,14 @@
 		the transcluded content. (This means that any other contents of the 
 		include-link’s parent element are also discarded.)
 
-	include-no-spinner
+	include-identify-not
+		Normally, if the include-link has a nonempty ‘id’ attribute, and that
+		ID does not occur in the transcluded content (after any unwrapping; see
+		‘include-unwrap’, above, for details), the content will be wrapped in a
+		DIV element, which will be given the ID of the include-link. When the
+		`include-identify-not` option is used, this will not be done.
+
+	include-spinner-not
 		Hides the “loading spinner” that is normally shown at the site of the
 		include-link while content to be transcluded is being retrieved.
 
@@ -244,7 +251,7 @@ function includeContent(includeLink, content) {
 
 	//	Update TOC, if need be.
 	if (includingIntoMainPage)
-		updatePageTOCAfterInclusion(wrapper);
+		updatePageTOC(wrapper, true);
 
 	//	Update footnotes, if need be.
 	let newFootnotesWrapper = Transclude.isAnnotationTransclude(includeLink)
@@ -348,6 +355,7 @@ function includeContent(includeLink, content) {
 
 	//	ID transplantation.
 	if (   includeLink.id > ""
+		&& includeLink.classList.contains("include-identify-not") == false
 		&& wrapper.querySelector("#" + includeLink.id) == null) {
 		let idBearerBlock = newElement("DIV", { "id": includeLink.id, "class": "include-wrapper-block" });
 		idBearerBlock.append(...(wrapper.childNodes));
@@ -464,7 +472,7 @@ function updateFootnotesAfterInclusion(newContent, includeLink) {
 		});
 
 		//	Update page TOC to add footnotes section entry.
-		updatePageTOCAfterInclusion(footnotesSectionWrapper);
+		updatePageTOC(footnotesSectionWrapper, true);
 
 		//	Unwrap.
 		unwrap(footnotesSectionWrapper);
@@ -505,78 +513,6 @@ function updateFootnotesAfterInclusion(newContent, includeLink) {
 	return newFootnotesWrapper;
 }
 
-/******************************************************************************/
-/*	Updates the page TOC after transclusion has modified the main page content.
- */
-//	Called by: includeContent
-function updatePageTOCAfterInclusion(newContent) {
-    GWLog("updatePageTOCAfterInclusion", "transclude.js", 2);
-
-	let TOC = document.querySelector("#TOC");
-	if (!TOC)
-		return;
-
-	//	Find where to insert the new TOC entries.
-	let parentSection = newContent.closest("section") ?? document.querySelector("#markdownBody");
-	let previousSection = Array.from(parentSection.children).filter(child => 
-		   child.tagName == "SECTION" 
-		&& child.compareDocumentPosition(newContent) == Node.DOCUMENT_POSITION_FOLLOWING
-	).last;
-
-	//	Any already-existing <section> should have a TOC entry.
-	let parentTOCElement = parentSection.id == "markdownBody"
-						   ? TOC
-						   : TOC.querySelector(`#toc-${parentSection.id}`).parentElement;
-	let precedingTOCElement = previousSection 
-							  ? parentTOCElement.querySelector(`#toc-${previousSection.id}`).parentElement
-							  : null;
-
-	//	TOC entry insertion function, called recursively.
-	function addToPageTOC(newContent, parentTOCElement, precedingTOCElement) {
-		let insertBeforeElement = precedingTOCElement 
-								  ? precedingTOCElement.nextElementSibling
-								  : null;
-
-		let addedEntries = [ ];
-
-		newContent.querySelectorAll("section").forEach(section => {
-			/*	We may have already added this section in a recursive call from
-				a previous section.
-			 */
-			if (parentTOCElement.querySelector(`a[href$='#${section.id}']`) != null)
-				return;
-
-			//	Construct entry.
-			let entry = newElement("LI");
-			let entryText = section.id == "footnotes"
-							? "Footnotes"
-							: section.firstElementChild.textContent;
-			entry.innerHTML = `<a id='toc-${section.id}' href='#${fixedEncodeURIComponent(section.id)}'>${entryText}</a>`;
-
-			//	Get or construct the <ul> element.
-			let subList = Array.from(parentTOCElement.childNodes).find(child => child.tagName == "UL");
-			if (!subList) {
-				subList = newElement("UL");
-				parentTOCElement.appendChild(subList);
-			}
-
-			subList.insertBefore(entry, insertBeforeElement);
-			addedEntries.push(entry);
-
-			//	Recursive call, to added sections nested within this one.
-			addToPageTOC(section, entry, null);
-		});
-
-		return addedEntries;
-	}
-
-	//	Add the new entries.
-	let newEntries = addToPageTOC(newContent, parentTOCElement, precedingTOCElement);
-
-	//	Process the new entries to activate pop-frame spawning.
-	newEntries.forEach(Extracts.addTargetsWithin);
-}
-
 /***********************************************************************/
 /*	Handles interactions between include-links and content at locations.
  */
@@ -593,7 +529,8 @@ Transclude = {
 		"include-when-collapsed",
 		"include-unwrap",
 		"include-replace-container",
-		"include-no-spinner"
+		"include-identify-not",
+		"include-spinner-not"
 	],
 
 	transcludeAnnotationsByDefault: true,

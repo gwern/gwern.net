@@ -5579,6 +5579,6 @@ a.include-loading[data-link-icon]:not(:empty)::after {
     bottom: 0;
 }
 
-a.include-loading.include-no-spinner::after {
+a.include-loading.include-spinner-not::after {
     display: none;
 }

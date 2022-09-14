@@ -917,6 +917,95 @@ function stripTOCLinkSpans(loadEventInfo) {
 addContentLoadHandler(stripTOCLinkSpans, "rewrite", (info) => info.needsRewrite);
 
 
+/*******************************************************************************/
+/*	Updates the page TOC with any sections within the given container that don’t
+	already have TOC entries.
+ */
+//	Called by: includeContent (transclude.js)
+function updatePageTOC(newContent, needsProcessing = false) {
+    GWLog("updatePageTOC", "transclude.js", 2);
+
+	let TOC = document.querySelector("#TOC");
+	if (!TOC)
+		return;
+
+	//	Find where to insert the new TOC entries.
+	let parentSection = newContent.closest("section") ?? document.querySelector("#markdownBody");
+	let previousSection = Array.from(parentSection.children).filter(child => 
+		   child.tagName == "SECTION" 
+		&& child.compareDocumentPosition(newContent) == Node.DOCUMENT_POSITION_FOLLOWING
+	).last;
+
+	//	Any already-existing <section> should have a TOC entry.
+	let parentTOCElement = parentSection.id == "markdownBody"
+						   ? TOC
+						   : TOC.querySelector(`#toc-${parentSection.id}`).parentElement;
+	let precedingTOCElement = previousSection 
+							  ? parentTOCElement.querySelector(`#toc-${previousSection.id}`).parentElement
+							  : null;
+
+	//	TOC entry insertion function, called recursively.
+	function addToPageTOC(newContent, parentTOCElement, precedingTOCElement) {
+		let insertBeforeElement = precedingTOCElement 
+								  ? precedingTOCElement.nextElementSibling
+								  : null;
+
+		let addedEntries = [ ];
+
+		newContent.querySelectorAll("section").forEach(section => {
+			/*	We may have already added this section in a recursive call from
+				a previous section.
+			 */
+			if (parentTOCElement.querySelector(`a[href$='#${section.id}']`) != null)
+				return;
+
+			//	Construct entry.
+			let entry = newElement("LI");
+			let entryText = section.id == "footnotes"
+							? "Footnotes"
+							: section.firstElementChild.textContent;
+			entry.innerHTML = `<a id='toc-${section.id}' href='#${fixedEncodeURIComponent(section.id)}'>${entryText}</a>`;
+
+			//	Get or construct the <ul> element.
+			let subList = Array.from(parentTOCElement.childNodes).find(child => child.tagName == "UL");
+			if (!subList) {
+				subList = newElement("UL");
+				parentTOCElement.appendChild(subList);
+			}
+
+			subList.insertBefore(entry, insertBeforeElement);
+			addedEntries.push(entry);
+
+			//	Recursive call, to added sections nested within this one.
+			addToPageTOC(section, entry, null);
+		});
+
+		return addedEntries;
+	}
+
+	//	Add the new entries.
+	let newEntries = addToPageTOC(newContent, parentTOCElement, precedingTOCElement);
+
+	if (needsProcessing) {
+		//	Process the new entries to activate pop-frame spawning.
+		newEntries.forEach(Extracts.addTargetsWithin);
+	}
+}
+
+/****************************************************************************/
+/*	Update main page TOC within any sections within the initially loaded page
+	that don’t already have TOC entries.
+ */
+function updateMainPageTOC(loadEventInfo) {
+    GWLog("updateMainPageTOC", "rewrite.js", 1);
+
+	updatePageTOC(loadEventInfo.document.querySelector("#markdownBody"));
+}
+
+addContentLoadHandler(updateMainPageTOC, "rewrite", (info) => (   info.needsRewrite
+															   && info.isMainDocument));
+
+
 /*************/
 /* FOOTNOTES */
 /*************/
@@ -949,22 +1038,6 @@ function injectFootnoteSectionSelfLink(loadEventInfo) {
 }
 
 addContentLoadHandler(injectFootnoteSectionSelfLink, "rewrite", (info) => info.needsRewrite);
-
-/*******************************************/
-/*  Add a TOC link to the footnotes section.
- */
-function injectFootnoteSectionTOCLink(loadEventInfo) {
-    GWLog("injectFootnoteSectionTOCLink", "rewrite.js", 1);
-
-    let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
-    let TOCList = loadEventInfo.document.getRootNode().querySelector("#TOC > ul");
-    if (   TOCList
-    	&& footnotesSection
-    	&& TOCList.querySelector("#toc-footnotes") == null)
-        TOCList.insertAdjacentHTML("beforeend", `<li><a id="toc-footnotes" href="#footnotes">Footnotes</a></li>\n`);
-}
-
-addContentLoadHandler(injectFootnoteSectionTOCLink, "rewrite", (info) => info.needsRewrite);
 
 /*****************************************/
 /*	Add footnote class to footnote blocks.
@@ -1139,27 +1212,6 @@ function bindHighlightEventsToFootnoteSelfLinks(loadEventInfo) {
 addContentLoadHandler(bindNoteHighlightEventsToCitations, "eventListeners");
 
 
-/*******************/
-/* FURTHER READING */
-/*******************/
-
-/***************************************************/
-/*  Add a TOC link to the “Further Reading” section.
- */
-function injectFurtherReadingTOCLink(loadEventInfo) {
-    GWLog("injectFurtherReadingTOCLink", "rewrite.js", 1);
-
-    let furtherReadingSection = loadEventInfo.document.querySelector("#further-reading");
-    let TOCList = loadEventInfo.document.getRootNode().querySelector("#TOC > ul");
-    if (   TOCList
-    	&& furtherReadingSection
-    	&& TOCList.querySelector("#toc-further-reading") == null)
-        TOCList.insertAdjacentHTML("beforeend", `<li><a id="toc-further-reading" href="#further-reading">Further Reading</a></li>\n`);
-}
-
-addContentLoadHandler(injectFurtherReadingTOCLink, "rewrite", (info) => info.needsRewrite);
-
-
 /*********************/
 /* LINK BIBLIOGRAPHY */
 /*********************/
@@ -1183,22 +1235,6 @@ function uniquelyIdentifyLinkBibliographyEntries(loadEventInfo) {
 }
 
 addContentLoadHandler(uniquelyIdentifyLinkBibliographyEntries, "rewrite", (info) => info.needsRewrite);
-
-/*******************************************/
-/*  Add a TOC link to the link bibliography.
- */
-function injectLinkBibliographyTOCLink(loadEventInfo) {
-    GWLog("injectLinkBibliographyTOCLink", "rewrite.js", 1);
-
-    let linkBibliographySection = loadEventInfo.document.querySelector("#link-bibliography");
-    let TOCList = loadEventInfo.document.getRootNode().querySelector("#TOC > ul");
-    if (   TOCList
-    	&& linkBibliographySection
-    	&& TOCList.querySelector("#toc-link-bibliography") == null)
-        TOCList.insertAdjacentHTML("beforeend", `<li><a id="toc-link-bibliography" href="#link-bibliography">Link Bibliography</a></li>\n`);
-}
-
-addContentLoadHandler(injectLinkBibliographyTOCLink, "rewrite", (info) => info.needsRewrite);
 
 
 /*********/
