@@ -4,7 +4,7 @@
 -- link-titler.hs: add titles to bare links in a Markdown file using a database of link metadata
 -- Author: Gwern Branwen
 -- Date: 2022-04-01
--- When:  Time-stamp: "2022-06-06 09:11:16 gwern"
+-- When:  Time-stamp: "2022-09-14 10:46:54 gwern"
 -- License: CC-0
 --
 -- Read a Markdown page, parse links out, look up their titles, generate a standard gwern.net-style citation ('"Title", Author1 et al Year[a-z]'),
@@ -46,8 +46,8 @@ main = do md <- readLinkMetadata
           args <- getArgs
           Par.mapM_ (addTitlesToFile md) args
 
-          -- update annotations; reminder: `walkAndUpdateLinkMetadata :: ((Path, MetadataItem) → IO (Path, MetadataItem)) → IO ()`
-          walkAndUpdateLinkMetadata (addTitlesToHTML md)
+          -- update annotations; reminder: `walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()`
+          walkAndUpdateLinkMetadata False (addTitlesToHTML md)
 
 addTitlesToFile :: Metadata -> String -> IO ()
 addTitlesToFile md filepath = do
