@@ -53,19 +53,19 @@ main = do md  <- readLinkMetadata
           -- whenever one is modified, kill the monitor, wait 10s, and check for new annotations to
           -- embed & save; if nothing, exit & restart the monitoring.']
           args <- getArgs
+          -- Otherwise, we keep going & compute all the suggestions.
+          -- rp-tree supports serializing the tree to disk, but unclear how to update it, and it's fast enough to construct that it's not a bottleneck, so we recompute it from the embeddings every time.
+          ddb <- embeddings2Forest edb''
+          printGreen "Begin computing & writing out missing similarity-rankings…"
+          Par.mapM_ (\f -> do exists <- similaritemExistsP f
+                              unless exists $
+                                           case M.lookup f edbDB of
+                                             Nothing        -> return ()
+                                             Just (b,c,d,e) -> do let nmatches = findN ddb bestNEmbeddings iterationLimit (f,b,c,d,e)
+                                                                  writeOutMatch md nmatches
+                    )
+            mdl
           unless (args == ["--update-only-embeddings"]) $ do
-            -- Otherwise, we keep going & compute all the suggestions.
-            -- rp-tree supports serializing the tree to disk, but unclear how to update it, and it's fast enough to construct that it's not a bottleneck, so we recompute it from the embeddings every time.
-            ddb <- embeddings2Forest edb''
-            printGreen "Begin computing & writing out missing similarity-rankings…"
-            Par.mapM_ (\f -> do exists <- similaritemExistsP f
-                                unless exists $
-                                             case M.lookup f edbDB of
-                                               Nothing        -> return ()
-                                               Just (b,c,d,e) -> do let nmatches = findN ddb bestNEmbeddings iterationLimit (f,b,c,d,e)
-                                                                    writeOutMatch md nmatches
-                      )
-              mdl
             printGreen "Wrote out missing. Now writing out changed…"
             Par.mapM_ (writeOutMatch md . findN ddb bestNEmbeddings iterationLimit) edb''
             Par.mapM_ (\f -> case M.lookup f edbDB of

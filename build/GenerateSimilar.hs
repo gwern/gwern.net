@@ -164,8 +164,7 @@ type Forest = RPForest Double (V.Vector (Embed DVector Double String))
 embeddings2Forest :: Embeddings -> IO Forest
 embeddings2Forest e = do let f = embeddings2ForestConfigurable 60 2 32 e
                          let fl = serialiseRPForest f
-                         print ("Forest length: " ++ show (length fl))
-                         when (null fl) $ error "embeddings2Forest: serialiseRPForest returned an invalid empty result on the output of embeddings2ForestConfigurable‽"
+                         when (length fl < 2) $ error "embeddings2Forest: serialiseRPForest returned an invalid empty result on the output of embeddings2ForestConfigurable‽"
                          return f
 
 embeddings2ForestConfigurable :: Int -> Int -> Int -> Embeddings -> Forest
