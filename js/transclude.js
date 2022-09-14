@@ -140,18 +140,12 @@
 		 a single element ID to transclude.)
 
 	include-replace-container
-	include-replace-container-not
 		Normally, when transclusion occurs, the transcluded content replaces the
 		include-link in the page, leaving any surrounding elements untouched.
 		When the `include-replace-container` option is used, the include-link’s
 		parent element, instead of just the include-link itself, is replaced by 
 		the transcluded content. (This means that any other contents of the 
 		include-link’s parent element are also discarded.)
-
-		NOTE: This container-replacing functionality happens by default (i.e.,
-		even when `include-replace-container` is not set) in the case where the
-		include-link is the only non-empty child node of its parent. To disable
-		this behavior, use the `include-replace-container-not` option.
 
 	include-no-spinner
 		Hides the “loading spinner” that is normally shown at the site of the
@@ -230,10 +224,8 @@ function includeContent(includeLink, content) {
 	}
 
 	//	Inject.
-	let replaceContainer = (includeLink.parentElement.parentElement != null
-							&& (   includeLink.classList.contains("include-replace-container")
-								|| (   isOnlyChild(includeLink)
-									&& includeLink.classList.contains("include-replace-container-not") == false)));
+	let replaceContainer = (   includeLink.parentElement.parentElement != null
+							&& includeLink.classList.contains("include-replace-container"));
 	let insertWhere = replaceContainer 
 					  ? includeLink.parentElement
 					  : includeLink;
@@ -601,7 +593,6 @@ Transclude = {
 		"include-when-collapsed",
 		"include-unwrap",
 		"include-replace-container",
-		"include-replace-container-not",
 		"include-no-spinner"
 	],
 
