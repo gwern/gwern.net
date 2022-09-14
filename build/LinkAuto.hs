@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-09-12 12:54:16 gwern"
+When:  Time-stamp: "2022-09-13 19:47:46 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -44,7 +44,7 @@ be detected for the purposes of rewrite-short-circuiting or possibly rewriting a
 Dependencies: Pandoc, text, regex-tdfa, /static/build/Utils.hs, /static/build/Query.hs
 -}
 
-import Data.Char (isPunctuation)
+import Data.Char (isPunctuation, isSpace)
 import Data.List (nub, sortBy)
 import Data.List.Split (chunksOf)
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
@@ -54,7 +54,7 @@ import Control.Parallel.Strategies (parMap, rseq)
 import Control.Monad.State (evalState, get, put, State)
 import System.IO.Unsafe (unsafePerformIO)
 
-import Text.Pandoc (topDown, nullAttr, readerExtensions, def, writeHtml5String, pandocExtensions, runPure, readHtml, Pandoc(..), Inline(Link,Image,Code,Span,Str), Block(Div))
+import Text.Pandoc (topDown, nullAttr, readerExtensions, def, writeHtml5String, pandocExtensions, runPure, readHtml, Pandoc(..), Inline(Link,Image,Code,Span,Str), Block(Div)) -- nullMeta, Inline(Space), Block(Para)
 import Text.Pandoc.Walk (walkM, walk)
 import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness/segfault/strange-closure issues (native Text, and useful splitting), so to save my sanity... BUG: TDFA seems to have slow Text instances: https://github.com/haskell-hvr/regex-tdfa/issues/9
 
@@ -65,10 +65,10 @@ import Typography (mergeSpaces)
 
 -- test,test2 :: [Inline]
 -- -- test3 = [Link ("",[],[]) [Quoted DoubleQuote [Str "Self-improving",Space,Str "reactive",Space,Str "agents",Space,Str "based",Space,Str "on",Space,Str "reinforcement",Space,Str "learning,",Space,Str "planning",Space,Str "and",Space,Str "teaching"]] ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.7884&rep=rep1&type=pdf",""),Str ",",Space,Str "Lin",Space,Str "1992"]
--- test2 = [Str "It's a dilemma: at small or easy domains, StyleGAN is much faster (if not better); but at large or hard domains, mode collapse is too risky and endangers the big investment necessary to surpass StyleGAN. MuZero vs Muesli."]
+-- test2 = [Str "It's a dilemma: at small or easy domains, StyleGAN is much faster (if not better); but at large or hard domains, mode collapse is too risky and endangers the big investment necessary to surpass StyleGAN. MuZero vs Muesli. Brown et al 2020."]
 -- test = [Str "bigGAN means", Space, Str "BIG", Str "GAN; you will have an easier time training a GAN on a good GPU like a P100 or a TPUv3.", Space, Str "(See",Space,Str "WP",Space,Str "on",Space,Link ("",[],[]) [Link ("",[],[]) [Str "GAN"] ("https://en.wikipedia.org/wiki/Generative_adversarial_network","")] ("https://en.wikipedia.org/wiki/Generative_adversarial_network",""),Str ").", Space, Str "Nevertheless, expensive is a GAN. See Barack Obama's presidency. Still, we shouldn't put too much weight on Barack Obama. More efficient is DistilBERT, not to be confused with", Space, Str "BERT", Str "."]
 -- testDoc :: Pandoc
--- testDoc = let doc = Pandoc nullMeta [Para test] in
+-- testDoc = let doc = Pandoc nullMeta [Para test2] in
 --             linkAuto doc
 
 -----------
@@ -160,7 +160,7 @@ defineLinks dict is = concatMap go $ mergeSpaces is
    go x@Image{}  = [x] -- likewise
    go x@Code{}   = [x]
    go (Span a x) = [Span a (concatMap go x)]
-   go x@(Str a)  = case findRegexMatch dict a of
+   go x@(Str a)  = case findRegexMatch dict (T.replace " " " " a) of
                      Nothing   -> [x]
                      Just (before,"",after, _) -> go (Str before) ++ go (Str after)
                      -- NOTE: our regexps must delimit on space/punctuation, which puts the matched character *inside* `matched` instead of `before`/`after`;
@@ -172,8 +172,8 @@ defineLinks dict is = concatMap go $ mergeSpaces is
                        go (Str before) ++ -- NOTE: we need to recurse *before* as well after, because 'findRegexMatch' short-circuits on the first match
                                           -- but there may be a later regexp which would match somewhere in the prefix.
                        let frst = T.head matched in let lst = T.last matched in
-                        (if frst == ' ' || isPunctuation frst then
-                                        if lst == ' ' || isPunctuation lst then
+                        (if isSpace frst || isPunctuation frst then
+                                        if isSpace lst || isPunctuation lst then
                                           -- NOTE: we do *not* set .backlink-not because we want automatic links to count just as much as a hand-written link (eg. if an Arxiv abstract mentions GPT-3, then when it gets auto-linked to Brown et al 2020, then that should count just as much as if I had edited the abstract by hand - both mentions are relevant and should show up in Brown et al 2020's backlinks); cases where backlinks are not desirable from a link should be handled elsewhere, like Wikipedia links where backlinks are undesirable & that is already handled by the interwiki code
                                           [Str $ T.singleton frst, Link ("",["link-auto"],[]) [Str $ T.init $ T.tail matched] (defn, ""), Str $ T.singleton lst] else
                                           [Str $ T.singleton frst, Link ("",["link-auto"],[]) [Str $ T.tail matched] (defn, "")]
@@ -313,7 +313,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Big [Ff]ive|OCEAN|Big 5)", "https://en.wikipedia.org/wiki/Big_Five_personality_traits")
         , ("(BigGAN(-deep)s?|Brock et al 2018)", "https://arxiv.org/abs/1809.11096#deepmind")
         , ("(CBT|[Cc]ognitive[ -][Bb]ehaviou?r(al)? [Tt]herap(y|ies))", "https://en.wikipedia.org/wiki/Cognitive_behavioral_therapy")
-        , ("(CNN|[Cc]onvolutional [Nn]eural [Nn]etwork)", "https://en.wikipedia.org/wiki/Convolutional_neural_network")
+        , ("(CNNs?|[Cc]onvolutional [Nn]eural [Nn]etworks?)", "https://en.wikipedia.org/wiki/Convolutional_neural_network")
         , ("(COCO|MS[- ]?COCO)", "https://arxiv.org/abs/1405.0312#microsoft")
         , ("(CURL|Curl|curl)", "https://en.wikipedia.org/wiki/CURL")
         , ("(Czeslaw Milosz|Czesław Miłosz|Miłosz|Milosz)", "https://en.wikipedia.org/wiki/Czeslaw_Milosz")
@@ -472,7 +472,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Aldous Huxley", "https://en.wikipedia.org/wiki/Aldous_Huxley")
         , ("Alexander Shulgin", "https://en.wikipedia.org/wiki/Alexander_Shulgin")
         , ("Alfred W. McCoy", "https://en.wikipedia.org/wiki/Alfred_W._McCoy")
-        , ("Allegrini et al 2018", "https://www.biorxiv.org/content/10.1101/418210v1.full")
+        , ("Allegrini et al 2018", "https://www.biorxiv.org/content/10.1101/418210.full")
         , ("Alpha ?Go", "https://en.wikipedia.org/wiki/AlphaGo")
         , ("AlphaGo Master", "https://en.wikipedia.org/wiki/Master_(software)")
         , ("Amanda Knox", "https://en.wikipedia.org/wiki/Amanda_Knox")
@@ -538,7 +538,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Carmen", "https://en.wikipedia.org/wiki/Carmen")
         , ("Catch-22", "https://en.wikipedia.org/wiki/Catch-22")
         , ("Catherynne M. Valente", "https://en.wikipedia.org/wiki/Catherynne_M._Valente")
-        , ("CelebA", "http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html")
+        , ("CelebA", "https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html")
         , ("Char Aznable", "https://en.wikipedia.org/wiki/Char_Aznable")
         , ("Charles Murray", "https://en.wikipedia.org/wiki/Charles_Murray_%28political_scientist%29")
         , ("Christopher Murray", "https://en.wikipedia.org/wiki/Christopher_J.L._Murray")
@@ -642,7 +642,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("GODIVA", "https://arxiv.org/abs/2104.14806#microsoft")
         , ("GPT-1", "https://openai.com/blog/language-unsupervised/")
         , ("GPT-2", "/docs/ai/nn/transformer/gpt/2019-radford.pdf#openai")
-        , ("GPT-3", "https://arxiv.org/abs/2005.14165#openai")
+        , ("(GPT-3|Brown et al 2020)", "https://arxiv.org/abs/2005.14165#openai")
         , ("GPT-J", "https://arankomatsuzaki.wordpress.com/2021/06/04/gpt-j/")
         , ("GPT-f", "https://arxiv.org/abs/2009.03393#openai")
         , ("(OpenAI Codex|OA Codex|OA's Codex)", "https://arxiv.org/abs/2107.03374#openai")
@@ -654,7 +654,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Galton's [Pp]roblem", "https://en.wikipedia.org/wiki/Galton%27s_problem")
         , ("Gary Drescher", "https://en.wikipedia.org/wiki/Gary_Drescher")
         , ("Gaussian process", "https://en.wikipedia.org/wiki/Gaussian_process")
-        , ("Ge et al 2016", "https://www.biorxiv.org/content/10.1101/070177v1.full")
+        , ("Ge et al 2016", "https://www.biorxiv.org/content/10.1101/070177.full")
         , ("Gene Wolfe", "https://en.wikipedia.org/wiki/Gene_Wolfe")
         , ("Genshiken", "https://en.wikipedia.org/wiki/Genshiken")
         , ("Geocities", "https://en.wikipedia.org/wiki/Geocities")

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-12 21:20:23 gwern"
+When:  Time-stamp: "2022-09-13 16:19:44 gwern"
 License: CC-0
 -}
 
@@ -253,7 +253,7 @@ readLinkMetadataAndCheck = do
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
              let datesBad = filter (\(_,(_,_,dt,_,_,_)) -> not (dt =~ dateRegex || null dt)) finalL
-             unless (null datesBad) (printRed "Malformed date (not 'YYYY[-MM[-DD]]'): ") >> putStrLn (ppShow datesBad)
+             unless (null datesBad) (printRed "Malformed date (not 'YYYY[-MM[-DD]]'): ") >> printGreen (show datesBad)
 
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.
              let titlesEmpty = M.filter (\(t,_,_,_,_,abst) -> t=="" && length abst > 100) final
@@ -1070,7 +1070,7 @@ filterMeta :: String -> String
 filterMeta ea = if anyInfix ea badSubstrings || elem ea badWholes then "" else ea
  where badSubstrings, badWholes :: [String]
        badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd", "pdftk-java", "OP-ESRJ", "FUJIT S. U.", "JRC5", "klynch", "pruich", "Micron", "Anonymous Submission", "Asterisk"]
-       badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association", "om", "lhf", "comp", "khan", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo", "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "mchahino", "LaTeX2e"]
+       badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association", "om", "lhf", "comp", "khan", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo", "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "mchahino", "LaTeX2e", "Paperless"]
 
 -- nested JSON object: eg. 'jq .message.abstract'
 newtype Crossref = Crossref { message :: Message } deriving (Show,Generic)
@@ -1387,7 +1387,7 @@ generateID url author date
        , ("/static/js/old/wikipedia-popups.js", "achmiz-2019-wikipediapopups")
        , ("http://discovery.ucl.ac.uk/10080409/8/Bradley_10080409_thesis.pdf", "bradley-2019-2")
        , ("http://fastml.com/goodbooks-10k-a-new-dataset-for-book-recommendations/", "z-2017-2")
-       , ("http://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.0040352", "smith-et-al-2007-link")
+       , ("https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.0040352", "smith-et-al-2007-link")
        , ("http://www.engineeringletters.com/issues_v27/issue_3/EL_27_3_01.pdf", "liu-et-al-2019-anime-sketch-coloring")
        , ("http://www.incompleteideas.net/IncIdeas/BitterLesson.html", "sutton-2019-2")
        , ("http://www.paulgraham.com/nerds.html", "paul-graham-nerds-2")

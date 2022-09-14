@@ -109,9 +109,9 @@
               <span id="page-status" title="Writing status of current page: ranges 'abandoned'/'notes'/'draft'/'in progress'/'finished'"><em>$status$</em></span> <br>
               <span id="page-confidence"><a href="/About#confidence-tags" title="Explanation of 'confidence' metadata: probability of overall being meaningfully correct, expressed as Kesselman Estimative Words (ranging 0–100%: 'certain'/'highly likely'/'likely'/'possible'/'unlikely'/'highly unlikely'/'remote'/'impossible')">certainty</a>: <em>$confidence$</em></span>
               <span id="page-importance"><a href="/About#importance-tags" title="Explanation of 'importance' metadata: rating 1–10 about how much a topic matters to the world.">importance</a>: <em>$importance$</em></span> <br>
-              $if(backlinksNo)$<span class="backlinks"><a id="backlinks" class="backlinks" href="/metadata/annotations/backlinks/$escapedURL$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page).">backlinks</a></span>$endif$
-              $if(similarsNo)$<span class="similars"><a id="similars" class="similars" href="/metadata/annotations/similars/$escapedURL$" title="Similar links for this link (by text embedding).">similar</a></span>$endif$
-              <span class="link-bibliography"><a id="link-bibliography-link" href="#link-bibliography" title="Bibliography of links cited in this page (forward citations).">bibliography</a></span>
+              $if(backlinksNo)$<span class="backlinks"><a id="page=backlinks" class="backlinks" href="#further-reading" title="Reverse citations/backlinks for this page (the list of other pages which link to this page).">backlinks</a></span>$endif$
+              $if(similarsNo)$<span class="similars"><a id="page-similars" class="similars" href="#similars-link-footer-transclusion" title="Similar links for this link (by text embedding).">similar</a></span>$endif$
+              <span class="link-bibliography"><a id="page-link-bibliography" href="#link-bibliography" title="Bibliography of links cited in this page (forward citations).">bibliography</a></span>
           </div>
         </div>
 
@@ -120,9 +120,16 @@
 
         $body$
 
-        $if(index)$ $else$<section id="link-bibliography" class="level1"><a id="link-bibliography-link-footer-transclusion" href="/docs/link-bibliography$url$" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include-unwrap include-replace-container-not">Link bibliography</a></section>$endif$
-        </div>
-        <!-- NOTE: unmatched, because it closes the opening div from the hakyll.hs $$body$$ Pandoc template -->
+        $if(index)$ $else$
+        <section id="further-reading" class="level1">
+          <h1><a href="#further-reading" title="Link to section: § 'Further Reading'">Further Reading</a></h1>
+          $if(backlinksNo)$<a id="backlinks" href="/metadata/annotations/backlinks/$escapedURL$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="include-unwrap include-replace-container-not">backlinks</a>$endif$
+          $if(similarsNo)$<a id="similars" href="/metadata/annotations/similars/$escapedURL$" title="Similar links for this link (by text embedding)." class="include-unwrap include-replace-container-not">similar</a>$endif$
+        </section>
+        <section id="link-bibliography" class="level1">
+          <a id="link-bibliography-link-footer-transclusion" href="/docs/link-bibliography$url$#link-bibliography" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include-unwrap include-replace-container-not">Link bibliography</a>
+        </section>$endif$
+        </div> <!-- NOTE: unmatched, because it closes the opening div from the hakyll.hs $$body$$ Pandoc template -->
 
         <nav id="navigation">
           <a id="navigation-previous" class="link-local-not" rel="prev" href="$previous$" title="Link to previous page by topic, ‘$previous$’"

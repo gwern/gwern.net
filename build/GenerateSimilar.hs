@@ -209,7 +209,7 @@ findN f k iter e@(p1,_,_,_,_) = let results = take bestNEmbeddings $ nub $ filte
 
 -- some weird cases: for example, “Estimating the effect-size of gene dosage on cognitive ability across the coding genome” is somehow close to *every* embedding...?
 blackList :: String -> Bool
-blackList p = p `elem` ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554v3.full", "/docs/genetics/heritable/correlation/2019-kandler.pdf"]
+blackList p = p `elem` ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554.full", "/docs/genetics/heritable/correlation/2019-kandler.pdf"]
 
 -- hyperparameterSweep :: Embeddings -> [(Double, (Int,Int,Int))]
 -- hyperparameterSweep edb =

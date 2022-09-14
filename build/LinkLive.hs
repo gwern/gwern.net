@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-09-12 11:45:24 gwern"
+When:  Time-stamp: "2022-09-13 15:51:40 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -14,7 +14,11 @@ the annotation and wants to go further.
 
 However, due to the March of Web Progress™, many websites set X headers <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options>
 or just plain don't work in a frame (often due to JS, and then often due to extremely reader-unfriendly design
-like giant headers or stickies). Perhaps only a quarter of external links work as live popups.
+like giant headers or stickies), or are 'mixed content' - that is, the HTTP (or HTTPS) version would work perfectly
+*except browsers block it* in the name of security, so a reader who visits HTTPS gwern.net can't load the HTTP version
+and I have to test the HTTPS version instead, which even when it exists, will often be broken by things like
+self-signed certificates etc.
+Perhaps only a quarter of external links work as live popups.
 So we can't just offer it as an option on all links, that will waste reader time & trust, and they will
 learn to avoid the feature entirely and resent the visual clutter and trap of this 'feature'.
 
@@ -778,7 +782,7 @@ goodDomainsSimple =
     , "www.allencheng.com"
     , "www.alicemaz.com"
     , "www.adamsmith.org"
-    , "www.aboutamazon.com"
+    , "blog.aboutamazon.com"
     , "www-cs-faculty.stanford.edu"
     , "wiki.lesswrong.com"
     , "whyevolutionistrue.com"
@@ -1274,7 +1278,6 @@ badDomainsSimple = ["1d4chan.org",
     , "politicalscience.osu.edu"
     , "hal.archives-ouvertes.fr"
     , "code.google.com"
-    , "cardcaptor.moekaku.com"
     , "wyclif.substack.com"
     , "www.thenewatlantis.com"
     , "www.nola.com"
@@ -2231,7 +2234,6 @@ badDomainsSimple = ["1d4chan.org",
     , "markets.nitle.org"
     , "bitcoincharts.com"
     , "2chan.us"
-    , "ajpregu.physiology.org"
     , "antiagingcentral.com"
     , "arbital.com"
     , "archinte.ama-assn.org"
@@ -2451,6 +2453,7 @@ badDomainsSimple = ["1d4chan.org",
     , "www.microsoft.com"
     , "www.research.va.gov"
     , "everything2.com"
+    , "host.robots.ox.ac.uk"
    ]
 
 url :: T.Text -> Inline
@@ -2964,7 +2967,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://github.blog/2019-01-07-new-year-new-github/", True)
     , ("https://globalvoices.org/2011/11/05/japans-it-exodus-a-personal-perspective-part-2/print/", True)
     , ("http://google-summer-of-code-2009-haskell.googlecode.com/files/Niklas_Broberg.tar.gz", True)
-    , ("http://gradientscience.org/data_rep_bias/", True)
+    , ("https://gradientscience.org/data_rep_bias/", True)
     , ("https://gutenberg.net.au/ebooks03/0300151h.html", True)
     , ("https://handbook-5-1.cochrane.org/chapter_8/8_assessing_risk_of_bias_in_included_studies.htm", True)
     , ("https://healthland.time.com/2012/04/05/frozen-assets-why-u-s-sperm-is-a-hot-commodity/", True)
@@ -3147,7 +3150,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://www.allencheng.com/starting-a-business-around-gpt-3-is-a-bad-idea/", True)
     , ("https://www.alicemaz.com/writing/minecraft.html", True)
     , ("https://www.adamsmith.org/research/back-in-the-ussr", True)
-    , ("https://www.aboutamazon.com/news/company-news/2016-letter-to-shareholders", True)
+    , ("https://blog.aboutamazon.com/company-news/2016-letter-to-shareholders", True)
     , ("https://www-cs-faculty.stanford.edu/~knuth/faq.html", True)
     , ("https://wiki.lesswrong.com/wiki/Egan%27s_law", True)
     , ("https://whyevolutionistrue.com/2018/03/04/a-human-chimera/", True)
@@ -3293,7 +3296,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://jetpress.org/volume1/moravec.htm", True)
     , ("https://en.wikipedia.org/wiki/User:Gwern", True)
     , ("https://en.wikipedia.org/wiki/Talk:Small_caps", True)
-    , ("http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html", True)
+    , ("https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html", True)
     ]
 
 badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", False)
@@ -3464,7 +3467,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.arxiv-vanity.com/", False)
     , ("https://www.bbc.com/news/health-35262535", False)
     , ("https://www.betterworldbooks.com/", False)
-    , ("https://www.biorxiv.org/content/10.1101/274654v2.full", False)
+    , ("https://www.biorxiv.org/content/10.1101/274654.full", False)
     , ("https://www.bloomberg.com/view/articles/2017-05-03/why-i-lost-my-bet-with-warren-buffett", False)
     , ("https://www.bls.gov/opub/mlr/2016/article/the-life-of-american-workers-in-1915.htm", False)
     , ("https://www.bmj.com/content/361/bmj.K2270", False)
@@ -3486,7 +3489,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.liebertpub.com/doi/10.1089/hs.2021.0083", False)
     , ("https://www.mayoclinicproceedings.org/article/S0025-6196%2813%2900405-9/fulltext", False)
     , ("https://www.mdpi.com/2073-4425/11/6/648", False)
-    , ("https://www.medrxiv.org/content/10.1101/2021.03.29.21253866v2.full", False)
+    , ("https://www.cell.com/cell-genomics/fulltext/S2666-979X(22)00063-5", False)
     , ("https://www.metaculus.com/questions/", False)
     , ("https://www.millionshort.com/", False)
     , ("https://www.moma.org/interactives/exhibitions/2012/inventingabstraction/?work=42", False)
@@ -3573,7 +3576,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.jstatsoft.org/index.php/jss/article/download/v048i09/601", False)
     , ("https://pcl.sitehost.iu.edu/rgoldsto/interrelated/interrelated.html", False)
     , ("https://www.fimfiction.net/story/62074/Friendship-is-Optimal", False)
-    , ("http://https://web.archive.org/web/20130314044739/http://www.ex.org/2.4/09-jpopconference_1.html", False)
     , ("https://news.ycombinator.com/item?id=17048329", False)
     , ("https://www.science.org/content/article/plan-replicate-50-high-impact-cancer-papers-shrinks-just-18", False)
     , ("https://www.longecity.org/forum/topic/54856-modafinil-use-prosecution-convictions/", False)
@@ -3625,7 +3627,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://politicalscience.osu.edu/faculty/jmueller/MID11TSM.PDF", False)
     , ("https://hal.archives-ouvertes.fr/hal-00904097/document#pdf", False)
     , ("https://code.google.com/archive/p/amphetype", False)
-    , ("http://cardcaptor.moekaku.com/?p=112", False)
     , ("https://wyclif.substack.com/p/the-natural-selection-paper-part-908", False)
     , ("https://www.thenewatlantis.com/publications/shop-class-as-soulcraft", False)
     , ("https://www.nola.com/news/crime_police/article_bd297d74-f2e1-5c15-9db3-c96545f38688.html", False)
@@ -3971,7 +3972,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://imagelibrary.bgu.ac.il/pf.tlx/O6ORSOx-nut", False)
     , ("https://inews.co.uk/opinion/why-i-donate-my-sperm-over-facebook-and-have-fathered-23-children-194142", False)
     , ("https://infidels.org/library/modern/richard-carrier-kooks/", False)
-    , ("https://informallogic.ca/index.php/informal_logic/article/download/2132/1576", False)
+    , ("/docs/statistics/bayes/2003-korb.pdf", False)
     , ("https://interviews.slashdot.org/story/11/09/06/1458254/Kevin-Kelly-Answers-Your-Questions", False)
     , ("https://irs.princeton.edu/sites/irs/files/event/uploads/economics_of_scaleup_20171004.pdf", False)
     , ("https://iterative.capital/thesis/", False)
@@ -3987,7 +3988,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://jme.bmj.com/content/37/4/249.abstract", False)
     , ("https://jnnp.bmj.com/content/72/2/179.full", False)
     , ("https://jotengine.com/transcriptions/Q0I0i33TaqCa9w4In0ZQCg", False)
-    , ("https://journals.physiology.org/doi/full/10.1152/ajpregu.2001.280.2.r602", False)
     , ("https://jpet.aspetjournals.org/content/296/3/849", False)
     , ("https://justpaste.it/7eovk", False)
     , ("https://jyllands-posten.dk/indland/politiretsvaesen/ECE7542044/To-m%C3%A6nd-afsl%C3%B8ret-med-over-et-ton-doping/", False)
@@ -4234,7 +4234,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.clippershipteaco.com/", False)
     , ("https://www.clubindustry.com/studies/ihrsa-reports-57-million-health-club-members-276-billion-industry-revenue-2016", False)
     , ("https://www.cmajopen.ca/content/2/2/E69.full", False)
-    , ("https://www.cmu.edu/epp/people/faculty/research/Fischhoff-Decision-Making-Competence-External-Validation-DMC.pdf", False)
+    , ("/docs/sunk-cost/2005-parker.pdf", False)
     , ("https://wwwcn.cs.uni-duesseldorf.de/publications/publications/library/Jerschow2010a.pdf", False)
     , ("https://www.cnet.com/13506_3-20040008-17.html", False)
     , ("https://www.codespaces.com/power-searching-with-google.html", False)
@@ -4574,7 +4574,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://markets.nitle.org/markets", False)
     , ("https://bitcoincharts.com/charts/mtgoxUSD#rg180zczsg2013-07-23zeg2013-07-23ztgSzm1g10zm2g25zv", False)
     , ("http://2chan.us/wordpress/2012/07/12/c82-genre-stats/", False)
-    , ("http://ajpregu.physiology.org/content/278/4/R905.full", False)
+    , ("https://journals.physiology.org/doi/full/10.1152/ajpregu.2000.278.4.r905", False)
     , ("http://antiagingcentral.com/store/catalog/index.php?cPath=29", False)
     , ("https://arbital.com/p/edge_instantiation/", False)
     , ("http://archinte.ama-assn.org/cgi/content/abstract/172/6/494", False)
@@ -4712,7 +4712,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://bitcoinweekly.com/", False)
     , ("http://bastiat.org/en/twisatwins.html", False)
     , ("http://augmentingcognition.com/ltm.html", False)
-    , ("http://amstat.tandfonline.com/doi/full/10.1080/01621459.2016.1240079", False)
     , ("https://answers.google.com/answers/threadview/id/777105.html", False)
     , ("https://dual-n-back.com/nback.html", False)
     , ("http://eurfa.org.uk/pangur_ban.php", False)
@@ -4793,4 +4792,5 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.mangaupdates.com/series.html?id=2701", False)
     , ("https://www.microsoft.com/en-us/research/blog/zero-2-deepspeed-shattering-barriers-of-deep-learning-speed-scale/", False)
     , ("https://www.research.va.gov/mvp/", False)
+    , ("http://host.robots.ox.ac.uk/pascal/VOC/", False)
     ]
