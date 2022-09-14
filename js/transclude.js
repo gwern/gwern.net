@@ -523,6 +523,7 @@ function updatePageTOCAfterInclusion(newContent) {
 		&& child.compareDocumentPosition(newContent) == Node.DOCUMENT_POSITION_FOLLOWING
 	).last;
 
+	//	Any already-existing <section> should have a TOC entry.
 	let parentTOCElement = parentSection.id == "markdownBody"
 						   ? TOC
 						   : TOC.querySelector(`#toc-${parentSection.id}`).parentElement;
