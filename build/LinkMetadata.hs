@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-14 15:59:42 gwern"
+When:  Time-stamp: "2022-09-14 16:22:06 gwern"
 License: CC-0
 -}
 
@@ -493,7 +493,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                          ) ++
                                          [Str ":"]),
                                        BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
-                                                                            if blp=="" then "" else "<div class=\"backlinks-append\">\n\n<p><strong>Backlinks</strong>:</p>\n<p><a class=\"backlinks-transclusion include-strict include-spinner-not\" href=\"" `T.append` (T.pack blp) `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>")]
+                                                                            if blp=="" then "" else "<div class=\"backlinks-append\">\n\n<p><strong>Backlinks</strong>:</p>\n<p><a class=\"backlinks-transclusion include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>")]
                                   ]
                              where
                                nonAnnotatedLink :: [Block]
