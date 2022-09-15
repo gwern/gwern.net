@@ -396,6 +396,14 @@ Extracts = {
         		|| element.closest("p"))
     },
 
+	/*	Returns the element, in the target document, pointed to by the hash of
+		the given link.
+	 */
+	//	Called by: many functions
+	targetElementInDocument: (link, doc) => {
+		return doc.querySelector(selectorFromHash(link.hash));
+	},
+
     /*  This function fills a pop-frame for a given target with content. It
         returns true if the pop-frame successfully filled, false otherwise.
      */
@@ -608,7 +616,7 @@ Extracts = {
             requestAnimationFrame(() => {
             	let element = null;
                 if (   popFrame
-                    && (element = popFrame.document.querySelector(selectorFromHash(target.hash))))
+                    && (element = Extracts.targetElementInDocument(target, popFrame.document)))
                 	requestAnimationFrame(() => {
 	                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
 	                });
@@ -627,7 +635,7 @@ Extracts = {
                 && extraCondition(link)) {
                 link.onclick = () => { return false; };
                 link.addActivateEvent((event) => {
-                    let hashTarget = popFrame.document.querySelector(selectorFromHash(link.hash));
+                    let hashTarget = Extracts.targetElementInDocument(link, popFrame.document);
                     if (hashTarget) {
                         Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(hashTarget);
                         return false;
@@ -713,7 +721,7 @@ Extracts = {
             	fullTargetDocument = Extracts.cachedPages[target.pathname];
 
             if (fullTargetDocument) {
-            	let linkedElement = fullTargetDocument.querySelector(selectorFromHash(target.hash));
+            	let linkedElement = Extracts.targetElementInDocument(target, fullTargetDocument);
 				let nearestBlock = Extracts.nearestBlockElement(linkedElement);
 
 				return newDocument(unwrapFunction(nearestBlock));
@@ -817,7 +825,7 @@ Extracts = {
 		let nearestBlockElement = (   targetDocument != null 
 								   && target.hash > ""
 								   && popFrame.classList.contains("external-page-embed") == false)
-								  ? Extracts.nearestBlockElement(targetDocument.querySelector(selectorFromHash(target.hash)))
+								  ? Extracts.nearestBlockElement(Extracts.targetElementInDocument(target, targetDocument))
 								  : null;
 
         let popFrameTitleText = ((() => {
@@ -912,13 +920,13 @@ Extracts = {
 		let target = popFrame.spawningTarget;
 		let sourceDocument = Extracts.cachedPages[target.pathname] || Extracts.rootDocument;
 
-		popFrame.firstSection = popFrame.firstSection || sourceDocument.querySelector(selectorFromHash(target.hash));
+		popFrame.firstSection = popFrame.firstSection || Extracts.targetElementInDocument(target, sourceDocument);
 		popFrame.lastSection = popFrame.lastSection || popFrame.firstSection;
 
 		if (!(next || prev))
 			return;
 
-		if (popFrame.document.querySelector(selectorFromHash(target.hash)) == null) {
+		if (Extracts.targetElementInDocument(target, popFrame.document) == null) {
 			let sectionWrapper = document.createElement("SECTION");
 			sectionWrapper.id = popFrame.firstSection.id;
 			sectionWrapper.classList.add(...(popFrame.firstSection.classList));
@@ -990,7 +998,7 @@ Extracts = {
 
 		//	Insert page thumbnail into page abstract.
 		if (Extracts.cachedPageThumbnailImageTags[target.pathname]) {
-			let pageAbstract = popup.body.querySelector("#page-metadata + .abstract blockquote");
+			let pageAbstract = popup.document.querySelector("#page-metadata + .abstract blockquote");
 			if (pageAbstract)
 				pageAbstract.insertAdjacentHTML("afterbegin", `<figure>${Extracts.cachedPageThumbnailImageTags[target.pathname]}</figure>`);
 		}
@@ -1268,7 +1276,7 @@ Extracts = {
             specialRewriteFunction(popin);
 
         //  For object popins, scroll popin into view once object loads.
-        let objectOfSomeSort = popin.body.querySelector("iframe, object, img, video");
+        let objectOfSomeSort = popin.document.querySelector("iframe, object, img, video");
         if (objectOfSomeSort) {
             objectOfSomeSort.addEventListener("load", (event) => {
                 requestAnimationFrame(() => {
@@ -1384,7 +1392,7 @@ Extracts = {
             specialRewriteFunction(popup);
 
         //  Ensure no reflow due to figures.
-        popup.body.querySelectorAll("figure[class^='float-'] img[width]").forEach(img => {
+        popup.document.querySelectorAll("figure[class^='float-'] img[width]").forEach(img => {
             if (img.style.width <= "") {
                 img.style.width = img.getAttribute("width") + "px";
                 img.style.maxHeight = "unset";

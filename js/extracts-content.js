@@ -346,7 +346,7 @@ Extracts = { ...Extracts,
         //  Do not spawn citation context popup if citation is visible.
         let targetDocument = Extracts.targetDocument(target);
         if (   targetDocument
-        	&& Popups.isVisible(targetDocument.querySelector(selectorFromHash(target.hash))))
+        	&& Popups.isVisible(Extracts.targetElementInDocument(target, targetDocument)))
             return null;
 
         //  Mini title bar.
@@ -364,11 +364,11 @@ Extracts = { ...Extracts,
             inside the popup (to prevent confusion with the citation that
             the spawning link points to, which will be highlighted).
          */
-        popup.body.querySelectorAll(".footnote-ref.targeted").forEach(targetedCitation => {
+        popup.document.querySelectorAll(".footnote-ref.targeted").forEach(targetedCitation => {
             targetedCitation.classList.remove("targeted");
         });
         //  In the popup, the citation for which context is being shown.
-        let citationInPopup = popup.body.querySelector(selectorFromHash(target.hash));
+        let citationInPopup = Extracts.targetElementInDocument(target, popup.document);
         //  Highlight the citation.
         citationInPopup.classList.add("targeted");
 
@@ -595,7 +595,7 @@ Extracts = { ...Extracts,
         Extracts.rewritePopFrameContent_LOCAL_IMAGE(popin);
 
         //  Remove extraneous classes from images in image popins.
-        popin.body.querySelector("img").classList.remove("spawns-popin");
+        popin.document.querySelector("img").classList.remove("spawns-popin");
     },
 
     //  Called by: extracts.js (as `rewritePopinContent_${targetTypeName}`)
@@ -603,9 +603,9 @@ Extracts = { ...Extracts,
         Extracts.rewritePopFrameContent_LOCAL_IMAGE(popup);
 
         //  Remove extraneous classes from images in image popups.
-        popup.body.querySelector("img").classList.remove("spawns-popup");
+        popup.document.querySelector("img").classList.remove("spawns-popup");
 
-        if (popup.body.querySelector("img[width][height]"))
+        if (popup.document.querySelector("img[width][height]"))
             popup.classList.add("dimensions-specified");
     },
 };
