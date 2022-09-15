@@ -318,7 +318,7 @@ Extracts = { ...Extracts,
                 //  This block applies to all annotated links.
 
                 return (Extracts.popFrameHasLoaded(popFrame)
-                        ? popFrame.body.querySelector(".data-field.title").textContent
+                        ? popFrame.document.querySelector(".data-field.title").textContent
                         : (Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))
                            ? target.href
                            : target.pathname + target.hash));
@@ -372,7 +372,7 @@ Extracts = { ...Extracts,
         let target = popFrame.spawningTarget;
 
         //  Mark annotations from non-local data sources.
-        let dataSourceClass = popFrame.body.querySelector(".annotation-abstract").dataset.sourceClass;
+        let dataSourceClass = popFrame.document.querySelector(".annotation-abstract").dataset.sourceClass;
         if (dataSourceClass)
             Extracts.popFrameProvider.addClassesToPopFrame(popFrame, dataSourceClass.split(" "));
 
@@ -380,7 +380,7 @@ Extracts = { ...Extracts,
             (only on sufficiently wide viewports).
             */
         if (!(GW.mediaQueries.mobileWidth.matches)) {
-            let initialFigure = popFrame.body.querySelector(".annotation-abstract > figure.float-right:first-child");
+            let initialFigure = popFrame.document.querySelector(".annotation-abstract > figure.float-right:first-child");
             if (initialFigure)
                 popFrame.body.insertBefore(initialFigure, popFrame.body.firstElementChild);
         }

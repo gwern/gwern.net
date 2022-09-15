@@ -2683,6 +2683,26 @@ a .cite-author-plural::after {
 }
 a .cite-date { margin-left: 0em; }
 
+
+/******************************/
+/* “FURTHER READING” SECTIONS */
+/******************************/
+
+#further-reading .columns ul {
+	margin-top: 0.5em;
+	padding-left: 2.5em;
+}
+@media only screen and (max-width: 649px) {
+	#further-reading .columns ul {
+		padding-left: 1.75em;
+	}
+}
+
+#further-reading > div + div {
+	margin-top: 1.5em;
+}
+
+
 /*******************************/
 /* PAGE-SPECIFIC MODIFICATIONS */
 /*******************************/
@@ -4912,10 +4932,12 @@ section.highlight-fading::before {
 
 /*  Images (such as the ones in Wikipedia annotations).
     */
-.annotation > figure.float-right {
-    margin: 0.125em 0 0.125em 1.5em;
-    max-width: calc(50% - 1.5em);
-    float: right;
+@media only screen and (min-width: 650px) {
+	.annotation > figure.float-right {
+		margin: 0.125em 0 0.125em 1.5em;
+		max-width: calc(50% - 1.5em);
+		float: right;
+	}
 }
 .annotation figure.float-left .image-wrapper,
 .annotation figure.float-right .image-wrapper {
