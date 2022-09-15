@@ -5,7 +5,7 @@ module Main where
 
 import Text.Pandoc (nullMeta,
                      runPure, writeHtml5String,
-                     Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,RawInline), Format(..))
+                     Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,RawInline, Strong, Str), Format(..))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack, tail, takeWhile, Text)
 import qualified Data.Text.IO as TIO (readFile)
@@ -13,7 +13,6 @@ import Data.List (isPrefixOf, isSuffixOf)
 import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter)
 import System.Directory (createDirectoryIfMissing, doesFileExist)
 import Network.HTTP (urlEncode)
-import Utils (replace)
 import Data.Containers.ListUtils (nubOrd)
 import Control.Monad (forM_, unless)
 
@@ -23,7 +22,7 @@ import LinkAuto (linkAutoFiltered)
 import LinkMetadata (hasAnnotation, isLocalPath, readLinkMetadata, generateID, Metadata, MetadataItem, safeHtmlWriterOptions)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB,)
 import Query (extractLinksWith)
-import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed)
+import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed, replace)
 
 main :: IO ()
 main = do
@@ -79,6 +78,8 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                           callers
                                        let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-local"] else ["link-annotated"]) callers
                                        let callers' = zip3 callers callerClasses callerTitles
+
+                                       let preface = [Para [Strong [Str "Backlinks"], Str ":"]]
                                        let content = BulletList $ -- critical to insert .backlink-not or we might get weird recursive blowup!
                                             map (\(u,c,t) -> [Para [Link ("", "id-not":"backlink-not":c, [])
                                                                   [RawInline (Format "html") t]
@@ -88,7 +89,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
 
                                        -- auto-links are a good source of backlinks, catching cases where an abstract mentions something but I haven't actually hand-annotated the link yet (which would make it show up as a normal backlink). But auto-linking is extremely slow, and we don't care about the WP links which make up the bulk of auto-links. So we can do just the subset of non-WP autolinks.
                                        let pandoc = linkAutoFiltered (filter (\(_,url) -> not ("wikipedia.org/"`T.isInfixOf`url))) $
-                                                    walk (hasAnnotation md True) $ Pandoc nullMeta [content]
+                                                    walk (hasAnnotation md True) $ Pandoc nullMeta $ preface++[content]
                                        let html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
                                                   in case htmlEither of
                                                               Left e -> error $ show target ++ show callers ++ show e

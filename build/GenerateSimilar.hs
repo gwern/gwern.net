@@ -162,7 +162,7 @@ type Forest = RPForest Double (V.Vector (Embed DVector Double String))
 -- [(0.8555555555555556,(60,1,32)),(0.46888888888888886,(21,5,12))]
 -- TODO: I am not sure why it keeps picking '1' tree as optimum, and that seems like it might be related to the instances where no hits are returned?
 embeddings2Forest :: Embeddings -> IO Forest
-embeddings2Forest e = do let f = embeddings2ForestConfigurable 60 2 32 e
+embeddings2Forest e = do let f = embeddings2ForestConfigurable 30 3 32 e
                          let fl = serialiseRPForest f
                          when (length fl < 2) $ error "embeddings2Forest: serialiseRPForest returned an invalid empty result on the output of embeddings2ForestConfigurable‽"
                          return f
@@ -175,7 +175,7 @@ embeddings2ForestConfigurable ls nt pvd es =
               (length $ (\(_,_,_,_,embedding) -> embedding) $ head es) -- dimension of each datapoint (eg. 1024 for ada-similarity embeddings, 12288 for davinci)
       nTrees = nt -- ???
       projectionVectorDimension = pvd -- ???
-      randSeed = 10
+      randSeed = 11
   in
     runIdentity $
     forest randSeed (fpMaxTreeDepth cfg) minLeafSize nTrees (fpDataChunkSize cfg) (fpProjNzDensity cfg) projectionVectorDimension $
@@ -208,7 +208,7 @@ findN f k iter e@(p1,_,_,_,_) = let results = take bestNEmbeddings $ nub $ filte
 
 -- some weird cases: for example, “Estimating the effect-size of gene dosage on cognitive ability across the coding genome” is somehow close to *every* embedding...?
 blackList :: String -> Bool
-blackList p = p `elem` ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554.full", "/docs/genetics/heritable/correlation/2019-kandler.pdf"]
+blackList p = p `elem` ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554.full", "/docs/genetics/heritable/correlation/2019-kandler.pdf", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4210287/"]
 
 -- hyperparameterSweep :: Embeddings -> [(Double, (Int,Int,Int))]
 -- hyperparameterSweep edb =
@@ -292,9 +292,10 @@ generateMatches md p abst matches =
                                                                     T.pack ("Gwern.net site search hits for ‘" ++ title' ++ "’."))
                                                ]]]
 
+             preface = [Para [Strong [Str "Similar Links"], Str ":"]]
              linkList = BulletList $ similarItems ++ googleScholar
 
-             pandoc = Pandoc nullMeta [linkList]
+             pandoc = Pandoc nullMeta $ preface ++ [linkList]
              html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
                     in case htmlEither of
                                 Left e -> error $ show e ++ ":" ++ show p ++ ":" ++ show matches ++ ":" ++ show similarItems
