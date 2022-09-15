@@ -5,7 +5,7 @@ module Main where
 
 import Text.Pandoc (nullMeta,
                      runPure, writeHtml5String,
-                     Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,RawInline, Strong, Str), Format(..))
+                     Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,RawInline, Strong, Str), Format(..), nullAttr)
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack, tail, takeWhile, Text)
 import qualified Data.Text.IO as TIO (readFile)
@@ -20,7 +20,7 @@ import Control.Monad.Parallel as Par (mapM)
 
 import Columns as C (listLength)
 import LinkAuto (linkAutoFiltered)
-import LinkMetadata (hasAnnotation, isLocalPath, readLinkMetadata, generateID, Metadata, MetadataItem, safeHtmlWriterOptions)
+import LinkMetadata (hasAnnotation, isLocalPath, readLinkMetadata, generateID, Metadata, MetadataItem, safeHtmlWriterOptions, parseRawInline)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB,)
 import Query (extractLinksWith)
 import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed, replace)
@@ -83,7 +83,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                        let preface = [Para [Strong [Str "Backlinks"], Str ":"]]
                                        let content = BulletList $ -- critical to insert .backlink-not or we might get weird recursive blowup!
                                             map (\(u,c,t) -> [Para [Link ("", "id-not":"backlink-not":c, [])
-                                                                  [RawInline (Format "html") t]
+                                                                  [parseRawInline nullAttr $ RawInline (Format "html") t]
                                                                   (if isLocalPath u then u`T.append`selfIdent else u, "")]
                                                    ]
                                                 ) callers'
@@ -95,7 +95,9 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                   in case htmlEither of
                                                               Left e -> error $ show target ++ show callers ++ show e
                                                               Right output -> output
+
                                        let backLinksHtmlFragment = if (C.listLength content > 60 || length callers' < 4) then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
+
                                        writeUpdatedFile "backlink" f backLinksHtmlFragment
 
 parseAnnotationForLinks :: T.Text -> MetadataItem -> [(T.Text,T.Text)]

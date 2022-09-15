@@ -14,7 +14,7 @@
 -- manually checked & all skinny lists correctly annotated, and skipped to avoid unnecessary
 -- reporting of false-positives.
 
-module Columns (listsTooLong, listLengthMaxN, sublistsLengthMinN, listLength, main) where
+module Columns where -- (listsTooLong, listLengthMaxN, sublistsLengthMinN, listLength, main) where
 
 import Text.Pandoc (def, queryWith, readerExtensions, readHtml, readMarkdown, runPure,
                     pandocExtensions, Block(BulletList, OrderedList), Pandoc(Pandoc))
@@ -77,7 +77,9 @@ listLength (OrderedList _ list) = listLengthLongest list
 listLength (BulletList    list) = listLengthLongest list
 listLength _                    = maxBound
 listLengthLongest :: [[Block]] -> Int
-listLengthLongest = maximum . map listItemLength
+listLengthLongest []   = 0
+listLengthLongest [[]] = 0
+listLengthLongest bls  = maximum $ map listItemLength bls
 
 -- > listItemLength [Para [Str "Foo", Link nullAttr [Str "bar"] ("https://en.wikipedia.org/wiki/Bar", "Wikipedia link")], Para [Str "Continued Line"]]
 -- → 15
@@ -88,6 +90,7 @@ listLengthLongest = maximum . map listItemLength
 -- > map listItemLength [[Para [Str "test"]],[Para [Str "test2"],Para [Str "Continuation"]],[Para [Link ("",[],[]) [Str "WP"] ("https://en.wikipedia.org/wiki/Foo","")]],[Para [Str "Final",Space,Str "line"]]]
 -- → [5,13,3,11]
 listItemLength :: [Block] -> Int
+listItemLength [] = 0
 listItemLength is = let lengths = map listSubItemLength is in maximum lengths
 
 -- > listSubItemLength $ Para [Str "Foo"]
@@ -95,4 +98,4 @@ listItemLength is = let lengths = map listSubItemLength is in maximum lengths
 -- > listSubItemLength $ Para [Str "Foo", Link nullAttr [Str "bar"] ("https://en.wikipedia.org/wiki/Bar", "Wikipedia link")]
 -- → 7
 listSubItemLength :: Block -> Int
-listSubItemLength i = T.length $ simplified i
+listSubItemLength = T.length . simplified

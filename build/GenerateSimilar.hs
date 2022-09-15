@@ -3,7 +3,7 @@
 
 module GenerateSimilar where
 
-import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str, Strong), Format(..), runPure, Pandoc(..))
+import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str, Strong), Format(..), runPure, Pandoc(..), nullAttr)
 import qualified Data.Text as T  (append, intercalate, length, pack, strip, take, unlines, unpack, Text)
 import Data.List ((\\), intercalate,  nub)
 import Data.Maybe (fromJust)
@@ -28,7 +28,7 @@ import Data.Conduit (ConduitT)
 import Data.Conduit.List (sourceList)
 
 import Columns as C (listLength)
-import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, safeHtmlWriterOptions)
+import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, safeHtmlWriterOptions, parseRawInline)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
 import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, replaceManyT)
 
@@ -313,5 +313,5 @@ generateItem md (p2,distance) = case M.lookup p2 md of
                                     [Para -- NOTE: we set .backlink-not because similar-links suggestions, even curated ones, can be quite tangential & distant, so we don't want to clutter up backlinks with them.
                                       [Link ("", ["link-annotated", "backlink-not", "id-not"], [("embedding-distance", T.pack $ take 7 $ show distance)] ++
                                               if null tags then [] else [("link-tags", T.pack $ unwords tags) ]
-                                            ) [RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
+                                            ) [parseRawInline nullAttr $ RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
                                     ]
