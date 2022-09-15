@@ -362,6 +362,25 @@ function includeContent(includeLink, content) {
 		wrapper.append(idBearerBlock);
 	}
 
+	//	Special treatment for aux-links blocks.
+	if (Extracts.isAuxLinksLink(includeLink)) {
+		let auxLinksBlock = null;
+		if (wrapper.firstElementChild.classList.contains("include-wrapper-block")) {
+			auxLinksBlock = wrapper.firstElementChild;
+		} else {
+			auxLinksBlock = wrapper.closest("backlinks-append, similars-append");
+		}
+		if (auxLinksBlock == null) {
+			auxLinksBlock = newElement("DIV");
+			auxLinksBlock.append(...(wrapper.childNodes));
+			wrapper.append(auxLinksBlock);
+		}
+		let auxLinksLinkType = Extracts.auxLinksLinkType(includeLink);
+		auxLinksBlock.classList.add(`aux-links-block`, `${auxLinksLinkType}-block`);
+		if (auxLinksLinkType == "backlinks")
+			auxLinksBlock.dataset.targetUrl = Extracts.targetOfAuxLinksLink(includeLink);
+	}
+
 	//	Unwrap.
 	unwrap(wrapper);
 

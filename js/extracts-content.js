@@ -205,9 +205,14 @@ Extracts = { ...Extracts,
         doAjax({
             location: target.href,
             onSuccess: (event) => {
-                //  Cache the aux-links source. (Strip extraneous elements.)
+                //  Cache the aux-links source (and wrap in aux-links block).
                 let auxLinksSource = newDocument(event.target.responseText);
-                auxLinksSource = newDocument(auxLinksSource.querySelector("div.columns, ul"));
+				let auxLinksLinkType = Extracts.auxLinksLinkType(target);
+				let auxLinksBlock = newElement("DIV", { "class": `aux-links-block ${auxLinksLinkType}-block` });
+                if (auxLinksLinkType == "backlinks")
+					auxLinksBlock.dataset.targetUrl = Extracts.targetOfAuxLinksLink(target);
+				auxLinksBlock.append(auxLinksSource);
+				auxLinksSource.append(auxLinksBlock);
                 Extracts.auxLinksCache[target.pathname] = auxLinksSource;
 
                 /*  Trigger the rewrite pass by firing the requisite event.
