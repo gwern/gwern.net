@@ -392,7 +392,7 @@ Extracts = {
     //  Called by: Extracts.localTranscludeForTarget
     //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
     nearestBlockElement: (element) => {
-        return (   element.closest("section, .footnote, .sidenote, .markdownBody > *")
+        return (   element.closest("section, .footnote, .sidenote, .markdownBody > *, .include-wrapper-block")
         		|| element.closest("p"))
     },
 
