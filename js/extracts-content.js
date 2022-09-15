@@ -290,8 +290,8 @@ Extracts = { ...Extracts,
         let target = popFrame.spawningTarget;
 
 		//	Remove back-link and self-link.
-		popFrame.body.querySelector(".footnote-self-link").remove();
-		popFrame.body.querySelector(".footnote-back").remove();
+		popFrame.document.querySelector(".footnote-self-link").remove();
+		popFrame.document.querySelector(".footnote-back").remove();
 
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
@@ -583,7 +583,7 @@ Extracts = { ...Extracts,
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_IMAGE: (popFrame) => {
         //  Remove extraneous classes from images in image pop-frames.
-        popFrame.body.querySelector("img").classList.remove("link-local", "link-self", 
+        popFrame.document.querySelector("img").classList.remove("link-local", "link-self", 
         	"has-annotation", "has-annotation-partial", "has-content");
 
         //  Loading spinner.
@@ -656,7 +656,7 @@ Extracts = { ...Extracts,
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_DOCUMENT: (popFrame) => {
         //  Set title of popup from page title.
-        let iframe = popFrame.body.querySelector("iframe");
+        let iframe = popFrame.document.querySelector("iframe");
         if (iframe) {
             iframe.addEventListener("load", (event) => {
                 popFrame.titleBar.querySelector(".popframe-title-link").innerHTML = iframe.contentDocument.title;
@@ -868,7 +868,7 @@ Extracts = { ...Extracts,
                     if (event.target.getResponseHeader("content-type").startsWith("text/plain"))
                         doc.innerHTML = `<pre>${doc.innerHTML}</pre>`;
 
-                    target.popFrame.body.querySelector("iframe").srcdoc = doc.innerHTML;
+                    target.popFrame.document.querySelector("iframe").srcdoc = doc.innerHTML;
 
                     target.popFrame.classList.toggle("loading", false);
                 },

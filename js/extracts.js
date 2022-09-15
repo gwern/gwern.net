@@ -532,7 +532,7 @@ Extracts = {
         popFrame.classList.toggle("loading", true);
 
         //  When loading ends (in success or failure)...
-        let objectOfSomeSort = popFrame.body.querySelector("iframe, object, img, video");
+        let objectOfSomeSort = popFrame.document.querySelector("iframe, object, img, video");
         if (objectOfSomeSort.tagName == "IFRAME") {
             //  Iframes do not fire ‘error’ on server error.
             objectOfSomeSort.onload = (event) => {
@@ -608,7 +608,7 @@ Extracts = {
             requestAnimationFrame(() => {
             	let element = null;
                 if (   popFrame
-                	&& (element = popFrame.body.querySelector(selectorFromHash(target.hash))))
+                    && (element = popFrame.document.querySelector(selectorFromHash(target.hash))))
                 	requestAnimationFrame(() => {
 	                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
 	                });
@@ -620,14 +620,14 @@ Extracts = {
 	constrainLinkClickBehaviorInPopFrame: (popFrame, extraCondition = (link => true)) => {
         let target = popFrame.spawningTarget;
 
-        popFrame.body.querySelectorAll("a").forEach(link => {
+        popFrame.document.querySelectorAll("a").forEach(link => {
             if (   link.hostname == target.hostname
                 && link.pathname == target.pathname
                 && link.hash > ""
                 && extraCondition(link)) {
                 link.onclick = () => { return false; };
                 link.addActivateEvent((event) => {
-                    let hashTarget = popFrame.body.querySelector(selectorFromHash(link.hash));
+                    let hashTarget = popFrame.document.querySelector(selectorFromHash(link.hash));
                     if (hashTarget) {
                         Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(hashTarget);
                         return false;
@@ -918,7 +918,7 @@ Extracts = {
 		if (!(next || prev))
 			return;
 
-		if (popFrame.body.querySelector(selectorFromHash(target.hash)) == null) {
+		if (popFrame.document.querySelector(selectorFromHash(target.hash)) == null) {
 			let sectionWrapper = document.createElement("SECTION");
 			sectionWrapper.id = popFrame.firstSection.id;
 			sectionWrapper.classList.add(...(popFrame.firstSection.classList));
