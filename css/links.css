@@ -265,15 +265,12 @@ body.index a.link-local::after,
     content: none;
 }
 
-/*  Also remove ‘G’ icon from the tags inside popups or in directory index
-    entries (which go to directory indexes, which aren’t really top-level/essay
-    content, and the G is clutter).
-
-    Ditto link tags.
+/*  Also remove ‘G’ icon from the tags / aux-links links inside annotations 
+	(which aren’t really top-level/essay content, and the G is clutter).
  */
-.markdownBody .backlinks a::after,
-.markdownBody .similars a::after,
-.markdownBody .link-tags a::after {
+.data-field .backlinks a::after,
+.data-field .similars a::after,
+.data-field .link-tags a::after {
     content: none;
 }
 
