@@ -128,7 +128,7 @@ Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isAuxLinksLink: (target) => {
         let auxLinksLinkType = Extracts.auxLinksLinkType(target);
-        return (auxLinksLinkType && target.classList.contains(auxLinksLinkType));
+        return ((auxLinksLinkType != null) && target.classList.contains(auxLinksLinkType));
     },
 
     /*  Backlinks, similar-links, etc.
@@ -194,8 +194,10 @@ Extracts = { ...Extracts,
         doAjax({
             location: target.href,
             onSuccess: (event) => {
-                //  Cache the aux-links source.
-                Extracts.auxLinksCache[target.pathname] = newDocument(event.target.responseText);
+                //  Cache the aux-links source. (Strip extraneous elements.)
+                let auxLinksSource = newDocument(event.target.responseText);
+                auxLinksSource = newDocument(auxLinksSource.querySelector("div.columns"));
+                Extracts.auxLinksCache[target.pathname] = auxLinksSource;
 
                 /*  Trigger the rewrite pass by firing the requisite event.
                     */
