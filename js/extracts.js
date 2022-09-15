@@ -732,7 +732,12 @@ Extracts = {
 
             if (fullTargetDocument) {
             	let linkedElement = Extracts.targetElementInDocument(target, fullTargetDocument);
-				let nearestBlock = Extracts.nearestBlockElement(linkedElement);
+            	let isBlockTransclude = (   Transclude.isIncludeLink(linkedElement)
+            							 && linkedElement.id > ""
+            							 && linkedElement.classList.contains("include-identify-not") == false);
+				let nearestBlock = isBlockTransclude
+								   ? linkedElement
+								   : Extracts.nearestBlockElement(linkedElement);
 
 				return newDocument(unwrapFunction(nearestBlock));
 			} else {
