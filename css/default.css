@@ -2515,15 +2515,6 @@ span.link-bibliography a {
 	padding-left: 1.5em;
 }
 
-#further-reading .columns ul {
-	padding-left: 2.5em;
-}
-@media only screen and (max-width: 649px) {
-	#further-reading .columns ul {
-		padding-left: 1.75em;
-	}
-}
-
 
 /***************/
 /* ADMONITIONS */
@@ -2691,6 +2682,26 @@ a .cite-author-plural::after {
     white-space: nowrap;
 }
 a .cite-date { margin-left: 0em; }
+
+
+/******************************/
+/* “FURTHER READING” SECTIONS */
+/******************************/
+
+#further-reading .columns ul {
+	margin-top: 0.5em;
+	padding-left: 2.5em;
+}
+@media only screen and (max-width: 649px) {
+	#further-reading .columns ul {
+		padding-left: 1.75em;
+	}
+}
+
+#further-reading > div + div {
+	margin-top: 1.5em;
+}
+
 
 /*******************************/
 /* PAGE-SPECIFIC MODIFICATIONS */
