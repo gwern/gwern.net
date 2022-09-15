@@ -121,7 +121,7 @@
 /*  Disclosure button.
  */
 .disclosure-button {
-	--button-color: var(--GW-collapse-disclosure-button-color);
+    --button-color: var(--GW-collapse-disclosure-button-color);
 
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -143,7 +143,7 @@
         box-shadow 0.1s ease;
 }
 .disclosure-button:hover {
-	--button-color: var(--GW-collapse-disclosure-button-hover-color);
+    --button-color: var(--GW-collapse-disclosure-button-hover-color);
 
     z-index: 11;
 }
@@ -152,11 +152,11 @@
 }
 /*
 .disclosure-button:checked {
-	pointer-events: none;
+    pointer-events: none;
 }
 .disclosure-button:checked::before,
 .disclosure-button:checked::after {
-	pointer-events: auto;
+    pointer-events: auto;
 }
  */
 
@@ -374,14 +374,14 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
     padding: 0;
 }
 .table-wrapper > .collapse:not(.expanded) > .disclosure-button::before {
-	top: 2px;
+    top: 2px;
 }
 .table-wrapper > .collapse:not(.expanded) > .disclosure-button::after {
-	bottom: 1px;
+    bottom: 1px;
 }
 
 /****************************/
-/*	Collapses in blockquotes.
+/*  Collapses in blockquotes.
  */
 blockquote :not(section).collapse:not(.expanded),
 blockquote :not(section).collapse.expanded {
@@ -396,19 +396,19 @@ blockquote > :not(section).collapse:last-child {
 
 @media only screen and (max-width: 649px) {
     blockquote :not(section).collapse:not(.expanded),
-	blockquote :not(section).collapse.expanded {
-		padding-left: 1em;
-		padding-right: 1em;
-		margin-left: -1em;
-		margin-right: -1em;
-	}
-	blockquote > :not(section).collapse:last-child {
-		margin-bottom: -0.75em;
-	}
+    blockquote :not(section).collapse.expanded {
+        padding-left: 1em;
+        padding-right: 1em;
+        margin-left: -1em;
+        margin-right: -1em;
+    }
+    blockquote > :not(section).collapse:last-child {
+        margin-bottom: -0.75em;
+    }
 }
 
 blockquote .collapse::before {
-	background-color: var(--GW-blockquote-background-color);
+    background-color: var(--GW-blockquote-background-color);
 }
 blockquote .collapse:not(.expanded) > .disclosure-button {
     --button-color: var(--GW-collapse-in-blockquote-disclosure-button-color-30-percent-transparent);
@@ -623,7 +623,7 @@ section:target > :first-child a::after {
 }
 
 .markdownBody .TOC.columns > ul {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 /**********/
@@ -635,13 +635,13 @@ section:target > :first-child a::after {
     margin: 3em 0 0 0;
 }
 @media only screen and (max-width: 649px) {
-	#footer {
-	    margin: 3em 0 2em 0;
-	}
+    #footer {
+        margin: 3em 0 2em 0;
+    }
 }
 
 #footer p {
-	margin: 1em 0;
+    margin: 1em 0;
 }
 
 /*********************/
@@ -732,7 +732,7 @@ blockquote :not(section).collapse.annotation-see-also:not(.expanded) > .disclosu
 }
 
 blockquote .collapse:not(.expanded).annotation-see-also > div > p:first-child {
-	margin-top: 0.5em;
+    margin-top: 0.5em;
 }
 
 
@@ -1105,13 +1105,13 @@ blockquote table {
     font-size: 0.7em;
 }
 
-/*	Lists in blockquotes.
+/*  Lists in blockquotes.
  */
 .markdownBody blockquote li {
-	text-align: left;
+    text-align: left;
 }
 
-/*	EPITAPH (eg /LARPing)
+/*  EPITAPH (eg /LARPing)
  */
 .text-center { text-align: center; }
 
@@ -1491,7 +1491,7 @@ section.footnotes > hr:first-child.highlighted::before {
     pointer-events: none;
 }
 .sidenote-layout-cell > * {
-	pointer-events: auto;
+    pointer-events: auto;
 }
 
 #sidenote-column-left,
@@ -1520,7 +1520,7 @@ section.footnotes > hr:first-child.highlighted::before {
 }
 #sidenote-column-left:empty,
 #sidenote-column-right:empty {
-	display: none;
+    display: none;
 }
 
 /*=-----------------=*/
@@ -1535,12 +1535,12 @@ section.footnotes > hr:first-child.highlighted::before {
     line-height: 1.5;
     padding: 2em 0 0 0;
     transition:
-    	opacity 0.25s ease-in,
+        opacity 0.25s ease-in,
         transform 0.25s ease-in;
 }
 .sidenote.displaced {
     transition:
-    	opacity 0.25s ease-out,
+        opacity 0.25s ease-out,
         transform 0.25s ease-out;
 }
 .sidenote.hidden {
@@ -1559,7 +1559,7 @@ section.footnotes > hr:first-child.highlighted::before {
     z-index: 1;
 }
 .sidenote.displaced {
-	z-index: 2;
+    z-index: 2;
 }
 .sidenote.highlighted,
 .sidenote:hover {
@@ -1585,25 +1585,25 @@ section.footnotes > hr:first-child.highlighted::before {
 }
 
 .sidenote.cut-off::before {
-	content: "…";
-	position: absolute;
-	border: 1px dotted var(--GW-sidenote-border-color);
-	bottom: 0;
-	left: 0;
-	right: 0;
-	margin: auto;
-	width: -moz-fit-content;
-	width: fit-content;
-	z-index: 2;
-	background-color: var(--GW-body-background-color);
-	padding: 0.125em 0.5em 0.5em 0.5em;
-	font-size: 1.25em;
-	font-weight: 600;
-	line-height: 0.5;
-	pointer-events: none;
+    content: "…";
+    position: absolute;
+    border: 1px dotted var(--GW-sidenote-border-color);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: -moz-fit-content;
+    width: fit-content;
+    z-index: 2;
+    background-color: var(--GW-body-background-color);
+    padding: 0.125em 0.5em 0.5em 0.5em;
+    font-size: 1.25em;
+    font-weight: 600;
+    line-height: 0.5;
+    pointer-events: none;
 }
 .sidenote.cut-off.hide-more-indicator::before {
-	visibility: hidden;
+    visibility: hidden;
 }
 
 /*=-------------------=*/
@@ -1758,8 +1758,8 @@ section.footnotes > hr:first-child.highlighted::before {
     color: inherit;
 }
 .marginnote.sidenote {
-	display: flex;
-	justify-content: right;
+    display: flex;
+    justify-content: right;
     /*  925px because that’s the width of #markdownBody at the widths where we
         get margin notes. Someday, find a way to auto-compute this (but note
         that `50%` doesn’t work in place of `(925px / 2)`; it breaks when the
@@ -1785,9 +1785,9 @@ section.footnotes > hr:first-child.highlighted::before {
     z-index: 1;
 }
 .marginnote.sidenote .marginnote-inner-wrapper {
-	display: block;
-	width: -moz-fit-content;
-	width: fit-content;
+    display: block;
+    width: -moz-fit-content;
+    width: fit-content;
 }
 
 .marginnote.sidenote:hover {
@@ -1956,12 +1956,12 @@ th.tablesorter-headerDesc:hover {
 /* Floating tables: float small by default because if they are 'small', they don't need the full body column */
 .table-small.float-left { float: left;
                           max-width: calc(50% - 1.5em);
-                          margin: 0 1.5em 1em 0;
+                          margin: 1.5em 1.5em 1em 0;
                         }
 /* We may wish to alternate side for many small tables in success: */
 .table-small.float-right { float: right;
                            max-width: calc(50% - 1.5em);
-                           margin: 0 0 1.5em 1em;
+                           margin: 1.5em 0 1em 1em;
                          }
 
 /*  Tables in blockquotes.
@@ -2512,7 +2512,7 @@ span.link-bibliography a {
 }
 
 .columns ul {
-	padding-left: 1.5em;
+    padding-left: 1.5em;
 }
 
 
@@ -2689,17 +2689,17 @@ a .cite-date { margin-left: 0em; }
 /******************************/
 
 #further-reading .columns ul {
-	margin-top: 0.5em;
-	padding-left: 2.5em;
+    margin-top: 0.5em;
+    padding-left: 2.5em;
 }
 @media only screen and (max-width: 649px) {
-	#further-reading .columns ul {
-		padding-left: 1.75em;
-	}
+    #further-reading .columns ul {
+        padding-left: 1.75em;
+    }
 }
 
 #further-reading > div + div {
-	margin-top: 1.5em;
+    margin-top: 1.5em;
 }
 
 
@@ -2792,7 +2792,7 @@ body.index #markdownBody section > h1:first-child a::after {
 
 body.reviews-books #markdownBody blockquote {
     clear: none;
-	overflow: auto;
+    overflow: auto;
 }
 
 body.reviews-books #markdownBody .book-review-meta {
@@ -3321,7 +3321,7 @@ body.index-directory #footer {
 }
 
 .popframe-body > section:only-child {
-	display: contents;
+    display: contents;
 }
 
 .popframe-body ul,
@@ -3447,7 +3447,7 @@ body.index-directory #footer {
 /*└──────────────────────┘*/
 
 .popframe-body.aux-links .aux-links-block > p:first-child {
-	display: none;
+    display: none;
 }
 .popframe-body.aux-links .columns ul {
     margin: 0.75em 0 1em 0;
@@ -3632,7 +3632,7 @@ body.index-directory #footer {
     display: none;
 }
 .popframe-body section.display-pop-not {
-	margin-top: 2.75em;
+    margin-top: 2.75em;
 }
 
 /*  We also want to squeeze the directory list because the default
@@ -4930,17 +4930,17 @@ section.highlight-fading::before {
  */
 .data-field.title {
     text-indent: 0;
-	text-align: left;
+    text-align: left;
 }
 
 /*  Images (such as the ones in Wikipedia annotations).
     */
 @media only screen and (min-width: 650px) {
-	.annotation > figure.float-right {
-		margin: 0.125em 0 0.125em 1.5em;
-		max-width: calc(50% - 1.5em);
-		float: right;
-	}
+    .annotation > figure.float-right {
+        margin: 0.125em 0 0.125em 1.5em;
+        max-width: calc(50% - 1.5em);
+        float: right;
+    }
 }
 .annotation figure.float-left .image-wrapper,
 .annotation figure.float-right .image-wrapper {
@@ -5033,26 +5033,26 @@ section.highlight-fading::before {
     font-style: inherit;
 }
 
-/*	“Backlinks” section of annotations.
+/*  “Backlinks” section of annotations.
  */
 
 .backlinks-append {
-	margin-top: 1em;
-	padding-bottom: 0.375em;
+    margin-top: 1em;
+    padding-bottom: 0.375em;
 }
 
 .annotation-see-also > div > div > ul,
 .backlinks-append > div > ul {
-	margin-top: 0.5em;
+    margin-top: 0.5em;
 }
 
 p + .backlinks-append {
-	border-top: 1px solid var(--GW-TOC-border-color);
-	margin-top: 1.25em;
-	padding-top: 1em;
+    border-top: 1px solid var(--GW-TOC-border-color);
+    margin-top: 1.25em;
+    padding-top: 1em;
 }
 .TOC + .backlinks-append {
-	margin-top: 0.75em;
+    margin-top: 0.75em;
 }
 
 
@@ -5200,14 +5200,14 @@ p + .backlinks-append {
         padding: 0.25em 0.25em;
         box-sizing: border-box;
     }
-	#back-to-top {
+    #back-to-top {
         background-color: var(--GW-body-background-color);
-		background-image: linear-gradient(var(--GW-back-to-top-link-color),
-										  var(--GW-back-to-top-link-color));
-		background-position: 0 0;
-		background-repeat: no-repeat;
-		background-size: 0 0;
-	}
+        background-image: linear-gradient(var(--GW-back-to-top-link-color),
+                                          var(--GW-back-to-top-link-color));
+        background-position: 0 0;
+        background-repeat: no-repeat;
+        background-size: 0 0;
+    }
 }
 
 /*************/
