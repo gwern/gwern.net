@@ -401,7 +401,23 @@ Extracts = {
 	 */
 	//	Called by: many functions
 	targetElementInDocument: (link, doc) => {
-		return doc.querySelector(selectorFromHash(link.hash));
+		let element = doc.querySelector(selectorFromHash(link.hash));
+		if (element)
+			return element;
+
+		if (link.closest("#backlinks")) {
+			element = doc.querySelector(`a.link-local[href*='${location.pathname}']`);
+		} else if (link.closest(".markdownBody.backlinks")) {
+			let popFrameBody = link.closest(".markdownBody.backlinks");
+			let backlinksLink = (popFrameBody.popup ?? popFrameBody.popin).spawningTarget;
+			let pageLink = backlinksLink.closest(".data-field.title").querySelector(".title-link");
+			element = doc.querySelector(`a.link-local[href*='${pageLink.pathname}']`);
+		} else if (link.closest(".backlinks-append")) {
+			let pageLink = link.closest(".annotation").previousElementSibling.querySelector(".title-link");
+			element = doc.querySelector(`a.link-local[href*='${pageLink.pathname}']`);
+		}
+
+		return element;
 	},
 
     /*  This function fills a pop-frame for a given target with content. It
@@ -792,9 +808,10 @@ Extracts = {
         GWLog("Extracts.preparePopFrame_LOCAL_PAGE", "extracts.js", 2);
 
 		//	Add to a full-page pop-frame the body classes of the page.
+		let target = popFrame.spawningTarget;
 		if (   popFrame.classList.contains("external-page-embed")
-			&& Extracts.cachedPageBodyClasses[popFrame.spawningTarget.pathname] > null)
-			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...Extracts.cachedPageBodyClasses[popFrame.spawningTarget.pathname]);
+			&& Extracts.cachedPageBodyClasses[target.pathname] > null)
+			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...Extracts.cachedPageBodyClasses[target.pathname]);
 
 		return popFrame;
 	},
