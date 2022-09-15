@@ -155,7 +155,7 @@ else
             FILELENGTH=$(cat "$FILE" | wc --lines)
             (echo -e "~~~~~~~~~~~~~~~~~~~~~{.$LANGUAGE}"; # NOTE: excessively long tilde-line is necessary to override/escape any tilde-blocks inside Markdown files: <https://pandoc.org/MANUAL.html#fenced-code-blocks>
             if [ $EXTENSION == "page" ]; then # the very long lines look bad in narrow popups, so we fold:
-                cat "$FILE" | fold --spaces --width=65 | head -1100 | iconv -t utf8 -c;
+                cat "$FILE" | fold --spaces --width=70 | sed -e 's/~~~/∼∼∼/g' | head -1100 | iconv -t utf8 -c;
             else
                 cat "$FILE" | head -1000;
             fi
