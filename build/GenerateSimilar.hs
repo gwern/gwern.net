@@ -27,6 +27,7 @@ import Data.RPTree (knn, forest, metricL2, rpTreeCfg, fpMaxTreeDepth, fpDataChun
 import Data.Conduit (ConduitT)
 import Data.Conduit.List (sourceList)
 
+import Columns as C (listLength)
 import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, safeHtmlWriterOptions)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
 import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, replaceManyT)
@@ -300,7 +301,7 @@ generateMatches md p abst matches =
                     in case htmlEither of
                                 Left e -> error $ show e ++ ":" ++ show p ++ ":" ++ show matches ++ ":" ++ show similarItems
                                 Right output -> output
-             similarLinksHtmlFragment = "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
+             similarLinksHtmlFragment = if (C.listLength (BulletList similarItems) > 60 || length matchesPruned < 4) then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
          in similarLinksHtmlFragment
 
 generateItem :: Metadata -> (String,Double) -> [Block]
