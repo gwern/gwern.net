@@ -3446,7 +3446,10 @@ body.index-directory #footer {
 /*│ Aux-link pop-frames. │*/
 /*└──────────────────────┘*/
 
-.popframe-body.backlinks .columns ul {
+.popframe-body.aux-links .aux-links-block > p:first-child {
+	display: none;
+}
+.popframe-body.aux-links .columns ul {
     margin: 0.75em 0 1em 0;
     padding: 0 0 0 1.75em;
 }

@@ -405,16 +405,10 @@ Extracts = {
 		if (element)
 			return element;
 
-		if (link.closest("#backlinks")) {
-			element = doc.querySelector(`a.link-local[id][href*='${location.pathname}']`);
-		} else if (link.closest(".markdownBody.backlinks")) {
-			let popFrameBody = link.closest(".markdownBody.backlinks");
-			let backlinksLink = (popFrameBody.popup ?? popFrameBody.popin).spawningTarget;
-			let pageLink = backlinksLink.closest(".data-field.title").querySelector(".title-link");
-			element = doc.querySelector(`a.link-local[id][href*='${pageLink.pathname}']`);
-		} else if (link.closest(".backlinks-append")) {
-			let pageLink = link.closest(".annotation").previousElementSibling.querySelector(".title-link");
-			element = doc.querySelector(`a.link-local[id][href*='${pageLink.pathname}']`);
+		let backlinksBlock = link.closest(".backlinks-block");
+		if (backlinksBlock) {
+			let escapedURL = CSS.escape(backlinksBlock.dataset.targetUrl);
+			element = doc.querySelector(`a.link-local[id][href*='${escapedURL}']`);
 		}
 
 		return element;
