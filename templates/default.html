@@ -109,7 +109,7 @@
               <span id="page-status" title="Writing status of current page: ranges 'abandoned'/'notes'/'draft'/'in progress'/'finished'"><em>$status$</em></span> <br>
               <span id="page-confidence"><a href="/About#confidence-tags" title="Explanation of 'confidence' metadata: probability of overall being meaningfully correct, expressed as Kesselman Estimative Words (ranging 0–100%: 'certain'/'highly likely'/'likely'/'possible'/'unlikely'/'highly unlikely'/'remote'/'impossible')">certainty</a>: <em>$confidence$</em></span>
               <span id="page-importance"><a href="/About#importance-tags" title="Explanation of 'importance' metadata: rating 1–10 about how much a topic matters to the world.">importance</a>: <em>$importance$</em></span> <br>
-              $if(backlinksYes)$<span class="backlinks"><a id="page=backlinks" class="backlinks" href="#further-reading" title="Reverse citations/backlinks for this page (the list of other pages which link to this page).">backlinks</a></span>$endif$
+              $if(backlinksYes)$<span class="backlinks"><a id="page=backlinks" class="backlinks" href="#backlinks" title="Reverse citations/backlinks for this page (the list of other pages which link to this page).">backlinks</a></span>$endif$
               $if(similarsYes)$<span class="similars"><a id="page-similars" class="similars" href="#similars" title="Similar links for this link (by text embedding).">similar</a></span>$endif$
               <span class="link-bibliography"><a id="page-link-bibliography" href="#link-bibliography" title="Bibliography of links cited in this page (forward citations).">bibliography</a></span>
           </div>
@@ -123,8 +123,8 @@
         $if(index)$ $else$
         <section id="further-reading" class="level1">
           <h1><a href="#further-reading" title="Link to section: § 'Further Reading'">Further Reading</a></h1>
-          $if(backlinksYes)$<a id="backlinks" href="/metadata/annotations/backlinks/$escapedURL$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="include-unwrap">backlinks</a>$endif$
-          $if(similarsYes)$<a id="similars" href="/metadata/annotations/similars/$escapedURL$" title="Similar links for this link (by text embedding)." class="include-unwrap">similar</a>$endif$
+          $if(backlinksYes)$<a id="backlinks" href="/metadata/annotations/backlinks/$escapedURL$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="backlinks include">backlinks</a>$endif$
+          $if(similarsYes)$<a id="similars" href="/metadata/annotations/similars/$escapedURL$" title="Similar links for this link (by text embedding)." class="similars include">similar</a>$endif$
         </section>
         <section id="link-bibliography" class="level1">
           <a id="link-bibliography-link-footer-transclusion" href="/docs/link-bibliography$url$#link-bibliography" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include-unwrap include-identify-not">Link Bibliography</a>
