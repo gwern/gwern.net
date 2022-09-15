@@ -294,7 +294,7 @@ whiteList = M.fromList [
       , "Zhu et al 2015"
       ]
     )
-  , ( "/docs/iq/2016-okbay-2.pdf"
+  , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4883595/"
     , [ "Genome-wide association study identifies 74 [162] loci associated with educational attainment"
       , "Genome-wide association study identifies 74 loci associated with educational attainment"
       , "Okbay et al 2016"
@@ -1023,7 +1023,7 @@ whiteList = M.fromList [
     , [ "Mastering the Art of War: How Patterns of Gameplay Influence Skill in Halo"
       ]
     ),
-    ( "https://journals.plos.org/plosmedicine/article/info%3Adoi%2F10.1371%2Fjournal.pmed.1000097"
+    ( "https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1000097"
       , [ "Preferred Reporting Items for Systematic Reviews and Meta-Analyses: The PRISMA Statement', Moher et al 2009"
         , "PRISMA" ])
   , ( "https://old.reddit.com/r/MachineLearning/comments/akbc11/p_tag_estimation_for_animestyle_girl_image/"
@@ -1045,7 +1045,7 @@ whiteList = M.fromList [
     , [ "\"Understand\"" ]
     ), ( "https://web.archive.org/web/20161021035119/http://www.ibooksonline.com/88/Text/hell.html"
     , [ "Hell is the Absence of God" ]
-    ), ( "https://web.archive.org/web/20190111175346/https://nplusonemag.com/issue-3/reviews/adventures-of-a-man-of-science/"
+    ), ( "https://www.nplusonemag.com/issue-3/reviews/adventures-of-a-man-of-science/"
     , [ "Adventures of a Man of Science" , "Batuman 2005" ]
     ), ( "/docs/genetics/selection/artificial/index-selection/2011-cole.pdf"
     , [ "Cole & VanRaden 2011"
@@ -1127,7 +1127,7 @@ whiteList = M.fromList [
     ), ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4313871/"
     , [ "The contribution of <em>de novo</em> coding mutations to autism spectrum disorder"
       ]
-    ), ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4509557/"
+    ), ( "/docs/psychiatry/lithium/2015-helbich.pdf"
     , [ "Helbich et al 2015"
       , "Lithium in drinking water and suicide mortality: interplay with lithium prescriptions"
       ]

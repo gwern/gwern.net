@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-14 20:27:43 gwern"
+When:  Time-stamp: "2022-09-14 22:45:07 gwern"
 License: CC-0
 -}
 
@@ -244,7 +244,7 @@ readLinkMetadataAndCheck = do
              unless (null urlsDuplicateAffiliation) $ printRed "Duplicated URLs by affiliation:" >> printGreen (show urlsDuplicateAffiliation)
 
              let titlesSimilar = sort $ map (\(u,(t,_,_,_,_,_)) -> (u, t)) $ filter (\(u,_) -> '.' `elem` u && not ("wikipedia.org" `isInfixOf` u)) $ M.toList final
-             let titles = filter (not . null) $ map snd titlesSimilar
+             let titles = filter (\title -> length title > 5) $ map snd titlesSimilar
              unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in YAMLs!: " >> printGreen (show (titles \\ nubOrd titles))
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) finalL

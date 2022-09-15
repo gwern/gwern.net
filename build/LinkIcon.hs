@@ -880,7 +880,6 @@ linkIconTestUnitsText =
          , ("https://www.atlasobscura.com/articles/cyoa-choose-your-own-adventure-maps", "atlas-obscura", "svg")
          , ("http://www.antipope.org/charlie/blog-static/2007/03/why_the_commercial_ebook_marke.html", "C.S.", "text,sans")
          , ("http://rspb.royalsocietypublishing.org/content/284/1851/20162562", "RS", "text")
-         , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3270388/", "RS", "text")
          , ("http://rstb.royalsocietypublishing.org/content/365/1537/73.full", "RS", "text")
          , ("https://royalsocietypublishing.org/doi/10.1098/rsos.181393", "RS", "text")
          , ("https://nautil.us/mapping-the-human-exposome-10595/", "nautilus", "svg")
