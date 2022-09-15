@@ -430,7 +430,8 @@ Annotations.dataSources.wikipedia = {
 
 		//  Strip inline styles.
 		referenceEntry.querySelectorAll("[style]").forEach(element => {
-			element.removeAttribute("style");
+			if (element.style.display != "none")
+				element.removeAttribute("style");
 		});
 
 		//  Un-linkify images.
