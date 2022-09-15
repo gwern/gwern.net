@@ -146,6 +146,17 @@ Extracts = { ...Extracts,
         }
     },
 
+    //  Called by: Extracts.preparePopFrame (as `preparePopFrame_${targetTypeName}`)
+	preparePopFrame_AUX_LINKS_LINK: (popFrame) => {
+        GWLog("Extracts.preparePopFrame_AUX_LINKS_LINK", "extracts-content.js", 2);
+
+        let auxLinksLinkType = Extracts.auxLinksLinkType(popFrame.spawningTarget);
+        if (auxLinksLinkType > "")
+			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, auxLinksLinkType);
+
+		return popFrame;
+	},
+
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_AUX_LINKS_LINK: (popFrame) => {
         let target = popFrame.spawningTarget;
@@ -196,7 +207,7 @@ Extracts = { ...Extracts,
             onSuccess: (event) => {
                 //  Cache the aux-links source. (Strip extraneous elements.)
                 let auxLinksSource = newDocument(event.target.responseText);
-                auxLinksSource = newDocument(auxLinksSource.querySelector("div.columns"));
+                auxLinksSource = newDocument(auxLinksSource.querySelector("div.columns, ul"));
                 Extracts.auxLinksCache[target.pathname] = auxLinksSource;
 
                 /*  Trigger the rewrite pass by firing the requisite event.
