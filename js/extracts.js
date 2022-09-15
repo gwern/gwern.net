@@ -814,16 +814,18 @@ Extracts = {
 
         let target = popFrame.spawningTarget;
 		let targetDocument = Extracts.targetDocument(target) || Extracts.cachedPages[target.pathname];
-		let nearestBlockElement = ((targetDocument != null) && (target.hash > "")
-								   ? Extracts.nearestBlockElement(targetDocument.querySelector(selectorFromHash(target.hash)))
-								   : null);
+		let nearestBlockElement = (   targetDocument != null 
+								   && target.hash > ""
+								   && popFrame.classList.contains("external-page-embed") == false)
+								  ? Extracts.nearestBlockElement(targetDocument.querySelector(selectorFromHash(target.hash)))
+								  : null;
 
         let popFrameTitleText = ((() => {
         	//	Designate section embeds with a section mark (§).
         	return ((   target.hash > ""
+        			 && popFrame.classList.contains("external-page-embed") == false
             		 && nearestBlockElement
-           			 && nearestBlockElement.tagName == "SECTION"
-        			 && !popFrame.classList.contains("external-page-embed"))
+           			 && nearestBlockElement.tagName == "SECTION")
            			? "&#x00a7; "
            			: "");
         })() + (() => {
