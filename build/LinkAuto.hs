@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-09-13 19:47:46 gwern"
+When:  Time-stamp: "2022-09-16 14:13:51 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -31,8 +31,7 @@ regexp that matches.
 After the regexp pass, we do an additional cleanup pass. How should we handle the case of a phrase
 like "GAN" or "GPT-3" appearing potentially scores or hundreds of times in page? Do we really want
 to hyperlink *all* of them? Probably not. For the cleanup pass, we track 'seen' `link-auto` links in
-a Set, and if a link has been seen before, we remove it, leaving the text annotated with a simple
-Span 'link-auto-skipped' class. (In the future, we may drop this clean up pass, if we can find a
+a Set, and if a link has been seen before, we remove it. (In the future, we may drop this clean up pass, if we can find a
 good way to dynamically hide 'excess' links; one idea is define `.link-auto` CSS to de-style links,
 and then, on browser screen scroll, use JS to re-link-style the first instance of each URL. So only
 the first instance would be visible on each screen, minimizing redundancy/clutter/over-linking.)
@@ -47,18 +46,17 @@ Dependencies: Pandoc, text, regex-tdfa, /static/build/Utils.hs, /static/build/Qu
 import Data.Char (isPunctuation, isSpace)
 import Data.List (nub, sortBy)
 import Data.List.Split (chunksOf)
-import qualified Data.Set as S (empty, fromList, insert, member, Set)
+import qualified Data.Set as S (fromList)
 import qualified Data.Text as T (append, head, intercalate, length, last, replace, singleton, tail, init, pack, unpack, Text)
 import Control.Concurrent (getNumCapabilities)
 import Control.Parallel.Strategies (parMap, rseq)
-import Control.Monad.State (evalState, get, put, State)
 import System.IO.Unsafe (unsafePerformIO)
 
-import Text.Pandoc (topDown, nullAttr, readerExtensions, def, writeHtml5String, pandocExtensions, runPure, readHtml, Pandoc(..), Inline(Link,Image,Code,Span,Str), Block(Div)) -- nullMeta, Inline(Space), Block(Para)
-import Text.Pandoc.Walk (walkM, walk)
+import Text.Pandoc (topDown, readerExtensions, def, writeHtml5String, pandocExtensions, runPure, readHtml, Pandoc(..), Inline(Link,Image,Code,Span,Str), Block(Div)) -- nullMeta, Inline(Space), Block(Para)
+import Text.Pandoc.Walk (walk)
 import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness/segfault/strange-closure issues (native Text, and useful splitting), so to save my sanity... BUG: TDFA seems to have slow Text instances: https://github.com/haskell-hvr/regex-tdfa/issues/9
 
-import Utils (addClass, simplifiedDoc)
+import Utils (simplifiedDoc)
 import Query (extractURLs)
 import Interwiki (inlinesToText)
 import Typography (mergeSpaces)
@@ -95,23 +93,9 @@ linkAutoFiltered subsetter p =
   let plain = simplifiedDoc p :: T.Text -- cache the plain text of the document
   in
        let customDefinitions' = filterMatches plain $ filterDefinitions p (customDefinitions subsetter) in
-         if null customDefinitions' then p else topDown cleanUpDivsEmpty $ topDown cleanUpSpansLinkAutoSkipped $ cleanupNestedLinks $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
+         if null customDefinitions' then p else topDown cleanUpDivsEmpty $ cleanupNestedLinks $ walk (defineLinks customDefinitions') p
 
 -----------
-
--- Walk a Pandoc document; find the first instance of every auto-definition and mark it with the HTML/CSS class `definition-auto-first`; skip any further examples of that particular defined word.
--- This lets one add CSS to highlight *just* the first definition and skip the rest; this is difficult/impossible to do in CSS alone, so requires either preprocessing  or runtime JS
-annotateFirstDefinitions :: Pandoc -> Pandoc
-annotateFirstDefinitions doc = evalState (walkM addFirstDefn doc) S.empty
-  where addFirstDefn :: Inline -> State (S.Set T.Text) Inline
-        addFirstDefn x@(Link a@(_,classes,_) il c@(t,_)) = if "link-auto" `elem` classes then
-            do st <- get
-               if S.member t st then return $ addClass "link-auto-skipped" $ Span nullAttr il -- Useful for debugging to annotate spans of text which *would* have been Links.
-                 else do let st' = S.insert t st
-                         put st'
-                         return $ addClass "link-auto-first" $ Link a il c
-            else return x
-        addFirstDefn x = return x
 
 -- HACK: Somehow we can, very rarely on gwern.net (maybe a dozen cases site-wide) wind up with Links nested inside of Links, despite attempts to block the substitution going too deep in `defineLinks`. This is bad, and also generates invalid HTML of nested <a><a></a></a>s.
 -- I can't figure out what is going on, and this may be related to various weird issues which makes me suspect that Pandoc's traverse operations aren't *quite* defined right.
@@ -126,21 +110,6 @@ cleanupNestedLinks = topDown go
         goDeeper (Link _ is _) = Str $ inlinesToText is -- Span nullAttr is
         goDeeper x = x
 
--- we probably want to remove the link-auto-skipped Spans if we are not actively debugging, because they inflate the markup & browser DOM.
--- We can't just remove the Span using a 'Inline -> Inline' walk, because a Span is an Inline with an [Inline] payload, so if we just remove the Span wrapper, it is a type error: we've actually done 'Inline -> [Inline]'.
--- Block elements always have [Inline] (or [[Inline]]) and not Inline arguments if they have Inline at all; likewise, Inline element also have only [Inline] arguments.
--- So, every instance of a Span *must* be inside an [Inline]. Therefore, we can walk an [Inline], and remove the wrapper, and then before++payload++after :: [Inline] and it typechecks and doesn't change the shape.
---
--- > cleanUpSpansLinkAutoSkipped [Str "foo", Span ("",["link-auto-skipped"],[]) [Str "Bar", Emph [Str "Baz"]], Str "Quux"]
---                               [Str "foo",                                     Str "Bar", Emph [Str "Baz"],  Str "Quux"]
--- > walk cleanUpSpansLinkAutoSkipped $ Pandoc nullMeta [Para [Str "foo", Span ("",["link-auto-skipped"],[]) [Str "Bar", Emph [Str "Baz"]], Str "Quux"]]
--- Pandoc (Meta {unMeta = fromList []}) [Para [Str "foo",Str "Bar",Emph [Str "Baz"],Str "Quux"]]
---
--- NOTE: might need to generalize this to clean up other Span crud?
-cleanUpSpansLinkAutoSkipped :: [Inline] -> [Inline]
-cleanUpSpansLinkAutoSkipped [] = []
-cleanUpSpansLinkAutoSkipped (Span (_,["link-auto-skipped"],_) payload : rest) = payload ++ rest
-cleanUpSpansLinkAutoSkipped (r:rest) = r : cleanUpSpansLinkAutoSkipped rest
 
 cleanUpDivsEmpty :: [Block] -> [Block]
 cleanUpDivsEmpty [] = []
