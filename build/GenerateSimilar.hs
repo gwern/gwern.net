@@ -42,7 +42,7 @@ singleShotRecommendations html =
      ddb <- embeddings2Forest (newEmbedding:edb)
      let (_,n) = findN ddb (2*bestNEmbeddings) iterationLimit newEmbedding :: (String,[(String,Double)])
 
-     let matchListHtml = generateMatches md "" html n :: T.Text
+     let matchListHtml = generateMatches md True "" html n :: T.Text
      return matchListHtml
 
 -- how many results do we want?
@@ -247,17 +247,17 @@ writeOutMatch md (p,matches) =
        Just (_,_,_,_,_,"") -> return ()
        Just ("",_,_,_,_,_) -> return ()
        Just (_,_,_,_,_,abst) -> do
-             let similarLinksHtmlFragment = generateMatches md p abst matches
+             let similarLinksHtmlFragment = generateMatches md False p abst matches
              let f = take 274 $ "metadata/annotations/similars/" ++ urlEncode p ++ ".html"
              writeUpdatedFile "similars" f similarLinksHtmlFragment
 
-generateMatches :: Metadata -> String -> String -> [(String,Double)] -> T.Text
-generateMatches md p abst matches =
+generateMatches :: Metadata -> Bool -> String -> String -> [(String,Double)] -> T.Text
+generateMatches md linkTagsP p abst matches =
          -- we don't want to provide as a 'see also' a link already in the annotation, of course, so we need to pull them out & filter by:
          let alreadyLinked = extractLinks False $ T.pack abst
              matchesPruned = filter (\(p2,_) -> T.pack p2 `notElem` alreadyLinked) matches
 
-             similarItems = filter (not . null) $ map (generateItem md) matchesPruned
+             similarItems = filter (not . null) $ map (generateItem md linkTagsP) matchesPruned
              googleScholar = case M.lookup p md of
                Nothing             -> []
                -- We require a title, to display as a link; and an abstract, to make it worth recommending (if it has no abstract, the embedding will also probably be garbage):
@@ -304,14 +304,13 @@ generateMatches md p abst matches =
              similarLinksHtmlFragment = if (C.listLength (BulletList similarItems) > 60 || length matchesPruned < 4) then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
          in similarLinksHtmlFragment
 
-generateItem :: Metadata -> (String,Double) -> [Block]
-generateItem md (p2,distance) = case M.lookup p2 md of
+generateItem :: Metadata -> Bool -> (String,Double) -> [Block]
+generateItem md linkTagsP (p2,_) = case M.lookup p2 md of
                                   Nothing -> [] -- This shouldn't be possible. All entries in the embedding database should've had a defined annotation as a prerequisite. But file renames might cause trouble so we ignore mismatches.
                                   Just ("",_,_,_,_,_) -> []
                                   Just (_,_,_,_,_,"") -> []
                                   Just (t,_,_,_,tags,_) ->
                                     [Para -- NOTE: we set .backlink-not because similar-links suggestions, even curated ones, can be quite tangential & distant, so we don't want to clutter up backlinks with them.
-                                      [Link ("", ["link-annotated", "backlink-not", "id-not"], [("embedding-distance", T.pack $ take 7 $ show distance)] ++
-                                              if null tags then [] else [("link-tags", T.pack $ unwords tags) ]
+                                      [Link ("", ["link-annotated", "backlink-not", "id-not"], if null tags || not linkTagsP then [] else [("link-tags", T.pack $ unwords tags) ]
                                             ) [parseRawInline nullAttr $ RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
                                     ]
