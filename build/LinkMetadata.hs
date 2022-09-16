@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-15 20:10:48 gwern"
+When:  Time-stamp: "2022-09-16 17:22:45 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateID, generateAnnotationBlock, generateAnnotationTransclusionBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad, guessTagFromShort, listTagsAll, listTagDirectories) where
+module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateID, generateURL, generateAnnotationBlock, generateAnnotationTransclusionBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad, guessTagFromShort, listTagsAll, listTagDirectories) where
 
 import Control.Monad (unless, void, when, foldM_, filterM)
 import Data.Aeson (eitherDecode, FromJSON)
@@ -1225,9 +1225,10 @@ processArxivAbstract a = let cleaned = runPure $ do
                                      -- if we don't escape dollar signs, it breaks abstracts with dollar amounts like "a $700 GPU"; crude heuristic, if only 1 '$', then it's not being used for LaTeX math (eg. https://arxiv.org/abs/2108.05818#tencent )
                                     let dollarSignsN = length $ filter (=='$') a
                                     let tex = sedMany [("\\\\citep?\\{([[:graph:]]*)\\}", "(\\texttt{\\1})"),
-                                                      ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
-                                                      ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
-                                                      ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})")] $
+                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
+                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
+                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
+                                                       ("({\\lambda})", "(λ)")] $
                                               replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), ("~", " \\sim")
 
                                                           ] $ (if dollarSignsN == 1 then replaceMany [("$", "\\$")] else id) a
@@ -1656,6 +1657,13 @@ generateID url author date
        , ("https://www.thiswaifudoesnotexist.net/", "gwern-twdne-website")
       ]
 
+-- attempt to guess the URL for a specific annotation somewhere in the tag-directories for easier reference (used in `gwa` dumps)
+generateURL :: Path -> MetadataItem -> String
+generateURL _ (_,_,_,_,[],_) = ""
+generateURL url (_,a,d,_,ts,_) = let ident = T.unpack $ generateID url a d in
+                                   if null ident then "" else
+                                     "https://www.gwern.net/docs/" ++ head ts ++ "/index#" ++ ident ++ "-section"
+
 authorsToCite :: String -> String -> String -> String
 authorsToCite url author date =
   let year = if date=="" then show currentYear else take 4 date -- YYYY-MM-DD
@@ -1791,7 +1799,7 @@ gwernAbstract shortAllowed p' description toc f =
                          beginning = dropWhile (dropToID anchor) $ dropWhile dropToBody f
                          -- complicated titles like `## Loehlin & Nichols 1976: _A Study of 850 Sets of Twins_` won't be just a single TagText, so grab everything inside the <a></a>:
                          title = renderTags $ takeWhile dropToLinkEnd $ dropWhile dropToText $ drop 1 $ dropWhile dropToLink beginning
-                         titleClean = trim $ sed "<span>(.*)</span>" "\\1" $ replaceMany [("\n", " "), ("<span class=\"smallcaps\">",""), ("<span class=\"link-auto-skipped\">",""), ("<span class=\"link-auto-first\">","")] title
+                         titleClean = trim $ sed "<span>(.*)</span>" "\\1" $ replaceMany [("\n", " "), ("<span class=\"smallcaps\">",""), ("<span class=\"link-auto-first\">","")] title
                          abstractRaw = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
                          restofpageAbstract = trim $ renderTags $ filter filterAbstract abstractRaw
                          in (titleClean, abstractRaw, restofpageAbstract)
@@ -2286,6 +2294,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(W \\in {\\mathbb R}^{p \\times d}\\)</span>", "<em>W</em> ∈ ℝ<sup><em>p</em>×<em>d</em></sup>")
           , ("<span class=\"math inline\">\\(\\varphi\\)</span>", "ϕ")
           , ("<span class=\"math inline\">\\(W z_i\\)</span>", "<em>Wz<sub>i</sub></em>")
+          , (" TD()", " TD(λ)")
+          , ("({\\lambda})", "(λ)")
           , ("O((log n log log n)^2)", "𝑂(log<sup>2</sup> <em>n</em> log log <em>n</em>)")
           , ("O(m log^2 n)", "𝑂(<em>m</em> log <em>n</em> + <em>n</em> log<sup>2</sup> <em>n</em>)")
           , ("O(N) ", "𝑂(<em>N</em>) ")
@@ -3020,6 +3030,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" Drosophila melanogaster", " <em>Drosophila melanogaster</em>")
           , (" C. elegans", " <em>C. elegans</em>")
           , (" T. gondii", " <em>T. gondii</em>")
+          , (" Equus ", " <em>Equus</em> ")
           , ("Lempel–Ziv–Markov", "Lempel-Ziv-Markov")
           , ("learn-ing", "learning")
           , ("Per- formance", "Performance")
