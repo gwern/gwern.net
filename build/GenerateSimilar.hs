@@ -40,7 +40,7 @@ singleShotRecommendations html =
 
      newEmbedding <- embed [] ("",("","","","",[],html))
      ddb <- embeddings2Forest (newEmbedding:edb)
-     let (_,n) = findN ddb (2*bestNEmbeddings) iterationLimit newEmbedding :: (String,[(String,Double)])
+     let (_,n) = findN ddb (2*bestNEmbeddings) iterationLimit newEmbedding :: (String,[String])
 
      let matchListHtml = generateMatches md True "" html n :: T.Text
      return matchListHtml
@@ -193,14 +193,14 @@ knnEmbedding f k (_,_,_,_,embd) = V.toList $
                               -- 'knn', 'knnH', 'knnPQ': knnH/knnPQ always perform way worse for me.
                                knn metricL2 k f ((fromListDv embd)::DVector Double)
 
-findNearest :: Forest -> Int -> Embedding -> [(String,Double)]
-findNearest f k e = map (\(dist,Embed _ p) -> (p,dist)) $ knnEmbedding f k e
+findNearest :: Forest -> Int -> Embedding -> [String]
+findNearest f k e = map (\(_,Embed _ p) -> p) $ knnEmbedding f k e
 
 -- we'll keep the distance to insert into the metadata for debugging purposes.
-findN :: Forest -> Int -> Int -> Embedding -> (String,[(String,Double)])
+findN :: Forest -> Int -> Int -> Embedding -> (String,[String])
 findN _ 0 _ e = error ("findN called for k=0; embedding target: " ++ show e)
 findN _ _ 0 e = error ("findN failed to return enough candidates within iteration loop limit. Something went wrong! Embedding target: " ++ show e)
-findN f k iter e@(p1,_,_,_,_) = let results = take bestNEmbeddings $ nub $ filter (\(p2,_) -> p1 /= p2 && not (blackList p2)) $ findNearest f k e in
+findN f k iter e@(p1,_,_,_,_) = let results = take bestNEmbeddings $ nub $ filter (\(p2) -> not (blackList p2)) $ findNearest f k e in
                  -- NOTE: 'knn' is the fastest (and most accurate?), but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
                  -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed…)
                  -- If that happens, back off and request more k up to a max of 50.
@@ -240,7 +240,7 @@ findN f 20 iterationLimit $ head edb
 similaritemExistsP :: String -> IO Bool
 similaritemExistsP p = doesFileExist $ take 274 $ "metadata/annotations/similars/" ++ urlEncode p ++ ".html"
 
-writeOutMatch :: Metadata -> (String, [(String,Double)]) -> IO ()
+writeOutMatch :: Metadata -> (String, [String]) -> IO ()
 writeOutMatch md (p,matches) =
   do case M.lookup p md of
        Nothing             -> return ()
@@ -251,11 +251,11 @@ writeOutMatch md (p,matches) =
              let f = take 274 $ "metadata/annotations/similars/" ++ urlEncode p ++ ".html"
              writeUpdatedFile "similars" f similarLinksHtmlFragment
 
-generateMatches :: Metadata -> Bool -> String -> String -> [(String,Double)] -> T.Text
+generateMatches :: Metadata -> Bool -> String -> String -> [String] -> T.Text
 generateMatches md linkTagsP p abst matches =
          -- we don't want to provide as a 'see also' a link already in the annotation, of course, so we need to pull them out & filter by:
          let alreadyLinked = extractLinks False $ T.pack abst
-             matchesPruned = filter (\(p2,_) -> T.pack p2 `notElem` alreadyLinked) matches
+             matchesPruned = filter (\p2 -> T.pack p2 `notElem` alreadyLinked) matches
 
              similarItems = filter (not . null) $ map (generateItem md linkTagsP) matchesPruned
              googleScholar = case M.lookup p md of
@@ -304,8 +304,8 @@ generateMatches md linkTagsP p abst matches =
              similarLinksHtmlFragment = if (C.listLength (BulletList similarItems) > 60 || length matchesPruned < 4) then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
          in similarLinksHtmlFragment
 
-generateItem :: Metadata -> Bool -> (String,Double) -> [Block]
-generateItem md linkTagsP (p2,_) = case M.lookup p2 md of
+generateItem :: Metadata -> Bool -> String -> [Block]
+generateItem md linkTagsP p2 = case M.lookup p2 md of
                                   Nothing -> [] -- This shouldn't be possible. All entries in the embedding database should've had a defined annotation as a prerequisite. But file renames might cause trouble so we ignore mismatches.
                                   Just ("",_,_,_,_,_) -> []
                                   Just (_,_,_,_,_,"") -> []
