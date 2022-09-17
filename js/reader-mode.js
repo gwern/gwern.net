@@ -59,6 +59,16 @@ ReaderMode = { ...ReaderMode,
 	/*	Mode selection.
 	 */
 
+	//	Called by: ReaderMode.modeSelectButtonClicked
+	saveMode: (newMode) => {
+		GWLog("ReaderMode.saveMode", "reader-mode.js", 1);
+
+		if (newMode == "auto")
+			localStorage.removeItem("reader-mode-setting");
+		else
+			localStorage.setItem("reader-mode-setting", newMode);
+	},
+
 	/*	Activate or deactivate reader mode, as determined by the current setting
 		and the selected mode.
 	 */
@@ -123,6 +133,26 @@ ReaderMode = { ...ReaderMode,
 			+ `</${selectorTagName}>`;
 	},
 
+	modeSelectButtonClicked: (event) => {
+		GWLog("ReaderMode.modeSelectButtonClicked", "reader-mode.js", 2);
+
+		/*	We don’t want clicks to go through if the transition 
+			between modes has not completed yet, so we disable the 
+			button temporarily while we’re transitioning between 
+			modes.
+		 */
+		doIfAllowed(() => {
+			// Determine which setting was chosen (ie. which button was clicked).
+			let selectedMode = event.target.dataset.name;
+
+			// Save the new setting.
+			ReaderMode.saveMode(selectedMode);
+
+			// Actually change the mode.
+			ReaderMode.setMode(selectedMode);
+		}, ReaderMode, "modeSelectorInteractable");
+	},
+
 	//	Called by: ReaderMode.setup
 	injectModeSelector: (replacedElement = null) => {
 		GWLog("ReaderMode.injectModeSelector", "reader-mode.js", 1);
@@ -141,28 +171,7 @@ ReaderMode = { ...ReaderMode,
 		requestAnimationFrame(() => {
 			//	Activate mode selector widget buttons.
 			modeSelector.querySelectorAll("button").forEach(button => {
-				button.addActivateEvent(ReaderMode.modeSelectButtonClicked = (event) => {
-					GWLog("ReaderMode.modeSelectButtonClicked", "reader-mode.js", 2);
-
-					/*	We don’t want clicks to go through if the transition 
-						between modes has not completed yet, so we disable the 
-						button temporarily while we’re transitioning between 
-						modes.
-					 */
-					doIfAllowed(() => {
-						// Determine which setting was chosen (ie. which button was clicked).
-						let selectedMode = event.target.dataset.name;
-
-						// Save the new setting.
-						if (selectedMode == "auto")
-							localStorage.removeItem("reader-mode-setting");
-						else
-							localStorage.setItem("reader-mode-setting", selectedMode);
-
-						// Actually change the mode.
-						ReaderMode.setMode(selectedMode);
-					}, ReaderMode, "modeSelectorInteractable");
-				});
+				button.addActivateEvent(ReaderMode.modeSelectButtonClicked);
 			});
 
 			if (modeSelector == ReaderMode.modeSelector) {
@@ -220,8 +229,12 @@ ReaderMode = { ...ReaderMode,
 		/*	Ensure the right button (on or off) has the “currently active”
 			indicator, if the current mode is ‘auto’.
 		 */
-		if (currentMode == "auto")
-			modeSelector.querySelector(`.select-mode-${(ReaderMode.active ? "on" : "off")}`).classList.add("active");
+		if (currentMode == "auto") {
+			let activeMode = ReaderMode.active 
+							 ? "on" 
+							 : "off";
+			modeSelector.querySelector(`.select-mode-${activeMode}`).classList.add("active");
+		}
 	},
 
 	//	Called by: ReaderMode.updateModeSelectorVisibilityScrollListener

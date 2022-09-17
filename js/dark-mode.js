@@ -71,6 +71,16 @@ DarkMode = { ...DarkMode,
 	/*	Mode selection.
 	 */
 
+	//	Called by: DarkMode.modeSelectButtonClicked
+	saveMode: (newMode) => {
+		GWLog("DarkMode.saveMode", "dark-mode.js", 1);
+
+		if (newMode == "auto")
+			localStorage.removeItem("dark-mode-setting");
+		else
+			localStorage.setItem("dark-mode-setting", newMode);
+	},
+
 	//	Called by: DarkMode.injectModeSelector
 	modeSelectorHTML: (inline = false) => {
 		let selectorTagName = (inline ? "span" : "div");
@@ -103,6 +113,26 @@ DarkMode = { ...DarkMode,
 			+ `</${selectorTagName}>`;
 	},
 
+	modeSelectButtonClicked: (event) => {
+		GWLog("DarkMode.modeSelectButtonClicked", "dark-mode.js", 2);
+
+		/*	We don’t want clicks to go through if the transition 
+			between modes has not completed yet, so we disable the 
+			button temporarily while we’re transitioning between 
+			modes.
+		 */
+		doIfAllowed(() => {
+			// Determine which setting was chosen (ie. which button was clicked).
+			let selectedMode = event.target.dataset.name;
+
+			// Save the new setting.
+			DarkMode.saveMode(selectedMode);
+
+			// Actually change the mode.
+			DarkMode.setMode(selectedMode);
+		}, DarkMode, "modeSelectorInteractable");
+	},
+
 	//	Called by: DarkMode.setup
 	injectModeSelector: (replacedElement = null) => {
 		GWLog("DarkMode.injectModeSelector", "dark-mode.js", 1);
@@ -117,32 +147,11 @@ DarkMode = { ...DarkMode,
 			modeSelector = DarkMode.modeSelector = addUIElement(DarkMode.modeSelectorHTML());
 		}
 
-		//  Add event listeners and update state.
+		//  Add event listeners.
 		requestAnimationFrame(() => {
 			//	Activate mode selector widget buttons.
 			modeSelector.querySelectorAll("button").forEach(button => {
-				button.addActivateEvent(DarkMode.modeSelectButtonClicked = (event) => {
-					GWLog("DarkMode.modeSelectButtonClicked", "dark-mode.js", 2);
-
-					/*	We don’t want clicks to go through if the transition 
-						between modes has not completed yet, so we disable the 
-						button temporarily while we’re transitioning between 
-						modes.
-					 */
-					doIfAllowed(() => {
-						// Determine which setting was chosen (ie. which button was clicked).
-						let selectedMode = event.target.dataset.name;
-
-						// Save the new setting.
-						if (selectedMode == "auto")
-							localStorage.removeItem("dark-mode-setting");
-						else
-							localStorage.setItem("dark-mode-setting", selectedMode);
-
-						// Actually change the mode.
-						DarkMode.setMode(selectedMode);
-					}, DarkMode, "modeSelectorInteractable");
-				});
+				button.addActivateEvent(DarkMode.modeSelectButtonClicked);
 			});
 
 			if (modeSelector == DarkMode.modeSelector) {
@@ -163,7 +172,7 @@ DarkMode = { ...DarkMode,
 		});
 
 		if (modeSelector == DarkMode.modeSelector) {
-			//	Show/hide the button on scroll up/down.
+			//	Show/hide the main selector on scroll up/down.
 			addScrollListener(DarkMode.updateModeSelectorVisibility,
 				"DarkMode.updateModeSelectorVisibilityScrollListener", { defer: true });
 		}
@@ -207,8 +216,12 @@ DarkMode = { ...DarkMode,
 		/*	Ensure the right button (light or dark) has the “currently active” 
 			indicator, if the current mode is ‘auto’.
 		 */
-		if (currentMode == "auto")
-			modeSelector.querySelector(`.select-mode-${(GW.mediaQueries.systemDarkModeActive.matches ? "dark" : "light")}`).classList.add("active");
+		if (currentMode == "auto") {
+			let activeMode = GW.mediaQueries.systemDarkModeActive.matches 
+							 ? "dark" 
+							 : "light";
+			modeSelector.querySelector(`.select-mode-${activeMode}`).classList.add("active");
+		}
 	},
 
 	//	Called by: DarkMode.updateModeSelectorVisibilityScrollListener
