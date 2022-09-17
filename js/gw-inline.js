@@ -522,7 +522,7 @@ function removeScrollListener(name) {
 
 /*	Simple mutex mechanism.
  */
-function doIfAllowed(f, passHolder, passName, releaseAfterAnimationFrame = true) {
+function doIfAllowed(f, passHolder, passName, releaseImmediately = false) {
 	if (passHolder[passName] == false)
 		return;
 
@@ -530,9 +530,13 @@ function doIfAllowed(f, passHolder, passName, releaseAfterAnimationFrame = true)
 
 	f();
 
-	requestAnimationFrame(() => {
+	if (releaseImmediately) {
 		passHolder[passName] = true;
-	});
+	} else {
+		requestAnimationFrame(() => {
+			passHolder[passName] = true;
+		});
+	}
 }
 
 /*	When the given event is triggered on the given target, after the given delay
