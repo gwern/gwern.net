@@ -1104,9 +1104,10 @@ GW.notificationCenter = {
 	 */
 	currentEvents: [ ],
 
-	/*	Array of event handlers waiting to be added. A handler waits here if its
-		addHandlerForEvent() call happened while the target event was firing. 
-		The handler will be added once the event has finished firing.
+	/*	Arrays (keyed to event names) of event handlers waiting to be added to
+		events. A handler waits here if its addHandlerForEvent() call happened 
+		while the target event was firing. The handler will be added once the 
+		event has finished firing.
 	 */
 	waitingHandlers: { },
 
