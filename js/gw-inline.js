@@ -818,9 +818,7 @@ GW.notificationCenter = {
     	(Handlers with no specified phase might be called at any point in this
     	 sequence, depending on when they were registered.)
      */
-    handlerPhaseOrders: {
-        "GW.contentDidLoad": [ "rewrite", "eventListeners" ]
-    },
+    handlerPhaseOrders: { },
 
     /*	Register a new event handler for the named event. Arguments are:
 
@@ -1221,6 +1219,10 @@ GW.notificationCenter = {
 		GW.notificationCenter.addWaitingHandlersForEvent(eventName);
     }
 };
+
+/*	Event-specific handler phase order for the ‘GW.contentDidLoad’ event.
+ */
+GW.notificationCenter.handlerPhaseOrders["GW.contentDidLoad"] = [ "rewrite", "eventListeners" ];
 
 /*	Event-specific boolean flags for the ‘GW.contentDidLoad’ event.
 
