@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-16 17:22:45 gwern"
+When:  Time-stamp: "2022-09-17 10:33:57 gwern"
 License: CC-0
 -}
 
@@ -494,7 +494,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                          [Str ":"]),
                                        BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
                                                                             if blp=="" then "" else "<div class=\"backlinks-append\">\n<p><a class=\"backlinks-transclusion include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>" `T.append`
-                                                                            if slp=="" then "" else "<div class=\"similars-append\">\n<p><a class=\"similars-transclusion include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">[Similar links for this annotation.]</a></p>\n</div>"
+                                                                            if slp=="" then "" else "<div class=\"similars-append\">\n<p><a class=\"include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">[Similar links for this annotation.]</a></p>\n</div>"
                                                                             )]
                                   ]
                              where
@@ -674,7 +674,7 @@ guessTagFromShort m t = let allTags = nubOrd $ sort m in
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
 tagsLong2Short, tagsShort2Long :: [(String,String)]
-tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/samples"), ("japanese", "japan")] ++ -- custom tag shortcuts, to fix typos etc
+tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/samples"), ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"), ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision")] ++ -- custom tag shortcuts, to fix typos etc
                  -- attempt to infer short->long rewrites from the displayed tag names, which are long->short; but note that many of them are inherently invalid and the mapping only goes one way.
                   (map (\(a,b) -> (map toLower b,a)) $ filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
 tagsLong2Short = [
@@ -721,6 +721,10 @@ tagsLong2Short = [
           , ("ai/nn/transformer/alphafold", "AlphaFold")
           , ("ai/nn/transformer/t5", "T5 Transformer")
           , ("ai/highleyman", "Highleyman")
+          , ("ai/nn/sparsity", "NN sparsity")
+          , ("ai/nn/sparsity/low-precision", "NN reduced-precision")
+          , ("ai/nn/sparsity/pruning", "NN pruning")
+          , ("ai/nn/sparsity/knowledge-distillation", "knowledge distillation")
           , ("existential-risk", "x-risk")
           , ("philosophy/ethics", "ethics")
           , ("philosophy/brethren-of-purity", "Brethren of Purity")
@@ -1655,6 +1659,8 @@ generateID url author date
        , ("https://www.theatlantic.com/magazine/archive/2006/08/nightfall/305030/", "leithauser-2006-nightfall")
        , ("https://www.thisfursonadoesnotexist.com/", "arfafax-tfdne")
        , ("https://www.thiswaifudoesnotexist.net/", "gwern-twdne-website")
+       , ("/docs/statistics/bias/2021-yang.pdf", "yang-et-al-2021-bargraph")
+       , ("https://arxiv.org/abs/2110.04725#inspur", "wu-et-al-2021-yuan-1")
       ]
 
 -- attempt to guess the URL for a specific annotation somewhere in the tag-directories for easier reference (used in `gwa` dumps)
