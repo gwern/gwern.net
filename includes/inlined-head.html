@@ -3445,7 +3445,7 @@ addScrollListener(updateScrollState, "updateScrollStateScrollListener", { defer:
 /*  Toggles whether the page is scrollable.
  */
 function isPageScrollingEnabled() {
-    return !(document.documentElement.classList.contains("no-scroll"));
+    return !(document.documentElement.classList.contains("scroll-enabled-not"));
 }
 /*	Pass true or false to enable or disable (respectively) page scrolling.
 	Calling this function with no arguments toggles the state (enables if
@@ -3453,27 +3453,28 @@ function isPageScrollingEnabled() {
  */
 function togglePageScrolling(enable) {
     if (typeof enable == "undefined")
-        enable = document.documentElement.classList.contains("no-scroll");
+        enable = document.documentElement.classList.contains("scroll-enabled-not");
 
     let preventScroll = (event) => { document.documentElement.scrollTop = GW.scrollState.lastScrollTop; };
 
-	/*	The `no-scroll` CSS class, which is added to the `html` element when
-		scrolling is disabled by this function (in order to permit the “toggle”
-		behavior, i.e. calling ‘togglePageScrolling’ with no arguments), allows
-		the assignment of arbitrary CSS properties to the page on the basis of
-		scroll state. This is purely a convenience (which may be useful if, for
-		example, some styling needs to change on the basis of change in page
-		scroll state, e.g. modifying the appearance of scroll bars). No specific
-		CSS properties are needed in order for this function to work properly.
+	/*	The `scroll-enabled-not` CSS class, which is added to the `html` element 
+		when scrolling is disabled by this function (in order to permit the 
+		“toggle” behavior, i.e. calling ‘togglePageScrolling’ with no 
+		arguments), allows the assignment of arbitrary CSS properties to the 
+		page on the basis of scroll state. This is purely a convenience (which 
+		may be useful if, for example, some styling needs to change on the basis
+		of change in page scroll state, e.g. modifying the appearance of scroll 
+		bars). No specific CSS properties are needed in order for this function 
+		to work properly.
 	 */
     if (   enable
     	&& isPageScrollingEnabled() == false) {
-        document.documentElement.classList.toggle("no-scroll", false);
+        document.documentElement.classList.toggle("scroll-enabled-not", false);
         removeScrollListener("preventScroll");
         addScrollListener(updateScrollState, "updateScrollStateScrollListener");
     } else if (  !enable
     		   && isPageScrollingEnabled() == true) {
-        document.documentElement.classList.toggle("no-scroll", true);
+        document.documentElement.classList.toggle("scroll-enabled-not", true);
         addScrollListener(preventScroll, "preventScroll");
         removeScrollListener("updateScrollStateScrollListener");
     }
