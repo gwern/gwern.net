@@ -318,7 +318,7 @@ else
     λ(){ find metadata/annotations/ -name "*.html" \
              | shuf | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort -u | \
              egrep -v -e '^annotation-see-also$' -e '^archive-local$' -e '^archive-not$' -e '^author$' -e '^aux-links$' -e '^backlink-not$' \
-                   -e '^backlinks$' -e '^backlinks-append$' -e '^backlinks-transclusion$' -e '^bash$' -e '^book-review-author$' \
+                   -e '^backlinks$' -e '^backlinks-append$' -e '^backlinks-transclusion$' -e 'aux-links-append' -e '^bash$' -e '^book-review-author$' \
                    -e '^book-review-date$' -e '^book-review-rating$' -e '^book-review-title$' -e '^cite-author$' -e '^cite-author-plural$' \
                    -e '^cite-date$' -e '^date$' -e '^display$' -e '^email$' -e '^external-page-embed$' -e '^id-not$' -e '^include$' \
                    -e '^include-strict$' -e '^inflation-adjusted$' -e '^latex$' -e '^link-annotated$' -e '^link-live$' -e '^link-local$' \
