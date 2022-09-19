@@ -3385,7 +3385,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://gallica.bnf.fr/ark:/12148/bpt6k851127r/", False)
     , ("https://gitcoin.co/blog/gitcoin-grants-clr-matching/", False)
     , ("https://gitlab.com/cryptsetup/cryptsetup/-/issues/19", False)
-    , ("https://goo.gl/eR7fbX", False)
+    , ("https://sites.google.com/view/multi-agent-competition", False)
     , ("https://groups.google.com/g/brain-training/c/DdeZzeXEMyE", False)
     , ("https://gwern.shinyapps.io/orderStatisticsIncreasedVariance/", False)
     , ("https://halshs.archives-ouvertes.fr/halshs-02180182/document", False)

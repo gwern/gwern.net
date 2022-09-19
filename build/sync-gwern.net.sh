@@ -20,9 +20,9 @@ red  () { echo -e "\e[41m$@\e[0m"; }
 wrap () { OUTPUT=$($1 2>&1)
          WARN="$2"
          if [ -n "$OUTPUT" ]; then
-             red "Begin: $WARN";
+             echo -n "Begin: "; red "$WARN";
              echo -e "$OUTPUT";
-             red "End: $WARN";
+             echo -n "End: "; red "$WARN";
          fi; }
 eg () { egrep --color=always "$@"; }
 gf () { fgrep --color=always "$@"; }
@@ -183,7 +183,8 @@ else
                -e 's/class=\"\(.*\)icon-not \?/class="\1/g' \
                -e 's/class=\"\(.*\)id-not \?/class="\1/g' \
                -e 's/class=\"\(.*\)link-annotated-not \?/class="\1/g' \
-               -e 's/class=\"\(.*\)link-live-not \?/class="\1/g' \               -
+               -e 's/class=\"\(.*\)link-auto \?/class="\1/g' \
+               -e 's/class=\"\(.*\)link-live-not \?/class="\1/g' \
     "$@"; }; export -f cleanClasses
     find ./ -path ./_site -prune -type f -o -name "*.page" | fgrep -v -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 cleanClasses || true
     find ./_site/metadata/ -type f -name "*.html" | sort | parallel --max-args=100 cleanClasses || true
@@ -281,7 +282,7 @@ else
     λ(){ COMPILED_N="$(find -L ./_site/ -type f | wc --lines)"
          [ "$COMPILED_N" -le 84000 ] && echo "File count: $COMPILED_N" && exit 1;
          COMPILED_BYTES="$(du --summarize --total --dereference --bytes ./_site/ | tail --lines=1 | cut --field=1)"
-         [ "$COMPILED_BYTES" -le 741000000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
+         [ "$COMPILED_BYTES" -le 735000000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
     wrap λ "Sanity-check: number of files & file-size"
 
     λ(){ SUGGESTIONS_N=$(cat ./metadata/linkSuggestions.el | wc --lines); [ "$SUGGESTIONS_N" -le 32000 ] && echo "$SUGGESTIONS_N"; }
@@ -325,12 +326,12 @@ else
                    -e '^directory-indexes-upwards$' -e '^epigraph$' -e '^even$' -e '^float-right$' -e '^float-left$' -e '^footnote-ref$' \
                    -e '^full-width$' -e '^haskell$' -e '^header$' -e '^horizontal-rule-nth-0$' -e '^horizontal-rule-nth-1$' \
                    -e '^horizontal-rule-nth-2$' -e '^icon-not$' -e '^inline$' -e '^invert$' -e '^invert-auto$' -e '^invert-not$' \
-                   -e '^javascript$' -e '^link-annotated-not$' -e '^link-annotated-partial$' -e '^link-auto$' -e '^link-auto-first$' \
-                   -e '^link-live-not$' -e '^logotype-tex$' -e '^math$' -e '^icon-no$' -e '^odd$' -e '^page-thumbnail$' \
+                   -e '^javascript$' -e '^link-annotated-not$' -e '^link-annotated-partial$'  \
+                   -e '^link-live-not$' -e '^logotype-tex$' -e '^math$' -e '^odd$' -e '^page-thumbnail$' \
                    -e '^pascal$' -e '^python$' -e '^reader-mode-selector-inline$' -e '^smallcaps$' -e '^sourceCode$' -e '^subsup$' \
                    -e '^table-small$' -e '^TOC$' -e '^uri$' -e '^width-full$' -e '^at$' -e '^bu$' -e '^c1$' -e '^c2$' -e '^c3$' -e '^c4$' \
                    -e '^c5$' -e '^c6$' -e '^c7$' -e '^cf$' -e '^co$' -e '^dv$' -e '^fu$' -e '^kw$' -e '^op$' -e '^s1$' -e '^st$' -e '^reader-mode$' \
-                   -e '^scrape-abstract-not$'  -e '^abstract$' -e '^abstract-collapse$' -e '^adonition$' -e '^admonition-title$' \
+                   -e '^scrape-abstract-not$'  -e '^abstract$' -e '^abstract-collapse$' -e '^admonition$' -e '^admonition-title$' \
                    -e '^book-review-meta$' -e '^book-review-review$' -e '^tip$' -e '^xml$' -e '^warning$' -e '^al$' -e '^an$' -e '^bn$' \
                    -e '^cn$' -e '^cv$' -e '^do$' -e '^dt$' -e '^er$' -e '^error$' -e '^ex$' -e '^fl$' -e '^im$' -e '^in$' -e '^ot$' -e '^pp$' \
                    -e '^re$' -e '^sc$' -e '^ss$' -e '^va$' -e '^citation$' -e '^directory-indexes$' -e '^directory-indexes-sideways$' \
@@ -344,7 +345,7 @@ else
                    -e '^mjx-mn$' -e '^mjx-mo$' -e '^mjx-mrow$' -e '^mjx-mspace$' -e '^mjx-msqrt$' -e '^mjx-mstyle$' -e '^mjx-msubsup$' \
                    -e '^mjx-msup$' -e '^mjx-mtext$' -e '^mjx-munderover$' -e '^mjx-numerator$' -e '^mjx-op$' -e '^mjx-over$' -e '^mjx-row$' \
                    -e '^mjx-stack$' -e '^mjx-sub$' -e '^mjx-sup$' -e '^mjx-surd$' -e '^mjx-texatom$' -e '^mjx-TeXmathchoice$' -e '^mjx-under$' \
-                   -e '^mjx-vsize$' -e '^new$' -e '^outline-not$' -e '^warning$' -e '^markdown-body$' -e '^similars$' -e '^text-center$'; }
+                   -e '^mjx-vsize$' -e '^new$' -e '^outline-not$' -e '^warning$' -e '^markdown-body$' -e '^similars$' -e '^similars-append$' -e '^text-center$'; }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | \

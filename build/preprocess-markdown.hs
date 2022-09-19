@@ -1,5 +1,6 @@
 module Main where
 
+import Control.Monad (unless)
 import qualified Data.Text as T (unpack)
 import qualified Data.Text.IO as TIO (getContents)
 
@@ -25,4 +26,4 @@ main = do originalMarkdown <- TIO.getContents
           putStrLn html
 
           matchList <- GS.singleShotRecommendations html
-          putStrLn $ "<div class=\"collapse annotation-see-also\">\n\n<p><strong>See Also</strong>:</p>\n\n" ++ T.unpack matchList ++ "\n</div>"
+          unless (null matchList) $ putStrLn $ "<div class=\"collapse annotation-see-also\">\n\n<p><strong>See Also</strong>:</p>\n\n" ++ T.unpack matchList ++ "\n</div>"
