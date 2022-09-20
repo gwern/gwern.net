@@ -827,6 +827,9 @@ else
     λ() { ghci -istatic/build/ ./static/build/LinkLive.hs  -e 'linkLivePrioritize' | fgrep -v -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
     wrap λ "Need link live whitelist/blacklisting?"
 
+    λ() { find ./metadata/annotations/similars/ -type f -name "*.html" | xargs --max-procs=0 --max-args=1000 fgrep --no-filename -e '<a href="' -- | sort | uniq --count | sort --numeric-sort | egrep '^ +[4-9][0-9]+ +'; }
+    wrap λ "Similar-links: overused links indicate pathological lookups; blacklist links as necessary."
+
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.
     if [ $(date +"%d") == "1" ]; then
 

@@ -207,10 +207,6 @@ findN f k iter e@(p1,_,_,_,_) = let results = take bestNEmbeddings $ nub $ filte
                  if k>50 then (p1, [])
                  else if length results < bestNEmbeddings then findN f (k*2) (iter - 1) e else (p1,results)
 
--- some weird cases: for example, “Estimating the effect-size of gene dosage on cognitive ability across the coding genome” is somehow close to *every* embedding...?
-blackList :: String -> Bool
-blackList p = p `elem` ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554.full", "/docs/genetics/heritable/correlation/2019-kandler.pdf", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4210287/"]
-
 -- hyperparameterSweep :: Embeddings -> [(Double, (Int,Int,Int))]
 -- hyperparameterSweep edb =
 --   -- sweep over `R> expand.grid(seq(30,100,by=10), seq(1,10,by=2), seq(2,200,by=10))` (n=800), ranges chosen by trying some hand optimization below
@@ -314,3 +310,7 @@ generateItem md linkTagsP p2 = case M.lookup p2 md of
                                       [Link ("", ["link-annotated", "backlink-not", "id-not"], if null tags || not linkTagsP then [] else [("link-tags", T.pack $ unwords tags) ]
                                             ) [parseRawInline nullAttr $ RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
                                     ]
+
+-- some weird cases: for example, “Estimating the effect-size of gene dosage on cognitive ability across the coding genome” is somehow close to *every* embedding...?
+blackList :: String -> Bool
+blackList p = p `elem` ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554.full", "/docs/genetics/heritable/correlation/2019-kandler.pdf", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4210287/", "https://www.wired.com/1996/12/ffglass/", "https://andrewmayneblog.wordpress.com/2021/05/18/a-simple-method-to-keep-gpt-3-focused-in-a-conversation/", "https://www.dutchnews.nl/news/2022/07/german-fighter-pilot-identified-after-79-years-from-dna-on-envelope/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1065034/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2653069/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2925254/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2998793/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4763788/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4921196/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6022844/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8931369/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9232116/", "https://www.statnews.com/2022/07/28/abandoned-technique-revived-in-effort-to-make-artificial-human-eggs/", "https://www.thenationalnews.com/health/2022/09/07/woman-who-can-smell-parkinsons-helps-scientists-develop-new-test-for-condition/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4898064/"]
