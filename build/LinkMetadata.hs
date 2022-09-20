@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-19 15:54:42 gwern"
+When:  Time-stamp: "2022-09-19 18:19:01 gwern"
 License: CC-0
 -}
 
@@ -1814,7 +1814,8 @@ gwernAbstract shortAllowed p' description toc f =
       abstrct'  = (if anyPrefix abstrct ["<p>", "<p>", "<figure>"] then abstrct
                     else if null abstrct then "" else "<p>"++abstrct++"</p>") ++ " " ++ toc
       -- combine description + abstract; if there's no abstract, settle for the description:
-      abstrct'' = if description /= "" && abstrct' /= "" then "<p>"++description++"</p>"++abstrct'
+      abstrct'' = if description /= "" && abstrct' /= "" then "<p>[<a href=\"/"++baseURL++"\">Top-level</a> description: "++description++"]</p>"++
+                                                              abstrct'
                                       else if description == "" && abstrct' /= "" then abstrct'
                                            else if description /= "" && abstrct' == "" then "<p>"++description++"</p>"
                                                 else ""
