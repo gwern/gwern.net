@@ -51,14 +51,14 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
   if T.head interwiki == '!' then
         case M.lookup (T.tail interwiki) interwikiMap of
                 Just url  -> let attr' = (ident,
-                                            wpPopupClasses (url `interwikiurl` (if article=="" then inlinesToText ref else article)) ++
-                                            classes,
+                                            nubOrd (wpPopupClasses (url `interwikiurl` (if article=="" then inlinesToText ref else article)) ++
+                                            classes),
                                            kvs) in
                              case article of
                                   "" -> Link attr' ref (url `interwikiurl` inlinesToText ref, "") -- tooltip is now handled by LinkMetadata.hs
                                   _  -> Link attr' ref (url `interwikiurl` article, "")
                 Nothing -> error $ "Attempted to use an interwiki link with no defined interwiki: " ++ show x
-  else let classes' = wpPopupClasses interwiki ++ classes in
+  else let classes' = nubOrd (wpPopupClasses interwiki ++ classes) in
          if ".wikipedia.org/wiki/" `T.isInfixOf` interwiki then
            Link (ident, classes', kvs) ref (interwiki, article)
               else x
@@ -68,7 +68,7 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
     interwikiurl "" _ = error (show x)
     interwikiurl _ "" = error (show x)
     interwikiurl u a = let a' = if ".wikipedia.org/wiki/" `T.isInfixOf` u then T.toUpper (T.take 1 a) `T.append` T.tail a else a in
-                         u `T.append` (E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '\'', '+'])) $ replaceManyT [("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $ deunicode a')
+                         u `T.append` (E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '\'', '+'])) $ replaceManyT [("–", "%E2%80%93"), ("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $ deunicode a')
     deunicode :: T.Text -> T.Text
     deunicode = replaceManyT [("‘", "\'"), ("’", "\'"), (" ", " "), (" ", " ")]
 convertInterwikiLinks x = x
@@ -106,7 +106,8 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
     Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
 
   -- !W
-  , (Link nullAttr [Str "Jure Robič"] ("!W",""), Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Jure Robič"] ("https://en.wikipedia.org/wiki/Jure_Robi%C4%8D", ""))
+  , (Link nullAttr [Str "Jure Robič"] ("!W",""),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Jure Robič"] ("https://en.wikipedia.org/wiki/Jure_Robi%C4%8D", ""))
   , (Link nullAttr [Str "Pondicherry"] ("!W",""),
     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
   , (Link nullAttr [Str "Special:Pondicherry"] ("!W",""),
@@ -115,6 +116,19 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
   , (Link nullAttr [Str "Category:Pondicherry"] ("!W",""),
     Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
+
+   -- !W + duplicate classes
+  , (Link ("", ["id-not", "backlink-not", "link-annotated", "link-live"], []) [Str "Jure Robič"] ("!W",""),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Jure Robič"] ("https://en.wikipedia.org/wiki/Jure_Robi%C4%8D", ""))
+  -- , (Link ("", ["id-not", "backlink-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("!W",""),
+  --    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
+  -- , (Link ("", ["id-not", "backlink-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("!W",""),
+  --    Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
+  -- , (Link ("", ["id-not", "backlink-not", "link-annotated", "link-live"], []) [Str "SpecialPondicherry"] ("!W",""),
+  --    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
+  -- , (Link ("", ["id-not", "backlink-not", "link-annotated-not", "link-live"], []) [Str "Category:Pondicherry"] ("!W",""),
+  --    Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
+
 
   -- !W + title
   , (Link nullAttr [Str "foo"] ("!W","Pondicherry"),
@@ -186,7 +200,7 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
 --
 -- This is important because we can request Articles through the API and display them as a WP popup, but for other namespaces it would be meaningless (what is the contents of [[Special:Random]]? Or [[Special:BookSources/0-123-456-7]]?). These can only be done as live link popups (if at all, we can't for Special:).
 wpPopupClasses :: T.Text -> [T.Text]
-wpPopupClasses u = nubOrd $ ["backlink-not", "id-not"] ++ case parseURIReference (T.unpack u) of
+wpPopupClasses u = ["backlink-not", "id-not"] ++ case parseURIReference (T.unpack u) of
                         Nothing -> []
                         Just uri -> case uriAuthority uri of
                           Nothing -> []
