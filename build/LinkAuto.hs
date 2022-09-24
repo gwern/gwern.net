@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-09-17 11:05:14 gwern"
+When:  Time-stamp: "2022-09-23 12:59:34 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -139,7 +139,12 @@ cleanupNestedLinks = topDown go
 -- NOTE: might need to generalize this to clean up other Span crud?
 cleanUpSpansLinkAutoSkipped :: [Inline] -> [Inline]
 cleanUpSpansLinkAutoSkipped [] = []
-cleanUpSpansLinkAutoSkipped (Span (_,["link-auto-skipped"],_) payload : rest) = payload ++ rest
+cleanUpSpansLinkAutoSkipped   (Span ("",[],[]) payload : rest) = payload ++ rest
+cleanUpSpansLinkAutoSkipped x@(Span (_,[],_) _ : _) = x
+cleanUpSpansLinkAutoSkipped   (Span (_,["link-auto-skipped"],_) payload : rest) = payload ++ rest
+cleanUpSpansLinkAutoSkipped   (Span (_,["link-auto-first", "link-auto"],_) payload : rest) = payload ++ rest
+cleanUpSpansLinkAutoSkipped   (Span (a,classes,b) c : rest) = let classes' = filter (\cl -> cl `notElem` ["link-auto","link-auto-first","link-auto-skipped"]) classes in
+                                                       Span (a,classes',b) c : rest
 cleanUpSpansLinkAutoSkipped (r:rest) = r : cleanUpSpansLinkAutoSkipped rest
 
 cleanUpDivsEmpty :: [Block] -> [Block]
@@ -354,7 +359,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(MCTS|Monte Carlo [Tt]ree[ -][Ss]earch|MCTS-based)", "https://en.wikipedia.org/wiki/Monte_Carlo_tree_search")
         , ("(MIRI|Machine Intelligence Research Institute)", "https://en.wikipedia.org/wiki/Machine_Intelligence_Research_Institute")
         , ("(MLP:?FIM|My Little Pony: Friendship is Magic)", "https://en.wikipedia.org/wiki/My_Little_Pony:_Friendship_Is_Magic")
-        , ("(MR|[Mm]endelian[ -][Rr]andomization)", "https://en.wikipedia.org/wiki/Mendelian_randomization")
+        , ("(MR|[Mm]endelian[ -][Rr]andomi[sz]ation)", "https://en.wikipedia.org/wiki/Mendelian_randomization")
         , ("(Mamoru Oshii|Oshii)", "https://en.wikipedia.org/wiki/Mamoru_Oshii")
         , ("(NFT|[Nn]on-[Ff]ungible [Tt]oken)", "https://en.wikipedia.org/wiki/Non-fungible_token")
         , ("(NPV|[Nn]et [Pp]resent [Vv]alue)", "https://en.wikipedia.org/wiki/Net_present_value")
@@ -1072,7 +1077,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ee]nhanced weathering", "https://en.wikipedia.org/wiki/Enhanced_weathering")
         , ("[Ee]pistasis", "https://en.wikipedia.org/wiki/Epistasis")
         , ("[Ee]verything [Ii]s [Cc]orrelated", "/Everything")
-        , ("[Ee]xenatide", "https://en.wikipedia.org/wiki/Exenatide")
         , ("[Ee]xperience curves?", "https://en.wikipedia.org/wiki/Experience_curve_effects")
         , ("[Ee]xponential distribution", "https://en.wikipedia.org/wiki/Exponential_distribution")
         , ("[Ff]actor analysis", "https://en.wikipedia.org/wiki/Factor_analysis")
@@ -1229,7 +1233,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ss]urvivorship curve", "https://en.wikipedia.org/wiki/Survivorship_curve")
         , ("[Tt]ime[ -]preference", "https://en.wikipedia.org/wiki/Time_preference")
         , ("[Tt]okusatsu", "https://en.wikipedia.org/wiki/Tokusatsu")
-        , ("[Tt]orsion balance", "https://en.wikipedia.org/wiki/Torsion_spring#Torsion_balance")
         , ("[Tt]ragedy of the anticommons", "https://en.wikipedia.org/wiki/Tragedy_of_the_anticommons")
         , ("[Tt]ransfer RNAs?", "https://en.wikipedia.org/wiki/Transfer_RNA")
         , ("[Tt]ree induction", "https://en.wikipedia.org/wiki/Decision_tree_learning")

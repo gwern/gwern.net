@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Main where
 
 import Control.Monad (unless)
@@ -26,4 +27,4 @@ main = do originalMarkdown <- TIO.getContents
           putStrLn html
 
           matchList <- GS.singleShotRecommendations html
-          unless (null matchList) $ putStrLn $ "<div class=\"collapse annotation-see-also\">\n\n<p><strong>See Also</strong>:</p>\n\n" ++ T.unpack matchList ++ "\n</div>"
+          unless (matchList == "") $ putStrLn $ "<div class=\"collapse annotation-see-also\">\n\n<p><strong>See Also</strong>:</p>\n\n" ++ T.unpack matchList ++ "\n</div>"

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-19 18:19:01 gwern"
+When:  Time-stamp: "2022-09-23 21:49:40 gwern"
 License: CC-0
 -}
 
@@ -674,7 +674,7 @@ guessTagFromShort m t = let allTags = nubOrd $ sort m in
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
 tagsLong2Short, tagsShort2Long :: [(String,String)]
-tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/samples"), ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"), ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision"), ("evolution", "genetics/selection/natural"), ("gpt-3", "ai/nn/transformer/gpt"), ("gpt3", "ai/nn/transformer/gpt")] ++
+tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/samples"), ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"), ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision"), ("evolution", "genetics/selection/natural"), ("gpt-3", "ai/nn/transformer/gpt"), ("gpt3", "ai/nn/transformer/gpt"), ("red", "design/typography/rubrication"), ("self-attention", "ai/nn/transformer/attention"), ("efficient-attention", "ai/nn/transformer/attention"), ("ai/rnn", "ai/nn/rnn"), ("ai/retrieval", "ai/nn/retrieval"), ("mr", "genetics/heritable/correlation/mendelian-randomization"), ("japan/anime", "anime")] ++
                  -- ^ custom tag shortcuts, to fix typos etc
                  -- attempt to infer short->long rewrites from the displayed tag names, which are long->short; but note that many of them are inherently invalid and the mapping only goes one way.
                   (map (\(a,b) -> (map toLower b,a)) $ filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
@@ -694,6 +694,7 @@ tagsLong2Short = [
           , ("ai/scaling", "AI scaling")
           , ("ai/scaling/moe", "MoE NN")
           , ("ai/nn/tokenization", "LM tokenization")
+          , ("ai/nn/retrieval", "retrieval AI")
           , ("iq/ses", "IQ/SES")
           , ("iq/high/smpy", "SMPY")
           , ("iq/high/munich", "Munich Giftedness Study")
@@ -701,7 +702,9 @@ tagsLong2Short = [
           , ("iq/high/anne-roe", "Anne Roe's Scientists")
           , ("ai/nn/transformer/clip", "CLIP")
           , ("ai/nn/transformer/clip/samples", "CLIP samples")
+          , ("ai/nn/transformer/attention", "self-attention")
           , ("design/typography", "typography")
+          , ("design/typography/rubrication", "rubricated typography")
           , ("design/visualization", "data visualization")
           , ("vitamin-d", "Vitamin D")
           , ("dual-n-back", "DNB")
@@ -831,6 +834,7 @@ tagsLong2Short = [
           , ("genetics/genome-synthesis/virus-proof", "virus-proof cells")
           , ("genetics/gametogenesis", "gametogenesis")
           , ("genetics/heritable/correlation", "genetic correlation")
+          , ("genetics/heritable/correlation/mendelian-randomization", "Mendelian Randomization")
           , ("genetics/microbiome", "microbiome")
           , ("economics/georgism", "Georgism")
           , ("economics/experience-curve", "experience curves")
@@ -860,6 +864,9 @@ tagsLong2Short = [
           , ("radiance", "<em>Radiance</em>")
           , ("long-now", "Long Now")
           , ("japan", "Japan")
+          , ("japan/history", "Japanese history")
+          , ("japan/art", "Japanese art")
+          , ("japan/poetry", "Japanese poetry")
           , ("japan/poetry/zeami",    "Zeami Motokiyo")
           , ("japan/poetry/shotetsu", "Shōtetsu")
           , ("japan/poetry/teika",    "Fujiwara no Teika")
@@ -2058,6 +2065,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         ("<br/>    <strong>([a-zA-Z]+)</strong><br/><p>", "<p><strong>\\1</strong>: "),
         ("<strong>([a-zA-Z0-9_]+)</strong>:<p>", "<p><strong>\\1</strong>: "),
         ("<jats:title>([a-zA-Z0-9_]+):</jats:title><jats:p>", "<p><strong>\\1</strong>: "),
+        ("<jats:title>([a-zA-Z0-9_]+)\\.</jats:title><jats:p>", "<p><strong>\\1</strong>: "),
         ("<jats:sec id=\"[a-zA-Z0-9_]+\">", ""),
         ("<jats:sec id=\"[a-zA-Z0-9_]+\" sec-type=\"[a-z]+\">", ""),
         (" © [0-9]+ European Association of Personality Psychology", "")
@@ -2444,6 +2452,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<br></p>", "</p>")
           , ("\n<br />\n", "")
           , ("<br/><p>", "<p>")
+          , ("non–", "non-")
           , (" -- ", "&mdash;")
           , ("---", "&mdash;")
           , (" - ", "—")
@@ -2574,8 +2583,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<jats:title content-type=\"abstract-subheading\">", "<strong>")
           , ("<jats:title>", "<strong>")
           , ("</jats:title>", "</strong>")
-          , ("<jats:title>", "<strong>")
-          , ("</jats:title>", "</strong>")
+          , (".</jats:title>", "</strong>")
           , ("<jats:p xml:lang=\"en\">", "<p>")
           , ("<jats:p>", "<p>")
           , ("</Emphasis>", "</em>")
@@ -2612,6 +2620,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<h3>SUMMARY</h3>", "")
           , ("<h3>Summary</h3>", "")
           , ("<abstract abstract-type=\"summary\">", "")
+          , ("<p><abstract abstract-type=\"short\"></p>", "")
           , ("</abstract>", "")
           , ("<abstract>", "")
           , ("<abstract>\n  ", "")
@@ -2643,6 +2652,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<strong>CLINICAL RELEVANCE</strong>: ", "<strong>Clinical Relevance</strong>: ")
           , ("<strong>PROCEDURES</strong>: ", "<strong>Procedures</strong>: ")
 
+          , ("</p><strong>Setting & Participants</strong>:<p>", "</p><p><strong>Setting & Participants</strong>: ")
           , ("<strong>OBJECTIVE</strong></p>\n", "<strong>Objective</strong>: ")
           , ("<strong>METHOD</strong></p>\n", "<strong>Method</strong>: ")
           , ("<strong>RESULTS</strong></p>\n", "<strong>Results</strong>: ")
@@ -2664,6 +2674,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\nSetting: ", "\n<strong>Setting</strong>: ")
           , ("\nParticipants: ", "\n<strong>Participants</strong>: ")
           , ("\nMeaning: ", "\n<strong>Meaning</strong>: ")
+          , ("Setting and Participants", "Setting & Participants")
           , ("\nDesign, Setting, and Participants: ", "\n<strong>Design, Setting, & Participants</strong>: ")
           , ("\nIntervention: ", "\n<strong>Intervention</strong>: ")
           , ("\nData Sources: ", "\n<strong>Data Sources</strong>: ")
@@ -2864,6 +2875,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("( n = ", "(<em>n</em> = ")
           , ("n = ", "<em>n</em> = ")
           , ("(minimum p ", "(minimum <em>p</em> ")
+          , ("<em>P</em> = 0", "<em>p</em> = 0")
           , ("(p = ", "(<em>p</em> = ")
           , (" p&lt;", " <em>p</em> < ")
           , (" p&gt;", " <em>p</em> > ")
@@ -2902,6 +2914,10 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("P ≤ ", "<em>p</em> ≤ ")
           , ("\40P<",     "\40<em>p</em> < ")
           , ("(<em>P</em> &lt;", "(<em>p</em> &lt;")
+          , ("<span>0,1</span>^n", "{0,1}<sup><em>n</em></sup>")
+          , (" P(t) ", " <em>P(t)</em> ")
+          , (" t ", " <em>t</em> ")
+          , (" t test", " <em>t</em>-test")
           , ("(P≤", "(<em>p</em> ≤ ")
           , ("(P&lt;", "(<em>p</em> &lt; ")
           , ("(P&gt;", "(<em>p</em> &gt; ")
