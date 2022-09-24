@@ -59,7 +59,7 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
                                   _  -> Link attr' ref (url `interwikiurl` article, "")
                 Nothing -> error $ "Attempted to use an interwiki link with no defined interwiki: " ++ show x
   else let classes' = nubOrd (wpPopupClasses interwiki ++ classes) in
-         if ".wikipedia.org/wiki/" `T.isInfixOf` interwiki then
+         if ".wikipedia.org/wiki/" `T.isInfixOf` interwiki || ".wikipedia.org/w/index.php" `T.isInfixOf` interwiki then
            Link (ident, classes', kvs) ref (interwiki, article)
               else x
   where
@@ -191,6 +191,10 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
       Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Random"] ("https://en.wikipedia.org/wiki/Special:Random", ""))
   , (Link nullAttr [Str "Special:BookSources/0-8054-2836-4"] ("!W",""),
      Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:BookSources/0-8054-2836-4"] ("https://en.wikipedia.org/wiki/Special:BookSources/0-8054-2836-4", ""))
+  , (Link nullAttr [Str "Special:Log/Marudubshinki"] ("!W",""),
+     Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Log/Marudubshinki"] ("https://en.wikipedia.org/wiki/Special:Log/Marudubshinki", ""))
+  , (Link nullAttr [Str "Deletion log"] ("https://en.wikipedia.org/w/index.php?title=Special:Log&type=delete&user=&page=Gernot+Pfl%C3%BCger&year=&month=-1&tagfilter=",""),
+      Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Deletion log"] ("https://en.wikipedia.org/w/index.php?title=Special:Log&type=delete&user=&page=Gernot+Pfl%C3%BCger&year=&month=-1&tagfilter=", ""))
   ]
 
 -- Set link-live/link-live-not and link-annotated/link-annotated-not classes on a WP link depending on its namespace. As the quality of WP API annotations, and the possibility of iframe popups, varies across WP namespaces, we can't simply set them universally.
@@ -209,17 +213,17 @@ wpPopupClasses u = ["backlink-not", "id-not"] ++ case parseURIReference (T.unpac
                                             in
                                              if not ("wikipedia.org" `T.isSuffixOf` domain) && "http" `T.isPrefixOf` u then [] else
                                                         let u' = T.takeWhile (/= ':') $ replaceManyT [("/wiki/", "")] article in
-                                                          [if u' `elem` apiNamespacesNo then "link-annotated-not" else "link-annotated",
-                                                           if u' `elem` linkliveNamespacesNo then "link-live-not" else "link-live"]
+                                                          [if u' `elem` apiNamespacesNo      then "link-annotated-not" else "link-annotated",
+                                                           if u' `elem` linkliveNamespacesNo then "link-live-not"      else "link-live"]
 
 -- WP namespaces which are known to not return a useful annotation from the API; Special: does not (eg. Special:Random, or, common in article popups, Special:BookSources for ISBNs) and returns nothing while Category: returns something which is useless (just the category title!), but surprisingly, most others return something useful (eg. even Talk pages like <https:/en.wikipedia.org/api/rest_v1/page/mobile-sections/Talk:Small_caps> do).
 -- I have not checked the full list of namespaces carefully so some of the odder namespaces may be bad.
 apiNamespacesNo :: [T.Text]
-apiNamespacesNo = ["Category", "File", "Special"]
+apiNamespacesNo = ["Category", "File", "Special", "/w/index.php"]
 
 -- A separate question from API annotations is whether a namespace permits live popups, or if it sets X-FRAME headers. Thus far, only Special: appears to block embeddings (probably for security reasons, as there is a lot of MediaWiki functionality gatewayed behind Special: URLs, while the other namespaces should be harder to abuse).
 linkliveNamespacesNo :: [T.Text]
-linkliveNamespacesNo = ["Special"]
+linkliveNamespacesNo = ["Special", "/w/index.php"]
 
 -- nonArticleNamespace :: [T.Text]
 -- nonArticleNamespace = ["Talk", "User", "User_talk", "Wikipedia", "Wikipedia_talk", "File", "File_talk", "MediaWiki", "MediaWiki_talk", "Template", "Template_talk", "Help", "Help_talk", "Category", "Category_talk", "Portal", "Portal_talk", "Draft", "Draft_talk", "TimedText", "TimedText_talk", "Module", "Module_talk", "Gadget", "Gadget_talk", "Gadget definition", "Gadget definition_talk", "Special", "Media"]
