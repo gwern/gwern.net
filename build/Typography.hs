@@ -16,7 +16,6 @@ import Control.Monad (void, when)
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
 import Data.Char (toUpper)
 import Data.List (isPrefixOf)
-import Utils (replace)
 import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
 import System.Directory (doesFileExist, getModificationTime, removeFile)
 import System.Exit (ExitCode(ExitFailure))
@@ -47,7 +46,7 @@ import Text.Pandoc.Walk (walk, walkM)
 import LinkIcon (linkIcon)
 import LinkLive (linkLive)
 
-import Utils (addClass, sed, printRed, currentYear)
+import Utils (addClass, sed, printRed, currentYear, replace, replaceMany)
 
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = let year = currentYear in
@@ -409,5 +408,6 @@ titlecase' "" = ""
 titlecase' t = titlecase $ titlecase'' t
    where titlecase'' :: String -> String
          titlecase'' "" = ""
-         titlecase'' t' = let (before,matched,after) =  t' =~ ("\\-[a-z]"::String) :: (String,String,String)
-                          in before ++ map toUpper matched ++ titlecase'' after
+         titlecase'' t' = let (before,matched,after) =  t' =~ ("[ $^][A-za-z]\\-[a-z][ $^]"::String) :: (String,String,String)
+                          in replaceMany [("cite-Author", "cite-author"), ("cite-Date", "cite-date"), ("cite-Joiner", "cite-joiner"), ("Class=","class=")] $ -- HACK
+                             before ++ map toUpper matched ++ titlecase'' after
