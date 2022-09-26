@@ -3503,7 +3503,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.patreon.com/gwern", False)
     , ("https://www.philanthropy.com/article/FinancialLeadership-Woes/138335/", False)
     , ("https://www.pluralsight.com/search?q=R", False)
-    , ("https://www.pnas.org/content/111/24/8788.full", False)
+    , ("https://www.pnas.org/doi/full/10.1073/pnas.1320040111", False)
     , ("https://www.proofofexistence.com/", False)
     , ("https://www.quora.com/Do-you-have-any-plans-for-optimizing-Duolingos-vocabulary-learning-using-spaced-repetition", False)
     , ("https://www.r-inla.org/", False)

@@ -684,7 +684,7 @@ linkIconTestUnitsText =
          , ("https://speakingofmedicine.plos.org/2012/06/25/less-research-is-needed/",  "plos","svg")
          , ("https://journals.plos.org/plosmedicine/article/fetchObject.action?uri=info:doi/10.1371/journal.pmed.0020124.t004&representation=PNG_M",  "plos","svg")
          , ("https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0023175",  "plos","svg")
-         , ("https://www.pnas.org/content/104/18/7582",  "PNAS","text,quad")
+         , ("https://www.pnas.org/doi/10.1073/pnas.0610941104",  "PNAS","text,quad")
          , ("https://predictionbook.com/",  "?","text,sans,bold")
          , ("https://publicdomainreview.org/essay/the-lost-world-of-the-london-coffeehouse/",  "TPDR","text,quad")
          , ("https://psyarxiv.com/gjh95/",   "ψ", "text")

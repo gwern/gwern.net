@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-09-12 22:22:09 gwern"
+When:  Time-stamp: "2022-09-25 19:48:06 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -155,12 +155,12 @@ readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/ar
                             -- check for failed archives:
                             pdl' <- filterM (\(p,ami) -> case ami of
                                      Right (Just "") -> printRed ("Error! Invalid empty archive link: ") >> print (show p ++ show ami) >> return False
-                                     Right u@(Just ('/':'/':_)) -> printRed ("Error! Invalid double-slash archive link: ") >> print (show p ++ show ami ++ show u) >> return False
+                                     Right u@(Just ('/':'/':_)) -> printRed "Error! Invalid double-slash archive link: " >> print (show p ++ show ami ++ show u) >> return False
                                      Right (Just u)  -> if not ("http" `isPrefixOf` p) then
-                                                          printRed ("Error! Did a local link slip in somehow? ") >> print (show p ++ show u ++ show ami) >> return False
+                                                          printRed "Error! Did a local link slip in somehow? " >> print (show p ++ show u ++ show ami) >> return False
                                                         else
                                                           if isNothing (parseTLD p) then
-                                                           printRed ("Error! Invalid URI link in archive? ") >> print (show p ++ show u ++ show ami) >> return False
+                                                           printRed "Error! Invalid URI link in archive? " >> print (show p ++ show u ++ show ami) >> return False
                                                           else do let filepath = takeWhile (/='#') $ tail u
                                                                   exists <- doesFileExist filepath
                                                                   unless exists $ error ("Archive file not found: " ++ filepath ++ " (original path: " ++ show (p,ami) ++ ")")
@@ -196,7 +196,7 @@ rewriteLink adb archivedN url = do
   -- print $ "checkLink: " ++ url
   fromMaybe url <$> if whiteList url then return Nothing else
     case M.lookup url adb of
-      Nothing -> Nothing <$ insertLinkIntoDB (Left today) url
+      Nothing               -> Nothing <$ insertLinkIntoDB (Left today) url
       Just (Left firstSeen) -> if ((today - firstSeen) < archiveDelay) && not ("pdf" `isInfixOf` url)
         then return Nothing
         else do
@@ -1221,6 +1221,8 @@ whiteList url
       , "https://next-week-tonight.github.io/NWT/" -- low quality (video embeds)
       , "https://magenta.tensorflow.org/perceiver-ar" -- low quality (audio embeds)
       , "https://hazyresearch.stanford.edu/sashimi-examples/" -- low quality (audio embeds)
+      , "https://speechresearch.github.io/naturalspeech/" -- low quality (audio embeds)
+      , "https://keithito.com/LJ-Speech-Dataset/" -- low quality (audio embeds)
       , "https://carolineec.github.io/informative_drawings/" -- low quality (video embeds)
       , "https://parti.research.google/" -- low-quality (initial image carousel doesn't work)
       , "https://unconventionality.github.io/" -- low-quality (interactive app breaks)
@@ -1231,5 +1233,13 @@ whiteList url
       , "https://wenlong.page/language-planner/" -- low quality (video embeds)
       , "https://patents.google.com/?inventor" -- interactive
       , "https://sites.google.com/view/ving-robot" -- low quality (video embeds)
+      , "https://agility.csail.mit.edu/" -- low quality (video embeds)
+      , "https://plai.cs.ubc.ca/2022/05/20/flexible-diffusion-modeling-of-long-videos/" -- low quality (video embeds)
+      , "https://models.aminer.cn/cogvideo/" -- interactive service
+      , "https://nitter.hu/JeanRemiKing/status/1533720262344073218" -- low quality (video embeds)
+      , "https://danijar.com/project/director/" -- low quality (video embeds)
+      , "https://bigvgan-demo.github.io/" -- low quality (audio embeds)
+      , "https://gist.github.com/brockmanmatt/7265297f21634693868c2aad9d2c5919" -- Github iPython notebook - always fail to render for me
+      , "https://gist.github.com/brockmanmatt/deafb4dba7e4399327e44f2c8fd97b2b" -- Github iPython notebook - always fail to render for me
       ] = True
     | otherwise = False

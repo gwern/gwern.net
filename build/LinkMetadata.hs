@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-23 21:49:40 gwern"
+When:  Time-stamp: "2022-09-25 15:20:25 gwern"
 License: CC-0
 -}
 
@@ -430,8 +430,9 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
                  |                  otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
            in -- erase link ID?
               if (length abstrct < minimumAnnotationLength) && not forcep then
+                -- TEMPORARY: we do not set '.link-annotated-partial' on local links, even when they are a normal partial link, as a compromise due to the weakness of 'partial' popups right now. They only popup the partial itself (so, maybe a title & backlinks, a tag, perhaps an author or date, and that's about it); for a local PDF, that's inferior to popping up the PDF itself, because you generally wouldn't learn much from the partial popup compared to popping up the full PDF, and adds an annoying extra mouse-search to every popup. Bad. So, instead, we just ignore partial status for local links. Ideally, the partial popup would pop up the full PDF, with a wrapper frame containing just the partial metadata. Then the partial popup is no worse than the non-partial popup, and usually better. (Once that is added, the link-local boolean can be removed.)
                 if "link-local" `elem` b || (length abstrct < minimumAnnotationLength) then x
-                else (Link (a',nubOrd (b++["link-annotated", "link-annotated-partial"]),c) e (f,g')) -- always add the ID if possible
+                else Link (a',nubOrd (b++["link-annotated", "link-annotated-partial"]),c) e (f,g') -- always add the ID if possible
               else
                   Link (a', nubOrd (b++["link-annotated"]), c) e (f,g')
           addHasAnnotation _ _ z _ = z
@@ -1084,7 +1085,7 @@ pdf p = do let p' = takeWhile (/='#') p
 filterMeta :: String -> String
 filterMeta ea = if anyInfix ea badSubstrings || elem ea badWholes then "" else ea
  where badSubstrings, badWholes :: [String]
-       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd", "pdftk-java", "OP-ESRJ", "FUJIT S. U.", "JRC5", "klynch", "pruich", "Micron", "Anonymous Submission", "Asterisk", "KBarry2", ",-0", "fi-5530C2dj", "FUJIT S. U.", "LEVET_Layout", "Digitized by the "]
+       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd", "pdftk-java", "OP-ESRJ", "FUJIT S. U.", "JRC5", "klynch", "pruich", "Micron", "Anonymous Submission", "Asterisk", "KBarry2", ",-0", "fi-5530C2dj", "FUJIT S. U.", "LEVET_Layout", "Digitized by the ", "shaniahl", ".orig.pdf"]
        badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association", "om", "lhf", "comp", "khan", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo", "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "mchahino", "LaTeX2e", "Paperless", "fulvio", "Winter", "yeh", "markj", "Vahrenhorst", "vahrenhorst", "Vahrenhorst 2004", "Vahrenhorst 2008", "pilc2501", "yeh 2008", "markj 2009"]
 
 -- nested JSON object: eg. 'jq .message.abstract'
@@ -2311,6 +2312,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(W \\in {\\mathbb R}^{p \\times d}\\)</span>", "<em>W</em> ∈ ℝ<sup><em>p</em>×<em>d</em></sup>")
           , ("<span class=\"math inline\">\\(\\varphi\\)</span>", "ϕ")
           , ("<span class=\"math inline\">\\(W z_i\\)</span>", "<em>Wz<sub>i</sub></em>")
+          , ("<span class=\"math inline\">\\({\\raise.17ex\\hbox{<span class=\"math inline\">~</span>}}\\)</span>", "~")
           , (" TD()", " TD(λ)")
           , ("({\\lambda})", "(λ)")
           , ("O((log n log log n)^2)", "𝑂(log<sup>2</sup> <em>n</em> log log <em>n</em>)")
@@ -2678,7 +2680,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\nDesign, Setting, and Participants: ", "\n<strong>Design, Setting, & Participants</strong>: ")
           , ("\nIntervention: ", "\n<strong>Intervention</strong>: ")
           , ("\nData Sources: ", "\n<strong>Data Sources</strong>: ")
-          , ("\nMain Outcomes & Measures: ", "\n<strong>Main Outcomes and Measures</strong>: ")
+          , ("\nMain Outcomes & Measures: ", "\n<strong>Main Outcomes & Measures</strong>: ")
           , ("\nMeasurements: ", "\n<strong>Measurements</strong>: ")
           , (". Results. ", ".</p> <p><strong>Results</strong>: ")
           , ("\nResults: ", "\n<strong>Results</strong>: ")
@@ -2686,7 +2688,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (". Conclusions. ", ".</p> <p><strong>Conclusion</strong>: ")
           , ("\nConclusion: ", "\n<strong>Conclusion</strong>: ")
           , ("\nConclusions: ", "\n<strong>Conclusion</strong>: ")
-          , ("\nConclusions & Relevance: ", "\n<strong>Conclusion and Relevance</strong>: ")
+          , ("\nConclusions & Relevance: ", "\n<strong>Conclusion & Relevance</strong>: ")
           , ("\nTrial Registration: ", "\n<strong>Trial Registration</strong>: ")
           , ("<h3>Highlights</h3>\n<p>", "<p><strong>Highlights</strong>: ")
           , ("<h3>Background</h3>\n<p>", "<p><strong>Background</strong>: ")
@@ -2706,13 +2708,14 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<h3>Design, Setting, and Participants</h3>\n<p>", "<p><strong>Design, Setting, & Participants</strong>: ")
           , ("<h3>Intervention</h3>\n<p>", "<p><strong>Intervention</strong>: ")
           , ("<h3>Data Sources</h3>\n<p>", "<p><strong>Data Sources</strong>: ")
-          , ("<h3>Main Outcomes & Measures</h3>\n<p>", "<p><strong>Main Outcomes and Measures</strong>: ")
+          , ("<h3>Main Outcomes & Measures</h3>\n<p>", "<p><strong>Main Outcomes & Measures</strong>: ")
           , ("<h3>Measurements</h3>\n<p>", "<p><strong>Measurements</strong>: ")
           , ("<h3>Results</h3>\n<p>", "<p><strong>Results</strong>: ")
           , ("<h3>Significance</h3>\n<p>", "<p><strong>Significance</strong>: ")
           , ("<h3>Conclusion</h3>\n<p>", "<p><strong>Conclusion</strong>: ")
           , ("<h3>Conclusions</h3>\n<p>", "<p><strong>Conclusion</strong>: ")
-          , ("<h3>Conclusions & Relevance</h3>\n<p>", "<p><strong>Conclusions and Relevance</strong>: ")
+          , ("<h3>Conclusions & relevance</h3>\n<p>", "<p><strong>Conclusions & Relevance</strong>: ")
+          , ("<h3>Conclusions & Relevance</h3>\n<p>", "<p><strong>Conclusions & Relevance</strong>: ")
           , ("<h3>Trial Registration</h3>\n<p>", "<p><strong>Trial Registration</strong>: ")
           , ("</h3><br/>", "</h3>")
           , ("<br/><h3>", "<h3>")
@@ -2723,6 +2726,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\91Keywords: ", "\91<strong>Keywords</strong>: ")
           , ("&lt;/i&gt;&lt;/b&gt;", "</em>")
           , ("&lt;b&gt;&lt;i&gt;", "<em>")
+          , ("acc.:", "accuracy:")
           , (" m/s", " m⁄s")
           , ("~1/250", "~1⁄250")
           , (" 2/3 ", " 2⁄3 ")

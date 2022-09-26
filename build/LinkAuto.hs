@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-09-23 12:59:34 gwern"
+When:  Time-stamp: "2022-09-24 12:51:00 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -109,7 +109,7 @@ annotateFirstDefinitions doc = evalState (walkM addFirstDefn doc) S.empty
                if S.member t st then return $ addClass "link-auto-skipped" $ Span nullAttr il -- Useful for debugging to annotate spans of text which *would* have been Links.
                  else do let st' = S.insert t st
                          put st'
-                         return $ addClass "link-auto-first" $ Link a il c
+                         return $ addClass "link-auto-first" $ Span nullAttr [Link a il c]
             else return x
         addFirstDefn x = return x
 
