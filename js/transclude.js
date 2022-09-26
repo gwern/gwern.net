@@ -575,12 +575,16 @@ Transclude = {
         if (includeLink.classList.containsAnyOf([ "link-annotated", "include-annotation" ]) == false)
             return false;
 
-        return (( Transclude.transcludeAnnotationsByDefault &&
-                  includeLink.classList.contains("link-annotated") &&
-                  not (includeLink.classList.contains("link-annotated-partial")))
+        return ((   Transclude.transcludeAnnotationsByDefault 
+        		 && Transclude.hasAnnotation(includeLink))
                 ? includeLink.classList.contains("include-content") == false
                 : includeLink.classList.contains("include-annotation"));
     },
+
+	hasAnnotation: (includeLink) => {
+		return (   includeLink.classList.contains("link-annotated") 
+        		&& includeLink.classList.contains("link-annotated-partial") == false);
+	},
 
     /***********/
     /*  Caching.
@@ -845,6 +849,14 @@ Transclude = {
             "include-in-progress",
             "include-complete"
         ])) return;
+
+		/*	If it’s an annotation transclude but doesn’t actually have an 
+			annotation, do nothing. (Presumably, an annotation will be added to
+			this link someday.)
+		 */
+		if (   Transclude.isAnnotationTransclude(includeLink)
+			&& Transclude.hasAnnotation(includeLink) == false)
+			returnl
 
         if (   includeLink.hostname != location.hostname
             && Transclude.isAnnotationTransclude(includeLink) == false) {
