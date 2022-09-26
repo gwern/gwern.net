@@ -625,7 +625,7 @@ header h1 {
 	font-variant-numeric: oldstyle-nums;
 }
 
-/*	Interpunct separators for the metadata fields; looks nicer than semicolons 
+/*	Interpunct separators for the metadata fields; looks nicer than semicolons
 	or slashes
  */
 #page-metadata-block > span:not(:last-child)::after {
@@ -680,7 +680,7 @@ header h1 {
 /*= /index =*/
 /*=--------=*/
 
-/*	On the index page, we hide article-related formatting, begging, to make it 
+/*	On the index page, we hide article-related formatting, begging, to make it
 	more compact & classy.
  */
 body.index #sidebar a.patreon,
@@ -735,8 +735,8 @@ body.index #markdownBody #notable {
     }
 }
 
-/*	On sufficiently-wide screens, we can get 3 columns in nicely; to preserve 
-	the initial row being ‘meta’ blocks, we leave #notable visible 
+/*	On sufficiently-wide screens, we can get 3 columns in nicely; to preserve
+	the initial row being ‘meta’ blocks, we leave #notable visible
 	(for a newest/popular/notable triplet)
  */
 @media only screen and (min-width: 2050px) {
@@ -748,7 +748,7 @@ body.index #markdownBody #notable {
     }
 }
 
-/*  Abstract is not a real abstract, just an introduction, no need for the 
+/*  Abstract is not a real abstract, just an introduction, no need for the
 	abstract formatting.
  */
 body.index .abstract {
@@ -828,7 +828,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     display: none;
 }
 
-/*  On mobile, we want the TOC to be inline, but for desktop, we want it 
+/*  On mobile, we want the TOC to be inline, but for desktop, we want it
 	side by side with the content.
  */
 @media only screen and (max-width: 1280px) {
@@ -1094,7 +1094,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 @media only screen and (min-width: 650px) {
     @media only screen and (max-width: 1000px) {
 		/*  Replaces A/B-test-set average value; the wider the screen, the more
-			line-height is necessary, and no one size suits all, so set 3 
+			line-height is necessary, and no one size suits all, so set 3
 			brackets of increasing height.
 		 */
         .markdownBody {
@@ -1174,8 +1174,8 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 	}
 }
 
-/*	Auto-smallcaps the first line of the introduction (= the first `<p>` after 
-	an ‘abstract’ div); this avoids the need to manually specify what to 
+/*	Auto-smallcaps the first line of the introduction (= the first `<p>` after
+	an ‘abstract’ div); this avoids the need to manually specify what to
 	smallcaps, and it auto-adjusts to screen/line-width, which is nicer.
  */
 .abstract + p::first-line,
@@ -1254,8 +1254,8 @@ a {
     text-decoration: none;
 }
 
-/*	Slightly gray out links the reader has already visited, so they know if 
-	they’ve seen that content before. (A critical affordance in densely 
+/*	Slightly gray out links the reader has already visited, so they know if
+	they’ve seen that content before. (A critical affordance in densely
 	hyperlinked longform.)
  */
 .markdownBody a:visited {
@@ -1343,18 +1343,33 @@ a code {
 p {
     margin: 0;
 }
-p + p,
-p + figure[class^='float-'] + p,
-div[class^='drop-cap-'] + p,
-.abstract.scrape-abstract-not + p {
+body.indented p + p,
+body.indented p + figure[class^='float-'] + p,
+body.indented div[class^='drop-cap-'] + p,
+body.indented .abstract + p {
     text-indent: 2.5em;
 }
 @media only screen and (max-width: 649px) {
-    p + p,
-	p + figure[class^='float-'] + p,
-	div[class^='drop-cap-'] + p,
-	.abstract.scrape-abstract-not + p {
+    body.indented p + p,
+    body.indented p + figure[class^='float-'] + p,
+    body.indented div[class^='drop-cap-'] + p,
+    body.indented .abstract + p {
         text-indent: 1.75em;
+    }
+}
+
+body.indented-not p + p,
+body.indented-not p + figure[class^='float-'] + p,
+body.indented-not div[class^='drop-cap-'] + p,
+body.indented-not .abstract + p {
+    margin-top: 1em;
+}
+@media only screen and (max-width: 649px) {
+    body.indented-not p + p,
+    body.indented-not p + figure[class^='float-'] + p,
+    body.indented-not div[class^='drop-cap-'] + p,
+    body.indented-not .abstract + p {
+        margin-top: 1em;
     }
 }
 
@@ -1502,7 +1517,7 @@ figure svg {
 /* MISC */
 /********/
 
-/*  Enable standard Pandoc attribute-based syntax for small-caps like 
+/*  Enable standard Pandoc attribute-based syntax for small-caps like
 	‘[foo]{.smallcaps}’; see https://pandoc.org/MANUAL.html#small-caps
  */
 span.smallcaps {
@@ -1512,10 +1527,10 @@ span.smallcaps {
 /*************/
 /* DARK MODE */
 /*************/
-/*	See /static/js/dark-mode.js and /static/css/dark-mode.css; this allows the 
+/*	See /static/js/dark-mode.js and /static/css/dark-mode.css; this allows the
 	user to toggle at runtime.
  */
- </style>
+</style>
 <style id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)">
 :root {
     /*  General.
