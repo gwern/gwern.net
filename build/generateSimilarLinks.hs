@@ -11,6 +11,7 @@ import System.Environment (getArgs)
 import Data.Map.Strict as M (fromList, lookup, keys, filter)
 
 import GenerateSimilar (bestNEmbeddings, iterationLimit, embed, embeddings2Forest, findN, missingEmbeddings, readEmbeddings, similaritemExistsP, writeEmbeddings, writeOutMatch, pruneEmbeddings)
+import LinkBacklink (readBacklinksDB)
 import LinkMetadata (readLinkMetadata)
 import Utils (printGreen)
 
@@ -20,6 +21,7 @@ maxEmbedAtOnce = 50
 main :: IO ()
 main = do md  <- readLinkMetadata
           let mdl = sort $ M.keys $ M.filter (\(_,_,_,_,_,abst) -> abst /= "") md -- to iterate over the annotation database's URLs, and skip outdated URLs still in the embedding database
+          bdb <- readBacklinksDB
           edb <- readEmbeddings
           let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
           printGreen "Read databases."
@@ -62,15 +64,15 @@ main = do md  <- readLinkMetadata
                                            case M.lookup f edbDB of
                                              Nothing        -> return ()
                                              Just (b,c,d,e) -> do let nmatches = findN ddb bestNEmbeddings iterationLimit (f,b,c,d,e)
-                                                                  writeOutMatch md nmatches
+                                                                  writeOutMatch md bdb nmatches
                     )
             mdl
           unless (args == ["--update-only-embeddings"]) $ do
             printGreen "Wrote out missing. Now writing out changed…"
-            Par.mapM_ (writeOutMatch md . findN ddb bestNEmbeddings iterationLimit) edb''
+            Par.mapM_ (writeOutMatch md bdb . findN ddb bestNEmbeddings iterationLimit) edb''
             Par.mapM_ (\f -> case M.lookup f edbDB of
                                    Nothing        -> return ()
-                                   Just (b,c,d,e) -> writeOutMatch md (findN ddb bestNEmbeddings iterationLimit (f,b,c,d,e))
+                                   Just (b,c,d,e) -> writeOutMatch md bdb (findN ddb bestNEmbeddings iterationLimit (f,b,c,d,e))
                                   )
               mdl
             printGreen "Done."

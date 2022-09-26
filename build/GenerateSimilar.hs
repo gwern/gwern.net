@@ -27,6 +27,7 @@ import Data.RPTree (knn, forest, metricL2, rpTreeCfg, fpMaxTreeDepth, fpDataChun
 import Data.Conduit (ConduitT)
 import Data.Conduit.List (sourceList)
 
+import LinkBacklink (readBacklinksDB, Backlinks)
 import Columns as C (listLength)
 import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, safeHtmlWriterOptions, parseRawInline)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
@@ -37,12 +38,13 @@ singleShotRecommendations :: String -> IO T.Text
 singleShotRecommendations html =
   do md  <- readLinkMetadata
      edb <- readEmbeddings
+     bdb <- readBacklinksDB
 
      newEmbedding <- embed [] ("",("","","","",[],html))
      ddb <- embeddings2Forest (newEmbedding:edb)
      let (_,n) = findN ddb (2*bestNEmbeddings) iterationLimit newEmbedding :: (String,[String])
 
-     let matchListHtml = generateMatches md True "" html n :: T.Text
+     let matchListHtml = generateMatches md bdb True "" html n :: T.Text
      return matchListHtml
 
 -- how many results do we want?
@@ -236,21 +238,25 @@ findN f 20 iterationLimit $ head edb
 similaritemExistsP :: String -> IO Bool
 similaritemExistsP p = doesFileExist $ take 274 $ "metadata/annotations/similars/" ++ urlEncode p ++ ".html"
 
-writeOutMatch :: Metadata -> (String, [String]) -> IO ()
-writeOutMatch md (p,matches) =
+writeOutMatch :: Metadata -> Backlinks -> (String, [String]) -> IO ()
+writeOutMatch md bdb (p,matches) =
   do case M.lookup p md of
        Nothing             -> return ()
        Just (_,_,_,_,_,"") -> return ()
        Just ("",_,_,_,_,_) -> return ()
        Just (_,_,_,_,_,abst) -> do
-             let similarLinksHtmlFragment = generateMatches md False p abst matches
+             let similarLinksHtmlFragment = generateMatches md bdb False p abst matches
              let f = take 274 $ "metadata/annotations/similars/" ++ urlEncode p ++ ".html"
              writeUpdatedFile "similars" f similarLinksHtmlFragment
 
-generateMatches :: Metadata -> Bool -> String -> String -> [String] -> T.Text
-generateMatches md linkTagsP p abst matches =
+generateMatches :: Metadata -> Backlinks -> Bool -> String -> String -> [String] -> T.Text
+generateMatches md bdb linkTagsP p abst matches =
          -- we don't want to provide as a 'see also' a link already in the annotation, of course, so we need to pull them out & filter by:
-         let alreadyLinked = extractLinks False $ T.pack abst
+         let alreadyLinkedBody = extractLinks False $ T.pack abst
+             alreadyLinkdBacklinks = case M.lookup (T.pack p) bdb of
+                                       Nothing        -> []
+                                       Just backlinks -> backlinks
+             alreadyLinked = alreadyLinkedBody ++ alreadyLinkdBacklinks
              matchesPruned = filter (\p2 -> T.pack p2 `notElem` alreadyLinked) matches
 
              similarItems = filter (not . null) $ map (generateItem md linkTagsP) matchesPruned
