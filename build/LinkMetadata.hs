@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-25 15:20:25 gwern"
+When:  Time-stamp: "2022-09-26 11:21:15 gwern"
 License: CC-0
 -}
 
@@ -479,7 +479,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
                                     link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
                                     -- make sure every abstract is wrapped in paragraph tags for proper rendering:in
-                                    abst' = if anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure"] then abst else "<p>" ++ abst ++ "</p>"
+                                    abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure"] then abst else "<p>" ++ abst ++ "</p>"
                                 in
                                   [Para
                                        ([link,Str ","] ++
@@ -3062,6 +3062,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" Arabidopsis thaliana", " <em>Arabidopsis thaliana</em>")
           , ("(Drosophila melanogaster", "(<em>Drosophila melanogaster</em>")
           , (" Drosophila melanogaster", " <em>Drosophila melanogaster</em>")
+          , (" Arabidopsis Thaliana", " <em>Arabidopsis Thaliana</em>")
           , (" C. elegans", " <em>C. elegans</em>")
           , (" T. gondii", " <em>T. gondii</em>")
           , (" Equus ", " <em>Equus</em> ")
