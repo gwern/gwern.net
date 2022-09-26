@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-26 11:21:15 gwern"
+When:  Time-stamp: "2022-09-26 18:20:51 gwern"
 License: CC-0
 -}
 
@@ -23,7 +23,7 @@ import qualified Data.ByteString as B (appendFile, readFile)
 import qualified Data.ByteString.Lazy as BL (length, concat)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, Map) -- traverseWithKey, union, Map
-import qualified Data.Text as T (append, breakOnAll, isInfixOf, pack, unpack, Text)
+import qualified Data.Text as T (append, breakOnAll, head, isInfixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.IORef (IORef)
 import Data.FileStore.Utils (runShellCommand)
@@ -51,6 +51,8 @@ import Text.Regex.TDFA ((=~)) -- WARNING: avoid the native Posix 'Text.Regex' du
 import Text.Show.Pretty (ppShow)
 
 import qualified Control.Monad.Parallel as Par (mapM_)
+
+import System.IO.Unsafe (unsafePerformIO)
 
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
@@ -298,6 +300,10 @@ warnParagraphizeYAML path = do yaml <- readYaml path
 minimumAnnotationLength :: Int
 minimumAnnotationLength = 200
 
+-- convert a URL to the local path of its annotation (which may not exist), eg 'http://www2.biology.ualberta.ca/locke.hp/dougandbill.htm' → 'metadata/annotations/http%3A%2F%2Fwww2.biology.ualberta.ca%2Flocke.hp%2Fdougandbill.htm.html'
+urlToAnnotationPath :: String -> String
+urlToAnnotationPath u = "metadata/annotations/" ++ (take 247 $ urlEncode u) ++ ".html"
+
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Integer -> Bool -> IO ()
 writeAnnotationFragments am md archived writeOnlyMissing = mapM_ (\(p, mi) -> writeAnnotationFragment am md archived writeOnlyMissing p mi) $ M.toList md
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Integer -> Bool -> Path -> MetadataItem -> IO ()
@@ -306,8 +312,7 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
       if ("/index#" `isInfixOf` u && ("#section" `isInfixOf` u || "-section" `isSuffixOf` u)) ||
          anyInfix u ["/index#see-also", "/index#links", "/index#miscellaneous", "/index#manual-annotation"] then return ()
       else do let u' = linkCanonicalize u
-              let filepath = take 247 $ urlEncode u'
-              let filepath' = "metadata/annotations/" ++ filepath ++ ".html"
+              let filepath' = urlToAnnotationPath u'
               annotationExisted <- doesFileExist filepath'
               when (not onlyMissing || (onlyMissing && not annotationExisted)) $ do
 
@@ -329,12 +334,13 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                                     else do
                                           let p = walk (convertInterwikiLinks . nominalToRealInflationAdjuster) $
                                                   walk (hasAnnotation md True) $
+                                                  walk addLocalLinkWalk $
                                                   walk (parseRawBlock nullAttr) pandoc
                                           p' <- walkM (localizeLink am archived) p
                                           walkM imageSrcset p' -- add 'srcset' HTML <img> property - helps toggle between the small/large image versions for mobile vs desktop
                       let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
-                      when (filepath /= urlEncode u') (printRed "Warning, annotation fragment path → URL truncated!" >>
-                                                          putStrLn ("Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"))
+                      when (length (urlEncode u') > 273) (printRed "Warning, annotation fragment path → URL truncated!" >>
+                                                          putStrLn ("Was: " ++ urlEncode u' ++ " but truncated to: " ++ take 247 u' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"))
 
                       case finalHTMLEither of
                         Left er -> error ("Writing annotation fragment failed! " ++ show u ++ " : " ++ show i ++ " : " ++ show er)
@@ -403,39 +409,42 @@ annotateLink _ x = error ("annotateLink was passed an Inline which was not a Lin
 -- walk the page, and modify each URL to specify if it has an annotation available or not:
 hasAnnotation :: Metadata -> Bool -> Block -> Block
 hasAnnotation md idp = walk (hasAnnotationInline md idp)
-    where hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
-          hasAnnotationInline mdb idBool y@(Link (a,classes,c) d (f,g)) =
-            if hasAny ["link-annotated-not", "idNot", "link-annotated", "link-annotated-partial"] classes then y
-            else
-              let f' = linkCanonicalize $ T.unpack f in
-                case M.lookup f' mdb of
-                  Nothing                  -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y
-                  Just ("","","","",[],"") -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y
-                  Just                 mi  -> addHasAnnotation idBool False y mi
-          hasAnnotationInline _ _ y = y
 
-          addHasAnnotation :: Bool -> Bool -> Inline -> MetadataItem -> Inline
-          addHasAnnotation idBool forcep x@(Link (a,b,c) e (f,g)) (title,aut,dt,_,_,abstrct) =
-           let a'
-                 | not idBool = ""
-                 | a == ""    = generateID (T.unpack f) aut dt
-                 | otherwise  = a
-               -- f' = linkCanonicalize $ T.unpack f
-               -- we would like to set the tooltip title too if omitted, for the non-JS users and non-human users who may not read the data-* attributes:
-               g'
-                 | g/="" = g
-                 |       title=="" && aut=="" = g
-                 |       title/="" && aut=="" = T.pack title
-                 |       title=="" && aut/="" = T.pack $ authorsToCite (T.unpack f) aut dt
-                 |                  otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
-           in -- erase link ID?
-              if (length abstrct < minimumAnnotationLength) && not forcep then
-                -- TEMPORARY: we do not set '.link-annotated-partial' on local links, even when they are a normal partial link, as a compromise due to the weakness of 'partial' popups right now. They only popup the partial itself (so, maybe a title & backlinks, a tag, perhaps an author or date, and that's about it); for a local PDF, that's inferior to popping up the PDF itself, because you generally wouldn't learn much from the partial popup compared to popping up the full PDF, and adds an annoying extra mouse-search to every popup. Bad. So, instead, we just ignore partial status for local links. Ideally, the partial popup would pop up the full PDF, with a wrapper frame containing just the partial metadata. Then the partial popup is no worse than the non-partial popup, and usually better. (Once that is added, the link-local boolean can be removed.)
-                if "link-local" `elem` b || (length abstrct < minimumAnnotationLength) then x
-                else Link (a',nubOrd (b++["link-annotated", "link-annotated-partial"]),c) e (f,g') -- always add the ID if possible
-              else
-                  Link (a', nubOrd (b++["link-annotated"]), c) e (f,g')
-          addHasAnnotation _ _ z _ = z
+hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
+hasAnnotationInline mdb idBool y@(Link (a,classes,c) d (f,g)) =
+  if hasAny ["link-annotated-not", "idNot", "link-annotated", "link-annotated-partial"] classes then y
+  else
+    let f' = linkCanonicalize $ T.unpack f in
+      case M.lookup f' mdb of
+        Nothing                  -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y
+        Just ("","","","",[],"") -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y -- zilch
+        Just                 mi  -> addHasAnnotation idBool mi y -- possible partial
+hasAnnotationInline _ _ y = y
+
+addHasAnnotation :: Bool -> MetadataItem -> Inline -> Inline
+addHasAnnotation idBool (title,aut,dt,_,_,abstrct) x@(Link (a,b,c) e (f,g))  =
+ let a'
+       | not idBool = ""
+       | a == ""    = generateID (T.unpack f) aut dt
+       | otherwise  = a
+     -- f' = linkCanonicalize $ T.unpack f
+     -- we would like to set the tooltip title too if omitted, for the non-JS users and non-human users who may not read the data-* attributes:
+     g'
+       | g/="" = g
+       |       title=="" && aut=="" = g
+       |       title/="" && aut=="" = T.pack title
+       |       title=="" && aut/="" = T.pack $ authorsToCite (T.unpack f) aut dt
+       |                  otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
+ in -- erase link ID?
+    if length abstrct > minimumAnnotationLength then -- full annotation, no problem:
+      Link (a', nubOrd (b++["link-annotated"]), c) e (f,g')
+      -- TEMPORARY: we do not set '.link-annotated-partial' on local links, even when they are a normal partial link, as a compromise due to the weakness of 'partial' popups right now. They only popup the partial itself (so, maybe a title & backlinks, a tag, perhaps an author or date, and that's about it); for a local PDF, that's inferior to popping up the PDF itself, because you generally wouldn't learn much from the partial popup compared to popping up the full PDF, and adds an annoying extra mouse-search to every popup. Bad. So, instead, we just ignore partial status for local links. Ideally, the partial popup would pop up the full PDF, with a wrapper frame containing just the partial metadata. Then the partial popup is no worse than the non-partial popup, and usually better. (Once that is added, the link-local boolean can be removed.)
+      else if "link-local" `elem` b || T.head f == '/' then
+             x else -- may be a partial...
+             if not $ unsafePerformIO $ doesFileExist $ urlToAnnotationPath $ T.unpack f then x -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
+             else -- so it's not a local link, doesn't have a full annotation, but does have *some* partial annotation since it exists on disk, so it gets `.link-annotated-partial`
+               Link (a',nubOrd (b++["link-annotated", "link-annotated-partial"]),c) e (f,g')
+addHasAnnotation _ _ z = z
 
 parseRawBlock :: Attr -> Block -> Block
 parseRawBlock attr x@(RawBlock (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
