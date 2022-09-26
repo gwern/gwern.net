@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-26 18:20:51 gwern"
+When:  Time-stamp: "2022-09-26 19:13:51 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (addLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateID, generateURL, generateAnnotationBlock, generateAnnotationTransclusionBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad, guessTagFromShort, listTagsAll, listTagDirectories) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateID, generateURL, generateAnnotationBlock, generateAnnotationTransclusionBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad, guessTagFromShort, listTagsAll, listTagDirectories) where
 
 import Control.Monad (unless, void, when, foldM_, filterM)
 import Data.Aeson (eitherDecode, FromJSON)
@@ -63,22 +63,21 @@ import LinkBacklink (getSimilarLink, getBackLink)
 import Query (truncateTOCHTML, extractLinksInlines)
 import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split, pairs, anyPrefixT, hasAny)
 
-----
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (docs/, static/, images/) entirely; a Gwern.net page is then any
 -- link without a file extension (ie. a '.' in the URL - we guarantee that no Markdown essay has a
 -- period inside its URL).
--- Local links get the 'link-local' class.
-addLocalLinkWalk :: Pandoc -> Pandoc
-addLocalLinkWalk = walk addLocalLink
+-- Essay/page links get the 'link-page' class.
+addPageLinkWalk :: Pandoc -> Pandoc
+addPageLinkWalk = walk addPageLink
 
-addLocalLink :: Inline -> Inline
-addLocalLink y@(Link (a,b,c) e (f,g)) = if "link-local" `elem` b || not (isLocalPath f) then y
-                                        else Link (a, "link-local" : b, c) e (f, g)
-addLocalLink x = x
+addPageLink :: Inline -> Inline
+addPageLink y@(Link (a,b,c) e (f,g)) = if "link-page" `elem` b || "link-page-not" `elem` b || not (isPagePath f) then y
+                                        else Link (a, "link-page" : b, c) e (f, g)
+addPageLink x = x
 
-isLocalPath :: T.Text -> Bool
-isLocalPath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
+isPagePath :: T.Text -> Bool
+isPagePath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
     (if
         not ("/" `isPrefixOf` f') ||
       ("/images/" `isPrefixOf` f' || "/static/" `isPrefixOf` f')
@@ -334,7 +333,7 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                                     else do
                                           let p = walk (convertInterwikiLinks . nominalToRealInflationAdjuster) $
                                                   walk (hasAnnotation md True) $
-                                                  walk addLocalLinkWalk $
+                                                  walk addPageLinkWalk $
                                                   walk (parseRawBlock nullAttr) pandoc
                                           p' <- walkM (localizeLink am archived) p
                                           walkM imageSrcset p' -- add 'srcset' HTML <img> property - helps toggle between the small/large image versions for mobile vs desktop
@@ -438,8 +437,8 @@ addHasAnnotation idBool (title,aut,dt,_,_,abstrct) x@(Link (a,b,c) e (f,g))  =
  in -- erase link ID?
     if length abstrct > minimumAnnotationLength then -- full annotation, no problem:
       Link (a', nubOrd (b++["link-annotated"]), c) e (f,g')
-      -- TEMPORARY: we do not set '.link-annotated-partial' on local links, even when they are a normal partial link, as a compromise due to the weakness of 'partial' popups right now. They only popup the partial itself (so, maybe a title & backlinks, a tag, perhaps an author or date, and that's about it); for a local PDF, that's inferior to popping up the PDF itself, because you generally wouldn't learn much from the partial popup compared to popping up the full PDF, and adds an annoying extra mouse-search to every popup. Bad. So, instead, we just ignore partial status for local links. Ideally, the partial popup would pop up the full PDF, with a wrapper frame containing just the partial metadata. Then the partial popup is no worse than the non-partial popup, and usually better. (Once that is added, the link-local boolean can be removed.)
-      else if "link-local" `elem` b || T.head f == '/' then
+      -- TEMPORARY: we do not set '.link-annotated-partial' on local links, even when they are a normal partial link, as a compromise due to the weakness of 'partial' popups right now. They only popup the partial itself (so, maybe a title & backlinks, a tag, perhaps an author or date, and that's about it); for a local PDF, that's inferior to popping up the PDF itself, because you generally wouldn't learn much from the partial popup compared to popping up the full PDF, and adds an annoying extra mouse-search to every popup. Bad. So, instead, we just ignore partial status for local links. Ideally, the partial popup would pop up the full PDF, with a wrapper frame containing just the partial metadata. Then the partial popup is no worse than the non-partial popup, and usually better. (Once that is added, the link-page boolean can be removed.)
+      else if "link-page" `elem` b || T.head f == '/' then
              x else -- may be a partial...
              if not $ unsafePerformIO $ doesFileExist $ urlToAnnotationPath $ T.unpack f then x -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
              else -- so it's not a local link, doesn't have a full annotation, but does have *some* partial annotation since it exists on disk, so it gets `.link-annotated-partial`
@@ -482,8 +481,8 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                                                           if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
                                                                     [Str (T.pack $ dateTruncateBad dt)]]
                                     tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
-                                    backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
-                                    similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
+                                    backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
+                                    similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
                                     link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
@@ -524,8 +523,8 @@ generateAnnotationTransclusionBlock (f, (tle,aut,dt,doi,ts,_)) blp slp =
                                                                           if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
                                                                     [Str (T.pack $ dateTruncateBad dt)]]
                                     tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
-                                    backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
-                                    similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
+                                    backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
+                                    similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     link = Link (lid, ["link-annotated", "include-annotation", "include-replace-container", "include-spinner-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
                                 in
@@ -595,7 +594,7 @@ tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = sort ts in
                        Span ("", ["link-tags"], []) $
-                       intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
+                       intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-page", "link-annotated"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
 -- Ditto; but since a Div is a Block element, we copy-paste a separate function:
 tagsToLinksDiv :: [T.Text] -> Block
@@ -603,7 +602,7 @@ tagsToLinksDiv [] = Div nullAttr []
 tagsToLinksDiv [""] = Div nullAttr []
 tagsToLinksDiv ts = let tags = sort ts in
                        Div ("", ["link-tags"], []) $
-                       [Para $ intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags]
+                       [Para $ intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-page", "link-annotated"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags]
 
 -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg. '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
 tag2TagsWithDefault :: String -> String -> [String]
@@ -1810,8 +1809,8 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
 -- skip the complex gwernAbstract logic: /docs/index is special because it has only subdirectories, is not tagged, and is the entry point. We just generate the ToC directly from a recursive tree of subdirectories with 'index.page' entries:
 gwerntoplevelDocAbstract :: IO (Either Failure (Path, MetadataItem))
 gwerntoplevelDocAbstract = do allDirs <- listTagDirectories ["docs/"]
-                              let allDirLinks = unlines $ map (\d -> "<li><a class='link-local link-tag directory-indexes-downwards link-annotated link-annotated-partial' data-link-icon='arrow-down' data-link-icon-type='svg' rel='tag' href=\"" ++ d ++ "\">" ++ (T.unpack $ abbreviateTag (T.pack (replace "/docs/" "" $ takeDirectory d))) ++ "</a></li>") allDirs
-                              return $ Right ("/docs/index", ("docs tag","N/A","","",[],"<p>Bibliography for tag <em>docs</em>, most recent first: " ++ show (length allDirs) ++ " tags (<a href='/index' class='link-local link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>).</p> <div class=\"columns TOC\"> <ul>" ++ allDirLinks ++ "</ul> </div>"))
+                              let allDirLinks = unlines $ map (\d -> "<li><a class='link-page link-tag directory-indexes-downwards link-annotated link-annotated-partial' data-link-icon='arrow-down' data-link-icon-type='svg' rel='tag' href=\"" ++ d ++ "\">" ++ (T.unpack $ abbreviateTag (T.pack (replace "/docs/" "" $ takeDirectory d))) ++ "</a></li>") allDirs
+                              return $ Right ("/docs/index", ("docs tag","N/A","","",[],"<p>Bibliography for tag <em>docs</em>, most recent first: " ++ show (length allDirs) ++ " tags (<a href='/index' class='link-page link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>).</p> <div class=\"columns TOC\"> <ul>" ++ allDirLinks ++ "</ul> </div>"))
 
 gwernAbstract :: Bool -> String -> String -> String -> [Tag String] -> (String,String)
 gwernAbstract shortAllowed p' description toc f =

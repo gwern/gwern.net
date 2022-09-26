@@ -599,7 +599,7 @@ Extracts = { ...Extracts,
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_IMAGE: (popFrame) => {
         //  Remove extraneous classes from images in image pop-frames.
-        popFrame.document.querySelector("img").classList.remove("link-local", "link-self", 
+        popFrame.document.querySelector("img").classList.remove("link-page", "link-self", 
         	"has-annotation", "has-annotation-partial", "has-content");
 
         //  Loading spinner.

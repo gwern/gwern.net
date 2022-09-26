@@ -20,7 +20,7 @@ import Control.Monad.Parallel as Par (mapM)
 
 import Columns as C (listLength)
 import LinkAuto (linkAutoFiltered)
-import LinkMetadata (hasAnnotation, isLocalPath, readLinkMetadata, generateID, Metadata, MetadataItem, safeHtmlWriterOptions, parseRawInline)
+import LinkMetadata (hasAnnotation, isPagePath, readLinkMetadata, generateID, Metadata, MetadataItem, safeHtmlWriterOptions, parseRawInline)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB,)
 import Query (extractLinksWith)
 import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed, replace)
@@ -77,14 +77,14 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                                       Just ("",_,_,_,_,_) -> if T.head u == '/' then T.tail u else u
                                                                       Just (t,_,_,_,_,_) -> T.pack t)
                                                           callers
-                                       let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-local"] else ["link-annotated"]) callers
+                                       let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-page"] else ["link-annotated"]) callers
                                        let callers' = zip3 callers callerClasses callerTitles
 
                                        let preface = [Para [Strong [Str "Backlinks"], Str ":"]]
                                        let content = BulletList $ -- critical to insert .backlink-not or we might get weird recursive blowup!
                                             map (\(u,c,t) -> [Para [Link ("", "id-not":"backlink-not":c, [])
                                                                   [parseRawInline nullAttr $ RawInline (Format "html") t]
-                                                                  (if isLocalPath u then u`T.append`selfIdent else u, "")]
+                                                                  (if isPagePath u then u`T.append`selfIdent else u, "")]
                                                    ]
                                                 ) callers'
 

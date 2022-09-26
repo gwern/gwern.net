@@ -62,7 +62,7 @@ import qualified Data.Text as T (append, isInfixOf, pack, unpack, length)
 -- local custom modules:
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToText, interwikiTestSuite)
-import LinkMetadata (addLocalLinkWalk, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString, tagsToLinksDiv, safeHtmlWriterOptions)
+import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString, tagsToLinksDiv, safeHtmlWriterOptions)
 import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (linebreakingTransform, typographyTransform, invertImageInline, imageMagickDimensions, addImgDimensions, imageSrcset)
 import LinkAuto (linkAuto)
@@ -287,9 +287,9 @@ pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `con
                            do let indexp = indexp' == "true"
                               let pw = if indexp then walk convertInterwikiLinks p else walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
                               _ <- unless indexp $ createAnnotations md pw
-                              let pb = walk (hasAnnotation md True) $ addLocalLinkWalk pw -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
+                              let pb = walk (hasAnnotation md True) $ addPageLinkWalk pw -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
                               pbt <- fmap typographyTransform . walkM (localizeLink adb archived) $ if indexp then pb else walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) pb
-                              let pbth = addLocalLinkWalk $ walk headerSelflink pbt
+                              let pbth = addPageLinkWalk $ walk headerSelflink pbt
                               if indexp then return pbth else do
                                 pbth' <- walkM invertImageInline pbth
                                 pbth'' <- walkM imageSrcset pbth'

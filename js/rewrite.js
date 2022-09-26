@@ -1280,9 +1280,9 @@ function addSpecialLinkClasses(loadEventInfo) {
         if (   link.pathname == loadEventInfo.baseLocation.pathname
             && (   loadEventInfo.isMainDocument
             	|| null != loadEventInfo.document.querySelector(selectorFromHash(link.hash)))) {
-            link.swapClasses([ "link-self", "link-local" ], 0);
+            link.swapClasses([ "link-self", "link-page" ], 0);
         } else if (link.pathname.slice(1).match(/[\.]/) == null) {
-            link.swapClasses([ "link-self", "link-local" ], 1);
+            link.swapClasses([ "link-self", "link-page" ], 1);
         }
     });
 }
@@ -1320,7 +1320,7 @@ function designateSpecialLinkIcons(loadEventInfo) {
 	});
 
 	//	Local links (to other pages on the site).
-	loadEventInfo.document.querySelectorAll(".link-local:not(.icon-not)").forEach(link => {
+	loadEventInfo.document.querySelectorAll(".link-page:not(.icon-not)").forEach(link => {
 		if (link.dataset.linkIcon)
 			return;
 

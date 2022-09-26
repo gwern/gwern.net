@@ -143,7 +143,7 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
               (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not link-annotated-not' href='/docs/" ++ (if d=="" then "" else d++"/") ++ "index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
               (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='icon-not link-annotated-not' href='/docs/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++
               (if linkN == 0 then ""       else (if (directoryN+annotationN) > 0 then ", & " else "") ++ show linkN ++ " <a class='icon-not link-annotated-not' href='/docs/" ++ d ++ "/index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
-              " (<a href='" ++ parent ++ "' class='link-local link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>)" ++
+              " (<a href='" ++ parent ++ "' class='link-page link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>)" ++
                ".\"\n",
              thumbnail,
              "created: 'N/A'\n",
@@ -281,8 +281,8 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) = -- no abstracts:
        author   = if aut=="" || aut=="N/A" then [] else [Str ",", Space, authorSpan]
        date     = if dt=="" then [] else [Span ("", ["cite-date"], []) [Str (T.pack (dateTruncateBad dt))]]
        tags     = if tgs==[] then [] else [tagsToLinksSpan $ map T.pack tgs]
-       backlink = if bl=="" then [] else (if null tgs then [] else [Str ";", Space]) ++ [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-local", "backlinks"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]
-       similar  = if sl=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["aux-links", "link-local", "similar"],[]) [Str "similar"] (T.pack sl,"Similar links (by text embedding).")]]
+       backlink = if bl=="" then [] else (if null tgs then [] else [Str ";", Space]) ++ [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]
+       similar  = if sl=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similar"],[]) [Str "similar"] (T.pack sl,"Similar links (by text embedding).")]]
   in
   if (tgs==[] && bl=="" && dt=="") then [Para (Link nullAttr title (T.pack f, "") : (author))]
   else [Para (Link nullAttr title (T.pack f, "") : (author ++ date ++ (if null (tags ++ backlink ++ similar)

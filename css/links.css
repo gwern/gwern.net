@@ -252,16 +252,16 @@ a[data-link-icon='𝔊']::after {
     opacity: 0.75;
 }
 
-#page-metadata a.link-local::after {
+#page-metadata a.link-page::after {
     content: none;
 }
 
 /*  Index page, and embeds thereof, do not need the G icon; nor do backlinks
     pop-frames.
  */
-body.index a.link-local::after,
-.popframe-body.index a.link-local::after,
-.popframe-body.backlinks a.link-local::after {
+body.index a.link-page::after,
+.popframe-body.index a.link-page::after,
+.popframe-body.backlinks a.link-page::after {
     content: none;
 }
 
