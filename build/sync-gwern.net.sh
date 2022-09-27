@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Author: Gwern Branwen
+# Date: 2016-10-01
+# When:  Time-stamp: "2022-09-27 19:50:20 gwern"
+# License: CC-0
+#
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
 # can be done using 'runghc hakyll.hs build', but that is slow, semi-error-prone (did you
 # remember to delete all intermediates?), and does no sanity checks or optimizations like compiling
@@ -8,11 +13,6 @@
 # This script automates all of that: it cleans up, compiles a hakyll binary for faster compilation,
 # generates a sitemap XML file, optimizes the MathJax use, checks for many kinds of errors, uploads,
 # and cleans up.
-#
-# Author: Gwern Branwen
-# Date: 2016-10-01
-# When:  Time-stamp: "2019-09-15 14:38:14 gwern"
-# License: CC-0
 
 bold () { echo -e "\033[1m$@\033[0m"; }
 red  () { echo -e "\e[41m$@\e[0m"; }
@@ -47,19 +47,20 @@ else
     set -e
 
     # lower priority of everything we run (some of it is expensive):
-    renice -n 15 "$$" &>/dev/null
+    renice --priority 19 --pid "$$" &>/dev/null
+    ionice --class 3     --pid "$$" &>/dev/null
 
     ## Parallelization: WARNING: post-2022-03 Hakyll uses parallelism which catastrophically slows down at >= # of physical cores; see <https://groups.google.com/g/hakyll/c/5_evK9wCb7M/m/3oQYlX9PAAAJ>
     N="30" # "$(if [ ${#} == 0 ]; then echo 31; else echo "$1"; fi)"
     if [ "$1" == "--slow" ]; then export SLOW="--slow"; else SLOW=""; fi
 
-    if [ "$SLOW" ]; then (cd ~/wiki/ && git status || true); fi &
+    if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true; fi &
     bold "Pulling infrastructure updates…"
-    (cd ./static/ && git status && timeout 10m git pull --verbose 'https://gwern.obormot.net/static/.git/' master || true)
+    (cd ./static/ && git status && timeout 10m git pull --verbose 'https://gwern.obormot.net/static/.git/' master) || true
 
     if [ "$SLOW" ]; then
         bold "Executing string rewrite cleanups…" # automatically clean up some Gwern.net bad URL patterns, typos, inconsistencies, house-styles:
-        (gwsed 'https://mobile.twitter.com' 'https://twitter.com' && gwsed 'https://twitter.com/' 'https://nitter.hu/' && gwsed 'https://mobile.twitter.com/' 'https://nitter.hu/' && gwsed 'https://www.twitter.com/' 'https://nitter.hu/' && gwsed 'https://www.reddit.com/r/' 'https://old.reddit.com/r/' && gwsed 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/' && gwsed 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts' && gwsed '&hl=en' '' && gwsed '?hl=en&' '?' && gwsed '?hl=en' '' && gwsed '?usp=sharing' '' && gwsed '<p> ' '<p>' && gwsed 'EMBASE' 'Embase' && gwsed 'Medline' 'MEDLINE' && gwsed 'PsychINFO' 'PsycINFO' && gwsed 'http://web.archive.org/web/' 'https://web.archive.org/web/' && gwsed 'https://youtu.be/' 'https://www.youtube.com/watch?v=' && gwsed '?via%3Dihub' '' && gwsed 'http://arxiv.org' 'https://arxiv.org' && gwsed '.html?pagewanted=all' '.html' && gwsed '(ie,' '(ie.' && gwsed '(ie ' '(ie. ' && gwsed '(i.e.,' '(ie.' && gwsed 'ie., ' 'ie. ' && gwsed '(i.e.' '(ie.' && gwsed '(eg, ' '(eg. ' && gwsed ' eg ' ' eg. ' && gwsed '(eg ' '(eg. ' && gwsed '[eg ' '[eg. ' && gwsed 'e.g. ' 'eg. ' && gwsed ' e.g. ' ' eg. ' && gwsed 'e.g.,' 'eg.' && gwsed 'eg.,' 'eg.' && gwsed ']^[' '] ^[' && gwsed 'et al. (' 'et al (' && gwsed ' et al. 1'  ' et al 1' && gwsed ' et al. 2'  ' et al 2' && gwsed ' et al., ' ' et al ' && gwsed 'et al., ' 'et al ' && sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' metadata/*.yaml  `find . -name "*.page" -or -name "*.yaml"` && sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g'  `find . -name "*.page" -or -name "*.yaml"` && gwsed '(cf ' '(cf. ' && gwsed ' cf ' ' cf. ' && gwsed ' _n_s' ' <em>n</em>s' && gwsed ' (n = ' ' (<em>n</em> = ' && gwsed ' (N = ' ' (<em>n</em> = ' && gwsed '<sup>St</sup>' '<sup>st</sup>' && gwsed '<sup>Th</sup>' '<sup>th</sup>' && gwsed '<sup>Rd</sup>' '<sup>rd</sup>' && gwsed ' de novo ' ' <em>de novo</em> ' && gwsed ' De Novo ' ' <em>De Novo</em> ' && gwsed ', Jr.' ' Junior' && gwsed ' Jr.' ' Junior' && gwsed ', Junior' ' Junior' && gwsed '.full-text' '.full' && gwsed '.full.full' '.full' && gwsed '.full-text' '.full' && gwsed '.full-text.full' '.full' && gwsed '.full.full.full' '.full' && gwsed '.full.full' '.full' && gwsed '#allen#allen' '#allen' && gwsed '#deepmind#deepmind' '#deepmind' && gwsed '&org=deepmind&org=deepmind' '&org=deepmind' && gwsed '#nvidia#nvidia' '#nvidia' && gwsed '#openai#openai' '#openai' && gwsed '#google#google' '#google' && gwsed '#uber#uber' '#uber' && gwsed 'MSCOCO' 'MS COCO' && gwsed '&feature=youtu.be' '' && gwsed 'Rene Girard' 'René Girard' && gwsed 'Anno Hideaki' 'Hideaki Anno' && gwsed 'facebookok' 'facebook' && gwsed ':443/' '/' && gwsed 'border colly' 'border collie' && gwsed ':80/' '/' && gwsed '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P' && gwsed 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com' && gwsed '?s=r' '' && gwsed '?sd=pf' '' && gwsed 'backlinks-not' 'backlink-not' && gwsed ',</a>' '</a>,' && gwsed ':</a>' '</a>:' && gwsed ';</a>' '</a>;' && gwsed ' <<a href' ' <a href' && gwsed 'Yann Le Cun' 'Yann LeCun' && gwsed ' GPT2' ' GPT-2' && gwsed '_X_s' '<em>X</em>s' && gwsed ' _r_s' ' <em>r</em>s' && gwsed 'Jorges Luis Borges' 'Jorge Luis Borges' && gwsed 'genomewide' 'genome-wide' && gwsed 'regularise' 'regularize' && gwsed ' VQVAE' ' VQ-VAE' && gwsed '# External links' '# External Links' && gwsed '# See also' '# See Also' && gwsed '"abstract-collapse abstract"' '"abstract abstract-collapse"' && gwsed 'cite-Author' 'cite-author' && gwsed 'cite-Date' 'cite-date' && gwsed 'cite-Joiner' 'cite-joiner' && gwsed ' residualis' ' residualiz' && gwsed 'CIFAR 10' 'CIFAR-10' && gwsed 'v1.full' '.full'  &&  gwsed 'v2.full' '.full'  &&  gwsed 'v3.full' '.full'  &&  gwsed 'v4.full' '.full'  &&  gwsed 'v5.full' '.full'  &&  gwsed 'v6.full' '.full'  &&  gwsed 'v7.full' '.full'  &&  gwsed 'v8.full' '.full'  &&  gwsed 'v9.full' '.full' && gwsed 'endelian randomisation' 'endelian randomization' && gwsed 'mendelian randomization' 'Mendelian Randomization' && gwsed 'Mendelian randomization' 'Mendelian Randomization' && gwsed 'canalization' 'canalisation' && gwsed 'Statistical significance' 'Statistical-significance' && gwsed 'Statistical Significance' 'Statistical-Significance' && gwsed 'statistical significance' 'statistical-significance' ) &> /dev/null &
+        (gwsed 'https://mobile.twitter.com' 'https://twitter.com' && gwsed 'https://twitter.com/' 'https://nitter.hu/' && gwsed 'https://mobile.twitter.com/' 'https://nitter.hu/' && gwsed 'https://www.twitter.com/' 'https://nitter.hu/' && gwsed 'https://www.reddit.com/r/' 'https://old.reddit.com/r/' && gwsed 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/' && gwsed 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts' && gwsed '&hl=en' '' && gwsed '?hl=en&' '?' && gwsed '?hl=en' '' && gwsed '?usp=sharing' '' && gwsed '<p> ' '<p>' && gwsed 'EMBASE' 'Embase' && gwsed 'Medline' 'MEDLINE' && gwsed 'PsychINFO' 'PsycINFO' && gwsed 'http://web.archive.org/web/' 'https://web.archive.org/web/' && gwsed 'https://youtu.be/' 'https://www.youtube.com/watch?v=' && gwsed '?via%3Dihub' '' && gwsed 'http://arxiv.org' 'https://arxiv.org' && gwsed '.html?pagewanted=all' '.html' && gwsed '(ie,' '(ie.' && gwsed '(ie ' '(ie. ' && gwsed '(i.e.,' '(ie.' && gwsed 'ie., ' 'ie. ' && gwsed '(i.e.' '(ie.' && gwsed '(eg, ' '(eg. ' && gwsed ' eg ' ' eg. ' && gwsed '(eg ' '(eg. ' && gwsed '[eg ' '[eg. ' && gwsed 'e.g. ' 'eg. ' && gwsed ' e.g. ' ' eg. ' && gwsed 'e.g.,' 'eg.' && gwsed 'eg.,' 'eg.' && gwsed ']^[' '] ^[' && gwsed 'et al. (' 'et al (' && gwsed ' et al. 1'  ' et al 1' && gwsed ' et al. 2'  ' et al 2' && gwsed ' et al., ' ' et al ' && gwsed 'et al., ' 'et al ' && sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' metadata/*.yaml  `find . -name "*.page" -or -name "*.yaml"` && sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g'  `find . -name "*.page" -or -name "*.yaml"` && gwsed '(cf ' '(cf. ' && gwsed ' cf ' ' cf. ' && gwsed ' _n_s' ' <em>n</em>s' && gwsed ' (n = ' ' (<em>n</em> = ' && gwsed ' (N = ' ' (<em>n</em> = ' && gwsed '<sup>St</sup>' '<sup>st</sup>' && gwsed '<sup>Th</sup>' '<sup>th</sup>' && gwsed '<sup>Rd</sup>' '<sup>rd</sup>' && gwsed ' de novo ' ' <em>de novo</em> ' && gwsed ' De Novo ' ' <em>De Novo</em> ' && gwsed ', Jr.' ' Junior' && gwsed ' Jr.' ' Junior' && gwsed ', Junior' ' Junior' && gwsed '.full-text' '.full' && gwsed '.full.full' '.full' && gwsed '.full-text' '.full' && gwsed '.full-text.full' '.full' && gwsed '.full.full.full' '.full' && gwsed '.full.full' '.full' && gwsed '#allen#allen' '#allen' && gwsed '#deepmind#deepmind' '#deepmind' && gwsed '&org=deepmind&org=deepmind' '&org=deepmind' && gwsed '#nvidia#nvidia' '#nvidia' && gwsed '#openai#openai' '#openai' && gwsed '#google#google' '#google' && gwsed '#uber#uber' '#uber' && gwsed 'MSCOCO' 'MS COCO' && gwsed '&feature=youtu.be' '' && gwsed 'Rene Girard' 'René Girard' && gwsed 'Anno Hideaki' 'Hideaki Anno' && gwsed 'facebookok' 'facebook' && gwsed ':443/' '/' && gwsed 'border colly' 'border collie' && gwsed ':80/' '/' && gwsed '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P' && gwsed 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com' && gwsed '?s=r' '' && gwsed '?sd=pf' '' && gwsed 'backlinks-not' 'backlink-not' && gwsed ',</a>' '</a>,' && gwsed ':</a>' '</a>:' && gwsed ';</a>' '</a>;' && gwsed ' <<a href' ' <a href' && gwsed 'Yann Le Cun' 'Yann LeCun' && gwsed ' GPT2' ' GPT-2' && gwsed '_X_s' '<em>X</em>s' && gwsed ' _r_s' ' <em>r</em>s' && gwsed 'Jorges Luis Borges' 'Jorge Luis Borges' && gwsed 'genomewide' 'genome-wide' && gwsed 'regularise' 'regularize' && gwsed ' VQVAE' ' VQ-VAE' && gwsed '# External links' '# External Links' && gwsed '# See also' '# See Also' && gwsed '"abstract-collapse abstract"' '"abstract abstract-collapse"' && gwsed 'cite-Author' 'cite-author' && gwsed 'cite-Date' 'cite-date' && gwsed 'cite-Joiner' 'cite-joiner' && gwsed ' residualis' ' residualiz' && gwsed 'CIFAR 10' 'CIFAR-10' && gwsed 'v1.full' '.full'  &&  gwsed 'v2.full' '.full'  &&  gwsed 'v3.full' '.full'  &&  gwsed 'v4.full' '.full'  &&  gwsed 'v5.full' '.full'  &&  gwsed 'v6.full' '.full'  &&  gwsed 'v7.full' '.full'  &&  gwsed 'v8.full' '.full'  &&  gwsed 'v9.full' '.full' && gwsed 'endelian randomisation' 'endelian randomization' && gwsed 'mendelian randomization' 'Mendelian Randomization' && gwsed 'Mendelian randomization' 'Mendelian Randomization' && gwsed 'canalization' 'canalisation' && gwsed 'Statistical significance' 'Statistical-significance' && gwsed 'Statistical Significance' 'Statistical-Significance' && gwsed 'statistical significance' 'statistical-significance' && gwsed ' Clinicaltrials.gov' ' ClinicalTrials.gov' && gwsed ' clinicaltrials.gov' ' ClinicalTrials.gov') &> /dev/null &
     sed -i -e 's/ data-link-?[Tt]ags="[a-z0-9 \/-]\+">/>/' ./metadata/*.yaml;
     fi
 
@@ -92,16 +93,19 @@ else
     # Update the directory listing index pages: there are a number of directories we want to avoid,
     # like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of
     # docs, so we'll blacklist those:
-    bold "Building directory indexes…"
-    ./static/build/generateDirectory +RTS -N"$N" -RTS \
-                $(find docs/ fiction/ haskell/ newsletter/ nootropics/ notes/ reviews/ zeo/ -type d \
+    DIRECTORY_TAGS="$(find docs/ fiction/ haskell/ newsletter/ nootropics/ notes/ reviews/ zeo/ -type d \
                       | sort | fgrep -v -e 'docs/www' -e 'docs/rotten.com' -e 'docs/genetics/selection/www.mountimprobable.com' \
                                         -e 'docs/biology/2000-iapac-norvir' -e 'docs/gwern.net-gitstats' -e 'docs/rl/armstrong-controlproblem' \
                                         -e 'docs/statistics/order/beanmachine-multistage' -e 'docs/personal/2011-gwern-yourmorals.org/' \
-                -e 'docs/link-bibliography' | shuf) # we want to generate all directories first before running Hakyll in case a new tag was created
+                -e 'docs/link-bibliography')"
+    PAGES_BIBLIOGRAPHIES="$(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e '404.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///' | shuf) index.page"
+
+    # we want to generate all directories first before running Hakyll in case a new tag was created
+    bold "Building directory indexes…"
+    ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS &
 
     bold "Updating link bibliographies…"
-    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e '404.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///' | shuf) index.page &
+    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $PAGES_BIBLIOGRAPHIES &
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
@@ -262,8 +266,12 @@ else
     # Testing compilation results:
     set +e
 
-    λ(){ PAGES="$(find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotations/ -type f -name '*.html' | sort)"
-         echo "$PAGES" | xargs fgrep -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
+    # essays only:
+    PAGES="$(find . -type f -name "*.page" | fgrep -v -e '_site/' -e 'index' | sort -u)"
+    # essays+tags+annotations+similars+backlinks:
+    PAGES_ALL="$(find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotations/ -type f -name '*.html' | sort)"
+    λ(){
+         echo "$PAGES_ALL" | xargs fgrep -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
                                      fgrep --invert-match -e '/1955-nash' -e '/Backstop' -e '/Death-Note-Anonymity' -e '/Differences' \
                                                           -e '/Lorem' -e '/Modus' -e '/Order-statistics' -e '/Conscientiousness-and-online-education' \
                                 -e 'docs%2Fmath%2Fhumor%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
@@ -313,7 +321,7 @@ else
 
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/';
        }
-    wrap λ "Stray or bad URL links in Markdown/HTML."
+    wrap λ "Stray or bad URL links in Markdown-sourced HTML."
 
     λ(){ find metadata/annotations/ -name "*.html" \
              | shuf | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort -u | \
@@ -502,7 +510,6 @@ else
     λ(){
         set +e;
         IFS=$(echo -en "\n\b");
-        PAGES="$(find . -type f -name "*.page" | fgrep -v -e '_site/' -e 'index' | sort -u)"
         OTHERS="$(find metadata/annotations/ -name "*.html"; echo index)"
         for PAGE in $PAGES $OTHERS ./static/404; do
             HTML="${PAGE%.page}"
@@ -521,10 +528,8 @@ else
     wrap λ "Markdown→HTML pages don't validate as HTML5"
 
     ## anchor-checker.php doesn't work on HTML fragments, like the metadata annotations, and those rarely ever have within-fragment anchor links anyway, so skip those:
-    λ() { PAGES=$(cd ~/wiki/ && find . -type f -name "*.page" | sed -e 's/\.\///' -e 's/\.page$//' | sort)
-          for PAGE in $PAGES ./static/404; do
-              HTML="${PAGE%.page}"
-              ANCHOR=$(./static/build/anchor-checker.php ./_site/"$HTML")
+    λ() { for PAGE in $PAGES_ALL; do
+              ANCHOR=$(./static/build/anchor-checker.php "$PAGE")
               if [[ -n $ANCHOR ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$ANCHOR"; fi
           done;
           }
@@ -815,7 +820,7 @@ else
     wrap λ "Compress JPGs to ≤65% quality"
 
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
-    λ() { for IMAGE in $(find ./images/ -type f -name "*.jpg" -or -name "*.png" | fgrep --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'images/fiction/batman/' -e 'images/ai/dall-e/2/' -e '2022-09-21-gwern-stablediffusionv14-circulardropcapinitialsamples.png' -e '2022-09-22-gwern-stablediffusionv14-textualinversion-yinit-dropcapsexperiments.png' | sort); do
+    λ() { for IMAGE in $(find ./images/ -type f -name "*.jpg" -or -name "*.png" | fgrep --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'images/fiction/batman/' -e 'images/ai/dall-e/2/' -e '2022-09-21-gwern-stablediffusionv14-circulardropcapinitialsamples.png' -e '2022-09-22-gwern-stablediffusionv14-textualinversion-yinit-dropcapsexperiments.png' -e '2022-09-27-gwernnet-indentjustification2x2abtest.png'); do
               SIZE_W=$(identify -format "%w" "$IMAGE")
               if (( $SIZE_W > 1600  )); then echo "Too wide image: $IMAGE $SIZE_W ; shrinking…";
                                              mogrify  -resize 1600x10000 "$IMAGE";
@@ -836,7 +841,6 @@ else
     if [ $(date +"%d") == "1" ]; then
 
         bold "Checking all MIME types…"
-        PAGES=$(cd ~/wiki/ && find . -type f -name "*.page" | sed -e 's/\.\///' -e 's/\.page$//' | sort)
         c () { curl --compressed --silent --output /dev/null --head "$@"; }
         for PAGE in $PAGES; do
             MIME=$(c --max-redirs 0 --write-out '%{content_type}' "https://www.gwern.net/$PAGE")
