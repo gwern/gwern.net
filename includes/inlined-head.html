@@ -1137,20 +1137,21 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     natively, and all JS implementations I’ve looked at are buggy.)
 
     However, do hyphenate at all widths.
- */
-.markdownBody p,
-.markdownBody li {
+*/
+body.justified .markdownBody p,
+body.justified .markdownBody li {
     -webkit-hyphens: auto;
+    -ms-hyphens: auto;
     hyphens: auto;
 }
 @media only screen and (min-width: 900px) {
-    .markdownBody p,
-    .markdownBody li {
+    body.justified .markdownBody p,
+    body.justified .markdownBody li {
         text-align: justify;
     }
-    .markdownBody .TOC li {
-		text-align: left;
-	}
+    body.justified .markdownBody .TOC li {
+        text-align: left;
+    }
 }
 
 /*  Cute ‘old-style’ numerals, look a little nicer inline in text, and available
