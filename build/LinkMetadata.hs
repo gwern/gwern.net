@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-27 10:56:15 gwern"
+When:  Time-stamp: "2022-09-27 12:51:27 gwern"
 License: CC-0
 -}
 
@@ -502,8 +502,10 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                          ) ++
                                          [Str ":"]),
                                        BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
-                                                                            if blp=="" then "" else "<div class=\"backlinks-append aux-links-append\">\n<p><a class=\"backlinks-transclusion include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>" `T.append`
-                                                                            if slp=="" then "" else "<div class=\"similars-append aux-links-append\">\n<p><a class=\"include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">[Similar links for this annotation.]</a></p>\n</div>"
+                                                                            if (blp++slp)=="" then "" else "<div class=\"collapse\">" `T.append`
+                                                                            (if blp=="" then "" else "<div class=\"backlinks-append aux-links-append\">\n<p><a class=\"backlinks-transclusion include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>" `T.append`
+                                                                              if slp=="" then "" else "<div class=\"similars-append aux-links-append\">\n<p><a class=\"include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">[Similar links for this annotation.]</a></p>\n</div>") `T.append`
+                                                                            "</div>"
                                                                             )]
                                   ]
                              where
