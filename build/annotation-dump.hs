@@ -15,10 +15,10 @@ type Path = String
 
 main :: IO ()
 main = do custom  <- readYamlFast "/home/gwern/wiki/metadata/custom.yaml"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
-          partial <- readYamlFast "/home/gwern/wiki/metadata/partial.yaml" -- tagged but not handwritten/cleaned-up
+          half <- readYamlFast "/home/gwern/wiki/metadata/half.yaml" -- tagged but not handwritten/cleaned-up
           auto    <- readYamlFast "/home/gwern/wiki/metadata/auto.yaml"    -- auto-generated cached definitions; can be deleted if gone stale
-          let incompleteDB = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto)
-          let finalDB = M.union (M.fromList $ blacklist "c" custom) $ M.union (M.fromList $ blacklist "p" partial) (M.fromList $ blacklist "a" auto)
+          let incompleteDB = M.union (M.fromList custom) $ M.union (M.fromList half) (M.fromList auto)
+          let finalDB = M.union (M.fromList $ blacklist "c" custom) $ M.union (M.fromList $ blacklist "p" half) (M.fromList $ blacklist "a" auto)
           let final = sortItemPathDate $ M.toList finalDB
           let finalSingleLine = map toSingleLine final
 

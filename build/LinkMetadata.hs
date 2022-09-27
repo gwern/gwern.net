@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-26 19:13:51 gwern"
+When:  Time-stamp: "2022-09-27 10:56:15 gwern"
 License: CC-0
 -}
 
@@ -101,7 +101,7 @@ isPagePath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
 -- > walkAndUpdateLinkMetadata True (\(a,(b,c,d,e,f,abst)) -> return (a,(b,c,d,e,f, linkAutoHtml5String abst)))
 walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
 walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataYaml f "metadata/custom.yaml"
-                                       walkAndUpdateLinkMetadataYaml f "metadata/partial.yaml"
+                                       walkAndUpdateLinkMetadataYaml f "metadata/half.yaml"
                                        walkAndUpdateLinkMetadataYaml f "metadata/auto.yaml"
                                        when check (printGreen "Checking…" >> readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting.")
 
@@ -114,7 +114,7 @@ walkAndUpdateLinkMetadataYaml f file = do db <- readYaml file -- TODO: refactor 
 -- This can be run every few months to update abstracts (they generally don't change much).
 updateGwernEntries :: IO ()
 updateGwernEntries = do rescrapeYAML gwernEntries "metadata/custom.yaml"
-                        rescrapeYAML gwernEntries "metadata/partial.yaml"
+                        rescrapeYAML gwernEntries "metadata/half.yaml"
                         rescrapeYAML gwernEntries "metadata/auto.yaml"
                         readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting…"
   where gwernEntries path = ("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path || "#manual-annotation" `isInfixOf` path)
@@ -147,10 +147,10 @@ updateGwernEntry x@(path,(title,author,date,doi,tags,_)) = if False then return 
 readLinkMetadata :: IO Metadata
 readLinkMetadata = do
              custom  <- readYaml "metadata/custom.yaml"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
-             partial <- readYaml "metadata/partial.yaml" -- tagged but not handwritten/cleaned-up
+             half <- readYaml "metadata/half.yaml" -- tagged but not handwritten/cleaned-up
              auto    <- readYaml "metadata/auto.yaml"    -- auto-generated cached definitions; can be deleted if gone stale
              -- merge the hand-written & auto-generated link annotations, and return:
-             let final = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto) -- left-biased, so 'custom' overrides 'partial' overrides 'partial' overrides 'auto'
+             let final = M.union (M.fromList custom) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'custom' overrides 'half' overrides 'half' overrides 'auto'
              return final
 
 -- read the annotation database, and do extensive semantic & syntactic checks for errors/duplicates:
@@ -189,23 +189,23 @@ readLinkMetadataAndCheck = do
                "custom.yaml:  Duplicate annotations: " ++ unlines (annotations \\ nubOrd annotations)
 
              -- intermediate link annotations: not finished, like 'custom.yaml' entries, but also not fully auto-generated.
-             -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such partial annotations can't be put into 'custom.yaml' without destroying all of the checks' validity.
-             partial <- readYaml "metadata/partial.yaml"
-             let (customPaths,partialPaths) = (map fst custom, map fst partial)
-             let redundantPartials = customPaths `intersect` partialPaths
-             unless (null redundantPartials) (printRed "Redundant entries in partial.yaml & custom.yaml: " >> printGreen (show redundantPartials))
+             -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such half annotations can't be put into 'custom.yaml' without destroying all of the checks' validity.
+             half <- readYaml "metadata/half.yaml"
+             let (customPaths,halfPaths) = (map fst custom, map fst half)
+             let redundantHalfs = customPaths `intersect` halfPaths
+             unless (null redundantHalfs) (printRed "Redundant entries in half.yaml & custom.yaml: " >> printGreen (show redundantHalfs))
 
-             let urlsCP = map fst (custom ++ partial)
+             let urlsCP = map fst (custom ++ half)
              let files = map (takeWhile (/='#') . tail) $ filter (\u -> head u == '/') urlsCP
              Par.mapM_ (\f -> let f' = if '.' `elem` f then f else f ++ ".page" in
                                     do exist <- doesFileExist f'
                                        unless exist $ printRed ("Custom annotation error: file does not exist? " ++ f ++ " (checked file name: " ++ f' ++ ")")) files
 
              -- auto-generated cached definitions; can be deleted if gone stale
-             rewriteLinkMetadata partial custom "metadata/auto.yaml" -- do auto-cleanup  first
+             rewriteLinkMetadata half custom "metadata/auto.yaml" -- do auto-cleanup  first
              auto <- readYaml "metadata/auto.yaml"
              -- merge the hand-written & auto-generated link annotations, and return:
-             let final = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto) -- left-biased, so 'custom' overrides 'partial' overrides 'auto'
+             let final = M.union (M.fromList custom) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'custom' overrides 'half' overrides 'auto'
              let finalL = M.toList final
 
              let urlsFinal = M.keys final
@@ -265,7 +265,7 @@ readLinkMetadataAndCheck = do
                                                          in any ((fileTag++"/") `isPrefixOf`) tags) final
              unless (null tagIsNarrowerThanFilename) $ printRed "Files whose tags are more specific than their path: " >> printGreen (unlines $ map (\(f',(t',tag')) -> t' ++ " : " ++ f' ++ " " ++ unwords tag') $ M.toList tagIsNarrowerThanFilename)
 
-             -- check tags (not just custom but all of them, including partials)
+             -- check tags (not just custom but all of them, including halfs)
              let tagsSet = sort $ nubOrd $ concat $ M.elems $ M.map (\(_,_,_,_,tags,_) -> tags) $ M.filter (\(t,_,_,_,_,_) -> t /= "") final
              tagsAll <- listTagsAll
              let tagsBad = tagsSet \\ tagsAll
@@ -320,7 +320,7 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                   -- we prefer annotations which have a fully-written abstract, but we will settle for 'partial' annotations,
                   -- which serve as a sort of souped-up tooltip: partials don't get the dotted-underline indicating a full annotation, but it will still pop-up on hover.
                   -- Now, tooltips already handle title/author/date, so we only need partials in the case of things with tags, abstracts, backlinks, or similar-links, which cannot be handled by tooltips (since HTML tooltips only let you pop up some raw unstyled Unicode text, not clickable links).
-                  when (any (not . null) [concat ts, abst, bl, sl]) $ do
+                  when (any (not . null) [concat (drop 1 ts), abst, bl, sl]) $ do
                       let titleHtml    = typesetHtmlField $ titlecase' a
                       let authorHtml   = typesetHtmlField b
                       -- obviously no point in trying to reformatting date/DOI, so skip those
@@ -958,11 +958,11 @@ guessDateFromLocalSchema url date = if head url /= '/' || date /= "" then date
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: MetadataList -> MetadataList -> Path -> IO ()
-rewriteLinkMetadata partial custom yaml
+rewriteLinkMetadata half custom yaml
   = do old <- readYaml yaml
-       -- de-duplicate by removing anything in auto.yaml which has been promoted to custom/partial:
-       let (partialURLs,customURLs) = (map fst partial, map fst custom)
-       let betterURLs = nubOrd (partialURLs ++ customURLs) -- these *should* not have any duplicates, but...
+       -- de-duplicate by removing anything in auto.yaml which has been promoted to custom/half:
+       let (halfURLs,customURLs) = (map fst half, map fst custom)
+       let betterURLs = nubOrd (halfURLs ++ customURLs) -- these *should* not have any duplicates, but...
        let old' = filter (\(p,_) -> p `notElem` betterURLs) old
        let new = M.fromList old' :: Metadata -- NOTE: constructing a Map data structure automatically sorts/dedupes
        let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ -- flatten [(Path, (String, String, String, String, String))]

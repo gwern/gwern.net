@@ -59,29 +59,29 @@ changeOneTag link tag = do
                         if existP then return $ "/" ++ link' else
                           error $ "File does not exist? : '" ++ link' ++ "'"
           when (head tag == '/' || take 4 tag == "http") $ error $ "Arguments not 'changeTag.hs *tag* link'? : '" ++ tag ++ "'"
-          [custom,partial,auto] <- mapM readYaml ["metadata/custom.yaml", "metadata/partial.yaml", "metadata/auto.yaml"]
-          changeAndWriteTags tag link'' custom partial auto
+          [custom,half,auto] <- mapM readYaml ["metadata/custom.yaml", "metadata/half.yaml", "metadata/auto.yaml"]
+          changeAndWriteTags tag link'' custom half auto
 
--- If an annotation is in custom.yaml, we only want to write that. If it's in partial.yaml,
+-- If an annotation is in custom.yaml, we only want to write that. If it's in half.yaml,
 -- likewise. If it's in auto.yaml, now that we've added a tag to it, it is no longer disposable and
--- must be preserved by moving it from auto.yaml to partial.yaml. If it's not in any metadata file
--- (such as a Wikipedia link, which is normally suppressed), then we add it to partial.yaml.
+-- must be preserved by moving it from auto.yaml to half.yaml. If it's not in any metadata file
+-- (such as a Wikipedia link, which is normally suppressed), then we add it to half.yaml.
 changeAndWriteTags :: String -> String -> MetadataList -> MetadataList -> MetadataList -> IO ()
 changeAndWriteTags t i c p a = do let cP = hasItem i c
                                       pP = hasItem i p
                                       aP = hasItem i a
                                   if cP then writeYaml "metadata/custom.yaml" (changeTag i c t) else
-                                    if pP then writeYaml "metadata/partial.yaml" (changeTag i p t) else
-                                      if aP then let (autoNew,partialNew) = mvItem a p i in writeYaml "metadata/auto.yaml" autoNew >> writeYaml "metadata/partial.yaml" (changeTag i partialNew t)
+                                    if pP then writeYaml "metadata/half.yaml" (changeTag i p t) else
+                                      if aP then let (autoNew,halfNew) = mvItem a p i in writeYaml "metadata/auto.yaml" autoNew >> writeYaml "metadata/half.yaml" (changeTag i halfNew t)
                                       else addNewLink t i
 
 -- what if a link is completely new and is not in either custom.yaml (handwritten) or auto.yaml
--- (often auto-annotated)? If we write it directly into partial.yaml, then for many links like
+-- (often auto-annotated)? If we write it directly into half.yaml, then for many links like
 -- Arxiv/Biorxiv, we'd skip creating an automatic annotation!
 --
 -- So instead we hook back into the main link annotation workflow, create a new annotation for that
 -- (which will be in auto.yaml), and then run changeTag.hs *again*, so this time it has an annotation
--- to work with (and will do auto.yaml → partial.yaml).
+-- to work with (and will do auto.yaml → half.yaml).
 addNewLink :: String -> String -> IO ()
 addNewLink tag p = do md <- readLinkMetadata
                       _ <- annotateLink md (Link nullAttr [] (T.pack p, T.pack ""))
