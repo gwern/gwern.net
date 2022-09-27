@@ -1,11 +1,11 @@
 #! /usr/bin/env php
 <?php
-// Check anchors in HTML files.  Only checks anchors local to each document.
+// Check anchors in HTML files. Only checks anchors local to each document.
 // Anchors prefixed with a filename are ignored even if they refer to the
-// same file.  Anchors with no element with the corresponding fragment ID
+// same file. Anchors with no element with the corresponding fragment ID
 // are written to stderr prefixed with the filename.
 //
-// Usage: anchor-checker.php [FILE]...
+// Usage: anchor-checker.php FILE1 [FILE2]...
 //
 // To the extent possible under law, D. Bohdan has waived all copyright and
 // related or neighboring rights to this work.
@@ -17,6 +17,8 @@ error_reporting(E_ALL);
 
 function main($files) {
     $exit_code = 0;
+
+    if (count($files) == 0) { fwrite(STDERR,"Wrong number of file arguments:"); fwrite(STDERR, implode(", ", $files)); exit(1); }
 
     foreach ($files as $file) {
         $bad_anchors = check_file($file);
@@ -31,6 +33,8 @@ function main($files) {
 
 function check_file($file) {
     $html = file_get_contents($file);
+    if (!$html) { fwrite(STDERR,"Failed to read file:"); fwrite(STDERR, $file); exit(2); }
+
     // An ugly hack to get around missing HTML5 support tripping up the parser.
     $html = preg_replace("/<wbr>/", "", $html);
 

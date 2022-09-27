@@ -521,9 +521,10 @@ else
     wrap λ "Markdown→HTML pages don't validate as HTML5"
 
     ## anchor-checker.php doesn't work on HTML fragments, like the metadata annotations, and those rarely ever have within-fragment anchor links anyway, so skip those:
-    λ() { for PAGE in $PAGES ./static/404; do
+    λ() { PAGES=$(cd ~/wiki/ && find . -type f -name "*.page" | sed -e 's/\.\///' -e 's/\.page$//' | sort)
+          for PAGE in $PAGES ./static/404; do
               HTML="${PAGE%.page}"
-              ANCHOR=$(static/build/anchor-checker.php ./_site/"$HTML")
+              ANCHOR=$(./static/build/anchor-checker.php ./_site/"$HTML")
               if [[ -n $ANCHOR ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$ANCHOR"; fi
           done;
           }
