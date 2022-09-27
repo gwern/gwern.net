@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-09-25 19:48:06 gwern"
+When:  Time-stamp: "2022-09-27 14:33:07 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -118,7 +118,7 @@ import Utils (writeUpdatedFile, printGreen, printRed, sed, addClass, anyInfix, a
 
 archiveDelay, archivePerRunN :: Integer
 archiveDelay = 60
-archivePerRunN = 5
+archivePerRunN = 10
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg. 2019-11-22 = 58810
@@ -136,7 +136,7 @@ localizeLink adb archived x@(Link (identifier, classes, pairs) b (targetURL, tar
   -- local link (or possibly, in the future, rewriting WP links to point to the historical revision ID when first
   -- linked, to avoid deletionist content rot)
   if whiteList (T.unpack targetURL) || "archive-not" `elem` classes then return x else
-    do targetURL' <- rewriteLink adb archived (T.unpack targetURL)
+    do targetURL' <- fmap ("/"++)  $ rewriteLink adb archived $ T.unpack targetURL
        if targetURL' == T.unpack targetURL then return x -- no archiving has been done yet, return original
        else do -- rewrite & annotate link with local archive:
          let padding = if targetDescription == "" then "" else " "
@@ -161,9 +161,9 @@ readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/ar
                                                         else
                                                           if isNothing (parseTLD p) then
                                                            printRed "Error! Invalid URI link in archive? " >> print (show p ++ show u ++ show ami) >> return False
-                                                          else do let filepath = takeWhile (/='#') $ tail u
+                                                          else do let filepath = takeWhile (/='#') u
                                                                   exists <- doesFileExist filepath
-                                                                  unless exists $ error ("Archive file not found: " ++ filepath ++ " (original path: " ++ show (p,ami) ++ ")")
+                                                                  unless exists $ error ("Archive file not found: " ++ filepath ++ " (original path in archive.hs: " ++ u ++ "; original tuple: " ++ show (p,ami) ++ ")")
                                                                   size <- getFileStatus filepath >>= \s -> return $ fileSize s
                                                                   if size == 0 then
                                                                     printRed "Error! Empty archive file. Not using: " >> print (show p ++ show u ++ show ami) >> return False
@@ -171,7 +171,7 @@ readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/ar
                                      Right Nothing   -> return True
                                      Left  _         -> return True)
                                  pdl
-                            let pdl'' = filter (\(p,_) -> "http"`isPrefixOf`p && not (whiteList p)) pdl'
+                            let pdl'' = filter (\(p,_) -> "http" `isPrefixOf` p && not (whiteList p)) pdl'
                             -- for mismatches, we know they were archived before, so we should archive them ASAP:
                             let pdl''' = map (\(p,ami) ->  if checksumIsValid p ami then (p,ami) else (p, Left 0)) pdl''
                             return $ M.fromList pdl'''
@@ -193,7 +193,6 @@ checksumIsValid url (Right (Just file)) = let derivedChecksum = Data.ByteString.
 rewriteLink :: ArchiveMetadata -> IORef Integer -> String -> IO String
 rewriteLink adb archivedN url = do
   today <- currentDay
-  -- print $ "checkLink: " ++ url
   fromMaybe url <$> if whiteList url then return Nothing else
     case M.lookup url adb of
       Nothing               -> Nothing <$ insertLinkIntoDB (Left today) url
@@ -232,7 +231,7 @@ archiveURL l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArc
                   case exit of
                      ExitSuccess -> do let result = U.toString stdout
                                        printGreen ( "Archiving (LinkArchive.hs): " ++ l ++ " returned: " ++ result)
-                                       if result == "" then return Nothing else return $ Just $ "/" ++ result
+                                       if result == "" then return Nothing else return $ Just result
                      ExitFailure _ -> printRed (l ++ " : archiving script failed to run correctly: ") >> print (U.toString stderr') >> return Nothing
 
 -- sometimes we may want to do automated transformations of a URL *before* we check any whitelists. In the case of
@@ -1241,5 +1240,15 @@ whiteList url
       , "https://bigvgan-demo.github.io/" -- low quality (audio embeds)
       , "https://gist.github.com/brockmanmatt/7265297f21634693868c2aad9d2c5919" -- Github iPython notebook - always fail to render for me
       , "https://gist.github.com/brockmanmatt/deafb4dba7e4399327e44f2c8fd97b2b" -- Github iPython notebook - always fail to render for me
+      , "https://sites.google.com/berkeley.edu/fleet-dagger/home" -- low quality (video embeds)
+      , "https://danijar.com/project/daydreamer/" -- low quality (video embeds)
+      , "https://sites.google.com/view/lmnav" -- low quality (video embeds)
+      , "https://innermonologue.github.io/" -- low quality (video embeds)
+      , "https://salu133445.github.io/mtmt/" -- low quality (audio embeds)
+      , "https://paddlehelix.baidu.com/app/drug/protein/forecast" -- interactive
+      , "https://semantic-abstraction.cs.columbia.edu/" -- low quality (video embeds)
+      , "https://nuwa-infinity.microsoft.com/" -- low quality (video embeds)
+      , "https://celebv-hq.github.io/" -- low quality (video embeds)
+      , "https://baghunter.com/" -- homepage
       ] = True
     | otherwise = False
