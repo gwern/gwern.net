@@ -151,22 +151,22 @@
     <!-- INLINED-FOOT-BEGIN --><!--#include virtual="/static/includes/inlined-foot.html" --><!-- INLINED-FOOT-END -->
 
 
-    <!-- 2×2 A/B test of identation vs newlining, and justified vs not  -->
+    <!-- 2×2 A/B test of indentation vs newlining, and justified vs not  -->
     <script id="justificationindentation-abtest-js">
     randomness = [2,3,1,4,2,4,3,1,4,2,3,1,1,3,2,4,4,2,3,1,3,2,1,4,3,4,1,2,1,4,3,2,2,3,1,4,4,2,1,3,2,3,1,4,1,3,4,2,2,3,4,1,1,3,4,2,4,3,1,2,1,2,3,4,2,4,1,3,2,3,1,4,4,2,1,3,1,2,3,4,1,4,3,2,3,1,4,2,4,2,3,1,1,3,2,4,4,2,1,3,4,1,3,2,4,1,2,3,1,2,4,3,4,2,1,3,1,3,4,2,3,2,1,4,4,3,1,2,1,2,3,4,3,2,4,1,2,3,1,4,4,3,2,1,1,4,2,3,3,1,2,4,4,2,3,1,3,4,2,1,1,2,4,3,1,3,4,2,3,2,1,4,4,1,3,2,3,4,2,1,2,4,1,3,2,3,4,1,1,4,3,2,3,2,4,1,2,1,3,4,3,4,2,1,4,1,2,3,3,2,4,1,4,3,2,1,3,4,2,1,3,2,1,4,2,4,3,1,1,3,4,2,4,1,3,2,1,3,4,2,2,4,1,3,1,4,2,3,2,4,3,1,1,4,3,2,2,3,4,1,4,2,3,1,2,4,1,3,3,2,1,4,2,1,3,4,4,3,1,2,3,4,2,1,1,4,3,2,1,3,4,2,4,2,1,3,2,1,4,3,1,3,2,4,4,3,1,2,3,4,2,1,1,2,3,4,4,3,2,1,2,1,4,3,4,2,3,1,4,2,3,1,4,1,2,3,4,1,3,2,2,3,1,4,3,1,2,4,3,2,4,1,2,3,1,4,1,3,4,2,3,1,4,2,2,1,3,4];
     var loadDate = (Math.round((new Date().setHours(23) - new Date(new Date().getYear()+1900, 0, 1, 0, 0, 0))/1000/60/60/24)) - 1;
-    choice = randomness[loadDate];
+    randomness[loadDate];
 
-    var indented = true;
+    var indented  = true;
     var justified = true;
     switch (choice) {
-     case 1: { indented = true;  justified = true;  }
-     case 2: { indented = false; justified = true;  }
-     case 3: { indented = true;  justified = false; }
-     case 4: { indented = false; justified = false; }
+        case 1: { indented = true;  justified = true;  break; }
+        case 2: { indented = false; justified = true;  break; }
+        case 3: { indented = true;  justified = false; break; }
+        case 4: { indented = false; justified = false; break; }
      }
 
-    if (!indented) { document.body.classList.remove("indented"); document.body.classList.add("indented-not"); }
+    if (!indented)  { document.body.classList.remove("indented");  document.body.classList.add("indented-not");  }
     if (!justified) { document.body.classList.remove("justified"); document.body.classList.add("justified-not"); }
     </script>
 
