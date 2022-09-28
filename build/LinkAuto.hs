@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-09-24 12:51:00 gwern"
+When:  Time-stamp: "2022-09-27 21:55:26 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -276,8 +276,8 @@ customDefinitionsR = map (\(a,b) -> (a,
 -- validate and error out immediately if there are bad rewrites defined
 definitionsValidate :: [(T.Text, T.Text)] -> [(T.Text, T.Text)]
 definitionsValidate defs
-    | nub (map fst defs) /= map fst defs = error $ "Definition keys are not unique! Definitions: "   ++ show (map fst defs)
-    | nub (map snd defs) /= map snd defs = error $ "Definition values are not unique! Definitions: " ++ show (map snd defs)
+    | nub (map fst defs) /= map fst defs = error $ "LinkAuto fatal error: Definition keys are not unique! Definitions: "   ++ show (map fst defs)
+    | nub (map snd defs) /= map snd defs = error $ "LinkAuto fatal error: Definition values are not unique! Definitions: " ++ show (map snd defs)
     | otherwise = defs
 
 -- Create sorted (by length) list of (string/compiled-regexp/substitution) tuples.
@@ -424,7 +424,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("([Ff]orward [Ee]rror [Cc]orrection|FEC)", "https://en.wikipedia.org/wiki/Forward_error_correction")
         , ("([Gg]amebook|CYOA)", "https://en.wikipedia.org/wiki/Gamebook")
         , ("([Gg]arbage collection|GC)", "https://en.wikipedia.org/wiki/Garbage_collection_%28computer_science%29")
-        , ("([Gg]enetic correlation.?|[Gg]enetically[ -]correlated?)", "https://en.wikipedia.org/wiki/Genetic_correlations")
         , ("([Gg]enomic [Ss]election|[Mm]olecular breeding)", "https://en.wikipedia.org/wiki/Molecular_breeding")
         , ("([Gg]eometric distribution|geometrically[ -]distributed)", "https://en.wikipedia.org/wiki/Geometric_distribution")
         , ("([Gg]roup[ -]selection(ism)?|[Mm]ulti-level selection)", "https://en.wikipedia.org/wiki/Group_selection")
@@ -1088,7 +1087,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ff]urry", "https://en.wikipedia.org/wiki/Furry_fandom")
         , ("[Gg]alantamine", "https://en.wikipedia.org/wiki/Galantamine")
         , ("[Gg]ame theory", "https://en.wikipedia.org/wiki/Game_theory")
-        , ("[Gg]enetic [Cc]orrelations?", "https://en.wikipedia.org/wiki/Genetic_correlation")
+        , ("([Gg]enetic [Cc]orrelations?.?|[Gg]enetically[ -]correlated?)", "https://en.wikipedia.org/wiki/Genetic_correlation")
         , ("[Gg]enetic drift", "https://en.wikipedia.org/wiki/Genetic_drift")
         , ("[Gg]enome-[Ww]ide [Cc]omplex [Tt]rait [Aa]nalysis", "https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308")
         , ("[Gg]esamtkunstwerk", "https://en.wikipedia.org/wiki/Gesamtkunstwerk")
@@ -1328,4 +1327,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Rainbow DQN", "https://arxiv.org/abs/1710.02298#deepmind")
         , ("CIFAR-10", "https://en.wikipedia.org/wiki/CIFAR-10")
         , ("CIFAR-100", "https://www.cs.toronto.edu/~kriz/cifar.html")
+        , ("[Cc]linical[Tt]rials\\.gov", "https://en.wikipedia.org/wiki/ClinicalTrials.gov")
         ]

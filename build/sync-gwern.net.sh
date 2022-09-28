@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-09-27 19:50:20 gwern"
+# When:  Time-stamp: "2022-09-27 21:05:30 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -299,7 +299,7 @@ else
     wrap λ "Backlinks database broken?"
 
     λ(){ ANNOTATION_FILES_N=$(find ./metadata/annotations/ -maxdepth 1 -type f | wc --lines);
-         [ "$ANNOTATION_FILES_N"   -le 25000 ] && echo "$ANNOTATION_FILES_N"; }
+         [ "$ANNOTATION_FILES_N"   -le 19000 ] && echo "$ANNOTATION_FILES_N"; }
     wrap λ "Annotation files are missing?"
     λ(){ BACKLINKS_FILES_N=$(find ./metadata/annotations/backlinks/ -type f | wc --lines);
          [ "$BACKLINKS_FILES_N"    -le 24000 ] && echo "$BACKLINKS_FILES_N"; }
@@ -463,7 +463,7 @@ else
             -e '"!"' -e '</sub<' -e 'xref>' -e '<xref' -e '<e>' -e '\\$' -e 'title="http' -e '%3Csup%3E' -e 'sup%3E' -e ' et la ' \
             -e '<strong>Abstract' -e ' ]' -e "</a>’s" -e 'title="&#39; ' -e 'collapseAbstract' -e 'utm_' \
             -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -e ' : ' -e " ' " -e '>/>a' -e '</a></a>' -e '(, ' \
-            -e '&lt;figcaption' -e '{.}' -e ' ?' -e ' ’’' -e 'lt;/td&gt;' -e '‘’' -e '’‘' -e '’’' -- ./metadata/*.yaml;
+            -e '&lt;figcaption' -e '{.}' -e ' ?' -e ' ’’' -e 'lt;/td&gt;' -e '‘’' -e '’‘' -e '’’' -e '<li></li>' -e '</em<em>' -- ./metadata/*.yaml;
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
 
