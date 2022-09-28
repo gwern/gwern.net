@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-27 12:51:27 gwern"
+When:  Time-stamp: "2022-09-27 20:45:09 gwern"
 License: CC-0
 -}
 
@@ -440,7 +440,8 @@ addHasAnnotation idBool (title,aut,dt,_,_,abstrct) x@(Link (a,b,c) e (f,g))  =
       -- TEMPORARY: we do not set '.link-annotated-partial' on local links, even when they are a normal partial link, as a compromise due to the weakness of 'partial' popups right now. They only popup the partial itself (so, maybe a title & backlinks, a tag, perhaps an author or date, and that's about it); for a local PDF, that's inferior to popping up the PDF itself, because you generally wouldn't learn much from the partial popup compared to popping up the full PDF, and adds an annoying extra mouse-search to every popup. Bad. So, instead, we just ignore partial status for local links. Ideally, the partial popup would pop up the full PDF, with a wrapper frame containing just the partial metadata. Then the partial popup is no worse than the non-partial popup, and usually better. (Once that is added, the link-page boolean can be removed.)
       else if "link-page" `elem` b || T.head f == '/' then
              x else -- may be a partial...
-             if not $ unsafePerformIO $ doesFileExist $ urlToAnnotationPath $ T.unpack f then x -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
+             -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
+             if not $ unsafePerformIO $ doesFileExist $ urlToAnnotationPath $ T.unpack f then (Link (a',b,c) e (f,g')) -- remember to set the ID!
              else -- so it's not a local link, doesn't have a full annotation, but does have *some* partial annotation since it exists on disk, so it gets `.link-annotated-partial`
                Link (a',nubOrd (b++["link-annotated", "link-annotated-partial"]),c) e (f,g')
 addHasAnnotation _ _ z = z
@@ -486,7 +487,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
                                     link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
-                                    -- make sure every abstract is wrapped in paragraph tags for proper rendering:in
+                                    -- make sure every abstract is wrapped in paragraph tags for proper rendering:
                                     abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure"] then abst else "<p>" ++ abst ++ "</p>"
                                 in
                                   [Para
@@ -498,16 +499,17 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                                 tags ++
                                                 backlink ++
                                                 similarlink ++
-                                                [Str ")"]
-                                         ) ++
-                                         [Str ":"]),
-                                       BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
+                                                [Str ")"] ++
+                                                (if null abst then [] else [Str ":"])
+                                         ))] ++
+                                         (if null abst then []
+                                           else [BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
                                                                             if (blp++slp)=="" then "" else "<div class=\"collapse\">" `T.append`
-                                                                            (if blp=="" then "" else "<div class=\"backlinks-append aux-links-append\">\n<p><a class=\"backlinks-transclusion include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>" `T.append`
-                                                                              if slp=="" then "" else "<div class=\"similars-append aux-links-append\">\n<p><a class=\"include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">[Similar links for this annotation.]</a></p>\n</div>") `T.append`
+                                                                            (if blp=="" then "" else "<div class=\"backlinks-append aux-links-append\">\n<p><a class=\"backlinks-transclusion include-strict include-when-collapsed include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>" `T.append`
+                                                                              if slp=="" then "" else "<div class=\"similars-append aux-links-append\">\n<p><a class=\"include-strict include-when-collapsed include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">[Similar links for this annotation.]</a></p>\n</div>") `T.append`
                                                                             "</div>"
-                                                                            )]
-                                  ]
+                                                                                       )]
+                                                ])
                              where
                                nonAnnotatedLink :: [Block]
                                nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]]
@@ -1977,6 +1979,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         ("(.*)\\*(.+)\\*(.*)", "\\1<em>\\2</em>\\3"),
         ("(.*)\\*\\*(.+)\\*\\*(.*)", "\\1<strong>\\2</strong>\\3"),
         ("<p>This paper was accepted by [A-Z][a-z]+ [A-Z][a-z]+, .*\\.</p>", ""),
+        -- <https://en.wikipedia.org/wiki/ClinicalTrials.gov>
+        (" (NCT[0-9]+)", "<a href=\"https://clinicaltrials.gov/show/\1\">\1</a>"),
         -- cleanup bare URLs (particularly common in Arxiv abstracts when linking to Github):
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+)$", " <a href=\"\\1\">\\1</a>$"),
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+)</p>", " <a href=\"\\1\">\\1</a></p>"),
@@ -2507,10 +2511,11 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("clinical significance", "clinical-significance")
           , ("clinically significant", "clinically-significant")
           , ("<p><strong>Significance Statement</strong></p>\n<p>", "<p><strong>Significance Statement</strong>: ")
-          , (". <strong>Conclusion</strong>: ", ".</p> <p><strong>Conclusion</strong>: ")
-          , (". <strong>Conclusions</strong>: ", ".</p> <p><strong>Conclusions</strong>: ")
-          , ("<strong>Conclusions</strong>\n<p>", "<p><strong>Conclusions</strong>: ")
-          , ("<p>Conclusions: ", "<p><strong>Conclusions</strong>: ")
+          , (". <strong>Conclusion</strong>: ", ".</p> <p><strong>Conclusio</strong>: ")
+          , (". <strong>Conclusions</strong>: ", ".</p> <p><strong>Conclusion</strong>: ")
+          , ("<strong>Conclusions and Significance</strong>", "<strong>Conclusion</strong>")
+          , ("<strong>Conclusions</strong>\n<p>", "<p><strong>Conclusion</strong>: ")
+          , ("<p>Conclusions: ", "<p><strong>Conclusion</strong>: ")
           , ("\n <strong>Conclusion</strong>\n<p>", "<p><strong>Conclusion</strong>: ")
           , (". <strong>Results</strong>: ", ".</p> <p><strong>Results</strong>: ")
           , ("\n <strong>Results</strong>\n<p>", "<p><strong>Results</strong>: ")
@@ -2660,7 +2665,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<strong>OBJECTIVE</strong>: ", "<strong>Objective</strong>: ")
           , ("<strong>METHOD</strong>: ", "<strong>Method</strong>: ")
           , ("<strong>RESULTS</strong>: ", "<strong>Results</strong>: ")
-          , ("<strong>CONCLUSIONS</strong>: ", "<strong>Conclusions</strong>: ")
+          , ("<strong>CONCLUSIONS</strong>: ", "<strong>Conclusion</strong>: ")
           , ("<strong>CLINICAL RELEVANCE</strong>: ", "<strong>Clinical Relevance</strong>: ")
           , ("<strong>PROCEDURES</strong>: ", "<strong>Procedures</strong>: ")
 
@@ -2668,12 +2673,12 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<strong>OBJECTIVE</strong></p>\n", "<strong>Objective</strong>: ")
           , ("<strong>METHOD</strong></p>\n", "<strong>Method</strong>: ")
           , ("<strong>RESULTS</strong></p>\n", "<strong>Results</strong>: ")
-          , ("<strong>CONCLUSIONS</strong></p>\n         ", "<strong>Conclusions</strong>: ")
+          , ("<strong>CONCLUSIONS</strong></p>\n         ", "<strong>Conclusion</strong>: ")
           , ("<strong>CLINICAL RELEVANCE</strong></p>\n         ", "<strong>Clinical Relevance</strong>: ")
           , ("<p><strong>OBJECTIVE</strong></p>\n<p>", "<p><strong>Objective</strong>: ")
           , ("<p><strong>METHOD</strong></p>\n<p>", "<p><strong>Method</strong>: ")
           , ("<p><strong>RESULTS</strong></p>\n<p>", "<p><strong>Results</strong>: ")
-          , ("<p><strong>CONCLUSIONS</strong></p>\n<p>         ", "<p><strong>Conclusions</strong>: ")
+          , ("<p><strong>CONCLUSIONS</strong></p>\n<p>         ", "<p><strong>Conclusion</strong>: ")
           , ("<p><strong>CLINICAL RELEVANCE</strong></p>\n<p>         ", "<p><strong>Clinical Relevance</strong>: ")
           , ("\nObjective: ", "\n<strong>Objective</strong>: ")
           , ("\nObjectives: ", "\n<strong>Objectives</strong>: ")
@@ -2724,15 +2729,16 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<h3>Significance</h3>\n<p>", "<p><strong>Significance</strong>: ")
           , ("<h3>Conclusion</h3>\n<p>", "<p><strong>Conclusion</strong>: ")
           , ("<h3>Conclusions</h3>\n<p>", "<p><strong>Conclusion</strong>: ")
-          , ("<h3>Conclusions & relevance</h3>\n<p>", "<p><strong>Conclusions & Relevance</strong>: ")
-          , ("<h3>Conclusions & Relevance</h3>\n<p>", "<p><strong>Conclusions & Relevance</strong>: ")
+          , ("<h3>Conclusions & relevance</h3>\n<p>", "<p><strong>Conclusion & Relevance</strong>: ")
+          , ("<h3>Conclusions & Relevance</h3>\n<p>", "<p><strong>Conclusion & Relevance</strong>: ")
           , ("<h3>Trial Registration</h3>\n<p>", "<p><strong>Trial Registration</strong>: ")
           , ("</h3><br/>", "</h3>")
           , ("<br/><h3>", "<h3>")
           , ("<em>Background:</em>", "<strong>Background</strong>:")
           , ("<em>Objective:</em> ", "<strong>Objective</strong>:")
           , ("<em>Results:</em> ", "<strong>Results</strong>:")
-          , ("<em>Conclusions:</em>", "<strong>Conclusions</strong>:")
+          , ("<em>Conclusions:</em>", "<strong>Conclusion</strong>:")
+          , ("<strong>Originality/value</strong>", "<strong>Conclusion</strong>:")
           , ("\91Keywords: ", "\91<strong>Keywords</strong>: ")
           , ("&lt;/i&gt;&lt;/b&gt;", "</em>")
           , ("&lt;b&gt;&lt;i&gt;", "<em>")
@@ -2809,7 +2815,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" gc ", " <em>gc</em> ")
           , ("( g = ", "(<em>g</em> = ")
           , ("<i><em>h</em><sup>2</sup></i>", "<em>h</em><sup>2</sup>")
-          , ("<i><em>h</em><sup>2</sup><sub>SNP</sub></i>", "<em>h</em><sup>2</sup><sub>SNP</sub>")
+          , ("<i><em>h</em><sup>2</sup><sub>SNP</sub></i>", "<em>h</em><span class=\"subsup\"><sub>SNP</sub><sup>2</sup></span>")
+          , ("h2SNP", "<em>h</em><span class=\"subsup\"><sub>SNP</sub><sup>2</sup></span>")
           , ("h<sup>2</sup>", "<em>h</em><sup>2</sup>")
           , ("|rA|", "|r<sub>A</sub>|")
           , ("|rE|", "|r<sub>E</sub>|")
