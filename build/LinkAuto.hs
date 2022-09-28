@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-09-27 21:55:26 gwern"
+When:  Time-stamp: "2022-09-28 11:09:00 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -58,7 +58,7 @@ import Text.Pandoc (topDown, nullAttr, readerExtensions, def, writeHtml5String, 
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness/segfault/strange-closure issues (native Text, and useful splitting), so to save my sanity... BUG: TDFA seems to have slow Text instances: https://github.com/haskell-hvr/regex-tdfa/issues/9
 
-import Utils (addClass, simplifiedDoc)
+import Utils (addClass, frequency, simplifiedDoc)
 import Query (extractURLs)
 import Interwiki (inlinesToText)
 import Typography (mergeSpaces)
@@ -276,8 +276,8 @@ customDefinitionsR = map (\(a,b) -> (a,
 -- validate and error out immediately if there are bad rewrites defined
 definitionsValidate :: [(T.Text, T.Text)] -> [(T.Text, T.Text)]
 definitionsValidate defs
-    | nub (map fst defs) /= map fst defs = error $ "LinkAuto fatal error: Definition keys are not unique! Definitions: "   ++ show (map fst defs)
-    | nub (map snd defs) /= map snd defs = error $ "LinkAuto fatal error: Definition values are not unique! Definitions: " ++ show (map snd defs)
+    | nub (map fst defs) /= map fst defs = error $ "LinkAuto fatal error: Definition keys are not unique! Definitions: "   ++ show (frequency $ map fst defs)
+    | nub (map snd defs) /= map snd defs = error $ "LinkAuto fatal error: Definition values are not unique! Definitions: " ++ show (frequency $ map snd defs)
     | otherwise = defs
 
 -- Create sorted (by length) list of (string/compiled-regexp/substitution) tuples.
