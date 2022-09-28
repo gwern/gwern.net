@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-27 20:45:09 gwern"
+When:  Time-stamp: "2022-09-28 11:01:32 gwern"
 License: CC-0
 -}
 
@@ -505,8 +505,8 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                          (if null abst then []
                                            else [BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
                                                                             if (blp++slp)=="" then "" else "<div class=\"collapse\">" `T.append`
-                                                                            (if blp=="" then "" else "<div class=\"backlinks-append aux-links-append\">\n<p><a class=\"backlinks-transclusion include-strict include-when-collapsed include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>" `T.append`
-                                                                              if slp=="" then "" else "<div class=\"similars-append aux-links-append\">\n<p><a class=\"include-strict include-when-collapsed include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">[Similar links for this annotation.]</a></p>\n</div>") `T.append`
+                                                                                                           ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append\">\n<p><a class=\"backlinks-transclusion include-strict include-when-collapsed include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>")) `T.append`
+                                                                                                             (if slp=="" then "" else ("<div class=\"similars-append aux-links-append\">\n<p><a class=\"include-strict include-when-collapsed include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">[Similar links for this annotation.]</a></p>\n</div>"))) `T.append`
                                                                             "</div>"
                                                                                        )]
                                                 ])
@@ -1979,6 +1979,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         ("(.*)\\*(.+)\\*(.*)", "\\1<em>\\2</em>\\3"),
         ("(.*)\\*\\*(.+)\\*\\*(.*)", "\\1<strong>\\2</strong>\\3"),
         ("<p>This paper was accepted by [A-Z][a-z]+ [A-Z][a-z]+, .*\\.</p>", ""),
+        (" Study ([0-9][a-z]?)", " <strong>Study \\1</strong>"),
+        (" Experiment ([0-9][a-z]?)", " <strong>Experiment \\1</strong>"),
         -- <https://en.wikipedia.org/wiki/ClinicalTrials.gov>
         (" (NCT[0-9]+)", "<a href=\"https://clinicaltrials.gov/show/\1\">\1</a>"),
         -- cleanup bare URLs (particularly common in Arxiv abstracts when linking to Github):
@@ -3140,6 +3142,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("²", "<sup>2</sup>")
           , ("₂", "<sub>2</sub>")
           , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
+          , ("‐", "-")
           , ("‰", "%") -- PER MILLE SIGN https://en.wikipedia.org/wiki/Per_mille - only example I've ever seen was erroneous
           , ("FROH", "<em>F<sub>ROH</sub></em>")
           , (" Ne ", " <em>N<sub>e</sub></em> ")
