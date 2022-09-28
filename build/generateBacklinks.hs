@@ -80,7 +80,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                        let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-page"] else ["link-annotated"]) callers
                                        let callers' = zip3 callers callerClasses callerTitles
 
-                                       let preface = [Para [Strong [Str "Backlinks"], Str ":"]]
+                                       let preface = [Para [Strong [Str (if length callers' > 1 then "Backlinks" else "Backlink")], Str ":"]]
                                        let content = BulletList $ -- critical to insert .backlink-not or we might get weird recursive blowup!
                                             map (\(u,c,t) -> [Para [Link ("", "id-not":"backlink-not":c, [])
                                                                   [parseRawInline nullAttr $ RawInline (Format "html") t]

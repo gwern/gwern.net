@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-28 11:06:34 gwern"
+When:  Time-stamp: "2022-09-28 16:19:44 gwern"
 License: CC-0
 -}
 
@@ -59,7 +59,7 @@ import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase', invertImage, imageSrcset, addImgDimensions)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAutoHtml5String)
-import LinkBacklink (getSimilarLink, getBackLink)
+import LinkBacklink (getSimilarLink, getBackLink, getBackLinkCount)
 import Query (truncateTOCHTML, extractLinksInlines)
 import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split, pairs, anyPrefixT, hasAny)
 
@@ -315,12 +315,13 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
               annotationExisted <- doesFileExist filepath'
               when (not onlyMissing || (onlyMissing && not annotationExisted)) $ do
 
-                  bl <- getBackLink u'
+                  bl  <- getBackLink u'
+                  blN <- getBackLinkCount u'
                   sl <- getSimilarLink u'
                   -- we prefer annotations which have a fully-written abstract, but we will settle for 'partial' annotations,
                   -- which serve as a sort of souped-up tooltip: partials don't get the dotted-underline indicating a full annotation, but it will still pop-up on hover.
                   -- Now, tooltips already handle title/author/date, so we only need partials in the case of things with tags, abstracts, backlinks, or similar-links, which cannot be handled by tooltips (since HTML tooltips only let you pop up some raw unstyled Unicode text, not clickable links).
-                  when (any (not . null) [concat (drop 1 ts), abst, bl, sl]) $ do
+                  when (any (not . null) [concat (drop 1 ts), abst, (if blN > 1 then bl else ""), sl]) $ do
                       let titleHtml    = typesetHtmlField $ titlecase' a
                       let authorHtml   = typesetHtmlField b
                       -- obviously no point in trying to reformatting date/DOI, so skip those
@@ -504,8 +505,8 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                          (if null abst then []
                                            else [BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
                                                                             if (blp++slp)=="" then "" else "<div class=\"collapse\">" `T.append`
-                                                                                                           ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append\">\n<p><a class=\"backlinks-transclusion include-strict include-when-collapsed include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>")) `T.append`
-                                                                                                             (if slp=="" then "" else ("<div class=\"similars-append aux-links-append\">\n<p><a class=\"include-strict include-when-collapsed include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">[Similar links for this annotation.]</a></p>\n</div>"))) `T.append`
+                                                                                                           ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append\">\n<p><a class=\"backlinks-transclusion include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">[Backlinks for this annotation.]</a></p>\n</div>")) `T.append`
+                                                                                                             (if slp=="" then "" else ("<div class=\"similars-append aux-links-append\">\n<p><a class=\"include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">[Similar links for this annotation.]</a></p>\n</div>"))) `T.append`
                                                                             "</div>"
                                                                                        )]
                                                 ])

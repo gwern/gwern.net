@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-06-07 22:52:09 gwern"
+When:  Time-stamp: "2022-09-28 16:17:34 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -16,14 +16,14 @@ Because every used link necessarily has a backlink (the document in which it is 
 is also a convenient way to get a list of all URLs. -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkBacklink (getBackLink, getSimilarLink, Backlinks, readBacklinksDB, writeBacklinksDB) where
+module LinkBacklink (getBackLink, getBackLinkCount, getSimilarLink, getSimilarLinkCount, Backlinks, readBacklinksDB, writeBacklinksDB) where
 
 import Data.List (sort)
 import qualified Data.Map.Strict as M (empty, fromList, toList, Map) -- fromListWith,
-import qualified Data.Text as T (pack, unpack, Text)
+import qualified Data.Text as T (count, pack, unpack, Text)
 import Data.Text.IO as TIO (readFile)
 import Text.Read (readMaybe)
-import Network.HTTP (urlEncode)
+import Network.HTTP (urlEncode, urlDecode)
 import Text.Show.Pretty (ppShow)
 import System.Directory (doesFileExist)
 
@@ -56,6 +56,16 @@ getXLink linkType p = do
 getBackLink, getSimilarLink :: FilePath -> IO FilePath
 getBackLink    = getXLink "backlinks"
 getSimilarLink = getXLink "similars"
+
+-- avoid use of backlinks/similar-links database for convenience and just quickly grep the on-disk snippet:
+getBackLinkCount :: FilePath -> IO Int
+getBackLinkCount p = do file <- getBackLink p
+                        fileContents <- TIO.readFile (tail $ urlDecode file)
+                        return $ T.count "\n<li><p><a href=\"" fileContents
+getSimilarLinkCount :: FilePath -> IO Int
+getSimilarLinkCount p = do file <- getSimilarLink p
+                           fileContents <- TIO.readFile (tail $ urlDecode file)
+                           return $ T.count "\n<li><p><a href=\"" fileContents
 
 ----------------------
 
