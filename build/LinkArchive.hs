@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-09-27 14:33:07 gwern"
+When:  Time-stamp: "2022-09-27 22:31:37 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -136,14 +136,14 @@ localizeLink adb archived x@(Link (identifier, classes, pairs) b (targetURL, tar
   -- local link (or possibly, in the future, rewriting WP links to point to the historical revision ID when first
   -- linked, to avoid deletionist content rot)
   if whiteList (T.unpack targetURL) || "archive-not" `elem` classes then return x else
-    do targetURL' <- fmap ("/"++)  $ rewriteLink adb archived $ T.unpack targetURL
+    do targetURL' <- rewriteLink adb archived $ T.unpack targetURL
        if targetURL' == T.unpack targetURL then return x -- no archiving has been done yet, return original
        else do -- rewrite & annotate link with local archive:
          let padding = if targetDescription == "" then "" else " "
          let targetDescription' = T.unpack targetDescription ++ padding ++ "(Original URL: " ++ T.unpack targetURL ++ " )"
          -- specify that the rewritten links are mirrors & to be ignored:
          let archiveAttributes = [("rel", "archived alternate nofollow"), ("data-url-original", T.pack (transformURLsForLinking (T.unpack targetURL)))]
-         let archivedLink = addClass "archive-local" $ Link (identifier, classes, pairs++archiveAttributes) b (T.pack targetURL', T.pack targetDescription')
+         let archivedLink = addClass "archive-local" $ Link (identifier, classes, pairs++archiveAttributes) b (T.pack ('/':targetURL'), T.pack targetDescription')
          return archivedLink
 localizeLink _ _ x = return x
 
@@ -1245,10 +1245,12 @@ whiteList url
       , "https://sites.google.com/view/lmnav" -- low quality (video embeds)
       , "https://innermonologue.github.io/" -- low quality (video embeds)
       , "https://salu133445.github.io/mtmt/" -- low quality (audio embeds)
-      , "https://paddlehelix.baidu.com/app/drug/protein/forecast" -- interactive
+      , "https://paddlehelix.baidu.com/app/drug/protein" -- interactive
       , "https://semantic-abstraction.cs.columbia.edu/" -- low quality (video embeds)
       , "https://nuwa-infinity.microsoft.com/" -- low quality (video embeds)
       , "https://celebv-hq.github.io/" -- low quality (video embeds)
       , "https://baghunter.com/" -- homepage
+      , "https://www.talkrl.com/episodes/" -- low quality (audio embeds)
+      , "https://www.ultimagenomics.com/" -- homepage
       ] = True
     | otherwise = False
