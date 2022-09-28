@@ -126,7 +126,7 @@ generateDirectory md dirs dir'' = do
 
   let document = Pandoc nullMeta body
   let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} $
-           walk identUniquefy $ walk (hasAnnotation md True) document  -- global rewrite to de-duplicate all of the inserted URLs
+           walk identUniquefy $ walk (hasAnnotation md) document  -- global rewrite to de-duplicate all of the inserted URLs
 
   case p of
     Left e   -> hPrint stderr e

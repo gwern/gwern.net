@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-28 11:01:32 gwern"
+When:  Time-stamp: "2022-09-28 11:06:34 gwern"
 License: CC-0
 -}
 
@@ -332,7 +332,7 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                       pandoc' <- if null abst then return pandoc
                                     else do
                                           let p = walk (convertInterwikiLinks . nominalToRealInflationAdjuster) $
-                                                  walk (hasAnnotation md True) $
+                                                  walk (hasAnnotation md) $
                                                   walk addPageLinkWalk $
                                                   walk (parseRawBlock nullAttr) pandoc
                                           p' <- walkM (localizeLink am archived) p
@@ -406,24 +406,23 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
 annotateLink _ x = error ("annotateLink was passed an Inline which was not a Link: " ++ show x)
 
 -- walk the page, and modify each URL to specify if it has an annotation available or not:
-hasAnnotation :: Metadata -> Bool -> Block -> Block
-hasAnnotation md idp = walk (hasAnnotationInline md idp)
+hasAnnotation :: Metadata -> Block -> Block
+hasAnnotation md = walk (hasAnnotationInline md)
 
-hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
-hasAnnotationInline mdb idBool y@(Link (a,classes,c) d (f,g)) =
+hasAnnotationInline :: Metadata -> Inline -> Inline
+hasAnnotationInline mdb y@(Link (a,classes,c) d (f,g)) =
   if hasAny ["link-annotated-not", "idNot", "link-annotated", "link-annotated-partial"] classes then y
   else
     let f' = linkCanonicalize $ T.unpack f in
       case M.lookup f' mdb of
         Nothing                  -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y
         Just ("","","","",[],"") -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y -- zilch
-        Just                 mi  -> addHasAnnotation idBool mi y -- possible partial
-hasAnnotationInline _ _ y = y
+        Just                 mi  -> addHasAnnotation mi y -- possible partial
+hasAnnotationInline _ y = y
 
-addHasAnnotation :: Bool -> MetadataItem -> Inline -> Inline
-addHasAnnotation idBool (title,aut,dt,_,_,abstrct) x@(Link (a,b,c) e (f,g))  =
+addHasAnnotation :: MetadataItem -> Inline -> Inline
+addHasAnnotation (title,aut,dt,_,_,abstrct) x@(Link (a,b,c) e (f,g))  =
  let a'
-       | not idBool = ""
        | a == ""    = generateID (T.unpack f) aut dt
        | otherwise  = a
      -- f' = linkCanonicalize $ T.unpack f
@@ -444,7 +443,7 @@ addHasAnnotation idBool (title,aut,dt,_,_,abstrct) x@(Link (a,b,c) e (f,g))  =
              if not $ unsafePerformIO $ doesFileExist $ urlToAnnotationPath $ T.unpack f then (Link (a',b,c) e (f,g')) -- remember to set the ID!
              else -- so it's not a local link, doesn't have a full annotation, but does have *some* partial annotation since it exists on disk, so it gets `.link-annotated-partial`
                Link (a',nubOrd (b++["link-annotated", "link-annotated-partial"]),c) e (f,g')
-addHasAnnotation _ _ z = z
+addHasAnnotation _ z = z
 
 parseRawBlock :: Attr -> Block -> Block
 parseRawBlock attr x@(RawBlock (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in

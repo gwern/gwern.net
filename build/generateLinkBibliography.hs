@@ -52,7 +52,7 @@ generateLinkBibliography md page = do links <- extractLinksFromPage page
                                                  [generateLinkBibliographyItems pairs']
                                           document = Pandoc nullMeta body
                                           markdown = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} $
-                                            walk identUniquefy $ walk (hasAnnotation md True) document -- global rewrite to de-duplicate all of the inserted URLs
+                                            walk identUniquefy $ walk (hasAnnotation md) document -- global rewrite to de-duplicate all of the inserted URLs
                                       case markdown of
                                         Left e   -> hPrint stderr e
                                         -- compare with the old version, and update if there are any differences:
