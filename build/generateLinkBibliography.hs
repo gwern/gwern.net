@@ -44,8 +44,8 @@ main = do pages <- getArgs
 
 generateLinkBibliography :: Metadata -> String -> IO ()
 generateLinkBibliography md page = do links <- extractLinksFromPage page
-                                      backlinks    <- mapM getBackLink links
-                                      similarlinks <- mapM getSimilarLink links
+                                      backlinks    <- mapM (fmap snd . getBackLink) links
+                                      similarlinks <- mapM (fmap snd . getSimilarLink) links
                                       let pairs = linksToAnnotations md links
                                           pairs' = zipWith3 (\(a,b) c d -> (a,b,c,d)) pairs backlinks similarlinks
                                           body = Header 1 nullAttr [Str "Link Bibliography"] :

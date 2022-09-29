@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-09-28 16:17:34 gwern"
+When:  Time-stamp: "2022-09-28 17:40:16 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -23,7 +23,7 @@ import qualified Data.Map.Strict as M (empty, fromList, toList, Map) -- fromList
 import qualified Data.Text as T (count, pack, unpack, Text)
 import Data.Text.IO as TIO (readFile)
 import Text.Read (readMaybe)
-import Network.HTTP (urlEncode, urlDecode)
+import Network.HTTP (urlEncode)
 import Text.Show.Pretty (ppShow)
 import System.Directory (doesFileExist)
 
@@ -44,28 +44,33 @@ writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[T.Text])]
                            let bll' = sort $ map (\(a,b) -> (T.unpack a, sort $ map T.unpack b)) bll
                            writeUpdatedFile "hakyll-backlinks" "metadata/backlinks.hs" (T.pack $ ppShow bll')
 
-getXLink :: String -> FilePath -> IO FilePath
+-- return the raw FilePath of an x-link, and also the URL-encoded version safe to substitute into HTML:
+getXLink :: String -> FilePath -> IO (FilePath,FilePath)
 getXLink linkType p = do
                    let linkRaw = "/metadata/annotations/"++linkType++"/" ++
                                                                    urlEncode (p++".html")
                    linkExists <- doesFileExist $ tail linkRaw
                    -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg. `/metadata/annotations/$LINKTYPE/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotations/$LINKTYPE/%2Fdocs%2Frl%2Findex.html`)
-                   let link' = if not linkExists then "" else "/metadata/annotations/"++linkType++"/" ++
-                         urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' || t=='+' then urlEncode [t] else [t]) (p++".html"))
-                   return link'
-getBackLink, getSimilarLink :: FilePath -> IO FilePath
+                   if not linkExists then return ("","") else
+                     let link' =  "/metadata/annotations/"++linkType++"/" ++ urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' || t=='+' then urlEncode [t] else [t]) (p++".html")) in
+                       return (tail linkRaw,link')
+getBackLink, getSimilarLink :: FilePath -> IO (FilePath,FilePath)
 getBackLink    = getXLink "backlinks"
 getSimilarLink = getXLink "similars"
 
 -- avoid use of backlinks/similar-links database for convenience and just quickly grep the on-disk snippet:
 getBackLinkCount :: FilePath -> IO Int
-getBackLinkCount p = do file <- getBackLink p
-                        fileContents <- TIO.readFile (tail $ urlDecode file)
-                        return $ T.count "\n<li><p><a href=\"" fileContents
+getBackLinkCount "" = return 0
+getBackLinkCount p = do (file,_) <- getBackLink p
+                        if null file then return 0 else do
+                          fileContents <- TIO.readFile file
+                          return $ T.count "backlink-not" fileContents
 getSimilarLinkCount :: FilePath -> IO Int
-getSimilarLinkCount p = do file <- getSimilarLink p
-                           fileContents <- TIO.readFile (tail $ urlDecode file)
-                           return $ T.count "\n<li><p><a href=\"" fileContents
+getSimilarLinkCount "" = return 0
+getSimilarLinkCount p = do (file,_) <- getSimilarLink p
+                           if null file then return 0 else do
+                             fileContents <- TIO.readFile file
+                             return $ T.count "class=\"link-annotated backlink-not id-not\"" fileContents
 
 ----------------------
 

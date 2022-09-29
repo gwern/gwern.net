@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-28 16:19:44 gwern"
+When:  Time-stamp: "2022-09-28 22:15:33 gwern"
 License: CC-0
 -}
 
@@ -59,7 +59,7 @@ import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase', invertImage, imageSrcset, addImgDimensions)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAutoHtml5String)
-import LinkBacklink (getSimilarLink, getBackLink, getBackLinkCount)
+import LinkBacklink (getSimilarLink, getSimilarLinkCount, getBackLink, getBackLinkCount)
 import Query (truncateTOCHTML, extractLinksInlines)
 import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split, pairs, anyPrefixT, hasAny)
 
@@ -315,13 +315,14 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
               annotationExisted <- doesFileExist filepath'
               when (not onlyMissing || (onlyMissing && not annotationExisted)) $ do
 
-                  bl  <- getBackLink u'
+                  (_,bl)  <- getBackLink u'
                   blN <- getBackLinkCount u'
-                  sl <- getSimilarLink u'
+                  (_,sl) <- getSimilarLink u'
+                  slN <- getSimilarLinkCount u'
                   -- we prefer annotations which have a fully-written abstract, but we will settle for 'partial' annotations,
                   -- which serve as a sort of souped-up tooltip: partials don't get the dotted-underline indicating a full annotation, but it will still pop-up on hover.
                   -- Now, tooltips already handle title/author/date, so we only need partials in the case of things with tags, abstracts, backlinks, or similar-links, which cannot be handled by tooltips (since HTML tooltips only let you pop up some raw unstyled Unicode text, not clickable links).
-                  when (any (not . null) [concat (drop 1 ts), abst, (if blN > 1 then bl else ""), sl]) $ do
+                  when (any (not . null) [concat (drop 1 ts), abst, (if blN > 1 then bl else ""), (if slN > 5 then sl else "")]) $ do
                       let titleHtml    = typesetHtmlField $ titlecase' a
                       let authorHtml   = typesetHtmlField b
                       -- obviously no point in trying to reformatting date/DOI, so skip those
@@ -550,9 +551,9 @@ generateAnnotationTransclusionBlock (f, (tle,aut,dt,doi,ts,_)) blp slp =
 rewriteAnchors :: FilePath -> T.Text -> T.Text
 rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
--- WARNING: update the list in /static/js/extracts-annotation.js L218 if you change this list!
+-- WARNING: update the list in /static/js/extracts-annotation.js L298 if you change this list!
 affiliationAnchors :: [String]
-affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance", "cerebras", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "graphcore", "huawei", "ibm", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pinterest", "pdf", "salesforce", "sberbank", "schmidhuber", "sensetime", "snapchat", "spotify", "tencent", "tensorfork", "twitter", "uber", "yandex"]
+affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance", "cerebras", "cohere", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "graphcore", "huawei", "ibm", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pinterest", "pdf", "salesforce", "sberbank", "schmidhuber", "sensetime", "snapchat", "spotify", "tencent", "tensorfork", "twitter", "uber", "yandex"]
 
 -- find all instances where I link "https://arxiv.org/abs/1410.5401" when it should be "https://arxiv.org/abs/1410.5401#deepmind", where they are inconsistent and the hash matches a whitelist of orgs.
 findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]
@@ -687,7 +688,7 @@ guessTagFromShort m t = let allTags = nubOrd $ sort m in
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
 tagsLong2Short, tagsShort2Long :: [(String,String)]
-tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/samples"), ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"), ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision"), ("evolution", "genetics/selection/natural"), ("gpt-3", "ai/nn/transformer/gpt"), ("gpt3", "ai/nn/transformer/gpt"), ("red", "design/typography/rubrication"), ("self-attention", "ai/nn/transformer/attention"), ("efficient-attention", "ai/nn/transformer/attention"), ("ai/rnn", "ai/nn/rnn"), ("ai/retrieval", "ai/nn/retrieval"), ("mr", "genetics/heritable/correlation/mendelian-randomization"), ("japan/anime", "anime")] ++
+tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/samples"), ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"), ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision"), ("evolution", "genetics/selection/natural"), ("gpt-3", "ai/nn/transformer/gpt"), ("gpt3", "ai/nn/transformer/gpt"), ("red", "design/typography/rubrication"), ("self-attention", "ai/nn/transformer/attention"), ("efficient-attention", "ai/nn/transformer/attention"), ("ai/rnn", "ai/nn/rnn"), ("ai/retrieval", "ai/nn/retrieval"), ("mr", "genetics/heritable/correlation/mendelian-randomization"), ("japan/anime", "anime"), ("psychology/birds/neuroscience", "psychology/bird/neuroscience"), ("psychology/birds", "psychology/bird"), ("dalle","dall-e"), ("dall-e", "ai/nn/transformer/gpt/dall-e")] ++
                  -- ^ custom tag shortcuts, to fix typos etc
                  -- attempt to infer short->long rewrites from the displayed tag names, which are long->short; but note that many of them are inherently invalid and the mapping only goes one way.
                   (map (\(a,b) -> (map toLower b,a)) $ filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
@@ -813,6 +814,8 @@ tagsLong2Short = [
           , ("psychology/energy", "mental energy")
           , ("psychology/illusion-of-depth", "illusion of depth")
           , ("psychology/neuroscience", "neuroscience")
+          , ("psychology/bird", "birds")
+          , ("psychology/bird/neuroscience", "bird brains")
           , ("psychology/european-journal-of-parapsychology", "<em>EJP</em>")
           , ("psychology/spaced-repetition", "spaced repetition")
           , ("psychiatry/traumatic-brain-injury", "TBI")
@@ -1915,7 +1918,7 @@ truncateTOC p' toc = let pndc = truncateTOCHTML (T.pack (sed ".*#" "" p')) (T.pa
 
 -- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
 initializeAuthors :: String -> String
-initializeAuthors = trim . replaceMany [(",,", ","), (",,", ","), (", ,", ", "), (" ", " "), (" MA,", ","), (", MA,", ","), (" MS,", ","), ("Dr ", ""), (" PhD", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", ""), (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""), (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" , BSc", ","), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), (",,", ","), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), ("and ", ", "), (", PhD1", ","), ("  DMSc", ""), (", (Hons),", ","), (",, ", ", "), (", ,,", ", "), (",,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", ""), (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior")] .
+initializeAuthors = trim . replaceMany [("?",""), (",,", ","), (",,", ","), (", ,", ", "), (" ", " "), (" MA,", ","), (", MA,", ","), (" MS,", ","), ("Dr ", ""), (" PhD", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", ""), (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""), (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" , BSc", ","), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), (",,", ","), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), ("and ", ", "), (", PhD1", ","), ("  DMSc", ""), (", (Hons),", ","), (",, ", ", "), (", ,,", ", "), (",,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", ""), (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior")] .
                        sedMany [
                          ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2"), -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
                          (",$", ""),
@@ -3112,8 +3115,11 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\t", "")
           , ("\t\t", "")
           , ("\t\t\t\t\t", "")
+          , ("longstanding", "long-standing")
           , ("co- occurring", "co-occurring")
           , ("CLIP- based", "CLIP-based")
+          , (" GPT2", " GPT-2")
+          , (" GPT3", " GPT-3")
           , ("</sup><br/>", "</sup>")
           , (" < jats:sub>", "<sub>")
           , ("<italic toggle=\"yes\">", "<em>")

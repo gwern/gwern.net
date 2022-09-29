@@ -165,8 +165,8 @@ listFiles m direntries' = do
                    let files'          = (sort . filter (not . ("index"`isSuffixOf`)) . map (replace ".page" "") . filter ('#' `notElem`) . filter (not . isSuffixOf ".tar") ) files
                    let fileAnnotationsMi = map (lookupFallback m) files'
                    -- NOTE: files may be annotated only under a hash, eg. '/docs/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/docs/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/docs/ai/scaling/hardware/2021-norrie.pdf' → `('/docs/ai/scaling/hardware/2021-norrie.pdf#google',_)`
-                   backlinks    <- mapM (getBackLink . fst) fileAnnotationsMi
-                   similarlinks <- mapM (getSimilarLink . fst) fileAnnotationsMi
+                   backlinks    <- mapM (fmap snd . getBackLink . fst) fileAnnotationsMi
+                   similarlinks <- mapM (fmap snd . getSimilarLink . fst) fileAnnotationsMi
 
                    return $
                      zipWith3 (\(a,b) c d -> (a,b,c,d)) fileAnnotationsMi backlinks similarlinks
@@ -180,8 +180,8 @@ listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else
                    let dirTag = replace "docs/" "" dir in
                      let tagged = M.filterWithKey (\u (_,_,_,_,tgs,_) -> not (dir `isInfixOf` u) && dirTag `elem` tgs) m in
                        do let files = nub $ map truncateAnchors $ M.keys tagged
-                          backlinks    <- mapM getBackLink files
-                          similarlinks <- mapM getSimilarLink files
+                          backlinks    <- mapM (fmap snd . getBackLink) files
+                          similarlinks <- mapM (fmap snd . getSimilarLink) files
                           let fileAnnotationsMi = map (lookupFallback m) files
                           return $
                             zipWith3 (\(a,b) c d -> (a,b,c,d)) fileAnnotationsMi backlinks similarlinks
