@@ -44,7 +44,7 @@ singleShotRecommendations html =
      ddb <- embeddings2Forest (newEmbedding:edb)
      let (_,n) = findN ddb (2*bestNEmbeddings) iterationLimit newEmbedding :: (String,[String])
 
-     let matchListHtml = generateMatches md bdb True "" html n :: T.Text
+     let matchListHtml = generateMatches md bdb True True "" html n :: T.Text
      return matchListHtml
 
 -- how many results do we want?
@@ -245,12 +245,12 @@ writeOutMatch md bdb (p,matches) =
        Just (_,_,_,_,_,"") -> return ()
        Just ("",_,_,_,_,_) -> return ()
        Just (_,_,_,_,_,abst) -> do
-             let similarLinksHtmlFragment = generateMatches md bdb False p abst matches
+             let similarLinksHtmlFragment = generateMatches md bdb False False p abst matches
              let f = take 274 $ "metadata/annotations/similars/" ++ urlEncode p ++ ".html"
              writeUpdatedFile "similars" f similarLinksHtmlFragment
 
-generateMatches :: Metadata -> Backlinks -> Bool -> String -> String -> [String] -> T.Text
-generateMatches md bdb linkTagsP p abst matches =
+generateMatches :: Metadata -> Backlinks -> Bool -> Bool -> String -> String -> [String] -> T.Text
+generateMatches md bdb linkTagsP singleShot p abst matches =
          -- we don't want to provide as a 'see also' a link already in the annotation, of course, so we need to pull them out & filter by:
          let alreadyLinkedBody = extractLinks False $ T.pack abst
              alreadyLinkdBacklinks = case M.lookup (T.pack p) bdb of
@@ -295,7 +295,7 @@ generateMatches md bdb linkTagsP p abst matches =
                                                                     T.pack ("Gwern.net site search hits for ‘" ++ title' ++ "’."))
                                                ]]]
 
-             preface = [Para [Strong [Str "Similar Links"], Str ":"]]
+             preface = if singleShot then [] else [Para [Strong [Str "Similar Links"], Str ":"]]
              linkList = BulletList $ similarItems ++ googleScholar
 
              pandoc = Pandoc nullMeta $ preface ++ [linkList]
