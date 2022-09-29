@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-28 22:15:33 gwern"
+When:  Time-stamp: "2022-09-29 11:31:31 gwern"
 License: CC-0
 -}
 
@@ -297,7 +297,7 @@ warnParagraphizeYAML path = do yaml <- readYaml path
                                unless (null unparagraphized) $ printGreen $ ppShow (map fst unparagraphized)
 
 minimumAnnotationLength :: Int
-minimumAnnotationLength = 200
+minimumAnnotationLength = 250
 
 -- convert a URL to the local path of its annotation (which may not exist), eg 'http://www2.biology.ualberta.ca/locke.hp/dougandbill.htm' → 'metadata/annotations/http%3A%2F%2Fwww2.biology.ualberta.ca%2Flocke.hp%2Fdougandbill.htm.html'
 urlToAnnotationPath :: String -> String
