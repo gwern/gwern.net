@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-09-27 22:31:37 gwern"
+When:  Time-stamp: "2022-09-28 21:34:14 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1252,5 +1252,6 @@ whiteList url
       , "https://baghunter.com/" -- homepage
       , "https://www.talkrl.com/episodes/" -- low quality (audio embeds)
       , "https://www.ultimagenomics.com/" -- homepage
+      , "http://tweet.onerandom.com/" -- randomized
       ] = True
     | otherwise = False
