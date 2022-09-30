@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-29 11:31:31 gwern"
+When:  Time-stamp: "2022-09-29 20:59:46 gwern"
 License: CC-0
 -}
 
@@ -629,7 +629,7 @@ pages2Tags path oldTags = url2Tags path ++ oldTags
 
 -- We also do general-purpose heuristics on the path/URL: any page in a domain might be given a specific tag, or perhaps any URL with the string "deepmind" might be given a 'reinforcement-learning/deepmind' tag—that sort of thing.
 url2Tags :: String -> [String]
-url2Tags p = concat $ map (\(match,tag) -> if match p then [tag] else []) urlTagDB
+url2Tags p = concatMap (\(match,tag) -> if match p then [tag] else []) urlTagDB
  where -- we allow arbitrary string predicates (so one might use regexps as well)
         urlTagDB :: [((String -> Bool), String)]
         urlTagDB = [
@@ -940,14 +940,15 @@ readYaml yaml = do yaml' <- do filep <- doesFileExist yaml
                                        if not fileAbsoluteP then printRed ("YAML path does not exist: " ++ yaml) >> return yaml
                                        else return ("/home/gwern/wiki/" ++ yaml)
                    file <- Y.decodeFileEither yaml' :: IO (Either ParseException [[String]])
+                   allTags <- listTagsAll
                    case file of
                      Left  e -> error $ "File: "++ yaml ++ "; parse error: " ++ ppShow e
-                     Right y -> (return $ concatMap convertListToMetadata y) :: IO MetadataList
+                     Right y -> (return $ concatMap (convertListToMetadata allTags) y) :: IO MetadataList
                 where
-                 convertListToMetadata :: [String] -> MetadataList
-                 convertListToMetadata [u, t, a, d, di,     s] = [(u, (t,a,guessDateFromLocalSchema u d,di,uniqTags $ pages2Tags u $ tag2TagsWithDefault u "", s))]
-                 convertListToMetadata [u, t, a, d, di, ts, s] = [(u, (t,a,guessDateFromLocalSchema u d,di,uniqTags $ pages2Tags u $ tag2TagsWithDefault u ts, s))]
-                 convertListToMetadata                       e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
+                 convertListToMetadata :: [String] -> [String] -> MetadataList
+                 convertListToMetadata allTags' [u, t, a, d, di,     s] = [(u, (t,a,guessDateFromLocalSchema u d,di,map (guessTagFromShort allTags') $ uniqTags $ pages2Tags u $ tag2TagsWithDefault u "", s))]
+                 convertListToMetadata allTags' [u, t, a, d, di, ts, s] = [(u, (t,a,guessDateFromLocalSchema u d,di,map (guessTagFromShort allTags') $ uniqTags $ pages2Tags u $ tag2TagsWithDefault u ts, s))]
+                 convertListToMetadata _                     e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
 
 -- If no accurate date is available, attempt to guess date from the local file schema of 'YYYY-surname-[title, disambiguation, etc].ext' or 'YYYY-MM-DD-...'
 -- This is useful for PDFs with bad metadata, or data files with no easy way to extract metadata (like HTML files with hopelessly inconsistent dirty metadata fields like `<meta>` tags) or where it's not yet supported (image files usually have a reliable creation date).
@@ -2759,6 +2760,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" (5/8 ", " (5⁄8 ")
           , (" (5/8 ", " (5⁄8 ")
           , (" 1/2 ", " 1⁄2 ")
+          , (" 1/3 ", " 1⁄3 ")
           , (" 1/4 ", " 1⁄4 ")
           , (" 2/3 ", " 2⁄3 ")
           , (" 4/5 ", " 4⁄5 ")
