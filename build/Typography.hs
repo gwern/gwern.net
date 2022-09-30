@@ -405,7 +405,11 @@ identUniquefy doc = evalState (walkM addIdentNth doc) M.empty
 -- Hopefully titlecase will do better and we can remove this.
 titlecase' :: String -> String
 titlecase' "" = ""
-titlecase' t = titlecase $ titlecase'' t
+titlecase' t = let t' = titlecase $ titlecase'' t
+  -- TODO: `titlecase` strips whitespace <https://github.com/peti/titlecase/issues/7> so have to restore it
+                   t'' = if head t == ' ' then " " ++ t' else t'
+                   t''' = if last t == ' ' then t'' ++ " " else t''
+             in t'''
    where titlecase'' :: String -> String
          titlecase'' "" = ""
          titlecase'' t' = let (before,matched,after) =  t' =~ ("[ $^][A-za-z]\\-[a-z][ $^]"::String) :: (String,String,String)
