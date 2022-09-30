@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-09-28 11:05:31 gwern"
+When: Time-stamp: "2022-09-29 19:26:38 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -64,7 +64,7 @@ import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToText, interwikiTestSuite)
 import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString, tagsToLinksDiv, safeHtmlWriterOptions)
 import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata)
-import Typography (linebreakingTransform, typographyTransform, invertImageInline, imageMagickDimensions, addImgDimensions, imageSrcset)
+import Typography (linebreakingTransform, typographyTransform, invertImageInline, imageMagickDimensions, addImgDimensions, imageSrcset, titlecaseInline)
 import LinkAuto (linkAuto)
 import LinkIcon (rebuildSVGIconCSS)
 import LinkLive (linkLiveTest, linkLivePrioritize)
@@ -309,10 +309,9 @@ addAmazonAffiliate x@(Link attr r (l, t)) = if (("www.amazon.com/" `T.isInfixOf`
                                        else x
 addAmazonAffiliate x = x
 
--- | Make headers into links to themselves, so they can be clicked on or copy-pasted easily.
--- BUG: Pandoc uses the Span trick to remove the Link from the generated ToC, which leaves behind redundant meaningless <span></span> wrappers. <https://github.com/jgm/pandoc/issues/8020>
+-- | Make headers into links to themselves, so they can be clicked on or copy-pasted easily. Put the displayed text into title-case if not already.
 headerSelflink :: Block -> Block
-headerSelflink (Header a (href,b,c) d) = Header a (href,b,c) [Link nullAttr d ("#"`T.append`href,
+headerSelflink (Header a (href,b,c) d) = Header a (href,b,c) [Link nullAttr (walk titlecaseInline d) ("#"`T.append`href,
                                                                                "Link to section: § '" `T.append` inlinesToText d `T.append` "'")]
 headerSelflink x = x
 

@@ -9,7 +9,7 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (invertImage, invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase', identUniquefy, mergeSpaces, addImgDimensions, imageSrcset) where
+module Typography (invertImage, invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase', titlecaseInline, identUniquefy, mergeSpaces, addImgDimensions, imageSrcset) where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Control.Monad (void, when)
@@ -411,3 +411,8 @@ titlecase' t = titlecase $ titlecase'' t
          titlecase'' t' = let (before,matched,after) =  t' =~ ("[ $^][A-za-z]\\-[a-z][ $^]"::String) :: (String,String,String)
                           in replaceMany [("cite-author", "cite-author"), ("cite-date", "cite-date"), ("cite-joiner", "cite-joiner"), ("Class=","class=")] $ -- HACK
                              before ++ map toUpper matched ++ titlecase'' after
+
+-- lift `titlecase'` to Inline so it can be walked, such as in Headers
+titlecaseInline :: Inline -> Inline
+titlecaseInline (Str s) = Str $ T.pack $ titlecase' $ T.unpack s
+titlecaseInline       x = x
