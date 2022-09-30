@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-29 20:59:46 gwern"
+When:  Time-stamp: "2022-09-29 21:44:25 gwern"
 License: CC-0
 -}
 
@@ -100,7 +100,7 @@ isPagePath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
 --
 -- > walkAndUpdateLinkMetadata True (\(a,(b,c,d,e,f,abst)) -> return (a,(b,c,d,e,f, linkAutoHtml5String abst)))
 walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
-walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataYaml f "metadata/custom.yaml"
+walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataYaml f "metadata/full.yaml"
                                        walkAndUpdateLinkMetadataYaml f "metadata/half.yaml"
                                        walkAndUpdateLinkMetadataYaml f "metadata/auto.yaml"
                                        when check (printGreen "Checking…" >> readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting.")
@@ -113,7 +113,7 @@ walkAndUpdateLinkMetadataYaml f file = do db <- readYaml file -- TODO: refactor 
 
 -- This can be run every few months to update abstracts (they generally don't change much).
 updateGwernEntries :: IO ()
-updateGwernEntries = do rescrapeYAML gwernEntries "metadata/custom.yaml"
+updateGwernEntries = do rescrapeYAML gwernEntries "metadata/full.yaml"
                         rescrapeYAML gwernEntries "metadata/half.yaml"
                         rescrapeYAML gwernEntries "metadata/auto.yaml"
                         readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting…"
@@ -146,7 +146,7 @@ updateGwernEntry x@(path,(title,author,date,doi,tags,_)) = if False then return 
 -- read the annotation base (no checks, >8× faster)
 readLinkMetadata :: IO Metadata
 readLinkMetadata = do
-             custom  <- readYaml "metadata/custom.yaml"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
+             custom  <- readYaml "metadata/full.yaml"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
              half <- readYaml "metadata/half.yaml" -- tagged but not handwritten/cleaned-up
              auto    <- readYaml "metadata/auto.yaml"    -- auto-generated cached definitions; can be deleted if gone stale
              -- merge the hand-written & auto-generated link annotations, and return:
@@ -157,43 +157,43 @@ readLinkMetadata = do
 readLinkMetadataAndCheck :: IO Metadata
 readLinkMetadataAndCheck = do
              -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
-             custom <- readYaml "metadata/custom.yaml"
+             custom <- readYaml "metadata/full.yaml"
 
              -- Quality checks:
              -- requirements:
-             -- - URLs/keys must exist, be unique, and either be a remote URL (starting with 'h') or a local filepath (starting with '/') which exists on disk (auto.yaml may have stale entries, but custom.yaml should never! This indicates a stale annotation, possibly due to a renamed or accidentally-missing file, which means the annotation can never be used and the true URL/filepath will be missing the hard-earned annotation). We strip http/https because so many websites now redirect and that's an easy way for duplicate annotations to exist.
+             -- - URLs/keys must exist, be unique, and either be a remote URL (starting with 'h') or a local filepath (starting with '/') which exists on disk (auto.yaml may have stale entries, but full.yaml should never! This indicates a stale annotation, possibly due to a renamed or accidentally-missing file, which means the annotation can never be used and the true URL/filepath will be missing the hard-earned annotation). We strip http/https because so many websites now redirect and that's an easy way for duplicate annotations to exist.
              -- - titles must exist & be unique (overlapping annotations to pages are disambiguated by adding the section title or some other description)
              -- - authors must exist (if only as 'Anonymous' or 'N/A'), but are non-unique
              -- - dates are non-unique & optional/NA for always-updated things like Wikipedia. If they exist, they should be of the format 'YYYY[-MM[-DD]]'.
              -- - DOIs are optional since they usually don't exist, and non-unique (there might be annotations for separate pages/anchors for the same PDF and thus same DOI; DOIs don't have any equivalent of `#page=n` I am aware of unless the DOI creator chose to mint such DOIs, which they never (?) do). DOIs sometimes use hyphens and so are subject to the usual problems of em/en-dashes sneaking in by 'smart' systems screwing up.
              -- - tags are optional, but all tags should exist on-disk as a directory of the form "docs/$TAG/"
-             -- - annotations must exist and be unique inside custom.yaml (overlap in auto.yaml can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
+             -- - annotations must exist and be unique inside full.yaml (overlap in auto.yaml can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
              let urlsC = map fst custom
              let normalizedUrlsC = map (replace "https://" "" . replace "http://" "") urlsC
-             when (length (nub (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "custom.yaml: Duplicate URLs!" ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
+             when (length (nub (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "full.yaml: Duplicate URLs!" ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
 
              let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,ts,_)) -> ts) custom
 
              let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> anyInfix doi ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'"] || "http" `isInfixOf` doi) custom in
-                 unless (null badDoisDash) $ error $ "custom.yaml: Bad DOIs (invalid punctuation in DOI): " ++ show badDoisDash
+                 unless (null badDoisDash) $ error $ "full.yaml: Bad DOIs (invalid punctuation in DOI): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
              -- Thus far, I have not run into any real DOIs which omit numbers, so we'll include that as a check for accidental tags inserted into the DOI field.
              let badDois = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else doi `elem` tagsAllC || head doi `elem` ['a'..'z'] || '/' `notElem` doi || null ("0123456789" `intersect` doi)) custom in
-               unless (null badDois) $ error $ "custom.yaml: Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
+               unless (null badDois) $ error $ "full.yaml: Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
 
              let emptyCheck = filter (\(u,(t,a,_,_,_,s)) ->  "" `elem` [u,t,a,s]) custom
-             unless (null emptyCheck) $ error $ "custom.yaml: Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
+             unless (null emptyCheck) $ error $ "full.yaml: Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
 
              let annotations = map (\(_,(_,_,_,_,_,s)) -> s) custom in
                when (length (nub (sort annotations)) /= length annotations) $ error $
-               "custom.yaml:  Duplicate annotations: " ++ unlines (annotations \\ nubOrd annotations)
+               "full.yaml:  Duplicate annotations: " ++ unlines (annotations \\ nubOrd annotations)
 
-             -- intermediate link annotations: not finished, like 'custom.yaml' entries, but also not fully auto-generated.
-             -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such half annotations can't be put into 'custom.yaml' without destroying all of the checks' validity.
+             -- intermediate link annotations: not finished, like 'full.yaml' entries, but also not fully auto-generated.
+             -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such half annotations can't be put into 'full.yaml' without destroying all of the checks' validity.
              half <- readYaml "metadata/half.yaml"
              let (customPaths,halfPaths) = (map fst custom, map fst half)
              let redundantHalfs = customPaths `intersect` halfPaths
-             unless (null redundantHalfs) (printRed "Redundant entries in half.yaml & custom.yaml: " >> printGreen (show redundantHalfs))
+             unless (null redundantHalfs) (printRed "Redundant entries in half.yaml & full.yaml: " >> printGreen (show redundantHalfs))
 
              let urlsCP = map fst (custom ++ half)
              let files = map (takeWhile (/='#') . tail) $ filter (\u -> head u == '/') urlsCP

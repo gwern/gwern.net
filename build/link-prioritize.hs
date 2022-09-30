@@ -10,9 +10,9 @@ Dependencies: gwern.net Hakyll libraries
 
 For writing manual link annotations, a simple way to go is count un-annotated links by frequency.
 Links can be extracted from Markdown documents with `link-extractor.hs` but counting is harder: not
-appearing in the manual annotation database `/metadata/custom.yaml` doesn't mean a link needs to be
+appearing in the manual annotation database `/metadata/full.yaml` doesn't mean a link needs to be
 annotated, because it could be one of the good auto-generated links in `/metadata/auto.hs` so we
-can't simply `grep $URL custom.yaml` for each URL & `sort --unique | sort --numeric-sort`; the list
+can't simply `grep $URL full.yaml` for each URL & `sort --unique | sort --numeric-sort`; the list
 of good auto-generated links also may change over time, because a query failed or new domains become
 supported.
 So instead we take a more heavyweight approach of explicitly parsing both and checking for no or

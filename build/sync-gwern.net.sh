@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-09-28 22:19:29 gwern"
+# When:  Time-stamp: "2022-09-29 18:02:53 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -404,7 +404,7 @@ else
     λ(){ eg -e '^"~/' -e '\$";$' -e '$" "docs' -e '\|' ./static/redirects/nginx*.conf; }
     wrap λ "Warning: caret/tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
 
-    λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeYAML "metadata/custom.yaml"'; }
+    λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeYAML "metadata/full.yaml"'; }
     wrap λ "Annotations that need to be rewritten into paragraphs."
 
     λ(){ runghc -istatic/build/ ./static/build/link-prioritize.hs 20; }
@@ -413,13 +413,13 @@ else
     λ(){ eg -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -e 'https://goo.gl' -- ./metadata/*.yaml; }
     wrap λ "Check possible typo in YAML metadata database."
 
-    λ(){ eg '  - .*[a-z]–[a-Z]' ./metadata/custom.yaml ./metadata/half.yaml; }
+    λ(){ eg '  - .*[a-z]–[a-Z]' ./metadata/full.yaml ./metadata/half.yaml; }
     wrap λ "Look for en-dash abuse."
 
-    λ(){ fgrep ' ?' ./metadata/custom.yaml; }
+    λ(){ fgrep ' ?' ./metadata/full.yaml; }
     wrap λ "Problem with question-marks (perhaps the crossref/Emacs copy-paste problem?)."
 
-    λ(){ fgrep -v -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -- ./metadata/custom.yaml ./metadata/half.yaml | \
+    λ(){ fgrep -v -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -- ./metadata/full.yaml ./metadata/half.yaml | \
              eg -e ',[A-Za-z]'; }
     wrap λ "Look for run-together commas (but exclude chemical names where that's correct)."
 
@@ -429,7 +429,7 @@ else
     λ(){ egrep -e '[.,:;-<]</a>' -e '\]</a>' -- ./metadata/*.yaml | fgrep -v -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>' -e '#' -e '[review]</a>' | eg -e '[.,:;-<]</a>'; }
     wrap λ "Look for punctuation inside links; unless it's a full sentence or a quote or a section link, generally prefer to put punctuation outside."
 
-    λ(){ gf -e '**' -e 'amp#' -e ' _' -e '_ ' -e '!!' -e '*' -- ./metadata/custom.yaml ./metadata/half.yaml; }
+    λ(){ gf -e '**' -e 'amp#' -e ' _' -e '_ ' -e '!!' -e '*' -- ./metadata/full.yaml ./metadata/half.yaml; }
     wrap λ "Look for italics errors."
 
     λ(){ egrep --color=always -e '^- - /doc/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]\+ [A-Z]' \
@@ -467,16 +467,19 @@ else
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
 
+    λ(){ egrep -e ' [0-9]/[0-9]\+ ' -- ./metadata/*.yaml | fgrep -v -e 'Toll-like' -e 'Adam' -e '0/1' -e 'My Little Pony Seasons' -e '9/11'; }
+    wrap λ "Possible uses of FRACTION SLASH ⁄ or EN DASH –?"
+
     λ(){ fgrep -e '""' -- ./metadata/*.yaml | fgrep -v -e ' alt=""' -e 'controls=""'; }
     wrap λ "Doubled double-quotes in YAML, usually an error."
 
-    λ(){ fgrep -e "'''" -- ./metadata/custom.yaml ./metadata/half.yaml; }
+    λ(){ fgrep -e "'''" -- ./metadata/full.yaml ./metadata/half.yaml; }
     wrap λ "Triple quotes in YAML, should be curly quotes for readability/safety."
 
     λ(){ eg -v '^- - ' -- ./metadata/*.yaml | gf -e ' -- ' -e '---'; }
     wrap λ "Markdown hyphen problems in YAML metadata database"
 
-    λ(){ eg -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/custom.yaml; }
+    λ(){ eg -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/full.yaml; }
     wrap λ "Wikipedia annotations in YAML metadata database, but will be ignored by popups! Override with non-WP URL?"
 
     λ(){ eg -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.yaml; }
@@ -492,10 +495,10 @@ else
     λ(){ eg -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
     wrap λ "Check <figure> vs <img> usage, image hotlinking, non-absolute relative image paths in YAML metadata database"
 
-    λ(){ gf -e ' significant'  ./metadata/custom.yaml; }
-    wrap λ "Misleading language in custom.yaml"
+    λ(){ gf -e ' significant'  ./metadata/full.yaml; }
+    wrap λ "Misleading language in full.yaml"
 
-    λ(){ gf -e '/docs/www/'  ./metadata/custom.yaml; }
+    λ(){ gf -e '/docs/www/'  ./metadata/full.yaml; }
     wrap λ "Generated local archive links showing up in manual annotations."
 
     λ(){ gf -e 'backlinks/' -e 'metadata/annotations/' -e '?gi=' -- ./metadata/backlinks.hs; }
@@ -686,7 +689,7 @@ else
           cm "text/x-patch; charset=utf-8" 'https://www.gwern.net/docs/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch'
           cm "text/x-r; charset=utf-8" 'https://www.gwern.net/static/build/linkAbstract.R'
           cm "text/plain; charset=utf-8" 'https://www.gwern.net/static/build/linkArchive.sh'
-          cm "text/yaml; charset=utf-8" 'https://www.gwern.net/metadata/custom.yaml'
+          cm "text/yaml; charset=utf-8" 'https://www.gwern.net/metadata/full.yaml'
           cm "video/mp4"  'https://www.gwern.net/images/genetics/selection/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
           cm "video/webm" 'https://www.gwern.net/images/statistics/2003-murray-humanaccomplishment-region-proportions-bootstrap.webm'
           cm "image/jpeg" 'https://www.gwern.net/images/technology/security/lobel-frogandtoadtogether-thebox-crop.jpg'
