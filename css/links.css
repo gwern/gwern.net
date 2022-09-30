@@ -35,14 +35,14 @@
     width: 1px;
     height: 100%;
     background-image:
-        linear-gradient(var(--GW-link-underline-background-color), 
+        linear-gradient(var(--GW-link-underline-background-color),
                         var(--GW-link-underline-background-color)),
-        linear-gradient(var(--GW-link-underline-gradient-line-color), 
+        linear-gradient(var(--GW-link-underline-gradient-line-color),
                         var(--GW-link-underline-gradient-line-color));
-    background-size: 
+    background-size:
         1px 0.5em,
         1px 1em;
-    background-position: 
+    background-position:
         0 0.1em,
         0 calc(100% - 0.1em);
     background-repeat: no-repeat;
@@ -70,7 +70,7 @@ body.index .has-content .indicator-hook {
     background-image: var(--GW-dotted-underline-hover-background-image);
 }
 
-/*  TOCs in pop-frames, and also in link bibliographies, directory indexes, etc.
+/*  ToCs in pop-frames, and also in link bibliographies, directory indexes, etc.
  */
 .popframe-body .TOC a,
 .popframe-body .TOC a *,
@@ -265,7 +265,7 @@ body.index a.link-page::after,
     content: none;
 }
 
-/*  Also remove ‘G’ icon from the tags / aux-links links inside annotations 
+/*  Also remove ‘G’ icon from the tags / aux-links links inside annotations
 	(which aren’t really top-level/essay content, and the G is clutter).
  */
 .data-field .backlinks a::after,
