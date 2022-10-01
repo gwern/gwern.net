@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-09-29 22:31:57 gwern"
+When:  Time-stamp: "2022-09-30 20:26:14 gwern"
 License: CC-0
 -}
 
@@ -553,7 +553,7 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 -- WARNING: update the list in /static/js/extracts-annotation.js L298 if you change this list!
 affiliationAnchors :: [String]
-affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance", "cerebras", "cohere", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "graphcore", "huawei", "ibm", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pinterest", "pdf", "salesforce", "sberbank", "schmidhuber", "sensetime", "snapchat", "spotify", "tencent", "tensorfork", "twitter", "uber", "yandex"]
+affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance", "cerebras", "cohere", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "graphcore", "huawei", "ibm", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pinterest", "pdf", "salesforce", "samsung", "sberbank", "schmidhuber", "sensetime", "snapchat", "spotify", "tencent", "tensorfork", "twitter", "uber", "yandex"]
 
 -- find all instances where I link "https://arxiv.org/abs/1410.5401" when it should be "https://arxiv.org/abs/1410.5401#deepmind", where they are inconsistent and the hash matches a whitelist of orgs.
 findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]
@@ -688,7 +688,7 @@ guessTagFromShort m t = let allTags = nubOrd $ sort m in
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
 tagsLong2Short, tagsShort2Long :: [(String,String)]
-tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/samples"), ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"), ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision"), ("evolution", "genetics/selection/natural"), ("gpt-3", "ai/nn/transformer/gpt"), ("gpt3", "ai/nn/transformer/gpt"), ("red", "design/typography/rubrication"), ("self-attention", "ai/nn/transformer/attention"), ("efficient-attention", "ai/nn/transformer/attention"), ("ai/rnn", "ai/nn/rnn"), ("ai/retrieval", "ai/nn/retrieval"), ("mr", "genetics/heritable/correlation/mendelian-randomization"), ("japan/anime", "anime"), ("psychology/birds/neuroscience", "psychology/bird/neuroscience"), ("psychology/birds", "psychology/bird"), ("dalle","dall-e"), ("dall-e", "ai/nn/transformer/gpt/dall-e")] ++
+tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/samples"), ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"), ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision"), ("evolution", "genetics/selection/natural"), ("gpt-3", "ai/nn/transformer/gpt"), ("gpt3", "ai/nn/transformer/gpt"), ("red", "design/typography/rubrication"), ("self-attention", "ai/nn/transformer/attention"), ("efficient-attention", "ai/nn/transformer/attention"), ("ai/rnn", "ai/nn/rnn"), ("ai/retrieval", "ai/nn/retrieval"), ("mr", "genetics/heritable/correlation/mendelian-randomization"), ("japan/anime", "anime"), ("psychology/birds/neuroscience", "psychology/bird/neuroscience"), ("psychology/birds", "psychology/bird"), ("dalle","dall-e"), ("dall-e", "ai/nn/transformer/gpt/dall-e"), ("silk-road-1", "darknet-markets/silk-road/1"), ("sr1", "darknet-markets/silk-road/1"), ("silk-road-2", "darknet-markets/silk-road/2"), ("sr2", "darknet-markets/silk-road/2")] ++
                  -- ^ custom tag shortcuts, to fix typos etc
                  -- attempt to infer short->long rewrites from the displayed tag names, which are long->short; but note that many of them are inherently invalid and the mapping only goes one way.
                   (map (\(a,b) -> (map toLower b,a)) $ filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
@@ -2829,6 +2829,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("|rE|", "|r<sub>E</sub>|")
           , ("<em>r</em> <sub>g</sub>", "<em>r</em><sub>g</sub>")
           , ("r(g)",    "<em>r</em><sub><em>g</em></sub>")
+          , (" rg:", " <em>r</em><sub><em>g</em></sub>:")
           , (" rg ", " <em>r</em><sub><em>g</em></sub> ")
           , (" rg=", " <em>r</em><sub><em>g</em></sub> = ")
           , (" rg = ", " <em>r</em><sub><em>g</em></sub> = ")
@@ -2867,10 +2868,14 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" R2", " R<sup>2</sup>")
           , ("R2 = ", "R<sup>2</sup> = ")
           , ("top-k", "top-<em>k</em>")
+          , ("Top-k", "Top-<em>k</em>")
+          , ("Top-K", "Top-<em>k</em>")
           , (" z = ", " <em>z</em> = ")
           , ("z-score", "<em>z</em>-score")
           , ("Z-score", "<em>z</em>-score")
           , ("z-scores", "<em>z</em>-scores")
+          , (" z-latent", "<em>z</em>-latent")
+          , (" w-latent", "<em>w</em>-latent")
           , (" &lt; .0", " &lt; 0.0")
           , (" p &amp;gt; ", " <em>p</em> &gt; ")
           , (" p &amp;lt; ", " <em>p</em> &lt; ")
@@ -2922,6 +2927,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\40p=",     "\40<em>p</em> = ")
           , (" n=",     " <em>n</em> = ")
           , ("( n=", "( <em>n</em> = ")
+          , ("Neffective", "<em>n</em><sub>effective</sub>")
+          , ("Neffective=", "<em>n</em><sub>effective</sub> = ")
           , (" n-gram", " <em>n</em>-gram")
           , (" k &gt; ", " <em>nk</em> &gt; ")
           , (" k > ", " <em>k</em> > ")

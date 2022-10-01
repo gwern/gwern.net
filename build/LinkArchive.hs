@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-09-28 23:46:15 gwern"
+When:  Time-stamp: "2022-09-29 23:22:27 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1254,5 +1254,6 @@ whiteList url
       , "https://www.ultimagenomics.com/" -- homepage
       , "http://tweet.onerandom.com/" -- randomized
       , "https://google.github.io/deepmac/" -- low quality (video embeds)
+      , "https://semantle.pimanrul.es/" -- interactive
       ] = True
     | otherwise = False
