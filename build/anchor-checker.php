@@ -31,7 +31,7 @@ function main($files) {
     exit($exit_code);
 }
 
-function check_file($file) {
+function check_file($file) { // }
     $html = file_get_contents($file);
     if (!$html) { fwrite(STDERR,"Failed to read file:"); fwrite(STDERR, $file); exit(2); }
 
@@ -57,7 +57,7 @@ function check_document($dom) {
     $bad_anchors = array();
     $hrefs = (new DOMXpath($dom))->query("//a/@href");
     foreach ($hrefs as $href) {
-        $value = trim($href->value);
+        $value = urldecode(trim($href->value));
 
         if (substr($value, 0, 1) !== "#") continue;
 
