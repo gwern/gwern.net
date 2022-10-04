@@ -96,6 +96,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "nvidia"  || aU'' ["nvlabs.github.io", "nv-adlr.github.io", "nv-tlabs.github.io"] = aI "n" "text,sans,italic" -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
  | u' "openai" || u'' "gptprompts.wikidot.com" = aI "openai" "svg" -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
  | u' "microsoft" = aI "MS" "text,sans,italic" -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
+ | u' "#anthropic" || u'' "transformer-circuits.pub" || u'' "www.anthropic.com" = aI "anthropic" "svg" -- need to override Arxiv
 
  -- Domains:
  | aU'' ["psyarxiv.com", "files.osf.io", "osf.io"] = aI "ψ" "text" -- Unicode trickery icons: GREEK SMALL LETTER PSI
@@ -1050,4 +1051,7 @@ linkIconTestUnitsText =
          , ("https://www.nytimes.com/2016/11/27/technology/artificial-intelligence-pioneer-jurgen-schmidhuber-overlooked.html", "SMDH", "text,quad,sans")
          , ("https://www.ssc.wisc.edu/wlsresearch/about/description.php", "WLS", "text,tri,sans")
          , ("http://host.robots.ox.ac.uk/pascal/VOC/", "VOC", "text,tri,sans")
+         , ("https://www.anthropic.com/news/announcement", "anthropic", "svg")
+         , ("https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html#anthropic", "anthropic", "svg")
+         , ("https://arxiv.org/abs/2207.05221#anthropic", "anthropic", "svg")
         ]
