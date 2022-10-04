@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-09-29 23:22:27 gwern"
+When:  Time-stamp: "2022-10-02 22:56:29 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1255,5 +1255,6 @@ whiteList url
       , "http://tweet.onerandom.com/" -- randomized
       , "https://google.github.io/deepmac/" -- low quality (video embeds)
       , "https://semantle.pimanrul.es/" -- interactive
+      , "https://labelerrors.com/" -- interactive
       ] = True
     | otherwise = False

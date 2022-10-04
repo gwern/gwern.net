@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-09-28 22:09:51 gwern"
+When:  Time-stamp: "2022-10-02 20:03:57 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -216,10 +216,10 @@ filterDefinitions p = let allLinks = S.fromList $ map (T.replace "https://www.gw
 -- if it does not match the plain text, it should never match the AST?
 -- Since generally <1% of regexps will match anywhere in the document, doing a single global check
 -- lets us discard that regexp completely, and not check at every node. So we can trade off doing
--- 𝑂(R × Nodes) regexp checks for doing 𝑂(R + Nodes) + plain-text-compilation, which in practice
+-- 𝒪(R × Nodes) regexp checks for doing 𝒪(R + Nodes) + plain-text-compilation, which in practice
 -- turns out to be a *huge* performance gain (>30×?) here.
 -- Hypothetically, we can optimize this further: we can glue together regexps to binary search the
--- list for matching regexps, giving something like 𝑂(log R) passes. Alternately, it may be possible
+-- list for matching regexps, giving something like 𝒪(log R) passes. Alternately, it may be possible
 -- to create a 'regexp trie' where the leaves are associated with each original regexp, and search
 -- the trie in parallel for all matching leaves.
 filterMatches :: T.Text -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
@@ -240,7 +240,7 @@ filterMatches plain definitions  = if T.length plain < 10000 then
    regexpsMax :: Int
    regexpsMax = 16
 
-   -- Optimization: we can glue together regexps to binary search the list for matching regexps, giving something like 𝑂(log R) passes.
+   -- Optimization: we can glue together regexps to binary search the list for matching regexps, giving something like 𝒪(log R) passes.
    -- divide-and-conquer recursion: if we have 1 regexp left to test, test it and return if matches or empty list otherwise;
    -- if we have more than one regexp, test the full list; if none match, return empty list, otherwise, split in half, and recurse on each half.
    filterMatch :: Bool -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
@@ -491,7 +491,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Anne Roe", "https://en.wikipedia.org/wiki/Anne_Roe")
         , ("Anthropic [Pp]rinciple", "https://en.wikipedia.org/wiki/Anthropic_principle")
         , ("Apollo 11", "https://en.wikipedia.org/wiki/Apollo_11")
-        , ("Arab slave trade", "https://en.wikipedia.org/wiki/Barbary_slave_trade")
         , ("Archive ?Team", "https://en.wikipedia.org/wiki/Archive_Team")
         , ("Artbreeder", "https://www.artbreeder.com/")
         , ("Arthur C\\. Clarke", "https://en.wikipedia.org/wiki/Arthur_C._Clarke")
