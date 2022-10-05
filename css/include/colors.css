@@ -53,7 +53,7 @@
 
     /*  Collapse blocks.
         */
-	--GW-collapse-summary-blockquote-hover-color: #eee;
+	--GW-abstract-collapse-blockquote-hover-color: #eee;
 	--GW-collapse-disclosure-button-color: #eee;
 	--GW-collapse-disclosure-button-hover-color: #ddd;
 	--GW-collapse-disclosure-button-color-15-percent-transparent: rgba(238, 238, 238, 0.85);

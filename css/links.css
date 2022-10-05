@@ -1052,6 +1052,14 @@ a[data-link-icon='magnifying-glass']::after {
     opacity: 0.75;
 }
 
+a[data-link-icon='anthropic']::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-y: 0.1em;
+    --link-icon-offset-x: -0em;
+
+    opacity: 0.6
+}
+
 /*=------------------=*/
 /*= Wikipedia links. =*/
 /*=------------------=*/

@@ -114,7 +114,7 @@
     margin: 0;
 }
 .collapse:not(.expanded) > .disclosure-button:hover + .abstract-collapse blockquote {
-    background-color: var(--GW-collapse-summary-blockquote-hover-color);
+    background-color: var(--GW-abstract-collapse-blockquote-hover-color);
 }
 
 /*********************/
