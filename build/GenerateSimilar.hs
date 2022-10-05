@@ -29,9 +29,9 @@ import Data.Conduit.List (sourceList)
 
 import LinkBacklink (readBacklinksDB, Backlinks)
 import Columns as C (listLength)
-import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, safeHtmlWriterOptions, parseRawInline)
+import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, parseRawInline)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, replaceManyT)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, replaceManyT, safeHtmlWriterOptions)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text

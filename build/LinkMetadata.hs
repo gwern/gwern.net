@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-10-02 22:10:34 gwern"
+When:  Time-stamp: "2022-10-05 11:08:00 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateID, generateURL, generateAnnotationBlock, generateAnnotationTransclusionBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad, guessTagFromShort, listTagsAll, listTagDirectories) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateID, generateURL, generateAnnotationBlock, generateAnnotationTransclusionBlock, getSimilarLink, authorsToCite, authorsTruncate, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad, guessTagFromShort, listTagsAll, listTagDirectories) where
 
 import Control.Monad (unless, void, when, foldM_, filterM)
 import Data.Aeson (eitherDecode, FromJSON)
@@ -44,7 +44,7 @@ import System.GlobalLock (lock)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderOptions, renderTags, renderTagsOptions, Tag(TagClose, TagOpen, TagText))
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span), HTMLMathMethod(MathJax),
                     defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String, WrapOption(WrapNone), runPure, pandocExtensions,
-                    readHtml, writerExtensions, nullAttr, nullMeta, writerColumns, Extension(Ext_shortcut_reference_links), enableExtension, WriterOptions,
+                    readHtml, nullAttr, nullMeta,
                     Inline(Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div, Plain), Attr)
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA ((=~)) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
@@ -61,7 +61,7 @@ import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAutoHtml5String)
 import LinkBacklink (getSimilarLink, getSimilarLinkCount, getBackLink, getBackLinkCount)
 import Query (truncateTOCHTML, extractLinksInlines)
-import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split, pairs, anyPrefixT, hasAny)
+import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split, pairs, anyPrefixT, hasAny, safeHtmlWriterOptions)
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (docs/, static/, images/) entirely; a Gwern.net page is then any
@@ -119,6 +119,7 @@ updateGwernEntries = do rescrapeYAML gwernEntries "metadata/full.yaml"
                         readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting…"
   where gwernEntries path = ("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path || "#manual-annotation" `isInfixOf` path)
 
+-- eg to rescrape a specific abstract: `rescrapeYAML (\p -> p == "/notes/Attention") "metadata/half.yaml"`
 rescrapeYAML :: (Path -> Bool) -> Path -> IO ()
 rescrapeYAML filterF yamlpath = do dbl <- readYaml yamlpath
                                    let paths = filter filterF $ map fst dbl
@@ -351,10 +352,6 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
              -- This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
              -- There is presumably some way for Hakyll to do the metadata file listing *after* compilation is finished, but it's easier to hack around here by forcing 'new' annotation writes to be manually inserted into _site/.
                                               unless annotationExisted $ writeUpdatedFile "annotation" ("./_site/"++filepath') finalHTML
-
--- HACK: this is a workaround for an edge-case: Pandoc reads complex tables as 'grid tables', which then, when written using the default writer options, will break elements arbitrarily at newlines (breaking links in particular). We set the column width *so* wide that it should never need to break, and also enable 'reference links' to shield links by sticking their definition 'outside' the table. See <https://github.com/jgm/pandoc/issues/7641>.
-safeHtmlWriterOptions :: WriterOptions
-safeHtmlWriterOptions = def{writerColumns = 9999, writerExtensions = (enableExtension Ext_shortcut_reference_links pandocExtensions)}
 
 typesetHtmlField :: String -> String
 typesetHtmlField "" = ""
@@ -3094,6 +3091,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("(Drosophila melanogaster", "(<em>Drosophila melanogaster</em>")
           , (" Drosophila melanogaster", " <em>Drosophila melanogaster</em>")
           , (" Arabidopsis Thaliana", " <em>Arabidopsis Thaliana</em>")
+          , ("<em>C</em>. <em>elegans</em>", "<em>C. elegans</em>")
+          , (" Caenorhabditis elegans ", " <em>Caenorhabditis elegans</em> ")
           , (" C. elegans", " <em>C. elegans</em>")
           , (" T. gondii", " <em>T. gondii</em>")
           , (" Equus ", " <em>Equus</em> ")

@@ -8,10 +8,11 @@ import qualified Data.Text.IO as TIO (getContents)
 import Text.Pandoc (def, pandocExtensions, runPure, readerExtensions, readMarkdown, writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
-import LinkMetadata (cleanAbstractsHTML, safeHtmlWriterOptions)
+import LinkMetadata (cleanAbstractsHTML)
 import LinkAuto (linkAuto)
 import Interwiki (convertInterwikiLinks)
 import qualified GenerateSimilar as GS (singleShotRecommendations)
+import Utils (safeHtmlWriterOptions)
 
 main :: IO ()
 main = do originalMarkdown <- TIO.getContents

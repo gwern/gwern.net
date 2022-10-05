@@ -20,10 +20,10 @@ import Control.Monad.Parallel as Par (mapM)
 
 import Columns as C (listLength)
 import LinkAuto (linkAutoFiltered)
-import LinkMetadata (hasAnnotation, isPagePath, readLinkMetadata, generateID, Metadata, MetadataItem, safeHtmlWriterOptions, parseRawInline)
+import LinkMetadata (hasAnnotation, isPagePath, readLinkMetadata, generateID, Metadata, MetadataItem, parseRawInline)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB,)
 import Query (extractLinksWith)
-import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed, replace)
+import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed, replace, safeHtmlWriterOptions)
 
 main :: IO ()
 main = do

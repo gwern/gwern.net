@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-10-02 20:03:57 gwern"
+When:  Time-stamp: "2022-10-05 11:02:31 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -58,7 +58,7 @@ import Text.Pandoc (topDown, nullAttr, readerExtensions, def, writeHtml5String, 
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness/segfault/strange-closure issues (native Text, and useful splitting), so to save my sanity... BUG: TDFA seems to have slow Text instances: https://github.com/haskell-hvr/regex-tdfa/issues/9
 
-import Utils (addClass, removeClass, frequency, simplifiedDoc)
+import Utils (addClass, removeClass, frequency, simplifiedDoc, safeHtmlWriterOptions)
 import Query (extractURLs)
 import Interwiki (inlinesToText)
 import Typography (mergeSpaces)
@@ -84,7 +84,7 @@ linkAutoHtml5String "" = ""
 linkAutoHtml5String s = let clean = runPure $ do
                                    pandoc <- readHtml def{readerExtensions=pandocExtensions} (T.pack s)
                                    let pandoc' = linkAuto pandoc
-                                   fmap T.unpack $ writeHtml5String def pandoc'
+                                   fmap T.unpack $ writeHtml5String safeHtmlWriterOptions pandoc'
                              in case clean of
                                   Left e -> error $ show e ++ " : " ++ s
                                   Right output -> output

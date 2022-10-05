@@ -19,7 +19,7 @@ import qualified Data.Text as T (Text, pack, unpack, isInfixOf, isPrefixOf, isSu
 import Text.Regex (subRegex, mkRegex) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors: `$ cabal install regex-compat-tdfa && ghc-pkg --user hide regex-compat-0.95.2.1`
 
 import Text.Pandoc (def, nullMeta, runPure,
-                    writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Code, Image, Link, Span, Str), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions)
+                    writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Code, Image, Link, Span, Str), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension)
 
 -- Auto-update the current year.
 currentYear :: Int
@@ -174,3 +174,8 @@ hasAny :: Eq a => [a]           -- ^ List of elements to look for
 hasAny [] _          = False             -- An empty search list: always false
 hasAny _ []          = False             -- An empty list to scan: always false
 hasAny search (x:xs) = if x `elem` search then True else hasAny search xs
+
+-- HACK: this is a workaround for an edge-case: Pandoc reads complex tables as 'grid tables', which then, when written using the default writer options, will break elements arbitrarily at newlines (breaking links in particular). We set the column width *so* wide that it should never need to break, and also enable 'reference links' to shield links by sticking their definition 'outside' the table. See <https://github.com/jgm/pandoc/issues/7641>.
+-- This also gives us somewhat cleaner HTML by making Pandoc not insert '\n'.
+safeHtmlWriterOptions :: WriterOptions
+safeHtmlWriterOptions = def{writerColumns = 9999, writerExtensions = (enableExtension Ext_shortcut_reference_links pandocExtensions)}
