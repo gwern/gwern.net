@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-10-02 22:56:29 gwern"
+When:  Time-stamp: "2022-10-07 10:16:41 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1206,7 +1206,7 @@ whiteList url
       , "https://unminify.com/" -- interactive service
       , "https://www.bulletproof.com/" -- homepage
       , "https://www.google.com/alerts" -- interactive service
-      , "http://darwintunes.org/" -- Soundcloud music sound embed doesn't preserve
+      , "http://darwintunes.org/" -- SoundCloud music sound embed doesn't preserve
       , "https://danlark.org/2022/04/20/changing-stdsort-at-googles-scale-and-beyond/" -- low quality: video embeds
       , "http://relative-attention-music-nips-2018.s3-website-us-west-1.amazonaws.com/" -- low quality: sound embeds
       , "https://sites.google.com/view/nips2017-one-shot-imitation/home" -- low quality (video embeds)
@@ -1256,5 +1256,7 @@ whiteList url
       , "https://google.github.io/deepmac/" -- low quality (video embeds)
       , "https://semantle.pimanrul.es/" -- interactive
       , "https://labelerrors.com/" -- interactive
+      , "https://novelai.net/" -- homepage
+      , "https://well-typed.com/" -- homepage
       ] = True
     | otherwise = False

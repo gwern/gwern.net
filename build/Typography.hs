@@ -413,7 +413,7 @@ titlecase' t = let t' = titlecase $ titlecase'' t
    where titlecase'' :: String -> String
          titlecase'' "" = ""
          titlecase'' t' = let (before,matched,after) =  t' =~ ("[ $^][A-za-z]\\-[a-z][ $^]"::String) :: (String,String,String)
-                          in replaceMany [("cite-author", "cite-author"), ("cite-date", "cite-date"), ("cite-joiner", "cite-joiner"), ("Class=","class=")] $ -- HACK
+                          in replaceMany [("Cite-author", "cite-author"), ("Cite-date", "cite-date"), ("Cite-joiner", "cite-joiner"), ("Class=","class=")] $ -- HACK
                              before ++ map toUpper matched ++ titlecase'' after
 
 -- lift `titlecase'` to Inline so it can be walked, such as in Headers

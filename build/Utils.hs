@@ -101,7 +101,7 @@ fixedPoint = fixedPoint' 10000
        fixedPoint' n f i = let i' = f i in if i' == i then i else fixedPoint' (n-1) f i'
 
 sed :: String -> String -> String -> String
-sed before after s = subRegex (mkRegex before) s after
+sed before after s = if before == after then error ("Fatal error in `sed`: before == after: \"" ++ before ++ "\"") else subRegex (mkRegex before) s after
 
 -- list of regexp string rewrites
 sedMany :: [(String,String)] -> (String -> String)
@@ -116,8 +116,8 @@ replaceManyT :: [(T.Text,T.Text)] -> (T.Text -> T.Text)
 replaceManyT rewrites s = foldr (uncurry T.replace) s rewrites
 
 -- replace/split/hasKeyAL copied from https://hackage.haskell.org/package/MissingH-1.5.0.1/docs/src/Data.List.Utils.html to avoid MissingH's dependency of regex-compat
-replace :: Eq a => [a] -> [a] -> [a] -> [a]
-replace old new = intercalate new . split old
+replace :: (Eq a, Show a) => [a] -> [a] -> [a] -> [a]
+replace before after = if before == after then error ("Fatal error in `replace`: before == after" ++ show before ++ "\"") else intercalate after . split before
 split :: Eq a => [a] -> [a] -> [[a]]
 split _ [] = []
 split delim str =
@@ -173,7 +173,7 @@ hasAny :: Eq a => [a]           -- ^ List of elements to look for
        -> Bool                  -- ^ Result
 hasAny [] _          = False             -- An empty search list: always false
 hasAny _ []          = False             -- An empty list to scan: always false
-hasAny search (x:xs) = if x `elem` search then True else hasAny search xs
+hasAny search (x:xs) = x `elem` search || hasAny search xs
 
 -- HACK: this is a workaround for an edge-case: Pandoc reads complex tables as 'grid tables', which then, when written using the default writer options, will break elements arbitrarily at newlines (breaking links in particular). We set the column width *so* wide that it should never need to break, and also enable 'reference links' to shield links by sticking their definition 'outside' the table. See <https://github.com/jgm/pandoc/issues/7641>.
 -- This also gives us somewhat cleaner HTML by making Pandoc not insert '\n'.
