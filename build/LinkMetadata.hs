@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-10-05 11:08:00 gwern"
+When:  Time-stamp: "2022-10-07 20:45:20 gwern"
 License: CC-0
 -}
 
@@ -61,7 +61,7 @@ import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAutoHtml5String)
 import LinkBacklink (getSimilarLink, getSimilarLinkCount, getBackLink, getBackLinkCount)
 import Query (truncateTOCHTML, extractLinksInlines)
-import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split, pairs, anyPrefixT, hasAny, safeHtmlWriterOptions)
+import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split, pairs, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass)
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (docs/, static/, images/) entirely; a Gwern.net page is then any
@@ -420,7 +420,7 @@ hasAnnotationInline mdb y@(Link (a,classes,c) d (f,g)) =
 hasAnnotationInline _ y = y
 
 addHasAnnotation :: MetadataItem -> Inline -> Inline
-addHasAnnotation (title,aut,dt,_,_,abstrct) x@(Link (a,b,c) e (f,g))  =
+addHasAnnotation (title,aut,dt,_,_,abstrct) (Link (a,b,c) e (f,g))  =
  let a'
        | a == ""    = generateID (T.unpack f) aut dt
        | otherwise  = a
@@ -432,16 +432,17 @@ addHasAnnotation (title,aut,dt,_,_,abstrct) x@(Link (a,b,c) e (f,g))  =
        |       title/="" && aut=="" = T.pack title
        |       title=="" && aut/="" = T.pack $ authorsToCite (T.unpack f) aut dt
        |                  otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
+     x' = Link (a',b,c) e (f,g') -- remember to set the ID!
  in -- erase link ID?
     if length abstrct > minimumAnnotationLength then -- full annotation, no problem:
-      Link (a', nubOrd (b++["link-annotated"]), c) e (f,g')
+      addClass "link-annotated" x'
       -- TEMPORARY: we do not set '.link-annotated-partial' on local links, even when they are a normal partial link, as a compromise due to the weakness of 'partial' popups right now. They only popup the partial itself (so, maybe a title & backlinks, a tag, perhaps an author or date, and that's about it); for a local PDF, that's inferior to popping up the PDF itself, because you generally wouldn't learn much from the partial popup compared to popping up the full PDF, and adds an annoying extra mouse-search to every popup. Bad. So, instead, we just ignore partial status for local links. Ideally, the partial popup would pop up the full PDF, with a wrapper frame containing just the partial metadata. Then the partial popup is no worse than the non-partial popup, and usually better. (Once that is added, the link-page boolean can be removed.)
       else if "link-page" `elem` b || T.head f == '/' then
-             x else -- may be a partial...
+             x' else -- may be a partial...
              -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
-             if not $ unsafePerformIO $ doesFileExist $ urlToAnnotationPath $ T.unpack f then (Link (a',b,c) e (f,g')) -- remember to set the ID!
+             if not $ unsafePerformIO $ doesFileExist $ urlToAnnotationPath $ T.unpack f then x'
              else -- so it's not a local link, doesn't have a full annotation, but does have *some* partial annotation since it exists on disk, so it gets `.link-annotated-partial`
-               Link (a',nubOrd (b++["link-annotated", "link-annotated-partial"]),c) e (f,g')
+               addClass "link-annotated" $ addClass "link-annotated-partial" x'
 addHasAnnotation _ z = z
 
 parseRawBlock :: Attr -> Block -> Block
