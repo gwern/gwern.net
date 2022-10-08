@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-10-07 21:08:21 gwern"
+When:  Time-stamp: "2022-10-08 19:06:22 gwern"
 License: CC-0
 -}
 
@@ -171,7 +171,7 @@ readLinkMetadataAndCheck = do
              -- - annotations must exist and be unique inside full.yaml (overlap in auto.yaml can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
              let urlsC = map fst custom
              let normalizedUrlsC = map (replace "https://" "" . replace "http://" "") urlsC
-             when (length (nub (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "full.yaml: Duplicate URLs!" ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
+             when (length (nub (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "full.yaml: Duplicate URLs! " ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
 
              let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,ts,_)) -> ts) custom
 
@@ -686,7 +686,7 @@ guessTagFromShort m t = let allTags = nubOrd $ sort m in
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
 tagsLong2Short, tagsShort2Long :: [(String,String)]
-tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/samples"), ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"), ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision"), ("evolution", "genetics/selection/natural"), ("gpt-3", "ai/nn/transformer/gpt"), ("gpt3", "ai/nn/transformer/gpt"), ("red", "design/typography/rubrication"), ("self-attention", "ai/nn/transformer/attention"), ("efficient-attention", "ai/nn/transformer/attention"), ("ai/rnn", "ai/nn/rnn"), ("ai/retrieval", "ai/nn/retrieval"), ("mr", "genetics/heritable/correlation/mendelian-randomization"), ("japan/anime", "anime"), ("psychology/birds/neuroscience", "psychology/bird/neuroscience"), ("psychology/birds", "psychology/bird"), ("dalle","dall-e"), ("dall-e", "ai/nn/transformer/gpt/dall-e"), ("silk-road-1", "darknet-markets/silk-road/1"), ("sr1", "darknet-markets/silk-road/1"), ("silk-road-2", "darknet-markets/silk-road/2"), ("sr2", "darknet-markets/silk-road/2")] ++
+tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/samples"), ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"), ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision"), ("evolution", "genetics/selection/natural"), ("gpt-3", "ai/nn/transformer/gpt"), ("gpt3", "ai/nn/transformer/gpt"), ("red", "design/typography/rubrication"), ("self-attention", "ai/nn/transformer/attention"), ("efficient-attention", "ai/nn/transformer/attention"), ("ai/rnn", "ai/nn/rnn"), ("ai/retrieval", "ai/nn/retrieval"), ("mr", "genetics/heritable/correlation/mendelian-randomization"), ("japan/anime", "anime"), ("psychology/birds/neuroscience", "psychology/bird/neuroscience"), ("psychology/birds", "psychology/bird"), ("dalle","dall-e"), ("dall-e", "ai/nn/transformer/gpt/dall-e"), ("silk-road-1", "darknet-markets/silk-road/1"), ("sr1", "darknet-markets/silk-road/1"), ("silk-road-2", "darknet-markets/silk-road/2"), ("sr2", "darknet-markets/silk-road/2"), ("psychology/neuroscience/bird", "psychology/bird/neuroscience")] ++
                  -- ^ custom tag shortcuts, to fix typos etc
                  -- attempt to infer short->long rewrites from the displayed tag names, which are long->short; but note that many of them are inherently invalid and the mapping only goes one way.
                   (map (\(a,b) -> (map toLower b,a)) $ filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
@@ -1273,7 +1273,11 @@ processArxivAbstract a = let cleaned = runPure $ do
                                     writeHtml5String safeHtmlWriterOptions{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc
               in case cleaned of
                  Left e -> error $ " : " ++ ppShow e ++ " : " ++ a
-                 Right output -> cleanAbstractsHTML $ T.unpack output
+                 Right output -> cleanArxivAbstracts $ cleanAbstractsHTML $ T.unpack output
+                   -- 'significan*' in Arxiv abstracts typically doesn't mean statistically-significant, but 'important' or 'large'; unfortunately,
+                   -- this is puffery applied to every single advance, and in an Arxiv abstract, is meaningless
+                    where cleanArxivAbstracts = replaceMany [("significant", ""), ("significantly", ""), ("significance", ""), (" significant", ""), (" significantly", ""), (" significance", "")] .
+                            replaceMany [("more significant", "important"), ("significant margin", "large margin"), ("significant capital", "large capital"), ("significant amount", "large amount"), ("significant cost", "large cost"), ("hugely significant", "important"), ("without significant overhead", "without much overhead"), ("significant risk", "large risk"), ("significant semantic complexity", "high semantic complexity"), ("more significantly correlate", "more correlate"), ("significantly yet smoothly", "substantially get smoothly"), ("significance metric", "statistical-significance metric")]
 
 -- Is an annotation (HTML or Markdown) already If the input has more than one <p>, or if there is one or more double-newlines, that means this input is already multiple-paragraphs
 -- and we will skip trying to break it up further.
@@ -1923,7 +1927,7 @@ truncateTOC p' toc = let pndc = truncateTOCHTML (T.pack (sed ".*#" "" p')) (T.pa
 
 -- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
 initializeAuthors :: String -> String
-initializeAuthors = trim . replaceMany [("?",""), (",,", ","), (",,", ","), (", ,", ", "), (" ", " "), (" MA,", ","), (", MA,", ","), (" MS,", ","), ("Dr ", ""), (" PhD", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", ""), (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""), (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" , BSc", ","), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), (",,", ","), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), ("and ", ", "), (", PhD1", ","), ("  DMSc", ""), (", (Hons),", ","), (",, ", ", "), (", ,,", ", "), (",,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", ""), (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior")] .
+initializeAuthors = trim . replaceMany [(". . ", ". "), ("?",""), (",,", ","), (",,", ","), (", ,", ", "), (" ", " "), (" MA,", ","), (", MA,", ","), (" MS,", ","), ("Dr ", ""), (" PhD", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", ""), (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""), (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" , BSc", ","), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), (",,", ","), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), ("and ", ", "), (", PhD1", ","), ("  DMSc", ""), (", (Hons),", ","), (",, ", ", "), (", ,,", ", "), (",,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", ""), (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior")] .
                        sedMany [
                          ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2"), -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
                          (",$", ""),
@@ -2527,6 +2531,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<p><strong>Significance Statement</strong></p>\n<p>", "<p><strong>Significance Statement</strong>: ")
          , (". <strong>Conclusion</strong>: ", ".</p> <p><strong>Conclusio</strong>: ")
          , (". <strong>Conclusions</strong>: ", ".</p> <p><strong>Conclusion</strong>: ")
+         , ("<strong>Conclusions & Significance</strong>", "<strong>Conclusion</strong>")
          , ("<strong>Conclusions and Significance</strong>", "<strong>Conclusion</strong>")
          , ("<strong>Conclusions</strong>\n<p>", "<p><strong>Conclusion</strong>: ")
          , ("<p>Conclusions: ", "<p><strong>Conclusion</strong>: ")
@@ -3166,6 +3171,29 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("Norbert Weiner",  "Norbert Wiener")
          , ("mulitple",  "multiple")
          , ("statistically statistically-significant", "statistically-significant")
+         , ("-wide significance", "-wide statistical-significance")
+         , ("GW significance", "genome-wide statistical-significance")
+         , ("Most of the significance for", "Most of the statistical-significance for")
+         , ("a significance test", "a statistical-significance test")
+         , ("significance tests", "statistical-significance tests")
+         , ("The significance of melatonergic", "The importance of melatonergic")
+         , (", with significance for the ", ", with implications for the")
+         , ("variants of uncertain significance", "variants of uncertain importance")
+         , ("philosophical significance", "philosophical importance")
+         , ("study-wide significance", "study-wide statistical-significance")
+         , (" significance threshold", " statistical-significance threshold")
+         , (" significance measures", " statistical-significance measures")
+         , ("but not significance criteria", "but not statistical-significance criteria")
+         , ("unique biological significance of", "unique biological importance of")
+         , ("epidemiological significance", "epidemiological importance")
+         , ("assess its significance", "assess its importance")
+         , ("nominal significance level", "nominal statistical-significance level")
+         , ("strict significance level", "strict statistical-significance level")
+         , ("levels of significance", "levels of statistical-significance")
+         , ("Excess significance", "Excess statistical-significance")
+         , ("their scientific significance", "their scientific importance")
+         , ("behavioral significance", "behavioral importance")
+         , ("behaviour", "behavior")
          , ("de Novo", "De Novo")
          , ("small saple", "small sample")
          , ("\8201", " ")
