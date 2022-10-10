@@ -3,143 +3,143 @@
 /* license: MIT */
 
 /******************************/
-/*	Events fired by rewrite.js:
+/*  Events fired by rewrite.js:
 
-	Rewrite.fullWidthMediaDidLoad {
-			mediaElement:
-				the <img> or <video> element that loaded
-		}
-		Fired when a full-width image or video is loaded. This event is only
-		fired after the initial page load completes (i.e., it is triggered by
-		lazy-loading of media elements).
+    Rewrite.fullWidthMediaDidLoad {
+            mediaElement:
+                the <img> or <video> element that loaded
+        }
+        Fired when a full-width image or video is loaded. This event is only
+        fired after the initial page load completes (i.e., it is triggered by
+        lazy-loading of media elements).
 
-	GW.pageLayoutWillComplete
-		Fired just before the page layout process completes. The value of the
-		`GW.pageLayoutComplete` flag is false at this point.
+    GW.pageLayoutWillComplete
+        Fired just before the page layout process completes. The value of the
+        `GW.pageLayoutComplete` flag is false at this point.
 
-	GW.pageLayoutDidComplete
-		Fired just after the page layout process completes. The value of the
-		`GW.pageLayoutComplete` flag is true at this point.
+    GW.pageLayoutDidComplete
+        Fired just after the page layout process completes. The value of the
+        `GW.pageLayoutComplete` flag is true at this point.
  */
 
 /***************************************/
-/*	NOTE on the GW.contentDidLoad event:
+/*  NOTE on the GW.contentDidLoad event:
 
-	This event is fired whenever any new local page content is loaded (whether
-	this means “loaded via a network request”, “loaded from cache”,
-	“constructed from existing page elements”, or any other process by which
-	a new unit of page content is created). This includes the initial page
-	load, but also such things as pop-frames being spawned, annotations being
-	lazy-loaded, etc.
+    This event is fired whenever any new local page content is loaded (whether
+    this means “loaded via a network request”, “loaded from cache”,
+    “constructed from existing page elements”, or any other process by which
+    a new unit of page content is created). This includes the initial page
+    load, but also such things as pop-frames being spawned, annotations being
+    lazy-loaded, etc.
 
-	Many event handlers are attached to this event, because a great deal of
-	processing must take place before newly-loaded page content is ready for
-	presentation to the user. Typography rectification must take place; the HTML
-	structure of certain page elements (such as tables, figures, etc.) must be
-	reconfigured; CSS classes must be added; various event listeners attached;
-	etc. Most of this file (rewrite.js) consists of exactly such “content load
-	handlers”, a.k.a. “rewrite functions”. (Additional content load handlers are
-	defined elsewhere in the code, as appropriate; e.g. the handler that
-	attaches event listeners to annotated links to load annotations when the
-	user mouses over such links, which is found in extracts-annotations.js.)
+    Many event handlers are attached to this event, because a great deal of
+    processing must take place before newly-loaded page content is ready for
+    presentation to the user. Typography rectification must take place; the HTML
+    structure of certain page elements (such as tables, figures, etc.) must be
+    reconfigured; CSS classes must be added; various event listeners attached;
+    etc. Most of this file (rewrite.js) consists of exactly such “content load
+    handlers”, a.k.a. “rewrite functions”. (Additional content load handlers are
+    defined elsewhere in the code, as appropriate; e.g. the handler that
+    attaches event listeners to annotated links to load annotations when the
+    user mouses over such links, which is found in extracts-annotations.js.)
 
-	The GW.contentDidLoad event has the following named handler phases (see
-	gw-inline.js for details on what this means):
+    The GW.contentDidLoad event has the following named handler phases (see
+    gw-inline.js for details on what this means):
 
-		[ "rewrite", "eventListeners" ]
+        [ "rewrite", "eventListeners" ]
 
-	The GW.contentDidLoad event should have the following keys and values in its
-	event info dictionary (see gw-inline.js for details on event info
-	dictionaries):
+    The GW.contentDidLoad event should have the following keys and values in its
+    event info dictionary (see gw-inline.js for details on event info
+    dictionaries):
 
-		‘source’ (key)
-			String that indicates function (or event name, if fired from a
-			browser event listener) from which the event is fired (such as
-			‘Annotation.loadAnnotation’).
+        ‘source’ (key)
+            String that indicates function (or event name, if fired from a
+            browser event listener) from which the event is fired (such as
+            ‘Annotation.loadAnnotation’).
 
-		‘document’ (key)
-			DOM object containing the loaded content. (For the GW.contentDidLoad
-			event fired on the initial page load, the value of this key is
-			`document`, i.e. the root document of the page. For pop-frames, this
-			may be the `document` property of the pop-frame, or a 
-			DocumentFragment containing the embedded page elements.)
+        ‘document’ (key)
+            DOM object containing the loaded content. (For the GW.contentDidLoad
+            event fired on the initial page load, the value of this key is
+            `document`, i.e. the root document of the page. For pop-frames, this
+            may be the `document` property of the pop-frame, or a
+            DocumentFragment containing the embedded page elements.)
 
-		‘loadLocation’ (key)
-			URL object (https://developer.mozilla.org/en-US/docs/Web/API/URL)
-			which specifies the URL from which the loaded content was loaded.
-			For the main page, the represented URL will be the value of 
-			`location.href`. For pop-frames and the like, the represented URL 
-			may be the URL of the annotation resource, or the URL of a locally 
-			archived version of a website, or something else.
+        ‘loadLocation’ (key)
+            URL object (https://developer.mozilla.org/en-US/docs/Web/API/URL)
+            which specifies the URL from which the loaded content was loaded.
+            For the main page, the represented URL will be the value of
+            `location.href`. For pop-frames and the like, the represented URL
+            may be the URL of the annotation resource, or the URL of a locally
+            archived version of a website, or something else.
 
-		‘baseLocation’ (key)
-			URL object which specifies the URL associated with the document to 
-			which the loaded content belongs, after loading.
-			For the main page, the represented URL will be the value of 
-			`location.href`. For pop-frames and the like, the represented URL 
-			will be the value of the `href` attribute of the spawning target.
+        ‘baseLocation’ (key)
+            URL object which specifies the URL associated with the document to
+            which the loaded content belongs, after loading.
+            For the main page, the represented URL will be the value of
+            `location.href`. For pop-frames and the like, the represented URL
+            will be the value of the `href` attribute of the spawning target.
 
-		‘flags’ (key)
-			Bit field containing various flags (combined via bitwise OR). The
-			values of the flags are defined in GW.contentDidLoadEventFlags.
+        ‘flags’ (key)
+            Bit field containing various flags (combined via bitwise OR). The
+            values of the flags are defined in GW.contentDidLoadEventFlags.
 
-			(Note that event handlers for the ‘GW.contentDidLoad’ event can
-			 access the values of these flags directly via property access on
-			 the event info, e.g. the following two expressions are equivalent:
+            (Note that event handlers for the ‘GW.contentDidLoad’ event can
+             access the values of these flags directly via property access on
+             the event info, e.g. the following two expressions are equivalent:
 
-			   eventInfo.flags & GW.contentDidLoadEventFlags.needsRewrite != 0
+               eventInfo.flags & GW.contentDidLoadEventFlags.needsRewrite != 0
 
-			   eventInfo.needsRewrite
+               eventInfo.needsRewrite
 
-			 It is recommended that the latter form be used.)
+             It is recommended that the latter form be used.)
 
-			The flags are:
+            The flags are:
 
-			‘isMainDocument’
-				Specifies whether the loaded content is the main page itself, or
-				some content loaded within the main page (which might be a
-				content fragment like an annotation, or an entire other local
-				page loaded in a pop-frame, or something else).
+            ‘isMainDocument’
+                Specifies whether the loaded content is the main page itself, or
+                some content loaded within the main page (which might be a
+                content fragment like an annotation, or an entire other local
+                page loaded in a pop-frame, or something else).
 
-				The value of this key should be true only once per page session,
-				when the initial page content is loaded (and the
-				GW.contentDidLoad event is called from a listener for the
-				DOMContentLoaded browser event).
+                The value of this key should be true only once per page session,
+                when the initial page content is loaded (and the
+                GW.contentDidLoad event is called from a listener for the
+                DOMContentLoaded browser event).
 
-				If true, the loaded content will contain a main content element
-				(`#markdownBody`) as well as a page metadata block
-				(`#page-metadata`) and a table of contents (`#TOC`).
+                If true, the loaded content will contain a main content element
+                (`#markdownBody`) as well as a page metadata block
+                (`#page-metadata`) and a table of contents (`#TOC`).
 
-			‘needsRewrite’
-				Specifies whether the loaded content needs to be processed
-				through a rewrite pass (i.e., to have its typography rectified,
-				HTML structure adjusted, etc.). If this value is false, then the
-				loaded content has already had rewriting performed (this will be
-				the case when the content is being loaded from a local cache),
-				and only needs to have event listeners attached, positioning
-				adjusted, and other such treatment that doesn’t modify the
-				content.
+            ‘needsRewrite’
+                Specifies whether the loaded content needs to be processed
+                through a rewrite pass (i.e., to have its typography rectified,
+                HTML structure adjusted, etc.). If this value is false, then the
+                loaded content has already had rewriting performed (this will be
+                the case when the content is being loaded from a local cache),
+                and only needs to have event listeners attached, positioning
+                adjusted, and other such treatment that doesn’t modify the
+                content.
 
-			‘clickable’
-				Currently unused. Reserved for future use.
+            ‘clickable’
+                Currently unused. Reserved for future use.
 
-			‘collapseAllowed’
-				Specifies whether the loaded content is permitted to have
-				collapsed sections. Generally false for all but the main page
-				(because collapsing/un-collapsing interactions are awkward and
-				confusing in pop-frames and similar embedded content elements).
-				If the value of this key is false, then any collapse blocks in
-				the loaded content will be automatically expanded (if present)
-				or simply not enabled in the first place, and all content in
-				collapsible sections will be visible at all times.
+            ‘collapseAllowed’
+                Specifies whether the loaded content is permitted to have
+                collapsed sections. Generally false for all but the main page
+                (because collapsing/un-collapsing interactions are awkward and
+                confusing in pop-frames and similar embedded content elements).
+                If the value of this key is false, then any collapse blocks in
+                the loaded content will be automatically expanded (if present)
+                or simply not enabled in the first place, and all content in
+                collapsible sections will be visible at all times.
 
-			‘fullWidthPossible’
-				Specifies whether full-width elements are permitted in the
-				loaded content. Generally true only for the main page load. If
-				false, elements marked as full-width will be laid out as if for
-				a mobile (narrow) viewport, regardless of the actual dimensions
-				of the loaded content’s container (i.e. they will not actually
-				be “full-width”).
+            ‘fullWidthPossible’
+                Specifies whether full-width elements are permitted in the
+                loaded content. Generally true only for the main page load. If
+                false, elements marked as full-width will be laid out as if for
+                a mobile (narrow) viewport, regardless of the actual dimensions
+                of the loaded content’s container (i.e. they will not actually
+                be “full-width”).
  */
 
 
@@ -148,179 +148,179 @@
 /***********/
 
 /******************************************************************************/
-/*	Create and return a new element with the specified tag name, attributes, and
-	object properties.
+/*  Create and return a new element with the specified tag name, attributes, and
+    object properties.
  */
 function newElement(tagName, attributes = { }, properties = { }) {
-	let element = document.createElement(tagName);
-	for (const attrName in attributes)
-		if (attributes.hasOwnProperty(attrName))
-			element.setAttribute(attrName, attributes[attrName]);
-	for (const propName in properties)
-		if (properties.hasOwnProperty(propName))
-			element[propName] = properties[propName];
-	return element;
+    let element = document.createElement(tagName);
+    for (const attrName in attributes)
+        if (attributes.hasOwnProperty(attrName))
+            element.setAttribute(attrName, attributes[attrName]);
+    for (const propName in properties)
+        if (properties.hasOwnProperty(propName))
+            element[propName] = properties[propName];
+    return element;
 }
 
-/*	Create and return a DocumentFragment containing the given content.
+/*  Create and return a DocumentFragment containing the given content.
 
-	The content can be any of the following (yielding the listed return value):
-	
-	null
-		an empty DocumentFragment
+    The content can be any of the following (yielding the listed return value):
 
-	a DocumentFragment
-		a DocumentFragment containing the given DocumentFragment’s children
+    null
+        an empty DocumentFragment
 
-	a string
-		a DocumentFragment containing the HTML content that results from parsing
-		the string
+    a DocumentFragment
+        a DocumentFragment containing the given DocumentFragment’s children
 
-	a Node
-		a DocumentFragment containing the Node
+    a string
+        a DocumentFragment containing the HTML content that results from parsing
+        the string
 
-	a NodeList
-		a DocumentFragment containing the nodes
+    a Node
+        a DocumentFragment containing the Node
+
+    a NodeList
+        a DocumentFragment containing the nodes
  */
 function newDocument(content) {
-	let docFrag = new DocumentFragment();
+    let docFrag = new DocumentFragment();
 
-	if (content == null)
-		return docFrag;
+    if (content == null)
+        return docFrag;
 
-	if (content instanceof DocumentFragment) {
-		content = content.childNodes;
-	} else if (typeof content == "string") {
-		let wrapper = newElement("DIV");
-		wrapper.innerHTML = content;
-		content = wrapper.childNodes;
-	}
+    if (content instanceof DocumentFragment) {
+        content = content.childNodes;
+    } else if (typeof content == "string") {
+        let wrapper = newElement("DIV");
+        wrapper.innerHTML = content;
+        content = wrapper.childNodes;
+    }
 
-	if (content instanceof Node) {
-		docFrag.append(document.importNode(content, true));
-	} else if (content instanceof NodeList) {
-		docFrag.append(...(Array.from(content).map(node => document.importNode(node, true))));
-	}
+    if (content instanceof Node) {
+        docFrag.append(document.importNode(content, true));
+    } else if (content instanceof NodeList) {
+        docFrag.append(...(Array.from(content).map(node => document.importNode(node, true))));
+    }
 
-	return docFrag;
+    return docFrag;
 }
 
 /*****************************************************/
-/*	Wrap an element in a wrapper element.
+/*  Wrap an element in a wrapper element.
  */
 function wrapElement(element, wrapClass, wrapTagName = "DIV", useExistingWrapper = false, moveClasses = false) {
-	if (   useExistingWrapper
-		&& element.parentElement
-		&& element.parentElement.tagName == wrapTagName
-		&& element.parentElement.children.length == 1) {
-		if (wrapClass > "")
-			element.parentElement.classList.add(...(wrapClass.split(" ")));
-	} else {
-		let wrapper = newElement(wrapTagName);
-		if (wrapClass > "")
-			wrapper.classList.add(...(wrapClass.split(" ")));
-		element.parentElement.insertBefore(wrapper, element);
-		wrapper.appendChild(element);
-	}
+    if (   useExistingWrapper
+        && element.parentElement
+        && element.parentElement.tagName == wrapTagName
+        && element.parentElement.children.length == 1) {
+        if (wrapClass > "")
+            element.parentElement.classList.add(...(wrapClass.split(" ")));
+    } else {
+        let wrapper = newElement(wrapTagName);
+        if (wrapClass > "")
+            wrapper.classList.add(...(wrapClass.split(" ")));
+        element.parentElement.insertBefore(wrapper, element);
+        wrapper.appendChild(element);
+    }
 
-	if (moveClasses === false)
-		return;
+    if (moveClasses === false)
+        return;
 
-	if (moveClasses === true) {
-		element.parentElement.classList.add(...(element.classList));
-		element.removeAttribute("class");
-		return;
-	}
+    if (moveClasses === true) {
+        element.parentElement.classList.add(...(element.classList));
+        element.removeAttribute("class");
+        return;
+    }
 
-	if (!(moveClasses instanceof Array))
-		return;
+    if (!(moveClasses instanceof Array))
+        return;
 
-	moveClasses.forEach(cssClass => {
-		if (element.classList.contains(cssClass)) {
-			element.classList.remove(cssClass);
-			element.parentElement.classList.add(cssClass);
-		}
-	});
+    moveClasses.forEach(cssClass => {
+        if (element.classList.contains(cssClass)) {
+            element.classList.remove(cssClass);
+            element.parentElement.classList.add(cssClass);
+        }
+    });
 }
 
 /*****************************************************/
-/*	Wrap all elements specified by the given selector.
+/*  Wrap all elements specified by the given selector.
  */
 function wrapAll(selector, wrapClassOrFunction, wrapTagName = "DIV", root = document, useExistingWrappers = false, moveClasses = false) {
-	let wrapperFunction;
-	if (typeof wrapClassOrFunction == "string") {
-		wrapperFunction = (element) => {
-			wrapElement(element, wrapClassOrFunction, wrapTagName, useExistingWrappers, moveClasses);
-		};
-	} else {
-		wrapperFunction = wrapClassOrFunction;
-	}
+    let wrapperFunction;
+    if (typeof wrapClassOrFunction == "string") {
+        wrapperFunction = (element) => {
+            wrapElement(element, wrapClassOrFunction, wrapTagName, useExistingWrappers, moveClasses);
+        };
+    } else {
+        wrapperFunction = wrapClassOrFunction;
+    }
 
-	root.querySelectorAll(selector).forEach(wrapperFunction);
+    root.querySelectorAll(selector).forEach(wrapperFunction);
 }
 
 /****************************************/
-/*	Replace an element with its contents.
+/*  Replace an element with its contents.
  */
 function unwrap(wrapper) {
-	if (wrapper.parentElement == null)
-		return;
+    if (wrapper.parentElement == null)
+        return;
 
-	while (wrapper.childNodes.length > 0)
-		wrapper.parentElement.insertBefore(wrapper.firstChild, wrapper);
-	wrapper.remove();
+    while (wrapper.childNodes.length > 0)
+        wrapper.parentElement.insertBefore(wrapper.firstChild, wrapper);
+    wrapper.remove();
 }
 
 /*******************************************************/
-/*	Unwrap all elements specified by the given selector.
+/*  Unwrap all elements specified by the given selector.
  */
 function unwrapAll(selector, root = document) {
-	root.querySelectorAll(selector).forEach(element => {
-		unwrap(element);
-	});
+    root.querySelectorAll(selector).forEach(element => {
+        unwrap(element);
+    });
 }
 
 /*****************************************************************************/
-/*	Add content load handler (i.e., an event handler for the GW.contentDidLoad
-	event).
+/*  Add content load handler (i.e., an event handler for the GW.contentDidLoad
+    event).
  */
 function addContentLoadHandler(handler, phase, condition = null) {
-	let options = { phase: phase };
-	if (condition)
-		options.condition = condition;
-	GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", handler, options);
+    let options = { phase: phase };
+    if (condition)
+        options.condition = condition;
+    GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", handler, options);
 }
 
 /*****************************************************************************/
-/*	Call the given function when the given element (if `target` is an element),
-	or the element specified by the given selector (if `target` is a string),
-	intersects the viewport.
-	Optionally specify the interaction ratio.
+/*  Call the given function when the given element (if `target` is an element),
+    or the element specified by the given selector (if `target` is a string),
+    intersects the viewport.
+    Optionally specify the interaction ratio.
  */
 function lazyLoadObserver(f, target, options = { }) {
-	if (typeof target == "string")
-		target = document.querySelector(target);
+    if (typeof target == "string")
+        target = document.querySelector(target);
 
-	if (target == null)
-		return;
+    if (target == null)
+        return;
 
-	if (   options.root == null
-		&& (options.threshold ?? 0) == 0 
-		&& (options.rootMargin ?? "0px") == "0px"
-		&& isOnScreen(target)) {
-		f();
-		return;
-	}
+    if (   options.root == null
+        && (options.threshold ?? 0) == 0
+        && (options.rootMargin ?? "0px") == "0px"
+        && isOnScreen(target)) {
+        f();
+        return;
+    }
 
-	let observer = new IntersectionObserver((entries) => {
-		if (entries.first.isIntersecting == false)
-			return;
+    let observer = new IntersectionObserver((entries) => {
+        if (entries.first.isIntersecting == false)
+            return;
 
-		f();
-		observer.disconnect();
-	}, options);
+        f();
+        observer.disconnect();
+    }, options);
 
-	observer.observe(target);
+    observer.observe(target);
 }
 
 
@@ -334,30 +334,30 @@ function lazyLoadObserver(f, target, options = { }) {
 function wrapTables(loadEventInfo) {
     GWLog("wrapTables", "rewrite.js", 1);
 
-	wrapAll("table", "table-wrapper", "DIV", loadEventInfo.document, true)
+    wrapAll("table", "table-wrapper", "DIV", loadEventInfo.document, true)
 }
 
 addContentLoadHandler(wrapTables, "rewrite", (info) => info.needsRewrite);
 
 /*****************************************************************************/
 /*  Wrap each full-width table in a div.full-width-table-inner-wrapper, and
-	also move the .collapse class (if any) from the outer wrapper to the table
-	(for consistency).
+    also move the .collapse class (if any) from the outer wrapper to the table
+    (for consistency).
  */
 function wrapFullWidthTables(loadEventInfo) {
     GWLog("wrapFullWidthTables", "rewrite.js", 1);
 
-	wrapAll(".table-wrapper.width-full > table", "full-width-table-inner-wrapper", "DIV", loadEventInfo.document, false);
+    wrapAll(".table-wrapper.width-full > table", "full-width-table-inner-wrapper", "DIV", loadEventInfo.document, false);
 
-	//	Move ‘collapse’ class from wrappers to tables.
-	loadEventInfo.document.querySelectorAll(".table-wrapper.width-full.collapse table").forEach(table => {
-		table.closest(".table-wrapper").classList.remove("collapse");
-		table.classList.add("collapse");
-	});
+    //  Move ‘collapse’ class from wrappers to tables.
+    loadEventInfo.document.querySelectorAll(".table-wrapper.width-full.collapse table").forEach(table => {
+        table.closest(".table-wrapper").classList.remove("collapse");
+        table.classList.add("collapse");
+    });
 }
 
-addContentLoadHandler(wrapFullWidthTables, "rewrite", (info) => (   info.needsRewrite 
-																 && info.fullWidthPossible));
+addContentLoadHandler(wrapFullWidthTables, "rewrite", (info) => (   info.needsRewrite
+                                                                 && info.fullWidthPossible));
 
 
 /***********/
@@ -372,11 +372,11 @@ function setImageDimensions(loadEventInfo) {
     GWLog("setImageDimensions", "rewrite.js", 1);
 
     loadEventInfo.document.querySelectorAll("figure img[width]").forEach(image => {
-		if (image.classList.contains("width-full")) {
-			return;
-		} else {
-	        image.style.width = image.getAttribute("width") + "px";
-		}
+        if (image.classList.contains("width-full")) {
+            return;
+        } else {
+            image.style.width = image.getAttribute("width") + "px";
+        }
     });
 }
 
@@ -388,23 +388,23 @@ addContentLoadHandler(setImageDimensions, "rewrite", (info) => info.needsRewrite
 function wrapImages(loadEventInfo) {
     GWLog("wrapImages", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll("p > img:only-child").forEach(image => {
-		unwrap(image.parentElement);
-	});
+    loadEventInfo.document.querySelectorAll("p > img:only-child").forEach(image => {
+        unwrap(image.parentElement);
+    });
 
-	let exclusionSelector = ".footnote-back, .mwe-math-element";
-	wrapAll("img", (image) => {
-		if (image.closest(exclusionSelector))
-			return;
+    let exclusionSelector = ".footnote-back, .mwe-math-element, .mw-default-size, .unicode.haudio, td";
+    wrapAll("img", (image) => {
+        if (image.closest(exclusionSelector))
+            return;
 
-		let figure = image.closest("figure");
-		if (   figure
-			&& figure.querySelector("figcaption") != null)
-			return;
+        let figure = image.closest("figure");
+        if (   figure
+            && figure.querySelector("figcaption") != null)
+            return;
 
-		wrapElement(image, null, "FIGURE", true,
-			[ "float-left", "float-right", "outline-not", "image-focus-not" ]);
-	}, null, loadEventInfo.document);
+        wrapElement(image, null, "FIGURE", true,
+            [ "float-left", "float-right", "outline-not", "image-focus-not" ]);
+    }, null, loadEventInfo.document);
 }
 
 addContentLoadHandler(wrapImages, "rewrite", (info) => info.needsRewrite);
@@ -469,15 +469,15 @@ function markFullWidthFigures(loadEventInfo) {
         allFullWidthMedia.forEach(fullWidthMedia => {
             fullWidthMedia.addEventListener("load", (event) => {
                 GW.notificationCenter.fireEvent("Rewrite.fullWidthMediaDidLoad", {
-                	mediaElement: fullWidthMedia
+                    mediaElement: fullWidthMedia
                 });
             });
         });
     });
 }
 
-addContentLoadHandler(markFullWidthFigures, "rewrite", (info) => (   info.needsRewrite 
-																  && info.fullWidthPossible));
+addContentLoadHandler(markFullWidthFigures, "rewrite", (info) => (   info.needsRewrite
+                                                                  && info.fullWidthPossible));
 
 
 /***************/
@@ -491,14 +491,14 @@ addContentLoadHandler(markFullWidthFigures, "rewrite", (info) => (   info.needsR
 function wrapFullWidthPreBlocks(loadEventInfo) {
     GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
-	wrapAll("pre.width-full", (fullWidthPre) => {
-		wrapElement(fullWidthPre, "width-full", "DIV", true);
-		wrapElement(fullWidthPre.parentElement, "full-width-code-block-wrapper", "DIV", false);
-	}, null, loadEventInfo.document);
+    wrapAll("pre.width-full", (fullWidthPre) => {
+        wrapElement(fullWidthPre, "width-full", "DIV", true);
+        wrapElement(fullWidthPre.parentElement, "full-width-code-block-wrapper", "DIV", false);
+    }, null, loadEventInfo.document);
 }
 
-addContentLoadHandler(wrapFullWidthPreBlocks, "rewrite", (info) => (   info.needsRewrite 
-																	&& info.fullWidthPossible));
+addContentLoadHandler(wrapFullWidthPreBlocks, "rewrite", (info) => (   info.needsRewrite
+                                                                    && info.fullWidthPossible));
 
 
 /***********/
@@ -506,15 +506,15 @@ addContentLoadHandler(wrapFullWidthPreBlocks, "rewrite", (info) => (   info.need
 /***********/
 
 /*****************************************/
-/*	Disable columns if only one list item.
+/*  Disable columns if only one list item.
  */
 function disableSingleItemColumnBlocks(loadEventInfo) {
     GWLog("disableSingleItemColumnBlocks", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll(".columns > ul").forEach(columnList => {
-		if (columnList.children.length == 1)
-			columnList.parentElement.classList.remove("columns");
-	});
+    loadEventInfo.document.querySelectorAll(".columns > ul").forEach(columnList => {
+        if (columnList.children.length == 1)
+            columnList.parentElement.classList.remove("columns");
+    });
 }
 
 addContentLoadHandler(disableSingleItemColumnBlocks, "rewrite", (info) => info.needsRewrite);
@@ -525,16 +525,16 @@ addContentLoadHandler(disableSingleItemColumnBlocks, "rewrite", (info) => info.n
 /****************/
 
 /*************************************************************/
-/*	Wrap the contents of all margin notes in an inner wrapper.
+/*  Wrap the contents of all margin notes in an inner wrapper.
  */
 function wrapMarginNotes(loadEventInfo) {
     GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll(".marginnote").forEach(marginnote => {
-		let innerWrapper = newElement("SPAN", { "class": "marginnote-inner-wrapper" });
-		innerWrapper.append(...(marginnote.childNodes));
-		marginnote.append(innerWrapper);
-	});
+    loadEventInfo.document.querySelectorAll(".marginnote").forEach(marginnote => {
+        let innerWrapper = newElement("SPAN", { "class": "marginnote-inner-wrapper" });
+        innerWrapper.append(...(marginnote.childNodes));
+        marginnote.append(innerWrapper);
+    });
 }
 
 addContentLoadHandler(wrapMarginNotes, "rewrite", (info) => info.needsRewrite);
@@ -545,190 +545,190 @@ addContentLoadHandler(wrapMarginNotes, "rewrite", (info) => info.needsRewrite);
 /**************/
 
 /******************************************************************************/
-/*	Remove extraneous whitespace-only text nodes from between the element parts
-	of a .cite (citation element).
+/*  Remove extraneous whitespace-only text nodes from between the element parts
+    of a .cite (citation element).
  */
 function removeExtraneousWhitespaceFromCitations(loadEventInfo) {
     GWLog("removeExtraneousWhitespaceFromCitations", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll(".cite").forEach(citation => {
-		Array.from(citation.children).forEach(citationPart => {
-			if (   citationPart.nextSibling
-				&& citationPart.nextSibling.nodeType == Node.TEXT_NODE
-				&& isNodeEmpty(citationPart.nextSibling))
-				citationPart.nextSibling.remove();
-		});
-	});
+    loadEventInfo.document.querySelectorAll(".cite").forEach(citation => {
+        Array.from(citation.children).forEach(citationPart => {
+            if (   citationPart.nextSibling
+                && citationPart.nextSibling.nodeType == Node.TEXT_NODE
+                && isNodeEmpty(citationPart.nextSibling))
+                citationPart.nextSibling.remove();
+        });
+    });
 }
 
 addContentLoadHandler(removeExtraneousWhitespaceFromCitations, "rewrite", (info) => info.needsRewrite);
 
 /******************************************************************/
-/*	Configure Hyphenopoly.
+/*  Configure Hyphenopoly.
 
     Requires Hyphenopoly_Loader.js to be loaded prior to this file.
  */
 Hyphenopoly.config({
-	require: {
-		"en-us": "FORCEHYPHENOPOLY"
-	},
-	setup: {
-		hide: "none",
-		keepAlive: true,
-		safeCopy: false
-	}
+    require: {
+        "en-us": "FORCEHYPHENOPOLY"
+    },
+    setup: {
+        hide: "none",
+        keepAlive: true,
+        safeCopy: false
+    }
 });
 
 /******************************************************************/
-/*	Hyphenate with Hyphenopoly.
+/*  Hyphenate with Hyphenopoly.
 
     Requires Hyphenopoly_Loader.js to be loaded prior to this file.
  */
 function hyphenate(injectEventInfo) {
     GWLog("hyphenate", "rewrite.js", 1);
 
-	if (!(Hyphenopoly.hyphenators))
-		return;
+    if (!(Hyphenopoly.hyphenators))
+        return;
 
-	if (GW.isX11())
-		return;
+    if (GW.isX11())
+        return;
 
-	let doHyphenation = (selector) => {
-		Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
-			injectEventInfo.document.querySelectorAll(selector).forEach(block => {
-				hyphenate(block);
-			});
-		});	
-	};
+    let doHyphenation = (selector) => {
+        Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
+            injectEventInfo.document.querySelectorAll(selector).forEach(block => {
+                hyphenate(block);
+            });
+        });
+    };
 
-	if (   GW.isMobile() 
-		|| injectEventInfo.mainPageContent == false) {
-		doHyphenation(injectEventInfo.mainPageContent ? ".markdownBody p" : "p");
-	} else {
-		doHyphenation(".sidenote p");
-	}
+    if (   GW.isMobile()
+        || injectEventInfo.mainPageContent == false) {
+        doHyphenation(injectEventInfo.mainPageContent ? ".markdownBody p" : "p");
+    } else {
+        doHyphenation(".sidenote p");
+    }
 }
 
 /*******************************************************************************/
-/*	Set line height of element to its computed line height, rounded to the
-	nearest pixel.
+/*  Set line height of element to its computed line height, rounded to the
+    nearest pixel.
 
-	(Actually, the value of the CSS `line-height` property is set to a unitless
-	 value computed to result in the rendered line height being an integer pixel
-	 value.)
+    (Actually, the value of the CSS `line-height` property is set to a unitless
+     value computed to result in the rendered line height being an integer pixel
+     value.)
 
-	Returns the CSS property value as a string.
+    Returns the CSS property value as a string.
 
-	If the `returnOnly` argument is TRUE, then the property is not actually set;
-	the value to be set is only returned.
+    If the `returnOnly` argument is TRUE, then the property is not actually set;
+    the value to be set is only returned.
  */
 function rectifyLineHeight(elementOrSelector, root = document, returnOnly = false) {
-	if (typeof elementOrSelector == "string")
-		elementOrSelector = root.querySelector(elementOrSelector);
+    if (typeof elementOrSelector == "string")
+        elementOrSelector = root.querySelector(elementOrSelector);
 
-	if (elementOrSelector == null)
-		return null;
+    if (elementOrSelector == null)
+        return null;
 
-	let e = elementOrSelector;
-	let style = getComputedStyle(e);
-	let fontSize = parseFloat(style.fontSize);
-	let lineHeight = Math.round(parseFloat(style.lineHeight));
-	if (isNaN(fontSize) || isNaN(lineHeight))
-		return null;
-	let lineHeightPropertyValue = `calc(${lineHeight}/${fontSize})`;
-	if (!returnOnly)
-		e.style.lineHeight = lineHeightPropertyValue;
-	return lineHeightPropertyValue;
+    let e = elementOrSelector;
+    let style = getComputedStyle(e);
+    let fontSize = parseFloat(style.fontSize);
+    let lineHeight = Math.round(parseFloat(style.lineHeight));
+    if (isNaN(fontSize) || isNaN(lineHeight))
+        return null;
+    let lineHeightPropertyValue = `calc(${lineHeight}/${fontSize})`;
+    if (!returnOnly)
+        e.style.lineHeight = lineHeightPropertyValue;
+    return lineHeightPropertyValue;
 }
 
 /**********************************************************************/
-/*	Rectify line heights of elements matching a given set of selectors.
+/*  Rectify line heights of elements matching a given set of selectors.
  */
 function rectifyLineHeights(injectEventInfo) {
     GWLog("rectifyLineHeights", "rewrite.js", 1);
 
-	/*	Note: these selectors should be “all block elements on which the font
-		size is adjusted”. It seems possible but code-complex and
-		runtime-expensive to find all such elements dynamically; using a fixed
-		selector list is simpler and faster but, of course, has the downside of
-		many likely false negatives. (False positives can also occur but should
-		be mostly harmless, or, at any rate, no more harmful than true
-		positives. Possible sources of harm from true or false positives include
-		render time penalty [minor] and failure to recalculate line heights in
-		response to changes in computed values caused by, e.g., viewport shifts
-		[major]. The latter could perhaps be addressed by calling this function
-		from a window resize listener [inefficient] or from some sort of
-		mutation observer or some other low-overhead observer/listener that
-		watches for changes in CSS in response to various transformations and
-		events.) The selector list may also become stale as changes to HTML
-		structure and to the CSS codebase are not reliably propagated to parts
-		of the code such as this.
+    /*  Note: these selectors should be “all block elements on which the font
+        size is adjusted”. It seems possible but code-complex and
+        runtime-expensive to find all such elements dynamically; using a fixed
+        selector list is simpler and faster but, of course, has the downside of
+        many likely false negatives. (False positives can also occur but should
+        be mostly harmless, or, at any rate, no more harmful than true
+        positives. Possible sources of harm from true or false positives include
+        render time penalty [minor] and failure to recalculate line heights in
+        response to changes in computed values caused by, e.g., viewport shifts
+        [major]. The latter could perhaps be addressed by calling this function
+        from a window resize listener [inefficient] or from some sort of
+        mutation observer or some other low-overhead observer/listener that
+        watches for changes in CSS in response to various transformations and
+        events.) The selector list may also become stale as changes to HTML
+        structure and to the CSS codebase are not reliably propagated to parts
+        of the code such as this.
 
-		The current implementation should thus be considered a prototype, and
-		revisited at a later date.
-			—SA 2022-06-23
-	 */
-	let selectors = [
-		"#page-description",
-		"blockquote",
-		".sidenote"
-	];
+        The current implementation should thus be considered a prototype, and
+        revisited at a later date.
+            —SA 2022-06-23
+     */
+    let selectors = [
+        "#page-description",
+        "blockquote",
+        ".sidenote"
+    ];
 
-	/*	On the first pass, compute the adjusted values for line-height of all
-		affected elements; on the second pass, actually set the values. (This is
-		done to prevent cascades of deviations from ideal [fractional] values
-		due to rounding, in nested line-height-adjusted elements.)
-	 */
-	let elements = [ ];
-	injectEventInfo.document.querySelectorAll(selectors.join(", ")).forEach(element => {
-		if (element.style.lineHeight > "")
-			return;
-		let lineHeight = rectifyLineHeight(element, injectEventInfo.document, true);
-		elements.push({
-			element: 	element,
-			lineHeight:	lineHeight
-		});
-	});
-	elements.forEach(e => {
-		if (   null != e.element
-			&& null != e.lineHeight)
-			e.element.style.lineHeight = e.lineHeight;
-	});
+    /*  On the first pass, compute the adjusted values for line-height of all
+        affected elements; on the second pass, actually set the values. (This is
+        done to prevent cascades of deviations from ideal [fractional] values
+        due to rounding, in nested line-height-adjusted elements.)
+     */
+    let elements = [ ];
+    injectEventInfo.document.querySelectorAll(selectors.join(", ")).forEach(element => {
+        if (element.style.lineHeight > "")
+            return;
+        let lineHeight = rectifyLineHeight(element, injectEventInfo.document, true);
+        elements.push({
+            element:    element,
+            lineHeight: lineHeight
+        });
+    });
+    elements.forEach(e => {
+        if (   null != e.element
+            && null != e.lineHeight)
+            e.element.style.lineHeight = e.lineHeight;
+    });
 }
 
 /**********************************************/
 /*  Add content inject handlers for typography.
  */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-	hyphenate(info);
-	rectifyLineHeights(info);
+    hyphenate(info);
+    rectifyLineHeights(info);
 });
 
 /****************************************/
-/*	Remove soft hyphens from copied text.
+/*  Remove soft hyphens from copied text.
  */
 addCopyProcessor((event, selection) => {
-	//	Passing `true` for the third argument also removes zero-width spaces.
-	Typography.processElement(selection, Typography.replacementTypes.SOFTHYPHENS, true);
+    //  Passing `true` for the third argument also removes zero-width spaces.
+    Typography.processElement(selection, Typography.replacementTypes.SOFTHYPHENS, true);
 
-	return true;
+    return true;
 });
 
 /*****************************************************************************/
-/*	Makes it so that copying an author-date citation (e.g. `Foo et al 2001`)
-	interact properly with copy-paste when rendered with pseudo-element ellipses
-	(`Foo...2001`).
+/*  Makes it so that copying an author-date citation (e.g. `Foo et al 2001`)
+    interact properly with copy-paste when rendered with pseudo-element ellipses
+    (`Foo...2001`).
  */
 addCopyProcessor((event, selection) => {
-	/*	Set `display` of all `span.cite-joiner` to `initial` (overriding the
-		default of `none`) so that their contents are included in the 
-		content properties of the selection).
-	 */
-	selection.querySelectorAll(".cite-joiner").forEach(citeJoiner => {
-		citeJoiner.style.display = "initial";
-	});
+    /*  Set `display` of all `span.cite-joiner` to `initial` (overriding the
+        default of `none`) so that their contents are included in the
+        content properties of the selection).
+     */
+    selection.querySelectorAll(".cite-joiner").forEach(citeJoiner => {
+        citeJoiner.style.display = "initial";
+    });
 
-	return true;
+    return true;
 });
 
 
@@ -786,7 +786,7 @@ function createFullWidthBlockLayoutStyles() {
 }
 
 GW.notificationCenter.addHandlerForEvent("GW.pageLayoutWillComplete", (info) => {
-	createFullWidthBlockLayoutStyles();
+    createFullWidthBlockLayoutStyles();
 });
 
 /************************************/
@@ -849,7 +849,7 @@ function rectifyTypographyInAnnotation(loadEventInfo) {
         (  Typography.replacementTypes.QUOTES
          | Typography.replacementTypes.WORDBREAKS
          | Typography.replacementTypes.ELLIPSES),
-    	true);
+        true);
 
     //  Educate quotes in image alt-text.
     loadEventInfo.document.querySelectorAll("img").forEach(image => {
@@ -858,11 +858,11 @@ function rectifyTypographyInAnnotation(loadEventInfo) {
 }
 
 addContentLoadHandler(rectifyTypographyInAnnotation, "rewrite", (info) => (   info.needsRewrite
-						  												   && info.source == "Extracts.annotationForTarget"));
+                                                                           && info.source == "Extracts.annotationForTarget"));
 
 /******************************************************************************/
 /*  Bind mouse hover events to, when hovering over an annotated link, highlight
-	that annotation (as viewed in a tags directory, for instance).
+    that annotation (as viewed in a tags directory, for instance).
  */
 function bindSectionHighlightEventsToAnnotatedLinks(loadEventInfo) {
     GWLog("bindSectionHighlightEventsToAnnotatedLinks", "rewrite.js", 1);
@@ -870,30 +870,30 @@ function bindSectionHighlightEventsToAnnotatedLinks(loadEventInfo) {
     loadEventInfo.document.querySelectorAll(".link-annotated").forEach(annotatedLink => {
         //  Unbind existing events, if any.
         if (annotatedLink.annotatedLinkMouseEnter)
-        	annotatedLink.removeEventListener("mouseenter", annotatedLink.annotatedLinkMouseEnter);
+            annotatedLink.removeEventListener("mouseenter", annotatedLink.annotatedLinkMouseEnter);
         if (annotatedLink.annotatedLinkMouseLeave)
-        	annotatedLink.removeEventListener("mouseleave", annotatedLink.annotatedLinkMouseLeave);
+            annotatedLink.removeEventListener("mouseleave", annotatedLink.annotatedLinkMouseLeave);
 
         //  Bind events.
         let escapedLinkURL = CSS.escape(decodeURIComponent(annotatedLink.href));
         let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='${escapedLinkURL}']`);
         if (   targetAnalogueInLinkBibliography
-        	&& targetAnalogueInLinkBibliography != annotatedLink) {
-        	let containingSection = targetAnalogueInLinkBibliography.closest("section");
-        	if (containingSection) {
-				annotatedLink.addEventListener("mouseenter", annotatedLink.annotatedLinkMouseEnter = (event) => {
-					clearTimeout(containingSection.highlightFadeTimer);
-					containingSection.classList.toggle("highlight-fading", false);
-					containingSection.classList.toggle("highlighted", true);
-				});
-				annotatedLink.addEventListener("mouseleave", annotatedLink.annotatedLinkMouseLeave = (event) => {
-					containingSection.classList.toggle("highlight-fading", true);
-					containingSection.highlightFadeTimer = setTimeout(() => {
-						containingSection.classList.toggle("highlight-fading", false);
-						containingSection.classList.toggle("highlighted", false);
-					}, 150);
-				});
-        	}
+            && targetAnalogueInLinkBibliography != annotatedLink) {
+            let containingSection = targetAnalogueInLinkBibliography.closest("section");
+            if (containingSection) {
+                annotatedLink.addEventListener("mouseenter", annotatedLink.annotatedLinkMouseEnter = (event) => {
+                    clearTimeout(containingSection.highlightFadeTimer);
+                    containingSection.classList.toggle("highlight-fading", false);
+                    containingSection.classList.toggle("highlighted", true);
+                });
+                annotatedLink.addEventListener("mouseleave", annotatedLink.annotatedLinkMouseLeave = (event) => {
+                    containingSection.classList.toggle("highlight-fading", true);
+                    containingSection.highlightFadeTimer = setTimeout(() => {
+                        containingSection.classList.toggle("highlight-fading", false);
+                        containingSection.classList.toggle("highlighted", false);
+                    }, 150);
+                });
+            }
         }
     });
 }
@@ -906,104 +906,104 @@ addContentLoadHandler(bindSectionHighlightEventsToAnnotatedLinks, "eventListener
 /*********************/
 
 /***************************************************************************/
-/*	Strip spurious <span> tags (unavoidably added by Pandoc) from TOC links.
+/*  Strip spurious <span> tags (unavoidably added by Pandoc) from TOC links.
  */
 function stripTOCLinkSpans(loadEventInfo) {
     GWLog("stripTOCLinkSpans", "rewrite.js", 1);
 
-	unwrapAll(".TOC li a > span:not([class])", loadEventInfo.document);
+    unwrapAll(".TOC li a > span:not([class])", loadEventInfo.document);
 }
 
 addContentLoadHandler(stripTOCLinkSpans, "rewrite", (info) => info.needsRewrite);
 
 
 /*******************************************************************************/
-/*	Updates the page TOC with any sections within the given container that don’t
-	already have TOC entries.
+/*  Updates the page TOC with any sections within the given container that don’t
+    already have TOC entries.
  */
-//	Called by: includeContent (transclude.js)
+//  Called by: includeContent (transclude.js)
 function updatePageTOC(newContent, needsProcessing = false) {
     GWLog("updatePageTOC", "transclude.js", 2);
 
-	let TOC = document.querySelector("#TOC");
-	if (!TOC)
-		return;
+    let TOC = document.querySelector("#TOC");
+    if (!TOC)
+        return;
 
-	//	Find where to insert the new TOC entries.
-	let parentSection = newContent.closest("section") ?? document.querySelector("#markdownBody");
-	let previousSection = Array.from(parentSection.children).filter(child => 
-		   child.tagName == "SECTION" 
-		&& child.compareDocumentPosition(newContent) == Node.DOCUMENT_POSITION_FOLLOWING
-	).last;
+    //  Find where to insert the new TOC entries.
+    let parentSection = newContent.closest("section") ?? document.querySelector("#markdownBody");
+    let previousSection = Array.from(parentSection.children).filter(child =>
+           child.tagName == "SECTION"
+        && child.compareDocumentPosition(newContent) == Node.DOCUMENT_POSITION_FOLLOWING
+    ).last;
 
-	//	Any already-existing <section> should have a TOC entry.
-	let parentTOCElement = parentSection.id == "markdownBody"
-						   ? TOC
-						   : TOC.querySelector(`#toc-${parentSection.id}`).parentElement;
-	let precedingTOCElement = previousSection 
-							  ? parentTOCElement.querySelector(`#toc-${previousSection.id}`).parentElement
-							  : null;
+    //  Any already-existing <section> should have a TOC entry.
+    let parentTOCElement = parentSection.id == "markdownBody"
+                           ? TOC
+                           : TOC.querySelector(`#toc-${parentSection.id}`).parentElement;
+    let precedingTOCElement = previousSection
+                              ? parentTOCElement.querySelector(`#toc-${previousSection.id}`).parentElement
+                              : null;
 
-	//	TOC entry insertion function, called recursively.
-	function addToPageTOC(newContent, parentTOCElement, precedingTOCElement) {
-		let insertBeforeElement = precedingTOCElement 
-								  ? precedingTOCElement.nextElementSibling
-								  : null;
+    //  TOC entry insertion function, called recursively.
+    function addToPageTOC(newContent, parentTOCElement, precedingTOCElement) {
+        let insertBeforeElement = precedingTOCElement
+                                  ? precedingTOCElement.nextElementSibling
+                                  : null;
 
-		let addedEntries = [ ];
+        let addedEntries = [ ];
 
-		newContent.querySelectorAll("section").forEach(section => {
-			/*	We may have already added this section in a recursive call from
-				a previous section.
-			 */
-			if (parentTOCElement.querySelector(`a[href$='#${section.id}']`) != null)
-				return;
+        newContent.querySelectorAll("section").forEach(section => {
+            /*  We may have already added this section in a recursive call from
+                a previous section.
+             */
+            if (parentTOCElement.querySelector(`a[href$='#${section.id}']`) != null)
+                return;
 
-			//	Construct entry.
-			let entry = newElement("LI");
-			let entryText = section.id == "footnotes"
-							? "Footnotes"
-							: section.firstElementChild.textContent;
-			entry.innerHTML = `<a id='toc-${section.id}' href='#${fixedEncodeURIComponent(section.id)}'>${entryText}</a>`;
+            //  Construct entry.
+            let entry = newElement("LI");
+            let entryText = section.id == "footnotes"
+                            ? "Footnotes"
+                            : section.firstElementChild.textContent;
+            entry.innerHTML = `<a id='toc-${section.id}' href='#${fixedEncodeURIComponent(section.id)}'>${entryText}</a>`;
 
-			//	Get or construct the <ul> element.
-			let subList = Array.from(parentTOCElement.childNodes).find(child => child.tagName == "UL");
-			if (!subList) {
-				subList = newElement("UL");
-				parentTOCElement.appendChild(subList);
-			}
+            //  Get or construct the <ul> element.
+            let subList = Array.from(parentTOCElement.childNodes).find(child => child.tagName == "UL");
+            if (!subList) {
+                subList = newElement("UL");
+                parentTOCElement.appendChild(subList);
+            }
 
-			subList.insertBefore(entry, insertBeforeElement);
-			addedEntries.push(entry);
+            subList.insertBefore(entry, insertBeforeElement);
+            addedEntries.push(entry);
 
-			//	Recursive call, to added sections nested within this one.
-			addToPageTOC(section, entry, null);
-		});
+            //  Recursive call, to added sections nested within this one.
+            addToPageTOC(section, entry, null);
+        });
 
-		return addedEntries;
-	}
+        return addedEntries;
+    }
 
-	//	Add the new entries.
-	let newEntries = addToPageTOC(newContent, parentTOCElement, precedingTOCElement);
+    //  Add the new entries.
+    let newEntries = addToPageTOC(newContent, parentTOCElement, precedingTOCElement);
 
-	if (needsProcessing) {
-		//	Process the new entries to activate pop-frame spawning.
-		newEntries.forEach(Extracts.addTargetsWithin);
-	}
+    if (needsProcessing) {
+        //  Process the new entries to activate pop-frame spawning.
+        newEntries.forEach(Extracts.addTargetsWithin);
+    }
 }
 
 /****************************************************************************/
-/*	Update main page TOC within any sections within the initially loaded page
-	that don’t already have TOC entries.
+/*  Update main page TOC within any sections within the initially loaded page
+    that don’t already have TOC entries.
  */
 function updateMainPageTOC(loadEventInfo) {
     GWLog("updateMainPageTOC", "rewrite.js", 1);
 
-	updatePageTOC(loadEventInfo.document.querySelector("#markdownBody"));
+    updatePageTOC(loadEventInfo.document.querySelector("#markdownBody"));
 }
 
 addContentLoadHandler(updateMainPageTOC, "rewrite", (info) => (   info.needsRewrite
-															   && info.isMainDocument));
+                                                               && info.isMainDocument));
 
 
 /*************/
@@ -1020,10 +1020,10 @@ function injectFootnoteSectionSelfLink(loadEventInfo) {
     if (!footnotesSection)
         return;
 
-    let footnotesSectionSelfLink = newElement("A", { 
-    	"class": "section-self-link", 
-    	"href": "#footnotes", 
-    	"title": "Link to section: § ‘Footnotes’" 
+    let footnotesSectionSelfLink = newElement("A", {
+        "class": "section-self-link",
+        "href": "#footnotes",
+        "title": "Link to section: § ‘Footnotes’"
     });
 
     footnotesSection.insertBefore(footnotesSectionSelfLink, footnotesSection.firstElementChild.nextElementSibling);
@@ -1040,14 +1040,14 @@ function injectFootnoteSectionSelfLink(loadEventInfo) {
 addContentLoadHandler(injectFootnoteSectionSelfLink, "rewrite", (info) => info.needsRewrite);
 
 /*****************************************/
-/*	Add footnote class to footnote blocks.
+/*  Add footnote class to footnote blocks.
  */
 function addFootnoteClassToFootnotes(loadEventInfo) {
     GWLog("addFootnoteClassToFootnotes", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
-		footnote.classList.add("footnote");
-	});
+    loadEventInfo.document.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
+        footnote.classList.add("footnote");
+    });
 }
 
 addContentLoadHandler(addFootnoteClassToFootnotes, "rewrite", (info) => info.needsRewrite);
@@ -1058,54 +1058,54 @@ addContentLoadHandler(addFootnoteClassToFootnotes, "rewrite", (info) => info.nee
 function injectFootnoteSelfLinks(loadEventInfo) {
     GWLog("injectFootnoteSelfLinks", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
-		if (footnote.querySelector(".footnote-self-link"))
-			return;
+    loadEventInfo.document.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
+        if (footnote.querySelector(".footnote-self-link"))
+            return;
 
-		let footnoteNumber = footnote.id.slice(2);
+        let footnoteNumber = footnote.id.slice(2);
         footnote.insertAdjacentHTML("afterbegin",
-        	`<a
-        		href="#fn${footnoteNumber}"
-        		title="Link to footnote ${footnoteNumber}"
-        		class="footnote-self-link"
-        			>&nbsp;</a>`);
-	});
+            `<a
+                href="#fn${footnoteNumber}"
+                title="Link to footnote ${footnoteNumber}"
+                class="footnote-self-link"
+                    >&nbsp;</a>`);
+    });
 }
 
 addContentLoadHandler(injectFootnoteSelfLinks, "rewrite", (info) => info.needsRewrite);
 
 /*****************************************************************/
-/*	Rewrite footnote back-to-citation links (generated by Pandoc).
+/*  Rewrite footnote back-to-citation links (generated by Pandoc).
  */
 function rewriteFootnoteBackLinks(loadEventInfo) {
     GWLog("rewriteFootnoteBackLinks", "rewrite.js", 1);
 
-	/*	Base font size (1rem) is 20px at this time, making a good default.
-		That value might change later, but this’ll still be a fine default;
-		the width/height get adjusted below, anyway, so no big deal if the
-		default is not the final value. We mostly care about having _a_ value
-		for the width/height for page load performance reasons.
-	 */
-	let defaultSize = 20;
-	loadEventInfo.document.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
-		let backlink = footnote.querySelector(".footnote-back");
-		if (backlink.querySelector("img"))
-			return;
+    /*  Base font size (1rem) is 20px at this time, making a good default.
+        That value might change later, but this’ll still be a fine default;
+        the width/height get adjusted below, anyway, so no big deal if the
+        default is not the final value. We mostly care about having _a_ value
+        for the width/height for page load performance reasons.
+     */
+    let defaultSize = 20;
+    loadEventInfo.document.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
+        let backlink = footnote.querySelector(".footnote-back");
+        if (backlink.querySelector("img"))
+            return;
 
-		backlink.textContent = "";
-		backlink.appendChild(newElement("IMG", {
-			width: defaultSize,
-			height: defaultSize,
-			alt: "↩ Right arrow curving left [footnote return link] arrow",
-			src: "/static/img/icons/arrow-hook-left.svg"
-		}));
-	});
+        backlink.textContent = "";
+        backlink.appendChild(newElement("IMG", {
+            width: defaultSize,
+            height: defaultSize,
+            alt: "↩ Right arrow curving left [footnote return link] arrow",
+            src: "/static/img/icons/arrow-hook-left.svg"
+        }));
+    });
 }
 
 addContentLoadHandler(rewriteFootnoteBackLinks, "rewrite", (info) => info.needsRewrite);
 
 /******************************************************************************/
-/*	Set size properly, after setting default value in rewriteFootnoteBackLinks.
+/*  Set size properly, after setting default value in rewriteFootnoteBackLinks.
  */
 function rectifyFootnoteBackLinkArrowSize(loadEventInfo) {
     GWLog("rectifyFootnoteBackLinkArrowSize", "rewrite.js", 1);
@@ -1114,20 +1114,20 @@ function rectifyFootnoteBackLinkArrowSize(loadEventInfo) {
     if (!footnotesList)
         return;
 
-	requestIdleCallback(() => {
-		let size = parseInt(getComputedStyle(footnotesList).fontSize);
-		if (!size)
-			return;
+    requestIdleCallback(() => {
+        let size = parseInt(getComputedStyle(footnotesList).fontSize);
+        if (!size)
+            return;
 
-		loadEventInfo.document.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
-			let arrow = footnote.querySelector(".footnote-back img");
-			if (!arrow)
-				return;
+        loadEventInfo.document.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
+            let arrow = footnote.querySelector(".footnote-back img");
+            if (!arrow)
+                return;
 
-			arrow.width = size;
-			arrow.height = size;
-		});
-	});
+            arrow.width = size;
+            arrow.height = size;
+        });
+    });
 }
 
 addContentLoadHandler(rectifyFootnoteBackLinkArrowSize, "eventListeners");
@@ -1156,14 +1156,14 @@ function allNotesForCitation(citation) {
 function bindNoteHighlightEventsToCitations(loadEventInfo) {
     GWLog("bindNoteHighlightEventsToCitations", "rewrite.js", 1);
 
-	let allCitations = loadEventInfo.document.querySelectorAll(".footnote-ref");
+    let allCitations = loadEventInfo.document.querySelectorAll(".footnote-ref");
 
-	let bindEventsToCitation = (citation) => {
+    let bindEventsToCitation = (citation) => {
         //  Unbind existing events, if any.
         if (citation.citationMouseEnter)
-        	citation.removeEventListener("mouseenter", citation.citationMouseEnter);
+            citation.removeEventListener("mouseenter", citation.citationMouseEnter);
         if (citation.citationMouseLeave)
-        	citation.removeEventListener("mouseleave", citation.citationMouseLeave);
+            citation.removeEventListener("mouseleave", citation.citationMouseLeave);
 
         //  Bind events.
         let notesForCitation = allNotesForCitation(citation);
@@ -1177,23 +1177,23 @@ function bindNoteHighlightEventsToCitations(loadEventInfo) {
                 note.classList.toggle("highlighted", false);
             });
         });
-	};
+    };
 
-	//	Bind events.
+    //  Bind events.
     allCitations.forEach(bindEventsToCitation);
 
-	//	Add handler to re-bind events if more notes are injected.
+    //  Add handler to re-bind events if more notes are injected.
     GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-	    allCitations.forEach(bindEventsToCitation);
-    }, { condition: (info) => (   info.mainPageContent 
-    						   || info.document == loadEventInfo.document)
+        allCitations.forEach(bindEventsToCitation);
+    }, { condition: (info) => (   info.mainPageContent
+                               || info.document == loadEventInfo.document)
     });
 }
 
 addContentLoadHandler(bindHighlightEventsToFootnoteSelfLinks, "eventListeners");
 
 /******************************************/
-/*	Highlight footnote self-links on hover.
+/*  Highlight footnote self-links on hover.
  */
 function bindHighlightEventsToFootnoteSelfLinks(loadEventInfo) {
     GWLog("bindHighlightEventsToFootnoteSelfLinks", "rewrite.js", 1);
@@ -1217,21 +1217,21 @@ addContentLoadHandler(bindNoteHighlightEventsToCitations, "eventListeners");
 /*********************/
 
 /**********************************************************************/
-/*	Add IDs to the <li> elements for each entry of link bibliographies.
-	(This makes lazy transclusion triggering much more performant.)
+/*  Add IDs to the <li> elements for each entry of link bibliographies.
+    (This makes lazy transclusion triggering much more performant.)
  */
 function uniquelyIdentifyLinkBibliographyEntries(loadEventInfo) {
     GWLog("uniquelyIdentifyLinkBibliographyEntries", "rewrite.js", 1);
 
-	if (loadEventInfo.document.parentElement == null)
-		return;
+    if (loadEventInfo.document.parentElement == null)
+        return;
 
-	let bodyClass = loadEventInfo.baseLocation.pathname.slice(1);
-	loadEventInfo.document.querySelectorAll("#link-bibliography > ol").forEach(list => {
-		for (let i = 0; i < list.children.length; i++) {
-			list.children[i].id = `${CSS.escape(bodyClass)}-link-bibliography-entry-${(i + 1)}`;
-		}
-	});
+    let bodyClass = loadEventInfo.baseLocation.pathname.slice(1);
+    loadEventInfo.document.querySelectorAll("#link-bibliography > ol").forEach(list => {
+        for (let i = 0; i < list.children.length; i++) {
+            list.children[i].id = `${CSS.escape(bodyClass)}-link-bibliography-entry-${(i + 1)}`;
+        }
+    });
 }
 
 addContentLoadHandler(uniquelyIdentifyLinkBibliographyEntries, "rewrite", (info) => info.needsRewrite);
@@ -1242,24 +1242,24 @@ addContentLoadHandler(uniquelyIdentifyLinkBibliographyEntries, "rewrite", (info)
 /*********/
 
 /**********************************************************************/
-/*  Qualify anchorlinks in loaded content by rewriting their `pathname` 
-	attributes.
+/*  Qualify anchorlinks in loaded content by rewriting their `pathname`
+    attributes.
  */
 function qualifyAnchorLinks(loadEventInfo) {
     GWLog("qualifyAnchorLinks", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll("a[href]").forEach(link => {
-		if (   (   link.getAttribute("href").startsWith("#")
-				|| link.pathname == loadEventInfo.loadLocation.pathname)
-			&& (   loadEventInfo.isMainDocument
-				|| null != loadEventInfo.document.querySelector(selectorFromHash(link.hash))
-				|| (   loadEventInfo.document instanceof Element
-					&& loadEventInfo.document == loadEventInfo.document.closest(selectorFromHash(link.hash))))) {
-			link.pathname = loadEventInfo.baseLocation.pathname;
-		} else if (link.getAttribute("href").startsWith("#")) {
-			link.pathname = loadEventInfo.loadLocation.pathname;
-		}
-	});
+    loadEventInfo.document.querySelectorAll("a[href]").forEach(link => {
+        if (   (   link.getAttribute("href").startsWith("#")
+                || link.pathname == loadEventInfo.loadLocation.pathname)
+            && (   loadEventInfo.isMainDocument
+                || null != loadEventInfo.document.querySelector(selectorFromHash(link.hash))
+                || (   loadEventInfo.document instanceof Element
+                    && loadEventInfo.document == loadEventInfo.document.closest(selectorFromHash(link.hash))))) {
+            link.pathname = loadEventInfo.baseLocation.pathname;
+        } else if (link.getAttribute("href").startsWith("#")) {
+            link.pathname = loadEventInfo.loadLocation.pathname;
+        }
+    });
 }
 
 addContentLoadHandler(qualifyAnchorLinks, "rewrite", (info) => info.needsRewrite);
@@ -1279,7 +1279,7 @@ function addSpecialLinkClasses(loadEventInfo) {
 
         if (   link.pathname == loadEventInfo.baseLocation.pathname
             && (   loadEventInfo.isMainDocument
-            	|| null != loadEventInfo.document.querySelector(selectorFromHash(link.hash)))) {
+                || null != loadEventInfo.document.querySelector(selectorFromHash(link.hash)))) {
             link.swapClasses([ "link-self", "link-page" ], 0);
         } else if (link.pathname.slice(1).match(/[\.]/) == null) {
             link.swapClasses([ "link-self", "link-page" ], 1);
@@ -1290,43 +1290,43 @@ function addSpecialLinkClasses(loadEventInfo) {
 addContentLoadHandler(addSpecialLinkClasses, "rewrite");
 
 /************************************************************************/
-/*	Assign proper link icons to self-links (directional or otherwise) and
-	local links.
+/*  Assign proper link icons to self-links (directional or otherwise) and
+    local links.
  */
 function designateSpecialLinkIcons(loadEventInfo) {
     GWLog("designateSpecialLinkIcons", "rewrite.js", 1);
 
-	//	Self-links (anchorlinks to the current page).
-	loadEventInfo.document.querySelectorAll(".link-self:not(.icon-not)").forEach(link => {
-		link.dataset.linkIconType = "text";
-		link.dataset.linkIcon = "\u{00B6}"; // ¶
+    //  Self-links (anchorlinks to the current page).
+    loadEventInfo.document.querySelectorAll(".link-self:not(.icon-not)").forEach(link => {
+        link.dataset.linkIconType = "text";
+        link.dataset.linkIcon = "\u{00B6}"; // ¶
 
-		/*  Directional navigation links on self-links: for each self-link like
-			“see [later](#later-identifier)”, find the linked identifier,
-			whether it’s before or after, and if it is before/previously,
-			annotate the self-link with ‘↑’ and if after/later, ‘↓’. This helps
-			the reader know if it’s a backwards link to an identifier already
-			read, or an unread identifier.
-		 */
+        /*  Directional navigation links on self-links: for each self-link like
+            “see [later](#later-identifier)”, find the linked identifier,
+            whether it’s before or after, and if it is before/previously,
+            annotate the self-link with ‘↑’ and if after/later, ‘↓’. This helps
+            the reader know if it’s a backwards link to an identifier already
+            read, or an unread identifier.
+         */
         let target = loadEventInfo.document.querySelector(selectorFromHash(link.hash));
         if (!target)
-        	return;
+            return;
 
         link.dataset.linkIconType = "svg";
         link.dataset.linkIcon =
-        	(link.compareDocumentPosition(target) == Node.DOCUMENT_POSITION_FOLLOWING
+            (link.compareDocumentPosition(target) == Node.DOCUMENT_POSITION_FOLLOWING
              ? 'arrow-down'
              : 'arrow-up');
-	});
+    });
 
-	//	Local links (to other pages on the site).
-	loadEventInfo.document.querySelectorAll(".link-page:not(.icon-not)").forEach(link => {
-		if (link.dataset.linkIcon)
-			return;
+    //  Local links (to other pages on the site).
+    loadEventInfo.document.querySelectorAll(".link-page:not(.icon-not)").forEach(link => {
+        if (link.dataset.linkIcon)
+            return;
 
-		link.dataset.linkIconType = "text";
-		link.dataset.linkIcon = "\u{1D50A}"; // 𝔊
-	});
+        link.dataset.linkIconType = "text";
+        link.dataset.linkIcon = "\u{1D50A}"; // 𝔊
+    });
 }
 
 addContentLoadHandler(designateSpecialLinkIcons, "rewrite");
@@ -1343,14 +1343,14 @@ addContentLoadHandler(designateSpecialLinkIcons, "rewrite");
 function cleanUpImageAltText(loadEventInfo) {
     GWLog("cleanUpImageAltText", "rewrite.js", 1);
 
-	/*	If an image has no alt text, use the value of the ‘title’ attribute,
-		if present; otherwise, a default string (“Image”).
-	 */
-	loadEventInfo.document.querySelectorAll("img:not([alt])").forEach(image => {
-		image.alt = (image.title || "Image");
-	});
+    /*  If an image has no alt text, use the value of the ‘title’ attribute,
+        if present; otherwise, a default string (“Image”).
+     */
+    loadEventInfo.document.querySelectorAll("img:not([alt])").forEach(image => {
+        image.alt = (image.title || "Image");
+    });
 
-	//	URL-encode ‘%’ signs in image alt text.
+    //  URL-encode ‘%’ signs in image alt text.
     loadEventInfo.document.querySelectorAll("img[alt]").forEach(image => {
         image.alt = decodeURIComponent(image.alt.replace(/%(?![A-Fa-f0-9]{2})/g, "%25"));
     });
@@ -1359,17 +1359,17 @@ function cleanUpImageAltText(loadEventInfo) {
 addContentLoadHandler(cleanUpImageAltText, "rewrite", (info) => info.needsRewrite);
 
 /************************************************************************/
-/*	Prevent line breaks immediately before citations (which “orphans” the
-	citation on the next line, and looks ugly).
+/*  Prevent line breaks immediately before citations (which “orphans” the
+    citation on the next line, and looks ugly).
  */
 function noBreakForCitations(loadEventInfo) {
     GWLog("noBreakForCitations", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll(".footnote-ref").forEach(citation => {
-		citation.insertAdjacentHTML("beforebegin", "&NoBreak;");
-		let textNode = citation.querySelector("sup").firstTextNode;
-		textNode.textContent = "\u{2060}" + textNode.textContent;
-	});
+    loadEventInfo.document.querySelectorAll(".footnote-ref").forEach(citation => {
+        citation.insertAdjacentHTML("beforebegin", "&NoBreak;");
+        let textNode = citation.querySelector("sup").firstTextNode;
+        textNode.textContent = "\u{2060}" + textNode.textContent;
+    });
 }
 
 addContentLoadHandler(noBreakForCitations, "rewrite", (info) => info.needsRewrite);
@@ -1385,34 +1385,34 @@ addContentLoadHandler(noBreakForCitations, "rewrite", (info) => info.needsRewrit
 function applyDropCapsClasses(loadEventInfo) {
     GWLog("applyDropCapsClasses", "rewrite.js", 1);
 
-	let loadedDocBody = loadEventInfo.document.querySelector("body");
+    let loadedDocBody = loadEventInfo.document.querySelector("body");
 
     //  Add ‘drop-cap-’ class to requisite blocks.
     let dropCapBlocksSelector = [
-    	".markdownBody > p:first-child",
-    	".markdownBody > .epigraph:first-child + p",
-    	".markdownBody .abstract:not(.scrape-abstract-not) + p"
+        ".markdownBody > p:first-child",
+        ".markdownBody > .epigraph:first-child + p",
+        ".markdownBody .abstract:not(.scrape-abstract-not) + p"
     ].join(", ");
     let dropCapClass = Array.from(loadedDocBody.classList).find(cssClass => cssClass.startsWith("drop-caps-"));
     if (dropCapClass)
         dropCapClass = dropCapClass.replace("-caps-", "-cap-");
 
-	loadEventInfo.document.querySelectorAll(dropCapBlocksSelector).forEach(dropCapBlock => {
-		/*  Drop cap class could be set globally, or overridden by a .abstract;
-			the latter could be `drop-cap-no` (which nullifies any page-global
-			drop-cap class for the given block).
-		 */
-		let precedingAbstract = (   dropCapBlock.previousElementSibling
-								 && dropCapBlock.previousElementSibling.classList.contains("abstract"))
-								? dropCapBlock.previousElementSibling
-								: null;
-		dropCapClass = (precedingAbstract
-						? Array.from(precedingAbstract.classList).find(cssClass => cssClass.startsWith("drop-cap-"))
-						: null) || dropCapClass;
-		if (   dropCapClass
-			&& dropCapClass != "drop-cap-no")
-			dropCapBlock.classList.add(dropCapClass);
-	});
+    loadEventInfo.document.querySelectorAll(dropCapBlocksSelector).forEach(dropCapBlock => {
+        /*  Drop cap class could be set globally, or overridden by a .abstract;
+            the latter could be `drop-cap-no` (which nullifies any page-global
+            drop-cap class for the given block).
+         */
+        let precedingAbstract = (   dropCapBlock.previousElementSibling
+                                 && dropCapBlock.previousElementSibling.classList.contains("abstract"))
+                                ? dropCapBlock.previousElementSibling
+                                : null;
+        dropCapClass = (precedingAbstract
+                        ? Array.from(precedingAbstract.classList).find(cssClass => cssClass.startsWith("drop-cap-"))
+                        : null) || dropCapClass;
+        if (   dropCapClass
+            && dropCapClass != "drop-cap-no")
+            dropCapBlock.classList.add(dropCapClass);
+    });
 }
 
 addContentLoadHandler(applyDropCapsClasses, "rewrite", (info) => info.isMainDocument);
@@ -1423,83 +1423,83 @@ addContentLoadHandler(applyDropCapsClasses, "rewrite", (info) => info.isMainDocu
 /********/
 
 /*****************************************************************************/
-/*	Makes it so that copying a rendered equation or other math element copies
-	the LaTeX source, instead of the useless gibberish that is the contents of
-	the text nodes of the HTML representation of the equation.
+/*  Makes it so that copying a rendered equation or other math element copies
+    the LaTeX source, instead of the useless gibberish that is the contents of
+    the text nodes of the HTML representation of the equation.
  */
 addCopyProcessor((event, selection) => {
-	if (event.target.closest(".mjx-math")) {
-		selection.replaceChildren(event.target.closest(".mjx-math").getAttribute("aria-label"));
+    if (event.target.closest(".mjx-math")) {
+        selection.replaceChildren(event.target.closest(".mjx-math").getAttribute("aria-label"));
 
-		return false;
-	}
+        return false;
+    }
 
-	selection.querySelectorAll(".mjx-chtml").forEach(mathBlock => {
-		mathBlock.innerHTML = mathBlock.querySelector(".mjx-math").getAttribute("aria-label");
-	});
+    selection.querySelectorAll(".mjx-chtml").forEach(mathBlock => {
+        mathBlock.innerHTML = mathBlock.querySelector(".mjx-math").getAttribute("aria-label");
+    });
 
-	return true;
+    return true;
 });
 
 /******************************************************************************/
-/*	Makes double-clicking on a math element select the entire math element.
-	(This actually makes no difference to the behavior of the copy listener
-	 [see the `addCopyProcessor` call above], which copies the entire LaTeX 
-	 source of the full equation no matter how much of said equation is selected 
-	 when the copy command is sent; however, it ensures that the UI communicates 
-	 the actual behavior in a more accurate and understandable way.)
+/*  Makes double-clicking on a math element select the entire math element.
+    (This actually makes no difference to the behavior of the copy listener
+     [see the `addCopyProcessor` call above], which copies the entire LaTeX
+     source of the full equation no matter how much of said equation is selected
+     when the copy command is sent; however, it ensures that the UI communicates
+     the actual behavior in a more accurate and understandable way.)
  */
 function addDoubleClickListenersToMathBlocks(loadEventInfo) {
     GWLog("addDoubleClickListenersToMathBlocks", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll(".mjpage").forEach(mathBlock => {
-		mathBlock.addEventListener("dblclick", (event) => {
-			document.getSelection().selectAllChildren(mathBlock.querySelector(".mjx-chtml"));
-		});
-		mathBlock.title = mathBlock.classList.contains("mjpage__block")
-						  ? "Double-click to select equation, then copy, to get LaTeX source (or, just click the Copy button in the top-right of the equation area)"
-						  : "Double-click to select equation; copy to get LaTeX source";
-	});
+    loadEventInfo.document.querySelectorAll(".mjpage").forEach(mathBlock => {
+        mathBlock.addEventListener("dblclick", (event) => {
+            document.getSelection().selectAllChildren(mathBlock.querySelector(".mjx-chtml"));
+        });
+        mathBlock.title = mathBlock.classList.contains("mjpage__block")
+                          ? "Double-click to select equation, then copy, to get LaTeX source (or, just click the Copy button in the top-right of the equation area)"
+                          : "Double-click to select equation; copy to get LaTeX source";
+    });
 }
 
 addContentLoadHandler(addDoubleClickListenersToMathBlocks, "eventListeners");
 
 /****************************************************************/
-/*	Add block buttons (copy) to block (not inline) math elements.
+/*  Add block buttons (copy) to block (not inline) math elements.
  */
 function addBlockButtonsToMathBlocks(loadEventInfo) {
     GWLog("addBlockButtonsToMathBlocks", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll(".mjpage__block").forEach(mathBlock => {
-		//	Inject button bar.
-		mathBlock.insertAdjacentHTML("beforeend",
-			  `<span class="block-button-bar">`
-			+ `<button type="button" class="copy" tabindex="-1" title="Copy LaTeX source of this equation to clipboard">`
-			+ `<img src="/static/img/icons/copy.svg">`
-			+ `</button>`
-			+ `<span class="scratchpad"></span>`
-			+ `</span>`);
+    loadEventInfo.document.querySelectorAll(".mjpage__block").forEach(mathBlock => {
+        //  Inject button bar.
+        mathBlock.insertAdjacentHTML("beforeend",
+              `<span class="block-button-bar">`
+            + `<button type="button" class="copy" tabindex="-1" title="Copy LaTeX source of this equation to clipboard">`
+            + `<img src="/static/img/icons/copy.svg">`
+            + `</button>`
+            + `<span class="scratchpad"></span>`
+            + `</span>`);
 
-		//	Activate buttons.
-		requestAnimationFrame(() => {
-			//	Copy button (copies LaTeX source);
-			let latexSource = mathBlock.querySelector(".mjx-math").getAttribute("aria-label");
-			let scratchpad = mathBlock.querySelector(".scratchpad");
-			mathBlock.querySelector("button.copy").addActivateEvent((event) => {
-				GWLog("mathBlockCopyButtonClicked", "rewrite.js", 3);
+        //  Activate buttons.
+        requestAnimationFrame(() => {
+            //  Copy button (copies LaTeX source);
+            let latexSource = mathBlock.querySelector(".mjx-math").getAttribute("aria-label");
+            let scratchpad = mathBlock.querySelector(".scratchpad");
+            mathBlock.querySelector("button.copy").addActivateEvent((event) => {
+                GWLog("mathBlockCopyButtonClicked", "rewrite.js", 3);
 
-				//	Perform copy operation.
-				scratchpad.innerText = latexSource;
-				selectElementContents(scratchpad);
-				document.execCommand("copy");
-				scratchpad.innerText = "";
+                //  Perform copy operation.
+                scratchpad.innerText = latexSource;
+                selectElementContents(scratchpad);
+                document.execCommand("copy");
+                scratchpad.innerText = "";
 
-				//	Flash math block, for visual feedback of copy operation.
-				mathBlock.classList.add("flash");
-				setTimeout(() => { mathBlock.classList.remove("flash"); }, 150);
-			});
-		});
-	});
+                //  Flash math block, for visual feedback of copy operation.
+                mathBlock.classList.add("flash");
+                setTimeout(() => { mathBlock.classList.remove("flash"); }, 150);
+            });
+        });
+    });
 }
 
 addContentLoadHandler(addBlockButtonsToMathBlocks, "rewrite", (info) => info.needsRewrite);
@@ -1513,53 +1513,53 @@ addContentLoadHandler(addBlockButtonsToMathBlocks, "rewrite", (info) => info.nee
 /*  Returns a DocumentFragment containing the current selection.
  */
 function getSelectionAsDocument(doc = document) {
-	let docFrag = new DocumentFragment();
-	docFrag.append(doc.getSelection().getRangeAt(0).cloneContents());
-	return docFrag;
+    let docFrag = new DocumentFragment();
+    docFrag.append(doc.getSelection().getRangeAt(0).cloneContents());
+    return docFrag;
 }
 
 /*****************************************************************************/
-/*	Adds the given copy processor, appending it to the existing array thereof.
+/*  Adds the given copy processor, appending it to the existing array thereof.
 
-	Each copy processor should take two arguments: the copy event, and the 
-	DocumentFragment which holds the selection as it is being processed by each
-	successive copy processor.
+    Each copy processor should take two arguments: the copy event, and the
+    DocumentFragment which holds the selection as it is being processed by each
+    successive copy processor.
 
-	A copy processor should return true if processing should continue after it’s
-	done, false otherwise (e.g. if it has entirely replaced the contents of the 
-	selection object with what the final clipboard contents should be).
+    A copy processor should return true if processing should continue after it’s
+    done, false otherwise (e.g. if it has entirely replaced the contents of the
+    selection object with what the final clipboard contents should be).
  */
 function addCopyProcessor(processor) {
-	if (GW.copyProcessors == null)
-		GW.copyProcessors = [ ];
+    if (GW.copyProcessors == null)
+        GW.copyProcessors = [ ];
 
-	GW.copyProcessors.push(processor);
+    GW.copyProcessors.push(processor);
 }
 
 /****************************************************************************/
-/*	Set up the copy processor system by registering a ‘copy’ event handler to
-	call copy processors.
+/*  Set up the copy processor system by registering a ‘copy’ event handler to
+    call copy processors.
  */
 function registerCopyProcessors(loadEventInfo) {
     GWLog("registerCopyProcessors", "rewrite.js", 1);
 
-	loadEventInfo.document.addEventListener("copy", (event) => {
-		event.preventDefault();
-		event.stopPropagation();
+    loadEventInfo.document.addEventListener("copy", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
 
-		let selection = getSelectionAsDocument(loadEventInfo.document);
+        let selection = getSelectionAsDocument(loadEventInfo.document);
 
-		let i = 0;
-		while (   i < GW.copyProcessors.length 
-			   && GW.copyProcessors[i++](event, selection));
+        let i = 0;
+        while (   i < GW.copyProcessors.length
+               && GW.copyProcessors[i++](event, selection));
 
-		event.clipboardData.setData("text/plain", selection.textContent);
-		event.clipboardData.setData("text/html", selection.innerHTML);
-	});
+        event.clipboardData.setData("text/plain", selection.textContent);
+        event.clipboardData.setData("text/html", selection.innerHTML);
+    });
 }
 
 addContentLoadHandler(registerCopyProcessors, "eventListeners", (info) => (   info.document instanceof Document
-		  				  												   || info.document instanceof ShadowRoot));
+                                                                           || info.document instanceof ShadowRoot));
 
 
 /********************/
@@ -1574,8 +1574,8 @@ addContentLoadHandler(registerCopyProcessors, "eventListeners", (info) => (   in
 function updateBackToTopLinkScrollPositionIndicator(event) {
     GWLog("updateBackToTopLinkScrollPositionIndicator", "rewrite.js", 3);
 
-	GW.backToTop.dataset.scrollPosition = Math.round(100 * (window.pageYOffset / (document.documentElement.offsetHeight - window.innerHeight)));
-	GW.backToTop.style.backgroundSize = `100% ${GW.backToTop.dataset.scrollPosition}%`;
+    GW.backToTop.dataset.scrollPosition = Math.round(100 * (window.pageYOffset / (document.documentElement.offsetHeight - window.innerHeight)));
+    GW.backToTop.style.backgroundSize = `100% ${GW.backToTop.dataset.scrollPosition}%`;
 }
 
 /*********************************************************************/
@@ -1586,17 +1586,17 @@ function updateBackToTopLinkScrollPositionIndicator(event) {
 function updateBackToTopLinkVisibility(event) {
     GWLog("updateBackToTopLinkVisibility", "rewrite.js", 3);
 
-	//	One PgDn’s worth of scroll distance, approximately.
-	let onePageScrollDistance = (0.8 * window.innerHeight);
+    //  One PgDn’s worth of scroll distance, approximately.
+    let onePageScrollDistance = (0.8 * window.innerHeight);
 
     if (GW.isMobile()) {
-		//  Show back-to-top link on ANY scroll down.
-		if (GW.scrollState.unbrokenDownScrollDistance > 0)
-			GW.backToTop.classList.toggle("hidden", false);
+        //  Show back-to-top link on ANY scroll down.
+        if (GW.scrollState.unbrokenDownScrollDistance > 0)
+            GW.backToTop.classList.toggle("hidden", false);
     } else {
-		//  Show back-to-top link when scrolling a full page down from the top.
-		if (GW.scrollState.unbrokenDownScrollDistance > onePageScrollDistance)
-			GW.backToTop.classList.toggle("hidden", false);
+        //  Show back-to-top link when scrolling a full page down from the top.
+        if (GW.scrollState.unbrokenDownScrollDistance > onePageScrollDistance)
+            GW.backToTop.classList.toggle("hidden", false);
     }
 
     //  Hide back-to-top link when scrolling to top.
@@ -1614,25 +1614,25 @@ function injectBackToTopLink(loadEventInfo) {
         `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M6.1 422.3l209.4-209.4c4.7-4.7 12.3-4.7 17 0l209.4 209.4c4.7 4.7 4.7 12.3 0 17l-19.8 19.8c-4.7 4.7-12.3 4.7-17 0L224 278.4 42.9 459.1c-4.7 4.7-12.3 4.7-17 0L6.1 439.3c-4.7-4.7-4.7-12.3 0-17zm0-143l19.8 19.8c4.7 4.7 12.3 4.7 17 0L224 118.4l181.1 180.7c4.7 4.7 12.3 4.7 17 0l19.8-19.8c4.7-4.7 4.7-12.3 0-17L232.5 52.9c-4.7-4.7-12.3-4.7-17 0L6.1 262.3c-4.7 4.7-4.7 12.3 0 17z"/></svg>`
         + `</a></div>`);
 
-	//  Show/hide the back-to-top link on scroll up/down.
-	addScrollListener((event) => {
-		updateBackToTopLinkVisibility(event);
+    //  Show/hide the back-to-top link on scroll up/down.
+    addScrollListener((event) => {
+        updateBackToTopLinkVisibility(event);
 
-		if (GW.isMobile())
-			updateBackToTopLinkScrollPositionIndicator(event);
-	}, "updateBackToTopLinkScrollListener", { defer: true, ifDeferCallWhenAdd: true });
+        if (GW.isMobile())
+            updateBackToTopLinkScrollPositionIndicator(event);
+    }, "updateBackToTopLinkScrollListener", { defer: true, ifDeferCallWhenAdd: true });
 
-	//	Show the back-to-top link on mouseover.
-	GW.backToTop.addEventListener("mouseenter", (event) => {
-		GW.backToTop.style.transition = "none";
-		GW.backToTop.classList.toggle("hidden", false);
-	});
-	GW.backToTop.addEventListener("mouseleave", (event) => {
-		GW.backToTop.style.transition = "";
-	});
-	GW.backToTop.addEventListener("click", (event) => {
-		GW.backToTop.style.transition = "";
-	});
+    //  Show the back-to-top link on mouseover.
+    GW.backToTop.addEventListener("mouseenter", (event) => {
+        GW.backToTop.style.transition = "none";
+        GW.backToTop.classList.toggle("hidden", false);
+    });
+    GW.backToTop.addEventListener("mouseleave", (event) => {
+        GW.backToTop.style.transition = "";
+    });
+    GW.backToTop.addEventListener("click", (event) => {
+        GW.backToTop.style.transition = "";
+    });
 }
 
 addContentLoadHandler(injectBackToTopLink, "rewrite", (info) => info.isMainDocument);
@@ -1643,14 +1643,14 @@ addContentLoadHandler(injectBackToTopLink, "rewrite", (info) => info.isMainDocum
 /*****************/
 
 /*  Run the given function immediately if page layout has completed, or add an
-	event handler to run it as soon as page layout completes.
+    event handler to run it as soon as page layout completes.
  */
 function doWhenPageLayoutComplete(f) {
     if (GW.pageLayoutComplete == true)
         f();
     else
         GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", (info) => {
-			f();
+            f();
         }, { once: true });
 }
 
@@ -1666,38 +1666,38 @@ doWhenPageLoaded(() => {
 /**************************/
 /* BROKEN ANCHOR CHECKING */
 /**************************/
-/*	If a reader loads a page and the anchor ID/hash does not exist inside the page,
-	fire off a request to the 404 page, whose logs are reviewed manually,
-	with the offending page+anchor ID, for correction (either fixing an outdated
-	link somewhere on gwern.net, or adding a span/div manually to the page to
-	make old inbound links go where they ought to).
+/*  If a reader loads a page and the anchor ID/hash does not exist inside the page,
+    fire off a request to the 404 page, whose logs are reviewed manually,
+    with the offending page+anchor ID, for correction (either fixing an outdated
+    link somewhere on gwern.net, or adding a span/div manually to the page to
+    make old inbound links go where they ought to).
 
     Such broken anchors can reflect out of date cross-page references, or reflect
-	incoming URLs from elsewhere on the Internet which are broken/outdated.
-	(Within-page anchor links are checked statically at compile-time, and those
-	 errors should never exist.)
+    incoming URLs from elsewhere on the Internet which are broken/outdated.
+    (Within-page anchor links are checked statically at compile-time, and those
+     errors should never exist.)
  */
 
 function reportBrokenAnchorLink(link) {
-	GWLog("reportBrokenAnchorLink", "rewrite.js", 1);
+    GWLog("reportBrokenAnchorLink", "rewrite.js", 1);
 
-	if (link.hash == "")
-		return;
+    if (link.hash == "")
+        return;
 
-	GWServerLogError(fixedEncodeURIComponent(link.pathname) + "--" + fixedEncodeURIComponent(link.hash.substr(1)), "broken hash-anchor");
+    GWServerLogError(fixedEncodeURIComponent(link.pathname) + "--" + fixedEncodeURIComponent(link.hash.substr(1)), "broken hash-anchor");
 }
 
-/*	Check for broken anchor (location hash not pointing to any element on the
-	page) both at page load time and whenever the hash changes.
+/*  Check for broken anchor (location hash not pointing to any element on the
+    page) both at page load time and whenever the hash changes.
  */
 GW.notificationCenter.addHandlerForEvent("GW.hashHandlingSetupDidComplete", GW.brokenAnchorCheck = (info) => {
-	GWLog("GW.brokenAnchorCheck", "rewrite.js", 1);
+    GWLog("GW.brokenAnchorCheck", "rewrite.js", 1);
 
-	if (   location.hash > ""
-		&& /^#if_slide/.test(location.hash) == false
-		&& /^#:~:/.test(location.hash) == false
-		&& document.querySelector(selectorFromHash(location.hash)) == null)
-		reportBrokenAnchorLink(location);
+    if (   location.hash > ""
+        && /^#if_slide/.test(location.hash) == false
+        && /^#:~:/.test(location.hash) == false
+        && document.querySelector(selectorFromHash(location.hash)) == null)
+        reportBrokenAnchorLink(location);
 }, { once: true });
 GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", GW.brokenAnchorCheck);
 
@@ -1707,50 +1707,50 @@ GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", GW.brokenAnchorChec
 /**************************/
 
 function cleanLocationHash() {
-	GWLog("cleanLocationHash", "rewrite.js", 2);
+    GWLog("cleanLocationHash", "rewrite.js", 2);
 
-	if (   location.hash == "#top"
-		|| (   location.hash == "" 
-			&& location.href.endsWith("#"))) {
-		relocate(location.pathname);
-	}
+    if (   location.hash == "#top"
+        || (   location.hash == ""
+            && location.href.endsWith("#"))) {
+        relocate(location.pathname);
+    }
 }
 
 GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayoutCompleteHashHandlingSetup = (info) => {
-	GWLog("GW.pageLayoutCompleteHashHandlingSetup", "rewrite.js", 1);
+    GWLog("GW.pageLayoutCompleteHashHandlingSetup", "rewrite.js", 1);
 
     //  Chrome’s fancy new “scroll to text fragment”. Deal with it in Firefox.
     if (GW.isFirefox()) {
         if (location.hash.startsWith("#:~:")) {
             relocate(location.pathname);
         } else if (location.hash.includes(":~:")) {
-        	relocate(location.hash.replace(/:~:.*$/, ""));
+            relocate(location.hash.replace(/:~:.*$/, ""));
         }
     }
 
-	//	Clean location hash.
-	cleanLocationHash();
+    //  Clean location hash.
+    cleanLocationHash();
 
-	//	Save hash, for change tracking.
-	GW.locationHash = location.hash;
+    //  Save hash, for change tracking.
+    GW.locationHash = location.hash;
 
-	/*	Remove “#top” or “#” from the URL hash (e.g. after user clicks on the 
-		back-to-top link).
-	 */
-	window.addEventListener("hashchange", GW.handleBrowserHashChangeEvent = () => {
-		GWLog("GW.handleBrowserHashChangeEvent", "rewrite.js", 1);
+    /*  Remove “#top” or “#” from the URL hash (e.g. after user clicks on the
+        back-to-top link).
+     */
+    window.addEventListener("hashchange", GW.handleBrowserHashChangeEvent = () => {
+        GWLog("GW.handleBrowserHashChangeEvent", "rewrite.js", 1);
 
-		//	Clean location hash.
-		cleanLocationHash();
+        //  Clean location hash.
+        cleanLocationHash();
 
-		//	If hash really changed, update saved hash and fire event.
-		if (GW.locationHash != location.hash) {
-			GW.notificationCenter.fireEvent("GW.hashDidChange", { oldHash: GW.locationHash });
-			GW.locationHash = location.hash;
-		}
-	});
+        //  If hash really changed, update saved hash and fire event.
+        if (GW.locationHash != location.hash) {
+            GW.notificationCenter.fireEvent("GW.hashDidChange", { oldHash: GW.locationHash });
+            GW.locationHash = location.hash;
+        }
+    });
 
-	GW.notificationCenter.fireEvent("GW.hashHandlingSetupDidComplete");
+    GW.notificationCenter.fireEvent("GW.hashHandlingSetupDidComplete");
 }, { once: true });
 
 
