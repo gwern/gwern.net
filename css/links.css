@@ -1031,7 +1031,7 @@ a[data-link-icon='metaculus']::after {
     --link-icon-offset-y: 0.2em;
     --link-icon-offset-x: 0.2em;
 
-    opacity: 0.75;
+    opacity: 0.70;
 }
 a[data-link-icon='metaculus']:hover::after {
     opacity: 0.45;
