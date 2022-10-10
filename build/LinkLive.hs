@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-10-06 09:29:34 gwern"
+When:  Time-stamp: "2022-10-09 23:14:01 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -3165,7 +3165,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
             , ("https://www.memteaimports.com/tea/bei-dou", True)
             , ("https://www.mentalfloss.com/article/94569/clair-patterson-scientist-who-determined-age-earth-and-then-saved-it", True)
             , ("https://www.mercurynews.com/2016/01/27/san-jose-former-postal-inspector-to-serve-3-years-for-possessing-stolen-mail-marijuana-trafficking/", True)
-            , ("https://www.merkle.com/cryo/techFeas.html", True)
+            , ("https://ralphmerkle.com/cryo/techFeas.html", True)
             , ("https://www.metafilter.com/91797/working-working-memory-with-dual-nback#3108845", True)
             , ("https://www.metopera.org/season/in-cinemas/2019-20-season/akhnaten-live-in-hd/", True)
             , ("https://www.metzdowd.com/pipermail/cryptography/2015-January/024433.html", True)
@@ -3722,7 +3722,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://eiga.com/news/20110830/11/", False)
             , ("https://ejlt.org/article/view/320/424", False)
             , ("https://elifesciences.org/articles/66920", False)
-            , ("https://eml.berkeley.edu/~jsteinsson/papers/giftofmoving.pdf", False)
             , ("https://en.chessbase.com/post/a-history-of-cheating-in-chess-4", False)
             , ("https://en.wik%20ipedia.org/wiki/Va%20nishing_bird_cage", False)
             , ("https://en.wikip%20edia.org/wiki/The_%20Prestige_(film)", False)
