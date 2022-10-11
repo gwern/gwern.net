@@ -219,6 +219,7 @@ whiteList = M.fromList [
       ]
     )
   , ("https://www.teds.ac.uk/about-teds", ["TEDS", "Twins Early Development Study"])
+  , ("/docs/iq/2018-lee.pdf", ["Lee et al 2018"])
   , ("https://en.wikipedia.org/wiki/Reliability_(statistics)", ["reliability", "reliable"])
   , ("https://en.wikipedia.org/wiki/Functional_magnetic_resonance_imaging", ["fMRI", "functional magnetic resonance imaging"])
   , ("regret", ["https://en.wikipedia.org/wiki/Regret_(decision_theory)"])

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-10-10 12:56:59 gwern"
+When:  Time-stamp: "2022-10-11 19:41:27 gwern"
 License: CC-0
 -}
 
@@ -686,7 +686,7 @@ guessTagFromShort m t = let allTags = nubOrd $ sort m in
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
 tagsLong2Short, tagsShort2Long :: [(String,String)]
-tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/samples"), ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"), ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision"), ("evolution", "genetics/selection/natural"), ("gpt-3", "ai/nn/transformer/gpt"), ("gpt3", "ai/nn/transformer/gpt"), ("red", "design/typography/rubrication"), ("self-attention", "ai/nn/transformer/attention"), ("efficient-attention", "ai/nn/transformer/attention"), ("ai/rnn", "ai/nn/rnn"), ("ai/retrieval", "ai/nn/retrieval"), ("mr", "genetics/heritable/correlation/mendelian-randomization"), ("japan/anime", "anime"), ("psychology/birds/neuroscience", "psychology/bird/neuroscience"), ("psychology/birds", "psychology/bird"), ("dalle","dall-e"), ("dall-e", "ai/nn/transformer/gpt/dall-e"), ("silk-road-1", "darknet-markets/silk-road/1"), ("sr1", "darknet-markets/silk-road/1"), ("silk-road-2", "darknet-markets/silk-road/2"), ("sr2", "darknet-markets/silk-road/2"), ("psychology/neuroscience/bird", "psychology/bird/neuroscience"), ("uighurs", "history/uighur"), ("ai/nn/adversarial", "ai/adversarial")] ++
+tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/samples"), ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"), ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision"), ("evolution", "genetics/selection/natural"), ("gpt-3", "ai/nn/transformer/gpt"), ("gpt3", "ai/nn/transformer/gpt"), ("red", "design/typography/rubrication"), ("self-attention", "ai/nn/transformer/attention"), ("efficient-attention", "ai/nn/transformer/attention"), ("ai/rnn", "ai/nn/rnn"), ("ai/retrieval", "ai/nn/retrieval"), ("mr", "genetics/heritable/correlation/mendelian-randomization"), ("japan/anime", "anime"), ("psychology/birds/neuroscience", "psychology/bird/neuroscience"), ("psychology/birds", "psychology/bird"), ("dalle","dall-e"), ("dall-e", "ai/nn/transformer/gpt/dall-e"), ("silk-road-1", "darknet-markets/silk-road/1"), ("sr1", "darknet-markets/silk-road/1"), ("silk-road-2", "darknet-markets/silk-road/2"), ("sr2", "darknet-markets/silk-road/2"), ("psychology/neuroscience/bird", "psychology/bird/neuroscience"), ("uighurs", "history/uighur"), ("ai/nn/adversarial", "ai/adversarial"), ("add", "psychiatry/adhd"), ("personality/conscientiousness", "psychology/personality/conscientiousness")] ++
                  -- ^ custom tag shortcuts, to fix typos etc
                  -- attempt to infer short->long rewrites from the displayed tag names, which are long->short; but note that many of them are inherently invalid and the mapping only goes one way.
                   (map (\(a,b) -> (map toLower b,a)) $ filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
@@ -823,7 +823,6 @@ tagsLong2Short = [
           , ("psychology/bird/neuroscience", "bird brains")
           , ("psychology/european-journal-of-parapsychology", "<em>EJP</em>")
           , ("psychology/spaced-repetition", "spaced repetition")
-          , ("psychiatry/traumatic-brain-injury", "TBI")
           , ("sociology/abandoned-footnotes", "<em>Abandoned Footnotes</em>")
           , ("sociology/preference-falsification", "preference falsification")
           , ("statistics/survival-analysis", "survival analysis")
@@ -834,9 +833,12 @@ tagsLong2Short = [
           , ("statistics/bayes", "Bayes")
           , ("statistics/order", "order statistics")
           , ("statistics/decision", "decision theory")
+          , ("psychiatry/traumatic-brain-injury", "TBI")
+          , ("psychiatry/adhd", "ADHD")
           , ("psychiatry/schizophrenia", "SCZ")
           , ("psychiatry/bipolar", "BPD")
           , ("psychiatry/depression", "MDD")
+          , ("psychiatry/meditation", "meditation")
           , ("longevity/johan-bjorksten", "Johan Bjorksten")
           , ("longevity/senolytic", "senolytics")
           , ("genetics/sequencing", "gene sequencing")
@@ -859,7 +861,6 @@ tagsLong2Short = [
           , ("genetics/microbiome", "microbiome")
           , ("economics/georgism", "Georgism")
           , ("economics/experience-curve", "experience curves")
-          , ("psychiatry/meditation", "meditation")
           , ("fiction/criticism", "literary criticism")
           , ("fiction/text-game", "text game")
           , ("fiction/gene-wolfe", "Gene Wolfe")
@@ -2344,6 +2345,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<span class=\"math inline\">\\(\\varphi\\)</span>", "ϕ")
          , ("<span class=\"math inline\">\\(W z_i\\)</span>", "<em>Wz<sub>i</sub></em>")
          , ("<span class=\"math inline\">\\({\\raise.17ex\\hbox{<span class=\"math inline\">~</span>}}\\)</span>", "~")
+         , ("<span class=\"math inline\">\\(z=0\\)</span>", "<em>z</em> = 0")
+         , ("<span class=\"math inline\">\\(r \\to\\infty\\)</span>", "<em>r</em> → ∞")
          , (" TD()", " TD(λ)")
          , ("({\\lambda})", "(λ)")
          , ("O((log n log log n)^2)", "𝒪(log<sup>2</sup> <em>n</em> log log <em>n</em>)")
@@ -2886,6 +2889,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" cm(3)", " cm<sup>3</sup>")
          , (" R2", " R<sup>2</sup>")
          , ("R2 = ", "R<sup>2</sup> = ")
+         , (" R(2)", " R<sup>2</sup>")
          , ("top-k", "top-<em>k</em>")
          , ("Top-k", "Top-<em>k</em>")
          , ("Top-K", "Top-<em>k</em>")
@@ -2901,6 +2905,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<em>p<\\/em>=", "<em>p</em> = ")
          , ("P = ", "<em>p</em> = ")
          , ("P values", "<em>p</em>-values")
+         , (" p value", " <em>p</em>-value")
          , (" P &lt; .", " <em>p</em> &lt; 0.")
          , (" P &lt;", " <em>p</em> &lt;")
          , (" P &lt;", " <em>p</em> &lt;")
@@ -2953,6 +2958,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" k > ", " <em>k</em> > ")
          , (" N &gt; ", " <em>n</em> &gt; ")
          , (" N > ", " <em>n</em> > ")
+         , (" N<sub>effective</sub>", " <em>N<sub>effective</sub>")
+         , (" N-weighted", " <em>N</em>-weighted")
          , (" n-back", " <em>n</em>-back")
          , ("<em>p</em> &lt; .05", "<em>p</em> &lt; 0.05")
          , ("( <em>p</em>", "(<em>p</em>")
