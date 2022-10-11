@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-10-09 23:14:01 gwern"
+When:  Time-stamp: "2022-10-10 12:52:26 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -767,7 +767,7 @@ goodDomainsSimple =
     , "www.memteaimports.com"
     , "www.mentalfloss.com"
     , "www.mercurynews.com"
-    , "www.merkle.com"
+    , "ralphmerkle.com"
     , "www.metafor-project.org"
     , "www.metopera.org"
     , "www.metzdowd.com"
@@ -1439,7 +1439,6 @@ badDomainsSimple = [ "2chan.us"
    , "risk-engineering.org"
    , "ro.ecu.edu.au"
    , "royalsocietypublishing.org"
-   , "rpds.princeton.edu"
    , "rss.onlinelibrary.wiley.com"
    , "runrepeat.com"
    , "samsaffron.com"
@@ -4048,7 +4047,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://risk-engineering.org/concept/Rasmussen-practical-drift", False)
             , ("https://ro.ecu.edu.au/cgi/viewcontent.cgi?article=1025&context=spsyc_pres", False)
             , ("https://royalsocietypublishing.org/doi/10.1098/rsos.170988", False)
-            , ("https://rpds.princeton.edu/papers/pdfs/case_paxson_morbidity.pdf", False)
             , ("https://rpubs.com/EmilOWK/232493", False)
             , ("https://rss.onlinelibrary.wiley.com/doi/full/10.1111/j.1740-9713.2006.00202.x", False)
             , ("https://runrepeat.com/height-evolution-in-the-nba", False)

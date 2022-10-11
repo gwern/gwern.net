@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-10-09 22:26:39 gwern"
+When:  Time-stamp: "2022-10-10 12:56:59 gwern"
 License: CC-0
 -}
 
@@ -1340,7 +1340,7 @@ generateID url author date
   | any (\(u,_) -> u == url) linkIDOverrides = fromJust $ lookup url linkIDOverrides
   | ("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index" `isSuffixOf` url) = ""
   -- eg. '/Faces' = '#gwern-faces'
-  | ("Gwern Branwen" == author) ||
+  | ("Gwern Branwen" == author) &&
     (("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && not ('.'`elem`url) && not ("/index"`isInfixOf`url))
   = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("'", ""), ("https://", ""), ("https://www.gwern.net/", "")] $ map toLower $ "gwern-"++url)
   -- skip tag links:
@@ -2768,6 +2768,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("&lt;b&gt;&lt;i&gt;", "<em>")
          , ("acc.:", "accuracy:")
          , (" m/s", " m⁄s")
+         , (" 1/100 ", " 1⁄100 ")
          , ("~1/250", "~1⁄250")
          , (" 2/3 ", " 2⁄3 ")
          , (" 3/3 ", " 3⁄3 ")
@@ -3152,6 +3153,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("longstanding", "long-standing")
          , ("co- occurring", "co-occurring")
          , ("CLIP- based", "CLIP-based")
+         , ("self- and psychiatrist-rated", "self-rated & psychiatrist-rated")
          , (" GPT2", " GPT-2")
          , (" GPT3", " GPT-3")
          , ("</sup><br/>", "</sup>")
@@ -3165,12 +3167,19 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("Yann Le Cun", "Yann LeCun")
          , ("Oliver Bryne", "Oliver Byrne")
          , ("UCF-101", "UCF101")
+         , ("WikiText103", "WikiText-103")
          , (" an universe", " a universe")
          , ("eyetracking", "eye tracking")
          , ("PsychINFO", "PsycINFO")
          , (" an universe", " a universe")
          , ("Norbert Weiner",  "Norbert Wiener")
          , ("mulitple",  "multiple")
+         , (" a improvement",  " an improvement")
+         , (" a enrichment", " an enrichment")
+         , (" a insertional", " an insertional")
+         , (" a overlap", " an overlap")
+         , (" a audio", " an audio")
+         , (" a interaction", " an interaction")
          , ("statistically statistically-significant", "statistically-significant")
          , ("-wide significance", "-wide statistical-significance")
          , ("GW significance", "genome-wide statistical-significance")
@@ -3197,6 +3206,10 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("behaviour", "behavior")
          , ("de Novo", "De Novo")
          , ("small saple", "small sample")
+         , ("ofsmoking", "of smoking")
+         , (" u.s. ", " U.S. ")
+         , ("ofthe", "of the")
+         , ("ofdata", "of data")
          , ("\8201", " ")
          , ("Fr’echet", "Fréchet")
          , ("Frechet", "Fréchet")

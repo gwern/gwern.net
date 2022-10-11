@@ -125,7 +125,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.dailymail.co.uk" = aI "𝔐" "text" -- 𝔐 MATHEMATICAL FRAKTUR CAPITAL M
  | aU'' ["danbooru.donmai.us", "derpibooru.org", "safebooru.org"] = aI "❐" "text" -- ❐ U+2750 UPPER RIGHT DROP-SHADOWED WHITE SQUARE
  | u'' "www.edge.org" = aI "E" "text,italic"
- | u'' "www.economist.com" = aI "E" "text,sans" -- Economist: logo is just ‘Economist’... There is a sibling magazine <https://en.wikipedia.org/wiki/1843_(magazine)> which I don't seem to link to.
+ | u'' "www.economist.com" = aI "E" "text,sans" -- Economist: logo is just ‘Economist’… There is a sibling magazine <https://en.wikipedia.org/wiki/1843_(magazine)> which I don't seem to link to.
  | u'' "everything2.com" = aI "E2" "text"
  | u'' "examine.com" = aI "Eχ" "text,sans"
  | u'' "www.sciencedirect.com" = aI "E" "text" -- Elsevier/Sciencedirect.com: also an ‘E’
@@ -149,7 +149,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.theverge.com" = aI "▽" "text" -- The Verge uses a sort of delta Escher triangle-esque 'V' stylization <https://en.wikipedia.org/wiki/The_Verge> which looks like a triangle pointing down, so, ▽ WHITE DOWN-POINTING TRIANGLE (Nabla operator) &#x25BD; &#9661;
  | u'' "www.quora.com" = aI "Q" "text" -- surprisingly, no one's taken 'Q' yet
  | aU'' ["www.edwardtufte.com", "edwardtufte.github.io"] || aU' ["github.com/edwardtufte/", "github.com/jez/tufte-pandoc-jekyll", "github.com/jez/tufte", "github.com/clayh53/tufte", "/docs/design/typography/rubrication/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "cran.r-project.org/web/packages/tufte/"] = aI "ET" "text"
- | aU'' ["cran.r-project.org", "www.r-project.org", "lme4.r-forge.r-project.org", "www.metafor-project.org", "rstudio.com"] || u' "github.com/paul-buerkner/brms" = aI "R" "text" -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too... primary user: cran.r-project.org
+ | aU'' ["cran.r-project.org", "www.r-project.org", "lme4.r-forge.r-project.org", "www.metafor-project.org", "rstudio.com"] || u' "github.com/paul-buerkner/brms" = aI "R" "text" -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too… primary user: cran.r-project.org
  | u'' "www.science.org" || u'' "sciencemag.org" = aI "S" "text" -- Science is just typeset in red
  | u'' "www.sciencedaily.com" = aI "SD" "text,sans"
  | u'' "www.sciencenews.org" = aI "SN" "text,sans" -- <https://en.wikipedia.org/wiki/Science_News>
@@ -165,7 +165,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "onlinelibrary.wiley.com" = aI "W" "text,sans" -- Wiley & Sons’s ‘W’ unfortunately overlaps with the WP ‘W’ but if we sans it, maybe that’ll help. primary user: onlinelibrary.wiley.com
  | aU' ["longbets.org", "longnow.org", "rosettaproject.org", "theinterval.org"] = aI "X" "text,overline" -- Long Now Foundation projects
  | u'' "yunnansourcing.com" || u'' "yunnansourcing.us" = aI "ys" "text"
- | u'' "predictionbook.com" = aI "?" "text,sans,bold" -- PB logo is confusing. A purple question mark...?
+ | u'' "predictionbook.com" = aI "?" "text,sans,bold" -- PB logo is confusing. A purple question mark…?
  | u'' "silkroadvb5piz3r.onion" || u'' "silkroad5v7dywlc.onion" = aI "SR1" "text,sans"
  | u'' "beepb00p.xyz" = aI "\129302" "text" -- ROBOT FACE U+1F916
  | u'' "antilop.cc" = aI "෴" "text" -- SINHALA PUNCTUATION KUNDDALIYA 0x0DF4 - because it's written by "Moustache", get it
@@ -182,7 +182,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.thecut.com" = aI "TC" "text"
  | u'' "www.scientificamerican.com" = aI "SA" "text"
  | u'' "www.mirror.co.uk" = aI "M" "text,sans"
- | u'' "www.stuff.co.nz" = aI "NZ" "text,sans" -- even their official name 'Stuff' is lazy and unmemorable. I just think of them as 'that New Zealand website reporting on crime & DNM stuff'...
+ | u'' "www.stuff.co.nz" = aI "NZ" "text,sans" -- even their official name 'Stuff' is lazy and unmemorable. I just think of them as 'that New Zealand website reporting on crime & DNM stuff'…
  | u'' "chronopause.com" = aI "M.D." "text,sans" -- Mike Darwin, similarly TODO: experiment with initials using periods - does this work as-is? How about quad? '﹒' SMALL FULL STOP U+FE52 does not work.
  | u'' "vitalik.ca" || u' "/docs/economics/2018-buterin.pdf" = aI "V.B." "text,sans" -- Vitalik Buterin, similarly
  | u'' "unenumerated.blogspot.com" || u' "szabo.best.vwh.net" || u' "nick-szabo" = aI "N.S." "text,sans" -- Nick Szabo
@@ -260,7 +260,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.nap.edu" = aI "NAP" "text,tri"
  | u' ".cnn.com" = aI "CNN" "text,tri,sans"
  | u'' "www.npr.org" || u'' "text.npr.org" = aI "npr" "text,tri,sans" -- NPR styles it in lowercase in their |n|p|r| logo
- | u'' "www.filfre.net" = aI "TDA" "text,tri,sans" -- Filfre.net/The Digital Antiquarian has no logo or usable substitute...
+ | u'' "www.filfre.net" = aI "TDA" "text,tri,sans" -- Filfre.net/The Digital Antiquarian has no logo or usable substitute…
  | u'' "lwn.net" = aI "LWN" "text,tri,sans"
  | u' ".fast.ai" ||  u' "github.com/fastai/" = aI "F.ai" "text,tri"
  | u'' "www.sfgate.com" = aI "SFG" "text,tri,sans"
@@ -278,7 +278,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | aU'' ["blogs.wsj.com", "online.wsj.com", "www.wsj.com"] = aI "WSJ" "text,tri" -- The Wall Street Journal
  | u'' "gameprogrammingpatterns.com" = aI "GPP" "text,tri,sans"
  | u'' "www.metopera.org" = aI "Met" "text,tri"
- | u'' "www.schneier.com" = aI "SOS" "text,tri,sans" -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says... "SOS")
+ | u'' "www.schneier.com" = aI "SOS" "text,tri,sans" -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says… "SOS")
  | u'' "hbr.org" = aI "HBR" "text,tri,sans" -- Harvard Business Review
  | aU'' ["dl.acm.org", "queue.acm.org", "cacm.acm.org"] = aI "acm" "text,tri,sans" -- <https://en.wikipedia.org/wiki/File:Association_for_Computing_Machinery_(ACM)_logo.svg> 'acm' sans in a circle inside a diamond; can't fake it with Unicode joiners (they'd only put one character into a circle+diamond), and I probably don't want to bother with a SVG.
  | u' "www.cs.utexas.edu/~EWD/" = aI "EWD" "text,tri,sans" -- Edsger W. Dijkstra, of course, wrote in sans
@@ -295,9 +295,9 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.nber.org" && (extension u /= ".pdf") = aI "NBER" "text,quad"
  | u'' "www.pnas.org" = aI "PNAS" "text,quad" -- PNAS: they don’t have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (but just as black text on white background, per our monochrome theme) [On second thought, all of the icons using background squares, like HN/YC, are very intense and hard to visually balance. It's probably better to leave PNAS as just a quad-letter.]
  | u'' "www.rand.org" = aI "RAND" "text,quad,sans"
- | u' ".sagepub.com" = aI "SAGE" "text,quad,sans" -- Sage Journals’s logo is a circled S... but would anyone recognize it? Primary user: journals.sagepub.com
+ | u' ".sagepub.com" = aI "SAGE" "text,quad,sans" -- Sage Journals’s logo is a circled S… but would anyone recognize it? Primary user: journals.sagepub.com
  | u'' "publicdomainreview.org" = aI "TPDR" "text,quad"
- | u' "xkcd.com" = aI "XKCD" "text,quad,sans" -- covers explainxkcd.com, what-if.xkcd.com...
+ | u' "xkcd.com" = aI "XKCD" "text,quad,sans" -- covers explainxkcd.com, what-if.xkcd.com…
  | u'' "www.imdb.com" = aI "IMDb" "text,sans,quad"
  | u'' "www.nejm.org" = aI "NEJM" "text,quad"
  | u'' "spectrum.ieee.org" || u'' "ieeexplore.ieee.org" = aI "IEEE" "text,mono,quad"
@@ -329,6 +329,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.spiegel.de" = aI "SPGL" "text,quad" -- Der Spiegel, major German newspaper; the 'S' logo is unrecognizable given the sheer number of 'S' logos out there, so abbreviation instead
  | u'' "tasvideos.org" = aI "TASV" "text,quad" -- TASVideos.org: tool-assisted game movies
  | u'' "habr.com" = aI "Habr" "text,quad,sans" -- Russian tech collaborative blog <https://en.wikipedia.org/wiki/Habr>
+ | u'' "www.teds.ac.uk" = aI "TEDS" "text,quad,sans" -- UK twin registry founded by Robert Plomin, heavily used in behavioral genetics & sociology/psychology; it has a clever little logo (https://www.teds.ac.uk/Content/Images/TEDSlogo.png) & a monochrome SVG version would work… but unfortunately no one ever uses it & it is always known as "Twins Early Development Study (TEDS)"
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -346,7 +347,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' ".nytimes.com" = aI "newyorktimes" "svg" -- The New York Times: manual edit, reducing full 'NEW YORK TIMES' SVG logo to just the ‘T’ they use as an icon.
  | aU'' ["www.ncbi.nlm.nih.gov", "pubmed.ncbi.nlm.nih.gov", "www.clinicaltrials.gov"] = aI "nlm-ncbi" "svg" -- NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg). primary user: ncbi.nlm.nih.gov
  | u'' "www.patreon.com" = aI "patreon" "svg" -- Patreon. (Used the old one (https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg) because I don’t like the new one.)
- | aU' ["plos.org", "plosone.org", "plosmedicine.org"] = aI "plos" "svg" -- PLOS ONE in all their domain permutations... primary user: journals.plos.org
+ | aU' ["plos.org", "plosone.org", "plosmedicine.org"] = aI "plos" "svg" -- PLOS ONE in all their domain permutations… primary user: journals.plos.org
  | u' "reddit.com" = aI "reddit" "svg" -- old.reddit.com
  | aU' ["overflow.net", "overflow.com", "stackexchange.com"] = aI "stackexchange" "svg" -- The *Exchange/*Overflow family of websites.
  | u' "substack.com" = aI "substack" "svg" -- gwern.substack.com
@@ -509,7 +510,7 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                      "www.wakapoetry.net", "www.wunderground.com", "www.standard.co.uk", "www.rte.ie", "www.orlandosentinel.com",
                      "www.mercurynews.com", "www.links.org", "www.math.uwaterloo.ca", "sourceforge.net", "shkspr.mobi", "ro.ecu.edu.au",
                      "repository.upenn.edu","proceedings.neurips.cc","polisen.se", "latanyasweeney.org", "highnoongmt.wordpress.com",
-                     "alumni.media.mit.edu", "www.merkle.com", "www.mentalfloss.com", "www.lightspeedmagazine.com", "ajp.psychiatryonline.org",
+                     "alumni.media.mit.edu", "ralphmerkle.com", "www.mentalfloss.com", "www.lightspeedmagazine.com", "ajp.psychiatryonline.org",
                      "agtb.wordpress.com", "aeon.co", "digitalcommons.unl.edu", "emilkirkegaard.dk", "gazette.com", "ohtori.nu",
                      "www.austlii.edu.au", "www.animenewsservice.com", "www.animeigo.com", "www.alexa.com", "vividness.live",
                      "thepharmacyexpress.com", "thegrandnarrative.com", "srconstantin.wordpress.com", "penelope.uchicago.edu",
@@ -1054,4 +1055,5 @@ linkIconTestUnitsText =
          , ("https://www.anthropic.com/news/announcement", "anthropic", "svg")
          , ("https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html#anthropic", "anthropic", "svg")
          , ("https://arxiv.org/abs/2207.05221#anthropic", "anthropic", "svg")
+         , ("https://www.teds.ac.uk/about-teds", "TEDS", "text,quad,sans")
         ]
