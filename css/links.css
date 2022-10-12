@@ -260,6 +260,7 @@ a[data-link-icon='𝔊']::after {
     pop-frames.
  */
 body.index a.link-page::after,
+body.static-404 a.link-page::after,
 .popframe-body.index a.link-page::after,
 .popframe-body.backlinks a.link-page::after {
     content: none;
