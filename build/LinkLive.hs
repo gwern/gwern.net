@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-10-10 12:52:26 gwern"
+When:  Time-stamp: "2022-10-12 09:22:35 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -2454,6 +2454,7 @@ badDomainsSimple = [ "2chan.us"
   , "www.vice.com"
   , "www.vox.com"
   , "www.wunderground.com"
+  , "www.teds.ac.uk"
    ]
 
 url :: T.Text -> Inline
@@ -4791,4 +4792,5 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://yunnansourcing.com/collections/flower-and-herbal-teas/products/yunnan-sun-dried-wild-rose-buds-from-wenshan", False)
             , ("https://yunnansourcing.us/", False)
             , ("https://annals.org/article.aspx?articleid=745807", False)
+            , ("https://www.teds.ac.uk/about-teds", False)
             ]
