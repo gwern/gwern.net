@@ -135,7 +135,7 @@ embed edb i@(p,_) = do
     else do let doc = formatDoc i
             (modelType,embedding) <- oaAPIEmbed doc
             today <- currentDay
-            return (p,today,(T.unpack doc),modelType,embedding)
+            return (p,today,T.unpack doc,modelType,embedding)
  where new = takeBaseName p
        olds = filter (\(pold,_,_,_,_) -> if head pold == '/' then new == takeBaseName pold
                                          else dehttp new == dehttp pold) edb
@@ -193,7 +193,7 @@ knnEmbedding f k (_,_,_,_,embd) = V.toList $
                                -- NOTE: 'metricL2' *seems* to be the L2-normalized Euclidean distance? which is *proportional* to cosine similarity/distance: not identical, but produces the same ranking, and so just as good for my purpose here? or so claims https://stats.stackexchange.com/a/146279/16897
                                -- 'inner' also works, type-wise, but produces terrible results on the GPT-3-ada embeddings; this is apparently due to the extremely similar magnitude of the embeddings, and dot-product not working as well as cosine similarity on language model embeddings is apparently common and expected.
                               -- 'knn', 'knnH', 'knnPQ': knnH/knnPQ always perform way worse for me.
-                               knn metricL2 k f ((fromListDv embd)::DVector Double)
+                               knn metricL2 k f (fromListDv embd :: DVector Double)
 
 findNearest :: Forest -> Int -> Embedding -> [String]
 findNearest f k e = map (\(_,Embed _ p) -> p) $ knnEmbedding f k e
@@ -202,7 +202,7 @@ findNearest f k e = map (\(_,Embed _ p) -> p) $ knnEmbedding f k e
 findN :: Forest -> Int -> Int -> Embedding -> (String,[String])
 findN _ 0 _ e = error ("findN called for k=0; embedding target: " ++ show e)
 findN _ _ 0 e = error ("findN failed to return enough candidates within iteration loop limit. Something went wrong! Embedding target: " ++ show e)
-findN f k iter e@(p1,_,_,_,_) = let results = take bestNEmbeddings $ nub $ filter (\(p2) -> not (blackList p2)) $ findNearest f k e in
+findN f k iter e@(p1,_,_,_,_) = let results = take bestNEmbeddings $ nub $ filter (not . blackList) $ findNearest f k e in
                  -- NOTE: 'knn' is the fastest (and most accurate?), but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
                  -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed…)
                  -- If that happens, back off and request more k up to a max of 50.
@@ -256,7 +256,11 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
              alreadyLinkdBacklinks = case M.lookup (T.pack p) bdb of
                                        Nothing        -> []
                                        Just backlinks -> backlinks
-             alreadyLinked = alreadyLinkedBody ++ alreadyLinkdBacklinks
+             alreadyTagsLinked = case M.lookup p md of
+                          Nothing               -> []
+                          Just (_,_,_,_,[],_)   -> []
+                          Just (_,_,_,_,tags,_) -> map (\tag -> "/docs/" `T.append` T.pack tag `T.append` "/index") tags
+             alreadyLinked = alreadyLinkedBody ++ alreadyLinkdBacklinks ++ alreadyTagsLinked
              matchesPruned = filter (\p2 -> T.pack p2 `notElem` alreadyLinked) matches
 
              similarItems = filter (not . null) $ map (generateItem md linkTagsP) matchesPruned
@@ -269,7 +273,10 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
                                                doiQuery = "doi:" ++ doiEscaped
                                                title' = simplifiedString title -- need to strip out HTML formatting like "<em>Peep Show</em>—The Most Realistic Portrayal of Evil Ever Made"
                                                titleQuery = urlEncode $ "\"" ++ title' ++ "\""
-                                               query = if null title' && not (null doi) then doiQuery else if null doi && not (null title) then titleQuery else doiQuery ++ "+OR+" ++ titleQuery
+                                               query
+                                                 | null title' && not (null doi) = doiQuery
+                                                 | null doi && not (null title) = titleQuery
+                                                 | otherwise = doiQuery ++ "+OR+" ++ titleQuery
                                                linkMetadataG  = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "google"), ("link-icon-type", "svg")])
                                                linkMetadataGS = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "google-scholar"), ("link-icon-type", "svg")])
                                                linkMetadataCP = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "connected-papers"), ("link-icon-type", "svg")])
@@ -303,7 +310,8 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
                     in case htmlEither of
                                 Left e -> error $ show e ++ ":" ++ show p ++ ":" ++ show matches ++ ":" ++ show similarItems
                                 Right output -> output
-             similarLinksHtmlFragment = if (C.listLength (BulletList similarItems) > 60 || length matchesPruned < 4) then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
+             similarLinksHtmlFragment = if C.listLength (BulletList similarItems) > 60 || length matchesPruned < 4 then html
+                                        else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
          in similarLinksHtmlFragment
 
 generateItem :: Metadata -> Bool -> String -> [Block]
