@@ -31,7 +31,7 @@ import LinkBacklink (readBacklinksDB, Backlinks)
 import Columns as C (listLength)
 import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, parseRawInline)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, replaceManyT, safeHtmlWriterOptions)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, replaceManyT, safeHtmlWriterOptions, printGreen)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
@@ -40,7 +40,7 @@ singleShotRecommendations html =
      edb <- readEmbeddings
      bdb <- readBacklinksDB
 
-     newEmbedding <- embed [] ("",("","","","",[],html))
+     newEmbedding <- embed [] md bdb ("",("","","","",[],html))
      ddb <- embeddings2Forest (newEmbedding:edb)
      let (_,n) = findN ddb (2*bestNEmbeddings) iterationLimit newEmbedding :: (String,[String])
 
@@ -128,11 +128,23 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
     maxLength :: Int
     maxLength = 7900 -- how long is too long? OA guesstimates 1 BPE = 4 characters on average (https://beta.openai.com/tokenizer), so 2047 BPEs ~ 8192 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
 
-embed :: Embeddings -> (String,MetadataItem) -> IO Embedding
-embed edb i@(p,_) = do
+embed :: Embeddings -> Metadata -> Backlinks -> (String,MetadataItem) -> IO Embedding
+embed edb mdb bdb i@(p,_) = do
   -- an embedding may already exist for this, and the embedding firing because of a rename. As a heuristic, we check for any existing embedding with the same base filename, to catch cases of '/docs/foo/bar.pdf' → 'docs/foo/baz/bar.pdf'; when we bulk-rename large directories of annotated files, the false-positive embeddings can get expensive!
   if not (null olds) then let (_,b,c,d,e) = head olds in return (p,b,c,d,e)
-    else do let doc = formatDoc i
+    else do
+            -- Flourish: look up the backlinks and append their title/author/date to the embedded document; should add useful keywords & context
+            let backlinks = case M.lookup (T.pack p) bdb of
+                              Nothing -> []
+                              Just bl -> map T.unpack bl
+            let backlinksMetadata = if null backlinks then "" else
+                                      unlines $ ["Reverse citations:"] ++
+                                       map (\b -> case M.lookup b mdb of
+                                                   Nothing -> ""
+                                                   Just (t,a,d,_,_,_) -> "\"" ++ t ++ "\", " ++ authorsTruncate a ++ " (" ++ d ++ ")") backlinks
+
+            let doc = formatDoc i `T.append` (T.pack backlinksMetadata)
+            printGreen ("Formatted document as embedded (`embed`): " ++ show doc)
             (modelType,embedding) <- oaAPIEmbed doc
             today <- currentDay
             return (p,today,T.unpack doc,modelType,embedding)

@@ -31,7 +31,7 @@ main = do md  <- readLinkMetadata
           edb'' <- if null todo then printGreen "All databases up to date." >> return edb else
                      do
                        printGreen $ "Embedding…\n" ++ unlines (map show todo)
-                       newEmbeddings <- mapM (embed edb) todo
+                       newEmbeddings <- mapM (embed edb md bdb) todo
                        printGreen "Generated embeddings."
                        let edb' = nubOrd (edb ++ newEmbeddings)
                        -- clean up by removing any outdated embeddings whose path/URL no longer corresponds to any annotations (typically because renamed):
