@@ -104,7 +104,7 @@ generateDirectory md dirs dir'' = do
   let abstract = case M.lookup ("/"++dir''++"index#manual-annotation") md of
                    Nothing -> []
                    Just (_,_,_,_,_,"") -> []
-                   Just (_,_,_,_,_,dirAbstract) -> [parseRawBlock ("",["abstract"],[]) $ RawBlock (Format "html") (T.pack $ "<blockquote>"++dirAbstract++"</blockquote>")]
+                   Just (_,_,_,_,_,dirAbstract) -> [parseRawBlock ("",["abstract", "abstract-tag-directory"],[]) $ RawBlock (Format "html") (T.pack $ "<blockquote>"++dirAbstract++"</blockquote>")]
 
   let body = abstract ++
 
