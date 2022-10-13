@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2022-09-27 15:34:33 gwern"
+# When:  Time-stamp: "2022-10-13 11:01:01 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -33,7 +33,7 @@ TARGET=""
 ## But we still need to return it as part of the final rewritten path/URL.
 HASH="$(echo -n "$1" | sed -e 's/^\///' | cut -d '#' -f 1 | sha1sum - | cut -d ' ' -f 1)"
 DOMAIN="$(echo "$1" | awk -F[/:] '{print $4}')"
-if [[ -n $(echo "$1" | fgrep '#') ]]; then
+if [[ -n $(echo "$1" | grep -F '#') ]]; then
     ANCHOR="#$(echo -n "$1" | cut -d '#' -f 2)"
 fi
 
@@ -62,7 +62,7 @@ else
             TARGET=/tmp/"$HASH".pdf
             ## sometimes servers lie or a former PDF URL has linkrotted or changed to a HTML landing page, so we need to check
             ## that we actually got a real PDF file:
-            MIME_LOCAL=$(file "$TARGET" | fgrep 'PDF document, version ') || true
+            MIME_LOCAL=$(file "$TARGET" | grep -F 'PDF document, version ') || true
 
             if [[ -f "$TARGET" ]] && [[ -n "$MIME_LOCAL" ]] && [[ ! "$MIME_REMOTE" =~ .*"text/html".* ]] || \
                    [[ "$MIME_REMOTE" =~ "application/pdf".*  || "$MIME_REMOTE" =~ "application/octet-stream".* ]] || \
@@ -104,7 +104,7 @@ else
 
             if [[ -f "$TARGET" ]]; then
                 ## Check for error pages which nevertheless returned validly:
-                ERROR_404=$(fgrep -e '404 Not Found' -e 'Download Limit Exceeded' -e 'Access Denied' "$TARGET")
+                ERROR_404=$(grep -F -e '404 Not Found' -e 'Download Limit Exceeded' -e 'Access Denied' "$TARGET")
                 if [[ -z "$ERROR_404" ]]; then
                     mkdir --parents "./docs/www/$DOMAIN/"
                     mv "$TARGET" "./docs/www/$DOMAIN/$HASH.html"

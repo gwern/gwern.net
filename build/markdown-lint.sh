@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2022-01-16 10:41:14 gwern"
+# When:  Time-stamp: "2022-10-13 11:00:12 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -63,7 +63,7 @@ do
         wrap λ "HTTP → HTTPS URLs"
 
         ## ban articles written by John Hewitt; he endorses the pig-human pseudoscience, lies about research (eg claiming platypus genome proven to be a bird hybrid), and makes bad arguments (eg. his criticism of senolytics because senescent cells do not have a single unique universal signature):
-        λ(){ fgrep -e 'phys.org' -- "$PAGE" | fgp -v -e '2019-07-cat-science.html' -e '2017-08-cavemen-genetic-checkup.html' -e'2019-12-mouse-pups-born-eggs-derived.html'; }
+        λ(){ grep -F -e 'phys.org' -- "$PAGE" | fgp -v -e '2019-07-cat-science.html' -e '2017-08-cavemen-genetic-checkup.html' -e'2019-12-mouse-pups-born-eggs-derived.html'; }
         wrap λ "Phys.org link detected: make sure John Hewitt didn't write it"
 
         λ(){ ~/wiki/static/build/Columns.hs "$PAGE"; }
@@ -101,12 +101,12 @@ do
         λ() { grep -P -e '[\x{0590}-\x{05FF}]|[\x{0600}-\x{06FF}]'  -- "$PAGE"; }
         wrap λ "Check that bidirectional scripts (Hebrew, Arabic) are not displayed; can cause Firefox Mac rendering bugs page-wide"
 
-        λ(){ fgrep '~~~{.' -- "$PAGE" | tr -d '{}~' | tr ' ' '\n' | \
-                 fgrep -v -e '.R' -e '.collapse' -e '.Haskell' -e '.Bash' -e '.Diff' -e '.Javascript' -e '.numberLines' \
+        λ(){ grep -F '~~~{.' -- "$PAGE" | tr -d '{}~' | tr ' ' '\n' | \
+                 grep -F -v -e '.R' -e '.collapse' -e '.Haskell' -e '.Bash' -e '.Diff' -e '.Javascript' -e '.numberLines' \
                        -e '.Python' -e '.C ' -e '.CPO' -e '.SQL' -e '.Bibtex' -e '.HTML' -e '.CSS'; }
         wrap λ "look for potentially broken syntax-highlighting classes"
 
-        λ(){ egrep --invert-match '[[:space:]]*>' -- "$PAGE" | fgp -e ' significant ' -e ' significantly ' -e ' obvious' -e 'basically' -e ' the the ' -e 'reproducibility crisis' -e 'replicability crisis'; } # WARNING: can't use 'egp' for some reason
+        λ(){ grep -E --invert-match '[[:space:]]*>' -- "$PAGE" | fgp -e ' significant ' -e ' significantly ' -e ' obvious' -e 'basically' -e ' the the ' -e 'reproducibility crisis' -e 'replicability crisis'; } # WARNING: can't use 'egp' for some reason
         wrap λ "look for personal uses of illegitimate statistics & weasel words, but filter out blockquotes"
 
         λ(){ fgp -e ' feet' -e ' foot ' -e ' pound ' -e ' mile ' -e ' miles ' -e ' inch' -- "$PAGE";
@@ -140,9 +140,9 @@ do
         wrap λ "LaTeX: simplify to Unicode/Markdown"
         λ(){ egp -e '\$\\frac{[0-9]\+}{[0-9]\+}' -- "$PAGE"; }
         wrap λ "Unicodify: LaTeX for simple numerical fractions is overkill; use '⁄' FRACTION SLASH instead"
-        λ(){ fgrep ' \\times ' -- "$PAGE"; }
+        λ(){ grep -F ' \\times ' -- "$PAGE"; }
         wrap λ "LaTeX: \\cdot is nicer"
-        λ(){ fgrep '$$E(' -- "$PAGE"; }
+        λ(){ grep -F '$$E(' -- "$PAGE"; }
         wrap λ "LaTeX: use \\mathbb for expectations"
         λ(){ egp -e '[a-zA-Z]→[a-zA-Z]' -e '[a-zA-Z]←[a-zA-Z]' -e '[a-zA-Z]↔[a-zA-Z]' -- "$PAGE"; }
         wrap λ "Add spaces to arrows: more legible, fewer odd interactions (like Hyphenator)"
@@ -179,15 +179,15 @@ do
         HTML=$(mktemp  --suffix=".html")
         cat "$PAGE" | pandoc --metadata lang=en --metadata title="Test" --mathml --to=html5 --standalone --number-sections --toc --reference-links --css=https://www.gwern.net/static/css/default.css -f markdown+smart --template=/home/gwern/bin/bin/pandoc-template-html5-articleedit.html5 - --output="$HTML"
 
-        λ() { tidy -quiet -errors --doctype html5 "$HTML" 2>&1 >/dev/null | fgrep -v -e 'Warning: <img> proprietary attribute "loading"'; }
+        λ() { tidy -quiet -errors --doctype html5 "$HTML" 2>&1 >/dev/null | grep -F -v -e 'Warning: <img> proprietary attribute "loading"'; }
         wrap λ "HTML validation problems"
 
-        λ() { cat "$HTML" | elinks -dump --force-html | egrep 'file:///dev/stdin#.*\..*'; }
+        λ() { cat "$HTML" | elinks -dump --force-html | grep -E 'file:///dev/stdin#.*\..*'; }
         wrap λ "Header problem: period present (valid HTML but breaks CSS/JS!). Override default Pandoc link fragment with '{#header-without-period}'"
 
-        λ() {  COLLAPSED=$(cat "$HTML" | egrep --after-context=3 '<h[0-7] class="collapse"')
-               COLLAPSED_SECTION_COUNT=$(echo "$COLLAPSED" | egrep '<h[0-7] class="collapse"' | wc --lines)
-               COLLAPSED_SUMMARY_COUNT=$(echo "$COLLAPSED" | fgrep '<div class="collapseSummary">' | wc --lines)
+        λ() {  COLLAPSED=$(cat "$HTML" | grep -E --after-context=3 '<h[0-7] class="collapse"')
+               COLLAPSED_SECTION_COUNT=$(echo "$COLLAPSED" | grep -E '<h[0-7] class="collapse"' | wc --lines)
+               COLLAPSED_SUMMARY_COUNT=$(echo "$COLLAPSED" | grep -F '<div class="collapseSummary">' | wc --lines)
                MISSING=$(( COLLAPSED_SECTION_COUNT - COLLAPSED_SUMMARY_COUNT ))
                if [[ $MISSING != 0 ]];
                then echo "Missing collapsed section summaries?"
@@ -207,23 +207,23 @@ do
                    | egp -e '\!Margin:.*↩'; } # ))
         wrap λ "look for syntax errors making it to the final HTML output"
 
-        λ(){ runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egrep -v -e "^http" -e '^!Wikipedia' -e '^#' -e '^/' -e '^\!' -e  '^\$'; }
+        λ(){ runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -v -e "^http" -e '^!Wikipedia' -e '^#' -e '^/' -e '^\!' -e  '^\$'; }
         wrap λ "special syntax shouldn't make it to the compiled HTML"
 
-        λ() { runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egrep -v -e '^\!' -e  '^\$' | sort | uniq --count | sort --numeric-sort | egrep -v -e '.* 1 '; }
+        λ() { runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -v -e '^\!' -e  '^\$' | sort | uniq --count | sort --numeric-sort | grep -E -v -e '.* 1 '; }
         wrap λ "Duplicate links"
 
         λ(){ egp --only-matching '\!\[.*\]\(http://.*\)' -- "$PAGE"; }
         wrap λ "image hotlinking deprecated; impolite, and slows page loads & site compiles"
 
         # Note links which need to be annotated (probably most of them...)
-        λ() { runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egrep -v -e '^\!' -e '^\$' -e '^/docs/.*txt' -e '.xz$' -e '^#' -e '.patch$' -e '.jpg$' -e '.png$' -e '.mp4' -e '.mp3' -e 'news.ycombinator.com' -e 'old.reddit.com' -e 'youtube.com' -e 'youtu.be/' -e 'amazon.com' -e 'bandcamp.com' -e 'dropbox.com' -e 'vocadb.net' -e 'twitter.com' -e 'nitter.cc' -e '#link-bibliography' -e 'https://en.wikipedia.org/wiki' | runghc -istatic/build/ static/build/link-prioritize.hs; }
+        λ() { runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -v -e '^\!' -e '^\$' -e '^/docs/.*txt' -e '.xz$' -e '^#' -e '.patch$' -e '.jpg$' -e '.png$' -e '.mp4' -e '.mp3' -e 'news.ycombinator.com' -e 'old.reddit.com' -e 'youtube.com' -e 'youtu.be/' -e 'amazon.com' -e 'bandcamp.com' -e 'dropbox.com' -e 'vocadb.net' -e 'twitter.com' -e 'nitter.cc' -e '#link-bibliography' -e 'https://en.wikipedia.org/wiki' | runghc -istatic/build/ static/build/link-prioritize.hs; }
         wrap λ "Link annotations required"
 
         # we use link annotations on URLs to warn readers about PDFs; if a URL ends in 'pdf', it gets a PDF icon. What about URLs which redirect to or serve PDF?
         # we must manually annotate them with a '#pdf'. Check URLs in a page for URLs which serve a PDF MIME type but do not mention PDF in their URL:
         λ() { checkPDF() {
-                  MIME=$(timeout 20s curl --insecure --write-out '%{content_type}' --silent -o /dev/null "$@" | fgrep -i -e "application/pdf" -e "application/octet-stream")
+                  MIME=$(timeout 20s curl --insecure --write-out '%{content_type}' --silent -o /dev/null "$@" | grep -F -i -e "application/pdf" -e "application/octet-stream")
                   if [ ${#MIME} -gt 5 ]; then
                       if [[ ! $@ =~ .*pdf.* ]] && [[ ! $@ =~ .*PDF.* ]]; then
                           echo "UNWARNED NON-LOCAL PDF: " "$@" "$MIME"
@@ -235,11 +235,11 @@ do
               ## checkPDF 'http://www.nytimes.com/2009/11/15/business/economy/15view.html ' # no
               ## checkPDF 'http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.208.2314&rep=rep1&type=pdf' # yes
               ## checkPDF 'https://files.osf.io/v1/resources/np2jd/providers/osfstorage/59614dec594d9002288271b6?action=download&version=1&direct' # yes
-              runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egrep "^http" | fgrep -v -e 'https://www.gwern.net' -e arxiv.org -e pnas.org | sort -u | shuf | parallel -n 1 checkPDF; }
+              runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E "^http" | grep -F -v -e 'https://www.gwern.net' -e arxiv.org -e pnas.org | sort -u | shuf | parallel -n 1 checkPDF; }
         wrap λ "Non-icon/warned PDF links"
 
-        λ() { for PDF in $(runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egrep -e '^/docs/' -e 'https:\/\/www\.gwern\.net\/' | \
-                               egrep '\.pdf$' | sed -e 's/\/docs/docs/' -e 's/https:\/\/www\.gwern\.net//' ); do
+        λ() { for PDF in $(runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -e '^/docs/' -e 'https:\/\/www\.gwern\.net\/' | \
+                               grep -E '\.pdf$' | sed -e 's/\/docs/docs/' -e 's/https:\/\/www\.gwern\.net//' ); do
 
                   TITLE=$(exiftool -printFormat '$Title' -Title ~/wiki/"$PDF")
                   AUTHOR=$(exiftool -printFormat '$Author' -Author ~/wiki/"$PDF")
@@ -247,7 +247,7 @@ do
                   DOI=$(exiftool -printFormat '$DOI' -DOI ~/wiki/"$PDF")
                   TEXT=$(pdftotext ~/wiki/"$PDF" - 2>/dev/null)
                   TEXT_LENGTH=$(echo "$TEXT" | wc --chars)
-                  PREPRINT=$(echo "$TEXT" | fgrep -e 'This is a PDF file of an unedited manuscript that has been accepted for publication.' \
+                  PREPRINT=$(echo "$TEXT" | grep -F -e 'This is a PDF file of an unedited manuscript that has been accepted for publication.' \
                                                   -e 'use of the JSTOR database indicates your acceptance' \
                                                   -e 'you may not download an entire issue of a journal' \
                                                   -e 'This article appeared in a journal published by Elsevier.' \

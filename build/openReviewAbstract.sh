@@ -3,7 +3,7 @@
 # openReviewAbstract.sh: scrape paper metadata from OpenReview
 # Author: Gwern Branwen
 # Date: 2021-10-12
-# When:  Time-stamp: "2022-06-07 20:44:47 gwern"
+# When:  Time-stamp: "2022-10-13 11:00:41 gwern"
 # License: CC-0
 #
 # Shell script to scrape paper titles/date/author/abstract (TLDR if exists, then full
@@ -33,9 +33,9 @@
 
 JSON=$(curl --silent --location "$@" | \
     # normalizing with Tidy puts the JSON object on a single line, which we can then grep out without full-blown HTML parsing:
-    tidy -quiet 2>/dev/null | fgrep "pageProps")
+    tidy -quiet 2>/dev/null | grep -F "pageProps")
 PARSED=""
-if [[ $(echo "$JSON" | fgrep '"value":') ]]; then
+if [[ $(echo "$JSON" | grep -F '"value":') ]]; then
    PARSED=$(echo "$JSON" |
     jq --raw-output '(.props.pageProps.forumNote.content.title.value),
        (.props.pageProps.forumNote.content.authors.value | join(", ")),
