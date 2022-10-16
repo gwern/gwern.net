@@ -29,15 +29,17 @@ import Text.Pandoc (Inline(Link), nullAttr)
 import Data.Text as T (pack)
 
 import LinkMetadata (annotateLink, guessTagFromShort, listTagsAll, readLinkMetadata, readYaml, writeYaml, MetadataList, MetadataItem)
+import Utils (printGreen)
 
 main :: IO ()
 main = do args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://www.gwern.net/" "/") getArgs
           when (length args < 2) $ error "Error: Insufficient arguments (<2)."
+          when ("gwt" `elem` args) $ error "Invalid tag/URL 'gwt' detected! Is this entire command malformed? Exiting immediately."
 
           let links = filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) args
           allTags <- listTagsAll
-          let tags = map (guessTagFromShort allTags) $ map (filter (/=',')) $ -- we store tags comma-separated so sometimes we might leave in a stray tag when copy-pasting
-                filter (`notElem` links) args
+          let tags = (filter (`elem` allTags) $ map (guessTagFromShort allTags . filter (/=',')) $ -- we store tags comma-separated so sometimes we might leave in a stray tag when copy-pasting
+                filter (`notElem` links) args) :: [String]
 
           when (null tags) $ error ("Error: Forgot tags? " ++ show args)
           mapM_ (\arg' -> do filep <- doesDirectoryExist ("docs/"++ if head arg' == '-' then tail arg' else arg')
@@ -60,6 +62,7 @@ changeOneTag link tag = do
                           error $ "File does not exist? : '" ++ link' ++ "'"
           when (head tag == '/' || take 4 tag == "http") $ error $ "Arguments not 'changeTag.hs *tag* link'? : '" ++ tag ++ "'"
           [custom,half,auto] <- mapM readYaml ["metadata/full.yaml", "metadata/half.yaml", "metadata/auto.yaml"]
+          printGreen ("Executing: " ++ tag ++ " tag on link: " ++ link'')
           changeAndWriteTags tag link'' custom half auto
 
 -- If an annotation is in full.yaml, we only want to write that. If it's in half.yaml,
