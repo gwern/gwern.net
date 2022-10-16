@@ -1144,10 +1144,17 @@ biorxiv p = do checkURL p
                                  let date    = concat $ parseMetadataTagsoup "DC.Date" metas
                                  let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
                                  let author  = initializeAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
-                                 abstrct <- fmap (replace "9s" "s") $ -- BUG: Biorxiv's abstracts have broken quote encoding. I reported this to them 2 years ago and they still have not fixed it.
-                                   fmap (linkAutoHtml5String . cleanAbstractsHTML) $ processParagraphizer p $ cleanAbstractsHTML $ concat $ parseMetadataTagsoupSecond "citation_abstract" metas
+                                 let abstractRaw = concat $ parseMetadataTagsoupSecond "citation_abstract" metas
+                                 let abstractRaw' = if not (null abstractRaw) then abstractRaw else concat $ parseMetadataTagsoup "DC.Description" metas
+                                 abstrct <- fmap (replace "9s" "s") $ -- BUG: BioRxiv abstracts have broken quote encoding. I reported this to them 2 years ago and they still have not fixed it.
+                                   fmap (linkAutoHtml5String . cleanAbstractsHTML) $ processParagraphizer p $ cleanAbstractsHTML abstractRaw'
                                  let ts = [] -- TODO: replace with ML call to infer tags
-                                 if abstrct == "" then return (Left Temporary) else
+                                 if abstrct == "" then do printRed ("BioRxiv parsing failed")
+                                                          print ("Metas: " ++ show metas)
+                                                          print abstractRaw
+                                                          print abstractRaw'
+                                                          return (Left Temporary)
+                                   else
                                                    return $ Right (p, (title, author, date, doi, ts, abstrct))
   where
     parseMetadataTagsoup, parseMetadataTagsoupSecond :: String -> [Tag String] -> [String]
