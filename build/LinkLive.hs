@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-10-12 09:22:35 gwern"
+When:  Time-stamp: "2022-10-14 17:24:07 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -4620,7 +4620,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://www.rescuetime.com/teams", False)
             , ("https://www.research.va.gov/mvp/", False)
             , ("https://www.researchandmarkets.com/reportinfo.asp?report_id=305358", False)
-            , ("https://www.researchgate.net/profile/James-Swanson-4/publication/7447194_Efficacy_and_Safety_of_Modafinil_Film-Coated_Tablets_in_Children_and_Adolescents_With_Attention-DeficitHyperactivity_Disorder_Results_of_a_Randomized_Double-Blind_Placebo-Controlled_Flexible-Dose_Stud/links/549adef50cf2fedbc30e3798/Efficacy-and-Safety-of-Modafinil-Film-Coated-Tablets-in-Children-and-Adolescents-With-Attention-Deficit-Hyperactivity-Disorder-Results-of-a-Randomized-Double-Blind-Placebo-Controlled-Flexible-Dose.pdf#page=3", False)
+            , ("https://www.researchgate.net/profile/Carole-Nowicke/publication/236212779_Secondary_and_Tertiary_Citing_A_Study_of_Referencing_Behavior_in_the_Literature_of_Citation_Analysis_Deriving_from_the_%27Ortega_Hypothesis%27_of_Cole_and_Cole/links/571e631208aead26e71a88a5/Secondary-and-Tertiary-Citing-A-Study-of-Referencing-Behavior-in-the-Literature-of-Citation-Analysis-Deriving-from-the-Ortega-Hypothesis-of-Cole-and-Cole.pdf#page=2", False)
             , ("https://www.rightstufanime.com/Utena-Revolutionary-Girl-DVD-Set-3-Apocalypse-Saga-Hyb-Limited-Edition", False)
             , ("https://www.rollingstone.com/culture/culture-features/smiley-face-murder-serial-killer-drowning-death-882042/", False)
             , ("https://www.rrauction.com/auctions/lot-detail/31909050347196/", False)

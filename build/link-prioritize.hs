@@ -33,7 +33,7 @@ $ ~/wiki/static/build/link-extractor.hs DNB-FAQ.page | runghc -istatic/build/ ./
 
 More complex use:
 
-$ find ~/wiki/ -name "*.page" -type f -print0 | parallel --null ~/wiki/haskell/link-extractor.hs | egrep '^http' | ./haskell/link-prioritize.hs
+$ find ~/wiki/ -name "*.page" -type f -print0 | parallel --null ~/wiki/haskell/link-extractor.hs | grep -E '^http' | ./haskell/link-prioritize.hs
 65 https://www.patreon.com/gwern
 15 https://fis.fda.gov/sense/app/d10be6bb-494e-4cd2-82e4-0135608ddc13/sheet/45beeb74-30ab-46be-8267-5756582633b4/state/analysis
 12 http://forum.evageeks.org/viewtopic.php?p=366709#366709
