@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-10-07 10:16:41 gwern"
+When:  Time-stamp: "2022-10-19 10:08:24 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1258,5 +1258,6 @@ whiteList url
       , "https://labelerrors.com/" -- interactive
       , "https://novelai.net/" -- homepage
       , "https://well-typed.com/" -- homepage
+      , "https://everynoise.com/engenremap.html" -- interactive
       ] = True
     | otherwise = False

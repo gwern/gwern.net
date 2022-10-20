@@ -297,10 +297,10 @@ Extracts = { ...Extracts,
                          */
                             && !(["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance",
                                   "cerebras", "cohere", "deepmind", "eleutherai", "elementai", "facebook", "flickr",
-                                  "github", "google", "googledeepmind", "google-graphcore", "graphcore", "huawei", "ibm", "intel", "jd", "kako", "laion",
+                                  "github", "google", "googledeepmind", "google-graphcore", "graphcore", "huawei", "huggingface", "ibm", "intel", "jd", "kako", "laion",
                                   "lighton", "microsoft", "microsoftnvidia", "miri", "naver",
                                   "nvidia", "openai", "pinterest", "pdf", "salesforce", "samsung", "sberbank", "schmidhuber", "sensetime",
-                                  "snapchat", "spotify", "tencent", "tensorfork", "twitter", "uber", "yandex"
+                                  "snapchat", "sony", "spotify", "tencent", "tensorfork", "twitter", "uber", "yandex"
                               ].includes(target.hash.slice(1))))) {
                     return "&#x00a7; ";
                 } else if (   target.hash > ""

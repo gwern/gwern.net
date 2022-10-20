@@ -292,10 +292,4 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) = -- no abstracts:
              )
        ]
 -- long abstracts:
-generateItem (f,a,bl,sl) =
-  -- render annotation as: (skipping DOIs)
-  --
-  -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philosophy/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
-  -- >
-  -- > > A poem on the Epicurean model of the world...
-  generateAnnotationTransclusionBlock (f,a) bl sl
+generateItem (f,a,bl,sl) = generateAnnotationTransclusionBlock (f,a) bl sl

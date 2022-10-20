@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-10-14 17:24:07 gwern"
+When:  Time-stamp: "2022-10-19 10:09:35 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -587,12 +587,6 @@ goodDomainsSimple =
     , "washingtonmonthly.com"
     , "wavemotioncannon.com"
     , "wayback.archive-it.org"
-    , "web.archive.org"
-    , "web.archive.org"
-    , "web.archive.org"
-    , "web.archive.org"
-    , "web.archive.org"
-    , "web.archive.org"
     , "web.archive.org"
     , "web.media.mit.edu"
     , "web.stanford.edu"
@@ -4440,7 +4434,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://www.infoplease.com/us/government/elections/presidential-election-of-2008-electoral-and-popular-vote-summary", False)
             , ("https://www.informit.com/articles/article.aspx?p=2213858", False)
             , ("https://www.inputmag.com/culture/secretly-vibrant-world-of-audio-porn-mp3s", False)
-            , ("https://www.insidehighered.com/news/2009/06/16/ethics", False)
+            , ("https://www.insidehighered.com/news/2010/05/25/science", False)
             , ("https://www.instagram.com/nathanwpylestrangeplanet/", False)
             , ("https://www.instructables.com/Low-power-doorwindow-sensor/", False)
             , ("https://www.intel.com/pressroom/archive/releases/2007/20071025corp.htm", False)
