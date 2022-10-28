@@ -1018,8 +1018,7 @@ p {
 }
 body.indented p + p,
 body.indented p + figure[class^='float-'] + p,
-body.indented div[class^='drop-cap-'] + p,
-body.indented .abstract + p {
+body.indented div[class^='drop-cap-'] + p {
     text-indent: 2.5em;
 }
 @media only screen and (max-width: 649px) {
