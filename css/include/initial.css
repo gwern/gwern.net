@@ -810,18 +810,31 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 
     However, do hyphenate at all widths.
 */
-body.justified .markdownBody p,
-body.justified .markdownBody li {
+.markdownBody p,
+.markdownBody li {
     -webkit-hyphens: auto;
     -ms-hyphens: auto;
     hyphens: auto;
 }
 @media only screen and (min-width: 900px) {
-    body.justified .markdownBody p,
-    body.justified .markdownBody li {
+    .markdownBody p,
+    .markdownBody li {
         text-align: justify;
     }
-    body.justified .markdownBody .TOC li {
+    .markdownBody .TOC li {
+        text-align: left;
+    }
+}
+
+body.justified-not .markdownBody p,
+body.justified-not .markdownBody li {
+    -webkit-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+@media only screen and (min-width: 900px) {
+    body.justified-not .markdownBody p,
+    body.justified-not .markdownBody li {
         text-align: left;
     }
 }

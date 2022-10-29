@@ -1217,9 +1217,13 @@ Extracts = {
 				leftMargin = (bodyRect.left - popinRect.left);
 				rightMargin = (popinRect.right - bodyRect.right);
 			} else {
-				let markdownBodyRect = document.querySelector("#markdownBody").getBoundingClientRect();
-				leftMargin = (markdownBodyRect.left - popinRect.left);
-				rightMargin = (popinRect.right - markdownBodyRect.right);
+				let containerSelector = [ 
+					".abstract > blockquote",
+					"#markdownBody" 
+				].join(", ");
+				let containerRect = popin.closest(containerSelector).getBoundingClientRect();
+				leftMargin = (containerRect.left - popinRect.left);
+				rightMargin = (popinRect.right - containerRect.right);
 			}
 			popin.style = `margin-left: ${leftMargin}px; `
 						+ `margin-right: ${rightMargin}px; `

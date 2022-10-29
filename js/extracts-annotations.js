@@ -317,8 +317,9 @@ Extracts = { ...Extracts,
             })() + (() => {
                 //  This block applies to all annotated links.
 
+				//	The `.slice(1)` is to get rid of the initial `&NoBreak;`.
                 return (Extracts.popFrameHasLoaded(popFrame)
-                        ? popFrame.document.querySelector(".data-field.title").textContent
+                        ? popFrame.document.querySelector(".data-field.title").textContent.slice(1).trimQuotes()
                         : (Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))
                            ? target.href
                            : target.pathname + target.hash));

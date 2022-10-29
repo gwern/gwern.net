@@ -349,6 +349,11 @@
 	/*	Mode selectors.
 	 */
 	--GW-mode-selector-mobile-background-color: rgba(18, 18, 18, 0.75);
+
+	/*	Wikipedia images assume a white background; transparent images don’t 
+		look right if that assumption is violated.
+	 */
+	--GW-wikipedia-image-background-color: #fff;
 }
 
 /*  The ‘fill’ attribute of the SVGs is modified in dark mode.
@@ -643,6 +648,10 @@ a[data-link-icon-type*='svg']::after {
  */
 .annotation.wikipedia-entry .mwe-math-element img {
 	filter: invert(1);
+}
+
+.annotation.wikipedia-entry img {
+	background-color: var(--GW-wikipedia-image-background-color);
 }
 
 /*	Popups-disabled icon/button.

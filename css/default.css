@@ -2352,6 +2352,9 @@ span.link-bibliography a {
     or a specific <p>.)
     */
 @media only screen and (min-width: 650px) {
+    *[class*='drop-cap-'] {
+        min-height: 6em;
+    }
     *[class*='drop-cap-']::first-letter,
     *[class*='drop-cap-'] > p:first-child::first-letter {
         font-style: normal;
