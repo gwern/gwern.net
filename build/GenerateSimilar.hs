@@ -5,7 +5,7 @@ module GenerateSimilar where
 
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str, Strong), Format(..), runPure, Pandoc(..), nullAttr)
 import qualified Data.Text as T  (append, intercalate, length, pack, strip, take, unlines, unpack, Text)
-import Data.List ((\\), intercalate,  nub)
+import Data.List ((\\), intercalate,  nub, isPrefixOf, isSuffixOf)
 import Data.Maybe (fromJust)
 import qualified Data.Map.Strict as M (filter, keys, lookup, fromList, toList, difference, withoutKeys)
 import System.Directory (doesFileExist, renameFile)
@@ -268,11 +268,7 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
              alreadyLinkdBacklinks = case M.lookup (T.pack p) bdb of
                                        Nothing        -> []
                                        Just backlinks -> backlinks
-             alreadyLinkedTags = case M.lookup p md of
-                          Nothing               -> []
-                          Just (_,_,_,_,[],_)   -> []
-                          Just (_,_,_,_,tags,_) -> map (\tag -> "/docs/" `T.append` T.pack tag `T.append` "/index") tags
-             alreadyLinked = alreadyLinkedBody ++ alreadyLinkdBacklinks ++ alreadyLinkedTags
+             alreadyLinked = alreadyLinkedBody ++ alreadyLinkdBacklinks
              matchesPruned = filter (\p2 -> T.pack p2 `notElem` alreadyLinked) matches
 
              similarItems = filter (not . null) $ map (generateItem md linkTagsP) matchesPruned
@@ -333,10 +329,13 @@ generateItem md linkTagsP p2 = case M.lookup p2 md of
                                   Just (_,_,_,_,_,"") -> []
                                   Just (t,_,_,_,tags,_) ->
                                     [Para -- NOTE: we set .backlink-not because similar-links suggestions, even curated ones, can be quite tangential & distant, so we don't want to clutter up backlinks with them.
-                                      [Link ("", ["link-annotated", "backlink-not", "id-not"], if null tags || not linkTagsP then [] else [("link-tags", T.pack $ unwords tags) ]
+                                      [Link ("", ["link-annotated", "backlink-not", "id-not"],
+                                             -- link-tags are particularly useful when reviewing single-shot reccomendations while writing annotations
+                                              if null tags || not linkTagsP then [] else [("link-tags", T.pack $ unwords tags) ]
                                             ) [parseRawInline nullAttr $ RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
                                     ]
 
 -- some weird cases: for example, “Estimating the effect-size of gene dosage on cognitive ability across the coding genome” is somehow close to *every* embedding...?
 blackList :: String -> Bool
 blackList p = p `elem` ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554.full", "/docs/genetics/heritable/correlation/2019-kandler.pdf", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4210287/", "https://www.wired.com/1996/12/ffglass/", "https://andrewmayneblog.wordpress.com/2021/05/18/a-simple-method-to-keep-gpt-3-focused-in-a-conversation/", "https://www.dutchnews.nl/news/2022/07/german-fighter-pilot-identified-after-79-years-from-dna-on-envelope/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1065034/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2653069/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2925254/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2998793/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4763788/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4921196/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6022844/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8931369/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9232116/", "https://www.statnews.com/2022/07/28/abandoned-technique-revived-in-effort-to-make-artificial-human-eggs/", "https://www.thenationalnews.com/health/2022/09/07/woman-who-can-smell-parkinsons-helps-scientists-develop-new-test-for-condition/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4898064/"]
+  || "/docs/" `isPrefixOf` p && "/index" `isSuffixOf` p
