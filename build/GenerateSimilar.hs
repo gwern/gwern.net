@@ -214,7 +214,7 @@ findNearest f k e = map (\(_,Embed _ p) -> p) $ knnEmbedding f k e
 findN :: Forest -> Int -> Int -> Embedding -> (String,[String])
 findN _ 0 _ e = error ("findN called for k=0; embedding target: " ++ show e)
 findN _ _ 0 e = error ("findN failed to return enough candidates within iteration loop limit. Something went wrong! Embedding target: " ++ show e)
-findN f k iter e@(p1,_,_,_,_) = let results = take bestNEmbeddings $ nub $ filter (not . blackList) $ findNearest f k e in
+findN f k iter e@(p1,_,_,_,_) = let results = take bestNEmbeddings $ nub $ filter (\p2 -> not $ blackList p2 && not (p1==p2)) $ findNearest f k e in
                  -- NOTE: 'knn' is the fastest (and most accurate?), but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
                  -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed…)
                  -- If that happens, back off and request more k up to a max of 50.
@@ -268,11 +268,11 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
              alreadyLinkdBacklinks = case M.lookup (T.pack p) bdb of
                                        Nothing        -> []
                                        Just backlinks -> backlinks
-             alreadyTagsLinked = case M.lookup p md of
+             alreadyLinkedTags = case M.lookup p md of
                           Nothing               -> []
                           Just (_,_,_,_,[],_)   -> []
                           Just (_,_,_,_,tags,_) -> map (\tag -> "/docs/" `T.append` T.pack tag `T.append` "/index") tags
-             alreadyLinked = alreadyLinkedBody ++ alreadyLinkdBacklinks ++ alreadyTagsLinked
+             alreadyLinked = alreadyLinkedBody ++ alreadyLinkdBacklinks ++ alreadyLinkedTags
              matchesPruned = filter (\p2 -> T.pack p2 `notElem` alreadyLinked) matches
 
              similarItems = filter (not . null) $ map (generateItem md linkTagsP) matchesPruned
