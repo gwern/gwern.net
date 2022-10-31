@@ -1359,7 +1359,7 @@ document.addEventListener("readystatechange", () => {
 /*********************/
 
 GW.specialOccasions = [
-	[ "halloween", () => false, () => {
+	[ "halloween", () => true, () => {
 		let specialClass = DarkMode.currentMode() == "dark"
 						   ? "special-halloween-dark" 
 						   : "special-halloween-light";
