@@ -3,7 +3,7 @@ module Interwiki (convertInterwikiLinks, inlinesToText, wpPopupClasses, interwik
 
 import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Map as M (fromList, lookup, Map)
-import qualified Data.Text as T (append, concat, head, isInfixOf, null, tail, take, toUpper, pack, unpack, Text, isPrefixOf, isSuffixOf, takeWhile)
+import qualified Data.Text as T (append, concat, head, isInfixOf, null, tail, take, toUpper, pack, unpack, Text, isPrefixOf, isSuffixOf, takeWhile, init, replace)
 import Network.URI (parseURIReference, uriPath, uriAuthority, uriRegName)
 import qualified Network.URI.Encode as E (encodeTextWith, isAllowed)
 
@@ -55,7 +55,9 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
                                             classes),
                                            kvs) in
                              case article of
-                                  "" -> Link attr' ref (url `interwikiurl` inlinesToText ref, "") -- tooltip is now handled by LinkMetadata.hs
+                                  -- NOTE: only in cases of displayed text do we want to run the transformations like deleting possessives.
+                                  -- So eg `[George Washington's](!W)` is automatically transformed to 'George Washington' but if we explicitly write `[George Washington](!W "George Washington's")`, then we respect the user override because there must be a reason for it.
+                                  "" -> Link attr' ref (url `interwikiurl` wpURLRewrites (inlinesToText ref), "") -- tooltip is now handled by LinkMetadata.hs
                                   _  -> Link attr' ref (url `interwikiurl` article, "")
                 Nothing -> error $ "Attempted to use an interwiki link with no defined interwiki: " ++ show x
   else let classes' = nubOrd (wpPopupClasses interwiki ++ classes) in
@@ -67,11 +69,19 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
     -- normalize links; MediaWiki requires first letter to be capitalized, and prefers '_' to ' '/'%20' for whitespace
     interwikiurl "" _ = error (show x)
     interwikiurl _ "" = error (show x)
-    interwikiurl u a = let a' = if ".wikipedia.org/wiki/" `T.isInfixOf` u then T.toUpper (T.take 1 a) `T.append` T.tail a else a in
+    interwikiurl u a = let a' = if ".wikipedia.org/wiki/" `T.isInfixOf` u then T.toUpper (T.take 1 a) `T.append` T.tail a else a
+                       in
                          u `T.append` (E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '\'', '+'])) $ replaceManyT [("–", "%E2%80%93"), ("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $ deunicode a')
     deunicode :: T.Text -> T.Text
     deunicode = replaceManyT [("‘", "\'"), ("’", "\'"), (" ", " "), (" ", " ")]
 convertInterwikiLinks x = x
+
+-- special case rewrites: for example, automatically rewrite anchor texts ending in "'s" to delete it (eg. "George Washington's" to "George Washington") if it is not a special-case where that is part of the official name (eg. "Antoine's"). This makes writing much easier because you can simply write '[George Washington's](!W) first act as president was' instead of ''[George Washington's](!W "George Washington") first act...'. This sort of possessive rewriting gets especially annoying in long runs of "$CREATOR's $MEDIA" like in reviews.
+wpURLRewrites :: T.Text -> T.Text
+wpURLRewrites ref = if ref `elem` overrides' || not ("'s" `T.isSuffixOf` ref || "’s" `T.isSuffixOf` ref) then ref else
+                      T.init (T.init ref)
+    where overrides = ["Antoine's", "Bloomingdale's", "Collier's", "Kinko's", "Mzoli's", "Security_hacker#Birth_of_subculture_and_entering_mainstream:_1960's-1980's", "Security hacker#Birth of subculture and entering mainstream: 1960's-1980's"]
+          overrides' = overrides ++ map (T.replace "'" "’") overrides
 
 interwikiTestSuite :: [(Inline, Inline, Inline)]
 interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\(link1, link2) -> convertInterwikiLinks link1 /= link2) [
@@ -129,7 +139,6 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
   -- , (Link ("", ["id-not", "backlink-not", "link-annotated-not", "link-live"], []) [Str "Category:Pondicherry"] ("!W",""),
   --    Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
 
-
   -- !W + title
   , (Link nullAttr [Str "foo"] ("!W","Pondicherry"),
     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
@@ -139,6 +148,22 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
   , (Link nullAttr [Str "foo"] ("!W","Category:Pondicherry"),
     Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
+
+  -- !W + possessive special-case rewrite:
+  , (Link nullAttr [Emph [Str "George Washington"]] ("!Wikipedia",""),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "George Washington"]] ("https://en.wikipedia.org/wiki/George_Washington", ""))
+  , (Link nullAttr [Emph [Str "George Washington's"]] ("!Wikipedia",""),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "George Washington's"]] ("https://en.wikipedia.org/wiki/George_Washington", ""))
+  , (Link nullAttr [Emph [Str "George Washington’s"]] ("!Wikipedia",""),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "George Washington’s"]] ("https://en.wikipedia.org/wiki/George_Washington", ""))
+  , (Link nullAttr [Emph [Str "George Washington"]] ("!Wikipedia","George Washington's"),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "George Washington"]] ("https://en.wikipedia.org/wiki/George_Washington's", ""))
+  , (Link nullAttr [Emph [Str "Antoine's"]] ("!Wikipedia",""),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Antoine's"]] ("https://en.wikipedia.org/wiki/Antoine's", ""))
+  , (Link nullAttr [Emph [Str "Antoine's"]] ("!Wikipedia","Antoine's"),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Antoine's"]] ("https://en.wikipedia.org/wiki/Antoine's", ""))
+  , (Link nullAttr [Emph [Str "famous restaurant"]] ("!Wikipedia","Antoine's"),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "famous restaurant"]] ("https://en.wikipedia.org/wiki/Antoine's", ""))
 
    -- <https://en.wikipedia.org/wiki/$ARTICLE>
   , (Link nullAttr [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry",""),
