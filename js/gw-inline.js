@@ -1358,24 +1358,43 @@ document.addEventListener("readystatechange", () => {
 /* SPECIAL OCCASIONS */
 /*********************/
 
+/*	If a special function is provided to apply classes, one should also be 
+	provided to remove those classes. (See the ‘halloween’ entry for example.)
+ */
 GW.specialOccasions = [
 	[ "halloween", () => true, () => {
-		let specialClass = DarkMode.currentMode() == "dark"
+		document.body.classList.remove("special-halloween-dark", "special-halloween-light");
+		let specialClass = DarkMode.computedMode() == "dark" 
 						   ? "special-halloween-dark" 
 						   : "special-halloween-light";
 		document.body.classList.add(specialClass);
+	  }, () => {
+	  	document.body.classList.remove("special-halloween-dark", "special-halloween-light");
 	  } ],
 	[ "christmas", () => false ],
 ];
 
-doWhenBodyExists(() => {
+function applySpecialOccasionClasses() {
 	for (occasion of GW.specialOccasions) {
-		let [ name, test, action ] = occasion;
+		let [ name, test, doIfTrue, doIfFalse ] = occasion;
 		if (test()) {
-			if (action)
-				action();
+			if (doIfTrue)
+				doIfTrue();
 			else
 				document.body.classList.add("special-" + name);
+		} else {
+			if (doIfFalse)
+				doIfFalse();
+			else if (!doIfTrue)
+				document.body.classList.remove("special-" + name);
+				
 		}
 	}
+}
+
+doWhenBodyExists(() => {
+	applySpecialOccasionClasses();
+	GW.notificationCenter.addHandlerForEvent("DarkMode.computedModeDidChange", (info) => {
+		applySpecialOccasionClasses();
+	});
 });
