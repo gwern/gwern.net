@@ -56,7 +56,7 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
                                            kvs) in
                              case article of
                                   -- NOTE: only in cases of displayed text do we want to run the transformations like deleting possessives.
-                                  -- So eg `[George Washington's](!W)` is automatically transformed to 'George Washington' but if we explicitly write `[George Washington](!W "George Washington's")`, then we respect the user override because there must be a reason for it.
+                                  -- So eg. `[George Washington's](!W)` is automatically transformed to 'George Washington' but if we explicitly write `[George Washington](!W "George Washington's")`, then we respect the user override because there must be a reason for it.
                                   "" -> Link attr' ref (url `interwikiurl` wpURLRewrites (inlinesToText ref), "") -- tooltip is now handled by LinkMetadata.hs
                                   _  -> Link attr' ref (url `interwikiurl` article, "")
                 Nothing -> error $ "Attempted to use an interwiki link with no defined interwiki: " ++ show x
