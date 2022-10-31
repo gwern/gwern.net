@@ -35,6 +35,7 @@ if (typeof window.GW == "undefined")
 		(This event is fired immediately after the GW.contentDidLoad event.)
  */
 
+
 /*****************/
 /* MEDIA QUERIES */
 /*****************/
@@ -63,6 +64,7 @@ GW.isFirefox = () => {
 GW.isX11 = () => {
 	return (navigator.userAgent.indexOf("X11") > 0);
 };
+
 
 /********************/
 /* DEBUGGING OUTPUT */
@@ -104,6 +106,7 @@ function GWStopWatch(f, ...args) {
     return rval;
 }
 
+
 /*******************/
 /* ERROR REPORTING */
 /*******************/
@@ -115,6 +118,7 @@ function GWServerLogError(errorString, errorType) {
 	doAjax({ location: `${location.origin}/static/404-error-` + fixedEncodeURIComponent(errorString) });
 	GWLog(`Reporting ${(errorType || "error")}:  ${errorString}`, "error reporting", 1);
 }
+
 
 /***********/
 /* HELPERS */
@@ -269,6 +273,7 @@ Object.defineProperty(Node.prototype, "lastTextNode", {
 		return null;
     }
 });
+
 
 /*  Returns true if the list contains any of the tokens in the given array.
  */
@@ -618,6 +623,7 @@ function urlSansHash(url) {
 	return fixedURL;
 }
 
+
 /************************/
 /* ACTIVE MEDIA QUERIES */
 /************************/
@@ -677,6 +683,7 @@ function cancelDoWhenMatchMedia(name) {
 
     GW.mediaQueryResponders[name] = null;
 }
+
 
 /*****************/
 /* NOTIFICATIONS */
@@ -1245,6 +1252,7 @@ GW.notificationCenter.prefireProcessors["GW.contentDidLoad"] = (eventInfo) => {
 	return eventInfo;
 };
 
+
 /****************/
 /* SCROLL STATE */
 /****************/
@@ -1307,6 +1315,7 @@ function togglePageScrolling(enable) {
     }
 }
 
+
 /******************/
 /* BROWSER EVENTS */
 /******************/
@@ -1342,4 +1351,31 @@ window.addEventListener("load", () => {
 });
 document.addEventListener("readystatechange", () => {
     GWLog("document.readyState." + document.readyState, "browser event");
+});
+
+
+/*********************/
+/* SPECIAL OCCASIONS */
+/*********************/
+
+GW.specialOccasions = [
+	[ "halloween", () => false, () => {
+		let specialClass = DarkMode.currentMode() == "dark"
+						   ? "special-halloween-dark" 
+						   : "special-halloween-light";
+		document.body.classList.add(specialClass);
+	  } ],
+	[ "christmas", () => false ],
+];
+
+doWhenBodyExists(() => {
+	for (occasion of GW.specialOccasions) {
+		let [ name, test, action ] = occasion;
+		if (test()) {
+			if (action)
+				action();
+			else
+				document.body.classList.add("special-" + name);
+		}
+	}
 });
