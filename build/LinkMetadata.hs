@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-10-30 21:47:16 gwern"
+When:  Time-stamp: "2022-10-31 12:54:49 gwern"
 License: CC-0
 -}
 
@@ -1291,10 +1291,12 @@ processArxivAbstract a = let cleaned = runPure $ do
                                     writeHtml5String safeHtmlWriterOptions{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc
               in case cleaned of
                  Left e -> error $ " : " ++ ppShow e ++ " : " ++ a
-                 Right output -> cleanArxivAbstracts $ cleanAbstractsHTML $ T.unpack output
-                   -- 'significan*' in Arxiv abstracts typically doesn't mean statistically-significant, but 'important' or 'large'; unfortunately,
-                   -- this is puffery applied to every single advance, and in an Arxiv abstract, is meaningless
-                    where cleanArxivAbstracts = replaceMany [("significant", ""), ("significantly", ""), ("significance", ""), (" significant", ""), (" significantly", ""), (" significance", "")] .
+                 Right output -> cleanAbstractsHTML $ cleanArxivAbstracts $ T.unpack output
+
+-- 'significan✱' in Arxiv abstracts typically doesn't mean statistically-significant, but 'important' or 'large'; unfortunately,
+-- this is puffery applied to every single advance, and in an Arxiv abstract, is meaningless
+cleanArxivAbstracts :: String -> String
+cleanArxivAbstracts = replaceMany [(" significant", ""), (" significantly", ""), (" significance", "")] .
                             replaceMany [("more significant", "important"), ("significant margin", "large margin"), ("significant capital", "large capital"), ("significant amount", "large amount"), ("significant cost", "large cost"), ("hugely significant", "important"), ("without significant overhead", "without much overhead"), ("significant risk", "large risk"), ("significant semantic complexity", "high semantic complexity"), ("more significantly correlate", "more correlate"), ("significantly yet smoothly", "substantially get smoothly"), ("significance metric", "statistical-significance metric")]
 
 -- Is an annotation (HTML or Markdown) already If the input has more than one <p>, or if there is one or more double-newlines, that means this input is already multiple-paragraphs
@@ -3210,6 +3212,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" a overlap", " an overlap")
          , (" a audio", " an audio")
          , (" a interaction", " an interaction")
+         , ("non-significant", "non-statistically-significant")
+         , ("non-significance", "non-statistical-significance")
          , ("statistically statistically-significant", "statistically-significant")
          , ("-wide significance", "-wide statistical-significance")
          , ("GW significance", "genome-wide statistical-significance")
