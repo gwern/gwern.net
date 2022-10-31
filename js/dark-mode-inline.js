@@ -44,7 +44,27 @@ DarkMode = {
     currentMode: () => {
         return (localStorage.getItem("dark-mode-setting") || "auto");
     },
+
+	/*	Returns currently color mode (light or dark).
+		Based on saved selector mode, plus system setting (if selected mode is
+		‘auto’).
+	 */
+	computedMode: () => {
+		return ((   DarkMode.currentMode() == "dark" 
+				|| (   DarkMode.currentMode() == "auto" 
+					&& GW.mediaQueries.systemDarkModeActive.matches))
+				? "dark"
+				: "light");
+	}
 };
 
 //	Activate saved mode.
 DarkMode.setMode();
+
+//	Set up mode change events.
+GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", (info) => {
+	GW.notificationCenter.fireEvent("DarkMode.computedModeDidChange");
+});
+doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, "DarkMode.fireComputedModeDidChangeEventForSystemDarkModeChange", () => {
+	GW.notificationCenter.fireEvent("DarkMode.computedModeDidChange");
+});
