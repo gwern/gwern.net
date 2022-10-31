@@ -38,7 +38,7 @@ main = do args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a)
 
           let links = filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) args
           allTags <- listTagsAll
-          let tags = (filter (`elem` allTags) $ map (guessTagFromShort allTags . filter (/=',')) $ -- we store tags comma-separated so sometimes we might leave in a stray tag when copy-pasting
+          let tags = (filter (\t -> t `elem` allTags || tail t `elem` allTags) $ map (guessTagFromShort allTags . filter (/=',')) $ -- we store tags comma-separated so sometimes we might leave in a stray tag when copy-pasting
                 filter (`notElem` links) args) :: [String]
 
           when (null tags) $ error ("Error: Forgot tags? " ++ show args)

@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-10-19 10:08:24 gwern"
+When:  Time-stamp: "2022-10-30 10:58:31 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1259,5 +1259,8 @@ whiteList url
       , "https://novelai.net/" -- homepage
       , "https://well-typed.com/" -- homepage
       , "https://everynoise.com/engenremap.html" -- interactive
+      , "https://jamiepinheiro.com/cyclic_tv_reference_paradox_finder/" -- interactive
+      , "https://practiceoftheory.weebly.com/a-causal-models-probability-of-being-true.html" -- interactive
+      , "https://wenxin.baidu.com/moduleApi/ernieVilg" -- interactive
       ] = True
     | otherwise = False

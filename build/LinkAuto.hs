@@ -555,7 +555,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("CogView", "https://arxiv.org/abs/2105.13290#baai")
         , ("Comiket", "https://en.wikipedia.org/wiki/Comiket")
         , ("ConViT", "https://arxiv.org/abs/2103.10697#facebook")
-        , ("Conceptual Captions", "/docs/ai/diffusion/2018-sharma.pdf#google")
+        , ("Conceptual Captions", "/docs/ai/nn/diffusion/2018-sharma.pdf#google")
         , ("Confirmation bias", "https://en.wikipedia.org/wiki/Confirmation_bias")
         , ("Conformer", "https://arxiv.org/abs/2005.08100#google")
         , ("Conscientiousness", "https://en.wikipedia.org/wiki/Conscientiousness")

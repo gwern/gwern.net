@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-10-19 10:59:03 gwern"
+When:  Time-stamp: "2022-10-30 21:47:16 gwern"
 License: CC-0
 -}
 
@@ -687,7 +687,7 @@ guessTagFromShort m t = let allTags = nubOrd $ sort m in
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
 tagsLong2Short, tagsShort2Long :: [(String,String)]
-tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/samples"), ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"), ("quantization", "ai/nn/sparsity/low-precision") , ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision"), ("evolution", "genetics/selection/natural"), ("gpt-3", "ai/nn/transformer/gpt"), ("gpt3", "ai/nn/transformer/gpt"), ("red", "design/typography/rubrication"), ("self-attention", "ai/nn/transformer/attention"), ("efficient-attention", "ai/nn/transformer/attention"), ("ai/rnn", "ai/nn/rnn"), ("ai/retrieval", "ai/nn/retrieval"), ("mr", "genetics/heritable/correlation/mendelian-randomization"), ("japan/anime", "anime"), ("psychology/birds/neuroscience", "psychology/bird/neuroscience"), ("psychology/birds", "psychology/bird"), ("dalle","dall-e"), ("dall-e", "ai/nn/transformer/gpt/dall-e"), ("silk-road-1", "darknet-markets/silk-road/1"), ("sr1", "darknet-markets/silk-road/1"), ("silk-road-2", "darknet-markets/silk-road/2"), ("sr2", "darknet-markets/silk-road/2"), ("psychology/neuroscience/bird", "psychology/bird/neuroscience"), ("uighurs", "history/uighur"), ("ai/adversarial", "ai/nn/adversarial"), ("add", "psychiatry/adhd"), ("asperger", "psychiatry/autism"), ("aspergers", "psychiatry/autism"), ("personality/conscientiousness", "psychology/personality/conscientiousness"), ("anorexia-nervosa", "psychiatry/anorexia"), ("anxiety-disorder", "psychiatry/anxiety"), ("masked-auto-encoder", "ai/nn/vae/mae"), ("masked-autoencoder", "ai/nn/vae/mae"), ("masked", "ai/nn/vae/mae"), ("alzheimer's", "psychiatry/alzheimers"), ("ad", "psychiatry/alzheimers"), ("alzheimers-disease", "psychiatry/alzheimers"), ("alzheimer", "psychiatry/alzheimers")] ++
+tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/samples"), ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"), ("quantization", "ai/nn/sparsity/low-precision") , ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision"), ("evolution", "genetics/selection/natural"), ("gpt-3", "ai/nn/transformer/gpt"), ("gpt3", "ai/nn/transformer/gpt"), ("red", "design/typography/rubrication"), ("self-attention", "ai/nn/transformer/attention"), ("efficient-attention", "ai/nn/transformer/attention"), ("ai/rnn", "ai/nn/rnn"), ("ai/retrieval", "ai/nn/retrieval"), ("mr", "genetics/heritable/correlation/mendelian-randomization"), ("japan/anime", "anime"), ("psychology/bird", "psychology/animal/bird"), ("psychology/birds/neuroscience", "psychology/animal/bird/neuroscience"), ("psychology/birds", "psychology/animal/bird"), ("dalle","dall-e"), ("dall-e", "ai/nn/transformer/gpt/dall-e"), ("silk-road-1", "darknet-markets/silk-road/1"), ("sr1", "darknet-markets/silk-road/1"), ("silk-road-2", "darknet-markets/silk-road/2"), ("sr2", "darknet-markets/silk-road/2"), ("psychology/neuroscience/bird", "psychology/animal/bird/neuroscience"), ("uighurs", "history/uighur"), ("ai/adversarial", "ai/nn/adversarial"), ("add", "psychiatry/adhd"), ("asperger", "psychiatry/autism"), ("aspergers", "psychiatry/autism"), ("personality/conscientiousness", "psychology/personality/conscientiousness"), ("anorexia-nervosa", "psychiatry/anorexia"), ("anxiety-disorder", "psychiatry/anxiety"), ("masked-auto-encoder", "ai/nn/vae/mae"), ("masked-autoencoder", "ai/nn/vae/mae"), ("masked", "ai/nn/vae/mae"), ("alzheimer's", "psychiatry/alzheimers"), ("ad", "psychiatry/alzheimers"), ("alzheimers-disease", "psychiatry/alzheimers"), ("alzheimer", "psychiatry/alzheimers")] ++
                  -- ^ custom tag shortcuts, to fix typos etc
                  -- attempt to infer short->long rewrites from the displayed tag names, which are long->short; but note that many of them are inherently invalid and the mapping only goes one way.
                   (map (\(a,b) -> (map toLower b,a)) $ filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
@@ -724,8 +724,8 @@ tagsLong2Short = [
           , ("design/visualization", "data visualization")
           , ("vitamin-d", "Vitamin D")
           , ("dual-n-back", "DNB")
-          , ("ai/diffusion", "diffusion model")
-          , ("ai/diffusion/discrete ", "discrete diffusion")
+          , ("ai/nn/diffusion", "diffusion model")
+          , ("ai/nn/diffusion/discrete ", "discrete diffusion")
           , ("ai/nn/gan", "GAN")
           , ("ai/nn/gan/biggan", "BigGAN")
           , ("ai/nn/gan/stylegan", "StyleGAN")
@@ -822,8 +822,9 @@ tagsLong2Short = [
           , ("psychology/energy", "mental energy")
           , ("psychology/illusion-of-depth", "illusion of depth")
           , ("psychology/neuroscience", "neuroscience")
-          , ("psychology/bird", "birds")
-          , ("psychology/bird/neuroscience", "bird brains")
+          , ("psychology/animal", "animal psych")
+          , ("psychology/animal/bird", "birds")
+          , ("psychology/animal/bird/neuroscience", "bird brains")
           , ("psychology/european-journal-of-parapsychology", "<em>EJP</em>")
           , ("psychology/spaced-repetition", "spaced repetition")
           , ("sociology/abandoned-footnotes", "<em>Abandoned Footnotes</em>")
@@ -2364,6 +2365,10 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<span class=\"math inline\">\\({\\raise.17ex\\hbox{<span class=\"math inline\">~</span>}}\\)</span>", "~")
          , ("<span class=\"math inline\">\\(z=0\\)</span>", "<em>z</em> = 0")
          , ("<span class=\"math inline\">\\(r \\to\\infty\\)</span>", "<em>r</em> → ∞")
+         , ("<span class=\"math inline\">\\(N_A/(N_A+N_B)\\)</span>", "<em>N<sub>a</sub></em> / (<em>N<sub>A</sub></em> + <em>N<sub>B</sub></em>)")
+         , ("<span class=\"math inline\">\\(N_A\\)</span>", "<em>N<sub>A</sub></em>")
+         , ("<span class=\"math inline\">\\(N_B\\)</span>", "<em>N<sub>B</sub></em>")
+         , ("<span class=\"math inline\">\\(N_A \\ll N_B\\)</span>", "<em>N<sub>A</sub></em> ≪ <em>N<sub>B</sub></em>")
          , (" TD()", " TD(λ)")
          , ("({\\lambda})", "(λ)")
          , ("O((log n log log n)^2)", "𝒪(log<sup>2</sup> <em>n</em> log log <em>n</em>)")

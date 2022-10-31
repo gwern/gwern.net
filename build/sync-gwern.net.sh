@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-10-28 12:01:15 gwern"
+# When:  Time-stamp: "2022-10-30 11:57:37 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -472,7 +472,7 @@ else
     λ(){ grep -E -e ' [0-9]/[0-9]\+ ' -- ./metadata/*.yaml | grep -F -v -e 'Toll-like' -e 'Adam' -e '0/1' -e 'My Little Pony Seasons' -e '9/11'; }
     wrap λ "Possible uses of FRACTION SLASH ⁄ or EN DASH –?"
 
-    λ(){ grep -F -e '""' -- ./metadata/*.yaml | grep -F -v -e ' alt=""' -e 'controls=""'; }
+    λ(){ grep -F -e '""' -- ./metadata/*.yaml | grep -F -v -e ' alt=""' -e 'controls=""' -e 'loop=""'; }
     wrap λ "Doubled double-quotes in YAML, usually an error."
 
     λ(){ grep -F -e "'''" -- ./metadata/full.yaml ./metadata/half.yaml; }
