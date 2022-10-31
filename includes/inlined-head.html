@@ -1543,6 +1543,98 @@ span.smallcaps {
 /*	See /static/js/dark-mode.js and /static/css/dark-mode.css; this allows the
 	user to toggle at runtime.
  */
+
+
+/*********************/
+/* SPECIAL OCCASIONS */
+/*********************/
+
+/*=-----------=*/
+/*= Halloween =*/
+/*=-----------=*/
+
+body.special-halloween-dark {
+	--GW-blood-red: #b00;
+	--GW-blood-red-dried: #700;
+	--GW-blood-red-arterial: #e00;
+
+	--GW-sidebar-horizontal-rule-color: var(--GW-blood-red);
+
+	--GW-TOC-border-color: var(--GW-blood-red-dried);
+	--GW-abstract-border-color: var(--GW-blood-red-dried);
+
+	--GW-pre-element-border-color: var(--GW-blood-red-dried);
+
+	--GW-epigraph-quotation-mark-color: var(--GW-blood-red-dried);
+
+	--GW-H1-box-shadow-line-color: var(--GW-blood-red);
+	--GW-H2-bottom-border-color: var(--GW-blood-red);
+
+    --GW-drop-caps-yinit-color: var(--GW-blood-red);
+    --GW-drop-caps-yinit-text-shadow-color: var(--GW-blood-red);
+    --GW-drop-caps-de-zs-color: var(--GW-blood-red);
+    --GW-drop-caps-cheshire-color: var(--GW-blood-red);
+    --GW-drop-caps-kanzlei-color: var(--GW-blood-red);
+
+	--GW-figure-outline-color: var(--GW-blood-red-dried);
+	--GW-figure-caption-outline-color: var(--GW-blood-red);
+
+	--GW-footnotes-section-top-rule-color: var(--GW-blood-red-dried);
+	--GW-footnote-border-color: var(--GW-blood-red-arterial);
+	--GW-sidenote-highlight-box-shadow-color: var(--GW-blood-red-arterial);
+	--GW-footnote-backlink-border-color: var(--GW-blood-red);
+
+	--GW-sidenote-self-link-border-color: var(--GW-blood-red-arterial);
+	--GW-sidenote-border-color: var(--GW-blood-red-arterial);
+
+	--GW-math-block-scrollbar-border-color: var(--GW-blood-red);
+
+	--GW-mode-selector-border-color: var(--GW-blood-red-arterial);
+	--GW-mode-selector-border-hover-color: var(--GW-blood-red-dried);
+
+	--GW-back-to-top-link-color: var(--GW-blood-red-dried);
+
+	--GW-body-link-hover-color: var(--GW-blood-red-arterial);
+
+	--GW-footnote-ref-highlight-box-shadow-color: var(--GW-blood-red);
+}
+
+body.special-halloween-dark blockquote {
+	--GW-blockquote-border-color: var(--GW-blood-red-dried);
+}
+
+body.special-halloween-dark #logo {
+	color: var(--GW-blood-red);
+}
+
+body.special-halloween-dark #navigation a {
+	color: var(--GW-blood-red);
+}
+
+body.special-halloween-dark h1,
+body.special-halloween-dark h2,
+body.special-halloween-dark h3,
+body.special-halloween-dark h4,
+body.special-halloween-dark h5,
+body.special-halloween-dark h6 {
+	--GW-body-text-color: var(--GW-blood-red);
+	--GW-body-link-color: var(--GW-blood-red);
+
+	color: var(--GW-body-text-color);
+}
+
+@media only screen and (hover: hover) {
+	body.special-halloween-dark #ui-elements-container .mode-selector {
+		outline-style: dotted;
+		outline-width: 1px;
+		outline-color: var(--GW-mode-selector-border-color);
+	}
+	body.special-halloween-dark #ui-elements-container .mode-selector:hover {
+		outline-style: double;
+		outline-width: 3px;
+		outline-color: var(--GW-mode-selector-border-hover-color);
+	}
+}
 </style>
 <style id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)">
 :root {
@@ -2245,6 +2337,7 @@ if (typeof window.GW == "undefined")
 		(This event is fired immediately after the GW.contentDidLoad event.)
  */
 
+
 /*****************/
 /* MEDIA QUERIES */
 /*****************/
@@ -2273,6 +2366,7 @@ GW.isFirefox = () => {
 GW.isX11 = () => {
 	return (navigator.userAgent.indexOf("X11") > 0);
 };
+
 
 /********************/
 /* DEBUGGING OUTPUT */
@@ -2314,6 +2408,7 @@ function GWStopWatch(f, ...args) {
     return rval;
 }
 
+
 /*******************/
 /* ERROR REPORTING */
 /*******************/
@@ -2325,6 +2420,7 @@ function GWServerLogError(errorString, errorType) {
 	doAjax({ location: `${location.origin}/static/404-error-` + fixedEncodeURIComponent(errorString) });
 	GWLog(`Reporting ${(errorType || "error")}:  ${errorString}`, "error reporting", 1);
 }
+
 
 /***********/
 /* HELPERS */
@@ -2479,6 +2575,7 @@ Object.defineProperty(Node.prototype, "lastTextNode", {
 		return null;
     }
 });
+
 
 /*  Returns true if the list contains any of the tokens in the given array.
  */
@@ -2828,6 +2925,7 @@ function urlSansHash(url) {
 	return fixedURL;
 }
 
+
 /************************/
 /* ACTIVE MEDIA QUERIES */
 /************************/
@@ -2887,6 +2985,7 @@ function cancelDoWhenMatchMedia(name) {
 
     GW.mediaQueryResponders[name] = null;
 }
+
 
 /*****************/
 /* NOTIFICATIONS */
@@ -3455,6 +3554,7 @@ GW.notificationCenter.prefireProcessors["GW.contentDidLoad"] = (eventInfo) => {
 	return eventInfo;
 };
 
+
 /****************/
 /* SCROLL STATE */
 /****************/
@@ -3517,6 +3617,7 @@ function togglePageScrolling(enable) {
     }
 }
 
+
 /******************/
 /* BROWSER EVENTS */
 /******************/
@@ -3552,6 +3653,33 @@ window.addEventListener("load", () => {
 });
 document.addEventListener("readystatechange", () => {
     GWLog("document.readyState." + document.readyState, "browser event");
+});
+
+
+/*********************/
+/* SPECIAL OCCASIONS */
+/*********************/
+
+GW.specialOccasions = [
+	[ "halloween", () => true, () => {
+		let specialClass = DarkMode.currentMode() == "dark"
+						   ? "special-halloween-dark" 
+						   : "special-halloween-light";
+		document.body.classList.add(specialClass);
+	  } ],
+	[ "christmas", () => false ],
+];
+
+doWhenBodyExists(() => {
+	for (occasion of GW.specialOccasions) {
+		let [ name, test, action ] = occasion;
+		if (test()) {
+			if (action)
+				action();
+			else
+				document.body.classList.add("special-" + name);
+		}
+	}
 });
 </script>
 <script>
