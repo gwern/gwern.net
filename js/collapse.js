@@ -132,7 +132,7 @@ function isWithinCollapsedBlock(element) {
 function prepareCollapseBlocks(loadEventInfo) {
 	GWLog("prepareCollapseBlocks", "collapse.js", 1);
 
-	let classesToImport = [ "annotation-see-also" ];
+	let classesToImport = [ "aux-links-append" ];
 
 	let aBlockDidStartExpanded = false;
 

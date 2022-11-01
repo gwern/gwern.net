@@ -375,7 +375,7 @@ function includeContent(includeLink, content) {
         if (wrapper.firstElementChild.classList.contains("include-wrapper-block")) {
             auxLinksBlock = wrapper.firstElementChild;
         } else {
-            auxLinksBlock = wrapper.closest("backlinks-append, similars-append");
+            auxLinksBlock = wrapper.closest("aux-links-append");
         }
         if (auxLinksBlock == null) {
             auxLinksBlock = newElement("DIV");

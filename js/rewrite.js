@@ -836,6 +836,31 @@ addContentLoadHandler(setMarginsOnFullWidthBlocks, ">rewrite");
 /* ANNOTATIONS */
 /***************/
 
+/**************************************************************/
+/*	Clean up HTML structure of aux-links blocks in annotations.
+ */
+function rewriteAuxLinksBlocksInAnnotation(loadEventInfo) {
+    GWLog("rectifyTypographyInAnnotation", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll(".annotation-see-also").forEach(seeAlsoLinksBlock => {
+		seeAlsoLinksBlock.classList.add("aux-links-append");
+		let extraneousDiv = seeAlsoLinksBlock.querySelector(".annotation-see-also > p + div");
+		if (   extraneousDiv 
+			&& extraneousDiv.className == "")
+			unwrap(extraneousDiv);
+	});
+
+	loadEventInfo.document.querySelectorAll(".aux-links-append").forEach(auxLinksBlock => {
+		if (auxLinksBlock.parentElement == auxLinksBlock.closest(".collapse")) {
+			auxLinksBlock.parentElement.classList.add(...(auxLinksBlock.classList));
+			unwrap(auxLinksBlock);
+		}
+	});
+}
+
+addContentLoadHandler(rewriteAuxLinksBlocksInAnnotation, "rewrite", (info) => (   info.needsRewrite
+																			   && info.source == "Extracts.annotationForTarget"));
+
 /*******************************************************************************/
 /*  Apply various typographic fixes (educate quotes, inject <wbr> elements after
     certain problematic characters, etc.).

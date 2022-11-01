@@ -722,16 +722,16 @@ blockquote .TOC a:hover::after {
     opacity: unset;
 }
 
-blockquote :not(section).collapse.annotation-see-also:not(.expanded) > .disclosure-button::before {
+blockquote :not(section).collapse.aux-links-append:not(.expanded) > .disclosure-button::before {
     content: "Click to expand";
     width: 10rem;
     padding: 1rem 3rem 0.75rem 0;
 }
-blockquote :not(section).collapse.annotation-see-also:not(.expanded) > .disclosure-button::after {
+blockquote :not(section).collapse.aux-links-append:not(.expanded) > .disclosure-button::after {
     display: none;
 }
 
-blockquote .collapse:not(.expanded).annotation-see-also > div > p:first-child {
+blockquote .collapse:not(.expanded).aux-links-append > div > p:first-child {
     margin-top: 0.5em;
 }
 
@@ -5040,26 +5040,30 @@ section.highlight-fading::before {
     font-style: inherit;
 }
 
-/*  “Backlinks” section of annotations.
+/*  “Aux links” (backlinks, similars, “see also”, etc.) section of annotations.
  */
 
-.backlinks-append {
+.aux-links-append {
     margin-top: 1em;
     padding-bottom: 0.375em;
-}
-
-.annotation-see-also > div > div > ul,
-.backlinks-append > div > ul {
-    margin-top: 0.5em;
-}
-
-p + .backlinks-append {
     border-top: 1px solid var(--GW-TOC-border-color);
-    margin-top: 1.25em;
-    padding-top: 1em;
 }
-.TOC + .backlinks-append {
+.aux-links-append:not(:last-child) {
+    border-bottom: 1px solid var(--GW-TOC-border-color);
+}
+p + .aux-links-append {
+    margin-top: 1.25em;
+}
+.aux-links-append + .aux-links-append {
+    margin-top: 1.5em;
+}
+.TOC + .aux-links-append {
     margin-top: 0.75em;
+}
+
+.aux-links-append > div > ul {
+    margin-top: 0.5em;
+    margin-bottom: 0.25em;
 }
 
 
