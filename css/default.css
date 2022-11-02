@@ -722,19 +722,6 @@ blockquote .TOC a:hover::after {
     opacity: unset;
 }
 
-blockquote :not(section).collapse.aux-links-append:not(.expanded) > .disclosure-button::before {
-    content: "Click to expand";
-    width: 10rem;
-    padding: 1rem 3rem 0.75rem 0;
-}
-blockquote :not(section).collapse.aux-links-append:not(.expanded) > .disclosure-button::after {
-    display: none;
-}
-
-blockquote .collapse:not(.expanded).aux-links-append > div > p:first-child {
-    margin-top: 0.5em;
-}
-
 
 /*************************/
 /* TAG DIRECTORY INDEXES */
@@ -5061,9 +5048,27 @@ p + .aux-links-append {
     margin-top: 0.75em;
 }
 
-.aux-links-append > div > ul {
+.aux-links-append > div > ul,
+.aux-links-append > div > .columns > ul {
     margin-top: 0.5em;
     margin-bottom: 0.25em;
+}
+
+blockquote :not(section).collapse.aux-links-append:not(.expanded) > .disclosure-button::before {
+    content: "Click to expand";
+    width: 10rem;
+    padding: 1rem 3rem 0.75rem 0;
+}
+blockquote :not(section).collapse.aux-links-append:not(.expanded) > .disclosure-button::after {
+    display: none;
+}
+
+blockquote .collapse:not(.expanded).aux-links-append > div > :first-child {
+    margin-top: 0.5em;
+}
+
+blockquote .aux-links-append > div > .columns:not(:first-child) {
+    margin-top: 1em;
 }
 
 
