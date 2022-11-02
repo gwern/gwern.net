@@ -964,9 +964,9 @@ function updatePageTOC(newContent, needsProcessing = false) {
     //  Any already-existing <section> should have a TOC entry.
     let parentTOCElement = parentSection.id == "markdownBody"
                            ? TOC
-                           : TOC.querySelector(`#toc-${parentSection.id}`).parentElement;
+                           : TOC.querySelector(`#toc-${CSS.escape(parentSection.id)}`).parentElement;
     let precedingTOCElement = previousSection
-                              ? parentTOCElement.querySelector(`#toc-${previousSection.id}`).parentElement
+                              ? parentTOCElement.querySelector(`#toc-${CSS.escape(previousSection.id)}`).parentElement
                               : null;
 
     //  TOC entry insertion function, called recursively.
@@ -981,7 +981,7 @@ function updatePageTOC(newContent, needsProcessing = false) {
             /*  We may have already added this section in a recursive call from
                 a previous section.
              */
-            if (parentTOCElement.querySelector(`a[href$='#${section.id}']`) != null)
+            if (parentTOCElement.querySelector(`a[href$='#${fixedEncodeURIComponent(section.id)}']`) != null)
                 return;
 
             //  Construct entry.
