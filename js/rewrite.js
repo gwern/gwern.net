@@ -941,6 +941,20 @@ function stripTOCLinkSpans(loadEventInfo) {
 
 addContentLoadHandler(stripTOCLinkSpans, "rewrite", (info) => info.needsRewrite);
 
+/******************************************************************************/
+/*	Returns the heading level of a <section> element. (Given by a class of the
+	form ‘levelX’ where X is a positive integer. Defaults to 1 if no such class
+	is present.)
+ */
+function sectionLevel(section) {
+	if (  !section 
+		|| section.tagName != "SECTION")
+		return null;
+
+	//	Note: ‘m’ is a regexp matches array.
+	let m = Array.from(section.classList).map(c => c.match(/^level([0-9]*)$/)).find(m => m);
+	return (m ? parseInt(m[1]) : 1);
+}
 
 /*******************************************************************************/
 /*  Updates the page TOC with any sections within the given container that don’t
@@ -953,6 +967,9 @@ function updatePageTOC(newContent, needsProcessing = false) {
     let TOC = document.querySelector("#TOC");
     if (!TOC)
         return;
+
+	//	Don’t nest TOC entries any deeper than this.
+	let maxNestingDepth = 4;
 
     //  Find where to insert the new TOC entries.
     let parentSection = newContent.closest("section") ?? document.querySelector("#markdownBody");
@@ -983,6 +1000,11 @@ function updatePageTOC(newContent, needsProcessing = false) {
              */
             if (parentTOCElement.querySelector(`a[href$='#${fixedEncodeURIComponent(section.id)}']`) != null)
                 return;
+
+			/*	If this section is too deeply nested, do not add it.
+			 */
+			if (sectionLevel(section) > maxNestingDepth)
+				return;
 
             //  Construct entry.
             let entry = newElement("LI");
