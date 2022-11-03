@@ -249,11 +249,17 @@ Annotations = { ...Annotations,
 
 				//	Abstract (if exists).
 				let abstractElement = referenceEntry.querySelector("blockquote");
-				//	Unwrap extraneous <div>, if present.
-				if (   abstractElement
-					&& abstractElement.firstElementChild == abstractElement.lastElementChild
-					&& abstractElement.firstElementChild.tagName == "DIV")
-					unwrap(abstractElement.firstElementChild);
+				//	Unwrap extraneous <div>s, if present.
+				if (abstractElement) {
+					if (   abstractElement.firstElementChild == abstractElement.lastElementChild
+						&& abstractElement.firstElementChild.tagName == "DIV")
+						unwrap(abstractElement.firstElementChild);
+
+					let pageDescriptionClass = "page-description-annotation";
+					let pageDescription = abstractElement.querySelector(`div.${pageDescriptionClass}`);
+					if (pageDescription)
+						unwrap(pageDescription, [ pageDescriptionClass ]);
+				}
 
 				return {
 					element:        referenceElement,

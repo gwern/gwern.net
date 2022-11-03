@@ -4952,6 +4952,11 @@ section.highlight-fading::before {
     width: 100%;
 }
 
+.annotation .page-description-annotation {
+    font-style: italic;
+    margin-bottom: 0.5em;
+}
+
 /*  Wikipedia entries.
  */
 .annotation.wikipedia-entry .table-wrapper {
