@@ -3475,6 +3475,14 @@ body.index-directory #footer {
 .popframe-body.local-code-file div.sourceCode {
     height: 100%;
 }
+.popframe-body.local-code-file div.sourceCode.truncated {
+    height: calc(100% - 1.75em);
+}
+.popframe-body.local-code-file div.sourceCode.truncated + p {
+	font-family: var(--GW-sans-serif-font-stack);
+	height: 1.75em;
+	text-align: center;
+}
 .popframe-body.local-code-file pre {
     height: 100%;
     margin: 0;

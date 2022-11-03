@@ -743,6 +743,13 @@ Extracts = { ...Extracts,
 		}
 	},
 
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    rewritePopFrameContent_LOCAL_CODE_FILE: (popFrame) => {
+		//	Mark truncated code blocks, so layout can be adjusted properly.
+		if (popFrame.body.lastElementChild.tagName == "P")
+			popFrame.body.firstElementChild.classList.add("truncated");
+	},
+
     /*  Refresh (respawn or reload) a pop-frame for a local code file after the
         code file loads.
      */
