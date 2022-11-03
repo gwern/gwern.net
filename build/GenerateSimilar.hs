@@ -27,7 +27,7 @@ import Data.RPTree (knn, forest, metricL2, rpTreeCfg, fpMaxTreeDepth, fpDataChun
 import Data.Conduit (ConduitT)
 import Data.Conduit.List (sourceList)
 
-import LinkBacklink (readBacklinksDB, Backlinks)
+import LinkBacklink (getForwardLinks, readBacklinksDB, Backlinks)
 import Columns as C (listLength)
 import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, parseRawInline)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
@@ -264,11 +264,13 @@ writeOutMatch md bdb (p,matches) =
 generateMatches :: Metadata -> Backlinks -> Bool -> Bool -> String -> String -> [String] -> T.Text
 generateMatches md bdb linkTagsP singleShot p abst matches =
          -- we don't want to provide as a 'see also' a link already in the annotation, of course, so we need to pull them out & filter by:
-         let alreadyLinkedBody = extractLinks False $ T.pack abst
-             alreadyLinkdBacklinks = case M.lookup (T.pack p) bdb of
-                                       Nothing        -> []
-                                       Just backlinks -> backlinks
-             alreadyLinked = alreadyLinkedBody ++ alreadyLinkdBacklinks
+         let p' = T.pack p
+             alreadyLinkedAbstract  = extractLinks False $ T.pack abst
+             alreadyLinkedBody      = getForwardLinks bdb p'
+             alreadyLinkedBacklinks = case M.lookup p' bdb of
+                                        Nothing        -> []
+                                        Just backlinks -> backlinks
+             alreadyLinked = [p'] ++ alreadyLinkedAbstract ++ alreadyLinkedBody ++ alreadyLinkedBacklinks
              matchesPruned = filter (\p2 -> T.pack p2 `notElem` alreadyLinked) matches
 
              similarItems = filter (not . null) $ map (generateItem md linkTagsP) matchesPruned
