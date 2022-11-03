@@ -2767,6 +2767,7 @@ body.index #markdownBody section > h1:first-child a::after {
 @media only screen and (min-width: 1145px) {
     body.index #back-to-top {
         left: calc(108px + (100% - 1145px)/2);
+        right: unset;
     }
 }
 @media only screen and (min-width: 1761px) {
@@ -4926,6 +4927,13 @@ section.highlight-fading::before {
 }
 .annotation .data-field.annotation-abstract:empty {
     display: none;
+}
+.annotation .page-description-annotation::before {
+    content: "";
+    display: block;
+    overflow: auto;
+    margin: 0.75em 0 0.5em 0;
+    border-top: 1px dotted currentColor;
 }
 
 /*  In indexes and such.
