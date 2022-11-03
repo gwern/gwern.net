@@ -4928,6 +4928,13 @@ section.highlight-fading::before {
 .annotation .data-field.annotation-abstract:empty {
     display: none;
 }
+.annotation .page-description-annotation::before {
+    content: "";
+    display: block;
+    overflow: auto;
+    margin: 0.75em 0 0.5em 0;
+    border-top: 1px dotted currentColor;
+}
 
 /*  In indexes and such.
  */
