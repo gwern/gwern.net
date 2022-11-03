@@ -1013,7 +1013,8 @@ Extracts = {
         let target = popup.spawningTarget;
 
 		//	Insert page thumbnail into page abstract.
-		if (Extracts.cachedPageThumbnailImageTags[target.pathname]) {
+		if (   Extracts.cachedPageThumbnailImageTags[target.pathname]
+			&& popup.document.querySelector("img.page-thumbnail") == null) {
 			let pageAbstract = popup.document.querySelector("#page-metadata + .abstract blockquote");
 			if (pageAbstract)
 				pageAbstract.insertAdjacentHTML("afterbegin", `<figure>${Extracts.cachedPageThumbnailImageTags[target.pathname]}</figure>`);
