@@ -262,21 +262,43 @@ function wrapAll(selector, wrapClassOrFunction, wrapTagName = "DIV", root = docu
 /****************************************/
 /*  Replace an element with its contents.
  */
-function unwrap(wrapper) {
+function unwrap(wrapper, moveClasses = false) {
     if (wrapper.parentElement == null)
         return;
 
-    while (wrapper.childNodes.length > 0)
-        wrapper.parentElement.insertBefore(wrapper.firstChild, wrapper);
+    while (wrapper.childNodes.length > 0) {
+		let child = wrapper.firstChild;
+
+        wrapper.parentElement.insertBefore(child, wrapper);
+
+		if (!(child instanceof Element))
+			continue;
+
+		if (moveClasses === false)
+			continue;
+
+		if (moveClasses === true) {
+			child.classList.add(...(wrapper.classList));
+			continue;
+		}
+
+		if (!(moveClasses instanceof Array))
+			continue;
+
+		moveClasses.forEach(cssClass => {
+			if (wrapper.classList.contains(cssClass))
+				child.classList.add(cssClass);
+		});
+    }
     wrapper.remove();
 }
 
 /*******************************************************/
 /*  Unwrap all elements specified by the given selector.
  */
-function unwrapAll(selector, root = document) {
+function unwrapAll(selector, root = document, moveClasses = false) {
     root.querySelectorAll(selector).forEach(element => {
-        unwrap(element);
+        unwrap(element, moveClasses);
     });
 }
 
