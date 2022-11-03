@@ -578,7 +578,7 @@ Transclude = {
     },
 
     isAnnotationTransclude: (includeLink) => {
-        if (Annotations.isAnnotatedLinkFull(includeLink) || includeLink.classList.contains("include-annotation") == false)
+        if ((Annotations.isAnnotatedLinkFull(includeLink) || includeLink.classList.contains("include-annotation")) == false)
             return false;
 
         return ((   Transclude.transcludeAnnotationsByDefault
