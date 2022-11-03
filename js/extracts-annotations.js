@@ -377,8 +377,13 @@ Extracts = { ...Extracts,
         /*  Allow for floated figures at the start of abstract
             (only on sufficiently wide viewports).
             */
-        if (!(GW.mediaQueries.mobileWidth.matches)) {
+        if (GW.mediaQueries.mobileWidth.matches == false) {
             let initialFigure = popFrame.document.querySelector(".annotation-abstract > figure.float-right:first-child");
+            if (initialFigure == null) {
+            	let pageThumbnailImage = popFrame.document.querySelector("img.page-thumbnail");
+            	if (pageThumbnailImage)
+            		initialFigure = pageThumbnailImage.closest("figure");
+            }
             if (initialFigure)
                 popFrame.body.insertBefore(initialFigure, popFrame.body.firstElementChild);
         }
