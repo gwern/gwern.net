@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-10-31 12:54:49 gwern"
+When:  Time-stamp: "2022-11-02 21:34:00 gwern"
 License: CC-0
 -}
 
@@ -693,7 +693,7 @@ tagsShort2Long = [("statistics/power", "statistics/power-analysis"), ("reinforce
                   (map (\(a,b) -> (map toLower b,a)) $ filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
 tagsLong2Short = [
           ("reinforcement-learning", "RL")
-          , ("music-distraction", "music distraction")
+          , ("music/music-distraction", "music distraction")
           , ("reinforcement-learning/chess", "AI chess")
           , ("ai/tabular", "tabular ML")
           , ("ai/nn/adversarial", "adversarial examples")
@@ -814,6 +814,7 @@ tagsLong2Short = [
           , ("reinforcement-learning/safe", "AI safety")
           , ("statistics/prediction/election", "election forecast")
           , ("Statistics/prediction", "forecasting")
+          , ("psychology/nature", "psych of nature")
           , ("psychology/okcupid", "OKCupid")
           , ("psychology/personality", "personality")
           , ("psychology/personality/conscientiousness", "Conscientiousness")
@@ -1426,7 +1427,7 @@ generateID url author date
        , ("/docs/japanese/poetry/teika/1999-keene-seedsintheheart-teika.pdf", "keene-1999-teika")
        , ("/docs/japanese/2002-gibson", "gibson-mud-2")
        , ("/docs/longevity/2021-zhang.pdf", "zhang-et-al-2021-hair")
-       , ("/docs/music-distraction/2012-perham.pdf", "perham-sykora-2012-2")
+       , ("/docs/music/music-distraction/2012-perham.pdf", "perham-sykora-2012-2")
        , ("/docs/psychology/1904-spearman.pdf", "spearman-1904-measurementerror")
        , ("/docs/psychology/2014-shen.pdf", "shen-et-al-2014-link")
        , ("/docs/psychology/2016-feinberg.pdf", "feinberg-2016-consciousness-2")
@@ -1866,7 +1867,7 @@ gwernAbstract shortAllowed p' description toc f =
       abstrct'  = (if anyPrefix abstrct ["<p>", "<p>", "<figure>"] then abstrct
                     else if null abstrct then "" else "<p>"++abstrct++"</p>") ++ " " ++ toc
       -- combine description + abstract; if there's no abstract, settle for the description:
-      abstrct'' = if description /= "" && abstrct' /= "" then "<p>[<a href=\"/"++baseURL++"\">Top-level</a> description: "++description++"]</p>"++
+      abstrct'' = if description /= "" && abstrct' /= "" then "<div class=\"page-description-annotation\"><p>"++description++"</p></div>"++
                                                               abstrct'
                                       else if description == "" && abstrct' /= "" then abstrct'
                                            else if description /= "" && abstrct' == "" then "<p>"++description++"</p>"
