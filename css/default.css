@@ -2767,6 +2767,7 @@ body.index #markdownBody section > h1:first-child a::after {
 @media only screen and (min-width: 1145px) {
     body.index #back-to-top {
         left: calc(108px + (100% - 1145px)/2);
+        right: unset;
     }
 }
 @media only screen and (min-width: 1761px) {
