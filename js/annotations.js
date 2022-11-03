@@ -479,7 +479,7 @@ Annotations.dataSources.wikipedia = {
 		//  Separate out the thumbnail and float it.
 		let thumbnail = referenceEntry.querySelector("img");
 		if (   thumbnail
-			&& thumbnail.closest("table")) {
+			&& thumbnail.closest(".infobox-image, .thumb")) {
 			//  Save reference to the thumbnail’s containing element.
 			let thumbnailContainer = thumbnail.parentElement;
 
