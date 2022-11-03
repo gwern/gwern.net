@@ -21,9 +21,30 @@
  */
 
 Annotations = {
+	annotatedLinkFullClass: "link-annotated",
+	annotatedLinkPartialClass: "link-annotated-partial"
+};
+
+Annotations = { ...Annotations,
     /***********/
     /*  General.
         */
+
+	isAnnotatedLink: (link) => {
+		return link.classList.containsAnyOf([ Annotations.annotatedLinkFullClass,  Annotations.annotatedLinkPartialClass ]);
+	},
+
+	isAnnotatedLinkFull: (link) => {
+		return link.classList.contains(Annotations.annotatedLinkFullClass);
+	},
+
+	isAnnotatedLinkPartial: (link) => {
+		return link.classList.contains(Annotations.annotatedLinkPartialClass);
+	},
+
+    allAnnotatedLinksInContainer: (container) => {
+        return Array.from(container.querySelectorAll("a[class*='link-annotated']")).filter(link => Annotations.isAnnotatedLink(link));
+    },
 
     /*  Storage for retrieved and cached annotations.
         */
@@ -249,7 +270,7 @@ Annotations = {
 			},
 
 			basePathname: "/metadata/annotations/",
-			referenceElementSelector: "a.link-annotated"
+			referenceElementSelector: [ Annotations.annotatedLinkFullClass,  Annotations.annotatedLinkPartialClass ].map(className => `a.${className}`).join(", ")
 		}
 	}
 };
@@ -417,7 +438,7 @@ Annotations.dataSources.wikipedia = {
 			//  Mark other Wikipedia links as also being annotated.
 			if (/(.+?)\.wikipedia\.org/.test(link.hostname)) {
 				if (Annotations.dataSources.wikipedia.matches(link)) {
-					link.classList.add("link-annotated");
+					link.classList.add(Annotations.annotatedLinkFullClass);
 				} else {
 					if (!(link.pathname.startsWithAnyOf(_π("/wiki/", [ "Special:" ]))))
 						link.classList.add("link-live");

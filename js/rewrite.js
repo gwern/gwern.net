@@ -892,7 +892,7 @@ addContentLoadHandler(rectifyTypographyInAnnotation, "rewrite", (info) => (   in
 function bindSectionHighlightEventsToAnnotatedLinks(loadEventInfo) {
     GWLog("bindSectionHighlightEventsToAnnotatedLinks", "rewrite.js", 1);
 
-    loadEventInfo.document.querySelectorAll(".link-annotated").forEach(annotatedLink => {
+    Annotations.allAnnotatedLinksInContainer(loadEventInfo.document).forEach(annotatedLink => {
         //  Unbind existing events, if any.
         if (annotatedLink.annotatedLinkMouseEnter)
             annotatedLink.removeEventListener("mouseenter", annotatedLink.annotatedLinkMouseEnter);

@@ -98,8 +98,8 @@
 
     include-annotation
     include-content
-        If the include-link is an annotated link (`link-annotated` class and
-        not `link-annotated-partial`), then instead of transcluding the linked
+        If the include-link is a full-annotated (as opposed to 
+        partial-annotated) link, then instead of transcluding the linked
         content, the annotation for the linked content may be transcluded.
         The default behavior is set via the
         Transclude.transcludeAnnotationsByDefault property. If this is set to
@@ -578,7 +578,7 @@ Transclude = {
     },
 
     isAnnotationTransclude: (includeLink) => {
-        if (includeLink.classList.containsAnyOf([ "link-annotated", "include-annotation" ]) == false)
+        if (Annotations.isAnnotatedLinkFull(includeLink) || includeLink.classList.contains("include-annotation") == false)
             return false;
 
         return ((   Transclude.transcludeAnnotationsByDefault
@@ -588,8 +588,7 @@ Transclude = {
     },
 
 	hasAnnotation: (includeLink) => {
-		return (   includeLink.classList.contains("link-annotated")
-        		&& includeLink.classList.contains("link-annotated-partial") == false);
+		return (Annotations.isAnnotatedLinkFull(includeLink));
 	},
 
     /***********/
