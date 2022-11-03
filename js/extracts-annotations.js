@@ -45,8 +45,8 @@ Extracts.targetTypeDefinitions.insertBefore([
     "ANNOTATION",               // Type name
     "isAnnotatedLink",          // Type predicate function
     (target) =>                 // Target classes to add
-        ((   target.classList.contains("link-annotated-partial")
-          && !(Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))))
+        ((   Annotations.isAnnotatedLinkPartial(target)
+          && Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target)) == false)
          ? "has-annotation-partial"
          : "has-annotation"),
     "annotationForTarget",      // Pop-frame fill function
@@ -54,9 +54,6 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
-    //  Used in: Extracts.setUpAnnotationLoadEventWithin
-    annotatedTargetSelectors: [ "a.link-annotated" ],
-
     //  Constructed annotations.
     cachedAnnotations: { },
 
@@ -64,7 +61,7 @@ Extracts = { ...Extracts,
     //  Called by: extracts.js
     //  Called by: extracts-content.js
     isAnnotatedLink: (target) => {
-        return target.classList.contains("link-annotated");
+        return Annotations.isAnnotatedLink(target);
     },
 
     /*  This “special testing function” is used to exclude certain targets which
@@ -408,7 +405,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.setUpAnnotationLoadEventWithin", "extracts-annotations.js", 1);
 
         //  Get all the annotated targets in the container.
-        let allAnnotatedTargetsInContainer = container.querySelectorAll(Extracts.annotatedTargetSelectors.join(", "));
+        let allAnnotatedTargetsInContainer = Annotations.allAnnotatedLinksInContainer(container);
 
         if (Extracts.popFrameProvider == Popups) {
             //  Add hover event listeners to all the annotated targets.
