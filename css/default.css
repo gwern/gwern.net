@@ -1091,6 +1091,9 @@ blockquote p > a:first-child code:first-child {
 blockquote table {
     font-size: 0.7em;
 }
+blockquote table table {
+    font-size: 1em;
+}
 
 /*  Lists in blockquotes.
  */
@@ -4973,6 +4976,9 @@ section.highlight-fading::before {
 }
 .annotation.wikipedia-entry .infobox {
     font-size: 0.9em;
+}
+.annotation.wikipedia-entry .infobox table {
+	font-size: 0.935em;
 }
 .annotation.wikipedia-entry .infobox tbody tr:hover {
     outline: none;

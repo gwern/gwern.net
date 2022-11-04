@@ -385,7 +385,6 @@ Annotations.dataSources.wikipedia = {
 		"style",
 		".mw-ref",
 		".shortdescription",
-		".plainlinks",
 		"td hr",
 		".hatnote",
 		".portal",
@@ -456,10 +455,35 @@ Annotations.dataSources.wikipedia = {
 				link.classList.add("link-self");
 		});
 
-		//  Strip inline styles.
-		referenceEntry.querySelectorAll("[style]").forEach(element => {
-			if (element.style.display != "none")
-				element.removeAttribute("style");
+		//	Strip inline styles and some related attributes.
+		let tableElementsSelector = "table, thead, tfoot, tbody, tr, th, td";
+		referenceEntry.querySelectorAll("[style]").forEach(styledElement => {
+			//	Skip table elements; we handle those specially.
+			if (styledElement.closest(tableElementsSelector) == styledElement)
+				return;
+
+			if (styledElement.style.display != "none")
+				stripStyles(styledElement, null, [ "position", "top", "left", "bottom", "right", "width", "height" ]);
+		});
+		//	Special handling for table elements.
+		referenceEntry.querySelectorAll(tableElementsSelector).forEach(tableElement => {
+			if (tableElement.style.display != "none")
+				stripStyles(tableElement, null, [ "text-align" ]);
+
+			tableElement.removeAttribute("width");
+			tableElement.removeAttribute("height");
+		});
+
+		//  Rectify table classes.
+		referenceEntry.querySelectorAll("table.sidebar").forEach(table => {
+			table.classList.toggle("infobox", true);
+		});
+
+		//  Normalize table cell types.
+		referenceEntry.querySelectorAll("th:not(:only-child)").forEach(cell => {
+			let rowSpan = (cell.rowSpan > 1) ? ` rowspan="${cell.rowSpan}"` : ``;
+			let colSpan = (cell.colSpan > 1) ? ` colspan="${cell.colSpan}"` : ``;
+			cell.outerHTML = `<td${rowSpan}${colSpan}>${cell.innerHTML}</td>`;
 		});
 
 		//  Un-linkify images.
@@ -467,19 +491,9 @@ Annotations.dataSources.wikipedia = {
 			imageLink.parentElement.outerHTML = imageLink.outerHTML;
 		});
 
-		//  Normalize table cell types.
-		referenceEntry.querySelectorAll("th:not(:only-child)").forEach(cell => {
-			cell.outerHTML = `<td>${cell.innerHTML}</td>`;
-		});
-
 		//	Fix chemical formulas.
 		referenceEntry.querySelectorAll(".chemf br").forEach(br => {
 			br.remove();
-		});
-
-		//  Rectify table classes.
-		referenceEntry.querySelectorAll("table.sidebar").forEach(table => {
-			table.classList.toggle("infobox", true);
 		});
 
 		//  Separate out the thumbnail and float it.
