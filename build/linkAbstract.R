@@ -3,7 +3,7 @@
 # LinkAbstracter
 # Author: gwern
 # Date: 2019-08-29
-# When:  Time-stamp: "2022-03-29 12:35:52 gwern"
+# When:  Time-stamp: "2022-11-03 17:15:27 gwern"
 # License: CC-0
 #
 # Read a PLOS or PMCID URL, and return the parsed fulltext as newline-delimited
@@ -23,7 +23,7 @@
 #
 # PLOS example (NOTE: ' ' thin spaces are used in the formatting):
 #
-# $ Rscript  linkAbstract.R 'http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0100248'
+# $ Rscript linkAbstract.R 'http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0100248'
 # Genetic Variation Associated with Differential Educational Attainment in Adults Has Anticipated Associations with School Performance in Children
 # Mary E. Ward, George McMahon, Beate St Pourcain, David M. Evans, Cornelius A. Rietveld, Daniel J. Benjamin, Philipp D. Koellinger, David Cesarini, NA NA, George Davey Smith, Nicholas J. Timpson
 # 2014-05-22

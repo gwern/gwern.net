@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-02 21:34:00 gwern"
+When:  Time-stamp: "2022-11-03 16:08:40 gwern"
 License: CC-0
 -}
 
@@ -735,6 +735,7 @@ tagsLong2Short = [
           , ("ai/nn/transformer/gpt/inner-monologue", "inner monologue (AI)")
           , ("ai/nn/transformer/gpt/codex",           "Codex")
           , ("ai/nn/transformer/gpt/lamda",           "LaMDA")
+          , ("ai/nn/transformer/gpt/palm",            "PaLM")
           , ("ai/nn/transformer/gpt/dall-e",          "DALL·E")
           , ("ai/nn/transformer/gpt/fiction",         "GPT fiction")
           , ("ai/nn/transformer/gpt/poetry",          "GPT poetry")
@@ -2372,6 +2373,11 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<span class=\"math inline\">\\(N_A\\)</span>", "<em>N<sub>A</sub></em>")
          , ("<span class=\"math inline\">\\(N_B\\)</span>", "<em>N<sub>B</sub></em>")
          , ("<span class=\"math inline\">\\(N_A \\ll N_B\\)</span>", "<em>N<sub>A</sub></em> ≪ <em>N<sub>B</sub></em>")
+         , ("<span class=\"math inline\">\\(\\dot{M}\\)</span>", "<em>̇M</em>")
+         , ("<span class=\"math inline\">\\(0.15{-}1.3 {\\rm M}_{\\odot}\\)</span>", "0.15–1.3M<sub>☉</sub>")
+         , ("<span class=\"math inline\">\\({\\sim} 0.3 {\\rm M}_{\\odot}\\)</span>", "~0.3M<sub>☉</sub>")
+         , ("<span class=\"math inline\">\\({\\rm M}_{\\odot}\\)</span>", "M<sub>☉</sub>")
+         , ("<span class=\"math inline\">\\({\\sim}0.02 {\\rm M}_{\\mathrm{Ceres}}\\)</span>", "~0.02M<sub><a href=\"https://en.wikipedia.org/wiki/Ceres_(dwarf_planet)\">Ceres</a></sub>")
          , (" TD()", " TD(λ)")
          , ("({\\lambda})", "(λ)")
          , ("O((log n log log n)^2)", "𝒪(log<sup>2</sup> <em>n</em> log log <em>n</em>)")
@@ -3184,6 +3190,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("\t\t", "")
          , ("\t\t\t\t\t", "")
          , ("longstanding", "long-standing")
+         , ("dis -ambiguate", "disambiguate")
          , ("co- occurring", "co-occurring")
          , ("CLIP- based", "CLIP-based")
          , ("self- and psychiatrist-rated", "self-rated & psychiatrist-rated")
@@ -3238,6 +3245,13 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("Excess significance", "Excess statistical-significance")
          , ("their scientific significance", "their scientific importance")
          , ("behavioral significance", "behavioral importance")
+         , ("parametris", "parameteriz")
+         , ("normalis", "normaliz")
+         , ("generalis", "generaliz")
+         , ("benefitt", "benefit")
+         , ("noninsight", "non-insight")
+         , (" UNet", " U-Net")
+         , ("PsycArticles", "PsycARTICLES")
          , ("behaviour", "behavior")
          , ("de Novo", "De Novo")
          , ("small saple", "small sample")

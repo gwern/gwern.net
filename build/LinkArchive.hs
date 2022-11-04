@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-10-30 23:05:27 gwern"
+When:  Time-stamp: "2022-11-03 16:21:10 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1263,5 +1263,7 @@ whiteList url
       , "https://practiceoftheory.weebly.com/a-causal-models-probability-of-being-true.html" -- interactive
       , "https://wenxin.baidu.com/moduleApi/ernieVilg" -- interactive
       , "https://ai-muzic.github.io/meloform/" -- low quality (audio embeds)
+      , "https://www.webdesignmuseum.org/" -- homepage
+      , "https://minerva-demo.github.io/#category=Algebra&index=1" -- interactive
       ] = True
     | otherwise = False
