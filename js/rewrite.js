@@ -293,6 +293,64 @@ function unwrap(wrapper, moveClasses = false) {
     wrapper.remove();
 }
 
+/*************************************************************************/
+/*	Save an element’s inline styles in a .savedStyles DOM object property.
+ */
+function saveStyles(element, propertiesToSave) {
+	let stylesToSave = { };
+
+	for (let i = 0; i < element.style.length; i++) {
+		let propertyName = element.style.item(i);
+		if (propertiesToSave.includes(propertyName)) {
+			let propertyValue = element.style.getPropertyValue(propertyName);
+			stylesToSave[propertyName] = propertyValue;
+		}
+	}
+
+	if (Object.entries(stylesToSave).length > 0)
+		element.savedStyles = stylesToSave;
+}
+
+/******************************************************************************/
+/*	Restore an element’s inline styles from a .savedStyles DOM object property.
+ */
+function restoreStyles(element) {
+	if (element.savedStyles == null)
+		return;
+
+	for ([ propertyName, propertyValue ] of Object.entries(element.savedStyles))
+		element.style.setProperty(propertyName, propertyValue);
+
+	element.savedStyles = null;
+}
+
+/*****************************************************************************/
+/*	Strip an element’s inline styles, optionally only removing some styles,
+	optionally keeping some styles. (The ‘propertiesToSave’ argument overrides
+	the ‘propertiesToRemove’ argument, i.e. if a property appears in both 
+	lists, it is saved.)
+ */
+function stripStyles(element, propertiesToRemove = null, propertiesToSave = null) {
+	if (propertiesToSave)
+		saveStyles(element, propertiesToSave);
+
+	if (propertiesToRemove) {
+		for (let i = 0; i < element.style.length; i++) {
+			let propertyName = element.style.item(i);
+			if (propertiesToRemove.includes(propertyName))
+				element.style.removeProperty(propertyName);
+		}
+	} else {
+		element.removeAttribute("style");
+	}
+
+	if (propertiesToSave)
+		restoreStyles(element);
+
+	if (element.style.length == 0)
+		element.removeAttribute("style");
+}
+
 /*******************************************************/
 /*  Unwrap all elements specified by the given selector.
  */
