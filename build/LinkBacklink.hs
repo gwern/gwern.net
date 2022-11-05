@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-09-28 17:40:16 gwern"
+When:  Time-stamp: "2022-11-03 16:55:50 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -16,10 +16,10 @@ Because every used link necessarily has a backlink (the document in which it is 
 is also a convenient way to get a list of all URLs. -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkBacklink (getBackLink, getBackLinkCount, getSimilarLink, getSimilarLinkCount, Backlinks, readBacklinksDB, writeBacklinksDB) where
+module LinkBacklink (getBackLink, getBackLinkCount, getSimilarLink, getSimilarLinkCount, Backlinks, readBacklinksDB, writeBacklinksDB, getForwardLinks) where
 
 import Data.List (sort)
-import qualified Data.Map.Strict as M (empty, fromList, toList, Map) -- fromListWith,
+import qualified Data.Map.Strict as M (empty, filter, fromList, keys, toList, Map) -- fromListWith,
 import qualified Data.Text as T (count, pack, unpack, Text)
 import Data.Text.IO as TIO (readFile)
 import Text.Read (readMaybe)
@@ -71,6 +71,10 @@ getSimilarLinkCount p = do (file,_) <- getSimilarLink p
                            if null file then return 0 else do
                              fileContents <- TIO.readFile file
                              return $ T.count "class=\"link-annotated backlink-not id-not\"" fileContents
+
+-- a backlinks database implicitly defines all the forward links as well. It's not efficient compared to converting it to a 'forwardlinks database', but we can support one-off searches easily:
+getForwardLinks :: Backlinks -> T.Text -> [T.Text]
+getForwardLinks bdb p = M.keys $ M.filter (p `elem`) bdb
 
 ----------------------
 
