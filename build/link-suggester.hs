@@ -805,6 +805,7 @@ whiteList = M.fromList [
     , [ "Neuroticism", "neuroticism", "neurotic", "Neurotic", "emotional stability", "Emotional Stability" ]
     )
   , ("https://en.wikipedia.org/wiki/Agreeableness", ["agreeableness", "Agreeableness", "disagreeableness", "Disagreeableness"])
+  , ("https://en.wikipedia.org/wiki/Circadian_rhythm", ["circadian rhythm", "circadian rhythms", "circadian cycle", "circadian cycles", "circadian"])
   , ( "https://en.wikipedia.org/wiki/Niccol%C3%B2_Machiavelli"
     , [ "Machiavelli" ]
     )
