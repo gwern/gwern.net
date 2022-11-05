@@ -940,9 +940,10 @@ Extracts = {
 			return;
 
 		if (Extracts.targetElementInDocument(target, popFrame.document) == null) {
-			let sectionWrapper = document.createElement("SECTION");
-			sectionWrapper.id = popFrame.firstSection.id;
-			sectionWrapper.classList.add(...(popFrame.firstSection.classList));
+			let sectionWrapper = newElement("SECTION", {
+				"id": popFrame.firstSection.id,
+				"class": [ ...(popFrame.firstSection.classList) ].join(" ")
+			});
 			sectionWrapper.replaceChildren(...(popFrame.body.children));
 			popFrame.body.appendChild(sectionWrapper);
 

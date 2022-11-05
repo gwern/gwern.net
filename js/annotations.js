@@ -504,18 +504,14 @@ Annotations.dataSources.wikipedia = {
 			let thumbnailContainer = thumbnail.parentElement;
 
 			//  Create the figure and move the thumbnail into it.
-			let figure = document.createElement("FIGURE");
-			figure.classList.add("float-right");
+			let figure = newElement("FIGURE", { "class": "float-right" });
 			figure.appendChild(thumbnail);
 
 			//  Create the caption, if need be.
 			let caption = referenceEntry.querySelector(".mw-default-size + div");
 			if (   caption
-				&& caption.textContent > "") {
-				let figcaption = document.createElement("FIGCAPTION");
-				figcaption.innerHTML = caption.innerHTML;
-				figure.appendChild(figcaption);
-			}
+				&& caption.textContent > "")
+				figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": caption.innerHTML }));
 
 			//  Insert the figure as the first child of the annotation.
 			referenceEntry.insertBefore(figure, referenceEntry.firstElementChild);
