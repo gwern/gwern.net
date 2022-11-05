@@ -4931,7 +4931,7 @@ section.highlight-fading::before {
 .annotation .data-field.annotation-abstract:empty {
     display: none;
 }
-.annotation .page-description-annotation::before {
+.annotation .data-field.annotation-abstract .page-description-annotation::before {
     content: "";
     display: block;
     overflow: auto;
