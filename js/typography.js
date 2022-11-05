@@ -15,10 +15,6 @@
 	MIT License
 	*/
 
-const Typography_pL = "a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ";
-const Typography_word = `[${Typography_pL}_0-9]`;
-const Typography_nonWord = `[^${Typography_pL}_0-9]`;
-
 Typography = {
 	replacements: (types) => {
 		let allReplacements = [ ];
@@ -65,7 +61,7 @@ Typography = {
 			// beginning '
 			[ /(\W|^)'(\S)/g, '$1\u2018$2' ],
 			// conjunction's possession
-			[ /([a-z])'([a-z])/ig, '$1\u2019$2' ],
+			[ /([a-z0-9])'([a-z])/ig, '$1\u2019$2' ],
 			// abbrev. years like '93
 			[ /(\u2018)([0-9]{2}[^\u2019]*)(\u2018([^0-9]|$)|$|\u2019[a-z])/ig, '\u2019$2$3' ],
 			// ending '
