@@ -533,6 +533,17 @@ Annotations.dataSources.wikipedia = {
 			if (caption.textContent == "")
 				caption.remove();
 		}
+
+		//	Rewrite other figures.
+		referenceEntry.querySelectorAll("div.thumb").forEach(figureBlock => {
+			let figure = newElement("FIGURE");
+			figureBlock.querySelectorAll("img").forEach(image => {
+				figure.appendChild(image);
+			});
+			figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": figureBlock.querySelector(".thumbcaption").innerHTML }));
+			figureBlock.parentNode.insertBefore(figure, figureBlock);
+			figureBlock.remove();
+		});
 	}
 };
 

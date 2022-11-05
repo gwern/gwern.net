@@ -4955,6 +4955,9 @@ section.highlight-fading::before {
         float: right;
     }
 }
+.annotation figure {
+    clear: both;
+}
 .annotation figure.float-left .image-wrapper,
 .annotation figure.float-right .image-wrapper {
     max-width: 100%;
