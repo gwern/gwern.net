@@ -869,8 +869,7 @@ Extracts = { ...Extracts,
 					if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
 						return;
 
-                    let doc = document.createElement("DIV");
-                    doc.innerHTML = event.target.responseText;
+                    let doc = newElement("DIV", null, { "innerHTML": event.target.responseText });
                     doc.querySelectorAll("[href], [src]").forEach(element => {
                         if (element.href) {
                             let elementURL = new URL(element.href);

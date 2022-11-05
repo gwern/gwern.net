@@ -495,8 +495,10 @@ addContentLoadHandler(wrapImages, "rewrite", (info) => info.needsRewrite);
 function wrapFigures(loadEventInfo) {
     GWLog("wrapFigures", "rewrite.js", 1);
 
+	let mediaSelector = "img, audio, video";
+
     loadEventInfo.document.querySelectorAll("figure").forEach(figure => {
-        let media = figure.querySelector("img, audio, video");
+        let media = figure.querySelector(mediaSelector);
         let caption = figure.querySelector("figcaption");
 
         if (!(media && caption))
@@ -506,19 +508,20 @@ function wrapFigures(loadEventInfo) {
         let innerWrapper = newElement("SPAN", { "class": "figure-inner-wrapper" });
         figure.appendChild(innerWrapper);
 
+        //  Re-insert the (possibly wrapped) media into the figure.
+        figure.querySelectorAll(mediaSelector).forEach(mediaElement => {
+        	let mediaBlock = mediaElement.closest(".image-wrapper") || mediaElement;	
+        	innerWrapper.appendChild(mediaBlock);
+        });
+
         //  Wrap the caption in the wrapper span.
-        let wrapper = newElement("SPAN", { "class": "caption-wrapper" });
-        wrapper.appendChild(caption);
+        let captionWrapper = newElement("SPAN", { "class": "caption-wrapper" });
+        captionWrapper.appendChild(caption);
+        
+        //  Re-insert the wrapped caption into the figure.
+        innerWrapper.appendChild(captionWrapper);
 
-        //  Get the media, or (if any) the image wrapper.
-        let mediaBlock = media.closest(".image-wrapper") || media;
-
-        //  Re-insert the (possibly wrapped) media and the wrapped caption into
-        //  the figure.
-        innerWrapper.appendChild(mediaBlock);
-        innerWrapper.appendChild(wrapper);
-
-        // Tag the figure with the image’s float class.
+        //	Tag the figure with the first (or only) media element’s float class.
         if (media.classList.contains("float-left"))
             media.closest("figure").classList.add("float-left");
         if (media.classList.contains("float-right"))

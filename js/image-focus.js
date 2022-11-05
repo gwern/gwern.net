@@ -145,8 +145,7 @@ ImageFocus = {
 
 			let imageContainer = image.parentElement;
 
-			let wrapper = document.createElement("SPAN");
-			wrapper.classList.add("image-wrapper");
+			let wrapper = newElement("SPAN", { "class": "image-wrapper" });
 			wrapper.appendChild(image);
 			imageContainer.insertBefore(wrapper, imageContainer.firstChild);
 
