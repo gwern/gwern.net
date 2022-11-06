@@ -4966,6 +4966,10 @@ section.highlight-fading::before {
     width: 100%;
 }
 
+.annotation .image-row-wrapper {
+	display: flex;
+}
+
 .annotation .page-description-annotation {
     font-style: italic;
     margin-bottom: 0.5em;
