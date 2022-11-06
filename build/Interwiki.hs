@@ -9,7 +9,7 @@ import qualified Network.URI.Encode as E (encodeTextWith, isAllowed)
 
 import Text.Pandoc (Inline(..), nullAttr)
 
-import Utils (replaceManyT)
+import Utils (replaceManyT, anyPrefixT)
 
 -- INTERWIKI PLUGIN
 -- This is a simplification of the original interwiki plugin I wrote for Gitit: <https://github.com/jgm/gitit/blob/master/plugins/Interwiki.hs>
@@ -78,8 +78,13 @@ convertInterwikiLinks x = x
 
 -- special case rewrites: for example, automatically rewrite anchor texts ending in "'s" to delete it (eg. "George Washington's" to "George Washington") if it is not a special-case where that is part of the official name (eg. "Antoine's"). This makes writing much easier because you can simply write '[George Washington's](!W) first act as president was' instead of ''[George Washington's](!W "George Washington") first act...'. This sort of possessive rewriting gets especially annoying in long runs of "$CREATOR's $MEDIA" like in reviews.
 wpURLRewrites :: T.Text -> T.Text
-wpURLRewrites ref = if ref `elem` overrides' || not ("'s" `T.isSuffixOf` ref || "’s" `T.isSuffixOf` ref) then ref else
-                      T.init (T.init ref)
+wpURLRewrites ref
+  | ref == ""                                          = error "Interwiki.wpURLRewrites called with empty string; this should never happen."
+  | ref `elem` overrides'                              = ref
+  | "'s" `T.isSuffixOf` ref || "’s" `T.isSuffixOf` ref = T.init $ T.init ref
+  -- WP seems to not permit double or single quotation marks at the beginning of article titles, so we don't have to worry about whitelisting; any leading quotation mark means to strip the surrounding pair
+  | anyPrefixT ref ["\"", "'", "‘", "’", "“", "”"]     = T.tail $ T.init ref
+  | otherwise                                          = ref
     where overrides = ["Antoine's", "Bloomingdale's", "Collier's", "Kinko's", "Mzoli's", "Security_hacker#Birth_of_subculture_and_entering_mainstream:_1960's-1980's", "Security hacker#Birth of subculture and entering mainstream: 1960's-1980's"]
           overrides' = overrides ++ map (T.replace "'" "’") overrides
 
@@ -164,6 +169,20 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
       Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Antoine's"]] ("https://en.wikipedia.org/wiki/Antoine's", ""))
   , (Link nullAttr [Emph [Str "famous restaurant"]] ("!Wikipedia","Antoine's"),
       Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "famous restaurant"]] ("https://en.wikipedia.org/wiki/Antoine's", ""))
+
+    -- !W + quotation marks special-case rewrite:
+    , (Link nullAttr [Emph [Str "“The Two Cultures”"]] ("!Wikipedia",""),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "“The Two Cultures”"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
+    , (Link nullAttr [Emph [Str "”The Two Cultures“"]] ("!Wikipedia",""),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "”The Two Cultures“"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", "")) -- must be able to handle cases of smart-quotes going awry
+    , (Link nullAttr [Emph [Str "\"The Two Cultures\""]] ("!Wikipedia",""),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "\"The Two Cultures\""]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
+    , (Link nullAttr [Emph [Str "'The Two Cultures'"]] ("!Wikipedia",""),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "'The Two Cultures'"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
+    , (Link nullAttr [Emph [Str "‘The Two Cultures’"]] ("!Wikipedia",""),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "‘The Two Cultures’"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
+    , (Link nullAttr [Emph [Str "’The Two Cultures‘"]] ("!Wikipedia",""),
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "’The Two Cultures‘"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
 
    -- <https://en.wikipedia.org/wiki/$ARTICLE>
   , (Link nullAttr [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry",""),
