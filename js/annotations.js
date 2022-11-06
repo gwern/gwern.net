@@ -463,7 +463,7 @@ Annotations.dataSources.wikipedia = {
 				return;
 
 			if (styledElement.style.display != "none")
-				stripStyles(styledElement, null, [ "position", "top", "left", "bottom", "right", "width", "height" ]);
+				stripStyles(styledElement, null, [ "position", "top", "left", "bottom", "right", "width", "height", "display" ]);
 		});
 		//	Special handling for table elements.
 		referenceEntry.querySelectorAll(tableElementsSelector).forEach(tableElement => {
@@ -498,17 +498,37 @@ Annotations.dataSources.wikipedia = {
 
 		//  Separate out the thumbnail and float it.
 		let thumbnail = referenceEntry.querySelector("img");
+		let thumbnailContainer;
+		if (thumbnail)
+			thumbnailContainer = thumbnail.closest(".infobox-image, .thumb");
 		if (   thumbnail
-			&& thumbnail.closest(".infobox-image, .thumb")) {
-			//  Save reference to the thumbnail’s containing element.
-			let thumbnailContainer = thumbnail.parentElement;
+			&& thumbnailContainer) {
+			//	Save references to thumbnails’ parent elements.
+			let thumbnailParents = [ ];
 
-			//  Create the figure and move the thumbnail into it.
+			//  Create the figure and move the thumbnail(s) into it.
 			let figure = newElement("FIGURE", { "class": "float-right" });
-			figure.appendChild(thumbnail);
+			thumbnailContainer.querySelectorAll("img").forEach(image => {
+				if (image.closest("figure") == figure)
+					return;
+
+				thumbnailParents.push(image.parentElement);
+
+				let closestRow = image.closest("tr, [style*='display']");
+				while (!(closestRow.tagName == "TR" || closestRow.style.display == "table-row"))
+					closestRow = closestRow.parentElement.closest("tr, [style*='display']");
+				let allImagesInRow = closestRow.querySelectorAll("img");
+				if (allImagesInRow.length > 1) {
+					let rowWrapper = newElement("SPAN", { "class": "image-wrapper image-row-wrapper" });
+					rowWrapper.append(...allImagesInRow);
+					figure.append(rowWrapper);
+				} else {
+					figure.append(allImagesInRow[0]);
+				}
+			});
 
 			//  Create the caption, if need be.
-			let caption = referenceEntry.querySelector(".mw-default-size + div");
+			let caption = referenceEntry.querySelector(".mw-default-size + div, .infobox-caption");
 			if (   caption
 				&& caption.textContent > "")
 				figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": caption.innerHTML }));
@@ -517,10 +537,12 @@ Annotations.dataSources.wikipedia = {
 			referenceEntry.insertBefore(figure, referenceEntry.firstElementChild);
 
 			//  Rectify classes.
-			thumbnailContainer.closest("table").classList.toggle("infobox", true);
+			thumbnailParents.first.closest("table").classList.toggle("infobox", true);
 
-			//  Remove the whole row where the thumbnail was.
-			thumbnailContainer.closest("tr").remove();
+			//  Remove the whole row where each thumbnail was.
+			thumbnailParents.forEach(thumbnailParent => {
+				thumbnailParent.closest("tr").remove();
+			});
 		} else if (   thumbnail
 				   && thumbnail.closest("figure")) {
 			let figure = thumbnail.closest("figure");
