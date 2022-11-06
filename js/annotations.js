@@ -393,7 +393,8 @@ Annotations.dataSources.wikipedia = {
 		".Template-Fact",
 		".error",
 		".mwe-math-mathml-inline",
-        ".sidebar"
+        ".sidebar",
+        ".ambox"
 	],
 
 	/*  Post-process an already-constructed annotation created from a Wikipedia
