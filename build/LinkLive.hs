@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-10-19 10:09:35 gwern"
+When:  Time-stamp: "2022-11-04 22:51:30 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -1083,7 +1083,6 @@ badDomainsSimple = [ "2chan.us"
    , "developer.nvidia.com"
    , "developer.twitter.com"
    , "dharmaoverground.org"
-   , "digitalcollections.library.cmu.edu"
    , "digitalcommons.unl.edu"
    , "disease-connect.org"
    , "dl.acm.org"
@@ -3691,7 +3690,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://developer.nvidia.com/cuda-downloads", False)
             , ("https://developer.twitter.com/en/docs/twitter-api/v1/rules-and-filtering/search-operators", False)
             , ("https://dharmaoverground.org/web/guest/discussion/-/message_boards/message/2718243#_com_liferay_message_boards_web_portlet_MBPortlet_message_2718243", False)
-            , ("https://digitalcollections.library.cmu.edu/awweb/awarchive?type=file&item=33748", False)
             , ("https://digitalcommons.unl.edu/cgi/viewcontent.cgi?article=1024&context=vpc15", False)
             , ("https://discord.com/invite/7RgdJZy", False)
             , ("https://disease-connect.org/", False)

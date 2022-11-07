@@ -287,6 +287,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "www.ssc.wisc.edu/wlsresearch/" = aI "WLS" "text,tri,sans" -- Wisconsin Longitudinal Study
  | u' "host.robots.ox.ac.uk/pascal/VOC" = aI "VOC" "text,tri,sans" -- PASCAL VOC (Visual Object Classes) machine learning image dataset/competition
  | u'' "www.tandfonline.com" = aI "T&F" "text,tri,sans" -- Taylor & Francis: their icon is a small white oil lamp on a blue background, but it's illegible as a favicon and just looks like a white blob on a blue square; since these need to be monochrome, that makes it useless. Plus I recognize 'Taylor & Francis' (sans serif, as usual for STEM publishers) more anyway, so 'T&F' is the natural tri-text icon. A possible Unicode alternative for the AMPERSAND if it is too big is 'U+FE60 ﹠ SMALL AMPERSAND'.
+ | u' "omega0.xyz/omega8008/" = aI "ETJ" "text,tri,sans" -- E. T. Jaynes book/paper website
 
  -- Quad-letter-square icons.
  | aU'' ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
@@ -672,7 +673,7 @@ linkIconTestUnitsText =
          , ("https://nv-adlr.github.io/MegatronLM",  "n","text,sans,italic")
          , ("https://nv-tlabs.github.io/big-datasetgan/",  "n","text,sans,italic")
          , ("https://nvlabs.github.io/stylegan2/versions.html",  "n","text,sans,italic")
-         , ("https://6thfloor.blogs.nytimes.com/2013/03/20/a-sham-procedure-leads-to-disappointing-m-s-news/",  "newyorktimes","svg")
+         , ("https://archive.nytimes.com/6thfloor.blogs.nytimes.com/2013/03/20/a-sham-procedure-leads-to-disappointing-m-s-news/",  "newyorktimes","svg")
          , ("https://www.wsj.com/articles/SB10000872396390443696604577647870908169992",  "WSJ","text,tri")
          , ("/docs/ai/nn/transformer/gpt/dall-e/2020-chen.pdf#openai",  "openai","svg")
          , ("https://openai.com/blog/better-language-models/",  "openai","svg")
@@ -1058,4 +1059,5 @@ linkIconTestUnitsText =
          , ("https://arxiv.org/abs/2207.05221#anthropic", "anthropic", "svg")
          , ("https://www.teds.ac.uk/about-teds", "TEDS", "text,quad,sans")
          , ("https://www.tandfonline.com/doi/abs/10.1080/02783190209554137", "T&F", "text,tri,sans")
+         , ("https://omega0.xyz/omega8008/JaynesBookPdf.html", "ETJ", "text,tri,sans")
         ]
