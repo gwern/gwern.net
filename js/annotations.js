@@ -426,6 +426,11 @@ Annotations.dataSources.wikipedia = {
 			emptyGraf.remove();
 		});
 
+		//	Remove edit-links.
+		referenceEntry.querySelectorAll("a[title^='Edit this on Wiki'], a[title^='Edit this at Wiki']").forEach(editLink => {
+			editLink.remove();
+		});
+
 		//  Process links.
 		referenceEntry.querySelectorAll("a").forEach(link => {
 			//	De-linkify non-anchor self-links.
@@ -504,6 +509,9 @@ Annotations.dataSources.wikipedia = {
 			thumbnailContainer = thumbnail.closest(".infobox-image, .thumb");
 		if (   thumbnail
 			&& thumbnailContainer) {
+			while ([ "TR", "TD", "TH" ].includes(thumbnailContainer.tagName))
+				thumbnailContainer = thumbnailContainer.parentElement;
+
 			//	Save references to thumbnails’ parent elements.
 			let thumbnailParents = [ ];
 
