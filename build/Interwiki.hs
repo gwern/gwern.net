@@ -91,7 +91,7 @@ wpURLRewrites ref
 -- bypass WP redirects to make links slightly faster, more consistent (important for link-suggester), and avoid noise in linkchecker runs warning about redirects:
 -- NOTE: we match by prefix due to hash-anchors.
 wpURLRedirectRewrites url = let baseURL = T.takeWhile (/='#') url
-                                hits = take 1 $ filter (\(t,_) -> t `T.isPrefixOf` baseURL) redirectDB in
+                                hits = take 1 $ filter (\(t,_) -> (T.takeWhile (/='#') t) == baseURL) redirectDB in
                               if null hits then url else T.replace baseURL (snd $ head hits) url
 
 interwikiTestSuite :: [(Inline, Inline, Inline)]
@@ -202,9 +202,9 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
 
   -- bypass redirects:
   , (Link nullAttr [Str "WP:RS"] ("!W",""),
-     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "WP:RS"] ("https://en.wikipedia.org/wiki/Wikipedia:RS", ""))
+     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "WP:RS"] ("https://en.wikipedia.org/wiki/Wikipedia:Reliable_sources", ""))
   , (Link nullAttr [Str "WP:RS#foobar"] ("!W",""),
-     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "WP:RS#foobar"] ("https://en.wikipedia.org/wiki/Wikipedia:RS#foobar", ""))
+     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "WP:RS#foobar"] ("https://en.wikipedia.org/wiki/Wikipedia:Reliable_sources#foobar", ""))
 
   -- /Lorem testcases: Should popup (as an **annotation**):
   , (Link nullAttr [Emph [Str "Liber Figurarum"]] ("https://it.wikipedia.org/wiki/Liber_Figurarum",""),
@@ -299,7 +299,7 @@ wpInterwikiMap = [("Wikipedia", "https://en.wikipedia.org/wiki/"),
 
 redirectDB :: [(T.Text, T.Text)]
 redirectDB = [
-          ("https://en.wikipedia.org/wiki/WP:RS", "https://en.wikipedia.org/wiki/Wikipedia:RS")
+          ("https://en.wikipedia.org/wiki/WP:RS", "https://en.wikipedia.org/wiki/Wikipedia:Reliable_sources")
           , ("https://en.wikipedia.org/wiki/WP:MISSING", "https://en.wikipedia.org/wiki/Wikipedia:MISSING")
           , ("https://en.wikipedia.org/wiki/WP:HAIKU", "https://en.wikipedia.org/wiki/Wikipedia:HAIKU")
           , ("https://en.wikipedia.org/wiki/Macross:_Do_You_Remember_Love?", "https://en.wikipedia.org/wiki/Macross:_Do_You_Remember_Love")
@@ -1632,7 +1632,7 @@ redirectDB = [
           , ( "https://en.wikipedia.org/wiki/National_Inquirer", "https://en.wikipedia.org/wiki/National_Enquirer")
           , ( "https://en.wikipedia.org/wiki/National_Longitudinal_Survey_of_Youth", "https://en.wikipedia.org/wiki/National_Longitudinal_Surveys")
           , ( "https://en.wikipedia.org/wiki/National_Security_Advisor", "https://en.wikipedia.org/wiki/National_security_advisor")
-          , ( "https://en.wikipedia.org/wiki/Nat_Turner", "https://en.wikipedia.org/wiki/Nat_Turner%27s_slave_rebellion#Nat_Turner")
+          , ( "https://en.wikipedia.org/wiki/Nat_Turner", "https://en.wikipedia.org/wiki/Nat_Turner%27s_slave_rebellion#Nat_Turner's_background")
           , ( "https://en.wikipedia.org/wiki/Navier-Stokes_equations", "https://en.wikipedia.org/wiki/Navier%E2%80%93Stokes_equations")
           , ( "https://en.wikipedia.org/wiki/Neal_Bush", "https://en.wikipedia.org/wiki/Neil_Bush")
           , ( "https://en.wikipedia.org/wiki/Near_(Death_Note)", "https://en.wikipedia.org/wiki/List_of_Death_Note_characters#Near")
