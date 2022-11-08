@@ -583,7 +583,8 @@ Annotations.dataSources.wikipedia = {
 			".mw-default-size",
 			".unicode.haudio",
 			".sister-logo",
-			".side-box-image"
+			".side-box-image",
+			"p"
 		].map(selector => `${selector} img`).join(", ");
 		referenceEntry.querySelectorAll(noFigureImagesSelector).forEach(image => {
 			image.classList.add("figure-not");

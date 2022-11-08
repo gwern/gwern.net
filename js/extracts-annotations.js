@@ -219,7 +219,7 @@ Extracts = { ...Extracts,
 
         //  Inject abstract (annotation body).
         if (referenceData.abstract)
-            constructedAnnotation.querySelector(".annotation-abstract").appendChild(referenceData.abstract);
+            constructedAnnotation.querySelector(".annotation-abstract").appendChild(newDocument(referenceData.abstract));
 
         //  Fire contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
