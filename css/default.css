@@ -976,7 +976,7 @@ video + .caption-wrapper {
     padding-bottom: 1px;
 }
 
-/*	Enable the various `![caption](/images/foo.jpg){.width-full}` uses; 
+/*	Enable the various `![caption](/images/foo.jpg){.width-full}` uses;
 	analogous to width-full tables
  */
 figure.width-full {
@@ -2296,10 +2296,10 @@ p {
     line-height: 0.75;
 }
 .subsup sup {
-    top: 0.20em;
+    top: 0.25em;
 }
 .subsup sub {
-    bottom: -0.40em;
+    bottom: -0.15em;
 }
 /*  Make sure that adjusted prices move as a block: no breaking in the middle between the price & sup/sub; this works better than trying to use no-break Unicode entities
     */
