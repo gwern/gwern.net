@@ -349,7 +349,7 @@
 
 	--GW-base-font-size: 20px;
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
 	:root {
 		--GW-base-font-size: 18px;
 	}
@@ -577,7 +577,7 @@ header h1 {
     letter-spacing: -1px;
 }
 
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     header h1 {
         font-size: 2em;
     }
@@ -633,7 +633,7 @@ header h1 {
     margin: 0 0.35em 0 0.65em;
 }
 
-@media only screen and (min-width: 650px) {
+@media all and (min-width: 650px) {
 	#page-metadata {
 		overflow: auto;
 		font-size: calc((19/20) * var(--GW-base-font-size));
@@ -650,7 +650,7 @@ header h1 {
 		display: none;
 	}
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
 	#page-metadata {
 		overflow: visible;
 		font-size: calc((17/18) * var(--GW-base-font-size));
@@ -831,40 +831,40 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 /*  On mobile, we want the TOC to be inline, but for desktop, we want it
 	side by side with the content.
  */
-@media only screen and (max-width: 1280px) {
+@media all and (max-width: 1280px) {
     #TOC {
         font-size: 0.95rem;
     }
 }
-@media only screen and (max-width: 1200px) {
+@media all and (max-width: 1200px) {
     #TOC {
         font-size: 0.90rem;
     }
 }
-@media only screen and (max-width: 1120px) {
+@media all and (max-width: 1120px) {
     #TOC {
         font-size: 0.85rem;
         margin: 0 1.5rem 1.25rem 0;
     }
 }
-@media only screen and (max-width: 1040px) {
+@media all and (max-width: 1040px) {
     #TOC {
         font-size: 0.80rem;
         margin: 0 1.25rem 1rem 0;
     }
 }
-@media only screen and (max-width: 960px) {
+@media all and (max-width: 960px) {
     #TOC {
         margin: 0 1rem 1rem 0;
     }
 }
-@media only screen and (min-width: 901px) {
+@media all and (min-width: 901px) {
     #TOC {
         float: left;
         max-width: 285px;
     }
 }
-@media only screen and (max-width: 900px) {
+@media all and (max-width: 900px) {
     #TOC {
         float: none;
         clear: both;
@@ -896,7 +896,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 		background-position: 50% 0;
 	}
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     #TOC a {
         display: inline-block;
     }
@@ -1060,7 +1060,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 /*= Directory indexes =*/
 /*=-------------------=*/
 
-@media only screen and (min-width: 650px) {
+@media all and (min-width: 650px) {
 	body[class*='-index'] #TOC {
 		float: unset;
 		max-width: unset;
@@ -1085,14 +1085,14 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 
 /*  Breakpoint for sidenotes.
  */
-@media only screen and (min-width: 1761px) {
+@media all and (min-width: 1761px) {
     #markdownBody {
         position: relative;
     }
 }
 
-@media only screen and (min-width: 650px) {
-    @media only screen and (max-width: 1000px) {
+@media all and (min-width: 650px) {
+    @media all and (max-width: 1000px) {
 		/*  Replaces A/B-test-set average value; the wider the screen, the more
 			line-height is necessary, and no one size suits all, so set 3
 			brackets of increasing height.
@@ -1101,18 +1101,18 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
             line-height: 1.50;
         }
     }
-    @media only screen and (min-width: 1001px) and (max-width: 1200px) {
+    @media all and (min-width: 1001px) and (max-width: 1200px) {
         .markdownBody {
             line-height: 1.55;
         }
     }
-    @media only screen and (min-width: 1201px) {
+    @media all and (min-width: 1201px) {
         .markdownBody {
             line-height: 1.60;
         }
     }
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
 	.markdownBody {
 		line-height: 1.45;
 	}
@@ -1144,7 +1144,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     -ms-hyphens: auto;
     hyphens: auto;
 }
-@media only screen and (min-width: 900px) {
+@media all and (min-width: 900px) {
     .markdownBody p,
     .markdownBody li {
         text-align: justify;
@@ -1160,7 +1160,7 @@ body.justified-not .markdownBody li {
     -ms-hyphens: none;
     hyphens: none;
 }
-@media only screen and (min-width: 900px) {
+@media all and (min-width: 900px) {
     body.justified-not .markdownBody p,
     body.justified-not .markdownBody li {
         text-align: left;
@@ -1182,7 +1182,7 @@ body.justified-not .markdownBody li {
     padding: 0.9rem 1.25rem 0.95rem 1.25rem;
     clear: none;
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
 	.abstract blockquote {
     	padding: 0.75rem 1rem 0.8rem 1rem;
 	}
@@ -1204,7 +1204,7 @@ h1 {
     position: relative;
 }
 
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     h1 {
         margin: 1.25em 0 0.5em 0;
         padding-bottom: 2px;
@@ -1362,7 +1362,7 @@ body.indented p + figure[class^='float-'] + p,
 body.indented div[class^='drop-cap-'] + p {
     text-indent: 2.5em;
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     body.indented p + p,
     body.indented p + figure[class^='float-'] + p,
     body.indented div[class^='drop-cap-'] + p,
@@ -1377,7 +1377,7 @@ body.indented-not div[class^='drop-cap-'] + p,
 body.indented-not .abstract + p {
     margin-top: 1em;
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     body.indented-not p + p,
     body.indented-not p + figure[class^='float-'] + p,
     body.indented-not div[class^='drop-cap-'] + p,
@@ -1431,12 +1431,12 @@ blockquote blockquote blockquote blockquote blockquote blockquote {
 /*= Various edge cases =*/
 /*=--------------------=*/
 
-@media only screen and (min-width: 650px) {
+@media all and (min-width: 650px) {
     .abstract blockquote {
         overflow: hidden;
     }
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     /* even less horizontal is available on mobile! */
     blockquote {
         margin: 1.25em 0 1.5em 0;

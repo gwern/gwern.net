@@ -399,7 +399,7 @@ blockquote > :not(section).collapse:last-child {
     margin-bottom: -1em;
 }
 
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     blockquote :not(section).collapse:not(.expanded),
     blockquote :not(section).collapse.expanded {
         padding-left: 1em;
@@ -447,7 +447,7 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: bold;
     position: relative;
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     h1, h2, h3, h4, h5, h6 {
         margin: 1.25em 0 0.5em 0;
     }
@@ -490,7 +490,7 @@ section:not(.collapse) > h1:first-child {
     position: absolute;
     top: 0.15em;
 }
-@media only screen and (min-width: 650px) {
+@media all and (min-width: 650px) {
     section:not(.collapse) > h1:first-child {
         margin: 1.75em 0 0.375em -0.75rem;
         font-size: 2em;
@@ -539,7 +539,7 @@ h2::after {
 .markdownBody section.collapse > h2:first-child a::after {
     top: -0.2em;
 }
-@media only screen and (min-width: 650px) {
+@media all and (min-width: 650px) {
     section:not(.collapse) > h2:first-child {
         overflow: hidden;
     }
@@ -639,7 +639,7 @@ section:target > :first-child a::after {
     text-align: center;
     margin: 3em 0 0 0;
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     #footer {
         margin: 3em 0 2em 0;
     }
@@ -807,7 +807,7 @@ ul > li::before {
     list-style-type: none;
 }
 
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     ul,
     ol {
         padding: 0 0 0 1.75em;
@@ -893,7 +893,7 @@ figure {
     margin: 2em auto 1.75em auto;
     max-width: calc(100% - 5em);
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     figure {
         max-width: calc(100% - 2em);
     }
@@ -901,7 +901,7 @@ figure {
 figure + figure {
     margin-top: 2.75em;
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     figure + figure {
         margin-top: 2em;
     }
@@ -951,7 +951,7 @@ figcaption strong {
     font-weight: inherit;
     font-variant-caps: small-caps;
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     figcaption {
         font-size: 0.875em;
     }
@@ -986,7 +986,7 @@ figure.width-full {
 
 /*	Floating figures. (Mostly for amusing asides/memes.)
  */
-@media only screen and (min-width: 650px) {
+@media all and (min-width: 650px) {
     figure.float-right {
         float: right;
         max-width: calc(50% - 1.5em);
@@ -1000,7 +1000,7 @@ figure.width-full {
 }
 
 /* try to get edge-to-edge images on mobile to maximize horizontal space usage */
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     #markdownBody figure {
         max-width: unset;
     }
@@ -1175,7 +1175,7 @@ blockquote table table {
     bottom: -1em;
 }
 
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     .epigraph {
         margin: 2.125em 1em;
         padding: 0;
@@ -1199,7 +1199,7 @@ blockquote table table {
 /*= Edge cases =*/
 /*=------------=*/
 
-@media only screen and (min-width: 650px) {
+@media all and (min-width: 650px) {
     h1 + .epigraph,
     h3 + .epigraph,
     h5 + .epigraph {
@@ -2349,7 +2349,7 @@ span.link-bibliography a {
     are supported by a separate 'drop-cap' singular class which can wrap either the abstract
     or a specific <p>.)
     */
-@media only screen and (min-width: 650px) {
+@media all and (min-width: 650px) {
     *[class*='drop-cap-'] {
         min-height: 6em;
     }
@@ -2405,7 +2405,7 @@ span.link-bibliography a {
 
     /*  Compensating for responsive line-height reduction.
         */
-    @media only screen and (max-width: 1200px) {
+    @media all and (max-width: 1200px) {
         .drop-cap-goudy::first-letter,
         .drop-cap-goudy > p:first-child::first-letter {
             font-size: 6.875em;
@@ -2427,7 +2427,7 @@ span.link-bibliography a {
             font-size: 6.875em;
         }
     }
-    @media only screen and (max-width: 1000px) {
+    @media all and (max-width: 1000px) {
         .drop-cap-goudy::first-letter,
         .drop-cap-goudy > p:first-child::first-letter {
             font-size: 6.625em;
@@ -2693,7 +2693,7 @@ a .cite-date { margin-left: 0em; }
     margin-top: 0.5em;
     padding-left: 2.5em;
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     #further-reading .columns ul {
         padding-left: 1.75em;
     }
@@ -2724,7 +2724,7 @@ body.index #markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::
 }
 
 /*  The /index needs more space in the lists for mobile users */
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     body.index #markdownBody li {
         line-height: 1.65;
     }
@@ -2753,7 +2753,7 @@ body.index #markdownBody section > h1:first-child a::after {
 }
 
 /* For desktop users, we hide the horizontal rulers on the /index page as they are unnecessary given the flowing columns; for mobile users, we'll separate sections by rulers because they only get a single very long column to scroll through, which lacks a sense of hierarchy/chunking. However, desktop users still get the initial <hr> inserted by sed to divide the two blocks of New/Popular/Notable from all-topics sections (which has no class set on it). */
-@media only screen and (min-width: 650px) {
+@media all and (min-width: 650px) {
 /*  Horizontal ruler on the home page.
     */
     body.index hr {
@@ -4952,7 +4952,7 @@ section.highlight-fading::before {
 
 /*  Images (such as the ones in Wikipedia annotations).
     */
-@media only screen and (min-width: 650px) {
+@media all and (min-width: 650px) {
     .annotation > figure.float-right {
         margin: 0.125em 0 0.125em 1.5em;
         max-width: calc(50% - 1.5em);
@@ -5683,4 +5683,46 @@ a.include-loading[data-link-icon]:not(:empty)::after {
 
 a.include-loading.include-spinner-not::after {
     display: none;
+}
+
+
+/****************/
+/* PRINT STYLES */
+/****************/
+
+@media print {
+	:root {
+		--GW-TOC-background-color: transparent;
+		--GW-abstract-background-color: transparent;
+	}
+
+	blockquote {
+		--GW-blockquote-background-color: transparent;
+	}
+	
+	#ui-elements-container,
+	#sidebar {
+		display: none;
+	}
+
+	body {
+		margin: 0;
+	}
+	main {
+		margin: 1em;
+	}
+	h1, h2, h3, h4, h5, h6 {
+		margin-left: 0;
+	}
+	.markdownBody {
+		line-height: 1.6;
+		text-align: justify;
+	}
+
+	.collapse .disclosure-button {
+		display: none;
+	}
+	.collapse .disclosure-button ~ * {
+		max-height: unset !important;
+	}
 }
