@@ -863,14 +863,13 @@ Transclude = {
 			&& Transclude.hasAnnotation(includeLink) == false)
 			return;
 
+		/*  We exclude cross-origin transclusion for security reasons, but from 
+			a technical standpoint there’s no reason it shouldn’t work. Simply 
+			comment out the block below to enable cross-origin transcludes.
+			—SA 2022-08-18
+		 */
         if (   includeLink.hostname != location.hostname
             && Transclude.isAnnotationTransclude(includeLink) == false) {
-            /*  We exclude cross-origin transclusion for security reasons, but
-                from a technical standpoint there’s no reason it shouldn’t work.
-                Simply comment out these two statements to enable cross-origin
-                transcludes.
-                —SA 2022-08-18
-             */
             Transclude.setLinkStateLoadingFailed(includeLink);
             return;
         }
