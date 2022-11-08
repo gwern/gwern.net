@@ -426,6 +426,11 @@ Annotations.dataSources.wikipedia = {
 			emptyGraf.remove();
 		});
 
+		//	Remove edit-links.
+		referenceEntry.querySelectorAll("a[title^='Edit this on Wiki'], a[title^='Edit this at Wiki']").forEach(editLink => {
+			editLink.remove();
+		});
+
 		//  Process links.
 		referenceEntry.querySelectorAll("a").forEach(link => {
 			//	De-linkify non-anchor self-links.
@@ -503,7 +508,11 @@ Annotations.dataSources.wikipedia = {
 		if (thumbnail)
 			thumbnailContainer = thumbnail.closest(".infobox-image, .thumb");
 		if (   thumbnail
-			&& thumbnailContainer) {
+			&& thumbnailContainer
+			&& thumbnailContainer.closest(".gallery") == null) {
+			while ([ "TR", "TD", "TH" ].includes(thumbnailContainer.tagName))
+				thumbnailContainer = thumbnailContainer.parentElement;
+
 			//	Save references to thumbnails’ parent elements.
 			let thumbnailParents = [ ];
 
@@ -566,6 +575,18 @@ Annotations.dataSources.wikipedia = {
 			figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": figureBlock.querySelector(".thumbcaption").innerHTML }));
 			figureBlock.parentNode.insertBefore(figure, figureBlock);
 			figureBlock.remove();
+		});
+
+		//	Mark certain images as not to be wrapped in figures.
+		let noFigureImagesSelector = [
+			".mwe-math-element",
+			".mw-default-size",
+			".unicode.haudio",
+			".sister-logo",
+			".side-box-image"
+		].map(selector => `${selector} img`).join(", ");
+		referenceEntry.querySelectorAll(noFigureImagesSelector).forEach(image => {
+			image.classList.add("figure-not");
 		});
 	}
 };
