@@ -44,7 +44,8 @@ GW.mediaQueries = {
     mobileWidth:           matchMedia("(max-width: 649px)"),
     systemDarkModeActive:  matchMedia("(prefers-color-scheme: dark)"),
     hoverAvailable:        matchMedia("only screen and (hover: hover) and (pointer: fine)"),
-    portraitOrientation:   matchMedia("(orientation: portrait)")
+    portraitOrientation:   matchMedia("(orientation: portrait)"),
+    printView:             matchMedia("print")
 };
 
 GW.isMobile = () => {
