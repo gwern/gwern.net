@@ -1234,7 +1234,9 @@ span.smallcaps {
 	}
 	
 	#ui-elements-container,
-	#sidebar {
+	#sidebar,
+	#navigation,
+	#footer {
 		display: none;
 	}
 
