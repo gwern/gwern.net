@@ -472,9 +472,10 @@ function wrapImages(loadEventInfo) {
         unwrap(image.parentElement);
     });
 
-    let exclusionSelector = ".footnote-back, .mwe-math-element, .mw-default-size, .unicode.haudio, td";
+    let exclusionSelector = ".footnote-back, td, th";
     wrapAll("img", (image) => {
-        if (image.closest(exclusionSelector))
+        if (   image.classList.contains("figure-not")
+        	|| image.closest(exclusionSelector))
             return;
 
         let figure = image.closest("figure");

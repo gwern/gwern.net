@@ -971,27 +971,26 @@ video + .caption-wrapper {
     padding-bottom: 1px;
 }
 
-/* enable the various `![caption](/images/foo.jpg){.width-full}` uses; analogous to width-full tables */
+/*	Enable the various `![caption](/images/foo.jpg){.width-full}` uses; 
+	analogous to width-full tables
+ */
 figure.width-full {
     position: relative;
     max-width: unset;
 }
 
-/* Floating figures. (Mostly for amusing asides/memes.) */
+/*	Floating figures. (Mostly for amusing asides/memes.)
+ */
 @media only screen and (min-width: 650px) {
     figure.float-right {
         float: right;
         max-width: calc(50% - 1.5em);
-        margin: 0 0 1em 1.5em;
+        margin: 0.5em 0 1em 1.5em;
     }
     figure.float-left {
         float: left;
         max-width: calc(50% - 1.5em);
-        margin: 0 1.5em 1em 0;
-    }
-    p ~ figure.float-right,
-    p ~ figure.float-left {
-        margin-top: 0.5em;
+        margin: 0.5em 1.5em 1em 0;
     }
 }
 
@@ -5028,6 +5027,29 @@ section.highlight-fading::before {
 }
 .annotation.wikipedia-entry .chemf {
     word-break: break-all;
+}
+.annotation.wikipedia-entry .side-box {
+	border: 1px dotted currentColor;
+	float: right;
+	padding: 0.5em 0.75em;
+	max-width: calc(50% - 2em);
+	margin: 0 0 1em 1em;
+	overflow: auto;
+	position: relative;
+}
+.annotation.wikipedia-entry .side-box.sister-box ul {
+	padding: 0;
+	margin: 1em 0 0 0;
+}
+.annotation.wikipedia-entry .side-box.sister-box ul li::before {
+	content: none;
+}
+.annotation.wikipedia-entry .side-box.sister-box ul .sister-logo {
+	margin: 0 0.5em 0 0;
+	display: inline-block;
+	vertical-align: text-top;
+	width: 1.5em;
+	text-align: center;
 }
 
 /*  Special case for inline math in Wikipedia pop-frames.
