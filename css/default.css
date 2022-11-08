@@ -329,6 +329,11 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
 /***************************/
 /*  Collapsible code blocks.
  */
+
+.sourceCode {
+	clear: both;
+}
+
 .sourceCode .collapse,
 .sourceCode.collapse {
     margin: 1.75em auto;
