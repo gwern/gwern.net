@@ -281,7 +281,8 @@ function expandLockCollapseBlocks(loadEventInfo) {
 	});
 }
 
-addContentLoadHandler(expandLockCollapseBlocks, ">rewrite", (info) => !info.collapseAllowed);
+addContentLoadHandler(expandLockCollapseBlocks, ">rewrite", (info) => (  !info.collapseAllowed
+																	   || GW.mediaQueries.printView.matches));
 
 /*******************************************************************************/
 /*	Ensure that the given element is scrolled into view when layout is complete.
