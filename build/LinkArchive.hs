@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-11-03 16:21:10 gwern"
+When:  Time-stamp: "2022-11-06 22:48:56 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1265,5 +1265,8 @@ whiteList url
       , "https://ai-muzic.github.io/meloform/" -- low quality (audio embeds)
       , "https://www.webdesignmuseum.org/" -- homepage
       , "https://minerva-demo.github.io/#category=Algebra&index=1" -- interactive
+      , "https://yashkant.github.io/housekeep/" -- low quality (video embeds)
+      , "https://google-research.github.io/seanet/audiolm/examples/" -- low quality (audio embeds)
+      , "https://www.painreprocessingtherapy.com/" -- homepage / low quality (video embeds)
       ] = True
     | otherwise = False

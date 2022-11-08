@@ -165,7 +165,6 @@ anyInfixT p = any (`T.isInfixOf` p)
 anyPrefixT p = any (`T.isPrefixOf` p)
 anySuffixT p = any (`T.isSuffixOf` p)
 
-
 {- | Returns true if the given list contains any of the elements in the search
 list. -}
 hasAny :: Eq a => [a]           -- ^ List of elements to look for

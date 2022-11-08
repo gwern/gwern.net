@@ -9,7 +9,7 @@ import qualified Network.URI.Encode as E (encodeTextWith, isAllowed)
 
 import Text.Pandoc (Inline(..), nullAttr)
 
-import Utils (replaceManyT, anyPrefixT)
+import Utils (replaceManyT, anyPrefixT, fixedPoint)
 
 -- INTERWIKI PLUGIN
 -- This is a simplification of the original interwiki plugin I wrote for Gitit: <https://github.com/jgm/gitit/blob/master/plugins/Interwiki.hs>
@@ -71,7 +71,7 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
     interwikiurl _ "" = error (show x)
     interwikiurl u a = let a' = if ".wikipedia.org/wiki/" `T.isInfixOf` u then T.toUpper (T.take 1 a) `T.append` T.tail a else a
                        in
-                         wpURLRedirectRewrites $ u `T.append` (E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '\'', '+'])) $ replaceManyT [("–", "%E2%80%93"), ("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $ deunicode a')
+                         fixedPoint wpURLRedirectRewrites $ u `T.append` (E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '\'', '+'])) $ replaceManyT [("–", "%E2%80%93"), ("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $ deunicode a')
     deunicode :: T.Text -> T.Text
     deunicode = replaceManyT [("‘", "\'"), ("’", "\'"), (" ", " "), (" ", " ")]
 convertInterwikiLinks x = x

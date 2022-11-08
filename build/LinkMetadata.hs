@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-04 12:04:43 gwern"
+When:  Time-stamp: "2022-11-07 12:06:05 gwern"
 License: CC-0
 -}
 
@@ -3249,6 +3249,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("parametris", "parameteriz")
          , ("normalis", "normaliz")
          , ("generalis", "generaliz")
+         , (" disincentivis", " disincentiviz")
+         , (" incentivis", " incentiviz")
          , ("benefitt", "benefit")
          , ("noninsight", "non-insight")
          , (" UNet", " U-Net")
@@ -3313,5 +3315,6 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" Nineteen", " 19")
          , (" twenty", " 20")
          , (" Twenty", " 20")
+         , ("twenty six", "26")
          , ("\160", " ") -- NO BREAK SPACE
          ]
