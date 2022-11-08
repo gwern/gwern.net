@@ -20,7 +20,6 @@
 module Main where
 
 import Control.Monad (when)
-import Utils (replace)
 import Data.List (isPrefixOf)
 import Data.Maybe (isJust, fromJust)
 import System.Environment (getArgs)
@@ -29,7 +28,7 @@ import Text.Pandoc (Inline(Link), nullAttr)
 import Data.Text as T (pack)
 
 import LinkMetadata (annotateLink, guessTagFromShort, listTagsAll, readLinkMetadata, readYaml, writeYaml, MetadataList, MetadataItem)
-import Utils (printGreen)
+import Utils (printGreen, replace)
 
 main :: IO ()
 main = do args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://www.gwern.net/" "/") getArgs
@@ -38,8 +37,9 @@ main = do args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a)
 
           let links = filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) args
           allTags <- listTagsAll
-          let tags = (filter (\t -> t `elem` allTags || tail t `elem` allTags) $ map (guessTagFromShort allTags . filter (/=',')) $ -- we store tags comma-separated so sometimes we might leave in a stray tag when copy-pasting
-                filter (`notElem` links) args) :: [String]
+          let tags = (filter (\t -> t `elem` allTags || tail t `elem` allTags) $ map (\t -> if head t == '-' then "-" ++ (guessTagFromShort allTags $ filter (/=',') $ tail t)
+                                                                                            else guessTagFromShort allTags $ filter (/=',') t) $ -- we store tags comma-separated so sometimes we might leave in a stray tag when copy-pasting
+                filter (\t -> t `notElem` links || ("-"++t) `notElem` links) args) :: [String]
 
           when (null tags) $ error ("Error: Forgot tags? " ++ show args)
           mapM_ (\arg' -> do filep <- doesDirectoryExist ("docs/"++ if head arg' == '-' then tail arg' else arg')
