@@ -924,7 +924,7 @@ GW.notificationCenter = {
             event, AND (b) the handler we’re registering is being assigned to a
             specific phase, do we have anything to do here...
          */
-        if (   options.phase
+        if (   options.phase > ""
             && phaseOrder) {
             /*  Get the target phase name, which may be the full value of the
                 ‘phase’ key of the options dictionary, OR it may be that value
@@ -971,7 +971,7 @@ GW.notificationCenter = {
             let phaseAt = (index) => {
                 if (index >= handlers.length)
                     return null;
-                let parts = handlers[index].options.phase.match(/^([<>]?)(.+)/);
+                let parts = handlers[index].options.phase.match(/^([<>]?)(.*)$/);
                 return {
                     phase: parts[2],
                     before: (parts[1] == "<"),
