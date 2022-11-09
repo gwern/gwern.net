@@ -929,7 +929,8 @@ function designateAuxLinksAppendContainer(loadEventInfo) {
 	addContentLoadHandler((info) => {
 		loadEventInfo.document.querySelectorAll(".aux-links-append").forEach(auxLinksBlock => {
 			let enclosingCollapseBlock = auxLinksBlock.parentElement.closest(".collapse, .annotation-abstract > div");
-			enclosingCollapseBlock.classList.add("aux-links-container");
+			if (enclosingCollapseBlock)
+				enclosingCollapseBlock.classList.add("aux-links-container");
 		});
 	}, ">rewrite");
 }
