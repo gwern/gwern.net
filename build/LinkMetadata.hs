@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-07 12:06:05 gwern"
+When:  Time-stamp: "2022-11-08 20:03:18 gwern"
 License: CC-0
 -}
 
@@ -474,6 +474,8 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                               Just (tle,aut,dt,doi,ts,abst) ->
                                 let tle' = if null tle then "<code>"++f++"</code>" else tle
                                     lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
+                                    lidBacklinkFragment    = if lid=="" then "" else "backlink-transclusion-"    `T.append` lid
+                                    lidSimilarLinkFragment = if lid=="" then "" else "similarlink-transclusion-" `T.append` lid
                                     authorShort = authorsTruncate aut
                                     authorSpan = if aut/=authorShort then Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
                                                  else Span ("", ["author", "cite-author"], []) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
@@ -482,8 +484,8 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                                                           if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
                                                                     [Str (T.pack $ dateTruncateBad dt)]]
                                     tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
-                                    backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
-                                    similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
+                                    backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks"],[]) [Str "backlinks"] (if lidBacklinkFragment=="" then T.pack blp else "#"`T.append`lidBacklinkFragment,"Reverse citations for this page.")]]
+                                    similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars"],[]) [Str "similar"] (if lidSimilarLinkFragment=="" then T.pack slp else "#"`T.append`lidSimilarLinkFragment,"Similar links for this link (by text embedding).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
                                     link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
@@ -505,8 +507,8 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                          (if null abst then []
                                            else [BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
                                                                             if (blp++slp)=="" then "" else "<div class=\"collapse\">" `T.append`
-                                                                                                           ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append\">\n<p>[<a class=\"backlinks-transclusion include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">Backlinks for this annotation</a>.]</p>\n</div>")) `T.append`
-                                                                                                             (if slp=="" then "" else ("<div class=\"similars-append aux-links-append\">\n<p>[<a class=\"include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">Similar links for this annotation</a>.]</p>\n</div>"))) `T.append`
+                                                                                                           ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append\"" `T.append` " id=\"" `T.append` lidBacklinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"backlinks-transclusion include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">Backlinks for this annotation</a>.]</p>\n</div>")) `T.append`
+                                                                                                             (if slp=="" then "" else ("<div class=\"similars-append aux-links-append\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">Similar links for this annotation</a>.]</p>\n</div>"))) `T.append`
                                                                             "</div>"
                                                                                        )]
                                                 ])

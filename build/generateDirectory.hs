@@ -139,7 +139,7 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
   = concat [ "---\n",
              "title: " ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (replace "docs/" "" d)))) ++ " tag\n",
              "author: 'N/A'\n",
-             "description: \"Bibliography for tag <em>" ++ (if d=="" then "docs" else d) ++ "</em>, most recent first: " ++
+             "description: \"Bibliography for tag <code>" ++ (if d=="" then "docs" else d) ++ "</code>, most recent first: " ++
               (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not link-annotated-not' href='/docs/" ++ (if d=="" then "" else d++"/") ++ "index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
               (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='icon-not link-annotated-not' href='/docs/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++
               (if linkN == 0 then ""       else (if (directoryN+annotationN) > 0 then ", & " else "") ++ show linkN ++ " <a class='icon-not link-annotated-not' href='/docs/" ++ d ++ "/index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
