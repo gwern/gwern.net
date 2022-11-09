@@ -269,8 +269,8 @@ Annotations = { ...Annotations,
 									 dateElement.textContent.replace(/-[0-9][0-9]-[0-9][0-9]$/, "") +
 									 `</span>` : ``),
 					tagsHTML:       (tagsElement ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>` : ``),
-					backlinksHTML:  (backlinksElement ? `<span class="data-field backlinks">${backlinksElement.innerHTML}</span>` : ``),
-					similarHTML:    (similarElement ? `<span class="data-field similars" >${similarElement.innerHTML}</span>` : ``),
+					backlinksHTML:  (backlinksElement ? `<span class="data-field aux-links backlinks">${backlinksElement.innerHTML}</span>` : ``),
+					similarHTML:    (similarElement ? `<span class="data-field aux-links similars" >${similarElement.innerHTML}</span>` : ``),
 					abstract:   	(abstractElement ? newDocument(abstractElement.childNodes) : null)
 				};
 			},

@@ -374,6 +374,21 @@ Extracts = { ...Extracts,
         if (dataSourceClass)
             Extracts.popFrameProvider.addClassesToPopFrame(popFrame, dataSourceClass.split(" "));
 
+		/*	Make aux-links links in annotation metadata scroll the pop-frame to
+			the corresponding transcluded .aux-links-append block, if present.
+		 */
+        popFrame.document.querySelectorAll(".data-field.aux-links a.aux-links").forEach(auxLinksLink => {
+			let auxLinksType = Extracts.auxLinksLinkType(auxLinksLink);
+			let includedAuxLinksBlock = popFrame.document.querySelector(`.${auxLinksType}-append`);
+			if (includedAuxLinksBlock) {
+				auxLinksLink.onclick = () => { return false; };
+				auxLinksLink.addActivateEvent((event) => {
+					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(includedAuxLinksBlock);
+					return false;
+				});
+			}
+        });
+
         /*  Allow for floated figures at the start of abstract
             (only on sufficiently wide viewports).
             */
