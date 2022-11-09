@@ -1889,6 +1889,33 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
 }, { once: true });
 
 
+/************/
+/* PRINTING */
+/************/
+
+/*********************************************************************/
+/*	Trigger transcludes and expand-lock collapse blocks when printing.
+ */
+window.addEventListener("beforeprint", (event) => {
+	GWLog("Print command received.", "rewrite.js", 1);
+
+	function expand(doc) {
+		Transclude.triggerTranscludesInContainer(doc);
+		expandLockCollapseBlocks({ document: doc });
+	}
+
+	GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView = (info) => {
+		expand(info.document);
+	});
+	expand(document);
+});
+window.addEventListener("afterprint", (event) => {
+	GWLog("Print command completed.", "rewrite.js", 1);
+
+	GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView);
+});
+
+
 /*****************************************************************************************/
 /*! instant.page v5.1.0 - (C) 2019-2020 Alexandre Dieulot - https://instant.page/license */
 /* Settings: 'prefetch' (loads HTML of target) after 1600ms hover (desktop) or mouse-down-click (mobile); TODO: left in logging for testing during experiment */
