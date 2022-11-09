@@ -5093,20 +5093,6 @@ section.highlight-fading::before {
 
 .aux-links-append {
     margin-top: 1em;
-    padding-bottom: 0.375em;
-    border-top: 1px solid var(--GW-TOC-border-color);
-}
-.aux-links-append:not(:last-child) {
-    border-bottom: 1px solid var(--GW-TOC-border-color);
-}
-p + .aux-links-append {
-    margin-top: 1.25em;
-}
-.aux-links-append + .aux-links-append {
-    margin-top: 1.5em;
-}
-.TOC + .aux-links-append {
-    margin-top: 0.75em;
 }
 
 .aux-links-append > div > ul,
@@ -5115,21 +5101,42 @@ p + .aux-links-append {
     margin-bottom: 0.25em;
 }
 
-blockquote :not(section).collapse.aux-links-append:not(.expanded) > .disclosure-button::before {
+.aux-links-append > div > .columns:not(:first-child) {
+    margin-top: 1em;
+}
+
+/*	“Aux links” in link bibliographies, directory indexes, and other transcluded
+	(rather than pop-framed) annotations.
+ */
+
+blockquote.annotation .aux-links-append {
+    padding-bottom: 0.375em;
+    border-top: 1px solid var(--GW-TOC-border-color);
+}
+blockquote.annotation .aux-links-append:not(:last-child) {
+    border-bottom: 1px solid var(--GW-TOC-border-color);
+}
+blockquote.annotation p + .aux-links-append {
+    margin-top: 1.25em;
+}
+blockquote.annotation .aux-links-append + .aux-links-append {
+    margin-top: 1.5em;
+}
+blockquote.annotation .TOC + .aux-links-append {
+    margin-top: 0.75em;
+}
+
+blockquote.annotation :not(section).collapse.aux-links-append:not(.expanded) > .disclosure-button::before {
     content: "Click to expand";
     width: 10rem;
     padding: 1rem 3rem 0.75rem 0;
 }
-blockquote :not(section).collapse.aux-links-append:not(.expanded) > .disclosure-button::after {
+blockquote.annotation :not(section).collapse.aux-links-append:not(.expanded) > .disclosure-button::after {
     display: none;
 }
 
-blockquote .collapse:not(.expanded).aux-links-append > div > :first-child {
+blockquote.annotation .collapse:not(.expanded).aux-links-append > div > :first-child {
     margin-top: 0.5em;
-}
-
-blockquote .aux-links-append > div > .columns:not(:first-child) {
-    margin-top: 1em;
 }
 
 
