@@ -479,7 +479,8 @@ function wrapImages(loadEventInfo) {
             return;
 
         let figure = image.closest("figure");
-        if (figure)
+        if (   figure 
+        	&& figure.querySelector("figcaption") != null)
             return;
 
         wrapElement(image, null, "FIGURE", true,
