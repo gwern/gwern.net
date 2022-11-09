@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-08 20:03:18 gwern"
+When:  Time-stamp: "2022-11-09 16:25:57 gwern"
 License: CC-0
 -}
 
@@ -484,8 +484,8 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                                                           if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
                                                                     [Str (T.pack $ dateTruncateBad dt)]]
                                     tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
-                                    backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks"],[]) [Str "backlinks"] (if lidBacklinkFragment=="" then T.pack blp else "#"`T.append`lidBacklinkFragment,"Reverse citations for this page.")]]
-                                    similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars"],[]) [Str "similar"] (if lidSimilarLinkFragment=="" then T.pack slp else "#"`T.append`lidSimilarLinkFragment,"Similar links for this link (by text embedding).")]]
+                                    backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks"],[]) [Str "backlinks"] (T.pack blp, "Reverse citations for this page.")]]
+                                    similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars"],[]) [Str "similar"] (T.pack slp, "Similar links for this link (by text embedding).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
                                     link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
@@ -816,6 +816,7 @@ tagsLong2Short = [
           , ("reinforcement-learning/imperfect-information/poker", "poker AI")
           , ("reinforcement-learning/robot", "robotics")
           , ("reinforcement-learning/safe", "AI safety")
+          , ("reinforcement-learning/exploration", "RL exploration")
           , ("statistics/prediction/election", "election forecast")
           , ("Statistics/prediction", "forecasting")
           , ("psychology/nature", "psych of nature")
