@@ -920,34 +920,21 @@ addContentLoadHandler(setMarginsOnFullWidthBlocks, ">rewrite");
 /* ANNOTATIONS */
 /***************/
 
-/**************************************************************/
-/*	Clean up HTML structure of aux-links blocks in annotations.
+/********************************************/
+/*	Apply class to aux-link-append container.
  */
-function rewriteAuxLinksBlocksInAnnotation(loadEventInfo) {
-    GWLog("rectifyTypographyInAnnotation", "rewrite.js", 1);
+function designateAuxLinksAppendContainer(loadEventInfo) {
+    GWLog("designateAuxLinksAppendContainer", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll(".annotation-see-also").forEach(seeAlsoLinksBlock => {
-		seeAlsoLinksBlock.classList.add("aux-links-append");
-		let extraneousDiv = seeAlsoLinksBlock.querySelector(".annotation-see-also > p + div");
-		if (   extraneousDiv 
-			&& extraneousDiv.id == ""
-			&& extraneousDiv.className == "")
-			unwrap(extraneousDiv);
-	});
-
-	loadEventInfo.document.querySelectorAll(".aux-links-append").forEach(auxLinksBlock => {
-		if (auxLinksBlock.parentElement == auxLinksBlock.closest(".collapse")) {
-			if (   auxLinksBlock.parentElement.id == ""
-				&& auxLinksBlock.id > "")
-				auxLinksBlock.parentElement.id = auxLinksBlock.id;
-			auxLinksBlock.parentElement.classList.add(...(auxLinksBlock.classList));
-			unwrap(auxLinksBlock);
-		}
-	});
+	addContentLoadHandler((info) => {
+		loadEventInfo.document.querySelectorAll(".aux-links-append").forEach(auxLinksBlock => {
+			let enclosingCollapseBlock = auxLinksBlock.parentElement.closest(".collapse, .annotation-abstract > div");
+			enclosingCollapseBlock.classList.add("aux-links-container");
+		});
+	}, ">rewrite");
 }
 
-addContentLoadHandler(rewriteAuxLinksBlocksInAnnotation, "rewrite", (info) => (   info.needsRewrite
-																			   && info.source == "Extracts.annotationForTarget"));
+addContentLoadHandler(designateAuxLinksAppendContainer, ">rewrite");
 
 /*******************************************************************************/
 /*  Apply various typographic fixes (educate quotes, inject <wbr> elements after

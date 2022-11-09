@@ -5089,12 +5089,19 @@ section.highlight-fading::before {
  */
 
 .aux-links-append {
-    padding-bottom: 0.375em;
+	margin-top: 0.5em;
+	padding-left: 2px;
+	padding-bottom: 0.125em;
+}
+.aux-links-append + .aux-links-append {
     margin-top: 1em;
 }
 
-.aux-links-append > div > ul,
-.aux-links-append > div > .columns > ul {
+.TOC + .aux-links-container {
+    margin-top: 1em;
+}
+
+.aux-links-append > .columns > ul {
     margin-top: 0.5em;
     margin-bottom: 0.25em;
 }
@@ -5107,33 +5114,33 @@ section.highlight-fading::before {
 	(rather than pop-framed) annotations.
  */
 
-blockquote.annotation .aux-links-append {
+blockquote.annotation .collapse.aux-links-container {
     border-top: 1px solid var(--GW-TOC-border-color);
 }
-blockquote.annotation .aux-links-append:not(:last-child) {
+blockquote.annotation .collapse.aux-links-container:not(:last-child) {
     border-bottom: 1px solid var(--GW-TOC-border-color);
 }
-blockquote.annotation p + .aux-links-append {
+blockquote.annotation p + .collapse.aux-links-container {
     margin-top: 1.25em;
 }
-blockquote.annotation .aux-links-append + .aux-links-append {
+blockquote.annotation .collapse.aux-links-container + .collapse.aux-links-container {
     margin-top: 1.5em;
 }
-blockquote.annotation .TOC + .aux-links-append {
+blockquote.annotation .TOC + .collapse.aux-links-container {
     margin-top: 0.75em;
 }
 
-blockquote.annotation :not(section).collapse.aux-links-append:not(.expanded) > .disclosure-button::before {
+blockquote.annotation .collapse.aux-links-container .aux-links-append {
+	padding-left: 0;
+}
+
+blockquote.annotation :not(section).collapse.aux-links-container:not(.expanded) > .disclosure-button::before {
     content: "Click to expand";
     width: 10rem;
     padding: 1rem 3rem 0.75rem 0;
 }
-blockquote.annotation :not(section).collapse.aux-links-append:not(.expanded) > .disclosure-button::after {
+blockquote.annotation :not(section).collapse.aux-links-container:not(.expanded) > .disclosure-button::after {
     display: none;
-}
-
-blockquote.annotation .collapse:not(.expanded).aux-links-append > div > :first-child {
-    margin-top: 0.5em;
 }
 
 
