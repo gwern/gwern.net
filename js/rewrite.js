@@ -479,7 +479,8 @@ function wrapImages(loadEventInfo) {
             return;
 
         let figure = image.closest("figure");
-        if (figure)
+        if (   figure 
+        	&& figure.querySelector("figcaption") != null)
             return;
 
         wrapElement(image, null, "FIGURE", true,
@@ -929,12 +930,16 @@ function rewriteAuxLinksBlocksInAnnotation(loadEventInfo) {
 		seeAlsoLinksBlock.classList.add("aux-links-append");
 		let extraneousDiv = seeAlsoLinksBlock.querySelector(".annotation-see-also > p + div");
 		if (   extraneousDiv 
+			&& extraneousDiv.id == ""
 			&& extraneousDiv.className == "")
 			unwrap(extraneousDiv);
 	});
 
 	loadEventInfo.document.querySelectorAll(".aux-links-append").forEach(auxLinksBlock => {
 		if (auxLinksBlock.parentElement == auxLinksBlock.closest(".collapse")) {
+			if (   auxLinksBlock.parentElement.id == ""
+				&& auxLinksBlock.id > "")
+				auxLinksBlock.parentElement.id = auxLinksBlock.id;
 			auxLinksBlock.parentElement.classList.add(...(auxLinksBlock.classList));
 			unwrap(auxLinksBlock);
 		}
@@ -1882,6 +1887,33 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
 
     GW.notificationCenter.fireEvent("GW.hashHandlingSetupDidComplete");
 }, { once: true });
+
+
+/************/
+/* PRINTING */
+/************/
+
+/*********************************************************************/
+/*	Trigger transcludes and expand-lock collapse blocks when printing.
+ */
+window.addEventListener("beforeprint", (event) => {
+	GWLog("Print command received.", "rewrite.js", 1);
+
+	function expand(doc) {
+		Transclude.triggerTranscludesInContainer(doc);
+		expandLockCollapseBlocks({ document: doc });
+	}
+
+	GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView = (info) => {
+		expand(info.document);
+	});
+	expand(document);
+});
+window.addEventListener("afterprint", (event) => {
+	GWLog("Print command completed.", "rewrite.js", 1);
+
+	GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView);
+});
 
 
 /*****************************************************************************************/
