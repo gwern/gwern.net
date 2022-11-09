@@ -5089,6 +5089,7 @@ section.highlight-fading::before {
  */
 
 .aux-links-append {
+    padding-bottom: 0.375em;
     margin-top: 1em;
 }
 
@@ -5107,7 +5108,6 @@ section.highlight-fading::before {
  */
 
 blockquote.annotation .aux-links-append {
-    padding-bottom: 0.375em;
     border-top: 1px solid var(--GW-TOC-border-color);
 }
 blockquote.annotation .aux-links-append:not(:last-child) {
