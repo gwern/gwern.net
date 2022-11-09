@@ -327,7 +327,7 @@ function restoreStyles(element) {
 /*****************************************************************************/
 /*	Strip an element’s inline styles, optionally only removing some styles,
 	optionally keeping some styles. (The ‘propertiesToSave’ argument overrides
-	the ‘propertiesToRemove’ argument, i.e. if a property appears in both 
+	the ‘propertiesToRemove’ argument, i.e. if a property appears in both
 	lists, it is saved.)
  */
 function stripStyles(element, propertiesToRemove = null, propertiesToSave = null) {
@@ -479,7 +479,7 @@ function wrapImages(loadEventInfo) {
             return;
 
         let figure = image.closest("figure");
-        if (   figure 
+        if (   figure
         	&& figure.querySelector("figcaption") != null)
             return;
 
@@ -511,14 +511,14 @@ function wrapFigures(loadEventInfo) {
 
         //  Re-insert the (possibly wrapped) media into the figure.
         figure.querySelectorAll(mediaSelector).forEach(mediaElement => {
-        	let mediaBlock = mediaElement.closest(".image-wrapper") || mediaElement;	
+        	let mediaBlock = mediaElement.closest(".image-wrapper") || mediaElement;
         	innerWrapper.appendChild(mediaBlock);
         });
 
         //  Wrap the caption in the wrapper span.
         let captionWrapper = newElement("SPAN", { "class": "caption-wrapper" });
         captionWrapper.appendChild(caption);
-        
+
         //  Re-insert the wrapped caption into the figure.
         innerWrapper.appendChild(captionWrapper);
 
@@ -926,10 +926,10 @@ addContentLoadHandler(setMarginsOnFullWidthBlocks, ">rewrite");
 function rewriteAuxLinksBlocksInAnnotation(loadEventInfo) {
     GWLog("rectifyTypographyInAnnotation", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll(".annotation-see-also").forEach(seeAlsoLinksBlock => {
+	loadEventInfo.document.querySelectorAll(".see-also-append").forEach(seeAlsoLinksBlock => {
 		seeAlsoLinksBlock.classList.add("aux-links-append");
-		let extraneousDiv = seeAlsoLinksBlock.querySelector(".annotation-see-also > p + div");
-		if (   extraneousDiv 
+		let extraneousDiv = seeAlsoLinksBlock.querySelector(".see-also-append > p + div");
+		if (   extraneousDiv
 			&& extraneousDiv.id == ""
 			&& extraneousDiv.className == "")
 			unwrap(extraneousDiv);
@@ -1035,7 +1035,7 @@ addContentLoadHandler(stripTOCLinkSpans, "rewrite", (info) => info.needsRewrite)
 	is present.)
  */
 function sectionLevel(section) {
-	if (  !section 
+	if (  !section
 		|| section.tagName != "SECTION")
 		return null;
 
