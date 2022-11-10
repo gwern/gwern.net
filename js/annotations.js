@@ -297,6 +297,7 @@ Annotations.dataSources.wikipedia = {
 
 		return (   url
 				&& /(.+?)\.wikipedia\.org/.test(url.hostname)
+				&& url.pathname.startsWith("/wiki/")
 				&& !(url.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:" ]))));
 	},
 
@@ -451,7 +452,8 @@ Annotations.dataSources.wikipedia = {
 				if (Annotations.dataSources.wikipedia.matches(link)) {
 					link.classList.add(Annotations.annotatedLinkFullClass);
 				} else {
-					if (!(link.pathname.startsWithAnyOf(_π("/wiki/", [ "Special:" ]))))
+					if (!(   link.pathname.startsWithAnyOf(_π("/wiki/", [ "Special:" ]))
+						  || link.pathname == "/w/index.php"))
 						link.classList.add("link-live");
 				}
 			}
