@@ -1914,6 +1914,10 @@ window.addEventListener("beforeprint", (event) => {
 	GWLog("Print command received.", "rewrite.js", 1);
 
 	function expand(doc) {
+		if (   doc instanceof Element
+			&& doc.closest("#link-bibliography"))
+			return;
+
 		Transclude.triggerTranscludesInContainer(doc);
 		expandLockCollapseBlocks({ document: doc });
 	}
@@ -1921,6 +1925,7 @@ window.addEventListener("beforeprint", (event) => {
 	GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView = (info) => {
 		expand(info.document);
 	});
+
 	expand(document);
 });
 window.addEventListener("afterprint", (event) => {
