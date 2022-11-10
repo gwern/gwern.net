@@ -120,6 +120,7 @@ ReaderMode = {
                 width: 1.5rem;
                 background-color: var(--GW-body-background-color);
                 padding: 0 10px 0 11px;
+                margin: auto;
             }
             body.reader-mode-active #sidebar #logo::before {
                 content: "";
