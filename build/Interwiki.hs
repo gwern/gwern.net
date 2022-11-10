@@ -230,6 +230,14 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
   , (Link nullAttr [Str "MediaWiki:Citethispage-content"] ("!W",""),
       Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "MediaWiki:Citethispage-content"] ("https://en.wikipedia.org/wiki/MediaWiki:Citethispage-content", ""))
 
+   -- /Lorem testcases: should all be annotations, but check that the presence of the slash (these slashes are genuine, and in the true article name, they aren't redirects which can be skipped, so we do need to verify we handle them correctly) doesn't screw up and trigger false negatives on annotation/live status:
+  , (Link nullAttr  [Str "Bouba/kiki effect"] ("!W",""),
+     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Bouba/kiki effect"] ("https://en.wikipedia.org/wiki/Bouba/kiki_effect", ""))
+  , (Link nullAttr [Emph [Str "Fate/stay night"]] ("!W",""),
+     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Fate/stay night"]] ("https://en.wikipedia.org/wiki/Fate/stay_night", ""))
+  , (Link nullAttr [Emph [Str "Fate/stay_night: Unlimited_Blade_Works (film)"]] ("!W",""),
+     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Fate/stay_night: Unlimited_Blade_Works (film)"]] ("https://en.wikipedia.org/wiki/Fate/stay_night:_Unlimited_Blade_Works_(film)", ""))
+
     -- Should popup (as a **live link** but not annotation): [Category:Buddhism and sports](!W)
   , (Link nullAttr [Str "Category:Buddhism and sports"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports",""),
      Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Buddhism and sports"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports", ""))
