@@ -378,8 +378,8 @@ Extracts = { ...Extracts,
 			the corresponding transcluded .aux-links-append block, if present.
 		 */
         popFrame.document.querySelectorAll(".data-field.aux-links a.aux-links").forEach(auxLinksLink => {
-			let auxLinksType = Extracts.auxLinksLinkType(auxLinksLink);
-			let includedAuxLinksBlock = popFrame.document.querySelector(`.${auxLinksType}-append`);
+			let auxLinksLinkType = Extracts.auxLinksLinkType(auxLinksLink);
+			let includedAuxLinksBlock = popFrame.document.querySelector(`.${auxLinksLinkType}-append`);
 			if (includedAuxLinksBlock) {
 				auxLinksLink.onclick = () => { return false; };
 				auxLinksLink.addActivateEvent((event) => {

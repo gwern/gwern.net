@@ -128,7 +128,8 @@ Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isAuxLinksLink: (target) => {
         let auxLinksLinkType = Extracts.auxLinksLinkType(target);
-        return ((auxLinksLinkType != null) && target.classList.contains(auxLinksLinkType));
+        return (   auxLinksLinkType != null
+        		&& target.classList.contains(auxLinksLinkType));
     },
 
     /*  This “special testing function” is used to exclude certain targets which

@@ -920,6 +920,32 @@ addContentLoadHandler(setMarginsOnFullWidthBlocks, ">rewrite");
 /* ANNOTATIONS */
 /***************/
 
+/**************************************************************************/
+/*	Because annotations transclude aux-links, we can rewrite the aux-links 
+	links in annotation metadata blocks to be anchorlinks. (We do this only
+	when transcluding, not when showing annotations in pop-frames.)
+ */
+function rewriteAuxLinksLinksInTranscludedAnnotations(loadEventInfo) {
+    GWLog("rewriteAuxLinksLinksInTranscludedAnnotations", "rewrite.js", 1);
+
+	if (Extracts.popFrameProvider == Popins)
+		return;
+
+	loadEventInfo.document.querySelectorAll(".data-field.aux-links a.aux-links").forEach(auxLinksLink => {
+		let auxLinksLinkType = Extracts.auxLinksLinkType(auxLinksLink);
+		let includedAuxLinksBlock = loadEventInfo.document.querySelector(`.${auxLinksLinkType}-append`);
+		if (includedAuxLinksBlock) {
+			auxLinksLink.onclick = () => { return false; };
+			auxLinksLink.addActivateEvent((event) => {
+				revealElement(includedAuxLinksBlock, true);
+				return false;
+			});
+		}
+	});
+}
+
+addContentLoadHandler(rewriteAuxLinksLinksInTranscludedAnnotations, "rewrite", (info) => info.source == "transclude");
+
 /********************************************/
 /*	Apply class to aux-link-append container.
  */
