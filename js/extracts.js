@@ -1276,9 +1276,8 @@ Extracts = {
         return popin;
     },
 
-    //  Called by: Extracts.refreshPopFrameAfterLocalPageLoads
-    //  Called by: extracts-annotations.js
-    //  Called by: extracts-content.js
+    //	Called by: Extracts.preparePopin
+    //  Called by: Extracts.postRefreshSuccessUpdatePopFrameForTarget
     rewritePopinContent: (popin) => {
         GWLog("Extracts.rewritePopinContent", "extracts.js", 2);
 
@@ -1397,8 +1396,8 @@ Extracts = {
         return popup;
     },
 
-    //  Called by: Extracts.preparePopup
-    //  Called by: extracts-content.js
+    //	Called by: Extracts.preparePopup
+    //  Called by: Extracts.postRefreshSuccessUpdatePopFrameForTarget
     rewritePopupContent: (popup) => {
         GWLog("Extracts.rewritePopupContent", "extracts.js", 2);
 

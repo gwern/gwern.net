@@ -65,7 +65,7 @@ Extracts = { ...Extracts,
     },
 
     /*  This “special testing function” is used to exclude certain targets which
-        have already been categorized as (in this case) `LOCAL_PAGE` targets. It
+        have already been categorized as (in this case) `ANNOTATION` targets. It
         returns false if the target is to be excluded, true otherwise. Excluded
         targets will not spawn pop-frames.
      */

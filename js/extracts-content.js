@@ -131,6 +131,26 @@ Extracts = { ...Extracts,
         return ((auxLinksLinkType != null) && target.classList.contains(auxLinksLinkType));
     },
 
+    /*  This “special testing function” is used to exclude certain targets which
+        have already been categorized as (in this case) `AUX_LINKS_LINK` targets. 
+        It returns false if the target is to be excluded, true otherwise. 
+        Excluded targets will not spawn pop-frames.
+     */
+    //  Called by: Extracts.targets.testTarget (as `testTarget_${targetTypeInfo.typeName}`)
+	testTarget_AUX_LINKS_LINK: (target) => {
+		let exclude = false;
+		let auxLinksType = Extracts.auxLinksLinkType(target);
+		let containingAnnotation = target.closest(".annotation");
+		if (containingAnnotation) {
+			let includedAuxLinksBlock = containingAnnotation.querySelector(`.${auxLinksType}-append`);
+			if (includedAuxLinksBlock)
+				exclude = true;
+		}
+
+        return (!(   Extracts.popFrameProvider == Popins
+                  && exclude == true));
+	},
+
     /*  Backlinks, similar-links, etc.
      */
     //  Called by: extracts.js (as `popFrameFillFunctionName`)

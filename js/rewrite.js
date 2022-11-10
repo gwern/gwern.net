@@ -1438,8 +1438,8 @@ function designateSpecialLinkIcons(loadEventInfo) {
         link.dataset.linkIconType = "svg";
         link.dataset.linkIcon =
             (link.compareDocumentPosition(target) == Node.DOCUMENT_POSITION_FOLLOWING
-             ? 'arrow-down'
-             : 'arrow-up');
+             ? "arrow-down"
+             : "arrow-up");
     });
 
     //  Local links (to other pages on the site).
