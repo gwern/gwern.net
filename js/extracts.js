@@ -1234,7 +1234,7 @@ Extracts = {
 			}
 			popin.style = `margin-left: ${leftMargin}px; `
 						+ `margin-right: ${rightMargin}px; `
-						+ `width: calc(100% + ${(-1 * (leftMargin + rightMargin))}px)`;
+						+ `width: calc(${popinRect.width}px + ${(-1 * (leftMargin + rightMargin))}px)`;
 		};
 	},
 
