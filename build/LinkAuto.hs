@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-11-07 12:03:45 gwern"
+When:  Time-stamp: "2022-11-08 20:47:18 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -313,7 +313,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Alexey )?Guzey", "https://guzey.com/")
         , ("(Alpha ?Zero|Alpha0)", "/docs/reinforcement-learning/model/alphago/2018-silver.pdf#deepmind")
         , ("(Andrey )?Kolmogorov.?.?.?", "https://en.wikipedia.org/wiki/Andrey_Kolmogorov")
-        , ("(Anime News Network|ANN)", "https://en.wikipedia.org/wiki/Anime_News_Network")
+        , ("Anime News Network", "https://en.wikipedia.org/wiki/Anime_News_Network")
         , ("(ArXiv|Arxiv|arxiv)", "https://en.wikipedia.org/wiki/ArXiv")
         , ("(Arthur|A.) Jensen", "https://en.wikipedia.org/wiki/Arthur_Jensen")
         , ("(Big [Ff]ive|OCEAN|Big 5)", "https://en.wikipedia.org/wiki/Big_Five_personality_traits")
@@ -1332,4 +1332,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("YOLOv5", "https://github.com/ultralytics/yolov5/issues/6998#issue-1170533269")
         , ("SVHN", "https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/37648.pdf")
         , ("Stable Diffusion", "https://stability.ai/blog/stable-diffusion-public-release")
+        , ("Omniglot", "https://arxiv.org/abs/1902.03477")
         ]

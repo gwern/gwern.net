@@ -3789,7 +3789,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://hacks.mozilla.org/2021/05/improving-firefox-stability-on-linux/", False)
             , ("https://hal.archives-ouvertes.fr/hal-00904097/document#pdf", False)
             , ("https://halshs.archives-ouvertes.fr/halshs-02180182/document", False)
-            , ("https://handbook.cochrane.org/front_page.htm", False)
+            , ("https://training.cochrane.org/handbook/current", False)
             , ("https://hansard.parliament.uk/Lords/1986-06-12/debates/56392d7a-e823-45be-80b6-26711300c7aa/GruinardIslandCostOfDecontamination", False)
             , ("https://hardcoresoftware.learningbyshipping.com/p/061-bsod-to-watson-the-reliability", False)
             , ("https://harmreductionjournal.biomedcentral.com/articles/10.1186/s12954-019-0308-4", False)

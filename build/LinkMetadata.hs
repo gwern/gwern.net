@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-09 16:25:57 gwern"
+When:  Time-stamp: "2022-11-10 19:19:52 gwern"
 License: CC-0
 -}
 
@@ -2059,6 +2059,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("([a-z[:punct:]])([0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+)\\.", "\\1<sup>\\2</sup>.")
          , ("([a-z[:punct:]])([0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+)\\.", "\\1<sup>\\2</sup>.")
          , ("([a-z[:punct:]])([0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+)\\.", "\\1<sup>\\2</sup>.")
+         , ("([0-9]) x ([0-9]+)\\(([0-9−-]+)\\)", "\\1 × \\2<sup>\\3</sup>") -- '~2.5 x 10(13)' → '~2.5 × 10<sup>13</sup>'
          -- common spelling error, 'a' → 'an':
          , (" a ([aeio][a-z]+)", " an \\1")
          -- - comma-separate at thousands for consistency:
@@ -2900,6 +2901,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" r<", " <em>r</em> < ")
          , ("r≥", "<em>r</em> ≥ ")
          , ("r≤", "<em>r</em> ≤ ")
+         , ("≤n≤", " ≤ <em>n</em> ≤ ")
          , ("<var>", "<em>")
          , ("</var>", "</em>")
          , ("</monospace>", "</code>")
@@ -3011,6 +3013,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("\40P<",     "\40<em>p</em> < ")
          , ("(<em>P</em> &lt;", "(<em>p</em> &lt;")
          , ("<span>0,1</span>^n", "{0,1}<sup><em>n</em></sup>")
+         , (" n&lt;", " <em>n</em> &lt; ")
          , (" P(t) ", " <em>P(t)</em> ")
          , (" t ", " <em>t</em> ")
          , (" t test", " <em>t</em>-test")

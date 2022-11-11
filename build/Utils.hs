@@ -95,9 +95,9 @@ printRed s = hPutStrLn stderr $ "\x1b[41m" ++ s ++ "\x1b[0m"
 -- Repeatedly apply `f` to an input until the input stops changing. Show constraint for better error
 -- reporting on the occasional infinite loop.
 fixedPoint :: (Show a, Eq a) => (a -> a) -> a -> a
-fixedPoint = fixedPoint' 10000
+fixedPoint = fixedPoint' 5000
  where fixedPoint' :: (Show a, Eq a) => Int -> (a -> a) -> a -> a
-       fixedPoint' 0 _ i = error $ "Hit recursion limit: still changing after 10,000 iterations! Infinite loop? Last result: " ++ show i
+       fixedPoint' 0 _ i = error $ "Hit recursion limit: still changing after 5,000 iterations! Infinite loop? Last result: " ++ show i
        fixedPoint' n f i = let i' = f i in if i' == i then i else fixedPoint' (n-1) f i'
 
 sed :: String -> String -> String -> String
