@@ -732,15 +732,46 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 /*= Directory indexes =*/
 /*=-------------------=*/
 
+#TOC.TOC-links-only {
+	padding-top: 2.75em;
+}
+#TOC.TOC-links-only::before {
+	content: "Contents";
+	position: absolute;
+	font-size: 1.25em;
+	font-weight: bold;
+	top: 0.5em;
+	left: 0.75em;
+}
+#TOC.TOC-links-only li {
+	font-weight: normal;
+}
+
+@media all and (max-width: 900px) {
+	#TOC.TOC-links-only::before {
+		left: 0.5em;
+	}
+	body[class*='-index'] #TOC > ul {
+		column-count: 1;
+		background-image: none;
+	}
+}
+
 @media all and (min-width: 650px) {
 	body[class*='-index'] #TOC {
 		float: unset;
 		max-width: unset;
 		margin-right: unset;
+		margin-top: 3.5em;
 	}
 	body[class='docs-index'] #TOC,
 	body[class='docs-index'] #see-also h1 {
 		display: none;
+	}
+}
+@media all and (max-width: 649px) {
+	body[class*='-index'] #TOC {
+		margin-top: 2.75em;
 	}
 }
 

@@ -720,22 +720,6 @@ blockquote .TOC {
     width: calc(100% - 1.25em);    /* Subtract side padding. */
 }
 
-blockquote .TOC a:hover::after {
-    margin: 0;
-    bottom: unset;
-    font-size: inherit;
-    opacity: unset;
-}
-
-
-/*************************/
-/* TAG DIRECTORY INDEXES */
-/*************************/
-
-.directory-indexes.columns ul {
-    clear: none;
-}
-
 
 /***********/
 /* NUMBERS */

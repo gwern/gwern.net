@@ -1062,6 +1062,7 @@ function sectionLevel(section) {
 /*  Updates the page TOC with any sections within the given container that don’t
     already have TOC entries.
  */
+//	Called by: updateMainPageTOC
 //  Called by: includeContent (transclude.js)
 function updatePageTOC(newContent, needsProcessing = false) {
     GWLog("updatePageTOC", "transclude.js", 2);
@@ -1153,6 +1154,47 @@ function updateMainPageTOC(loadEventInfo) {
 
 addContentLoadHandler(updateMainPageTOC, "rewrite", (info) => (   info.needsRewrite
                                                                && info.isMainDocument));
+
+/**********************************************************/
+/*	Relocate and clean up TOC on tag directory index pages.
+ */
+function rewriteDirectoryIndexTOC(loadEventInfo) {
+    GWLog("rewriteDirectoryIndexTOC", "rewrite.js", 1);
+
+	//	Do this only on tag directory indexes.
+	if (/^\/docs\/.+\/index$/.test(loadEventInfo.loadLocation.pathname) == false)
+		return;
+
+	let TOC = loadEventInfo.document.querySelector("#TOC");
+	let seeAlsoSection = loadEventInfo.document.querySelector("#see-also");
+
+	/*	Place the TOC after the “See Also” section (which also places it after
+		the page abstract, if such exists, because that comes before the 
+		“See Also” section).
+	 */
+	seeAlsoSection.parentElement.insertBefore(TOC, seeAlsoSection.nextElementSibling);
+
+	//	The “See Also” section no longer needs a TOC entry.
+	TOC.querySelector("#toc-see-also").closest("li").remove();
+
+	/*	If “Links” is the only remaining section, then it does not itself need
+		a TOC entry; shift its children up one TOC level.
+	 */
+	let linksTOCEntry = TOC.querySelector("#toc-links");
+	if (isOnlyChild(linksTOCEntry.closest("li"))) {
+		let outerTOCList = TOC.querySelector("ul");
+		let innerTOCList = TOC.querySelector("#toc-links + ul");
+
+		TOC.insertBefore(innerTOCList, null);
+		outerTOCList.remove();
+
+		//	Mark with special class, for styling purposes.
+		TOC.classList.add("TOC-links-only");
+	}
+}
+
+addContentLoadHandler(rewriteDirectoryIndexTOC, "rewrite", (info) => (   info.needsRewrite 
+																	  && info.isMainDocument));
 
 
 /*************/
