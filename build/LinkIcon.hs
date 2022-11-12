@@ -14,7 +14,7 @@ import Data.Containers.ListUtils (nubOrd)
 import System.Directory (doesFileExist)
 
 import LinkBacklink (readBacklinksDB)
-import Utils (host, writeUpdatedFile, hasKeyAL)
+import Utils (host, writeUpdatedFile, hasKeyAL, anyPrefixT)
 
 -- Statically, at site 'compile-time', define the link-icons for links. Doing this at runtime with CSS is
 -- entirely possible and originally done by links.css, but the logic becomes increasingly convoluted
@@ -79,6 +79,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  -- NOTE: 'gwern': the Fraktur '𝔊' for local essay links (where 'local' is defined as '/' but with no '.' in it) is set dynamically clientside by rewrite.js:l1075 (`designateSpecialLinkIcons`) and so we do not handle it here
  | hasIcon x           = x
  | hasKeyAL u overrideLinkIcons = let (i,it) = fromJust $ lookup u overrideLinkIcons in addIcon x i it
+ | anyPrefixT u ["/metadata/annotations/backlinks/", "/metadata/annotations/similars/"] = x
 
  | "directory-indexes-upwards"   `elem` cl = aI "arrow-up-left"    "svg"
  | "directory-indexes-downwards" `elem` cl = aI "arrow-down-right" "svg"

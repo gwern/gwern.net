@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-11-11 22:20:29 gwern"
+When: Time-stamp: "2022-11-11 23:17:37 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -249,7 +249,7 @@ thumbnailSmallTransform d = field d $ \item -> do
                     Just img -> return $ thumbnailSmall img
 
 thumbnailSmall :: String -> String
-thumbnailSmall = ++"-530px.jpg"
+thumbnailSmall = (++"-530px.jpg")
 
 -- should backlinks be in the metadata? We skip backlinks for newsletters & indexes (excluded from the backlink generation process as well) due to lack of any value of looking for backlinks to hose.
 -- HACK: uses unsafePerformIO. Not sure how to check up front without IO... Read the backlinks DB and thread it all the way through `postCtx`, and `main`?
@@ -267,7 +267,7 @@ imageDimensionWidth d = field d $ \item -> do
                   if d == "thumbnailWidth" then return w else return h
 
 escapedTitleField :: String -> Context String
-escapedTitleField t = (mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField) t
+escapedTitleField = (mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField)
 
 -- for 'title' metadata, they can have formatting like <em></em> italics; this would break when substituted into <title> or <meta> tags.
 -- So we render a simplified ASCII version of every 'title' field, '$titlePlain$', and use that in default.html when we need a non-display
