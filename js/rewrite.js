@@ -1200,6 +1200,25 @@ function rewriteDirectoryIndexTOC(loadEventInfo) {
 addContentLoadHandler(rewriteDirectoryIndexTOC, "rewrite", (info) => (   info.needsRewrite 
 																	  && info.isMainDocument));
 
+/**************************************************************************/
+/*	If the table of contents has but one entry (or none at all), remove it.
+ */
+function removeTOCIfSingleEntry(loadEventInfo) {
+    GWLog("removeTOCIfSingleEntry", "rewrite.js", 1);
+
+	let TOC = loadEventInfo.document.querySelector(".TOC");
+	if (TOC == null)
+		return;
+
+	let numEntries = TOC.querySelectorAll("li").length;
+	if (   (   TOC.id == "TOC"
+		    && numEntries <= 1)
+		|| numEntries == 0)
+		TOC.remove();
+}
+
+addContentLoadHandler(removeTOCIfSingleEntry, "rewrite", (info) => info.needsRewrite);
+
 
 /*************/
 /* FOOTNOTES */
