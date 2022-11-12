@@ -371,6 +371,8 @@ function addContentLoadHandler(handler, phase, condition = null) {
     GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", handler, options);
 }
 
+GW.contentLoadHandlers = { };
+
 /*****************************************************************************/
 /*  Call the given function when the given element (if `target` is an element),
     or the element specified by the given selector (if `target` is a string),
@@ -448,19 +450,16 @@ addContentLoadHandler(wrapFullWidthTables, "rewrite", (info) => (   info.needsRe
 /*  Sets, in CSS, the image dimensions that are specified in HTML.
     (This is to ensure no reflow.)
  */
-function setImageDimensions(loadEventInfo) {
+addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (loadEventInfo) => {
     GWLog("setImageDimensions", "rewrite.js", 1);
 
-    loadEventInfo.document.querySelectorAll("figure img[width]").forEach(image => {
-        if (image.classList.contains("width-full")) {
-            return;
-        } else {
-            image.style.width = image.getAttribute("width") + "px";
-        }
-    });
-}
+    loadEventInfo.document.querySelectorAll("figure img[width][height]").forEach(image => {
+		let width = image.getAttribute("width");
+		let height = image.getAttribute("height");
 
-addContentLoadHandler(setImageDimensions, "rewrite", (info) => info.needsRewrite);
+    	image.style.aspectRatio = `${width} / ${height}`;
+    });
+}, "rewrite", (info) => info.needsRewrite);
 
 /*******************************/
 /*  Wrap bare images in figures.
