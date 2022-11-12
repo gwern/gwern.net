@@ -732,6 +732,13 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 /*= Directory indexes =*/
 /*=-------------------=*/
 
+section#see-also:only-child > h1:first-child {
+	margin-top: 0.25em;
+}
+section#see-also:only-child > h1:first-child a {
+	display: none;
+}
+
 .abstract.abstract-tag-directory blockquote {
 	margin-top: 1em;
 }
