@@ -342,7 +342,6 @@ staticImg x@(TagOpen "img" xs) = do
              -- body max-width is 1600 px, sidebar is 150px, so any image wider than ~1400px
              -- will wind up being reflowed by the 'img { max-width: 100%; }' responsive-image CSS declaration;
              -- let's avoid that specific case by lying about its width, although this doesn't fix all the reflowing.
-             -- No images should be more than a screen in height either, so we'll set a maximum of 1400
              let width' =  readMaybe width  ::Maybe Int
              let height' = readMaybe height ::Maybe Int
              case width' of
@@ -351,7 +350,7 @@ staticImg x@(TagOpen "img" xs) = do
                                  Nothing       -> printRed ("staticImg: Image height can't be read: " ++ show x) >> return x
                                  Just height'' -> return (TagOpen "img" (uniq ([("loading", "lazy"), -- lazy load & async render all images
                                                                                 ("decoding", "async"),
-                                                                                ("height", show (height'' `min` 1400)), ("width", show (width'' `min` 1400))]++xs)))
+                                                                                ("height", show height''), ("width", show (width'' `min` 1400))]++xs)))
       else return x
   where uniq = nubBy (\a b -> fst a == fst b) . sort
 staticImg x = return x
