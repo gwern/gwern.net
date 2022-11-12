@@ -218,7 +218,14 @@ Annotations = { ...Annotations,
 
 			//	Called by: Annotations.processedAPIResponseForIdentifier
 			processAPIResponse: (response) => {
-				return newDocument(response);
+				let responseDoc = newDocument(response);
+
+				//	Request the image, to cache it.
+				let thumbnail = responseDoc.querySelector(".page-thumbnail");
+				if (thumbnail)
+					doAjax({ location: new URL(thumbnail.src) });
+
+				return responseDoc;
 			},
 
 			//	Called by: Annotations.referenceDataFromParsedAPIResponse
