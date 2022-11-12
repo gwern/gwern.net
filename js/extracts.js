@@ -1035,6 +1035,7 @@ Extracts = {
     cachedPageTitles: { },
     cachedPageBodyClasses: { },
     cachedPageThumbnailImageTags: { },
+    defaultPageThumbnailPathnamePrefix: "/static/img/logo/logo-",
 
     //  Called by: Extracts.externalPageEmbedForTarget
     refreshPopFrameAfterLocalPageLoads: (target) => {
@@ -1063,7 +1064,7 @@ Extracts = {
 					let pageThumbnailHeight = page.querySelector("meta[property='og:image:height']").getAttribute("content");
 
 					//	Construct and save the <img> tag.
-					if (pageThumbnailURL.pathname != "/static/img/logo/logo-whitebg-large-border.png")
+					if (pageThumbnailURL.pathname.startsWith(Extracts.defaultPageThumbnailPathnamePrefix) == false)
 						Extracts.cachedPageThumbnailImageTags[target.pathname] = `<img
 							src='${pageThumbnailURL.href}'
 							alt='${pageThumbnailAltText}'
