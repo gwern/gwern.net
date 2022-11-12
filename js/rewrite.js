@@ -1206,16 +1206,18 @@ addContentLoadHandler(rewriteDirectoryIndexTOC, "rewrite", (info) => (   info.ne
 function removeTOCIfSingleEntry(loadEventInfo) {
     GWLog("removeTOCIfSingleEntry", "rewrite.js", 1);
 
-	let TOC = loadEventInfo.document.querySelector("#TOC");
+	let TOC = loadEventInfo.document.querySelector(".TOC");
 	if (TOC == null)
 		return;
 
-	if (TOC.querySelectorAll("li").length <= 1)
+	let numEntries = TOC.querySelectorAll("li").length;
+	if (   (   TOC.id == "TOC"
+		    && numEntries <= 1)
+		|| numEntries == 0)
 		TOC.remove();
 }
 
-addContentLoadHandler(removeTOCIfSingleEntry, "rewrite", (info) => (   info.needsRewrite 
-																	&& info.isMainDocument));
+addContentLoadHandler(removeTOCIfSingleEntry, "rewrite", (info) => info.needsRewrite);
 
 
 /*************/
