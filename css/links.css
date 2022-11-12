@@ -76,21 +76,21 @@ body.index .has-content .indicator-hook {
 .popframe-body .TOC a:link *,
 blockquote .TOC a:link,
 blockquote .TOC a:link *,
-.TOC-links-only a:link,
-.TOC-links-only a:link * {
+body[class*='-index'] #TOC a:link,
+body[class*='-index'] #TOC a:link * {
     background: none;
     text-shadow: none;
 }
 
 .popframe-body .TOC a::after,
 blockquote .TOC a::after,
-.TOC-links-only a::after {
+body[class*='-index'] #TOC a::after {
     display: none;
 }
 
 .popframe-body .TOC a:hover::after,
 blockquote .TOC a:hover::after,
-.TOC-links-only a:hover::after {
+body[class*='-index'] #TOC a:hover::after {
     margin: 0;
     bottom: unset;
     font-size: inherit;
@@ -99,7 +99,7 @@ blockquote .TOC a:hover::after,
 
 .popframe-body .TOC a[data-link-icon]:hover::after,
 blockquote .TOC a[data-link-icon]:hover::after,
-.TOC-links-only a[data-link-icon]:hover::after {
+body[class*='-index'] #TOC a[data-link-icon]:hover::after {
     background-image: none;
     padding: 0;
     opacity: 1.0;

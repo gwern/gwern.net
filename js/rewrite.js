@@ -1168,6 +1168,10 @@ function rewriteDirectoryIndexTOC(loadEventInfo) {
 	let TOC = loadEventInfo.document.querySelector("#TOC");
 	let seeAlsoSection = loadEventInfo.document.querySelector("#see-also");
 
+	if (   TOC == null
+		|| seeAlsoSection == null)
+		return;
+
 	/*	Place the TOC after the “See Also” section (which also places it after
 		the page abstract, if such exists, because that comes before the 
 		“See Also” section).

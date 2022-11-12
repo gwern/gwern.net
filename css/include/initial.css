@@ -732,19 +732,24 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 /*= Directory indexes =*/
 /*=-------------------=*/
 
+.abstract.abstract-tag-directory blockquote {
+	margin-top: 1em;
+}
+
 #TOC.TOC-links-only {
-	padding-top: 2.75em;
+	padding-top: 2.5em;
 }
 #TOC.TOC-links-only::before {
 	content: "Contents";
 	position: absolute;
-	font-size: 1.25em;
+	font-size: 1.125em;
 	font-weight: bold;
 	top: 0.5em;
 	left: 0.75em;
 }
 #TOC.TOC-links-only li {
 	font-weight: normal;
+	font-size: 0.9em;
 }
 
 @media all and (max-width: 900px) {
@@ -882,12 +887,12 @@ body.justified-not .markdownBody li {
     margin: 0 0 1.5em 0;
     background-color: var(--GW-abstract-background-color);
     border-color: var(--GW-abstract-border-color);
-    padding: 0.9rem 1.25rem 0.95rem 1.25rem;
+    padding-top: 0.9em;
     clear: none;
 }
 @media all and (max-width: 649px) {
 	.abstract blockquote {
-    	padding: 0.75rem 1rem 0.8rem 1rem;
+	    padding-top: 0.75rem;
 	}
 }
 

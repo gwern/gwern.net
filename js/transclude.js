@@ -638,7 +638,7 @@ Transclude = {
      */
 
     //  Called by: Transclude.transclude
-    reformatAnnotation: (annotation) => {
+    reformatAnnotation: (annotation, includeLink) => {
         let title = annotation.querySelector(".data-field.title");
         let authorDateAux = annotation.querySelector(".data-field.author-date-aux");
         let abstract = annotation.querySelector(".data-field.annotation-abstract");
@@ -649,7 +649,7 @@ Transclude = {
             a local annotation. See annotations.js for more information on
             annotation data sources.)
          */
-        let format = dataSourceClass > ""
+        let format = dataSourceClass > "" || (includeLink.closest(".abstract-tag-directory") != null)
                      ? "pop-frame"
                      : "index-entry";
 
@@ -964,7 +964,9 @@ Transclude = {
 
                 return;
             } else if (referenceData) {
-                Transclude.setCachedContentForLink(Transclude.reformatAnnotation(Extracts.annotationForTarget(includeLink)), includeLink);
+                Transclude.setCachedContentForLink(Transclude.reformatAnnotation(Extracts.annotationForTarget(includeLink), 
+                																 includeLink), 
+                								   includeLink);
                 Transclude.transclude(includeLink, true);
 
                 return;

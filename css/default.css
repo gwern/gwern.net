@@ -395,7 +395,7 @@ blockquote :not(section).collapse.expanded {
     margin-left: -1.25em;
     margin-right: -1.25em;
 }
-blockquote > :not(section).collapse:last-child {
+.markdownBody blockquote :not(section).collapse:last-child {
     margin-bottom: -1em;
 }
 
@@ -407,7 +407,7 @@ blockquote > :not(section).collapse:last-child {
         margin-left: -1em;
         margin-right: -1em;
     }
-    blockquote > :not(section).collapse:last-child {
+    .markdownBody blockquote :not(section).collapse:last-child {
         margin-bottom: -0.75em;
     }
 }
