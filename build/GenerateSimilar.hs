@@ -49,7 +49,15 @@ singleShotRecommendations html =
 
 -- how many results do we want?
 bestNEmbeddings :: Int
-bestNEmbeddings = 15
+bestNEmbeddings = 20
+
+-- how many characters long should a formatted annotation be before it is worth trying to embed?
+minimumLength :: Int
+minimumLength = 700
+
+-- how few suggestions is too few to bother the reader with the existence of a 'Similar Links' link? 1 is way too few, but 5 might be demanding too much?
+minimumSuggestions :: Int
+minimumSuggestions = 3
 
 -- prevent pathological loops by requesting no more than i times:
 iterationLimit :: Int
@@ -93,9 +101,6 @@ missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, 
                                urlsEmbedded = map (\(u,_,_,_,_) -> u) edb :: [String]
                                missing      = urlsToCheck \\ urlsEmbedded
                                in map (\u -> (u, fromJust $ M.lookup u md)) missing
-
-  where minimumLength :: Int
-        minimumLength = 450 -- how many characters long should metadata be before it is worth trying to embed?
 
 -- convert an annotated item into a single text string: concatenate the useful metadata in a OA API-aware way.
 formatDoc :: (String,MetadataItem) -> T.Text
@@ -252,6 +257,7 @@ similaritemExistsP p = doesFileExist $ take 274 $ "metadata/annotations/similars
 
 writeOutMatch :: Metadata -> Backlinks -> (String, [String]) -> IO ()
 writeOutMatch md bdb (p,matches) =
+  if length matches < minimumSuggestions then return () else
   do case M.lookup p md of
        Nothing             -> return ()
        Just (_,_,_,_,_,"") -> return ()
