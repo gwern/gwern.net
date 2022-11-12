@@ -281,6 +281,8 @@ imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
              notExist <- fmap not $ doesFileExist smallerPath
              when notExist $ do
                (status,_,bs) <-  runShellCommand "./" Nothing "convert" [tail target', "-resize", "768x768", smallerPath]
+               -- ultra-small low-quality version for thumbnails:
+               _ <-  runShellCommand "./" Nothing "convert" [tail target', "-resize", "530", "-quality", "10%", tail target' ++ "-530px.jpg"]
                case status of
                  ExitFailure _ -> error $ show status ++ show bs
                  _ -> void $ forkIO $ if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:

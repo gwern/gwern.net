@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-11-11 18:25:06 gwern"
+When: Time-stamp: "2022-11-11 22:20:29 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -150,7 +150,9 @@ main =
                                        "static/**.js",
                                        "static/**.net",
                                        "static/**.png",
-                                       "static/**.png-768px",
+                                       "static/**768px.png",
+                                       "static/**768px.jpg",
+                                       "static/**530px.jpg",
                                        "static/**.R",
                                        "static/**.sh",
                                        "static/**.svg",
@@ -247,7 +249,7 @@ thumbnailSmallTransform d = field d $ \item -> do
                     Just img -> return $ thumbnailSmall img
 
 thumbnailSmall :: String -> String
-thumbnailSmall img = if ".png" `isSuffixOf` img then img++"-768px.png" else img++"-768px.jpg"
+thumbnailSmall = ++"-530px.jpg"
 
 -- should backlinks be in the metadata? We skip backlinks for newsletters & indexes (excluded from the backlink generation process as well) due to lack of any value of looking for backlinks to hose.
 -- HACK: uses unsafePerformIO. Not sure how to check up front without IO... Read the backlinks DB and thread it all the way through `postCtx`, and `main`?
@@ -260,7 +262,7 @@ imageDimensionWidth :: String -> Context String
 imageDimensionWidth d = field d $ \item -> do
                   metadataMaybe <- getMetadataField (itemIdentifier item) "thumbnail"
                   let (h,w) = case metadataMaybe of
-                        Nothing -> ("679","768") -- /static/img/logo/logo-whitebg-large-border.png-768px.png dimensions
+                        Nothing -> ("530","441") -- /static/img/logo/logo-whitebg-large-border.png-530px.jpg dimensions
                         Just thumbnailPath -> unsafePerformIO $ imageMagickDimensions $ tail $ thumbnailSmall thumbnailPath
                   if d == "thumbnailWidth" then return w else return h
 
