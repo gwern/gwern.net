@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-10-05 11:04:40 gwern"
+When: Time-stamp: "2022-11-11 18:25:06 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -215,13 +215,14 @@ postCtx md =
     constField "confidence" "log" <>
     constField "importance" "0" <>
     constField "cssExtension" "drop-caps-de-zs" <>
+    thumbnailSmallTransform "thumbnailSmall" <>
     imageDimensionWidth "thumbnailHeight" <>
     imageDimensionWidth "thumbnailWidth" <>
     -- for use in templating, `<body class="$safeURL$">`, allowing page-specific CSS:
     escapedTitleField "safeURL" <>
     (mapContext (\p -> (urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) $ ("/" ++ replace ".page" ".html" p))) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotations/backlinks/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotations/backlinks/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotations/backlinks/%2Fnotes%2FFaster.html'
 
-fieldsTagHTML :: Metadata -> Context a
+fieldsTagHTML :: Metadata -> Context String
 fieldsTagHTML m = field "tagsHTML" $ \item -> do
   let path = "/" ++ (replace ".page" "" $ toFilePath $ itemIdentifier item)
   case M.lookup path m of
@@ -230,12 +231,23 @@ fieldsTagHTML m = field "tagsHTML" $ \item -> do
                                  Left e -> error ("Failed to compile tags to HTML fragment: " ++ show path ++ show x ++ show e)
                                  Right html -> return (T.unpack html)
 
-fieldsTagPlain :: Metadata -> Context a
+fieldsTagPlain :: Metadata -> Context String
 fieldsTagPlain m = field "tagsPlain" $ \item -> do
   let path = "/" ++ (replace ".page" "" $ toFilePath $ itemIdentifier item)
   case M.lookup path m of
     Nothing               -> return "" -- noResult "no description field"
     Just (_,_,_,_,tags,_) -> return $ intercalate ", " tags
+
+thumbnailSmallTransform :: String -> Context String
+thumbnailSmallTransform d = field d $ \item -> do
+                  metadata <- getMetadata (itemIdentifier item)
+                  let thumbMaybe = lookupString "thumbnail" metadata
+                  case thumbMaybe of
+                    Nothing -> noResult "no thumbnail field"
+                    Just img -> return $ thumbnailSmall img
+
+thumbnailSmall :: String -> String
+thumbnailSmall img = if ".png" `isSuffixOf` img then img++"-768px.png" else img++"-768px.jpg"
 
 -- should backlinks be in the metadata? We skip backlinks for newsletters & indexes (excluded from the backlink generation process as well) due to lack of any value of looking for backlinks to hose.
 -- HACK: uses unsafePerformIO. Not sure how to check up front without IO... Read the backlinks DB and thread it all the way through `postCtx`, and `main`?
@@ -244,28 +256,28 @@ backlinkCheck i = let p = toFilePath (itemIdentifier i) in unsafePerformIO (does
 similarCheck :: Item a -> Bool
 similarCheck i = let p = toFilePath (itemIdentifier i) in unsafePerformIO (doesFileExist (("metadata/annotations/similars/" ++ replace "/" "%2F" (replace ".page" "" ("/"++p))) ++ ".html")) && not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
 
-imageDimensionWidth :: String -> Context a
+imageDimensionWidth :: String -> Context String
 imageDimensionWidth d = field d $ \item -> do
                   metadataMaybe <- getMetadataField (itemIdentifier item) "thumbnail"
                   let (h,w) = case metadataMaybe of
-                        Nothing -> ("1400","1238") -- /static/img/logo/logo-whitebg-large-border.png dimensions
-                        Just thumbnailPath -> unsafePerformIO $ imageMagickDimensions $ tail thumbnailPath
+                        Nothing -> ("679","768") -- /static/img/logo/logo-whitebg-large-border.png-768px.png dimensions
+                        Just thumbnailPath -> unsafePerformIO $ imageMagickDimensions $ tail $ thumbnailSmall thumbnailPath
                   if d == "thumbnailWidth" then return w else return h
 
-escapedTitleField :: String -> Context a
+escapedTitleField :: String -> Context String
 escapedTitleField t = (mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField) t
 
 -- for 'title' metadata, they can have formatting like <em></em> italics; this would break when substituted into <title> or <meta> tags.
 -- So we render a simplified ASCII version of every 'title' field, '$titlePlain$', and use that in default.html when we need a non-display
 -- title.
-titlePlainField :: String -> Context a
+titlePlainField :: String -> Context String
 titlePlainField d = field d $ \item -> do
                   metadataMaybe <- getMetadataField (itemIdentifier item) "title"
                   case metadataMaybe of
                     Nothing -> noResult "no title field"
                     Just t -> return (simplifiedHTMLString t)
 
-descField :: String -> Context a
+descField :: String -> Context String
 descField d = field d $ \item -> do
                   metadata <- getMetadata (itemIdentifier item)
                   let descMaybe = lookupString d metadata
