@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-12 09:39:31 gwern"
+When:  Time-stamp: "2022-11-13 16:50:22 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateID, generateURL, generateAnnotationBlock, generateAnnotationTransclusionBlock, getSimilarLink, authorsToCite, authorsTruncate, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad, guessTagFromShort, listTagsAll, listTagDirectories) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateID, generateURL, generateAnnotationBlock, generateAnnotationTransclusionBlock, getSimilarLink, authorsToCite, authorsTruncate, cleanAbstractsHTML, tagsToLinksSpan, tagsToLinksDiv, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString, uniqTags, tooltipToMetadata, dateTruncateBad, guessTagFromShort, listTagsAll, listTagDirectories, urlToAnnotationPath) where
 
 import Control.Monad (unless, void, when, foldM_, filterM)
 import Data.Aeson (eitherDecode, FromJSON)
@@ -61,7 +61,7 @@ import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAutoHtml5String)
 import LinkBacklink (getSimilarLink, getSimilarLinkCount, getBackLink, getBackLinkCount)
 import Query (truncateTOCHTML, extractLinksInlines)
-import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split, pairs, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass)
+import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split, pairs, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, getLinkBibliography)
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (docs/, static/, images/) entirely; a Gwern.net page is then any
@@ -320,6 +320,7 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                   blN <- getBackLinkCount u'
                   (_,sl) <- getSimilarLink u'
                   slN <- getSimilarLinkCount u'
+                  lb <- getLinkBibliography filepath'
                   -- we prefer annotations which have a fully-written abstract, but we will settle for 'partial' annotations,
                   -- which serve as a sort of souped-up tooltip: partials don't get the dotted-underline indicating a full annotation, but it will still pop-up on hover.
                   -- Now, tooltips already handle title/author/date, so we only need partials in the case of things with tags, abstracts, backlinks, or similar-links, which cannot be handled by tooltips (since HTML tooltips only let you pop up some raw unstyled Unicode text, not clickable links).
@@ -329,7 +330,7 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                       -- obviously no point in trying to reformatting date/DOI, so skip those
                       let abstractHtml = typesetHtmlField abst
                       -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
-                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock False True (u', Just (titleHtml,authorHtml,c,d,ts,abstractHtml)) bl sl
+                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock False True (u', Just (titleHtml,authorHtml,c,d,ts,abstractHtml)) bl sl lb
                       -- for partials, we skip the heavyweight processing:
                       unless (null abst) $ void $ createAnnotations md pandoc
                       pandoc' <- if null abst then return pandoc
@@ -466,8 +467,8 @@ extractAndFlattenInlines x = error (show x)
 simplifiedHTMLString :: String -> String
 simplifiedHTMLString arg = trim $ T.unpack $ simplified $ parseRawBlock nullAttr (RawBlock (Text.Pandoc.Format "html") (T.pack arg))
 
-generateAnnotationBlock :: Bool -> Bool -> (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> FilePath -> [Block]
-generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
+generateAnnotationBlock :: Bool -> Bool -> (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
+generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann of
                               Nothing                 -> nonAnnotatedLink
                               -- Just ("",   _,_,_,_,_)  -> nonAnnotatedLink
                               -- Just (_,    _,_,_,_,"") -> nonAnnotatedLink
@@ -486,6 +487,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                     tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
                                     backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks", "icon-not"],[]) [Str "backlinks"] (T.pack blp, "Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars", "icon-not"],[]) [Str "similar"] (T.pack slp, "Similar links for this link (by text embedding).")]]
+                                    linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["linkbibliography"], []) [Link ("",["aux-links", "link-page", "icon-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of links it cites).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
                                     link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
@@ -496,11 +498,12 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                        ([link,Str ","] ++
                                          author ++
                                          date ++
-                                         (if (tags++backlink++similarlink)==[] then []
+                                         (if (tags++backlink++similarlink++linkBibliography)==[] then []
                                            else [Str " ("] ++
                                                 tags ++
                                                 backlink ++
                                                 similarlink ++
+                                                linkBibliography ++
                                                 [Str ")"] ++
                                                 (if null abst then [] else [Str ":"])
                                          ))] ++
@@ -517,8 +520,8 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp = case ann of
                                nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]]
 
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime; but for backwards compatibility with non-JS readers (such as NoScript users, bots, tools etc), we still provide the title/author/date/backlinks/similar-links along with the transcluded-URL. For JS users, that all will be replaced by the proper popups annotation, and is mostly irrelevant to them. As such, this is a simplified version of `generateAnnotationBlock`.
-generateAnnotationTransclusionBlock :: (FilePath, LinkMetadata.MetadataItem) -> FilePath -> FilePath -> [Block]
-generateAnnotationTransclusionBlock (f, (tle,aut,dt,doi,ts,_)) blp slp =
+generateAnnotationTransclusionBlock :: (FilePath, LinkMetadata.MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
+generateAnnotationTransclusionBlock (f, (tle,aut,dt,doi,ts,_)) blp slp lb =
                                 let tle' = if null tle then "<code>"++f++"</code>" else tle
                                     lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
                                     authorShort = authorsTruncate aut
@@ -531,6 +534,7 @@ generateAnnotationTransclusionBlock (f, (tle,aut,dt,doi,ts,_)) blp slp =
                                     tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
                                     backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks", "icon-not"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars", "icon-not"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
+                                    linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["linkbibliography"], []) [Link ("",["aux-links", "link-page", "icon-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of links it cites).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     link = Link (lid, ["link-annotated", "include-annotation", "include-replace-container", "include-spinner-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
                                 in
@@ -543,6 +547,7 @@ generateAnnotationTransclusionBlock (f, (tle,aut,dt,doi,ts,_)) blp slp =
                                                 tags ++
                                                 backlink ++
                                                 similarlink ++
+                                                linkBibliography ++
                                                 [Str ")"]
                                          ))
                                   ]
@@ -759,7 +764,7 @@ tagsLong2Short = [
           , ("philosophy/ethics", "ethics")
           , ("philosophy/brethren-of-purity", "Brethren of Purity")
           , ("longevity/tirzepatide", "tirzepatide")
-          , ("longevity/semaglutide", "glutides")
+          , ("longevity/semaglutide", "glutide")
           , ("exercise/gravitostat", "the gravitostat")
           , ("tominaga-nakamoto", "Tominaga Nakamoto")
           , ("conscientiousness", "Conscientiousness")
@@ -799,7 +804,7 @@ tagsLong2Short = [
           , ("history/uighur", "Uighur genocide")
           , ("history/public-domain-review", "<em>Public Domain Review</em>")
           , ("technology", "tech")
-          , ("technology/stevensinstituteoftechnology-satmnewsletter", "<em>SATM</em> archives")
+          , ("technology/stevensinstituteoftechnology-satmnewsletter", "<em>SATM</em> archive")
           , ("technology/carbon-capture", "carbon capture")
           , ("technology/digital-antiquarian", "<em>Filfre</em>")
           , ("technology/google", "Google")
@@ -829,7 +834,7 @@ tagsLong2Short = [
           , ("psychology/illusion-of-depth", "illusion of depth")
           , ("psychology/neuroscience", "neuroscience")
           , ("psychology/animal", "animal psych")
-          , ("psychology/animal/bird", "birds")
+          , ("psychology/animal/bird", "bird")
           , ("psychology/animal/bird/neuroscience", "bird brains")
           , ("psychology/european-journal-of-parapsychology", "<em>EJP</em>")
           , ("psychology/spaced-repetition", "spaced repetition")
@@ -1817,7 +1822,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas
-                        let thumbnail' = if (thumbnail == "https://www.gwern.net/static/img/logo/logo-whitebg-large-border.png" ) then "" else replace "https://www.gwern.net/" "" thumbnail
+                        let thumbnail' = if ("https://www.gwern.net/static/img/logo/logo-whitebg-large-border.png" `isPrefixOf` thumbnail) then "" else replace "https://www.gwern.net/" "" thumbnail
                         let thumbnailText = if not (any filterThumbnailText metas) then "" else -- WARNING: if there is no thumbnailText, then bad things will happen downstream as the thumbnail gets rendered as solely an <img> rather than a <figure><img>. We will assume the author will always have a thumbnailText set.
                                           (\(TagOpen _ [_, ("content", thumbt)]) -> thumbt) $ head $ filter filterThumbnailText metas
                         when (null thumbnailText) $ printRed ("Warning: no thumbnailText alt text defined for URL " ++ p)
@@ -2383,6 +2388,10 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<span class=\"math inline\">\\({\\sim} 0.3 {\\rm M}_{\\odot}\\)</span>", "~0.3M<sub>☉</sub>")
          , ("<span class=\"math inline\">\\({\\rm M}_{\\odot}\\)</span>", "M<sub>☉</sub>")
          , ("<span class=\"math inline\">\\({\\sim}0.02 {\\rm M}_{\\mathrm{Ceres}}\\)</span>", "~0.02M<sub><a href=\"https://en.wikipedia.org/wiki/Ceres_(dwarf_planet)\">Ceres</a></sub>")
+         , ("<span class=\"math inline\">\\(ii\\)</span>", "1")
+         , ("<span class=\"math inline\">\\(ii\\)</span>", "2")
+         , ("<span class=\"math inline\">\\(iii\\)</span>", "3")
+         , ("<span class=\"math inline\">\\(iv\\)</span>", "4")
          , (" TD()", " TD(λ)")
          , ("({\\lambda})", "(λ)")
          , ("O((log n log log n)^2)", "𝒪(log<sup>2</sup> <em>n</em> log log <em>n</em>)")

@@ -178,3 +178,8 @@ hasAny search (x:xs) = x `elem` search || hasAny search xs
 -- This also gives us somewhat cleaner HTML by making Pandoc not insert '\n'.
 safeHtmlWriterOptions :: WriterOptions
 safeHtmlWriterOptions = def{writerColumns = 9999, writerExtensions = (enableExtension Ext_shortcut_reference_links pandocExtensions)}
+
+getLinkBibliography :: FilePath -> IO FilePath
+getLinkBibliography filepath' = do let lbPath = "docs/link-bibliography/" ++ filepath'
+                                   lb <- doesFileExist lbPath
+                                   return $ if not lb then "" else lbPath

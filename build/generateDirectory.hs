@@ -292,4 +292,4 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) = -- no abstracts:
              )
        ]
 -- long abstracts:
-generateItem (f,a,bl,sl) = generateAnnotationTransclusionBlock (f,a) bl sl
+generateItem (f,a,bl,sl) = generateAnnotationTransclusionBlock (f,a) bl sl ""
