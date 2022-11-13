@@ -15,6 +15,7 @@ import System.IO.Temp (emptySystemTempFile)
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Show.Pretty (ppShow)
 import qualified Data.Text as T (Text, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf, replace)
+import Network.HTTP (urlEncode)
 
 import Text.Regex (subRegex, mkRegex) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors: `$ cabal install regex-compat-tdfa && ghc-pkg --user hide regex-compat-0.95.2.1`
 
@@ -179,7 +180,12 @@ hasAny search (x:xs) = x `elem` search || hasAny search xs
 safeHtmlWriterOptions :: WriterOptions
 safeHtmlWriterOptions = def{writerColumns = 9999, writerExtensions = (enableExtension Ext_shortcut_reference_links pandocExtensions)}
 
+-- HACK: put into Utils.hs to avoid dependency cycles because generateLinkBibliography.hs imports LinkMetadata but LinkMetadata needs `getLinkBibliography` so it can't go *there*...
 getLinkBibliography :: FilePath -> IO FilePath
-getLinkBibliography filepath' = do let lbPath = "docs/link-bibliography/" ++ filepath'
-                                   lb <- doesFileExist lbPath
-                                   return $ if not lb then "" else lbPath
+getLinkBibliography "" = return ""
+getLinkBibliography filepath = do let filepath' = urlToAnnotationPath filepath
+                                  let lbPath = "docs/link-bibliography/" ++ filepath'
+                                  lb <- doesFileExist lbPath
+                                  return $ if not lb then "" else "/" ++ lbPath
+  where urlToAnnotationPath :: String -> String
+        urlToAnnotationPath u = "metadata/annotations/" ++ (take 247 $ urlEncode u) ++ ".html"
