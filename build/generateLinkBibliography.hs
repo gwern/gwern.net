@@ -16,9 +16,10 @@ module Main where
 -- They are compiled like normal pages by Hakyll, and they are exposed to readers as an additional
 -- link in the page metadata block, paired with the backlinks.
 
+import Control.Monad (when)
 import Data.List (isPrefixOf, isSuffixOf, nub)
 import Data.Text.Titlecase (titlecase)
-import qualified Data.Map as M (lookup)
+import qualified Data.Map as M (lookup, keys)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
 import System.IO (stderr, hPrint)
@@ -28,19 +29,22 @@ import qualified Data.Text as T (pack, unpack)
 
 import Control.Monad.Parallel as Par (mapM_)
 
-import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(Header, Para, OrderedList), Pandoc(..))
+import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(Header, Para, OrderedList), Pandoc(..), writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
 import LinkBacklink (getBackLink, getSimilarLink)
-import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, authorsTruncate, hasAnnotation, Metadata, MetadataItem)
-import Query (extractURLs)
+import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, authorsTruncate, hasAnnotation, urlToAnnotationPath, Metadata, MetadataItem)
+import Query (extractURLs, extractLinks)
 import Typography (identUniquefy)
 import Utils (writeUpdatedFile, replace)
 
 main :: IO ()
 main = do pages <- getArgs
           md <- readLinkMetadata
+          -- build the full link-bib pages for top-level pages/essays; these are full Markdown pages which are compiled like regular pages, and can be popped up:
           Par.mapM_ (generateLinkBibliography md) pages
+          -- build HTML fragments for each annotation link, containing just the list and no header/full-page wrapper, so they are nice to transclude *into* popups:
+          Par.mapM_ (writeAnnotationLinkBibliographyFragment md) $ M.keys md
 
 generateLinkBibliography :: Metadata -> String -> IO ()
 generateLinkBibliography md page = do links <- extractLinksFromPage page
@@ -88,7 +92,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
                  [Str ",", Space, authorSpan]
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
-    let linkAttr = if ("https://en.wikipedia.org/wiki/"`isPrefixOf`f) then ("",["include-annotation", "include-spinner-not"],[]) else nullAttr
+    let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation", "include-spinner-not"],[]) else nullAttr
     in
     if t=="" then
       [Para (Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author)]
@@ -115,3 +119,29 @@ linkToAnnotation :: Metadata -> String -> (String,MetadataItem)
 linkToAnnotation m u = case M.lookup u m of
                          Just i  -> (u,i)
                          Nothing -> (u,("","","","",[],""))
+
+-- don't waste the user's time if the annotation is not heavily linked, as most are not, or if all the links are WP links:
+mininumLinkBibliographyFragment :: Int
+mininumLinkBibliographyFragment = 4
+
+writeAnnotationLinkBibliographyFragment :: Metadata -> FilePath -> IO ()
+writeAnnotationLinkBibliographyFragment md path =
+  case M.lookup path md of
+       Nothing -> return ()
+       Just (_,_,_,_,_,"") -> return ()
+       Just (_,_,_,_,_,abstract) -> do
+        let links = filter (\l -> not (takeWhile (/='#') path `isPrefixOf` l)) $ -- delete self-links, such as in the ToC of scraped abstracts
+              map T.unpack $ extractLinks False (T.pack abstract)
+        when (length (filter (\l -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` l))  links) >= mininumLinkBibliographyFragment) $
+          do backlinks    <- mapM (fmap snd . getBackLink) links
+             similarlinks <- mapM (fmap snd . getSimilarLink) links
+             let pairs = linksToAnnotations md links
+                 pairs' = zipWith3 (\(a,b) c d -> (a,b,c,d)) pairs backlinks similarlinks
+                 body = [generateLinkBibliographyItems pairs']
+                 document = Pandoc nullMeta body
+                 html = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} $
+                   walk (hasAnnotation md) document
+             case html of
+               Left e   -> hPrint stderr e
+               -- compare with the old version, and update if there are any differences:
+               Right p' -> writeUpdatedFile "linkbibliography-fragment" ("docs/link-bibliography/" ++ urlToAnnotationPath path) p'
