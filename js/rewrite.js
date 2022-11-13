@@ -446,25 +446,10 @@ addContentLoadHandler(wrapFullWidthTables, "rewrite", (info) => (   info.needsRe
 /* FIGURES */
 /***********/
 
-/*****************************************************************************/
-/*  Sets, in CSS, the image dimensions that are specified in HTML.
-    (This is to ensure no reflow.)
- */
-addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (loadEventInfo) => {
-    GWLog("setImageDimensions", "rewrite.js", 1);
-
-    loadEventInfo.document.querySelectorAll("figure img[width][height]").forEach(image => {
-		let width = image.getAttribute("width");
-		let height = image.getAttribute("height");
-
-    	image.style.aspectRatio = `${width} / ${height}`;
-    });
-}, "rewrite", (info) => info.needsRewrite);
-
 /*******************************/
 /*  Wrap bare images in figures.
  */
-function wrapImages(loadEventInfo) {
+addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (loadEventInfo) => {
     GWLog("wrapImages", "rewrite.js", 1);
 
     loadEventInfo.document.querySelectorAll("p > img:only-child").forEach(image => {
@@ -485,14 +470,30 @@ function wrapImages(loadEventInfo) {
         wrapElement(image, null, "FIGURE", true,
             [ "float-left", "float-right", "outline-not", "image-focus-not" ]);
     }, null, loadEventInfo.document);
-}
+}, "rewrite", (info) => info.needsRewrite);
 
-addContentLoadHandler(wrapImages, "rewrite", (info) => info.needsRewrite);
+/*****************************************************************************/
+/*  Sets, in CSS, the image dimensions that are specified in HTML.
+    (This is to ensure no reflow.)
+ */
+addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (loadEventInfo) => {
+    GWLog("setImageDimensions", "rewrite.js", 1);
+
+    loadEventInfo.document.querySelectorAll("figure img[width][height]").forEach(image => {
+		let width = image.getAttribute("width");
+		let height = image.getAttribute("height");
+
+    	image.style.aspectRatio = `${width} / ${height}`;
+
+		if (loadEventInfo.source == "Extracts.annotationForTarget")
+			image.style.width = `${width}px`;
+    });
+}, "rewrite", (info) => info.needsRewrite);
 
 /********************************/
 /*  Inject wrappers into figures.
  */
-function wrapFigures(loadEventInfo) {
+addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (loadEventInfo) => {
     GWLog("wrapFigures", "rewrite.js", 1);
 
 	let mediaSelector = "img, audio, video";
@@ -527,14 +528,12 @@ function wrapFigures(loadEventInfo) {
         if (media.classList.contains("float-right"))
             media.closest("figure").classList.add("float-right");
     });
-}
-
-addContentLoadHandler(wrapFigures, "rewrite", (info) => info.needsRewrite);
+}, "rewrite", (info) => info.needsRewrite);
 
 /********************************************************************/
 /*  Designate full-width figures as such (with a ‘width-full’ class).
  */
-function markFullWidthFigures(loadEventInfo) {
+addContentLoadHandler(GW.contentLoadHandlers.markFullWidthFigures = (loadEventInfo) => {
     GWLog("markFullWidthFigures", "rewrite.js", 1);
 
     let fullWidthClass = "width-full";
@@ -557,10 +556,8 @@ function markFullWidthFigures(loadEventInfo) {
             });
         });
     });
-}
-
-addContentLoadHandler(markFullWidthFigures, "rewrite", (info) => (   info.needsRewrite
-                                                                  && info.fullWidthPossible));
+}, "rewrite", (info) => (   info.needsRewrite
+						 && info.fullWidthPossible));
 
 
 /***************/

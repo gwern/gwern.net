@@ -402,7 +402,23 @@ Annotations.dataSources.wikipedia = {
 		".error",
 		".mwe-math-mathml-inline",
         ".sidebar",
-        ".ambox"
+        ".ambox",
+		".unicode.haudio"
+	],
+
+	/*  CSS properties to preserve when stripping inline styles.
+		*/
+	//	Used in: Annotations.dataSources.wikipedia.postProcessReferenceEntry
+	preservedInlineStyleProperties: [ 
+		"display",
+		"position", 
+		"top", 
+		"left", 
+		"bottom", 
+		"right", 
+		"width", 
+		"height", 
+		"word-break"
 	],
 
 	/*  Post-process an already-constructed annotation created from a Wikipedia
@@ -478,7 +494,7 @@ Annotations.dataSources.wikipedia = {
 				return;
 
 			if (styledElement.style.display != "none")
-				stripStyles(styledElement, null, [ "position", "top", "left", "bottom", "right", "width", "height", "display" ]);
+				stripStyles(styledElement, null, Annotations.dataSources.wikipedia.preservedInlineStyleProperties);
 		});
 		//	Special handling for table elements.
 		referenceEntry.querySelectorAll(tableElementsSelector).forEach(tableElement => {
@@ -527,7 +543,7 @@ Annotations.dataSources.wikipedia = {
 
 			//  Create the figure and move the thumbnail(s) into it.
 			let figure = newElement("FIGURE", { "class": "float-right" });
-			thumbnailContainer.querySelectorAll("img").forEach(image => {
+			thumbnailContainer.querySelectorAll(".infobox-image img, .thumb img").forEach(image => {
 				if (image.closest("figure") == figure)
 					return;
 
@@ -590,7 +606,6 @@ Annotations.dataSources.wikipedia = {
 		let noFigureImagesSelector = [
 			".mwe-math-element",
 			".mw-default-size",
-			".unicode.haudio",
 			".sister-logo",
 			".side-box-image",
 			"p"
