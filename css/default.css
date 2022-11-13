@@ -1091,7 +1091,9 @@ blockquote table table {
 
 /*  EPITAPH (eg /LARPing)
  */
-.text-center { text-align: center; }
+.text-center {
+	text-align: center;
+}
 
 /*************/
 /* EPIGRAPHS */
@@ -3328,7 +3330,8 @@ body.index-directory #footer {
     margin-bottom: 0.2em;
 }
 
-.popframe-body li {
+.popframe-body li,
+.popframe-body li p {
     text-align: left;
 }
 
