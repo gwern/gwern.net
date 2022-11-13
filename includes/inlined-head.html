@@ -2498,6 +2498,8 @@ function GWStopWatch(f, ...args) {
 
 /*  Reports an error by sending an XMLHTTPRequest to the 404 page, suffixed
     with some error string (which gets automatically URL-encoded).
+
+	(Requires utility.js.)
  */
 function GWServerLogError(errorString, errorType) {
     doAjax({ location: `${location.origin}/static/404-error-` + fixedEncodeURIComponent(errorString) });
@@ -2505,95 +2507,9 @@ function GWServerLogError(errorString, errorType) {
 }
 
 
-/***********/
-/* HELPERS */
-/***********/
-
-/*  Because encodeURIComponent does not conform to RFC 3986; see MDN docs.
- */
-function fixedEncodeURIComponent(str) {
-    return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
-        return '%' + c.charCodeAt(0).toString(16);
-    });
-}
-
-/*  Transforming a URL hash into a CSS selector in a form that’s safe to pass to
-    querySelector and similar functions. (All characters that need to be escaped
-    according to the CSS spec are escaped.)
- */
-function selectorFromHash(hash) {
-    if (hash.length < 2)
-        return null;
-
-    //  Chrome’s fancy new “scroll to text fragment”.
-    if (hash.startsWith("#:~:"))
-        return null;
-
-    return "#" + CSS.escape(decodeURIComponent(hash.slice(1)));
-}
-
-/*  Helper function for AJAX, by kronusaturn
-    https://github.com/kronusaturn/lw2-viewer/blob/master/www/script.js
- */
-function urlEncodeQuery(params) {
-    return (Object.keys(params)).map(x => (`${x}=${ fixedEncodeURIComponent(params[x]) }`)).join("&");
-}
-
-/*  Helper function for AJAX, by kronusaturn
-    https://github.com/kronusaturn/lw2-viewer/blob/master/www/script.js
- */
-function doAjax(options) {
-    let req = new XMLHttpRequest();
-    req.addEventListener("load", (event) => {
-        if (event.target.status < 400) {
-            if (options["onSuccess"])
-                options.onSuccess(event);
-        } else {
-            if (options["onFailure"])
-                options.onFailure(event);
-        }
-    });
-    req.addEventListener("error", (event) => {
-        if (options["onFailure"])
-            options.onFailure(event);
-    });
-    let method = (options["method"] || "GET");
-    let location = (options.location || document.location)
-                   + ((options.params && method == "GET") ? ("?" + urlEncodeQuery(options.params)) : "");
-    req.open(method, location);
-    if (options["method"] == "POST") {
-        req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        req.send(urlEncodeQuery(options.params));
-    } else {
-        req.send();
-    }
-}
-
-/*  Adds an event listener to a button (or other clickable element), attaching
-    it to both ‘click’ and ‘keyup’ events (for use with keyboard navigation).
-    Optionally also attaches the listener to the ‘mousedown’ event, making the
-    element activate on mouse down instead of mouse up.
- */
-Element.prototype.addActivateEvent = function(fn, includeMouseDown) {
-    let ael = this.activateEventListener = (event) => {
-        if (   event.button === 0
-            || event.key    === ' ')
-            fn(event);
-    };
-    this.addEventListener("click", ael);
-    this.addEventListener("keyup", ael);
-    if (includeMouseDown)
-        this.addEventListener("mousedown", ael);
-}
-
-/*  Swap classes on the given element.
-    First argument is an array with two string elements (the classes).
-    Second argument is 0 or 1 (index of class to add; the other is removed).
- */
-Element.prototype.swapClasses = function (classes, whichToAdd) {
-    this.classList.add(classes[whichToAdd]);
-    this.classList.remove(classes[1 - whichToAdd]);
-};
+/*************************/
+/* JS CLASS MODIFICATION */
+/*************************/
 
 /*  The first item of the array (or null if array is empty).
  */
@@ -2617,88 +2533,6 @@ Object.defineProperty(Array.prototype, "last", {
     }
 });
 
-/*  The first text node of a node or element (or null if an element contains no
-    text nodes).
- */
-Object.defineProperty(Node.prototype, "firstTextNode", {
-    get() {
-        if (this.nodeType == Node.TEXT_NODE)
-            return this;
-
-        if (this.childNodes.length == 0)
-            return null;
-
-        for (let i = 0; i < this.childNodes.length; i++) {
-            let firstTextNodeWithinChildNode = this.childNodes[i].firstTextNode;
-            if (firstTextNodeWithinChildNode)
-                return firstTextNodeWithinChildNode;
-        }
-
-        return null;
-    }
-});
-
-/*  The last text node of a node or element (or null if an element contains no
-    text nodes).
- */
-Object.defineProperty(Node.prototype, "lastTextNode", {
-    get() {
-        if (this.nodeType == Node.TEXT_NODE)
-            return this;
-
-        if (this.childNodes.length == 0)
-            return null;
-
-        for (let i = this.childNodes.length - 1; i >= 0; i--) {
-            let lastTextNodeWithinChildNode = this.childNodes[i].lastTextNode;
-            if (lastTextNodeWithinChildNode)
-                return lastTextNodeWithinChildNode;
-        }
-
-        return null;
-    }
-});
-
-
-/*  Returns true if the list contains any of the tokens in the given array.
- */
-DOMTokenList.prototype.containsAnyOf = function (tokens) {
-    for (token of tokens)
-        if (this.contains(token))
-            return true;
-    return false;
-}
-
-/*  Returns true if the point is within the given rect, false otherwise.
- */
-function pointWithinRect(point, rect) {
-    return (   point.x >= rect.left
-            && point.x <= rect.right
-            && point.y >= rect.top
-            && point.y <= rect.bottom);
-}
-
-/*  Returns true if the given rects intersect, false otherwise.
- */
-function doRectsIntersect(rectA, rectB) {
-    return (   rectA.top < rectB.bottom
-            && rectA.bottom > rectB.top
-            && rectA.left < rectB.right
-            && rectA.right > rectB.left);
-}
-
-/*  Returns true if the given element intersects the given rect,
-    false otherwise.
- */
-function isWithinRect(element, rect) {
-    return doRectsIntersect(element.getBoundingClientRect(), rect);
-}
-
-/*  Returns true if the given element intersects the viewport, false otherwise.
- */
-function isOnScreen (element) {
-    return isWithinRect(element, new DOMRect(0, 0, window.innerWidth, window.innerHeight));
-}
 
 /*  Returns the string trimmed of opening/closing quotes.
  */
@@ -2808,51 +2642,9 @@ function _π(...args) {
     return product;
 }
 
-/*  Changes the page location to the given URL string (or path or hash).
- */
-function relocate(s) {
-    history.replaceState(null, null, s);
-}
-
-/*  Run the given function immediately if the page is already loaded, or add
-    a listener to run it as soon as the page loads.
- */
-function doWhenPageLoaded(f) {
-    if (document.readyState == "complete")
-        f();
-    else
-        window.addEventListener("load", () => { f(); });
-}
-
-/*  Run the given function immediately if the page content has already loaded
-    (DOMContentLoaded event has fired), or add a listener to run it as soon as
-    the event fires.
- */
-function doWhenDOMContentLoaded(f) {
-    if (GW.DOMContentLoaded == true)
-        f();
-    else
-        window.addEventListener("DOMContentLoaded", () => { f(); });
-}
-
-/*  Run the given function immediately if the <body> element has already been
-    created, or add a mutation observer to run it as soon as the <body> element
-    is created.
- */
-function doWhenBodyExists(f) {
-    if (document.body) {
-        f();
-    } else {
-        let observer = new MutationObserver((mutationsList, observer) => {
-            if (document.body) {
-                observer.disconnect();
-                f();
-            }
-        });
-
-        observer.observe(document.documentElement, { childList: true });
-    }
-}
+/***********/
+/* PAGE UI */
+/***********/
 
 /*  Given an HTML string, creates an element from that HTML, adds it to
     #ui-elements-container (creating the latter if it does not exist), and
@@ -2868,144 +2660,6 @@ function addUIElement(element_html) {
 
     ui_elements_container.insertAdjacentHTML("beforeend", element_html);
     return ui_elements_container.lastElementChild;
-}
-
-GW.scrollListeners = { };
-/*  Adds a scroll event listener to the page.
- */
-function addScrollListener(fn, name, options = { }, target = document) {
-    if (options.defer) {
-        doWhenPageLoaded(() => {
-            requestAnimationFrame(() => {
-                if (options.ifDeferCallWhenAdd)
-                    fn();
-                addScrollListener(fn, name, { defer: false }, target);
-            });
-        });
-        return;
-    }
-
-    let wrapper = (event) => {
-        requestAnimationFrame(() => {
-            fn(event);
-            target.addEventListener("scroll", wrapper, { once: true, passive: true });
-        });
-    }
-    target.addEventListener("scroll", wrapper, { once: true, passive: true });
-
-    /*  Retain a reference to the scroll listener, if a name is provided.
-     */
-    if (name)
-        GW.scrollListeners[name] = { wrapper: wrapper, target: target };
-
-    return wrapper;
-}
-/*  Removes a named scroll event listener from the page.
- */
-function removeScrollListener(name) {
-    let listener = GW.scrollListeners[name];
-    if (listener) {
-        listener.target.removeEventListener("scroll", listener.wrapper);
-        GW.scrollListeners[name] = null;
-    }
-}
-
-/*  Simple mutex mechanism.
- */
-function doIfAllowed(f, passHolder, passName, releaseImmediately = false) {
-    if (passHolder[passName] == false)
-        return;
-
-    passHolder[passName] = false;
-
-    f();
-
-    if (releaseImmediately) {
-        passHolder[passName] = true;
-    } else {
-        requestAnimationFrame(() => {
-            passHolder[passName] = true;
-        });
-    }
-}
-
-/*  When the given event is triggered on the given target, after the given delay
-    call the given handler function. (Optionally, if the given cancel event
-    occurs in the interim - i.e. after the trigger event happens but before the
-    delay elapses - cancel calling the handler.)
-
-    Return value of this function is an anonymous function which removes the
-    listeners that this function adds.
-
-    NOTE: If `delay` is 0 or less, then `cancelEventName` is ignored, and `func`
-    is added as an event handler for `triggerEventName` directly.
-
-    If `delay` is positive, then `func` will be called by a timer after `delay`
-    ms, prior to which time it might be cancelled if `cancelEventName` (if any)
-    occurs. (If `cancelEventName` is null, then `func` will be called after
-    `delay` unconditionally.)
- */
-function onEventAfterDelayDo(target, triggerEventName, delay, func, cancelEventName = null) {
-    if (delay <= 0) {
-        target.addEventListener(triggerEventName, func);
-        return (() => {
-            target.removeEventListener(triggerEventName, func);
-        });
-    } else {
-        let timer = null;
-        let events = { };
-        target.addEventListener(triggerEventName, events.triggerEvent = (event) => {
-            timer = setTimeout(func, delay, event);
-        });
-        if (cancelEventName != null) {
-            target.addEventListener(cancelEventName, events.cancelEvent = (event) => {
-                clearTimeout(timer);
-            });
-        }
-        return (() => {
-            target.removeEventListener(triggerEventName, events.triggerEvent);
-            if (cancelEventName != null)
-                target.removeEventListener(cancelEventName, events.cancelEvent);
-        });
-    }
-}
-
-/*  Causes an element’s contents to become selected.
- */
-function selectElementContents(element) {
-    let range = document.createRange();
-    range.selectNodeContents(element);
-    let selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-}
-
-/*  Returns val, or def if val == defval. (By default, defval is -1.)
-    (In other words, `defval(X,Y,Z)` is “return X if Y is Z [else, just Y]”.)
- */
-function defval(def, val, defval = -1) {
-    return (val == defval) ? def : val;
-}
-
-/*  Returns val, or min if val < min, or max if val > max.
-    (In other words, clamps val to [min,max].)
- */
-function valMinMax(val, min, max) {
-    return Math.max(Math.min(val, max), min);
-}
-
-/*  Returns a URL object with no hash, and otherwise the `href` equal to that
-    represented by the passed object (either a string, or some object that has
-    the `href` property, such as an <A> element, or the `location` object).
- */
-function urlSansHash(url) {
-    let fixedURL = null;
-    if (typeof url == "string")
-        fixedURL = new URL(url);
-    else
-        fixedURL = new URL(url.href);
-    fixedURL.hash = "";
-    return fixedURL;
 }
 
 
@@ -3067,6 +2721,25 @@ function cancelDoWhenMatchMedia(name) {
         mediaQuery.removeListener(GW.mediaQueryResponders[name]);
 
     GW.mediaQueryResponders[name] = null;
+}
+
+
+/***********/
+/* HELPERS */
+/***********/
+
+/*  Returns val, or def if val == defval. (By default, defval is -1.)
+    (In other words, `defval(X,Y,Z)` is “return X if Y is Z [else, just Y]”.)
+ */
+function defval(def, val, defval = -1) {
+    return (val == defval) ? def : val;
+}
+
+/*  Returns val, or min if val < min, or max if val > max.
+    (In other words, clamps val to [min,max].)
+ */
+function valMinMax(val, min, max) {
+    return Math.max(Math.min(val, max), min);
 }
 
 
@@ -3638,6 +3311,51 @@ GW.notificationCenter.prefireProcessors["GW.contentDidLoad"] = (eventInfo) => {
 };
 
 
+/********************/
+/* SCROLL LISTENERS */
+/********************/
+
+GW.scrollListeners = { };
+/*  Adds a scroll event listener to the page.
+ */
+function addScrollListener(fn, name, options = { }, target = document) {
+    if (options.defer) {
+        doWhenPageLoaded(() => {
+            requestAnimationFrame(() => {
+                if (options.ifDeferCallWhenAdd)
+                    fn();
+                addScrollListener(fn, name, { defer: false }, target);
+            });
+        });
+        return;
+    }
+
+    let wrapper = (event) => {
+        requestAnimationFrame(() => {
+            fn(event);
+            target.addEventListener("scroll", wrapper, { once: true, passive: true });
+        });
+    }
+    target.addEventListener("scroll", wrapper, { once: true, passive: true });
+
+    /*  Retain a reference to the scroll listener, if a name is provided.
+     */
+    if (name)
+        GW.scrollListeners[name] = { wrapper: wrapper, target: target };
+
+    return wrapper;
+}
+/*  Removes a named scroll event listener from the page.
+ */
+function removeScrollListener(name) {
+    let listener = GW.scrollListeners[name];
+    if (listener) {
+        listener.target.removeEventListener("scroll", listener.wrapper);
+        GW.scrollListeners[name] = null;
+    }
+}
+
+
 /****************/
 /* SCROLL STATE */
 /****************/
@@ -3697,6 +3415,51 @@ function togglePageScrolling(enable) {
         document.documentElement.classList.toggle("scroll-enabled-not", true);
         addScrollListener(preventScroll, "preventScroll");
         removeScrollListener("updateScrollStateScrollListener");
+    }
+}
+
+
+/***********/
+/* DO-WHEN */
+/***********/
+
+/*  Run the given function immediately if the page is already loaded, or add
+    a listener to run it as soon as the page loads.
+ */
+function doWhenPageLoaded(f) {
+    if (document.readyState == "complete")
+        f();
+    else
+        window.addEventListener("load", () => { f(); });
+}
+
+/*  Run the given function immediately if the page content has already loaded
+    (DOMContentLoaded event has fired), or add a listener to run it as soon as
+    the event fires.
+ */
+function doWhenDOMContentLoaded(f) {
+    if (GW.DOMContentLoaded == true)
+        f();
+    else
+        window.addEventListener("DOMContentLoaded", () => { f(); });
+}
+
+/*  Run the given function immediately if the <body> element has already been
+    created, or add a mutation observer to run it as soon as the <body> element
+    is created.
+ */
+function doWhenBodyExists(f) {
+    if (document.body) {
+        f();
+    } else {
+        let observer = new MutationObserver((mutationsList, observer) => {
+            if (document.body) {
+                observer.disconnect();
+                f();
+            }
+        });
+
+        observer.observe(document.documentElement, { childList: true });
     }
 }
 

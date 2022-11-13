@@ -415,48 +415,6 @@ function includeContent(includeLink, content) {
     }
 }
 
-/*******************************************************************************/
-/*  Returns true if the node’s parent has just one child (i.e., the given node),
-    or if all siblings are empty nodes. (Note that the given node *itself* being
-    empty does not prevent this function from returning true!)
- */
-function isOnlyChild(node) {
-    if (node.parentElement == null)
-        return undefined;
-
-    if (node.parentElement.childNodes.length == 1)
-        return true;
-
-    let nonemptySiblingsExist = false;
-    node.parentElement.childNodes.forEach(child => {
-        if (   child != node
-            && isNodeEmpty(child) == false)
-            nonemptySiblingsExist = true;
-    });
-    return (nonemptySiblingsExist == false);
-}
-
-/******************************************************************************/
-/*  Returns true if the node contains only whitespace and/or other empty nodes.
- */
-function isNodeEmpty(node) {
-    if (node.nodeType == Node.TEXT_NODE)
-        return (node.textContent.match(/\S/) == null);
-
-    if (   node.nodeType == Node.ELEMENT_NODE
-        && [ "IMG", "VIDEO", "AUDIO", "IFRAME", "OBJECT" ].includes(node.tagName))
-        return false;
-
-    if (node.childNodes.length == 0)
-        return true;
-
-    for (childNode of node.childNodes)
-        if (isNodeEmpty(childNode) == false)
-            return false;
-
-    return true;
-}
-
 /**************************************************************************/
 /*  Updates footnotes section after transclusion.
 
@@ -1077,7 +1035,7 @@ Transclude = {
 /****************************/
 /*  Process transclude-links.
  */
-function handleTranscludes(loadEventInfo) {
+addContentLoadHandler(GW.contentLoadHandlers.handleTranscludes = (loadEventInfo) => {
     GWLog("handleTranscludes", "transclude.js", 1);
 
     Transclude.allIncludeLinksInContainer(loadEventInfo.document).forEach(includeLink => {
@@ -1087,6 +1045,4 @@ function handleTranscludes(loadEventInfo) {
         //  Transclude now or maybe later.
         Transclude.transclude(includeLink);
     });
-}
-
-addContentLoadHandler(handleTranscludes, "<rewrite");
+}, "<rewrite");
