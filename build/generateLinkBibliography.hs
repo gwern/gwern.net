@@ -77,7 +77,7 @@ generateYAMLHeader d = "---\n" ++
                        "\n"
 
 generateLinkBibliographyItems :: [(String,MetadataItem,FilePath,FilePath)] -> Block
-generateLinkBibliographyItems [] = error "generateLinkBibliographyItems asked to generate a block of link-bib entries but passed an empty list. This should never happen."
+generateLinkBibliographyItems [] = Para []
 generateLinkBibliographyItems items = OrderedList (1, DefaultStyle, DefaultDelim) $ map generateLinkBibliographyItem items
 generateLinkBibliographyItem  :: (String,MetadataItem,FilePath,FilePath) -> [Block]
 generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:

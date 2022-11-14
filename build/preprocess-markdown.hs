@@ -28,4 +28,4 @@ main = do originalMarkdown <- TIO.getContents
           putStrLn html
 
           matchList <- GS.singleShotRecommendations html
-          unless (matchList == "") $ putStrLn $ "<div class=\"collapse see-also-append\">\n\n<p><strong>See Also</strong>:</p>\n\n" ++ T.unpack matchList ++ "\n</div>"
+          unless (matchList == "") $ putStrLn $ "<div class=\"collapse aux-links-append see-also-append\">\n\n<p><strong>See Also</strong>:</p>\n\n" ++ T.unpack matchList ++ "\n</div>"
