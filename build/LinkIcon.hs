@@ -1063,5 +1063,5 @@ linkIconTestUnitsText =
          , ("https://omega0.xyz/omega8008/JaynesBookPdf.html", "ETJ", "text,tri,sans")
          , ("/docs/statistics/bayes/1988-jaynes-maximumentropyandbayesianmethods.pdf", "ETJ", "text,tri,sans")
          , ("http://www-biba.inrialpes.fr/Jaynes/cc18i.pdf", "ETJ", "text,tri,sans")
-         , ("https://blog.chron.com/climateabyss/2011/12/e-t-jaynes-explains-why-people-aren%e2%80%99t-convinced-by-climate-change-evidence/", "ETJ", "text,tri,sans")
+         , ("https://web.archive.org/web/20120304012147/https://blog.chron.com/climateabyss/2011/12/e-t-jaynes-explains-why-people-aren%E2%80%99t-convinced-by-climate-change-evidence/", "ETJ", "text,tri,sans")
         ]
