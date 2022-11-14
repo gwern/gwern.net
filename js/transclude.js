@@ -561,10 +561,7 @@ Transclude = {
             && includeLink.pathname == location.pathname)
             return document;
 
-        let noHashURL = new URL(includeLink.href);
-        noHashURL.hash = "";
-
-        return Transclude.cachedDocuments[noHashURL.href];
+        return Transclude.cachedDocuments[urlSansHash(includeLink).href];
     },
 
     //  Called by: Transclude.transclude
@@ -573,10 +570,7 @@ Transclude = {
             && includeLink.pathname == location.pathname)
             return;
 
-        let noHashURL = new URL(includeLink.href);
-        noHashURL.hash = "";
-
-        Transclude.cachedDocuments[noHashURL.href] = doc;
+        Transclude.cachedDocuments[urlSansHash(includeLink).href] = doc;
     },
 
     cachedContent: { },
