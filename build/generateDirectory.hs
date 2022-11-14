@@ -161,7 +161,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_),_,_,lb)  =
     let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation", "include-spinner-not"],[]) else nullAttr
         link = if t=="" then Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author
                else Code nullAttr (T.pack f') : Str ":" : Space : Link linkAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author
-    in [Para link, Para [Link ("",["include", "include-spinner-not", "include-replace-container"],[]) [Str "link-bibliography"] (T.pack lb,"Link-bibliography for link " `T.append` (T.pack f))]]
+    in [Para link, Para [Link ("",["include", "include-spinner-not", "include-replace-container"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` (T.pack f))]]
 
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String
 generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail

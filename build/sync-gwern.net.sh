@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-11-13 21:25:40 gwern"
+# When:  Time-stamp: "2022-11-14 09:51:25 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -100,13 +100,13 @@ else
                 -e 'docs/link-bibliography')"
     PAGES_BIBLIOGRAPHIES="$(find . -type f -name "*.page" | sort | grep -F -v -e 'index.page' -e '404.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///' | shuf) index.page"
 
-    # we want to generate all directories first before running Hakyll in case a new tag was created
-    bold "Building directory indexes…"
-    ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS &
-
     # wait for generateLinkBibliography to finish to ensure the annotation link-bibs are all created:
     bold "Updating link bibliographies…"
     ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $PAGES_BIBLIOGRAPHIES
+
+    # we want to generate all directories first before running Hakyll in case a new tag was created
+    bold "Building directory indexes…"
+    ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
