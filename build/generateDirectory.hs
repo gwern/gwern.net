@@ -29,10 +29,10 @@ import Text.Pandoc.Walk (walk)
 
 import Interwiki (inlinesToText)
 import LinkMetadata (readLinkMetadata, generateAnnotationTransclusionBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag, hasAnnotation, dateTruncateBad, listTagDirectories, parseRawInline)
-import LinkBacklink (getBackLink, getSimilarLink)
+import LinkBacklink (getBackLink, getSimilarLink, getLinkBibLink)
 import Query (extractImages)
 import Typography (identUniquefy)
-import Utils (replace, writeUpdatedFile, getLinkBibliography)
+import Utils (replace, writeUpdatedFile)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -196,7 +196,7 @@ listFiles m direntries' = do
                    -- NOTE: files may be annotated only under a hash, eg. '/docs/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/docs/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/docs/ai/scaling/hardware/2021-norrie.pdf' → `('/docs/ai/scaling/hardware/2021-norrie.pdf#google',_)`
                    backlinks    <- mapM (fmap snd . getBackLink . fst) fileAnnotationsMi
                    similarlinks <- mapM (fmap snd . getSimilarLink . fst) fileAnnotationsMi
-                   linkbiblios  <- mapM (getLinkBibliography . fst) fileAnnotationsMi
+                   linkbiblios  <- mapM (fmap snd . getLinkBibLink . fst) fileAnnotationsMi
 
                    return $ zipWith4 (\(a,b) c d e -> (a,b,c,d,e)) fileAnnotationsMi backlinks similarlinks linkbiblios
 
@@ -211,7 +211,7 @@ listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else
                        do let files = nub $ map truncateAnchors $ M.keys tagged
                           backlinks    <- mapM (fmap snd . getBackLink) files
                           similarlinks <- mapM (fmap snd . getSimilarLink) files
-                          linkbiblios  <- mapM getLinkBibliography files
+                          linkbiblios  <- mapM (fmap snd . getLinkBibLink) files
                           let fileAnnotationsMi = map (lookupFallback m) files
                           return $ zipWith4 (\(a,b) c d e -> (a,b,c,d,e)) fileAnnotationsMi backlinks similarlinks linkbiblios
   where

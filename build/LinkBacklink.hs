@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-11-03 16:55:50 gwern"
+When:  Time-stamp: "2022-11-14 12:44:33 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -16,7 +16,7 @@ Because every used link necessarily has a backlink (the document in which it is 
 is also a convenient way to get a list of all URLs. -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkBacklink (getBackLink, getBackLinkCount, getSimilarLink, getSimilarLinkCount, Backlinks, readBacklinksDB, writeBacklinksDB, getForwardLinks) where
+module LinkBacklink (getBackLink, getBackLinkCount, getSimilarLink, getSimilarLinkCount, Backlinks, readBacklinksDB, writeBacklinksDB, getForwardLinks, getLinkBibLink) where
 
 import Data.List (sort)
 import qualified Data.Map.Strict as M (empty, filter, fromList, keys, toList, Map) -- fromListWith,
@@ -47,16 +47,18 @@ writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[T.Text])]
 -- return the raw FilePath of an x-link, and also the URL-encoded version safe to substitute into HTML:
 getXLink :: String -> FilePath -> IO (FilePath,FilePath)
 getXLink linkType p = do
-                   let linkRaw = "/metadata/annotations/"++linkType++"/" ++
+                   let linkRaw = "/metadata/annotations"++linkType++"/" ++
                                                                    urlEncode (p++".html")
                    linkExists <- doesFileExist $ tail linkRaw
                    -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg. `/metadata/annotations/$LINKTYPE/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotations/$LINKTYPE/%2Fdocs%2Frl%2Findex.html`)
                    if not linkExists then return ("","") else
-                     let link' =  "/metadata/annotations/"++linkType++"/" ++ urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' || t=='+' then urlEncode [t] else [t]) (p++".html")) in
+                     let link' =  "/metadata/annotations"++linkType++"/" ++ urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' || t=='+' then urlEncode [t] else [t]) (p++".html")) in
                        return (tail linkRaw,link')
-getBackLink, getSimilarLink :: FilePath -> IO (FilePath,FilePath)
-getBackLink    = getXLink "backlinks"
-getSimilarLink = getXLink "similars"
+getBackLink, getSimilarLink, getLinkBibLink :: FilePath -> IO (FilePath,FilePath)
+getBackLink    = getXLink "/backlinks"
+getSimilarLink = getXLink "/similars"
+getLinkBibLink p = do (raw,escape) <- getXLink "" p
+                      return $ if null raw || null escape then (raw,escape) else ("/docs/link-bibliography/" ++ raw, "/docs/link-bibliography/" ++ escape)
 
 -- avoid use of backlinks/similar-links database for convenience and just quickly grep the on-disk snippet:
 getBackLinkCount :: FilePath -> IO Int
