@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-11-09 14:45:07 gwern"
+# When:  Time-stamp: "2022-11-13 21:25:40 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -104,8 +104,9 @@ else
     bold "Building directory indexes…"
     ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS &
 
+    # wait for generateLinkBibliography to finish to ensure the annotation link-bibs are all created:
     bold "Updating link bibliographies…"
-    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $PAGES_BIBLIOGRAPHIES &
+    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $PAGES_BIBLIOGRAPHIES
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)

@@ -20,7 +20,7 @@ import System.Directory (listDirectory, doesFileExist)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
-                    Block(BulletList, Div, Header, Para, RawBlock), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
+                    Block(BulletList, Div, Header, Para, RawBlock, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
 import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (append, pack, unpack)
 import System.IO (stderr, hPrint)
@@ -106,6 +106,8 @@ generateDirectory md dirs dir'' = do
                    Just (_,_,_,_,_,"") -> []
                    Just (_,_,_,_,_,dirAbstract) -> [parseRawBlock ("",["abstract", "abstract-tag-directory"],[]) $ RawBlock (Format "html") (T.pack $ "<blockquote>"++dirAbstract++"</blockquote>")]
 
+  let linkBibList = generateLinkBibliographyItems $ filter (\(_,(_,_,_,_,_,_),_,_,lb) -> not (null lb)) links'
+
   let body = abstract ++
 
              [Header 1 nullAttr [Str "See Also"]] ++ [sectionDirectory] ++
@@ -122,7 +124,11 @@ generateDirectory md dirs dir'' = do
                  if not allUnannotatedUntitledP then [untitledLinksSection] else
                    [RawBlock (Format "html") "<div id=\"miscellaneous-links-list\" class=\"columns\">\n\n",
                     untitledLinksSection,
-                    RawBlock (Format "html") "</div>"])
+                    RawBlock (Format "html") "</div>"]) ++
+
+               (if null linkBibList then [] else
+                 Header 1 ("", ["link-annotated-not"], []) [Str "Link Bibliography"] :
+                 linkBibList)
 
   let document = Pandoc nullMeta body
   let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} $
@@ -133,6 +139,29 @@ generateDirectory md dirs dir'' = do
     -- compare with the old version, and update if there are any differences:
     Right p' -> do let contentsNew = T.pack header `T.append` p'
                    writeUpdatedFile "directory" (dir'' ++ "index.page") contentsNew
+
+generateLinkBibliographyItems :: [(String,MetadataItem,FilePath,FilePath,FilePath)] -> [Block]
+generateLinkBibliographyItems [] = []
+generateLinkBibliographyItems items = [OrderedList (1, DefaultStyle, DefaultDelim) $ map generateLinkBibliographyItem items]
+generateLinkBibliographyItem  :: (String,MetadataItem,FilePath,FilePath,FilePath) -> [Block]
+generateLinkBibliographyItem x@(_,(_,_,_,_,_,_),_,_,"") = error $ "generateDirectory.hs.generateLinkBibliographyItem asked to generate a link-bib entry for an item passed to it with no link-bib file defined! This should never happen. Data: " ++ show x
+generateLinkBibliographyItem (f,(t,aut,_,_,_,_),_,_,lb)  =
+  let f'
+        | "http" `isPrefixOf` f = f
+        | "index" `isSuffixOf` f = takeDirectory f
+        | otherwise = takeFileName f
+      authorShort = authorsTruncate aut
+      authorSpan  = if authorShort/=aut then Span ("",["full-authors-list"],[("title", T.pack aut)]) [Str (T.pack $ authorsTruncate aut)]
+                    else Str (T.pack authorShort)
+      author = if aut=="" || aut=="N/A" then []
+               else
+                 [Str ",", Space, authorSpan]
+      -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
+  in
+    let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation", "include-spinner-not"],[]) else nullAttr
+        link = if t=="" then Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author
+               else Code nullAttr (T.pack f') : Str ":" : Space : Link linkAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author
+    in [Para link, Para [Link ("",["include", "include-spinner-not", "include-replace-container"],[]) [Str "link-bibliography"] (T.pack lb,"Link-bibliography for link " `T.append` (T.pack f))]]
 
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String
 generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail
@@ -165,13 +194,11 @@ listFiles m direntries' = do
                    let files'          = (sort . filter (not . ("index"`isSuffixOf`)) . map (replace ".page" "") . filter ('#' `notElem`) . filter (not . isSuffixOf ".tar") ) files
                    let fileAnnotationsMi = map (lookupFallback m) files'
                    -- NOTE: files may be annotated only under a hash, eg. '/docs/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/docs/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/docs/ai/scaling/hardware/2021-norrie.pdf' → `('/docs/ai/scaling/hardware/2021-norrie.pdf#google',_)`
-                   print (map fst fileAnnotationsMi)
                    backlinks    <- mapM (fmap snd . getBackLink . fst) fileAnnotationsMi
                    similarlinks <- mapM (fmap snd . getSimilarLink . fst) fileAnnotationsMi
                    linkbiblios  <- mapM (getLinkBibliography . fst) fileAnnotationsMi
 
-                   return $
-                     zipWith4 (\(a,b) c d e -> (a,b,c,d,e)) fileAnnotationsMi backlinks similarlinks linkbiblios
+                   return $ zipWith4 (\(a,b) c d e -> (a,b,c,d,e)) fileAnnotationsMi backlinks similarlinks linkbiblios
 
 -- Fetch URLs/file 'tagged' with the current directory but not residing in it.
 --
@@ -186,8 +213,7 @@ listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else
                           similarlinks <- mapM (fmap snd . getSimilarLink) files
                           linkbiblios  <- mapM getLinkBibliography files
                           let fileAnnotationsMi = map (lookupFallback m) files
-                          return $
-                            zipWith4 (\(a,b) c d e -> (a,b,c,d,e)) fileAnnotationsMi backlinks similarlinks linkbiblios
+                          return $ zipWith4 (\(a,b) c d e -> (a,b,c,d,e)) fileAnnotationsMi backlinks similarlinks linkbiblios
   where
     -- for essays, not files/links, drop section anchors to look up/link:
     truncateAnchors :: String -> String
