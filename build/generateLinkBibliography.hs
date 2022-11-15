@@ -28,7 +28,7 @@ import qualified Data.Text as T (pack, unpack)
 
 import Control.Monad.Parallel as Par (mapM_)
 
-import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha), Block(Header, Para, OrderedList), Pandoc(..), writeHtml5String)
+import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha), Block(Div, Header, Para, OrderedList), Pandoc(..), writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
 import LinkBacklink (getBackLink, getSimilarLink)
@@ -78,7 +78,7 @@ generateYAMLHeader d = "---\n" ++
 
 generateLinkBibliographyItems :: [(String,MetadataItem,FilePath,FilePath)] -> Block
 generateLinkBibliographyItems [] = Para []
-generateLinkBibliographyItems items = OrderedList (1, LowerAlpha, DefaultDelim) $ map generateLinkBibliographyItem items
+generateLinkBibliographyItems items = Div ("", ["link-linkbibliography-sublist"], []) [OrderedList (1, LowerAlpha, DefaultDelim) $ map generateLinkBibliographyItem items]
 generateLinkBibliographyItem  :: (String,MetadataItem,FilePath,FilePath) -> [Block]
 generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
   let f'
