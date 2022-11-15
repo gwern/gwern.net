@@ -183,7 +183,7 @@ Extracts = { ...Extracts,
             if (isWikipediaLink)
                 return "";
 
-            //  Similars, backlinks, tags.
+            //  Similars, backlinks, tags, link-linkbib:
             let auxLinks = [ ];
             if (referenceData.backlinksHTML == ``) {
                 if (referenceData.tagsHTML > ``)
@@ -196,6 +196,9 @@ Extracts = { ...Extracts,
             }
             if (referenceData.similarHTML) {
                 auxLinks.push(referenceData.similarHTML);
+            }
+            if (referenceData.linkbibHTML) {
+                auxLinks.push(referenceData.linkbibHTML);
             }
             auxLinks = auxLinks.join("; ");
 

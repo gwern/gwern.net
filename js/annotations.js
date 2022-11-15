@@ -254,6 +254,9 @@ Annotations = { ...Annotations,
 				//	The similar-links link (if exists).
 				let similarElement = referenceEntry.querySelector(".similars");
 
+                //	The link-linkbibliography link (if exists).
+				let linkbibElement = referenceEntry.querySelector(".linkbibliography");
+
 				//	Abstract (if exists).
 				let abstractElement = referenceEntry.querySelector("blockquote");
 				//	Unwrap extraneous <div>s, if present.
@@ -278,6 +281,7 @@ Annotations = { ...Annotations,
 					tagsHTML:       (tagsElement ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>` : ``),
 					backlinksHTML:  (backlinksElement ? `<span class="data-field aux-links backlinks">${backlinksElement.innerHTML}</span>` : ``),
 					similarHTML:    (similarElement ? `<span class="data-field aux-links similars" >${similarElement.innerHTML}</span>` : ``),
+                    linkbibHTML:    (linkbibElement ? `<span class="data-field aux-links linkbibliography" >${linkbibElement.innerHTML}</span>` : ``),
 					abstract:   	(abstractElement ? newDocument(abstractElement.childNodes) : null)
 				};
 			},
@@ -409,15 +413,15 @@ Annotations.dataSources.wikipedia = {
 	/*  CSS properties to preserve when stripping inline styles.
 		*/
 	//	Used in: Annotations.dataSources.wikipedia.postProcessReferenceEntry
-	preservedInlineStyleProperties: [ 
+	preservedInlineStyleProperties: [
 		"display",
-		"position", 
-		"top", 
-		"left", 
-		"bottom", 
-		"right", 
-		"width", 
-		"height", 
+		"position",
+		"top",
+		"left",
+		"bottom",
+		"right",
+		"width",
+		"height",
 		"word-break"
 	],
 
