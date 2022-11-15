@@ -24,7 +24,6 @@ import qualified Data.Text as T (any, append, concat, isSuffixOf, pack, unpack, 
 import Data.Text.Read (decimal)
 import Text.Read (readMaybe)
 import Text.Regex.TDFA ((=~), Regex, makeRegex, match) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
-import System.IO (stderr, hPrint)
 import System.IO.Temp (emptySystemTempFile)
 import qualified Data.Map.Strict as M
 import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
@@ -203,7 +202,7 @@ invertImage f | "https://www.gwern.net/" `isPrefixOf` f = invertImageLocal $ Uti
                                            -- NOTE: while wget preserves it, curl erases the original modification time reported by server in favor of local file creation; this is useful for `invertImagePreview` --- we want to check downloaded images manually before their annotation gets stored permanently.
                                            (status,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", f, "--output", temp]
                                            case status of
-                                             ExitFailure _ -> do hPrint stderr ("Download failed (unable to check image invertibility): " ++ f)
+                                             ExitFailure _ -> do printRed ("Download failed (unable to check image invertibility): " ++ f)
                                                                  removeFile temp
                                                                  return (False, "320", "320") -- NOTE: most WP thumbnails are 320/320px squares, so to be safe we'll use that as a default value
                                              _ -> do c <- imageMagickColor f temp

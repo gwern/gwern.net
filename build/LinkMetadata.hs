@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-13 16:50:22 gwern"
+When:  Time-stamp: "2022-11-14 12:49:48 gwern"
 License: CC-0
 -}
 
@@ -59,9 +59,9 @@ import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase', invertImage, imageSrcset, addImgDimensions)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAutoHtml5String)
-import LinkBacklink (getSimilarLink, getSimilarLinkCount, getBackLink, getBackLinkCount)
+import LinkBacklink (getSimilarLink, getSimilarLinkCount, getBackLink, getBackLinkCount, getLinkBibLink)
 import Query (truncateTOCHTML, extractLinksInlines)
-import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split, pairs, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, getLinkBibliography)
+import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, frequency, replace, split, pairs, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass)
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (docs/, static/, images/) entirely; a Gwern.net page is then any
@@ -320,7 +320,7 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                   blN <- getBackLinkCount u'
                   (_,sl) <- getSimilarLink u'
                   slN <- getSimilarLinkCount u'
-                  lb <- getLinkBibliography filepath'
+                  (_,lb) <- getLinkBibLink filepath'
                   -- we prefer annotations which have a fully-written abstract, but we will settle for 'partial' annotations,
                   -- which serve as a sort of souped-up tooltip: partials don't get the dotted-underline indicating a full annotation, but it will still pop-up on hover.
                   -- Now, tooltips already handle title/author/date, so we only need partials in the case of things with tags, abstracts, backlinks, or similar-links, which cannot be handled by tooltips (since HTML tooltips only let you pop up some raw unstyled Unicode text, not clickable links).
@@ -2023,6 +2023,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("(.*)\\*(.+)\\*(.*)", "\\1<em>\\2</em>\\3")
          , ("(.*)\\*\\*(.+)\\*\\*(.*)", "\\1<strong>\\2</strong>\\3")
          , ("<p>This paper was accepted by [A-Z][a-z]+ [A-Z][a-z]+, .*\\.</p>", "")
+         , (" ### Author Declarations .*$", "")
+         , (" ### Competing Interest Statement .*$", "")
          , (" Study ([0-9][a-z]?)", " <strong>Study \\1</strong>")
          , (" Experiment ([0-9][a-z]?)", " <strong>Experiment \\1</strong>")
          -- <https://en.wikipedia.org/wiki/ClinicalTrials.gov>
@@ -3278,6 +3280,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("ofthe", "of the")
          , ("ofdata", "of data")
          , ("\8201", " ")
+         , ("ADE20k", "ADE20K")
+         , ("CityScapes", "Cityscapes")
          , ("Fr’echet", "Fréchet")
          , ("Frechet", "Fréchet")
          , ("h20ttps://", "https://")

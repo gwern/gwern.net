@@ -22,21 +22,21 @@ import Data.Text.Titlecase (titlecase)
 import qualified Data.Map as M (lookup, keys)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
-import System.IO (stderr, hPrint)
 
 import Data.Text.IO as TIO (readFile)
 import qualified Data.Text as T (pack, unpack)
 
 import Control.Monad.Parallel as Par (mapM_)
 
-import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(Header, Para, OrderedList), Pandoc(..), writeHtml5String)
+import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha), Block(Header, Para, OrderedList), Pandoc(..), writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
 import LinkBacklink (getBackLink, getSimilarLink)
 import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, authorsTruncate, hasAnnotation, urlToAnnotationPath, Metadata, MetadataItem)
 import Query (extractURLs, extractLinks)
-import Typography (identUniquefy)
-import Utils (writeUpdatedFile, replace)
+import Typography (identUniquefy, typographyTransform)
+import Utils (writeUpdatedFile, replace, printRed)
+import Interwiki (convertInterwikiLinks)
 
 main :: IO ()
 main = do pages <- getArgs
@@ -58,7 +58,7 @@ generateLinkBibliography md page = do links <- extractLinksFromPage page
                                           markdown = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} $
                                             walk identUniquefy $ walk (hasAnnotation md) document -- global rewrite to de-duplicate all of the inserted URLs
                                       case markdown of
-                                        Left e   -> hPrint stderr e
+                                        Left e   -> printRed (show e)
                                         -- compare with the old version, and update if there are any differences:
                                         Right p' -> do let contentsNew = generateYAMLHeader (replace ".page" "" page) ++ T.unpack p' ++ "\n\n"
                                                        writeUpdatedFile "link-bibliography" ("docs/link-bibliography/" ++ page) (T.pack contentsNew)
@@ -78,7 +78,7 @@ generateYAMLHeader d = "---\n" ++
 
 generateLinkBibliographyItems :: [(String,MetadataItem,FilePath,FilePath)] -> Block
 generateLinkBibliographyItems [] = Para []
-generateLinkBibliographyItems items = OrderedList (1, DefaultStyle, DefaultDelim) $ map generateLinkBibliographyItem items
+generateLinkBibliographyItems items = OrderedList (1, LowerAlpha, DefaultDelim) $ map generateLinkBibliographyItem items
 generateLinkBibliographyItem  :: (String,MetadataItem,FilePath,FilePath) -> [Block]
 generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
   let f'
@@ -98,9 +98,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
     if t=="" then
       [Para (Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author)]
     else
-      [Para (Code nullAttr (T.pack f') :
-              Str ":" : Space :
-              Link linkAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
+      [Para (Link linkAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
 -- long items:
 generateLinkBibliographyItem (f,a,bl,sl) = generateAnnotationTransclusionBlock (f,a) bl sl ""
 
@@ -141,8 +139,8 @@ writeAnnotationLinkBibliographyFragment md path =
                  body = [generateLinkBibliographyItems pairs']
                  document = Pandoc nullMeta body
                  html = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} $
-                   walk (hasAnnotation md) document
+                   walk (typographyTransform) $ walk convertInterwikiLinks $ walk (hasAnnotation md) document
              case html of
-               Left e   -> hPrint stderr e
+               Left e   -> printRed (show e)
                -- compare with the old version, and update if there are any differences:
                Right p' -> writeUpdatedFile "linkbibliography-fragment" ("docs/link-bibliography/" ++ urlToAnnotationPath path) p'

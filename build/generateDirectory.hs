@@ -23,16 +23,15 @@ import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMar
                     Block(BulletList, Div, Header, Para, RawBlock, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
 import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (append, pack, unpack)
-import System.IO (stderr, hPrint)
 import Control.Monad.Parallel as Par (mapM_)
 import Text.Pandoc.Walk (walk)
 
 import Interwiki (inlinesToText)
 import LinkMetadata (readLinkMetadata, generateAnnotationTransclusionBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag, hasAnnotation, dateTruncateBad, listTagDirectories, parseRawInline)
-import LinkBacklink (getBackLink, getSimilarLink)
+import LinkBacklink (getBackLink, getSimilarLink, getLinkBibLink)
 import Query (extractImages)
 import Typography (identUniquefy)
-import Utils (replace, writeUpdatedFile, getLinkBibliography)
+import Utils (replace, writeUpdatedFile, printRed)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -135,7 +134,7 @@ generateDirectory md dirs dir'' = do
            walk identUniquefy $ walk (hasAnnotation md) document  -- global rewrite to de-duplicate all of the inserted URLs
 
   case p of
-    Left e   -> hPrint stderr e
+    Left e   -> printRed e
     -- compare with the old version, and update if there are any differences:
     Right p' -> do let contentsNew = T.pack header `T.append` p'
                    writeUpdatedFile "directory" (dir'' ++ "index.page") contentsNew
@@ -196,7 +195,7 @@ listFiles m direntries' = do
                    -- NOTE: files may be annotated only under a hash, eg. '/docs/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/docs/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/docs/ai/scaling/hardware/2021-norrie.pdf' → `('/docs/ai/scaling/hardware/2021-norrie.pdf#google',_)`
                    backlinks    <- mapM (fmap snd . getBackLink . fst) fileAnnotationsMi
                    similarlinks <- mapM (fmap snd . getSimilarLink . fst) fileAnnotationsMi
-                   linkbiblios  <- mapM (getLinkBibliography . fst) fileAnnotationsMi
+                   linkbiblios  <- mapM (fmap snd . getLinkBibLink . fst) fileAnnotationsMi
 
                    return $ zipWith4 (\(a,b) c d e -> (a,b,c,d,e)) fileAnnotationsMi backlinks similarlinks linkbiblios
 
@@ -211,7 +210,7 @@ listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else
                        do let files = nub $ map truncateAnchors $ M.keys tagged
                           backlinks    <- mapM (fmap snd . getBackLink) files
                           similarlinks <- mapM (fmap snd . getSimilarLink) files
-                          linkbiblios  <- mapM getLinkBibliography files
+                          linkbiblios  <- mapM (fmap snd . getLinkBibLink) files
                           let fileAnnotationsMi = map (lookupFallback m) files
                           return $ zipWith4 (\(a,b) c d e -> (a,b,c,d,e)) fileAnnotationsMi backlinks similarlinks linkbiblios
   where
