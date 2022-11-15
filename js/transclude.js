@@ -619,25 +619,13 @@ Transclude = {
             a local annotation. See annotations.js for more information on
             annotation data sources.)
          */
-        let format;
-        if (   annotationData.dataSourceClass > "" 
-        	|| (includeLink.closest(".abstract-tag-directory") != null)) {
-			format = GW.mediaQueries.mobileWidth.matches
-					 ? "blockquote-outside-mobile"
-					 : "blockquote-outside";
-        } else {
-        	format = "blockquote-inside";
-        }
+        let format = (   annotationData.dataSourceClass > "" 
+        			  || (includeLink.closest(".abstract-tag-directory") != null))
+        			 ? "blockquote-outside"
+        			 : "blockquote-inside";
 
     	let annotationTemplates = {
     		"blockquote-outside": `
-    			<blockquote class="annotation <{dataSourceClass}>">
-    				<p class="data-field title"><{title}></p>
-    				<[IF authorDateAux]><p class="data-field author-date-aux"><{authorDateAux}></p><[IFEND]>
-    				<div class="data-field annotation-abstract"><{abstract}></p>
-    			</blockquote>
-    		`,
-    		"blockquote-outside-mobile": `
     			<blockquote class="annotation <{dataSourceClass}>">
     				<p class="data-field title"><{title}></p>
     				<[IF authorDateAux]><p class="data-field author-date-aux"><{authorDateAux}></p><[IFEND]>
