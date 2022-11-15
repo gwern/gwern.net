@@ -210,6 +210,21 @@
     element, or if they are the same), then the transcluded content is empty.
  */
 
+//	(string, object) => DocumentFragment
+function fillTemplate(template, data) {
+	let filledTemplate = template;
+
+	filledTemplate = filledTemplate.replace(
+		/<\[IF (.+?)\]>(.+?)(?:<\[ELSE\]>(.+?))?<\[IFEND\]>/g, 
+		(match, fieldName, ifValue, elseValue) => (data[fieldName] ? (ifValue ?? "") : (elseValue ?? ""))
+	).replace(
+		/<\{(.+?)\}>/g, 
+		(match, fieldName) => (data[fieldName] ?? "")
+	);
+
+	return newDocument(filledTemplate);
+}
+
 /***********************************************************************/
 /*  Replace an include-link with the given content (a DocumentFragment).
  */
@@ -591,68 +606,51 @@ Transclude = {
 
     //  Called by: Transclude.transclude
     reformatAnnotation: (annotation, includeLink) => {
-        let title = annotation.querySelector(".data-field.title");
-        let authorDateAux = annotation.querySelector(".data-field.author-date-aux");
-        let abstract = annotation.querySelector(".data-field.annotation-abstract");
-        let dataSourceClass = abstract.dataset.sourceClass;
+		let annotationAbstract = annotation.querySelector(".data-field.annotation-abstract");
+		let annotationData = {
+			title: annotation.querySelector(".data-field.title").innerHTML,
+			authorDateAux: (annotation.querySelector(".data-field.author-date-aux") || {}).innerHTML,
+			abstract: annotationAbstract.innerHTML,
+			dataSourceClass: annotationAbstract.dataset.sourceClass
+		};
 
         /*  We select the format for the annotation transclude on the basis of
             the annotation’s data source. (An empty data source class indicates
             a local annotation. See annotations.js for more information on
             annotation data sources.)
          */
-        let format = dataSourceClass > "" || (includeLink.closest(".abstract-tag-directory") != null)
-                     ? "pop-frame"
-                     : "index-entry";
-
-        /*  In any transclude format, the body of the annotation goes inside a
-            blockquote.
-         */
-        let blockquote = newElement("BLOCKQUOTE", { "class": "annotation" });
-        if (dataSourceClass)
-            blockquote.classList.add(...(dataSourceClass.split(" ")));
-
-        if (format == "pop-frame") {
-            /*  In the `pop-frame` annotation transclude format, the title and
-                the author-date-aux fields (if present) go on separate lines,
-                and both go inside the blockquote.
-             */
-
-            blockquote.append(...(annotation.childNodes));
-
-            /*  Allow for floated figures at the start of abstract
-                (only on sufficiently wide viewports).
-                */
-            if (!(GW.mediaQueries.mobileWidth.matches)) {
-                let initialFigure = blockquote.querySelector(".annotation-abstract > figure.float-right:first-child");
-                if (initialFigure)
-                    blockquote.insertBefore(initialFigure, blockquote.firstElementChild);
-            }
-
-            annotation.append(blockquote);
-        } else if (format == "index-entry") {
-            /*  In the `index-entry` annotation transclude format, the title and
-                author-date-aux fields (if present) go on the same line, which
-                is outside the blockquote.
-             */
-
-            let firstGraf = newElement("P");
-            firstGraf.append(...(title.childNodes));
-            if (authorDateAux) {
-                firstGraf.append(new Text(", "));
-                firstGraf.append(...(authorDateAux.childNodes));
-                firstGraf.lastTextNode.textContent = "):";
-                firstGraf.classList.add("data-field", "title", "author-date-aux");
-            } else {
-                firstGraf.classList.add("data-field", "title");
-            }
-
-            blockquote.append(...(abstract.childNodes));
-
-            annotation.replaceChildren(firstGraf, blockquote);
+        let format;
+        if (   annotationData.dataSourceClass > "" 
+        	|| (includeLink.closest(".abstract-tag-directory") != null)) {
+			format = GW.mediaQueries.mobileWidth.matches
+					 ? "blockquote-outside-mobile"
+					 : "blockquote-outside";
+        } else {
+        	format = "blockquote-inside";
         }
 
-        return annotation;
+    	let annotationTemplates = {
+    		"blockquote-outside": `
+    			<blockquote class="annotation <{dataSourceClass}>">
+    				<p class="data-field title"><{title}></p>
+    				<[IF authorDateAux]><p class="data-field author-date-aux"><{authorDateAux}></p><[IFEND]>
+    				<div class="data-field annotation-abstract"><{abstract}></p>
+    			</blockquote>
+    		`,
+    		"blockquote-outside-mobile": `
+    			<blockquote class="annotation <{dataSourceClass}>">
+    				<p class="data-field title"><{title}></p>
+    				<[IF authorDateAux]><p class="data-field author-date-aux"><{authorDateAux}></p><[IFEND]>
+    				<div class="data-field annotation-abstract"><{abstract}></p>
+    			</blockquote>
+    		`,
+    		"blockquote-inside": `
+    			<p class="data-field title <[IF authorDateAux]>author-date-aux<[IFEND]>>"><{title}><[IF authorDateAux]>, <{authorDateAux}>:<[IFEND]></p>
+    			<blockquote class="annotation"><{abstract}></blockquote>
+    		`
+    	};
+			
+ 		return fillTemplate(annotationTemplates[format], annotationData);
     },
 
     //  Called by: Transclude.transclude

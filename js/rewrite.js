@@ -392,6 +392,25 @@ addContentLoadHandler(GW.contentLoadHandlers.markFullWidthFigures = (loadEventIn
 }, "rewrite", (info) => (   info.needsRewrite
 						 && info.fullWidthPossible));
 
+/*****************************************************************/
+/*  Allow for floated figures at the start of annotation abstracts
+	(only on sufficiently wide viewports).
+ */
+addContentLoadHandler(GW.contentLoadHandlers.relocateThumbnailInAnnotation = (loadEventInfo) => {
+    GWLog("relocateThumbnailInAnnotation", "rewrite.js", 1);
+
+	if (GW.mediaQueries.mobileWidth.matches)
+		return;
+
+	let blockquote = loadEventInfo.document.querySelector("blockquote.annotation");
+	if (blockquote == null)
+		return;
+
+	let initialFigure = blockquote.querySelector(".annotation-abstract > figure.float-right:first-child");
+	if (initialFigure)
+		blockquote.insertBefore(initialFigure, blockquote.firstElementChild);
+}, "rewrite", (info) => info.source == "transclude");
+
 
 /***************/
 /* CODE BLOCKS */
