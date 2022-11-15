@@ -134,7 +134,7 @@ generateDirectory md dirs dir'' = do
            walk identUniquefy $ walk (hasAnnotation md) document  -- global rewrite to de-duplicate all of the inserted URLs
 
   case p of
-    Left e   -> printRed e
+    Left e   -> printRed (show e)
     -- compare with the old version, and update if there are any differences:
     Right p' -> do let contentsNew = T.pack header `T.append` p'
                    writeUpdatedFile "directory" (dir'' ++ "index.page") contentsNew
@@ -154,7 +154,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_),_,_,lb)  =
                     else Str (T.pack authorShort)
       author = if aut=="" || aut=="N/A" then []
                else
-                 [Str ",", Space, authorSpan]
+                 [Str ",", Space, authorSpan, Str ":"]
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
     let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation", "include-spinner-not"],[]) else nullAttr
