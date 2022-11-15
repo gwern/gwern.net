@@ -212,8 +212,8 @@ Extracts = { ...Extracts,
             //  Abstract (data field). (Empty for now; content injected below.)
             return `<div class="data-field annotation-abstract"`
                     + (isWikipediaLink
-                       ? ` data-source-class="wikipedia-entry"`
-                       : ``)
+                       ? ` data-source-class="wikipedia-entry" data-template="annotation-blockquote-outside"`
+                       : ` data-template="annotation-blockquote-inside"`)
                     + `></div>`
         })());
 

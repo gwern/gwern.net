@@ -210,21 +210,6 @@
     element, or if they are the same), then the transcluded content is empty.
  */
 
-//	(string, object) => DocumentFragment
-function fillTemplate(template, data) {
-	let filledTemplate = template;
-
-	filledTemplate = filledTemplate.replace(
-		/<\[IF (.+?)\]>(.+?)(?:<\[ELSE\]>(.+?))?<\[IFEND\]>/g, 
-		(match, fieldName, ifValue, elseValue) => (data[fieldName] ? (ifValue ?? "") : (elseValue ?? ""))
-	).replace(
-		/<\{(.+?)\}>/g, 
-		(match, fieldName) => (data[fieldName] ?? "")
-	);
-
-	return newDocument(filledTemplate);
-}
-
 /***********************************************************************/
 /*  Replace an include-link with the given content (a DocumentFragment).
  */
@@ -600,6 +585,58 @@ Transclude = {
         Transclude.cachedContent[includeLink.href] = content;
     },
 
+    /**************/
+    /*  Templating.
+     */
+
+	templateDirectoryPathname: "/static/templates/include/",
+	templateListFileName: "templates.json",
+
+	templates: { },
+
+	loadTemplates: () => {
+        GWLog("Transclude.loadTemplates", "transclude.js", 1);
+
+		doAjax({
+			location: Transclude.templateDirectoryPathname + Transclude.templateListFileName,
+			onSuccess: (event) => {
+				let templateList = JSON.parse(event.target.responseText);
+				for (templateName of templateList)
+					Transclude.loadTemplateByName(templateName);
+			}
+		});
+	},
+
+	loadTemplateByName: (templateName) => {
+        GWLog("Transclude.loadTemplateByName", "transclude.js", 2);
+
+		doAjax({
+			location: Transclude.templateDirectoryPathname + templateName + ".tmpl",
+			onSuccess: (event) => {
+				Transclude.templates[templateName] = event.target.responseText;
+			},
+		});
+	},
+
+	//	(string, object) => DocumentFragment
+	fillTemplate: (template, data) => {
+		if (template == null)
+			return null;
+
+		if (data == null)
+			return newDocument(template);
+
+		let filledTemplate = template.replace(
+			/<\[IF (.+?)\]>(.+?)(?:<\[ELSE\]>(.+?))?<\[IFEND\]>/g, 
+			(match, fieldName, ifValue, elseValue) => (data[fieldName] ? (ifValue ?? "") : (elseValue ?? ""))
+		).replace(
+			/<\{(.+?)\}>/g, 
+			(match, fieldName) => (data[fieldName] ?? "")
+		);
+
+		return newDocument(filledTemplate);
+	},
+
     /********************************/
     /*  Retrieved content processing.
      */
@@ -611,34 +648,13 @@ Transclude = {
 			title: annotation.querySelector(".data-field.title").innerHTML,
 			authorDateAux: (annotation.querySelector(".data-field.author-date-aux") || {}).innerHTML,
 			abstract: annotationAbstract.innerHTML,
-			dataSourceClass: annotationAbstract.dataset.sourceClass
+			dataSourceClass: annotationAbstract.dataset.sourceClass,
+			template: annotationAbstract.dataset.template
 		};
 
-        /*  We select the format for the annotation transclude on the basis of
-            the annotation’s data source. (An empty data source class indicates
-            a local annotation. See annotations.js for more information on
-            annotation data sources.)
-         */
-        let format = (   annotationData.dataSourceClass > "" 
-        			  || (includeLink.closest(".abstract-tag-directory") != null))
-        			 ? "blockquote-outside"
-        			 : "blockquote-inside";
-
-    	let annotationTemplates = {
-    		"blockquote-outside": `
-    			<blockquote class="annotation <{dataSourceClass}>">
-    				<p class="data-field title"><{title}></p>
-    				<[IF authorDateAux]><p class="data-field author-date-aux"><{authorDateAux}></p><[IFEND]>
-    				<div class="data-field annotation-abstract"><{abstract}></p>
-    			</blockquote>
-    		`,
-    		"blockquote-inside": `
-    			<p class="data-field title <[IF authorDateAux]>author-date-aux<[IFEND]>>"><{title}><[IF authorDateAux]>, <{authorDateAux}>:<[IFEND]></p>
-    			<blockquote class="annotation"><{abstract}></blockquote>
-    		`
-    	};
+        let templateName = (includeLink.dataset.template || annotationData.template);
 			
- 		return fillTemplate(annotationTemplates[format], annotationData);
+ 		return Transclude.fillTemplate(Transclude.templates[templateName], annotationData);
     },
 
     //  Called by: Transclude.transclude
@@ -1011,6 +1027,11 @@ Transclude = {
         }
     }
 };
+
+/***************************/
+/*	Load standard templates.
+ */
+Transclude.loadTemplates();
 
 /****************************/
 /*  Process transclude-links.
