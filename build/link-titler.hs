@@ -4,7 +4,7 @@
 -- link-titler.hs: add titles to bare links in a Markdown file using a database of link metadata
 -- Author: Gwern Branwen
 -- Date: 2022-04-01
--- When:  Time-stamp: "2022-09-14 10:46:54 gwern"
+-- When:  Time-stamp: "2022-11-14 18:56:51 gwern"
 -- License: CC-0
 --
 -- Read a Markdown page, parse links out, look up their titles, generate a standard gwern.net-style citation ('"Title", Author1 et al Year[a-z]'),
@@ -16,7 +16,7 @@
 -- This makes it much easier to read a Markdown file with a lot of opaque URL references, without the extraordinarily tedious
 -- mechanical busywork of hand-writing the tooltip title every time.
 -- This makes searches of the full codebase more useful as well since
--- you'll get hits on the lead author/title/year instead of needing the exact URL.
+-- you'll get hits on the lead author/title/year instead of needing the exact URL. (And probably makes document text embeddings better.)
 --
 -- This can be run regularly in a cron job to keep files up to date.
 --

@@ -288,7 +288,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "www.ssc.wisc.edu/wlsresearch/" = aI "WLS" "text,tri,sans" -- Wisconsin Longitudinal Study
  | u' "host.robots.ox.ac.uk/pascal/VOC" = aI "VOC" "text,tri,sans" -- PASCAL VOC (Visual Object Classes) machine learning image dataset/competition
  | u'' "www.tandfonline.com" = aI "T&F" "text,tri,sans" -- Taylor & Francis: their icon is a small white oil lamp on a blue background, but it's illegible as a favicon and just looks like a white blob on a blue square; since these need to be monochrome, that makes it useless. Plus I recognize 'Taylor & Francis' (sans serif, as usual for STEM publishers) more anyway, so 'T&F' is the natural tri-text icon. A possible Unicode alternative for the AMPERSAND if it is too big is 'U+FE60 ﹠ SMALL AMPERSAND'.
- | u' "omega0.xyz/omega8008/" || aU' ["/docs/statistics/bayes/1988-jaynes-maximumentropyandbayesianmethods.pdf", "www-biba.inrialpes.fr/Jaynes/cc18i.pdf", "blog.chron.com/climateabyss/2011/12/e-t-jaynes-explains-why-people-aren%e2%80%99t-convinced-by-climate-change-evidence/"] = aI "ETJ" "text,tri,sans" -- E. T. Jaynes book/paper website
+ | u' "omega0.xyz/omega8008/" || aU' ["/docs/statistics/bayes/1988-jaynes-maximumentropyandbayesianmethods.pdf", "www-biba.inrialpes.fr/Jaynes/cc18i.pdf"] = aI "ETJ" "text,tri,sans" -- E. T. Jaynes book/paper website
 
  -- Quad-letter-square icons.
  | aU'' ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
@@ -1063,5 +1063,4 @@ linkIconTestUnitsText =
          , ("https://omega0.xyz/omega8008/JaynesBookPdf.html", "ETJ", "text,tri,sans")
          , ("/docs/statistics/bayes/1988-jaynes-maximumentropyandbayesianmethods.pdf", "ETJ", "text,tri,sans")
          , ("http://www-biba.inrialpes.fr/Jaynes/cc18i.pdf", "ETJ", "text,tri,sans")
-         , ("https://web.archive.org/web/20120304012147/https://blog.chron.com/climateabyss/2011/12/e-t-jaynes-explains-why-people-aren%E2%80%99t-convinced-by-climate-change-evidence/", "ETJ", "text,tri,sans")
         ]

@@ -4582,7 +4582,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://www.scq.ubc.ca/files/63401nature.pdf", False)
             , ("https://www.screendaily.com/awards/hideaki-anno-evangelion/5081255.article?blocktitle=INTERVIEWS&contentID=41866", False)
             , ("https://www.sdfertility.com/fertility-treatments/genetic-testing/pgd", False)
-            , ("https://www.seacoastonline.com/story/news/education/2014/05/07/silas-students-to-show-lawmakers/37409876007/", False)
+            , ("https://www.seacoastonline.com/story/news/local/hampton-union/2014/05/07/hampton-man-to-plead-guilty/37408765007/", False)
             , ("https://www.sec.gov/Archives/edgar/data/1766502/000119312519124430/d665122ds1.htm", False)
             , ("https://www.semanticscholar.org/paper/Donor-Sibling-Networks-as-a-Vehicle-for-Expanding-Hertz-Nelson/6e736c71cd499fa03af6dabad3009335a8259745?p2df#page=14", False)
             , ("https://www.sendspace.com/file/ozr19p", False)

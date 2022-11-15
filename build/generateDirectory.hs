@@ -23,7 +23,6 @@ import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMar
                     Block(BulletList, Div, Header, Para, RawBlock, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
 import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (append, pack, unpack)
-import System.IO (stderr, hPrint)
 import Control.Monad.Parallel as Par (mapM_)
 import Text.Pandoc.Walk (walk)
 
@@ -32,7 +31,7 @@ import LinkMetadata (readLinkMetadata, generateAnnotationTransclusionBlock, gene
 import LinkBacklink (getBackLink, getSimilarLink, getLinkBibLink)
 import Query (extractImages)
 import Typography (identUniquefy)
-import Utils (replace, writeUpdatedFile)
+import Utils (replace, writeUpdatedFile, printRed)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -135,7 +134,7 @@ generateDirectory md dirs dir'' = do
            walk identUniquefy $ walk (hasAnnotation md) document  -- global rewrite to de-duplicate all of the inserted URLs
 
   case p of
-    Left e   -> hPrint stderr e
+    Left e   -> printRed e
     -- compare with the old version, and update if there are any differences:
     Right p' -> do let contentsNew = T.pack header `T.append` p'
                    writeUpdatedFile "directory" (dir'' ++ "index.page") contentsNew

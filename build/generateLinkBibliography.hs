@@ -22,7 +22,6 @@ import Data.Text.Titlecase (titlecase)
 import qualified Data.Map as M (lookup, keys)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
-import System.IO (stderr, hPrint)
 
 import Data.Text.IO as TIO (readFile)
 import qualified Data.Text as T (pack, unpack)
@@ -36,7 +35,7 @@ import LinkBacklink (getBackLink, getSimilarLink)
 import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, authorsTruncate, hasAnnotation, urlToAnnotationPath, Metadata, MetadataItem)
 import Query (extractURLs, extractLinks)
 import Typography (identUniquefy, typographyTransform)
-import Utils (writeUpdatedFile, replace)
+import Utils (writeUpdatedFile, replace, printRed)
 import Interwiki (convertInterwikiLinks)
 
 main :: IO ()
@@ -59,7 +58,7 @@ generateLinkBibliography md page = do links <- extractLinksFromPage page
                                           markdown = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} $
                                             walk identUniquefy $ walk (hasAnnotation md) document -- global rewrite to de-duplicate all of the inserted URLs
                                       case markdown of
-                                        Left e   -> hPrint stderr e
+                                        Left e   -> printRed (show e)
                                         -- compare with the old version, and update if there are any differences:
                                         Right p' -> do let contentsNew = generateYAMLHeader (replace ".page" "" page) ++ T.unpack p' ++ "\n\n"
                                                        writeUpdatedFile "link-bibliography" ("docs/link-bibliography/" ++ page) (T.pack contentsNew)
@@ -142,6 +141,6 @@ writeAnnotationLinkBibliographyFragment md path =
                  html = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} $
                    walk (typographyTransform) $ walk convertInterwikiLinks $ walk (hasAnnotation md) document
              case html of
-               Left e   -> hPrint stderr e
+               Left e   -> printRed (show e)
                -- compare with the old version, and update if there are any differences:
                Right p' -> writeUpdatedFile "linkbibliography-fragment" ("docs/link-bibliography/" ++ urlToAnnotationPath path) p'
