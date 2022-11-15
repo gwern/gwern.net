@@ -305,6 +305,7 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
                                               Str "; "]
                                                ++
                                                (if null doi then [] else [Link linkMetadataCP
+                                                                         -- it would be nice to include <https://paperswithcode.com/> but their DOI lookup was broken and stateful last I checked. Someday?
                                                                           [Str "CP"] (T.pack ("https://www.connectedpapers.com/api/redirect/doi/" ++ doiEscaped),
                                                                                       T.pack ("Connected Papers lookup for DOI ‘" ++ doiEscaped ++ "’.")),
                                                                          Str "; "])
