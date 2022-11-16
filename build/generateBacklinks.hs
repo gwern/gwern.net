@@ -9,7 +9,7 @@ import Text.Pandoc (nullMeta,
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack, tail, takeWhile, Text)
 import qualified Data.Text.IO as TIO (readFile)
-import Data.List (isPrefixOf, isSuffixOf)
+import Data.List (isPrefixOf, isSuffixOf, sort)
 import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter)
 import System.Directory (createDirectoryIfMissing, doesFileExist)
 import Network.HTTP (urlEncode)
@@ -72,13 +72,16 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                              -- (eg. for Boehm et al 1993's "backlinks", there will be a 'Hierarchy in the Library' backlink which would point at 'https://www.gwern.net/docs/culture/2008-johnson.pdf#boehm-et-al-1993' , which has no annotation, because it's annotated as '/docs/culture/2008-johnson.pdf').
                                                              Just (_,aut,dt,_,_,_) -> let i = generateID (T.unpack target) aut dt in
                                                                                         if i=="" then "" else "#" `T.append` i
-                                       let callerTitles = map (\u -> case M.lookup (T.unpack u) md of
-                                                                      Nothing -> if T.head u == '/' then T.tail u else u
-                                                                      Just ("",_,_,_,_,_) -> if T.head u == '/' then T.tail u else u
-                                                                      Just (t,_,_,_,_,_) -> T.pack t)
+                                       let callerDatesTitles = map (\u -> case M.lookup (T.unpack u) md of
+                                                                      Nothing -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
+                                                                      Just ("",_,"",_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
+                                                                      Just ("",_,_,_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
+                                                                      Just (t,_,dt,_,_,_) -> (dt,T.pack t,u))
                                                           callers
-                                       let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-page"] else ["link-annotated"]) callers
-                                       let callers' = zip3 callers callerClasses callerTitles
+                                       -- sort backlinks in descending order (most-recent first) as a simple way to prioritize:
+                                       let callerTitles = map (\(_,b,c) -> (b,c)) $ reverse $ sort callerDatesTitles
+                                       let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-page"] else ["link-annotated"]) $ map fst callerTitles
+                                       let callers' = zipWith (\a (b,c) -> (c,a,b)) callerClasses callerTitles
 
                                        let preface = [Para [Strong [Str (if length callers' > 1 then "Backlinks" else "Backlink")], Str ":"]]
                                        let content = BulletList $ -- critical to insert .backlink-not or we might get weird recursive blowup!
