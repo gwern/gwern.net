@@ -78,7 +78,7 @@ generateYAMLHeader d = "---\n" ++
 
 generateLinkBibliographyItems :: [(String,MetadataItem,FilePath,FilePath)] -> Block
 generateLinkBibliographyItems [] = Para []
-generateLinkBibliographyItems items = Div ("", ["link-linkbibliography-sublist"], []) [OrderedList (1, LowerAlpha, DefaultDelim) $ map generateLinkBibliographyItem items]
+generateLinkBibliographyItems items = OrderedList (1, LowerAlpha, DefaultDelim) $ map generateLinkBibliographyItem items
 generateLinkBibliographyItem  :: (String,MetadataItem,FilePath,FilePath) -> [Block]
 generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
   let f'

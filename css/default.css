@@ -869,9 +869,6 @@ li > ol + p {
     margin-top: 1em;
 }
 
-/* In the sub-lists of tag-directory link-bibliographies (the top-level is the list of actual links with the tag, then the second level, which is transcluded, is each link's own links (which were linked in its abstract). This would normally just be a 'ol ol' when transcluded, and thus get 'upper-roman', but Obormot thinks the sub-lists would look better with alphabetic markers, so we use the per-link-linkbibliography div to restyle them. (They are just 'ol' within that <div>.) */
-.link-linkbibliography-sublist ol { list-style-type: lower-alpha; }
-
 /***********/
 /* FIGURES */
 /***********/
