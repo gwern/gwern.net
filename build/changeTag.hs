@@ -27,7 +27,9 @@ import System.Directory (doesDirectoryExist, doesFileExist)
 import Text.Pandoc (Inline(Link), nullAttr)
 import Data.Text as T (pack)
 
-import LinkMetadata (annotateLink, guessTagFromShort, listTagsAll, readLinkMetadata, readYaml, writeYaml, MetadataList, MetadataItem)
+import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml)
+import LinkMetadataTypes (MetadataList, MetadataItem)
+import Tags (guessTagFromShort, listTagsAll)
 import Utils (printGreen, replace)
 
 main :: IO ()

@@ -8,7 +8,9 @@ import Data.Map as M (lookup, union, toList, fromList)
 import Data.Text as T (unpack)
 import Data.Text.IO as TIO (getContents)
 
-import LinkMetadata (authorsToCite, authorsTruncate, sortItemPathDate, readYamlFast, uniqTags, generateURL, MetadataItem)
+import LinkMetadata (authorsToCite, authorsTruncate, sortItemPathDate, readYamlFast, generateURL)
+import LinkMetadataTypes (MetadataItem)
+import Tags (uniqTags)
 import Utils (anyInfix, replace, sed)
 
 type Path = String

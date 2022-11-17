@@ -2,7 +2,7 @@
 
 import System.Environment (getArgs)
 
-import LinkMetadata (listTagsAll, guessTagFromShort)
+import Tags (listTagsAll, guessTagFromShort)
 
 main :: IO ()
 main = do tags    <- listTagsAll

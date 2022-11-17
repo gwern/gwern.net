@@ -32,7 +32,8 @@ import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMet
 import Text.Pandoc.Walk (walk)
 
 import LinkBacklink (getBackLink, getSimilarLink)
-import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, authorsTruncate, hasAnnotation, urlToAnnotationPath, Metadata, MetadataItem)
+import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, authorsTruncate, hasAnnotation, urlToAnnotationPath)
+import LinkMetadataTypes (Metadata, MetadataItem)
 import Query (extractURLs, extractLinks)
 import Typography (identUniquefy, typographyTransform)
 import Utils (writeUpdatedFile, replace, printRed)
