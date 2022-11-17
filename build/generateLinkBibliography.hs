@@ -28,7 +28,7 @@ import qualified Data.Text as T (pack, unpack)
 
 import Control.Monad.Parallel as Par (mapM_)
 
-import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha), Block(Div, Header, Para, OrderedList), Pandoc(..), writeHtml5String)
+import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha), Block(Header, Para, OrderedList), Pandoc(..), writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
 import LinkBacklink (getBackLink, getSimilarLink)
@@ -143,4 +143,4 @@ writeAnnotationLinkBibliographyFragment md path =
              case html of
                Left e   -> printRed (show e)
                -- compare with the old version, and update if there are any differences:
-               Right p' -> writeUpdatedFile "linkbibliography-fragment" ("metadata/annotations/link-bibliography/" ++ urlToAnnotationPath path) p'
+               Right p' -> writeUpdatedFile "linkbibliography-fragment" (replace "metadata/annotations/" "metadata/annotations/link-bibliography/" (urlToAnnotationPath path)) p'
