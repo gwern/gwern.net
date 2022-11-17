@@ -46,7 +46,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "isAnnotatedLink",          // Type predicate function
     (target) =>                 // Target classes to add
         ((   Annotations.isAnnotatedLinkPartial(target)
-          && Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target)) == false)
+          && Annotations.dataSourceForIdentifier(Extracts.targetIdentifier(target)) == Annotations.dataSources.local)
          ? "has-annotation-partial"
          : "has-annotation"),
     "annotationForTarget",      // Pop-frame fill function
@@ -107,9 +107,6 @@ Extracts = { ...Extracts,
             return newDocument();
         }
 
-        //  Wikipedia (external) annotations get special treatment.
-        let isWikipediaLink = Annotations.isWikipediaArticleLink(annotationIdentifier);
-
         let constructedAnnotation = newDocument((() => {
             //  Title (data field).
 
@@ -135,7 +132,7 @@ Extracts = { ...Extracts,
             //  Extract title/link.
             let titleLinkClass = (originalLinkHTML > ""
                                   ? `title-link local-archive-link`
-                                  : (isWikipediaLink
+                                  : (referenceData.dataSource == "wikipedia"
                                      ? `title-link link-live`
                                      : `title-link`));
             //  Import certain link classes from target.
@@ -152,7 +149,7 @@ Extracts = { ...Extracts,
                 if (target.classList.contains(targetClass))
                     titleLinkClass += ` ${targetClass}`;
             });
-            let titleLinkIconMetadata = (isWikipediaLink
+            let titleLinkIconMetadata = (referenceData.dataSource == "wikipedia"
                                          ? `data-link-icon-type="svg" data-link-icon="wikipedia"`
                                          : ``);
             let titleLinkHTML = `<a
@@ -180,7 +177,7 @@ Extracts = { ...Extracts,
                 the encyclopedic topic & tone. Putting ‘Wikipedia’ on an entire
                 line by itself is just a waste of precious popup vertical space.
              */
-            if (isWikipediaLink)
+            if (referenceData.dataSource == "wikipedia")
                 return "";
 
             //  Similars, backlinks, tags, link-linkbib:
@@ -214,7 +211,7 @@ Extracts = { ...Extracts,
         })() + (() => {
             //  Abstract (data field). (Empty for now; content injected below.)
             return `<div class="data-field annotation-abstract"`
-                    + (isWikipediaLink
+                    + (referenceData.dataSource == "wikipedia"
                        ? ` data-source-class="wikipedia-entry" data-template="annotation-blockquote-outside"`
                        : ` data-template="annotation-blockquote-inside"`)
                     + `></div>`
@@ -245,6 +242,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.titleForPopFrame_ANNOTATION", "extracts-annotations.js", 2);
 
         let target = popFrame.spawningTarget;
+		let referenceData = Annotations.referenceDataForAnnotationIdentifier(Extracts.targetIdentifier(target))
 
         return ((() => {
             /*  For local-archive links, the archive link. For other link types,
@@ -278,9 +276,9 @@ Extracts = { ...Extracts,
                         page title and the section title, separated by the ‘§’
                         symbol (see below).
                      */
-                    && Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))
-                    && Extracts.popFrameHasLoaded(popFrame)) {
-                    let referenceData = Annotations.referenceDataForAnnotationIdentifier(Extracts.targetIdentifier(popFrame.spawningTarget));
+                    && Extracts.popFrameHasLoaded(popFrame)
+                    && referenceData.dataSource == "wikipedia") {
+                    let referenceData = Annotations.referenceDataForAnnotationIdentifier(Extracts.targetIdentifier(target));
                     return referenceData.articleTitle;
                 } else {
                     return "";
@@ -304,8 +302,8 @@ Extracts = { ...Extracts,
                               ].includes(target.hash.slice(1))))) {
                     return "&#x00a7; ";
                 } else if (   target.hash > ""
-                           && Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))
-                           && Extracts.popFrameHasLoaded(popFrame)) {
+                           && Extracts.popFrameHasLoaded(popFrame)
+                           && referenceData.dataSource == "wikipedia") {
                     /*  For links to sections of Wikipedia articles, show the
                         page title and the section title, (see above), separated
                         by the ‘§’ symbol.
@@ -320,7 +318,7 @@ Extracts = { ...Extracts,
 				//	The `.slice(1)` is to get rid of the initial `&NoBreak;`.
                 return (Extracts.popFrameHasLoaded(popFrame)
                         ? popFrame.document.querySelector(".data-field.title").textContent.slice(1).trimQuotes()
-                        : (Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))
+                        : (Annotations.dataSources.wikipedia.matches(Extracts.targetIdentifier(target))
                            ? target.href
                            : target.pathname + target.hash));
             })());
