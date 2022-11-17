@@ -9,7 +9,7 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (invertImage, invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase', titlecaseInline, identUniquefy, mergeSpaces, addImgDimensions, imageSrcset, addEagerLoadingImage) where
+module Typography (invertImage, invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase', titlecaseInline, identUniquefy, mergeSpaces, addImgDimensions, imageSrcset) where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Control.Monad (void, when)
@@ -361,12 +361,6 @@ addLazyLoadingImage :: Inline -> Inline
 addLazyLoadingImage i@(Image (c, t, pairs) inlines (target, title)) = let lazy = lookup "loading" pairs in
                                                                       if isNothing lazy then (Image (c, t, ("loading","lazy"):pairs) inlines (target, title)) else i
 addLazyLoadingImage x = x
-
--- add loading="eager" attribute; intended for use in annotations which are lazily transcluded or popin/up, so the laziness is unnecessary: they will be almost always be demanded immediately. In fact, lazy images inside lazy transclusions (or popups) blocks possible optimizations like doing rendering off-screen before the popup timeout has expired, in order to swap in a fully-rendered popup instead of only *then* loading & rendering it.
-addEagerLoadingImage :: Inline -> Inline
-addEagerLoadingImage (Image (c, t, pairs) inlines (target, title)) = let pairs' = [("loading","eager")] ++ filter (\(lg,_) -> lg/="loading") pairs
-                                                                             in Image (c, t, pairs') inlines (target, title)
-addEagerLoadingImage x = x
 
 -------------------------------------------
 
