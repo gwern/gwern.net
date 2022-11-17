@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-16 19:02:57 gwern"
+When:  Time-stamp: "2022-11-17 17:23:27 gwern"
 License: CC-0
 -}
 
@@ -56,7 +56,8 @@ import System.IO.Unsafe (unsafePerformIO)
 
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
-import Typography (typographyTransform, titlecase', invertImage, imageSrcset, addImgDimensions)
+import Typography (typographyTransform, titlecase')
+import Image (invertImage, imageSrcset, addImgDimensions)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAutoHtml5String)
 import LinkBacklink (getSimilarLink, getSimilarLinkCount, getBackLink, getBackLinkCount, getLinkBibLink)
