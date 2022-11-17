@@ -179,7 +179,7 @@ invertImageInline x@(Image (htmlid, classes, kvs) xs (p,t)) =
     return x else do
                    (color,_,_) <- invertFile p
                    if not color then return x else
-                     return (Image (htmlid, "invert-auto":classes, kvs++[("loading","lazy")]) xs (p,t))
+                     return (addLazyLoadingImage $ Image (htmlid, "invert-auto":classes, kvs) xs (p,t))
 invertImageInline x@(Link (htmlid, classes, kvs) xs (p, t)) =
   if notInvertP classes || not (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p)  then
                                                           return x else
@@ -308,7 +308,7 @@ imageSrcset x = return x
 -- FASTER HTML RENDERING BY STATICLY SPECIFYING ALL IMAGE DIMENSIONS
 -- read HTML string with TagSoup, process `<img>` tags to read the file's dimensions, and hardwire them;
 -- this optimizes HTML rendering since browsers know before downloading the image how to layout the page.
--- Further, specify 'async' decoding & 'lazy-loading' for all images: the lazy attribute was introduced by Chrome 76 ~August 2019, and adopted by Firefox 75 ~February 2020 (<https://bugzilla.mozilla.org/show_bug.cgi?id=1542784>), standardized as <https://html.spec.whatwg.org/multipage/urls-and-fetching.html#lazy-loading-attributes> with >63% global availability + backwards compatibility (<https://caniuse.com/#feat=loading-lazy-attr> <https://github.com/whatwg/html/pull/3752> <https://web.dev/native-lazy-loading/>).
+
 -- Async decoding: when an image *does* load, can it be decoded to pixels in parallel with the text? For us, yes. Docs: <https://html.spec.whatwg.org/multipage/images.html#decoding-images> <https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/decoding>.
 -- Pandoc feature request to push the lazy loading upstream: <https://github.com/jgm/pandoc/issues/6197>
 addImgDimensions :: String -> IO String
@@ -325,6 +325,7 @@ staticImg x@(TagOpen "img" xs) = do
   let h = lookup "height" xs
   let w = lookup "width" xs
   let lazy = lookup "loading" xs
+  let loading = if isNothing lazy then [("loading","lazy")] else [] -- don't override a loading="eager"
   let Just p = lookup "src" xs
   if (isNothing h || isNothing w || isNothing lazy) &&
      not ("//" `isPrefixOf` p || "http" `isPrefixOf` p) &&
@@ -347,12 +348,19 @@ staticImg x@(TagOpen "img" xs) = do
                 Nothing       -> printRed ("staticImg: Image width can't be read: " ++ show x) >> return x
                 Just width'' -> case height' of
                                  Nothing       -> printRed ("staticImg: Image height can't be read: " ++ show x) >> return x
-                                 Just height'' -> return (TagOpen "img" (uniq ([("loading", "lazy"), -- lazy load & async render all images
-                                                                                ("decoding", "async"),
+                                 Just height'' -> return (TagOpen "img" (uniq (loading ++  -- lazy load & async render all images
+                                                                                [("decoding", "async"),
                                                                                 ("height", show height''), ("width", show (width'' `min` 1400))]++xs)))
       else return x
   where uniq = nubBy (\a b -> fst a == fst b) . sort
 staticImg x = return x
+
+-- Further, specify 'async' decoding & 'lazy-loading' for all images: the lazy attribute was introduced by Chrome 76 ~August 2019, and adopted by Firefox 75 ~February 2020 (<https://bugzilla.mozilla.org/show_bug.cgi?id=1542784>), standardized as <https://html.spec.whatwg.org/multipage/urls-and-fetching.html#lazy-loading-attributes> with >63% global availability + backwards compatibility (<https://caniuse.com/#feat=loading-lazy-attr> <https://github.com/whatwg/html/pull/3752> <https://web.dev/native-lazy-loading/>).
+-- Negation: `loading="eager"`
+addLazyLoadingImage :: Inline -> Inline
+addLazyLoadingImage i@(Image (c, t, pairs) inlines (target, title)) = let lazy = lookup "loading" pairs in
+                                                                      if isNothing lazy then (Image (c, t, ("loading","lazy"):pairs) inlines (target, title)) else i
+addLazyLoadingImage x = x
 
 -------------------------------------------
 
