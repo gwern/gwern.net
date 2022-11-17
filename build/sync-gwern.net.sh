@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-11-16 22:16:00 gwern"
+# When:  Time-stamp: "2022-11-17 15:44:13 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -185,7 +185,6 @@ else
         sed -i -e 's/class=\"\(.*\)archive-local \?/class="\1/g' \
                -e 's/class=\"\(.*\)archive-not \?/class="\1/g' \
                -e 's/class=\"\(.*\)backlink-not \?/class="\1/g' \
-               -e 's/class=\"\(.*\)icon-not \?/class="\1/g' \
                -e 's/class=\"\(.*\)id-not \?/class="\1/g' \
                -e 's/class=\"\(.*\)link-annotated-not \?/class="\1/g' \
                -e 's/class=\"\(.*\)link-auto \?/class="\1/g' \

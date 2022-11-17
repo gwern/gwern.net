@@ -76,7 +76,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  -- .link-icon-type="svg"}` by specifying the attributes directly), or define a global URL/(link
  -- icon, link icon type) rewrite:
  | "icon-not" `elem` cl = x
- -- NOTE: 'gwern': the Fraktur '𝔊' for local essay links (where 'local' is defined as '/' but with no '.' in it) is set dynamically clientside by rewrite.js:l1075 (`designateSpecialLinkIcons`) and so we do not handle it here
+ -- NOTE: 'gwern': the Fraktur '𝔊' for local essay links (where 'local' is defined as '/' but with no '.' in it) is set dynamically clients-ide by rewrite.js:l1075 (`designateSpecialLinkIcons`) and so we do not handle it here. (It is also overridden by 'icon-not'; WARNING: 'icon-not' is used at runtime and should not be erased!)
  | hasIcon x           = x
  | hasKeyAL u overrideLinkIcons = let (i,it) = fromJust $ lookup u overrideLinkIcons in addIcon x i it
  | anyPrefixT u ["/metadata/annotations/"] = x
