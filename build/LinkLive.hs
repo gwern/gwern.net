@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-11-15 17:11:30 gwern"
+When:  Time-stamp: "2022-11-17 18:33:03 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -34,14 +34,14 @@ For an independent JS NPM library implementation, see <https://github.com/Stvad/
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkLive (linkLive, linkLiveTest, linkLiveTestHeaders, urlLive, linkLivePrioritize) where
+module LinkLive (linkLive, linkLiveString, linkLiveTest, linkLiveTestHeaders, urlLive, linkLivePrioritize) where
 
 import Control.Monad (forM_, when, unless)
 import Data.Char (toLower)
 import Data.List (isInfixOf, sort)
 import Data.Maybe (isNothing)
 import qualified Data.Map.Strict as M (fromListWith, toList, map, keys)
-import qualified Data.Text as T (append, isInfixOf, isPrefixOf, unpack, Text)
+import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, Text)
 import Data.Text.IO as TIO (appendFile)
 import Text.Pandoc (Inline(Link), nullAttr)
 import Data.FileStore.Utils (runShellCommand)
@@ -63,6 +63,9 @@ linkLive x@(Link (_,cl,_) _ (u, _))
  where aL :: Inline -> Inline
        aL = addClass "link-live"
 linkLive x = x
+
+linkLiveString :: String -> Inline
+linkLiveString u = linkLive (Link nullAttr [] (T.pack u,""))
 
 -- hardwire URLs which should be live
 overrideLinkLive :: [T.Text]

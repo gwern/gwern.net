@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Tags where
 
 import Control.Monad (filterM)
@@ -127,7 +128,7 @@ listTagDirectories direntries' = do
                        return $ sort $ map ("/"++) directoriesVerified
 
 -- try to infer a long tag from a short tag, first by exact match, then by suffix, then by prefix, then by infix, then give up.
--- so eg 'sr1' → 'SR1' → 'darknet-markets/silk-road/1', 'road/1' → 'darknet-markets/silk-road/1', 'darknet-markets/silk' → 'darknet-markets/silk-road', 'silk-road' → 'darknet-markets/silk-road'
+-- so eg. 'sr1' → 'SR1' → 'darknet-markets/silk-road/1', 'road/1' → 'darknet-markets/silk-road/1', 'darknet-markets/silk' → 'darknet-markets/silk-road', 'silk-road' → 'darknet-markets/silk-road'
 guessTagFromShort :: [String] -> String -> String
 guessTagFromShort _ "" = ""
 guessTagFromShort m t = let allTags = nubOrd $ sort m in
@@ -135,7 +136,7 @@ guessTagFromShort m t = let allTags = nubOrd $ sort m in
    case lookup t tagsShort2Long of
      Just tl -> tl -- is an existing short/petname
      Nothing -> let shortFallbacks =
-                      (map (\a->(a,"")) $ filter (\tag -> ("/"++t) `isSuffixOf` tag || (t++"/") `isInfixOf` tag) allTags) ++ -- look for matches by path segment eg 'transformer' → 'ai/nn/transformer' (but not 'ai/nn/transformer/alphafold' or 'ai/nn/transformer/gpt')
+                      (map (\a->(a,"")) $ filter (\tag -> ("/"++t) `isSuffixOf` tag || (t++"/") `isInfixOf` tag) allTags) ++ -- look for matches by path segment eg. 'transformer' → 'ai/nn/transformer' (but not 'ai/nn/transformer/alphafold' or 'ai/nn/transformer/gpt')
                       filter (\(short,_) -> t `isSuffixOf` short) tagsShort2Long ++
                       filter (\(short,_) -> t `isPrefixOf` short) tagsShort2Long ++
                       filter (\(short,_) -> t `isInfixOf` short) tagsShort2Long

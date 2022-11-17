@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-17 17:51:37 gwern"
+When:  Time-stamp: "2022-11-17 18:15:00 gwern"
 License: CC-0
 -}
 
@@ -60,6 +60,7 @@ import Image (invertImage, imageSrcset, addImgDimensions)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAutoHtml5String)
 import LinkBacklink (getSimilarLink, getSimilarLinkCount, getBackLink, getBackLinkCount, getLinkBibLink)
+import LinkLive (linkLive)
 import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList)
 import Query (truncateTOCHTML, extractLinksInlines)
 import Tags (abbreviateTag, uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan, tagPairsCount, tagCount, tagMax, tagPairMax, listTagDirectories)
@@ -494,7 +495,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
                                     linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["linkbibliography"], []) [Link ("",["aux-links", "link-page", "linkbibliography", "icon-not", "link-annotated-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of links it cites).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
-                                    link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
+                                    link = linkLive $ Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
                                     -- make sure every abstract is wrapped in paragraph tags for proper rendering:
                                     abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure"] then abst else "<p>" ++ abst ++ "</p>"
                                 in
@@ -542,7 +543,7 @@ generateAnnotationTransclusionBlock (f, (tle,aut,dt,doi,ts,_)) blp slp lb =
                                     similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars", "icon-not"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
                                     linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["linkbibliography"], []) [Link ("",["aux-links", "link-page", "icon-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of links it cites).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
-                                    link = Link (lid, ["link-annotated", "include-annotation", "include-replace-container", "include-spinner-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
+                                    link = linkLive $ Link (lid, ["link-annotated", "include-annotation", "include-replace-container", "include-spinner-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
                                 in
                                   [Para
                                        ([link,Str ","] ++

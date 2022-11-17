@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 -- Optimize or stylize images
 module Image where
 
