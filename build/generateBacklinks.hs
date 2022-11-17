@@ -80,7 +80,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                           callers
                                        -- sort backlinks in descending order (most-recent first) as a simple way to prioritize:
                                        let callerTitles = map (\(_,b,c) -> (b,c)) $ reverse $ sort callerDatesTitles
-                                       let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-page"] else ["link-annotated"]) $ map fst callerTitles
+                                       let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-page"] else ["link-annotated"]) $ map snd callerTitles
                                        let callers' = zipWith (\a (b,c) -> (c,a,b)) callerClasses callerTitles
 
                                        let preface = [Para [Strong [Str (if length callers' > 1 then "Backlinks" else "Backlink")], Str ":"]]
