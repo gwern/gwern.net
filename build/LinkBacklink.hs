@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-11-15 11:31:26 gwern"
+When:  Time-stamp: "2022-11-16 20:47:06 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -47,17 +47,18 @@ writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[T.Text])]
 -- return the raw FilePath of an x-link, and also the URL-encoded version safe to substitute into HTML:
 getXLink :: String -> FilePath -> IO (FilePath,FilePath)
 getXLink linkType p = do
-                   let linkRaw = linkType++"/" ++
+                   let linkType' = "/metadata/annotations/" ++ linkType
+                   let linkRaw = linkType'++"/" ++
                                                                    urlEncode (p++".html")
                    linkExists <- doesFileExist $ tail linkRaw
                    -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg. `/metadata/annotations/$LINKTYPE/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotations/$LINKTYPE/%2Fdocs%2Frl%2Findex.html`)
                    if not linkExists then return ("","") else
-                     let link' = linkType++"/" ++ urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' || t=='+' then urlEncode [t] else [t]) (p++".html")) in
+                     let link' = linkType'++"/" ++ urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' || t=='+' then urlEncode [t] else [t]) (p++".html")) in
                        return (tail linkRaw,link')
 getBackLink, getSimilarLink, getLinkBibLink :: FilePath -> IO (FilePath,FilePath)
-getBackLink    = getXLink "/metadata/annotations/backlinks"
-getSimilarLink = getXLink "/metadata/annotations/similars"
-getLinkBibLink = getXLink "/docs/link-bibliography/metadata/annotations"
+getBackLink    = getXLink "backlinks"
+getSimilarLink = getXLink "similars"
+getLinkBibLink = getXLink "link-bibliography"
 
 -- avoid use of backlinks/similar-links database for convenience and just quickly grep the on-disk snippet:
 getBackLinkCount :: FilePath -> IO Int

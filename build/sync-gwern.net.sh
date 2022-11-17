@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-11-16 12:04:44 gwern"
+# When:  Time-stamp: "2022-11-16 20:48:24 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -192,7 +192,7 @@ else
                -e 's/class=\"\(.*\)link-live-not \?/class="\1/g' \
     "$@"; }; export -f cleanClasses
     find ./ -path ./_site -prune -type f -o -name "*.page" | grep -F -v -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 cleanClasses || true
-    find ./_site/metadata/ ./_site/docs/link-bibliography/metadata/ -type f -name "*.html" | sort | parallel --max-args=100 cleanClasses || true
+    find ./_site/metadata/ -type f -name "*.html" | sort | parallel --max-args=100 cleanClasses || true
 
     ## Pandoc/Skylighting by default adds empty self-links to line-numbered code blocks to make them clickable (as opposed to just setting a span ID, which it also does). These links *would* be hidden except that self links get marked up with up/down arrows, so arrows decorate the codeblocks. We have no use for them and Pandoc/skylighting has no option or way to disable them, so we strip them.
     bold "Stripping self-links from syntax-highlighted HTML…"

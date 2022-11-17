@@ -143,4 +143,4 @@ writeAnnotationLinkBibliographyFragment md path =
              case html of
                Left e   -> printRed (show e)
                -- compare with the old version, and update if there are any differences:
-               Right p' -> writeUpdatedFile "linkbibliography-fragment" ("docs/link-bibliography/" ++ urlToAnnotationPath path) p'
+               Right p' -> writeUpdatedFile "linkbibliography-fragment" ("metadata/annotations/link-bibliography/" ++ urlToAnnotationPath path) p'
