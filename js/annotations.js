@@ -386,7 +386,8 @@ Annotations.dataSources.wikipedia = {
 			titleHTML:      titleHTML,
 			articleTitle:	response["lead"]["displaytitle"],
 			authorHTML:     `<span class="data-field author">Wikipedia</span>`,
-			abstract: 		referenceEntry
+			abstract: 		referenceEntry,
+			dataSource:		"wikipedia"
 		};
 	},
 
@@ -618,14 +619,6 @@ Annotations.dataSources.wikipedia = {
 			image.classList.add("figure-not");
 		});
 	}
-};
-
-/*  Returns true iff the given identifier string is a Wikipedia URL.
-	*/
-//	Called by: Extracts.annotationForTarget (extracts-annotations.js)
-//	Called by: Extracts.titleForPopFrame_ANNOTATION (extracts-annotations.js)
-Annotations.isWikipediaArticleLink = (identifier) => {
-	return Annotations.dataSources.wikipedia.matches(identifier);
 };
 
 GW.notificationCenter.fireEvent("Annotations.didLoad");
