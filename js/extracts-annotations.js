@@ -276,9 +276,9 @@ Extracts = { ...Extracts,
                         page title and the section title, separated by the ‘§’
                         symbol (see below).
                      */
-                    && referenceData.dataSource == "wikipedia"
-                    && Extracts.popFrameHasLoaded(popFrame)) {
-                    let referenceData = Annotations.referenceDataForAnnotationIdentifier(Extracts.targetIdentifier(popFrame.spawningTarget));
+                    && Extracts.popFrameHasLoaded(popFrame)
+                    && referenceData.dataSource == "wikipedia") {
+                    let referenceData = Annotations.referenceDataForAnnotationIdentifier(Extracts.targetIdentifier(target));
                     return referenceData.articleTitle;
                 } else {
                     return "";
@@ -302,8 +302,8 @@ Extracts = { ...Extracts,
                               ].includes(target.hash.slice(1))))) {
                     return "&#x00a7; ";
                 } else if (   target.hash > ""
-                           && referenceData.dataSource == "wikipedia"
-                           && Extracts.popFrameHasLoaded(popFrame)) {
+                           && Extracts.popFrameHasLoaded(popFrame)
+                           && referenceData.dataSource == "wikipedia") {
                     /*  For links to sections of Wikipedia articles, show the
                         page title and the section title, (see above), separated
                         by the ‘§’ symbol.
@@ -318,7 +318,7 @@ Extracts = { ...Extracts,
 				//	The `.slice(1)` is to get rid of the initial `&NoBreak;`.
                 return (Extracts.popFrameHasLoaded(popFrame)
                         ? popFrame.document.querySelector(".data-field.title").textContent.slice(1).trimQuotes()
-                        : (referenceData.dataSource == "wikipedia"
+                        : (Annotations.dataSources.wikipedia.matches(Extracts.targetIdentifier(target))
                            ? target.href
                            : target.pathname + target.hash));
             })());
