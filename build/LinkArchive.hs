@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-11-09 16:30:01 gwern"
+When:  Time-stamp: "2022-11-15 10:16:31 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1270,5 +1270,6 @@ whiteList url
       , "https://www.painreprocessingtherapy.com/" -- homepage / low quality (video embeds)
       , "https://namuol.github.io/banal-duck/" -- interactive
       , "https://psych.hanover.edu/JavaTest/CLE/Cognition/Cognition/MentalRotation.html" -- interactive (Java applet!)
+      , "https://sites.google.com/view/multi-agent-competition" -- low quality (video embeds)
       ] = True
     | otherwise = False

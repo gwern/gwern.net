@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-15 18:20:22 gwern"
+When:  Time-stamp: "2022-11-16 19:02:57 gwern"
 License: CC-0
 -}
 
@@ -515,7 +515,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
                                                                             else "<div class=\"collapse\">" `T.append`
                                                                                  ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append\"" `T.append` " id=\"" `T.append` lidBacklinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"backlinks-transclusion include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">Backlinks for this annotation</a>.]</p>\n</div>")) `T.append`
                                                                                   (if slp=="" then "" else ("<div class=\"similars-append aux-links-append\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">Similar links for this annotation</a>.]</p>\n</div>")) `T.append`
-                                                                                   (if lb=="" then "" else ("<div class=\"linkbibliography-append aux-links-append\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack lb `T.append` "\">Link bibliography for this annotation</a>.]</p>\n</div>"))) `T.append`
+                                                                                   (if lb=="" then "" else ("<div class=\"linkbibliography-append aux-links-append\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p><strong>Link Bibliography</strong>:</p> <p>[<a class=\"include include-replace-container include-spinner-not\" href=\"" `T.append` T.pack lb `T.append` "\">Link bibliography for this annotation</a>.]</p>\n</div>"))) `T.append`
                                                                             "</div>"
                                                                                        )]
                                                 ])
@@ -609,7 +609,7 @@ tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = sort ts in
                        Span ("", ["link-tags"], []) $
-                       intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-page", "link-annotated"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
+                       intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-page", "link-annotated", "icon-not"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
 -- Ditto; but since a Div is a Block element, we copy-paste a separate function:
 tagsToLinksDiv :: [T.Text] -> Block
@@ -1988,8 +1988,9 @@ wikipediaURLToTitle u = trimTitle $ cleanAbstractsHTML $ replace "#" " § " $ ur
 -- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+double-space, and general whitespace cleaning
 trimTitle :: String -> String
 trimTitle [] = ""
-trimTitle t = let t' = reverse $ sedMany [("([a-z])_ ", "\\1: ")] $ -- a lot of Elsevier papers replace colons with underscores (‽) in PDF metadata eg. "Compensatory conspicuous communication_ Low status increases jargon use"
-                       replaceMany [(" : ", ": "), ("\n ", "")] $ trim t in
+trimTitle t = let t' = reverse $ sedMany [("†.*", ""), -- eg "Relation of Serum 25-Hydroxyvitamin D to Heart Rate and Cardiac Work (from the National Health and Nutrition Examination Surveys)†\n†Conflict of interest: Dr. Simpson receives support from Abbott Laboratories, Chicago, Illinois"
+                                          ("([a-z])_ ", "\\1: ")] $ -- a lot of Elsevier papers replace colons with underscores (‽) in PDF metadata eg. "Compensatory conspicuous communication_ Low status increases jargon use"
+                       replaceMany [(" : ", ": "), ("\n ", " ")] $ trim t in
                 if not (null t') then reverse (if head t' == '.' then tail t' else t') else ""
 
 -- run all necessary rewrites on a string to clean up malformation, inconsistent formatting, errors, convert to house style, etc
@@ -2653,7 +2654,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" e) ", " (5) ")
          , (" f) ", " (6) ")
          , (" h) ", " (7) ")
-         , (" i) ", " (8) ")
+         -- i excluded due to ambiguity with Roman numeral i/ii/iii etc numbering
          , (" j) ", " (9) ")
          , (" k) ", " (10) ")
          , (" =  ", " = ")

@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-11-14 10:15:09 gwern"
+When:  Time-stamp: "2022-11-15 17:11:30 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -1789,7 +1789,6 @@ badDomainsSimple = [ "2chan.us"
    , "www.global.toshiba"
    , "www.globaltimes.cn"
    , "www.gloucestershirelive.co.uk"
-   , "www.gmp.police.uk"
    , "www.gnu.org"
    , "www.goodtherapy.org"
    , "www.google.com"
@@ -4353,7 +4352,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://www.global.toshiba/ww/news/corporate/2010/07/pr1401.html", False)
             , ("https://www.globaltimes.cn/content/1161960.shtml", False)
             , ("https://www.gloucestershirelive.co.uk/Cheltenham-student-jailed-importing-cocaine-Costa/story-28599085-detail/story.html", False)
-            , ("https://www.gmp.police.uk/content/SocialTwitterFeed/A391702C29DD7E8D80257E210039C813", False)
             , ("https://www.gnu.org/software/emacs/manual/html_node/emacs/Keyboard-Macro-Counter.html", False)
             , ("https://www.goodreads.com/interviews/show/21.Malcolm_Gladwell", False)
             , ("https://www.goodtherapy.org/blog/natural-lighting-increases-productivity-0104112/", False)
