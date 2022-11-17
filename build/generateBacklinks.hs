@@ -11,7 +11,7 @@ import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack,
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isSuffixOf, sort)
 import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter)
-import System.Directory (createDirectoryIfMissing, doesFileExist)
+import System.Directory (createDirectoryIfMissing, doesFileExist, listDirectory)
 import Network.HTTP (urlEncode)
 import Data.Containers.ListUtils (nubOrd)
 import Control.Monad (forM_, unless)
@@ -27,10 +27,15 @@ import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix
 
 main :: IO ()
 main = do
+  createDirectoryIfMissing False "metadata/annotations/backlinks/"
+  priorBacklinksN <- fmap length $ listDirectory "metadata/annotations/backlinks/"
+  -- for uninteresting reasons probably due to a bad architecture, when the existing set of backlinks is deleted for a clean start, apparently you have to run generateBacklinks.hs twice...? So if we appear to be at a clean start, we run twice:
+  if priorBacklinksN > 0 then main' else main' >> main'
+
+main' :: IO ()
+main' = do
   bldb <- readBacklinksDB
   md <- readLinkMetadata
-  createDirectoryIfMissing False "metadata/annotations/backlinks/"
-
   -- check that all backlink targets/callers are valid:
   let dotPageFy f = if '.' `elem` f then f else f++".page" -- all files have at least 1 period in them (for file extensions); a file missing periods must be a `.page` Markdown file, with the exception of tag pages which are auto-generated
   let filesCheck = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $
