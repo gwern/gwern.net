@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-17 18:15:00 gwern"
+When:  Time-stamp: "2022-11-18 11:47:07 gwern"
 License: CC-0
 -}
 
@@ -518,7 +518,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
                                                                             else "<div class=\"collapse\">" `T.append`
                                                                                  ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append\"" `T.append` " id=\"" `T.append` lidBacklinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"backlinks-transclusion include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">Backlinks for this annotation</a>.]</p>\n</div>")) `T.append`
                                                                                   (if slp=="" then "" else ("<div class=\"similars-append aux-links-append\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">Similar links for this annotation</a>.]</p>\n</div>")) `T.append`
-                                                                                   (if lb=="" then "" else ("<div class=\"linkbibliography-append aux-links-append\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p><strong>Link Bibliography</strong>:</p> <p>[<a class=\"include include-replace-container include-spinner-not\" href=\"" `T.append` T.pack lb `T.append` "\">Link bibliography for this annotation</a>.]</p>\n</div>"))) `T.append`
+                                                                                   (if lb=="" then "" else ("<div class=\"linkbibliography-append aux-links-append\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include include-replace-container include-spinner-not\" href=\"" `T.append` T.pack lb `T.append` "\">Link bibliography for this annotation</a>.]</p>\n</div>"))) `T.append`
                                                                             "</div>"
                                                                                        )]
                                                 ])
@@ -2907,7 +2907,10 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("behavioral significance", "behavioral importance")
          , ("parametris", "parameteriz")
          , ("normalis", "normaliz")
-         , ("generalis", "generaliz")
+         , ("generalizt", "generalist")
+         , ("generalise", "generalize")
+         , ("generalisi", "generalizi")
+         , ("generalisa", "generaliza")
          , (" disincentivis", " disincentiviz")
          , (" incentivis", " incentiviz")
          , ("benefitt", "benefit")
