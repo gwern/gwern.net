@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-19 16:42:15 gwern"
+When:  Time-stamp: "2022-11-19 23:34:53 gwern"
 License: CC-0
 -}
 
@@ -372,7 +372,7 @@ createAnnotations md (Pandoc _ markdown) = mapM_ (annotateLink md) $ extractLink
 
 annotateLink :: Metadata -> Inline -> IO Bool
 annotateLink md x@(Link (_,_,_) _ (targetT,_))
-  | anyPrefixT targetT ["/metadata/", "/docs/link-bibliography/", "#", "$", "!", "\8383"] = return False
+  | anyPrefixT targetT ["/metadata/", "#", "$", "!", "\8383"] = return False
   | otherwise =
   do let target = T.unpack targetT
      when (null target) $ error (show x)
@@ -564,7 +564,7 @@ generateAnnotationTransclusionBlock (f, (tle,aut,dt,doi,ts,_)) blp slp lb =
 rewriteAnchors :: FilePath -> T.Text -> T.Text
 rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
--- WARNING: update the list in /static/js/extracts-annotation.js L298 if you change this list!
+-- WARNING: update the list in /static/js/annotations.js L354 if you change this list!
 affiliationAnchors :: [String]
 affiliationAnchors = ["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance", "cerebras", "cohere", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "graphcore", "huawei", "huggingface", "ibm", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pinterest", "pdf", "salesforce", "samsung", "sberbank", "schmidhuber", "sensetime", "snapchat", "sony", "spotify", "tencent", "tensorfork", "twitter", "uber", "yandex"]
 
@@ -1441,7 +1441,7 @@ gwern "docs/index"  = gwerntoplevelDocAbstract
 gwern p | p == "/" || p == "" = return (Left Permanent)
         | ".pdf" `isInfixOf` p = pdf p
         | anyInfix p [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
-        | anyPrefix p ["docs/link-bibliography/"] ||
+        | anyPrefix p ["metadata", "/metadata"] ||
           anySuffix p ["#external-links", "#see-also", "#see-also", "#see-alsos", "#see-also-1", "#see-also-2", "#footnotes", "#links", "#misc", "#miscellaneous", "#appendix", "#appendices", "#conclusion", "#conclusion-1", "#conclusion-2", "#media", "#writings", "#filmtv", "#music", "#books"] ||
           anyInfix p ["index.html", "/index#"] ||
           ("/index#" `isInfixOf` p && "-section" `isSuffixOf` p)  = return (Left Permanent)

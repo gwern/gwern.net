@@ -41,7 +41,7 @@ main' = do
   -- check that all backlink targets/callers are valid:
   let dotPageFy f = if '.' `elem` f then f else f++".page" -- all files have at least 1 period in them (for file extensions); a file missing periods must be a `.page` Markdown file, with the exception of tag pages which are auto-generated
   let filesCheck = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $
-        filter (\f -> not (anyInfix f ["/index","/docs/link-bibliography/"])) $
+        filter (\f -> not (anyInfix f ["/index","/link-bibliography/"])) $
         filter ("/"`isPrefixOf`) $ map T.unpack $
         M.keys bldb ++ concat (M.elems bldb)
   forM_ filesCheck (\f -> do exist <- doesFileExist f
@@ -49,8 +49,8 @@ main' = do
 
   -- if all are valid, write out:
   _ <- M.traverseWithKey (writeOutCallers md) bldb
-
-  fs <- fmap (filter (\f -> not $ (anyPrefix f ["/backlinks/","/docs/link-bibliography/","#",".#"])) .  map (sed "^\\.\\/" "")) $
+␇
+  fs <- fmap (filter (\f -> not $ (anyPrefix f ["/backlinks/","#",".#"])) .  map (sed "^\\.\\/" "")) $
          fmap lines getContents
 
   let markdown = filter (".page" `isSuffixOf`) fs

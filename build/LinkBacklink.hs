@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-11-16 21:45:37 gwern"
+When:  Time-stamp: "2022-11-19 21:47:06 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -18,7 +18,7 @@ is also a convenient way to get a list of all URLs. -}
 {-# LANGUAGE OverloadedStrings #-}
 module LinkBacklink (getBackLink, getBackLinkCount, getSimilarLink, getSimilarLinkCount, Backlinks, readBacklinksDB, writeBacklinksDB, getForwardLinks, getLinkBibLink) where
 
-import Data.List (sort, isPrefixOf, isSuffixOf)
+import Data.List (sort)
 import qualified Data.Map.Strict as M (empty, filter, fromList, keys, toList, Map) -- fromListWith,
 import qualified Data.Text as T (count, pack, unpack, Text)
 import Data.Text.IO as TIO (readFile)
@@ -58,10 +58,7 @@ getXLink linkType p = do
 getBackLink, getSimilarLink, getLinkBibLink :: FilePath -> IO (FilePath,FilePath)
 getBackLink    = getXLink "backlinks"
 getSimilarLink = getXLink "similars"
--- for top-level pages/essays, we compile a full Markdown standalone link-bibliography page inside /docs/link-bibliography/; annotations just get a little fragment stuffed into /metadata/annotations/. (Unclear how necessary this distinction is. Maybe they should all be the latter?)
-getLinkBibLink p = if (head p == '/' && '.' `notElem` p) && not ("/docs/" `isPrefixOf` p && "/index" `isSuffixOf` p) then
-                     let p' = "/docs/link-bibliography" ++ (takeWhile (/='#') p) in return (p'++".page",p')
-                   else getXLink "link-bibliography" p
+getLinkBibLink = getXLink "link-bibliography"
 
 -- avoid use of backlinks/similar-links database for convenience and just quickly grep the on-disk snippet:
 getBackLinkCount :: FilePath -> IO Int

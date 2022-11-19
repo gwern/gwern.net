@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-11-19 21:22:02 gwern"
+# When:  Time-stamp: "2022-11-19 22:20:10 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -120,13 +120,12 @@ else
     DIRECTORY_TAGS="$(find docs/ fiction/ haskell/ newsletter/ nootropics/ notes/ reviews/ zeo/ -type d \
                       | sort | grep -F -v -e 'docs/www' -e 'docs/rotten.com' -e 'docs/genetics/selection/www.mountimprobable.com' \
                                         -e 'docs/biology/2000-iapac-norvir' -e 'docs/gwern.net-gitstats' -e 'docs/rl/armstrong-controlproblem' \
-                                        -e 'docs/statistics/order/beanmachine-multistage' -e 'docs/personal/2011-gwern-yourmorals.org/' \
-                -e 'docs/link-bibliography')"
-    PAGES_BIBLIOGRAPHIES="$(find . -type f -name "*.page" | sort | grep -F -v -e 'index.page' -e '404.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///' | shuf; find . -type f -name "index.page"|grep -F -v -e 'docs/') index.page"
+                                        -e 'docs/statistics/order/beanmachine-multistage' -e 'docs/personal/2011-gwern-yourmorals.org/')"
+    PAGES_BIBLIOGRAPHIES="$(find . -type f -name "*.page" | sort | grep -F -v -e 'index.page' -e '404.page' | sed -e 's/\.\///' | shuf; find . -type f -name "index.page"|grep -F -v -e 'docs/') index.page"
 
     # wait for generateLinkBibliography to finish to ensure the annotation link-bibs are all created:
     bold "Updating link bibliographies…"
-    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $PAGES_BIBLIOGRAPHIES
+    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS
 
     # we want to generate all directories first before running Hakyll in case a new tag was created
     bold "Building directory indexes…"
@@ -158,7 +157,7 @@ else
     ## possible alternative implementation in hakyll: https://www.rohanjain.in/hakyll-sitemap/
     (echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
      ## very static files which rarely change: PDFs, images, site infrastructure:
-     find -L _site/docs/ _site/images/ _site/static/ -not -name "*.page" -type f | grep -F --invert-match -e 'docs/www/' -e 'docs/link-bibliography' -e 'metadata/' -e '.git' -e '404' -e '/static/templates/default.html' -e '/docs/personal/index' | \
+     find -L _site/docs/ _site/images/ _site/static/ -not -name "*.page" -type f | grep -F --invert-match -e 'docs/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/templates/default.html' -e '/docs/personal/index' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/www\.gwern\.net\/\1<\/loc><changefreq>never<\/changefreq><\/url>/'
      ## Everything else changes once in a while:
@@ -302,7 +301,7 @@ else
                                 -e '/The-Existential-Risk-of-Mathematical-Error' -e '/Replication' \
                                 -e '%2Fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index' -e '/Coin-flip' \
                                 -e '/nootropics/Magnesium' -e '/Selection' -e 'docs/statistics/bayes/1994-falk' -e '/Zeo' \
-                                -e '/Mail-delivery' -e 'docs/link-bibliography/Complexity-vs-AI' -e 'docs/link-bibliography/newsletter/2021/04' \
+                                -e '/Mail-delivery' \
                                 -e '/docs/math/humor/index' -e '/docs/ai/index' -e '/docs/statistics/bias/index' -e '/Variables' -e '1400861560180858880' \
                                 -e 'w28340%2Fw28340.pdf' -e 'docs/statistics/order/index' -e 'docs/statistics/decision/index' -e 'docs/cs/algorithm/index' -e 'docs/economics/index';
        }

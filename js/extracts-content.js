@@ -12,7 +12,7 @@
                 also occur in embedded pages - is currently in sidenotes mode
                 or not).
             baseLocation:
-            	Same as loadLocation.
+                Same as loadLocation.
             flags:
                 0 (no flags set)
         }
@@ -33,7 +33,7 @@
                 multiple instances of the citation on the page, this will be the
                 URL of the first one, and that is what the popup will contain.)
             baseLocation:
-            	Same as loadLocation.
+                Same as loadLocation.
             flags:
                 0 (no flags set)
         }
@@ -52,7 +52,7 @@
             loadLocation:
                 URL of the aux-links source file.
             baseLocation:
-            	Same as loadLocation.
+                Same as loadLocation.
             flags:
                 GW.contentDidLoadEventFlags.needsRewrite
         }
@@ -64,24 +64,24 @@
          GW.contentDidLoad event.)
 */
 
-Extracts = { ...Extracts, 
-	//	Called by: Extracts.videoForTarget
-	//	Called by: Extracts.localDocumentForTarget
-	//	Called by: Extracts.foreignSiteForTarget
-	objectHTMLForURL: (url, additionalAttributes = null) => {
-		if (url.href.match(/\.pdf(#|$)/) != null) {
+Extracts = { ...Extracts,
+    //  Called by: Extracts.videoForTarget
+    //  Called by: Extracts.localDocumentForTarget
+    //  Called by: Extracts.foreignSiteForTarget
+    objectHTMLForURL: (url, additionalAttributes = null) => {
+        if (url.href.match(/\.pdf(#|$)/) != null) {
             let data = url.href + (url.hash ? "&" : "#") + "view=FitH";
-            return `<object 
-            			data="${data}"
-            				></object>`;
+            return `<object
+                        data="${data}"
+                            ></object>`;
         } else {
-            return `<iframe 
-            			src="${url.href}" 
-            			frameborder="0" 
-            		  + ${(additionalAttributes ? (" " + additionalAttributes) : "")}
-            				></iframe>`;
+            return `<iframe
+                        src="${url.href}"
+                        frameborder="0"
+                      + ${(additionalAttributes ? (" " + additionalAttributes) : "")}
+                            ></iframe>`;
         }
-	},
+    },
 };
 
 /*=-----------------=*/
@@ -96,22 +96,21 @@ Extracts.targetTypeDefinitions.insertBefore([
     "aux-links"             // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, 
-	auxLinksLinkTypes: {
-		"/metadata/annotations/backlinks/":          "backlinks",
-		"/metadata/annotations/similars/":           "similars",
-		"/metadata/annotations/link-bibliography/":  "link-bibliography",
-		"/docs/link-bibliography/":                  "link-bibliography"
-	},
+Extracts = { ...Extracts,
+    auxLinksLinkTypes: {
+        "/metadata/annotations/backlinks/":          "backlinks",
+        "/metadata/annotations/similars/":           "similars",
+        "/metadata/annotations/link-bibliography/":  "link-bibliography"
+    },
 
     //  Called by: Extracts.isAuxLinksLink
     //  Called by: Extracts.titleForPopFrame_AUX_LINKS_LINK
     auxLinksLinkType: (target) => {
-    	for ([ pathnamePrefix, linkType ] of Object.entries(Extracts.auxLinksLinkTypes))
-    		if (target.pathname.startsWith(pathnamePrefix))
-    			return linkType;
+        for ([ pathnamePrefix, linkType ] of Object.entries(Extracts.auxLinksLinkTypes))
+            if (target.pathname.startsWith(pathnamePrefix))
+                return linkType;
 
-    	return null;
+        return null;
     },
 
     //  Called by: Extracts.isLocalCodeFileLink
@@ -119,28 +118,28 @@ Extracts = { ...Extracts,
     isAuxLinksLink: (target) => {
         let auxLinksLinkType = Extracts.auxLinksLinkType(target);
         return (   auxLinksLinkType != null
-        		&& target.classList.contains(auxLinksLinkType));
+                && target.classList.contains(auxLinksLinkType));
     },
 
     /*  This “special testing function” is used to exclude certain targets which
-        have already been categorized as (in this case) `AUX_LINKS_LINK` targets. 
-        It returns false if the target is to be excluded, true otherwise. 
+        have already been categorized as (in this case) `AUX_LINKS_LINK` targets.
+        It returns false if the target is to be excluded, true otherwise.
         Excluded targets will not spawn pop-frames.
      */
     //  Called by: Extracts.targets.testTarget (as `testTarget_${targetTypeInfo.typeName}`)
-	testTarget_AUX_LINKS_LINK: (target) => {
-		let exclude = false;
-		let auxLinksType = Extracts.auxLinksLinkType(target);
-		let containingAnnotation = target.closest(".annotation");
-		if (containingAnnotation) {
-			let includedAuxLinksBlock = containingAnnotation.querySelector(`.${auxLinksType}-append`);
-			if (includedAuxLinksBlock)
-				exclude = true;
-		}
+    testTarget_AUX_LINKS_LINK: (target) => {
+        let exclude = false;
+        let auxLinksType = Extracts.auxLinksLinkType(target);
+        let containingAnnotation = target.closest(".annotation");
+        if (containingAnnotation) {
+            let includedAuxLinksBlock = containingAnnotation.querySelector(`.${auxLinksType}-append`);
+            if (includedAuxLinksBlock)
+                exclude = true;
+        }
 
         return (!(   Extracts.popFrameProvider == Popins
                   && exclude == true));
-	},
+    },
 
     /*  Backlinks, similar-links, etc.
      */
@@ -148,21 +147,21 @@ Extracts = { ...Extracts,
     auxLinksForTarget: (target) => {
         GWLog("Extracts.auxLinksForTarget", "extracts-content.js", 2);
 
-		let auxLinksLinkType = Extracts.auxLinksLinkType(target);
+        let auxLinksLinkType = Extracts.auxLinksLinkType(target);
 
-		return newDocument(`<a href="${target.href}" class="${auxLinksLinkType} include-strict"></a>`);
+        return newDocument(`<a href="${target.href}" class="${auxLinksLinkType} include-strict"></a>`);
     },
 
     //  Called by: Extracts.preparePopFrame (as `preparePopFrame_${targetTypeName}`)
-	preparePopFrame_AUX_LINKS_LINK: (popFrame) => {
+    preparePopFrame_AUX_LINKS_LINK: (popFrame) => {
         GWLog("Extracts.preparePopFrame_AUX_LINKS_LINK", "extracts-content.js", 2);
 
         let auxLinksLinkType = Extracts.auxLinksLinkType(popFrame.spawningTarget);
         if (auxLinksLinkType > "")
-			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, auxLinksLinkType);
+            Extracts.popFrameProvider.addClassesToPopFrame(popFrame, auxLinksLinkType);
 
-		return popFrame;
-	},
+        return popFrame;
+    },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_AUX_LINKS_LINK: (popFrame) => {
@@ -182,20 +181,20 @@ Extracts = { ...Extracts,
      */
     //  Called by: Extracts.titleForPopFrame_AUX_LINKS_LINK
     targetOfAuxLinksLink: (target) => {
-    	for ([ pathnamePrefix, linkType ] of Object.entries(Extracts.auxLinksLinkTypes)) {
-    		if (target.pathname.startsWith(pathnamePrefix)) {
-    			if (target.pathname.endsWith(".html")) {
-					let start = pathnamePrefix.length;
-					let end = (target.pathname.length - ".html".length);
-					return decodeURIComponent(decodeURIComponent(target.pathname.slice(start, end)));
-				} else {
-					let start = (pathnamePrefix.length - 1);
-					return target.pathname.slice(start);
-				}
-    		}
-    	}
+        for ([ pathnamePrefix, linkType ] of Object.entries(Extracts.auxLinksLinkTypes)) {
+            if (target.pathname.startsWith(pathnamePrefix)) {
+                if (target.pathname.endsWith(".html")) {
+                    let start = pathnamePrefix.length;
+                    let end = (target.pathname.length - ".html".length);
+                    return decodeURIComponent(decodeURIComponent(target.pathname.slice(start, end)));
+                } else {
+                    let start = (pathnamePrefix.length - 1);
+                    return target.pathname.slice(start);
+                }
+            }
+        }
 
-		return null;
+        return null;
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
@@ -209,7 +208,7 @@ Extracts = { ...Extracts,
             case "similars":
                 return `${targetPage} (Similar links)`;
             case "link-bibliography":
-            	return `${targetPage} (Link bibliography)`;
+                return `${targetPage} (Link bibliography)`;
             default:
                 return `${targetPage}`;
         }
@@ -228,7 +227,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "footnote"              // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, 
+Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isCitation: (target) => {
         return target.classList.contains("footnote-ref");
@@ -287,9 +286,9 @@ Extracts = { ...Extracts,
     rewritePopFrameContent_CITATION: (popFrame) => {
         let target = popFrame.spawningTarget;
 
-		//	Remove back-link and self-link.
-		popFrame.document.querySelector(".footnote-self-link").remove();
-		popFrame.document.querySelector(".footnote-back").remove();
+        //  Remove back-link and self-link.
+        popFrame.document.querySelector(".footnote-self-link").remove();
+        popFrame.document.querySelector(".footnote-back").remove();
 
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
@@ -314,7 +313,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "citation-context"                  // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, 
+Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isCitationBackLink: (target) => {
         return target.classList.contains("footnote-back");
@@ -344,7 +343,7 @@ Extracts = { ...Extracts,
         //  Do not spawn citation context popup if citation is visible.
         let targetDocument = Extracts.targetDocument(target);
         if (   targetDocument
-        	&& Popups.isVisible(Extracts.targetElementInDocument(target, targetDocument)))
+            && Popups.isVisible(Extracts.targetElementInDocument(target, targetDocument)))
             return null;
 
         //  Mini title bar.
@@ -380,7 +379,7 @@ Extracts = { ...Extracts,
         });
 
         //  Scroll to the citation.
-		Extracts.scrollToTargetedElementInPopFrame(target, popup);
+        Extracts.scrollToTargetedElementInPopFrame(target, popup);
     }
 };
 
@@ -396,7 +395,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "video object"          // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, 
+Extracts = { ...Extracts,
     // Called by: Extracts.isVideoLink
     // Called by: Extracts.videoForTarget
     youtubeId: (href) => {
@@ -425,12 +424,12 @@ Extracts = { ...Extracts,
     videoForTarget: (target) => {
         GWLog("Extracts.videoForTarget", "extracts-content.js", 2);
 
-        let srcdocStyles = 
-        	  `<style>` 
-        	+ `* { padding: 0; margin: 0; overflow: hidden; } ` 
-        	+ `html, body { height: 100%; } ` 
-            + `img, span { position: absolute; width: 100%; top: 0; bottom: 0; margin: auto; } ` 
-            + `span { height: 1.5em; text-align: center; font: 48px/1.5 sans-serif; color: white; text-shadow: 0 0 0.5em black; }` 
+        let srcdocStyles =
+              `<style>`
+            + `* { padding: 0; margin: 0; overflow: hidden; } `
+            + `html, body { height: 100%; } `
+            + `img, span { position: absolute; width: 100%; top: 0; bottom: 0; margin: auto; } `
+            + `span { height: 1.5em; text-align: center; font: 48px/1.5 sans-serif; color: white; text-shadow: 0 0 0.5em black; }`
             + `</style>`;
 
         let videoId = Extracts.youtubeId(target.href);
@@ -440,8 +439,8 @@ Extracts = { ...Extracts,
         let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
         //  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-        return newDocument(Extracts.objectHTMLForURL(videoEmbedURL, 
-			`srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`));
+        return newDocument(Extracts.objectHTMLForURL(videoEmbedURL,
+            `srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`));
     }
 };
 
@@ -457,7 +456,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "video object"              // Pop-frame class
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, 
+Extracts = { ...Extracts,
     //  Used in: Extracts.isLocalVideoLink
     videoFileExtensions: [ "mp4" ],
 
@@ -484,9 +483,9 @@ Extracts = { ...Extracts,
         GWLog("Extracts.localVideoForTarget", "extracts-content.js", 2);
 
         return newDocument(
-        	  `<video controls="controls" preload="none">` 
-        	+ `<source src="${target.href}">` 
-        	+ `</video>`);
+              `<video controls="controls" preload="none">`
+            + `<source src="${target.href}">`
+            + `</video>`);
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -516,7 +515,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "image object"              // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, 
+Extracts = { ...Extracts,
     //  Used in: Extracts.isLocalImageLink
     imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ],
 
@@ -560,12 +559,12 @@ Extracts = { ...Extracts,
             styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
 
         //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invert’.
-        return newDocument(`<img 
-								${styles} 
-								class="${target.classList}" 
-								src="${target.href}" 
-								loading="lazy"
-									>`);
+        return newDocument(`<img
+                                ${styles}
+                                class="${target.classList}"
+                                src="${target.href}"
+                                loading="lazy"
+                                    >`);
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -581,8 +580,8 @@ Extracts = { ...Extracts,
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_IMAGE: (popFrame) => {
         //  Remove extraneous classes from images in image pop-frames.
-        popFrame.document.querySelector("img").classList.remove("link-page", "link-self", 
-        	"has-annotation", "has-annotation-partial", "has-content");
+        popFrame.document.querySelector("img").classList.remove("link-page", "link-self",
+            "has-annotation", "has-annotation-partial", "has-content");
 
         //  Loading spinner.
         Extracts.setLoadingSpinner(popFrame);
@@ -620,7 +619,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "local-document object"         // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, 
+Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalDocumentLink: (target) => {
         if (   target.hostname != location.hostname
@@ -636,8 +635,8 @@ Extracts = { ...Extracts,
     localDocumentForTarget: (target) => {
         GWLog("Extracts.localDocumentForTarget", "extracts-content.js", 2);
 
-		return newDocument(Extracts.objectHTMLForURL(target,
-			`sandbox="allow-same-origin" referrerpolicy="same-origin"`));
+        return newDocument(Extracts.objectHTMLForURL(target,
+            `sandbox="allow-same-origin" referrerpolicy="same-origin"`));
     },
 
     /*  This “special testing function” is used to exclude certain targets which
@@ -678,8 +677,8 @@ Extracts.targetTypeDefinitions.insertBefore([
     "local-code-file"               // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, 
-	codeFilesCache: { },
+Extracts = { ...Extracts,
+    codeFilesCache: { },
 
     //  Used in: Extracts.isLocalCodeFileLink
     codeFileExtensions: [
@@ -716,21 +715,21 @@ Extracts = { ...Extracts,
     localCodeFileForTarget: (target) => {
         GWLog("Extracts.localCodeFileForTarget", "extracts-content.js", 2);
 
-		if (Extracts.codeFilesCache[target.pathname]) {
-			return newDocument(Extracts.codeFilesCache[target.pathname]);
-		} else {
-			Extracts.refreshPopFrameAfterCodeFileLoads(target);
+        if (Extracts.codeFilesCache[target.pathname]) {
+            return newDocument(Extracts.codeFilesCache[target.pathname]);
+        } else {
+            Extracts.refreshPopFrameAfterCodeFileLoads(target);
 
             return newDocument();
-		}
-	},
+        }
+    },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_CODE_FILE: (popFrame) => {
-		//	Mark truncated code blocks, so layout can be adjusted properly.
-		if (popFrame.body.lastElementChild.tagName == "P")
-			popFrame.body.firstElementChild.classList.add("truncated");
-	},
+        //  Mark truncated code blocks, so layout can be adjusted properly.
+        if (popFrame.body.lastElementChild.tagName == "P")
+            popFrame.body.firstElementChild.classList.add("truncated");
+    },
 
     /*  Refresh (respawn or reload) a pop-frame for a local code file after the
         code file loads.
@@ -744,10 +743,10 @@ Extracts = { ...Extracts,
         doAjax({
             location: target.href + ".html",
             onSuccess: (event) => {
-				//	Cache the code file.
-				Extracts.codeFilesCache[target.pathname] = newDocument(event.target.responseText);
+                //  Cache the code file.
+                Extracts.codeFilesCache[target.pathname] = newDocument(event.target.responseText);
 
-				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
+                Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
             },
             onFailure: (event) => {
                 doAjax({
@@ -758,13 +757,13 @@ Extracts = { ...Extracts,
                         htmlEncodedResponse = lines.map(line => `<span class="line">${(line || "&nbsp;")}</span>`).join("\n");
                         let codeBlock = `<pre class="raw-code"><code>${htmlEncodedResponse}</code></pre>`;
 
-						//	Cache the code file.
-						Extracts.codeFilesCache[target.pathname] = newDocument(codeBlock);
+                        //  Cache the code file.
+                        Extracts.codeFilesCache[target.pathname] = newDocument(codeBlock);
 
-						Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
+                        Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
                     },
                     onFailure: (event) => {
-						Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
+                        Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
                     }
                 });
             }
@@ -786,7 +785,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "foreign-site object"       // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
-Extracts = { ...Extracts, 
+Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isForeignSiteLink: (target) => {
         if (   target.hostname == location.hostname
@@ -796,43 +795,43 @@ Extracts = { ...Extracts,
         return target.classList.contains("link-live");
     },
 
-	//	Used in: Extracts.foreignSiteForTarget
-	foreignSiteEmbedURLTransforms: [
-		//  Less Wrong
-		[	(url) => [ "www.lesswrong.com", "lesswrong.com", "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname),
-			(url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "www"); } 
-			],
-		//  Alignment Forum
-		[	(url) => (   [ "www.alignmentforum.org", "alignmentforum.org" ].includes(url.hostname)
-					  || (   [ "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)
-						  && url.searchParams.get("view") == "alignment-forum")),
-			(url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "www", "view=alignment-forum"); }
-			],
-		//  EA Forum
-		[	(url) => [ "forum.effectivealtruism.org", "ea.greaterwrong.com" ].includes(url.hostname),
-			(url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "ea"); } 
-			],
-		//  Arbital
-		[	(url) => [ "arbital.com", "arbital.greaterwrong.com" ].includes(url.hostname),
-			(url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "arbital"); } 
-			],
-		//  Wikipedia
-		[	(url) => /(.+?)\.wikipedia\.org/.test(url.hostname) == true,
-			(url) => {
-				url.hostname = url.hostname.replace(/(.+?)(?:\.m)?\.wikipedia\.org/, "$1.m.wikipedia.org");
-				if (!url.hash)
-					url.hash = "#bodyContent";
-			} ]
-	],
+    //  Used in: Extracts.foreignSiteForTarget
+    foreignSiteEmbedURLTransforms: [
+        //  Less Wrong
+        [   (url) => [ "www.lesswrong.com", "lesswrong.com", "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname),
+            (url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "www"); }
+            ],
+        //  Alignment Forum
+        [   (url) => (   [ "www.alignmentforum.org", "alignmentforum.org" ].includes(url.hostname)
+                      || (   [ "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)
+                          && url.searchParams.get("view") == "alignment-forum")),
+            (url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "www", "view=alignment-forum"); }
+            ],
+        //  EA Forum
+        [   (url) => [ "forum.effectivealtruism.org", "ea.greaterwrong.com" ].includes(url.hostname),
+            (url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "ea"); }
+            ],
+        //  Arbital
+        [   (url) => [ "arbital.com", "arbital.greaterwrong.com" ].includes(url.hostname),
+            (url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "arbital"); }
+            ],
+        //  Wikipedia
+        [   (url) => /(.+?)\.wikipedia\.org/.test(url.hostname) == true,
+            (url) => {
+                url.hostname = url.hostname.replace(/(.+?)(?:\.m)?\.wikipedia\.org/, "$1.m.wikipedia.org");
+                if (!url.hash)
+                    url.hash = "#bodyContent";
+            } ]
+    ],
 
-	//	Used in: Extracts.foreignSiteEmbedURLTransforms
-	foreignSiteEmbedURLTransform_GreaterWrong: (url, subdomain = "www", searchString = null) => {
-		url.hostname = `${subdomain}.greaterwrong.com`;
-		url.search = (searchString
-					  ? `${searchString}&`
-					  : ``) + 
-					 "format=preview&theme=classic";
-	},
+    //  Used in: Extracts.foreignSiteEmbedURLTransforms
+    foreignSiteEmbedURLTransform_GreaterWrong: (url, subdomain = "www", searchString = null) => {
+        url.hostname = `${subdomain}.greaterwrong.com`;
+        url.search = (searchString
+                      ? `${searchString}&`
+                      : ``) +
+                     "format=preview&theme=classic";
+    },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
     foreignSiteForTarget: (target) => {
@@ -848,8 +847,8 @@ Extracts = { ...Extracts,
                 location: proxyURL.href,
                 params: { url: url.href },
                 onSuccess: (event) => {
-					if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
-						return;
+                    if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
+                        return;
 
                     let doc = newElement("DIV", null, { "innerHTML": event.target.responseText });
                     doc.querySelectorAll("[href], [src]").forEach(element => {
@@ -877,8 +876,8 @@ Extracts = { ...Extracts,
                     target.popFrame.classList.toggle("loading", false);
                 },
                 onFailure: (event) => {
-					if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
-						return;
+                    if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
+                        return;
 
                     target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
                 }
@@ -888,24 +887,24 @@ Extracts = { ...Extracts,
         }
         //  END EXPERIMENTAL SECTION
 
-		//	Transform URL for embedding.
-		/*	NOTE: the protocol *must* be https, not http; attempting to load 
-			http URLs from a page loaded over https, even in a shadow-root, will
-			fail with a “Mixed Content” error. This way, we force https, in the
-			hopes that the foreign site supports TLS, despite that the URL we’ve
-			got is http. Unfortunately, some sites do not in fact support TLS;
-			those sites will fail to load. This is unavoidable, and means that
-			such sites cannot be live-embedded.
-		 */
-		url.protocol = "https:";
-		for ([ test, transform ] of Extracts.foreignSiteEmbedURLTransforms) {
-			if (test(url)) {
-				transform(url);
-				break;
-			}
-		}
+        //  Transform URL for embedding.
+        /*  NOTE: the protocol *must* be https, not http; attempting to load
+            http URLs from a page loaded over https, even in a shadow-root, will
+            fail with a “Mixed Content” error. This way, we force https, in the
+            hopes that the foreign site supports TLS, despite that the URL we’ve
+            got is http. Unfortunately, some sites do not in fact support TLS;
+            those sites will fail to load. This is unavoidable, and means that
+            such sites cannot be live-embedded.
+         */
+        url.protocol = "https:";
+        for ([ test, transform ] of Extracts.foreignSiteEmbedURLTransforms) {
+            if (test(url)) {
+                transform(url);
+                break;
+            }
+        }
 
-		return newDocument(Extracts.objectHTMLForURL(url, "sandbox"));
+        return newDocument(Extracts.objectHTMLForURL(url, "sandbox"));
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)

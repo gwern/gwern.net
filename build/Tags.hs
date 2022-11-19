@@ -62,7 +62,7 @@ tagsToLinksDiv ts = let tags = sort ts in
 -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg. '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
 tag2TagsWithDefault :: String -> String -> [String]
 tag2TagsWithDefault path tags = let tags' = map trim $ split ", " $ map toLower tags
-                                    defTag = if ("/docs/" `isPrefixOf` path) && (not ("/docs/link-bibliography"`isPrefixOf`path || "/docs/biology/2000-iapac-norvir"`isPrefixOf`path || "/docs/rotten.com/"`isPrefixOf`path || "/docs/statistics/order/beanmachine-multistage"`isPrefixOf`path||"/docs/www/"`isPrefixOf`path)) then tag2Default path else ""
+                                    defTag = if ("/docs/" `isPrefixOf` path) && (not ("/docs/biology/2000-iapac-norvir"`isPrefixOf`path || "/docs/rotten.com/"`isPrefixOf`path || "/docs/statistics/order/beanmachine-multistage"`isPrefixOf`path||"/docs/www/"`isPrefixOf`path)) then tag2Default path else ""
                                 in
                                   if defTag `elem` tags' || defTag == "" || defTag == "/docs" then tags' else defTag:tags'
 
