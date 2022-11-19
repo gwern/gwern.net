@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-11-11 23:17:37 gwern"
+When: Time-stamp: "2022-11-17 17:59:44 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -62,9 +62,12 @@ import qualified Data.Text as T (append, isInfixOf, pack, unpack, length)
 -- local custom modules:
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToText, interwikiTestSuite)
-import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString, tagsToLinksDiv)
+import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, createAnnotations, hasAnnotation, simplifiedHTMLString)
+import LinkMetadataTypes (Metadata)
+import Tags (tagsToLinksDiv)
 import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata)
-import Typography (linebreakingTransform, typographyTransform, invertImageInline, imageMagickDimensions, addImgDimensions, imageSrcset, titlecaseInline)
+import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
+import Image (invertImageInline, imageMagickDimensions, addImgDimensions, imageSrcset)
 import LinkAuto (linkAuto)
 import LinkIcon (rebuildSVGIconCSS)
 import LinkLive (linkLiveTest, linkLivePrioritize)

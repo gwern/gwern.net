@@ -29,7 +29,8 @@ import Data.Conduit.List (sourceList)
 
 import LinkBacklink (getForwardLinks, readBacklinksDB, Backlinks)
 import Columns as C (listLength)
-import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, parseRawInline)
+import LinkMetadata (readLinkMetadata, authorsTruncate, parseRawInline)
+import LinkMetadataTypes (Metadata, MetadataItem)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
 import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, replaceManyT, safeHtmlWriterOptions, printGreen)
 

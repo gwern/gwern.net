@@ -4,7 +4,7 @@
                       creation of manual link annotations.
 Author: Gwern Branwen
 Date: 2019-11-22
-When:  Time-stamp: "2022-04-10 12:22:39 gwern"
+When:  Time-stamp: "2022-11-17 17:59:54 gwern"
 License: CC-0
 Dependencies: gwern.net Hakyll libraries
 
@@ -61,7 +61,8 @@ import qualified Data.Text as T (isInfixOf, unpack)
 import System.Environment (getArgs)
 
 import LinkBacklink (readBacklinksDB)
-import LinkMetadata (readLinkMetadata, Metadata)
+import LinkMetadata (readLinkMetadata)
+import LinkMetadataTypes (Metadata)
 
 main :: IO ()
 main = do printN:_ <- getArgs

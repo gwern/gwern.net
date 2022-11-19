@@ -11,7 +11,7 @@ import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack,
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isSuffixOf, sort)
 import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter)
-import System.Directory (createDirectoryIfMissing, doesFileExist)
+import System.Directory (createDirectoryIfMissing, doesFileExist, listDirectory)
 import Network.HTTP (urlEncode)
 import Data.Containers.ListUtils (nubOrd)
 import Control.Monad (forM_, unless)
@@ -20,17 +20,23 @@ import Control.Monad.Parallel as Par (mapM)
 
 import Columns as C (listLength)
 import LinkAuto (linkAutoFiltered)
-import LinkMetadata (hasAnnotation, isPagePath, readLinkMetadata, generateID, Metadata, MetadataItem, parseRawInline)
+import LinkMetadata (hasAnnotation, isPagePath, readLinkMetadata, generateID, parseRawInline)
+import LinkMetadataTypes (Metadata, MetadataItem)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB,)
 import Query (extractLinksWith)
 import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed, replace, safeHtmlWriterOptions)
 
 main :: IO ()
 main = do
+  createDirectoryIfMissing False "metadata/annotations/backlinks/"
+  priorBacklinksN <- fmap length $ listDirectory "metadata/annotations/backlinks/"
+  -- for uninteresting reasons probably due to a bad architecture, when the existing set of backlinks is deleted for a clean start, apparently you have to run generateBacklinks.hs twice...? So if we appear to be at a clean start, we run twice:
+  if priorBacklinksN > 0 then main' else main' >> main'
+
+main' :: IO ()
+main' = do
   bldb <- readBacklinksDB
   md <- readLinkMetadata
-  createDirectoryIfMissing False "metadata/annotations/backlinks/"
-
   -- check that all backlink targets/callers are valid:
   let dotPageFy f = if '.' `elem` f then f else f++".page" -- all files have at least 1 period in them (for file extensions); a file missing periods must be a `.page` Markdown file, with the exception of tag pages which are auto-generated
   let filesCheck = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $
@@ -80,7 +86,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                           callers
                                        -- sort backlinks in descending order (most-recent first) as a simple way to prioritize:
                                        let callerTitles = map (\(_,b,c) -> (b,c)) $ reverse $ sort callerDatesTitles
-                                       let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-page"] else ["link-annotated"]) $ map fst callerTitles
+                                       let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-page"] else ["link-annotated"]) $ map snd callerTitles
                                        let callers' = zipWith (\a (b,c) -> (c,a,b)) callerClasses callerTitles
 
                                        let preface = [Para [Strong [Str (if length callers' > 1 then "Backlinks" else "Backlink")], Str ":"]]

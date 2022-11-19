@@ -222,6 +222,7 @@ whiteList = M.fromList [
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
+  , ("https://en.wikipedia.org/wiki/Derek_Lowe_(chemist)", ["Derek Lowe"])
   , ("https://en.wikipedia.org/wiki/California_Institute_of_Technology", ["Caltech"])
   , ("https://www.teds.ac.uk/about-teds", ["TEDS", "Twins Early Development Study"])
   , ("/docs/iq/2018-lee.pdf", ["Lee et al 2018"])
@@ -456,18 +457,18 @@ whiteList = M.fromList [
       , "Agent57: Outperforming the Atari Human Benchmark', Badia et al 2020"
       ]
     )
-  , ( "https://deepmind.com/blog/article/learning-through-human-feedback"
+  , ( "https://www.deepmind.com/blog/article/learning-through-human-feedback"
     , ["Learning through human feedback" ]
     )
   , ( "https://www.deepmind.com/blog/learning-through-human-feedback"
     , [ "Learning through human feedback" ]
     )
-  , ( "https://deepmind.com/blog/prefrontal-cortex-meta-reinforcement-learning-system/"
+  , ( "https://www.deepmind.com/blog/prefrontal-cortex-meta-reinforcement-learning-system/"
     , [
       "Prefrontal cortex as a meta-reinforcement learning system"
       ]
     )
-  , ( "https://deepmind.com/blog/wavenet-generative-model-raw-audio/"
+  , ( "https://www.deepmind.com/blog/wavenet-generative-model-raw-audio/"
     , [ "WaveNet: A Generative Model for Raw Audio" ]
     )
   , ( "https://edwardtufte.github.io/tufte-css/"

@@ -28,11 +28,12 @@ import qualified Data.Text as T (pack, unpack)
 
 import Control.Monad.Parallel as Par (mapM_)
 
-import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha), Block(Div, Header, Para, OrderedList), Pandoc(..), writeHtml5String)
+import Text.Pandoc (Inline(Code, Link, Str, Space, Span, Strong), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha), Block(Header, Para, OrderedList), Pandoc(..), writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
 import LinkBacklink (getBackLink, getSimilarLink)
-import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, authorsTruncate, hasAnnotation, urlToAnnotationPath, Metadata, MetadataItem)
+import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, authorsTruncate, hasAnnotation, urlToAnnotationPath)
+import LinkMetadataTypes (Metadata, MetadataItem)
 import Query (extractURLs, extractLinks)
 import Typography (identUniquefy, typographyTransform)
 import Utils (writeUpdatedFile, replace, printRed)
@@ -136,11 +137,11 @@ writeAnnotationLinkBibliographyFragment md path =
              similarlinks <- mapM (fmap snd . getSimilarLink) links
              let pairs = linksToAnnotations md links
                  pairs' = zipWith3 (\(a,b) c d -> (a,b,c,d)) pairs backlinks similarlinks
-                 body = [generateLinkBibliographyItems pairs']
+                 body = [Para [Strong [Str "Link Bibliography"], Str ":"], generateLinkBibliographyItems pairs']
                  document = Pandoc nullMeta body
                  html = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} $
                    walk (typographyTransform) $ walk convertInterwikiLinks $ walk (hasAnnotation md) document
              case html of
                Left e   -> printRed (show e)
                -- compare with the old version, and update if there are any differences:
-               Right p' -> writeUpdatedFile "linkbibliography-fragment" ("metadata/annotations/link-bibliography/" ++ urlToAnnotationPath path) p'
+               Right p' -> writeUpdatedFile "linkbibliography-fragment" (replace "metadata/annotations/" "metadata/annotations/link-bibliography/" (urlToAnnotationPath path)) p'

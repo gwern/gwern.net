@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-11-15 10:16:31 gwern"
+When:  Time-stamp: "2022-11-18 10:14:17 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -196,7 +196,7 @@ rewriteLink adb archivedN url = do
   fromMaybe url <$> if whiteList url then return Nothing else
     case M.lookup url adb of
       Nothing               -> Nothing <$ insertLinkIntoDB (Left today) url
-      Just (Left firstSeen) -> if ((today - firstSeen) < archiveDelay) && not ("pdf" `isInfixOf` url)
+      Just (Left firstSeen) -> if ((today - firstSeen) < archiveDelay) && not ("pdf" `isInfixOf` url && not ("twitter" `isInfixOf` url))
         then return Nothing
         else do
                  let url' = transformURLsForArchiving url

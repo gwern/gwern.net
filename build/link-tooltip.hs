@@ -8,7 +8,8 @@ import qualified Data.Map.Strict as M (lookup, fromList, Map)
 import qualified Data.Text as T (unpack)
 import qualified Data.Text.IO as TIO (readFile)
 
-import LinkMetadata (MetadataItem, walkAndUpdateLinkMetadata, tooltipToMetadata)
+import LinkMetadata (walkAndUpdateLinkMetadata, tooltipToMetadata)
+import LinkMetadataTypes (MetadataItem)
 import Query (parseMarkdownOrHTML)
 
 main :: IO ()
@@ -39,6 +40,6 @@ extractMetadataCandidates filepath = do
           fileContents <- TIO.readFile filepath
           let pandoc = parseMarkdownOrHTML True fileContents
           let tooltips = extractAnchorTooltips pandoc
-          let new = sort $ map (\(u,tt) -> (u, tooltipToMetadata tt)) tooltips
+          let new = sort $ map (\(u,tt) -> (u, tooltipToMetadata filepath tt)) tooltips
           let new' = filter (\(_,(t,_,_)) -> t /= "") new
           return new'
