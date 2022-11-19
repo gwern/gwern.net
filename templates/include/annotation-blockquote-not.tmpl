@@ -1,25 +1,27 @@
-<p class="data-field title">
-	<a 
-	   class="<{titleLinkClass}>"
-	   title="Open <{titleLinkHref}> in a new tab"
-	   href="<{titleLinkHref}>"
-	   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
-	   <{titleLinkIconMetadata}>
-	       ><{titleHTML}></a>
-	<[IF originalURL]>
-	<span class="originalURL">
-		[<a
-			 title="Link to original URL for <{titleText}>"
-			 href="<{originalURL}>"
-			 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-			 alt="Original URL for this archived link; may be broken."
-				 ><{originalURLText}></a>]
-	</span>
+<div class="annotation <{dataSourceClass}>">
+	<p class="data-field title">
+		<a 
+		   class="<{titleLinkClass}>"
+		   title="Open <{titleLinkHref}> in a new tab"
+		   href="<{titleLinkHref}>"
+		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
+		   <{titleLinkIconMetadata}>
+			   ><{titleHTML}></a>
+		<[IF originalURL]>
+		<span class="originalURL">
+			[<a
+				 title="Link to original URL for <{titleText}>"
+				 href="<{originalURL}>"
+				 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
+				 alt="Original URL for this archived link; may be broken."
+					 ><{originalURLText}></a>]
+		</span>
+		<[IFEND]>
+	</p>
+	<[IF authorDateAux]>
+	<p class="data-field author-date-aux"><{authorDateAux}></p>
 	<[IFEND]>
-</p>
-<[IF authorDateAux]>
-<p class="data-field author-date-aux"><{authorDateAux}></p>
-<[IFEND]>
-<[IF abstract]>
-<div class="data-field annotation-abstract"><{abstract}></div>
-<[IFEND]>
+	<[IF abstract]>
+	<div class="data-field annotation-abstract"><{abstract}></div>
+	<[IFEND]>
+</div>

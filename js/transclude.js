@@ -503,11 +503,6 @@ function includeContent(includeLink, content) {
         }
     }
 
-	//	Mark annotations as such, if need be.
-	if (   Transclude.isAnnotationTransclude(includeLink)
-		&& wrapper.querySelector(".annotation") == null)
-		wrapper.querySelector(".annotation-abstract").parentElement.closest("div, li").classList.add("annotation");
-
     //  Unwrap.
     unwrap(wrapper);
 
