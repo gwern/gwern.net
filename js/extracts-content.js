@@ -100,8 +100,8 @@ Extracts = { ...Extracts,
 	auxLinksLinkTypes: {
 		"/metadata/annotations/backlinks/":          "backlinks",
 		"/metadata/annotations/similars/":           "similars",
-		"/metadata/annotations/link-bibliography/":  "linkbibliography",
-		"/docs/link-bibliography/":                  "linkbibliography"
+		"/metadata/annotations/link-bibliography/":  "link-bibliography",
+		"/docs/link-bibliography/":                  "link-bibliography"
 	},
 
     //  Called by: Extracts.isAuxLinksLink
@@ -208,7 +208,7 @@ Extracts = { ...Extracts,
                 return `${targetPage} (Backlinks)`;
             case "similars":
                 return `${targetPage} (Similar links)`;
-            case "linkbibliography":
+            case "link-bibliography":
             	return `${targetPage} (Link bibliography)`;
             default:
                 return `${targetPage}`;

@@ -303,11 +303,11 @@ Annotations = { ...Annotations,
 							       >${similarsElement.innerHTML}</span>`
 							   : null;
 
-                //	The link-linkbibliography link (if exists).
-				let linkbibElement = referenceEntry.querySelector(".linkbibliography");
+                //	The link-link-bibliography link (if exists).
+				let linkbibElement = referenceEntry.querySelector(".link-bibliography");
 				let linkbib = linkbibElement
 							  ? `<span 
-							  	  class="data-field aux-links linkbibliography"
+							  	  class="data-field aux-links link-bibliography"
 							  	  >${linkbibElement.innerHTML}</span>`
 							  : null;
 

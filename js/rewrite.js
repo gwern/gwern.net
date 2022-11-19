@@ -904,7 +904,7 @@ addContentLoadHandler(GW.contentLoadHandlers.bindSectionHighlightEventsToAnnotat
 
         //  Bind events.
         let escapedLinkURL = CSS.escape(decodeURIComponent(annotatedLink.href));
-        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='${escapedLinkURL}']`);
+        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='link-bibliography'][href='${escapedLinkURL}']`);
         if (   targetAnalogueInLinkBibliography
             && targetAnalogueInLinkBibliography != annotatedLink) {
             let containingSection = targetAnalogueInLinkBibliography.closest("section");
