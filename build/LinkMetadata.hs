@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-18 21:09:27 gwern"
+When:  Time-stamp: "2022-11-19 16:42:15 gwern"
 License: CC-0
 -}
 
@@ -1018,11 +1018,12 @@ generateID :: String -> String -> String -> T.Text
 generateID url author date
   -- hardwire tricky cases where unique IDs can't easily be derived from the URL/metadata:
   | any (\(u,_) -> u == url) linkIDOverrides = fromJust $ lookup url linkIDOverrides
+  -- indexes or tag-directories shouldn't be cited/have IDs (often linked many times on a page)
   | ("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index" `isSuffixOf` url) = ""
-  -- eg. '/Faces' = '#gwern-faces'
+  -- eg. '/Faces' = '#gwern-faces'; `generateID "https://www.gwern.net/Fonts" "Gwern Branwen" "2021-01-01"` → "gwern-fonts" (since we are using the short URL/slug, we don't need a year/date to disambiguate, and those are often meaningless on Gwern.net anyway).
   | ("Gwern Branwen" == author) &&
-    (("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && not ('.'`elem`url) && not ("/index"`isInfixOf`url))
-  = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("'", ""), ("https://", ""), ("https://www.gwern.net/", "")] $ map toLower $ "gwern-"++url)
+    (("/" `isPrefixOf` url') && not ('.' `elem` url') && not ("/index"`isInfixOf`url'))
+  = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("'", ""), ("https://", "")] $ map toLower $ "gwern-"++tail url')
   -- skip tag links:
   -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
   | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
@@ -1032,6 +1033,7 @@ generateID url author date
   -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
   | otherwise = T.pack $ citeToID $ authorsToCite url author date
   where
+    url' = replace "https://www.gwern.net" "" url
     linkIDOverrides :: [(String, T.Text)]
     linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start with [a-zA-Z]
                               if (not $ isAlpha $ head $ T.unpack ident) then error ("Invalid link ID override! " ++ ppShow o) else o) $
@@ -1376,6 +1378,10 @@ generateID url author date
        , ("https://www.thiswaifudoesnotexist.net/", "gwern-twdne-website")
        , ("/docs/statistics/bias/2021-yang.pdf", "yang-et-al-2021-bargraph")
        , ("https://arxiv.org/abs/2110.04725#inspur", "wu-et-al-2021-yuan-1")
+       , ("https://www.medrxiv.org/content/10.1101/2022.06.24.22276728.full", "chen-et-al-2022-rare-variants")
+       , ("https://arxiv.org/abs/2210.11399#google", "tay-et-al-2022-upalm")
+       , ("https://arxiv.org/abs/2206.15472", "lin-et-al-2022-smolml")
+       , ("https://arxiv.org/abs/2209.14156", "tang-et-al-2022-tvlt")
       ]
 
 -- attempt to guess the URL for a specific annotation somewhere in the tag-directories for easier reference (used in `gwa` dumps)
