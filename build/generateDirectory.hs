@@ -313,7 +313,7 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl,lb) = -- no abstracts:
        tags     = if tgs==[] then [] else [tagsToLinksSpan $ map T.pack tgs]
        backlink = if bl=="" then [] else (if null tgs then [] else [Str ";", Space]) ++ [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks", "icon-not"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]
        similar  = if sl=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similar", "icon-not"],[]) [Str "similar"] (T.pack sl,"Similar links (by text embedding).")]]
-       linkBibliography = if lb=="" then [] else (if bl=="" && sl=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["linkbibliography"], []) [Link ("",["aux-links", "link-page", "icon-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of links it cites).")]]
+       linkBibliography = if lb=="" then [] else (if bl=="" && sl=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], []) [Link ("",["aux-links", "link-page", "icon-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of links it cites).")]]
   in
   if (tgs==[] && bl=="" && dt=="") then [Para (Link nullAttr title (T.pack f, "") : (author))]
   else [Para (Link nullAttr title (T.pack f, "") : (author ++ date ++ (if null (tags ++ backlink ++ similar)

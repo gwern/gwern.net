@@ -98,7 +98,7 @@
 
     include-annotation
     include-content
-        If the include-link is a full-annotated (as opposed to 
+        If the include-link is a full-annotated (as opposed to
         partial-annotated) link, then instead of transcluding the linked
         content, the annotation for the linked content may be transcluded.
         The default behavior is set via the
@@ -213,22 +213,22 @@
 /*****************************************************************************/
 /*	Extract template data from an HTML string by looking for:
 
-	1. Elements with the `data-template-field` attribute. The value of the 
-	   attribute is the data field name; the .innerHTML of the element is the 
+	1. Elements with the `data-template-field` attribute. The value of the
+	   attribute is the data field name; the .innerHTML of the element is the
 	   field value.
 
 	2. Elements with the `data-template-field-attributes` attribute. The value
-	   of the attribute should be a comma-separated list of 
-	   `FIELD_NAME=ATTRIBUTE_NAME` pairs. The first (FIELD_NAME) component of 
+	   of the attribute should be a comma-separated list of
+	   `FIELD_NAME=ATTRIBUTE_NAME` pairs. The first (FIELD_NAME) component of
 	   each pair is the data field name; the second (ATTRIBUTE_NAME) component
 	   is the name of the attribute of the given element which holds the field
 	   value.
 
 	3. Elements with the `data-template-field-properties` attribute. The value
-	   of the attribute should be a comma-separated list of 
-	   `FIELD_NAME=PROPERTY_NAME` pairs. The first (FIELD_NAME) component of 
+	   of the attribute should be a comma-separated list of
+	   `FIELD_NAME=PROPERTY_NAME` pairs. The first (FIELD_NAME) component of
 	   each pair is the data field name; the second (PROPERTY_NAME) component
-	   is the name of the DOM object property of the given element which holds 
+	   is the name of the DOM object property of the given element which holds
 	   the field value.
  */
 //	(string) => object
@@ -236,9 +236,9 @@ function templateDataFromHTML(html) {
 	let dataObject = { };
 
 	newDocument(html).querySelectorAll([
-		"[data-template-field]", 
-		"[data-template-fields-attributes]", 
-		"[data-template-fields-properties]" 
+		"[data-template-field]",
+		"[data-template-fields-attributes]",
+		"[data-template-fields-properties]"
 	].join(", ")).forEach(element => {
 		if (element.dataset.templateField)
 			dataObject[element.dataset.templateField] = element.innerHTML;
@@ -262,14 +262,14 @@ function templateDataFromHTML(html) {
 }
 
 /******************************************************************************/
-/*	Fill a template with provided reference data (supplemented by an optional 
+/*	Fill a template with provided reference data (supplemented by an optional
 	context object).
 
 	Reference data may be a data object, or else an HTML string (in which case
 	the templateDataFromHTML() function is used to extract data from the HTML).
 
-	If no ‘data’ argument is provided, then the template itself will be parsed 
-	to extract reference data (again, using the templateDataFromHTML() 
+	If no ‘data’ argument is provided, then the template itself will be parsed
+	to extract reference data (again, using the templateDataFromHTML()
 	function).
 
 	(Context argument must be an object, not a string.)
@@ -306,16 +306,16 @@ function fillTemplate (template, data = null, context = null) {
 	do {
 		didReplace = false;
 		filledTemplate = filledTemplate.replace(
-			/<\[IF([0-9]*)\s+(.+?)\]>(.+?)(?:<\[ELSE\1\]>(.+?))?<\[IF\1END\]>/gs, 
+			/<\[IF([0-9]*)\s+(.+?)\]>(.+?)(?:<\[ELSE\1\]>(.+?))?<\[IF\1END\]>/gs,
 			(match, nestLevel, fieldName, ifValue, elseValue) => {
 				didReplace = true;
 				return (value(fieldName) ? (ifValue ?? "") : (elseValue ?? ""));
 			});
-	} while (didReplace); 
+	} while (didReplace);
 
 	//	Data variable substitution.
 	filledTemplate = filledTemplate.replace(
-		/<\{(.+?)\}>/g, 
+		/<\{(.+?)\}>/g,
 		(match, fieldName) => (value(fieldName) ?? "")
 	);
 
@@ -468,7 +468,7 @@ function includeContent(includeLink, content) {
         let allowedParentTags = [ "SECTION", "DIV" ];
 
         //  Special handling for annotation transcludes in link bibliographies.
-        if (wrapper.parentElement.closest("#link-bibliography, .linkbibliography-append") != null)
+        if (wrapper.parentElement.closest("#link-bibliography, .link-bibliography-append") != null)
             allowedParentTags.push("LI");
 
         while (   false == allowedParentTags.includes(wrapper.parentElement.tagName)
@@ -904,8 +904,8 @@ Transclude = {
 			&& Transclude.hasAnnotation(includeLink) == false)
 			return;
 
-		/*  We exclude cross-origin transclusion for security reasons, but from 
-			a technical standpoint there’s no reason it shouldn’t work. Simply 
+		/*  We exclude cross-origin transclusion for security reasons, but from
+			a technical standpoint there’s no reason it shouldn’t work. Simply
 			comment out the block below to enable cross-origin transcludes.
 			—SA 2022-08-18
 		 */
@@ -1006,7 +1006,7 @@ Transclude = {
                 return;
             } else if (referenceData) {
             	let templateName = (includeLink.dataset.template || referenceData.template);
-                Transclude.setCachedContentForLink(Transclude.fillTemplateNamed(templateName, referenceData), 
+                Transclude.setCachedContentForLink(Transclude.fillTemplateNamed(templateName, referenceData),
                 								   includeLink);
                 Transclude.transclude(includeLink, true);
 

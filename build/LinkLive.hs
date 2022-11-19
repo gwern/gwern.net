@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-11-17 18:33:03 gwern"
+When:  Time-stamp: "2022-11-17 21:24:56 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -925,6 +925,7 @@ goodDomainsSimple =
     , "xkcd.com"
     , "xtools.wmflabs.org"
     , "zlkj.in"
+    , "www.cs.toronto.edu"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com",
@@ -2238,7 +2239,7 @@ badDomainsSimple = [ "2chan.us"
   , "darknetlive.com"
   , "darwin-online.org.uk"
   , "de1.erowid.org"
-  , "deepmind.com"
+  , "www.deepmind.com"
   , "derpibooru.org"
   , "dev.kanotype.net"
   , "developer.mozilla.org"
@@ -3109,7 +3110,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
             , ("https://www.harrowell.org.uk/blog/2018/01/31/in-the-eternal-inferno-fiends-torment-ronald-coase-with-the-fate-of-his-ideas/", True)
             , ("https://www.haskell.org/cabal/", True)
             , ("https://www.hbs.edu/faculty/Pages/default.aspx", True)
-            , ("https://www.heraldsun.com.au/remote/check_cookie.html?url=https%3a%2f%2fwww.heraldsun.com.au%2fnews%2flaw-order%2fman-faces-jail-after-2700-drug-tablets-on-notorious-site-silk-road%2fstory-fni0fee2-1226851736371", True)
+            , ("https://www.heraldsun.com.au/news/law-order/man-faces-jail-after-2700-drug-tablets-on-notorious-site-silk-road/news-story/4ec3a87919d9d591057f3d7494336dd0", True)
             , ("https://www.hpmor.com/chapter/64", True)
             , ("https://www.hsx.com/security/feature.php?type=opening", True)
             , ("https://www.html-tidy.org/", True)
@@ -3280,6 +3281,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
             , ("https://xkcd.com/481/", True)
             , ("https://xtools.wmflabs.org/pages/index.php?name=Rhwawn&lang=en&wiki=wikipedia&namespace=0&redirects=noredirects", True)
             , ("https://zlkj.in/", True)
+            , ("https://www.cs.toronto.edu/~kriz/cifar.html", True)
             ]
 
 badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", False)

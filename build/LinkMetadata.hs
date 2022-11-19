@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-18 11:47:07 gwern"
+When:  Time-stamp: "2022-11-18 20:20:09 gwern"
 License: CC-0
 -}
 
@@ -477,11 +477,11 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
                               -- Just (_,    _,_,_,_,"") -> nonAnnotatedLink
                               Just (tle,aut,dt,doi,ts,abst) ->
                                 let tle' = if null tle then "<code>"++f++"</code>" else tle
-                                    lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
+                                    lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "link-bibliography-") `T.append` tmpID
                                     -- NOTE: we cannot link to an anchor fragment in ourselves, like just link in the annotation header to `#backlink-transclusion`, because it would severely complicate all the anchor-rewriting logic (how would it know if `#backlink-transclusion` refers to something *in* the annotation, or is a section or anchor inside the annotated URL?). But fortunately, by the logic of caching, it doesn't much matter if we link the same URL twice and pop it up the first time vs transclude it inside the popup/popin the second time.
                                     lidBacklinkFragment    = if lid=="" then "" else "backlink-transclusion-"    `T.append` lid
                                     lidSimilarLinkFragment = if lid=="" then "" else "similarlink-transclusion-" `T.append` lid
-                                    lidLinkBibLinkFragment = if lid=="" then "" else "linkbibliography-transclusion-" `T.append` lid
+                                    lidLinkBibLinkFragment = if lid=="" then "" else "link-bibliography-transclusion-" `T.append` lid
                                     authorShort = authorsTruncate aut
                                     authorSpan = if aut/=authorShort then Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
                                                  else Span ("", ["author", "cite-author"], []) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
@@ -492,7 +492,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
                                     tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
                                     backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks", "icon-not", "link-annotated-not"],[]) [Str "backlinks"] (T.pack blp, "Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars", "icon-not", "link-annotated-not"],[]) [Str "similar"] (T.pack slp, "Similar links for this link (by text embedding).")]]
-                                    linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["linkbibliography"], []) [Link ("",["aux-links", "link-page", "linkbibliography", "icon-not", "link-annotated-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of links it cites).")]]
+                                    linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], []) [Link ("",["aux-links", "link-page", "link-bibliography", "icon-not", "link-annotated-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of links it cites).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
                                     link = linkLive $ Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
@@ -518,7 +518,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
                                                                             else "<div class=\"collapse\">" `T.append`
                                                                                  ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append\"" `T.append` " id=\"" `T.append` lidBacklinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"backlinks-transclusion include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">Backlinks for this annotation</a>.]</p>\n</div>")) `T.append`
                                                                                   (if slp=="" then "" else ("<div class=\"similars-append aux-links-append\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">Similar links for this annotation</a>.]</p>\n</div>")) `T.append`
-                                                                                   (if lb=="" then "" else ("<div class=\"linkbibliography-append aux-links-append\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include include-replace-container include-spinner-not\" href=\"" `T.append` T.pack lb `T.append` "\">Link bibliography for this annotation</a>.]</p>\n</div>"))) `T.append`
+                                                                                   (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include include-replace-container include-spinner-not\" href=\"" `T.append` T.pack lb `T.append` "\">Link bibliography for this annotation</a>.]</p>\n</div>"))) `T.append`
                                                                             "</div>"
                                                                                        )]
                                                 ])
@@ -530,7 +530,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
 generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
 generateAnnotationTransclusionBlock (f, (tle,aut,dt,doi,ts,_)) blp slp lb =
                                 let tle' = if null tle then "<code>"++f++"</code>" else tle
-                                    lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
+                                    lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "link-bibliography-") `T.append` tmpID
                                     authorShort = authorsTruncate aut
                                     authorSpan = if aut/=authorShort then Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) [Str (T.pack authorShort)]
                                                  else Span ("", ["author", "cite-author"], []) [Str (T.pack authorShort)]
@@ -541,7 +541,7 @@ generateAnnotationTransclusionBlock (f, (tle,aut,dt,doi,ts,_)) blp slp lb =
                                     tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
                                     backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks", "icon-not"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars", "icon-not"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
-                                    linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["linkbibliography"], []) [Link ("",["aux-links", "link-page", "icon-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of links it cites).")]]
+                                    linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], []) [Link ("",["aux-links", "link-page", "icon-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of links it cites).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     link = linkLive $ Link (lid, ["link-annotated", "include-annotation", "include-replace-container", "include-spinner-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
                                 in
