@@ -410,9 +410,9 @@ Extracts = {
 		if (element)
 			return element;
 
-		let backlinksBlock = link.closest(".backlinks-block");
-		if (backlinksBlock) {
-			let escapedURL = CSS.escape(backlinksBlock.dataset.targetUrl);
+		let backlinksList = link.closest(".backlinks-list");
+		if (backlinksList) {
+			let escapedURL = CSS.escape(backlinksList.dataset.targetUrl);
 			element = doc.querySelector(`a.link-page[id][href*='${escapedURL}']`);
 		}
 
@@ -847,6 +847,9 @@ Extracts = {
 								   && popFrame.classList.contains("external-page-embed") == false)
 								  ? Extracts.nearestBlockElement(Extracts.targetElementInDocument(target, targetDocument))
 								  : null;
+		let nearestSection = nearestBlockElement
+							 ? nearestBlockElement.closest("section")
+							 : null;
 
 		let popFrameTitleText;
 		if (targetDocument) {
@@ -857,16 +860,15 @@ Extracts = {
 				//	Parts of the current page or of other pages.
 				popFrameTitleText = "";
 
-				//	Section mark (§) for sections.
-				if (   nearestBlockElement
-					&& nearestBlockElement.tagName == "SECTION")
+				//	Section title or block id.
+				if (nearestSection) {
+					//	Section mark (§) for sections.
 					popFrameTitleText += "&#x00a7; ";
-
-				//	Block title or hash.
-				if (nearestBlockElement.id == "footnotes") {
-					popFrameTitleText += "Footnotes";
-				} else if (nearestBlockElement.tagName == "SECTION") {
-					popFrameTitleText += nearestBlockElement.firstElementChild.textContent;
+					if (nearestSection.id == "footnotes") {
+						popFrameTitleText += "Footnotes";
+					} else {
+						popFrameTitleText += nearestSection.firstElementChild.textContent;
+					}
 				} else {
 					popFrameTitleText += target.hash;
 				}
@@ -1155,28 +1157,21 @@ Extracts = {
 		 */
 		if (Extracts.isLocalPageLink(target)) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
-				let identifiedAncestor = info.document.parentElement;
-				while (   identifiedAncestor
-					   && identifiedAncestor.id == ""
-					   && identifiedAncestor.parentElement != null) {
-					identifiedAncestor = identifiedAncestor.parentElement;
-				}
-				let containerSelector = null;
-				if (identifiedAncestor.id) {
-					containerSelector = "#" + CSS.escape(decodeURIComponent(identifiedAncestor.id));
-				} else if (popFrame.titleBar) {
-					let popFrameTitleLink = popFrame.titleBar.querySelector(".popframe-title-link");
-					if (popFrameTitleLink)
-						containerSelector = selectorFromHash(popFrameTitleLink.hash);
-				}
 				let sourceDocument = Extracts.cachedPages[target.pathname] || Extracts.rootDocument;
-				let containerInSourceDocument = containerSelector 
-												? sourceDocument.querySelector(containerSelector)
-												: sourceDocument;
+				Transclude.allIncludeLinksInContainer(sourceDocument).filter(link => 
+					link.href == info.includeLink.href
+				).forEach(link => {
+					Transclude.transclude(link, true);
+				});
 
-				//	Trigger transcludes.
-				Transclude.triggerTranscludesInContainer(containerInSourceDocument);
+				/*	If the transcluded content makes up the entirety of the 
+					pop-frame’s content, refresh the pop-frame after the load.
+				 */
+				if (   info.document.parentElement == popFrame.body
+					&& info.document.parentElement.children.length == 2)
+					Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);				
 			}, { 
+				once: true,
 				condition: (info) => (   info.source == "transclude" 
 									  && info.document.getRootNode() == popFrame.document)
 			});
@@ -1186,6 +1181,8 @@ Extracts = {
 		GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (info) => {
 			if (Extracts.popFrameProvider == Popups)
 				Popups.positionPopup(popFrame);
+			else // if (Extracts.popFrameProvider == Popins)
+				Popins.scrollPopinIntoView(popFrame);
 		}, { condition: (info) => (info.document == popFrame.document) });
 
         return popFrame;

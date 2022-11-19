@@ -770,6 +770,30 @@ addContentLoadHandler(GW.contentLoadHandlers.setMarginsOnFullWidthBlocks = (load
 }, ">rewrite");
 
 
+/*************/
+/* AUX-LINKS */
+/*************/
+
+/*****************************************************************************/
+/*	Rewrite backlinks or similars lists in transcludes aux-links of that type.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.re = (loadEventInfo) => {
+    GWLog("storeBacklinksOrigin", "rewrite.js", 1);
+
+	let auxLinksLinkType = Extracts.auxLinksLinkType(loadEventInfo.includeLink);
+	if (auxLinksLinkType == null)
+		return;
+
+	let auxLinksList = loadEventInfo.document.querySelector("ul, ol");
+	if (auxLinksList)
+		auxLinksList.classList.add("aux-links-list", auxLinksLinkType + "-list");
+
+	if (auxLinksLinkType == "backlinks")
+		auxLinksList.dataset.targetUrl = Extracts.targetOfAuxLinksLink(loadEventInfo.includeLink);
+}, "rewrite", (info) => (   info.needsRewrite
+						 && info.source == "transclude"));
+
+
 /***************/
 /* ANNOTATIONS */
 /***************/
@@ -880,7 +904,7 @@ addContentLoadHandler(GW.contentLoadHandlers.bindSectionHighlightEventsToAnnotat
 
         //  Bind events.
         let escapedLinkURL = CSS.escape(decodeURIComponent(annotatedLink.href));
-        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='${escapedLinkURL}']`);
+        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='link-bibliography'][href='${escapedLinkURL}']`);
         if (   targetAnalogueInLinkBibliography
             && targetAnalogueInLinkBibliography != annotatedLink) {
             let containingSection = targetAnalogueInLinkBibliography.closest("section");

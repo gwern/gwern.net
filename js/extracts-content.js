@@ -62,22 +62,6 @@
 
         (See rewrite.js for more information about the keys and values of the
          GW.contentDidLoad event.)
-
-    GW.contentDidLoad {
-            source: "Extracts.refreshPopFrameAfterAuxLinksLoad"
-            document:
-                A DocumentFragment containing the aux-links elements.
-            loadLocation:
-                URL of the aux-links source file.
-            baseLocation:
-            	Same as loadLocation.
-            flags: GW.contentDidLoadEventFlags.needsRewrite
-        }
-        Fired when the content of the aux-links pop-frame has been constructed,
-        but not yet injected into a pop-frame.
-
-        (See rewrite.js for more information about the keys and values of the
-         GW.contentDidLoad event.)
 */
 
 Extracts = { ...Extracts, 
@@ -113,15 +97,21 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts, 
-    auxLinksCache: { },
+	auxLinksLinkTypes: {
+		"/metadata/annotations/backlinks/":          "backlinks",
+		"/metadata/annotations/similars/":           "similars",
+		"/metadata/annotations/link-bibliography/":  "link-bibliography",
+		"/docs/link-bibliography/":                  "link-bibliography"
+	},
 
     //  Called by: Extracts.isAuxLinksLink
     //  Called by: Extracts.titleForPopFrame_AUX_LINKS_LINK
     auxLinksLinkType: (target) => {
-        if (target.pathname.startsWith("/metadata/annotations/") == false)
-            return null;
+    	for ([ pathnamePrefix, linkType ] of Object.entries(Extracts.auxLinksLinkTypes))
+    		if (target.pathname.startsWith(pathnamePrefix))
+    			return linkType;
 
-        return /^\/metadata\/annotations\/([^\/]+)/.exec(target.pathname)[1];
+    	return null;
     },
 
     //  Called by: Extracts.isLocalCodeFileLink
@@ -158,13 +148,9 @@ Extracts = { ...Extracts,
     auxLinksForTarget: (target) => {
         GWLog("Extracts.auxLinksForTarget", "extracts-content.js", 2);
 
-        if (Extracts.auxLinksCache[target.pathname]) {
-            return newDocument(Extracts.auxLinksCache[target.pathname]);
-        } else {
-            Extracts.refreshPopFrameAfterAuxLinksLoad(target);
+		let auxLinksLinkType = Extracts.auxLinksLinkType(target);
 
-            return newDocument();
-        }
+		return newDocument(`<a href="${target.href}" class="${auxLinksLinkType} include-strict"></a>`);
     },
 
     //  Called by: Extracts.preparePopFrame (as `preparePopFrame_${targetTypeName}`)
@@ -196,7 +182,20 @@ Extracts = { ...Extracts,
      */
     //  Called by: Extracts.titleForPopFrame_AUX_LINKS_LINK
     targetOfAuxLinksLink: (target) => {
-        return decodeURIComponent(decodeURIComponent(/\/metadata\/annotations\/[^\/]+?\/(.+?)\.html$/.exec(target.pathname)[1]));
+    	for ([ pathnamePrefix, linkType ] of Object.entries(Extracts.auxLinksLinkTypes)) {
+    		if (target.pathname.startsWith(pathnamePrefix)) {
+    			if (target.pathname.endsWith(".html")) {
+					let start = pathnamePrefix.length;
+					let end = (target.pathname.length - ".html".length);
+					return decodeURIComponent(decodeURIComponent(target.pathname.slice(start, end)));
+				} else {
+					let start = (pathnamePrefix.length - 1);
+					return target.pathname.slice(start);
+				}
+    		}
+    	}
+
+		return null;
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
@@ -209,52 +208,12 @@ Extracts = { ...Extracts,
                 return `${targetPage} (Backlinks)`;
             case "similars":
                 return `${targetPage} (Similar links)`;
-            case "linkbibliography":
+            case "link-bibliography":
             	return `${targetPage} (Link bibliography)`;
             default:
                 return `${targetPage}`;
         }
     },
-
-    /*  Refresh (respawn or reload) a pop-frame for an aux-link link after the
-        aux-links source loads.
-     */
-    //  Called by: Extracts.auxLinksForTarget
-    refreshPopFrameAfterAuxLinksLoad: (target) => {
-        GWLog("Extracts.refreshPopFrameAfterAuxLinksLoad", "extracts-content.js", 2);
-
-        target.popFrame.classList.toggle("loading", true);
-
-        doAjax({
-            location: target.href,
-            onSuccess: (event) => {
-                //  Cache the aux-links source (and wrap in aux-links block).
-                let auxLinksSource = newDocument(event.target.responseText);
-				let auxLinksLinkType = Extracts.auxLinksLinkType(target);
-				let auxLinksBlock = newElement("DIV", { "class": `aux-links-block ${auxLinksLinkType}-block` });
-                if (auxLinksLinkType == "backlinks")
-					auxLinksBlock.dataset.targetUrl = Extracts.targetOfAuxLinksLink(target);
-				auxLinksBlock.append(auxLinksSource);
-				auxLinksSource.append(auxLinksBlock);
-                Extracts.auxLinksCache[target.pathname] = auxLinksSource;
-
-                /*  Trigger the rewrite pass by firing the requisite event.
-                    */
-                GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-                    source: "Extracts.refreshPopFrameAfterAuxLinksLoad",
-                    document: Extracts.auxLinksCache[target.pathname],
-					loadLocation: Extracts.locationForTarget(target),
-					baseLocation: Extracts.locationForTarget(target),
-                    flags: GW.contentDidLoadEventFlags.needsRewrite
-                });
-
-				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
-            },
-            onFailure: (event) => {
-                Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
-            }
-        });
-    }
 };
 
 /*=-----------=*/

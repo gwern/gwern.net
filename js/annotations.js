@@ -111,7 +111,7 @@ Annotations = { ...Annotations,
     /*  Load and process the annotation for the given identifier string.
         */
     //	Called by: Extracts.setUpAnnotationLoadEventWithin (extracts-annotations.js)
-    loadAnnotation: (identifier) => {
+    loadAnnotation: (identifier, loadHandler = null, loadFailHandler = null) => {
         GWLog("Annotations.loadAnnotation", "annotations.js", 2);
 
 		/*	Get URL of the annotation resource.
@@ -129,10 +129,16 @@ Annotations = { ...Annotations,
 				Annotations.cachedReferenceData[identifier] = referenceData;
 
 				GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { identifier: identifier });
+
+				if (loadHandler)
+					loadHandler(identifier);
 			} else {
 				Annotations.cachedReferenceData[identifier] = "LOADING_FAILED";
 
 				GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: identifier });
+
+				if (loadFailHandler)
+					loadFailHandler(identifier);
 
 				//	Send request to record failure in server logs.
 				GWServerLogError(sourceURL + `--could-not-process`, "problematic annotation");
@@ -159,6 +165,9 @@ Annotations = { ...Annotations,
 					Annotations.cachedReferenceData[identifier] = "LOADING_FAILED";
 
 					GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: identifier });
+
+					if (loadFailHandler)
+						loadFailHandler(identifier);
 
 					//	Send request to record failure in server logs.
 					GWServerLogError(sourceURL, "missing annotation");
@@ -303,11 +312,11 @@ Annotations = { ...Annotations,
 							       >${similarsElement.innerHTML}</span>`
 							   : null;
 
-                //	The link-linkbibliography link (if exists).
-				let linkbibElement = referenceEntry.querySelector(".linkbibliography");
+                //	The link-link-bibliography link (if exists).
+				let linkbibElement = referenceEntry.querySelector(".link-bibliography");
 				let linkbib = linkbibElement
 							  ? `<span 
-							  	  class="data-field aux-links linkbibliography"
+							  	  class="data-field aux-links link-bibliography"
 							  	  >${linkbibElement.innerHTML}</span>`
 							  : null;
 

@@ -3435,7 +3435,7 @@ body.index-directory #footer {
 /*│ Aux-link pop-frames. │*/
 /*└──────────────────────┘*/
 
-.popframe-body .aux-links-block ul {
+.popframe-body ul.aux-links-list {
     margin: 0.75em 0 0.5em 0;
     padding: 0 0 0 1.75em;
 }
