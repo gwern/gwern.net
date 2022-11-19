@@ -1009,19 +1009,17 @@ Transclude = {
         if (Transclude.isAnnotationTransclude(includeLink)) {
             let annotationIdentifier = Extracts.targetIdentifier(includeLink);
 
-            //  Add load/fail handlers.
-            GW.notificationCenter.addHandlerForEvent("Annotations.annotationDidLoad", (info) => {
+            //  Request annotation load.
+            Annotations.loadAnnotation(annotationIdentifier, (identifier) => {
+            	//	Load success handler.
                 Transclude.transclude(includeLink, true);
-            }, { once: true, condition: (info) => info.identifier == annotationIdentifier });
-            GW.notificationCenter.addHandlerForEvent("Annotations.annotationLoadDidFail", (info) => {
+            }, (identifier) => {
+				//	Load fail handler.
                 Transclude.transclude(includeLink, true);
 
                 //  Send request to record failure in server logs.
                 GWServerLogError(includeLink.href + `--annotation-transclude-failed`, "failed annotation transclude");
-            }, { once: true, condition: (info) => info.identifier == annotationIdentifier });
-
-            //  Request annotation load.
-            Annotations.loadAnnotation(annotationIdentifier);
+            });
         } else {
             doAjax({
                 location: includeLink.href,
