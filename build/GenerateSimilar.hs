@@ -4,7 +4,8 @@
 module GenerateSimilar where
 
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str, Strong), Format(..), runPure, Pandoc(..), nullAttr)
-import qualified Data.Text as T  (append, intercalate, length, pack, strip, take, unlines, unpack, Text)
+import qualified Data.Text as T  (append, filter, intercalate, length, pack, strip, take, unlines, unpack, Text)
+import Data.Char (isAscii)
 import Data.List ((\\), intercalate,  nub, isPrefixOf, isSuffixOf)
 import Data.Maybe (fromJust)
 import qualified Data.Map.Strict as M (filter, keys, lookup, fromList, toList, difference, withoutKeys)
@@ -107,12 +108,12 @@ missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, 
 formatDoc :: (String,MetadataItem) -> T.Text
 formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
     let document = T.pack $ replace "\n" "\n\n" $ unlines [
-          if t=="" then "" else "'"++t++"' " ++
-          if path=="" then "" else "("++path++")" ++
-          if aut=="" then "" else ", by "++authorsTruncate aut ++
-          if dt==""then "." else" ("++dt++").",
+          (if t=="" then "" else "'"++t++"'" ++
+            if path=="" || head path == '/' then "" else " ("++path++")") ++
+          (if aut=="" || aut=="N/A" then "" else ", by "++authorsTruncate aut) ++
+          (if dt==""then "." else" ("++take 4 dt++")."),
 
-          if null tags then "" else "Subject: " ++ intercalate ", " tags ++ ".",
+          (if null tags then "" else "Keywords: " ++ intercalate ", " tags ++ "."),
 
           replace "<hr />" "" abst]
         parsedEither = let parsed = runPure $ readHtml def{readerExtensions = pandocExtensions } document
@@ -126,8 +127,8 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
         plainText = simplifiedDoc parsedEither `T.append` documentURLsText
         -- post-processing: 'We suggest replacing newlines (\n) in your input with a single space, as we have observed inferior results when newlines are present.' https://beta.openai.com/docs/api-reference/embeddings/create
         -- GPT-3 apparently doesn't do well with Unicode punctuation either (they get a bad BPE expansion factor too), so smart quotes are right out.
-        gptPlainText = T.take maxLength $ T.strip $
-                       replaceManyT [("\n"," "), ("  "," "), ("…","..."), ("“","'"), ("”","'"), ("‘","'"), ("’","'"), ("\\",""), ("\"","'"), ("\"","'")] plainText
+        gptPlainText = T.take maxLength $ T.strip $ T.filter isAscii $
+                       replaceManyT [("  ", " "), ("\8203",""), ("\8212", " - "), (" § ", ": "), ("\n"," "), ("  "," "), ("…","..."), ("“","'"), ("”","'"), ("‘","'"), ("’","'"), ("\\",""), ("\"","'"), ("\"","'")] plainText
     in
       gptPlainText
   where
@@ -144,13 +145,13 @@ embed edb mdb bdb i@(p,_) = do
                               Nothing -> []
                               Just bl -> map T.unpack bl
             let backlinksMetadata = if null backlinks then "" else
-                                      unlines $ ["Reverse citations:"] ++
-                                       map (\b -> case M.lookup b mdb of
-                                                   Nothing -> ""
-                                                   Just (t,a,d,_,_,_) -> "\"" ++ t ++ "\", " ++ authorsTruncate a ++ " (" ++ d ++ ")") backlinks
+                                      ". Reverse citations: " ++ (intercalate ". - " $
+                                        map (\b -> case M.lookup b mdb of
+                                                    Nothing -> ""
+                                                    Just (t,a,d,_,_,_) -> "\"" ++ t ++ "\", " ++ authorsTruncate a ++ (if d=="" then "" else " (" ++ take 4 d ++ ")")) backlinks)
 
             let doc = formatDoc i `T.append` (T.pack backlinksMetadata)
-            printGreen ("Formatted document as embedded (`embed`): " ++ show doc)
+            printGreen "Formatted document as embedded (`embed`):\n" >> putStrLn (T.unpack doc)
             (modelType,embedding) <- oaAPIEmbed doc
             today <- currentDay
             return (p,today,T.unpack doc,modelType,embedding)
