@@ -844,61 +844,49 @@ Extracts = {
         let target = popFrame.spawningTarget;
 		let targetDocument = Extracts.targetDocument(target) || Extracts.cachedPages[target.pathname];
 		let nearestBlockElement = (   targetDocument != null 
-								   && target.hash > ""
 								   && popFrame.classList.contains("external-page-embed") == false)
 								  ? Extracts.nearestBlockElement(Extracts.targetElementInDocument(target, targetDocument))
 								  : null;
 
-        let popFrameTitleText = ((() => {
-        	//	Designate section embeds with a section mark (§).
-        	return ((   target.hash > ""
-        			 && popFrame.classList.contains("external-page-embed") == false
-            		 && nearestBlockElement
-           			 && nearestBlockElement.tagName == "SECTION")
-           			? "&#x00a7; "
-           			: "");
-        })() + (() => {
-			if (target.pathname == location.pathname) {
-				//  Sections of the current page.
-				if (nearestBlockElement.id == "footnotes") {
-					/*	Special case for the Footnotes section, which has no heading 
-						associated with it, and thus no text to use as a section
-						title.
-					 */
-					return "Footnotes";
-				} else {
-					return (nearestBlockElement.tagName == "SECTION"
-							? nearestBlockElement.firstElementChild.textContent
-							: target.hash);
-				}
+		let popFrameTitleText;
+		if (targetDocument) {
+			if (popFrame.classList.contains("external-page-embed")) {
+				//  Entire other pages.
+				popFrameTitleText = Extracts.cachedPageTitles[target.pathname];
 			} else {
-				//	Other pages (whole pages or sections).
-				if (popFrame.classList.contains("external-page-embed")) {
-					//  Entire other pages.
-					return (Extracts.cachedPageTitles[target.pathname] || target.pathname);
-				} else {
-					//  Sections of other pages.
-					if (targetDocument) {
-						let pageTitleOrPath = Extracts.cachedPageTitles[target.pathname] || target.pathname;
-						if (nearestBlockElement.id == "footnotes") {
-							/*	Special case for the Footnotes section, which has no
-								heading associated with it, and thus no text to use 
-								as a section title.
-							 */
-							return `Footnotes (${pageTitleOrPath})`;
-						} else {
-							return (nearestBlockElement.tagName == "SECTION"
-									? `${nearestBlockElement.firstElementChild.textContent} (${pageTitleOrPath})`
-									: `${target.hash} (${pageTitleOrPath})`);
-						}
-					} else {
-						return (target.pathname + target.hash);
-					}
-				}
-			}
-        })());
+				//	Parts of the current page or of other pages.
+				popFrameTitleText = "";
 
-        return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
+				//	Section mark (§) for sections.
+				if (   nearestBlockElement
+					&& nearestBlockElement.tagName == "SECTION")
+					popFrameTitleText += "&#x00a7; ";
+
+				//	Block title or hash.
+				if (nearestBlockElement.id == "footnotes") {
+					popFrameTitleText += "Footnotes";
+				} else if (nearestBlockElement.tagName == "SECTION") {
+					popFrameTitleText += nearestBlockElement.firstElementChild.textContent;
+				} else {
+					popFrameTitleText += target.hash;
+				}
+
+				//	Page title (for parts of other pages).
+				if (target.pathname != location.pathname)
+					popFrameTitleText += ` (${Extracts.cachedPageTitles[target.pathname]})`;
+			}
+		} else {
+			popFrameTitleText = (target.pathname + target.hash);
+		}
+
+		return Transclude.fillTemplateNamed("pop-frame-title-local-page", {
+			titleLinkHref:      target.href,
+			popFrameTitleText:  popFrameTitleText
+		}, {
+			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
+			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
+			tabOrWindow:  (GW.isMobile() ? "tab" : "window")
+		}).innerHTML;
     },
 
     //  Called by: Extracts.rewritePopinContent_LOCAL_PAGE

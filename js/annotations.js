@@ -232,6 +232,34 @@ Annotations = { ...Annotations,
 			referenceDataFromParsedAPIResponse: (referenceEntry, identifier) => {
 				let referenceElement = referenceEntry.querySelector(Annotations.dataSources.local.referenceElementSelector);
 
+				let titleHTML = referenceElement.innerHTML;
+				let titleText = referenceElement.textContent;
+				let titleLinkHref = referenceElement.href;
+
+				let titleLinkClass = "title-link";
+				//  Import certain link classes.
+				/*  Just ‘link-live’ for now, but the inclusion rule is: any class that
+					is used to test whether a link is of a certain type - see e.g.
+					Extracts.isForeignSiteLink() in extracts-content.js - for which link
+					type there can be annotations (so not, e.g., ‘footnote-ref’, because
+					there’s no such thing as an annotated footnote link). This way, the
+					title-link of the popup will correctly test as the *un-annotated*
+					link type of the original target.
+					—SA 2022-06-13
+				 */
+				[ "link-live" ].forEach(targetClass => {
+					if (referenceElement.classList.contains(targetClass))
+						titleLinkClass += ` ${targetClass}`;
+				});
+
+				//	Original URL.
+				let originalURL = referenceElement.dataset.urlOriginal ?? null;
+				let originalURLText = originalURL
+									  ? (originalURL.includes("ar5iv") 
+									     ? `<span class="smallcaps">HTML</span>` 
+									     : "live")
+									  : null;
+
 				//  Author list.
 				let authorElement = referenceEntry.querySelector(".author");
 				//	Generate comma-separated author list; truncate with “…” abbreviation for 'et al' @ > 3.
@@ -241,21 +269,55 @@ Annotations = { ...Annotations,
 					if (authorList.length < authorElement.textContent.length)
 						authorList += "…";
 				}
+				let author = authorElement 
+							 ? `<span class="data-field author cite-author">${authorList}</span>` 
+							 : null;
 
 				//  Date.
 				let dateElement = referenceEntry.querySelector(".date");
+				let date = dateElement 
+						   ? (  `<span class="data-field cite-date" title="${dateElement.textContent}">` 
+						      + dateElement.textContent.replace(/-[0-9][0-9]-[0-9][0-9]$/, "") 
+						      + `</span>`) 
+						   : null;
 
 				// Link Tags
 				let tagsElement = referenceEntry.querySelector(".link-tags");
+				let tags = tagsElement
+						   ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>`
+						   : null;
 
 				//	The backlinks link (if exists).
 				let backlinksElement = referenceEntry.querySelector(".backlinks");
+				let backlinks = backlinksElement
+								? `<span 
+									class="data-field aux-links backlinks" 
+									>${backlinksElement.innerHTML}</span>`
+								: null;
 
 				//	The similar-links link (if exists).
-				let similarElement = referenceEntry.querySelector(".similars");
+				let similarsElement = referenceEntry.querySelector(".similars");
+				let similars = similarsElement
+							   ? `<span 
+							       class="data-field aux-links similars"
+							       >${similarsElement.innerHTML}</span>`
+							   : null;
 
                 //	The link-linkbibliography link (if exists).
 				let linkbibElement = referenceEntry.querySelector(".linkbibliography");
+				let linkbib = linkbibElement
+							  ? `<span 
+							  	  class="data-field aux-links linkbibliography"
+							  	  >${linkbibElement.innerHTML}</span>`
+							  : null;
+
+				//	All the aux-links (tags, backlinks, similars, link link-bib).
+				let auxLinks = ([ tags, backlinks, similars, linkbib ].filter(x => x).join("; ") || null);
+				if (auxLinks)
+					auxLinks = ` (${auxLinks})`;
+
+				//  Combined author, date, & aux-links.
+				let authorDateAux = ([ author, date, auxLinks ].filter(x => x).join("") || null);
 
 				//	Abstract (if exists).
 				let abstractElement = referenceEntry.querySelector("blockquote");
@@ -270,19 +332,44 @@ Annotations = { ...Annotations,
 					if (pageDescription)
 						unwrap(pageDescription, [ pageDescriptionClass ]);
 				}
+				let abstractHTML = abstractElement
+								   ? abstractElement.innerHTML
+								   : null;
+
+				//	Pop-frame title text. Mark sections with ‘§’ symbol.
+				/*  Annotations for local archive links with an org notation
+					for link icons (eg. 'https://arxiv.org/abs/2006.07159#google')
+					should not get a section mark.
+				 */
+				let noSectionMark = [
+					"adobe", "alibaba", "allen", "amazon", "anthropic", "apple", 
+					"baai", "baidu", "bair", "bytedance", "cerebras", "cohere", 
+					"deepmind", "eleutherai", "elementai", "facebook", "flickr",
+					"github", "google", "googledeepmind", "google-graphcore", 
+					"graphcore", "huawei", "huggingface", "ibm", "intel", "jd", 
+					"kako", "laion", "lighton", "microsoft", "microsoftnvidia", 
+					"miri", "naver", "nvidia", "openai", "pinterest", "pdf", 
+					"salesforce", "samsung", "sberbank", "schmidhuber", 
+					"sensetime", "snapchat", "sony", "spotify", "tencent", 
+					"tensorfork", "twitter", "uber", "yandex"
+				].includes(referenceElement.hash.slice(1));
+				let popFrameTitleText = ((   referenceElement.hash > "" 
+										  && noSectionMark == false)
+										 ? `&#x00a7; ${titleText.trimQuotes()}`
+										 : titleText.trimQuotes());
 
 				return {
-					element:        referenceElement,
-					titleHTML:      referenceElement.innerHTML,
-					authorHTML:     (authorElement ? `<span class="data-field author cite-author">${authorList}</span>` : ``),
-					dateHTML:       (dateElement ? `<span class="data-field cite-date" title="${dateElement.textContent}">` +
-									 dateElement.textContent.replace(/-[0-9][0-9]-[0-9][0-9]$/, "") +
-									 `</span>` : ``),
-					tagsHTML:       (tagsElement ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>` : ``),
-					backlinksHTML:  (backlinksElement ? `<span class="data-field aux-links backlinks">${backlinksElement.innerHTML}</span>` : ``),
-					similarHTML:    (similarElement ? `<span class="data-field aux-links similars" >${similarElement.innerHTML}</span>` : ``),
-                    linkbibHTML:    (linkbibElement ? `<span class="data-field aux-links linkbibliography" >${linkbibElement.innerHTML}</span>` : ``),
-					abstract:   	(abstractElement ? newDocument(abstractElement.childNodes) : null)
+					originalURL:        originalURL,
+					originalURLText:    originalURLText,
+					titleHTML:          titleHTML,
+					fullTitleHTML:      titleHTML,
+					titleText:          titleText,
+					titleLinkHref:      titleLinkHref,
+					titleLinkClass:     titleLinkClass,
+                    authorDateAux:      authorDateAux,
+					abstract:           abstractHTML,
+					popFrameTitleText:  popFrameTitleText,
+					template:           "annotation-blockquote-inside"
 				};
 			},
 
@@ -332,7 +419,9 @@ Annotations.dataSources.wikipedia = {
 	//	Called by: Annotations.referenceDataFromParsedAPIResponse
 	referenceDataFromParsedAPIResponse: (response, identifier) => {
 		let articleURL = new URL(identifier);
-		let responseHTML, titleHTML;
+		let titleLinkHref = articleURL.href;
+
+		let responseHTML, titleHTML, fullTitleHTML;
 		if (articleURL.hash > "") {
 			let targetSection = response["remaining"]["sections"].find(section =>
 				//	This MUST be decodeURIComponent, and NOT selectorFromHash!!!
@@ -347,10 +436,16 @@ Annotations.dataSources.wikipedia = {
 
 			responseHTML = targetSection["text"];
 			titleHTML = targetSection["line"];
+			fullTitleHTML = `${targetSection["line"]} (${response["lead"]["displaytitle"]})`;
 		} else {
 			responseHTML = response["lead"]["sections"][0]["text"];
+			titleHTML = response["lead"]["displaytitle"];
+			fullTitleHTML = titleHTML;
+
+			//	Build TOC.
 			let sections = response["remaining"]["sections"];
-			if (sections > []) {
+			if (   sections 
+				&& sections.length > 0) {
 				responseHTML += `<div class="TOC columns"><ul>`;
 				let headingLevel = 2;
 				for (let i = 0; i < sections.length; i++) {
@@ -359,7 +454,8 @@ Annotations.dataSources.wikipedia = {
 					if (newHeadingLevel > headingLevel)
 						responseHTML += `<ul>`;
 
-					if (i > 0 && newHeadingLevel <= headingLevel)
+					if (   i > 0 
+						&& newHeadingLevel <= headingLevel)
 						responseHTML += `</li>`;
 
 					if (newHeadingLevel < headingLevel)
@@ -373,21 +469,32 @@ Annotations.dataSources.wikipedia = {
 				}
 				responseHTML += `</li></ul></div>`;
 			}
-
-			titleHTML = response["lead"]["displaytitle"];
 		}
 
 		let referenceEntry = newDocument(responseHTML);
-
 		Annotations.dataSources.wikipedia.postProcessReferenceEntry(referenceEntry, identifier);
+		let abstractHTML = referenceEntry.innerHTML;
+
+		let titleText = newElement("SPAN", null, { innerHTML: titleHTML }).textContent;
+
+		//	Pop-frame title text. Mark sections with ‘§’ symbol.
+		let popFrameTitleHTML = (articleURL.hash > ""
+								 ? `${response["lead"]["displaytitle"]} &#x00a7; ${titleHTML}`
+								 : titleHTML);
+		let popFrameTitleText = newElement("SPAN", null, { innerHTML: popFrameTitleHTML }).textContent;
 
 		return {
-			element:        null,
-			titleHTML:      titleHTML,
-			articleTitle:	response["lead"]["displaytitle"],
-			authorHTML:     `<span class="data-field author">Wikipedia</span>`,
-			abstract: 		referenceEntry,
-			dataSource:		"wikipedia"
+			titleHTML:              titleHTML,
+			fullTitleHTML:          fullTitleHTML,
+			titleText:              titleText,
+			titleLinkHref:          titleLinkHref,
+			titleLinkClass:         `title-link link-live`,
+			titleLinkIconMetadata:  `data-link-icon-type="svg" data-link-icon="wikipedia"`,
+			abstract: 		        abstractHTML,
+			popFrameTitleText:      popFrameTitleText,
+			dataSource:		        "wikipedia",
+			dataSourceClass:        "wikipedia-entry",
+			template:               "annotation-blockquote-inside"
 		};
 	},
 

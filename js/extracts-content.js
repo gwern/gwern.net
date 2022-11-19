@@ -208,7 +208,9 @@ Extracts = { ...Extracts,
             case "backlinks":
                 return `${targetPage} (Backlinks)`;
             case "similars":
-                return `${targetPage} (Similar)`;
+                return `${targetPage} (Similar links)`;
+            case "linkbibliography":
+            	return `${targetPage} (Link bibliography)`;
             default:
                 return `${targetPage}`;
         }

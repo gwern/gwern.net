@@ -84,6 +84,15 @@ DOMTokenList.prototype.containsAnyOf = function (tokens) {
     return false;
 }
 
+/**************************************************/
+/*	The obvious equivalent of Element’s .innerHTML.
+ */
+Object.defineProperty(DocumentFragment.prototype, "innerHTML", {
+    get() {
+        return Array.from(this.childNodes).map(node => (node.nodeValue || node.outerHTML)).join("");
+    }
+});
+
 /*******************************************************************************/
 /*  Create and return a new element with the specified tag name, attributes, and
     object properties.

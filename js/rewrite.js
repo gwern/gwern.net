@@ -57,6 +57,11 @@
             browser event listener) from which the event is fired (such as
             ‘Annotation.loadAnnotation’).
 
+		‘contentType’ (key)
+			String that indicates content type of the loaded content. Might be 
+			null (which indicates the default content type: local page content).
+			Otherwise may be `annotation` or something else.
+
         ‘document’ (key)
             DOM object containing the loaded content. (For the GW.contentDidLoad
             event fired on the initial page load, the value of this key is
@@ -318,7 +323,7 @@ addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (loadEventInfo
 
     	image.style.aspectRatio = `${width} / ${height}`;
 
-		if (loadEventInfo.source == "Extracts.annotationForTarget")
+		if (loadEventInfo.contentType == "annotation")
 			image.style.width = `${width}px`;
     });
 }, "rewrite", (info) => info.needsRewrite);
@@ -402,14 +407,25 @@ addContentLoadHandler(GW.contentLoadHandlers.relocateThumbnailInAnnotation = (lo
 	if (GW.mediaQueries.mobileWidth.matches)
 		return;
 
-	let blockquote = loadEventInfo.document.querySelector("blockquote.annotation");
-	if (blockquote == null)
+	let annotationAbstract = loadEventInfo.document.querySelector(".annotation-abstract");
+	if (   annotationAbstract == null
+		|| annotationAbstract.tagName == "BLOCKQUOTE")
 		return;
 
-	let initialFigure = blockquote.querySelector(".annotation-abstract > figure.float-right:first-child");
-	if (initialFigure)
-		blockquote.insertBefore(initialFigure, blockquote.firstElementChild);
-}, "rewrite", (info) => info.source == "transclude");
+	let container = annotationAbstract.closest(".annotation");
+	if (   container == null
+		|| container == annotationAbstract)
+		return;
+
+	let initialFigure = annotationAbstract.querySelector(".annotation-abstract > figure.float-right:first-child");
+	if (initialFigure == null) {
+		let pageThumbnailImage = annotationAbstract.querySelector("img.page-thumbnail");
+		if (pageThumbnailImage)
+			initialFigure = pageThumbnailImage.closest("figure");
+	}
+    if (initialFigure)
+		container.insertBefore(initialFigure, container.firstElementChild);
+}, "rewrite");
 
 
 /***************/
@@ -758,44 +774,73 @@ addContentLoadHandler(GW.contentLoadHandlers.setMarginsOnFullWidthBlocks = (load
 /* ANNOTATIONS */
 /***************/
 
-/**************************************************************************/
-/*	Because annotations transclude aux-links, we can rewrite the aux-links 
-	links in annotation metadata blocks to be anchorlinks. (We do this only
-	when transcluding, not when showing annotations in pop-frames.)
+/***************************************************************************/
+/*	Because annotations transclude aux-links, we make the aux-links links in
+	the metadata line of annotations scroll down to the appended aux-links 
+	blocks.
  */
 addContentLoadHandler(GW.contentLoadHandlers.rewriteAuxLinksLinksInTranscludedAnnotations = (loadEventInfo) => {
     GWLog("rewriteAuxLinksLinksInTranscludedAnnotations", "rewrite.js", 1);
 
-	if (Extracts.popFrameProvider == Popins)
+	let annotation = loadEventInfo.document.querySelector(".annotation");
+	if (annotation == null)
 		return;
 
-	loadEventInfo.document.querySelectorAll(".data-field.aux-links a.aux-links").forEach(auxLinksLink => {
+	let inPopFrame = (annotation.closest(".popframe-body") != null);
+
+	annotation.querySelectorAll(".data-field.aux-links a.aux-links").forEach(auxLinksLink => {
 		let auxLinksLinkType = Extracts.auxLinksLinkType(auxLinksLink);
-		let includedAuxLinksBlock = loadEventInfo.document.querySelector(`.${auxLinksLinkType}-append`);
+		let includedAuxLinksBlock = annotation.querySelector(`.${auxLinksLinkType}-append`);
 		if (includedAuxLinksBlock) {
 			auxLinksLink.onclick = () => { return false; };
 			auxLinksLink.addActivateEvent((event) => {
-				revealElement(includedAuxLinksBlock, true);
+				if (inPopFrame) {
+					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(includedAuxLinksBlock);
+				} else {
+					revealElement(includedAuxLinksBlock, true);
+				}
 				return false;
 			});
 		}
 	});
-}, "rewrite", (info) => info.source == "transclude");
+}, "eventListeners", (info) => info.contentType == "annotation");
 
 /********************************************/
 /*	Apply class to aux-link-append container.
+
+	NOTE: This must run after prepareCollapseBlocks() in collapse.js.
+	Update the handler phase to indicate that specifically, when such
+	capability is added. —SA 2022-11-18
  */
 addContentLoadHandler(GW.contentLoadHandlers.designateAuxLinksAppendContainer = (loadEventInfo) => {
     GWLog("designateAuxLinksAppendContainer", "rewrite.js", 1);
 
-	addContentLoadHandler((info) => {
-		loadEventInfo.document.querySelectorAll(".aux-links-append").forEach(auxLinksBlock => {
-			let enclosingCollapseBlock = auxLinksBlock.parentElement.closest(".collapse, .annotation-abstract > div");
-			if (enclosingCollapseBlock)
-				enclosingCollapseBlock.classList.add("aux-links-container");
-		});
-	}, ">rewrite");
-}, ">rewrite");
+	loadEventInfo.document.querySelectorAll(".aux-links-append").forEach(auxLinksBlock => {
+		let enclosingCollapseBlock = auxLinksBlock.parentElement.closest(".collapse, .annotation-abstract > div");
+		if (enclosingCollapseBlock)
+			enclosingCollapseBlock.classList.add("aux-links-container");
+	});
+}, ">", (info) => info.needsRewrite);
+
+/*************************************************************************/
+/*	Rectify HTML structure of whole-page link bibliographies appended into
+	annotations.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rectifyAppendedPageLinkBibliographies = (loadEventInfo) => {
+    GWLog("rectifyAppendedPageLinkBibliographies", "rewrite.js", 1);
+
+	let appendedWholePageLinkBib = loadEventInfo.document.querySelector(".linkbibliography-append > .include-wrapper > #link-bibliography");
+	if (appendedWholePageLinkBib) {
+		if (appendedWholePageLinkBib.firstElementChild.tagName == "H1") {
+			appendedWholePageLinkBib.firstElementChild.remove();
+			appendedWholePageLinkBib.insertAdjacentHTML("afterbegin",
+				`<p><strong>Link bibliography:</strong></p>`);
+		}
+
+		unwrap(appendedWholePageLinkBib);
+	}
+}, "rewrite", (info) => (   info.needsRewrite
+						 && info.source == "transclude"));
 
 /*******************************************************************************/
 /*  Apply various typographic fixes (educate quotes, inject <wbr> elements after
@@ -817,7 +862,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInAnnotation = (lo
         image.alt = Typography.processString(image.alt, Typography.replacementTypes.QUOTES);
     });
 }, "rewrite", (info) => (   info.needsRewrite
-						 && info.source == "Extracts.annotationForTarget"));
+						 && info.contentType == "annotation"));
 
 /******************************************************************************/
 /*  Bind mouse hover events to, when hovering over an annotated link, highlight

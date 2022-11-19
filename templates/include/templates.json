@@ -1,4 +1,7 @@
 [
 	"annotation-blockquote-outside",
-	"annotation-blockquote-inside"
+	"annotation-blockquote-not",
+	"annotation-blockquote-inside",
+	"pop-frame-title-annotation",
+	"pop-frame-title-local-page"
 ]

@@ -3444,6 +3444,12 @@ body.index-directory #footer {
 /*│ Annotation pop-frames. │*/
 /*└────────────────────────┘*/
 
+.popframe-body..annotation .data-field.title {
+    font-size: 1.125em;
+    line-height: 1.35;
+    margin-bottom: 0.375em;
+}
+
 /*┌──────────────────────┐*/
 /*│ Footnote pop-frames. │*/
 /*└──────────────────────┘*/
@@ -4889,11 +4895,8 @@ section.highlight-fading::before {
     margin-top: 0.25em;
 }
 
-.annotation .data-field.title {
-    font-weight: bold;
-    font-size: 1.125em;
-    line-height: 1.35;
-    margin-bottom: 0.375em;
+.annotation .data-field.title .title-link {
+	font-weight: bold;
 }
 .annotation .data-field.title + p {
     text-indent: 0;
@@ -4913,13 +4916,16 @@ section.highlight-fading::before {
 .annotation .iaMirror {
     padding-right: 0.3em;
 }
-.annotation .data-field.annotation-abstract {
+.annotation div.data-field.annotation-abstract {
     margin-top: 0.5em;
+}
+.annotation blockquote.data-field.annotation-abstract {
+    margin-top: 1em;
 }
 .annotation .data-field.annotation-abstract:empty {
     display: none;
 }
-.annotation .data-field.annotation-abstract .page-description-annotation::before {
+.annotation .data-field.annotation-abstract:not(blockquote) .page-description-annotation::before {
     content: "";
     display: block;
     overflow: auto;
@@ -5098,35 +5104,48 @@ section.highlight-fading::before {
 	(rather than pop-framed) annotations.
  */
 
-blockquote.annotation .collapse.aux-links-container {
+.include-wrapper-block.annotation .collapse.aux-links-container {
     border-top: 1px solid var(--GW-TOC-border-color);
 }
-blockquote.annotation .collapse.aux-links-container:not(:last-child) {
+.include-wrapper-block.annotation .collapse.aux-links-container:not(:last-child) {
     border-bottom: 1px solid var(--GW-TOC-border-color);
 }
-blockquote.annotation p + .collapse.aux-links-container {
+.include-wrapper-block.annotation p + .collapse.aux-links-container {
     margin-top: 1.25em;
 }
-blockquote.annotation .collapse.aux-links-container + .collapse.aux-links-container {
+.include-wrapper-block.annotation .collapse.aux-links-container + .collapse.aux-links-container {
     margin-top: 1.5em;
 }
-blockquote.annotation .TOC + .collapse.aux-links-container {
+.include-wrapper-block.annotation .TOC + .collapse.aux-links-container {
     margin-top: 0.75em;
 }
 
-blockquote.annotation .collapse.aux-links-container .aux-links-append {
+.include-wrapper-block.annotation .collapse.aux-links-container .aux-links-append {
 	padding-left: 0;
 }
 
-blockquote.annotation :not(section).collapse.aux-links-container:not(.expanded) > .disclosure-button::before {
+.include-wrapper-block.annotation :not(section).collapse.aux-links-container:not(.expanded) > .disclosure-button::before {
     content: "Click to expand";
     width: 10rem;
     padding: 1rem 3rem 0.75rem 0;
 }
-blockquote.annotation :not(section).collapse.aux-links-container:not(.expanded) > .disclosure-button::after {
+.include-wrapper-block.annotation :not(section).collapse.aux-links-container:not(.expanded) > .disclosure-button::after {
     display: none;
 }
 
+.linkbibliography-append > ol {
+	list-style-type: lower-alpha;
+    padding-left: 1.75em;
+}
+.linkbibliography-append > ol > li::marker {
+    font-family: var(--GW-monospaced-font-stack);
+    font-size: 0.9em;
+}
+@media all and (max-width: 649px) {
+	.linkbibliography-append > ol {
+		padding-left: 1.75em;
+	}
+}
 
 /*********************/
 /* BOTTOM DECORATION */

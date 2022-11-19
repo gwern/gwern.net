@@ -1,12 +1,13 @@
-<p class="data-field title <[IF authorDateAux]>author-date-aux<[IFEND]>">
+<p class="data-field title">
 	<a 
 	   class="<{titleLinkClass}>"
 	   title="Open <{titleLinkHref}> in a new tab"
 	   href="<{titleLinkHref}>"
 	   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
 	   <{titleLinkIconMetadata}>
-	       ><{fullTitleHTML}></a><[IF dataSourceClass]>:<[IFEND]>
-	<[IF originalURL]><span class="originalURL">
+	       ><{titleHTML}></a>
+	<[IF originalURL]>
+	<span class="originalURL">
 		[<a
 			 title="Link to original URL for <{titleText}>"
 			 href="<{originalURL}>"
@@ -14,8 +15,11 @@
 			 alt="Original URL for this archived link; may be broken."
 				 ><{originalURLText}></a>]
 	</span>
-	<[IFEND]><[IF authorDateAux]>, <{authorDateAux}>:<[IFEND]>
+	<[IFEND]>
 </p>
+<[IF authorDateAux]>
+<p class="data-field author-date-aux"><{authorDateAux}></p>
+<[IFEND]>
 <[IF abstract]>
-<blockquote class="data-field annotation-abstract <{dataSourceClass}>"><{abstract}></blockquote>
+<div class="data-field annotation-abstract"><{abstract}></div>
 <[IFEND]>

@@ -260,8 +260,13 @@ function expandLockCollapseBlocks(loadEventInfo) {
 			collapseBlock.removeAttribute("class");
 		if (   collapseBlock.firstElementChild.tagName == "DIV"
 			&& collapseBlock.firstElementChild.className == ""
-			&& collapseBlock.children.length == 1)
+			&& isOnlyChild(collapseBlock.firstElementChild)) {
 			unwrap(collapseBlock.firstElementChild);
+		} else if (   collapseBlock.tagName == "DIV"
+				   && collapseBlock.className == ""
+				   && isOnlyChild(collapseBlock.firstElementChild)) {
+			unwrap(collapseBlock);
+		}
 
 		if (wasCollapsed)
 	    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", { source: "Collapse.expandLockCollapseBlocks" });

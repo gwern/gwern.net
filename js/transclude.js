@@ -210,6 +210,118 @@
     element, or if they are the same), then the transcluded content is empty.
  */
 
+/*****************************************************************************/
+/*	Extract template data from an HTML string by looking for:
+
+	1. Elements with the `data-template-field` attribute. The value of the 
+	   attribute is the data field name; the .innerHTML of the element is the 
+	   field value.
+
+	2. Elements with the `data-template-field-attributes` attribute. The value
+	   of the attribute should be a comma-separated list of 
+	   `FIELD_NAME=ATTRIBUTE_NAME` pairs. The first (FIELD_NAME) component of 
+	   each pair is the data field name; the second (ATTRIBUTE_NAME) component
+	   is the name of the attribute of the given element which holds the field
+	   value.
+
+	3. Elements with the `data-template-field-properties` attribute. The value
+	   of the attribute should be a comma-separated list of 
+	   `FIELD_NAME=PROPERTY_NAME` pairs. The first (FIELD_NAME) component of 
+	   each pair is the data field name; the second (PROPERTY_NAME) component
+	   is the name of the DOM object property of the given element which holds 
+	   the field value.
+ */
+//	(string) => object
+function templateDataFromHTML(html) {
+	let dataObject = { };
+
+	newDocument(html).querySelectorAll([
+		"[data-template-field]", 
+		"[data-template-fields-attributes]", 
+		"[data-template-fields-properties]" 
+	].join(", ")).forEach(element => {
+		if (element.dataset.templateField)
+			dataObject[element.dataset.templateField] = element.innerHTML;
+
+		if (element.dataset.templateFieldAttributes) {
+			element.dataset.templateFieldAttributes.split(",").forEach(templateField => {
+				let [ fieldName, attributeName ] = trim(templateField).split("=");
+				dataObject[fieldName] = element.getAttribute(attributeName);
+			});
+		}
+
+		if (element.dataset.templateFieldProperties) {
+			element.dataset.templateFieldProperties.split(",").forEach(templateField => {
+				let [ fieldName, propertyName ] = trim(templateField).split("=");
+				dataObject[fieldName] = element[propertyName];
+			});
+		}
+	});
+
+	return dataObject;
+}
+
+/******************************************************************************/
+/*	Fill a template with provided reference data (supplemented by an optional 
+	context object).
+
+	Reference data may be a data object, or else an HTML string (in which case
+	the templateDataFromHTML() function is used to extract data from the HTML).
+
+	If no ‘data’ argument is provided, then the template itself will be parsed 
+	to extract reference data (again, using the templateDataFromHTML() 
+	function).
+
+	(Context argument must be an object, not a string.)
+ */
+//	(string, string|object, object) => DocumentFragment
+function fillTemplate (template, data = null, context = null) {
+	if (template == null)
+		return null;
+
+	//	If no data source is provided, use the template itself as data source.
+	if (data == null)
+		data = template;
+
+	//	If the data source is a string, assume it to be HTML and extract data.
+	if (typeof data == "string")
+		data = templateDataFromHTML(data);
+
+	/*	Data variables specified in the provided context argument (if any)
+		take precedence over the reference data.
+	 */
+	let value = (fieldName) => {
+		return (context && context[fieldName]
+				? context[fieldName]
+				: (data ? data[fieldName] : null));
+	};
+
+	//	Make a copy of the template.
+	let filledTemplate = template;
+
+	/*	Conditionals. JavaScript’s regexps do not support recursion, so we
+		keep running the replacement until no conditionals remain.
+	 */
+	let didReplace;
+	do {
+		didReplace = false;
+		filledTemplate = filledTemplate.replace(
+			/<\[IF([0-9]*)\s+(.+?)\]>(.+?)(?:<\[ELSE\1\]>(.+?))?<\[IF\1END\]>/gs, 
+			(match, nestLevel, fieldName, ifValue, elseValue) => {
+				didReplace = true;
+				return (value(fieldName) ? (ifValue ?? "") : (elseValue ?? ""));
+			});
+	} while (didReplace); 
+
+	//	Data variable substitution.
+	filledTemplate = filledTemplate.replace(
+		/<\{(.+?)\}>/g, 
+		(match, fieldName) => (value(fieldName) ?? "")
+	);
+
+	return newDocument(filledTemplate);
+}
+
 /***********************************************************************/
 /*  Replace an include-link with the given content (a DocumentFragment).
  */
@@ -223,6 +335,14 @@ function includeContent(includeLink, content) {
 
     //  Prevent race condition, part I.
     includeLink.classList.add("include-in-progress");
+
+    //  Document into which the transclusion is being done.
+    let doc = includeLink.getRootNode();
+
+    //  Are we including into the main page, or into a pop-frame or something?
+    let includingIntoMainPage = (doc == document);
+
+	//	WITHIN-WRAPPER MODIFICATIONS BEGIN
 
     //  Wrap (unwrapping first, if need be).
     let wrapper = newElement("SPAN", { "class": "include-wrapper" });
@@ -245,31 +365,47 @@ function includeContent(includeLink, content) {
                       : includeLink;
     insertWhere.parentElement.insertBefore(wrapper, insertWhere);
 
-    //  Document into which the transclusion is being done.
-    let doc = includeLink.getRootNode();
-
-    //  Are we including into the main page, or into a pop-frame or something?
-    let includingIntoMainPage = (doc == document);
-
     //  Delete footnotes section, if any.
     let newContentFootnotesSection = wrapper.querySelector("#footnotes");
     if (newContentFootnotesSection)
         newContentFootnotesSection.remove();
-
-    //  Update TOC, if need be.
-    if (includingIntoMainPage)
-        updatePageTOC(wrapper, true);
 
     //  Update footnotes, if need be.
     let newFootnotesWrapper = Transclude.isAnnotationTransclude(includeLink)
                               ? null
                               : updateFootnotesAfterInclusion(wrapper, includeLink);
 
+    //  ID transplantation.
+    if (   includeLink.id > ""
+        && includeLink.classList.contains("include-identify-not") == false
+        && wrapper.querySelector("#" + includeLink.id) == null) {
+        let idBearerBlock = newElement("DIV", { "id": includeLink.id, "class": "include-wrapper-block" });
+        idBearerBlock.append(...(wrapper.childNodes));
+        wrapper.append(idBearerBlock);
+    }
+
+    //  Special treatment for aux-links blocks.
+    if (Extracts.isAuxLinksLink(includeLink)) {
+        let auxLinksBlock = null;
+        if (wrapper.firstElementChild.classList.contains("include-wrapper-block")) {
+            auxLinksBlock = wrapper.firstElementChild;
+        } else {
+            auxLinksBlock = wrapper.closest("aux-links-append");
+        }
+        if (auxLinksBlock == null) {
+            auxLinksBlock = newElement("DIV");
+            auxLinksBlock.append(...(wrapper.childNodes));
+            wrapper.append(auxLinksBlock);
+        }
+        let auxLinksLinkType = Extracts.auxLinksLinkType(includeLink);
+        auxLinksBlock.classList.add(`aux-links-block`, `${auxLinksLinkType}-block`);
+        if (auxLinksLinkType == "backlinks")
+            auxLinksBlock.dataset.targetUrl = Extracts.targetOfAuxLinksLink(includeLink);
+    }
+
     //  Fire events, if need be.
     if (includeLink.needsRewrite) {
-        let flags = 0;
-        if (Transclude.isAnnotationTransclude(includeLink) == false)
-            flags |= GW.contentDidLoadEventFlags.needsRewrite;
+        let flags = GW.contentDidLoadEventFlags.needsRewrite;
         if (includingIntoMainPage)
             flags |= (  GW.contentDidLoadEventFlags.fullWidthPossible
                       | GW.contentDidLoadEventFlags.collapseAllowed);
@@ -277,6 +413,7 @@ function includeContent(includeLink, content) {
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "transclude",
             document: wrapper,
+            contentType: (Transclude.isAnnotationTransclude(includeLink) ? "annotation" : null),
             loadLocation: new URL(includeLink.href),
             baseLocation: includeLink.baseLocation,
             flags: flags
@@ -305,8 +442,14 @@ function includeContent(includeLink, content) {
         }
     }
 
+	//	WITHIN-WRAPPER MODIFICATIONS END; OTHER MODIFICATIONS BEGIN
+
     //  Save reference for potential removal later.
     let includeLinkParentElement = includeLink.parentElement;
+
+    //  Update TOC, if need be.
+    if (includingIntoMainPage)
+        updatePageTOC(wrapper, true);
 
     //  Remove extraneous text node after link, if any.
     if (   replaceContainer == false
@@ -325,7 +468,7 @@ function includeContent(includeLink, content) {
         let allowedParentTags = [ "SECTION", "DIV" ];
 
         //  Special handling for annotation transcludes in link bibliographies.
-        if (wrapper.parentElement.closest("#link-bibliography") != null)
+        if (wrapper.parentElement.closest("#link-bibliography, .linkbibliography-append") != null)
             allowedParentTags.push("LI");
 
         while (   false == allowedParentTags.includes(wrapper.parentElement.tagName)
@@ -360,33 +503,10 @@ function includeContent(includeLink, content) {
         }
     }
 
-    //  ID transplantation.
-    if (   includeLink.id > ""
-        && includeLink.classList.contains("include-identify-not") == false
-        && wrapper.querySelector("#" + includeLink.id) == null) {
-        let idBearerBlock = newElement("DIV", { "id": includeLink.id, "class": "include-wrapper-block" });
-        idBearerBlock.append(...(wrapper.childNodes));
-        wrapper.append(idBearerBlock);
-    }
-
-    //  Special treatment for aux-links blocks.
-    if (Extracts.isAuxLinksLink(includeLink)) {
-        let auxLinksBlock = null;
-        if (wrapper.firstElementChild.classList.contains("include-wrapper-block")) {
-            auxLinksBlock = wrapper.firstElementChild;
-        } else {
-            auxLinksBlock = wrapper.closest("aux-links-append");
-        }
-        if (auxLinksBlock == null) {
-            auxLinksBlock = newElement("DIV");
-            auxLinksBlock.append(...(wrapper.childNodes));
-            wrapper.append(auxLinksBlock);
-        }
-        let auxLinksLinkType = Extracts.auxLinksLinkType(includeLink);
-        auxLinksBlock.classList.add(`aux-links-block`, `${auxLinksLinkType}-block`);
-        if (auxLinksLinkType == "backlinks")
-            auxLinksBlock.dataset.targetUrl = Extracts.targetOfAuxLinksLink(includeLink);
-    }
+	//	Mark annotations as such, if need be.
+	if (   Transclude.isAnnotationTransclude(includeLink)
+		&& wrapper.querySelector(".annotation") == null)
+		wrapper.querySelector(".annotation-abstract").parentElement.closest("div, li").classList.add("annotation");
 
     //  Unwrap.
     unwrap(wrapper);
@@ -400,6 +520,8 @@ function includeContent(includeLink, content) {
     //  Remove include-link’s container, if specified.
     if (replaceContainer)
         includeLinkParentElement.remove();
+
+	//	OTHER MODIFICATIONS END
 
     //  Prevent race condition, part II.
     includeLink.classList.add("include-complete");
@@ -618,44 +740,14 @@ Transclude = {
 		});
 	},
 
-	//	(string, object) => DocumentFragment
-	fillTemplate: (template, data) => {
-		if (template == null)
-			return null;
-
-		if (data == null)
-			return newDocument(template);
-
-		let filledTemplate = template.replace(
-			/<\[IF (.+?)\]>(.+?)(?:<\[ELSE\]>(.+?))?<\[IFEND\]>/g, 
-			(match, fieldName, ifValue, elseValue) => (data[fieldName] ? (ifValue ?? "") : (elseValue ?? ""))
-		).replace(
-			/<\{(.+?)\}>/g, 
-			(match, fieldName) => (data[fieldName] ?? "")
-		);
-
-		return newDocument(filledTemplate);
+	//	(string, string|object, object) => DocumentFragment
+	fillTemplateNamed: (templateName, data, context) => {
+		return fillTemplate(Transclude.templates[templateName], data, context);
 	},
 
     /********************************/
     /*  Retrieved content processing.
      */
-
-    //  Called by: Transclude.transclude
-    reformatAnnotation: (annotation, includeLink) => {
-		let annotationAbstract = annotation.querySelector(".data-field.annotation-abstract");
-		let annotationData = {
-			title: annotation.querySelector(".data-field.title").innerHTML,
-			authorDateAux: (annotation.querySelector(".data-field.author-date-aux") || {}).innerHTML,
-			abstract: annotationAbstract.innerHTML,
-			dataSourceClass: annotationAbstract.dataset.sourceClass,
-			template: annotationAbstract.dataset.template
-		};
-
-        let templateName = (includeLink.dataset.template || annotationData.template);
-			
- 		return Transclude.fillTemplate(Transclude.templates[templateName], annotationData);
-    },
 
     //  Called by: Transclude.transclude
     sliceContentFromDocument: (sourceDocument, includeLink) => {
@@ -846,7 +938,7 @@ Transclude = {
             return;
         }
 
-        //  Transclusion is eager (non-delayed) by default.
+        //  Transclusion is lazy by default.
         if (   now == false
             && includeLink.classList.contains("include-strict") == false) {
             includeLink.needsRewrite = true;
@@ -918,8 +1010,8 @@ Transclude = {
 
                 return;
             } else if (referenceData) {
-                Transclude.setCachedContentForLink(Transclude.reformatAnnotation(Extracts.annotationForTarget(includeLink), 
-                																 includeLink), 
+            	let templateName = (includeLink.dataset.template || referenceData.template);
+                Transclude.setCachedContentForLink(Transclude.fillTemplateNamed(templateName, referenceData), 
                 								   includeLink);
                 Transclude.transclude(includeLink, true);
 

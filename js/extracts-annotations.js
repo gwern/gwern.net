@@ -2,7 +2,8 @@
 /*  Events fired by extracts-annotations.js:
 
     GW.contentDidLoad {
-            source: "Extracts.annotationForTarget"
+            source: "Extracts.annotationForTarget",
+            contentType: "annotation",
             document:
                 A DocumentFragment containing the constructed annotation.
             loadLocation:
@@ -20,6 +21,7 @@
 
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_ANNOTATION"
+            contentType: "annotation",
             document:
                 The `document` property of the annotation pop-frame.
             loadLocation:
@@ -107,128 +109,19 @@ Extracts = { ...Extracts,
             return newDocument();
         }
 
-        let constructedAnnotation = newDocument((() => {
-            //  Title (data field).
-
-            //  Open links in same tab on mobile, new tab on desktop.
-            let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
-
-            //  Link to original URL (for archive links).
-            let originalLinkHTML = "";
-            if (   referenceData.element
-                && referenceData.element.dataset.urlOriginal != undefined
-                && referenceData.element.dataset.urlOriginal != target.href) {
-                let originalURLText = referenceData.element.dataset.urlOriginal.includes("ar5iv") ? `<span class="smallcaps">HTML</span>` : "live";
-                originalLinkHTML = ` <span class="originalURL">`
-                                      + `[<a
-                                            title="Link to original URL for ${referenceData.element.textContent}"
-                                            href="${referenceData.element.dataset.urlOriginal}"
-                                            target="${linkTarget}"
-                                            alt="Original URL for this archived link; may be broken."
-                                                >` + originalURLText + `</a>]`
-                                  + `</span>`;
-            }
-
-            //  Extract title/link.
-            let titleLinkClass = (originalLinkHTML > ""
-                                  ? `title-link local-archive-link`
-                                  : (referenceData.dataSource == "wikipedia"
-                                     ? `title-link link-live`
-                                     : `title-link`));
-            //  Import certain link classes from target.
-            /*  Just ‘link-live’ for now, but the inclusion rule is: any class that
-                is used to test whether a link is of a certain type - see e.g.
-                Extracts.isForeignSiteLink() in extracts-content.js - for which link
-                type there can be annotations (so not, e.g., ‘footnote-ref’, because
-                there’s no such thing as an annotated footnote link). This way, the
-                title-link of the popup will correctly test as the *un-annotated*
-                link type of the original target.
-                —SA 2022-06-13
-             */
-            [ "link-live" ].forEach(targetClass => {
-                if (target.classList.contains(targetClass))
-                    titleLinkClass += ` ${targetClass}`;
-            });
-            let titleLinkIconMetadata = (referenceData.dataSource == "wikipedia"
-                                         ? `data-link-icon-type="svg" data-link-icon="wikipedia"`
-                                         : ``);
-            let titleLinkHTML = `<a
-                                    class="${titleLinkClass}"
-                                    title="Open ${target.href} in a new tab"
-                                    href="${target.href}"
-                                    target="${linkTarget}"
-                                    ${titleLinkIconMetadata}
-                                        >${referenceData.titleHTML}</a>`;
-
-            return (`<p class="data-field title">`
-                     + titleLinkHTML
-                     + originalLinkHTML
-                     + `</p>`);
-        })() + (() => {
-            //  Author, date, aux-links (data field).
-
-            /*  Suppress the author block in WP popups; we have nothing more
-                useful to say than ‘Wikipedia’ (even if we grabbed the
-                last-revision-time from WP, that’s usually just a trivial bot
-                edit and isn’t a ‘real’ author date), and the fact that it’s WP
-                is already denoted by the dotted underline, ‘W’ icon on the
-                title link, lack of the standard metadata block which non-WP
-                annotations have (author/date/tag/backlinks/similar-links), and
-                the encyclopedic topic & tone. Putting ‘Wikipedia’ on an entire
-                line by itself is just a waste of precious popup vertical space.
-             */
-            if (referenceData.dataSource == "wikipedia")
-                return "";
-
-            //  Similars, backlinks, tags, link-linkbib:
-            let auxLinks = [ ];
-            if (referenceData.backlinksHTML == ``) {
-                if (referenceData.tagsHTML > ``)
-                    auxLinks.push(`<span class="data-field link-tags">${referenceData.tagsHTML}</span>`);
-            } else {
-                if (referenceData.tagsHTML > ``)
-                    auxLinks.push(referenceData.tagsHTML);
-
-                auxLinks.push(referenceData.backlinksHTML);
-            }
-            if (referenceData.similarHTML) {
-                auxLinks.push(referenceData.similarHTML);
-            }
-            if (referenceData.linkbibHTML) {
-                auxLinks.push(referenceData.linkbibHTML);
-            }
-            auxLinks = auxLinks.join("; ");
-
-            return ((referenceData.authorHTML || referenceData.dateHTML || auxLinks)
-            		? (`<p class="data-field author-date-aux">`
-            		   + referenceData.authorHTML
-            		   + referenceData.dateHTML
-            		   + (auxLinks == ""
-            		      ? ``
-            		      : ` (${auxLinks})`)
-            		   + `</p>`)
-            		: "");
-        })() + (() => {
-            //  Abstract (data field). (Empty for now; content injected below.)
-            return `<div class="data-field annotation-abstract"`
-                    + (referenceData.dataSource == "wikipedia"
-                       ? ` data-source-class="wikipedia-entry" data-template="annotation-blockquote-outside"`
-                       : ` data-template="annotation-blockquote-inside"`)
-                    + `></div>`
-        })());
-
-        //  Inject abstract (annotation body).
-        if (referenceData.abstract)
-            constructedAnnotation.querySelector(".annotation-abstract").appendChild(newDocument(referenceData.abstract));
+		//	Construct annotation by filling template with reference data.
+		let constructedAnnotation = Transclude.fillTemplateNamed("annotation-blockquote-not", referenceData, {
+			linkTarget:  ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank")
+		});
 
         //  Fire contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.annotationForTarget",
+            contentType: "annotation",
             document: constructedAnnotation,
             loadLocation: Annotations.sourceURLForIdentifier(annotationIdentifier),
             baseLocation: Extracts.locationForTarget(target),
-            flags: (  GW.contentDidLoadEventFlags.needsRewrite
-            		| GW.contentDidLoadEventFlags.collapseAllowed)
+            flags: GW.contentDidLoadEventFlags.needsRewrite
         });
 
         //  Cache constructed and processed annotation.
@@ -242,103 +135,22 @@ Extracts = { ...Extracts,
         GWLog("Extracts.titleForPopFrame_ANNOTATION", "extracts-annotations.js", 2);
 
         let target = popFrame.spawningTarget;
-		let referenceData = Annotations.referenceDataForAnnotationIdentifier(Extracts.targetIdentifier(target))
+		let referenceData = Annotations.referenceDataForAnnotationIdentifier(Extracts.targetIdentifier(target));
+		if (referenceData == null) {
+			referenceData = {
+				titleLinkHref:     target.href,
+				originalURL:       (target.dataset.urlOriginal ?? null),
+				popFrameTitleText: (target.hostname == location.hostname
+									? target.pathname + target.hash
+									: target.href)
+			};
+		}
 
-        return ((() => {
-            /*  For local-archive links, the archive link. For other link types,
-                nothing.
-             */
-
-            if (target.dataset.urlOriginal == null)
-                return "";
-
-            //  Open link in same tab on mobile, new tab on desktop.
-            let whichTab = (Extracts.popFrameProvider == Popins) ? "current" : "new";
-            let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
-            return `[<a
-                        class="popframe-title-link-archived"
-                        title="Open ${target.href} in ${whichTab} tab."
-                        href="${target.href}"
-                        target="${linkTarget}"
-                            >ARCHIVED</a>]`
-                  + `<span class="separator">·</span>`
-        })() + (() => {
-            /*  Original (live) link (which is the only link, for link types
-                other than “local archive”).
-             */
-
-            //  We construct the title text out of blocks also.
-            let popFrameTitleText = ((() => {
-                //  This block is relevant only to annotated anchorlinks.
-
-                if (   target.hash > ""
-                    /*  For links to sections of Wikipedia articles, show the
-                        page title and the section title, separated by the ‘§’
-                        symbol (see below).
-                     */
-                    && Extracts.popFrameHasLoaded(popFrame)
-                    && referenceData.dataSource == "wikipedia") {
-                    let referenceData = Annotations.referenceDataForAnnotationIdentifier(Extracts.targetIdentifier(target));
-                    return referenceData.articleTitle;
-                } else {
-                    return "";
-                }
-            })() + (() => {
-                //  This block is relevant only to annotated anchorlinks.
-
-                if (   target.hash > ""
-                    //  For sections of local pages, mark with ‘§’ symbol.
-                    && (    target.hostname == location.hostname
-                        /*  Annotations for local archive links with an org notation
-                            for link icons (eg. 'https://arxiv.org/abs/2006.07159#google')
-                            should not get a section mark.
-                         */
-                            && !(["adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance",
-                                  "cerebras", "cohere", "deepmind", "eleutherai", "elementai", "facebook", "flickr",
-                                  "github", "google", "googledeepmind", "google-graphcore", "graphcore", "huawei", "huggingface", "ibm", "intel", "jd", "kako", "laion",
-                                  "lighton", "microsoft", "microsoftnvidia", "miri", "naver",
-                                  "nvidia", "openai", "pinterest", "pdf", "salesforce", "samsung", "sberbank", "schmidhuber", "sensetime",
-                                  "snapchat", "sony", "spotify", "tencent", "tensorfork", "twitter", "uber", "yandex"
-                              ].includes(target.hash.slice(1))))) {
-                    return "&#x00a7; ";
-                } else if (   target.hash > ""
-                           && Extracts.popFrameHasLoaded(popFrame)
-                           && referenceData.dataSource == "wikipedia") {
-                    /*  For links to sections of Wikipedia articles, show the
-                        page title and the section title, (see above), separated
-                        by the ‘§’ symbol.
-                     */
-                    return " &#x00a7; ";
-                } else {
-                    return "";
-                }
-            })() + (() => {
-                //  This block applies to all annotated links.
-
-				//	The `.slice(1)` is to get rid of the initial `&NoBreak;`.
-                return (Extracts.popFrameHasLoaded(popFrame)
-                        ? popFrame.document.querySelector(".data-field.title").textContent.slice(1).trimQuotes()
-                        : (Annotations.dataSources.wikipedia.matches(Extracts.targetIdentifier(target))
-                           ? target.href
-                           : target.pathname + target.hash));
-            })());
-
-            if (target.dataset.urlOriginal) {
-                //  Open link in same tab on mobile, new tab on desktop.
-                let whichTab = (Extracts.popFrameProvider == Popins) ? "current" : "new";
-                let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
-                return `<a
-                            class="popframe-title-link"
-                            title="Open ${target.dataset.urlOriginal} in ${whichTab} tab."
-                            href="${target.dataset.urlOriginal}"
-                            target="${linkTarget}"
-                                >`
-                     +  popFrameTitleText.replace(/^\[original\]/, "")
-                     + `</a>`;
-            } else {
-                return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
-            }
-        })());
+		return Transclude.fillTemplateNamed("pop-frame-title-annotation", referenceData, {
+			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
+			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
+			tabOrWindow:  (GW.isMobile() ? "tab" : "window")
+		}).innerHTML;
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -369,44 +181,17 @@ Extracts = { ...Extracts,
         GWLog("Extracts.rewritePopFrameContent_ANNOTATION", "extracts-annotations.js", 2);
 
         let target = popFrame.spawningTarget;
+		let referenceData = Annotations.referenceDataForAnnotationIdentifier(Extracts.targetIdentifier(target))
 
         //  Mark annotations from non-local data sources.
-        let dataSourceClass = popFrame.document.querySelector(".annotation-abstract").dataset.sourceClass;
-        if (dataSourceClass)
-            Extracts.popFrameProvider.addClassesToPopFrame(popFrame, dataSourceClass.split(" "));
-
-		/*	Make aux-links links in annotation metadata scroll the pop-frame to
-			the corresponding transcluded .aux-links-append block, if present.
-		 */
-        popFrame.document.querySelectorAll(".data-field.aux-links a.aux-links").forEach(auxLinksLink => {
-			let auxLinksLinkType = Extracts.auxLinksLinkType(auxLinksLink);
-			let includedAuxLinksBlock = popFrame.document.querySelector(`.${auxLinksLinkType}-append`);
-			if (includedAuxLinksBlock) {
-				auxLinksLink.onclick = () => { return false; };
-				auxLinksLink.addActivateEvent((event) => {
-					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(includedAuxLinksBlock);
-					return false;
-				});
-			}
-        });
-
-        /*  Allow for floated figures at the start of abstract
-            (only on sufficiently wide viewports).
-            */
-        if (GW.mediaQueries.mobileWidth.matches == false) {
-            let initialFigure = popFrame.document.querySelector(".annotation-abstract > figure.float-right:first-child");
-            if (initialFigure == null) {
-            	let pageThumbnailImage = popFrame.document.querySelector("img.page-thumbnail");
-            	if (pageThumbnailImage)
-            		initialFigure = pageThumbnailImage.closest("figure");
-            }
-            if (initialFigure)
-                popFrame.body.insertBefore(initialFigure, popFrame.body.firstElementChild);
-        }
+        if (   referenceData 
+        	&& referenceData.dataSourceClass)
+            Extracts.popFrameProvider.addClassesToPopFrame(popFrame, referenceData.dataSourceClass.split(" "));
 
         //  Fire contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_ANNOTATION",
+            contentType: "annotation",
             document: popFrame.document,
             loadLocation: Annotations.sourceURLForIdentifier(Extracts.targetIdentifier(target)),
             baseLocation: Extracts.locationForTarget(target),
