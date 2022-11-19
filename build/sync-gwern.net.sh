@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-11-17 17:09:46 gwern"
+# When:  Time-stamp: "2022-11-18 21:09:36 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -326,7 +326,7 @@ else
     λ(){ find metadata/annotations/ -name "*.html" \
              | shuf | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort -u | \
              grep -E -v -e '^see-also-append$' -e '^archive-local$' -e '^archive-not$' -e '^author$' -e '^aux-links$' -e '^backlink-not$' \
-                   -e '^backlinks$' -e '^backlinks-append$' -e '^backlinks-transclusion$' -e 'aux-links-append' -e '^bash$' -e '^Bash$' -e '^book-review-author$' \
+                   -e '^backlinks$' -e '^backlinks-append$' -e 'aux-links-append' -e '^bash$' -e '^Bash$' -e '^book-review-author$' \
                    -e '^book-review-date$' -e '^book-review-rating$' -e '^book-review-title$' -e '^cite-author$' -e '^cite-author-plural$' \
                    -e '^cite-date$' -e '^date$' -e '^display$' -e '^email$' -e '^external-page-embed$' -e '^id-not$' -e '^include$' \
                    -e '^include-strict$' -e '^inflation-adjusted$' -e '^latex$' -e '^link-annotated$' -e '^link-live$' -e '^link-page$' -e '^link-page-not$' \
@@ -354,7 +354,7 @@ else
                    -e '^mjx-msup$' -e '^mjx-mtext$' -e '^mjx-munderover$' -e '^mjx-numerator$' -e '^mjx-op$' -e '^mjx-over$' -e '^mjx-row$' \
                    -e '^mjx-stack$' -e '^mjx-sub$' -e '^mjx-sup$' -e '^mjx-surd$' -e '^mjx-texatom$' -e '^mjx-TeXmathchoice$' -e '^mjx-under$' \
                    -e '^mjx-vsize$' -e '^new$' -e '^outline-not$' -e '^warning$' -e '^markdown-body$' -e '^similars$' -e '^similars-append$' \
-                   -e '^text-center$' -e '^abstract-tag-directory$' -e '^page-description-annotation$' -e '^linkbibliography$' \
+                   -e '^text-center$' -e '^abstract-tag-directory$' -e '^page-description-annotation$' -e '^link-bibliography$' \
                    -e '^linkbibliography-append$'; }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
