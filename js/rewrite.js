@@ -58,7 +58,7 @@
             ‘Annotation.loadAnnotation’).
 
 		‘contentType’ (key)
-			String that indicates content type of the loaded content. Might be 
+			String that indicates content type of the loaded content. Might be
 			null (which indicates the default content type: local page content).
 			Otherwise may be `annotation` or something else.
 
@@ -800,7 +800,7 @@ addContentLoadHandler(GW.contentLoadHandlers.re = (loadEventInfo) => {
 
 /***************************************************************************/
 /*	Because annotations transclude aux-links, we make the aux-links links in
-	the metadata line of annotations scroll down to the appended aux-links 
+	the metadata line of annotations scroll down to the appended aux-links
 	blocks.
  */
 addContentLoadHandler(GW.contentLoadHandlers.rewriteAuxLinksLinksInTranscludedAnnotations = (loadEventInfo) => {
@@ -853,7 +853,7 @@ addContentLoadHandler(GW.contentLoadHandlers.designateAuxLinksAppendContainer = 
 addContentLoadHandler(GW.contentLoadHandlers.rectifyAppendedPageLinkBibliographies = (loadEventInfo) => {
     GWLog("rectifyAppendedPageLinkBibliographies", "rewrite.js", 1);
 
-	let appendedWholePageLinkBib = loadEventInfo.document.querySelector(".linkbibliography-append > .include-wrapper > #link-bibliography");
+	let appendedWholePageLinkBib = loadEventInfo.document.querySelector(".link-bibliography-append > .include-wrapper > #link-bibliography");
 	if (appendedWholePageLinkBib) {
 		if (appendedWholePageLinkBib.firstElementChild.tagName == "H1") {
 			appendedWholePageLinkBib.firstElementChild.remove();
@@ -1053,7 +1053,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (loadEve
 		return;
 
 	/*	Place the TOC after the “See Also” section (which also places it after
-		the page abstract, if such exists, because that comes before the 
+		the page abstract, if such exists, because that comes before the
 		“See Also” section).
 	 */
 	seeAlsoSection.parentElement.insertBefore(TOC, seeAlsoSection.nextElementSibling);
@@ -1075,7 +1075,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (loadEve
 		//	Mark with special class, for styling purposes.
 		TOC.classList.add("TOC-links-only");
 	}
-}, "rewrite", (info) => (   info.needsRewrite 
+}, "rewrite", (info) => (   info.needsRewrite
 						 && info.isMainDocument));
 
 /**************************************************************************/

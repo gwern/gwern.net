@@ -163,7 +163,7 @@ Extracts = { ...Extracts,
             a tag index page, for example.)
          */
         let escapedLinkURL = CSS.escape(decodeURIComponent(target.href));
-        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='${escapedLinkURL}']`);
+        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='link-bibliography'][href='${escapedLinkURL}']`);
         if (targetAnalogueInLinkBibliography) {
             let containingSection = targetAnalogueInLinkBibliography.closest("section");
             if (   containingSection
@@ -184,7 +184,7 @@ Extracts = { ...Extracts,
 		let referenceData = Annotations.referenceDataForAnnotationIdentifier(Extracts.targetIdentifier(target))
 
         //  Mark annotations from non-local data sources.
-        if (   referenceData 
+        if (   referenceData
         	&& referenceData.dataSourceClass)
             Extracts.popFrameProvider.addClassesToPopFrame(popFrame, referenceData.dataSourceClass.split(" "));
 

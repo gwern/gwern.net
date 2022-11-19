@@ -5133,16 +5133,16 @@ section.highlight-fading::before {
     display: none;
 }
 
-.linkbibliography-append > ol {
+.link-bibliography-append > ol {
 	list-style-type: lower-alpha;
     padding-left: 1.75em;
 }
-.linkbibliography-append > ol > li::marker {
+.link-bibliography-append > ol > li::marker {
     font-family: var(--GW-monospaced-font-stack);
     font-size: 0.9em;
 }
 @media all and (max-width: 649px) {
-	.linkbibliography-append > ol {
+	.link-bibliography-append > ol {
 		padding-left: 1.75em;
 	}
 }
