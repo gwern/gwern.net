@@ -270,6 +270,15 @@ header h1 {
     font-style: italic;
     text-align: justify;
 }
+/*	The following is needed only due to the .justified-not no-hyphens styles; 
+	when the A/B test of justification & indentation is done, remove this also.
+		—SA 2022-11-20
+ */
+#page-description p {
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+}
 #page-description em {
     font-style: normal;
 }
