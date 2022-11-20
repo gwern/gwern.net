@@ -114,6 +114,13 @@ Extracts = { ...Extracts,
 			linkTarget:  ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank")
 		});
 
+		//	Make aux-links-append include-links lazy.
+		Array.from(constructedAnnotation.querySelectorAll(".include-strict")).filter(link => 
+			Extracts.auxLinksLinkType(link) != null
+		).forEach(link => {
+			link.swapClasses([ "include", "include-strict" ], 0);
+		});
+
         //  Fire contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.annotationForTarget",

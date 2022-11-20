@@ -960,8 +960,7 @@ Transclude = {
         let cachedContent = Transclude.cachedContentForLink(includeLink);
         if (cachedContent) {
             let content = newDocument(cachedContent);
-            if (   Transclude.isAnnotationTransclude(includeLink)
-                && includeLink.needsRewrite == false) {
+            if (Transclude.isAnnotationTransclude(includeLink)) {
                 includeLink.needsRewrite = true;
                 requestAnimationFrame(() => {
                     includeContent(includeLink, content);
