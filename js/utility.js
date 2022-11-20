@@ -544,9 +544,9 @@ function doIfAllowed(f, passHolder, passName, releaseImmediately = false) {
 
 /*******************************************************************************/
 /*  When the given event is triggered on the given target, after the given delay
-    call the given handler function. (Optionally, if the given cancel event
-    occurs in the interim - i.e. after the trigger event happens but before the
-    delay elapses - cancel calling the handler.)
+    (in ms), call the given handler function. (Optionally, if the given cancel 
+    event occurs in the interim - i.e. after the trigger event happens but 
+    before the delay elapses - cancel calling the handler.)
 
     Return value of this function is an anonymous function which removes the
     listeners that this function adds.
