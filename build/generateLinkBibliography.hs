@@ -130,7 +130,9 @@ writeAnnotationLinkBibliographyFragment md path =
        Nothing -> return ()
        Just (_,_,_,_,_,"") -> return ()
        Just (_,_,_,_,_,abstract) -> do
-        let links = filter (\l -> not (takeWhile (/='#') path `isPrefixOf` l)) $ -- delete self-links, such as in the ToC of scraped abstracts
+        let self = takeWhile (/='#') path
+            selfAbsolute = "https://www.gwern.net"++self
+            links = filter (\l -> not (self `isPrefixOf` l || selfAbsolute `isPrefixOf` l)) $ -- delete self-links, such as in the ToC of scraped abstracts, or newsletters linking themselves as the first link (eg '/newsletter/2022/05' will link to 'https://www.gwern.net/newsletter/2022/05' at the beginning)
               map T.unpack $ extractLinks False (T.pack abstract)
         when (length (filter (\l -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` l))  links) >= mininumLinkBibliographyFragment) $
           do backlinks    <- mapM (fmap snd . getBackLink) links
