@@ -692,6 +692,7 @@ addCopyProcessor((event, selection) => {
      */
     selection.querySelectorAll(".cite-joiner").forEach(citeJoiner => {
         citeJoiner.style.display = "initial";
+        citeJoiner.innerHTML = ` ${citeJoiner.innerHTML} `;
     });
 
     return true;
