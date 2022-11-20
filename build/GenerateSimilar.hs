@@ -4,6 +4,7 @@
 module GenerateSimilar where
 
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str, Strong), Format(..), runPure, Pandoc(..), nullAttr)
+import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T  (append, filter, intercalate, length, pack, strip, take, unlines, unpack, Text)
 import Data.Char (isAscii)
 import Data.List ((\\), intercalate,  nub, isPrefixOf, isSuffixOf)
@@ -32,8 +33,9 @@ import LinkBacklink (getForwardLinks, readBacklinksDB, Backlinks)
 import Columns as C (listLength)
 import LinkMetadata (readLinkMetadata, authorsTruncate, parseRawInline)
 import LinkMetadataTypes (Metadata, MetadataItem)
+import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, replaceManyT, safeHtmlWriterOptions, printGreen)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, replaceManyT, safeHtmlWriterOptions, printGreen, printStdErr)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
@@ -151,7 +153,7 @@ embed edb mdb bdb i@(p,_) = do
                                                     Just (t,a,d,_,_,_) -> "\"" ++ t ++ "\", " ++ authorsTruncate a ++ (if d=="" then "" else " (" ++ take 4 d ++ ")")) backlinks)
 
             let doc = formatDoc i `T.append` (T.pack backlinksMetadata)
-            printGreen "Formatted document as embedded (`embed`):\n" >> putStrLn (T.unpack doc)
+            printGreen "Formatted document as embedded (`embed`):\n" >> printStdErr (T.unpack doc)
             (modelType,embedding) <- oaAPIEmbed doc
             today <- currentDay
             return (p,today,T.unpack doc,modelType,embedding)
@@ -324,7 +326,7 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
              preface = if singleShot then [] else [Para [Strong [Str "Similar Links"], Str ":"]]
              linkList = BulletList $ similarItems ++ googleScholar
 
-             pandoc = Pandoc nullMeta $ preface ++ [linkList]
+             pandoc = walk typographyTransform $ Pandoc nullMeta $ preface ++ [linkList]
              html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
                     in case htmlEither of
                                 Left e -> error $ show e ++ ":" ++ show p ++ ":" ++ show matches ++ ":" ++ show similarItems
