@@ -61,6 +61,7 @@ function expandCollapseBlocksToReveal(node) {
     let disclosureButton = collapseParent.querySelector(".disclosure-button");
     let expansionOccurred = (disclosureButton.checked == false);
     disclosureButton.checked = true;
+    updateDisclosureButtonTitle(disclosureButton);
     collapseParent.classList.toggle("expanded", disclosureButton.checked);
 
     /*  Expand any higher-level collapse blocks!
@@ -72,6 +73,37 @@ function expandCollapseBlocksToReveal(node) {
 
     //  Report whether we had to expand a collapse block.
     return expansionOccurred;
+}
+
+/*****************************************************************************/
+/*	Updates the tooltip of a collapse block’s disclosure button to reflect the
+	collapse block’s current state.
+ */
+function updateDisclosureButtonTitleForCollapseBlock(collapseBlock) {
+    GWLog("updateDisclosureButtonTitleForCollapseBlock", "collapse.js", 3);
+
+	let disclosureButton = collapseBlock.querySelector(".disclosure-button");
+	if (disclosureButton)
+		updateDisclosureButtonTitle(disclosureButton);
+}
+
+/*****************************************************************************/
+/*	Updates the tooltip of a collapse block disclosure button to reflect its
+	collapse block’s current state.
+ */
+//	Called by: expandCollapseBlocksToReveal
+//	Called by: prepareCollapseBlocks
+function updateDisclosureButtonTitle(disclosureButton) {
+    GWLog("updateDisclosureButtonTitle", "collapse.js", 3);
+
+	//	No tooltip for hover-expandable collapse blocks.
+	if (disclosureButton.closest(".collapse").classList.contains("expand-on-hover"))
+		return;
+
+	let collapsedStateTitle = "This is a collapsed region; mouse click to expand it. Collapsed text can be sections, code, text samples, or long digressions which most users will not read, and interested readers can opt into.";
+	let expandedStateTitle = "This is an expanded collapse region; mouse click to collapse it.";
+
+	disclosureButton.title = disclosureButton.checked ? expandedStateTitle : collapsedStateTitle;
 }
 
 /*******************************************************************/
@@ -133,7 +165,7 @@ function prepareCollapseBlocks(loadEventInfo) {
 				collapseBlock.classList.add("expanded");
 		} else if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].includes(collapseBlock.tagName)) {
 			//  Remove the ‘collapse’ class and do nothing else.
-			collapseBlock.classList.remove("collapse");
+			collapseBlock.classList.remove("collapse", "expand-on-hover");
 			if (collapseBlock.className == "")
 				collapseBlock.removeAttribute("class");
 		} else if (   collapseBlock.parentElement.tagName == "DIV" 
@@ -141,6 +173,8 @@ function prepareCollapseBlocks(loadEventInfo) {
 			//  Use parent div as collapse block wrapper.
 			let realCollapseBlock = collapseBlock.parentElement;
 			realCollapseBlock.classList.add("collapse");
+			if (collapseBlock.classList.contains("expand-on-hover"))
+				realCollapseBlock.classList.add("expand-on-hover");
 
 			//	Inject the disclosure button.
 			realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
@@ -148,12 +182,17 @@ function prepareCollapseBlocks(loadEventInfo) {
 				realCollapseBlock.classList.add("expanded");
 
 			//  Remove the ‘collapse’ class.
-			collapseBlock.classList.remove("collapse");
+			collapseBlock.classList.remove("collapse", "expand-on-hover");
 			if (collapseBlock.className == "")
 				collapseBlock.removeAttribute("class");
 		} else {
 			//  Construct collapse block wrapper and inject the disclosure button.
-			let realCollapseBlock = newElement("DIV", { "class": `collapse${(checked > "" ? " expanded" : "")}` });
+			let collapseBlockClasses = [ "collapse" ];
+			if (checked)
+				collapseBlockClasses.push("expanded");
+			if (collapseBlock.classList.contains("expand-on-hover"))
+				collapseBlockClasses.push("expand-on-hover");
+			let realCollapseBlock = newElement("DIV", { "class": collapseBlockClasses.join(" ") });
 			realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
 
 			//  Move block-to-be-collapsed into wrapper.
@@ -161,7 +200,7 @@ function prepareCollapseBlocks(loadEventInfo) {
 			realCollapseBlock.appendChild(collapseBlock);
 
 			//  Remove the ‘collapse’ class.
-			collapseBlock.classList.remove("collapse");
+			collapseBlock.classList.remove("collapse", "expand-on-hover");
 			if (collapseBlock.className == "")
 				collapseBlock.removeAttribute("class");
 		}
@@ -182,6 +221,8 @@ function activateCollapseBlockDisclosureButtons(loadEventInfo) {
 
     //  Add listeners to toggle ‘expanded’ class of collapse blocks.
 	loadEventInfo.document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
+		updateDisclosureButtonTitle(disclosureButton);
+
 		let collapseBlock = disclosureButton.closest(".collapse");
 		if (disclosureButton.stateChangedHandler)
 			return;
@@ -190,6 +231,9 @@ function activateCollapseBlockDisclosureButtons(loadEventInfo) {
 			GWLog("Collapse.collapseBlockDisclosureButtonStateChanged", "collapse.js", 2);
 
 			collapseBlock.classList.toggle("expanded", disclosureButton.checked);
+
+			//	Update the tooltip.
+			updateDisclosureButtonTitle(disclosureButton);
 
 			//	Correct for CSS transition aberration.
 			if (!disclosureButton.checked) {
@@ -226,31 +270,33 @@ function activateCollapseBlockDisclosureButtons(loadEventInfo) {
 		/*	Collapse block expand-on-hover. Clicking within the block while it
 			is temporarily expanded causes it to stay expanded permanently.
 		 */
-		let expandOnHoverDelay = 750;
-		onEventAfterDelayDo(disclosureButton, "mouseenter", expandOnHoverDelay, (event) => {
-			if (disclosureButton.checked)
-				return;
+		if (collapseBlock.classList.contains("expand-on-hover")) {
+			let expandOnHoverDelay = 750;
+			onEventAfterDelayDo(disclosureButton, "mouseenter", expandOnHoverDelay, (event) => {
+				if (disclosureButton.checked)
+					return;
 
-			disclosureButton.checked = true;
-			disclosureButton.stateChangedHandler(event);
-			disclosureButton.classList.add("expanded-temp");
-
-			let collapseBlockMouseleaveHandler = (event) => {
-				disclosureButton.checked = false;
+				disclosureButton.checked = true;
 				disclosureButton.stateChangedHandler(event);
-				disclosureButton.classList.remove("expanded-temp");
+				disclosureButton.classList.add("expanded-temp");
 
-				collapseBlock.removeEventListener("mouseleave", collapseBlockMouseleaveHandler);
-			};
-			let collapseBlockClickHandler = (event) => {
-				disclosureButton.classList.remove("expanded-temp");
+				let collapseBlockMouseleaveHandler = (event) => {
+					disclosureButton.checked = false;
+					disclosureButton.stateChangedHandler(event);
+					disclosureButton.classList.remove("expanded-temp");
 
-				collapseBlock.removeEventListener("mouseleave", collapseBlockMouseleaveHandler);
-				collapseBlock.removeEventListener("click", collapseBlockClickHandler);
-			};
-			collapseBlock.addEventListener("mouseleave", collapseBlockMouseleaveHandler);
-			collapseBlock.addEventListener("click", collapseBlockClickHandler);
-		}, "mouseleave");
+					collapseBlock.removeEventListener("mouseleave", collapseBlockMouseleaveHandler);
+				};
+				let collapseBlockClickHandler = (event) => {
+					disclosureButton.classList.remove("expanded-temp");
+
+					collapseBlock.removeEventListener("mouseleave", collapseBlockMouseleaveHandler);
+					collapseBlock.removeEventListener("click", collapseBlockClickHandler);
+				};
+				collapseBlock.addEventListener("mouseleave", collapseBlockMouseleaveHandler);
+				collapseBlock.addEventListener("click", collapseBlockClickHandler);
+			}, "mouseleave");
+		}
 	});
 }
 

@@ -899,6 +899,12 @@ Extracts = {
 
         let target = popFrame.spawningTarget;
 
+		//	Make collapse blocks expand on hover.
+		popFrame.document.querySelectorAll(".collapse").forEach(collapseBlock => {
+			collapseBlock.classList.add("expand-on-hover");
+			updateDisclosureButtonTitleForCollapseBlock(collapseBlock);
+		});
+
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
