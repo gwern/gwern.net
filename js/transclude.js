@@ -211,50 +211,64 @@
  */
 
 /*****************************************************************************/
-/*	Extract template data from an HTML string by looking for:
+/*	Extract template data from an HTML string by looking for elements with the 
+	`data-template-field` attribute.
 
-	1. Elements with the `data-template-field` attribute. The value of the
-	   attribute is the data field name; the .innerHTML of the element is the
-	   field value.
+	If the value of the attribute contains no colons (the ‘:’ character), then
+	the entire attribute value is the data field name; the .innerHTML of the 
+	element is the field value.
 
-	2. Elements with the `data-template-field-attributes` attribute. The value
-	   of the attribute should be a comma-separated list of
-	   `FIELD_NAME=ATTRIBUTE_NAME` pairs. The first (FIELD_NAME) component of
-	   each pair is the data field name; the second (ATTRIBUTE_NAME) component
-	   is the name of the attribute of the given element which holds the field
-	   value.
+	If the value of the attribute contains at least one colon, then the 
+	attribute value is treated as a comma-separated list of 
+	`fieldName:fieldValueIdentifier` pairs. For each pair, the part before the
+	colon (the fieldName) is the data field name. The part after the colon
+	(the fieldValueIdentifier) can be interpreted in one of two ways:
 
-	3. Elements with the `data-template-field-properties` attribute. The value
-	   of the attribute should be a comma-separated list of
-	   `FIELD_NAME=PROPERTY_NAME` pairs. The first (FIELD_NAME) component of
-	   each pair is the data field name; the second (PROPERTY_NAME) component
-	   is the name of the DOM object property of the given element which holds
-	   the field value.
+	If the fieldValueIdentifier begins with a dollar sign (the ‘$’ character), 
+	then the rest of the identifier (after the dollar sign) is treated as the 
+	name of the attribute of the given element which holds the field value.
+
+	If the fieldValueIdentifier begins with a period (the ‘.’ character), then
+	the rest of the identifier (after the period) is treated as the name of the
+	DOM object property of the given element which holds the field value.
+
+	Examples:
+
+		<span data-template-field="foo">Bar</span>
+
+	This element defines a data field with name `foo` and value `Bar`.
+
+		<span data-template-field="foo:$title" title="Bar"></span>
+
+	This element defines a data field with name `foo` and value `Bar`.
+
+		<span data-template-field="foo:$title, bar:.tagName" title="Baz"></span>
+
+	This element defines two data fields: one with name `foo` and value `Baz`,
+	and one with name `bar` and value `SPAN`.
+
+		<span data-template-field="foo:title" title="Bar"></span>
+
+	This element defines no data fields.
  */
 //	(string) => object
 function templateDataFromHTML(html) {
 	let dataObject = { };
 
-	newDocument(html).querySelectorAll([
-		"[data-template-field]",
-		"[data-template-fields-attributes]",
-		"[data-template-fields-properties]"
-	].join(", ")).forEach(element => {
-		if (element.dataset.templateField)
+	newDocument(html).querySelectorAll("[data-template-field]").forEach(element => {
+		if (element.dataset.templateField.includes(":")) {
+			element.dataset.templateField.split(",").forEach(templateField => {
+				let [ beforeColon, afterColon ] = trim(templateField).split(":");
+				let fieldName = trim(beforeColon);
+				let fieldValueIdentifier = trim(afterColon);
+
+				if (fieldValueIdentifier.startsWith("."))
+					dataObject[fieldName] = element[fieldValueIdentifier.slice(1)]
+				else if (fieldValueIdentifier.startsWith("$"))
+					dataObject[fieldName] = element.getAttribute(fieldValueIdentifier.slice(1));
+			});
+		} else {
 			dataObject[element.dataset.templateField] = element.innerHTML;
-
-		if (element.dataset.templateFieldAttributes) {
-			element.dataset.templateFieldAttributes.split(",").forEach(templateField => {
-				let [ fieldName, attributeName ] = trim(templateField).split("=");
-				dataObject[fieldName] = element.getAttribute(attributeName);
-			});
-		}
-
-		if (element.dataset.templateFieldProperties) {
-			element.dataset.templateFieldProperties.split(",").forEach(templateField => {
-				let [ fieldName, propertyName ] = trim(templateField).split("=");
-				dataObject[fieldName] = element[propertyName];
-			});
 		}
 	});
 
