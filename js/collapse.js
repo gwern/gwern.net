@@ -61,7 +61,6 @@ function expandCollapseBlocksToReveal(node) {
     let disclosureButton = collapseParent.querySelector(".disclosure-button");
     let expansionOccurred = (disclosureButton.checked == false);
     disclosureButton.checked = true;
-    updateDisclosureButtonTitle(disclosureButton);
     collapseParent.classList.toggle("expanded", disclosureButton.checked);
 
     /*  Expand any higher-level collapse blocks!
@@ -73,21 +72,6 @@ function expandCollapseBlocksToReveal(node) {
 
     //  Report whether we had to expand a collapse block.
     return expansionOccurred;
-}
-
-/*****************************************************************************/
-/*	Updates the tooltip of a collapse block’s disclosure button to reflect the
-	collapse block’s current state.
- */
-//	Called by: expandCollapseBlocksToReveal
-//	Called by: prepareCollapseBlocks
-function updateDisclosureButtonTitle(disclosureButton) {
-    GWLog("updateDisclosureButtonTitle", "collapse.js", 3);
-
-	let collapsedStateTitle = "This is a collapsed region; mouse click to expand it. Collapsed text can be sections, code, text samples, or long digressions which most users will not read, and interested readers can opt into.";
-	let expandedStateTitle = "This is an expanded collapse region; mouse click to collapse it.";
-
-	disclosureButton.title = disclosureButton.checked ? expandedStateTitle : collapsedStateTitle;
 }
 
 /*******************************************************************/
@@ -198,8 +182,6 @@ function activateCollapseBlockDisclosureButtons(loadEventInfo) {
 
     //  Add listeners to toggle ‘expanded’ class of collapse blocks.
 	loadEventInfo.document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
-		updateDisclosureButtonTitle(disclosureButton);
-
 		let collapseBlock = disclosureButton.closest(".collapse");
 		if (disclosureButton.stateChangedHandler)
 			return;
@@ -209,9 +191,6 @@ function activateCollapseBlockDisclosureButtons(loadEventInfo) {
 
 			collapseBlock.classList.toggle("expanded", disclosureButton.checked);
 
-			//	Update the tooltip.
-			updateDisclosureButtonTitle(disclosureButton);
-
 			//	Correct for CSS transition aberration.
 			if (!disclosureButton.checked) {
 				disclosureButton.style.transition = "none";
@@ -220,21 +199,58 @@ function activateCollapseBlockDisclosureButtons(loadEventInfo) {
 				}, 100);
 			}
 
+			//	“Scroll into view” in main document vs. pop-frames.
+			let scrollCollapseBlockIntoView = (collapseBlock) => {
+				if (collapseBlock.closest(".popframe-body"))
+					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(collapseBlock);
+				else
+					scrollElementIntoView(collapseBlock);
+			};
+
 			/*	If a collapse block was collapsed from the bottom, it might now
 				be up off the screen. Scroll it into view.
 			 */
 			if (   !disclosureButton.checked 
 				&& !isOnScreen(collapseBlock))
-				scrollElementIntoView(collapseBlock);
+				scrollCollapseBlockIntoView(collapseBlock);
 			/*	If a collapse block was expanded from the bottom, the top of the
 				collapse block might be up off the screen. Scroll it into view.
 			 */
 			else if (   disclosureButton.checked 
 					 && collapseBlock.getBoundingClientRect().top < 0)
-				scrollElementIntoView(collapseBlock);
+				scrollCollapseBlockIntoView(collapseBlock);
 
 	    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", { source: "Collapse.collapseBlockDisclosureButtonStateChanged" });
 		});
+
+		/*	Collapse block expand-on-hover. Clicking within the block while it
+			is temporarily expanded causes it to stay expanded permanently.
+		 */
+		let expandOnHoverDelay = 750;
+		onEventAfterDelayDo(disclosureButton, "mouseenter", expandOnHoverDelay, (event) => {
+			if (disclosureButton.checked)
+				return;
+
+			disclosureButton.checked = true;
+			disclosureButton.stateChangedHandler(event);
+			disclosureButton.classList.add("expanded-temp");
+
+			let collapseBlockMouseleaveHandler = (event) => {
+				disclosureButton.checked = false;
+				disclosureButton.stateChangedHandler(event);
+				disclosureButton.classList.remove("expanded-temp");
+
+				collapseBlock.removeEventListener("mouseleave", collapseBlockMouseleaveHandler);
+			};
+			let collapseBlockClickHandler = (event) => {
+				disclosureButton.classList.remove("expanded-temp");
+
+				collapseBlock.removeEventListener("mouseleave", collapseBlockMouseleaveHandler);
+				collapseBlock.removeEventListener("click", collapseBlockClickHandler);
+			};
+			collapseBlock.addEventListener("mouseleave", collapseBlockMouseleaveHandler);
+			collapseBlock.addEventListener("click", collapseBlockClickHandler);
+		}, "mouseleave");
 	});
 }
 
