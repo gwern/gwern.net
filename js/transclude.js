@@ -945,27 +945,15 @@ Transclude = {
         //  Set loading state (for visual/interaction purposes).
         Transclude.setLinkStateLoading(includeLink);
 
-        /*  Check whether provider objects for annotation extracts are loaded;
-            if not, then wait until they load to attempt transclusion.
+        /*  Check whether provider object for annotation extracts is loaded;
+            if not, then wait until it loads to attempt transclusion.
          */
         if (   Transclude.isAnnotationTransclude(includeLink)
-            && (   window.Annotations == null
-                || window.Extracts == null)) {
-            let loadHandler = ((info) => {
-                if (   window.Annotations == null
-                    || window.Extracts == null)
-                    return;
-
-                GW.notificationCenter.removeHandlerForEvent("Annotations.didLoad", loadHandler);
-                GW.notificationCenter.removeHandlerForEvent("Extracts.didLoad", loadHandler);
-
-                Transclude.transclude(includeLink, true);
-            });
-
+            && window.Annotations == null) {
             includeLink.needsRewrite = true;
-
-            GW.notificationCenter.addHandlerForEvent("Annotations.didLoad", loadHandler);
-            GW.notificationCenter.addHandlerForEvent("Extracts.didLoad", loadHandler);
+            GW.notificationCenter.addHandlerForEvent("Annotations.didLoad", (info) => {
+                Transclude.transclude(includeLink, true);
+            }, { once: true });
 
             return;
         }
@@ -990,8 +978,7 @@ Transclude = {
         //  Check source document caches (depending on include type).
         if (Transclude.isAnnotationTransclude(includeLink)) {
             //  Get annotation reference data (if it’s been loaded).
-            let annotationIdentifier = Extracts.targetIdentifier(includeLink);
-            let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
+            let referenceData = Annotations.referenceDataForTarget(includeLink);
             if (referenceData == "LOADING_FAILED") {
                 /*  If we’ve already tried and failed to load the annotation, we
                     will not try loading again, and just show a “loading failed”
@@ -1062,7 +1049,7 @@ Transclude = {
         //  No cached documents or content; time for a network load.
         includeLink.needsRewrite = true;
         if (Transclude.isAnnotationTransclude(includeLink)) {
-            let annotationIdentifier = Extracts.targetIdentifier(includeLink);
+            let annotationIdentifier = Annotations.targetIdentifier(includeLink);
 
             //  Request annotation load.
             Annotations.loadAnnotation(annotationIdentifier, (identifier) => {
@@ -1103,7 +1090,7 @@ Transclude = {
     /*  Misc. helpers.
      */
 
-    //  Called by: Extracts.localTranscludeForTarget (extracts.js)
+    //  Called by: "beforeprint" listener (rewrite.js)
     triggerTranscludesInContainer: (container) => {
         Transclude.allIncludeLinksInContainer(container).forEach(includeLink => {
             Transclude.transclude(includeLink, true);

@@ -48,7 +48,7 @@ Extracts.targetTypeDefinitions.insertBefore([
     "isAnnotatedLink",          // Type predicate function
     (target) =>                 // Target classes to add
         ((   Annotations.isAnnotatedLinkPartial(target)
-          && Annotations.dataSourceForIdentifier(Extracts.targetIdentifier(target)) == Annotations.dataSources.local)
+          && Annotations.dataSourceForTarget(target) == Annotations.dataSources.local)
          ? "has-annotation-partial"
          : "has-annotation"),
     "annotationForTarget",      // Pop-frame fill function
@@ -58,6 +58,14 @@ Extracts.targetTypeDefinitions.insertBefore([
 Extracts = { ...Extracts,
     //  Constructed annotations.
     cachedAnnotations: { },
+
+	cachedAnnotationForTarget: (target) => {
+		return Extracts.cachedAnnotations[Extracts.targetIdentifier(target)];
+	},
+
+	setCachedAnnotationForTarget: (annotation, target) => {
+		Extracts.cachedAnnotations[Extracts.targetIdentifier(target)] = annotation;
+	},
 
     //  Called by: extracts.js (as `predicateFunctionName`)
     //  Called by: extracts.js
@@ -84,14 +92,12 @@ Extracts = { ...Extracts,
     annotationForTarget: (target) => {
         GWLog("Extracts.annotationForTarget", "extracts-annotations.js", 2);
 
-        let annotationIdentifier = Extracts.targetIdentifier(target);
-
         //  Use cached constructed annotation, if available.
-        if (Extracts.cachedAnnotations[annotationIdentifier])
-            return newDocument(Extracts.cachedAnnotations[annotationIdentifier]);
+        if (Extracts.cachedAnnotationForTarget(target))
+            return newDocument(Extracts.cachedAnnotationForTarget(target));
 
         //  Get annotation reference data (if it’s been loaded).
-        let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
+        let referenceData = Annotations.referenceDataForTarget(target);
         if (referenceData == null) {
             /*  If the annotation has yet to be loaded, we’ll ask for it to load,
                 and meanwhile wait, and do nothing yet.
@@ -126,13 +132,13 @@ Extracts = { ...Extracts,
             source: "Extracts.annotationForTarget",
             contentType: "annotation",
             document: constructedAnnotation,
-            loadLocation: Annotations.sourceURLForIdentifier(annotationIdentifier),
+            loadLocation: Annotations.sourceURLForTarget(target),
             baseLocation: Extracts.locationForTarget(target),
             flags: GW.contentDidLoadEventFlags.needsRewrite
         });
 
         //  Cache constructed and processed annotation.
-        Extracts.cachedAnnotations[annotationIdentifier] = constructedAnnotation;
+        Extracts.setCachedAnnotationForTarget(constructedAnnotation, target);
 
         return newDocument(constructedAnnotation);
     },
@@ -142,7 +148,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.titleForPopFrame_ANNOTATION", "extracts-annotations.js", 2);
 
         let target = popFrame.spawningTarget;
-		let referenceData = Annotations.referenceDataForAnnotationIdentifier(Extracts.targetIdentifier(target));
+		let referenceData = Annotations.referenceDataForTarget(target);
 		if (referenceData == null) {
 			referenceData = {
 				titleLinkHref:     target.href,
@@ -188,7 +194,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.rewritePopFrameContent_ANNOTATION", "extracts-annotations.js", 2);
 
         let target = popFrame.spawningTarget;
-		let referenceData = Annotations.referenceDataForAnnotationIdentifier(Extracts.targetIdentifier(target))
+		let referenceData = Annotations.referenceDataForTarget(target)
 
         //  Mark annotations from non-local data sources.
         if (   referenceData
@@ -200,7 +206,7 @@ Extracts = { ...Extracts,
             source: "Extracts.rewritePopFrameContent_ANNOTATION",
             contentType: "annotation",
             document: popFrame.document,
-            loadLocation: Annotations.sourceURLForIdentifier(Extracts.targetIdentifier(target)),
+            loadLocation: Annotations.sourceURLForTarget(target),
             baseLocation: Extracts.locationForTarget(target),
             flags: 0
         });
@@ -225,7 +231,7 @@ Extracts = { ...Extracts,
             allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
                 annotatedTarget.removeAnnotationLoadEvents = onEventAfterDelayDo(annotatedTarget, "mouseenter", Extracts.annotationLoadHoverDelay, (event) => {
                     //  Get the unique identifier of the annotation for the target.
-                    let annotationIdentifier = Extracts.targetIdentifier(annotatedTarget);
+                    let annotationIdentifier = Annotations.targetIdentifier(annotatedTarget);
 
                     //  Do nothing if the annotation is already loaded.
                     if (Annotations.cachedAnnotationExists(annotationIdentifier))
@@ -250,10 +256,10 @@ Extracts = { ...Extracts,
             allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
                 annotatedTarget.addEventListener("click", annotatedTarget.annotationLoad_click = (event) => {
                     //  Get the unique identifier of the annotation for the target.
-                    let annotationIdentifier = Extracts.targetIdentifier(annotatedTarget);
+                    let annotationIdentifier = Annotations.targetIdentifier(annotatedTarget);
 
                     //  Do nothing if the annotation is already loaded.
-                    if (!Annotations.cachedAnnotationExists(annotationIdentifier))
+                    if (Annotations.cachedAnnotationExists(annotationIdentifier) == false)
                         Annotations.loadAnnotation(annotationIdentifier);
                 });
             });
@@ -283,13 +289,13 @@ Extracts = { ...Extracts,
             GWLog("refreshPopFrameWhenAnnotationDidLoad", "extracts.js", 2);
 
             Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
-        }, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
+        }, { once: true, condition: (info) => info.identifier == Annotations.targetIdentifier(target) });
 
         //  Add handler for if the annotation load fails.
         GW.notificationCenter.addHandlerForEvent("Annotations.annotationLoadDidFail", (info) => {
             GWLog("updatePopFrameWhenAnnotationLoadDidFail", "extracts.js", 2);
 
             Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
-        }, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
+        }, { once: true, condition: (info) => info.identifier == Annotations.targetIdentifier(target) });
     }
 };

@@ -46,6 +46,35 @@ Annotations = { ...Annotations,
         return Array.from(container.querySelectorAll("a[class*='link-annotated']")).filter(link => Annotations.isAnnotatedLink(link));
     },
 
+    /*  Returns the target identifier: the original URL (for locally archived
+        pages), or the relative url (for local links), or the full URL (for
+        foreign links).
+     */
+	targetIdentifier: (target) => {
+        if (target.dataset.urlOriginal) {
+            let originalURL = new URL(target.dataset.urlOriginal);
+
+            /*  Special cases where the original URL of the target does not
+                match the target’s proper identifier (possibly due to outgoing
+                link rewriting).
+             */
+            if (originalURL.hostname == "ar5iv.labs.arxiv.org") {
+                originalURL.hostname = "arxiv.org";
+                originalURL.pathname = originalURL.pathname.replace("/html/", "/abs/");
+                /*	Erase the ?fallback=original query parameter necessary to 
+                	make it redirect if no Ar5iv version is available.
+                 */
+                originalURL.search = ""; 
+            }
+
+            return originalURL.href;
+        } else {
+            return (target.hostname == location.hostname
+                   ? target.pathname + target.hash
+                   : target.href);
+        }
+	},
+
     /*  Storage for retrieved and cached annotations.
         */
     cachedReferenceData: { },
@@ -63,10 +92,14 @@ Annotations = { ...Annotations,
     	or else either “LOADING_FAILED” (if loading the annotation was attempted
     	but failed) or null (if the annotation has not been loaded).
         */
-    //	Called by: Extracts.annotationForTarget (extracts-annotations.js)
     referenceDataForAnnotationIdentifier: (identifier) => {
         return Annotations.cachedReferenceData[identifier];
     },
+
+    //	Called by: Extracts.annotationForTarget (extracts-annotations.js)
+	referenceDataForTarget: (target) => {
+		return Annotations.referenceDataForAnnotationIdentifier(Annotations.targetIdentifier(target));
+	},
 
 	//	Called by: Annotations.sourceURLForIdentifier
 	//	Called by: Annotations.processedAPIResponseForIdentifier
@@ -80,6 +113,11 @@ Annotations = { ...Annotations,
 		return Annotations.dataSources.local;
 	},
 
+	//	Called by: extracts-annotations.js (ANNOTATION target type info)
+	dataSourceForTarget: (target) => {
+		return Annotations.dataSourceForIdentifier(Annotations.targetIdentifier(target));	
+	},
+
 	/*	Returns the URL of the annotation resource for the given identifier.
 	 */
 	//	Called by: Annotations.loadAnnotation
@@ -87,6 +125,11 @@ Annotations = { ...Annotations,
 	//	Called by: Annotations.cacheAPIResponseForIdentifier
 	sourceURLForIdentifier: (identifier) => {
 		return Annotations.dataSourceForIdentifier(identifier).sourceURLForIdentifier(identifier);
+	},
+
+	//	Called by: Extracts.rewritePopFrameContent_ANNOTATION
+	sourceURLForTarget: (target) => {
+		return Annotations.sourceURLForIdentifier(Annotations.targetIdentifier(target));
 	},
 
 	//	Called by: Annotations.loadAnnotation
