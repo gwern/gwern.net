@@ -142,7 +142,7 @@ writeAnnotationLinkBibliographyFragment md path =
                  body = [Para [Strong [Str "Link Bibliography"], Str ":"], generateLinkBibliographyItems pairs']
                  document = Pandoc nullMeta body
                  html = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} $
-                   walk (typographyTransform) $ walk convertInterwikiLinks $ walk (hasAnnotation md) document
+                   walk typographyTransform $ walk convertInterwikiLinks $ walk (hasAnnotation md) document
              case html of
                Left e   -> printRed (show e)
                -- compare with the old version, and update if there are any differences:
