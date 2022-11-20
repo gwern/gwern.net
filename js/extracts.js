@@ -854,7 +854,7 @@ Extracts = {
 
 				//	Page title (for parts of other pages).
 				if (target.pathname != location.pathname)
-					popFrameTitleText += ` (${Extracts.cachedPageTitles[target.pathname]})`;
+					popFrameTitleText = `${Extracts.cachedPageTitles[target.pathname]} ${popFrameTitleText}`;
 			}
 		} else {
 			popFrameTitleText = (target.pathname + target.hash);

@@ -388,27 +388,8 @@ Annotations = { ...Annotations,
 								   ? abstractElement.innerHTML
 								   : null;
 
-				//	Pop-frame title text. Mark sections with ‘§’ symbol.
-				/*  Annotations for local archive links with an org notation
-					for link icons (eg. 'https://arxiv.org/abs/2006.07159#google')
-					should not get a section mark.
-				 */
-				let noSectionMark = [
-					"adobe", "alibaba", "allen", "amazon", "anthropic", "apple", 
-					"baai", "baidu", "bair", "bytedance", "cerebras", "cohere", 
-					"deepmind", "eleutherai", "elementai", "facebook", "flickr",
-					"github", "google", "googledeepmind", "google-graphcore", 
-					"graphcore", "huawei", "huggingface", "ibm", "intel", "jd", 
-					"kako", "laion", "lighton", "microsoft", "microsoftnvidia", 
-					"miri", "naver", "nvidia", "openai", "pinterest", "pdf", 
-					"salesforce", "samsung", "sberbank", "schmidhuber", 
-					"sensetime", "snapchat", "sony", "spotify", "tencent", 
-					"tensorfork", "twitter", "uber", "yandex"
-				].includes(referenceElement.hash.slice(1));
-				let popFrameTitleText = ((   referenceElement.hash > "" 
-										  && noSectionMark == false)
-										 ? `&#x00a7; ${titleText.trimQuotes()}`
-										 : titleText.trimQuotes());
+				//	Pop-frame title text.
+				let popFrameTitleText = titleText.trimQuotes();
 
 				return {
 					originalURL:        originalURL,
