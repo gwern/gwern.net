@@ -54,7 +54,7 @@
             baseLocation:
             	Same as loadLocation.
             flags:
-                0 (no flags set)
+                GW.contentDidLoadEventFlags.needsRewrite
         }
         Fired at the last stage of preparing an aux-links pop-frame for spawning
         (after the pop-frame’s content has been loaded from the local aux-links
@@ -174,7 +174,7 @@ Extracts = { ...Extracts,
             document: popFrame.document,
             loadLocation: Extracts.locationForTarget(target),
             baseLocation: Extracts.locationForTarget(target),
-            flags: 0
+            flags: GW.contentDidLoadEventFlags.needsRewrite
         });
     },
 
