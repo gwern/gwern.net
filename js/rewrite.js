@@ -873,26 +873,6 @@ addContentLoadHandler(GW.contentLoadHandlers.designateAuxLinksAppendContainer = 
 	});
 }, ">", (info) => info.needsRewrite);
 
-/*************************************************************************/
-/*	Rectify HTML structure of whole-page link bibliographies appended into
-	annotations.
- */
-addContentLoadHandler(GW.contentLoadHandlers.rectifyAppendedPageLinkBibliographies = (loadEventInfo) => {
-    GWLog("rectifyAppendedPageLinkBibliographies", "rewrite.js", 1);
-
-	let appendedWholePageLinkBib = loadEventInfo.document.querySelector(".link-bibliography-append > .include-wrapper > #link-bibliography");
-	if (appendedWholePageLinkBib) {
-		if (appendedWholePageLinkBib.firstElementChild.tagName == "H1") {
-			appendedWholePageLinkBib.firstElementChild.remove();
-			appendedWholePageLinkBib.insertAdjacentHTML("afterbegin",
-				`<p><strong>Link bibliography:</strong></p>`);
-		}
-
-		unwrap(appendedWholePageLinkBib);
-	}
-}, "rewrite", (info) => (   info.needsRewrite
-						 && info.source == "transclude"));
-
 /*******************************************************************************/
 /*  Apply various typographic fixes (educate quotes, inject <wbr> elements after
     certain problematic characters, etc.).
