@@ -1,7 +1,7 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2022-11-13 16:19:47 gwern"
+When:  Time-stamp: "2022-11-20 16:16:54 gwern"
 License: CC-0
 -}
 
@@ -52,6 +52,8 @@ extractURL = extractURLWith (const True)
 -- '[GPT-3](https://arxiv.org/foo "Language Models are Few-Shot Learners")'—we would like to do
 -- similar-links on both the short noun 'GPT-3' and the paper title, but we can't if we arbitrarily
 -- return one but not the other).
+--
+-- Special links: this will convert interwiki links to the full URLs, but it will leave alone any local links (it will not prefix 'https://www.gwern.net') or any inflation-adjusted links (currently, links starting with '$' or '₿').
 extractURLsAndAnchorTooltips :: Pandoc -> [(T.Text,[T.Text])]
 extractURLsAndAnchorTooltips = queryWith extractURLSquashed . walk convertInterwikiLinks
  where
