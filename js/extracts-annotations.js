@@ -125,6 +125,7 @@ Extracts = { ...Extracts,
 			Extracts.auxLinksLinkType(link) != null
 		).forEach(link => {
 			link.swapClasses([ "include", "include-strict" ], 0);
+			link.classList.add("include-when-collapsed");
 		});
 
         //  Fire contentDidLoad event.
@@ -134,7 +135,8 @@ Extracts = { ...Extracts,
             document: constructedAnnotation,
             loadLocation: Annotations.sourceURLForTarget(target),
             baseLocation: Extracts.locationForTarget(target),
-            flags: GW.contentDidLoadEventFlags.needsRewrite
+            flags: (  GW.contentDidLoadEventFlags.needsRewrite
+            		| GW.contentDidLoadEventFlags.collapseAllowed)
         });
 
         //  Cache constructed and processed annotation.
@@ -208,7 +210,7 @@ Extracts = { ...Extracts,
             document: popFrame.document,
             loadLocation: Annotations.sourceURLForTarget(target),
             baseLocation: Extracts.locationForTarget(target),
-            flags: 0
+            flags: GW.contentDidLoadEventFlags.collapseAllowed
         });
     },
 

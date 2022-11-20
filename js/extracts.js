@@ -905,7 +905,7 @@ Extracts = {
             document: popFrame.document,
             loadLocation: Extracts.locationForTarget(target),
             baseLocation: Extracts.locationForTarget(target),
-            flags: 0
+            flags: GW.contentDidLoadEventFlags.collapseAllowed
         });
 
 		//	Lazy-loading of adjacent sections.
@@ -1097,7 +1097,8 @@ Extracts = {
                     document: Extracts.cachedPages[target.pathname],
 					loadLocation: Extracts.locationForTarget(target),
 					baseLocation: Extracts.locationForTarget(target),
-                    flags: GW.contentDidLoadEventFlags.needsRewrite
+                    flags: (  GW.contentDidLoadEventFlags.needsRewrite
+                    		| GW.contentDidLoadEventFlags.collapseAllowed)
                 });
 
 				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
