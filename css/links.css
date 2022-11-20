@@ -278,13 +278,11 @@ a[data-link-icon='𝔊']::after {
     content: none;
 }
 
-/*  Index page, and embeds thereof, do not need the G icon; nor do backlinks
-    pop-frames.
+/*  Index page, and embeds thereof, do not need the G icon.
  */
 body.index a.link-page::after,
 body.static-404 a.link-page::after,
-.popframe-body.index a.link-page::after,
-.popframe-body.backlinks a.link-page::after {
+.popframe-body.index a.link-page::after {
     content: none;
 }
 
