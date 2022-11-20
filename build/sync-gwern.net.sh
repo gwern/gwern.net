@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-11-18 21:09:36 gwern"
+# When:  Time-stamp: "2022-11-19 21:22:02 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -60,7 +60,31 @@ else
 
     if [ "$SLOW" ]; then
         bold "Executing string rewrite cleanups…" # automatically clean up some Gwern.net bad URL patterns, typos, inconsistencies, house-styles:
-        (gwsed 'https://mobile.twitter.com' 'https://twitter.com' && gwsed 'https://twitter.com/' 'https://nitter.hu/' && gwsed 'https://mobile.twitter.com/' 'https://nitter.hu/' && gwsed 'https://www.twitter.com/' 'https://nitter.hu/' && gwsed 'https://www.reddit.com/r/' 'https://old.reddit.com/r/' && gwsed 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/' && gwsed 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts' && gwsed '&hl=en' '' && gwsed '?hl=en&' '?' && gwsed '?hl=en' '' && gwsed '?usp=sharing' '' && gwsed '<p> ' '<p>' && gwsed 'EMBASE' 'Embase' && gwsed 'Medline' 'MEDLINE' && gwsed 'PsychINFO' 'PsycINFO' && gwsed 'http://web.archive.org/web/' 'https://web.archive.org/web/' && gwsed 'https://youtu.be/' 'https://www.youtube.com/watch?v=' && gwsed '?via%3Dihub' '' && gwsed 'http://arxiv.org' 'https://arxiv.org' && gwsed '.html?pagewanted=all' '.html' && gwsed '(ie,' '(ie.' && gwsed '(ie ' '(ie. ' && gwsed '(i.e.,' '(ie.' && gwsed 'ie., ' 'ie. ' && gwsed '(i.e.' '(ie.' && gwsed '(eg, ' '(eg. ' && gwsed ' eg ' ' eg. ' && gwsed '(eg ' '(eg. ' && gwsed '[eg ' '[eg. ' && gwsed 'e.g. ' 'eg. ' && gwsed ' e.g. ' ' eg. ' && gwsed 'e.g.,' 'eg.' && gwsed 'eg.,' 'eg.' && gwsed ']^[' '] ^[' && gwsed 'et al. (' 'et al (' && gwsed ' et al. 1'  ' et al 1' && gwsed ' et al. 2'  ' et al 2' && gwsed ' et al., ' ' et al ' && gwsed 'et al., ' 'et al ' && sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' metadata/*.yaml  `find . -name "*.page" -or -name "*.yaml"` && sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g'  `find . -name "*.page" -or -name "*.yaml"` && gwsed '(cf ' '(cf. ' && gwsed ' cf ' ' cf. ' && gwsed ' _n_s' ' <em>n</em>s' && gwsed ' (n = ' ' (<em>n</em> = ' && gwsed ' (N = ' ' (<em>n</em> = ' && gwsed '<sup>St</sup>' '<sup>st</sup>' && gwsed '<sup>Th</sup>' '<sup>th</sup>' && gwsed '<sup>Rd</sup>' '<sup>rd</sup>' && gwsed '<sup>Nd</sup>' '<sup>nd</sup>' && gwsed ' de novo ' ' <em>de novo</em> ' && gwsed ' De Novo ' ' <em>De Novo</em> ' && gwsed ', Jr.' ' Junior' && gwsed ' Jr.' ' Junior' && gwsed ', Junior' ' Junior' && gwsed '.full-text' '.full' && gwsed '.full.full' '.full' && gwsed '.full-text' '.full' && gwsed '.full-text.full' '.full' && gwsed '.full.full.full' '.full' && gwsed '.full.full' '.full' && gwsed '#allen#allen' '#allen' && gwsed 'https://deepmind.com' 'https://www.deepmind.com' && gwsed '#deepmind#deepmind' '#deepmind' && gwsed '&org=deepmind&org=deepmind' '&org=deepmind' && gwsed '#nvidia#nvidia' '#nvidia' && gwsed '#openai#openai' '#openai' && gwsed '#google#google' '#google' && gwsed '#uber#uber' '#uber' && gwsed 'MSCOCO' 'MS COCO' && gwsed '&feature=youtu.be' '' && gwsed 'Rene Girard' 'René Girard' && gwsed 'Anno Hideaki' 'Hideaki Anno' && gwsed 'facebookok' 'facebook' && gwsed ':443/' '/' && gwsed 'border colly' 'border collie' && gwsed ':80/' '/' && gwsed '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P' && gwsed 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com' && gwsed '?s=r' '' && gwsed '?sd=pf' '' && gwsed 'backlinks-not' 'backlink-not' && gwsed ',</a>' '</a>,' && gwsed ':</a>' '</a>:' && gwsed ';</a>' '</a>;' && gwsed ' <<a href' ' <a href' && gwsed 'Yann Le Cun' 'Yann LeCun' && gwsed ' GPT2' ' GPT-2' && gwsed '_X_s' '<em>X</em>s' && gwsed ' _r_s' ' <em>r</em>s' && gwsed 'Jorges Luis Borges' 'Jorge Luis Borges' && gwsed 'genomewide' 'genome-wide' && gwsed 'regularise' 'regularize' && gwsed ' VQVAE' ' VQ-VAE' && gwsed '# External links' '# External Links' && gwsed '# See also' '# See Also' && gwsed '"abstract-collapse abstract"' '"abstract abstract-collapse"' && gwsed ' residualis' ' residualiz' && gwsed 'CIFAR 10' 'CIFAR-10' && gwsed 'v1.full' '.full'  &&  gwsed 'v2.full' '.full'  &&  gwsed 'v3.full' '.full'  &&  gwsed 'v4.full' '.full'  &&  gwsed 'v5.full' '.full'  &&  gwsed 'v6.full' '.full'  &&  gwsed 'v7.full' '.full'  &&  gwsed 'v8.full' '.full'  &&  gwsed 'v9.full' '.full' && gwsed 'endelian randomisation' 'endelian randomization' && gwsed 'mendelian randomization' 'Mendelian Randomization' && gwsed 'Mendelian randomization' 'Mendelian Randomization' && gwsed 'canalization' 'canalisation' && gwsed 'Statistical significance' 'Statistical-significance' && gwsed 'Statistical Significance' 'Statistical-Significance' && gwsed 'statistical significance' 'statistical-significance' && gwsed ' Clinicaltrials.gov' ' ClinicalTrials.gov' && gwsed ' clinicaltrials.gov' ' ClinicalTrials.gov' && gwsed "‐" "-" && gwsed 'class="link-auto"' '' && gwsed ' longstanding' ' long-standing' && gwsed '𝑂(' '𝒪(' && gwsed 'utilise' 'utilize' && gwsed '?ref=The+Browser-newsletter' '' && gwsed 'Dario Amodai' 'Dario Amodei' && gwsed '?ignored=irrelevant' '' && gwsed '</strong> and <strong>' '</strong> & <strong>' ) &> /dev/null &
+        ( alias s="gwsed"
+          ## domain rewrites:
+          s 'https://mobile.twitter.com' 'https://twitter.com'; s 'https://twitter.com/' 'https://nitter.hu/'; s 'https://mobile.twitter.com/' 'https://nitter.hu/'; s 'https://www.twitter.com/' 'https://nitter.hu/'; s 'https://www.reddit.com/r/' 'https://old.reddit.com/r/'; s 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com'
+
+          ## link cruft rewrites:
+          s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ignored=irrelevant' ''
+
+          ## name/entity consistency:
+          s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'
+
+          ## abbreviation consistency:
+          s '(ie,' '(ie.'; s '(ie ' '(ie. '; s '(i.e.,' '(ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior'
+
+          ## spelling errors:
+          s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook'
+
+          ## citation consistency:
+          s ']^[' '] ^['; s 'et al. (' 'et al ('; s ' et al. 1'  ' et al 1'; s ' et al. 2'  ' et al 2'; s ' et al., ' ' et al '; s 'et al., ' 'et al '; sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' metadata/*.yaml  `find . -name "*.page" -or -name "*.yaml"`; sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g'  `find . -name "*.page" -or -name "*.yaml"`
+
+          ## anchor errors:
+          s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber'
+
+          ## HTML/Markdown formatting:
+          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s '<sup>St</sup>' '<sup>st</sup>'; s '<sup>Th</sup>' '<sup>th</sup>'; s '<sup>Rd</sup>' '<sup>rd</sup>'; s '<sup>Nd</sup>' '<sup>nd</sup>'; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'
+        ) &> /dev/null &
     sed -i -e 's/ data-link-?[Tt]ags="[a-z0-9 \/-]\+">/>/' ./metadata/*.yaml;
     fi
 
@@ -214,7 +238,7 @@ else
     find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | grep -F -v -e '#' -e 'Death-Note-script' | parallel --max-args=250 tidyUpWhole
 
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
-    ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html ; installation: `npm install --prefix ~/src/ mathjax-node-page`
+    ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html installation: `npm install --prefix ~/src/ mathjax-node-page`
     bold "Compiling LaTeX JS+HTML into static CSS+HTML…"
     staticCompileMathJax () {
         if [[ $(grep -F -e '<span class="math inline"' -e '<span class="math display"' "$@") ]]; then
@@ -380,7 +404,7 @@ else
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 grep -E --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]' -e '\#[a-z]\+\#[a-z]\+'; }
     wrap λ "Incorrect PDF page links in Markdown."
 
-    λ(){ find ./ -type f -name "*.page" -type f -exec grep -E --color=always -e 'cssExtension: [a-c,e-z]' {} \; ; }
+    λ(){ find ./ -type f -name "*.page" -type f -exec grep -E --color=always -e 'cssExtension: [a-c,e-z]' {} \;; }
     wrap λ "Incorrect drop caps in Markdown."
 
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | grep -F -v 'Lorem.page' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 "grep -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out Lorem.page's deliberate CSS test-case use of it
@@ -720,7 +744,7 @@ else
   if [ "$SLOW" ]; then
     # Testing files, post-sync
     bold "Checking for file anomalies…"
-    λ(){ fdupes --quiet --sameline --size --nohidden $(find ~/wiki/ -type d | grep -E -v -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotations/backlinks' -e 'metadata/annotations/similar') | grep -F --invert-match -e 'bytes each' -e 'trimfill.png'  ; }
+    λ(){ fdupes --quiet --sameline --size --nohidden $(find ~/wiki/ -type d | grep -E -v -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotations/backlinks' -e 'metadata/annotations/similar') | grep -F --invert-match -e 'bytes each' -e 'trimfill.png'; }
     wrap λ "Duplicate file check"
 
     λ() { find . -perm u=r -path '.git' -prune; }
@@ -752,7 +776,7 @@ else
                          parallel --max-args=100 "grep -F --ignore-case --files-with-matches \
                          -e '404 Not Found' -e '<title>Sign in - Google Accounts</title' -e 'Download Limit Exceeded' -e 'Access Denied'" | sort)"
          for BROKEN_HTML in $BROKEN_HTMLS;
-         do grep --before-context=3 "$BROKEN_HTML" ./metadata/archive.hs | grep -F --invert-match -e 'Right' -e 'Just' ;
+         do grep --before-context=3 "$BROKEN_HTML" ./metadata/archive.hs | grep -F --invert-match -e 'Right' -e 'Just';
          done; }
     wrap λ "Archives of broken links"
 
@@ -832,7 +856,7 @@ else
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
     λ() { for IMAGE in $(find ./images/ -type f -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'images/fiction/batman/' -e 'images/ai/dall-e/2/' -e '2022-09-21-gwern-stablediffusionv14-circulardropcapinitialsamples.png' -e '2022-09-22-gwern-stablediffusionv14-textualinversion-yinit-dropcapsexperiments.png' -e '2022-09-27-gwernnet-indentjustification2x2abtest.png'); do
               SIZE_W=$(identify -format "%w" "$IMAGE")
-              if (( $SIZE_W > 1600  )); then echo "Too wide image: $IMAGE $SIZE_W ; shrinking…";
+              if (( $SIZE_W > 1600  )); then echo "Too wide image: $IMAGE $SIZE_W; shrinking…";
                                              mogrify  -resize 1600x10000 "$IMAGE";
               fi;
           done; }
