@@ -49,9 +49,8 @@ main' = do
 
   -- if all are valid, write out:
   _ <- M.traverseWithKey (writeOutCallers md) bldb
-␇
-  fs <- fmap (filter (\f -> not $ (anyPrefix f ["/backlinks/","#",".#"])) .  map (sed "^\\.\\/" "")) $
-         fmap lines getContents
+  fs <- fmap (filter (\f -> not $ (anyPrefix f ["/backlinks/","#",".#"])) .  map (sed "^\\.\\/" "") . lines) $
+         getContents
 
   let markdown = filter (".page" `isSuffixOf`) fs
   links1 <- Par.mapM (parseFileForLinks True) markdown

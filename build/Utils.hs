@@ -86,11 +86,14 @@ removeClass _    x = x
 
 -- print normal progress messages to stderr in bold green:
 printGreen :: String -> IO ()
-printGreen s = hPutStrLn stderr $ "\x1b[32m" ++ s ++ "\x1b[0m"
+printGreen s = printStdErr $ "\x1b[32m" ++ s ++ "\x1b[0m"
 
 -- print danger or error messages to stderr in red background:
 printRed :: String -> IO ()
-printRed s = hPutStrLn stderr $ "\x1b[41m" ++ s ++ "\x1b[0m"
+printRed s = printStdErr $ "\x1b[41m" ++ s ++ "\x1b[0m"
+
+printStdErr :: String -> IO ()
+printStdErr = hPutStrLn stderr
 
 -- Repeatedly apply `f` to an input until the input stops changing. Show constraint for better error
 -- reporting on the occasional infinite loop.

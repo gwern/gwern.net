@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-19 23:34:53 gwern"
+When:  Time-stamp: "2022-11-20 15:42:14 gwern"
 License: CC-0
 -}
 
@@ -1380,6 +1380,7 @@ generateID url author date
        , ("https://arxiv.org/abs/2110.04725#inspur", "wu-et-al-2021-yuan-1")
        , ("https://www.medrxiv.org/content/10.1101/2022.06.24.22276728.full", "chen-et-al-2022-rare-variants")
        , ("https://arxiv.org/abs/2210.11399#google", "tay-et-al-2022-upalm")
+       , ("https://arxiv.org/abs/2205.05131#google", "tay-et-al-202-ul2")
        , ("https://arxiv.org/abs/2206.15472", "lin-et-al-2022-smolml")
        , ("https://arxiv.org/abs/2209.14156", "tang-et-al-2022-tvlt")
       ]
@@ -2025,6 +2026,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<span class=\"math inline\">\\(z_i \\in {\\mathbb R}^d\\)</span>", "<em>z<sub>i</sub></em> ∈ ℝ<sup><em>d</em></sup>")
          , ("<span class=\"math inline\">\\(W \\in {\\mathbb R}^{p \\times d}\\)</span>", "<em>W</em> ∈ ℝ<sup><em>p</em>×<em>d</em></sup>")
          , ("<span class=\"math inline\">\\(\\varphi\\)</span>", "ϕ")
+         , ("<span class=\"math inline\">\\(x\\mathbf{1}_{x&gt;0}\\)</span>", "<em>x</em><strong>1</strong><sub><em>x</em>&gt;0</sub>")
+         , ("<span class=\"math inline\">\\(\\Phi(10)\\)</span>", "Φ(<em>x</em>)")
+         , ("<span class=\"math inline\">\\(x\\Phi(10)\\)</span>", "<em>x</em>Φ(<em>x</em>)")
          , ("<span class=\"math inline\">\\(W z_i\\)</span>", "<em>Wz<sub>i</sub></em>")
          , ("<span class=\"math inline\">\\({\\raise.17ex\\hbox{<span class=\"math inline\">~</span>}}\\)</span>", "~")
          , ("<span class=\"math inline\">\\(z=0\\)</span>", "<em>z</em> = 0")
@@ -2657,6 +2661,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" N<sub>effective</sub>", " <em>N<sub>effective</sub>")
          , (" N-weighted", " <em>N</em>-weighted")
          , (" n-back", " <em>n</em>-back")
+         , ("N-back", "<em>N</em>-back")
          , ("<em>p</em> &lt; .05", "<em>p</em> &lt; 0.05")
          , ("( <em>p</em>", "(<em>p</em>")
          , (" p&lt;", " <em>p</em> &lt; ")
