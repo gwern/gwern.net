@@ -1257,7 +1257,11 @@ Popups = {
 								 || target.getBoundingClientRect();
 
 		//	Prevent popup cycling in Chromium.
-		popup.style.visibility = "hidden";
+		/*	This seems to no longer be necessary. Delete it once some time 
+			has passed with no problems.
+				—SA 2022-11-20
+		 */
+// 		popup.style.visibility = "hidden";
 
 		//  Wait for the “naive” layout to be completed, and then...
 		requestAnimationFrame(() => {
@@ -1393,7 +1397,11 @@ Popups = {
 			popup.viewportRect = popup.getBoundingClientRect();
 
 			//	Prevent popup cycling in Chromium.
-			popup.style.visibility = "";
+			/*	This seems to no longer be necessary. Delete it once some time 
+				has passed with no problems.
+					—SA 2022-11-20
+			 */
+// 			popup.style.visibility = "";
 
 			document.activeElement.blur();
 		});
