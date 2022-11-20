@@ -344,36 +344,15 @@ Extracts = {
         return null;
     },
 
-    /*  Returns the target identifier: the original URL (for locally archived
-        pages), or the relative url (for local links), or the full URL (for
-        foreign links).
-     */
     //  Called by: Extracts.targetsMatch
     //  Called by: Extracts.fillPopFrame
     //  Called by: extracts-annotations.js
     targetIdentifier: (target) => {
-        if (target.dataset.urlOriginal) {
-            let originalURL = new URL(target.dataset.urlOriginal);
-
-            /*  Special cases where the original URL of the target does not
-                match the target’s proper identifier (possibly due to outgoing
-                link rewriting).
-             */
-            if (originalURL.hostname == "ar5iv.labs.arxiv.org") {
-                originalURL.hostname = "arxiv.org";
-                originalURL.pathname = originalURL.pathname.replace("/html/", "/abs/");
-                /*	Erase the ?fallback=original query parameter necessary to 
-                	make it redirect if no Ar5iv version is available.
-                 */
-                originalURL.search = ""; 
-            }
-
-            return originalURL.href;
-        } else {
-            return (target.hostname == location.hostname
-                   ? target.pathname + target.hash
-                   : target.href);
-        }
+    	return Extracts.isAnnotatedLink(target)
+    		   ? Annotations.targetIdentifier(target)
+    		   : (target.hostname == location.hostname
+                  ? target.pathname + target.hash
+                  : target.href);
     },
 
     /*  Returns true if the two targets will spawn identical popups
@@ -875,7 +854,7 @@ Extracts = {
 
 				//	Page title (for parts of other pages).
 				if (target.pathname != location.pathname)
-					popFrameTitleText += ` (${Extracts.cachedPageTitles[target.pathname]})`;
+					popFrameTitleText = `${Extracts.cachedPageTitles[target.pathname]} ${popFrameTitleText}`;
 			}
 		} else {
 			popFrameTitleText = (target.pathname + target.hash);
