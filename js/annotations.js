@@ -52,22 +52,7 @@ Annotations = { ...Annotations,
      */
 	targetIdentifier: (target) => {
         if (target.dataset.urlOriginal) {
-            let originalURL = new URL(target.dataset.urlOriginal);
-
-            /*  Special cases where the original URL of the target does not
-                match the target’s proper identifier (possibly due to outgoing
-                link rewriting).
-             */
-            if (originalURL.hostname == "ar5iv.labs.arxiv.org") {
-                originalURL.hostname = "arxiv.org";
-                originalURL.pathname = originalURL.pathname.replace("/html/", "/abs/");
-                /*	Erase the ?fallback=original query parameter necessary to 
-                	make it redirect if no Ar5iv version is available.
-                 */
-                originalURL.search = ""; 
-            }
-
-            return originalURL.href;
+            return originalURLForLink(target).href;
         } else {
             return (target.hostname == location.hostname
                    ? target.pathname + target.hash

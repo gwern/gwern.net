@@ -153,6 +153,32 @@
 /***********/
 
 /******************************************************************************/
+/*	Return original URL for a link. (Equal to the link’s URL itself for all but
+	locally archived links.)
+ */
+function originalURLForLink(link) {
+	if (link.dataset.urlOriginal == null)
+		return new URL(link.href);
+
+	let originalURL = new URL(link.dataset.urlOriginal);
+
+	/*  Special cases where the original URL of the target does not
+		match the target’s proper identifier (possibly due to outgoing
+		link rewriting).
+	 */
+	if (originalURL.hostname == "ar5iv.labs.arxiv.org") {
+		originalURL.hostname = "arxiv.org";
+		originalURL.pathname = originalURL.pathname.replace("/html/", "/abs/");
+		/*	Erase the ?fallback=original query parameter necessary to 
+			make it redirect if no Ar5iv version is available.
+		 */
+		originalURL.search = ""; 
+	}
+
+	return originalURL;
+}
+
+/******************************************************************************/
 /*	Returns the heading level of a <section> element. (Given by a class of the
 	form ‘levelX’ where X is a positive integer. Defaults to 1 if no such class
 	is present.)
