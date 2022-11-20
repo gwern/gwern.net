@@ -218,6 +218,26 @@ Extracts = {
     setup: () => {
         GWLog("Extracts.setup", "extracts.js", 1);
 
+		//  Set pop-frame type (mode) - popups or popins.
+		let mobileMode = (    localStorage.getItem("extracts-force-popins") == "true"
+						  || GW.isMobile() 
+						  || matchMedia("(max-width: 1279px) and (max-height: 959px)").matches);
+		Extracts.popFrameProviderName = mobileMode ? "Popins" : "Popups";
+		GWLog(`${(mobileMode ? "Mobile" : "Non-mobile")} client detected. Activating ${(mobileMode ? "popins" : "popups")}.`, "extracts.js", 1);
+
+		//  Prevent null references.
+		Popups = window["Popups"] || { };
+		Popins = window["Popins"] || { };
+
+		//	If provider not loaded yet, defer setup until it is.
+		if (window[Extracts.popFrameProviderName] == null) {
+			GW.notificationCenter.addHandlerForEvent(Extracts.popFrameProviderName + ".didLoad", (info) => {
+				Extracts.setup();
+			}, { once: true });
+
+			return;
+		}
+
         //  Set service provider object.
         Extracts.popFrameProvider = window[Extracts.popFrameProviderName];
 
@@ -1394,24 +1414,4 @@ Extracts = {
 
 GW.notificationCenter.fireEvent("Extracts.didLoad");
 
-//  Set pop-frame type (mode) - popups or popins.
-let mobileMode =    (localStorage.getItem("extracts-force-popins") == "true") 
-				 || GW.isMobile() 
-				 || matchMedia("(max-width: 1279px) and (max-height: 959px)").matches;
-Extracts.popFrameProviderName = mobileMode ? "Popins" : "Popups";
-GWLog(`${(mobileMode ? "Mobile" : "Non-mobile")} client detected. Activating ${(mobileMode ? "popins" : "popups")}.`, "extracts.js", 1);
-
-doSetup = () => {
-    //  Prevent null references.
-    Popups = window["Popups"] || { };
-    Popins = window["Popins"] || { };
-
-    Extracts.setup();
-};
-if (window[Extracts.popFrameProviderName]) {
-    doSetup();
-} else {
-    GW.notificationCenter.addHandlerForEvent(Extracts.popFrameProviderName + ".didLoad", (info) => {
-        doSetup();
-    }, { once: true });
-}
+Extracts.setup();
