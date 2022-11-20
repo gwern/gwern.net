@@ -41,8 +41,9 @@ blacklist sourceLabel = map (\(a,b) -> (a,(b,sourceLabel))) . filter (\(f,(title
 toSingleLine :: (Path,(MetadataItem,String)) -> String
 toSingleLine ("",_) = ""
 toSingleLine (f,(("",_,_,_,[],_),_)) = f ++ " []" -- we insert '[]' to parallel links with barebones auto-metadata but lacking even a tag; this lets us grep output for all untagged links (as opposed to only being able to grep for the smaller & much more arbitrary subset, 'untagged but has an auto-title')
-toSingleLine (f,(mi@(b,c,d,_,tags,abst),label)) = ("\x1b[36m"++label++"\x1b[0m: ") ++ intercalate "; "
-  ([ authorsToCite f c d,
+toSingleLine (f,(mi@(b,c,d,_,tags,abst),label)) = intercalate "; "
+  ([ label,
+     authorsToCite f c d,
     "\x1b[32m "++f++" \x1b[0m",
     show (uniqTags tags),
     "\x1b[35m\""++b++"\"\x1b[0m",
