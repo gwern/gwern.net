@@ -871,7 +871,20 @@ addContentLoadHandler(GW.contentLoadHandlers.designateAuxLinksAppendContainer = 
 		if (enclosingCollapseBlock)
 			enclosingCollapseBlock.classList.add("aux-links-container");
 	});
-}, ">", (info) => info.needsRewrite);
+}, ">", (info) => (   info.needsRewrite
+				   && info.contentType == "annotation"));
+
+/***********************************************************************/
+/*	Rewrite collapse blocks in annotations to make them expand on hover.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rewriteCollapseBlocksInAnnotation = (loadEventInfo) => {
+    GWLog("rewriteCollapseBlocksInAnnotation", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll(".collapse").forEach(collapseBlock => {
+		collapseBlock.classList.add("expand-on-hover");
+		updateDisclosureButtonTitleForCollapseBlock(collapseBlock);
+	});
+}, "<eventListeners", (info) => info.contentType == "annotation");
 
 /*******************************************************************************/
 /*  Apply various typographic fixes (educate quotes, inject <wbr> elements after
