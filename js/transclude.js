@@ -276,7 +276,8 @@ function templateDataFromHTML(html) {
  */
 //	(string, string|object, object) => DocumentFragment
 function fillTemplate (template, data = null, context = null) {
-	if (template == null)
+	if (   template == null
+		|| template == "LOADING_FAILED")
 		return null;
 
 	//	If no data source is provided, use the template itself as data source.
@@ -713,7 +714,20 @@ Transclude = {
 			location: Transclude.templateDirectoryPathname + templateName + ".tmpl",
 			onSuccess: (event) => {
 				Transclude.templates[templateName] = event.target.responseText;
+
+				GW.notificationCenter.fireEvent("Transclude.templateDidLoad", {
+					source: "Transclude.loadTemplateByName",
+					templateName: templateName
+				});
 			},
+			onFailure: (event) => {
+				Transclude.templates[templateName] = "LOADING_FAILED";
+
+				GW.notificationCenter.fireEvent("Transclude.templateLoadDidFail", {
+					source: "Transclude.loadTemplateByName",
+					templateName: templateName
+				});
+			}
 		});
 	},
 
@@ -960,6 +974,7 @@ Transclude = {
         let cachedContent = Transclude.cachedContentForLink(includeLink);
         if (cachedContent) {
             let content = newDocument(cachedContent);
+
             if (Transclude.isAnnotationTransclude(includeLink)) {
                 includeLink.needsRewrite = true;
                 requestAnimationFrame(() => {
@@ -987,8 +1002,49 @@ Transclude = {
                 return;
             } else if (referenceData) {
             	let templateName = (includeLink.dataset.template || referenceData.template);
+
+				//	If the template has failed to load, do nothing.
+				if (Transclude.templates[templateName] == "LOADING_FAILED") {
+					Transclude.setLinkStateLoadingFailed(includeLink);
+
+					return;
+				}
+
+				/*	If the template hasn’t loaded yet, add load/fail handlers
+					and then return; when the template loads, we’ll try again.
+				 */
+				if (Transclude.templates[templateName] == null) {
+					GW.notificationCenter.addHandlerForEvent("Transclude.templateDidLoad", (info) => {
+						Transclude.transclude(includeLink, true);
+					}, {
+						once: true,
+						condition: (info) => info.templateName == templateName
+					});
+					GW.notificationCenter.addHandlerForEvent("Transclude.templateLoadDidFail", (info) => {
+						Transclude.setLinkStateLoadingFailed(includeLink);
+
+						//	Send request to record failure in server logs.
+						GWServerLogError(includeLink.href, "missing template");
+					}, {
+						once: true,
+						condition: (info) => info.templateName == templateName
+					});
+
+					return;
+				}
+
                 Transclude.setCachedContentForLink(Transclude.fillTemplateNamed(templateName, referenceData),
                 								   includeLink);
+
+                if (Transclude.cachedContentForLink(includeLink) == null) {
+                	Transclude.setLinkStateLoadingFailed(includeLink);
+
+                	//	Send request to record failure in server logs.
+					GWServerLogError(includeLink.href + `--annotation-transclude-failed`, "failed annotation transclude");
+
+                	return;
+                }
+
                 Transclude.transclude(includeLink, true);
 
                 return;
@@ -1014,7 +1070,7 @@ Transclude = {
                 Transclude.transclude(includeLink, true);
             }, (identifier) => {
 				//	Load fail handler.
-                Transclude.transclude(includeLink, true);
+                Transclude.setLinkStateLoadingFailed(includeLink);
 
                 //  Send request to record failure in server logs.
                 GWServerLogError(includeLink.href + `--annotation-transclude-failed`, "failed annotation transclude");
@@ -1025,8 +1081,10 @@ Transclude = {
                 onSuccess: (event) => {
                     let contentType = event.target.getResponseHeader("Content-Type").match(/(.+?)(?:;|$)/)[1];
                     if (Transclude.permittedContentTypes.includes(contentType) == false) {
-                        GWServerLogError(includeLink.href + `--transclude-bad-content-type`, "bad transclude content type");
                         Transclude.setLinkStateLoadingFailed(includeLink);
+
+	                	//	Send request to record failure in server logs.
+                        GWServerLogError(includeLink.href + `--transclude-bad-content-type`, "bad transclude content type");
 
                         return;
                     }
