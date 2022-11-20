@@ -1182,7 +1182,10 @@ Extracts = {
 				Popups.positionPopup(popFrame);
 			else // if (Extracts.popFrameProvider == Popins)
 				Popins.scrollPopinIntoView(popFrame);
-		}, { condition: (info) => (info.document == popFrame.document) });
+		}, { 
+			once: true,
+			condition: (info) => (info.document == popFrame.document) 
+		});
 
         return popFrame;
     },
