@@ -401,10 +401,10 @@ function includeContent(includeLink, content) {
 
     //  Fire events, if need be.
     if (includeLink.needsRewrite) {
-        let flags = GW.contentDidLoadEventFlags.needsRewrite;
+        let flags = (  GW.contentDidLoadEventFlags.needsRewrite
+                	 | GW.contentDidLoadEventFlags.collapseAllowed);
         if (includingIntoMainPage)
-            flags |= (  GW.contentDidLoadEventFlags.fullWidthPossible
-                      | GW.contentDidLoadEventFlags.collapseAllowed);
+            flags |= GW.contentDidLoadEventFlags.fullWidthPossible;
 
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "transclude",
