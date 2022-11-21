@@ -3450,6 +3450,16 @@ body.index-directory #footer {
     margin-bottom: 0.375em;
 }
 
+.popframe-body > div.annotation > div.annotation-abstract > :not(section).collapse:not(.expanded),
+.popframe-body > div.annotation > div.annotation-abstract > :not(section).collapse.expanded {
+    margin-right: -2px;
+    border-right: 1px solid var(--GW-TOC-border-color);
+}
+.popframe-body > div.annotation > div.annotation-abstract > :not(section).collapse:last-child {
+    margin-bottom: 0.25em;
+    border-bottom: 1px solid var(--GW-TOC-border-color);
+}
+
 /*┌──────────────────────┐*/
 /*│ Footnote pop-frames. │*/
 /*└──────────────────────┘*/
@@ -4910,11 +4920,6 @@ section.highlight-fading::before {
 }
 .annotation .originalURL {
     font-variant-caps: small-caps;
-    margin: 0 0.5em 0 0;
-    font-size: 0.875em;
-}
-.annotation .iaMirror {
-    padding-right: 0.3em;
 }
 .annotation div.data-field.annotation-abstract {
     margin-top: 0.5em;
@@ -5104,32 +5109,32 @@ section.highlight-fading::before {
 	(rather than pop-framed) annotations.
  */
 
-.include-wrapper-block.annotation .collapse.aux-links-container {
+.annotation .collapse.aux-links-container {
     border-top: 1px solid var(--GW-TOC-border-color);
 }
-.include-wrapper-block.annotation .collapse.aux-links-container:not(:last-child) {
+.annotation .collapse.aux-links-container:not(:last-child) {
     border-bottom: 1px solid var(--GW-TOC-border-color);
 }
-.include-wrapper-block.annotation p + .collapse.aux-links-container {
+.annotation p + .collapse.aux-links-container {
     margin-top: 1.25em;
 }
-.include-wrapper-block.annotation .collapse.aux-links-container + .collapse.aux-links-container {
+.annotation .collapse.aux-links-container + .collapse.aux-links-container {
     margin-top: 1.5em;
 }
-.include-wrapper-block.annotation .TOC + .collapse.aux-links-container {
+.annotation .TOC + .collapse.aux-links-container {
     margin-top: 0.75em;
 }
 
-.include-wrapper-block.annotation .collapse.aux-links-container .aux-links-append {
+.annotation .collapse.aux-links-container .aux-links-append {
 	padding-left: 0;
 }
 
-.include-wrapper-block.annotation :not(section).collapse.aux-links-container:not(.expanded) > .disclosure-button::before {
+.annotation :not(section).collapse.aux-links-container:not(.expanded) > .disclosure-button::before {
     content: "Click to expand";
     width: 10rem;
     padding: 1rem 3rem 0.75rem 0;
 }
-.include-wrapper-block.annotation :not(section).collapse.aux-links-container:not(.expanded) > .disclosure-button::after {
+.annotation :not(section).collapse.aux-links-container:not(.expanded) > .disclosure-button::after {
     display: none;
 }
 
