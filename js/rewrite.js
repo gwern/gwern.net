@@ -825,6 +825,63 @@ addContentLoadHandler(GW.contentLoadHandlers.re = (loadEventInfo) => {
 /* ANNOTATIONS */
 /***************/
 
+addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (loadEventInfo) => {
+    GWLog("rewritePartialAnnotations", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll(".annotation-partial").forEach(partialAnnotation => {
+		//	Designate reference link, for annotations.js to identify it.
+		partialAnnotation.querySelector("a").classList.add("link-annotated-partial");
+
+		//	Retrieve reference data.
+		let referenceData = Annotations.dataSources.local.referenceDataFromParsedAPIResponse(partialAnnotation);
+
+		//	Define context.
+		let context = {
+			template: "annotation-blockquote-inside",
+			annotationClassSuffix: "-partial"
+		};
+
+		//	We may have to wait for the template to load.
+		Transclude.doWhenTemplateLoaded(context["template"], (delayed = false) => {
+			partialAnnotation.replaceChildren(Transclude.fillTemplateNamed(context["template"], referenceData, context));
+
+			/*	We only need to fire events if we had to wait; otherwise, all
+				requisite content rewriting will be done by the parent document.
+			 */
+			if (delayed) {
+				//  Document into which the transclusion is being done.
+				let doc = loadEventInfo.document.getRootNode();
+
+				//  Are we including into the main page, or into a pop-frame or something?
+				let includingIntoMainPage = (doc == document);
+
+				let flags = GW.contentDidLoadEventFlags.collapseAllowed;
+				if (delayed)
+					flags |= GW.contentDidLoadEventFlags.needsRewrite;
+				if (includingIntoMainPage)
+					flags |= GW.contentDidLoadEventFlags.fullWidthPossible;
+
+				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+					source: "rewritePartialAnnotations",
+					document: partialAnnotation,
+					contentType: "annotation",
+					loadLocation: loadEventInfo.loadLocation,
+					baseLocation: loadEventInfo.baseLocation,
+					flags: flags
+				});
+
+				GW.notificationCenter.fireEvent("GW.contentDidInject", {
+					source: "rewritePartialAnnotations",
+					document: partialAnnotation,
+					mainPageContent: includingIntoMainPage
+				});
+			}
+
+			unwrap(partialAnnotation);
+		});
+	});
+}, "rewrite", (info) => info.needsRewrite);
+
 /***************************************************************************/
 /*	Because annotations transclude aux-links, we make the aux-links links in
 	the metadata line of annotations scroll down to the appended aux-links

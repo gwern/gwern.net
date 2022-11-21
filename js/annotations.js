@@ -266,7 +266,7 @@ Annotations = { ...Annotations,
 			},
 
 			//	Called by: Annotations.referenceDataFromParsedAPIResponse
-			referenceDataFromParsedAPIResponse: (referenceEntry, identifier) => {
+			referenceDataFromParsedAPIResponse: (referenceEntry, identifier = null) => {
 				let referenceElement = referenceEntry.querySelector(Annotations.dataSources.local.referenceElementSelector);
 
 				let titleHTML = referenceElement.innerHTML;
