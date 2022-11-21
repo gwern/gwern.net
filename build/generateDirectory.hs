@@ -316,11 +316,10 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl,lb) = -- no abstracts:
        linkBibliography = if lb=="" then [] else (if bl=="" && sl=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], []) [Link ("",["aux-links", "link-page", "icon-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of links it cites).")]]
   in
   if (tgs==[] && bl=="" && dt=="") then [Para (Link nullAttr title (T.pack f, "") : (author))]
-  else [Para (Link nullAttr title (T.pack f, "") : (author ++ date ++ (if null (tags ++ backlink ++ similar)
+  else [Div ("", ["annotation-partial"], [])
+         [Para (Link nullAttr title (T.pack f, "") : (author ++ date ++ (if null (tags ++ backlink ++ similar)
                                                                         then []
-                                                                        else [Space, Str "("] ++ tags ++ backlink ++ similar ++ linkBibliography ++ [Str ")"])
-                                                   )
-             )
-       ]
+                                                                        else [Space, Str "("] ++ tags ++ backlink ++ similar ++ linkBibliography ++ [Str ")"]))
+                                                   )]]
 -- long abstracts:
 generateItem (f,a,bl,sl,lb) = generateAnnotationTransclusionBlock (f,a) bl sl lb
