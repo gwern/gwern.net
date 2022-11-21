@@ -4920,11 +4920,6 @@ section.highlight-fading::before {
 }
 .annotation .originalURL {
     font-variant-caps: small-caps;
-    margin: 0 0.5em 0 0;
-    font-size: 0.875em;
-}
-.annotation .iaMirror {
-    padding-right: 0.3em;
 }
 .annotation div.data-field.annotation-abstract {
     margin-top: 0.5em;
