@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-11-20 20:43:47 gwern"
+# When:  Time-stamp: "2022-11-21 10:24:25 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -307,28 +307,28 @@ else
        }
     wrap λ "Warning: unauthorized LaTeX users somewhere"
 
-    λ(){ VISIBLE_N=$(cat ./_site/sitemap.xml | wc --lines); [ "$VISIBLE_N" -le 13040 ] && echo "$VISIBLE_N" && exit 1; }
+    λ(){ VISIBLE_N=$(cat ./_site/sitemap.xml | wc --lines); [ "$VISIBLE_N" -le 20000 ] && echo "$VISIBLE_N" && exit 1; }
     wrap λ "Sanity-check number-of-public-site-files in sitemap.xml failed"
 
     λ(){ COMPILED_N="$(find -L ./_site/ -type f | wc --lines)"
-         [ "$COMPILED_N" -le 82000 ] && echo "File count: $COMPILED_N" && exit 1;
+         [ "$COMPILED_N" -le 93000 ] && echo "File count: $COMPILED_N" && exit 1;
          COMPILED_BYTES="$(du --summarize --total --dereference --bytes ./_site/ | tail --lines=1 | cut --field=1)"
-         [ "$COMPILED_BYTES" -le 73803000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
+         [ "$COMPILED_BYTES" -le 80603000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
     wrap λ "Sanity-check: number of files & file-size"
 
-    λ(){ SUGGESTIONS_N=$(cat ./metadata/linkSuggestions.el | wc --lines); [ "$SUGGESTIONS_N" -le 32000 ] && echo "$SUGGESTIONS_N"; }
+    λ(){ SUGGESTIONS_N=$(cat ./metadata/linkSuggestions.el | wc --lines); [ "$SUGGESTIONS_N" -le 38000 ] && echo "$SUGGESTIONS_N"; }
     wrap λ "Link-suggestion database broken?"
-    λ(){ BACKLINKS_N=$(cat ./metadata/backlinks.hs | wc --lines);         [ "$BACKLINKS_N"   -le 70000 ] && echo "$BACKLINKS_N"; }
+    λ(){ BACKLINKS_N=$(cat ./metadata/backlinks.hs | wc --lines);         [ "$BACKLINKS_N"   -le 73000 ] && echo "$BACKLINKS_N"; }
     wrap λ "Backlinks database broken?"
 
     λ(){ ANNOTATION_FILES_N=$(find ./metadata/annotations/ -maxdepth 1 -type f | wc --lines);
-         [ "$ANNOTATION_FILES_N"   -le 12000 ] && echo "$ANNOTATION_FILES_N"; }
+         [ "$ANNOTATION_FILES_N"   -le 12500 ] && echo "$ANNOTATION_FILES_N"; }
     wrap λ "Annotation files are missing?"
     λ(){ BACKLINKS_FILES_N=$(find ./metadata/annotations/backlinks/ -type f | wc --lines);
-         [ "$BACKLINKS_FILES_N"    -le 24000 ] && echo "$BACKLINKS_FILES_N"; }
+         [ "$BACKLINKS_FILES_N"    -le 24500 ] && echo "$BACKLINKS_FILES_N"; }
     wrap λ "Backlinks files are missing?"
     λ(){ SIMILARLINKS_FILES_N=$(find ./metadata/annotations/similars/ -type f | wc --lines);
-         [ "$SIMILARLINKS_FILES_N" -le 9600 ] && echo "$SIMILARLINKS_FILES_N"; }
+         [ "$SIMILARLINKS_FILES_N" -le 9540 ] && echo "$SIMILARLINKS_FILES_N"; }
     wrap λ "Similar-links files are missing?"
 
     ## NOTE: transclude.js supports some special 'range' syntax for transclusions, so a link like '/notes/Lion#history#'/'/notes/Lion##history'/'/notes/Lion##'/'/notes/Lion#history#foo' is in fact valid
