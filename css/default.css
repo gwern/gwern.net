@@ -3450,6 +3450,16 @@ body.index-directory #footer {
     margin-bottom: 0.375em;
 }
 
+.popframe-body > div.annotation > div.annotation-abstract > :not(section).collapse:not(.expanded),
+.popframe-body > div.annotation > div.annotation-abstract > :not(section).collapse.expanded {
+    margin-right: -2px;
+    border-right: 1px solid var(--GW-TOC-border-color);
+}
+.popframe-body > div.annotation > div.annotation-abstract > :not(section).collapse:last-child {
+    margin-bottom: 0.25em;
+    border-bottom: 1px solid var(--GW-TOC-border-color);
+}
+
 /*┌──────────────────────┐*/
 /*│ Footnote pop-frames. │*/
 /*└──────────────────────┘*/
