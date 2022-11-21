@@ -272,7 +272,9 @@ function activateCollapseBlockDisclosureButtons(loadEventInfo) {
 		 */
 		if (collapseBlock.classList.contains("expand-on-hover")) {
 			let expandOnHoverDelay = 750;
-			onEventAfterDelayDo(disclosureButton, "mouseenter", expandOnHoverDelay, (event) => {
+			let collapseOnUnhoverDelay = 250;
+
+			onEventAfterDelayDo(collapseBlock, "mouseenter", expandOnHoverDelay, (event) => {
 				if (disclosureButton.checked)
 					return;
 
@@ -280,20 +282,24 @@ function activateCollapseBlockDisclosureButtons(loadEventInfo) {
 				disclosureButton.stateChangedHandler(event);
 				disclosureButton.classList.add("expanded-temp");
 
+				let removeUnhoverHandler;
 				let collapseBlockMouseleaveHandler = (event) => {
 					disclosureButton.checked = false;
 					disclosureButton.stateChangedHandler(event);
 					disclosureButton.classList.remove("expanded-temp");
 
-					collapseBlock.removeEventListener("mouseleave", collapseBlockMouseleaveHandler);
+					removeUnhoverHandler();
 				};
+				removeUnhoverHandler = onEventAfterDelayDo(collapseBlock, "mouseleave", collapseOnUnhoverDelay, (event) => {
+					collapseBlockMouseleaveHandler(event);
+				}, "mouseenter");
+
 				let collapseBlockClickHandler = (event) => {
 					disclosureButton.classList.remove("expanded-temp");
 
-					collapseBlock.removeEventListener("mouseleave", collapseBlockMouseleaveHandler);
+					removeUnhoverHandler();
 					collapseBlock.removeEventListener("click", collapseBlockClickHandler);
 				};
-				collapseBlock.addEventListener("mouseleave", collapseBlockMouseleaveHandler);
 				collapseBlock.addEventListener("click", collapseBlockClickHandler);
 			}, "mouseleave");
 		}
