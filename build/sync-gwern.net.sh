@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-11-20 12:28:15 gwern"
+# When:  Time-stamp: "2022-11-20 20:43:47 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -346,6 +346,7 @@ else
        }
     wrap λ "Stray or bad URL links in Markdown-sourced HTML."
 
+    ## Whitelist of HTML classes which are authorized for use. Any new classes should be added here.
     λ(){ find metadata/annotations/ -name "*.html" \
              | shuf | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort -u | \
              grep -E -v -e '^see-also-append$' -e '^archive-local$' -e '^archive-not$' -e '^author$' -e '^full-authors-list$' -e '^aux-links$' -e '^backlink-not$' \
@@ -378,7 +379,7 @@ else
                    -e '^mjx-stack$' -e '^mjx-sub$' -e '^mjx-sup$' -e '^mjx-surd$' -e '^mjx-texatom$' -e '^mjx-TeXmathchoice$' -e '^mjx-under$' \
                    -e '^mjx-vsize$' -e '^new$' -e '^outline-not$' -e '^warning$' -e '^markdown-body$' -e '^similars$' -e '^similars-append$' \
                    -e '^text-center$' -e '^abstract-tag-directory$' -e '^page-description-annotation$' -e '^link-bibliography$' \
-                   -e '^link-bibliography-append$'; }
+                   -e '^link-bibliography-append$' -e '^expand-on-hover$'; }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
@@ -743,7 +744,7 @@ else
   if [ "$SLOW" ]; then
     # Testing files, post-sync
     bold "Checking for file anomalies…"
-    λ(){ fdupes --quiet --sameline --size --nohidden $(find ~/wiki/ -type d | grep -E -v -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotations/backlinks' -e 'metadata/annotations/similar' -e 'metadata/annotations/link-bibliography/%2F') | grep -F --invert-match -e 'bytes each' -e 'trimfill.png'; }
+    λ(){ fdupes --quiet --sameline --size --nohidden $(find ~/wiki/ -type d | grep -E -v -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotations/backlinks' -e 'metadata/annotations/similar' -e 'metadata/annotations/link-bibliography') | grep -F --invert-match -e 'bytes each' -e 'trimfill.png'; }
     wrap λ "Duplicate file check"
 
     λ() { find . -perm u=r -path '.git' -prune; }

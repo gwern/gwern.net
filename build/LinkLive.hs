@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-11-17 21:24:56 gwern"
+When:  Time-stamp: "2022-11-20 20:30:19 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -2450,6 +2450,7 @@ badDomainsSimple = [ "2chan.us"
   , "www.vox.com"
   , "www.wunderground.com"
   , "www.teds.ac.uk"
+  , "stability.ai"
    ]
 
 url :: T.Text -> Inline
@@ -3277,7 +3278,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
             , ("https://www.yalelawjournal.org/note/amazons-antitrust-paradox", True)
             , ("https://www.yf.io/p/lsun", True)
             , ("https://www.yudkowsky.net/", True)
-            , ("https://www.zeit.de/2014/12/drogenhandel-silk-road-pfandleiher", True)
+            , ("https://web.archive.org/web/20140314232216/https://www.zeit.de/2014/12/drogenhandel-silk-road-pfandleiher", True)
             , ("https://xkcd.com/481/", True)
             , ("https://xtools.wmflabs.org/pages/index.php?name=Rhwawn&lang=en&wiki=wikipedia&namespace=0&redirects=noredirects", True)
             , ("https://zlkj.in/", True)
@@ -4726,4 +4727,5 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://yunnansourcing.us/", False)
             , ("https://annals.org/article.aspx?articleid=745807", False)
             , ("https://www.teds.ac.uk/about-teds", False)
+            , ("https://stability.ai/blog/stable-diffusion-public-release", False)
             ]

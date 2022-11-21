@@ -253,6 +253,7 @@ tagsLong2Short = [
           , ("reinforcement-learning/model/alphago", "AlphaGo")
           , ("reinforcement-learning/model-free/alphastar", "AlphaStar")
           , ("reinforcement-learning/model-free/oa5", "OA5")
+          , ("reinforcement-learning/nethack", "<em>Nethack</em> AI")
           , ("history/uighur", "Uighur genocide")
           , ("history/public-domain-review", "<em>Public Domain Review</em>")
           , ("technology", "tech")

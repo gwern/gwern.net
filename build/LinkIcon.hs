@@ -334,6 +334,8 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "tasvideos.org" = aI "TASV" "text,quad" -- TASVideos.org: tool-assisted game movies
  | u'' "habr.com" = aI "Habr" "text,quad,sans" -- Russian tech collaborative blog <https://en.wikipedia.org/wiki/Habr>
  | u'' "www.teds.ac.uk" = aI "TEDS" "text,quad,sans" -- UK twin registry founded by Robert Plomin, heavily used in behavioral genetics & sociology/psychology; it has a clever little logo (https://www.teds.ac.uk/Content/Images/TEDSlogo.png) & a monochrome SVG version would work… but unfortunately no one ever uses it & it is always known as "Twins Early Development Study (TEDS)"
+ | u'' "stability.ai" || u' "#stability" = aI "SD" "text,sans"
+ | u'' "patrickcollison.com" = aI "PC" "text,sans"
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -1065,4 +1067,6 @@ linkIconTestUnitsText =
          , ("/docs/statistics/bayes/1988-jaynes-maximumentropyandbayesianmethods.pdf", "ETJ", "text,tri,sans")
          , ("http://www-biba.inrialpes.fr/Jaynes/cc18i.pdf", "ETJ", "text,tri,sans")
          , ("https://paperswithcode.com/method/dilated-convolution", "PwC", "text,tri,sans")
+         , ("https://stability.ai/blog/stable-diffusion-public-release", "SD", "text,sans")
+         , ("https://patrickcollison.com/labs", "PC", "text,sans")
         ]
