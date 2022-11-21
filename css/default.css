@@ -4897,28 +4897,31 @@ section.highlight-fading::before {
 
 /*  Data fields.
     */
-.annotation .data-field {
+.annotation .data-field,
+.annotation-partial .data-field {
     text-align: left;
     text-indent: 0;
 }
-.annotation .data-field + .data-field {
+.annotation .data-field + .data-field,
+.annotation-partial .data-field + .data-field {
     margin-top: 0.25em;
 }
 
-.annotation .data-field.title .title-link {
+.annotation .data-field.title .title-link,
+.annotation-partial .data-field.title .title-link {
 	font-weight: bold;
 }
 .annotation .data-field.title + p {
     text-indent: 0;
 }
-.annotation .data-field.author {
+
+.annotation .data-field.author,
+.annotation-partial .data-field.author {
     font-style: italic;
     margin-right: 0.075em; /* add a bit of separation from the subscripted date: the italics making the author name 'lean right' means the regular subscript CSS isn't *quite* correct */
 }
-.annotation .date-plus-cites {
-    display: inline-block;
-}
-.annotation .originalURL {
+.annotation .originalURL,
+.annotation-partial .originalURL {
     font-variant-caps: small-caps;
 }
 .annotation div.data-field.annotation-abstract {
@@ -4936,13 +4939,6 @@ section.highlight-fading::before {
     overflow: auto;
     margin: 0.75em 0 0.5em 0;
     border-top: 1px dotted currentColor;
-}
-
-/*  In indexes and such.
- */
-.data-field.title {
-    text-indent: 0;
-    text-align: left;
 }
 
 /*  Images (such as the ones in Wikipedia annotations).

@@ -745,6 +745,32 @@ Transclude = {
 		});
 	},
 
+	doWhenTemplateLoaded: (templateName, f) => {
+		let template = Transclude.templates[templateName];
+		if (template == "LOADING_FAILED")
+			return;
+
+		if (template) {
+			f();
+		} else {
+			let loadOrFailHandler = (info) => {
+				if (info.eventName == "Transclude.templateDidLoad")
+					f(true);
+
+				GW.notificationCenter.removeHandlerForEvent("Transclude.templateDidLoad", loadOrFailHandler);
+				GW.notificationCenter.removeHandlerForEvent("Transclude.templateLoadDidFail", loadOrFailHandler);
+			};
+			GW.notificationCenter.addHandlerForEvent("Transclude.templateDidLoad", loadOrFailHandler, {
+				once: true,
+				condition: (info) => info.templateName == templateName
+			});
+			GW.notificationCenter.addHandlerForEvent("Transclude.templateLoadDidFail", loadOrFailHandler, {
+				once: true,
+				condition: (info) => info.templateName == templateName
+			});
+		}
+	},
+
 	//	(string, string|object, object) => DocumentFragment
 	fillTemplateNamed: (templateName, data, context) => {
 		return fillTemplate(Transclude.templates[templateName], data, context);
