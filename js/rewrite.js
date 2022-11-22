@@ -1300,12 +1300,14 @@ addContentLoadHandler(GW.contentLoadHandlers.bindHighlightEventsToFootnoteSelfLi
     //  Bind events.
     allCitations.forEach(bindEventsToCitation);
 
-    //  Add handler to re-bind events if more notes are injected.
-    GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-        allCitations.forEach(bindEventsToCitation);
-    }, { condition: (info) => (   info.mainPageContent
-                               || info.document == loadEventInfo.document)
-    });
+	if (allCitations.length > 0) {
+		//  Add handler to re-bind events if more notes are injected.
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+			allCitations.forEach(bindEventsToCitation);
+		}, { condition: (info) => (   info.mainPageContent
+								   || info.document == loadEventInfo.document)
+		});
+    }
 }, "eventListeners");
 
 /******************************************/

@@ -3156,7 +3156,7 @@ GW.notificationCenter = {
         if (GW.notificationCenter.eventHandlers[eventName] == null)
             return;
 
-        GW.notificationCenter.eventHandlers[eventName].removeIf(handler => handler.f == f);
+        GW.notificationCenter.eventHandlers[eventName].removeIf(handler => handler.f === f);
     },
 
     /*  Unregister all registered event handlers from the specified named event.

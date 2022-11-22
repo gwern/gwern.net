@@ -749,21 +749,20 @@ Transclude = {
 		if (template == "LOADING_FAILED") {
 			if (loadFailHandler)
 				loadFailHandler();
-
-			return;
-		}
-
-		if (template) {
+		} else if (template) {
 			loadHandler();
 		} else {
 			let loadOrFailHandler = (info) => {
-				if (info.eventName == "Transclude.templateDidLoad")
+				if (info.eventName == "Transclude.templateDidLoad") {
 					loadHandler(true);
-				else if (loadFailHandler)
-					loadFailHandler(true);
 
-				GW.notificationCenter.removeHandlerForEvent("Transclude.templateDidLoad", loadOrFailHandler);
-				GW.notificationCenter.removeHandlerForEvent("Transclude.templateLoadDidFail", loadOrFailHandler);
+					GW.notificationCenter.removeHandlerForEvent("Transclude.templateLoadDidFail", loadOrFailHandler);
+				} else {
+					if (loadFailHandler) 
+						loadFailHandler(true);
+
+					GW.notificationCenter.removeHandlerForEvent("Transclude.templateDidLoad", loadOrFailHandler);
+				}
 			};
 			GW.notificationCenter.addHandlerForEvent("Transclude.templateDidLoad", loadOrFailHandler, {
 				once: true,
