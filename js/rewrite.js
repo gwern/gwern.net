@@ -1326,29 +1326,6 @@ addContentLoadHandler(GW.contentLoadHandlers.bindNoteHighlightEventsToCitations 
 }, "eventListeners");
 
 
-/*********************/
-/* LINK BIBLIOGRAPHY */
-/*********************/
-
-/**********************************************************************/
-/*  Add IDs to the <li> elements for each entry of link bibliographies.
-    (This makes lazy transclusion triggering much more performant.)
- */
-addContentLoadHandler(GW.contentLoadHandlers.uniquelyIdentifyLinkBibliographyEntries = (loadEventInfo) => {
-    GWLog("uniquelyIdentifyLinkBibliographyEntries", "rewrite.js", 1);
-
-    if (loadEventInfo.document.parentElement == null)
-        return;
-
-    let bodyClass = loadEventInfo.baseLocation.pathname.slice(1);
-    loadEventInfo.document.querySelectorAll("#link-bibliography > ol").forEach(list => {
-        for (let i = 0; i < list.children.length; i++) {
-            list.children[i].id = `${CSS.escape(bodyClass)}-link-bibliography-entry-${(i + 1)}`;
-        }
-    });
-}, "rewrite", (info) => info.needsRewrite);
-
-
 /*********/
 /* LINKS */
 /*********/
