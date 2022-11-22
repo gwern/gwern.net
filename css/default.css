@@ -4907,11 +4907,6 @@ section.highlight-fading::before {
     text-indent: 0;
 }
 
-.annotation .data-field.author,
-.annotation-partial .data-field.author {
-    font-style: italic;
-    margin-right: 0.075em; /* add a bit of separation from the subscripted date: the italics making the author name 'lean right' means the regular subscript CSS isn't *quite* correct */
-}
 .annotation .originalURL,
 .annotation-partial .originalURL {
     font-variant-caps: small-caps;
