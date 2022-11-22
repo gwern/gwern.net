@@ -258,9 +258,9 @@ function templateDataFromHTML(html) {
 	newDocument(html).querySelectorAll("[data-template-field]").forEach(element => {
 		if (element.dataset.templateField.includes(":")) {
 			element.dataset.templateField.split(",").forEach(templateField => {
-				let [ beforeColon, afterColon ] = trim(templateField).split(":");
-				let fieldName = trim(beforeColon);
-				let fieldValueIdentifier = trim(afterColon);
+				let [ beforeColon, afterColon ] = templateField.trim().split(":");
+				let fieldName = beforeColon.trim();
+				let fieldValueIdentifier = afterColon.trim();
 
 				if (fieldValueIdentifier.startsWith("."))
 					dataObject[fieldName] = element[fieldValueIdentifier.slice(1)]
@@ -275,6 +275,66 @@ function templateDataFromHTML(html) {
 	return dataObject;
 }
 
+/***************************************************************************/
+/*	Returns true or false, based on the value of defined template expression
+	constants. (Returns false for unknown constant name.)
+ */
+function evaluateTemplateExpressionConstant(constant) {
+	if (constant == "_TRUE_")
+		return true;
+
+	if (constant == "_FALSE_")
+		return false;
+
+	return false;
+}
+
+/************************************************************************/
+/*	Return either true or false, having evaluated the template expression
+	(used in conditionals, e.g. `<[IF !foo & bar]>baz<[IFEND]>`).
+ */
+function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
+	if (expr == "_TRUE_")
+		return true;
+
+	if (expr == "_FALSE_")
+		return false;
+
+	return evaluateTemplateExpressionConstant(expr.replace(
+		//	Brackets.
+		/\s*\[\s*(.+?)\s*\]\s*/g,
+		(match, bracketedExpr) => 
+		(evaluateTemplateExpression(bracketedExpr, valueFunction)
+		 ? "_TRUE_"
+		 : "_FALSE_")
+	).replace(
+		//	Boolean AND, OR.
+		/^\s*([^&|]+?)\s*([&|])\s*(.+?)\s*$/,
+		(match, leftOperand, operator, rightOperand) => {
+			let leftOperandTrue = evaluateTemplateExpression(leftOperand, valueFunction);
+			let rightOperandTrue = evaluateTemplateExpression(rightOperand, valueFunction);
+			let expressionTrue = operator == "&"
+								 ? (leftOperandTrue && rightOperandTrue)
+								 : (leftOperandTrue || rightOperandTrue);
+			return expressionTrue ? "_TRUE_" : "_FALSE_";
+		}
+	).replace(
+		//	Boolean NOT.
+		/^\s*!\s*(.+?)\s*$/,
+		(match, operand) =>
+		(evaluateTemplateExpression(operand, valueFunction)
+		 ? "_FALSE_"
+		 : "_TRUE_")
+	).replace(/^\s*(.+)\s*$/g,
+		(match, fieldName) => 
+		(/^_(.*)_$/.test(fieldName)
+		 ? fieldName
+		 : (valueFunction(fieldName) == null
+			? "_FALSE_"
+			: "_TRUE_"))
+	));
+}
+
 /******************************************************************************/
 /*	Fill a template with provided reference data (supplemented by an optional
 	context object).
@@ -287,9 +347,15 @@ function templateDataFromHTML(html) {
 	function).
 
 	(Context argument must be an object, not a string.)
+
+	Available options (defaults):
+
+		preserveSurroundingWhitespaceInConditionals (false)
+			If true, `<[IF foo]> bar <[IFEND]>` becomes ` bar `; 
+			if false, `bar`.
  */
 //	(string, string|object, object) => DocumentFragment
-function fillTemplate (template, data = null, context = null) {
+function fillTemplate (template, data = null, context = null, options = { }) {
 	if (   template == null
 		|| template == "LOADING_FAILED")
 		return null;
@@ -305,7 +371,7 @@ function fillTemplate (template, data = null, context = null) {
 	/*	Data variables specified in the provided context argument (if any)
 		take precedence over the reference data.
 	 */
-	let value = (fieldName) => {
+	let valueFunction = (fieldName) => {
 		return (context && context[fieldName]
 				? context[fieldName]
 				: (data ? data[fieldName] : null));
@@ -313,6 +379,18 @@ function fillTemplate (template, data = null, context = null) {
 
 	//	Make a copy of the template.
 	let filledTemplate = template;
+
+	//	Line continuations.
+	filledTemplate = filledTemplate.replace(
+		/>\\\n\s*</gs,
+		(match) => "><"
+	);
+
+	//	Comments.
+	filledTemplate = filledTemplate.replace(
+		/<\(.+?\)>/gs,
+		(match) => ""
+	);
 
 	/*	Conditionals. JavaScript’s regexps do not support recursion, so we
 		keep running the replacement until no conditionals remain.
@@ -322,16 +400,21 @@ function fillTemplate (template, data = null, context = null) {
 		didReplace = false;
 		filledTemplate = filledTemplate.replace(
 			/<\[IF([0-9]*)\s+(.+?)\]>(.+?)(?:<\[ELSE\1\]>(.+?))?<\[IF\1END\]>/gs,
-			(match, nestLevel, fieldName, ifValue, elseValue) => {
+			(match, nestLevel, expr, ifValue, elseValue) => {
 				didReplace = true;
-				return (value(fieldName) ? (ifValue ?? "") : (elseValue ?? ""));
+				let returnValue = evaluateTemplateExpression(expr, valueFunction) 
+								  ? (ifValue ?? "") 
+								  : (elseValue ?? "");
+				return options.preserveSurroundingWhitespaceInConditionals
+					   ? returnValue
+					   : returnValue.trim();
 			});
 	} while (didReplace);
 
 	//	Data variable substitution.
 	filledTemplate = filledTemplate.replace(
 		/<\{(.+?)\}>/g,
-		(match, fieldName) => (value(fieldName) ?? "")
+		(match, fieldName) => (valueFunction(fieldName) ?? "")
 	);
 
 	return newDocument(filledTemplate);
