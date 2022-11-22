@@ -1383,6 +1383,11 @@ addContentLoadHandler(GW.contentLoadHandlers.addSpecialLinkClasses = (loadEventI
 addContentLoadHandler(GW.contentLoadHandlers.designateSpecialLinkIcons = (loadEventInfo) => {
     GWLog("designateSpecialLinkIcons", "rewrite.js", 1);
 
+	//	Internal links on the home page need no decoration.
+	if (   loadEventInfo.isMainDocument
+		&& loadEventInfo.document.body.classList.contains("index"))
+		return;
+
     //  Self-links (anchorlinks to the current page).
     loadEventInfo.document.querySelectorAll(".link-self:not(.icon-not)").forEach(link => {
         link.dataset.linkIconType = "text";

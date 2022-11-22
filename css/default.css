@@ -2701,12 +2701,6 @@ body.index article #markdownBody section:not(.collapse) > h1:first-child a {
     display: inline;
 }
 
-/*  Internal links on the home page need no decoration. */
-body.index #markdownBody a[href^="."]:not([href*="/docs/"]):not([href*="/images/"])::after,
-body.index #markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::after {
-    content: none;
-}
-
 /*  The /index needs more space in the lists for mobile users */
 @media all and (max-width: 649px) {
     body.index #markdownBody li {
