@@ -388,7 +388,7 @@ function includeContent(includeLink, content) {
     //  Update footnotes, if need be.
     let newFootnotesWrapper = Transclude.isAnnotationTransclude(includeLink)
                               ? null
-                              : updateFootnotesAfterInclusion(wrapper, includeLink);
+                              : updateFootnotesAfterInclusion(includeLink, wrapper, newContentFootnotesSection);
 
     //  ID transplantation.
     if (   includeLink.id > ""
@@ -535,13 +535,12 @@ function includeContent(includeLink, content) {
     Returns wrapper element of the added footnotes, if any; null otherwise.
  */
 //  Called by: includeContent
-function updateFootnotesAfterInclusion(newContent, includeLink) {
+function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootnotesSection) {
     GWLog("updateFootnotesAfterInclusion", "transclude.js", 2);
 
     let citationsInNewContent = newContent.querySelectorAll(".footnote-ref");
-    let footnotesSectionInSourceDocument = Transclude.cachedDocumentForLink(includeLink).querySelector("#footnotes");
     if (   citationsInNewContent.length == 0
-        || footnotesSectionInSourceDocument == null)
+        || newContentFootnotesSection == null)
         return null;
 
     let newContentDocument = newContent.getRootNode();
@@ -581,7 +580,7 @@ function updateFootnotesAfterInclusion(newContent, includeLink) {
 
     citationsInNewContent.forEach(citation => {
         //  Footnote.
-        let footnote = footnotesSectionInSourceDocument.querySelector(citation.hash);
+        let footnote = newContentFootnotesSection.querySelector(citation.hash);
 
         //  #fnN
         citation.hash = citation.hash.slice(0, 3) + newFootnoteNumber;
@@ -745,17 +744,23 @@ Transclude = {
 		});
 	},
 
-	doWhenTemplateLoaded: (templateName, f) => {
+	doWhenTemplateLoaded: (templateName, loadHandler, loadFailHandler = null) => {
 		let template = Transclude.templates[templateName];
-		if (template == "LOADING_FAILED")
+		if (template == "LOADING_FAILED") {
+			if (loadFailHandler)
+				loadFailHandler();
+
 			return;
+		}
 
 		if (template) {
-			f();
+			loadHandler();
 		} else {
 			let loadOrFailHandler = (info) => {
 				if (info.eventName == "Transclude.templateDidLoad")
-					f(true);
+					loadHandler(true);
+				else if (loadFailHandler)
+					loadFailHandler(true);
 
 				GW.notificationCenter.removeHandlerForEvent("Transclude.templateDidLoad", loadOrFailHandler);
 				GW.notificationCenter.removeHandlerForEvent("Transclude.templateLoadDidFail", loadOrFailHandler);
@@ -1030,51 +1035,29 @@ Transclude = {
             } else if (referenceData) {
             	let templateName = (includeLink.dataset.template || referenceData.template);
 
-				//	If the template has failed to load, do nothing.
-				if (Transclude.templates[templateName] == "LOADING_FAILED") {
-					Transclude.setLinkStateLoadingFailed(includeLink);
+				Transclude.doWhenTemplateLoaded(templateName, (delayed) => {
+					if (delayed)
+						includeLink.needsRewrite = true;
 
-					return;
-				}
+					Transclude.setCachedContentForLink(Transclude.fillTemplateNamed(templateName, referenceData),
+													   includeLink);
 
-				/*	If the template hasn’t loaded yet, add load/fail handlers
-					and then return; when the template loads, we’ll try again.
-				 */
-				if (Transclude.templates[templateName] == null) {
-					GW.notificationCenter.addHandlerForEvent("Transclude.templateDidLoad", (info) => {
-						Transclude.transclude(includeLink, true);
-					}, {
-						once: true,
-						condition: (info) => info.templateName == templateName
-					});
-					GW.notificationCenter.addHandlerForEvent("Transclude.templateLoadDidFail", (info) => {
+					if (Transclude.cachedContentForLink(includeLink) == null) {
 						Transclude.setLinkStateLoadingFailed(includeLink);
 
 						//	Send request to record failure in server logs.
-						GWServerLogError(includeLink.href, "missing template");
-					}, {
-						once: true,
-						condition: (info) => info.templateName == templateName
-					});
+						GWServerLogError(includeLink.href + `--annotation-transclude-failed`, "failed annotation transclude");
+					} else {
+						Transclude.transclude(includeLink, true);
+					}
+				}, (delayed) => {
+					Transclude.setLinkStateLoadingFailed(includeLink);
 
-					return;
-				}
+					//	Send request to record failure in server logs.
+					GWServerLogError(templateName + `--include-template-load-failed`, "failed include template load");
+				});
 
-                Transclude.setCachedContentForLink(Transclude.fillTemplateNamed(templateName, referenceData),
-                								   includeLink);
-
-                if (Transclude.cachedContentForLink(includeLink) == null) {
-                	Transclude.setLinkStateLoadingFailed(includeLink);
-
-                	//	Send request to record failure in server logs.
-					GWServerLogError(includeLink.href + `--annotation-transclude-failed`, "failed annotation transclude");
-
-                	return;
-                }
-
-                Transclude.transclude(includeLink, true);
-
-                return;
+				return;
             }
         } else {
             let doc = Transclude.cachedDocumentForLink(includeLink);

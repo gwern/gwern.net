@@ -830,12 +830,13 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (loadEv
 
 	loadEventInfo.document.querySelectorAll(".annotation-partial").forEach(partialAnnotation => {
 		//	Designate reference link, for annotations.js to identify it.
-		partialAnnotation.querySelector("a").classList.add("link-annotated-partial");
+		let referenceLink = partialAnnotation.querySelector("a");
+		referenceLink.classList.add("link-annotated-partial");
 
 		//	Retrieve reference data.
 		let referenceData = Annotations.dataSources.local.referenceDataFromParsedAPIResponse(partialAnnotation);
 
-		//	Define context.
+		//	Define context for template fill.
 		let context = {
 			template: "annotation-blockquote-inside",
 			annotationClassSuffix: "-partial"
@@ -843,41 +844,18 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (loadEv
 
 		//	We may have to wait for the template to load.
 		Transclude.doWhenTemplateLoaded(context["template"], (delayed = false) => {
-			partialAnnotation.replaceChildren(Transclude.fillTemplateNamed(context["template"], referenceData, context));
+			//	Replace reference block with synthetic include-link.
+			let includeLink = newElement("A", {
+				"class": "include include-strict include-spinner-not",
+				"href": referenceLink.href,
+			}, {
+				"baseLocation": loadEventInfo.baseLocation,
+				"needsRewrite": delayed
+			});
+			partialAnnotation.parentElement.replaceChild(includeLink, partialAnnotation);
 
-			/*	We only need to fire events if we had to wait; otherwise, all
-				requisite content rewriting will be done by the parent document.
-			 */
-			if (delayed) {
-				//  Document into which the transclusion is being done.
-				let doc = loadEventInfo.document.getRootNode();
-
-				//  Are we including into the main page, or into a pop-frame or something?
-				let includingIntoMainPage = (doc == document);
-
-				let flags = GW.contentDidLoadEventFlags.collapseAllowed;
-				if (delayed)
-					flags |= GW.contentDidLoadEventFlags.needsRewrite;
-				if (includingIntoMainPage)
-					flags |= GW.contentDidLoadEventFlags.fullWidthPossible;
-
-				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-					source: "rewritePartialAnnotations",
-					document: partialAnnotation,
-					contentType: "annotation",
-					loadLocation: loadEventInfo.loadLocation,
-					baseLocation: loadEventInfo.baseLocation,
-					flags: flags
-				});
-
-				GW.notificationCenter.fireEvent("GW.contentDidInject", {
-					source: "rewritePartialAnnotations",
-					document: partialAnnotation,
-					mainPageContent: includingIntoMainPage
-				});
-			}
-
-			unwrap(partialAnnotation);
+			//	Include the rewritten content.
+			includeContent(includeLink, Transclude.fillTemplateNamed(context["template"], referenceData, context));
 		});
 	});
 }, "rewrite", (info) => info.needsRewrite);
