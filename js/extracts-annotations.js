@@ -244,15 +244,17 @@ Extracts = { ...Extracts,
                 }, "mouseleave");
             });
 
-            /*  Set up handler to remove hover event listeners from all
-                the annotated targets in the document.
-                */
-            GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", (info) => {
-                allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
-                    annotatedTarget.removeAnnotationLoadEvents();
-                    annotatedTarget.removeAnnotationLoadEvents = null;
-                });
-            }, { once: true });
+			if (allAnnotatedTargetsInContainer.length > 0) {
+				/*  Set up handler to remove hover event listeners from all
+					the annotated targets in the document.
+					*/
+				GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", (info) => {
+					allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
+						annotatedTarget.removeAnnotationLoadEvents();
+						annotatedTarget.removeAnnotationLoadEvents = null;
+					});
+				}, { once: true });
+            }
         } else { // if (Extracts.popFrameProvider == Popins)
             //  Add click event listeners to all the annotated targets.
             allAnnotatedTargetsInContainer.forEach(annotatedTarget => {

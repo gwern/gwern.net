@@ -2269,23 +2269,21 @@ p {
 /*  SUBSCRIPT+SUPERSCRIPT (necessary for inflation adjuster, and other math)
  */
 .subsup {
-    display: inline-block;
-    margin-left: 0.1em;
+    margin-left: 0.15em;
     margin-right: 0.1em;
-    text-indent: initial; /* override the `p + p { text-indent: 2.5em; }` */
+    text-indent: 0; /* override the `p + p { text-indent: 2.5em; }` */
+    display: inline-flex;
+    flex-flow: column;
+    align-items: flex-end;
+    vertical-align: text-bottom;
+    position: relative;
+    bottom: -0.1em;
 }
 .subsup sup,
 .subsup sub {
     position: relative;
-    display: block;
     font-size: 0.7em;
-    line-height: 0.75;
-}
-.subsup sup {
-    top: 0.25em;
-}
-.subsup sub {
-    bottom: -0.15em;
+    line-height: 1;
 }
 /*  Make sure that adjusted prices move as a block: no breaking in the middle between the price & sup/sub; this works better than trying to use no-break Unicode entities
     */
@@ -2701,12 +2699,6 @@ a .cite-date { margin-left: 0em; }
 /*  Header self-links on home page need not be full-width. */
 body.index article #markdownBody section:not(.collapse) > h1:first-child a {
     display: inline;
-}
-
-/*  Internal links on the home page need no decoration. */
-body.index #markdownBody a[href^="."]:not([href*="/docs/"]):not([href*="/images/"])::after,
-body.index #markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::after {
-    content: none;
 }
 
 /*  The /index needs more space in the lists for mobile users */
@@ -3444,7 +3436,7 @@ body.index-directory #footer {
 /*│ Annotation pop-frames. │*/
 /*└────────────────────────┘*/
 
-.popframe-body..annotation .data-field.title {
+.popframe-body > .annotation > .data-field.title {
     font-size: 1.125em;
     line-height: 1.35;
     margin-bottom: 0.375em;
