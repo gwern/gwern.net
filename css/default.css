@@ -3442,7 +3442,7 @@ body.index-directory #footer {
 /*│ Annotation pop-frames. │*/
 /*└────────────────────────┘*/
 
-.popframe-body..annotation .data-field.title {
+.popframe-body > .annotation > .data-field.title {
     font-size: 1.125em;
     line-height: 1.35;
     margin-bottom: 0.375em;
