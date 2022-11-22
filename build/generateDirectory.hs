@@ -307,7 +307,7 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl,lb) = -- no abstracts:
        -- we display short authors by default, but we keep a tooltip of the full author list for on-hover should the reader need it.
        authorShort = authorsTruncate aut
        authorSpan  = if authorShort/=aut || ", et al" `isSuffixOf` aut then Span ("",["full-authors-list", "cite-author-plural"],[("title", T.pack aut)]) [Str (T.pack $ replace ", et al" "" authorShort)]
-                     else Str (T.pack $ if countElem ',' aut == 1 then replace ", " " & " authorShort else  authorShort)
+                     else Span ("", ["author", "cite-author"], []) [Str (T.pack $ if countElem ',' aut == 1 then replace ", " " & " authorShort else  authorShort)]
        author   = if aut=="" || aut=="N/A" then [] else [Str ",", Space, authorSpan]
        date     = if dt=="" then [] else [Span ("", ["cite-date"], []) [Str (T.pack (dateTruncateBad dt))]]
        tags     = if tgs==[] then [] else [tagsToLinksSpan $ map T.pack tgs]
