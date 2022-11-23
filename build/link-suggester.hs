@@ -222,6 +222,7 @@ whiteList = M.fromList [
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
+  , ("https://en.wikipedia.org/wiki/Reinforcement_learning", ["RL", "reinforcement learning"])
   , ("https://en.wikipedia.org/wiki/Derek_Lowe_(chemist)", ["Derek Lowe"])
   , ("https://en.wikipedia.org/wiki/California_Institute_of_Technology", ["Caltech"])
   , ("https://www.teds.ac.uk/about-teds", ["TEDS", "Twins Early Development Study"])

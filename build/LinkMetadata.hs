@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-20 15:42:14 gwern"
+When:  Time-stamp: "2022-11-21 21:06:19 gwern"
 License: CC-0
 -}
 
@@ -1752,9 +1752,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("([0-9]) %", "\\1%")
          , ("([.0-9]+)[xX]", "\\1×")
          , ("=-\\.([.0-9]+)", " = -0.\\1")
-         , ("([0-9]*[02456789])th", "\\1<sup>th</sup>")
-         , ("([0-9]*[1])st",        "\\1<sup>st</sup>")
-         , ("([0-9]*[3])rd",        "\\1<sup>rd</sup>")
+         , ("([0-9]*[02456789])th ", "\\1<sup>th</sup> ")
+         , ("([0-9]*[1])st ",        "\\1<sup>st</sup> ")
+         , ("([0-9]*[3])rd ",        "\\1<sup>rd</sup> ")
          , ("\\(JEL [A-Z][0-9][0-9]+\\)\\.?", "")
          , (" \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)", "") -- rm AERA classification tags they stick into the Crossref abstracts
          , ("CI=([.0-9])", "CI = \\1") -- 'CI=0.90' → 'CI = 0.90'
@@ -2937,6 +2937,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("ofdata", "of data")
          , ("\8201", " ")
          , ("ADE20k", "ADE20K")
+         , (" XSUM", " XSum")
+         , (" Xsum", " XSum")
+         , (" xsum", " XSum")
          , ("CityScapes", "Cityscapes")
          , ("Fr’echet", "Fréchet")
          , ("Frechet", "Fréchet")

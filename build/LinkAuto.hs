@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-11-15 16:58:08 gwern"
+When:  Time-stamp: "2022-11-21 12:49:42 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -800,7 +800,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("NVAE", "https://arxiv.org/abs/2007.03898#nvidia")
         , ("Narcissis(m|t|tic)", "https://en.wikipedia.org/wiki/Narcissism")
         , ("Nate Silver", "https://en.wikipedia.org/wiki/Nate_Silver")
-        , ("NeRF", "https://arxiv.org/abs/2003.08934")
+        , ("(NeRF|Neural Radiance Field)", "https://arxiv.org/abs/2003.08934")
         , ("Neal Stephenson", "https://en.wikipedia.org/wiki/Neal_Stephenson")
         , ("Neil Gaiman", "https://en.wikipedia.org/wiki/Neil_Gaiman")
         , ("Neuroticism", "https://en.wikipedia.org/wiki/Neuroticism")
@@ -1146,7 +1146,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Mm]ono no aware", "https://en.wikipedia.org/wiki/Mono_no_aware")
         , ("[Mm]ultiple comparisons?", "https://en.wikipedia.org/wiki/Multiple_comparisons_problem")
         , ("[Mm]ultiple discover(y|ies)", "https://en.wikipedia.org/wiki/Multiple_discovery")
-        , ("([Gg]enerali([zs]ed)? [Ll]inear [Mm]odels?|GLMs?)", "https://en.wikipedia.org/wiki/Generalized_linear_model")
+        , ("([Gg]enerali([zs]ed)? [Ll]inear [Mm]odels?|GLMs)", "https://en.wikipedia.org/wiki/Generalized_linear_model") -- exclude 'GLM' because that's https://arxiv.org/abs/2210.02414#baai
         , ("[Mm]ultivariate linear model", "https://en.wikipedia.org/wiki/Multivariate_linear_model")
         , ("([Mm]utation load|[Gg]enetic load)", "https://en.wikipedia.org/wiki/Genetic_load")
         , ("[Mm]yxoma virus", "https://en.wikipedia.org/wiki/Myxoma_virus")
