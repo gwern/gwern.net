@@ -361,6 +361,11 @@ header h1 {
 /*= /index =*/
 /*=--------=*/
 
+/*  Header self-links on home page need not be full-width. */
+body.index article #markdownBody section:not(.collapse) > h1:first-child a {
+    display: inline;
+}
+
 /*	On the index page, we hide article-related formatting, begging, to make it
 	more compact & classy.
  */
@@ -453,21 +458,22 @@ body.index #markdownBody h1 {
 
 /*  Lists on the home page.
  */
-body.index #markdownBody li,
-body.index #markdownBody li p {
+body.index #markdownBody .section-link-list li,
+body.index #markdownBody .section-link-list li p {
     text-align: left;
 }
-body.index #markdownBody ul {
+body.index #markdownBody .section-link-list {
     margin: 1em 3em 0 0;
     padding: 0 0 0 1.375em;
 }
-body.index #markdownBody li > ul {
+body.index #markdownBody .section-link-list li > ul {
     margin: 0;
 }
-body.index #markdownBody li {
+body.index #markdownBody .section-link-list li {
     margin-top: 0;
 }
-body.index #markdownBody ul > li:nth-of-type(n+2) {
+body.index #markdownBody .section-link-list > li:nth-of-type(n+2),
+body.index #markdownBody .section-link-list ul > li:nth-of-type(n+2) {
     margin: 0;
 }
 
@@ -475,15 +481,17 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     body.index #markdownBody section {
         max-width: 100%;
     }
-    body.index #markdownBody ul {
+    body.index #markdownBody .section-link-list {
         overflow-wrap: break-word;
         margin-right: 0;
     }
-    body.index #markdownBody li {
+    body.index #markdownBody .section-link-list li {
+        line-height: 1.65;
         padding: 1px 0;
         margin: 2px 0 0 0;
     }
-    body.index #markdownBody ul > li::before {
+    body.index #markdownBody .section-link-list > li::before,
+    body.index #markdownBody .section-link-list ul > li::before {
         top: 0.25em;
     }
 }

@@ -828,13 +828,13 @@ ul ul ul ul > li::before {
 ul ul > li::before,
 ul ul ul ul ul > li::before,
 /* special /index override because the link compilation is not bolded */
-body.index ul > li::before {
+body.index .section-link-list > li::before {
     content: url('/static/img/icons/single-white-star.svg');
     opacity: initial;
 }
 ul ul ul > li::before,
 ul ul ul ul ul ul > li::before,
-body.index ul ul > li::before {
+body.index .section-link-list ul > li::before {
     /* this rotates into more of a 'lozenge' square for variety's sake */
     content: url('/static/img/icons/single-white-star-rotated.svg');
     opacity: initial;
@@ -2696,25 +2696,17 @@ a .cite-date { margin-left: 0em; }
 /*= Index page =*/
 /*=------------=*/
 
-/*  Header self-links on home page need not be full-width. */
-body.index article #markdownBody section:not(.collapse) > h1:first-child a {
-    display: inline;
+/*	Link bibliography on index page. */
+body.index section#link-bibliography {
+	grid-column: 1 / span 2;
 }
 
-/*  The /index needs more space in the lists for mobile users */
-@media all and (max-width: 649px) {
-    body.index #markdownBody li {
-        line-height: 1.65;
-    }
-}
-
-/*  Index's special appearance requires some more v-space for the nav UI */
+/*  Index’s special appearance requires some more v-space for the nav UI. */
 body.index #navigation {
     margin: 2.5em 0 0.5em 0;
 }
 
-/*  Less fancy headings.
-    */
+/*  Less fancy headings. */
 body.index section:not(.collapse) > h1:first-child {
     font-size: 1.5em;
     line-height: 1.125;
@@ -2724,8 +2716,7 @@ body.index section:not(.collapse) > h1:first-child {
     margin-left: 0;
     padding: 0;
 }
-/*  No pilcrows.
-    */
+/*  No pilcrows. */
 body.index #markdownBody section > h1:first-child a::after {
     display: none;
 }
