@@ -31,12 +31,9 @@ Content = {
 	},
 
 	contentTypeForIdentifier: (identifier) => {
-		let url = new URL(  "https://"
-						  + location.hostname
-						  + identifier);
-
-		if (url.pathname.match(/\./) == null)
-			return "localPage";
+		for ([ typeName, contentType ] of Object.entries(Content.contentTypes))
+			if (contentType.matches(identifier))
+				return contentType;
 
 		return null;
 	},
@@ -150,11 +147,13 @@ Content = {
 	},
 
 	contentFromResponseForIdentifier: (response, identifier) => {
-		return Content.contentTypes.localPage.contentFromResponseForIdentifier(response, identifier);
+		let contentType = Content.contentTypeForIdentifier(identifier);
+		return contentType.contentFromResponseForIdentifier(response, identifier);
 	},
 
 	referenceDataFromContent: (content, identifier) => {
-		return Content.contentTypes.localPage.referenceDataFromContent(content, identifier);
+		let contentType = Content.contentTypeForIdentifier(identifier);
+		return contentType.referenceDataFromContent(content, identifier);
 	},
 
 	updateCachedContent: (identifier, updateFunction) => {
@@ -164,7 +163,7 @@ Content = {
 		let content = Content.cachedContentForIdentifier(identifier);
 
 		switch (Content.contentTypeForIdentifier(identifier)) {
-			case "localPage":
+			case Content.contentTypes.localPage:
 				updateFunction(content.document);
 				break;
 			default:
@@ -178,6 +177,14 @@ Content = {
 
 	contentTypes: {
 		localPage: {
+			matches: (identifier) => {
+				let url = new URL(  "https://"
+								  + location.hostname
+								  + identifier);
+
+				return (url.pathname.match(/\./) == null);
+			},
+
 			contentFromResponseForIdentifier: (response, identifier) => {
 				let page = response
 						   ? newDocument(response)
