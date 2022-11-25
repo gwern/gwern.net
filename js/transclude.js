@@ -1067,11 +1067,11 @@ Transclude = {
             && includeLink.classList.contains("include-when-collapsed") == false) {
             includeLink.needsRewrite = true;
             GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (info) => {
-                if (isWithinCollapsedBlock(includeLink))
-                    return;
-
                 Transclude.transclude(includeLink);
-            }, { once: true });
+            }, { 
+            	once: true,
+            	condition: (info) => (isWithinCollapsedBlock(includeLink) == false)
+            });
 
             return;
         }
