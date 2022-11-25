@@ -525,6 +525,22 @@ function includeContent(includeLink, content) {
                 mainPageContent: includingIntoMainPage
             });
         }
+    } else {
+    	/*	NOTE: Only needed because we don’t update the source document cache
+    		when we transclude into included content.
+    	 */
+    	GW.contentLoadHandlers.handleTranscludes({
+    		document: wrapper,
+    		baseLocation: includeLink.baseLocation,
+			flags: 0
+    	});
+    	if (newFootnotesWrapper) {
+			GW.contentLoadHandlers.handleTranscludes({
+				document: newFootnotesWrapper,
+				baseLocation: includeLink.baseLocation,
+				flags: 0
+			});
+    	}
     }
 
 	//	WITHIN-WRAPPER MODIFICATIONS END; OTHER MODIFICATIONS BEGIN
