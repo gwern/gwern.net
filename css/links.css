@@ -81,6 +81,11 @@ body[class*='-index'] #TOC a:link * {
     background: none;
     text-shadow: none;
 }
+/*	Restore proper hover highlighting.
+ */
+.popframe-body .TOC a:hover {
+	background-color: var(--GW-TOC-link-hover-background-color);
+}
 
 .popframe-body .TOC a::after,
 blockquote .TOC a::after,
