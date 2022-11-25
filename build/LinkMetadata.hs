@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-21 21:06:19 gwern"
+When:  Time-stamp: "2022-11-25 17:51:36 gwern"
 License: CC-0
 -}
 
@@ -414,7 +414,7 @@ hasAnnotation md = walk (hasAnnotationInline md)
 
 hasAnnotationInline :: Metadata -> Inline -> Inline
 hasAnnotationInline mdb y@(Link (a,classes,c) d (f,g)) =
-  if hasAny ["link-annotated-not", "idNot", "link-annotated", "link-annotated-partial"] classes then y
+  if hasAny ["link-annotated-not", "id-not", "link-annotated", "link-annotated-partial"] classes then y
   else
     let f' = linkCanonicalize $ T.unpack f in
       case M.lookup f' mdb of
@@ -1577,7 +1577,9 @@ gwernTOC footnotesP indexP p' f =
                  ("<li>\n            <a class=\"id-not\" href=\"#links\"><span>Links</span></a>\n            <ul>", ""),
                  ("<li>\n            <a class=\"id-not\" href=\"#links\">Links</a>\n            <ul>", ""),
                  ("<li>\n            <a class=\"id-not\" href=\"#see-also\"><span>See Also</span></a>\n          </li>", ""),
-                 ("<li>\n            <a class=\"id-not\" href=\"#see-also\">See Also</a>\n          </li>", "")
+                 ("<li>\n            <a class=\"id-not\" href=\"#see-also\">See Also</a>\n          </li>", ""),
+                 ("<li>\n            <a class=\"id-not\" href=\"#link-bibliography\"><span>Link Bibliography</span></a>\n          </li>", ""),
+                 ("<li>\n            <a class=\"id-not\" href=\"#link-bibliography\">Link Bibliography</a>\n          </li>", "")
                 ] tc') $
  -- Pandoc declines to add an ID to footnotes section; on Gwern.net, we override this by at compile-time rewriting the <section> to have `#footnotes`:
  (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#footnotes\">Footnotes</a></li></ul></div>" tc) $
