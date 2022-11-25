@@ -70,20 +70,21 @@ Annotations = { ...Annotations,
     //	Called by: Extracts.setUpAnnotationLoadEventWithin (extracts-annotations.js)
     cachedAnnotationExists: (identifier) => {
         let cachedAnnotation = Annotations.cachedReferenceData[identifier];
-        return (cachedAnnotation && cachedAnnotation != "LOADING_FAILED");
+        return (   cachedAnnotation != null
+        		&& cachedAnnotation != "LOADING_FAILED");
     },
 
     /*  Returns cached annotation reference data for a given identifier string,
     	or else either “LOADING_FAILED” (if loading the annotation was attempted
     	but failed) or null (if the annotation has not been loaded).
         */
-    referenceDataForAnnotationIdentifier: (identifier) => {
+    referenceDataForIdentifier: (identifier) => {
         return Annotations.cachedReferenceData[identifier];
     },
 
     //	Called by: Extracts.annotationForTarget (extracts-annotations.js)
 	referenceDataForTarget: (target) => {
-		return Annotations.referenceDataForAnnotationIdentifier(Annotations.targetIdentifier(target));
+		return Annotations.referenceDataForIdentifier(Annotations.targetIdentifier(target));
 	},
 
 	//	Called by: Annotations.sourceURLForIdentifier
@@ -136,6 +137,41 @@ Annotations = { ...Annotations,
 		Annotations.cachedAPIResponses[Annotations.sourceURLForIdentifier(identifier)] = response;
 	},
 
+	//	Called by: extracts.annotationForTarget (extracts-annotations.js)
+	waitForAnnotationLoad: (identifier, loadHandler = null, loadFailHandler = null) => {
+		if (Annotations.cachedReferenceData[identifier] == "LOADING_FAILED") {
+            if (loadFailHandler)
+            	loadFailHandler(identifier);
+
+			return;
+		} else if (Annotations.cachedReferenceData[identifier]) {
+            if (loadHandler)
+            	loadHandler(identifier);
+
+			return;
+		}
+
+		let didLoadHandler = (info) => {
+            if (loadHandler)
+            	loadHandler(identifier);
+
+			GW.notificationCenter.removeHandlerForEvent("Annotations.annotationLoadDidFail", loadDidFailHandler);
+        };
+        let loadDidFailHandler = (info) => {
+            if (loadFailHandler)
+            	loadFailHandler(identifier);
+
+			GW.notificationCenter.removeHandlerForEvent("Annotations.annotationDidLoad", didLoadHandler);
+        };
+		let options = { 
+        	once: true, 
+        	condition: (info) => info.identifier == identifier
+        };
+
+        GW.notificationCenter.addHandlerForEvent("Annotations.annotationDidLoad", didLoadHandler, options);
+        GW.notificationCenter.addHandlerForEvent("Annotations.annotationLoadDidFail", loadDidFailHandler, options);
+	},
+
     /*  Load and process the annotation for the given identifier string.
         */
     //	Called by: Extracts.setUpAnnotationLoadEventWithin (extracts-annotations.js)
@@ -156,17 +192,15 @@ Annotations = { ...Annotations,
 			if (referenceData) {
 				Annotations.cachedReferenceData[identifier] = referenceData;
 
-				GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { identifier: identifier });
-
-				if (loadHandler)
-					loadHandler(identifier);
+				GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { 
+					identifier: identifier 
+				});
 			} else {
 				Annotations.cachedReferenceData[identifier] = "LOADING_FAILED";
 
-				GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: identifier });
-
-				if (loadFailHandler)
-					loadFailHandler(identifier);
+				GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { 
+					identifier: identifier 
+				});
 
 				//	Send request to record failure in server logs.
 				GWServerLogError(sourceURL + `--could-not-process`, "problematic annotation");
@@ -194,14 +228,14 @@ Annotations = { ...Annotations,
 
 					GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: identifier });
 
-					if (loadFailHandler)
-						loadFailHandler(identifier);
-
 					//	Send request to record failure in server logs.
 					GWServerLogError(sourceURL, "missing annotation");
 				}
 			});
 		}
+
+		//	Call any provided handlers, if/when appropriate.
+		Annotations.waitForAnnotationLoad(identifier, loadHandler, loadFailHandler);
     },
 
 	//	Called by: Annotations.loadAnnotation

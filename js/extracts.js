@@ -385,39 +385,6 @@ Extracts = {
                && Extracts.targetTypeInfo(targetA).typeName == Extracts.targetTypeInfo(targetB).typeName;
     },
 
-    //  Called by: Extracts.localTranscludeForTarget
-    //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
-    nearestBlockElement: (element) => {
-    	let blockElementSelector = [
-    		"section",
-    		".footnote",
-    		".sidenote",
-    		".aux-links-append",
-    		".markdownBody > *",
-    		".include-wrapper-block"
-    	].join(", ");
-        return (   element.closest(blockElementSelector)
-        		|| element.closest("p"))
-    },
-
-	/*	Returns the element, in the target document, pointed to by the hash of
-		the given link.
-	 */
-	//	Called by: many functions
-	targetElementInDocument: (link, doc) => {
-		let element = doc.querySelector(selectorFromHash(link.hash));
-		if (element)
-			return element;
-
-		let backlinksList = link.closest(".backlinks-list");
-		if (backlinksList) {
-			let escapedURL = CSS.escape(backlinksList.dataset.targetUrl);
-			element = doc.querySelector(`a.link-page[id][href*='${escapedURL}']`);
-		}
-
-		return element;
-	},
-
     /*  This function fills a pop-frame for a given target with content. It
         returns true if the pop-frame successfully filled, false otherwise.
      */
@@ -468,14 +435,14 @@ Extracts = {
             on desktop, we can open up in a tab for poweruser-browsing of
             tab-explosions.
          */
-        let whichWindow = (Extracts.popFrameProvider == Popins) ? "current" : "new";
-        let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
-        return `<a
-            class="popframe-title-link"
-            href="${target.href}"
-            title="Open ${target.href} in ${whichWindow} window."
-            target="${linkTarget}"
-                >${titleText}</a>`;
+		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
+			titleLinkHref:      target.href,
+			popFrameTitleText:  titleText
+		}, {
+			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
+			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
+			tabOrWindow:  (GW.isMobile() ? "tab" : "window")
+		}).innerHTML;
     },
 
     /*  Returns the contents of the title element for a pop-frame.
@@ -511,7 +478,7 @@ Extracts = {
 
         This may be either the root document, or an entire other page that was
         transcluded wholesale and embedded as a pop-frame (of class
-        ‘external-page-embed’).
+        ‘full-page’).
      */
     //  Called by: Extracts.localTranscludeForTarget
     //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
@@ -524,11 +491,11 @@ Extracts = {
             return Extracts.rootDocument;
 
         if (Extracts.popFrameProvider == Popups) {
-            let popupForTargetDocument = Popups.allSpawnedPopups().find(popup => (   popup.classList.contains("external-page-embed")
+            let popupForTargetDocument = Popups.allSpawnedPopups().find(popup => (   popup.classList.contains("full-page")
                                                                                   && popup.spawningTarget.pathname == target.pathname));
             return popupForTargetDocument ? popupForTargetDocument.body : null;
         } else if (Extracts.popFrameProvider == Popins) {
-            let popinForTargetDocument = Popins.allSpawnedPopins().find(popin => (   popin.classList.contains("external-page-embed")
+            let popinForTargetDocument = Popins.allSpawnedPopins().find(popin => (   popin.classList.contains("full-page")
                                                                                   && popin.spawningTarget.pathname == target.pathname)
                                                                                   && Extracts.popFrameHasLoaded(popin));
             return popinForTargetDocument ? popinForTargetDocument.body : null;
@@ -630,7 +597,7 @@ Extracts = {
             requestAnimationFrame(() => {
             	let element = null;
                 if (   popFrame
-                    && (element = Extracts.targetElementInDocument(target, popFrame.document)))
+                    && (element = targetElementInDocument(target, popFrame.document)))
                 	requestAnimationFrame(() => {
 	                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
 	                });
@@ -649,7 +616,7 @@ Extracts = {
                 && extraCondition(link)) {
                 link.onclick = () => { return false; };
                 link.addActivateEvent((event) => {
-                    let hashTarget = Extracts.targetElementInDocument(link, popFrame.document);
+                    let hashTarget = targetElementInDocument(link, popFrame.document);
                     if (hashTarget) {
                         Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(hashTarget);
                         return false;
@@ -704,80 +671,6 @@ Extracts = {
                 || target.hash > "");
     },
 
-    //  Called by: Extracts.fillPopFrame (as `popFrameFillFunctionName`)
-    //	Called by: Extracts.citationForTarget (extracts-content.js)
-    //	Called by: Extracts.citationBackLinkForTarget (extracts-content.js)
-    localTranscludeForTarget: (target, unwrapFunction, forceNarrow) => {
-        GWLog("Extracts.localTranscludeForTarget", "extracts.js", 2);
-
-		unwrapFunction = unwrapFunction ?? (blockElement => blockElement);
-
-        /*  Check to see if the target location matches an already-displayed
-            page (which can be the root page of the window).
-
-            If there already is a pop-frame that displays the entire linked
-			page, and if the link points to an anchor, display the linked
-			section or element.
-
-			Also display just the linked block if we’re spawning this pop-frame
-			from an in-pop-frame TOC.
-         */
-        let fullTargetDocument = Extracts.targetDocument(target);
-        if (   target.hash > ""
-        	&& (   fullTargetDocument
-        		|| forceNarrow
-        		|| target.closest(".TOC"))) {
-        	/*	If the loaded and cached full page exists but is not displayed
-        		in a pop-frame, we get the linked block from there instead
-        		(we still only display the linked block, not the full page).
-        	 */
-            if (fullTargetDocument == null)
-            	fullTargetDocument = Extracts.cachedPages[target.pathname];
-
-            if (fullTargetDocument) {
-            	let linkedElement = Extracts.targetElementInDocument(target, fullTargetDocument);
-            	let isBlockTransclude = (   Transclude.isIncludeLink(linkedElement)
-            							 && linkedElement.id > ""
-            							 && linkedElement.classList.contains("include-identify-not") == false);
-				let nearestBlock = isBlockTransclude
-								   ? linkedElement
-								   : Extracts.nearestBlockElement(linkedElement);
-
-				return newDocument(unwrapFunction(nearestBlock));
-			} else {
-				/*	If the page hasn’t been loaded yet, load it; upon the 
-					reload, we’ll return here but take the previous (true) 
-					branch of this conditional.
-				 */
-				Extracts.refreshPopFrameAfterLocalPageLoads(target);
-
-				return newDocument();
-			}
-        } else {
-            /*  Otherwise, display the entire linked page.
-
-                (Note that we might end up here because there is yet no
-                 pop-frame with the full linked document, OR because there is
-                 such a pop-frame but it’s a pinned popup or something (and thus
-                 we didn’t want to despawn it and respawn it at this target’s
-                 location).
-             */
-			//  Mark the pop-frame as an external page embed.
-			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "external-page-embed");
-
-			if (Extracts.cachedPages[target.pathname]) {
-				//  Give the pop-frame an identifying class.
-				Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "page-" + target.pathname.slice(1));
-
-				return newDocument(Extracts.cachedPages[target.pathname]);
-			} else {
-				Extracts.refreshPopFrameAfterLocalPageLoads(target);
-
-				return newDocument();
-			}
-        }
-    },
-
     /*  TOC links.
      */
     //  Called by: Extracts.testTarget_LOCAL_PAGE
@@ -805,16 +698,151 @@ Extracts = {
                       || Extracts.isSidebarLink(target))));
     },
 
-    //  Called by: Extracts.preparePopFrame (as `preparePopFrame_${targetTypeName}`)
-    //	Called by: Extracts.preparePopup_LOCAL_PAGE
+    //  Called by: Extracts.fillPopFrame (as `popFrameFillFunctionName`)
+    //	Called by: Extracts.citationForTarget (extracts-content.js)
+    //	Called by: Extracts.citationBackLinkForTarget (extracts-content.js)
+    localTranscludeForTarget: (target, forceNarrow) => {
+        GWLog("Extracts.localTranscludeForTarget", "extracts.js", 2);
+
+		/*  Check to see if the target location matches an already-displayed
+			page (which can be the root page of the window).
+
+			If the entire linked page is already displayed, and if the 
+			target points to an anchor in that page, display the linked
+			section or element.
+
+			Also display just the linked block if we’re spawning this 
+			pop-frame from an in-pop-frame TOC.
+
+			Otherwise, display the entire linked page.
+		 */
+		let fullPage = !(   target.hash > ""
+        				 && (   forceNarrow
+        					 || target.closest(".TOC")
+        					 || Extracts.targetDocument(target)));
+        if (fullPage) {
+            /*  Note that we might end up here because there is yet no
+                pop-frame with the full linked document, OR because there is
+                such a pop-frame but it’s a pinned popup or something (and thus
+                we didn’t want to despawn it and respawn it at this target’s
+                location).
+            */
+			/*  Mark the pop-frame as a full page embed, and give it suitable
+				identifying classes.
+			 */
+			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, 
+														   "full-page", 
+														   "page-" + target.pathname.slice(1));
+        }
+
+		//	Ask for a content load, if need be.
+		let contentIdentifier = Content.targetIdentifier(target);
+		if (Content.cachedContentExists(contentIdentifier) == false)
+			Content.loadContent(contentIdentifier);
+
+        //  Get content reference data (if it’s been loaded).
+        let referenceData = Content.referenceDataForTarget(target);
+        if (referenceData == null) {
+            /*  If the content has yet to be loaded, we’ll trust that it has
+            	been asked to load, and meanwhile wait, and do nothing yet.
+             */
+			target.popFrame.classList.toggle("loading", true);
+
+			Content.waitForContentLoad(Content.targetIdentifier(target), 
+			   (identifier) => {
+				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
+			}, (identifier) => {
+				Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
+			});
+
+            return newDocument();
+        } else if (referenceData == "LOADING_FAILED") {
+            /*  If we’ve already tried and failed to load the content, we
+                will not try loading again, and just show the “loading failed”
+                message.
+             */
+            target.popFrame.classList.add("loading-failed");
+
+            return newDocument();
+        }
+
+        if (fullPage) {
+			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, ...referenceData.pageBodyClasses.split(" "));
+			return newDocument(referenceData.pageContent);
+        } else {
+			let isBlockTransclude = (   Transclude.isIncludeLink(referenceData.targetElement)
+									 && referenceData.targetElement.id > ""
+									 && referenceData.targetElement.classList.contains("include-identify-not") == false);
+			return (isBlockTransclude
+					? newDocument(referenceData.targetElement)
+					: newDocument(referenceData.targetBlock));
+        }
+    },
+
+    //  Called by: Extracts.titleForPopFrame (as `titleForPopFrame_${targetTypeName}`)
+    titleForPopFrame_LOCAL_PAGE: (popFrame) => {
+        GWLog("Extracts.titleForPopFrame_LOCAL_PAGE", "extracts.js", 2);
+
+        let target = popFrame.spawningTarget;
+        let referenceData = Content.referenceDataForTarget(target);
+
+		let popFrameTitleText, titleLinkHref;
+		if (referenceData == null) {
+			popFrameTitleText = "";
+			if (target.pathname != location.pathname)
+				popFrameTitleText += target.pathname;
+			if (popFrame.classList.contains("full-page") == false)
+				popFrameTitleText += target.hash;
+
+			titleLinkHref = target.href;
+		} else {
+			popFrameTitleText = popFrame.classList.contains("full-page")
+								? referenceData.popFrameTitleTextShort
+								: referenceData.popFrameTitleText;
+			titleLinkHref = referenceData.titleLinkHref;
+		}
+
+		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
+			titleLinkHref:      titleLinkHref,
+			popFrameTitleText:  popFrameTitleText
+		}, {
+			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
+			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
+			tabOrWindow:  (GW.isMobile() ? "tab" : "window")
+		}).innerHTML;
+    },
+
 	preparePopFrame_LOCAL_PAGE: (popFrame) => {
         GWLog("Extracts.preparePopFrame_LOCAL_PAGE", "extracts.js", 2);
 
-		//	Add to a full-page pop-frame the body classes of the page.
-		let target = popFrame.spawningTarget;
-		if (   popFrame.classList.contains("external-page-embed")
-			&& Extracts.cachedPageBodyClasses[target.pathname] > null)
-			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...Extracts.cachedPageBodyClasses[target.pathname]);
+        let target = popFrame.spawningTarget;
+
+		/*	For local content embed pop-frames, add handler to trigger 
+			transcludes in source content when they trigger in the pop-frame.
+		 */
+		let identifier = Content.targetIdentifier(target);
+		if (Content.cachedContentExists(identifier)) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
+				Content.updateCachedContent(identifier, (content) => {
+					Transclude.allIncludeLinksInContainer(content).filter(link => 
+						link.href == info.includeLink.href
+					).forEach(link => {
+						Transclude.transclude(link, true);
+					});
+				});
+
+				/*	If the transcluded content makes up the entirety of the 
+					pop-frame’s content, refresh the pop-frame after the load.
+				 */
+				if (   info.document.parentElement == popFrame.body
+					&& info.document.parentElement.children.length == 2)
+					Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);				
+			}, { 
+				once: true,
+				condition: (info) => (   info.source == "transclude" 
+									  && info.document.getRootNode() == popFrame.document)
+			});
+		}
 
 		return popFrame;
 	},
@@ -836,60 +864,6 @@ Extracts = {
         return popup;
     },
 
-    //  Called by: Extracts.titleForPopFrame (as `titleForPopFrame_${targetTypeName}`)
-    titleForPopFrame_LOCAL_PAGE: (popFrame) => {
-        GWLog("Extracts.titleForPopFrame_LOCAL_PAGE", "extracts.js", 2);
-
-        let target = popFrame.spawningTarget;
-		let targetDocument = Extracts.targetDocument(target) || Extracts.cachedPages[target.pathname];
-		let nearestBlockElement = (   targetDocument != null 
-								   && popFrame.classList.contains("external-page-embed") == false)
-								  ? Extracts.nearestBlockElement(Extracts.targetElementInDocument(target, targetDocument))
-								  : null;
-		let nearestSection = nearestBlockElement
-							 ? nearestBlockElement.closest("section")
-							 : null;
-
-		let popFrameTitleText;
-		if (targetDocument) {
-			if (popFrame.classList.contains("external-page-embed")) {
-				//  Entire other pages.
-				popFrameTitleText = Extracts.cachedPageTitles[target.pathname];
-			} else {
-				//	Parts of the current page or of other pages.
-				popFrameTitleText = "";
-
-				//	Section title or block id.
-				if (nearestSection) {
-					//	Section mark (§) for sections.
-					popFrameTitleText += "&#x00a7; ";
-					if (nearestSection.id == "footnotes") {
-						popFrameTitleText += "Footnotes";
-					} else {
-						popFrameTitleText += nearestSection.firstElementChild.textContent;
-					}
-				} else {
-					popFrameTitleText += target.hash;
-				}
-
-				//	Page title (for parts of other pages).
-				if (target.pathname != location.pathname)
-					popFrameTitleText = `${Extracts.cachedPageTitles[target.pathname]} ${popFrameTitleText}`;
-			}
-		} else {
-			popFrameTitleText = (target.pathname + target.hash);
-		}
-
-		return Transclude.fillTemplateNamed("pop-frame-title-local-page", {
-			titleLinkHref:      target.href,
-			popFrameTitleText:  popFrameTitleText
-		}, {
-			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
-			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
-			tabOrWindow:  (GW.isMobile() ? "tab" : "window")
-		}).innerHTML;
-    },
-
     //  Called by: Extracts.rewritePopinContent_LOCAL_PAGE
     //  Called by: Extracts.rewritePopupContent_LOCAL_PAGE
     //  Called by: Extracts.rewritePopinContent (as `rewritePopFrameContent_${targetTypeName}`)
@@ -905,6 +879,14 @@ Extracts = {
 			updateDisclosureButtonTitleForCollapseBlock(collapseBlock);
 		});
 
+		//	Lazy-loading of adjacent sections.
+		//	WARNING: Experimental code!
+// 		if (target.hash > "") {
+// 			requestAnimationFrame(() => {
+// 				Extracts.loadAdjacentSections(popFrame, "next,prev");
+// 			});
+// 		}
+
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
@@ -914,16 +896,43 @@ Extracts = {
             flags: GW.contentDidLoadEventFlags.collapseAllowed
         });
 
-		//	Lazy-loading of adjacent sections.
-		//	WARNING: Experimental code!
-// 		if (target.hash > "") {
-// 			requestAnimationFrame(() => {
-// 				Extracts.loadAdjacentSections(popFrame, "next,prev");
-// 			});
-// 		}
-
         //  Scroll to the target.
         Extracts.scrollToTargetedElementInPopFrame(target, popFrame);
+    },
+
+    //  Called by: Extracts.rewritePopupContent (as `rewritePopupContent_${targetTypeName}`)
+    rewritePopupContent_LOCAL_PAGE: (popup) => {
+        GWLog("Extracts.rewritePopupContent_LOCAL_PAGE", "extracts.js", 2);
+
+        let target = popup.spawningTarget;
+
+		let referenceData = Content.referenceDataForTarget(target);
+		if (referenceData) {
+			//	Insert page thumbnail into page abstract.
+			if (   referenceData.pageThumbnailHTML
+				&& popup.document.querySelector("img.page-thumbnail") == null) {
+				let pageAbstract = popup.document.querySelector("#page-metadata + .abstract blockquote");
+				if (pageAbstract)
+					pageAbstract.insertAdjacentHTML("afterbegin", `<figure>${referenceData.pageThumbnailHTML}</figure>`);
+			}
+		}
+
+        //  Make anchorlinks scroll popup instead of opening normally.
+		Extracts.constrainLinkClickBehaviorInPopFrame(popup);
+
+        Extracts.rewritePopFrameContent_LOCAL_PAGE(popup);
+    },
+
+    //  Called by: Extracts.rewritePopinContent (as `rewritePopinContent_${targetTypeName}`)
+    rewritePopinContent_LOCAL_PAGE: (popin) => {
+        GWLog("Extracts.rewritePopinContent_LOCAL_PAGE", "extracts.js", 2);
+
+        /*  Make anchorlinks scroll popin instead of opening normally
+        	(but only for non-popin-spawning anchorlinks).
+         */
+		Extracts.constrainLinkClickBehaviorInPopFrame(popin, (link => link.classList.contains("no-popin")));
+
+        Extracts.rewritePopFrameContent_LOCAL_PAGE(popin);
     },
 
 	loadAdjacentSections: (popFrame, which) => {
@@ -936,13 +945,13 @@ Extracts = {
 		let target = popFrame.spawningTarget;
 		let sourceDocument = Extracts.cachedPages[target.pathname] || Extracts.rootDocument;
 
-		popFrame.firstSection = popFrame.firstSection || Extracts.targetElementInDocument(target, sourceDocument);
+		popFrame.firstSection = popFrame.firstSection || targetElementInDocument(target, sourceDocument);
 		popFrame.lastSection = popFrame.lastSection || popFrame.firstSection;
 
 		if (!(next || prev))
 			return;
 
-		if (Extracts.targetElementInDocument(target, popFrame.document) == null) {
+		if (targetElementInDocument(target, popFrame.document) == null) {
 			let sectionWrapper = newElement("SECTION", {
 				"id": popFrame.firstSection.id,
 				"class": [ ...(popFrame.firstSection.classList) ].join(" ")
@@ -993,128 +1002,6 @@ Extracts = {
 		}
 	},
 
-    //  Called by: Extracts.rewritePopinContent (as `rewritePopinContent_${targetTypeName}`)
-    rewritePopinContent_LOCAL_PAGE: (popin) => {
-        GWLog("Extracts.rewritePopinContent_LOCAL_PAGE", "extracts.js", 2);
-
-        Extracts.rewritePopFrameContent_LOCAL_PAGE(popin);
-
-        /*  Make anchorlinks scroll popin instead of opening normally
-        	(but only for non-popin-spawning anchorlinks).
-         */
-		Extracts.constrainLinkClickBehaviorInPopFrame(popin, (link => link.classList.contains("no-popin")));
-    },
-
-    //  Called by: Extracts.rewritePopupContent (as `rewritePopupContent_${targetTypeName}`)
-    rewritePopupContent_LOCAL_PAGE: (popup) => {
-        GWLog("Extracts.rewritePopupContent_LOCAL_PAGE", "extracts.js", 2);
-
-        Extracts.rewritePopFrameContent_LOCAL_PAGE(popup);
-
-        let target = popup.spawningTarget;
-
-		//	Insert page thumbnail into page abstract.
-		if (   Extracts.cachedPageThumbnailImageTags[target.pathname]
-			&& popup.document.querySelector("img.page-thumbnail") == null) {
-			let pageAbstract = popup.document.querySelector("#page-metadata + .abstract blockquote");
-			if (pageAbstract)
-				pageAbstract.insertAdjacentHTML("afterbegin", `<figure>${Extracts.cachedPageThumbnailImageTags[target.pathname]}</figure>`);
-		}
-
-        //  Make anchorlinks scroll popup instead of opening normally.
-		Extracts.constrainLinkClickBehaviorInPopFrame(popup);
-    },
-
-    //  Other site pages.
-    cachedPages: { },
-    cachedPageTitles: { },
-    cachedPageBodyClasses: { },
-    cachedPageThumbnailImageTags: { },
-    defaultPageThumbnailPathnamePrefix: "/static/img/logo/logo-",
-
-    //  Called by: Extracts.externalPageEmbedForTarget
-    refreshPopFrameAfterLocalPageLoads: (target) => {
-        GWLog("Extracts.refreshPopFrameAfterLocalPageLoads", "extracts.js", 2);
-
-        target.popFrame.classList.toggle("loading", true);
-
-        doAjax({
-            location: target.href,
-            onSuccess: (event) => {
-				let page = newDocument(event.target.responseText);
-
-				//	Get the page thumbnail URL and metadata.
-				let pageThumbnailMetaTag = page.querySelector("meta[property='og:image']");
-				if (pageThumbnailMetaTag) {
-					let pageThumbnailURL = new URL(pageThumbnailMetaTag.getAttribute("content"));
-
-					//	Alt text, if provided.
-					let pageThumbnailAltMetaTag = page.querySelector("meta[property='og:image:alt']");
-					let pageThumbnailAltText = pageThumbnailAltMetaTag
-											   ? pageThumbnailAltMetaTag.getAttribute("content")
-											   : `Thumbnail image for “${Extracts.cachedPageTitles[target.pathname]}”`;
-
-					//	Image dimensions.
-					let pageThumbnailWidth = page.querySelector("meta[property='og:image:width']").getAttribute("content");
-					let pageThumbnailHeight = page.querySelector("meta[property='og:image:height']").getAttribute("content");
-
-					//	Construct and save the <img> tag.
-					if (pageThumbnailURL.pathname.startsWith(Extracts.defaultPageThumbnailPathnamePrefix) == false)
-						Extracts.cachedPageThumbnailImageTags[target.pathname] = `<img
-							src='${pageThumbnailURL.href}'
-							alt='${pageThumbnailAltText}'
-							width='${pageThumbnailWidth}'
-							height='${pageThumbnailHeight}'
-							style='width: ${pageThumbnailWidth}px; height: auto;'
-								>`;
-
-					//	Request the image, to cache it.
-					doAjax({ location: pageThumbnailURL.href });
-				}
-
-				//	Get the body classes.
-				Extracts.cachedPageBodyClasses[target.pathname] = page.querySelector("meta[name='page-body-classes']").getAttribute("content").split(" ");
-
-                //  Get the page title.
-                Extracts.cachedPageTitles[target.pathname] = page.querySelector("title").innerHTML.match(Extracts.pageTitleRegexp)[1];
-
-                //  The content is the page body plus the metadata block.
-                let pageContent = page.querySelector("#markdownBody");
-
-				//	Add the page metadata block.
-                let pageMetadata = page.querySelector("#page-metadata");
-                if (pageMetadata) {
-                	pageMetadata.classList.remove("markdownBody");
-                	if (pageMetadata.className == "")
-                		pageMetadata.removeAttribute("class");
-                    pageContent.insertBefore(pageMetadata, pageContent.firstElementChild);
-                }
-
-				//	Discard extraneous DOM structure.
-				page.replaceChildren(...pageContent.children);
-
-				//	Cache the constructed page (document fragment).
-				Extracts.cachedPages[target.pathname] = page;
-
-                /*  Trigger the rewrite pass by firing the requisite event.
-                 */
-                GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-                    source: "Extracts.refreshPopFrameAfterLocalPageLoads",
-                    document: Extracts.cachedPages[target.pathname],
-					loadLocation: Extracts.locationForTarget(target),
-					baseLocation: Extracts.locationForTarget(target),
-                    flags: (  GW.contentDidLoadEventFlags.needsRewrite
-                    		| GW.contentDidLoadEventFlags.collapseAllowed)
-                });
-
-				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
-            },
-            onFailure: (event) => {
-                Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
-            }
-        });
-    },
-
     /***************************/
     /*  Pop-frames (in general).
      */
@@ -1157,31 +1044,6 @@ Extracts = {
 		document.querySelectorAll("link[rel='stylesheet']").forEach(cssLink => {
 			popFrame.document.insertBefore(cssLink.cloneNode(true), popFrame.body);
 		});
-
-		/*	For local content embed pop-frames, add handler to trigger 
-			transcludes in source document when they trigger in the pop-frame.
-		 */
-		if (Extracts.isLocalPageLink(target)) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
-				let sourceDocument = Extracts.cachedPages[target.pathname] || Extracts.rootDocument;
-				Transclude.allIncludeLinksInContainer(sourceDocument).filter(link => 
-					link.href == info.includeLink.href
-				).forEach(link => {
-					Transclude.transclude(link, true);
-				});
-
-				/*	If the transcluded content makes up the entirety of the 
-					pop-frame’s content, refresh the pop-frame after the load.
-				 */
-				if (   info.document.parentElement == popFrame.body
-					&& info.document.parentElement.children.length == 2)
-					Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);				
-			}, { 
-				once: true,
-				condition: (info) => (   info.source == "transclude" 
-									  && info.document.getRootNode() == popFrame.document)
-			});
-		}
 
 		//	Add handler to update popup position when content changes.
 		GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (info) => {

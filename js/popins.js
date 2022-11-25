@@ -443,7 +443,8 @@ Popins = {
 	},
 
 	isSpawned: (popin) => {
-		return (popin != null);
+		return (   popin
+				&& popin.parentElement);
 	},
 
 	/*******************/

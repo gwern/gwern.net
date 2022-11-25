@@ -237,11 +237,15 @@ Extracts = { ...Extracts,
     citationForTarget: (target) => {
         GWLog("Extracts.citationForTarget", "extracts-content.js", 2);
 
-        return Extracts.localTranscludeForTarget(target, (blockElement) => {
-            return target.hash.startsWith("#sn")
-                   ? blockElement.querySelector(".sidenote-inner-wrapper").childNodes
-                   : blockElement.childNodes;
-        }, true);
+		let content = Extracts.localTranscludeForTarget(target, true);
+
+		//	Remove extraneous elements.
+		content.querySelectorAll(".footnote-self-link, .footnote-back").forEach(element => {
+			element.remove();
+		});
+
+		//	Fully unwrap, returning only footnote content.
+		return newDocument(content.querySelector("li.footnote, .sidenote-inner-wrapper").childNodes);
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
@@ -286,10 +290,6 @@ Extracts = { ...Extracts,
     rewritePopFrameContent_CITATION: (popFrame) => {
         let target = popFrame.spawningTarget;
 
-        //  Remove back-link and self-link.
-        popFrame.document.querySelector(".footnote-self-link").remove();
-        popFrame.document.querySelector(".footnote-back").remove();
-
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_CITATION",
@@ -323,7 +323,7 @@ Extracts = { ...Extracts,
     citationBackLinkForTarget: (target) => {
         GWLog("Extracts.citationBackLinkForTarget", "extracts-content.js", 2);
 
-        return Extracts.localTranscludeForTarget(target, null, true);
+        return Extracts.localTranscludeForTarget(target, true);
     },
 
     /*  This “special testing function” is used to exclude certain targets which
@@ -343,7 +343,7 @@ Extracts = { ...Extracts,
         //  Do not spawn citation context popup if citation is visible.
         let targetDocument = Extracts.targetDocument(target);
         if (   targetDocument
-            && Popups.isVisible(Extracts.targetElementInDocument(target, targetDocument)))
+            && Popups.isVisible(targetElementInDocument(target, targetDocument)))
             return null;
 
         //  Mini title bar.
@@ -365,7 +365,7 @@ Extracts = { ...Extracts,
             targetedCitation.classList.remove("targeted");
         });
         //  In the popup, the citation for which context is being shown.
-        let citationInPopup = Extracts.targetElementInDocument(target, popup.document);
+        let citationInPopup = targetElementInDocument(target, popup.document);
         //  Highlight the citation.
         citationInPopup.classList.add("targeted");
 

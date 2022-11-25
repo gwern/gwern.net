@@ -428,7 +428,7 @@ function includeContent(includeLink, content) {
     GWLog("includeContent", "transclude.js", 2);
 
     //  Just in case, do nothing if the link isn’t attached to anything.
-    if (includeLink.parentElement == null)
+    if (includeLink.parentNode == null)
         return;
 
     //  Prevent race condition, part I.
@@ -439,6 +439,16 @@ function includeContent(includeLink, content) {
 
     //  Are we including into the main page, or into a pop-frame or something?
     let includingIntoMainPage = (doc == document);
+
+	//	Where to inject?
+    let replaceContainer = (   includeLink.parentElement != null
+                            && includeLink.classList.contains("include-replace-container"));
+    let insertWhere = replaceContainer
+                      ? includeLink.parentElement
+                      : includeLink;
+
+    //  Save reference for potential removal later.
+    let includeLinkParentElement = includeLink.parentElement;
 
 	//	WITHIN-WRAPPER MODIFICATIONS BEGIN
 
@@ -455,13 +465,8 @@ function includeContent(includeLink, content) {
         wrapper.append(content);
     }
 
-    //  Inject.
-    let replaceContainer = (   includeLink.parentElement.parentElement != null
-                            && includeLink.classList.contains("include-replace-container"));
-    let insertWhere = replaceContainer
-                      ? includeLink.parentElement
-                      : includeLink;
-    insertWhere.parentElement.insertBefore(wrapper, insertWhere);
+    //  Inject wrapper.
+    insertWhere.parentNode.insertBefore(wrapper, insertWhere);
 
     //  Delete footnotes section, if any.
     let newContentFootnotesSection = wrapper.querySelector("#footnotes");
@@ -524,9 +529,6 @@ function includeContent(includeLink, content) {
 
 	//	WITHIN-WRAPPER MODIFICATIONS END; OTHER MODIFICATIONS BEGIN
 
-    //  Save reference for potential removal later.
-    let includeLinkParentElement = includeLink.parentElement;
-
     //  Update TOC, if need be.
     if (includingIntoMainPage)
         updatePageTOC(wrapper, true);
@@ -548,11 +550,13 @@ function includeContent(includeLink, content) {
         let allowedParentTags = [ "SECTION", "DIV" ];
 
         //  Special handling for annotation transcludes in link bibliographies.
-        if (wrapper.parentElement.closest("#link-bibliography, .link-bibliography-append") != null)
+        if (   wrapper.parentElement != null
+        	&& wrapper.parentElement.closest("#link-bibliography, .link-bibliography-append") != null)
             allowedParentTags.push("LI");
 
-        while (   false == allowedParentTags.includes(wrapper.parentElement.tagName)
-               && wrapper.parentElement.parentElement != null) {
+        while (   wrapper.parentElement != null
+               && wrapper.parentElement.parentElement != null
+        	   && false == allowedParentTags.includes(wrapper.parentElement.tagName)) {
             let nextNode = wrapper.nextSibling;
 
             wrapper.parentElement.parentElement.insertBefore(wrapper, wrapper.parentElement.nextSibling);

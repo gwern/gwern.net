@@ -506,8 +506,9 @@ Popups = {
 	},
 
 	isSpawned: (popup) => {
-		return (   popup != null 
-				&& !popup.classList.contains("fading"));
+		return (   popup
+				&& popup.parentElement
+				&& popup.classList.contains("fading") == false);
 	},
 
 	/********************/
@@ -1266,11 +1267,7 @@ Popups = {
 								 || target.getBoundingClientRect();
 
 		//	Prevent popup cycling in Chromium.
-		/*	This seems to no longer be necessary. Delete it once some time 
-			has passed with no problems.
-				—SA 2022-11-20
-		 */
-// 		popup.style.visibility = "hidden";
+		popup.style.visibility = "hidden";
 
 		//  Wait for the “naive” layout to be completed, and then...
 		requestAnimationFrame(() => {
@@ -1406,11 +1403,7 @@ Popups = {
 			popup.viewportRect = popup.getBoundingClientRect();
 
 			//	Prevent popup cycling in Chromium.
-			/*	This seems to no longer be necessary. Delete it once some time 
-				has passed with no problems.
-					—SA 2022-11-20
-			 */
-// 			popup.style.visibility = "";
+			popup.style.visibility = "";
 
 			document.activeElement.blur();
 		});
@@ -1509,7 +1502,7 @@ Popups = {
 
 	//	Called by: Popups.setPopupSpawnTimer
 	setWaitCursorForTarget: (target) => {
-		GWLog("Popups.setWaitCursorForTarget", "popups.js", 1);
+		GWLog("Popups.setWaitCursorForTarget", "popups.js", 2);
 
 		document.documentElement.style.cursor = "progress";
 		target.style.cursor = "progress";

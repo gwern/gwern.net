@@ -210,13 +210,13 @@ function wrapAll(selector, wrapClassOrFunction, wrapTagName = "DIV", root = docu
 /*  Replace an element with its contents.
  */
 function unwrap(wrapper, moveClasses = false) {
-    if (wrapper.parentElement == null)
+    if (wrapper.parentNode == null)
         return;
 
     while (wrapper.childNodes.length > 0) {
 		let child = wrapper.firstChild;
 
-        wrapper.parentElement.insertBefore(child, wrapper);
+        wrapper.parentNode.insertBefore(child, wrapper);
 
 		if (!(child instanceof Element))
 			continue;

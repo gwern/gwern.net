@@ -66,6 +66,7 @@ $versioned_files = [
 	"{$static_dir}/css/links.css",
 	"{$static_dir}/js/annotations.js",
 	"{$static_dir}/js/collapse.js",
+	"{$static_dir}/js/content.js",
 	"{$static_dir}/js/dark-mode.js",
 	"{$static_dir}/js/extracts.js",
 	"{$static_dir}/js/extracts-annotations.js",

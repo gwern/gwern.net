@@ -99,10 +99,17 @@ Extracts = { ...Extracts,
         //  Get annotation reference data (if it’s been loaded).
         let referenceData = Annotations.referenceDataForTarget(target);
         if (referenceData == null) {
-            /*  If the annotation has yet to be loaded, we’ll ask for it to load,
-                and meanwhile wait, and do nothing yet.
+            /*  If the annotation has yet to be loaded, we’ll trust that it has
+            	been asked to load, and meanwhile wait, and do nothing yet.
              */
-            Extracts.refreshPopFrameAfterAnnotationDataLoads(target);
+			target.popFrame.classList.toggle("loading", true);
+
+			Annotations.waitForAnnotationLoad(Annotations.targetIdentifier(target), 
+			   (identifier) => {
+				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
+			}, (identifier) => {
+				Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
+			});
 
             return newDocument();
         } else if (referenceData == "LOADING_FAILED") {
@@ -277,29 +284,5 @@ Extracts = { ...Extracts,
                 });
             }, { once: true });
         }
-    },
-
-    /*  Refresh (respawn or reload) a pop-frame for an annotated target after
-        its annotation loads.
-        */
-    //  Called by: Extracts.annotationForTarget
-    refreshPopFrameAfterAnnotationDataLoads: (target) => {
-        GWLog("Extracts.refreshPopFrameAfterAnnotationDataLoads", "extracts-annotations.js", 2);
-
-        target.popFrame.classList.toggle("loading", true);
-
-        //  Add handler for when the annotations loads.
-        GW.notificationCenter.addHandlerForEvent("Annotations.annotationDidLoad", (info) => {
-            GWLog("refreshPopFrameWhenAnnotationDidLoad", "extracts.js", 2);
-
-            Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
-        }, { once: true, condition: (info) => info.identifier == Annotations.targetIdentifier(target) });
-
-        //  Add handler for if the annotation load fails.
-        GW.notificationCenter.addHandlerForEvent("Annotations.annotationLoadDidFail", (info) => {
-            GWLog("updatePopFrameWhenAnnotationLoadDidFail", "extracts.js", 2);
-
-            Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
-        }, { once: true, condition: (info) => info.identifier == Annotations.targetIdentifier(target) });
     }
 };

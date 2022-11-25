@@ -4201,7 +4201,7 @@ body.index-directory #footer {
 
 /*  External page embeds popups.
     */
-.popup.external-page-embed {
+.popup.full-page {
     width: var(--GW-popups-popup-max-width);
     height: var(--GW-popups-popup-max-height);
 }

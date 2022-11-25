@@ -152,6 +152,26 @@
 /* HELPERS */
 /***********/
 
+/****************************************************************************/
+/*	Return the element, in the target document, pointed to by the hash of the
+	given link (which may be a URL object or an <a> Element).
+ */
+function targetElementInDocument(link, doc) {
+	let element = doc.querySelector(selectorFromHash(link.hash));
+	if (element)
+		return element;
+
+	if (link instanceof Element) {
+		let backlinksList = link.closest(".backlinks-list");
+		if (backlinksList) {
+			let escapedURL = CSS.escape(backlinksList.dataset.targetUrl);
+			element = doc.querySelector(`a.link-page[id][href*='${escapedURL}']`);
+		}
+	}
+
+	return element;
+}
+
 /******************************************************************************/
 /*	Return original URL for a link. (Equal to the link’s URL itself for all but
 	locally archived links.)
