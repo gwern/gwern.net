@@ -136,12 +136,13 @@ Extracts = { ...Extracts,
 		});
 
         //  Fire contentDidLoad event.
+        let targetLocation = new URL(target.href);
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.annotationForTarget",
             contentType: "annotation",
             document: constructedAnnotation,
             loadLocation: Annotations.sourceURLForTarget(target),
-            baseLocation: Extracts.locationForTarget(target),
+            baseLocation: targetLocation,
             flags: (  GW.contentDidLoadEventFlags.needsRewrite
             		| GW.contentDidLoadEventFlags.collapseAllowed)
         });
@@ -211,12 +212,13 @@ Extracts = { ...Extracts,
             Extracts.popFrameProvider.addClassesToPopFrame(popFrame, referenceData.dataSourceClass.split(" "));
 
         //  Fire contentDidLoad event.
+        let targetLocation = new URL(target.href);
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_ANNOTATION",
             contentType: "annotation",
             document: popFrame.document,
             loadLocation: Annotations.sourceURLForTarget(target),
-            baseLocation: Extracts.locationForTarget(target),
+            baseLocation: targetLocation,
             flags: GW.contentDidLoadEventFlags.collapseAllowed
         });
     },

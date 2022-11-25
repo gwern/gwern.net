@@ -130,8 +130,6 @@ Extracts = {
         "404 Not Found"
     ],
 
-    pageTitleRegexp: /^(.+?) · Gwern\.net$/,
-
     rootDocument: document,
 
     /******************/
@@ -500,16 +498,6 @@ Extracts = {
                                                                                   && Extracts.popFrameHasLoaded(popin));
             return popinForTargetDocument ? popinForTargetDocument.body : null;
         }
-    },
-
-    /*  Returns the location (a URL object) of the document for a given target.
-     */
-    //  Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
-    //  Called by: Extracts.refreshPopFrameAfterLocalPageLoads
-    //  Called by: extracts-annotations.js
-    //  Called by: extracts-content.js
-    locationForTarget: (target) => {
-        return new URL(target.href);
     },
 
     /*  Activate loading spinner for an object pop-frame.
@@ -888,11 +876,12 @@ Extracts = {
 // 		}
 
         //  Fire a contentDidLoad event.
+        let targetLocation = new URL(target.href);
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
             document: popFrame.document,
-            loadLocation: Extracts.locationForTarget(target),
-            baseLocation: Extracts.locationForTarget(target),
+            loadLocation: targetLocation,
+            baseLocation: targetLocation,
             flags: GW.contentDidLoadEventFlags.collapseAllowed
         });
 
@@ -960,11 +949,12 @@ Extracts = {
 			popFrame.body.appendChild(sectionWrapper);
 
 			//  Fire a contentDidLoad event.
+			let targetLocation = new URL(target.href);
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.loadAdjacentSections",
 				document: popFrame.body.firstElementChild,
-				loadLocation: Extracts.locationForTarget(target),
-				baseLocation: Extracts.locationForTarget(target),
+				loadLocation: targetLocation,
+				baseLocation: targetLocation,
 				flags: 0
 			});
 		}
@@ -974,11 +964,12 @@ Extracts = {
 			popFrame.body.insertBefore(newDocument(prevSection), popFrame.body.firstElementChild);
 
 			//  Fire a contentDidLoad event.
+			let targetLocation = new URL(target.href);
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.loadAdjacentSections",
 				document: popFrame.body.firstElementChild,
-				loadLocation: Extracts.locationForTarget(target),
-				baseLocation: Extracts.locationForTarget(target),
+				loadLocation: targetLocation,
+				baseLocation: targetLocation,
 				flags: 0
 			});
 
@@ -990,11 +981,12 @@ Extracts = {
 			popFrame.body.insertBefore(newDocument(nextSection), null);
 
 			//  Fire a contentDidLoad event.
+			let targetLocation = new URL(target.href);
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.loadAdjacentSections",
 				document: popFrame.body.lastElementChild,
-				loadLocation: Extracts.locationForTarget(target),
-				baseLocation: Extracts.locationForTarget(target),
+				loadLocation: targetLocation,
+				baseLocation: targetLocation,
 				flags: 0
 			});
 

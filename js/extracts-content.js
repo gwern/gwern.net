@@ -168,11 +168,12 @@ Extracts = { ...Extracts,
         let target = popFrame.spawningTarget;
 
         //  Fire a contentDidLoad event.
+        let targetLocation = new URL(target.href);
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK",
             document: popFrame.document,
-            loadLocation: Extracts.locationForTarget(target),
-            baseLocation: Extracts.locationForTarget(target),
+            loadLocation: targetLocation,
+            baseLocation: targetLocation,
             flags: GW.contentDidLoadEventFlags.needsRewrite
         });
     },
@@ -291,11 +292,12 @@ Extracts = { ...Extracts,
         let target = popFrame.spawningTarget;
 
         //  Fire a contentDidLoad event.
+        let targetLocation = new URL(target.href);
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_CITATION",
             document: popFrame.document,
-            loadLocation: Extracts.locationForTarget(target),
-            baseLocation: Extracts.locationForTarget(target),
+            loadLocation: targetLocation,
+            baseLocation: targetLocation,
             flags: 0
         });
     },
@@ -370,11 +372,12 @@ Extracts = { ...Extracts,
         citationInPopup.classList.add("targeted");
 
         //  Fire a contentDidLoad event.
+        let targetLocation = new URL(target.href);
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopupContent_CITATION_BACK_LINK",
             document: popup.document,
-            loadLocation: Extracts.locationForTarget(target),
-            baseLocation: Extracts.locationForTarget(target),
+            loadLocation: targetLocation,
+            baseLocation: targetLocation,
             flags: 0
         });
 
