@@ -1263,6 +1263,12 @@ addContentLoadHandler(GW.contentLoadHandlers.handleTranscludes = (loadEventInfo)
         //  Store the location of the included-into document.
         includeLink.baseLocation = loadEventInfo.baseLocation;
 
+		/*	If we’re not rewriting the containing loaded content, then the
+			included content will need rewriting.
+		 */
+		if (loadEventInfo.needsRewrite == false)
+			includeLink.needsRewrite = true;
+
         //  Transclude now or maybe later.
         Transclude.transclude(includeLink);
     });
