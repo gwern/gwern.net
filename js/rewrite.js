@@ -1005,6 +1005,18 @@ addContentLoadHandler(GW.contentLoadHandlers.bindSectionHighlightEventsToAnnotat
 }, "eventListeners");
 
 
+addContentLoadHandler(GW.contentLoadHandlers.removeSubheadingFromLinkBibliography = (loadEventInfo) => {
+    GWLog("removeSubheadingFromLinkBibliography", "rewrite.js", 1);
+
+	if (loadEventInfo.document.closest("section#link-bibliography")) {
+		let subheading = loadEventInfo.document.querySelector("div#link-bibliography-link-footer-transclusion > p:first-child");
+		if (subheading)
+			subheading.remove();
+	}
+}, "rewrite", (info) => (   info.needsRewrite
+						 && info.source == "transclude"));
+
+
 /*********************/
 /* TABLE OF CONTENTS */
 /*********************/
