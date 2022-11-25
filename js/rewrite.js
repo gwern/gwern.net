@@ -169,6 +169,9 @@ function targetElementInDocument(link, doc) {
 		}
 	}
 
+	if (element == null)
+		reportBrokenAnchorLink(link);
+
 	return element;
 }
 
