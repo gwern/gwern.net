@@ -31,7 +31,14 @@ Content = {
 	},
 
 	contentTypeForIdentifier: (identifier) => {
-		return "localPage";
+		let url = new URL(  "https://"
+						  + location.hostname
+						  + identifier);
+
+		if (url.pathname.match(/\./) == null)
+			return "localPage";
+
+		return null;
 	},
 
 	contentTypeForTarget: (target) => {
