@@ -3436,7 +3436,7 @@ body.index-directory #footer {
 /*│ Annotation pop-frames. │*/
 /*└────────────────────────┘*/
 
-.popframe-body > .annotation.wikipedia-entry > .data-field.title {
+.popframe-body > .annotation:only-child > p.data-field.title:only-of-type {
     font-size: 1.125em;
     line-height: 1.35;
     margin-bottom: 0.375em;
