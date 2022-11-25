@@ -1044,7 +1044,6 @@ Extracts = {
 			else // if (Extracts.popFrameProvider == Popins)
 				Popins.scrollPopinIntoView(popFrame);
 		}, { 
-			once: true,
 			condition: (info) => (info.document == popFrame.document) 
 		});
 

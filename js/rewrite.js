@@ -1006,6 +1006,39 @@ addContentLoadHandler(GW.contentLoadHandlers.bindSectionHighlightEventsToAnnotat
 
 
 /*********************/
+/* LINK BIBLIOGRAPHY */
+/*********************/
+
+/***************************************************************/
+/*	Mark the link lists on the index page, for styling purposes.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.designateIndexPageSectionLinkLists = (loadEventInfo) => {
+    GWLog("designateIndexPageSectionLinkLists", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll("section > ul").forEach(sectionLinkList => {
+		sectionLinkList.classList.add("section-link-list");
+	});
+}, "rewrite", (info) => (   info.needsRewrite 
+						 && info.isMainDocument 
+						 && info.loadLocation.pathname == "/index"));
+
+/*********************************************************************/
+/*	Remove the “Link Bibliography:” bold text when transcluding a link
+	bibliography into a page’s Link Bibliography section.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.removeSubheadingFromLinkBibliography = (loadEventInfo) => {
+    GWLog("removeSubheadingFromLinkBibliography", "rewrite.js", 1);
+
+	if (loadEventInfo.document.closest("section#link-bibliography")) {
+		let subheading = loadEventInfo.document.querySelector("div#link-bibliography-link-footer-transclusion > p:first-child");
+		if (subheading)
+			subheading.remove();
+	}
+}, "rewrite", (info) => (   info.needsRewrite
+						 && info.source == "transclude"));
+
+
+/*********************/
 /* TABLE OF CONTENTS */
 /*********************/
 
