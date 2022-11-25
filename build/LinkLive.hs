@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-11-20 20:30:19 gwern"
+When:  Time-stamp: "2022-11-23 11:00:33 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -1531,7 +1531,6 @@ badDomainsSimple = [ "2chan.us"
    , "umichrl.pbworks.com"
    , "undark.org"
    , "understandinguncertainty.org"
-   , "unitscale.com"
    , "us.dantelabs.com"
    , "vanishingpoint.air-nifty.com"
    , "variety.com"
@@ -3056,7 +3055,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
             , ("https://www.cogmed.com/", True)
             , ("https://www.cogtest.com/coglib_demtest.html", True)
             , ("https://www.collectorsweekly.com/articles/cast-iron-doorstops/", True)
-            , ("https://www.couriermail.com.au/remote/check_cookie.html?url=https%3a%2f%2fwww.couriermail.com.au%2fnews%2fqueensland%2fgladstone%2fnews-story%2ff5bd03cfa834aad581b828fba8c07af2", True)
+            , ("https://www.couriermail.com.au/news/queensland/gladstone/gladstone-man-arrested-in-worldwide-firearms-bust/news-story/f5bd03cfa834aad581b828fba8c07af2", True)
             , ("https://www.cram.com/", True)
             , ("https://www.cryonicscalculator.com/", True)
             , ("https://www.cs.dartmouth.edu/~sergey/wm/", True)
@@ -4118,7 +4117,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://undark.org/2016/05/25/the-death-of-a-study-national-childrens-study/", False)
             , ("https://understandinguncertainty.org/what-does-13-increased-risk-death-mean", False)
             , ("https://unesdoc.unesco.org/ark:/48223/pf0000220391", False)
-            , ("https://unitscale.com/mb/rebuilding-the-typographic-society/", False)
+            , ("https://practicaltypography.com/rebuilding-the-typographic-society.html", False)
             , ("https://usesthis.com/", False)
             , ("https://variety.com/2017/digital/news/netflix-thumbs-vs-stars-1202010492/", False)
             , ("https://vault.si.com/vault/2009/03/23/how-and-why-athletes-go-broke", False)
