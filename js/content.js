@@ -211,9 +211,9 @@ Content = {
 				if (url.pathname.startsWith("/metadata/"))
 					return false;
 
-				if (   target.pathname.startsWith("/docs/www/")
-                	|| (   target.pathname.startsWith("/docs/")
-                		&& target.pathname.match(/\.(html|pdf)$/i) != null))
+				if (   url.pathname.startsWith("/docs/www/")
+                	|| (   url.pathname.startsWith("/docs/")
+                		&& url.pathname.match(/\.(html|pdf)$/i) != null))
                 	return false;
 
 				let codeFileURLRegExp = new RegExp(
