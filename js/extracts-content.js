@@ -1257,8 +1257,7 @@ Extracts = { ...Extracts,
         	links.)
          */
         let allTargetsInContainer = Array.from(container.querySelectorAll("a[class*='has-content']")).filter(link => 
-        	   Extracts.isLocalPageLink(link)
-        	|| Extracts.isLocalCodeFileLink(link)
+        	Content.contentTypeForTarget(link) != null
         );
 
         if (Extracts.popFrameProvider == Popups) {
