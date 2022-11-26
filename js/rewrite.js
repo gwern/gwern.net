@@ -1074,25 +1074,21 @@ function updatePageTOC(newContent, needsProcessing = false) {
 
     //  Find where to insert the new TOC entries.
     let parentSection = newContent.closest("section") ?? document.querySelector("#markdownBody");
-    let previousSection = Array.from(parentSection.children).filter(child =>
-           child.tagName == "SECTION"
-        && child.compareDocumentPosition(newContent) == Node.DOCUMENT_POSITION_FOLLOWING
-    ).last;
+    let nextSection = Array.from(parentSection.children).filter(child =>
+    	   child.tagName == "SECTION"
+    	&& child.compareDocumentPosition(newContent) == Node.DOCUMENT_POSITION_PRECEDING
+    ).first;
 
     //  Any already-existing <section> should have a TOC entry.
     let parentTOCElement = parentSection.id == "markdownBody"
                            ? TOC
                            : TOC.querySelector(`#toc-${CSS.escape(parentSection.id)}`).parentElement;
-    let precedingTOCElement = previousSection
-                              ? parentTOCElement.querySelector(`#toc-${CSS.escape(previousSection.id)}`).parentElement
-                              : null;
+    let followingTOCElement = nextSection
+    						  ? parentTOCElement.querySelector(`#toc-${CSS.escape(nextSection.id)}`).parentElement
+    						  : null;
 
     //  TOC entry insertion function, called recursively.
-    function addToPageTOC(newContent, parentTOCElement, precedingTOCElement) {
-        let insertBeforeElement = precedingTOCElement
-                                  ? precedingTOCElement.nextElementSibling
-                                  : null;
-
+    function addToPageTOC(newContent, parentTOCElement, followingTOCElement) {
         let addedEntries = [ ];
 
         newContent.querySelectorAll("section").forEach(section => {
@@ -1121,7 +1117,7 @@ function updatePageTOC(newContent, needsProcessing = false) {
                 parentTOCElement.appendChild(subList);
             }
 
-            subList.insertBefore(entry, insertBeforeElement);
+            subList.insertBefore(entry, followingTOCElement);
             addedEntries.push(entry);
 
             //  Recursive call, to added sections nested within this one.
@@ -1132,7 +1128,7 @@ function updatePageTOC(newContent, needsProcessing = false) {
     }
 
     //  Add the new entries.
-    let newEntries = addToPageTOC(newContent, parentTOCElement, precedingTOCElement);
+    let newEntries = addToPageTOC(newContent, parentTOCElement, followingTOCElement);
 
     if (needsProcessing) {
         //  Process the new entries to activate pop-frame spawning.
