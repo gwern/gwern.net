@@ -3,44 +3,9 @@ Content = {
 		return target.pathname + target.hash;
 	},
 
-	referenceDataForIdentifier: (identifier) => {
-		let content = Content.cachedContentForIdentifier(identifier);
-		if (   content == null
-			|| content == "LOADING_FAILED") {
-			return content;
-		} else {
-			return Content.referenceDataFromContent(content, identifier);
-		}
-	},
-
-	referenceDataForTarget: (target) => {
-		return Content.referenceDataForIdentifier(Content.targetIdentifier(target));
-	},
-
-	sourceURLForIdentifier: (identifier) => {
-		let url = new URL(  "https://"
-						  + location.hostname
-						  + identifier);
-		url.hash = "";
-
-		return url;
-	},
-
-	sourceURLForTarget: (target) => {
-		return Content.sourceURLForIdentifier(Content.targetIdentifier(target));
-	},
-
-	contentTypeForIdentifier: (identifier) => {
-		for ([ typeName, contentType ] of Object.entries(Content.contentTypes))
-			if (contentType.matches(identifier))
-				return contentType;
-
-		return null;
-	},
-
-	contentTypeForTarget: (target) => {
-		return Content.contentTypeForIdentifier(Content.targetIdentifier(target));
-	},
+	/*******************/
+	/*	Content caching.
+	 */
 
 	cachedContent: { },
 
@@ -50,13 +15,46 @@ Content = {
         		&& cachedContent != "LOADING_FAILED");
 	},
 
+	contentCacheKeyForIdentifier: (identifier) => {
+		let url = new URL(  "https://"
+						  + location.hostname
+						  + identifier);
+		return url.pathname;
+	},
+
 	cachedContentForIdentifier: (identifier) => {
-		let sourceURL = Content.sourceURLForIdentifier(identifier);
-		return Content.cachedContent[sourceURL];
+		return Content.cachedContent[Content.contentCacheKeyForIdentifier(identifier)];
 	},
 
 	cacheContentForIdentifier: (content, identifier) => {
-		Content.cachedContent[Content.sourceURLForIdentifier(identifier)] = content;
+		Content.cachedContent[Content.contentCacheKeyForIdentifier(identifier)] = content;
+	},
+
+	updateCachedContent: (identifier, updateFunction) => {
+		if (Content.cachedContentExists(identifier) == false)
+			return;
+
+		let content = Content.cachedContentForIdentifier(identifier);
+
+		switch (Content.contentTypeForIdentifier(identifier)) {
+			case Content.contentTypes.localPage:
+				updateFunction(content.document);
+				break;
+			default:
+				break;
+		}
+	},
+
+	/*******************/
+	/*	Content loading.
+	 */
+
+	sourceURLsForIdentifier: (identifier) => {
+		return Content.contentTypeForIdentifier(identifier).sourceURLsForIdentifier(identifier);
+	},
+
+	sourceURLsForTarget: (target) => {
+		return Content.sourceURLsForIdentifier(Content.targetIdentifier(target));
 	},
 
 	//	Called by: extracts.localTranscludeForTarget (extracts-annotations.js)
@@ -87,38 +85,38 @@ Content = {
         };
 		let options = { 
         	once: true, 
-        	condition: (info) => info.sourceURL.href == Content.sourceURLForIdentifier(identifier).href
+        	condition: (info) => (info.identifier == identifier)
         };
 
         GW.notificationCenter.addHandlerForEvent("Content.contentDidLoad", didLoadHandler, options);
         GW.notificationCenter.addHandlerForEvent("Content.contentLoadDidFail", loadDidFailHandler, options);
 	},
 
-	loadContent: (identifier, loadHandler = null, loadFailHandler = null) => {
+	loadContent: (identifier, loadHandler = null, loadFailHandler = null, sourceURLsRemaining = null) => {
         GWLog("Content.loadContent", "content.js", 2);
 
-		let sourceURL = Content.sourceURLForIdentifier(identifier);
+		sourceURLsRemaining = sourceURLsRemaining ?? Content.sourceURLsForIdentifier(identifier);
+		let sourceURL = sourceURLsRemaining.shift();
 
 		let processResponse = (response) => {
-			let content = Content.contentFromResponseForIdentifier(response, identifier);
+			let content = Content.contentFromResponse(response, identifier, sourceURL);
 
 			if (content) {
 				Content.cacheContentForIdentifier(content, identifier);
 			
 				GW.notificationCenter.fireEvent("Content.contentDidLoad", {
-					sourceURL: sourceURL
+					identifier: identifier
 				});
 			} else {
 				Content.cacheContentForIdentifier("LOADING_FAILED", identifier);
 			
 				GW.notificationCenter.fireEvent("Content.contentLoadDidFail", { 
-					sourceURL: sourceURL 
+					identifier: identifier 
 				});
 
 				//	Send request to record failure in server logs.
 				GWServerLogError(sourceURL + `--could-not-process`, "problematic content");
 			}
-
 		};
 
 		if (sourceURL.pathname == location.pathname) {
@@ -130,6 +128,11 @@ Content = {
 					processResponse(event.target.responseText);
 				},
 				onFailure: (event) => {
+					if (sourceURLsRemaining.length > 0) {
+						Content.loadContent(identifier, null, null, sourceURLsRemaining);
+						return;
+					}
+
 					Content.cacheContentForIdentifier("LOADING_FAILED", identifier);
 
 					GW.notificationCenter.fireEvent("Content.contentLoadDidFail", { 
@@ -143,12 +146,31 @@ Content = {
 		}
 
 		//	Call any provided handlers, if/when appropriate.
-		Content.waitForContentLoad(identifier, loadHandler, loadFailHandler);
+		if (loadHandler || loadFailHandler)
+			Content.waitForContentLoad(identifier, loadHandler, loadFailHandler);
 	},
 
-	contentFromResponseForIdentifier: (response, identifier) => {
+	contentFromResponse: (response, identifier, loadURL) => {
 		let contentType = Content.contentTypeForIdentifier(identifier);
-		return contentType.contentFromResponseForIdentifier(response, identifier);
+		return contentType.contentFromResponse(response, identifier, loadURL);
+	},
+
+	/****************************/
+	/*	Reference data retrieval.
+	 */
+
+	referenceDataForIdentifier: (identifier) => {
+		let content = Content.cachedContentForIdentifier(identifier);
+		if (   content == null
+			|| content == "LOADING_FAILED") {
+			return content;
+		} else {
+			return Content.referenceDataFromContent(content, identifier);
+		}
+	},
+
+	referenceDataForTarget: (target) => {
+		return Content.referenceDataForIdentifier(Content.targetIdentifier(target));
 	},
 
 	referenceDataFromContent: (content, identifier) => {
@@ -156,26 +178,92 @@ Content = {
 		return contentType.referenceDataFromContent(content, identifier);
 	},
 
-	updateCachedContent: (identifier, updateFunction) => {
-		if (Content.cachedContentExists(identifier) == false)
-			return;
+	/**************************************************************/
+	/*	CONTENT TYPES
 
-		let content = Content.cachedContentForIdentifier(identifier);
+		Each has three necessary members:
 
-		switch (Content.contentTypeForIdentifier(identifier)) {
-			case Content.contentTypes.localPage:
-				updateFunction(content.document);
-				break;
-			default:
-				break;
-		}
-	},
-
-	/****************/
-	/*	Page content.
+		.matches(string) => boolean
+		.sourceURLsForIdentifier(string) => [ URL ]
+		.contentFromResponse(string, string, URL) => object
+		.referenceDataFromContent(object, string) => object
 	 */
 
+	contentTypeForIdentifier: (identifier) => {
+		for ([ typeName, contentType ] of Object.entries(Content.contentTypes))
+			if (contentType.matches(identifier))
+				return contentType;
+
+		return null;
+	},
+
+	contentTypeForTarget: (target) => {
+		return Content.contentTypeForIdentifier(Content.targetIdentifier(target));
+	},
+
 	contentTypes: {
+		codeFile: {
+			matches: (identifier) => {
+				let url = new URL(  "https://"
+								  + location.hostname
+								  + identifier);
+				if (url.pathname.startsWith("/metadata/"))
+					return false;
+
+				let codeFileURLRegExp = new RegExp(
+					  '\\.('
+					+ Content.contentTypes.codeFile.codeFileExtensions.join("|")
+					+ ')$'
+				, 'i');
+				return (url.pathname.match(codeFileURLRegExp) != null);
+			},
+
+			sourceURLsForIdentifier: (identifier) => {
+				let url = new URL(  "https://"
+								  + location.hostname
+								  + identifier);
+				url.hash = "";
+
+				return [ new URL(url.href + ".html"), url ];
+			},
+
+			contentFromResponse: (response, identifier, loadURL) => {
+				let content;
+				if (response.slice(0, 1) == "<") {
+					content = newDocument(response);
+				} else {
+					let htmlEncodedResponse = response.replace(
+						/[<>]/g, 
+						c => ('&#' + c.charCodeAt(0) + ';')
+					).split("\n").map(
+						line => (`<span class="line">${(line || "&nbsp;")}</span>`)
+					).join("\n");
+					content = newDocument(  `<pre class="raw-code"><code>`
+										  + htmlEncodedResponse
+										  + `</code></pre>`);
+				}
+
+				return {
+					document: content
+				};
+			},
+
+			referenceDataFromContent: (codePage, identifier = null) => {
+				return {
+					codePageContent: codePage.document
+				};
+			},
+
+			codeFileExtensions: [
+				//	Truncated at 1000 lines for preview.
+				"bash", "c", "conf", "css", "csv", "diff", "hs", "html", "js", 
+				"json", "jsonl", "opml", "page", "patch", "php", "py", "R", 
+				"sh", "xml", "yaml",
+				//	Non-syntax highlighted (due to lack of known format), but truncated:
+				"txt"
+			]
+		},
+
 		localPage: {
 			matches: (identifier) => {
 				let url = new URL(  "https://"
@@ -185,7 +273,16 @@ Content = {
 				return (url.pathname.match(/\./) == null);
 			},
 
-			contentFromResponseForIdentifier: (response, identifier) => {
+			sourceURLsForIdentifier: (identifier) => {
+				let url = new URL(  "https://"
+								  + location.hostname
+								  + identifier);
+				url.hash = "";
+
+				return [ url ];
+			},
+
+			contentFromResponse: (response, identifier, loadURL) => {
 				let page = response
 						   ? newDocument(response)
 						   : document;
@@ -231,8 +328,8 @@ Content = {
 					GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 						source: "Content.referenceDataFromPage",
 						document: page,
-						loadLocation: Content.sourceURLForIdentifier(identifier),
-						baseLocation: Content.sourceURLForIdentifier(identifier),
+						loadLocation: loadURL,
+						baseLocation: loadURL,
 						flags: (  GW.contentDidLoadEventFlags.needsRewrite
 								| GW.contentDidLoadEventFlags.collapseAllowed)
 					});
@@ -246,7 +343,7 @@ Content = {
 				};
 			},
 
-			referenceDataFromContent: (page, identifier = null) => {
+			referenceDataFromContent: (page, identifier) => {
 				//  The page content is the page body plus the metadata block.
 				let pageContent = newDocument();
 				//	Add the page metadata block.

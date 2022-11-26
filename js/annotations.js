@@ -251,10 +251,10 @@ Annotations = { ...Annotations,
 		More data sources may be added. Any data source object must have these
 		four properties, each a function with the given signature:
 
-		matches: (string) => boolean
-		sourceURLForIdentifier: (string) => string
-		processAPIResponse: (string) => object
-		referenceDataFromParsedAPIResponse: (string|object, string) => object
+		.matches(string) => boolean
+		.sourceURLForIdentifier(string) => URL
+		.processAPIResponse(string) => object
+		.referenceDataFromParsedAPIResponse(object, string) => object
 
 		(Most data source objects also have additional properties, functions,
 		 etc., as necessary to implement the above functionality.)

@@ -463,10 +463,6 @@ Extracts = { ...Extracts,
     //  Used in: Extracts.isLocalVideoLink
     videoFileExtensions: [ "mp4" ],
 
-    // These variables appear to currently be unused. —SA, 2022-01-31
-//  Extracts.videoMaxWidth = 634.0;
-//  Extracts.videoMaxHeight = 474.0;
-
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalVideoLink: (target) => {
         if (   target.hostname != location.hostname
@@ -681,17 +677,6 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
-    codeFilesCache: { },
-
-    //  Used in: Extracts.isLocalCodeFileLink
-    codeFileExtensions: [
-        // truncated at 1000 lines for preview
-        "bash", "c", "conf", "css", "csv", "diff", "hs", "html", "js", "json", "jsonl", "opml",
-        "page", "patch", "php", "py", "R", "sh", "xml", "yaml",
-        // Non-syntax highlighted (due to lack of known format), but truncated:
-        "txt"
-    ],
-
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalCodeFileLink: (target) => {
         if (   target.hostname != location.hostname
@@ -703,7 +688,7 @@ Extracts = { ...Extracts,
 
         let codeFileURLRegExp = new RegExp(
               '\\.('
-            + Extracts.codeFileExtensions.join("|")
+            + Content.contentTypes.codeFile.codeFileExtensions.join("|")
             + ')$'
         , 'i');
         return (target.pathname.match(codeFileURLRegExp) != null);
@@ -718,13 +703,38 @@ Extracts = { ...Extracts,
     localCodeFileForTarget: (target) => {
         GWLog("Extracts.localCodeFileForTarget", "extracts-content.js", 2);
 
-        if (Extracts.codeFilesCache[target.pathname]) {
-            return newDocument(Extracts.codeFilesCache[target.pathname]);
-        } else {
-            Extracts.refreshPopFrameAfterCodeFileLoads(target);
+		//	Ask for a content load, if need be.
+		let contentIdentifier = Content.targetIdentifier(target);
+		if (Content.cachedContentExists(contentIdentifier) == false)
+			Content.loadContent(contentIdentifier);
+
+        //  Get content reference data (if it’s been loaded).
+        let referenceData = Content.referenceDataForTarget(target);
+        if (referenceData == null) {
+            /*  If the content has yet to be loaded, we’ll trust that it has
+            	been asked to load, and meanwhile wait, and do nothing yet.
+             */
+			target.popFrame.classList.toggle("loading", true);
+
+			Content.waitForContentLoad(Content.targetIdentifier(target), 
+			   (identifier) => {
+				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
+			}, (identifier) => {
+				Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
+			});
+
+            return newDocument();
+        } else if (referenceData == "LOADING_FAILED") {
+            /*  If we’ve already tried and failed to load the content, we
+                will not try loading again, and just show the “loading failed”
+                message.
+             */
+            target.popFrame.classList.add("loading-failed");
 
             return newDocument();
         }
+
+		return newDocument(referenceData.codePageContent);
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
@@ -732,47 +742,6 @@ Extracts = { ...Extracts,
         //  Mark truncated code blocks, so layout can be adjusted properly.
         if (popFrame.body.lastElementChild.tagName == "P")
             popFrame.body.firstElementChild.classList.add("truncated");
-    },
-
-    /*  Refresh (respawn or reload) a pop-frame for a local code file after the
-        code file loads.
-     */
-    //  Called by: Extracts.localCodeFileForTarget
-    refreshPopFrameAfterCodeFileLoads: (target) => {
-        GWLog("Extracts.refreshPopFrameAfterCodeFileLoads", "extracts-content.js", 2);
-
-        target.popFrame.classList.toggle("loading", true);
-
-        doAjax({
-            location: target.href + ".html",
-            onSuccess: (event) => {
-                //  Cache the code file.
-                Extracts.codeFilesCache[target.pathname] = newDocument(event.target.responseText);
-
-                Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
-            },
-            onFailure: (event) => {
-                doAjax({
-                    location: target.href,
-                    onSuccess: (event) => {
-                        let htmlEncodedResponse = event.target.responseText.replace(/[<>]/g, c => ('&#' + c.charCodeAt(0) + ';'));
-                        let lines = htmlEncodedResponse.split("\n");
-                        htmlEncodedResponse = lines.map(line => `<span class="line">${(line || "&nbsp;")}</span>`).join("\n");
-                        let codeBlock = `<pre class="raw-code"><code>${htmlEncodedResponse}</code></pre>`;
-
-                        //  Cache the code file.
-                        Extracts.codeFilesCache[target.pathname] = newDocument(codeBlock);
-
-                        Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
-                    },
-                    onFailure: (event) => {
-                        Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
-                    }
-                });
-            }
-        });
-
-        return newDocument();
     },
 };
 
