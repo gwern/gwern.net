@@ -229,8 +229,12 @@ function allNotesForCitation(citation) {
         full-page embeds that may be spawned).
      */
     let selector = `#fn${citationNumber}, #sn${citationNumber}`;
-    let allCitations = Array.from(document.querySelectorAll(selector)).concat(Array.from(citation.getRootNode().querySelectorAll(selector)));
-    return allCitations.filter(note => note.querySelector(".footnote-back").pathname == citation.pathname);
+    let allNotes = Array.from(document.querySelectorAll(selector)).concat(Array.from(citation.getRootNode().querySelectorAll(selector)));
+    return allNotes.filter(note => {
+    	let footnoteBackLink = note.querySelector(".footnote-back");
+    	return (   footnoteBackLink != null
+    			&& footnoteBackLink.pathname == citation.pathname);
+    });
 }
 
 /*****************************************************************************/
