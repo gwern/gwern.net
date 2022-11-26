@@ -207,8 +207,14 @@ Content = {
 				let url = new URL(  "https://"
 								  + location.hostname
 								  + identifier);
+
 				if (url.pathname.startsWith("/metadata/"))
 					return false;
+
+				if (   target.pathname.startsWith("/docs/www/")
+                	|| (   target.pathname.startsWith("/docs/")
+                		&& target.pathname.match(/\.(html|pdf)$/i) != null))
+                	return false;
 
 				let codeFileURLRegExp = new RegExp(
 					  '\\.('
