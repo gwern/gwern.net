@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module LinkID (authorsToCite, generateID, generateURL) where
 
 import Data.Char (isAlpha, isAlphaNum, isPunctuation, toLower)

@@ -5,7 +5,7 @@ module GenerateSimilar where
 
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str, Strong), Format(..), runPure, Pandoc(..), nullAttr)
 import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T  (append, filter, intercalate, length, pack, strip, take, unlines, unpack, Text)
+import qualified Data.Text as T  (append, map, intercalate, length, pack, strip, take, unlines, unpack, Text)
 import Data.Char (isAscii)
 import Data.List ((\\), intercalate,  nub, isPrefixOf, isSuffixOf)
 import Data.Maybe (fromJust)
@@ -134,8 +134,8 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
         plainText = simplifiedDoc parsedEither `T.append` documentURLsText
         -- post-processing: 'We suggest replacing newlines (\n) in your input with a single space, as we have observed inferior results when newlines are present.' https://beta.openai.com/docs/api-reference/embeddings/create
         -- GPT-3 apparently doesn't do well with Unicode punctuation either (they get a bad BPE expansion factor too), so smart quotes are right out.
-        gptPlainText = T.take maxLength $ T.strip $ T.filter isAscii $
-                       replaceManyT [("  ", " "), ("\8203",""), ("\8212", " - "), (" § ", ": "), ("\n"," "), ("  "," "), ("…","..."), ("“","'"), ("”","'"), ("‘","'"), ("’","'"), ("\\",""), ("\"","'"), ("\"","'")] plainText
+        gptPlainText = T.take maxLength $ T.strip $ T.map (\c -> if isAscii c then c else ' ') $
+                       replaceManyT [("  ", " "), ("\8203",""), ("\8212", " - "), ("–", " - "), ("—", "---"), (" § ", ": "), ("\n"," "), ("  "," "), ("…","..."), ("“","'"), ("”","'"), ("‘","'"), ("’","'"), ("\\",""), ("\"","'"), ("\"","'"), (" ", " "), (" ", " ")] plainText
     in
       gptPlainText
   where

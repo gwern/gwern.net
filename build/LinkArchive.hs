@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-11-22 18:28:27 gwern"
+When:  Time-stamp: "2022-11-26 20:15:32 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -118,7 +118,7 @@ import Utils (writeUpdatedFile, printGreen, printRed, sed, addClass, anyInfix, a
 
 archiveDelay, archivePerRunN :: Integer
 archiveDelay = 60
-archivePerRunN = 10
+archivePerRunN = 12
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg. 2019-11-22 = 58810
@@ -1272,5 +1272,8 @@ whiteList url
       , "https://psych.hanover.edu/JavaTest/CLE/Cognition/Cognition/MentalRotation.html" -- interactive (Java applet!)
       , "https://sites.google.com/view/multi-agent-competition" -- low quality (video embeds)
       , "https://webdiplomacy.net/" -- homepage
+      , "https://www.mmlab-ntu.com/project/vtoonify/" -- low quality (video embeds)
+      , "https://makeavideo.studio/#facebook" -- low quality (video embeds)
+      , "https://www.storylive.com/main.htm" -- interactive
       ] = True
     | otherwise = False

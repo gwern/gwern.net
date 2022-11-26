@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-11-21 12:49:42 gwern"
+When:  Time-stamp: "2022-11-26 15:09:29 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -1261,6 +1261,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("gMLP", "https://arxiv.org/abs/2105.08050#google")
         , ("[Gg]scan2pdf", "http://gscan2pdf.sourceforge.net/")
         , ("iGPT", "https://openai.com/blog/image-gpt/")
+        , ("InstructGPT", "https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf")
         , ("[Ii]nbreeding[ -]depression", "https://en.wikipedia.org/wiki/Inbreeding_depression")
         , ("lbpcascade_animeface", "https://github.com/nagadomi/lbpcascade_animeface")
         , ("[Ll]inkchecker", "https://github.com/linkchecker/linkchecker")

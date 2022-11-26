@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-11-23 11:00:33 gwern"
+When:  Time-stamp: "2022-11-26 17:53:59 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -510,7 +510,6 @@ goodDomainsSimple =
     , "sciencebulletin.org"
     , "scientistatwork.blogs.nytimes.com"
     , "scottaaronson.blog"
-    , "search.wikileaks.org"
     , "senrigan.io"
     , "seths.blog"
     , "sevensecularsermons.org"
@@ -2910,7 +2909,6 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
             , ("https://sciencebasedmedicine.org/antioxidants-and-exercise-more-harm-than-good/", True)
             , ("https://sciencebulletin.org/archives/9946.html", True)
             , ("https://scottaaronson.blog/?p=346", True)
-            , ("https://search.wikileaks.org/plusd/cables/09STATE37561_a.html", True)
             , ("https://senrigan.io/blog/how-writeupai-runs-behind-the-scenes/", True)
             , ("https://seths.blog/2005/03/dont_shave_that/", True)
             , ("https://sevensecularsermons.org/about/", True)
