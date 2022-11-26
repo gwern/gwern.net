@@ -1020,7 +1020,8 @@ addContentLoadHandler(GW.contentLoadHandlers.designateIndexPageSectionLinkLists 
 	});
 }, "rewrite", (info) => (   info.needsRewrite 
 						 && info.isMainDocument 
-						 && info.loadLocation.pathname == "/index"));
+						 && (   info.loadLocation.pathname == "/"
+						 	 || info.loadLocation.pathname == "/index")));
 
 /*********************************************************************/
 /*	Remove the “Link Bibliography:” bold text when transcluding a link
