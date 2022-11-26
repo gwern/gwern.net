@@ -540,6 +540,30 @@ Extracts = {
         };
     },
 
+	//	Called by; Extracts.localTranscludeForTarget
+	//	Called by: Extracts.localCodeFileForTarget
+	handleIncompleteReferenceData: (target, referenceData, dataProvider) => {
+        if (referenceData == null) {
+            /*  If the content has yet to be loaded, we’ll trust that it has
+            	been asked to load, and meanwhile wait, and do nothing yet.
+             */
+			target.popFrame.classList.toggle("loading", true);
+
+			dataProvider.waitForDataLoad(dataProvider.targetIdentifier(target), 
+			   (identifier) => {
+				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
+			}, (identifier) => {
+				Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
+			});
+        } else if (referenceData == "LOADING_FAILED") {
+            /*  If we’ve already tried and failed to load the content, we
+                will not try loading again, and just show the “loading failed”
+                message.
+             */
+            target.popFrame.classList.add("loading-failed");
+        }
+	},
+
 	//	Called by: Extracts.refreshPopFrameAfterLocalPageLoads
 	//	Called by: Extracts.refreshPopFrameAfterCodeFileLoads
 	//	Called by: Extracts.refreshPopFrameAfterAuxLinksLoad
@@ -730,26 +754,10 @@ Extracts = {
 
         //  Get content reference data (if it’s been loaded).
         let referenceData = Content.referenceDataForTarget(target);
-        if (referenceData == null) {
-            /*  If the content has yet to be loaded, we’ll trust that it has
-            	been asked to load, and meanwhile wait, and do nothing yet.
-             */
-			target.popFrame.classList.toggle("loading", true);
-
-			Content.waitForContentLoad(Content.targetIdentifier(target), 
-			   (identifier) => {
-				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
-			}, (identifier) => {
-				Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
-			});
-
-            return newDocument();
-        } else if (referenceData == "LOADING_FAILED") {
-            /*  If we’ve already tried and failed to load the content, we
-                will not try loading again, and just show the “loading failed”
-                message.
-             */
-            target.popFrame.classList.add("loading-failed");
+        if (   referenceData == null
+        	|| referenceData == "LOADING_FAILED") {
+        	//	Handle if not loaded yet, or load failed.
+	        Extracts.handleIncompleteReferenceData(target, referenceData, Content);
 
             return newDocument();
         }

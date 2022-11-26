@@ -694,11 +694,6 @@ Extracts = { ...Extracts,
         return (target.pathname.match(codeFileURLRegExp) != null);
     },
 
-    /*  We first try to retrieve a syntax-highlighted version of the given code
-        file, stored on the server as an HTML fragment. If present, we embed
-        that. If there’s no such fragment, then we just embed the contents of
-        the actual code file, in a <pre>-wrapped <code> element.
-     */
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
     localCodeFileForTarget: (target) => {
         GWLog("Extracts.localCodeFileForTarget", "extracts-content.js", 2);
@@ -710,26 +705,10 @@ Extracts = { ...Extracts,
 
         //  Get content reference data (if it’s been loaded).
         let referenceData = Content.referenceDataForTarget(target);
-        if (referenceData == null) {
-            /*  If the content has yet to be loaded, we’ll trust that it has
-            	been asked to load, and meanwhile wait, and do nothing yet.
-             */
-			target.popFrame.classList.toggle("loading", true);
-
-			Content.waitForContentLoad(Content.targetIdentifier(target), 
-			   (identifier) => {
-				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
-			}, (identifier) => {
-				Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
-			});
-
-            return newDocument();
-        } else if (referenceData == "LOADING_FAILED") {
-            /*  If we’ve already tried and failed to load the content, we
-                will not try loading again, and just show the “loading failed”
-                message.
-             */
-            target.popFrame.classList.add("loading-failed");
+        if (   referenceData == null
+        	|| referenceData == "LOADING_FAILED") {
+        	//	Handle if not loaded yet, or load failed.
+	        Extracts.handleIncompleteReferenceData(target, referenceData, Content);
 
             return newDocument();
         }

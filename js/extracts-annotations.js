@@ -98,26 +98,10 @@ Extracts = { ...Extracts,
 
         //  Get annotation reference data (if it’s been loaded).
         let referenceData = Annotations.referenceDataForTarget(target);
-        if (referenceData == null) {
-            /*  If the annotation has yet to be loaded, we’ll trust that it has
-            	been asked to load, and meanwhile wait, and do nothing yet.
-             */
-			target.popFrame.classList.toggle("loading", true);
-
-			Annotations.waitForAnnotationLoad(Annotations.targetIdentifier(target), 
-			   (identifier) => {
-				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
-			}, (identifier) => {
-				Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
-			});
-
-            return newDocument();
-        } else if (referenceData == "LOADING_FAILED") {
-            /*  If we’ve already tried and failed to load the annotation, we
-                will not try loading again, and just show the “loading failed”
-                message.
-             */
-            target.popFrame.classList.add("loading-failed");
+        if (   referenceData == null
+        	|| referenceData == "LOADING_FAILED") {
+        	//	Handle if not loaded yet, or load failed.
+	        Extracts.handleIncompleteReferenceData(target, referenceData, Annotations);
 
             return newDocument();
         }

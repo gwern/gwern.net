@@ -57,8 +57,8 @@ Content = {
 		return Content.sourceURLsForIdentifier(Content.targetIdentifier(target));
 	},
 
-	//	Called by: extracts.localTranscludeForTarget (extracts-annotations.js)
-	waitForContentLoad: (identifier, loadHandler = null, loadFailHandler = null) => {
+	//	Called by: Extracts.handleIncompleteReferenceData (extracts.js)
+	waitForDataLoad: (identifier, loadHandler = null, loadFailHandler = null) => {
 		if (Content.cachedContentForIdentifier(identifier) == "LOADING_FAILED") {
             if (loadFailHandler)
             	loadFailHandler(identifier);
@@ -147,7 +147,7 @@ Content = {
 
 		//	Call any provided handlers, if/when appropriate.
 		if (loadHandler || loadFailHandler)
-			Content.waitForContentLoad(identifier, loadHandler, loadFailHandler);
+			Content.waitForDataLoad(identifier, loadHandler, loadFailHandler);
 	},
 
 	contentFromResponse: (response, identifier, loadURL) => {
@@ -218,6 +218,12 @@ Content = {
 				return (url.pathname.match(codeFileURLRegExp) != null);
 			},
 
+			/*  We first try to retrieve a syntax-highlighted version of the 
+				given code file, stored on the server as an HTML fragment. If 
+				present, we embed that. If there’s no such fragment, then we 
+				just embed the contents of the actual code file, in a 
+				<pre>-wrapped <code> element.
+			 */
 			sourceURLsForIdentifier: (identifier) => {
 				let url = new URL(  "https://"
 								  + location.hostname

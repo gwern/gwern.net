@@ -138,7 +138,7 @@ Annotations = { ...Annotations,
 	},
 
 	//	Called by: extracts.annotationForTarget (extracts-annotations.js)
-	waitForAnnotationLoad: (identifier, loadHandler = null, loadFailHandler = null) => {
+	waitForDataLoad: (identifier, loadHandler = null, loadFailHandler = null) => {
 		if (Annotations.cachedReferenceData[identifier] == "LOADING_FAILED") {
             if (loadFailHandler)
             	loadFailHandler(identifier);
@@ -235,7 +235,8 @@ Annotations = { ...Annotations,
 		}
 
 		//	Call any provided handlers, if/when appropriate.
-		Annotations.waitForAnnotationLoad(identifier, loadHandler, loadFailHandler);
+		if (loadHandler || loadFailHandler)
+			Annotations.waitForDataLoad(identifier, loadHandler, loadFailHandler);
     },
 
 	//	Called by: Annotations.loadAnnotation
