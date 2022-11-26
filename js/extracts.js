@@ -209,6 +209,7 @@ Extracts = {
         }
 
 		Extracts.setUpAnnotationLoadEventWithin(container);
+		Extracts.setUpContentLoadEventWithin(container);
     },
 
     //  Called by: extracts.js (doSetup)
@@ -540,8 +541,14 @@ Extracts = {
         };
     },
 
-	//	Called by; Extracts.localTranscludeForTarget
+	/*	If the reference data is not yet available, we either queue the 
+		refresh-pop-frame callbacks for when it does load or fail (in the case 
+		where the network request hasn’t come back yet), or mark the pop-frame 
+		as “loading failed” and do nothing (if the load has failed).
+	 */
+	//	Called by: Extracts.localTranscludeForTarget
 	//	Called by: Extracts.localCodeFileForTarget
+	//	Called by: Extracts.annotationForTarget
 	handleIncompleteReferenceData: (target, referenceData, dataProvider) => {
         if (referenceData == null) {
             /*  If the content has yet to be loaded, we’ll trust that it has
@@ -639,6 +646,69 @@ Extracts = {
             }
         });
 	},
+
+	contentLoadHoverDelay: 25,
+
+    //  Called by: extracts.js
+    setUpContentLoadEventWithin: (container) => {
+        GWLog("Extracts.setUpContentLoadEventWithin", "extracts.js", 1);
+
+        /*  Get all targets in the container that use Content as a data loading
+        	provider. (Currently that is local page links and local code file
+        	links.)
+         */
+        let allTargetsInContainer = Array.from(container.querySelectorAll("a[class*='has-content']")).filter(link => 
+        	   Extracts.isLocalPageLink(link)
+        	|| Extracts.isLocalCodeFileLink(link)
+        );
+
+        if (Extracts.popFrameProvider == Popups) {
+            //  Add hover event listeners to all the chosen targets.
+            allTargetsInContainer.forEach(target => {
+                target.removeContentLoadEvents = onEventAfterDelayDo(target, "mouseenter", Extracts.contentLoadHoverDelay, (event) => {
+                    //  Get the unique identifier of the content for the target.
+                    let contentIdentifier = Content.targetIdentifier(target);
+
+                    //  Do nothing if the content is already loaded.
+                    if (Content.cachedContentExists(contentIdentifier) == false)
+                        Content.loadContent(contentIdentifier);
+                }, "mouseleave");
+            });
+
+			if (allTargetsInContainer.length > 0) {
+				/*  Set up handler to remove hover event listeners from all
+					the chosen targets in the document.
+					*/
+				GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", (info) => {
+					allTargetsInContainer.forEach(target => {
+						target.removeContentLoadEvents();
+						target.removeContentLoadEvents = null;
+					});
+				}, { once: true });
+            }
+        } else { // if (Extracts.popFrameProvider == Popins)
+            //  Add click event listeners to all the chosen targets.
+            allTargetsInContainer.forEach(target => {
+                target.addEventListener("click", target.contentLoad_click = (event) => {
+                    //  Get the unique identifier of the content for the target.
+                    let contentIdentifier = Content.targetIdentifier(target);
+
+                    //  Do nothing if the content is already loaded.
+                    if (Content.cachedContentExists(contentIdentifier) == false)
+                        Content.loadContent(contentIdentifier);
+                });
+            });
+
+            /*  Set up handler to remove click event listeners from all
+                the annotated targets in the document.
+                */
+            GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", (info) => {
+                allTargetsInContainer.forEach(target => {
+                    target.removeEventListener("click", target.contentLoad_click);
+                });
+            }, { once: true });
+        }
+    },
 
     /***************************************************************************/
     /*  The target-testing and pop-frame-filling functions in this section

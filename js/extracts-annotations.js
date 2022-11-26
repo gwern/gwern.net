@@ -214,7 +214,6 @@ Extracts = { ...Extracts,
     annotationLoadHoverDelay: 25,
 
     //  Called by: extracts.js
-    //  Called by: extracts-options.js
     setUpAnnotationLoadEventWithin: (container) => {
         GWLog("Extracts.setUpAnnotationLoadEventWithin", "extracts-annotations.js", 1);
 
@@ -229,11 +228,8 @@ Extracts = { ...Extracts,
                     let annotationIdentifier = Annotations.targetIdentifier(annotatedTarget);
 
                     //  Do nothing if the annotation is already loaded.
-                    if (Annotations.cachedAnnotationExists(annotationIdentifier))
-                        return;
-
-                    //  Otherwise, load the annotation.
-                    Annotations.loadAnnotation(annotationIdentifier);
+                    if (Annotations.cachedAnnotationExists(annotationIdentifier) == false)
+                        Annotations.loadAnnotation(annotationIdentifier);
                 }, "mouseleave");
             });
 
