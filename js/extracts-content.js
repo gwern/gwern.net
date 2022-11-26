@@ -918,7 +918,8 @@ Extracts = { ...Extracts,
                                 ${styles}
                                 class="${target.classList}"
                                 src="${target.href}"
-                                loading="lazy"
+                                loading="eager"
+                                decoding="sync"
                                     >`);
     },
 

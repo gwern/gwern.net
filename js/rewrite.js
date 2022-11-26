@@ -852,6 +852,19 @@ addContentLoadHandler(GW.contentLoadHandlers.re = (loadEventInfo) => {
 /* ANNOTATIONS */
 /***************/
 
+addContentLoadHandler(GW.contentLoadHandlers.setEagerLoadingForAnnotationImages = (loadEventInfo) => {
+    GWLog("setEagerLoadingForAnnotationImages", "rewrite.js", 1);
+
+	let firstImage = (   loadEventInfo.document.querySelector(".page-thumbnail")
+					  || loadEventInfo.document.querySelector("figure img"))
+	if (firstImage) {
+		firstImage.loading = "eager";
+		firstImage.decoding = "sync";
+	}
+}, "rewrite", (info) => (   info.needsRewrite 
+						 && (   info.contentType == "annotation"
+						 	 || info.source == "Extracts.rewritePopFrameContent_LOCAL_PAGE")));
+
 addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (loadEventInfo) => {
     GWLog("rewritePartialAnnotations", "rewrite.js", 1);
 
