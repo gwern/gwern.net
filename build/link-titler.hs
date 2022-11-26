@@ -4,7 +4,7 @@
 -- link-titler.hs: add titles to bare links in a Markdown file using a database of link metadata
 -- Author: Gwern Branwen
 -- Date: 2022-04-01
--- When:  Time-stamp: "2022-11-17 18:00:08 gwern"
+-- When:  Time-stamp: "2022-11-25 20:02:42 gwern"
 -- License: CC-0
 --
 -- Read a Markdown page, parse links out, look up their titles, generate a standard gwern.net-style citation ('"Title", Author1 et al Year[a-z]'),
@@ -35,7 +35,8 @@ import System.Environment (getArgs)
 import qualified Data.Text.IO as TIO (readFile)
 import qualified Data.Text as T (append, replace, pack, unpack, Text)
 
-import LinkMetadata (authorsToCite, walkAndUpdateLinkMetadata, readLinkMetadata)
+import LinkID (authorsToCite)
+import LinkMetadata (walkAndUpdateLinkMetadata, readLinkMetadata)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Query (extractURLsAndAnchorTooltips, parseMarkdownOrHTML)
 import Utils (replaceMany, writeUpdatedFile)
