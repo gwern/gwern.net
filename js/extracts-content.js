@@ -1040,7 +1040,7 @@ Extracts = { ...Extracts,
             || Extracts.isAnnotatedLink(target))
             return false;
 
-        if (Extracts.isAuxLinksLink(target))
+        if (target.pathname.startsWith("/metadata/"))
             return false;
 
         let codeFileURLRegExp = new RegExp(
