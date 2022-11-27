@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-25 20:01:06 gwern"
+When:  Time-stamp: "2022-11-27 13:05:14 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, getSimilarLink, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, simplifiedHTMLString, tooltipToMetadata, dateTruncateBad, urlToAnnotationPath) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, getSimilarLink, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, simplifiedHTMLString, tooltipToMetadata, dateTruncateBad) where
 
 import Control.Monad (unless, void, when, foldM_)
 import Data.Aeson (eitherDecode, FromJSON)
@@ -58,7 +58,7 @@ import Typography (typographyTransform, titlecase')
 import Image (invertImage, imageSrcset, addImgDimensions)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAutoHtml5String)
-import LinkBacklink (getSimilarLink, getSimilarLinkCount, getBackLink, getBackLinkCount, getLinkBibLink)
+import LinkBacklink (getSimilarLink, getSimilarLinkCount, getBackLink, getBackLinkCount, getLinkBibLink, getAnnotationLink)
 import LinkID (authorsToCite, generateID)
 import LinkLive (linkLive)
 import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList)
@@ -303,10 +303,6 @@ warnParagraphizeYAML path = do yaml <- readYaml path
 minimumAnnotationLength :: Int
 minimumAnnotationLength = 250
 
--- convert a URL to the local path of its annotation (which may not exist), eg 'http://www2.biology.ualberta.ca/locke.hp/dougandbill.htm' → 'metadata/annotations/http%3A%2F%2Fwww2.biology.ualberta.ca%2Flocke.hp%2Fdougandbill.htm.html'
-urlToAnnotationPath :: String -> String
-urlToAnnotationPath u = "metadata/annotations/" ++ (take 247 $ urlEncode u) ++ ".html"
-
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Integer -> Bool -> IO ()
 writeAnnotationFragments am md archived writeOnlyMissing = mapM_ (\(p, mi) -> writeAnnotationFragment am md archived writeOnlyMissing p mi) $ M.toList md
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Integer -> Bool -> Path -> MetadataItem -> IO ()
@@ -315,7 +311,7 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
       if ("/index#" `isInfixOf` u && ("#section" `isInfixOf` u || "-section" `isSuffixOf` u)) ||
          anyInfix u ["/index#see-also", "/index#links", "/index#miscellaneous", "/index#manual-annotation"] then return ()
       else do let u' = linkCanonicalize u
-              let filepath' = urlToAnnotationPath u'
+              let (filepath',_) = getAnnotationLink u'
               annotationExisted <- doesFileExist filepath'
               when (not onlyMissing || (onlyMissing && not annotationExisted)) $ do
 
@@ -445,7 +441,7 @@ addHasAnnotation (title,aut,dt,_,_,abstrct) (Link (a,b,c) e (f,g))  =
       else if "link-page" `elem` b || T.head f == '/' then
              x' else -- may be a partial...
              -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
-             if not $ unsafePerformIO $ doesFileExist $ urlToAnnotationPath $ T.unpack f then x'
+             if not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f then x'
              else -- so it's not a local link, doesn't have a full annotation, doesn't have an on-demand annotation like a Wikipedia article, but does have *some* partial annotation since it exists on disk, so it gets `.link-annotated-partial`
                addClass "link-annotated" $ addClass "link-annotated-partial" x'
 addHasAnnotation _ z = z

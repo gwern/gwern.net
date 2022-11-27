@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-11-19 21:47:06 gwern"
+When:  Time-stamp: "2022-11-27 13:07:17 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -16,7 +16,7 @@ Because every used link necessarily has a backlink (the document in which it is 
 is also a convenient way to get a list of all URLs. -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkBacklink (getBackLink, getBackLinkCount, getSimilarLink, getSimilarLinkCount, Backlinks, readBacklinksDB, writeBacklinksDB, getForwardLinks, getLinkBibLink) where
+module LinkBacklink (getBackLink, getBackLinkCount, getSimilarLink, getSimilarLinkCount, Backlinks, readBacklinksDB, writeBacklinksDB, getForwardLinks, getLinkBibLink, getAnnotationLink) where
 
 import Data.List (sort)
 import qualified Data.Map.Strict as M (empty, filter, fromList, keys, toList, Map) -- fromListWith,
@@ -45,20 +45,26 @@ writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[T.Text])]
                            writeUpdatedFile "hakyll-backlinks" "metadata/backlinks.hs" (T.pack $ ppShow bll')
 
 -- return the raw FilePath of an x-link, and also the URL-encoded version safe to substitute into HTML:
-getXLink :: String -> FilePath -> IO (FilePath,FilePath)
-getXLink linkType p = do
-                   let linkType' = "/metadata/annotations/" ++ linkType
-                   let linkRaw = linkType'++"/" ++
-                                                                   urlEncode (p++".html")
-                   linkExists <- doesFileExist $ tail linkRaw
-                   -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg. `/metadata/annotations/$LINKTYPE/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotations/$LINKTYPE/%2Fdocs%2Frl%2Findex.html`)
-                   if not linkExists then return ("","") else
-                     let link' = linkType'++"/" ++ urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' || t=='+' then urlEncode [t] else [t]) (p++".html")) in
-                       return (tail linkRaw,link')
+getXLink :: String -> FilePath -> (FilePath,FilePath)
+getXLink linkType p = let linkType' = "/metadata/annotations/" ++ linkType
+                          linkRaw = linkType'++"/" ++ take 24 (urlEncode p) ++ ".html"
+                          -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg. `/metadata/annotations/$LINKTYPE/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotations/$LINKTYPE/%2Fdocs%2Frl%2Findex.html`)
+                          link' = linkType'++"/" ++ urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' || t=='+' then urlEncode [t] else [t]) (p++".html"))
+                      in (tail linkRaw,link')
+getXLinkExists :: String -> FilePath -> IO (FilePath,FilePath)
+getXLinkExists linkType p = do let x@(linkRaw,_) = getXLink linkType p
+                               linkExists <- doesFileExist linkRaw
+                               if not linkExists then return ("","")
+                                 else return x
+
+-- convert a URL to the local path of its annotation (which may not exist because it hasn't been written yet so no need to do IO to check disk), eg 'http://www2.biology.ualberta.ca/locke.hp/dougandbill.htm' → 'metadata/annotations/http%3A%2F%2Fwww2.biology.ualberta.ca%2Flocke.hp%2Fdougandbill.htm.html'
+getAnnotationLink :: FilePath -> (FilePath,FilePath)
+getAnnotationLink = getXLink ""
+-- likewise, but this time require that the backlink/similar-link/link-biblink exist (requires IO):
 getBackLink, getSimilarLink, getLinkBibLink :: FilePath -> IO (FilePath,FilePath)
-getBackLink    = getXLink "backlinks"
-getSimilarLink = getXLink "similars"
-getLinkBibLink = getXLink "link-bibliography"
+getBackLink    = getXLinkExists "backlinks"
+getSimilarLink = getXLinkExists "similars"
+getLinkBibLink = getXLinkExists "link-bibliography"
 
 -- avoid use of backlinks/similar-links database for convenience and just quickly grep the on-disk snippet:
 getBackLinkCount :: FilePath -> IO Int

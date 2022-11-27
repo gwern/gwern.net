@@ -30,8 +30,8 @@ import Control.Monad.Parallel as Par (mapM_)
 import Text.Pandoc (Inline(Code, Link, Str, Space, Span, Strong), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha), Block(Para, OrderedList), Pandoc(..), writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
-import LinkBacklink (getBackLink, getSimilarLink)
-import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, authorsTruncate, hasAnnotation, urlToAnnotationPath)
+import LinkBacklink (getBackLink, getSimilarLink, getLinkBibLink)
+import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, authorsTruncate, hasAnnotation)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Query (extractURLs, extractLinks)
 import Typography (typographyTransform)
@@ -43,7 +43,6 @@ main = do
           md <- readLinkMetadata
           -- build HTML fragments for each page or annotation link, containing just the list and no header/full-page wrapper, so they are nice to transclude *into* popups:
           Par.mapM_ (writeLinkBibliographyFragment md) $ M.keys md
-
 
 -- don't waste the user's time if the annotation is not heavily linked, as most are not, or if all the links are WP links:
 mininumLinkBibliographyFragment :: Int
@@ -77,7 +76,8 @@ writeLinkBibliographyFragment md path =
              case html of
                Left e   -> printRed (show e)
                -- compare with the old version, and update if there are any differences:
-               Right p' -> writeUpdatedFile "link-bibliography-fragment" (replace "metadata/annotations/" "metadata/annotations/link-bibliography/" (urlToAnnotationPath path)) p'
+               Right p' -> do (path',_) <- getLinkBibLink path
+                              writeUpdatedFile "link-bibliography-fragment" path' p'
 
 generateLinkBibliographyItems :: [(String,MetadataItem,FilePath,FilePath)] -> Block
 generateLinkBibliographyItems [] = Para []
