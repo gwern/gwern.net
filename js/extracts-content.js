@@ -267,13 +267,13 @@ Extracts = { ...Extracts,
 				/*	If the transcluded content makes up the entirety of the 
 					pop-frame’s content, refresh the pop-frame after the load.
 				 */
-				if (   info.document.parentElement == popFrame.body
-					&& info.document.parentElement.children.length == 2)
+				if (   info.container.parentElement == popFrame.body
+					&& info.container.parentElement.children.length == 2)
 					Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);				
 			}, { 
 				once: true,
 				condition: (info) => (   info.source == "transclude" 
-									  && info.document.getRootNode() == popFrame.document)
+									  && info.document == popFrame.document)
 			});
 		}
 
@@ -324,6 +324,7 @@ Extracts = { ...Extracts,
         let targetLocation = new URL(target.href);
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
+            container: popFrame.body,
             document: popFrame.document,
             loadLocation: targetLocation,
             baseLocation: targetLocation,
@@ -397,7 +398,8 @@ Extracts = { ...Extracts,
 			let targetLocation = new URL(target.href);
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.loadAdjacentSections",
-				document: popFrame.body.firstElementChild,
+				container: popFrame.body.firstElementChild,
+				document: popFrame.document,
 				loadLocation: targetLocation,
 				baseLocation: targetLocation,
 				flags: 0
@@ -412,7 +414,8 @@ Extracts = { ...Extracts,
 			let targetLocation = new URL(target.href);
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.loadAdjacentSections",
-				document: popFrame.body.firstElementChild,
+				container: popFrame.body.firstElementChild,
+				document: popFrame.document,
 				loadLocation: targetLocation,
 				baseLocation: targetLocation,
 				flags: 0
@@ -429,7 +432,8 @@ Extracts = { ...Extracts,
 			let targetLocation = new URL(target.href);
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.loadAdjacentSections",
-				document: popFrame.body.lastElementChild,
+				container: popFrame.body.lastElementChild,
+				document: popFrame.document,
 				loadLocation: targetLocation,
 				baseLocation: targetLocation,
 				flags: 0
@@ -527,6 +531,7 @@ Extracts = { ...Extracts,
         let targetLocation = new URL(target.href);
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK",
+            container: popFrame.body,
             document: popFrame.document,
             loadLocation: targetLocation,
             baseLocation: targetLocation,
@@ -651,6 +656,7 @@ Extracts = { ...Extracts,
         let targetLocation = new URL(target.href);
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_CITATION",
+            container: popFrame.body,
             document: popFrame.document,
             loadLocation: targetLocation,
             baseLocation: targetLocation,
@@ -731,6 +737,7 @@ Extracts = { ...Extracts,
         let targetLocation = new URL(target.href);
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopupContent_CITATION_BACK_LINK",
+            container: popup.body,
             document: popup.document,
             loadLocation: targetLocation,
             baseLocation: targetLocation,

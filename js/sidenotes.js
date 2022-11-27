@@ -508,7 +508,7 @@ Sidenotes = { ...Sidenotes,
 			in the page load process.
 			*/
 		let markdownBody = document.querySelector("#markdownBody");
-		if (!markdownBody)
+		if (markdownBody == null)
 			return;
 
 		//	Destroy before creating.
@@ -616,26 +616,20 @@ Sidenotes = { ...Sidenotes,
 
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
 
-		/*	If re-constructing (i.e., if this function is being called after the
-			initial page load), fire events.
-		 */
-		if (loadEventInfo.isMainDocument != true) {
-			let mainPageLocation = urlSansHash(location);
-
-			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-				source: "Sidenotes.constructSidenotes",
-				document: Sidenotes.hiddenSidenoteStorage,
-				loadLocation: mainPageLocation,
-				baseLocation: mainPageLocation,
-				flags: 0
-			});
-
-			GW.notificationCenter.fireEvent("GW.contentDidInject", {
-				source: "Sidenotes.constructSidenotes",
-				document: Sidenotes.hiddenSidenoteStorage,
-				mainPageContent: true
-			});
-		}
+		//	Fire events.
+		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			source: "Sidenotes.constructSidenotes",
+			container: Sidenotes.hiddenSidenoteStorage,
+			document: document,
+			loadLocation: loadEventInfo.loadLocation,
+			baseLocation: urlSansHash(location),
+			flags: 0
+		});
+		GW.notificationCenter.fireEvent("GW.contentDidInject", {
+			source: "Sidenotes.constructSidenotes",
+			container: Sidenotes.hiddenSidenoteStorage,
+			document: document
+		});
 	},
 
 	cleanup: () => {
@@ -706,12 +700,12 @@ Sidenotes = { ...Sidenotes,
 		}, { 
 			phase: "rewrite",
 			condition: (info) => (   info.needsRewrite 
-								  && info.isMainDocument),
+								  && info.container == document.body),
 			once: true
 		});
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-			info.document.querySelectorAll(".marginnote").forEach(marginNote => {
-				marginNote.swapClasses([ "inline", "sidenote" ], ((Sidenotes.mediaQueries.viewportWidthBreakpoint.matches || info.mainPageContent != true) ? 0 : 1));
+			info.container.querySelectorAll(".marginnote").forEach(marginNote => {
+				marginNote.swapClasses([ "inline", "sidenote" ], ((Sidenotes.mediaQueries.viewportWidthBreakpoint.matches || info.document != document) ? 0 : 1));
 			});
 		});
 
@@ -747,7 +741,7 @@ Sidenotes = { ...Sidenotes,
 			}, { 
 				phase: "rewrite",
 				condition: (info) => (   info.needsRewrite 
-									  && info.baseLocation.pathname == location.pathname) 
+									  && info.document == document) 
 			});
 		}, { once: true });
 
@@ -853,7 +847,7 @@ Sidenotes = { ...Sidenotes,
 					citations are injected (e.g., in a popup).
 				 */
 				GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents = (info) => {
-					info.document.querySelectorAll("a.footnote-ref").forEach(citation => {
+					info.container.querySelectorAll("a.footnote-ref").forEach(citation => {
 						if (citation.pathname != location.pathname)
 							return;
 
@@ -863,7 +857,7 @@ Sidenotes = { ...Sidenotes,
 							Sidenotes.slideSidenoteIntoView(sidenote, false);
 						});
 					});
-				}, { condition: (info) => (info.mainPageContent == false) });
+				}, { condition: (info) => (info.document != document) });
 
 				/*	Add a scroll listener to un-slide all sidenotes on scroll.
 				 */
@@ -898,7 +892,7 @@ Sidenotes = { ...Sidenotes,
 
 			Sidenotes.constructSidenotes(info);
 		}, { 
-			condition: (info) => (   info.mainPageContent == true
+			condition: (info) => (   info.document == document
 								  && info.source != "Sidenotes.constructSidenotes")
 		});
 

@@ -40,7 +40,7 @@ Extracts = { ...Extracts,
 		/*  Since the main document has already loaded, we must trigger the
 			processing of targets manually.
 		 */
-		Extracts.processTargetsInDocument();
+		Extracts.processTargetsInContainer(document.body);
 
 		//  Remove the icon/button.
 // 		Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
@@ -92,7 +92,7 @@ Extracts = { ...Extracts,
 		/*  Since the main document has already loaded, we must trigger the
 			processing of targets manually.
 		 */
-		Extracts.processTargetsInDocument();
+		Extracts.processTargetsInContainer(document.body);
 
 		//  Remove the icon/button.
 		Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
