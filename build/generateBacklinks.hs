@@ -5,7 +5,7 @@ module Main where
 
 import Text.Pandoc (nullMeta,
                      runPure, writeHtml5String,
-                     Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,RawInline, Strong, Str), Format(..), nullAttr)
+                     Pandoc(Pandoc), Block(BlockQuote, BulletList, Para), Inline(Link, RawInline, Strong, Str), Format(..), nullAttr)
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack, tail, takeWhile, Text)
 import qualified Data.Text.IO as TIO (readFile)
@@ -23,7 +23,7 @@ import LinkAuto (linkAutoFiltered)
 import LinkID (generateID)
 import LinkMetadata (hasAnnotation, isPagePath, readLinkMetadata, parseRawInline)
 import LinkMetadataTypes (Metadata, MetadataItem)
-import LinkBacklink (readBacklinksDB, writeBacklinksDB,)
+import LinkBacklink (readBacklinksDB, writeBacklinksDB, getAnnotationLink)
 import Query (extractLinksWith)
 import Typography (typographyTransform)
 import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed, replace, safeHtmlWriterOptions)
@@ -50,8 +50,7 @@ main' = do
 
   -- if all are valid, write out:
   _ <- M.traverseWithKey (writeOutCallers md) bldb
-  fs <- fmap (filter (\f -> not $ (anyPrefix f ["/backlinks/","#",".#"])) .  map (sed "^\\.\\/" "") . lines) $
-         getContents
+  fs <- fmap (filter (\f -> not (anyPrefix f ["/backlinks/","#",".#"])) .  map (sed "^\\.\\/" "") . lines) getContents
 
   let markdown = filter (".page" `isSuffixOf`) fs
   links1 <- Par.mapM (parseFileForLinks True) markdown
@@ -86,19 +85,26 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                                       Just (t,_,dt,_,_,_) -> (dt,T.pack t,u))
                                                           callers
                                        -- sort backlinks in descending order (most-recent first) as a simple way to prioritize:
-                                       let callerTitles = map (\(_,b,c) -> (b,c)) $ reverse $ sort callerDatesTitles
-                                       let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-page"] else ["link-annotated"]) $ map snd callerTitles
+                                       let callerTitles  = map (\(_,b,c) -> (b,c)) $ reverse $ sort callerDatesTitles
+                                       let callerClasses = map (\(_,u) -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-page"] else ["link-annotated"]) callerTitles
                                        let callers' = zipWith (\a (b,c) -> (c,a,b)) callerClasses callerTitles
 
                                        let preface = [Para [Strong [Str (if length callers' > 1 then "Backlinks" else "Backlink")], Str ":"]]
-                                       let content = BulletList $ -- critical to insert .backlink-not or we might get weird recursive blowup!
+                                       let content = BulletList $ -- WARNING: critical to insert '.backlink-not' or we might get weird recursive blowup!
                                             map (\(u,c,t) -> [Para [Link ("", "id-not":"backlink-not":c, [])
-                                                                  [parseRawInline nullAttr $ RawInline (Format "html") t]
-                                                                  (if isPagePath u then u`T.append`selfIdent else u, "")]
-                                                   ]
+                                                                    [parseRawInline nullAttr $ RawInline (Format "html") t]
+                                                                    (if isPagePath u then u`T.append`selfIdent else u, ""),
+                                                                    Str ":"],
+                                                               -- use transclusion to default to display inline the context of the reverse citation, akin to how it would display if the reader popped the link up as a live cross-page transclusion, but without needing to hover over each one:
+                                                               BlockQuote [Para [Link ("",["id-not", "backlink-not", "include-spinner-not", "include-replace-container", "include-block-context"],[]) -- TODO: need '.include-strict' for better reader experience?
+                                                                                      [Str "[quote-transclude backlink context]"]
+                                                                                      ((if isPagePath u then u else T.pack (snd $ getAnnotationLink $ T.unpack u)) `T.append` selfIdent, "")
+                                                                                ]
+                                                                          ]
+                                                             ]
                                                 ) callers'
 
-                                       -- auto-links are a good source of backlinks, catching cases where an abstract mentions something but I haven't actually hand-annotated the link yet (which would make it show up as a normal backlink). But auto-linking is extremely slow, and we don't care about the WP links which make up the bulk of auto-links. So we can do just the subset of non-WP autolinks.
+                                       -- NOTE: auto-links are a good source of backlinks, catching cases where an abstract mentions something but I haven't actually hand-annotated the link yet (which would make it show up as a normal backlink). But auto-linking is extremely slow, and we don't care about the WP links which make up the bulk of auto-links. So we can do just the subset of non-WP auto-links.
                                        let pandoc = linkAutoFiltered (filter (\(_,url) -> not ("wikipedia.org/"`T.isInfixOf`url))) $
                                                     walk typographyTransform $ walk (hasAnnotation md) $ Pandoc nullMeta $ preface++[content]
                                        let html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
@@ -106,7 +112,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                               Left e -> error $ show target ++ show callers ++ show e
                                                               Right output -> output
 
-                                       let backLinksHtmlFragment = if (C.listLength content > 60 || length callers' < 4) then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
+                                       let backLinksHtmlFragment = if C.listLength content > 60 || length callers' < 4 then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
 
                                        writeUpdatedFile "backlink" f backLinksHtmlFragment
 
@@ -148,5 +154,5 @@ blackList f
   | anyPrefixT f ["/images", "/docs/www/", "/newsletter/", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem",
                    -- WARNING: do not filter out 'metadata/annotations' because that leads to empty databases & infinite loops
                    "/static/404", "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = False
-  | anySuffixT f ["/index"] = False
+  | anySuffixT f ["/index", "/index-long"] = False
   | otherwise = True
