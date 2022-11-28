@@ -1022,6 +1022,11 @@ blockquote {
     clear: both;
 }
 
+#markdownBody blockquote {
+	clear: none;
+	overflow: auto;
+}
+
 blockquote blockquote {
     margin: 1em 1px;
 }
@@ -2757,14 +2762,17 @@ body.index #markdownBody section > h1:first-child a::after {
     }
 }
 
+/*=-------------=*/
+/*= /index-long =*/
+/*=-------------=*/
+
+body.index-long section > .include-wrapper-block + .include-wrapper-block {
+	margin-top: 2.5em;
+}
+
 /*=----------------=*/
 /*= /reviews/Books =*/
 /*=----------------=*/
-
-body.reviews-books #markdownBody blockquote {
-    clear: none;
-    overflow: auto;
-}
 
 body.reviews-books #markdownBody .book-review-meta {
     margin: -0.5em 0 1.5em 0;
@@ -2836,15 +2844,6 @@ body.dnmarrests .table-wrapper#data-table td:last-of-type {
 
 body.lorem div[class^='drop-cap'] {
     margin: 1em 0 0 0;
-}
-
-/*=--------=*/
-/*= /otaku =*/
-/*=--------=*/
-
-body.otaku blockquote {
-    overflow: hidden;
-    clear: none;
 }
 
 /****************************/

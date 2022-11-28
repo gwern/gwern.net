@@ -193,7 +193,7 @@ function wrapElement(element, wrapClass, wrapTagName = "DIV", useExistingWrapper
 /*****************************************************/
 /*  Wrap all elements specified by the given selector.
  */
-function wrapAll(selector, wrapClassOrFunction, wrapTagName = "DIV", root = document, useExistingWrappers = false, moveClasses = false) {
+function wrapAll(selector, wrapClassOrFunction, wrapTagName = "DIV", container = document.body, useExistingWrappers = false, moveClasses = false) {
     let wrapperFunction;
     if (typeof wrapClassOrFunction == "string") {
         wrapperFunction = (element) => {
@@ -203,7 +203,7 @@ function wrapAll(selector, wrapClassOrFunction, wrapTagName = "DIV", root = docu
         wrapperFunction = wrapClassOrFunction;
     }
 
-    root.querySelectorAll(selector).forEach(wrapperFunction);
+    container.querySelectorAll(selector).forEach(wrapperFunction);
 }
 
 /****************************************/

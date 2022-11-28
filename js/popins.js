@@ -303,7 +303,7 @@ Popins = {
 		popin.contentView.attachShadow({ mode: "open" });
 		popin.document = popin.contentView.shadowRoot;
 		popin.document.appendChild(document.createElement("DIV"));
-		popin.body = popin.shadowBody = popin.document.firstElementChild;
+		popin.document.body = popin.body = popin.shadowBody = popin.document.firstElementChild;
 		popin.body.classList.add("popframe-body", "popin-body", "shadow-body");
 
 		let styleReset = document.createElement("STYLE");
@@ -373,8 +373,8 @@ Popins = {
 			//	Fire event.
 			GW.notificationCenter.fireEvent("GW.contentDidInject", {
 				source: "Popins.injectPopinForTarget",
-				document: target.popin.document,
-				mainPageContent: false
+				container: target.popin.body,
+				document: target.popin.document
 			});
 		}
 

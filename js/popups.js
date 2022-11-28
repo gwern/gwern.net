@@ -275,7 +275,7 @@ Popups = {
 		popup.contentView.attachShadow({ mode: "open" });
 		popup.document = popup.contentView.shadowRoot;
 		popup.document.appendChild(document.createElement("DIV"));
-		popup.body = popup.shadowBody = popup.document.firstElementChild;
+		popup.document.body = popup.body = popup.shadowBody = popup.document.firstElementChild;
 		popup.body.classList.add("popframe-body", "popup-body", "shadow-body");
 
 		let styleReset = document.createElement("STYLE");
@@ -385,8 +385,8 @@ Popups = {
 		//	Fire event.
 		GW.notificationCenter.fireEvent("GW.contentDidInject", {
 			source: "Popups.injectPopup",
-			document: popup.document,
-			mainPageContent: false
+			container: popup.body,
+			document: popup.document
 		});
 
 		//  Bring popup to front.

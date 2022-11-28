@@ -197,7 +197,7 @@ Extracts = {
         GW.notificationCenter.fireEvent("Extracts.cleanupDidComplete");
     },
 
-    //  Called by: Extracts.processTargetsInDocument
+    //  Called by: Extracts.processTargetsInContainer
     //  Called by: extracts-options.js
     addTargetsWithin: (container) => {
         GWLog("Extracts.addTargetsWithin", "extracts.js", 1);
@@ -270,13 +270,14 @@ Extracts = {
         GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad = (info) => {
             GWLog("Extracts.processTargetsOnContentLoad", "extracts.js", 2);
 
-            Extracts.processTargetsInDocument(info.document, info.needsRewrite);
+            Extracts.processTargetsInContainer(info.container, info.needsRewrite);
 
 			//	Fire targets-processed event.
 			GW.notificationCenter.fireEvent("Extracts.targetsDidProcessOnContentLoad", {
 				source: "Extracts.processTargetsOnContentLoad",
 				loadLocation: info.loadLocation,
 				baseLocation: info.baseLocation,
+				container: info.container,
 				document: info.document,
 				flags: info.flags
 			});
@@ -287,16 +288,16 @@ Extracts = {
     },
 
     //  Called by: Extracts.setup
-    processTargetsInDocument: (doc = Extracts.rootDocument, addHooks = true) => {
-        GWLog("Extracts.processTargetsInDocument", "extracts.js", 2);
+    processTargetsInContainer: (container, addHooks = true) => {
+        GWLog("Extracts.processTargetsInContainer", "extracts.js", 2);
 
-		if (   doc instanceof DocumentFragment
-			|| (   doc instanceof Element 
-			    && doc.closest(Extracts.contentContainersSelector))) {
-			Extracts.addTargetsWithin(doc);
+		if (   container instanceof DocumentFragment
+			|| (   container instanceof Element 
+			    && container.closest(Extracts.contentContainersSelector))) {
+			Extracts.addTargetsWithin(container);
 		} else {
-            doc.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-                Extracts.addTargetsWithin(container);
+            container.querySelectorAll(Extracts.contentContainersSelector).forEach(contentContainer => {
+                Extracts.addTargetsWithin(contentContainer);
             });
         }
 
@@ -304,7 +305,7 @@ Extracts = {
 			(See links.css for how these are used.)
 		 */
 		if (addHooks) {
-			doc.querySelectorAll(".has-content").forEach(link => {
+			container.querySelectorAll(".has-content").forEach(link => {
 				link.insertAdjacentHTML("afterbegin", `<span class='indicator-hook'></span>`);
 
 				/*	Inject U+2060 WORD JOINER at start of first text node of the

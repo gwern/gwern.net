@@ -27,7 +27,6 @@ if (typeof window.GW == "undefined")
             source: "DOMContentLoaded"
             document:
                 The global document object (window.document).
-            mainPageContent: true
         }
         Fired when the browser DOMContentLoaded event fires. “Injected” content
         is the full page itself.
@@ -1095,19 +1094,19 @@ window.addEventListener("DOMContentLoaded", () => {
     GW.DOMContentLoaded = true;
     GW.notificationCenter.fireEvent("GW.contentDidLoad", {
         source: "DOMContentLoaded",
+        container: document.body,
         document: document,
         loadLocation: new URL(location.href),
         baseLocation: new URL(location.href),
-        flags: (  GW.contentDidLoadEventFlags.isMainDocument
-                | GW.contentDidLoadEventFlags.needsRewrite
+        flags: (  GW.contentDidLoadEventFlags.needsRewrite
                 | GW.contentDidLoadEventFlags.clickable
                 | GW.contentDidLoadEventFlags.collapseAllowed
                 | GW.contentDidLoadEventFlags.fullWidthPossible)
     });
     GW.notificationCenter.fireEvent("GW.contentDidInject", {
         source: "DOMContentLoaded",
-        document: document,
-        mainPageContent: true
+        container: document,
+        document: document
     });
 });
 window.addEventListener("load", () => {

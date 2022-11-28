@@ -231,10 +231,9 @@ Content = {
 				<pre>-wrapped <code> element.
 			 */
 			sourceURLsForIdentifier: (identifier) => {
-				let url = new URL(  "https://"
-								  + location.hostname
-								  + identifier);
-				url.hash = "";
+				let url = urlSansHash(  "https://"
+									  + location.hostname
+									  + identifier);
 
 				return [ new URL(url.href + ".html"), url ];
 			},
@@ -286,10 +285,9 @@ Content = {
 			},
 
 			sourceURLsForIdentifier: (identifier) => {
-				let url = new URL(  "https://"
-								  + location.hostname
-								  + identifier);
-				url.hash = "";
+				let url = urlSansHash(  "https://"
+									  + location.hostname
+									  + identifier);
 
 				return [ url ];
 			},
@@ -339,6 +337,7 @@ Content = {
 					//  Fire contentDidLoad event, if need be.
 					GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 						source: "Content.referenceDataFromPage",
+						container: page,
 						document: page,
 						loadLocation: loadURL,
 						baseLocation: loadURL,
