@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-11-17 17:59:44 gwern"
+When: Time-stamp: "2022-11-28 15:25:14 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -208,6 +208,7 @@ postCtx md =
     defaultContext <>
     boolField "backlinksYes" backlinkCheck <>
     boolField "similarsYes" similarCheck <>
+    boolField "linkbibYes" linkbibCheck <>
     dateField "created" "%F" <>
     -- if no manually set last-modified time, fall back to checking file modification time:
     dateField "modified" "%F" <>
@@ -260,6 +261,8 @@ backlinkCheck :: Item a -> Bool
 backlinkCheck i = let p = toFilePath (itemIdentifier i) in unsafePerformIO (doesFileExist (("metadata/annotations/backlinks/" ++ replace "/" "%2F" (replace ".page" "" ("/"++p))) ++ ".html")) && not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
 similarCheck :: Item a -> Bool
 similarCheck i = let p = toFilePath (itemIdentifier i) in unsafePerformIO (doesFileExist (("metadata/annotations/similars/" ++ replace "/" "%2F" (replace ".page" "" ("/"++p))) ++ ".html")) && not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
+linkbibCheck :: Item a -> Bool
+linkbibCheck i = let p = toFilePath (itemIdentifier i) in unsafePerformIO (doesFileExist (("metadata/annotations/link-bibliography/" ++ replace "/" "%2F" (replace ".page" "" ("/"++p))) ++ ".html"))
 
 imageDimensionWidth :: String -> Context String
 imageDimensionWidth d = field d $ \item -> do
