@@ -31,7 +31,7 @@ import LinkID (generateID, authorsToCite)
 import LinkMetadata (readLinkMetadata, generateAnnotationTransclusionBlock, authorsTruncate, parseRawBlock, hasAnnotation, dateTruncateBad, parseRawInline)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Tags (tagsToLinksSpan, listTagDirectories, abbreviateTag)
-import LinkBacklink (getBackLinkCheck, getSimilarLinkCheck, getLinkBibLink)
+import LinkBacklink (getBackLinkCheck, getSimilarLinkCheck, getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy)
 import Utils (replace, writeUpdatedFile, printRed)
@@ -196,9 +196,9 @@ listFiles m direntries' = do
                    let files'          = (sort . filter (not . ("index"`isSuffixOf`)) . map (replace ".page" "") . filter ('#' `notElem`) . filter (not . isSuffixOf ".tar") ) files
                    let fileAnnotationsMi = map (lookupFallback m) files'
                    -- NOTE: files may be annotated only under a hash, eg. '/docs/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/docs/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/docs/ai/scaling/hardware/2021-norrie.pdf' → `('/docs/ai/scaling/hardware/2021-norrie.pdf#google',_)`
-                   backlinks    <- mapM (fmap snd . getBackLinkCheck . fst) fileAnnotationsMi
+                   backlinks    <- mapM (fmap snd . getBackLinkCheck . fst)    fileAnnotationsMi
                    similarlinks <- mapM (fmap snd . getSimilarLinkCheck . fst) fileAnnotationsMi
-                   let linkbiblios  = map (snd . getLinkBibLink . fst) fileAnnotationsMi
+                   linkbiblios  <- mapM (fmap snd . getLinkBibLinkCheck . fst) fileAnnotationsMi
 
                    return $ zipWith4 (\(a,b) c d e -> (a,b,c,d,e)) fileAnnotationsMi backlinks similarlinks linkbiblios
 
@@ -211,9 +211,9 @@ listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else
                    let dirTag = replace "docs/" "" dir in
                      let tagged = M.filterWithKey (\u (_,_,_,_,tgs,_) -> not (dir `isInfixOf` u) && dirTag `elem` tgs) m in
                        do let files = nub $ map truncateAnchors $ M.keys tagged
-                          backlinks    <- mapM (fmap snd . getBackLinkCheck) files
+                          backlinks    <- mapM (fmap snd . getBackLinkCheck)    files
                           similarlinks <- mapM (fmap snd . getSimilarLinkCheck) files
-                          let linkbiblios  = map (snd . getLinkBibLink) files
+                          linkbiblios  <- mapM (fmap snd . getLinkBibLinkCheck) files
                           let fileAnnotationsMi = map (lookupFallback m) files
                           return $ zipWith4 (\(a,b) c d e -> (a,b,c,d,e)) fileAnnotationsMi backlinks similarlinks linkbiblios
   where

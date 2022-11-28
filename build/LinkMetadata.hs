@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-28 11:41:26 gwern"
+When:  Time-stamp: "2022-11-28 21:09:31 gwern"
 License: CC-0
 -}
 
@@ -58,7 +58,7 @@ import Typography (typographyTransform, titlecase')
 import Image (invertImage, imageSrcset, addImgDimensions)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAutoHtml5String)
-import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLink, getAnnotationLink)
+import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
 import LinkID (authorsToCite, generateID)
 import LinkLive (linkLive)
 import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList)
@@ -315,11 +315,11 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
               annotationExisted <- doesFileExist filepath'
               when (not onlyMissing || (onlyMissing && not annotationExisted)) $ do
 
-                  (_,bl)  <- getBackLinkCheck u'
-                  blN     <- getBackLinkCount u'
-                  (_,sl)  <- getSimilarLinkCheck u'
-                  slN     <- getSimilarLinkCount u'
-                  let (_,lb) = getLinkBibLink u'
+                  (_,bl) <- getBackLinkCheck u'
+                  blN    <- getBackLinkCount u'
+                  (_,sl) <- getSimilarLinkCheck u'
+                  slN    <- getSimilarLinkCount u'
+                  (_,lb) <- getLinkBibLinkCheck u'
                   -- we prefer annotations which have a fully-written abstract, but we will settle for 'partial' annotations,
                   -- which serve as a sort of souped-up tooltip: partials don't get the dotted-underline indicating a full annotation, but it will still pop-up on hover.
                   -- Now, tooltips already handle title/author/date, so we only need partials in the case of things with tags, abstracts, backlinks, or similar-links, which cannot be handled by tooltips (since HTML tooltips only let you pop up some raw unstyled Unicode text, not clickable links).
