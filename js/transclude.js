@@ -483,6 +483,15 @@ function includeContent(includeLink, content) {
     if (newContentFootnotesSection)
         newContentFootnotesSection.remove();
 
+	/*	If need be, get the footnotes section from the document that the new
+		content came from.
+	 */
+    if (newContentFootnotesSection == null) {
+    	let newContentSourceDocument = Transclude.cachedDocumentForLink(includeLink);
+    	if (newContentSourceDocument)
+    		newContentFootnotesSection = newContentSourceDocument.querySelector("#footnotes");
+    }
+
     //  Update footnotes, if need be.
     let newFootnotesWrapper = Transclude.isAnnotationTransclude(includeLink)
                               ? null
@@ -660,12 +669,9 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
         || newContentFootnotesSection == null)
         return null;
 
-    let newContentDocument = newContent.getRootNode();
-    let footnotesSection = newContentDocument.querySelector(".markdownBody > #footnotes");
+    let containingDocument = newContent.getRootNode();
+    let footnotesSection = containingDocument.querySelector(".markdownBody > #footnotes");
     if (!footnotesSection) {
-		//  Document into which the transclusion is being done.
-		let containingDocument = includeLink.getRootNode();
-
         //  Construct footnotes section.
         footnotesSection = newElement("SECTION", { "id": "footnotes", "class": "footnotes", "role": "doc-endnotes" });
         footnotesSection.append(newElement("HR"));
@@ -676,7 +682,7 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
         footnotesSectionWrapper.append(footnotesSection);
 
         //  Inject.
-        let markdownBody = (newContentDocument.querySelector("#markdownBody") ?? newContentDocument.querySelector(".markdownBody"));
+        let markdownBody = (containingDocument.querySelector("#markdownBody") ?? containingDocument.querySelector(".markdownBody"));
         markdownBody.append(footnotesSectionWrapper);
 
         //  Fire event to trigger rewrite pass.
@@ -746,6 +752,7 @@ Transclude = {
         "include-strict",
         "include-when-collapsed",
         "include-unwrap",
+        "include-block-context",
         "include-replace-container",
         "include-identify-not",
         "include-spinner-not"
