@@ -2281,7 +2281,7 @@ p {
     text-indent: 0; /* override the `p + p { text-indent: 2.5em; }` */
     display: inline-flex;
     flex-flow: column;
-    align-items: flex-end;
+    align-items: flex-start;
     vertical-align: text-bottom;
     position: relative;
     bottom: -0.1em;
@@ -2296,6 +2296,9 @@ p {
     */
 span.inflation-adjusted {
     white-space: nowrap;
+}
+span.inflation-adjusted .subsup {
+    align-items: flex-end;
 }
 
 span.link-tags a,
