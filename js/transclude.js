@@ -143,6 +143,24 @@
         (This option has no effect unless the include-link’s URL hash specifies
          a single element ID to transclude.)
 
+	include-block-context
+		Normally, when an include-link’s URL specifies an element ID to 
+		transclude, only (at most; see `include-unwrap`) that element is 
+		transcluded. When the `include-block-context` option is used, not only
+		the identified element itself, but also its containing block element
+		(and everything within) will be included. (What “block element” means
+		in this context is not the same as what the HTML spec means by the 
+		term. Determination of what counts as a block element is done in a 
+		content-aware way.)
+
+		If `include-unwrap` is used as well as `include-block-context`, then the
+		identified element’s containing block will be unwrapped, and the
+		included content will be all the child nodes of the identified element’s
+		containing block.
+
+        (This option has no effect unless the include-link’s URL hash specifies
+         a single element ID to transclude.)
+
     include-replace-container
         Normally, when transclusion occurs, the transcluded content replaces the
         include-link in the page, leaving any surrounding elements untouched.
@@ -449,12 +467,10 @@ function includeContent(includeLink, content) {
     //  Wrap (unwrapping first, if need be).
     let wrapper = newElement("SPAN", { "class": "include-wrapper" });
     if (   includeLink.classList.contains("include-unwrap")
-        && includeLink.hash > "") {
-        let section = content.querySelector(selectorFromHash(includeLink.hash));
-        if (section) {
-            wrapper.id = section.id;
-            wrapper.append(...(section.childNodes));
-        }
+        && includeLink.hash > ""
+        && content.childElementCount == 1) {
+		wrapper.id = content.firstElementChild.id;
+		wrapper.append(...content.firstElementChild.childNodes);
     } else {
         wrapper.append(content);
     }
@@ -899,7 +915,22 @@ Transclude = {
         let anchors = includeLink.hash.match(/#[^#]*/g) ?? [ ];
         if (anchors.length == 1) {
             //  Simple element tranclude.
-			content = newDocument(content.querySelector(selectorFromHash(includeLink.hash)));
+            let targetElement = content.querySelector(selectorFromHash(includeLink.hash));
+            if (targetElement == null) {
+            	content = newDocument();
+            } else {
+				//	Optional block context.
+				if (includeLink.classList.contains("include-block-context")) {
+					let nearestBlock = nearestBlockElement(targetElement);
+					if (nearestBlock) {
+						content = newDocument(nearestBlock);
+					} else {
+						content = newDocument(targetElement);
+					}
+				} else {
+					content = newDocument(targetElement);
+				}
+            }
         } else if (anchors.length == 2) {
             //  PmWiki-like transclude range syntax.
 

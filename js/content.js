@@ -378,7 +378,7 @@ Content = {
 							  ? targetElementInDocument(url, pageContent)
 							  : null;
 				let block = element
-							? Content.contentTypes.localPage.nearestBlockElement(element)
+							? nearestBlockElement(element)
 							: null;
 
 				//	Pop-frame title text.
@@ -419,20 +419,7 @@ Content = {
 			},
 
 			pageTitleRegexp: /^(.+?) · Gwern\.net$/,
-			defaultPageThumbnailPathnamePrefix: "/static/img/logo/logo-",
-
-			nearestBlockElement: (element) => {
-				let blockElementSelector = [
-					"section",
-					".footnote",
-					".sidenote",
-					".aux-links-append",
-					".markdownBody > *",
-					".include-wrapper-block"
-				].join(", ");
-				return (   element.closest(blockElementSelector)
-						|| element.closest("p"))
-			}
+			defaultPageThumbnailPathnamePrefix: "/static/img/logo/logo-"
 		}
 	}
 };

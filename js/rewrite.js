@@ -147,6 +147,32 @@
 /* HELPERS */
 /***********/
 
+GW.defaultBlockElementSelectors = [
+	[	"section",
+		".footnote",
+		".sidenote",
+		".aux-links-append",
+		".markdownBody > *",
+		".include-wrapper-block"
+	].join(", "),
+	"p"
+];
+
+/********************************************************************/
+/*	Return the nearest block element that contains the given element.
+ */
+function nearestBlockElement(element, blockElementSelectors = GW.defaultBlockElementSelectors) {
+	if (typeof blockElementSelectors == "string")
+		blockElementSelectors = [ blockElementSelectors ];
+
+	let block = null;
+	for (selector of blockElementSelectors)
+		if (block = element.closest(selector))
+			break;
+
+	return block;
+}
+
 /****************************************************************************/
 /*	Return the element, in the target document, pointed to by the hash of the
 	given link (which may be a URL object or an <a> Element).

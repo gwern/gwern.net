@@ -1271,6 +1271,10 @@ Popups = {
 
 		//  Wait for the “naive” layout to be completed, and then...
 		requestAnimationFrame(() => {
+			//	Clear popup position.
+			popup.style.left = "";
+			popup.style.top = "";
+
 			/*  This is the width and height of the popup, as already determined
 				by the layout system, and taking into account the popup’s content,
 				and the max-width, min-width, etc., CSS properties.

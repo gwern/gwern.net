@@ -203,10 +203,11 @@ Extracts = { ...Extracts,
 			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, ...referenceData.pageBodyClasses.split(" "));
 			return newDocument(referenceData.pageContent);
         } else {
-			let isBlockTransclude = (   Transclude.isIncludeLink(referenceData.targetElement)
-									 && referenceData.targetElement.id > ""
-									 && referenceData.targetElement.classList.contains("include-identify-not") == false);
-			return (isBlockTransclude
+			let isBlockTranscludeLink = (   Transclude.isIncludeLink(referenceData.targetElement)
+										 && (   referenceData.targetElement.classList.contains("include-block-context")
+										 	 || (   referenceData.targetElement.id > ""
+												 && referenceData.targetElement.classList.contains("include-identify-not") == false)));
+			return (isBlockTranscludeLink
 					? newDocument(referenceData.targetElement)
 					: newDocument(referenceData.targetBlock));
         }
