@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-11-26 17:53:59 gwern"
+When:  Time-stamp: "2022-11-27 20:28:50 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -127,7 +127,6 @@ goodDomainsSimple =
     , "ai.google"
     , "ai.googleblog.com"
     , "aiimpacts.org"
-    , "aje.oxfordjournals.org"
     , "aleph.se"
     , "alexanderetz.com"
     , "altjapan.typepad.com"
@@ -2565,7 +2564,6 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
             , ("https://ai.google/research/pubs/pub46180", True)
             , ("https://ai.googleblog.com/2021/04/evolving-reinforcement-learning.html", True)
             , ("https://aiimpacts.org/wp-content/uploads/2019/02/image2.png", True)
-            , ("https://aje.oxfordjournals.org/content/156/11/985.full", True)
             , ("https://alexanderetz.com/2015/08/30/the-bayesian-reproducibility-project/", True)
             , ("https://altjapan.typepad.com/my_weblog/2007/05/better_stronger.html", True)
             , ("https://andrewmayneblog.wordpress.com/2020/07/08/openai-api-alchemy-turn-a-script-into-a-novel-and-vice-versa/", True)

@@ -343,6 +343,7 @@ tagsLong2Short = [
           , ("cat/psychology", "cat psychology")
           , ("cat/earwax", "cats & earwax")
           , ("crime/terrorism", "terrorism")
+          , ("crime/terrorism/rumiyah", "<em>Rumiyah</em> (ISIS)")
           , ("modafinil/survey", "modafinil surveys")
           , ("lesswrong-survey", "LW surveys")
           , ("lesswrong-survey/hpmor", "<em>HP:MoR</em> surveys")

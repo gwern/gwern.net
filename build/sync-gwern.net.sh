@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-11-26 17:52:41 gwern"
+# When:  Time-stamp: "2022-11-27 14:11:24 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -157,12 +157,12 @@ else
     ## possible alternative implementation in hakyll: https://www.rohanjain.in/hakyll-sitemap/
     (echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
      ## very static files which rarely change: PDFs, images, site infrastructure:
-     find -L _site/docs/ _site/images/ _site/static/ -not -name "*.page" -type f | grep -F --invert-match -e 'docs/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/templates/default.html' -e '-530px.jpg' -e '-768px.png' | grep -E -e '/docs/.*/index' | \
+     find -L _site/docs/ _site/images/ _site/static/ -not -name "*.page" -type f | grep -F --invert-match -e 'docs/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/templates/default.html' -e '-530px.jpg' -e '-768px.png' | grep -E --invert-match -e '/docs/.*/index' -e 'static/.*\..*\.html$' -e 'docs/.*\..*\.html$' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/www\.gwern\.net\/\1<\/loc><changefreq>never<\/changefreq><\/url>/'
      ## Everything else changes once in a while:
-     find -L _site/ -not -name "*.page" -type f | grep -F --invert-match -e 'static/' -e 'docs/' -e 'images/' -e 'Fulltext' -e 'metadata/' -e '-768px.' | \
-         grep -E -e '/.*/index' \
+     find -L _site/ -not -name "*.page" -type f | grep -F --invert-match -e 'static/' -e 'docs/' -e 'images/' -e 'Fulltext' -e 'metadata/' -e '-768px.'  -e '.page.html'| \
+         grep -E --invert-match -e '/.*/index' -e '.page$' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/www\.gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/'
      echo "</urlset>") >> ./_site/sitemap.xml
@@ -201,7 +201,7 @@ else
         sort |  grep -F -v \
                  `# Pandoc fails on embedded Unicode/regexps in JQuery` \
                  -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' \
-                 -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'docs/www/' | parallel  --jobs 25 syntaxHighlight
+                 -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'docs/www/' -e 'sitemap.xml' | parallel  --jobs 25 syntaxHighlight
     set -e
 
     bold "Stripping compile-time-only classes unnecessary at runtime…"

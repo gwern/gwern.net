@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-11-26 20:15:32 gwern"
+When:  Time-stamp: "2022-11-27 09:49:17 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -156,7 +156,7 @@ readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/ar
                             pdl' <- filterM (\(p,ami) -> case ami of
                                      Right (Just "") -> printRed ("Error! Invalid empty archive link: ") >> print (show p ++ show ami) >> return False
                                      Right u@(Just ('/':'/':_)) -> printRed "Error! Invalid double-slash archive link: " >> print (show p ++ show ami ++ show u) >> return False
-                                     Right (Just u)  -> if not ("http" `isPrefixOf` p) then
+                                     Right (Just u)  -> if not ("http" `isPrefixOf` p || "\n" `isInfixOf` p) then
                                                           printRed "Error! Did a local link slip in somehow? " >> print (show p ++ show u ++ show ami) >> return False
                                                         else
                                                           if isNothing (parseTLD p) then

@@ -112,7 +112,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                               Left e -> error $ show target ++ show callers ++ show e
                                                               Right output -> output
 
-                                       let backLinksHtmlFragment = if C.listLength content > 60 || length callers' < 4 then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
+                                       let backLinksHtmlFragment = html -- if C.listLength content > 60 || length callers' < 4 then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>" -- FIXME: temporarily removed while the context transclusion is worked out
 
                                        writeUpdatedFile "backlink" f backLinksHtmlFragment
 
