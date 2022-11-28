@@ -1119,6 +1119,8 @@ blockquote table table {
     font-size: inherit;
     position: relative;
     z-index: 1;
+}
+#markdownBody .epigraph blockquote {
     overflow: visible;
 }
 .epigraph > blockquote {
