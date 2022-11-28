@@ -1430,10 +1430,16 @@ addContentLoadHandler(GW.contentLoadHandlers.qualifyAnchorLinks = (loadEventInfo
     loadEventInfo.container.querySelectorAll("a[href]").forEach(link => {
         if (   (   link.getAttribute("href").startsWith("#")
                 || link.pathname == loadEventInfo.loadLocation.pathname)
+                // if initial base page load
             && (   loadEventInfo.container == document.body
+            	// if the link refers to an element also in the loaded content
                 || loadEventInfo.container.querySelector(selectorFromHash(link.hash)) != null
+                // if the link refers to the loaded content container itself
                 || (   loadEventInfo.container instanceof Element
-                    && loadEventInfo.container == loadEventInfo.container.closest(selectorFromHash(link.hash))))) {
+                    && loadEventInfo.container == loadEventInfo.container.closest(selectorFromHash(link.hash)))
+                // if we’re transcluding a citation (because we merge footnotes)
+                || (   loadEventInfo.source == "transclude")
+                	&& link.classList.contains("footnote-ref"))) {
             link.pathname = loadEventInfo.baseLocation.pathname;
         } else if (link.getAttribute("href").startsWith("#")) {
             link.pathname = loadEventInfo.loadLocation.pathname;
