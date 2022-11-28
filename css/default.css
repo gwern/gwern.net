@@ -1120,6 +1120,7 @@ blockquote table table {
     position: relative;
     z-index: 1;
 }
+.epigraph blockquote,
 #markdownBody .epigraph blockquote {
     overflow: visible;
 }
