@@ -83,8 +83,7 @@
     element with an ID matching the hash, then only that element (or that
     element’s contents; see the `include-unwrap` option, below) will be
     transcluded. (If the URL has a hash but the hash does not identify any
-    element contained in the page content, then behavior is as if there were
-    no hash.)
+    element contained in the page content, nothing is transcluded.)
 
     (See the ADVANCED section, below, for other ways to use an include-link’s
      URL hash to specify parts of a page to transclude.)
@@ -201,7 +200,7 @@
      contents of `<body>`, if present; or the whole page, otherwise).
 
     If an element of one of the specified IDs is not found in the page, the
-    transclusion proceeds as if that identifier were empty.
+    transclusion fails.
 
     If both elements are present, but the end element does not follow the start
     element in the page order (i.e., if the start element comes after the end
@@ -900,21 +899,31 @@ Transclude = {
         let anchors = includeLink.hash.match(/#[^#]*/g) ?? [ ];
         if (anchors.length == 1) {
             //  Simple element tranclude.
-
-            let section = content.querySelector(selectorFromHash(includeLink.hash));
-            if (section)
-                content = newDocument(section);
+			content = newDocument(content.querySelector(selectorFromHash(includeLink.hash)));
         } else if (anchors.length == 2) {
             //  PmWiki-like transclude range syntax.
 
-            let startElement = anchors[0].length > 1
-                               ? content.querySelector(selectorFromHash(anchors[0]))
-                               : null;
-            let endElement = anchors[1].length > 1
-                             ? content.querySelector(selectorFromHash(anchors[1]))
-                             : null;
+			//	Start element.
+			let startElement = null;
+			if (anchors[0].length > 1) {
+				startElement = content.querySelector(selectorFromHash(anchors[0]));
 
-            /*  If both ends of the range are null, we return the entire
+				//	If specified but missing, transclude nothing.
+				if (startElement == null)
+					return newDocument();
+			}
+
+			//	End element.
+			let endElement = null;
+			if (anchors[1].length > 1) {
+				endElement = content.querySelector(selectorFromHash(anchors[1]));
+
+				//	If specified but missing, transclude nothing.
+				if (endElement == null)
+					return newDocument();
+			}
+
+            /*  If both ends of the range are unspecified, we return the entire
                 content.
              */
             if (   startElement == null
