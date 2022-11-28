@@ -17,7 +17,7 @@ module Main where
 -- link in the page metadata block, paired with the backlinks.
 
 import Control.Monad (when)
-import Data.List (isPrefixOf, isSuffixOf, nub)
+import Data.List (isPrefixOf, isSuffixOf, nub, sort)
 import Data.Text.Titlecase (titlecase)
 import qualified Data.Map as M (lookup, keys)
 import System.FilePath (takeDirectory, takeFileName)
@@ -30,7 +30,7 @@ import Control.Monad.Parallel as Par (mapM_)
 import Text.Pandoc (Inline(Code, Link, Str, Space, Span, Strong), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha), Block(Para, OrderedList), Pandoc(..), writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
-import LinkBacklink (getBackLink, getSimilarLink, getLinkBibLink)
+import LinkBacklink (getBackLinkCheck, getSimilarLinkCheck, getLinkBibLink)
 import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, authorsTruncate, hasAnnotation)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Query (extractURLs, extractLinks)
@@ -42,7 +42,7 @@ main :: IO ()
 main = do
           md <- readLinkMetadata
           -- build HTML fragments for each page or annotation link, containing just the list and no header/full-page wrapper, so they are nice to transclude *into* popups:
-          Par.mapM_ (writeLinkBibliographyFragment md) $ M.keys md
+          Par.mapM_ (writeLinkBibliographyFragment md) $ sort $ M.keys md
 
 -- don't waste the user's time if the annotation is not heavily linked, as most are not, or if all the links are WP links:
 mininumLinkBibliographyFragment :: Int
@@ -65,8 +65,8 @@ writeLinkBibliographyFragment md path =
             -- delete self-links, such as in the ToC of scraped abstracts, or newsletters linking themselves as the first link (eg '/newsletter/2022/05' will link to 'https://www.gwern.net/newsletter/2022/05' at the beginning)
         let links = filter (\l -> not (self `isPrefixOf` l || selfAbsolute `isPrefixOf` l)) linksRaw
         when (length (filter (\l -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` l))  links) >= mininumLinkBibliographyFragment) $
-          do backlinks    <- mapM (fmap snd . getBackLink) links
-             similarlinks <- mapM (fmap snd . getSimilarLink) links
+          do backlinks    <- mapM (fmap snd . getBackLinkCheck) links
+             similarlinks <- mapM (fmap snd . getSimilarLinkCheck) links
              let pairs = linksToAnnotations md links
                  pairs' = zipWith3 (\(a,b) c d -> (a,b,c,d)) pairs backlinks similarlinks
                  body = [Para [Strong [Str "Link Bibliography"], Str ":"], generateLinkBibliographyItems pairs']
@@ -76,7 +76,8 @@ writeLinkBibliographyFragment md path =
              case html of
                Left e   -> printRed (show e)
                -- compare with the old version, and update if there are any differences:
-               Right p' -> do (path',_) <- getLinkBibLink path
+               Right p' -> do let (path',_) = getLinkBibLink path
+                              when (path' == "") $ error ("generateLinkBibliography.hs: writeLinkBibliographyFragment: writing out failed because received empty path' from getLinkBibLink for original path: " ++ path)
                               writeUpdatedFile "link-bibliography-fragment" path' p'
 
 generateLinkBibliographyItems :: [(String,MetadataItem,FilePath,FilePath)] -> Block
@@ -106,6 +107,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
 generateLinkBibliographyItem (f,a,bl,sl) = generateAnnotationTransclusionBlock (f,a) bl sl ""
 
 extractLinksFromPage :: String -> IO [String]
+extractLinksFromPage "" = error "generateLinkBibliography: `extractLinksFromPage` called with an empty '' argument—this should never happen!"
 extractLinksFromPage path =
   do existsp <- doesFileExist path
      if not existsp then return [] else
