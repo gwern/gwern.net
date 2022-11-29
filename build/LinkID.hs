@@ -32,7 +32,8 @@ generateID url author date
   -- indexes or tag-directories shouldn't be cited/have IDs (often linked many times on a page)
   | ("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index" `isSuffixOf` url) = ""
   -- eg. '/Faces' = '#gwern-faces'; `generateID "https://www.gwern.net/Fonts" "Gwern Branwen" "2021-01-01"` → "gwern-fonts" (since we are using the short URL/slug, we don't need a year/date to disambiguate, and those are often meaningless on Gwern.net anyway).
-  | ("Gwern Branwen" == author) &&
+  -- EXPERIMENTAL: we have hitherto not set IDs on *section* or *anchor* links like '/Improvements#microsoft'. Those got no ID, because no authorship metadata is available (unless metadata had been manually added via an annotation for that URL specifically). If we *assume*, no contrary metadata being available, that they were written by me, then they would get an ID like 'gwern-improvements-microsoft'. (Tacking on the hash to the baseline ID of '/Improvements' → 'gwern-improvements'.)
+  | ("Gwern Branwen" == author || "" == author) &&
     (("/" `isPrefixOf` url') && notElem '.' url' && not ("/index"`isInfixOf`url'))
   = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("'", ""), ("https://", "")] $ map toLower $ "gwern-"++tail url')
   -- skip tag links:
