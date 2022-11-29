@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-11-17 17:59:44 gwern"
+When: Time-stamp: "2022-11-28 17:32:52 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -40,7 +40,6 @@ import Data.IORef (newIORef, IORef)
 import Data.List (intercalate, isInfixOf, isSuffixOf)
 import qualified Data.Map.Strict as M (lookup)
 import Data.Maybe (fromMaybe)
-import System.Directory (doesFileExist)
 import System.Environment (lookupEnv)
 import Hakyll (compile, composeRoutes, constField,
                symlinkFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, getMetadataField, lookupString,
@@ -60,17 +59,18 @@ import System.IO.Unsafe (unsafePerformIO)
 import qualified Data.Text as T (append, isInfixOf, pack, unpack, length)
 
 -- local custom modules:
+import Image (invertImageInline, imageMagickDimensions, addImgDimensions, imageSrcset)
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToText, interwikiTestSuite)
+import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata)
+import LinkAuto (linkAuto)
+import LinkBacklink (getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck)
+import LinkIcon (rebuildSVGIconCSS)
+import LinkLive (linkLiveTest, linkLivePrioritize)
 import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, createAnnotations, hasAnnotation, simplifiedHTMLString)
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv)
-import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
-import Image (invertImageInline, imageMagickDimensions, addImgDimensions, imageSrcset)
-import LinkAuto (linkAuto)
-import LinkIcon (rebuildSVGIconCSS)
-import LinkLive (linkLiveTest, linkLivePrioritize)
 import Utils (printGreen, printRed, replace, safeHtmlWriterOptions)
 
 main :: IO ()
@@ -206,8 +206,9 @@ postCtx md =
     -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.page as `index: true` to set it to a non-null value.) Likewise, "error404" for generating the 404.html page.
     -- similarly, 'author': default.html has a conditional to set 'Gwern Branwen' as the author in the HTML metadata if 'author' is not defined, but if it is, then the HTML metadata switches to the defined author & the non-default author is exposed in the visible page metadata as well for the human readers.
     defaultContext <>
-    boolField "backlinksYes" backlinkCheck <>
-    boolField "similarsYes" similarCheck <>
+    boolField "backlinksYes" (check notNewsletterOrIndex getBackLinkCheck)    <>
+    boolField "similarsYes"  (check notNewsletterOrIndex getSimilarLinkCheck) <>
+    boolField "linkbibYes"   (check (const True)         getLinkBibLinkCheck) <>
     dateField "created" "%F" <>
     -- if no manually set last-modified time, fall back to checking file modification time:
     dateField "modified" "%F" <>
@@ -225,20 +226,20 @@ postCtx md =
     imageDimensionWidth "thumbnailWidth" <>
     -- for use in templating, `<body class="$safeURL$">`, allowing page-specific CSS:
     escapedTitleField "safeURL" <>
-    (mapContext (\p -> (urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) $ ("/" ++ replace ".page" ".html" p))) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotations/backlinks/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotations/backlinks/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotations/backlinks/%2Fnotes%2FFaster.html'
+    (mapContext (\p -> urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) ("/" ++ replace ".page" ".html" p)) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotations/backlinks/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotations/backlinks/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotations/backlinks/%2Fnotes%2FFaster.html'
 
 fieldsTagHTML :: Metadata -> Context String
 fieldsTagHTML m = field "tagsHTML" $ \item -> do
-  let path = "/" ++ (replace ".page" "" $ toFilePath $ itemIdentifier item)
+  let path = "/" ++ replace ".page" "" (toFilePath $ itemIdentifier item)
   case M.lookup path m of
     Nothing                 -> return "" -- noResult "no description field"
-    Just x@(_,_,_,_,tags,_) -> case (runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta [tagsToLinksDiv $ map T.pack tags])) of
+    Just x@(_,_,_,_,tags,_) -> case runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta [tagsToLinksDiv $ map T.pack tags]) of
                                  Left e -> error ("Failed to compile tags to HTML fragment: " ++ show path ++ show x ++ show e)
                                  Right html -> return (T.unpack html)
 
 fieldsTagPlain :: Metadata -> Context String
 fieldsTagPlain m = field "tagsPlain" $ \item -> do
-  let path = "/" ++ (replace ".page" "" $ toFilePath $ itemIdentifier item)
+  let path = "/" ++ replace ".page" "" (toFilePath $ itemIdentifier item)
   case M.lookup path m of
     Nothing               -> return "" -- noResult "no description field"
     Just (_,_,_,_,tags,_) -> return $ intercalate ", " tags
@@ -256,10 +257,15 @@ thumbnailSmall = (++"-530px.jpg")
 
 -- should backlinks be in the metadata? We skip backlinks for newsletters & indexes (excluded from the backlink generation process as well) due to lack of any value of looking for backlinks to hose.
 -- HACK: uses unsafePerformIO. Not sure how to check up front without IO... Read the backlinks DB and thread it all the way through `postCtx`, and `main`?
-backlinkCheck :: Item a -> Bool
-backlinkCheck i = let p = toFilePath (itemIdentifier i) in unsafePerformIO (doesFileExist (("metadata/annotations/backlinks/" ++ replace "/" "%2F" (replace ".page" "" ("/"++p))) ++ ".html")) && not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
-similarCheck :: Item a -> Bool
-similarCheck i = let p = toFilePath (itemIdentifier i) in unsafePerformIO (doesFileExist (("metadata/annotations/similars/" ++ replace "/" "%2F" (replace ".page" "" ("/"++p))) ++ ".html")) && not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
+check :: (String -> Bool) -> (String -> IO (String, String)) -> Item a -> Bool
+check filterfunc checkfunc i = unsafePerformIO $ do let p = pageIdentifierToPath i
+                                                    (_,path) <- checkfunc p
+                                                    return $ path /= "" && filterfunc p
+notNewsletterOrIndex :: String -> Bool
+notNewsletterOrIndex p = not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
+
+pageIdentifierToPath :: Item a -> String
+pageIdentifierToPath i = "/" ++ replace ".page" "" (toFilePath $ itemIdentifier i)
 
 imageDimensionWidth :: String -> Context String
 imageDimensionWidth d = field d $ \item -> do
@@ -270,7 +276,7 @@ imageDimensionWidth d = field d $ \item -> do
                   if d == "thumbnailWidth" then return w else return h
 
 escapedTitleField :: String -> Context String
-escapedTitleField = (mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField)
+escapedTitleField = mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField
 
 -- for 'title' metadata, they can have formatting like <em></em> italics; this would break when substituted into <title> or <meta> tags.
 -- So we render a simplified ASCII version of every 'title' field, '$titlePlain$', and use that in default.html when we need a non-display
@@ -301,16 +307,21 @@ descField d = field d $ \item -> do
 pandocTransform :: Metadata -> ArchiveMetadata -> IORef Integer -> String -> Pandoc -> IO Pandoc
 pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
                            -- tag-directories/link-bibliographies special-case: we don't need to run all the heavyweight passes, and LinkAuto has a regrettable tendency to screw up section headers, so we check to see if we are processing a document with 'index: true' set in the YAML metadata, and if we are, we slip several of the rewrite transformations:
-                           do let indexp = indexp' == "true"
-                              let pw = if indexp then walk convertInterwikiLinks p else walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
-                              _ <- unless indexp $ createAnnotations md pw
-                              let pb = walk (hasAnnotation md) $ addPageLinkWalk pw -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
-                              pbt <- fmap typographyTransform . walkM (localizeLink adb archived) $ if indexp then pb else walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) pb
-                              let pbth = addPageLinkWalk $ walk headerSelflink pbt
-                              if indexp then return pbth else do
-                                pbth' <- walkM invertImageInline pbth
-                                pbth'' <- walkM imageSrcset pbth'
-                                return pbth''
+  do let indexp = indexp' == "true"
+     let pw
+           = if indexp then walk convertInterwikiLinks p else
+               walk (footnoteAnchorChecker . convertInterwikiLinks) $
+                 walk linkAuto $ walk marginNotes p
+     unless indexp $ createAnnotations md pw
+     let pb = walk (hasAnnotation md) $ addPageLinkWalk pw  -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
+     pbt <- fmap typographyTransform . walkM (localizeLink adb archived)
+              $
+              if indexp then pb else
+                walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) pb
+     let pbth = addPageLinkWalk $ walk headerSelflink pbt
+     if indexp then return pbth else
+       do pbth' <- walkM invertImageInline pbth
+          walkM imageSrcset pbth'
 
 -- For Amazon links, there are two scenarios: there are parameters (denoted by a
 -- '?' in the URL), or there are not. In the former, we need to append the tag as
@@ -321,8 +332,8 @@ pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `con
 --
 -- For non-Amazon links, we just return them unchanged.
 addAmazonAffiliate :: Inline -> Inline
-addAmazonAffiliate x@(Link attr r (l, t)) = if (("www.amazon.com/" `T.isInfixOf` l) && not ("tag=gwernnet-20" `T.isInfixOf` l)) then
-                                        if ("?" `T.isInfixOf` l) then Link attr r (l `T.append` "&tag=gwernnet-20", t) else Link attr r (l `T.append` "?tag=gwernnet-20", t)
+addAmazonAffiliate x@(Link attr r (l, t)) = if ("www.amazon.com/" `T.isInfixOf` l) && not ("tag=gwernnet-20" `T.isInfixOf` l) then
+                                        if "?" `T.isInfixOf` l then Link attr r (l `T.append` "&tag=gwernnet-20", t) else Link attr r (l `T.append` "?tag=gwernnet-20", t)
                                        else x
 addAmazonAffiliate x = x
 

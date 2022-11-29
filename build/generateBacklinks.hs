@@ -18,7 +18,7 @@ import Control.Monad (forM_, unless)
 
 import Control.Monad.Parallel as Par (mapM)
 
-import Columns as C (listLength)
+-- import Columns as C (listLength)
 import LinkAuto (linkAutoFiltered)
 import LinkID (generateID)
 import LinkMetadata (hasAnnotation, isPagePath, readLinkMetadata, parseRawInline)

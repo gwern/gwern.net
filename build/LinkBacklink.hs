@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-11-27 20:00:21 gwern"
+When:  Time-stamp: "2022-11-28 11:38:55 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -16,7 +16,9 @@ Because every used link necessarily has a backlink (the document in which it is 
 is also a convenient way to get a list of all URLs. -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkBacklink (getBackLink, getBackLinkCount, getSimilarLink, getSimilarLinkCount, Backlinks, readBacklinksDB, writeBacklinksDB, getForwardLinks, getLinkBibLink, getAnnotationLink) where
+module LinkBacklink (getBackLinkCount, getSimilarLinkCount, Backlinks, readBacklinksDB, writeBacklinksDB, getForwardLinks,
+                    getAnnotationLink, getBackLink, getLinkBibLink, getSimilarLink,
+                    getAnnotationLinkCheck, getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck) where
 
 import Data.List (sort)
 import qualified Data.Map.Strict as M (empty, filter, fromList, keys, toList, Map) -- fromListWith,
@@ -58,24 +60,29 @@ getXLinkExists linkType p = do let x@(linkRaw,_) = getXLink linkType p
                                  else return x
 
 -- convert a URL to the local path of its annotation (which may not exist because it hasn't been written yet so no need to do IO to check disk), eg 'http://www2.biology.ualberta.ca/locke.hp/dougandbill.htm' → 'metadata/annotations/http%3A%2F%2Fwww2.biology.ualberta.ca%2Flocke.hp%2Fdougandbill.htm.html'
-getAnnotationLink :: FilePath -> (FilePath,FilePath)
+getAnnotationLink, getBackLink, getLinkBibLink, getSimilarLink :: FilePath -> (FilePath,FilePath)
 getAnnotationLink = getXLink ""
--- likewise, but this time require that the backlink/similar-link/link-biblink exist (requires IO):
-getBackLink, getSimilarLink, getLinkBibLink :: FilePath -> IO (FilePath,FilePath)
-getBackLink    = getXLinkExists "backlinks"
-getSimilarLink = getXLinkExists "similars"
-getLinkBibLink = getXLinkExists "link-bibliography"
+getBackLink    = getXLink "backlinks"
+getLinkBibLink    = getXLink "link-bibliography"
+getSimilarLink = getXLink "similars"
+
+-- IO versions which check for existence on-disk:
+getAnnotationLinkCheck, getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck :: FilePath -> IO (FilePath,FilePath)
+getAnnotationLinkCheck = getXLinkExists ""
+getBackLinkCheck       = getXLinkExists "backlinks"
+getLinkBibLinkCheck    = getXLinkExists "link-bibliography"
+getSimilarLinkCheck    = getXLinkExists "similars"
 
 -- avoid use of backlinks/similar-links database for convenience and just quickly grep the on-disk snippet:
 getBackLinkCount :: FilePath -> IO Int
 getBackLinkCount "" = return 0
-getBackLinkCount p = do (file,_) <- getBackLink p
+getBackLinkCount p = do (file,_) <- getBackLinkCheck p
                         if null file then return 0 else do
                           fileContents <- TIO.readFile file
                           return $ T.count "backlink-not" fileContents
 getSimilarLinkCount :: FilePath -> IO Int
 getSimilarLinkCount "" = return 0
-getSimilarLinkCount p = do (file,_) <- getSimilarLink p
+getSimilarLinkCount p = do (file,_) <- getSimilarLinkCheck p
                            if null file then return 0 else do
                              fileContents <- TIO.readFile file
                              return $ T.count "class=\"link-annotated backlink-not id-not\"" fileContents
