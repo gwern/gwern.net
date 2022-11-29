@@ -112,9 +112,11 @@
 }
 .collapse:not(.expanded) > .abstract-collapse blockquote {
     margin: 0;
+    border-color: var(--GW-abstract-background-color);
 }
 .collapse:not(.expanded) > .disclosure-button:hover + .abstract-collapse blockquote {
     background-color: var(--GW-abstract-collapse-blockquote-hover-color);
+    border-color: var(--GW-abstract-collapse-blockquote-hover-color);
 }
 
 /*********************/
