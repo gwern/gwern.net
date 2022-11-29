@@ -1165,7 +1165,7 @@ blockquote blockquote blockquote blockquote blockquote blockquote {
 
 @media all and (min-width: 650px) {
 	.abstract blockquote,
-    #markdown .abstract blockquote {
+    #markdownBody .abstract blockquote {
         overflow: hidden;
     }
 }
