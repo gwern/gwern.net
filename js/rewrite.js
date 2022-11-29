@@ -150,6 +150,12 @@
 GW.defaultBlockElementSelectors = [
 	[	"section",
 		".footnote",
+		/*	The following component is only needed because transclude.js doesn’t
+			do rewriting on full document load. Remove after transitioning to
+			using content.js for all content loading.
+			 —SA 2022-11-29
+		 */
+		"#footnotes > ol > li",
 		".sidenote",
 		".aux-links-append",
 		".markdownBody > *",
