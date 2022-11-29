@@ -202,15 +202,17 @@ Content = {
 	},
 
 	contentTypes: {
-		codeFile: {
+		localCodeFile: {
 			matches: (identifier) => {
 				let url = new URL(  "https://"
 								  + location.hostname
 								  + identifier);
 
+				//	Maybe it’s an aux-links link?
 				if (url.pathname.startsWith("/metadata/"))
 					return false;
 
+				//	Maybe it’s a local document link?
 				if (   url.pathname.startsWith("/docs/www/")
                 	|| (   url.pathname.startsWith("/docs/")
                 		&& url.pathname.match(/\.(html|pdf)$/i) != null))
@@ -218,10 +220,23 @@ Content = {
 
 				let codeFileURLRegExp = new RegExp(
 					  '\\.('
-					+ Content.contentTypes.codeFile.codeFileExtensions.join("|")
+					+ Content.contentTypes.localCodeFile.codeFileExtensions.join("|")
 					+ ')$'
 				, 'i');
 				return (url.pathname.match(codeFileURLRegExp) != null);
+			},
+
+			matchesLink: (link) => {
+				//	Maybe it’s a foreign link?
+				if (link.hostname != location.hostname)
+					return false;
+
+				//	Maybe it’s an annotated link?
+				if (Annotations.isAnnotatedLink(link))
+					return false
+
+				let identifier = Content.targetIdentifier(link);
+				return Content.contentTypes.localCodeFile.matches(identifier);
 			},
 
 			/*  We first try to retrieve a syntax-highlighted version of the 
@@ -281,7 +296,26 @@ Content = {
 								  + location.hostname
 								  + identifier);
 
-				return (url.pathname.match(/\./) == null);
+				/*  If it has a period in it, it’s not a page, but is something 
+					else, like a file of some sort, or a locally archived 
+					document.
+				 */
+				return (url.pathname.match(/\./) == null
+						&& (   url.pathname != location.pathname
+							&& url.hash > ""));
+			},
+
+			matchesLink: (link) => {
+				//	Maybe it’s a foreign link?
+				if (link.hostname != location.hostname)
+					return false;
+
+				//	Maybe it’s an annotated link?
+				if (Annotations.isAnnotatedLink(link))
+					return false
+
+				let identifier = Content.targetIdentifier(link);
+				return Content.contentTypes.localPage.matches(identifier);
 			},
 
 			sourceURLsForIdentifier: (identifier) => {

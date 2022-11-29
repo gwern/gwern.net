@@ -105,19 +105,7 @@ Extracts = { ...Extracts,
      */
     //  Called by: Extracts.targetTypeInfo (as `predicateFunctionName`)
     isLocalPageLink: (target) => {
-        if (   target.hostname != location.hostname
-            || Extracts.isAnnotatedLink(target))
-            return false;
-
-        /*  If it has a period in it, it’s not a page, but is something else,
-            like a file of some sort, or a locally archived document (accounted
-            for in the other test functions, if need be).
-         */
-        if (target.pathname.match(/\./))
-            return false;
-
-        return (   target.pathname != location.pathname
-                || target.hash > "");
+        return Content.contentTypes.localPage.matchesLink(target);
     },
 
     /*  TOC links.
@@ -1044,19 +1032,7 @@ Extracts.targetTypeDefinitions.insertBefore([
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalCodeFileLink: (target) => {
-        if (   target.hostname != location.hostname
-            || Extracts.isAnnotatedLink(target))
-            return false;
-
-        if (target.pathname.startsWith("/metadata/"))
-            return false;
-
-        let codeFileURLRegExp = new RegExp(
-              '\\.('
-            + Content.contentTypes.codeFile.codeFileExtensions.join("|")
-            + ')$'
-        , 'i');
-        return (target.pathname.match(codeFileURLRegExp) != null);
+    	return Content.contentTypes.localCodeFile.matchesLink(target);
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
