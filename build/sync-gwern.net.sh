@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-11-27 14:11:24 gwern"
+# When:  Time-stamp: "2022-11-29 14:06:19 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -100,12 +100,10 @@ else
     ## they are too slow to run during a regular site build & don't need to be super-up-to-date
     ## anyway
     cd ../../
-    cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" || true # backup in case of corruption
-    cp ./metadata/archive.hs "/tmp/archive-$(date +%s).hs.bak"
 
   if [ "$SLOW" ]; then
     bold "Checking embeddings database…"
-    ghci -i/home/gwern/wiki/static/build/ static/build/GenerateSimilar.hs  -e 'e <- readEmbeddings' &>/dev/null && cp ./metadata/embeddings.bin "/tmp/embeddings-$(date +%s).bin.bak"
+    ghci -i/home/gwern/wiki/static/build/ static/build/GenerateSimilar.hs  -e 'e <- readEmbeddings' &>/dev/null
 
     # duplicates a later check but if we have a fatal link error, we'd rather find out now rather than 30 minutes later while generating annotations:
     λ(){ grep -F -e 'href=""' -- ./metadata/*.yaml || true; }
@@ -140,8 +138,10 @@ else
     cd ../../ # go to site root
     bold "Building site…"
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
-    bold "Results size…"
-    du -chs ./_cache/ ./_site/; find ./_site/ -type f | wc --lines
+    bold "Results size:"
+    du -chs ./_cache/ ./_site/
+    echo "Raw file count: $(find ./_site/ -type f | wc --lines)"
+    echo "Total (including hardlinks) file count: $(find ./_site/ -type f -or -type l | wc --lines)"
 
     # cleanup post:
     rm -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-extractor &>/dev/null || true
@@ -208,7 +208,6 @@ else
     cleanClasses () {
         sed -i -e 's/class=\"\(.*\)archive-local \?/class="\1/g' \
                -e 's/class=\"\(.*\)archive-not \?/class="\1/g' \
-               -e 's/class=\"\(.*\)backlink-not \?/class="\1/g' \
                -e 's/class=\"\(.*\)id-not \?/class="\1/g' \
                -e 's/class=\"\(.*\)link-annotated-not \?/class="\1/g' \
                -e 's/class=\"\(.*\)link-auto \?/class="\1/g' \
@@ -310,7 +309,7 @@ else
        }
     wrap λ "Warning: unauthorized LaTeX users somewhere"
 
-    λ(){ VISIBLE_N=$(cat ./_site/sitemap.xml | wc --lines); [ "$VISIBLE_N" -le 20000 ] && echo "$VISIBLE_N" && exit 1; }
+    λ(){ VISIBLE_N=$(cat ./_site/sitemap.xml | wc --lines); [ "$VISIBLE_N" -le 15000 ] && echo "$VISIBLE_N" && exit 1; }
     wrap λ "Sanity-check number-of-public-site-files in sitemap.xml failed"
 
     λ(){ COMPILED_N="$(find -L ./_site/ -type f | wc --lines)"
@@ -398,7 +397,7 @@ else
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e '<div>' | grep -F -v -e 'I got around this by adding in the Hakyll template an additional'; }
     wrap λ "Stray <div>?"
 
-    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-link-tags' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link'; }
+    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-link-tags' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link' -e 'include-replace}' -e 'include-replace '; }
     wrap λ "Misspelled/outdated classes in Markdown/HTML."
 
      λ(){ find ./ -type f -name "*.page" | grep -F -v '/Variables' | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e '{#'; }
@@ -594,14 +593,15 @@ else
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. docs/*), just force a hash-based sync every time:
     bold "Syncing static/…"
-    rsync --perms --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='generateSimilar' --exclude='hakyll' --exclude='guessTag' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
+    rsync --perms --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='generateSimilar' --exclude='hakyll' --exclude='guessTag' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static" &
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie. non-generated files):
     bold "Syncing pages…"
-    rsync --perms --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
+    rsync --perms --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net" &
     ## Randomize sync type—usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
     bold "Syncing everything else…"
     SPEED=""; if [ "$SLOW" ]; then if ((RANDOM % 100 < 95)); then SPEED="--size-only"; else SPEED="--delete --checksum"; fi; else SPEED="--size-only"; fi
-    rsync --perms --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
+    rsync --perms --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net" &
+    wait
     set +e
 
     bold "Expiring ≤100 updated files…"
