@@ -627,7 +627,7 @@ Extracts = { ...Extracts,
         /*  Do not spawn footnote popup if the {side|foot}note it points to is
             visible.
          */
-        if (Array.from(allNotesForCitation(target)).findIndex(note => Popups.isVisible(note)) != -1)
+        if (Array.from(Notes.allNotesForCitation(target)).findIndex(note => Popups.isVisible(note)) != -1)
             return null;
 
         //  Mini title bar.

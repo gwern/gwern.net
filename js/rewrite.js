@@ -237,27 +237,6 @@ function sectionLevel(section) {
 	return (m ? parseInt(m[1]) : 1);
 }
 
-/**************************************************************************/
-/*  Return all {side|foot}note elements associated with the given citation.
- */
-function allNotesForCitation(citation) {
-    if (!citation.classList.contains("footnote-ref"))
-        return null;
-
-    let citationNumber = citation.id.substr(5);
-    /*  We must check to ensure that the note in question is from the same
-        page as the citation (to distinguish between main document and any
-        full-page embeds that may be spawned).
-     */
-    let selector = `#fn${citationNumber}, #sn${citationNumber}`;
-    let allNotes = Array.from(document.querySelectorAll(selector)).concat(Array.from(citation.getRootNode().querySelectorAll(selector)));
-    return allNotes.filter(note => {
-    	let footnoteBackLink = note.querySelector(".footnote-back");
-    	return (   footnoteBackLink != null
-    			&& footnoteBackLink.pathname == citation.pathname);
-    });
-}
-
 /*****************************************************************************/
 /*  Add content load handler (i.e., an event handler for the GW.contentDidLoad
     event).
@@ -290,6 +269,98 @@ function addCopyProcessor(processor) {
 
     GW.copyProcessors.push(processor);
 }
+
+
+/*********/
+/* NOTES */
+/*********/
+
+Notes = {
+	/*	Get the (side|foot)note number from the URL hash (which might point to a 
+		footnote, a sidenote, or a citation).
+	 */
+	noteNumberFromHash: (hash = location.hash) => {
+		if (hash.startsWith("#") == false)
+			hash = "#" + hash;
+
+		if (hash.match(/#[sf]n[0-9]/))
+			return hash.substr(3);
+		else if (hash.match(/#fnref[0-9]/))
+			return hash.substr(6);
+		else
+			return "";
+	},
+
+	citationSelectorMatching: (element) => {
+		return ("#" + Notes.idForCitationNumber(Notes.noteNumberFromHash(element.hash)));
+	},
+
+	footnoteSelectorMatching: (element) => {
+		return ("#" + Notes.idForFootnoteNumber(Notes.noteNumberFromHash(element.hash)));
+	},
+
+	sidenoteSelectorMatching: (element) => {
+		return ("#" + Notes.idForSidenoteNumber(Notes.noteNumberFromHash(element.hash)));
+	},
+
+	idForCitationNumber: (number) => {
+		return `fnref${number}`;
+	},
+
+	idForFootnoteNumber: (number) => {
+		return `fn${number}`;
+	},
+
+	idForSidenoteNumber: (number) => {
+		return `sn${number}`;
+	},
+
+	setCitationNumber: (citation, number) => {
+        //  #fnN
+        citation.hash = citation.hash.slice(0, 3) + number;
+
+        //  fnrefN
+        citation.id = citation.id.slice(0, 5) + number;
+
+        //  Link text.
+        citation.firstElementChild.textContent = number;
+	},
+
+	setFootnoteNumber: (footnote, number) => {
+        //  fnN
+        footnote.id = footnote.id.slice(0, 2) + number;
+
+        //  #fnrefN
+        let footnoteBackLink = footnote.querySelector("a.footnote-back");
+        footnoteBackLink.hash = footnoteBackLink.hash.slice(0, 6) + number;
+
+		//	#fnN
+		let footnoteSelfLink = footnote.querySelector("a.footnote-self-link");
+		footnoteSelfLink.hash = footnoteSelfLink.hash.slice(0, 3) + number;
+		footnoteSelfLink.title = "Link to footnote " + number;
+	},
+
+	/**************************************************************************/
+	/*  Return all {side|foot}note elements associated with the given citation.
+	 */
+	allNotesForCitation: (citation) => {
+		if (!citation.classList.contains("footnote-ref"))
+			return null;
+
+		let citationNumber = citation.id.substr(5);
+		/*  We must check to ensure that the note in question is from the same
+			page as the citation (to distinguish between main document and any
+			full-page embeds that may be spawned).
+		 */
+		let selector = `#fn${citationNumber}, #sn${citationNumber}`;
+		let allNotes = Array.from(document.querySelectorAll(selector)).concat(Array.from(citation.getRootNode().querySelectorAll(selector)));
+		return allNotes.filter(note => {
+			let footnoteBackLink = note.querySelector(".footnote-back");
+			return (   footnoteBackLink != null
+					&& footnoteBackLink.pathname == citation.pathname);
+		});
+	}
+};
 
 
 /*************/
@@ -1372,7 +1443,7 @@ addContentLoadHandler(GW.contentLoadHandlers.bindHighlightEventsToFootnoteSelfLi
             citation.removeEventListener("mouseleave", citation.citationMouseLeave);
 
         //  Bind events.
-        let notesForCitation = allNotesForCitation(citation);
+        let notesForCitation = Notes.allNotesForCitation(citation);
         citation.addEventListener("mouseenter", citation.citationMouseEnter = (event) => {
             notesForCitation.forEach(note => {
                 note.classList.toggle("highlighted", true);
@@ -1438,8 +1509,11 @@ addContentLoadHandler(GW.contentLoadHandlers.qualifyAnchorLinks = (loadEventInfo
                 || (   loadEventInfo.container instanceof Element
                     && loadEventInfo.container == loadEventInfo.container.closest(selectorFromHash(link.hash)))
                 // if we’re transcluding a citation (because we merge footnotes)
-                || (   loadEventInfo.source == "transclude")
-                	&& link.classList.contains("footnote-ref"))) {
+                || (   loadEventInfo.source == "transclude"
+                	&& link.classList.contains("footnote-ref"))
+                // if we’re merging a footnote for transcluded content
+                || (   loadEventInfo.source == "transclude.footnotes"
+                	&& link.classList.contains("footnote-back")))) {
             link.pathname = loadEventInfo.baseLocation.pathname;
         } else if (link.getAttribute("href").startsWith("#")) {
             link.pathname = loadEventInfo.loadLocation.pathname;

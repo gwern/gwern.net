@@ -327,9 +327,6 @@ header h1 {
 	#page-metadata > .link-tags {
 		font-size: calc((18/20) * var(--GW-base-font-size));
 	}
-	#page-metadata-block br {
-		display: none;
-	}
 }
 @media all and (max-width: 649px) {
 	#page-metadata {
@@ -1165,7 +1162,7 @@ blockquote blockquote blockquote blockquote blockquote blockquote {
 
 @media all and (min-width: 650px) {
 	.abstract blockquote,
-    #markdown .abstract blockquote {
+    #markdownBody .abstract blockquote {
         overflow: hidden;
     }
 }
