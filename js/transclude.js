@@ -519,11 +519,15 @@ function includeContent(includeLink, content) {
     	/*	NOTE: Only needed because we don’t update the source document cache
     		when we transclude into included content.
     	 */
+        let flags = GW.contentDidLoadEventFlags.collapseAllowed;
+        if (containingDocument == document)
+            flags |= GW.contentDidLoadEventFlags.fullWidthPossible;
+
     	GW.contentLoadHandlers.handleTranscludes({
     		container: wrapper,
     		document: containingDocument,
     		baseLocation: includeLink.loadEventInfo.baseLocation,
-			flags: 0
+			flags: flags
     	});
     }
 
@@ -640,6 +644,7 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
         return null;
 
     let containingDocument = includeLink.loadEventInfo.document;
+
     let footnotesSection = containingDocument.querySelector(".markdownBody > #footnotes");
     if (!footnotesSection) {
         //  Construct footnotes section.
@@ -672,41 +677,22 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
         unwrap(footnotesSectionWrapper);
     }
 
-	//	Wrapper.
+	//	Construct wrapper.
     let newFootnotesWrapper = newElement("OL", { "class": "include-wrapper" });
-    let newFootnoteNumber = footnotesSection.querySelector("ol").children.length + 1;
 
+	//	Add new footnotes to wrapper.
     citationsInNewContent.forEach(citation => {
-        //  Footnote.
-        let footnote = newContentFootnotesSection.querySelector(citation.hash);
-
-        //  #fnN
-        citation.hash = citation.hash.slice(0, 3) + newFootnoteNumber;
-
-        //  fnrefN
-        citation.id = citation.id.slice(0, 5) + newFootnoteNumber;
-
-        //  Link text.
-        citation.firstElementChild.textContent = newFootnoteNumber;
+        //  Original footnote (in source content/document).
+        let footnote = newContentFootnotesSection.querySelector(Notes.footnoteSelectorMatching(citation));
 
         //  Copy the footnote.
         let newFootnote = newFootnotesWrapper.appendChild(document.importNode(footnote, true));
-
-        //  fnN
-        newFootnote.id = newFootnote.id.slice(0, 2) + newFootnoteNumber;
-
-        //  #fnrefN
-        let newFootnoteBackLink = newFootnote.querySelector("a.footnote-back");
-        newFootnoteBackLink.hash = newFootnoteBackLink.hash.slice(0, 6) + newFootnoteNumber;
-
-        //  Increment.
-        newFootnoteNumber++;
     });
 
-	//	Inject.
+	//	Inject wrapper.
     footnotesSection.appendChild(newFootnotesWrapper);
 
-	//	Fire events.
+	//	Fire load event.
     if (includeLink.needsRewrite) {
         let flags = (  GW.contentDidLoadEventFlags.needsRewrite
                 	 | GW.contentDidLoadEventFlags.collapseAllowed);
@@ -721,26 +707,54 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
 			baseLocation: includeLink.loadEventInfo.baseLocation,
 			flags: flags
 		});
+	} else {
+    	/*	NOTE: Only needed because we don’t update the source document cache
+    		when we transclude into included content.
+    	 */
+        let flags = GW.contentDidLoadEventFlags.collapseAllowed;
+        if (containingDocument == document)
+            flags |= GW.contentDidLoadEventFlags.fullWidthPossible;
 
+		GW.contentLoadHandlers.handleTranscludes({
+			container: newFootnotesWrapper,
+			document: containingDocument,
+			baseLocation: includeLink.loadEventInfo.baseLocation,
+			flags: flags
+		});
+	}
+
+	//	Parent element of footnotes.
+	let footnotesList = footnotesSection.querySelector("ol");
+
+	//	Merge and unwrap.
+	footnotesList.append(...(newFootnotesWrapper.children));
+
+	//	Re-number citations/footnotes, and re-order footnotes.
+	let footnoteNumber = 1;
+	containingDocument.querySelectorAll(".footnote-ref").forEach(citation => {
+		let footnote = footnotesSection.querySelector(Notes.footnoteSelectorMatching(citation));
+
+		Notes.setCitationNumber(citation, footnoteNumber);
+		Notes.setFootnoteNumber(footnote, footnoteNumber);
+
+		newFootnotesWrapper.appendChild(footnote);
+
+		footnoteNumber++;
+	});
+
+	//	Fire inject event.
+    if (includeLink.needsRewrite) {
 		GW.notificationCenter.fireEvent("GW.contentDidInject", {
 			source: "transclude.footnotes",
 			container: newFootnotesWrapper,
 			document: containingDocument
 		});
-	} else {
-    	/*	NOTE: Only needed because we don’t update the source document cache
-    		when we transclude into included content.
-    	 */
-		GW.contentLoadHandlers.handleTranscludes({
-			container: newFootnotesWrapper,
-			document: containingDocument,
-			baseLocation: includeLink.loadEventInfo.baseLocation,
-			flags: 0
-		});
 	}
 
-	//	Merge and unwrap.
-	footnotesSection.querySelector("ol").append(...(newFootnotesWrapper.children));
+	//	Merge and unwrap (redux).
+	footnotesList.append(...(newFootnotesWrapper.children));
+
+	//	Discard wrapper.
 	newFootnotesWrapper.remove();
 }
 
