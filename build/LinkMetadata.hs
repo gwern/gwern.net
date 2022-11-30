@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-28 21:09:31 gwern"
+When:  Time-stamp: "2022-11-29 15:59:16 gwern"
 License: CC-0
 -}
 
@@ -737,7 +737,8 @@ pageNumberParse u = let pg = sed ".*\\.pdf#page=([0-9]+).*" "\\1" u
                     in if u == pg then "" else pg
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
-pdf p = do let p' = takeWhile (/='#') p
+pdf "" = error "Fatal error: LinkMetadata.pdf called on empty string argument; this should never happen."
+pdf p = do let p' = takeWhile (/='#') $ if head p == '/' then tail p else p
            existsp <- doesFileExist p'
            unless existsp $ error $ "PDF file doesn't exist? Tried to query " ++ p
            let pageNumber = pageNumberParse p

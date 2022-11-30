@@ -635,7 +635,7 @@ redirectDB = [
           , ( "https://en.wikipedia.org/wiki/Chofu", "https://en.wikipedia.org/wiki/Ch%C5%8Dfu")
           , ( "https://en.wikipedia.org/wiki/Christmas_crackers", "https://en.wikipedia.org/wiki/Christmas_cracker")
           , ( "https://en.wikipedia.org/wiki/Christmas_Pudding", "https://en.wikipedia.org/wiki/Christmas_pudding")
-          , ( "https://en.wikipedia.org/wiki/Christopher_J.L._Murray", "https://en.wikipedia.org/wiki/Christopher_J._L._Murray")
+          , ( "https://en.wikipedia.org/wiki/Christopher_J._L._Murray", "https://en.wikipedia.org/wiki/Christopher_J._L._Murray")
           , ( "https://en.wikipedia.org/wiki/CIA_World_Factbook", "https://en.wikipedia.org/wiki/The_World_Factbook")
           , ( "https://en.wikipedia.org/wiki/Cinderella_%282015_film%29", "https://en.wikipedia.org/wiki/Cinderella_(disambiguation)#Films")
           , ( "https://en.wikipedia.org/wiki/Circuit_no_Okami", "https://en.wikipedia.org/wiki/Circuit_no_%C5%8Ckami")
