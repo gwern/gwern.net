@@ -1,44 +1,44 @@
     <!-- Load the rest of the CSS. Note that we do not need any JS hacks here: HTML allows <link> stylesheets in the body: https://html.spec.whatwg.org/multipage/links.html#body-ok https://jakearchibald.com/2016/link-in-body/ -->
-    <link rel="stylesheet" type="text/css" href="/static/css/fonts.css?v=1655420134">
-    <link rel="stylesheet" type="text/css" href="/static/css/default.css?v=1669757201">
-    <link rel="stylesheet" type="text/css" href="/static/css/links.css?v=1669341981">
+    <link rel="stylesheet" type="text/css" href="/static/css/fonts.css?v=1655421673">
+    <link rel="stylesheet" type="text/css" href="/static/css/default.css?v=1669775205">
+    <link rel="stylesheet" type="text/css" href="/static/css/links.css?v=1669342165">
 
     <!-- JS library with utility functions used in rest of code -->
-    <script src="/static/js/utility.js?v=1669583396" defer></script>
+    <script src="/static/js/utility.js?v=1669597260" defer></script>
     <!-- JS library for spawning popups -->
-    <script src="/static/js/popups.js?v=1669604434" defer></script>
-    <script src="/static/js/popins.js?v=1669583215" defer></script>
+    <script src="/static/js/popups.js?v=1669605590" defer></script>
+    <script src="/static/js/popins.js?v=1669597260" defer></script>
     <!-- JS library for annotating hyperlinks with introduction/summary from various sources; not lazy-loaded as (almost) all pages have popups -->
-    <script src="/static/js/annotations.js?v=1669591746" defer></script>
-    <script src="/static/js/content.js?v=1669771518" defer></script>
-    <script src="/static/js/extracts.js?v=1669604444" defer></script>
-    <script src="/static/js/extracts-annotations.js?v=1669579464" defer></script>
-    <script src="/static/js/extracts-content.js?v=1669766027" defer></script>
-    <script src="/static/js/extracts-options.js?v=1669582509" defer></script>
+    <script src="/static/js/annotations.js?v=1669431129" defer></script>
+    <script src="/static/js/content.js?v=1669771575" defer></script>
+    <script src="/static/js/extracts.js?v=1669597260" defer></script>
+    <script src="/static/js/extracts-annotations.js?v=1669597260" defer></script>
+    <script src="/static/js/extracts-content.js?v=1669766467" defer></script>
+    <script src="/static/js/extracts-options.js?v=1669597260" defer></script>
 
     <!-- Misc JS: 1. Collapsed sections: insert a toggle to expand them; 2. cover source-code block listings too (for large R sections especially); 3. type setting stuff -->
-	<script src="/static/js/Hyphenopoly_Loader.js?v=1650818540" defer></script>
-    <script src="/static/js/typography.js?v=1667673751" defer></script>
-    <script src="/static/js/rewrite.js?v=1669756573" defer></script>
-    <script src="/static/js/transclude.js?v=1669756196" defer></script>
-    <script src="/static/js/collapse.js?v=1669582943" defer></script>
+	<script src="/static/js/Hyphenopoly_Loader.js?v=1650821831" defer></script>
+    <script src="/static/js/typography.js?v=1667688786" defer></script>
+    <script src="/static/js/rewrite.js?v=1669766467" defer></script>
+    <script src="/static/js/transclude.js?v=1669747128" defer></script>
+    <script src="/static/js/collapse.js?v=1669597260" defer></script>
 
     <!-- Dark Mode theme switcher (lets users toggle between regular black-on-white CSS, and dark mode) -->
-    <script src="/static/js/dark-mode.js?v=1667249190" defer></script>
+    <script src="/static/js/dark-mode.js?v=1663383996" defer></script>
 
     <!-- Reader Mode theme switcher (lets users toggle distraction-free ‘reader mode’ on and off) -->
-    <script src="/static/js/reader-mode.js?v=1663374036" defer></script>
+    <script src="/static/js/reader-mode.js?v=1663383996" defer></script>
     <!-- JS library for clickable/zoomable images, for images larger than can be displayed in -->
     <!-- the body: /static/js/image-focus.js -->
     <!-- not lazy-loaded due to various bugs -->
-    <script src="/static/js/image-focus.js?v=1667681837" defer></script>
+    <script src="/static/js/image-focus.js?v=1667688786" defer></script>
 
     <!-- sort tables: https://mottie.github.io/tablesorter/docs/ ; requires JQuery, which has been prepended to avoid multiple JS page loads & race conditions -->
     <script>
     if (document.querySelector("table")) {
         var js = document.createElement("script");
         js.type = "text/javascript";
-        js.src = "/static/js/tablesorter.js?v=1656018097";
+        js.src = "/static/js/tablesorter.js?v=1655848739";
         document.body.appendChild(js);
     }
     </script>

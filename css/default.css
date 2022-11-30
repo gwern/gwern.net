@@ -2782,26 +2782,26 @@ body.index-long section > .include-wrapper-block + .include-wrapper-block {
 /*= /reviews/Books =*/
 /*=----------------=*/
 
-body.reviews-books #markdownBody .book-review-meta {
+#markdownBody .book-review-meta {
     margin: -0.5em 0 1.5em 0;
     display: flex;
     flex-flow: row;
     justify-content: flex-start;
     max-width: 100%;
 }
-body.reviews-books .book-review-meta span {
+.book-review-meta span {
     white-space: nowrap;
 }
-body.reviews-books .book-review-meta span + span {
+.book-review-meta span + span {
     margin-left: 1em;
 }
-body.reviews-books .book-review-meta span:first-of-type {
+.book-review-meta span:first-of-type {
     flex: 0 1 auto;
     max-width: 100%;
     text-overflow: ellipsis;
     overflow: hidden;
 }
-body.reviews-books .book-review-meta span:first-of-type:hover {
+.book-review-meta span:first-of-type:hover {
     overflow: visible;
     white-space: normal;
     text-align: left;
