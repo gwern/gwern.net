@@ -302,7 +302,7 @@ Content = {
 				 */
 				return (url.pathname.match(/\./) == null
 						&& (   url.pathname != location.pathname
-							&& url.hash > ""));
+							|| url.hash > ""));
 			},
 
 			matchesLink: (link) => {
