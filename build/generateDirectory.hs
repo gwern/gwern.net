@@ -160,10 +160,10 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_),_,_,lb)  =
                  [Str ",", Space, authorSpan, Str ":"]
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
-    let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation", "include-spinner-not"],[]) else nullAttr
+    let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation"],[]) else nullAttr
         link = if t=="" then Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author
                else Code nullAttr (T.pack f') : Str ":" : Space : Link linkAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author
-    in [Para link, Para [Link ("",["include", "include-spinner-not", "include-replace-container"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` (T.pack f))]]
+    in [Para link, Para [Link ("",["include", "include-replace-container"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` (T.pack f))]]
 
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String
 generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail
@@ -299,7 +299,7 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_,_) ->
 
 generateItem :: (FilePath,MetadataItem,FilePath,FilePath,FilePath) -> [Block]
 generateItem (f,(t,aut,dt,_,tgs,""),bl,sl,lb) = -- no abstracts:
- if ("https://en.wikipedia.org/wiki/"`isPrefixOf`f) then [Para [Link ("",["include-annotation", "include-spinner-not"],[]) [Str "Wikipedia"] (T.pack f, if t=="" then "" else T.pack $ "Wikipedia link about " ++ t)]]
+ if ("https://en.wikipedia.org/wiki/"`isPrefixOf`f) then [Para [Link ("",["include-annotation"],[]) [Str "Wikipedia"] (T.pack f, if t=="" then "" else T.pack $ "Wikipedia link about " ++ t)]]
  else
   let
        f'       = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
