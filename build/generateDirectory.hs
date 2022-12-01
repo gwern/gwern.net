@@ -28,7 +28,7 @@ import Text.Pandoc.Walk (walk)
 
 import Interwiki (inlinesToText)
 import LinkID (generateID, authorsToCite)
-import LinkMetadata (readLinkMetadata, generateAnnotationTransclusionBlock, authorsTruncate, parseRawBlock, hasAnnotation, dateTruncateBad, parseRawInline)
+import LinkMetadata (readLinkMetadata, generateAnnotationTransclusionBlock, authorsTruncate, parseRawBlock, hasAnnotation, dateTruncateBad, parseRawInline, annotateLink)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Tags (tagsToLinksSpan, listTagDirectories, abbreviateTag)
 import LinkBacklink (getBackLinkCheck, getSimilarLinkCheck, getLinkBibLinkCheck)
@@ -78,6 +78,12 @@ generateDirectory md dirs dir'' = do
   triplets  <- listFiles md direntries'
 
   let links = nub $ reverse $ sortByDate $ triplets++tagged' -- newest first, to show recent additions
+
+  -- walk the list of observed links and if they do not have an entry in the annotation database, try to create one now before doing any more work:
+  Prelude.mapM_ (\(l,_,_,_,_) -> case M.lookup l md of
+                         Nothing -> annotateLink md (Link nullAttr [] (T.pack l, "")) >> return ()
+                         _ -> return ()
+        ) links
 
   -- remove the tag for *this* directory; it is redundant to display 'cat/catnip' on every doc/link inside '/docs/cat/catnip/index.page', after all.
   let tagSelf = if dir'' == "docs/" then "" else init $ replace "docs/" "" dir'' -- "docs/cat/catnip/" → 'cat/catnip'
