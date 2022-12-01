@@ -309,7 +309,7 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl,lb) = -- no abstracts:
  else
   let
        f'       = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
-       title    = if t=="" then [Code nullAttr (T.pack f')] else [Str (T.pack $ "“"++t++"”")]
+       title    = if t=="" then [Code nullAttr (T.pack f')] else [RawInline (Format "html") (T.pack $ "“"++t++"”")]
        -- prefix   = if t=="" then [] else [Code nullAttr (T.pack f'), Str ": "]
        -- we display short authors by default, but we keep a tooltip of the full author list for on-hover should the reader need it.
        authorShort = authorsTruncate aut
