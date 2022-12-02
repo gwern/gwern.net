@@ -128,9 +128,8 @@ generateDirectory md dirs dir'' = do
 
              (if null untitledLinks then [] else
                  Header 1 ("", ["link-annotated-not"], []) [Str "Miscellaneous"] :
-                 -- for lists, they *may* all be devoid of annotations and short
                  if not allUnannotatedUntitledP then [untitledLinksSection] else
-                   [RawBlock (Format "html") "<div id=\"miscellaneous-links-list\" class=\"columns\">\n\n",
+                   [RawBlock (Format "html") "<div id=\"miscellaneous-links-list\">\n\n",
                     untitledLinksSection,
                     RawBlock (Format "html") "</div>"]) ++
 
