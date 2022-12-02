@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-11-27 09:49:17 gwern"
+When:  Time-stamp: "2022-12-01 20:51:34 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1275,5 +1275,13 @@ whiteList url
       , "https://www.mmlab-ntu.com/project/vtoonify/" -- low quality (video embeds)
       , "https://makeavideo.studio/#facebook" -- low quality (video embeds)
       , "https://www.storylive.com/main.htm" -- interactive
+      , "https://sites.google.com/view/projected-gan/" -- low quality (video embeds)
+      , "https://diffusion-planning.github.io/"  -- low quality (video embeds)
+      , "https://emalmi.kapsi.fi/edit5_code.html" -- low quality (placeholder for future updates)
+      , "https://www.robot-learning.uk/dall-e-bot" -- low quality (video embeds)
+      , "https://t-naoya.github.io/hdm/" -- low quality (audio embeds)
+      , "https://lisiyao21.github.io/projects/AnimeRun" -- low quality (video embeds)
+      , "https://vision-locomotion.github.io/" -- low quality (video embeds)
+      , "https://ajayj.com/vectorfusion" -- low quality (video embeds)
       ] = True
     | otherwise = False

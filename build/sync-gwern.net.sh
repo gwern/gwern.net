@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-11-29 14:06:19 gwern"
+# When:  Time-stamp: "2022-12-01 18:16:04 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -71,7 +71,8 @@ else
           s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant';
 
           ## abbreviation consistency:
-          s '(ie,' '(ie.'; s '(ie ' '(ie. '; s '(i.e.,' '(ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior'; s '<sup>Th</sup>' '<sup>th</sup>'
+          s '(ie,' '(ie.'; s '(ie ' '(ie. '; s '(i.e.,' '(ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
+          s '<sup>Th</sup>' '<sup>th</sup>'; s '<sup>St</sup>' '<sup>st</sup>'; s '<sup>Nd</sup>' '<sup>nd</sup>'; s '<sup>Rd</sup>' '<sup>rd</sup>';
 
           ## spelling errors:
           s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook';
@@ -83,7 +84,7 @@ else
           s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber';
 
           ## HTML/Markdown formatting:
-          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s '<sup>St</sup>' '<sup>st</sup>'; s '<sup>Th</sup>' '<sup>th</sup>'; s '<sup>Rd</sup>' '<sup>rd</sup>'; s '<sup>Nd</sup>' '<sup>nd</sup>'; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'
+          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'
         ) &> /dev/null &
     sed -i -e 's/ data-link-?[Tt]ags="[a-z0-9 \/-]\+">/>/' ./metadata/*.yaml;
     fi
@@ -200,7 +201,7 @@ else
     find _site/ -type f,l -name "*.R" -or -name "*.c" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.diff" -or -name "*.py" -or -name "*.sh" -or -name "*.bash" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.page" -or -name "*.txt" -or -name "*.json" -or -name "*.jsonl" -or -name "*.yaml" -or -name "*.xml" -or -name "*.csv"  | \
         sort |  grep -F -v \
                  `# Pandoc fails on embedded Unicode/regexps in JQuery` \
-                 -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' \
+                 -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'index.page' \
                  -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'docs/www/' -e 'sitemap.xml' | parallel  --jobs 25 syntaxHighlight
     set -e
 
@@ -315,8 +316,8 @@ else
     λ(){ COMPILED_N="$(find -L ./_site/ -type f | wc --lines)"
          [ "$COMPILED_N" -le 86000 ] && echo "File count: $COMPILED_N" && exit 1;
          COMPILED_BYTES="$(du --summarize --total --dereference --bytes ./_site/ | tail --lines=1 | cut --field=1)"
-         [ "$COMPILED_BYTES" -le 80603000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
-    wrap λ "Sanity-check: number of files & file-size"
+         [ "$COMPILED_BYTES" -le 77000000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
+    wrap λ "Sanity-check: number of files & file-size too small?"
 
     λ(){ SUGGESTIONS_N=$(cat ./metadata/linkSuggestions.el | wc --lines); [ "$SUGGESTIONS_N" -le 38000 ] && echo "$SUGGESTIONS_N"; }
     wrap λ "Link-suggestion database broken?"
@@ -381,12 +382,12 @@ else
                    -e '^mjx-stack$' -e '^mjx-sub$' -e '^mjx-sup$' -e '^mjx-surd$' -e '^mjx-texatom$' -e '^mjx-TeXmathchoice$' -e '^mjx-under$' \
                    -e '^mjx-vsize$' -e '^new$' -e '^outline-not$' -e '^warning$' -e '^markdown-body$' -e '^similars$' -e '^similars-append$' \
                    -e '^text-center$' -e '^abstract-tag-directory$' -e '^page-description-annotation$' -e '^link-bibliography$' \
-                   -e '^link-bibliography-append$' -e '^expand-on-hover$'; }
+                   -e '^link-bibliography-append$' -e '^expand-on-hover$' -e '^include-block-context$'; }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
     λ(){ echo "$PAGES_ALL" | xargs --max-args=500 grep -F --with-filename --color=always -e ")'s " -e "}'s " -e '">?' | \
-             grep -F -v -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-';
-         echo "$PAGES_ALL" | xargs --max-args=500 grep -E --with-filename --color=always -e '<a .*href=".*">?';
+             grep -F -v -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c';
+         echo "$PAGES_ALL" | xargs --max-args=500 grep -E --with-filename --color=always -e '<a .*href=".*">\?';
        }
     wrap λ "Punctuation like possessives should go *inside* the link (unless it is an apostrophe in which case it should go outside due to Pandoc bug #8381)."
     ## NOTE: 8381 <https://github.com/jgm/pandoc/issues/8381> is a WONTFIX by jgm, so no solution but to manually check for it. Fortunately, it is rare.
@@ -409,7 +410,7 @@ else
     λ(){ find ./ -type f -name "*.page" -type f -exec grep -E --color=always -e 'cssExtension: [a-c,e-z]' {} \;; }
     wrap λ "Incorrect drop caps in Markdown."
 
-    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | grep -F -v 'Lorem.page' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 "grep -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out Lorem.page's deliberate CSS test-case use of it
+    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | grep -F -v 'Lorem.page' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 "grep --color=always -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out Lorem.page's deliberate CSS test-case use of it
     wrap λ "Broken code in Markdown."
 
     λ(){ find ./ -type f -name "*.page" | parallel --max-args=500 "grep -F --with-filename -e '<span class=\"supsub\">' -e 'class=\"subsup\"><sup>' --"; }
@@ -607,7 +608,7 @@ else
     bold "Expiring ≤100 updated files…"
     # expire CloudFlare cache to avoid hassle of manual expiration: (if more than 100, we've probably done some sort of major systemic change & better to flush whole cache or otherwise investigate manually)
     # NOTE: 'bot-fighting' CloudFlare settings must be largely disabled, otherwise CF will simply CAPTCHA or block outright the various curl/linkchecker tests as 'bots'.
-    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | grep -F -v -e '/images/thumbnails/' -e '/docs/www' -e '/static/build/' -e '/static/templates/' -e '/static/includes/' -e '/metadata/annotations/backlinks/' -e '/metadata/annotations/similars/' | xargs ls -t | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/www\.gwern\.net\/\1/' | head -50) https://www.gwern.net/sitemap.xml https://www.gwern.net/Lorem https://www.gwern.net/ https://www.gwern.net/index"
+    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | grep -F -v -e '/images/thumbnails/' -e '/docs/www' -e '/static/build/' -e '/static/templates/' -e '/static/includes/' -e '/metadata/annotations/backlinks/' -e '/metadata/annotations/similars/' | xargs ls -t 2>/dev/null | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/www\.gwern\.net\/\1/' | head -50) https://www.gwern.net/sitemap.xml https://www.gwern.net/Lorem https://www.gwern.net/ https://www.gwern.net/index"
     for URL in $EXPIRE; do
         echo -n "Expiring: $URL "
         ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
@@ -714,6 +715,7 @@ else
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Movies'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/docs/existential-risk/1985-hofstadter'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Bakewell'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/backfire-effect'
           cm "text/markdown; charset=utf-8" 'https://www.gwern.net/2014-spirulina.page'
           cm "text/plain; charset=utf-8" 'https://www.gwern.net/docs/personal/2009-sleep.txt'
           cm "text/plain; charset=utf-8" 'https://www.gwern.net/static/redirects/nginx.conf'
@@ -727,7 +729,9 @@ else
           cm "video/mp4"  'https://www.gwern.net/images/genetics/selection/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
           cm "video/webm" 'https://www.gwern.net/images/statistics/2003-murray-humanaccomplishment-region-proportions-bootstrap.webm'
           cm "image/jpeg" 'https://www.gwern.net/images/technology/security/lobel-frogandtoadtogether-thebox-crop.jpg'
+          cm "image/jpeg" 'https://www.gwern.net/images/google/15-predicted-survivorship-curves.png-530px.jpg'
           cm "image/png"  'https://www.gwern.net/images/technology/search/googlesearch-tools-daterange.png'
+          cm "image/png"  'https://www.gwern.net/images/google/15-predicted-survivorship-curves.png'
           cm "application/wasm"  'https://www.gwern.net/static/js/patterns/en-us.wasm'
         }
     wrap λ "The live MIME types are incorrect"
@@ -862,8 +866,8 @@ else
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
     λ() { for IMAGE in $(find ./images/ -type f -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'images/fiction/batman/' -e 'images/ai/dall-e/2/' -e '2022-09-21-gwern-stablediffusionv14-circulardropcapinitialsamples.png' -e '2022-09-22-gwern-stablediffusionv14-textualinversion-yinit-dropcapsexperiments.png' -e '2022-09-27-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2'); do
               SIZE_W=$(identify -format "%w" "$IMAGE")
-              if (( $SIZE_W > 1600  )); then echo "Too wide image: $IMAGE $SIZE_W; shrinking…";
-                                             mogrify  -resize 1600x10000 "$IMAGE";
+              if (( SIZE_W > 1600  )); then echo "Too wide image: $IMAGE $SIZE_W; shrinking…";
+                                            mogrify  -resize 1600x10000 "$IMAGE";
               fi;
           done; }
     wrap λ "Too-wide images (downscale)"
@@ -878,7 +882,7 @@ else
     wrap λ "Similar-links: overused links indicate pathological lookups; blacklist links as necessary."
 
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.
-    if [ $(date +"%d") == "1" ]; then
+    if [ "$(date +"%d")" == "1" ]; then
 
         bold "Checking all MIME types…"
         c () { curl --compressed --silent --output /dev/null --head "$@"; }
@@ -896,12 +900,12 @@ else
         wrap λ "Multi-columns use?"
     fi
     # if the end of the month, expire all of the annotations to get rid of stale ones:
-    if [ $(date +"%d") == "31" ]; then
+    if [ "$(date +"%d")" == "31" ]; then
         find ./metadata/annotations/ -maxdepth 1 -name "*.html" -delete
     fi
 
     # once a year, check all on-site local links to make sure they point to the true current URL; this avoids excess redirects and various possible bugs (such as an annotation not being applied because it's defined for the true current URL but not the various old ones, or going through HTTP nginx redirects first)
-    if [ $(date +"%j") == "002" ]; then
+    if [ "$(date +"%j")" == "002" ]; then
         bold "Checking all URLs for redirects…"
         for URL in $(find . -type f -name "*.page" | parallel --max-args=500 runghc ./static/build/link-extractor.hs | \
                          grep -E -e '^/' | cut --delimiter=' ' --field=1 | sort -u); do

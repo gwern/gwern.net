@@ -17,7 +17,7 @@ module Main where
 -- link in the page metadata block, paired with the backlinks.
 
 import Control.Monad (when)
-import Data.List (isPrefixOf, isSuffixOf, nub, sort)
+import Data.List (isPrefixOf, isSuffixOf, nub, sort, (\\))
 import Data.Text.Titlecase (titlecase)
 import qualified Data.Map as M (lookup, keys)
 import System.FilePath (takeDirectory, takeFileName)
@@ -27,7 +27,7 @@ import qualified Data.Text as T (pack, unpack)
 import System.Directory (doesFileExist)
 import Control.Monad.Parallel as Par (mapM_)
 
-import Text.Pandoc (Inline(Code, Link, Str, Space, Span, Strong), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha), Block(Para, OrderedList), Pandoc(..), writeHtml5String)
+import Text.Pandoc (Inline(Code, Link, Str, Space, Span, Strong), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha, UpperAlpha), Block(Div, OrderedList, Para), Pandoc(..), writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
 import LinkBacklink (getBackLinkCheck, getSimilarLinkCheck, getLinkBibLink)
@@ -39,8 +39,7 @@ import Utils (writeUpdatedFile, replace, printRed)
 import Interwiki (convertInterwikiLinks)
 
 main :: IO ()
-main = do
-          md <- readLinkMetadata
+main = do md <- readLinkMetadata
           -- build HTML fragments for each page or annotation link, containing just the list and no header/full-page wrapper, so they are nice to transclude *into* popups:
           Par.mapM_ (writeLinkBibliographyFragment md) $ sort $ M.keys md
 
@@ -82,7 +81,16 @@ writeLinkBibliographyFragment md path =
 
 generateLinkBibliographyItems :: [(String,MetadataItem,FilePath,FilePath)] -> Block
 generateLinkBibliographyItems [] = Para []
-generateLinkBibliographyItems items = OrderedList (1, LowerAlpha, DefaultDelim) $ map generateLinkBibliographyItem items
+generateLinkBibliographyItems items = let itemsWP = filter (\(u,_,_,_) -> "https://en.wikipedia.org/wiki/" `isPrefixOf` u) items
+                                          itemsPrimary =  items \\ itemsWP
+                                    in OrderedList (1, LowerAlpha, DefaultDelim)
+                                      (map generateLinkBibliographyItem itemsPrimary ++
+                                          -- because WP links are so numerous, and so bulky, stick them into a collapsed sub-list at the end:
+                                          if null itemsWP then [] else [
+                                                                        [Div ("",[if length itemsWP > 3 then "collapse" else ""],[]) [
+                                                                            Para [Strong [Str "Wikipedia link-bibliography"], Str ":"],
+                                                                            OrderedList (1, UpperAlpha, DefaultDelim) (map generateLinkBibliographyItem itemsWP)]]]
+                                      )
 generateLinkBibliographyItem  :: (String,MetadataItem,FilePath,FilePath) -> [Block]
 generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
   let f'
@@ -97,7 +105,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
                  [Str ",", Space, authorSpan]
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
-    let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation", "include-spinner-not"],[]) else nullAttr
+    let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation"],[]) else nullAttr
     in
     if t=="" then
       [Para (Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author)]
@@ -107,7 +115,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
 generateLinkBibliographyItem (f,a,bl,sl) = generateAnnotationTransclusionBlock (f,a) bl sl ""
 
 extractLinksFromPage :: String -> IO [String]
-extractLinksFromPage "" = error "generateLinkBibliography: `extractLinksFromPage` called with an empty '' argument—this should never happen!"
+extractLinksFromPage "" = error "generateLinkBibliography: `extractLinksFromPage` called with an empty '' string argument—this should never happen!"
 extractLinksFromPage path =
   do existsp <- doesFileExist path
      if not existsp then return [] else

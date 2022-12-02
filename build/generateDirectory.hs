@@ -28,7 +28,7 @@ import Text.Pandoc.Walk (walk)
 
 import Interwiki (inlinesToText)
 import LinkID (generateID, authorsToCite)
-import LinkMetadata (readLinkMetadata, generateAnnotationTransclusionBlock, authorsTruncate, parseRawBlock, hasAnnotation, dateTruncateBad, parseRawInline)
+import LinkMetadata (readLinkMetadata, generateAnnotationTransclusionBlock, authorsTruncate, parseRawBlock, hasAnnotation, dateTruncateBad, parseRawInline, annotateLink)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Tags (tagsToLinksSpan, listTagDirectories, abbreviateTag)
 import LinkBacklink (getBackLinkCheck, getSimilarLinkCheck, getLinkBibLinkCheck)
@@ -78,6 +78,12 @@ generateDirectory md dirs dir'' = do
   triplets  <- listFiles md direntries'
 
   let links = nub $ reverse $ sortByDate $ triplets++tagged' -- newest first, to show recent additions
+
+  -- walk the list of observed links and if they do not have an entry in the annotation database, try to create one now before doing any more work:
+  Prelude.mapM_ (\(l,_,_,_,_) -> case M.lookup l md of
+                         Nothing -> annotateLink md (Link nullAttr [] (T.pack l, "")) >> return ()
+                         _ -> return ()
+        ) links
 
   -- remove the tag for *this* directory; it is redundant to display 'cat/catnip' on every doc/link inside '/docs/cat/catnip/index.page', after all.
   let tagSelf = if dir'' == "docs/" then "" else init $ replace "docs/" "" dir'' -- "docs/cat/catnip/" → 'cat/catnip'
@@ -160,10 +166,10 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_),_,_,lb)  =
                  [Str ",", Space, authorSpan, Str ":"]
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
-    let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation", "include-spinner-not"],[]) else nullAttr
+    let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation"],[]) else nullAttr
         link = if t=="" then Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author
                else Code nullAttr (T.pack f') : Str ":" : Space : Link linkAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author
-    in [Para link, Para [Link ("",["include", "include-spinner-not", "include-replace-container"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` (T.pack f))]]
+    in [Para link, Para [Link ("",["include", "include-replace-container"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` (T.pack f))]]
 
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String
 generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail
@@ -299,11 +305,11 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_,_) ->
 
 generateItem :: (FilePath,MetadataItem,FilePath,FilePath,FilePath) -> [Block]
 generateItem (f,(t,aut,dt,_,tgs,""),bl,sl,lb) = -- no abstracts:
- if ("https://en.wikipedia.org/wiki/"`isPrefixOf`f) then [Para [Link ("",["include-annotation", "include-spinner-not"],[]) [Str "Wikipedia"] (T.pack f, if t=="" then "" else T.pack $ "Wikipedia link about " ++ t)]]
+ if ("https://en.wikipedia.org/wiki/"`isPrefixOf`f) then [Para [Link ("",["include-annotation"],[]) [Str "Wikipedia"] (T.pack f, if t=="" then "" else T.pack $ "Wikipedia link about " ++ t)]]
  else
   let
        f'       = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
-       title    = if t=="" then [Code nullAttr (T.pack f')] else [Str (T.pack $ "“"++t++"”")]
+       title    = if t=="" then [Code nullAttr (T.pack f')] else [RawInline (Format "html") (T.pack $ "“"++t++"”")]
        -- prefix   = if t=="" then [] else [Code nullAttr (T.pack f'), Str ": "]
        -- we display short authors by default, but we keep a tooltip of the full author list for on-hover should the reader need it.
        authorShort = authorsTruncate aut

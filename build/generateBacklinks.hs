@@ -96,8 +96,8 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                                     (if isPagePath u then u`T.append`selfIdent else u, ""),
                                                                     Str ":"],
                                                                -- use transclusion to default to display inline the context of the reverse citation, akin to how it would display if the reader popped the link up as a live cross-page transclusion, but without needing to hover over each one:
-                                                               BlockQuote [Para [Link ("",["id-not", "backlink-not", "include-spinner-not", "include-replace-container", "include-block-context"],[]) -- TODO: need '.include-strict' for better reader experience?
-                                                                                      [Str "[quote-transclude backlink context]"]
+                                                               BlockQuote [Para [Link ("",["id-not", "backlink-not", "include-replace-container", "include-block-context"],[]) -- TODO: need '.include-strict' for better reader experience?
+                                                                                      [Str "[backlink context]"]
                                                                                       ((if isPagePath u then u else T.pack (snd $ getAnnotationLink $ T.unpack u)) `T.append` selfIdent, "")
                                                                                 ]
                                                                           ]

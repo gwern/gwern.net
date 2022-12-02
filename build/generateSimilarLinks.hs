@@ -68,8 +68,9 @@ main = do md  <- readLinkMetadata
                                                                       writeOutMatch md bdb nmatches
                         )
                 mdl
+              printGreen "Wrote out missing."
               unless (args == ["--update-only-missing-embeddings"]) $ do
-                printGreen "Wrote out missing. Now writing out changed…"
+                printGreen "Rewriting all embeddings…"
                 Par.mapM_ (writeOutMatch md bdb . findN ddb bestNEmbeddings iterationLimit) edb''
                 Par.mapM_ (\f -> case M.lookup f edbDB of
                                        Nothing        -> return ()

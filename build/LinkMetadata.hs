@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-11-28 21:09:31 gwern"
+When:  Time-stamp: "2022-12-01 20:26:31 gwern"
 License: CC-0
 -}
 
@@ -21,6 +21,7 @@ import Data.Aeson (eitherDecode, FromJSON)
 import qualified Data.ByteString as B (appendFile, readFile)
 import qualified Data.ByteString.Lazy as BL (length, concat)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
+import Data.Char (isPunctuation)
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union) -- traverseWithKey, union, Map
 import qualified Data.Text as T (append, breakOnAll, head, isInfixOf, isPrefixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
@@ -254,7 +255,7 @@ readLinkMetadataAndCheck = do
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) finalL
              Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex) (printRed $ "Mixed up author & date?: " ++ a) ) authors
-             let authorsBadChars = filter (\a -> anyInfix a [";", "&", "?", "!"]) authors
+             let authorsBadChars = filter (\a -> anyInfix a [";", "&", "?", "!"] || isPunctuation (last a)) $ filter (not . null) authors
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
              let datesBad = filter (\(_,(_,_,dt,_,_,_)) -> not (dt =~ dateRegex || null dt)) finalL
@@ -512,9 +513,9 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
                                            else [BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
                                                                             if (blp++slp++lb)=="" then ""
                                                                             else "<div class=\"collapse\">" `T.append`
-                                                                                 ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append\"" `T.append` " id=\"" `T.append` lidBacklinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack blp `T.append` "\">Backlinks for this annotation</a>.]</p>\n</div>")) `T.append`
-                                                                                  (if slp=="" then "" else ("<div class=\"similars-append aux-links-append\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-strict include-replace-container include-spinner-not\" href=\"" `T.append` T.pack slp `T.append` "\">Similar links for this annotation</a>.]</p>\n</div>")) `T.append`
-                                                                                   (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include include-replace-container include-spinner-not\" href=\"" `T.append` T.pack lb `T.append` "\">Link bibliography for this annotation</a>.]</p>\n</div>"))) `T.append`
+                                                                                 ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append\"" `T.append` " id=\"" `T.append` lidBacklinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-strict include-replace-container\" href=\"" `T.append` T.pack blp `T.append` "\">Backlinks for this annotation</a>.]</p>\n</div>")) `T.append`
+                                                                                  (if slp=="" then "" else ("<div class=\"similars-append aux-links-append\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-strict include-replace-container\" href=\"" `T.append` T.pack slp `T.append` "\">Similar links for this annotation</a>.]</p>\n</div>")) `T.append`
+                                                                                   (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include include-replace-container\" href=\"" `T.append` T.pack lb `T.append` "\">Link bibliography for this annotation</a>.]</p>\n</div>"))) `T.append`
                                                                             "</div>"
                                                                                        )]
                                                 ])
@@ -539,7 +540,7 @@ generateAnnotationTransclusionBlock (f, (tle,aut,dt,doi,ts,_)) blp slp lb =
                                     similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars", "icon-not"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
                                     linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], []) [Link ("",["aux-links", "link-page", "icon-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of links it cites).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
-                                    link = linkLive $ Link (lid, ["link-annotated", "include-annotation", "include-replace-container", "include-spinner-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
+                                    link = linkLive $ Link (lid, ["link-annotated", "include-annotation", "include-replace-container"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
                                 in
                                   [Para
                                        ([link,Str ","] ++
@@ -737,7 +738,8 @@ pageNumberParse u = let pg = sed ".*\\.pdf#page=([0-9]+).*" "\\1" u
                     in if u == pg then "" else pg
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
-pdf p = do let p' = takeWhile (/='#') p
+pdf "" = error "Fatal error: LinkMetadata.pdf called on empty string argument; this should never happen."
+pdf p = do let p' = takeWhile (/='#') $ if head p == '/' then tail p else p
            existsp <- doesFileExist p'
            unless existsp $ error $ "PDF file doesn't exist? Tried to query " ++ p
            let pageNumber = pageNumberParse p
@@ -1184,7 +1186,7 @@ truncateTOC p' toc = let pndc = truncateTOCHTML (T.pack (sed ".*#" "" p')) (T.pa
 
 -- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
 initializeAuthors :: String -> String
-initializeAuthors = trim . replaceMany [(". . ", ". "), ("?",""), (",,", ","), (",,", ","), (", ,", ", "), (" ", " "), (" MA,", ","), (", MA,", ","), (" MS,", ","), ("Dr ", ""), (" PhD", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", ""), (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""), (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" , BSc", ","), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), (",,", ","), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), ("and ", ", "), (", PhD1", ","), ("  DMSc", ""), (", (Hons),", ","), (",, ", ", "), (", ,,", ", "), (",,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", ""), (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior")] .
+initializeAuthors = trim . replaceMany [(". . ", ". "), ("?",""), (",,", ","), (",,", ","), (", ,", ", "), (" ", " "), (" MA,", ","), (", MA,", ","), (" MS,", ","), ("Dr ", ""), (" PhD", ""), (" Ph.D.", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", ""), (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""), (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" M. Sc.", ""), (" B. Sc.", ""), (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" , BSc", ","), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), (",,", ","), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), ("and ", ", "), (", PhD1", ","), ("  DMSc", ""), (", (Hons),", ","), (",, ", ", "), (", ,,", ", "), (",,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", ""), (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior"), (" DO,", ","), ("M. D. MPH", "")] .
                        sedMany [
                          ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2"), -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
                          (",$", ""),

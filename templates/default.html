@@ -109,9 +109,9 @@
               <span id="page-status" title="Writing status of current page: ranges 'abandoned'/'notes'/'draft'/'in progress'/'finished'"><em>$status$</em></span>
               <span id="page-confidence"><a href="/About#confidence-tags" title="Explanation of 'confidence' metadata: probability of overall being meaningfully correct, expressed as Kesselman Estimative Words (ranging 0–100%: 'certain'/'highly likely'/'likely'/'possible'/'unlikely'/'highly unlikely'/'remote'/'impossible')">certainty</a>: <em>$confidence$</em></span>
               <span id="page-importance"><a href="/About#importance-tags" title="Explanation of 'importance' metadata: rating 1–10 about how much a topic matters to the world.">importance</a>: <em>$importance$</em></span>
-              $if(backlinksYes)$<span class="backlinks"><a id="page=backlinks" class="backlinks" href="#backlinks" title="Reverse citations/backlinks for this page (the list of other pages which link to this page).">backlinks</a></span>$endif$
+              $if(backlinksYes)$<span class="backlinks"><a class="backlinks" href="#backlinks" title="Reverse citations/backlinks for this page (the list of other pages which link to this page).">backlinks</a></span>$endif$
               $if(similarsYes)$<span class="similars"><a class="similars" href="#similars" title="Similar links for this link (by text embedding).">similar</a></span>$endif$
-              $if(linkbibYes)$<span class="link-bibliography"><a id="page-link-bibliography" href="#link-bibliography" title="Bibliography of links cited in this page (forward citations).">bibliography</a></span>$endif$
+              $if(linkbibYes)$<span class="link-bibliography"><a href="#link-bibliography" title="Bibliography of links cited in this page (forward citations).">bibliography</a></span>$endif$
           </div>
         </div>
 
@@ -121,16 +121,16 @@
         $body$
 
         $if(index)$ $else$
-        $if(backlinksYes)$<section id="further-reading" class="level1">
-          <h1><a href="#further-reading" title="Link to section: § 'Further Reading'">Further Reading</a></h1>
+        $if(backlinksYes)$<section id="backlinks-section" class="level1">
+          <h1><a href="#backlinks-section" title="Link to section: § 'Further Reading'">Further Reading</a></h1>
           <a id="backlinks" href="/metadata/annotations/backlinks/$escapedURL$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="backlinks include">backlinks</a>
         </section>$endif$
-        $if(linkbibYes)$<section id="link-bibliography" class="level1">
-          <h1><a href="#link-bibliography" title="Link to section: § 'Link Bibliography'">Link Bibliography</a></h1>
-          <a id="link-bibliography-link-footer-transclusion" href="/metadata/annotations/link-bibliography/$escapedURL$" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include link-bibliography">Link Bibliography</a>$endif$
+        $if(linkbibYes)$<section id="link-bibliography-section" class="level1">
+          <h1><a href="#link-bibliography-section" title="Link to section: § 'Link Bibliography'">Link Bibliography</a></h1>
+          <a id="link-bibliography" href="/metadata/annotations/link-bibliography/$escapedURL$" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include link-bibliography">Link Bibliography</a>$endif$
         </section>
-        $if(similarsYes)$<section id="similar-links-section" class="level1">
-          <h1><a href="#similar-links-section" title="Link to section: § 'Similar Links'">Similar Links</a></h1>
+        $if(similarsYes)$<section id="similars-section" class="level1">
+          <h1><a href="#similars-section" title="Link to section: § 'Similar Links'">Similar Links</a></h1>
           <a id="similars" href="/metadata/annotations/similars/$escapedURL$" title="Similar links for this link (by text embedding). Lazily-transcluded version at footer of page for easier scrolling." class="similars include">similar</a>
           </section>$endif$
           $endif$
