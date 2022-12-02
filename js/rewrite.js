@@ -193,6 +193,34 @@ function originalURLForLink(link) {
 	return originalURL;
 }
 
+/*****************************************************************************/
+/*	Construct synthetic include-link. The optional ‘link’ argument may be 
+	a string, a URL object, or an <a> Element, in which case it, or its .href 
+	property, is used as the ‘href’ attribute of the synthesized include-link.
+
+	If the ‘link’ argument is an <a> Element and has a ‘data-url-original’ 
+	attribute, then the same attribute is assigned the same value on the
+	synthesized include-link.
+ */
+function synthesizeIncludeLink(link, attributes, properties) {
+	let includeLink = newElement("A", attributes, properties);
+
+	if (link == null)
+		return includeLink;
+
+	if (typeof link == "string")
+		includeLink.href = link;
+	else if (   link instanceof Element
+			 || link instanceof URL)
+		includeLink.href = link.href;
+
+	if (   link instanceof Element
+		&& link.dataset.urlOriginal)
+		includeLink.dataset.urlOriginal = link.dataset.urlOriginal;
+
+	return includeLink;
+}
+
 /******************************************************************************/
 /*	Returns the heading level of a <section> element. (Given by a class of the
 	form ‘levelX’ where X is a positive integer. Defaults to 1 if no such class
@@ -969,15 +997,11 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventI
 												  Annotations.targetIdentifier(referenceLink));
 
 		//	Replace reference block contents with synthetic include-link.
-		let includeLink = newElement("A", {
+		partialAnnotation.replaceChildren(synthesizeIncludeLink(referenceLink, {
 			"class": "include-annotation include-replace-container link-annotated-partial",
-			"href": referenceLink.href,
 			"data-template-fields": "annotationClassSuffix:$",
 			"data-annotation-class-suffix": "-partial"
-		});
-		if (referenceLink.dataset.urlOriginal)
-			includeLink.dataset.urlOriginal = referenceLink.dataset.urlOriginal;
-		partialAnnotation.replaceChildren(includeLink);
+		}));
 
 		//	Fire GW.contentDidLoadEvent (to trigger transclude).
 		GW.notificationCenter.fireEvent("GW.contentDidLoad", {

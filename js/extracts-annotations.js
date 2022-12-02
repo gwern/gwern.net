@@ -40,15 +40,12 @@ Extracts = { ...Extracts,
     annotationForTarget: (target) => {
         GWLog("Extracts.annotationForTarget", "extracts-annotations.js", 2);
 
-		let linkTarget = ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank");
-
-		return newDocument(`<a 
-			href="${target.href}" 
-			class="link-annotated include-annotation include-strict"
-			data-template="annotation-blockquote-not"
-			data-template-fields="linkTarget:$"
-			data-link-target="${linkTarget}"
-				></a>`);
+		return newDocument(synthesizeIncludeLink(target, {
+			"class": "link-annotated include-annotation include-strict",
+			"data-template": "annotation-blockquote-not",
+			"data-template-fields": "linkTarget:$",
+			"data-link-target": ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank")
+		}));
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
