@@ -1675,7 +1675,9 @@ addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) 
     //  Add ‘drop-cap-’ class to requisite blocks.
     let dropCapBlocksSelector = [
         ".markdownBody > p:first-child",
+        ".markdownBody > section:first-of-type > p:nth-child(2)",
         ".markdownBody > .epigraph:first-child + p",
+        ".markdownBody > section:first-of-type > .epigraph:nth-child(2) + p",
         ".markdownBody .abstract:not(.scrape-abstract-not) + p"
     ].join(", ");
     let dropCapClass = Array.from(eventInfo.container.classList).find(cssClass => cssClass.startsWith("drop-caps-"));
@@ -1684,7 +1686,7 @@ addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) 
 
     eventInfo.container.querySelectorAll(dropCapBlocksSelector).forEach(dropCapBlock => {
         /*  Drop cap class could be set globally, or overridden by a .abstract;
-            the latter could be `drop-cap-no` (which nullifies any page-global
+            the latter could be `drop-cap-not` (which nullifies any page-global
             drop-cap class for the given block).
          */
         let precedingAbstract = (   dropCapBlock.previousElementSibling
@@ -1695,11 +1697,23 @@ addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) 
                         ? Array.from(precedingAbstract.classList).find(cssClass => cssClass.startsWith("drop-cap-"))
                         : null) || dropCapClass;
         if (   dropCapClass
-            && dropCapClass != "drop-cap-no")
+            && dropCapClass != "drop-cap-not")
             dropCapBlock.classList.add(dropCapClass);
     });
 }, "rewrite", (info) => (info.container == document.body));
 
+addContentInjectHandler(GW.contentInjectHandlers.preventDropCapsOverlap = (eventInfo) => {
+    GWLog("preventDropCapsOverlap", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("[class*='drop-cap-']").forEach(dropCapBlock => {
+		if (dropCapBlock.nextElementSibling) {
+			if (   dropCapBlock.nextElementSibling.classList.containsAnyOf([ "columns" ])
+				|| [ "OL", "UL" ].includes(dropCapBlock.nextElementSibling.tagName)
+				|| getComputedStyle(dropCapBlock.nextElementSibling).borderWidth != "0")
+				dropCapBlock.classList.add("overlap-not");
+		}
+	});
+}, "rewrite", (info) => (info.document == document))
 
 /********/
 /* MATH */
