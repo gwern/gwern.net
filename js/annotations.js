@@ -1,25 +1,3 @@
-/**********************************/
-/*	Events fired by annotations.js:
-
-	Annotations.didLoad
-		Fired when the Annotations object has loaded.
-
-	Annotations.annotationDidLoad {
-			identifier:
-				The identifier string for the annotation. (See the
-				Extracts.targetIdentifier function in extracts.js for details.)
-		}
-		Fired after a new annotation has been loaded and cached.
-
-	Annotations.annotationLoadDidFail {
-			identifier:
-				The identifier string for the annotation. (See the
-				Extracts.targetIdentifier function in extracts.js for details.)
-		}
-		Fired when a new annotation has failed to load, and the load failure
-		has been recorded in the annotations cache.
- */
-
 Annotations = {
 	annotatedLinkFullClass: "link-annotated",
 	annotatedLinkPartialClass: "link-annotated-partial"
@@ -64,14 +42,13 @@ Annotations = { ...Annotations,
         */
     cachedReferenceData: { },
 
-    /*  Returns true iff a processed and cached annotation exists for the given
-        identifier string.
+    /*  Returns true iff a cached API response exists for the given identifier.
         */
-    //	Called by: Extracts.setUpAnnotationLoadEventWithin (extracts-annotations.js)
-    cachedAnnotationExists: (identifier) => {
-        let cachedAnnotation = Annotations.cachedReferenceData[identifier];
-        return (   cachedAnnotation != null
-        		&& cachedAnnotation != "LOADING_FAILED");
+    //	Called by: Extracts.setUpAnnotationLoadEventsWithin (extracts-annotations.js)
+    cachedDataExists: (identifier) => {
+        let cachedAPIResponse = Annotations.cachedAPIResponseForIdentifier(identifier);
+        return (   cachedAPIResponse != null
+        		&& cachedAPIResponse != "LOADING_FAILED");
     },
 
     /*  Returns cached annotation reference data for a given identifier string,
@@ -79,6 +56,27 @@ Annotations = { ...Annotations,
     	but failed) or null (if the annotation has not been loaded).
         */
     referenceDataForIdentifier: (identifier) => {
+    	/*	Perhaps we’ve got an API response cached, but we haven’t actually
+    		constructed reference data from it yet. (Maybe because the API 
+    		response was acquired other than by the usual load process. Or 
+    		because the API response is the same as that for a different 
+    		identifier, and we don’t want to ask for a load.)
+    	 */
+		if (   Annotations.cachedReferenceData[identifier] == null
+			&& Annotations.cachedDataExists(identifier)) {
+			//	Get parsed API response.
+			let cachedAPIResponse = Annotations.cachedAPIResponseForIdentifier(identifier);
+
+			//	Attempt to construct reference data from API response.
+			let referenceData = Annotations.referenceDataFromParsedAPIResponse(cachedAPIResponse, identifier) ?? "LOADING_FAILED";
+			if (referenceData == "LOADING_FAILED")
+				//	Send request to record failure in server logs.
+				GWServerLogError(Annotations.sourceURLForIdentifier(identifier) + `--could-not-process`, "problematic annotation");
+
+			//	Cache reference data (successfully constructed or not).
+			Annotations.cachedReferenceData[identifier] = referenceData;
+		}
+
         return Annotations.cachedReferenceData[identifier];
     },
 
@@ -106,7 +104,7 @@ Annotations = { ...Annotations,
 
 	/*	Returns the URL of the annotation resource for the given identifier.
 	 */
-	//	Called by: Annotations.loadAnnotation
+	//	Called by: Annotations.load
 	//	Called by: Annotations.cachedAPIResponseForIdentifier
 	//	Called by: Annotations.cacheAPIResponseForIdentifier
 	sourceURLForIdentifier: (identifier) => {
@@ -118,7 +116,7 @@ Annotations = { ...Annotations,
 		return Annotations.sourceURLForIdentifier(Annotations.targetIdentifier(target));
 	},
 
-	//	Called by: Annotations.loadAnnotation
+	//	Called by: Annotations.load
 	processedAPIResponseForIdentifier: (response, identifier) => {
 		return Annotations.dataSourceForIdentifier(identifier).processAPIResponse(response);
 	},
@@ -127,24 +125,25 @@ Annotations = { ...Annotations,
 	//	Used by: Annotations.cacheAPIResponseForIdentifier
 	cachedAPIResponses: { },
 
-	//	Called by: Annotations.loadAnnotation
+	//	Called by: Annotations.load
 	cachedAPIResponseForIdentifier: (identifier) => {
 		return Annotations.cachedAPIResponses[Annotations.sourceURLForIdentifier(identifier)];
 	},
 
-	//	Called by: Annotations.loadAnnotation
+	//	Called by: Annotations.load
 	cacheAPIResponseForIdentifier: (response, identifier) => {
 		Annotations.cachedAPIResponses[Annotations.sourceURLForIdentifier(identifier)] = response;
 	},
 
 	//	Called by: extracts.annotationForTarget (extracts-annotations.js)
 	waitForDataLoad: (identifier, loadHandler = null, loadFailHandler = null) => {
-		if (Annotations.cachedReferenceData[identifier] == "LOADING_FAILED") {
+
+		if (Annotations.cachedAPIResponseForIdentifier(identifier) == "LOADING_FAILED") {
             if (loadFailHandler)
             	loadFailHandler(identifier);
 
 			return;
-		} else if (Annotations.cachedReferenceData[identifier]) {
+		} else if (Annotations.cachedAPIResponseForIdentifier(identifier)) {
             if (loadHandler)
             	loadHandler(identifier);
 
@@ -174,9 +173,9 @@ Annotations = { ...Annotations,
 
     /*  Load and process the annotation for the given identifier string.
         */
-    //	Called by: Extracts.setUpAnnotationLoadEventWithin (extracts-annotations.js)
-    loadAnnotation: (identifier, loadHandler = null, loadFailHandler = null) => {
-        GWLog("Annotations.loadAnnotation", "annotations.js", 2);
+    //	Called by: Extracts.setUpAnnotationLoadEventsWithin (extracts-annotations.js)
+    load: (identifier, loadHandler = null, loadFailHandler = null) => {
+        GWLog("Annotations.load", "annotations.js", 2);
 
 		/*	Get URL of the annotation resource.
 		 */
@@ -224,6 +223,7 @@ Annotations = { ...Annotations,
 					processResponse(response);
 				},
 				onFailure: (event) => {
+					Annotations.cacheAPIResponseForIdentifier("LOADING_FAILED", identifier);
 					Annotations.cachedReferenceData[identifier] = "LOADING_FAILED";
 
 					GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: identifier });
@@ -239,8 +239,11 @@ Annotations = { ...Annotations,
 			Annotations.waitForDataLoad(identifier, loadHandler, loadFailHandler);
     },
 
-	//	Called by: Annotations.loadAnnotation
+	//	Called by: Annotations.load
 	referenceDataFromParsedAPIResponse: (response, identifier) => {
+		if (response == "LOADING_FAILED")
+			return null;
+
 		return Annotations.dataSourceForIdentifier(identifier).referenceDataFromParsedAPIResponse(response, identifier);
 	},
 
@@ -393,20 +396,12 @@ Annotations = { ...Annotations,
 
 				//	Abstract (if exists).
 				let abstractElement = referenceEntry.querySelector("blockquote");
-				//	Unwrap extraneous <div>s, if present.
+				let abstractHTML = null;
 				if (abstractElement) {
-					if (   abstractElement.firstElementChild == abstractElement.lastElementChild
-						&& abstractElement.firstElementChild.tagName == "DIV")
-						unwrap(abstractElement.firstElementChild);
-
-					let pageDescriptionClass = "page-description-annotation";
-					let pageDescription = abstractElement.querySelector(`div.${pageDescriptionClass}`);
-					if (pageDescription)
-						unwrap(pageDescription, [ pageDescriptionClass ]);
+					let referenceEntry = newDocument(abstractElement.childNodes);
+					Annotations.dataSources.local.postProcessReferenceEntry(referenceEntry, identifier);
+					abstractHTML = referenceEntry.innerHTML;
 				}
-				let abstractHTML = abstractElement
-								   ? abstractElement.innerHTML
-								   : null;
 
 				//	Pop-frame title text.
 				let popFrameTitleText = titleText.trimQuotes();
@@ -424,6 +419,51 @@ Annotations = { ...Annotations,
 					popFrameTitleText:  popFrameTitleText,
 					template:           "annotation-blockquote-inside"
 				};
+			},
+
+			/*  Post-process an already-constructed local annotation 
+				(do HTML cleanup, etc.).
+				*/
+			//	Called by: Annotations.dataSources.local.referenceDataFromParsedAPIResponse
+			postProcessReferenceEntry: (referenceEntry, identifier) => {
+				//	Unwrap extraneous <div>s, if present.
+				if (   referenceEntry.firstElementChild == referenceEntry.lastElementChild
+					&& referenceEntry.firstElementChild.tagName == "DIV")
+					unwrap(referenceEntry.firstElementChild);
+
+				//	Unwrap more extraneous <div>s, if present.
+				let pageDescriptionClass = "page-description-annotation";
+				let pageDescription = referenceEntry.querySelector(`div.${pageDescriptionClass}`);
+				if (pageDescription)
+					unwrap(pageDescription, [ pageDescriptionClass ]);
+
+				//	Rewrite aux-links append block, if present.
+				let auxLinksAppend = referenceEntry.querySelector(".aux-links-append");
+				if (auxLinksAppend) {
+					//	Make aux-links-append include-links lazy.
+					auxLinksAppend.querySelectorAll(".include-strict").forEach(link => {
+						link.swapClasses([ "include", "include-strict" ], 0);
+						link.classList.add("include-when-collapsed");
+					});
+
+					//	Rectify collapse block structure and classes.
+					let collapseBlock = auxLinksAppend.closest(".collapse");
+					if (collapseBlock == auxLinksAppend) {
+						let newCollapseBlock = newElement("DIV", { "class": "collapse" });
+						collapseBlock.parentNode.insertBefore(newCollapseBlock, collapseBlock);
+						newCollapseBlock.appendChild(collapseBlock);
+						collapseBlock.classList.remove("collapse");
+						collapseBlock = newCollapseBlock;
+					}
+					if (collapseBlock)
+						collapseBlock.classList.add("aux-links-container");
+				}
+
+				//	Rewrite collapse blocks to make them expand on hover.
+				referenceEntry.querySelectorAll(".collapse").forEach(collapseBlock => {
+					collapseBlock.classList.add("expand-on-hover");
+					updateDisclosureButtonTitleForCollapseBlock(collapseBlock);
+				});
 			},
 
 			basePathname: "/metadata/annotations/",

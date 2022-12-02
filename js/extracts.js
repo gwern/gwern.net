@@ -10,72 +10,6 @@
 
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/static/build/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
-/*******************************/
-/*  Events fired by extracts.js:
-
-    Extracts.didLoad
-        Fired when the Extracts object has loaded.
-
-    Extracts.setupDidComplete
-        Fired just before the ‘setup’ function returns.
-
-    Extracts.cleanupDidComplete
-        Fired just before the ‘cleanup’ function returns.
-
-	Extracts.targetsDidProcessOnContentLoad {
-			source: "Extracts.processTargetsOnContentLoad"
-			document:
-				The `document` property of the GW.contentDidLoad event that
-				triggered the Extracts.processTargetsOnContentLoad handler.
-            loadLocation:
-                The `loadLocation` property of the GW.contentDidLoad event that
-				triggered the Extracts.processTargetsOnContentLoad handler.
-            baseLocation:
-                The `baseLocation` property of the GW.contentDidLoad event that
-				triggered the Extracts.processTargetsOnContentLoad handler.
-			flags:
-				The `flags` property of the GW.contentDidLoad event that
-				triggered the Extracts.processTargetsOnContentLoad handler.
-		}
-		Fired after targets in a document have been processed (classes applied,
-		event listeners attached, etc.).
-
-    GW.contentDidLoad {
-            source: "Extracts.rewritePopFrameContent_LOCAL_PAGE"
-            document:
-                The `document` property of the local transclude pop-frame.
-            loadLocation:
-                URL of the local page (including anchor, if any).
-            baseLocation:
-            	Same as loadLocation.
-            flags:
-                0 (no flags set)
-        }
-        Fired at the last stage of preparing a local page embed pop-frame for
-        spawning (after the pop-frame’s content has been loaded from the cache
-        of local pages).
-
-        (See rewrite.js for more information about the keys and values of the
-         GW.contentDidLoad event.)
-
-    GW.contentDidLoad {
-            source: "Extracts.refreshPopFrameAfterLocalPageLoads"
-            document:
-                A DocumentFragment containing the embedded page elements.
-            loadLocation:
-                URL of the local page (including anchor, if any).
-            baseLocation:
-            	Same as loadLocation.
-            flags: GW.contentDidLoadEventFlags.needsRewrite
-        }
-        Fired at the last stage of preparing a local page embed pop-frame for
-        spawning (after the pop-frame’s content has been freshly loaded via
-        a network request).
-
-        (See rewrite.js for more information about the keys and values of the
-         GW.contentDidLoad event.)
- */
-
 Extracts = {
     /*  Target containers.
      */
@@ -180,10 +114,8 @@ Extracts = {
 		//	Remove pop-frames & containers.
 		Extracts.popFrameProvider.cleanup();
 
-        //  Remove content load event handlers.
-        [ Extracts.processTargetsOnContentLoad,
-          Extracts.setUpAnnotationLoadEvent,
-          ].forEach(handler => GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", handler));
+        //  Remove content inject event handler.
+    	GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Extracts.processTargetsOnContentInject);
 
         if (Extracts.popFrameProvider == Popups) {
             //  Remove “popups disabled” icon/button, if present.
@@ -208,8 +140,8 @@ Extracts = {
             Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin, Extracts.preparePopinTarget);
         }
 
-		Extracts.setUpAnnotationLoadEventWithin(container);
-		Extracts.setUpContentLoadEventWithin(container);
+		Extracts.setUpAnnotationLoadEventsWithin(container);
+		Extracts.setUpContentLoadEventsWithin(container);
     },
 
     //  Called by: extracts.js (doSetup)
@@ -267,16 +199,15 @@ Extracts = {
             add hover/click event listeners to annotated targets, to load
             annotations (fragments).
          */
-        GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad = (info) => {
-            GWLog("Extracts.processTargetsOnContentLoad", "extracts.js", 2);
+        GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", Extracts.processTargetsOnContentInject = (info) => {
+            GWLog("Extracts.processTargetsOnContentInject", "extracts.js", 2);
 
-            Extracts.processTargetsInContainer(info.container, info.needsRewrite);
+            Extracts.processTargetsInContainer(info.container);
 
 			//	Fire targets-processed event.
-			GW.notificationCenter.fireEvent("Extracts.targetsDidProcessOnContentLoad", {
-				source: "Extracts.processTargetsOnContentLoad",
+			GW.notificationCenter.fireEvent("Extracts.targetsDidProcessOnContentInject", {
+				source: "extractsProcessTargetsOnContentLoad",
 				loadLocation: info.loadLocation,
-				baseLocation: info.baseLocation,
 				container: info.container,
 				document: info.document,
 				flags: info.flags
@@ -288,7 +219,7 @@ Extracts = {
     },
 
     //  Called by: Extracts.setup
-    processTargetsInContainer: (container, addHooks = true) => {
+    processTargetsInContainer: (container) => {
         GWLog("Extracts.processTargetsInContainer", "extracts.js", 2);
 
 		if (   container instanceof DocumentFragment
@@ -304,22 +235,23 @@ Extracts = {
 		/*	Add pop-frame indicator hooks, if need be.
 			(See links.css for how these are used.)
 		 */
-		if (addHooks) {
-			container.querySelectorAll(".has-content").forEach(link => {
-				link.insertAdjacentHTML("afterbegin", `<span class='indicator-hook'></span>`);
+		container.querySelectorAll(".has-content").forEach(link => {
+			if (link.querySelector(".indicator-hook") != null)
+				return;
 
-				/*	Inject U+2060 WORD JOINER at start of first text node of the
-					link. (It _must_ be injected as a Unicode character into the
-					existing text node; injecting it within the .indicator-hook
-					span, or as an HTML escape code into the text node, or in
-					any other fashion, creates a separate text node, which
-					causes all sorts of problems - text shadow artifacts, etc.)
-				 */
-				let linkFirstTextNode = link.firstTextNode;
-				if (linkFirstTextNode)
-					linkFirstTextNode.textContent = "\u{2060}" + linkFirstTextNode.textContent;
-			});
-		}
+			link.insertAdjacentHTML("afterbegin", `<span class="indicator-hook"></span>`);
+
+			/*	Inject U+2060 WORD JOINER at start of first text node of the
+				link. (It _must_ be injected as a Unicode character into the
+				existing text node; injecting it within the .indicator-hook
+				span, or as an HTML escape code into the text node, or in
+				any other fashion, creates a separate text node, which
+				causes all sorts of problems - text shadow artifacts, etc.)
+			 */
+			let linkFirstTextNode = link.firstTextNode;
+			if (linkFirstTextNode)
+				linkFirstTextNode.textContent = "\u{2060}" + linkFirstTextNode.textContent;
+		});
     },
 
     /***********/
@@ -478,7 +410,7 @@ Extracts = {
         transcluded wholesale and embedded as a pop-frame (of class
         ‘full-page’).
      */
-    //  Called by: Extracts.localTranscludeForTarget
+    //  Called by: Extracts.localPageForTarget
     //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
     //  Called by: extracts-content.js
     targetDocument: (target) => {
@@ -545,7 +477,7 @@ Extracts = {
 		where the network request hasn’t come back yet), or mark the pop-frame 
 		as “loading failed” and do nothing (if the load has failed).
 	 */
-	//	Called by: Extracts.localTranscludeForTarget
+	//	Called by: Extracts.localPageForTarget
 	//	Called by: Extracts.localCodeFileForTarget
 	//	Called by: Extracts.annotationForTarget
 	handleIncompleteReferenceData: (target, referenceData, dataProvider) => {

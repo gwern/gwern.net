@@ -2397,42 +2397,10 @@ div#popups-disabled-show-popup-options-dialog-button {
 }
 </style>
 <script>
-/*  Create global 'GW' object, if need be.
+/*  Create global ‘GW’ object, if need be.
  */
 if (typeof window.GW == "undefined")
     window.GW = { };
-
-/********************************/
-/*  Events fired by gw-inline.js:
-
-    GW.contentDidLoad {
-            source: "DOMContentLoaded"
-            document:
-                The global document object (window.document).
-            loadLocation:
-                URL of the main page, as loaded.
-            baseLocation:
-                URL of the main page, as loaded.
-            flags: (  GW.contentDidLoadEventFlags.isMainDocument
-                    | GW.contentDidLoadEventFlags.needsRewrite
-                    | GW.contentDidLoadEventFlags.clickable
-                    | GW.contentDidLoadEventFlags.collapseAllowed
-                    | GW.contentDidLoadEventFlags.fullWidthPossible)
-        }
-        Fired when the browser DOMContentLoaded event fires. Loaded content is
-        the full page itself.
-
-    GW.contentDidInject {
-            source: "DOMContentLoaded"
-            document:
-                The global document object (window.document).
-        }
-        Fired when the browser DOMContentLoaded event fires. “Injected” content
-        is the full page itself.
-
-        (This event is fired immediately after the GW.contentDidLoad event.)
- */
-
 
 /*****************/
 /* MEDIA QUERIES */
@@ -2870,32 +2838,39 @@ GW.notificationCenter = {
         (See definition of the ‘phase’ key of an event handler options
          dictionary, above, for more info.)
 
-        Phases are defined in execution order. For example, when the
-        GW.contentDidLoad event (whose handler phases are defined as follows:
-        `[ "rewrite", "eventListeners" ]`) fires, event handlers are called in
-        the following order:
+        Phases are defined in execution order. For example, consider a 
+        hypothetical GW.exampleDidHappen event, whose handler phases are defined
+        as follows: `[ "foo", "bar" ]`. When the GW.exampleDidHappen event 
+        fires, event handlers are called in the following order:
 
-        1. Handlers assigned to be called before the ‘rewrite’ phase (i.e.,
-           those with ‘<rewrite’ as the value of their ‘phase’ key in their
+		1. Handlers assigned to be called before all other phases (i.e., those 
+		   with ‘<’ as the value of their ‘phase’ key in their event handler 
+		   options dictionary)
+        2. Handlers assigned to be called before the ‘foo’ phase (i.e.,
+           those with ‘<foo’ as the value of their ‘phase’ key in their
            event handler options dictionary)
-        2. Handlers assigned to be called during the ‘rewrite’ phase (i.e.,
-           those with ‘rewrite’ as the value of their ‘phase’ key in their
+        3. Handlers assigned to be called during the ‘foo’ phase (i.e.,
+           those with ‘foo’ as the value of their ‘phase’ key in their
            event handler options dictionary)
-        3. Handlers assigned to be called after the ‘rewrite’ phase (i.e.,
-           those with ‘>rewrite’ as the value of their ‘phase’ key in their
+        4. Handlers assigned to be called after the ‘foo’ phase (i.e.,
+           those with ‘>foo’ as the value of their ‘phase’ key in their
            event handler options dictionary)
-        4. Handlers assigned to be called before the ‘eventListeners’ phase
-           (i.e., those with ‘<eventListeners’ as the value of their ‘phase’ key
+        5. Handlers assigned to be called before the ‘bar’ phase
+           (i.e., those with ‘<bar’ as the value of their ‘phase’ key
            in their event handler options dictionary)
-        5. Handlers assigned to be called during the ‘eventListeners’ phase
-           (i.e., those with ‘eventListeners’ as the value of their ‘phase’ key
+        6. Handlers assigned to be called during the ‘bar’ phase
+           (i.e., those with ‘bar’ as the value of their ‘phase’ key
            in their event handler options dictionary)
-        6. Handlers assigned to be called after the ‘eventListeners’ phase
-           (i.e., those with ‘>eventListeners’ as the value of their ‘phase’ key
+        7. Handlers assigned to be called after the ‘bar’ phase
+           (i.e., those with ‘>bar’ as the value of their ‘phase’ key
            in their event handler options dictionary)
+        8. Handlers assigned to be called after all other phases (i.e., those 
+		   with ‘>’ as the value of their ‘phase’ key in their event handler 
+		   options dictionary)
 
-        (Handlers with no specified phase might be called at any point in this
-         sequence, depending on when they were registered.)
+        (Handlers with no specified phase might be called at any point after 
+         step 1 and before step 8 in this sequence, depending on when they were 
+         registered.)
      */
     handlerPhaseOrders: { },
 
@@ -3221,10 +3196,10 @@ GW.notificationCenter = {
         dictionary may contain is the ‘source’ key, whose value should be a
         string identifying the function, browser event, or other context which
         caused the given event to be fired (such as ‘DOMContentLoaded’ or
-        ‘Annotations.loadAnnotation’). In addition to any ways in which it may
-        be used by an event handler, this string (i.e., the value of the
-        ‘source’ key) is (if present) included in the console message that is
-        printed when the event is fired.
+        ‘Annotations.load’). In addition to any ways in which it may be used 
+        by an event handler, this string (i.e., the value of the ‘source’ key) 
+        is (if present) included in the console message that is printed when the 
+        event is fired.
      */
     fireEvent: (eventName, eventInfo = { }) => {
         if (!eventName)
@@ -3301,24 +3276,23 @@ GW.notificationCenter = {
 
 /*  Event-specific handler phase order for the ‘GW.contentDidLoad’ event.
  */
-GW.notificationCenter.handlerPhaseOrders["GW.contentDidLoad"] = [ "rewrite", "eventListeners" ];
+GW.notificationCenter.handlerPhaseOrders["GW.contentDidLoad"] = [ "transclude", "rewrite" ];
+GW.notificationCenter.handlerPhaseOrders["GW.contentDidInject"] = [ "rewrite", "eventListeners" ];
 
-/*  Event-specific boolean flags for the ‘GW.contentDidLoad’ event.
+/*  Event-specific boolean flags for the ‘GW.contentDidInject’ event.
 
     See rewrite.js for details on the meaning of these flags.
  */
-GW.contentDidLoadEventFlags = {
-    isMainDocument:     1 << 0,
-    needsRewrite:       1 << 1,
-    clickable:          1 << 2,
-    collapseAllowed:    1 << 3,
-    fullWidthPossible:  1 << 4
+GW.contentDidInjectEventFlags = {
+    clickable:          1 << 0,
+    stripCollapses:     1 << 1,
+    fullWidthPossible:  1 << 2
 };
 
-/*  Event-specific pre-fire processing for the ‘GW.contentDidLoad’ event.
+/*  Event-specific pre-fire processing for the ‘GW.contentDidInject’ event.
  */
-GW.notificationCenter.prefireProcessors["GW.contentDidLoad"] = (eventInfo) => {
-    for ([flagName, flagValue] of Object.entries(GW.contentDidLoadEventFlags))
+GW.notificationCenter.prefireProcessors["GW.contentDidInject"] = (eventInfo) => {
+    for ([flagName, flagValue] of Object.entries(GW.contentDidInjectEventFlags))
         eventInfo[flagName] = (0 != (eventInfo.flags & flagValue));
 
     return eventInfo;
@@ -3491,21 +3465,20 @@ GWLog("document.readyState." + document.readyState, "browser event");
 window.addEventListener("DOMContentLoaded", () => {
     GWLog("window.DOMContentLoaded", "browser event");
     GW.DOMContentLoaded = true;
+    let pageURL = new URL(location.href);
     GW.notificationCenter.fireEvent("GW.contentDidLoad", {
         source: "DOMContentLoaded",
         container: document.body,
         document: document,
-        loadLocation: new URL(location.href),
-        baseLocation: new URL(location.href),
-        flags: (  GW.contentDidLoadEventFlags.needsRewrite
-                | GW.contentDidLoadEventFlags.clickable
-                | GW.contentDidLoadEventFlags.collapseAllowed
-                | GW.contentDidLoadEventFlags.fullWidthPossible)
+        loadLocation: pageURL
     });
     GW.notificationCenter.fireEvent("GW.contentDidInject", {
         source: "DOMContentLoaded",
         container: document,
-        document: document
+        document: document,
+        loadLocation: pageURL,
+        flags: (  GW.contentDidInjectEventFlags.clickable
+                | GW.contentDidInjectEventFlags.fullWidthPossible)
     });
 });
 window.addEventListener("load", () => {

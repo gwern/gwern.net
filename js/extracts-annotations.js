@@ -1,44 +1,3 @@
-/*******************************************/
-/*  Events fired by extracts-annotations.js:
-
-    GW.contentDidLoad {
-            source: "Extracts.annotationForTarget",
-            contentType: "annotation",
-            document:
-                A DocumentFragment containing the constructed annotation.
-            loadLocation:
-            	URL of the annotation resource.
-            baseLocation:
-                URL of the annotated target.
-            flags:
-                GW.contentDidLoadEventFlags.needsRewrite
-        }
-        Fired when the content of the annotation pop-frame (i.e., the
-        annotation) has been constructed, but not yet injected into a pop-frame.
-
-        (See rewrite.js for more information about the keys and values of the
-         GW.contentDidLoad event.)
-
-    GW.contentDidLoad {
-            source: "Extracts.rewritePopFrameContent_ANNOTATION"
-            contentType: "annotation",
-            document:
-                The `document` property of the annotation pop-frame.
-            loadLocation:
-            	URL of the annotation resource.
-            baseLocation:
-                URL of the annotated target.
-            flags:
-                0 (no flags set)
-        }
-        Fired when an annotation pop-frame has been filled with content (i.e.,
-        the annotation), at the last stage of preparing the pop-frame for
-        spawning (being injected into the page and positioned).
-
-        (See rewrite.js for more information about the keys and values of the
-         GW.contentDidLoad event.)
- */
-
 /*=-------------=*/
 /*= ANNOTATIONS =*/
 /*=-------------=*/
@@ -56,17 +15,6 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
-    //  Constructed annotations.
-    cachedAnnotations: { },
-
-	cachedAnnotationForTarget: (target) => {
-		return Extracts.cachedAnnotations[Extracts.targetIdentifier(target)];
-	},
-
-	setCachedAnnotationForTarget: (annotation, target) => {
-		Extracts.cachedAnnotations[Extracts.targetIdentifier(target)] = annotation;
-	},
-
     //  Called by: extracts.js (as `predicateFunctionName`)
     //  Called by: extracts.js
     //  Called by: extracts-content.js
@@ -92,50 +40,15 @@ Extracts = { ...Extracts,
     annotationForTarget: (target) => {
         GWLog("Extracts.annotationForTarget", "extracts-annotations.js", 2);
 
-        //  Use cached constructed annotation, if available.
-        if (Extracts.cachedAnnotationForTarget(target))
-            return newDocument(Extracts.cachedAnnotationForTarget(target));
+		let linkTarget = ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank");
 
-        //  Get annotation reference data (if it’s been loaded).
-        let referenceData = Annotations.referenceDataForTarget(target);
-        if (   referenceData == null
-        	|| referenceData == "LOADING_FAILED") {
-        	//	Handle if not loaded yet, or load failed.
-	        Extracts.handleIncompleteReferenceData(target, referenceData, Annotations);
-
-            return newDocument();
-        }
-
-		//	Construct annotation by filling template with reference data.
-		let constructedAnnotation = Transclude.fillTemplateNamed("annotation-blockquote-not", referenceData, {
-			linkTarget:  ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank")
-		});
-
-		//	Make aux-links-append include-links lazy.
-		Array.from(constructedAnnotation.querySelectorAll(".include-strict")).filter(link => 
-			Extracts.auxLinksLinkType(link) != null
-		).forEach(link => {
-			link.swapClasses([ "include", "include-strict" ], 0);
-			link.classList.add("include-when-collapsed");
-		});
-
-        //  Fire contentDidLoad event.
-        let targetLocation = new URL(target.href);
-        GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-            source: "Extracts.annotationForTarget",
-            contentType: "annotation",
-            container: constructedAnnotation,
-            document: constructedAnnotation,
-            loadLocation: Annotations.sourceURLForTarget(target),
-            baseLocation: targetLocation,
-            flags: (  GW.contentDidLoadEventFlags.needsRewrite
-            		| GW.contentDidLoadEventFlags.collapseAllowed)
-        });
-
-        //  Cache constructed and processed annotation.
-        Extracts.setCachedAnnotationForTarget(constructedAnnotation, target);
-
-        return newDocument(constructedAnnotation);
+		return newDocument(`<a 
+			href="${target.href}" 
+			class="link-annotated include-annotation include-strict"
+			data-template="annotation-blockquote-not"
+			data-template-fields="linkTarget:$"
+			data-link-target="${linkTarget}"
+				></a>`);
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
@@ -196,16 +109,11 @@ Extracts = { ...Extracts,
         	&& referenceData.dataSourceClass)
             Extracts.popFrameProvider.addClassesToPopFrame(popFrame, referenceData.dataSourceClass.split(" "));
 
-        //  Fire contentDidLoad event.
-        let targetLocation = new URL(target.href);
+        //  Fire contentDidLoad event (to trigger transclude).
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_ANNOTATION",
-            contentType: "annotation",
             container: popFrame.body,
-            document: popFrame.document,
-            loadLocation: Annotations.sourceURLForTarget(target),
-            baseLocation: targetLocation,
-            flags: GW.contentDidLoadEventFlags.collapseAllowed
+            document: popFrame.document
         });
     },
 
@@ -216,8 +124,8 @@ Extracts = { ...Extracts,
     annotationLoadHoverDelay: 25,
 
     //  Called by: extracts.js
-    setUpAnnotationLoadEventWithin: (container) => {
-        GWLog("Extracts.setUpAnnotationLoadEventWithin", "extracts-annotations.js", 1);
+    setUpAnnotationLoadEventsWithin: (container) => {
+        GWLog("Extracts.setUpAnnotationLoadEventsWithin", "extracts-annotations.js", 1);
 
         //  Get all the annotated targets in the container.
         let allAnnotatedTargetsInContainer = Annotations.allAnnotatedLinksInContainer(container);
@@ -230,8 +138,8 @@ Extracts = { ...Extracts,
                     let annotationIdentifier = Annotations.targetIdentifier(annotatedTarget);
 
                     //  Do nothing if the annotation is already loaded.
-                    if (Annotations.cachedAnnotationExists(annotationIdentifier) == false)
-                        Annotations.loadAnnotation(annotationIdentifier);
+                    if (Annotations.cachedDataExists(annotationIdentifier) == false)
+                        Annotations.load(annotationIdentifier);
                 }, "mouseleave");
             });
 
@@ -254,8 +162,8 @@ Extracts = { ...Extracts,
                     let annotationIdentifier = Annotations.targetIdentifier(annotatedTarget);
 
                     //  Do nothing if the annotation is already loaded.
-                    if (Annotations.cachedAnnotationExists(annotationIdentifier) == false)
-                        Annotations.loadAnnotation(annotationIdentifier);
+                    if (Annotations.cachedDataExists(annotationIdentifier) == false)
+                        Annotations.load(annotationIdentifier);
                 });
             });
 

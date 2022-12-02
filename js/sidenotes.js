@@ -9,28 +9,6 @@ Author: Said Achmiz
 license: MIT (derivative of footnotes.js, which is PD)
 */
 
-/********************************/
-/*	Events fired by sidenotes.js:
-
-	Sidenotes.didLoad
-		Fired when the Sidenotes object has loaded.
-
-	Sidenotes.setupDidComplete
-		Fired just before the ‘setup’ function returns.
-
-	Sidenotes.cleanupDidComplete
-		Fired just before the ‘cleanup’ function returns.
-
-	Sidenotes.sidenotesDidConstruct
-		Fired after HTML structure of sidenotes has been created and injected
-		into the page, and event listeners have been attached.
-
-	Sidenotes.sidenotePositionsDidUpdate
-		Fired after sidenote positions have been calculated (or re-calculated),
-		either after the initial page load or after, e.g., some change in
-		viewport dimensions.
- */
-
 /*****************/
 /*	Configuration.
  */
@@ -606,14 +584,14 @@ Sidenotes = { ...Sidenotes,
 			source: "Sidenotes.constructSidenotes",
 			container: Sidenotes.hiddenSidenoteStorage,
 			document: document,
-			loadLocation: loadEventInfo.loadLocation,
-			baseLocation: urlSansHash(location),
-			flags: 0
+			loadLocation: loadEventInfo.loadLocation
 		});
 		GW.notificationCenter.fireEvent("GW.contentDidInject", {
 			source: "Sidenotes.constructSidenotes",
 			container: Sidenotes.hiddenSidenoteStorage,
-			document: document
+			document: document,
+			loadLocation: loadEventInfo.loadLocation,
+			flags: 0
 		});
 	},
 
@@ -684,8 +662,7 @@ Sidenotes = { ...Sidenotes,
 			});
 		}, { 
 			phase: "rewrite",
-			condition: (info) => (   info.needsRewrite 
-								  && info.container == document.body),
+			condition: (info) => (info.container == document.body),
 			once: true
 		});
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
@@ -725,8 +702,7 @@ Sidenotes = { ...Sidenotes,
 				});
 			}, { 
 				phase: "rewrite",
-				condition: (info) => (   info.needsRewrite 
-									  && info.document == document) 
+				condition: (info) => (info.document == document) 
 			});
 		}, { once: true });
 
