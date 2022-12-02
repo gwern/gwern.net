@@ -3,16 +3,6 @@
 /* License: GPL (derivative work of https://www.pmwiki.org/wiki/Cookbook/ImgFocus ) */
 /* Lightweight dependency-free JavaScript library for "click to focus/zoom" images in HTML web pages. Originally coded for Obormot.net / GreaterWrong.com. */
 
-/**********************************/
-/*	Events fired by image-focus.js:
-
-	ImageFocus.didLoad
-		Fired when all image-focus code has loaded.
-
-	ImageFocus.setupDidComplete
-		Fired just before the ‘imageFocusSetup’ function returns.
- */
-
 ImageFocus = {
 	/****************/
 	/* Configuration.

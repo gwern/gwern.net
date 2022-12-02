@@ -23,8 +23,8 @@
     --GW-popups-annotation-popup-min-height: 120px;
     --GW-popups-aux-links-popup-min-width: 360px;
     --GW-popups-aux-links-popup-min-height: 120px;
-    --GW-popups-local-transclude-popup-min-width: 360px;
-    --GW-popups-local-transclude-popup-min-height: 120px;
+    --GW-popups-local-page-popup-min-width: 360px;
+    --GW-popups-local-page-popup-min-height: 120px;
     --GW-popups-popup-border-width: 3px;
     --GW-popups-popup-title-bar-height: calc(1.5rem + 1px);
     --GW-popups-popup-mini-title-bar-height: calc(1rem + 1px);
@@ -3352,14 +3352,14 @@ body.index-directory #footer {
     max-width: unset;
 }
 
-.popframe-body.local-transclude > blockquote:first-child,
-.popframe-body.local-transclude > .table-wrapper:first-child,
-.popframe-body.local-transclude > div.sourceCode:first-child pre {
+.popframe-body.local-page > blockquote:first-child,
+.popframe-body.local-page > .table-wrapper:first-child,
+.popframe-body.local-page > div.sourceCode:first-child pre {
     margin-top: calc(3em/9);
 }
-.popframe-body.local-transclude > blockquote:last-child,
-.popframe-body.local-transclude > .table-wrapper:last-child,
-.popframe-body.local-transclude > div.sourceCode:last-child pre {
+.popframe-body.local-page > blockquote:last-child,
+.popframe-body.local-page > .table-wrapper:last-child,
+.popframe-body.local-page > div.sourceCode:last-child pre {
     margin-bottom: calc(1em/9);
 }
 
@@ -3442,7 +3442,10 @@ body.index-directory #footer {
 
 .popframe-body > div.annotation > div.annotation-abstract > :not(section).collapse:not(.expanded),
 .popframe-body > div.annotation > div.annotation-abstract > :not(section).collapse.expanded {
+    margin-left: 0;
     margin-right: -2px;
+    padding-right: 0.5em;
+    border-left: 1px solid var(--GW-TOC-border-color);
     border-right: 1px solid var(--GW-TOC-border-color);
 }
 .popframe-body > div.annotation > div.annotation-abstract > :not(section).collapse:last-child {
@@ -3597,7 +3600,7 @@ body.index-directory #footer {
 /*│ Local transclude pop-frames. │*/
 /*└──────────────────────────────┘*/
 
-.popframe.local-transclude .popframe-content-view {
+.popframe.local-page .popframe-content-view {
     overflow-x: hidden;
 }
 
@@ -3715,7 +3718,7 @@ body.index-directory #footer {
     align-items: center;
     width: 100%;
     cursor: grab;
-    z-index: 11;
+    z-index: 111;
 }
 
 .popup.has-title-bar.mini-title-bar .popframe-title-bar {
@@ -4186,14 +4189,14 @@ body.index-directory #footer {
 /*│ Local transclude popups. │*/
 /*└──────────────────────────┘*/
 
-.popup.local-transclude {
-    min-width: var(--GW-popups-local-transclude-popup-min-width);
-    min-height: var(--GW-popups-local-transclude-popup-min-height);
+.popup.local-page {
+    min-width: var(--GW-popups-local-page-popup-min-width);
+    min-height: var(--GW-popups-local-page-popup-min-height);
 }
 
 /*  Table of contents popups.
     */
-.popup.local-transclude.toc-section .popframe-scroll-view {
+.popup.local-page.toc-section .popframe-scroll-view {
     max-height: calc(100vh - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
 }
 
@@ -5119,18 +5122,23 @@ section.highlight-fading::before {
     display: none;
 }
 
-.link-bibliography-append > ol {
+ol.link-bibliography-list-compact {
 	list-style-type: lower-alpha;
     padding-left: 1.75em;
 }
-.link-bibliography-append > ol > li::marker {
+ol.link-bibliography-list-compact > li::marker {
     font-family: var(--GW-monospaced-font-stack);
     font-size: 0.9em;
 }
 @media all and (max-width: 649px) {
-	.link-bibliography-append > ol {
+	ol.link-bibliography-list-compact {
 		padding-left: 1.75em;
 	}
+}
+
+#link-bibliography > ol > li > p + p {
+	text-indent: 0;
+    margin-top: 0.5em;
 }
 
 /*********************/
@@ -5637,14 +5645,14 @@ a.include-loading-failed:empty {
     background: none;
 }
 
-a.include-loading {
+a.include-loading.include-spinner {
     pointer-events: none;
     --spinner-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M222.7 32.15C227.7 49.08 218.1 66.9 201.1 71.94C121.8 95.55 64 169.1 64 255.1C64 362 149.1 447.1 256 447.1C362 447.1 448 362 448 255.1C448 169.1 390.2 95.55 310.9 71.94C293.9 66.9 284.3 49.08 289.3 32.15C294.4 15.21 312.2 5.562 329.1 10.6C434.9 42.07 512 139.1 512 255.1C512 397.4 397.4 511.1 256 511.1C114.6 511.1 0 397.4 0 255.1C0 139.1 77.15 42.07 182.9 10.6C199.8 5.562 217.6 15.21 222.7 32.15V32.15z"/></svg>');
 }
 
 /*  Loading spinner.
  */
-a.include-loading::after {
+a.include-loading.include-spinner::after {
     display: inline-block;
     animation: fa-spin 2s infinite linear;
     position: relative;
@@ -5652,18 +5660,18 @@ a.include-loading::after {
     top: 0.25em;
 }
 
-a.include-loading:empty::after {
+a.include-loading.include-spinner:empty::after {
     content: var(--spinner-image);
     width: 1.25em;
     height: 1.25em;
     margin: 0;
 }
 
-a.include-loading:not(:empty)::after,
-a.include-loading[data-link-icon]:not(:empty)::after {
+a.include-loading.include-spinner:not(:empty)::after,
+a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     background-image: var(--spinner-image);
 }
-a.include-loading:not(:empty)::after {
+a.include-loading.include-spinner:not(:empty)::after {
     --spinner-size: 0.9em;
 
     background-size: var(--spinner-size);
@@ -5673,14 +5681,10 @@ a.include-loading:not(:empty)::after {
     height: var(--spinner-size);
     margin: 0 0.1em 0 0.2em;
 }
-a.include-loading[data-link-icon]:not(:empty)::after {
+a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     padding: 0;
     background-position: 0 0;
     position: relative;
     top: unset;
     bottom: 0;
-}
-
-a.include-loading.include-spinner-not::after {
-    display: none;
 }

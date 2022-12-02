@@ -1,69 +1,3 @@
-/***************************************/
-/*  Events fired by extracts-content.js:
-
-    GW.contentDidLoad {
-            source: "Extracts.rewritePopFrameContent_CITATION"
-            document:
-                The `document` property of the citation pop-frame.
-            loadLocation:
-                URL of (i.e., anchor-link to) the footnote (or sidenote; this
-                depends on whether the page in which the citation appears -
-                which may not necessarily be the main page, as citations may
-                also occur in embedded pages - is currently in sidenotes mode
-                or not).
-            baseLocation:
-                Same as loadLocation.
-            flags:
-                0 (no flags set)
-        }
-        Fired when a citation (i.e., footnote) pop-frame has been filled with
-        content (i.e., the footnote), at the last stage of preparing the
-        pop-frame for spawning (being injected into the page and positioned).
-
-        (See rewrite.js for more information about the keys and values of the
-         GW.contentDidLoad event.)
-
-    GW.contentDidLoad {
-            source: "Extracts.rewritePopupContent_CITATION_BACK_LINK"
-            document:
-                The `document` property of the citation back-link popup.
-            loadLocation:
-                URL of (i.e., anchor-link to) the citation which references the
-                footnote/sidenote which spawned the popup. (If there are
-                multiple instances of the citation on the page, this will be the
-                URL of the first one, and that is what the popup will contain.)
-            baseLocation:
-                Same as loadLocation.
-            flags:
-                0 (no flags set)
-        }
-        Fired when a citation back-link popup has been filled with content
-        (i.e., the text surrounding the reference which links to the footnote),
-        at the last stage of preparing the popup for spawning (being
-        injected into the page and positioned).
-
-        (See rewrite.js for more information about the keys and values of the
-         GW.contentDidLoad event.)
-
-    GW.contentDidLoad {
-            source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK"
-            document:
-                The `document` property of the aux-links pop-frame.
-            loadLocation:
-                URL of the aux-links source file.
-            baseLocation:
-                Same as loadLocation.
-            flags:
-                GW.contentDidLoadEventFlags.needsRewrite
-        }
-        Fired at the last stage of preparing an aux-links pop-frame for spawning
-        (after the pop-frame’s content has been loaded from the local aux-links
-        frame cache).
-
-        (See rewrite.js for more information about the keys and values of the
-         GW.contentDidLoad event.)
-*/
-
 /***************************************************************************/
 /*  The target-testing and pop-frame-filling functions in this section
 	come in sets, which define and implement classes of pop-frames
@@ -89,11 +23,11 @@
  */
 
 Extracts.targetTypeDefinitions.push([
-	"LOCAL_PAGE",                // Type name
-	"isLocalPageLink",           // Type predicate function
-	"has-content",               // Target classes to add
-	"localTranscludeForTarget",  // Pop-frame fill function
-	"local-transclude"           // Pop-frame classes
+	"LOCAL_PAGE",          // Type name
+	"isLocalPageLink",     // Type predicate function
+	"has-content",         // Target classes to add
+	"localPageForTarget",  // Pop-frame fill function
+	"local-page"           // Pop-frame classes
 ]);
 
 /*=-------------=*/
@@ -138,8 +72,8 @@ Extracts = { ...Extracts,
     //  Called by: Extracts.fillPopFrame (as `popFrameFillFunctionName`)
     //	Called by: Extracts.citationForTarget (extracts-content.js)
     //	Called by: Extracts.citationBackLinkForTarget (extracts-content.js)
-    localTranscludeForTarget: (target, forceNarrow) => {
-        GWLog("Extracts.localTranscludeForTarget", "extracts.js", 2);
+    localPageForTarget: (target, forceNarrow) => {
+        GWLog("Extracts.localPageForTarget", "extracts.js", 2);
 
 		/*  Check to see if the target location matches an already-displayed
 			page (which can be the root page of the window).
@@ -174,8 +108,8 @@ Extracts = { ...Extracts,
 
 		//	Ask for a content load, if need be.
 		let contentIdentifier = Content.targetIdentifier(target);
-		if (Content.cachedContentExists(contentIdentifier) == false)
-			Content.loadContent(contentIdentifier);
+		if (Content.cachedDataExists(contentIdentifier) == false)
+			Content.load(contentIdentifier);
 
         //  Get content reference data (if it’s been loaded).
         let referenceData = Content.referenceDataForTarget(target);
@@ -189,8 +123,9 @@ Extracts = { ...Extracts,
 
         if (fullPage) {
 			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, ...referenceData.pageBodyClasses.split(" "));
-			return newDocument(referenceData.pageContent);
+			return newDocument(referenceData.content);
         } else {
+//         	return newDocument(referenceData.targetBlock);
 			let isBlockTranscludeLink = (   Transclude.isIncludeLink(referenceData.targetElement)
 										 && (   referenceData.targetElement.classList.contains("include-block-context")
 										 	 || (   referenceData.targetElement.id > ""
@@ -243,13 +178,13 @@ Extracts = { ...Extracts,
 			transcludes in source content when they trigger in the pop-frame.
 		 */
 		let identifier = Content.targetIdentifier(target);
-		if (Content.cachedContentExists(identifier)) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
+		if (Content.cachedDataExists(identifier)) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 				Content.updateCachedContent(identifier, (content) => {
-					Transclude.allIncludeLinksInContainer(content).filter(link => 
-						link.href == info.includeLink.href
-					).forEach(link => {
-						Transclude.transclude(link, true);
+					Transclude.allIncludeLinksInContainer(content).filter(includeLink => 
+						includeLink.href == info.includeLink.href
+					).forEach(includeLink => {
+						Transclude.transclude(includeLink, true);
 					});
 				});
 
@@ -259,11 +194,8 @@ Extracts = { ...Extracts,
 				if (   info.container.parentElement == popFrame.body
 					&& info.container.parentElement.children.length == 2)
 					Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);				
-			}, { 
-				once: true,
-				condition: (info) => (   info.source == "transclude" 
-									  && info.document == popFrame.document)
-			});
+			}, { condition: (info) => (   info.source == "transclude" 
+									   && info.document == popFrame.document) });
 		}
 
 		return popFrame;
@@ -301,6 +233,14 @@ Extracts = { ...Extracts,
 			updateDisclosureButtonTitleForCollapseBlock(collapseBlock);
 		});
 
+		//	Make first image load eagerly.
+		let firstImage = (   popFrame.body.querySelector(".page-thumbnail")
+						  || popFrame.body.querySelector("figure img"))
+		if (firstImage) {
+			firstImage.loading = "eager";
+			firstImage.decoding = "sync";
+		}
+
 		//	Lazy-loading of adjacent sections.
 		//	WARNING: Experimental code!
 // 		if (target.hash > "") {
@@ -309,15 +249,12 @@ Extracts = { ...Extracts,
 // 			});
 // 		}
 
-        //  Fire a contentDidLoad event.
-        let targetLocation = new URL(target.href);
-        GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+        //  Fire a contentDidInject event.
+        GW.notificationCenter.fireEvent("GW.contentDidInject", {
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
             container: popFrame.body,
             document: popFrame.document,
-            loadLocation: targetLocation,
-            baseLocation: targetLocation,
-            flags: GW.contentDidLoadEventFlags.collapseAllowed
+            loadLocation: new URL(target.href)
         });
 
         //  Scroll to the target.
@@ -383,15 +320,12 @@ Extracts = { ...Extracts,
 			sectionWrapper.replaceChildren(...(popFrame.body.children));
 			popFrame.body.appendChild(sectionWrapper);
 
-			//  Fire a contentDidLoad event.
-			let targetLocation = new URL(target.href);
-			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			//  Fire a contentDidInject event.
+			GW.notificationCenter.fireEvent("GW.contentDidInject", {
 				source: "Extracts.loadAdjacentSections",
 				container: popFrame.body.firstElementChild,
 				document: popFrame.document,
-				loadLocation: targetLocation,
-				baseLocation: targetLocation,
-				flags: 0
+				loadLocation: new URL(target.href)
 			});
 		}
 
@@ -399,15 +333,12 @@ Extracts = { ...Extracts,
 		if (prev && prevSection) {
 			popFrame.body.insertBefore(newDocument(prevSection), popFrame.body.firstElementChild);
 
-			//  Fire a contentDidLoad event.
-			let targetLocation = new URL(target.href);
-			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			//  Fire a contentDidInject event.
+			GW.notificationCenter.fireEvent("GW.contentDidInject", {
 				source: "Extracts.loadAdjacentSections",
 				container: popFrame.body.firstElementChild,
 				document: popFrame.document,
-				loadLocation: targetLocation,
-				baseLocation: targetLocation,
-				flags: 0
+				loadLocation: new URL(target.href)
 			});
 
 			popFrame.firstSection = prevSection;
@@ -417,15 +348,12 @@ Extracts = { ...Extracts,
 		if (next && nextSection) {
 			popFrame.body.insertBefore(newDocument(nextSection), null);
 
-			//  Fire a contentDidLoad event.
-			let targetLocation = new URL(target.href);
-			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			//  Fire a contentDidInject event.
+			GW.notificationCenter.fireEvent("GW.contentDidInject", {
 				source: "Extracts.loadAdjacentSections",
 				container: popFrame.body.lastElementChild,
 				document: popFrame.document,
-				loadLocation: targetLocation,
-				baseLocation: targetLocation,
-				flags: 0
+				loadLocation: new URL(target.href)
 			});
 
 			popFrame.lastSection = nextSection;
@@ -446,26 +374,10 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
-    auxLinksLinkTypes: {
-        "/metadata/annotations/backlinks/":          "backlinks",
-        "/metadata/annotations/similars/":           "similars",
-        "/metadata/annotations/link-bibliography/":  "link-bibliography"
-    },
-
-    //  Called by: Extracts.isAuxLinksLink
-    //  Called by: Extracts.titleForPopFrame_AUX_LINKS_LINK
-    auxLinksLinkType: (target) => {
-        for ([ pathnamePrefix, linkType ] of Object.entries(Extracts.auxLinksLinkTypes))
-            if (target.pathname.startsWith(pathnamePrefix))
-                return linkType;
-
-        return null;
-    },
-
     //  Called by: Extracts.isLocalCodeFileLink
     //  Called by: extracts.js (as `predicateFunctionName`)
     isAuxLinksLink: (target) => {
-        let auxLinksLinkType = Extracts.auxLinksLinkType(target);
+        let auxLinksLinkType = AuxLinks.auxLinksLinkType(target);
         return (   auxLinksLinkType != null
                 && target.classList.contains(auxLinksLinkType));
     },
@@ -478,7 +390,7 @@ Extracts = { ...Extracts,
     //  Called by: Extracts.targets.testTarget (as `testTarget_${targetTypeInfo.typeName}`)
     testTarget_AUX_LINKS_LINK: (target) => {
         let exclude = false;
-        let auxLinksType = Extracts.auxLinksLinkType(target);
+        let auxLinksType = AuxLinks.auxLinksLinkType(target);
         let containingAnnotation = target.closest(".annotation");
         if (containingAnnotation) {
             let includedAuxLinksBlock = containingAnnotation.querySelector(`.${auxLinksType}-append`);
@@ -496,7 +408,7 @@ Extracts = { ...Extracts,
     auxLinksForTarget: (target) => {
         GWLog("Extracts.auxLinksForTarget", "extracts-content.js", 2);
 
-        let auxLinksLinkType = Extracts.auxLinksLinkType(target);
+        let auxLinksLinkType = AuxLinks.auxLinksLinkType(target);
 
         return newDocument(`<a href="${target.href}" class="${auxLinksLinkType} include-strict"></a>`);
     },
@@ -505,7 +417,7 @@ Extracts = { ...Extracts,
     preparePopFrame_AUX_LINKS_LINK: (popFrame) => {
         GWLog("Extracts.preparePopFrame_AUX_LINKS_LINK", "extracts-content.js", 2);
 
-        let auxLinksLinkType = Extracts.auxLinksLinkType(popFrame.spawningTarget);
+        let auxLinksLinkType = AuxLinks.auxLinksLinkType(popFrame.spawningTarget);
         if (auxLinksLinkType > "")
             Extracts.popFrameProvider.addClassesToPopFrame(popFrame, auxLinksLinkType);
 
@@ -516,43 +428,19 @@ Extracts = { ...Extracts,
     rewritePopFrameContent_AUX_LINKS_LINK: (popFrame) => {
         let target = popFrame.spawningTarget;
 
-        //  Fire a contentDidLoad event.
-        let targetLocation = new URL(target.href);
+        //  Fire a contentDidLoad event (to trigger transclude).
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK",
             container: popFrame.body,
-            document: popFrame.document,
-            loadLocation: targetLocation,
-            baseLocation: targetLocation,
-            flags: GW.contentDidLoadEventFlags.needsRewrite
+            document: popFrame.document
         });
-    },
-
-    /*  Page or document for whom the aux-links are.
-     */
-    //  Called by: Extracts.titleForPopFrame_AUX_LINKS_LINK
-    targetOfAuxLinksLink: (target) => {
-        for ([ pathnamePrefix, linkType ] of Object.entries(Extracts.auxLinksLinkTypes)) {
-            if (target.pathname.startsWith(pathnamePrefix)) {
-                if (target.pathname.endsWith(".html")) {
-                    let start = pathnamePrefix.length;
-                    let end = (target.pathname.length - ".html".length);
-                    return decodeURIComponent(decodeURIComponent(target.pathname.slice(start, end)));
-                } else {
-                    let start = (pathnamePrefix.length - 1);
-                    return target.pathname.slice(start);
-                }
-            }
-        }
-
-        return null;
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
     titleForPopFrame_AUX_LINKS_LINK: (popFrame) => {
         let target = popFrame.spawningTarget;
-        let targetPage = Extracts.targetOfAuxLinksLink(target);
-        let auxLinksLinkType = Extracts.auxLinksLinkType(target);
+        let targetPage = AuxLinks.targetOfAuxLinksLink(target);
+        let auxLinksLinkType = AuxLinks.auxLinksLinkType(target);
         switch (auxLinksLinkType) {
             case "backlinks":
                 return `${targetPage} (Backlinks)`;
@@ -588,7 +476,7 @@ Extracts = { ...Extracts,
     citationForTarget: (target) => {
         GWLog("Extracts.citationForTarget", "extracts-content.js", 2);
 
-		let content = Extracts.localTranscludeForTarget(target, true);
+		let content = Extracts.localPageForTarget(target, true);
 
 		//	Remove extraneous elements.
 		content.querySelectorAll(".footnote-self-link, .footnote-back").forEach(element => {
@@ -641,15 +529,11 @@ Extracts = { ...Extracts,
     rewritePopFrameContent_CITATION: (popFrame) => {
         let target = popFrame.spawningTarget;
 
-        //  Fire a contentDidLoad event.
-        let targetLocation = new URL(target.href);
-        GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+        //  Fire a contentDidInject event.
+        GW.notificationCenter.fireEvent("GW.contentDidInject", {
             source: "Extracts.rewritePopFrameContent_CITATION",
             container: popFrame.body,
-            document: popFrame.document,
-            loadLocation: targetLocation,
-            baseLocation: targetLocation,
-            flags: 0
+            document: popFrame.document
         });
     },
 };
@@ -676,7 +560,7 @@ Extracts = { ...Extracts,
     citationBackLinkForTarget: (target) => {
         GWLog("Extracts.citationBackLinkForTarget", "extracts-content.js", 2);
 
-        return Extracts.localTranscludeForTarget(target, true);
+        return Extracts.localPageForTarget(target, true);
     },
 
     /*  This “special testing function” is used to exclude certain targets which
@@ -722,15 +606,11 @@ Extracts = { ...Extracts,
         //  Highlight the citation.
         citationInPopup.classList.add("targeted");
 
-        //  Fire a contentDidLoad event.
-        let targetLocation = new URL(target.href);
-        GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+        //  Fire a contentDidInject event.
+        GW.notificationCenter.fireEvent("GW.contentDidInject", {
             source: "Extracts.rewritePopupContent_CITATION_BACK_LINK",
             container: popup.body,
-            document: popup.document,
-            loadLocation: targetLocation,
-            baseLocation: targetLocation,
-            flags: 0
+            document: popup.document
         });
 
         //  Scroll to the citation.
@@ -1041,8 +921,8 @@ Extracts = { ...Extracts,
 
 		//	Ask for a content load, if need be.
 		let contentIdentifier = Content.targetIdentifier(target);
-		if (Content.cachedContentExists(contentIdentifier) == false)
-			Content.loadContent(contentIdentifier);
+		if (Content.cachedDataExists(contentIdentifier) == false)
+			Content.load(contentIdentifier);
 
         //  Get content reference data (if it’s been loaded).
         let referenceData = Content.referenceDataForTarget(target);
@@ -1054,7 +934,7 @@ Extracts = { ...Extracts,
             return newDocument();
         }
 
-		return newDocument(referenceData.codePageContent);
+		return newDocument(referenceData.content);
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
@@ -1229,16 +1109,16 @@ Extracts = { ...Extracts,
         }
     },
 
-	//	Used in: Extracts.setUpContentLoadEventWithin
+	//	Used in: Extracts.setUpContentLoadEventsWithin
 	contentLoadHoverDelay: 25,
 
     //  Called by: extracts.js
-    setUpContentLoadEventWithin: (container) => {
-        GWLog("Extracts.setUpContentLoadEventWithin", "extracts.js", 1);
+    setUpContentLoadEventsWithin: (container) => {
+        GWLog("Extracts.setUpContentLoadEventsWithin", "extracts.js", 1);
 
         /*  Get all targets in the container that use Content as a data loading
-        	provider. (Currently that is local page links and local code file
-        	links.)
+        	provider. (Currently that is local page links, local fragment links,
+        	and local code file links.)
          */
         let allTargetsInContainer = Array.from(container.querySelectorAll("a[class*='has-content']")).filter(link => 
         	Content.contentTypeForTarget(link) != null
@@ -1252,8 +1132,8 @@ Extracts = { ...Extracts,
                     let contentIdentifier = Content.targetIdentifier(target);
 
                     //  Do nothing if the content is already loaded.
-                    if (Content.cachedContentExists(contentIdentifier) == false)
-                        Content.loadContent(contentIdentifier);
+                    if (Content.cachedDataExists(contentIdentifier) == false)
+                        Content.load(contentIdentifier);
                 }, "mouseleave");
             });
 
@@ -1276,8 +1156,8 @@ Extracts = { ...Extracts,
                     let contentIdentifier = Content.targetIdentifier(target);
 
                     //  Do nothing if the content is already loaded.
-                    if (Content.cachedContentExists(contentIdentifier) == false)
-                        Content.loadContent(contentIdentifier);
+                    if (Content.cachedDataExists(contentIdentifier) == false)
+                        Content.load(contentIdentifier);
                 });
             });
 

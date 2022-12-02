@@ -9,10 +9,19 @@ Content = {
 
 	cachedContent: { },
 
-	cachedContentExists: (identifier) => {
+	cachedDataExists: (identifier) => {
 		let cachedContent = Content.cachedContentForIdentifier(identifier);
         return (   cachedContent != null 
         		&& cachedContent != "LOADING_FAILED");
+	},
+
+	//	Convenience method.
+	cachedDocumentForLink: (link) => {
+		let identifier = Content.targetIdentifier(link);
+		let cachedContent = Content.cachedContentForIdentifier(identifier);
+		return (cachedContent
+				? cachedContent.document
+				: null);
 	},
 
 	contentCacheKeyForIdentifier: (identifier) => {
@@ -31,7 +40,7 @@ Content = {
 	},
 
 	updateCachedContent: (identifier, updateFunction) => {
-		if (Content.cachedContentExists(identifier) == false)
+		if (Content.cachedDataExists(identifier) == false)
 			return;
 
 		let content = Content.cachedContentForIdentifier(identifier);
@@ -92,8 +101,8 @@ Content = {
         GW.notificationCenter.addHandlerForEvent("Content.contentLoadDidFail", loadDidFailHandler, options);
 	},
 
-	loadContent: (identifier, loadHandler = null, loadFailHandler = null, sourceURLsRemaining = null) => {
-        GWLog("Content.loadContent", "content.js", 2);
+	load: (identifier, loadHandler = null, loadFailHandler = null, sourceURLsRemaining = null) => {
+        GWLog("Content.load", "content.js", 2);
 
 		sourceURLsRemaining = sourceURLsRemaining ?? Content.sourceURLsForIdentifier(identifier);
 		let sourceURL = sourceURLsRemaining.shift();
@@ -125,11 +134,21 @@ Content = {
 			doAjax({
 				location: sourceURL.href,
 				onSuccess: (event) => {
+                    let httpContentType = event.target.getResponseHeader("Content-Type").match(/(.+?)(?:;|$)/)[1];
+                    let contentType = Content.contentTypeForIdentifier(identifier);
+                    if (   contentType.permittedContentTypes
+                    	&& contentType.permittedContentTypes.includes(httpContentType) == false) {
+	                	//	Send request to record failure in server logs.
+                        GWServerLogError(includeLink.href + `--bad-content-type`, "bad content type");
+
+                        return;
+                    }
+
 					processResponse(event.target.responseText);
 				},
 				onFailure: (event) => {
 					if (sourceURLsRemaining.length > 0) {
-						Content.loadContent(identifier, null, null, sourceURLsRemaining);
+						Content.load(identifier, null, null, sourceURLsRemaining);
 						return;
 					}
 
@@ -181,9 +200,10 @@ Content = {
 	/**************************************************************/
 	/*	CONTENT TYPES
 
-		Each has three necessary members:
+		Each has five necessary members:
 
 		.matches(string) => boolean
+		.matchesLink(URL|Element) => boolean
 		.sourceURLsForIdentifier(string) => [ URL ]
 		.contentFromResponse(string, string, URL) => object
 		.referenceDataFromContent(object, string) => object
@@ -198,7 +218,11 @@ Content = {
 	},
 
 	contentTypeForTarget: (target) => {
-		return Content.contentTypeForIdentifier(Content.targetIdentifier(target));
+		for ([ typeName, contentType ] of Object.entries(Content.contentTypes))
+			if (contentType.matchesLink(target))
+				return contentType;
+
+		return null;
 	},
 
 	contentTypes: {
@@ -254,9 +278,9 @@ Content = {
 			},
 
 			contentFromResponse: (response, identifier, loadURL) => {
-				let content;
+				let codeBlock;
 				if (response.slice(0, 1) == "<") {
-					content = newDocument(response);
+					codeBlock = newDocument(response);
 				} else {
 					let htmlEncodedResponse = response.replace(
 						/[<>]/g, 
@@ -264,19 +288,19 @@ Content = {
 					).split("\n").map(
 						line => (`<span class="line">${(line || "&nbsp;")}</span>`)
 					).join("\n");
-					content = newDocument(  `<pre class="raw-code"><code>`
-										  + htmlEncodedResponse
-										  + `</code></pre>`);
+					codeBlock = newDocument(  `<pre class="raw-code"><code>`
+											+ htmlEncodedResponse
+											+ `</code></pre>`);
 				}
 
 				return {
-					document: content
+					document: codeBlock
 				};
 			},
 
 			referenceDataFromContent: (codePage, identifier = null) => {
 				return {
-					codePageContent: codePage.document
+					content: codePage.document
 				};
 			},
 
@@ -288,6 +312,72 @@ Content = {
 				//	Non-syntax highlighted (due to lack of known format), but truncated:
 				"txt"
 			]
+		},
+
+		localFragment: {
+			matches: (identifier) => {
+				let url = new URL(  "https://"
+								  + location.hostname
+								  + identifier);
+
+				return (   url.pathname.startsWith("/metadata/")
+						&& url.pathname.endsWith(".html"));
+			},
+
+			matchesLink: (link) => {
+				//	Maybe it’s a foreign link?
+				if (link.hostname != location.hostname)
+					return false;
+
+				//	Maybe it’s an annotated link?
+				if (Annotations.isAnnotatedLink(link))
+					return false
+
+				let identifier = Content.targetIdentifier(link);
+				return Content.contentTypes.localFragment.matches(identifier);
+			},
+
+			sourceURLsForIdentifier: (identifier) => {
+				let url = urlSansHash(  "https://"
+									  + location.hostname
+									  + identifier);
+
+				return [ url ];
+			},
+
+			contentFromResponse: (response, identifier, loadURL) => {
+				let fragment = newDocument(response);
+
+				let auxLinksLinkType = AuxLinks.auxLinksLinkType(loadURL);
+				if (auxLinksLinkType) {
+					let auxLinksList = fragment.querySelector("ul, ol");
+					if (auxLinksList) {
+						auxLinksList.classList.add("aux-links-list", auxLinksLinkType + "-list");
+
+						if (auxLinksLinkType == "backlinks")
+							auxLinksList.dataset.targetUrl = AuxLinks.targetOfAuxLinksLink(loadURL);
+					}
+				}
+
+				//  Fire contentDidLoad event, if need be.
+				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+					source: "Content.contentTypes.localFragment.load",
+					container: fragment,
+					document: fragment
+				});
+
+				return {
+					document: fragment
+				};
+			},
+
+			referenceDataFromContent: (fragment, identifier) => {
+				return {
+					content: fragment.document
+				};
+			},
+
+		    permittedContentTypes: [ "text/html" ]
 		},
 
 		localPage: {
@@ -331,6 +421,9 @@ Content = {
 						   ? newDocument(response)
 						   : document;
 
+				if (response)
+					page.baseLocation = loadURL;
+
 				//	Get the body classes.
 				let pageBodyClasses = page.querySelector("meta[name='page-body-classes']").getAttribute("content");
 
@@ -370,13 +463,10 @@ Content = {
 				if (response) {
 					//  Fire contentDidLoad event, if need be.
 					GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-						source: "Content.referenceDataFromPage",
+						source: "Content.contentTypes.localPage.load",
 						container: page,
 						document: page,
-						loadLocation: loadURL,
-						baseLocation: loadURL,
-						flags: (  GW.contentDidLoadEventFlags.needsRewrite
-								| GW.contentDidLoadEventFlags.collapseAllowed)
+						loadLocation: loadURL
 					});
 				}
 
@@ -440,8 +530,8 @@ Content = {
 					pageTitle:               page.title,
 					pageBodyClasses:         page.bodyClasses,
 					pageThumbnailHTML:       page.thumbnailHTML,
-					pageContent:             pageContent,
-					pageContentHTML:         pageContent.innerHTML,
+					content:                 pageContent,
+					contentHTML:             pageContent.innerHTML,
 					targetElement:           element,
 					targetElementHTML:       element ? element.innerHTML : null,
 					targetBlock:             block,
@@ -452,6 +542,7 @@ Content = {
 				}
 			},
 
+		    permittedContentTypes: [ "text/html" ],
 			pageTitleRegexp: /^(.+?) · Gwern\.net$/,
 			defaultPageThumbnailPathnamePrefix: "/static/img/logo/logo-"
 		}

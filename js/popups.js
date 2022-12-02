@@ -4,30 +4,6 @@
 Original author:  Lukas Mathis (2010-04-20)
 License: public domain ("And some people have asked me about a license for this piece of code. I think it’s far too short to get its own license, so I’m relinquishing any copyright claims. Consider the code to be public domain. No attribution is necessary.")
 	*/
-/*****************************/
-/*	Events fired by popups.js:
-
-	Popups.didLoad
-		Fired when the Popups object has loaded.
-
-	Popups.setupDidComplete
-		Fired just before the ‘setup’ function returns.
-
-	Popups.popupDidSpawn
-		Fired after a popup has been injected into the page (or an existing 
-		popup brought to the front, if being re-used) and positioned.
-
-	Popups.popupWillDespawn
-		Fired when a popup is about to be removed from the page and discarded.
-
-	GW.contentDidInject {
-			source: "Popups.injectPopup"
-			document:
-				The `document` property of the popup.
-		}
-		Fired immediately after a popup has been injected into the page (but
-		NOT when an existing popup has merely been brought to the front).
- */
 
 Popups = {
 	/**********/
@@ -381,13 +357,6 @@ Popups = {
 
 		//  Inject popup into page.
 		Popups.popupContainer.appendChild(popup);
-
-		//	Fire event.
-		GW.notificationCenter.fireEvent("GW.contentDidInject", {
-			source: "Popups.injectPopup",
-			container: popup.body,
-			document: popup.document
-		});
 
 		//  Bring popup to front.
 		Popups.bringPopupToFront(popup);

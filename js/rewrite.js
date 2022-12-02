@@ -2,67 +2,48 @@
 /* author: Said Achmiz */
 /* license: MIT */
 
-/******************************/
-/*  Events fired by rewrite.js:
+/*******************************************************************************/
+/*  NOTE on the GW.contentDidLoad and GW.contentDidInject events:
 
-    Rewrite.fullWidthMediaDidLoad {
-            mediaElement:
-                the <img> or <video> element that loaded
-        }
-        Fired when a full-width image or video is loaded. This event is only
-        fired after the initial page load completes (i.e., it is triggered by
-        lazy-loading of media elements).
+    These events are fired whenever any new local page content is loaded and
+    injected into the page, respectively. (Here “loaded” may mean “loaded via a
+    network request”, “constructed from a template”, or any other process by 
+    which a new unit of page content is created. This includes the initial page 
+    load, but also such things as annotations being lazy-loaded, etc. Likewise,
+    “injected” may mean “injected into the base page”, “injected into a 
+    pop-frame shadow-root”, “injected into a DocumentFragment in cache”, etc.)
 
-    GW.pageLayoutWillComplete
-        Fired just before the page layout process completes. The value of the
-        `GW.pageLayoutComplete` flag is false at this point.
-
-    GW.pageLayoutDidComplete
-        Fired just after the page layout process completes. The value of the
-        `GW.pageLayoutComplete` flag is true at this point.
- */
-
-/***************************************/
-/*  NOTE on the GW.contentDidLoad event:
-
-    This event is fired whenever any new local page content is loaded (whether
-    this means “loaded via a network request”, “loaded from cache”,
-    “constructed from existing page elements”, or any other process by which
-    a new unit of page content is created). This includes the initial page
-    load, but also such things as pop-frames being spawned, annotations being
-    lazy-loaded, etc.
-
-    Many event handlers are attached to this event, because a great deal of
+    Many event handlers are attached to these, because a great deal of
     processing must take place before newly-loaded page content is ready for
     presentation to the user. Typography rectification must take place; the HTML
     structure of certain page elements (such as tables, figures, etc.) must be
     reconfigured; CSS classes must be added; various event listeners attached;
     etc. Most of this file (rewrite.js) consists of exactly such “content load
-    handlers”, a.k.a. “rewrite functions”. (Additional content load handlers are
-    defined elsewhere in the code, as appropriate; e.g. the handler that
-    attaches event listeners to annotated links to load annotations when the
-    user mouses over such links, which is found in extracts-annotations.js.)
+    handlers” and “content inject handlers”, a.k.a. “rewrite functions”. 
+    (Additional content load and inject handlers are defined elsewhere in the 
+    code, as appropriate; e.g. the handler that attaches event listeners to 
+    annotated links to load annotations when the user mouses over such links, 
+    which is found in extracts-annotations.js.)
 
     The GW.contentDidLoad event has the following named handler phases (see
     gw-inline.js for details on what this means):
 
+        [ "transclude", "rewrite" ]
+
+    The GW.contentDidInject event has the following named handler phases:
+
         [ "rewrite", "eventListeners" ]
 
-    The GW.contentDidLoad event should have the following keys and values in its
-    event info dictionary (see gw-inline.js for details on event info
-    dictionaries):
+    The GW.contentDidLoad and GW.contentDidInject events should have the 
+    following keys and values in their event info dictionary (see gw-inline.js 
+    for details on event info dictionaries):
 
-        ‘source’ (key)
+        ‘source’ (key) (required)
             String that indicates function (or event name, if fired from a
             browser event listener) from which the event is fired (such as
-            ‘Annotation.loadAnnotation’).
+            ‘Annotation.load’).
 
-		‘contentType’ (key)
-			String that indicates content type of the loaded content. Might be
-			null (which indicates the default content type: local page content).
-			Otherwise may be `annotation` or something else.
-
-		‘container’ (key)
+		‘container’ (key) (required)
             DOM object containing the loaded content. (For the GW.contentDidLoad
             event fired on the initial page load, the value of this key is
             `document`, i.e. the root document of the page. For pop-frames, this
@@ -71,7 +52,7 @@
             container will contain nothing but the newly-loaded content.
             (This key can be thought of as “what has been loaded?”.)
 
-        ‘document’ (key)
+        ‘document’ (key) (required)
             Document into which the content was loaded. May or may not be 
             identical with the value of the ‘container’ key (in those cases when
             the loaded content is a whole document itself). The value of this 
@@ -79,58 +60,47 @@
             page) or a DocumentFragment. (This key can be thought of as “into 
             where has the loaded content been loaded?”.)
 
+		‘contentType’ (key)
+			String that indicates content type of the loaded content. Might be
+			null (which indicates the default content type: local page content).
+			Otherwise may be `annotation` or something else.
+
         ‘loadLocation’ (key)
             URL object (https://developer.mozilla.org/en-US/docs/Web/API/URL)
             which specifies the URL from which the loaded content was loaded.
             For the main page, the represented URL will be the value of
-            `location.href`. For pop-frames and the like, the represented URL
-            may be the URL of the annotation resource, or the URL of a locally
-            archived version of a website, or something else.
+            `location.href`. For pop-frames, transcludes, etc., the represented
+            URL will be that of the page in which the content resides. (If the
+            loaded/injected content is not sourced from any page, this key will
+            have a null value.)
 
-        ‘baseLocation’ (key)
-            URL object which specifies the URL associated with the document to
-            which the loaded content belongs, after loading.
-            For the main page, the represented URL will be the value of
-            `location.href`. For pop-frames and the like, the represented URL
-            will be the value of the `href` attribute of the spawning target.
+    The GW.contentDidInject event should additionally have a value for the 
+    following key:
 
-        ‘flags’ (key)
+        ‘flags’ (key) (required)
             Bit field containing various flags (combined via bitwise OR). The
-            values of the flags are defined in GW.contentDidLoadEventFlags.
+            values of the flags are defined in GW.contentDidInjectEventFlags.
 
-            (Note that event handlers for the ‘GW.contentDidLoad’ event can
+            (Note that event handlers for the ‘GW.contentDidInject’ event can
              access the values of these flags directly via property access on
              the event info, e.g. the following two expressions are equivalent:
 
-               eventInfo.flags & GW.contentDidLoadEventFlags.needsRewrite != 0
+               eventInfo.flags & GW.contentDidInjectEventFlags.clickable != 0
 
-               eventInfo.needsRewrite
+               eventInfo.clickable
 
              It is recommended that the latter form be used.)
 
             The flags are:
 
-            ‘needsRewrite’
-                Specifies whether the loaded content needs to be processed
-                through a rewrite pass (i.e., to have its typography rectified,
-                HTML structure adjusted, etc.). If this value is false, then the
-                loaded content has already had rewriting performed (this will be
-                the case when the content is being loaded from a local cache),
-                and only needs to have event listeners attached, positioning
-                adjusted, and other such treatment that doesn’t modify the
-                content.
-
             ‘clickable’
                 Currently unused. Reserved for future use.
 
-            ‘collapseAllowed’
+            ‘stripCollapses’
                 Specifies whether the loaded content is permitted to have
-                collapsed sections. Generally false for all but the main page
-                (because collapsing/un-collapsing interactions are awkward and
-                confusing in pop-frames and similar embedded content elements).
-                If the value of this key is false, then any collapse blocks in
-                the loaded content will be automatically expanded (if present)
-                or simply not enabled in the first place, and all content in
+                collapsed sections. Generally false. If the value of this key is 
+                true, then any collapse blocks in the loaded content will be 
+                automatically expanded and stripped, and all content in
                 collapsible sections will be visible at all times.
 
             ‘fullWidthPossible’
@@ -150,12 +120,6 @@
 GW.defaultBlockElementSelectors = [
 	[	"section",
 		".footnote",
-		/*	The following component is only needed because transclude.js doesn’t
-			do rewriting on full document load. Remove after transitioning to
-			using content.js for all content loading.
-			 —SA 2022-11-29
-		 */
-		"#footnotes > ol > li",
 		".sidenote",
 		".aux-links-append",
 		".markdownBody > *",
@@ -207,7 +171,8 @@ function targetElementInDocument(link, doc) {
 	locally archived links.)
  */
 function originalURLForLink(link) {
-	if (link.dataset.urlOriginal == null)
+	if (   link.dataset.urlOriginal == null
+		|| link.dataset.urlOriginal == "")
 		return new URL(link.href);
 
 	let originalURL = new URL(link.dataset.urlOriginal);
@@ -246,8 +211,6 @@ function sectionLevel(section) {
 /*****************************************************************************/
 /*  Add content load handler (i.e., an event handler for the GW.contentDidLoad
     event).
-
-	See rewrite.js for more information on the GW.contentDidLoad event.
  */
 function addContentLoadHandler(handler, phase, condition = null) {
     let options = { phase: phase };
@@ -257,6 +220,19 @@ function addContentLoadHandler(handler, phase, condition = null) {
 }
 
 GW.contentLoadHandlers = { };
+
+/*************************************************************/
+/*  Add content inject handler (i.e., an event handler for the 
+	GW.contentDidInject event).
+ */
+function addContentInjectHandler(handler, phase, condition = null) {
+    let options = { phase: phase };
+    if (condition)
+        options.condition = condition;
+    GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", handler, options);
+}
+
+GW.contentInjectHandlers = { };
 
 /*****************************************************************************/
 /*  Adds the given copy processor, appending it to the existing array thereof.
@@ -275,6 +251,46 @@ function addCopyProcessor(processor) {
 
     GW.copyProcessors.push(processor);
 }
+
+
+/*************/
+/* AUX-LINKS */
+/*************/
+
+AuxLinks = {
+    auxLinksLinkTypes: {
+        "/metadata/annotations/backlinks/":          "backlinks",
+        "/metadata/annotations/similars/":           "similars",
+        "/metadata/annotations/link-bibliography/":  "link-bibliography"
+    },
+
+    auxLinksLinkType: (link) => {
+        for ([ pathnamePrefix, linkType ] of Object.entries(AuxLinks.auxLinksLinkTypes))
+            if (link.pathname.startsWith(pathnamePrefix))
+                return linkType;
+
+        return null;
+    },
+
+    /*  Page or document for whom the aux-links are.
+     */
+    targetOfAuxLinksLink: (link) => {
+        for ([ pathnamePrefix, linkType ] of Object.entries(AuxLinks.auxLinksLinkTypes)) {
+            if (link.pathname.startsWith(pathnamePrefix)) {
+                if (link.pathname.endsWith(".html")) {
+                    let start = pathnamePrefix.length;
+                    let end = (link.pathname.length - ".html".length);
+                    return decodeURIComponent(decodeURIComponent(link.pathname.slice(start, end)));
+                } else {
+                    let start = (pathnamePrefix.length - 1);
+                    return link.pathname.slice(start);
+                }
+            }
+        }
+
+        return null;
+    }
+};
 
 
 /*********/
@@ -368,7 +384,6 @@ Notes = {
 	}
 };
 
-
 /*************/
 /* CLIPBOARD */
 /*************/
@@ -377,14 +392,14 @@ Notes = {
 /*  Set up the copy processor system by registering a ‘copy’ event handler to
     call copy processors.
  */
-addContentLoadHandler(GW.contentLoadHandlers.registerCopyProcessors = (loadEventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.registerCopyProcessors = (eventInfo) => {
     GWLog("registerCopyProcessors", "rewrite.js", 1);
 
-    loadEventInfo.document.addEventListener("copy", (event) => {
+    eventInfo.document.addEventListener("copy", (event) => {
         event.preventDefault();
         event.stopPropagation();
 
-        let selection = getSelectionAsDocument(loadEventInfo.document);
+        let selection = getSelectionAsDocument(eventInfo.document);
 
         let i = 0;
         while (   i < GW.copyProcessors.length
@@ -403,29 +418,28 @@ addContentLoadHandler(GW.contentLoadHandlers.registerCopyProcessors = (loadEvent
 /****************************************************************/
 /*  Wrap each table in a div.table-wrapper (for layout purposes).
  */
-addContentLoadHandler(GW.contentLoadHandlers.wrapTables = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.wrapTables = (eventInfo) => {
     GWLog("wrapTables", "rewrite.js", 1);
 
-    wrapAll("table", "table-wrapper", "DIV", loadEventInfo.container, true)
-}, "rewrite", (info) => info.needsRewrite);
+    wrapAll("table", "table-wrapper", "DIV", eventInfo.container, true)
+}, "rewrite");
 
 /*****************************************************************************/
 /*  Wrap each full-width table in a div.full-width-table-inner-wrapper, and
     also move the .collapse class (if any) from the outer wrapper to the table
     (for consistency).
  */
-addContentLoadHandler(GW.contentLoadHandlers.wrapFullWidthTables = (loadEventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthTables = (eventInfo) => {
     GWLog("wrapFullWidthTables", "rewrite.js", 1);
 
-    wrapAll(".table-wrapper.width-full > table", "full-width-table-inner-wrapper", "DIV", loadEventInfo.container, false);
+    wrapAll(".table-wrapper.width-full > table", "full-width-table-inner-wrapper", "DIV", eventInfo.container, false);
 
     //  Move ‘collapse’ class from wrappers to tables.
-    loadEventInfo.container.querySelectorAll(".table-wrapper.width-full.collapse table").forEach(table => {
+    eventInfo.container.querySelectorAll(".table-wrapper.width-full.collapse table").forEach(table => {
         table.closest(".table-wrapper").classList.remove("collapse");
         table.classList.add("collapse");
     });
-}, "rewrite", (info) => (   info.needsRewrite
-						 && info.fullWidthPossible));
+}, "rewrite", (info) => info.fullWidthPossible);
 
 
 /***********/
@@ -435,10 +449,10 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFullWidthTables = (loadEventInf
 /*******************************/
 /*  Wrap bare images in figures.
  */
-addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
     GWLog("wrapImages", "rewrite.js", 1);
 
-    loadEventInfo.container.querySelectorAll("p > img:only-child").forEach(image => {
+    eventInfo.container.querySelectorAll("p > img:only-child").forEach(image => {
         unwrap(image.parentElement);
     });
 
@@ -455,36 +469,36 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (loadEventInfo) => {
 
         wrapElement(image, null, "FIGURE", true,
             [ "float-left", "float-right", "outline-not", "image-focus-not" ]);
-    }, null, loadEventInfo.container);
-}, "rewrite", (info) => info.needsRewrite);
+    }, null, eventInfo.container);
+}, "rewrite");
 
 /*****************************************************************************/
 /*  Sets, in CSS, the image dimensions that are specified in HTML.
     (This is to ensure no reflow.)
  */
-addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) => {
     GWLog("setImageDimensions", "rewrite.js", 1);
 
-    loadEventInfo.container.querySelectorAll("figure img[width][height]").forEach(image => {
+    eventInfo.container.querySelectorAll("figure img[width][height]").forEach(image => {
 		let width = image.getAttribute("width");
 		let height = image.getAttribute("height");
 
     	image.style.aspectRatio = `${width} / ${height}`;
 
-		if (loadEventInfo.contentType == "annotation")
+		if (eventInfo.contentType == "annotation")
 			image.style.width = `${width}px`;
     });
-}, "rewrite", (info) => info.needsRewrite);
+}, "rewrite");
 
 /********************************/
 /*  Inject wrappers into figures.
  */
-addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
     GWLog("wrapFigures", "rewrite.js", 1);
 
 	let mediaSelector = "img, audio, video";
 
-    loadEventInfo.container.querySelectorAll("figure").forEach(figure => {
+    eventInfo.container.querySelectorAll("figure").forEach(figure => {
         let media = figure.querySelector(mediaSelector);
         let caption = figure.querySelector("figcaption");
 
@@ -514,17 +528,17 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (loadEventInfo) => {
         if (media.classList.contains("float-right"))
             media.closest("figure").classList.add("float-right");
     });
-}, "rewrite", (info) => info.needsRewrite);
+}, "rewrite");
 
 /********************************************************************/
 /*  Designate full-width figures as such (with a ‘width-full’ class).
  */
-addContentLoadHandler(GW.contentLoadHandlers.markFullWidthFigures = (loadEventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.markFullWidthFigures = (eventInfo) => {
     GWLog("markFullWidthFigures", "rewrite.js", 1);
 
     let fullWidthClass = "width-full";
 
-    let allFullWidthMedia = loadEventInfo.container.querySelectorAll(`img.${fullWidthClass}, video.${fullWidthClass}`);
+    let allFullWidthMedia = eventInfo.container.querySelectorAll(`img.${fullWidthClass}, video.${fullWidthClass}`);
     allFullWidthMedia.forEach(fullWidthMedia => {
         fullWidthMedia.closest("figure").classList.toggle(fullWidthClass, true);
     });
@@ -542,20 +556,19 @@ addContentLoadHandler(GW.contentLoadHandlers.markFullWidthFigures = (loadEventIn
             });
         });
     });
-}, "rewrite", (info) => (   info.needsRewrite
-						 && info.fullWidthPossible));
+}, "rewrite", (info) => info.fullWidthPossible);
 
 /*****************************************************************/
 /*  Allow for floated figures at the start of annotation abstracts
 	(only on sufficiently wide viewports).
  */
-addContentLoadHandler(GW.contentLoadHandlers.relocateThumbnailInAnnotation = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.relocateThumbnailInAnnotation = (eventInfo) => {
     GWLog("relocateThumbnailInAnnotation", "rewrite.js", 1);
 
 	if (GW.mediaQueries.mobileWidth.matches)
 		return;
 
-	let annotationAbstract = loadEventInfo.container.querySelector(".annotation-abstract");
+	let annotationAbstract = eventInfo.container.querySelector(".annotation-abstract");
 	if (   annotationAbstract == null
 		|| annotationAbstract.tagName == "BLOCKQUOTE")
 		return;
@@ -584,15 +597,14 @@ addContentLoadHandler(GW.contentLoadHandlers.relocateThumbnailInAnnotation = (lo
 /*  Wrap each pre.width-full in a div.width-full and a
     div.full-width-code-block-wrapper (for layout purposes).
  */
-addContentLoadHandler(GW.contentLoadHandlers.wrapFullWidthPreBlocks = (loadEventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (eventInfo) => {
     GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
     wrapAll("pre.width-full", (fullWidthPre) => {
         wrapElement(fullWidthPre, "width-full", "DIV", true);
         wrapElement(fullWidthPre.parentElement, "full-width-code-block-wrapper", "DIV", false);
-    }, null, loadEventInfo.container);
-}, "rewrite", (info) => (   info.needsRewrite
-						 && info.fullWidthPossible));
+    }, null, eventInfo.container);
+}, "rewrite", (info) => info.fullWidthPossible);
 
 
 /***********/
@@ -602,14 +614,14 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFullWidthPreBlocks = (loadEvent
 /*****************************************/
 /*  Disable columns if only one list item.
  */
-addContentLoadHandler(GW.contentLoadHandlers.disableSingleItemColumnBlocks = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.disableSingleItemColumnBlocks = (eventInfo) => {
     GWLog("disableSingleItemColumnBlocks", "rewrite.js", 1);
 
-    loadEventInfo.container.querySelectorAll(".columns > ul").forEach(columnList => {
+    eventInfo.container.querySelectorAll(".columns > ul").forEach(columnList => {
         if (columnList.children.length == 1)
             columnList.parentElement.classList.remove("columns");
     });
-}, "rewrite", (info) => info.needsRewrite);
+}, "rewrite");
 
 
 /****************/
@@ -619,15 +631,15 @@ addContentLoadHandler(GW.contentLoadHandlers.disableSingleItemColumnBlocks = (lo
 /*************************************************************/
 /*  Wrap the contents of all margin notes in an inner wrapper.
  */
-addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (eventInfo) => {
     GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
-    loadEventInfo.container.querySelectorAll(".marginnote").forEach(marginnote => {
+    eventInfo.container.querySelectorAll(".marginnote").forEach(marginnote => {
         let innerWrapper = newElement("SPAN", { "class": "marginnote-inner-wrapper" });
-        innerWrapper.append(...(marginnote.childNodes));
+        innerWrapper.append(...marginnote.childNodes);
         marginnote.append(innerWrapper);
     });
-}, "rewrite", (info) => info.needsRewrite);
+}, "rewrite");
 
 
 /**************/
@@ -638,10 +650,10 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (loadEventInfo) =
 /*  Remove extraneous whitespace-only text nodes from between the element parts
     of a .cite (citation element).
  */
-addContentLoadHandler(GW.contentLoadHandlers.removeExtraneousWhitespaceFromCitations = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.removeExtraneousWhitespaceFromCitations = (eventInfo) => {
     GWLog("removeExtraneousWhitespaceFromCitations", "rewrite.js", 1);
 
-    loadEventInfo.container.querySelectorAll(".cite").forEach(citation => {
+    eventInfo.container.querySelectorAll(".cite").forEach(citation => {
         Array.from(citation.children).forEach(citationPart => {
             if (   citationPart.nextSibling
                 && citationPart.nextSibling.nodeType == Node.TEXT_NODE
@@ -649,7 +661,7 @@ addContentLoadHandler(GW.contentLoadHandlers.removeExtraneousWhitespaceFromCitat
                 citationPart.nextSibling.remove();
         });
     });
-}, "rewrite", (info) => info.needsRewrite);
+}, "rewrite");
 
 /******************************************************************/
 /*  Configure Hyphenopoly.
@@ -672,7 +684,7 @@ Hyphenopoly.config({
 
     Requires Hyphenopoly_Loader.js to be loaded prior to this file.
  */
-function hyphenate(injectEventInfo) {
+function hyphenate(eventInfo) {
     GWLog("hyphenate", "rewrite.js", 1);
 
     if (!(Hyphenopoly.hyphenators))
@@ -683,17 +695,17 @@ function hyphenate(injectEventInfo) {
 
     let doHyphenation = (selector) => {
         Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
-            injectEventInfo.container.querySelectorAll(selector).forEach(block => {
+            eventInfo.container.querySelectorAll(selector).forEach(block => {
                 hyphenate(block);
             });
         });
     };
 
     if (   GW.isMobile()
-        || injectEventInfo.document != document) {
-        doHyphenation((injectEventInfo.document == document) ? ".markdownBody p" : "p");
+        || eventInfo.document != document) {
+        doHyphenation((eventInfo.document == document) ? ".markdownBody p" : "p");
     } else {
-        doHyphenation(".sidenote p");
+        doHyphenation(".sidenote p, .abstract blockquote p");
     }
 }
 
@@ -732,7 +744,7 @@ function rectifyLineHeight(elementOrSelector, container = document.body, returnO
 /**********************************************************************/
 /*  Rectify line heights of elements matching a given set of selectors.
  */
-function rectifyLineHeights(injectEventInfo) {
+function rectifyLineHeights(eventInfo) {
     GWLog("rectifyLineHeights", "rewrite.js", 1);
 
     /*  Note: these selectors should be “all block elements on which the font
@@ -768,10 +780,10 @@ function rectifyLineHeights(injectEventInfo) {
         due to rounding, in nested line-height-adjusted elements.)
      */
     let elements = [ ];
-    injectEventInfo.container.querySelectorAll(selectors.join(", ")).forEach(element => {
+    eventInfo.container.querySelectorAll(selectors.join(", ")).forEach(element => {
         if (element.style.lineHeight > "")
             return;
-        let lineHeight = rectifyLineHeight(element, injectEventInfo.container, true);
+        let lineHeight = rectifyLineHeight(element, eventInfo.container, true);
         elements.push({
             element:    element,
             lineHeight: lineHeight
@@ -787,10 +799,10 @@ function rectifyLineHeights(injectEventInfo) {
 /**********************************************/
 /*  Add content inject handlers for typography.
  */
-GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+addContentInjectHandler(GW.contentInjectHandlers.rectifyTypography = (info) => {
     hyphenate(info);
     rectifyLineHeights(info);
-});
+}, "rewrite");
 
 /****************************************/
 /*  Remove soft hyphens from copied text.
@@ -881,11 +893,11 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutWillComplete", (info) => 
 /************************************/
 /*  Set margins of full-width blocks.
  */
-addContentLoadHandler(GW.contentLoadHandlers.setMarginsOnFullWidthBlocks = (loadEventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.setMarginsOnFullWidthBlocks = (eventInfo) => {
     GWLog("setMarginsOnFullWidthBlocks", "rewrite.js", 1);
 
     //  Get all full-width blocks in the given document.
-    let allFullWidthBlocks = loadEventInfo.container.querySelectorAll("div.width-full, figure.width-full");
+    let allFullWidthBlocks = eventInfo.container.querySelectorAll("div.width-full, figure.width-full");
 
     let removeFullWidthBlockMargins = () => {
         allFullWidthBlocks.forEach(fullWidthBlock => {
@@ -894,7 +906,7 @@ addContentLoadHandler(GW.contentLoadHandlers.setMarginsOnFullWidthBlocks = (load
         });
     };
 
-    if (loadEventInfo.fullWidthPossible == false) {
+    if (eventInfo.fullWidthPossible == false) {
         removeFullWidthBlockMargins();
         return;
     }
@@ -919,98 +931,79 @@ addContentLoadHandler(GW.contentLoadHandlers.setMarginsOnFullWidthBlocks = (load
 }, ">rewrite");
 
 
-/*************/
-/* AUX-LINKS */
-/*************/
-
-/*****************************************************************************/
-/*	Rewrite backlinks or similars lists in transcludes aux-links of that type.
- */
-addContentLoadHandler(GW.contentLoadHandlers.re = (loadEventInfo) => {
-    GWLog("storeBacklinksOrigin", "rewrite.js", 1);
-
-	let auxLinksLinkType = Extracts.auxLinksLinkType(loadEventInfo.includeLink);
-	if (auxLinksLinkType == null)
-		return;
-
-	let auxLinksList = loadEventInfo.container.querySelector("ul, ol");
-	if (auxLinksList)
-		auxLinksList.classList.add("aux-links-list", auxLinksLinkType + "-list");
-
-	if (auxLinksLinkType == "backlinks")
-		auxLinksList.dataset.targetUrl = Extracts.targetOfAuxLinksLink(loadEventInfo.includeLink);
-}, "rewrite", (info) => (   info.needsRewrite
-						 && info.source == "transclude"));
-
-
 /***************/
 /* ANNOTATIONS */
 /***************/
 
-addContentLoadHandler(GW.contentLoadHandlers.setEagerLoadingForAnnotationImages = (loadEventInfo) => {
+/******************************************************************************/
+/*	Make the page thumbnail (or just the first figure, if no thumbnail present)
+	in an annotation load eagerly instead of lazily.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.setEagerLoadingForAnnotationImages = (eventInfo) => {
     GWLog("setEagerLoadingForAnnotationImages", "rewrite.js", 1);
 
-	let firstImage = (   loadEventInfo.container.querySelector(".page-thumbnail")
-					  || loadEventInfo.container.querySelector("figure img"))
+	let firstImage = (   eventInfo.container.querySelector(".page-thumbnail")
+					  || eventInfo.container.querySelector("figure img"))
 	if (firstImage) {
 		firstImage.loading = "eager";
 		firstImage.decoding = "sync";
 	}
-}, "rewrite", (info) => (   info.needsRewrite 
-						 && (   info.contentType == "annotation"
-						 	 || info.source == "Extracts.rewritePopFrameContent_LOCAL_PAGE")));
+}, "rewrite", (info) => (info.contentType == "annotation"));
 
-addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (loadEventInfo) => {
+/*****************************************************************/
+/*	Partial annotations, defined inline (in directories and such).
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventInfo) => {
     GWLog("rewritePartialAnnotations", "rewrite.js", 1);
 
-	loadEventInfo.container.querySelectorAll(".annotation-partial").forEach(partialAnnotation => {
+	eventInfo.container.querySelectorAll(".annotation-partial").forEach(partialAnnotation => {
+		if (partialAnnotation.firstElementChild.classList.contains("data-field"))
+			return;
+
 		//	Designate reference link, for annotations.js to identify it.
 		let referenceLink = partialAnnotation.querySelector("a");
 		referenceLink.classList.add("link-annotated-partial");
 
-		//	Retrieve reference data.
-		let referenceData = Annotations.dataSources.local.referenceDataFromParsedAPIResponse(partialAnnotation);
+		//	Load data into Annotations.
+		Annotations.cacheAPIResponseForIdentifier(newDocument(partialAnnotation), 
+												  Annotations.targetIdentifier(referenceLink));
 
-		//	Define context for template fill.
-		let context = {
-			template: "annotation-blockquote-inside",
-			annotationClassSuffix: "-partial"
-		};
+		//	Replace reference block contents with synthetic include-link.
+		let includeLink = newElement("A", {
+			"class": "include-annotation include-replace-container link-annotated-partial",
+			"href": referenceLink.href,
+			"data-template-fields": "annotationClassSuffix:$",
+			"data-annotation-class-suffix": "-partial"
+		});
+		if (referenceLink.dataset.urlOriginal)
+			includeLink.dataset.urlOriginal = referenceLink.dataset.urlOriginal;
+		partialAnnotation.replaceChildren(includeLink);
 
-		//	We may have to wait for the template to load.
-		Transclude.doWhenTemplateLoaded(context["template"], (delayed = false) => {
-			//	Replace reference block with synthetic include-link.
-			let includeLink = newElement("A", {
-				"class": "include include-strict include-spinner-not",
-				"href": referenceLink.href,
-			}, {
-				"baseLocation": loadEventInfo.baseLocation,
-				"needsRewrite": delayed
-			});
-			partialAnnotation.parentElement.replaceChild(includeLink, partialAnnotation);
-
-			//	Include the rewritten content.
-			includeContent(includeLink, Transclude.fillTemplateNamed(context["template"], referenceData, context));
+		//	Fire GW.contentDidLoadEvent (to trigger transclude).
+		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			source: "rewritePartialAnnotations",
+			container: partialAnnotation,
+			document: eventInfo.document
 		});
 	});
-}, "rewrite", (info) => info.needsRewrite);
+}, "rewrite");
 
 /***************************************************************************/
 /*	Because annotations transclude aux-links, we make the aux-links links in
 	the metadata line of annotations scroll down to the appended aux-links
 	blocks.
  */
-addContentLoadHandler(GW.contentLoadHandlers.rewriteAuxLinksLinksInTranscludedAnnotations = (loadEventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.rewriteAuxLinksLinksInTranscludedAnnotations = (eventInfo) => {
     GWLog("rewriteAuxLinksLinksInTranscludedAnnotations", "rewrite.js", 1);
 
-	let annotation = loadEventInfo.container.querySelector(".annotation");
+	let annotation = eventInfo.container.querySelector(".annotation");
 	if (annotation == null)
 		return;
 
 	let inPopFrame = (annotation.closest(".popframe-body") != null);
 
 	annotation.querySelectorAll(".data-field.aux-links a.aux-links").forEach(auxLinksLink => {
-		let auxLinksLinkType = Extracts.auxLinksLinkType(auxLinksLink);
+		let auxLinksLinkType = AuxLinks.auxLinksLinkType(auxLinksLink);
 		let includedAuxLinksBlock = annotation.querySelector(`.${auxLinksLinkType}-append`);
 		if (includedAuxLinksBlock) {
 			auxLinksLink.onclick = () => { return false; };
@@ -1026,66 +1019,35 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteAuxLinksLinksInTranscludedAn
 	});
 }, "eventListeners", (info) => info.contentType == "annotation");
 
-/********************************************/
-/*	Apply class to aux-link-append container.
-
-	NOTE: This must run after prepareCollapseBlocks() in collapse.js.
-	Update the handler phase to indicate that specifically, when such
-	capability is added. —SA 2022-11-18
- */
-addContentLoadHandler(GW.contentLoadHandlers.designateAuxLinksAppendContainer = (loadEventInfo) => {
-    GWLog("designateAuxLinksAppendContainer", "rewrite.js", 1);
-
-	loadEventInfo.container.querySelectorAll(".aux-links-append").forEach(auxLinksBlock => {
-		let enclosingCollapseBlock = auxLinksBlock.parentElement.closest(".collapse, .annotation-abstract > div");
-		if (enclosingCollapseBlock)
-			enclosingCollapseBlock.classList.add("aux-links-container");
-	});
-}, ">", (info) => (   info.needsRewrite
-				   && info.contentType == "annotation"));
-
-/***********************************************************************/
-/*	Rewrite collapse blocks in annotations to make them expand on hover.
- */
-addContentLoadHandler(GW.contentLoadHandlers.rewriteCollapseBlocksInAnnotation = (loadEventInfo) => {
-    GWLog("rewriteCollapseBlocksInAnnotation", "rewrite.js", 1);
-
-	loadEventInfo.container.querySelectorAll(".collapse").forEach(collapseBlock => {
-		collapseBlock.classList.add("expand-on-hover");
-		updateDisclosureButtonTitleForCollapseBlock(collapseBlock);
-	});
-}, "<eventListeners", (info) => info.contentType == "annotation");
-
 /*******************************************************************************/
 /*  Apply various typographic fixes (educate quotes, inject <wbr> elements after
     certain problematic characters, etc.).
 
     Requires typography.js to be loaded prior to this file.
  */
-addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInAnnotation = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInAnnotation = (eventInfo) => {
     GWLog("rectifyTypographyInAnnotation", "rewrite.js", 1);
 
-    Typography.processElement(loadEventInfo.container,
+    Typography.processElement(eventInfo.container,
         (  Typography.replacementTypes.QUOTES
          | Typography.replacementTypes.WORDBREAKS
          | Typography.replacementTypes.ELLIPSES),
         true);
 
     //  Educate quotes in image alt-text.
-    loadEventInfo.container.querySelectorAll("img").forEach(image => {
+    eventInfo.container.querySelectorAll("img").forEach(image => {
         image.alt = Typography.processString(image.alt, Typography.replacementTypes.QUOTES);
     });
-}, "rewrite", (info) => (   info.needsRewrite
-						 && info.contentType == "annotation"));
+}, "rewrite", (info) => (info.contentType == "annotation"));
 
 /******************************************************************************/
 /*  Bind mouse hover events to, when hovering over an annotated link, highlight
     that annotation (as viewed in a tags directory, for instance).
  */
-addContentLoadHandler(GW.contentLoadHandlers.bindSectionHighlightEventsToAnnotatedLinks = (loadEventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.bindSectionHighlightEventsToAnnotatedLinks = (eventInfo) => {
     GWLog("bindSectionHighlightEventsToAnnotatedLinks", "rewrite.js", 1);
 
-    Annotations.allAnnotatedLinksInContainer(loadEventInfo.container).forEach(annotatedLink => {
+    Annotations.allAnnotatedLinksInContainer(eventInfo.container).forEach(annotatedLink => {
         //  Unbind existing events, if any.
         if (annotatedLink.annotatedLinkMouseEnter)
             annotatedLink.removeEventListener("mouseenter", annotatedLink.annotatedLinkMouseEnter);
@@ -1121,34 +1083,31 @@ addContentLoadHandler(GW.contentLoadHandlers.bindSectionHighlightEventsToAnnotat
 /* LINK BIBLIOGRAPHY */
 /*********************/
 
-/***************************************************************/
-/*	Mark the link lists on the index page, for styling purposes.
- */
-addContentLoadHandler(GW.contentLoadHandlers.designateIndexPageSectionLinkLists = (loadEventInfo) => {
-    GWLog("designateIndexPageSectionLinkLists", "rewrite.js", 1);
-
-	loadEventInfo.container.querySelectorAll("section > ul").forEach(sectionLinkList => {
-		sectionLinkList.classList.add("section-link-list");
-	});
-}, "rewrite", (info) => (   info.needsRewrite 
-						 && info.container == document.body 
-						 && (   info.loadLocation.pathname == "/"
-						 	 || info.loadLocation.pathname == "/index")));
-
 /*********************************************************************/
 /*	Remove the “Link Bibliography:” bold text when transcluding a link
 	bibliography into a page’s Link Bibliography section.
  */
-addContentLoadHandler(GW.contentLoadHandlers.removeSubheadingFromLinkBibliography = (loadEventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.removeSubheadingFromLinkBibliography = (eventInfo) => {
     GWLog("removeSubheadingFromLinkBibliography", "rewrite.js", 1);
 
-	if (loadEventInfo.container.closest("section#link-bibliography")) {
-		let subheading = loadEventInfo.container.querySelector("div#link-bibliography-link-footer-transclusion > p:first-child");
+	if (eventInfo.container.closest("section#link-bibliography")) {
+		let subheading = eventInfo.container.querySelector("div#link-bibliography-link-footer-transclusion > p:first-child");
 		if (subheading)
 			subheading.remove();
 	}
-}, "rewrite", (info) => (   info.needsRewrite
-						 && info.source == "transclude"));
+}, "rewrite", (info) => (info.source == "transclude"));
+
+/*****************************************************************************/
+/*	Apply a class to those link-bibs that should use the more compact styling.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.applyLinkBibliographyStylingClass = (eventInfo) => {
+    GWLog("applyLinkBibliographyStylingClass", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".link-bibliography-list").forEach(linkBibList => {
+		if (linkBibList.closest("li, .link-bibliography-append, .popframe-body.link-bibliography"))
+			linkBibList.classList.add("link-bibliography-list-compact");
+	});
+}, "rewrite");
 
 
 /*********************/
@@ -1158,11 +1117,11 @@ addContentLoadHandler(GW.contentLoadHandlers.removeSubheadingFromLinkBibliograph
 /***************************************************************************/
 /*  Strip spurious <span> tags (unavoidably added by Pandoc) from TOC links.
  */
-addContentLoadHandler(GW.contentLoadHandlers.stripTOCLinkSpans = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.stripTOCLinkSpans = (eventInfo) => {
     GWLog("stripTOCLinkSpans", "rewrite.js", 1);
 
-    unwrapAll(".TOC li a > span:not([class])", loadEventInfo.container);
-}, "rewrite", (info) => info.needsRewrite);
+    unwrapAll(".TOC li a > span:not([class])", eventInfo.container);
+}, "rewrite");
 
 /*******************************************************************************/
 /*  Updates the page TOC with any sections within the given container that don’t
@@ -1248,25 +1207,20 @@ function updatePageTOC(newContent, needsProcessing = false) {
 /*  Update main page TOC within any sections within the initially loaded page
     that don’t already have TOC entries.
  */
-addContentLoadHandler(GW.contentLoadHandlers.updateMainPageTOC = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.updateMainPageTOC = (eventInfo) => {
     GWLog("updateMainPageTOC", "rewrite.js", 1);
 
-    updatePageTOC(loadEventInfo.container.querySelector("#markdownBody"));
-}, "rewrite", (info) => (   info.needsRewrite
-						 && info.container == document.body));
+    updatePageTOC(eventInfo.container.querySelector("#markdownBody"));
+}, "rewrite", (info) => (info.container == document.body));
 
 /**********************************************************/
 /*	Relocate and clean up TOC on tag directory index pages.
  */
-addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (eventInfo) => {
     GWLog("rewriteDirectoryIndexTOC", "rewrite.js", 1);
 
-	//	Do this only on tag directory indexes.
-	if (/^\/docs\/.+\/index$/.test(loadEventInfo.loadLocation.pathname) == false)
-		return;
-
-	let TOC = loadEventInfo.container.querySelector("#TOC");
-	let seeAlsoSection = loadEventInfo.container.querySelector("#see-also");
+	let TOC = eventInfo.container.querySelector("#TOC");
+	let seeAlsoSection = eventInfo.container.querySelector("#see-also");
 
 	if (   TOC == null
 		|| seeAlsoSection == null)
@@ -1295,16 +1249,17 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (loadEve
 		//	Mark with special class, for styling purposes.
 		TOC.classList.add("TOC-links-only");
 	}
-}, "rewrite", (info) => (   info.needsRewrite
-						 && info.container == document.body));
+}, "rewrite", (info) => (   info.container == document.body
+						 && info.loadLocation
+						 && /^\/docs\/.+\/index$/.test(info.loadLocation.pathname)));
 
 /**************************************************************************/
 /*	If the table of contents has but one entry (or none at all), remove it.
  */
-addContentLoadHandler(GW.contentLoadHandlers.removeTOCIfSingleEntry = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.removeTOCIfSingleEntry = (eventInfo) => {
     GWLog("removeTOCIfSingleEntry", "rewrite.js", 1);
 
-	let TOC = loadEventInfo.container.querySelector(".TOC");
+	let TOC = eventInfo.container.querySelector(".TOC");
 	if (TOC == null)
 		return;
 
@@ -1313,7 +1268,7 @@ addContentLoadHandler(GW.contentLoadHandlers.removeTOCIfSingleEntry = (loadEvent
 		    && numEntries <= 1)
 		|| numEntries == 0)
 		TOC.remove();
-}, "rewrite", (info) => info.needsRewrite);
+}, "rewrite");
 
 
 /*************/
@@ -1323,10 +1278,10 @@ addContentLoadHandler(GW.contentLoadHandlers.removeTOCIfSingleEntry = (loadEvent
 /*****************************************************/
 /*  Inject self-link for the footnotes section itself.
  */
-addContentLoadHandler(GW.contentLoadHandlers.injectFootnoteSectionSelfLink = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.injectFootnoteSectionSelfLink = (eventInfo) => {
     GWLog("injectFootnoteSectionSelfLink", "rewrite.js", 1);
 
-    let footnotesSection = loadEventInfo.container.querySelector("#footnotes");
+    let footnotesSection = eventInfo.container.querySelector("#footnotes");
     if (!footnotesSection)
         return;
 
@@ -1345,26 +1300,26 @@ addContentLoadHandler(GW.contentLoadHandlers.injectFootnoteSectionSelfLink = (lo
     footnotesSectionSelfLink.addEventListener("mouseleave", (event) => {
         footnotesSectionSelfLink.previousElementSibling.classList.toggle("highlighted", false);
     });
-}, "rewrite", (info) => info.needsRewrite);
+}, "rewrite");
 
 /*****************************************/
 /*  Add footnote class to footnote blocks.
  */
-addContentLoadHandler(GW.contentLoadHandlers.addFootnoteClassToFootnotes = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.addFootnoteClassToFootnotes = (eventInfo) => {
     GWLog("addFootnoteClassToFootnotes", "rewrite.js", 1);
 
-    loadEventInfo.container.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
+    eventInfo.container.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
         footnote.classList.add("footnote");
     });
-}, "rewrite", (info) => info.needsRewrite);
+}, "rewrite");
 
 /******************************/
 /*  Inject footnote self-links.
  */
-addContentLoadHandler(GW.contentLoadHandlers.injectFootnoteSelfLinks = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.injectFootnoteSelfLinks = (eventInfo) => {
     GWLog("injectFootnoteSelfLinks", "rewrite.js", 1);
 
-    loadEventInfo.container.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
+    eventInfo.container.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
         if (footnote.querySelector(".footnote-self-link"))
             return;
 
@@ -1376,12 +1331,12 @@ addContentLoadHandler(GW.contentLoadHandlers.injectFootnoteSelfLinks = (loadEven
                 class="footnote-self-link"
                     >&nbsp;</a>`);
     });
-}, "rewrite", (info) => info.needsRewrite);
+}, "rewrite");
 
 /*****************************************************************/
 /*  Rewrite footnote back-to-citation links (generated by Pandoc).
  */
-addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventInfo) => {
     GWLog("rewriteFootnoteBackLinks", "rewrite.js", 1);
 
     /*  Base font size (1rem) is 20px at this time, making a good default.
@@ -1391,7 +1346,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (loadEve
         for the width/height for page load performance reasons.
      */
     let defaultSize = 20;
-    loadEventInfo.container.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
+    eventInfo.container.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
         let backlink = footnote.querySelector(".footnote-back");
         if (backlink.querySelector("img"))
             return;
@@ -1404,15 +1359,15 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (loadEve
             src: "/static/img/icons/arrow-hook-left.svg"
         }));
     });
-}, "rewrite", (info) => info.needsRewrite);
+}, "rewrite");
 
 /******************************************************************************/
 /*  Set size properly, after setting default value in rewriteFootnoteBackLinks.
  */
-addContentLoadHandler(GW.contentLoadHandlers.rectifyFootnoteBackLinkArrowSize = (loadEventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.rectifyFootnoteBackLinkArrowSize = (eventInfo) => {
     GWLog("rectifyFootnoteBackLinkArrowSize", "rewrite.js", 1);
 
-    let footnotesList = loadEventInfo.container.querySelector("#footnotes > ol");
+    let footnotesList = eventInfo.container.querySelector("#footnotes > ol");
     if (!footnotesList)
         return;
 
@@ -1421,7 +1376,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyFootnoteBackLinkArrowSize = 
         if (!size)
             return;
 
-        loadEventInfo.container.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
+        eventInfo.container.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
             let arrow = footnote.querySelector(".footnote-back img");
             if (!arrow)
                 return;
@@ -1430,16 +1385,16 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyFootnoteBackLinkArrowSize = 
             arrow.height = size;
         });
     });
-}, "eventListeners");
+}, "rewrite");
 
 /***************************************************************************/
 /*  Bind mouse hover events to, when hovering over a citation, highlight all
     {side|foot}notes associated with that citation.
  */
-addContentLoadHandler(GW.contentLoadHandlers.bindHighlightEventsToFootnoteSelfLinks = (loadEventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.bindHighlightEventsToFootnoteSelfLinks = (eventInfo) => {
     GWLog("bindNoteHighlightEventsToCitations", "rewrite.js", 1);
 
-    let allCitations = loadEventInfo.container.querySelectorAll(".footnote-ref");
+    let allCitations = eventInfo.container.querySelectorAll(".footnote-ref");
 
     let bindEventsToCitation = (citation) => {
         //  Unbind existing events, if any.
@@ -1470,7 +1425,7 @@ addContentLoadHandler(GW.contentLoadHandlers.bindHighlightEventsToFootnoteSelfLi
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 			allCitations.forEach(bindEventsToCitation);
 		}, { condition: (info) => (   info.document == document
-								   || info.document == loadEventInfo.document)
+								   || info.document == eventInfo.document)
 		});
     }
 }, "eventListeners");
@@ -1478,11 +1433,11 @@ addContentLoadHandler(GW.contentLoadHandlers.bindHighlightEventsToFootnoteSelfLi
 /******************************************/
 /*  Highlight footnote self-links on hover.
  */
-addContentLoadHandler(GW.contentLoadHandlers.bindNoteHighlightEventsToCitations = (loadEventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.bindNoteHighlightEventsToCitations = (eventInfo) => {
     GWLog("bindHighlightEventsToFootnoteSelfLinks", "rewrite.js", 1);
 
     //  Highlight footnote on hover over self-link.
-    loadEventInfo.container.querySelectorAll(".footnote-self-link").forEach(footnoteSelfLink => {
+    eventInfo.container.querySelectorAll(".footnote-self-link").forEach(footnoteSelfLink => {
         footnoteSelfLink.addEventListener("mouseenter", (event) => {
             footnoteSelfLink.parentElement.classList.toggle("highlighted", true);
         });
@@ -1497,54 +1452,87 @@ addContentLoadHandler(GW.contentLoadHandlers.bindNoteHighlightEventsToCitations 
 /* LINKS */
 /*********/
 
+/********************************************************/
+/*	Return the location (URL) associated with a document.
+	(Document|DocumentFragment) => URL
+ */
+function baseLocationForDocument(doc) {
+	if (doc == document) {
+		return new URL(location.href);
+	} else if (   doc.body instanceof Element
+			   && doc.body.classList.contains("popframe-body")) {
+		let spawningTarget = (Extracts.popFrameProvider == Popups
+							  ? doc.body.popup.spawningTarget
+							  : doc.body.popin.spawningTarget);
+		return new URL(spawningTarget.href);
+	} else if (doc.baseLocation) {
+		return new URL(doc.baseLocation.href);
+	} else {
+		return null;
+	}
+}
+
 /**********************************************************************/
 /*  Qualify anchorlinks in loaded content by rewriting their `pathname`
     attributes.
  */
-addContentLoadHandler(GW.contentLoadHandlers.qualifyAnchorLinks = (loadEventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo) => {
     GWLog("qualifyAnchorLinks", "rewrite.js", 1);
 
-    loadEventInfo.container.querySelectorAll("a[href]").forEach(link => {
+	let baseLocation = baseLocationForDocument(eventInfo.document);
+	if (baseLocation == null)
+		return;
+
+	let loadLocation = (eventInfo.loadLocation ?? baseLocation);
+
+    eventInfo.container.querySelectorAll("a[href]").forEach(link => {
         if (   (   link.getAttribute("href").startsWith("#")
-                || link.pathname == loadEventInfo.loadLocation.pathname)
+                || link.pathname == loadLocation.pathname)
                 // if initial base page load
-            && (   loadEventInfo.container == document.body
+            && (   eventInfo.container == document.body
             	// if the link refers to an element also in the loaded content
-                || loadEventInfo.container.querySelector(selectorFromHash(link.hash)) != null
+                || eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
                 // if the link refers to the loaded content container itself
-                || (   loadEventInfo.container instanceof Element
-                    && loadEventInfo.container == loadEventInfo.container.closest(selectorFromHash(link.hash)))
+                || (   eventInfo.container instanceof Element
+                    && eventInfo.container == eventInfo.container.closest(selectorFromHash(link.hash)))
                 // if we’re transcluding a citation (because we merge footnotes)
-                || (   loadEventInfo.source == "transclude"
+                || (   eventInfo.source == "transclude"
                 	&& link.classList.contains("footnote-ref"))
                 // if we’re merging a footnote for transcluded content
-                || (   loadEventInfo.source == "transclude.footnotes"
+                || (   eventInfo.source == "transclude.footnotes"
                 	&& link.classList.contains("footnote-back")))) {
-            link.pathname = loadEventInfo.baseLocation.pathname;
+            link.pathname = baseLocation.pathname;
         } else if (link.getAttribute("href").startsWith("#")) {
-            link.pathname = loadEventInfo.loadLocation.pathname;
+            link.pathname = loadLocation.pathname;
         }
     });
-}, "rewrite", (info) => info.needsRewrite);
+}, "rewrite");
 
 /********************************************************************/
 /*  Designate self-links (a.k.a. anchorlinks) and local links (a.k.a.
     within-site links) as such, via CSS classes.
  */
-addContentLoadHandler(GW.contentLoadHandlers.addSpecialLinkClasses = (loadEventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventInfo) => {
     GWLog("addSpecialLinkClasses", "rewrite.js", 1);
 
-    loadEventInfo.container.querySelectorAll(".markdownBody a[href]").forEach(link => {
+	let baseLocation = baseLocationForDocument(eventInfo.document);
+	if (baseLocation == null)
+		return;
+
+    eventInfo.container.querySelectorAll(".markdownBody a[href]").forEach(link => {
         if (   link.hostname != location.hostname
             || link.closest("h1, h2, h3, h4, h5, h6")
             || link.closest(".section-self-link, .footnote-ref, .footnote-back, .footnote-self-link, .sidenote-self-link"))
             return;
 
-        if (   link.pathname == loadEventInfo.baseLocation.pathname
-            && (   loadEventInfo.container == document.body
-                || loadEventInfo.container.querySelector(selectorFromHash(link.hash)) != null
-                || (   loadEventInfo.container instanceof Element
-                    && loadEventInfo.container == loadEventInfo.container.closest(selectorFromHash(link.hash))))) {
+        if (   link.pathname == baseLocation.pathname
+                // if initial base page load
+            && (   eventInfo.container == document.body
+            	// if the link refers to an element also in the loaded content
+                || eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
+               // if the link refers to the loaded content container itself
+                || (   eventInfo.container instanceof Element
+                    && eventInfo.container == eventInfo.container.closest(selectorFromHash(link.hash))))) {
             link.swapClasses([ "link-self", "link-page" ], 0);
         } else if (link.pathname.slice(1).match(/[\.]/) == null) {
             link.swapClasses([ "link-self", "link-page" ], 1);
@@ -1556,16 +1544,16 @@ addContentLoadHandler(GW.contentLoadHandlers.addSpecialLinkClasses = (loadEventI
 /*  Assign proper link icons to self-links (directional or otherwise) and
     local links.
  */
-addContentLoadHandler(GW.contentLoadHandlers.designateSpecialLinkIcons = (loadEventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (eventInfo) => {
     GWLog("designateSpecialLinkIcons", "rewrite.js", 1);
 
 	//	Internal links on the home page need no decoration.
-	if (   loadEventInfo.document == document
-		&& loadEventInfo.document.body.classList.contains("index"))
+	if (   eventInfo.container == document.body
+		&& eventInfo.container.classList.contains("index"))
 		return;
 
     //  Self-links (anchorlinks to the current page).
-    loadEventInfo.container.querySelectorAll(".link-self:not(.icon-not)").forEach(link => {
+    eventInfo.container.querySelectorAll(".link-self:not(.icon-not)").forEach(link => {
         link.dataset.linkIconType = "text";
         link.dataset.linkIcon = "\u{00B6}"; // ¶
 
@@ -1576,7 +1564,7 @@ addContentLoadHandler(GW.contentLoadHandlers.designateSpecialLinkIcons = (loadEv
             the reader know if it’s a backwards link to an identifier already
             read, or an unread identifier.
          */
-        let target = loadEventInfo.container.querySelector(selectorFromHash(link.hash));
+        let target = eventInfo.container.querySelector(selectorFromHash(link.hash));
         if (!target)
             return;
 
@@ -1588,7 +1576,7 @@ addContentLoadHandler(GW.contentLoadHandlers.designateSpecialLinkIcons = (loadEv
     });
 
     //  Local links (to other pages on the site).
-    loadEventInfo.container.querySelectorAll(".link-page:not(.icon-not)").forEach(link => {
+    eventInfo.container.querySelectorAll(".link-page:not(.icon-not)").forEach(link => {
         if (link.dataset.linkIcon)
             return;
 
@@ -1602,39 +1590,52 @@ addContentLoadHandler(GW.contentLoadHandlers.designateSpecialLinkIcons = (loadEv
 /* MISC. */
 /*********/
 
+/***************************************************************/
+/*	Mark the link lists on the index page, for styling purposes.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.designateIndexPageSectionLinkLists = (eventInfo) => {
+    GWLog("designateIndexPageSectionLinkLists", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("section > ul").forEach(sectionLinkList => {
+		sectionLinkList.classList.add("section-link-list");
+	});
+}, "rewrite", (info) => (   info.container == document.body 
+						 && (   info.loadLocation.pathname == "/"
+						 	 || info.loadLocation.pathname == "/index")));
+
 /***************************************************************************/
 /*  Clean up image alt-text. (Shouldn’t matter, because all image URLs work,
     right? Yeah, right...)
  */
-addContentLoadHandler(GW.contentLoadHandlers.cleanUpImageAltText = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.cleanUpImageAltText = (eventInfo) => {
     GWLog("cleanUpImageAltText", "rewrite.js", 1);
 
     /*  If an image has no alt text, use the value of the ‘title’ attribute,
         if present; otherwise, a default string (“Image”).
      */
-    loadEventInfo.container.querySelectorAll("img:not([alt])").forEach(image => {
+    eventInfo.container.querySelectorAll("img:not([alt])").forEach(image => {
         image.alt = (image.title || "Image");
     });
 
     //  URL-encode ‘%’ signs in image alt text.
-    loadEventInfo.container.querySelectorAll("img[alt]").forEach(image => {
+    eventInfo.container.querySelectorAll("img[alt]").forEach(image => {
         image.alt = decodeURIComponent(image.alt.replace(/%(?![A-Fa-f0-9]{2})/g, "%25"));
     });
-}, "rewrite", (info) => info.needsRewrite);
+}, "rewrite");
 
 /************************************************************************/
 /*  Prevent line breaks immediately before citations (which “orphans” the
     citation on the next line, and looks ugly).
  */
-addContentLoadHandler(GW.contentLoadHandlers.noBreakForCitations = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.noBreakForCitations = (eventInfo) => {
     GWLog("noBreakForCitations", "rewrite.js", 1);
 
-    loadEventInfo.container.querySelectorAll(".footnote-ref").forEach(citation => {
+    eventInfo.container.querySelectorAll(".footnote-ref").forEach(citation => {
         citation.insertAdjacentHTML("beforebegin", "&NoBreak;");
         let textNode = citation.querySelector("sup").firstTextNode;
         textNode.textContent = "\u{2060}" + textNode.textContent;
     });
-}, "rewrite", (info) => info.needsRewrite);
+}, "rewrite");
 
 
 /*************/
@@ -1644,7 +1645,7 @@ addContentLoadHandler(GW.contentLoadHandlers.noBreakForCitations = (loadEventInf
 /*******************************************************/
 /*  Apply classes to blocks that should have a drop cap.
  */
-addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) => {
     GWLog("applyDropCapsClasses", "rewrite.js", 1);
 
     //  Add ‘drop-cap-’ class to requisite blocks.
@@ -1653,11 +1654,11 @@ addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (loadEventIn
         ".markdownBody > .epigraph:first-child + p",
         ".markdownBody .abstract:not(.scrape-abstract-not) + p"
     ].join(", ");
-    let dropCapClass = Array.from(loadEventInfo.container.classList).find(cssClass => cssClass.startsWith("drop-caps-"));
+    let dropCapClass = Array.from(eventInfo.container.classList).find(cssClass => cssClass.startsWith("drop-caps-"));
     if (dropCapClass)
         dropCapClass = dropCapClass.replace("-caps-", "-cap-");
 
-    loadEventInfo.container.querySelectorAll(dropCapBlocksSelector).forEach(dropCapBlock => {
+    eventInfo.container.querySelectorAll(dropCapBlocksSelector).forEach(dropCapBlock => {
         /*  Drop cap class could be set globally, or overridden by a .abstract;
             the latter could be `drop-cap-no` (which nullifies any page-global
             drop-cap class for the given block).
@@ -1707,10 +1708,10 @@ addCopyProcessor((event, selection) => {
      when the copy command is sent; however, it ensures that the UI communicates
      the actual behavior in a more accurate and understandable way.)
  */
-addContentLoadHandler(GW.contentLoadHandlers.addDoubleClickListenersToMathBlocks = (loadEventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.addDoubleClickListenersToMathBlocks = (eventInfo) => {
     GWLog("addDoubleClickListenersToMathBlocks", "rewrite.js", 1);
 
-    loadEventInfo.container.querySelectorAll(".mjpage").forEach(mathBlock => {
+    eventInfo.container.querySelectorAll(".mjpage").forEach(mathBlock => {
         mathBlock.addEventListener("dblclick", (event) => {
             document.getSelection().selectAllChildren(mathBlock.querySelector(".mjx-chtml"));
         });
@@ -1723,10 +1724,10 @@ addContentLoadHandler(GW.contentLoadHandlers.addDoubleClickListenersToMathBlocks
 /****************************************************************/
 /*  Add block buttons (copy) to block (not inline) math elements.
  */
-addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (eventInfo) => {
     GWLog("addBlockButtonsToMathBlocks", "rewrite.js", 1);
 
-    loadEventInfo.container.querySelectorAll(".mjpage__block").forEach(mathBlock => {
+    eventInfo.container.querySelectorAll(".mjpage__block").forEach(mathBlock => {
         //  Inject button bar.
         mathBlock.insertAdjacentHTML("beforeend",
               `<span class="block-button-bar">`
@@ -1735,28 +1736,34 @@ addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (load
             + `</button>`
             + `<span class="scratchpad"></span>`
             + `</span>`);
-
-        //  Activate buttons.
-        requestAnimationFrame(() => {
-            //  Copy button (copies LaTeX source);
-            let latexSource = mathBlock.querySelector(".mjx-math").getAttribute("aria-label");
-            let scratchpad = mathBlock.querySelector(".scratchpad");
-            mathBlock.querySelector("button.copy").addActivateEvent((event) => {
-                GWLog("mathBlockCopyButtonClicked", "rewrite.js", 3);
-
-                //  Perform copy operation.
-                scratchpad.innerText = latexSource;
-                selectElementContents(scratchpad);
-                document.execCommand("copy");
-                scratchpad.innerText = "";
-
-                //  Flash math block, for visual feedback of copy operation.
-                mathBlock.classList.add("flash");
-                setTimeout(() => { mathBlock.classList.remove("flash"); }, 150);
-            });
-        });
     });
-}, "rewrite", (info) => info.needsRewrite);
+}, "rewrite");
+
+/************************************************/
+/*	Activate copy buttons of math block elements.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.activateMathBlockButtons = (eventInfo) => {
+    GWLog("activateMathBlockButtons", "rewrite.js", 1);
+
+    eventInfo.container.querySelectorAll(".mjpage__block").forEach(mathBlock => {
+		//  Copy button (copies LaTeX source).
+		let latexSource = mathBlock.querySelector(".mjx-math").getAttribute("aria-label");
+		let scratchpad = mathBlock.querySelector(".scratchpad");
+		mathBlock.querySelector("button.copy").addActivateEvent((event) => {
+			GWLog("mathBlockCopyButtonClicked", "rewrite.js", 3);
+
+			//  Perform copy operation.
+			scratchpad.innerText = latexSource;
+			selectElementContents(scratchpad);
+			document.execCommand("copy");
+			scratchpad.innerText = "";
+
+			//  Flash math block, for visual feedback of copy operation.
+			mathBlock.classList.add("flash");
+			setTimeout(() => { mathBlock.classList.remove("flash"); }, 150);
+		});
+    });
+}, "eventListeners");
 
 
 /********************/
@@ -1804,7 +1811,7 @@ function updateBackToTopLinkVisibility(event) {
 /***********************************************************************/
 /*  Injects the “back to top” link. (Called only for the main document.)
  */
-addContentLoadHandler(GW.contentLoadHandlers.injectBackToTopLink = (loadEventInfo) => {
+addContentLoadHandler(GW.contentLoadHandlers.injectBackToTopLink = (eventInfo) => {
     GWLog("injectBackToTopLink", "rewrite.js", 1);
 
     GW.backToTop = addUIElement(`<div id="back-to-top"><a href="#top" tabindex="-1" title="Back to top">` +
