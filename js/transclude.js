@@ -125,9 +125,13 @@
         DIV element, which will be given the ID of the include-link. When the
         `include-identify-not` option is used, this will not be done.
 
+	include-spinner
     include-spinner-not
-        Hides the “loading spinner” that is normally shown at the site of the
-        include-link while content to be transcluded is being retrieved.
+        Shows or hides the “loading spinner” that is shown at the site of the 
+        include-link while content to be transcluded is being retrieved. In the
+        absence of either of these classes, the spinner will be shown or not,
+        depending on context. Using either class causes the spinner to be shown
+        or not shown (respectively), unconditionally.
 
 
     III. ADVANCED
@@ -745,9 +749,7 @@ Transclude = {
         "include-unwrap",
         "include-block-context",
         "include-replace-container",
-        "include-identify-not",
-        "include-spinner",
-        "include-spinner-not"
+        "include-identify-not"
     ],
 
     transcludeAnnotationsByDefault: true,
