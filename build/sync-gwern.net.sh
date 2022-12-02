@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-11-30 12:56:38 gwern"
+# When:  Time-stamp: "2022-12-01 18:16:04 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -71,7 +71,8 @@ else
           s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant';
 
           ## abbreviation consistency:
-          s '(ie,' '(ie.'; s '(ie ' '(ie. '; s '(i.e.,' '(ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior'; s '<sup>Th</sup>' '<sup>th</sup>'
+          s '(ie,' '(ie.'; s '(ie ' '(ie. '; s '(i.e.,' '(ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
+          s '<sup>Th</sup>' '<sup>th</sup>'; s '<sup>St</sup>' '<sup>st</sup>'; s '<sup>Nd</sup>' '<sup>nd</sup>'; s '<sup>Rd</sup>' '<sup>rd</sup>';
 
           ## spelling errors:
           s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook';
@@ -83,7 +84,7 @@ else
           s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber';
 
           ## HTML/Markdown formatting:
-          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s '<sup>St</sup>' '<sup>st</sup>'; s '<sup>Th</sup>' '<sup>th</sup>'; s '<sup>Rd</sup>' '<sup>rd</sup>'; s '<sup>Nd</sup>' '<sup>nd</sup>'; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'
+          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'
         ) &> /dev/null &
     sed -i -e 's/ data-link-?[Tt]ags="[a-z0-9 \/-]\+">/>/' ./metadata/*.yaml;
     fi
@@ -728,7 +729,9 @@ else
           cm "video/mp4"  'https://www.gwern.net/images/genetics/selection/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
           cm "video/webm" 'https://www.gwern.net/images/statistics/2003-murray-humanaccomplishment-region-proportions-bootstrap.webm'
           cm "image/jpeg" 'https://www.gwern.net/images/technology/security/lobel-frogandtoadtogether-thebox-crop.jpg'
+          cm "image/jpeg" 'https://www.gwern.net/images/google/15-predicted-survivorship-curves.png-530px.jpg'
           cm "image/png"  'https://www.gwern.net/images/technology/search/googlesearch-tools-daterange.png'
+          cm "image/png"  'https://www.gwern.net/images/google/15-predicted-survivorship-curves.png'
           cm "application/wasm"  'https://www.gwern.net/static/js/patterns/en-us.wasm'
         }
     wrap λ "The live MIME types are incorrect"
@@ -863,8 +866,8 @@ else
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
     λ() { for IMAGE in $(find ./images/ -type f -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'images/fiction/batman/' -e 'images/ai/dall-e/2/' -e '2022-09-21-gwern-stablediffusionv14-circulardropcapinitialsamples.png' -e '2022-09-22-gwern-stablediffusionv14-textualinversion-yinit-dropcapsexperiments.png' -e '2022-09-27-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2'); do
               SIZE_W=$(identify -format "%w" "$IMAGE")
-              if (( $SIZE_W > 1600  )); then echo "Too wide image: $IMAGE $SIZE_W; shrinking…";
-                                             mogrify  -resize 1600x10000 "$IMAGE";
+              if (( SIZE_W > 1600  )); then echo "Too wide image: $IMAGE $SIZE_W; shrinking…";
+                                            mogrify  -resize 1600x10000 "$IMAGE";
               fi;
           done; }
     wrap λ "Too-wide images (downscale)"
@@ -879,7 +882,7 @@ else
     wrap λ "Similar-links: overused links indicate pathological lookups; blacklist links as necessary."
 
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.
-    if [ $(date +"%d") == "1" ]; then
+    if [ "$(date +"%d")" == "1" ]; then
 
         bold "Checking all MIME types…"
         c () { curl --compressed --silent --output /dev/null --head "$@"; }
@@ -897,12 +900,12 @@ else
         wrap λ "Multi-columns use?"
     fi
     # if the end of the month, expire all of the annotations to get rid of stale ones:
-    if [ $(date +"%d") == "31" ]; then
+    if [ "$(date +"%d")" == "31" ]; then
         find ./metadata/annotations/ -maxdepth 1 -name "*.html" -delete
     fi
 
     # once a year, check all on-site local links to make sure they point to the true current URL; this avoids excess redirects and various possible bugs (such as an annotation not being applied because it's defined for the true current URL but not the various old ones, or going through HTTP nginx redirects first)
-    if [ $(date +"%j") == "002" ]; then
+    if [ "$(date +"%j")" == "002" ]; then
         bold "Checking all URLs for redirects…"
         for URL in $(find . -type f -name "*.page" | parallel --max-args=500 runghc ./static/build/link-extractor.hs | \
                          grep -E -e '^/' | cut --delimiter=' ' --field=1 | sort -u); do
