@@ -1236,7 +1236,7 @@ Popups = {
 								 || target.getBoundingClientRect();
 
 		//	Prevent popup cycling in Chromium.
-		popup.style.visibility = "hidden";
+// 		popup.style.visibility = "hidden";
 
 		//  Wait for the “naive” layout to be completed, and then...
 		requestAnimationFrame(() => {
@@ -1376,7 +1376,7 @@ Popups = {
 			popup.viewportRect = popup.getBoundingClientRect();
 
 			//	Prevent popup cycling in Chromium.
-			popup.style.visibility = "";
+// 			popup.style.visibility = "";
 
 			document.activeElement.blur();
 		});

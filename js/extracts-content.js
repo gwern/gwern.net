@@ -191,9 +191,9 @@ Extracts = { ...Extracts,
 				/*	If the transcluded content makes up the entirety of the 
 					pop-frame’s content, refresh the pop-frame after the load.
 				 */
-				if (   info.container.parentElement == popFrame.body
-					&& info.container.parentElement.children.length == 2)
-					Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);				
+// 				if (   info.container.parentElement == popFrame.body
+// 					&& info.container.parentElement.children.length == 2)
+// 					Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);				
 			}, { condition: (info) => (   info.source == "transclude" 
 									   && info.document == popFrame.document) });
 		}
