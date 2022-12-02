@@ -2347,7 +2347,7 @@ span.link-bibliography a {
     or a specific <p>.)
     */
 @media all and (min-width: 650px) {
-    *[class*='drop-cap-'] {
+    *[class*='drop-cap-'].overlap-not {
         min-height: 6em;
     }
     *[class*='drop-cap-']::first-letter,
@@ -4750,6 +4750,9 @@ body.index-directory #footer {
 }
 .popin-open:not(.footnote-ref)::before,
 .popin-open:not(.footnote-ref):hover::before {
+	content: "";
+    display: block;
+    position: absolute;
     background-image: none;
     width: calc(100% + 2 * var(--GW-popins-popin-border-width));
     height: calc(100% + 2 * var(--GW-popins-popin-border-width));
@@ -4757,6 +4760,9 @@ body.index-directory #footer {
     left: calc(var(--popin-open-highlight-box-shadow-x-offset) - (2 * var(--GW-popins-popin-border-width)));
     bottom: calc(0px - (2 * var(--GW-popins-popin-border-width)));
     top: unset;
+}
+.popin-open:not(.footnote-ref) .indicator-hook {
+	display: none;
 }
 
 /*=-------------=*/
