@@ -20,7 +20,7 @@ GW.isMobile = () => {
         1. JavaScript detects touch capability, AND viewport is narrow; or,
         2. CSS does NOT detect hover capability.
      */
-    return (   (   ('ontouchstart' in document.documentElement)
+    return (   (   ("ontouchstart" in document.documentElement)
                 && GW.mediaQueries.mobileWidth.matches)
             || !GW.mediaQueries.hoverAvailable.matches);
 };
