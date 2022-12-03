@@ -1043,7 +1043,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteAuxLinksLinksInTransclud
 			});
 		}
 	});
-}, "eventListeners", (info) => info.contentType == "annotation");
+}, "eventListeners", (info) => (info.contentType == "annotation"));
 
 /*******************************************************************************/
 /*  Apply various typographic fixes (educate quotes, inject <wbr> elements after

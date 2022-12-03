@@ -516,6 +516,7 @@ function includeContent(includeLink, content) {
 		flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
 	GW.notificationCenter.fireEvent("GW.contentDidInject", {
 		source: "transclude",
+		contentType: (Transclude.isAnnotationTransclude(includeLink) ? "annotation" : null),
 		container: wrapper,
 		document: containingDocument,
 		loadLocation: loadLocationForIncludeLink(includeLink),
