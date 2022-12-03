@@ -137,7 +137,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			if (collapseBlock.className == "")
 				collapseBlock.removeAttribute("class");
 		} else if (   collapseBlock.parentElement.tagName == "DIV"
-				   && collapseBlock.parentElement.children.length == 1) {
+				   && isOnlyChild(collapseBlock)) {
 			//  Use parent div as collapse block wrapper.
 			let realCollapseBlock = collapseBlock.parentElement;
 			realCollapseBlock.classList.add("collapse");
@@ -264,39 +264,55 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 	});
 }, "eventListeners");
 
+/************************************************************************/
+/*	Permanently expand a collapse block and remove its disclosure button.
+ */
+function expandLockCollapseBlock(collapseBlock) {
+	//	Remove disclosure button.
+	collapseBlock.querySelector(".disclosure-button").remove();
+
+	//	Expand.
+	let wasCollapsed = !collapseBlock.classList.contains("expanded");
+
+	collapseBlock.classList.remove("collapse", "expanded", "expand-on-hover");
+	if (collapseBlock.className == "")
+		collapseBlock.removeAttribute("class");
+	if (   collapseBlock.firstElementChild.tagName == "DIV"
+		&& collapseBlock.firstElementChild.classList.contains("collapse-content-wrapper")
+		&& isOnlyChild(collapseBlock.firstElementChild)) {
+		unwrap(collapseBlock.firstElementChild);
+	} else if (   collapseBlock.tagName == "DIV"
+			   && collapseBlock.className == ""
+			   && isOnlyChild(collapseBlock.firstElementChild)) {
+		unwrap(collapseBlock);
+	}
+
+	//	Fire event.
+	if (wasCollapsed)
+		GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", { source: "Collapse.expandLockCollapseBlocks" });
+}
+
 /**********************************************************/
 /*	Removes disclosure buttons and expands collapse blocks.
  */
 addContentInjectHandler(GW.contentInjectHandlers.expandLockCollapseBlocks = (eventInfo) => {
 	GWLog("expandLockCollapseBlocks", "collapse.js", 2);
 
-	//  Remove disclosure buttons.
-	eventInfo.container.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
-		disclosureButton.remove();
-	});
-
 	//  Permanently expand collapse blocks (by making them into regular blocks).
-	eventInfo.container.querySelectorAll(".collapse").forEach(collapseBlock => {
-		let wasCollapsed = !collapseBlock.classList.contains("expanded");
-
-		collapseBlock.classList.remove("collapse", "expanded");
-		if (collapseBlock.className == "")
-			collapseBlock.removeAttribute("class");
-		if (   collapseBlock.firstElementChild.tagName == "DIV"
-			&& collapseBlock.firstElementChild.className == ""
-			&& isOnlyChild(collapseBlock.firstElementChild)) {
-			unwrap(collapseBlock.firstElementChild);
-		} else if (   collapseBlock.tagName == "DIV"
-				   && collapseBlock.className == ""
-				   && isOnlyChild(collapseBlock.firstElementChild)) {
-			unwrap(collapseBlock);
-		}
-
-		if (wasCollapsed)
-	    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", { source: "Collapse.expandLockCollapseBlocks" });
-
-	});
+	eventInfo.container.querySelectorAll(".collapse").forEach(expandLockCollapseBlock);
 }, "<rewrite", (info) => info.stripCollapses);
+
+/********************************************************************/
+/*	Strip a single collapse block encompassing the top level content.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.expandLockSingleTopLevelCollapseBlock = (eventInfo) => {
+	GWLog("expandLockSingleTopLevelCollapseBlock", "collapse.js", 2);
+
+	if (   isOnlyChild(eventInfo.container.firstElementChild)
+		&& eventInfo.container == eventInfo.document.body
+		&& eventInfo.container.firstElementChild.classList.contains("collapse"))
+		expandLockCollapseBlock(eventInfo.container.firstElementChild);
+}, "<rewrite");
 
 /*******************************************************************************/
 /*	Ensure that the given element is scrolled into view when layout is complete.
