@@ -1213,7 +1213,7 @@ Transclude = {
 				within a link bibliography.
 			 */
 			if (   link.hash == ""
-				|| link.closest(".link-bibliography-list") != null)
+				|| link.closest(".aux-links-list") != null)
 				link.classList.add("include-spinner");
 		}
 
