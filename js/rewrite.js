@@ -1712,7 +1712,7 @@ addContentInjectHandler(GW.contentInjectHandlers.preventDropCapsOverlap = (event
 		if (dropCapBlock.nextElementSibling) {
 			if (   dropCapBlock.nextElementSibling.classList.containsAnyOf([ "columns" ])
 				|| [ "OL", "UL" ].includes(dropCapBlock.nextElementSibling.tagName)
-				|| getComputedStyle(dropCapBlock.nextElementSibling).borderWidth != "0")
+				|| [ "0", "0px" ].includes(getComputedStyle(dropCapBlock.nextElementSibling).borderWidth) == false)
 				dropCapBlock.classList.add("overlap-not");
 		}
 	});
