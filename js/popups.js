@@ -16,7 +16,7 @@ Popups = {
     popupBreathingRoomX: 12.0,
     popupBreathingRoomY: 8.0,
 
-    popupTriggerDelay: 600,
+    popupTriggerDelay: 650,
     popupFadeoutDelay: 50,
     popupFadeoutDuration: 250,
 
@@ -468,8 +468,8 @@ Popups = {
 			return popup.popupStack.slice(0, indexOfPopup + 1);
 		} else {
 			let parentPopup = Popups.containingPopFrame(popup.spawningTarget);
-			return ((parentPopup && parentPopup.popupStack) 
-				    ? Popups.getPopupAncestorStack(parentPopup) 
+			return ((parentPopup && parentPopup.popupStack)
+				    ? Popups.getPopupAncestorStack(parentPopup)
 				    : [ ]);
 		}
 	},
@@ -1228,11 +1228,11 @@ Popups = {
 			spawnPoint = target.lastMouseEnterLocation;
 
 		/*	When the target’s bounding rect is composed of multiple client rects
-			(as when the target is a link that wraps across a line break), we 
+			(as when the target is a link that wraps across a line break), we
 			must select the right rect, to prevent the popup from spawning far
 			away from the cursor.
 		 */
-		let targetViewportRect =    Array.from(target.getClientRects()).find(rect => pointWithinRect(spawnPoint, rect)) 
+		let targetViewportRect =    Array.from(target.getClientRects()).find(rect => pointWithinRect(spawnPoint, rect))
 								 || target.getBoundingClientRect();
 
 		//	Prevent popup cycling in Chromium.
@@ -1399,7 +1399,7 @@ Popups = {
 		popup.style.left = `${rect.x}px`;
 		popup.style.top = `${rect.y}px`;
 
-		if (   rect.width > 0 
+		if (   rect.width > 0
 			&& rect.height > 0) {
 			popup.style.maxWidth = "unset";
 			popup.style.maxHeight = "unset";

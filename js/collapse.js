@@ -136,7 +136,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			collapseBlock.classList.remove("collapse", "expand-on-hover");
 			if (collapseBlock.className == "")
 				collapseBlock.removeAttribute("class");
-		} else if (   collapseBlock.parentElement.tagName == "DIV" 
+		} else if (   collapseBlock.parentElement.tagName == "DIV"
 				   && collapseBlock.parentElement.children.length == 1) {
 			//  Use parent div as collapse block wrapper.
 			let realCollapseBlock = collapseBlock.parentElement;
@@ -212,13 +212,13 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 			/*	If a collapse block was collapsed from the bottom, it might now
 				be up off the screen. Scroll it into view.
 			 */
-			if (   !disclosureButton.checked 
+			if (   !disclosureButton.checked
 				&& !isOnScreen(collapseBlock))
 				scrollCollapseBlockIntoView(collapseBlock);
 			/*	If a collapse block was expanded from the bottom, the top of the
 				collapse block might be up off the screen. Scroll it into view.
 			 */
-			else if (   disclosureButton.checked 
+			else if (   disclosureButton.checked
 					 && collapseBlock.getBoundingClientRect().top < 0)
 				scrollCollapseBlockIntoView(collapseBlock);
 
@@ -229,8 +229,8 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 			is temporarily expanded causes it to stay expanded permanently.
 		 */
 		if (collapseBlock.classList.contains("expand-on-hover")) {
-			let expandOnHoverDelay = 750;
-			let collapseOnUnhoverDelay = 250;
+			let expandOnHoverDelay = 800;
+			let collapseOnUnhoverDelay = 300;
 
 			onEventAfterDelayDo(collapseBlock, "mouseenter", expandOnHoverDelay, (event) => {
 				if (disclosureButton.checked)
@@ -373,19 +373,19 @@ GW.notificationCenter.addHandlerForEvent("GW.hashHandlingSetupDidComplete", GW.r
 });
 
 /*******************************************************************************/
-/*	What happens when a user C-fs on a page and there is a hit *inside* a 
-	collapse block? Just navigating to the collapsed section is not useful, 
-	especially when there may be multiple collapses inside a frame. So we must 
-	specially handle searches and pop open collapse sections with matches. We do 
+/*	What happens when a user C-fs on a page and there is a hit *inside* a
+	collapse block? Just navigating to the collapsed section is not useful,
+	especially when there may be multiple collapses inside a frame. So we must
+	specially handle searches and pop open collapse sections with matches. We do
 	this by watching for selection changes. (We don’t bother checking for window
-	focus/blur because that is unreliable and in any case doesn’t work for 
+	focus/blur because that is unreliable and in any case doesn’t work for
 	“Search Again” key command.)
  */
 document.addEventListener("selectionchange", GW.selectionChanged = (event) => {
 	GWLog("GW.selectionChangedCheckForCollapsedContainer", "collapse.js", 3);
 
 	let newSelection = document.getSelection();
-	if (   newSelection 
+	if (   newSelection
 		&& newSelection.rangeCount > 0
 		&& newSelection.getRangeAt(0).toString().length > 0)
 		expandCollapseBlocksToReveal(newSelection.anchorNode);
