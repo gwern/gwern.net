@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-12-01 20:26:31 gwern"
+When:  Time-stamp: "2022-12-02 10:51:28 gwern"
 License: CC-0
 -}
 
@@ -1638,6 +1638,10 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" n ", " <em>n</em> ")
          , ("(n ", "<em>n</em> ") -- it's safe to replace 'n', but not 'N' because 'N' is used fairly often in chemistry for nitrogen
          , ("<span class=\"math inline\">\\(n^{O(k)}\\)</span>", "<em>n</em><sup>𝒪(<em>k</em>)</sup>")
+         , ("<span class=\"math inline\">\\(S^</em>(0.8)\\)</span>", "<em>S</em><sup>✱</sup>(0.8)")
+         , ("<span class=\"math inline\">\\(S^</em>(0)\\)</span>", "<em>S</em><sup>✱</sup>(0)")
+         , ("<span class=\"math inline\">\\(S^<em>(0)\\)</span>", "<em>S</em><sup>✱</sup>(0)")
+         , ("<span class=\"math inline\">\\(S^</em>(0.8)\\)</span>", "<em>S</em><sup>✱</sup>(0.8)")
          , (" N pixels", " <em>N</em> pixels")
          , ("a n layer", "a <em>n</em> layer")
          , (" n-step", " <em>n</em>-step")
@@ -1917,6 +1921,10 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("< /italic>", "</em>")
          , ("</italic>", "</em>")
          , ("< /i>", "</i>")
+         , ("<jats:bold>", "<strong>")
+         , ("<bold>", "<strong>")
+         , ("</jats:bold>", "</strong>")
+         , ("</bold>", "</strong>")
          , ("<jats:title>Abstract</jats:title>\n\t  <jats:p>", "<p>")
          , ("<jats:title>Abstract</jats:title><jats:p>The</jats:p>", "")
          , ("<p><strong>Author Summary</strong></p> <p>", "<p><strong>Author Summary</strong>: ")

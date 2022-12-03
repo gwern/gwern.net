@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-12-01 20:51:34 gwern"
+When:  Time-stamp: "2022-12-02 19:15:40 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1283,5 +1283,6 @@ whiteList url
       , "https://lisiyao21.github.io/projects/AnimeRun" -- low quality (video embeds)
       , "https://vision-locomotion.github.io/" -- low quality (video embeds)
       , "https://ajayj.com/vectorfusion" -- low quality (video embeds)
+      , "https://realsinger.github.io/" -- low quality (audio embeds)
       ] = True
     | otherwise = False

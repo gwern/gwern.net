@@ -715,7 +715,7 @@ linkIconTestUnitsText =
          , ("https://slate.com/health-and-science/2017/06/daryl-bem-proved-esp-is-real-showed-science-is-broken.html",  "S","text,sans")
          , ("https://slatestarcodex.com/2015/01/15/depression-is-not-a-proxy-for-social-dysfunction/",  "SSC","text,tri")
          , ("https://unsongbook.com/",  "\8501","text")
-         , ("/docs/fiction/2011-yvain-iliadaslawsuit.html",  "SSC","text,tri")
+         , ("/docs/fiction/poetry/2011-yvain-iliadaslawsuit.html",  "SSC","text,tri")
          , ("https://astralcodexten.substack.com/p/know-your-amphetamines",  "SSC","text,tri")
          , ("https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3774989", "SSRN", "text,quad")
          , ("https://stackoverflow.com/questions/1197575/can-scripts-be-inserted-with-innerhtml",  "stackexchange","svg")
