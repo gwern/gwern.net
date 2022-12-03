@@ -118,14 +118,16 @@
 /***********/
 
 GW.defaultBlockElementSelectors = [
+	[	".footnote",
+		".sidenote"
+		].join(", "),
+	".aux-links-append",
+	"li",
+	"p",
 	[	"section",
-		".footnote",
-		".sidenote",
-		".aux-links-append",
 		".markdownBody > *",
 		".include-wrapper-block"
-	].join(", "),
-	"p"
+		].join(", ")
 ];
 
 /********************************************************************/
@@ -1519,12 +1521,13 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
                 // if the link refers to the loaded content container itself
                 || (   eventInfo.container instanceof Element
                     && eventInfo.container == eventInfo.container.closest(selectorFromHash(link.hash)))
-                // if we’re transcluding a citation (because we merge footnotes)
-                || (   eventInfo.source == "transclude"
-                	&& link.classList.contains("footnote-ref"))
-                // if we’re merging a footnote for transcluded content
-                || (   eventInfo.source == "transclude.footnotes"
-                	&& link.classList.contains("footnote-back")))) {
+                || (   eventInfo.document.querySelector("#page-metadata") != null
+			        		// if we’re transcluding a citation (because we merge footnotes)
+                	&& (   (   eventInfo.source == "transclude"
+							&& link.classList.contains("footnote-ref"))
+							// if we’re merging a footnote for transcluded content
+						|| (   eventInfo.source == "transclude.footnotes"
+							&& link.classList.contains("footnote-back")))))) {
             link.pathname = baseLocation.pathname;
         } else if (link.getAttribute("href").startsWith("#")) {
             link.pathname = loadLocation.pathname;

@@ -495,10 +495,11 @@ function includeContent(includeLink, content) {
     //  Inject wrapper.
     insertWhere.parentNode.insertBefore(wrapper, insertWhere);
 
-    //  Delete footnotes section, if any.
-    let newContentFootnotesSection = wrapper.querySelector("#footnotes");
-    if (newContentFootnotesSection)
-        newContentFootnotesSection.remove();
+    //  Delete footnotes section, if any, when transcluding into a full page.
+	let newContentFootnotesSection = wrapper.querySelector("#footnotes");
+    if (   newContentFootnotesSection
+    	&& containingDocument.querySelector("#page-metadata") != null)
+		newContentFootnotesSection.remove();
 
     //  ID transplantation.
     if (   includeLink.id > ""
@@ -524,11 +525,12 @@ function includeContent(includeLink, content) {
 
 	//	WITHIN-WRAPPER MODIFICATIONS END; OTHER MODIFICATIONS BEGIN
 
-    //  Update footnotes, if need be.
-    if (Transclude.isAnnotationTransclude(includeLink) == false)
+    //  Update footnotes, if need be, when transcluding into a full page.
+    if (   containingDocument.querySelector("#page-metadata") != null
+    	&& Transclude.isAnnotationTransclude(includeLink) == false)
         updateFootnotesAfterInclusion(includeLink, wrapper, newContentFootnotesSection);
 
-    //  Update TOC, if need be.
+    //  Update TOC, if need be, when transcluding into the base page.
     if (   containingDocument == document
     	&& Transclude.isAnnotationTransclude(includeLink) == false)
         updatePageTOC(wrapper, true);
@@ -878,7 +880,7 @@ Transclude = {
         let anchors = includeLink.hash.match(/#[^#]*/g) ?? [ ];
         if (anchors.length == 1) {
             //  Simple element tranclude.
-            let targetElement = content.querySelector(selectorFromHash(includeLink.hash));
+            let targetElement = targetElementInDocument(includeLink, content);
             if (targetElement == null) {
             	content = newDocument();
             } else {
