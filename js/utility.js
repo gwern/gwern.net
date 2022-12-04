@@ -84,6 +84,13 @@ DOMTokenList.prototype.containsAnyOf = function (tokens) {
     return false;
 }
 
+/*********************************************************************/
+/*	Workaround for Firefox weirdness, based on more Firefox weirdness.
+ */
+DocumentFragment.prototype.getSelection = function () {
+	return document.getSelection();
+}
+
 /**************************************************/
 /*	The obvious equivalent of Element’s .innerHTML.
  */
