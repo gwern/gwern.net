@@ -1075,7 +1075,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
     GW.notificationCenter.fireEvent("GW.contentDidInject", {
         source: "DOMContentLoaded",
-        container: document,
+        container: document.body,
         document: document,
         loadLocation: pageURL,
         flags: (  GW.contentDidInjectEventFlags.clickable
