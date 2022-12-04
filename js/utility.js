@@ -398,6 +398,17 @@ function selectElementContents(element) {
 function getSelectionAsDocument(doc = document) {
     let docFrag = new DocumentFragment();
     docFrag.append(doc.getSelection().getRangeAt(0).cloneContents());
+
+	//	Strip whitespace (remove top-level empty nodes).
+	let nodesToRemove = [ ];
+	docFrag.childNodes.forEach(node => {
+		if (isNodeEmpty(node))
+			nodesToRemove.push(node);
+	});
+	nodesToRemove.forEach(node => {
+		docFrag.removeChild(node);
+	});
+
     return docFrag;
 }
 
