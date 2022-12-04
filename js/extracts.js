@@ -658,7 +658,7 @@ Extracts = {
 			} else {
 				let containerSelector = [ 
 					".abstract blockquote",
-					"#markdownBody" 
+					".markdownBody" 
 				].join(", ");
 				let containerRect = popin.closest(containerSelector).getBoundingClientRect();
 				leftMargin = (containerRect.left - popinRect.left);
