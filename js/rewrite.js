@@ -2069,6 +2069,7 @@ doWhenBodyExists(() => {
 	GW.console.updateHeight();
 
 	if (   getQueryVariable("console") == "1"
+		|| getQueryVariable("console") == "2"
 		|| localStorage.getItem("console-enabled") == "true") {
 		//	Add show/hide key event listener.
 		document.addEventListener("keyup", GW.console.keyUp);
@@ -2079,7 +2080,8 @@ doWhenBodyExists(() => {
 	}
 
 	//	Show console.
-// 	GW.console.show();
+	if (getQueryVariable("console") == "2")
+		GW.console.show();
 });
 
 
