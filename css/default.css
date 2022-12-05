@@ -4745,6 +4745,7 @@ body.index-directory #footer {
         var(--popin-open-highlight-box-shadow-x-offset) 0 0 5px var(--GW-popins-popin-background-color);
     background-image: none !important;
     display: inline-block;
+    position: relative;
     text-align: left;
     text-indent: 0;
 }
