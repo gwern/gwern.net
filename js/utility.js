@@ -525,6 +525,8 @@ function doAjax(options) {
     let location = (options.location || document.location)
                    + ((options.params && method == "GET") ? ("?" + urlEncodeQuery(options.params)) : "");
     req.open(method, location);
+    if (options["responseType"])
+	    req.responseType = options["responseType"];
     if (options["method"] == "POST") {
         req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         req.send(urlEncodeQuery(options.params));

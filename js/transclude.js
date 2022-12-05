@@ -799,8 +799,9 @@ Transclude = {
 
 		doAjax({
 			location: Transclude.templateDirectoryPathname + Transclude.templateListFileName,
+			responseType: "json",
 			onSuccess: (event) => {
-				let templateList = JSON.parse(event.target.responseText);
+				let templateList = event.target.response;
 				for (templateName of templateList)
 					Transclude.loadTemplateByName(templateName);
 			}
@@ -812,8 +813,9 @@ Transclude = {
 
 		doAjax({
 			location: Transclude.templateDirectoryPathname + templateName + ".tmpl",
+			responseType: "text",
 			onSuccess: (event) => {
-				Transclude.templates[templateName] = event.target.responseText;
+				Transclude.templates[templateName] = event.target.response;
 
 				GW.notificationCenter.fireEvent("Transclude.templateDidLoad", {
 					source: "Transclude.loadTemplateByName",
