@@ -5695,3 +5695,80 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     top: unset;
     bottom: 0;
 }
+
+
+/***********/
+/* CONSOLE */
+/***********/
+
+#console {
+	position: absolute;
+	background-color: #fff;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	border-top: 3px double #000;
+	font-family: var(--GW-monospaced-font-stack);
+    max-height: 50vh;
+    display: flex;
+    flex-flow: column;
+    z-index: 1;
+    transition: 
+    	bottom 0.1s ease-out;
+}
+
+#console .console-scroll-view {
+	border-bottom: 1px solid #000;
+	min-height: 2em;
+    overflow-y: scroll;
+    overscroll-behavior: none;
+}
+
+#console .console-content-view {
+    font-size: 0.8rem;
+    padding: 2px;
+}
+#console .console-content-view p {
+    text-indent: 0;
+    white-space: pre-wrap;
+}
+
+#console .console-command-line {
+	display: flex;
+	height: 1.75em;
+}
+
+#console .console-command-line-prompt {
+	padding: 0 0.5em 0 0.25em;
+    display: flex;
+    line-height: 1.75;
+    font-size: 1rem;
+}
+#console .console-command-line-prompt::after {
+	content: ">";
+    padding: 0 0 0 0.5em;
+    margin: 0 0 0 0.375em;
+    border-left: 1px solid #000;
+}
+
+#console .console-command-line-entry-field {
+	background-color: lightblue;
+	flex: 1 0 auto;
+}
+#console .console-command-line-entry-field input {
+	appearance: none;
+	border: none;
+	height: 100%;
+	display: block;
+	width: 100%;
+	padding: 0 0.5em 0 0;
+	font-family: var(--GW-monospaced-font-stack);
+    font-size: 1rem;
+}
+#console .console-command-line-entry-field input:focus {
+	outline: none;
+}
+
+#console.hidden {
+    bottom: calc(-1 * var(--GW-console-view-height));
+}

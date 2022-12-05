@@ -57,7 +57,12 @@ function GWLog (string, source = "", level = 1) {
 
     let sourcestamp = (source > "" ? `[${source}]` : `[ ]`).padEnd(GW.logSourcePadLength, ' ');
 
-    console.log(`[${GWTimestamp()}]  ` + sourcestamp + string);
+	let outputString = (`[${GWTimestamp()}]  ` + sourcestamp + string);
+
+    console.log(outputString);
+
+	if (GW.console)
+		GW.console.print(outputString);
 }
 GW.setLogLevel = (level, permanently = false) => {
     if (permanently)
@@ -73,6 +78,19 @@ function GWStopWatch(f, ...args) {
     console.log(`[${GWTimestamp()}]  ${fname} [END]`);
     return rval;
 }
+
+
+/***********/
+/* CONSOLE */
+/***********/
+
+GW.consoleTempBuffer = "";
+GW.console = {
+	print: (string) => {
+		GW.consoleTempBuffer += string;
+		GW.consoleTempBuffer += "\n";
+	},
+};
 
 
 /*******************/

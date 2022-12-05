@@ -1906,6 +1906,168 @@ doWhenPageLoaded(() => {
 });
 
 
+/***********/
+/* CONSOLE */
+/***********/
+
+function $ (f) {
+	try {
+		if (typeof f == "string")
+			GW.console.print(eval(f));
+		else
+			GW.console.print(f());
+	} catch (e) {
+		GW.console.print(e);
+	}
+}
+
+GW.console = {
+	outputBuffer: newDocument(),
+
+	flushBuffer: () => {
+		if (GW.console.view == false)
+			return;
+
+		GW.console.view.output.append(GW.console.outputBuffer);
+		GW.console.view.output.lastElementChild.scrollIntoView();
+		GW.console.updateHeight();
+	},
+
+	print: (entity, flush = true) => {
+		GW.console.outputBuffer.appendChild(newElement("P", {
+			style: (entity instanceof Error ? "color: #f00;" : "")
+		}, {
+			innerHTML: entity.toString().replace("\n", "<br>")
+		}));
+
+		if (flush)
+			GW.console.flushBuffer();
+	},
+
+	show: () => {
+		GW.console.view.output.lastElementChild.scrollIntoView();
+		GW.console.view.classList.toggle("hidden", false);
+		GW.console.view.input.focus();
+	},
+
+	hide: () => {
+		GW.console.view.input.blur();
+		GW.console.view.classList.toggle("hidden", true);
+	},
+
+	isVisible: () => {
+		return (GW.console.view.classList.contains("hidden") == false);
+	},
+
+	updateHeight: () => {
+		GW.console.view.style.setProperty("--GW-console-view-height", GW.console.view.offsetHeight + "px");
+	},
+
+	setPrompt: (string) => {
+		GW.console.view.prompt.innerHTML = string;
+	},
+
+	clearCommandLine: () => {
+		GW.console.view.input.value = "";
+	},
+
+	keyDown: (event) => {
+		let allowedKeys = [ "Enter" ];
+		if (allowedKeys.includes(event.key) == false)
+			return;
+
+		if (GW.console.isVisible() == false)
+			return;
+
+		if (document.activeElement != GW.console.view.input)
+			return;
+
+		GW.console.commandLineCommandReceived();
+	},
+
+	keyUp: (event) => {
+		let allowedKeys = [ "`", "Esc", "Escape" ];
+		if (allowedKeys.includes(event.key) == false)
+			return;
+
+		switch (event.key) {
+			case "`":
+				if (GW.console.isVisible() == false)
+					GW.console.show();
+				break;
+			case "Esc":
+			case "Escape":
+				if (GW.console.isVisible() == true)
+					GW.console.hide();
+				break;
+		};
+	},
+
+	commandLineInputReceived: (event) => {
+		//	Nothing… yet.
+	},
+
+	commandLineCommandReceived: () => {
+		let inputLine = event.target.value;
+
+		GW.console.print("> " + inputLine);
+		GW.console.clearCommandLine();
+		GW.console.execLine(inputLine);
+	},
+
+	execLine: (line) => {
+		$(line);
+	}
+};
+
+//	Dump temporary buffer.
+GW.consoleTempBuffer.split("\n").forEach(line => {
+	GW.console.print(line, false);
+});
+GW.consoleTempBuffer = null;
+
+doWhenBodyExists(() => {
+	//	Construct views.
+	GW.console.view = addUIElement(`<div id="console" class="hidden">
+		<div class="console-scroll-view">
+			<div class="console-content-view"></div>
+		</div>
+		<div class="console-command-line">
+			<div class="console-command-line-prompt">
+				<span></span>
+			</div>
+			<div class="console-command-line-entry-field">
+				<input name="console-command" type="text" autocomplete="off"></input>
+			</div>
+		</div>
+	</div>`);
+
+	//	Convenience references.
+	GW.console.view.input = GW.console.view.querySelector(".console-command-line-entry-field input");
+	GW.console.view.output = GW.console.view.querySelector(".console-content-view");
+	GW.console.view.prompt = GW.console.view.querySelector(".console-command-line-prompt span");
+
+	//	Set prompt.
+	GW.console.setPrompt(location.pathname);
+
+	//	Flush output buffer.
+	GW.console.flushBuffer();
+
+	//	Update height.
+	GW.console.updateHeight();
+
+	//	Add show/hide key event listener.
+	document.addEventListener("keyup", GW.console.keyUp);
+	document.addEventListener("keydown", GW.console.keyDown);
+
+	//	Add command line input event listener.
+	GW.console.view.input.addEventListener("input", GW.console.commandLineInputReceived);
+
+	//	Show console.
+// 	GW.console.show();
+});
+
+
 /**************************/
 /* BROKEN ANCHOR CHECKING */
 /**************************/
