@@ -5713,8 +5713,15 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     display: flex;
     flex-flow: column;
     z-index: 1;
+    opacity: 1;
     transition: 
+    	opacity 0.1s ease-out,
     	bottom 0.1s ease-out;
+}
+#console.hidden {
+    transition: 
+    	opacity 0.1s ease-in,
+    	bottom 0.1s ease-in;
 }
 
 #console .console-scroll-view {
@@ -5767,8 +5774,4 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 }
 #console .console-command-line-entry-field input:focus {
 	outline: none;
-}
-
-#console.hidden {
-    bottom: calc(-1 * var(--GW-console-view-height));
 }
