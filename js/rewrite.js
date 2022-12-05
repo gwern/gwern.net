@@ -1934,11 +1934,23 @@ GW.console = {
 	},
 
 	print: (entity, flush = true) => {
-		GW.console.outputBuffer.appendChild(newElement("P", {
-			style: (entity instanceof Error ? "color: #f00;" : "")
-		}, {
-			innerHTML: entity.toString().replace("\n", "<br>")
-		}));
+		let style = "";
+		if (   entity == undefined
+			|| entity == null)
+			style = "color: #777;"
+		if (entity instanceof Error)
+			style = "color: #f00;"
+
+		let output = entity instanceof Error
+					 ? entity.stack
+					 : entity;
+
+		if (entity instanceof Error)
+			console.error(entity);
+		else
+			console.log(entity);
+
+		GW.console.outputBuffer.appendChild(newElement("P", { style: style }, { innerHTML: output }));
 
 		if (flush)
 			GW.console.flushBuffer();
@@ -2056,12 +2068,15 @@ doWhenBodyExists(() => {
 	//	Update height.
 	GW.console.updateHeight();
 
-	//	Add show/hide key event listener.
-	document.addEventListener("keyup", GW.console.keyUp);
-	document.addEventListener("keydown", GW.console.keyDown);
+	if (   getQueryVariable("console") == "1"
+		|| localStorage.getItem("console-enabled") == "true") {
+		//	Add show/hide key event listener.
+		document.addEventListener("keyup", GW.console.keyUp);
+		document.addEventListener("keydown", GW.console.keyDown);
 
-	//	Add command line input event listener.
-	GW.console.view.input.addEventListener("input", GW.console.commandLineInputReceived);
+		//	Add command line input event listener.
+		GW.console.view.input.addEventListener("input", GW.console.commandLineInputReceived);
+	}
 
 	//	Show console.
 // 	GW.console.show();
