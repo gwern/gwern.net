@@ -59,10 +59,10 @@ Popups = {
         		></div>`);
         requestAnimationFrame(() => {
             Popups.popupContainer = document.querySelector(`#${Popups.popupContainerID}`);
-        });
 
-		//  Add Escape key event listener.
-		document.addEventListener("keyup", Popups.keyUp);
+			//  Add Escape key event listener.
+			document.addEventListener("keyup", Popups.keyUp);
+        });
 
 		GW.notificationCenter.fireEvent("Popups.setupDidComplete");
 	},
