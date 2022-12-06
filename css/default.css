@@ -5765,6 +5765,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 #console .console-command-line-entry-field input {
 	appearance: none;
 	border: none;
+	background-color: inherit;
 	height: 100%;
 	display: block;
 	width: 100%;
