@@ -5735,6 +5735,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     font-size: 0.8rem;
     padding: 2px;
     line-height: calc(22/16);
+    tab-size: 4;
 }
 #console .console-content-view p {
     text-indent: 0;
