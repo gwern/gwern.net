@@ -1949,7 +1949,7 @@ GW.console = {
 			output = entity.stack;
 			console.error(entity);
 		} else if (typeof entity == "string") {
-			output = entity;
+			output = entity.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 			console.log(entity);
 		} else {
 			if (entity) {
