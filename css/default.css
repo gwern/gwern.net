@@ -5729,11 +5729,14 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 	min-height: 2em;
     overflow-y: scroll;
     overscroll-behavior: none;
+    display: flex;
+    flex-flow: column;
 }
 
 #console .console-content-view {
-    font-size: 0.8rem;
+    flex: 1 0 auto;
     padding: 2px;
+    font-size: 0.8rem;
     line-height: calc(22/16);
     tab-size: 4;
 }
