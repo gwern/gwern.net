@@ -1929,7 +1929,10 @@ GW.console = {
 			return;
 
 		GW.console.view.output.append(GW.console.outputBuffer);
-		GW.console.view.output.lastElementChild.scrollIntoView();
+
+		if (isNodeEmpty(GW.console.view.output) == false)
+			GW.console.view.output.lastElementChild.scrollIntoView();
+
 		GW.console.updateHeight();
 	},
 
@@ -1941,14 +1944,33 @@ GW.console = {
 		if (entity instanceof Error)
 			style = "color: #f00;"
 
-		let output = entity instanceof Error
-					 ? entity.stack
-					 : entity;
-
-		if (entity instanceof Error)
+		let output;
+		if (entity instanceof Error) {
+			output = entity.stack;
 			console.error(entity);
-		else
+		} else if (typeof entity == "string") {
+			output = entity;
 			console.log(entity);
+		} else {
+			if (entity) {
+				let jsonString = JSON.stringify(entity, null, "\n"
+					 				  ).replace(/\\n/g, "\n"
+					 				  ).replace(/\\t/g, "\t"
+					 				  ).replace(/\\"/g, "\"")
+				console.log(jsonString);
+				jsonString = JSON.stringify(entity, null, "\n"
+					 			  ).replace(/\\t/g, "    "
+					 			  ).replace(/\\"/g, "&quot;"
+					 			  ).replace(/</g, "&lt;"
+					 			  ).replace(/>/g, "&gt;"
+					 			  ).replace(/\n+/g, "\n"
+					 			  ).replace(/\\n/g, "<br>")
+				output = jsonString;
+			} else {
+				console.log(entity);
+				output = entity;
+			}
+		}
 
 		GW.console.outputBuffer.appendChild(newElement("P", { style: style }, { innerHTML: output }));
 
@@ -1957,7 +1979,9 @@ GW.console = {
 	},
 
 	show: () => {
-		GW.console.view.output.lastElementChild.scrollIntoView();
+		if (isNodeEmpty(GW.console.view.output) == false)
+			GW.console.view.output.lastElementChild.scrollIntoView();
+
 		GW.console.view.classList.toggle("hidden", false);
 		GW.console.view.input.focus();
 	},
@@ -2033,10 +2057,12 @@ GW.console = {
 };
 
 //	Dump temporary buffer.
-GW.consoleTempBuffer.split("\n").forEach(line => {
-	GW.console.print(line, false);
-});
-GW.consoleTempBuffer = null;
+if (GW.consoleTempBuffer > "") {
+	GW.consoleTempBuffer.split("\n").forEach(line => {
+		GW.console.print(line, false);
+	});
+	GW.consoleTempBuffer = null;
+}
 
 doWhenBodyExists(() => {
 	//	Construct views.
@@ -2055,7 +2081,7 @@ doWhenBodyExists(() => {
 	</div>`);
 
 	//	Convenience references.
-	GW.console.view.input = GW.console.view.querySelector(".console-command-line-entry-field input");
+	GW.console.view.input  = GW.console.view.querySelector(".console-command-line-entry-field input");
 	GW.console.view.output = GW.console.view.querySelector(".console-content-view");
 	GW.console.view.prompt = GW.console.view.querySelector(".console-command-line-prompt span");
 
@@ -2068,6 +2094,7 @@ doWhenBodyExists(() => {
 	//	Update height.
 	GW.console.updateHeight();
 
+	//	Add event listeners, if console enabled.
 	if (   getQueryVariable("console") == "1"
 		|| getQueryVariable("console") == "2"
 		|| localStorage.getItem("console-enabled") == "true") {
@@ -2079,7 +2106,7 @@ doWhenBodyExists(() => {
 		GW.console.view.input.addEventListener("input", GW.console.commandLineInputReceived);
 	}
 
-	//	Show console.
+	//	Show console, if auto-show enabled.
 	if (getQueryVariable("console") == "2")
 		GW.console.show();
 });

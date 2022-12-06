@@ -5734,10 +5734,12 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 #console .console-content-view {
     font-size: 0.8rem;
     padding: 2px;
+    line-height: calc(22/16);
 }
 #console .console-content-view p {
     text-indent: 0;
     white-space: pre-wrap;
+    margin: 0;
 }
 
 #console .console-command-line {
@@ -5759,7 +5761,6 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 }
 
 #console .console-command-line-entry-field {
-	background-color: lightblue;
 	flex: 1 0 auto;
 }
 #console .console-command-line-entry-field input {
