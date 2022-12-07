@@ -2,6 +2,90 @@
 /* author: Said Achmiz */
 /* license: MIT */
 
+/********************************************************/
+/*  Returns the string trimmed of opening/closing quotes.
+ */
+String.prototype.trimQuotes = function () {
+    return this.replace(/^["'“‘]?(.+?)["'”’]?$/, '$1');
+};
+
+/********************************************************************/
+/*  Returns true if the string begins with any of the given prefixes.
+ */
+String.prototype.startsWithAnyOf = function (prefixes) {
+    for (prefix of prefixes)
+        if (this.startsWith(prefix))
+            return true;
+    return false;
+}
+
+/******************************************************************/
+/*  Returns true if the string ends with any of the given suffixes.
+ */
+String.prototype.endsWithAnyOf = function (suffixes) {
+    for (suffix of suffixes)
+        if (this.endsWith(suffix))
+            return true;
+    return false;
+}
+
+/*******************************************************************/
+/*  Returns true if the string includes any of the given substrings.
+ */
+String.prototype.includesAnyOf = function (substrings) {
+    for (substring of substrings)
+        if (this.includes(substring))
+            return true
+    return false;
+}
+
+/*******************************************************************************/
+/*  Product of two string arrays. (Argument can be a string, which is equivalent
+    to passing an array with a single string member.)
+    Returns array whose members are all results of concatenating each left hand
+    array string with each right hand array string, e.g.:
+
+        [ "a", "b" ].π([ "x", "y" ])
+
+    will return:
+
+        [ "ax", "ay", "bx", "by" ]
+
+    Any non-string argument must be iterable, else null is returned. Any
+    members of a passed array (or other iterable object), whatever their types,
+    are stringified and interpolated into the resulting product strings.
+ */
+Array.prototype.π = function (strings) {
+    if (typeof strings == "string")
+        strings = [ strings ];
+
+    if (!!strings[Symbol.iterator] == "false")
+        return null;
+
+    let product = [ ];
+    for (lhs of this) {
+        for (rhs of strings) {
+            product.push(`${lhs}${rhs}`);
+        }
+    }
+    return product;
+};
+
+/*****************************************************************************/
+/*  As Array.π, but applies sequentially to each argument. (First argument may
+    be a string, which is impossible with the Array member version.)
+ */
+function _π(...args) {
+    if (args.length == 0)
+        return [ ];
+
+    let product = [ "" ];
+    for (arg of args)
+        product = product.π(arg);
+
+    return product;
+}
+
 /******************************************************************************/
 /*  Adds an event listener to a button (or other clickable element), attaching
     it to both ‘click’ and ‘keyup’ events (for use with keyboard navigation).
@@ -200,7 +284,12 @@ function wrapElement(element, wrapClass, wrapTagName = "DIV", useExistingWrapper
 /*****************************************************/
 /*  Wrap all elements specified by the given selector.
  */
-function wrapAll(selector, wrapClassOrFunction, wrapTagName = "DIV", container = document.body, useExistingWrappers = false, moveClasses = false) {
+function wrapAll(selector, 
+				 wrapClassOrFunction, 
+				 wrapTagName = "DIV", 
+				 container = document.body, 
+				 useExistingWrappers = false, 
+				 moveClasses = false) {
     let wrapperFunction;
     if (typeof wrapClassOrFunction == "string") {
         wrapperFunction = (element) => {
