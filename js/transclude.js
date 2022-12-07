@@ -798,7 +798,7 @@ Transclude = {
         GWLog("Transclude.loadTemplates", "transclude.js", 1);
 
 		doAjax({
-			location: Transclude.templateDirectoryPathname + Transclude.templateListFileName,
+			location: versionedAssetURL(Transclude.templateDirectoryPathname + Transclude.templateListFileName).href,
 			responseType: "json",
 			onSuccess: (event) => {
 				let templateList = event.target.response;
@@ -812,7 +812,7 @@ Transclude = {
         GWLog("Transclude.loadTemplateByName", "transclude.js", 2);
 
 		doAjax({
-			location: Transclude.templateDirectoryPathname + templateName + ".tmpl",
+			location: versionedAssetURL(Transclude.templateDirectoryPathname + templateName + ".tmpl").href,
 			responseType: "text",
 			onSuccess: (event) => {
 				Transclude.templates[templateName] = event.target.response;

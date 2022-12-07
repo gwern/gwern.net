@@ -91,4 +91,18 @@ if ($force || (`git diff-index --cached HEAD -- {$versioned_files}`)) {
 	`git add {$static_dir}/includes/.`;
 }
 
+## Templates and other assets.
+$versioned_assets = [ ];
+$versioned_asset_patterns = [
+	"{$static_dir}/templates/include/*.tmpl",
+	"{$static_dir}/templates/include/templates.json",
+];
+foreach ($versioned_asset_patterns as $pattern)
+	$versioned_assets = array_merge($versioned_assets, glob($pattern));
+$versioned_assets = implode(" ", $versioned_assets);
+if ($force || (`git diff-index --cached HEAD -- {$versioned_assets}`)) {
+	require_once("{$build_dir}/build_asset_versions.php");
+	`git add {$static_dir}/includes/.`;
+}
+
 ?>
