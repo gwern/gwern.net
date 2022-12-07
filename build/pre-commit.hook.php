@@ -77,7 +77,7 @@ $versioned_files = [
 	"{$static_dir}/js/popups.js",
 	"{$static_dir}/js/reader-mode.js",
 	"{$static_dir}/js/rewrite.js",
-// 	"{$static_dir}/js/sidenotes.js",
+	"{$static_dir}/js/sidenotes.js",
 	"{$static_dir}/js/tablesorter.js",
 	"{$static_dir}/js/transclude.js",
 	"{$static_dir}/js/typography.js",
