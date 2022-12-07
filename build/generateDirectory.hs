@@ -11,8 +11,8 @@ module Main where
 -- Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a
 -- directory (mostly showing random snippets).
 
-import Control.Monad (filterM)
-import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, nub, sort, sortBy, zipWith4)
+import Control.Monad (filterM, void)
+import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, nub, sort, sortBy, zipWith4, (\\))
 import Data.List.Utils (countElem)
 import Data.Maybe (fromJust)
 import Data.Text.Titlecase (titlecase)
@@ -20,7 +20,7 @@ import System.Directory (listDirectory, doesFileExist)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
-                    Block(BulletList, Div, Header, Para, RawBlock, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
+                    Block(BulletList, Div, Header, Para, RawBlock, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle, UpperAlpha), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
 import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (append, pack, unpack)
 import Control.Monad.Parallel as Par (mapM_)
@@ -77,11 +77,14 @@ generateDirectory md dirs dir'' = do
 
   triplets  <- listFiles md direntries'
 
-  let links = nub $ reverse $ sortByDate $ triplets++tagged' -- newest first, to show recent additions
+  let linksAll = nub $ reverse $ sortByDate $ triplets++tagged' -- newest first, to show recent additions
+  -- split into WP vs non-WP:
+  let links = filter (\(f,_,_,_,_) -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` f)) linksAll
+  let linksWP = linksAll \\ links
 
   -- walk the list of observed links and if they do not have an entry in the annotation database, try to create one now before doing any more work:
   Prelude.mapM_ (\(l,_,_,_,_) -> case M.lookup l md of
-                         Nothing -> annotateLink md (Link nullAttr [] (T.pack l, "")) >> return ()
+                         Nothing -> void $ annotateLink md (Link nullAttr [] (T.pack l, ""))
                          _ -> return ()
         ) links
 
@@ -95,13 +98,13 @@ generateDirectory md dirs dir'' = do
   let untitledLinks = filter (\(_,(t,_,_,_,_,_),_,_,_) -> t == "") links'
   let allUnannotatedUntitledP = (length untitledLinks >= 3) && (all (=="") $ map (\(_,(_,_,_,_,_,annotation),_,_,_) -> annotation) untitledLinks) -- whether to be compact columns
 
-  let titledLinksSections   = generateSections titledLinks
+  let titledLinksSections   = generateSections titledLinks linksWP
   let untitledLinksSection  = generateListItems untitledLinks
 
   -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnailText'
   let imageFirst = take 1 $ extractImages (Pandoc nullMeta titledLinksSections)
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst)) ++ "\n"
-  let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if not (captionText == "") then captionText else if not (altText == "") then altText else "") (head imageFirst))) ++ "'\n"
+  let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if captionText /= "" then captionText else if altText /= "" then altText else "") (head imageFirst))) ++ "'\n"
 
   let header = generateYAMLHeader parentDirectory' previous next tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
   let sectionDirectoryChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
@@ -291,12 +294,17 @@ generateDirectoryItems parent current ds =
 generateListItems :: [(FilePath, MetadataItem,FilePath,FilePath,FilePath)] -> Block
 generateListItems p = BulletList (map generateItem p)
 
-generateSections :: [(FilePath, MetadataItem,FilePath,FilePath,FilePath)] -> [Block]
-generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_,_) ->
+generateSections :: [(FilePath, MetadataItem,FilePath,FilePath,FilePath)] -> [(FilePath, MetadataItem,FilePath,FilePath,FilePath)] -> [Block]
+generateSections links [] = generateSections' links
+generateSections links linkswp = generateSections' links ++ [Header 2 ("titled-links-wikipedia", ["link-annotated-not"], []) [Str "Wikipedia"],
+                                                               OrderedList (1, UpperAlpha, DefaultDelim) (map generateItem linkswp)]
+
+generateSections' :: [(FilePath, MetadataItem,FilePath,FilePath,FilePath)] -> [Block]
+generateSections' = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_,_) ->
                                 let sectionID = if aut=="" then "" else let linkId = (generateID f aut dt) in
                                                                           if linkId=="" then "" else linkId `T.append` "-section"
                                     authorShort = authorsToCite f aut dt
-                                    sectionTitle = T.pack $ if "wikipedia"`isInfixOf`f then t else "“"++titlecase t++"”" ++
+                                    sectionTitle = T.pack $ "“"++titlecase t++"”" ++
                                                      (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt)
                                 in
                                  [Header 2 (sectionID, ["link-annotated-not"], []) [parseRawInline nullAttr $ RawInline (Format "html") sectionTitle]]
@@ -304,7 +312,7 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_,_) ->
 
 generateItem :: (FilePath,MetadataItem,FilePath,FilePath,FilePath) -> [Block]
 generateItem (f,(t,aut,dt,_,tgs,""),bl,sl,lb) = -- no abstracts:
- if ("https://en.wikipedia.org/wiki/"`isPrefixOf`f) then [Para [Link ("",["include-annotation"],[]) [Str "Wikipedia"] (T.pack f, if t=="" then "" else T.pack $ "Wikipedia link about " ++ t)]]
+ if ("https://en.wikipedia.org/wiki/"`isPrefixOf`f) then [Para [Link ("",["include-annotation"],[]) [Str (T.pack t)] (T.pack f, if t=="" then "" else T.pack $ "Wikipedia link about " ++ t)]]
  else
   let
        f'       = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
@@ -321,7 +329,7 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl,lb) = -- no abstracts:
        similar  = if sl=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similar", "icon-not"],[]) [Str "similar"] (T.pack sl,"Similar links (by text embedding).")]]
        linkBibliography = if lb=="" then [] else (if bl=="" && sl=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], []) [Link ("",["aux-links", "link-page", "icon-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of links it cites).")]]
   in
-  if (tgs==[] && bl=="" && dt=="") then [Para (Link nullAttr title (T.pack f, "") : (author))]
+  if (tgs==[] && bl=="" && dt=="") then [Para (Link nullAttr title (T.pack f, "") : author)]
   else [Div ("", ["annotation-partial"], [])
          [Para (Link nullAttr title (T.pack f, "") : (author ++ date ++ (if null (tags ++ backlink ++ similar)
                                                                         then []
