@@ -2,6 +2,43 @@
 /* author: Said Achmiz */
 /* license: MIT */
 
+/********************************************************/
+/*  Returns the string trimmed of opening/closing quotes.
+ */
+String.prototype.trimQuotes = function () {
+    return this.replace(/^["'“‘]?(.+?)["'”’]?$/, '$1');
+};
+
+/********************************************************************/
+/*  Returns true if the string begins with any of the given prefixes.
+ */
+String.prototype.startsWithAnyOf = function (prefixes) {
+    for (prefix of prefixes)
+        if (this.startsWith(prefix))
+            return true;
+    return false;
+}
+
+/******************************************************************/
+/*  Returns true if the string ends with any of the given suffixes.
+ */
+String.prototype.endsWithAnyOf = function (suffixes) {
+    for (suffix of suffixes)
+        if (this.endsWith(suffix))
+            return true;
+    return false;
+}
+
+/*******************************************************************/
+/*  Returns true if the string includes any of the given substrings.
+ */
+String.prototype.includesAnyOf = function (substrings) {
+    for (substring of substrings)
+        if (this.includes(substring))
+            return true
+    return false;
+}
+
 /******************************************************************************/
 /*  Adds an event listener to a button (or other clickable element), attaching
     it to both ‘click’ and ‘keyup’ events (for use with keyboard navigation).
@@ -200,7 +237,12 @@ function wrapElement(element, wrapClass, wrapTagName = "DIV", useExistingWrapper
 /*****************************************************/
 /*  Wrap all elements specified by the given selector.
  */
-function wrapAll(selector, wrapClassOrFunction, wrapTagName = "DIV", container = document.body, useExistingWrappers = false, moveClasses = false) {
+function wrapAll(selector, 
+				 wrapClassOrFunction, 
+				 wrapTagName = "DIV", 
+				 container = document.body, 
+				 useExistingWrappers = false, 
+				 moveClasses = false) {
     let wrapperFunction;
     if (typeof wrapClassOrFunction == "string") {
         wrapperFunction = (element) => {

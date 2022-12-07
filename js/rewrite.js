@@ -117,6 +117,22 @@
 /* HELPERS */
 /***********/
 
+/*****************************************************************************/
+/*	Return fully qualified, versioned (if possible) URL for asset at the given
+	path.
+ */
+function versionedAssetURL(pathname) {
+	let version = GW.assetVersions[pathname];
+	let versionString = (version ? `?v=${version}` : ``);
+	return new URL(  "https://"
+				   + location.hostname
+				   + pathname
+				   + versionString);
+}
+
+/********************************/
+/*	Used in nearestBlockElement()
+ */
 GW.defaultBlockElementSelectors = [
 	[	".footnote",
 		".sidenote"

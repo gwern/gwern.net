@@ -77,7 +77,7 @@ $versioned_files = [
 	"{$static_dir}/js/popups.js",
 	"{$static_dir}/js/reader-mode.js",
 	"{$static_dir}/js/rewrite.js",
-// 	"{$static_dir}/js/sidenotes.js",
+	"{$static_dir}/js/sidenotes.js",
 	"{$static_dir}/js/tablesorter.js",
 	"{$static_dir}/js/transclude.js",
 	"{$static_dir}/js/typography.js",
@@ -88,6 +88,20 @@ $versioned_files = [
 $versioned_files = implode(" ", $versioned_files);
 if ($force || (`git diff-index --cached HEAD -- {$versioned_files}`)) {
 	require_once("{$build_dir}/build_versioned_includes.php");
+	`git add {$static_dir}/includes/.`;
+}
+
+## Templates and other assets.
+$versioned_assets = [ ];
+$versioned_asset_patterns = [
+	"{$static_dir}/templates/include/*.tmpl",
+	"{$static_dir}/templates/include/templates.json",
+];
+foreach ($versioned_asset_patterns as $pattern)
+	$versioned_assets = array_merge($versioned_assets, glob($pattern));
+$versioned_assets = implode(" ", $versioned_assets);
+if ($force || (`git diff-index --cached HEAD -- {$versioned_assets}`)) {
+	require_once("{$build_dir}/build_asset_versions.php");
 	`git add {$static_dir}/includes/.`;
 }
 
