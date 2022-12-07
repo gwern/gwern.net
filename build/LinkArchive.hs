@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-12-02 19:15:40 gwern"
+When:  Time-stamp: "2022-12-06 17:05:55 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1284,5 +1284,7 @@ whiteList url
       , "https://vision-locomotion.github.io/" -- low quality (video embeds)
       , "https://ajayj.com/vectorfusion" -- low quality (video embeds)
       , "https://realsinger.github.io/" -- low quality (audio embeds)
+      , "https://www.ibd.la/" -- interactive
+      , "http://www.complexity-calculator.com/" -- interactive
       ] = True
     | otherwise = False
