@@ -1987,6 +1987,10 @@ GW.console = {
 			GW.console.flushBuffer();
 	},
 
+	setInputCursorPosition: (pos) => {
+		GW.console.view.input.setSelectionRange(pos, pos);
+	},
+
 	show: () => {
 		GW.console.scrollToBottom();
 		GW.console.view.classList.toggle("hidden", false);
@@ -2015,17 +2019,41 @@ GW.console = {
 	},
 
 	keyDown: (event) => {
-		let allowedKeys = [ "Enter" ];
-		if (allowedKeys.includes(event.key) == false)
+		if (GW.console.isVisible() == false)
 			return;
 
-		if (GW.console.isVisible() == false)
+		let allowedKeys = [ "Enter", "ArrowUp", "ArrowDown" ];
+		if (allowedKeys.includes(event.key) == false)
 			return;
 
 		if (document.activeElement != GW.console.view.input)
 			return;
 
-		GW.console.commandLineCommandReceived();
+		switch (event.key) {
+			case "Enter":
+				GW.console.commandLineCommandReceived();
+				break;
+
+			case "ArrowUp":
+				event.preventDefault();
+				if (GW.console.commandLog_pointer == GW.console.commandLog.length)
+					GW.console.commandLog_currentCommandLine = GW.console.view.input.value;
+				let prevLine = GW.console.commandLog_prevEntry();
+				if (prevLine != null) {
+					GW.console.view.input.value = prevLine;
+					GW.console.setInputCursorPosition(GW.console.view.input.value.length);
+				}
+				break;
+
+			case "ArrowDown":
+				event.preventDefault();
+				let nextLine = GW.console.commandLog_nextEntry();
+				if (nextLine != null) {
+					GW.console.view.input.value = nextLine;
+					GW.console.setInputCursorPosition(GW.console.view.input.value.length);
+				}
+				break;
+		}
 	},
 
 	keyUp: (event) => {
@@ -2050,11 +2078,36 @@ GW.console = {
 		//	Nothing… yet.
 	},
 
+	commandLog: [ ],
+	commandLog_currentCommandLine: "",
+	commandLog_pointer: 0,
+	commandLog_prevEntry: () => {
+		if (GW.console.commandLog_pointer == 0)
+			return null;
+
+		return GW.console.commandLog_entryAtIndex(--(GW.console.commandLog_pointer));
+	},
+	commandLog_nextEntry: () => {
+		if (GW.console.commandLog_pointer == GW.console.commandLog.length)
+			return null;
+
+		return GW.console.commandLog_entryAtIndex(++(GW.console.commandLog_pointer));
+	},
+	commandLog_entryAtIndex: (index) => {
+		return (index == GW.console.commandLog.length
+				? GW.console.commandLog_currentCommandLine
+				: GW.console.commandLog[index]);
+	},
+
 	commandLineCommandReceived: () => {
 		let inputLine = event.target.value;
 
 		GW.console.print("> " + inputLine);
 		GW.console.clearCommandLine();
+
+		GW.console.commandLog.push(inputLine);
+		GW.console.commandLog_currentCommandLine = "";
+		GW.console.commandLog_pointer = GW.console.commandLog.length;
 
 		if (/^`.*`$/.test(inputLine))
 			GW.console.jsExecLine(inputLine.slice(1, -1));
