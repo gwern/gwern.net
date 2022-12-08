@@ -741,6 +741,7 @@ function hyphenate(eventInfo) {
 
     let doHyphenation = (selector) => {
         Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
+	    	GW.console.print(eventInfo.container);
             eventInfo.container.querySelectorAll(selector).forEach(block => {
                 hyphenate(block);
             });
@@ -1975,6 +1976,9 @@ GW.console = {
 			console.error(entity);
 		} else if (typeof entity == "string") {
 			output = entity.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+			console.log(entity);
+		} else if (entity instanceof Element) {
+			output = entity.outerHTML.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 			console.log(entity);
 		} else {
 			if (entity) {
