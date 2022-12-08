@@ -743,8 +743,7 @@ function hyphenate(eventInfo) {
 
     let doHyphenation = (selector) => {
         Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
-	    	GW.console.print(eventInfo.container);
-            eventInfo.container.querySelectorAll(selector).forEach(block => {
+            eventInfo.document.querySelectorAll(selector).forEach(block => {
                 hyphenate(block);
             });
         });
