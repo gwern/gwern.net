@@ -1,12 +1,13 @@
 #!/usr/bin/env runghc
 {-# LANGUAGE OverloadedStrings #-}
 
+-- dependencies: pandoc, iconv, filestore, vector, rp-tree...
+
 module GenerateSimilar where
 
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str, Strong), Format(..), runPure, Pandoc(..), nullAttr)
 import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T  (append, map, intercalate, length, pack, strip, take, unlines, unpack, Text)
-import Data.Char (isAscii)
+import qualified Data.Text as T  (append, intercalate, length, pack, strip, take, unlines, unpack, Text)
 import Data.List ((\\), intercalate,  nub, isPrefixOf, isSuffixOf)
 import Data.Maybe (fromJust)
 import qualified Data.Map.Strict as M (filter, keys, lookup, fromList, toList, difference, withoutKeys)
@@ -22,6 +23,9 @@ import Network.HTTP (urlEncode)
 import System.FilePath (takeBaseName)
 import Control.Monad (when)
 import Data.Set as S (fromList)
+
+import qualified Codec.Text.IConv as I (Fuzzy(Transliterate), convertFuzzy)
+import qualified Data.ByteString.Lazy.Char8 as BL (pack, unpack)
 
 import qualified Data.Vector as V (toList, Vector)
 import Control.Monad.Identity (runIdentity, Identity)
@@ -134,7 +138,8 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
         plainText = simplifiedDoc parsedEither `T.append` documentURLsText
         -- post-processing: 'We suggest replacing newlines (\n) in your input with a single space, as we have observed inferior results when newlines are present.' https://beta.openai.com/docs/api-reference/embeddings/create
         -- GPT-3 apparently doesn't do well with Unicode punctuation either (they get a bad BPE expansion factor too), so smart quotes are right out.
-        gptPlainText = T.take maxLength $ T.strip $ T.map (\c -> if isAscii c then c else ' ') $
+        gptPlainText = T.take maxLength $ T.strip $
+                       (T.pack . BL.unpack . I.convertFuzzy I.Transliterate "UTF-8" "ASCII" . BL.pack . T.unpack) $
                        replaceManyT [("  ", " "), ("\8203",""), ("\8212", " - "), ("–", " - "), ("—", "---"), (" § ", ": "), ("\n"," "), ("  "," "), ("…","..."), ("“","'"), ("”","'"), ("‘","'"), ("’","'"), ("\\",""), ("\"","'"), ("\"","'"), (" ", " "), (" ", " ")] plainText
     in
       gptPlainText
