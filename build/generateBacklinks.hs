@@ -91,12 +91,18 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
 
                                        let preface = [Para [Strong [Str (if length callers' > 1 then "Backlinks" else "Backlink")], Str ":"]]
                                        let content = BulletList $ -- WARNING: critical to insert '.backlink-not' or we might get weird recursive blowup!
-                                            map (\(u,c,t) -> [Para [Link ("", "id-not":"backlink-not":c, [])
-                                                                    [parseRawInline nullAttr $ RawInline (Format "html") t]
-                                                                    (if isPagePath u then u`T.append`selfIdent else u, ""),
-                                                                    Str ":"],
+                                            map (\(u,c,t) ->
+                                                   -- do we transclude the context on page load? If it's an annotation, annotations are very cheap (~4kb average), so we can.
+                                                   -- we can't if it's an entire page like /GPT-3, however!
+                                                   let includeStrict = if isPagePath u then [] else ["include-strict"] in
+                                                                   [Para ([Link ("", "id-not":"backlink-not":c, [])
+                                                                          [parseRawInline nullAttr $ RawInline (Format "html") t]
+                                                                          (u, "")] ++
+                                                                          -- for top-level pages, we need a second link, like 'Foo (context)', because 'Foo' will popup the scraped abstract/annotation, but it will not pop up the reverse citation context displayed right below; this leads to a UI trap: the reader might be interested in navigating to the context, but they can't! The transclusion has replaced itself, so it doesn't provide any way to navigate to the actual page, and the provided annotation link doesn't know anything about the reverse citation because it is about the entire page. So we provide a backup non-transcluding link to the actual context.
+                                                                          (if isPagePath u then [Str " (", Link nullAttr [Str "context"] (if isPagePath u then u`T.append`selfIdent else u,""), Str ")"] else []) ++
+                                                                          [Str ":"]),
                                                                -- use transclusion to default to display inline the context of the reverse citation, akin to how it would display if the reader popped the link up as a live cross-page transclusion, but without needing to hover over each one:
-                                                               BlockQuote [Para [Link ("",["id-not", "backlink-not", "include-replace-container", "include-block-context"],[]) -- TODO: need '.include-strict' for better reader experience?
+                                                               BlockQuote [Para [Link ("",(["id-not", "backlink-not", "include-replace-container", "include-block-context"]++includeStrict),[]) -- TODO: need '.include-strict' for better reader experience?
                                                                                       [Str "[backlink context]"]
                                                                                       ((if isPagePath u then u else T.pack (snd $ getAnnotationLink $ T.unpack u)) `T.append` selfIdent, "")
                                                                                 ]

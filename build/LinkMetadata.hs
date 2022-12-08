@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-12-02 10:51:28 gwern"
+When:  Time-stamp: "2022-12-06 09:51:55 gwern"
 License: CC-0
 -}
 
@@ -1642,6 +1642,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<span class=\"math inline\">\\(S^</em>(0)\\)</span>", "<em>S</em><sup>✱</sup>(0)")
          , ("<span class=\"math inline\">\\(S^<em>(0)\\)</span>", "<em>S</em><sup>✱</sup>(0)")
          , ("<span class=\"math inline\">\\(S^</em>(0.8)\\)</span>", "<em>S</em><sup>✱</sup>(0.8)")
+         , ("<span class=\"math inline\">\\(1 - \\frac{1}{e}\\)</span>", "1 − 1⁄<em>e</em>")
          , (" N pixels", " <em>N</em> pixels")
          , ("a n layer", "a <em>n</em> layer")
          , (" n-step", " <em>n</em>-step")

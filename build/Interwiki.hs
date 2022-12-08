@@ -1938,7 +1938,7 @@ redirectDB = [
           , ( "https://en.wikipedia.org/wiki/Random_error", "https://en.wikipedia.org/wiki/Observational_error#Random")
           , ( "https://en.wikipedia.org/wiki/Random_forests", "https://en.wikipedia.org/wiki/Random_forest")
           , ( "https://en.wikipedia.org/wiki/Randomized_algorithms", "https://en.wikipedia.org/wiki/Randomized_algorithm")
-          , ( "https://en.wikipedia.org/wiki/Randomized_block_design", "https://en.wikipedia.org/wiki/Blocking_(statistics)#Randomized_block_design")
+          , ( "https://en.wikipedia.org/wiki/Randomized_block_design", "https://en.wikipedia.org/wiki/Blocking_(statistics)")
           , ( "https://en.wikipedia.org/wiki/Randomized_controlled_experiments", "https://en.wikipedia.org/wiki/Randomized_controlled_trial")
           , ( "https://en.wikipedia.org/wiki/Randomized_experiments", "https://en.wikipedia.org/wiki/Randomized_experiment")
           , ( "https://en.wikipedia.org/wiki/Random_number_generator", "https://en.wikipedia.org/wiki/Random_number_generation")
