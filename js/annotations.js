@@ -437,9 +437,8 @@ Annotations = { ...Annotations,
 				if (pageDescription)
 					unwrap(pageDescription, [ pageDescriptionClass ]);
 
-				//	Rewrite aux-links append block, if present.
-				let auxLinksAppend = referenceEntry.querySelector(".aux-links-append");
-				if (auxLinksAppend) {
+				//	Rewrite aux-links append blocks, if present.
+				referenceEntry.querySelectorAll(".aux-links-append").forEach(auxLinksAppend => {
 					//	Make aux-links-append include-links lazy.
 					auxLinksAppend.querySelectorAll(".include-strict").forEach(link => {
 						link.swapClasses([ "include", "include-strict" ], 0);
@@ -457,7 +456,7 @@ Annotations = { ...Annotations,
 					}
 					if (collapseBlock)
 						collapseBlock.classList.add("aux-links-container");
-				}
+				});
 
 				//	Rewrite collapse blocks to make them expand on hover.
 				referenceEntry.querySelectorAll(".collapse").forEach(collapseBlock => {
