@@ -117,6 +117,8 @@
 /* HELPERS */
 /***********/
 
+GW.assetVersions = (GW.assetVersions ?? { });
+
 /*****************************************************************************/
 /*	Return fully qualified, versioned (if possible) URL for asset at the given
 	path.
@@ -741,7 +743,7 @@ function hyphenate(eventInfo) {
 
     let doHyphenation = (selector) => {
         Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
-            eventInfo.container.querySelectorAll(selector).forEach(block => {
+            eventInfo.document.querySelectorAll(selector).forEach(block => {
                 hyphenate(block);
             });
         });
@@ -1975,6 +1977,9 @@ GW.console = {
 			console.error(entity);
 		} else if (typeof entity == "string") {
 			output = entity.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+			console.log(entity);
+		} else if (entity instanceof Element) {
+			output = entity.outerHTML.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 			console.log(entity);
 		} else {
 			if (entity) {

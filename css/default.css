@@ -5741,9 +5741,10 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     tab-size: 4;
 }
 #console .console-content-view p {
+    margin: 0;
     text-indent: 0;
     white-space: pre-wrap;
-    margin: 0;
+    word-break: break-all;
 }
 
 #console .console-command-line {
