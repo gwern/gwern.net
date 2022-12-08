@@ -117,6 +117,8 @@
 /* HELPERS */
 /***********/
 
+GW.assetVersions = (GW.assetVersions ?? { });
+
 /*****************************************************************************/
 /*	Return fully qualified, versioned (if possible) URL for asset at the given
 	path.
