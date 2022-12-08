@@ -9,10 +9,17 @@
 -- also the necessary tag existing on disk), then we change all tags on all links (order
 -- irrelevant).
 --
--- eg. 'changeTag.hs "https://en.wikipedia.org/wiki/Experience_curve_effects"
+-- eg. '$ changeTag.hs "https://en.wikipedia.org/wiki/Experience_curve_effects"
 -- "economics/experience-curve" "genetics/heritable"
 -- "https://www.genome.gov/about-genomics/fact-sheets/DNA-Sequencing-Costs-Data"' would add both tags on both
 -- links.
+-- or piping in URLs:
+--
+--  $ echo 'https://en.wikipedia.org/wiki/Subvocalization' | changeTag.hs psychology/inner-monologue
+-- # Executing: psychology/inner-monologue tag on link: https://en.wikipedia.org/wiki/Subvocalization
+-- # https://en.wikipedia.org/wiki/Subvocalization : "https://en.wikipedia.org/wiki/Subvocalization" : ("https://en.wikipedia.org/wiki/Subvocalization",("Subvocalization","","","",[],""))
+-- # https://en.wikipedia.org/wiki/Subvocalization : ( "Subvocalization" , "" , "" , "" , [] , "" )
+-- # Executing: psychology/inner-monologue tag on link: https://en.wikipedia.org/wiki/Subvocalization
 --
 -- Tags can be tagged by tagging their directory-index file (`/docs/$TAG1/index`); to do a one-way tag (to make $TAG1 'see also' $TAG2),
 -- one does `changeTag.hs $TAG1 /docs/$TAG2/index`. Since it's common to want tags to be reciprocal or bidirectional, this is a shortcut,
@@ -25,21 +32,38 @@ import Data.Maybe (isJust, fromJust)
 import System.Environment (getArgs)
 import System.Directory (doesDirectoryExist, doesFileExist)
 import Text.Pandoc (Inline(Link), nullAttr)
-import Data.Text as T (pack)
+import Data.Text as T (lines, pack, unpack)
 
 import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml)
 import LinkMetadataTypes (MetadataList, MetadataItem)
 import Tags (guessTagFromShort, listTagsAll)
 import Utils (printGreen, replace)
+import Query (extractLinks)
+
+import System.IO (stdin)
+import qualified Data.ByteString (hGetNonBlocking)
+import Data.Text.Encoding as E (decodeUtf8)
 
 main :: IO ()
-main = do args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://www.gwern.net/" "/") getArgs
+main = do
+          -- read the regular CLI arguments
+          argsCLI <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://www.gwern.net/" "/") getArgs
+
+          -- Optional input: read stdin but in a non-blocking way, just in case the user is piping in a list of URLs or Markdown/HTML fragments
+          -- (WARNING: This is a race condition but if there *are* any inputs being piped in, they should be available long before this code runs so it's safe-ish... Likewise, we have to provide an arbitrary length limit, so it's set to a high value.)
+          stdinContents <- fmap E.decodeUtf8 $ Data.ByteString.hGetNonBlocking System.IO.stdin 999999
+
+          -- attempt to support both freeform newline-delimited URLs, and also arbitrary Markdown/HTML fragments pasted in.
+          -- since URLs are deduplicated, we do this by blindly trying it both ways
+          let linksStdin = map T.unpack (T.lines stdinContents ++ extractLinks True stdinContents)
+
+          let args = argsCLI ++ linksStdin
           when (length args < 2) $ error "Error: Insufficient arguments (<2)."
           when ("gwt" `elem` args) $ error "Invalid tag/URL 'gwt' detected! Is this entire command malformed? Exiting immediately."
 
-          let links = filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) args
+          let links = filter (\arg -> " "/= arg && (head arg == '/' || "http" `isPrefixOf` arg)) args
           allTags <- listTagsAll
-          let tags = (filter (\t -> t `elem` allTags || tail t `elem` allTags) $ map (\t -> if head t == '-' then "-" ++ (guessTagFromShort allTags $ filter (/=',') $ tail t)
+          let tags = (filter (\t -> t `elem` allTags || tail t `elem` allTags) $ map (\t -> if head t == '-' then "-" ++ guessTagFromShort allTags (filter (/=',') $ tail t)
                                                                                             else guessTagFromShort allTags $ filter (/=',') t) $ -- we store tags comma-separated so sometimes we might leave in a stray tag when copy-pasting
                 filter (\t -> t `notElem` links || ("-"++t) `notElem` links) args) :: [String]
 
@@ -82,7 +106,7 @@ changeAndWriteTags t i c p a = do let cP = hasItem i c
 
 -- what if a link is completely new and is not in either full.yaml (handwritten) or auto.yaml
 -- (often auto-annotated)? If we write it directly into half.yaml, then for many links like
--- Arxiv/Biorxiv, we'd skip creating an automatic annotation!
+-- Arxiv/BioRxiv, we'd skip creating an automatic annotation!
 --
 -- So instead we hook back into the main link annotation workflow, create a new annotation for that
 -- (which will be in auto.yaml), and then run changeTag.hs *again*, so this time it has an annotation
