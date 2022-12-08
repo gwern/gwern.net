@@ -134,14 +134,15 @@ Content = {
 			doAjax({
 				location: sourceURL.href,
 				onSuccess: (event) => {
-                    let httpContentType = event.target.getResponseHeader("Content-Type").match(/(.+?)(?:;|$)/)[1];
-                    let contentType = Content.contentTypeForIdentifier(identifier);
-                    if (   contentType.permittedContentTypes
-                    	&& contentType.permittedContentTypes.includes(httpContentType) == false) {
-	                	//	Send request to record failure in server logs.
-                        GWServerLogError(includeLink.href + `--bad-content-type`, "bad content type");
+					let contentType = Content.contentTypeForIdentifier(identifier);
+					let httpContentTypeHeader = event.target.getResponseHeader("Content-Type");
+					if (   contentType.permittedContentTypes
+						&& (   httpContentTypeHeader == null
+							|| contentType.permittedContentTypes.includes(httpContentTypeHeader.match(/(.+?)(?:;|$)/)[1]) == false)) {
+						//	Send request to record failure in server logs.
+						GWServerLogError(includeLink.href + `--bad-content-type`, "bad content type");
 
-                        return;
+						return;
                     }
 
 					processResponse(event.target.responseText);
