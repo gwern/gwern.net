@@ -1212,12 +1212,19 @@ Transclude = {
             return;
 
 		if (link.classList.containsAnyOf([ "include-spinner", "include-spinner-not" ]) == false) {
-			/*	Add loading spinner for whole-page transcludes and anything
-				within a link bibliography.
+			/*	Add loading spinner for whole-page transcludes and link
+				bibliography entries.
 			 */
 			if (   link.hash == ""
-				|| link.closest(".link-bibliography-list-list") != null)
+				&& Content.contentTypes.localPage.matchesLink(link)) {
 				link.classList.add("include-spinner");
+			} else {
+				let containingAuxLinksBlock = link.closest(".aux-links-list, .aux-links-append");
+				if (   containingAuxLinksBlock
+					&& containingAuxLinksBlock.classList.contains("link-bibliography-list")) {
+					link.classList.add("include-spinner");
+				}
+			}
 		}
 
         link.classList.add("include-loading");

@@ -5101,6 +5101,7 @@ section.highlight-fading::before {
  */
 
 .annotation .collapse.aux-links-container {
+	clear: right;
     border-top: 1px solid var(--GW-TOC-border-color);
 }
 .annotation .collapse.aux-links-container:not(:last-child) {
