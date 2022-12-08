@@ -733,6 +733,9 @@ Extracts = {
         if (specialRewriteFunction)
             specialRewriteFunction(popin);
 
+		//	Register copy processors in popin.
+		registerCopyProcessorsForDocument(popin.document);
+
         //  For object popins, scroll popin into view once object loads.
         let objectOfSomeSort = popin.document.querySelector("iframe, object, img, video");
         if (objectOfSomeSort) {
@@ -849,13 +852,8 @@ Extracts = {
         if (specialRewriteFunction)
             specialRewriteFunction(popup);
 
-        //  Ensure no reflow due to figures.
-        popup.document.querySelectorAll("figure[class^='float-'] img[width]").forEach(img => {
-            if (img.style.width <= "") {
-                img.style.width = img.getAttribute("width") + "px";
-                img.style.maxHeight = "unset";
-            }
-        });
+		//	Register copy processors in popup.
+		registerCopyProcessorsForDocument(popup.document);
     }
 };
 

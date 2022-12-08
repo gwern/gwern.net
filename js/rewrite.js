@@ -282,6 +282,11 @@ function addContentInjectHandler(handler, phase, condition = null) {
 
 GW.contentInjectHandlers = { };
 
+
+/*************/
+/* CLIPBOARD */
+/*************/
+
 /*****************************************************************************/
 /*  Adds the given copy processor, appending it to the existing array thereof.
 
@@ -299,6 +304,36 @@ function addCopyProcessor(processor) {
 
     GW.copyProcessors.push(processor);
 }
+
+/******************************************************************************/
+/*  Set up the copy processor system by registering a ‘copy’ event handler to
+    call copy processors. (Must be set up for the main document, and separately
+    for any shadow roots.)
+ */
+function registerCopyProcessorsForDocument(doc) {
+    GWLog("registerCopyProcessorsForDocument", "rewrite.js", 1);
+
+    doc.addEventListener("copy", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        let selection = getSelectionAsDocument(doc);
+
+        let i = 0;
+        while (   i < GW.copyProcessors.length
+               && GW.copyProcessors[i++](event, selection));
+
+        event.clipboardData.setData("text/plain", selection.textContent);
+        event.clipboardData.setData("text/html", selection.innerHTML);
+    });
+}
+
+/*******************************************/
+/*	Set up copy processors in main document.
+ */
+doWhenDOMContentLoaded(() => {
+	registerCopyProcessorsForDocument(document);
+});
 
 
 /*************/
@@ -431,33 +466,6 @@ Notes = {
 		});
 	}
 };
-
-/*************/
-/* CLIPBOARD */
-/*************/
-
-/****************************************************************************/
-/*  Set up the copy processor system by registering a ‘copy’ event handler to
-    call copy processors.
- */
-addContentInjectHandler(GW.contentInjectHandlers.registerCopyProcessors = (eventInfo) => {
-    GWLog("registerCopyProcessors", "rewrite.js", 1);
-
-    eventInfo.document.addEventListener("copy", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-
-        let selection = getSelectionAsDocument(eventInfo.document);
-
-        let i = 0;
-        while (   i < GW.copyProcessors.length
-               && GW.copyProcessors[i++](event, selection));
-
-        event.clipboardData.setData("text/plain", selection.textContent);
-        event.clipboardData.setData("text/html", selection.innerHTML);
-    });
-}, "eventListeners", (info) => (info.container == info.document.body));
-
 
 /**********/
 /* TABLES */

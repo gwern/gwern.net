@@ -302,21 +302,6 @@ addContentInjectHandler(GW.contentInjectHandlers.expandLockCollapseBlocks = (eve
 	eventInfo.container.querySelectorAll(".collapse").forEach(expandLockCollapseBlock);
 }, "<rewrite", (info) => info.stripCollapses);
 
-/********************************************************************/
-/*	Strip a single collapse block encompassing the top level content.
- */
-addContentInjectHandler(GW.contentInjectHandlers.expandLockSingleTopLevelCollapseBlock = (eventInfo) => {
-	GWLog("expandLockSingleTopLevelCollapseBlock", "collapse.js", 2);
-
-	if (eventInfo.container.firstElementChild == null)
-		return;
-
-	if (   isOnlyChild(eventInfo.container.firstElementChild)
-		&& eventInfo.container == eventInfo.document.body
-		&& eventInfo.container.firstElementChild.classList.contains("collapse"))
-		expandLockCollapseBlock(eventInfo.container.firstElementChild);
-}, "<rewrite");
-
 /*******************************************************************************/
 /*	Ensure that the given element is scrolled into view when layout is complete.
  */

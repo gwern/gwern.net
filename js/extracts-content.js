@@ -187,13 +187,6 @@ Extracts = { ...Extracts,
 						Transclude.transclude(includeLink, true);
 					});
 				});
-
-				/*	If the transcluded content makes up the entirety of the 
-					pop-frame’s content, refresh the pop-frame after the load.
-				 */
-// 				if (   info.container.parentElement == popFrame.body
-// 					&& info.container.parentElement.children.length == 2)
-// 					Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);				
 			}, { condition: (info) => (   info.source == "transclude" 
 									   && info.document == popFrame.document) });
 		}
@@ -256,6 +249,11 @@ Extracts = { ...Extracts,
             document: popFrame.document,
             loadLocation: new URL(target.href)
         });
+
+		//	Strip a single collapse block encompassing the top level content.
+		if (   isOnlyChild(popFrame.body.firstElementChild)
+			&& popFrame.body.firstElementChild.classList.contains("collapse"))
+			expandLockCollapseBlock(popFrame.body.firstElementChild);
 
         //  Scroll to the target.
         Extracts.scrollToTargetedElementInPopFrame(target, popFrame);
