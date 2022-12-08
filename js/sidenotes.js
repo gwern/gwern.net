@@ -498,6 +498,11 @@ Sidenotes = { ...Sidenotes,
 		Sidenotes.sidenotes = [ ];
 		//  The footnote references (citations).
 		Sidenotes.citations = Array.from(document.querySelectorAll("a.footnote-ref"));
+
+		//	If there are no footnotes, we’re done.
+		if (Sidenotes.citations.length == 0)
+			return;
+
 		Sidenotes.citations.forEach(citation => {
 			let noteNumber = Notes.noteNumberFromHash(citation.hash);
 

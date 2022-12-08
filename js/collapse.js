@@ -308,6 +308,9 @@ addContentInjectHandler(GW.contentInjectHandlers.expandLockCollapseBlocks = (eve
 addContentInjectHandler(GW.contentInjectHandlers.expandLockSingleTopLevelCollapseBlock = (eventInfo) => {
 	GWLog("expandLockSingleTopLevelCollapseBlock", "collapse.js", 2);
 
+	if (eventInfo.container.firstElementChild == null)
+		return;
+
 	if (   isOnlyChild(eventInfo.container.firstElementChild)
 		&& eventInfo.container == eventInfo.document.body
 		&& eventInfo.container.firstElementChild.classList.contains("collapse"))
