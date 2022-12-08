@@ -438,9 +438,10 @@ Content = {
 
 					//	Alt text, if provided.
 					let pageThumbnailAltMetaTag = page.querySelector("meta[property='og:image:alt']");
-					let pageThumbnailAltText = pageThumbnailAltMetaTag
-											   ? pageThumbnailAltMetaTag.getAttribute("content")
-											   : `Thumbnail image for “${pageTitle}”`;
+					let pageThumbnailAltText = (pageThumbnailAltMetaTag
+												? pageThumbnailAltMetaTag.getAttribute("content")
+												: `Thumbnail image for “${pageTitle}”`
+												).replace(/"/g, "&quot;");
 
 					//	Image dimensions.
 					let pageThumbnailWidth = page.querySelector("meta[property='og:image:width']").getAttribute("content");
@@ -449,11 +450,11 @@ Content = {
 					//	Construct and save the <img> tag.
 					if (pageThumbnailURL.pathname.startsWith(Content.contentTypes.localPage.defaultPageThumbnailPathnamePrefix) == false)
 						pageThumbnailHTML = `<img
-							src='${pageThumbnailURL.href}'
-							alt='${pageThumbnailAltText}'
-							width='${pageThumbnailWidth}'
-							height='${pageThumbnailHeight}'
-							style='width: ${pageThumbnailWidth}px; height: auto;'
+							src="${pageThumbnailURL.href}"
+							title="${pageThumbnailAltText}"
+							width="${pageThumbnailWidth}"
+							height="${pageThumbnailHeight}"
+							style="width: ${pageThumbnailWidth}px; height: auto;"
 								>`;
 
 					//	Request the image, to cache it.
