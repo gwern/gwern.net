@@ -1,6 +1,6 @@
 Content = {
 	targetIdentifier: (target) => {
-		return target.pathname + target.hash;
+		return target.href;
 	},
 
 	/*******************/
@@ -25,10 +25,8 @@ Content = {
 	},
 
 	contentCacheKeyForIdentifier: (identifier) => {
-		let url = new URL(  "https://"
-						  + location.hostname
-						  + identifier);
-		return url.pathname;
+		let url = new URL(identifier);
+		return url.origin + url.pathname;
 	},
 
 	cachedContentForIdentifier: (identifier) => {
@@ -229,9 +227,7 @@ Content = {
 	contentTypes: {
 		localCodeFile: {
 			matches: (identifier) => {
-				let url = new URL(  "https://"
-								  + location.hostname
-								  + identifier);
+				let url = new URL(identifier);
 
 				//	Maybe it’s an aux-links link?
 				if (url.pathname.startsWith("/metadata/"))
@@ -271,11 +267,14 @@ Content = {
 				<pre>-wrapped <code> element.
 			 */
 			sourceURLsForIdentifier: (identifier) => {
-				let url = urlSansHash(  "https://"
-									  + location.hostname
-									  + identifier);
+				let codeFileURL = new URL(identifier);
+				codeFileURL.hash = "";
+				codeFileURL.search = "";
 
-				return [ new URL(url.href + ".html"), url ];
+				let syntaxHighlightedCodeFileURL = new URL(codeFileURL.href);
+				syntaxHighlightedCodeFileURL.pathname += ".html";
+
+				return [ syntaxHighlightedCodeFileURL, codeFileURL ];
 			},
 
 			contentFromResponse: (response, identifier, loadURL) => {
@@ -317,9 +316,7 @@ Content = {
 
 		localFragment: {
 			matches: (identifier) => {
-				let url = new URL(  "https://"
-								  + location.hostname
-								  + identifier);
+				let url = new URL(identifier);
 
 				return (   url.pathname.startsWith("/metadata/")
 						&& url.pathname.endsWith(".html"));
@@ -339,9 +336,7 @@ Content = {
 			},
 
 			sourceURLsForIdentifier: (identifier) => {
-				let url = urlSansHash(  "https://"
-									  + location.hostname
-									  + identifier);
+				let url = new URL(identifier);
 
 				return [ url ];
 			},
@@ -355,8 +350,14 @@ Content = {
 					if (auxLinksList) {
 						auxLinksList.classList.add("aux-links-list", auxLinksLinkType + "-list");
 
-						if (auxLinksLinkType == "backlinks")
-							auxLinksList.dataset.targetUrl = AuxLinks.targetOfAuxLinksLink(loadURL);
+						if (auxLinksLinkType == "backlinks") {
+							auxLinksList.querySelectorAll("a").forEach(link => {
+								if (Annotations.isAnnotatedLink(link))
+									return;
+
+								link.setQueryVariable("backlinkTargetURL", fixedEncodeURIComponent(AuxLinks.targetOfAuxLinksLink(loadURL)));
+							});
+						}
 					}
 				}
 
@@ -383,17 +384,13 @@ Content = {
 
 		localPage: {
 			matches: (identifier) => {
-				let url = new URL(  "https://"
-								  + location.hostname
-								  + identifier);
+				let url = new URL(identifier);
 
 				/*  If it has a period in it, it’s not a page, but is something 
 					else, like a file of some sort, or a locally archived 
 					document.
 				 */
-				return (url.pathname.match(/\./) == null
-						&& (   url.pathname != location.pathname
-							|| url.hash > ""));
+				return (url.pathname.match(/\./) == null);
 			},
 
 			matchesLink: (link) => {
@@ -410,9 +407,7 @@ Content = {
 			},
 
 			sourceURLsForIdentifier: (identifier) => {
-				let url = urlSansHash(  "https://"
-									  + location.hostname
-									  + identifier);
+				let url = new URL(identifier);
 
 				return [ url ];
 			},
@@ -497,12 +492,8 @@ Content = {
 				pageContent.append(newDocument(page.document.querySelector("#markdownBody").childNodes));
 
 				//	Find the target element and/or containing block, if any.
-				let url = new URL(  "https://"
-								  + location.hostname
-								  + identifier);
-				let element = url.hash
-							  ? targetElementInDocument(url, pageContent)
-							  : null;
+				let url = new URL(identifier);
+				let element = targetElementInDocument(url, pageContent);
 				let block = element
 							? nearestBlockElement(element)
 							: null;

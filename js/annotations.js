@@ -284,8 +284,7 @@ Annotations = { ...Annotations,
 			//	Called by: Annotations.processedAPIResponseForIdentifier
 			//	Called by: Annotations.sourceURLForIdentifier
 			sourceURLForIdentifier: (identifier) => {
-				return new URL("https://"
-							   + location.hostname
+				return new URL(  location.origin 
 							   + Annotations.dataSources.local.basePathname
 							   + fixedEncodeURIComponent(fixedEncodeURIComponent(identifier))
 							   + ".html");
