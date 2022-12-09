@@ -23,7 +23,7 @@ import LinkAuto (linkAutoFiltered)
 import LinkID (generateID)
 import LinkMetadata (hasAnnotation, isPagePath, readLinkMetadata, parseRawInline)
 import LinkMetadataTypes (Metadata, MetadataItem)
-import LinkBacklink (readBacklinksDB, writeBacklinksDB, getAnnotationLink)
+import LinkBacklink (readBacklinksDB, writeBacklinksDB)
 import Query (extractLinksWith)
 import Typography (typographyTransform)
 import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed, replace, safeHtmlWriterOptions)
@@ -86,7 +86,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                           callers
                                        -- sort backlinks in descending order (most-recent first) as a simple way to prioritize:
                                        let callerTitles  = map (\(_,b,c) -> (b,c)) $ reverse $ sort callerDatesTitles
-                                       let callerClasses = map (\(_,u) -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-page"] else ["link-annotated"]) callerTitles
+                                       let callerClasses = map (\(_,u) -> if T.head u == '/' && not ("." `T.isInfixOf` u) && isPagePath u then ["link-page"] else ["link-annotated"]) callerTitles
                                        let callers' = zipWith (\a (b,c) -> (c,a,b)) callerClasses callerTitles
 
                                        let preface = [Para [Strong [Str (if length callers' > 1 then "Backlinks" else "Backlink")], Str ":"]]
@@ -95,16 +95,20 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                    -- do we transclude the context on page load? If it's an annotation, annotations are very cheap (~4kb average), so we can.
                                                    -- we can't if it's an entire page like /GPT-3, however!
                                                    let includeStrict = if isPagePath u then [] else ["include-strict"] in
-                                                                   [Para ([Link ("", "id-not":"backlink-not":c, [])
+                                                                   [Para ([Link ("", "backlink-not":c, [])
                                                                           [parseRawInline nullAttr $ RawInline (Format "html") t]
                                                                           (u, "")] ++
                                                                           -- for top-level pages, we need a second link, like 'Foo (context)', because 'Foo' will popup the scraped abstract/annotation, but it will not pop up the reverse citation context displayed right below; this leads to a UI trap: the reader might be interested in navigating to the context, but they can't! The transclusion has replaced itself, so it doesn't provide any way to navigate to the actual page, and the provided annotation link doesn't know anything about the reverse citation because it is about the entire page. So we provide a backup non-transcluding link to the actual context.
-                                                                          (if isPagePath u then [Str " (", Link nullAttr [Str "context"] (if isPagePath u then u`T.append`selfIdent else u,""), Str ")"] else []) ++
+                                                                          (if isPagePath u then [Str " (", Link ("",["link-annotated-not"],[]) [Str "context"] (if isPagePath u then u`T.append`selfIdent else u,""), Str ")"] else []) ++
                                                                           [Str ":"]),
                                                                -- use transclusion to default to display inline the context of the reverse citation, akin to how it would display if the reader popped the link up as a live cross-page transclusion, but without needing to hover over each one:
-                                                               BlockQuote [Para [Link ("",(["id-not", "backlink-not", "include-replace-container", "include-block-context"]++includeStrict),[]) -- TODO: need '.include-strict' for better reader experience?
+                                                               BlockQuote [Para [Link ("",
+                                                                                        ["id-not", "backlink-not", "include-replace-container", "include-block-context"]++
+                                                                                          includeStrict++
+                                                                                          (if isPagePath u then [] else ["include-annotation"]),
+                                                                                          [])
                                                                                       [Str "[backlink context]"]
-                                                                                      ((if isPagePath u then u else T.pack (snd $ getAnnotationLink $ T.unpack u)) `T.append` selfIdent, "")
+                                                                                      (u`T.append`selfIdent, "")
                                                                                 ]
                                                                           ]
                                                              ]
