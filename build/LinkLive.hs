@@ -1328,7 +1328,7 @@ badDomainsSimple = [ "2chan.us"
    , "news.ycombinator.com"
    , "newsroom.collegeboard.org"
    , "nitro.biosci.arizona.edu"
-   , "nitter.hu"
+   , "nitter.net"
    , "nmteaco.com"
    , "nori.com"
    , "noscript.net"
@@ -3900,8 +3900,8 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://news.yahoo.com/shattered-inside-the-secret-battle-to-save-americas-undercover-spies-in-the-digital-age-100029026.html", False)
             , ("https://news.ycombinator.com/item?id=17048329", False)
             , ("https://newsroom.collegeboard.org/", False)
-            , ("https://nitter.hu/advadnoun/status/1458894698974638111", False)
-            , ("https://nitter.hu/search?f=tweets&q=http%3A%2F%2Fwww.thiswaifudoesnotexist.net&src=typd", False)
+            , ("https://nitter.net/advadnoun/status/1458894698974638111", False)
+            , ("https://nitter.net/search?f=tweets&q=http%3A%2F%2Fwww.thiswaifudoesnotexist.net&src=typd", False)
             , ("https://nmteaco.com/Plum-Oolong_p_380.html", False)
             , ("https://nori.com/", False)
             , ("https://noscript.net/", False)

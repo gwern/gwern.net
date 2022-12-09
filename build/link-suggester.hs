@@ -1079,7 +1079,7 @@ whiteList = M.fromList [
                                                                             )
     , ( "https://michaelnielsen.org/" , [ "Michael Nielsen" ] )
     , ( "https://mlp.fandom.com/wiki/Maud_Pie" , [ "Maud Pie" ] )
-    , ( "https://nitter.hu/theshawwn" , [ "Shawn Presser" ] )
+    , ( "https://nitter.net/theshawwn" , [ "Shawn Presser" ] )
     , ( "https://www.amazon.com/Turings-Cathedral-Origins-Digital-Universe/dp/1400075998/"
       , [ "Turing\8217s Cathedral" ]
       )

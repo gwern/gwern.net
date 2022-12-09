@@ -963,8 +963,8 @@ whiteList url
       , "archiveofourown.org" -- blocks archiving
       -- Nitter mirrors seem to be setting X headers to block live popups, but linkrot & uptime remains a problem, so time to start mirroring them:
       -- , "nitter.net/search" -- example/updated
-      -- , "nitter.hu/search" -- example/updated
-      -- , "nitter.hu" -- service/mirror, low quality (videos don't save)
+      -- , "nitter.net/search" -- example/updated
+      -- , "nitter.net" -- service/mirror, low quality (videos don't save)
       , "flashgamehistory.com" -- low quality
       , "thebrowser.com" -- paywall
       , "git.sr.ht" -- service/updated
@@ -1197,7 +1197,7 @@ whiteList url
       , "https://huggingface.co/spaces/" -- interactive
       , "https://www.arknights.global/" -- homepage
       , "http://arborjs.org/" -- homepage
-      , "https://nitter.hu/OpenAI" -- PR account
+      , "https://nitter.net/OpenAI" -- PR account
       , "https://songweige.github.io/projects/tats/index.html" -- video
       , "https://self-distilled-stylegan.github.io/" -- low quality (video embeds)
       , "https://www.flavorwire.com/415737/5-of-the-most-scandalous-affairs-in-literary-history" -- fails to archive, as does https://story.californiasunday.com/cosmic-crisp-apple-launch/ https://www.outsideonline.com/health/training-performance/inside-look-surprisingly-violent-quidditch-world-cup/ https://www.technologyreview.com/2020/02/17/844721/ai-openai-moonshot-elon-musk-sam-altman-greg-brockman-messy-secretive-reality/
@@ -1227,7 +1227,7 @@ whiteList url
       , "https://unconventionality.github.io/" -- low-quality (interactive app breaks)
       , "https://elicit.org/" -- homepage
       , "https://yzqin.github.io/dexmv/" -- low-quality (video, GIF embeds break)
-      , "https://nitter.hu/hausman_k/status/1511152160695730181" -- low quality (video embeds)
+      , "https://nitter.net/hausman_k/status/1511152160695730181" -- low quality (video embeds)
       , "https://say-can.github.io/" -- low quality (video embeds)
       , "https://wenlong.page/language-planner/" -- low quality (video embeds)
       , "https://patents.google.com/?inventor" -- interactive
@@ -1235,7 +1235,7 @@ whiteList url
       , "https://agility.csail.mit.edu/" -- low quality (video embeds)
       , "https://plai.cs.ubc.ca/2022/05/20/flexible-diffusion-modeling-of-long-videos/" -- low quality (video embeds)
       , "https://models.aminer.cn/cogvideo/" -- interactive service
-      , "https://nitter.hu/JeanRemiKing/status/1533720262344073218" -- low quality (video embeds)
+      , "https://nitter.net/JeanRemiKing/status/1533720262344073218" -- low quality (video embeds)
       , "https://danijar.com/project/director/" -- low quality (video embeds)
       , "https://bigvgan-demo.github.io/" -- low quality (audio embeds)
       , "https://gist.github.com/brockmanmatt/7265297f21634693868c2aad9d2c5919" -- Github iPython notebook - always fail to render for me

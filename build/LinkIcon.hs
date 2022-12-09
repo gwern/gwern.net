@@ -131,7 +131,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "examine.com" = aI "Eχ" "text,sans"
  | u'' "www.sciencedirect.com" = aI "E" "text" -- Elsevier/Sciencedirect.com: also an ‘E’
  | u'' "www.esquire.com" = aI "ℰ" "text"
- | aU'' ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' "www.evacommentary.org" || u' "nitter.hu/EvaMonkey/" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
+ | aU'' ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' "www.evacommentary.org" || u' "nitter.net/EvaMonkey/" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
  | aU'' ["www.fda.gov","fis.fda.gov","clinicaltrials.gov"] = aI "FDA" "text,tri,sans" -- U.S. Food & Drug Administration
  | u'' "www.hpmor.com" || u' "www.fanfiction.net/r/5782108/" || u' "old.reddit.com/r/HPMOR/" = aI "MoR" "text,tri,italic"
  | u' "mozilla.org" = aI "FF" "text,sans" -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized, and confusable with DeepMind.
@@ -361,7 +361,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.theguardian.com" || u'' "www.guardian.co.uk" = aI "theguardian" "svg" -- El Grauniad.
  | u'' "www.newyorker.com" = aI "thenewyorker" "svg" -- The New Yorker: the Dandy SVG, simplified & rotated more vertically.
  | u' "tumblr.com" = aI "tumblr" "svg"
- | aU'' ["twitter.com", "blog.twitter.com", "developer.twitter.com", "nitter.hu"] = aI "twitter" "svg"
+ | aU'' ["twitter.com", "blog.twitter.com", "developer.twitter.com", "nitter.net"] = aI "twitter" "svg"
  | u'' "www.uptontea.com" = aI "uptontea" "svg"
  | u'' "soundcloud.com" = aI "audio" "svg"
  | u' ".bandcamp.com" = aI "audio" "svg"
@@ -654,7 +654,7 @@ linkIconTestUnitsText =
          , ("https://17th-angel.tumblr.com/post/11409371268/anno-a-transfer-student-opens-the-door-with-a",  "NGE","text,tri")
          , ("https://forum.evageeks.org/index.php",  "EG","text")
          , ("https://www.evamonkey.com/ask-john/has-evangelion-influenced-contemporary-gundam-anime.php",  "EG","text")
-         , ("https://nitter.hu/EvaMonkey/", "EG", "text")
+         , ("https://nitter.net/EvaMonkey/", "EG", "text")
          , ("https://web.archive.org/web/20151106005148/http://www.evacommentary.org/appendix/character-names.html", "EG", "text")
          , ("http://evaotaku.com/html/programbooks.html",  "NGE","text,tri")
          , ("http://gainax.co.jp/",  "NGE","text,tri")
@@ -734,7 +734,7 @@ linkIconTestUnitsText =
          , ("https://econlolcats.tumblr.com/",  "tumblr","svg")
          , ("https://tvtropes.org/pmwiki/pmwiki.php/Anime/MobileSuitGundamCharscounterattack",  "TV","text")
          , ("https://developer.twitter.com/en/docs/twitter-api/v1/rules-and-filtering/search-operators",  "twitter","svg")
-         , ("https://nitter.hu/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg")
+         , ("https://nitter.net/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg")
          , ("https://www.uptontea.com/formosa-oolong-tea/taiwan-loose-leaf-oolong-tea/p/V00252/",  "uptontea","svg")
          , ("http://lists.urth.net/pipermail/urth-urth.net/2010-December/019108.html",  "U","text")
          , ("https://www.wolfewiki.com/pmwiki/pmwiki.php?n=Stories.SuzanneDelage", "U","text")
