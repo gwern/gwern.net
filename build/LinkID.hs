@@ -46,8 +46,45 @@ generateID url author date
   | otherwise = T.pack $ citeToID $ authorsToCite url author date
   where
     url' = replace "https://www.gwern.net" "" url
-    linkIDOverrides :: [(String, T.Text)]
-    linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start with [a-zA-Z]
+
+-- attempt to guess the URL for a specific annotation somewhere in the tag-directories for easier reference (used in `gwa` dumps)
+generateURL :: Path -> MetadataItem -> String
+generateURL _ (_,_,_,_,[],_) = ""
+generateURL url (_,a,d,_,ts,_) = let ident = T.unpack $ generateID url a d in
+                                   if null ident then "" else
+                                     "https://www.gwern.net/docs/" ++ head ts ++ "/index#" ++ ident ++ "-section"
+
+authorsToCite :: String -> String -> String -> String
+authorsToCite url author date =
+  let year = if date=="" then show currentYear else take 4 date -- YYYY-MM-DD
+      authors = split ", " $ sedMany [(" \\([A-Za-z ]+\\)", "")] author -- affiliations like "Schizophrenia Working Group of the Psychiatric Genomics Consortium (PGC), Stephan Foo" or "Foo Bar (Atlas Obscura)" would break the later string-munging & eventually the HTML
+      authorCount = length authors
+      firstAuthorSurname = if authorCount==0 then "" else filter (\c -> isAlphaNum c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse $ replaceMany [(" Senior",""), (" Junior" ,"")] $ head authors -- 'John Smith Junior 2020' is a weird cite if it turns into 'Junior 2020'! easiest fix is to just delete it, so as to get the expected 'Smith 2020'.
+  in
+       if authorCount == 0 then "" else
+           let
+             -- hashes: "https://www.google.com/foo.pdf#page=14" → "-page-14"; this is most useful for cases where we link a PDF but also specific pages in it, which produces colliding ids (eg. '/docs/psychology/2013-kurzban.pdf#page=14' vs '/docs/psychology/2013-kurzban.pdf')
+             -- We skip this for annotations like '#deepmind', however. There's no need to have to write IDs like 'silver-et-al-2016-deepmind', when 'silver-et-al-2016' is entirely adequate for a unique short ID.
+             extension = if not ("#page=" `isInfixOf` url) then "" else
+                           " (" ++ drop 1 (map (\c -> if isAlphaNum c then c else ' ') $ uriFragment $ fromJust $ parseURIReference url) ++ ")"
+             -- handle cases like '/docs/statistics/peer-review/1975-johnson.pdf' vs '/docs/statistics/peer-review/1975-johnson-2.pdf'
+             suffix' = (let suffix = sedMany [("^/docs/.*-([0-9][0-9]?)\\.[a-z]+$", "\\1")] url in
+                          -- eg. "/docs/economics/2019-brynjolfsson-3.pdf" → "Brynjolfsson et al 2019c"
+                           if suffix == url then "" else [['a'..'z'] !! ((read suffix :: Int) - 1)]  ) ++ extension
+
+           in
+           if authorCount >= 3 then
+                           firstAuthorSurname ++ " et al " ++ year ++ suffix' else
+                             if authorCount == 2 then
+                               let secondAuthorSurname = filter (\c -> isAlphaNum c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse (authors !! 1) in
+                                 firstAuthorSurname ++ " & " ++ secondAuthorSurname ++ " " ++ year ++ suffix'
+                             else
+                               firstAuthorSurname ++ " " ++ year ++ suffix'
+citeToID :: String -> String
+citeToID = filter (\c -> c/='.' && c/='\'' && c/='’'&& c/='('&&c/=')') . map toLower . replace " " "-" . replace " & " "-"
+
+linkIDOverrides :: [(String, T.Text)]
+linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start with [a-zA-Z]
                               if not $ isAlpha $ head $ T.unpack ident then error ("Invalid link ID override! " ++ ppShow o) else o)
                       [
       ("/docs/ai/nn/transformer/gpt/2019-radford.pdf#openai", "gpt-2-paper")
@@ -395,40 +432,12 @@ generateID url author date
        , ("https://arxiv.org/abs/2205.05131#google", "tay-et-al-202-ul2")
        , ("https://arxiv.org/abs/2206.15472", "lin-et-al-2022-smolml")
        , ("https://arxiv.org/abs/2209.14156", "tang-et-al-2022-tvlt")
+       , ("https://www.medrxiv.org/content/10.1101/2020.09.11.20175026.full", "jami-et-al-2021-gwas-internalizing")
+       , ("https://www.biorxiv.org/content/10.1101/2021.12.10.472095.full", "saul-et-al-2021-senescence-geneset")
+       , ("https://arxiv.org/abs/2110.11499", "wu-et-al-2021-wav2clip")
+       , ("https://openreview.net/forum?id=G89-1yZLFHk", "wu-et-al-2021-otter")
+       , ("https://www.newyorker.com/magazine/2020/01/13/operatic-shows-of-force", "ross-2020-wozzeck")
+       , ("https://www.newyorker.com/magazine/2020/08/31/how-wagner-shaped-hollywood", "ross-2020-wagner")
+       , ("https://openreview.net/forum?id=TXqemS7XEH#alibaba", "lin-et-al-2021-m610t")
+       , ("https://arxiv.org/abs/2202.01994#google", "bansal-et-al-2022-nmtscaling")
       ]
-
--- attempt to guess the URL for a specific annotation somewhere in the tag-directories for easier reference (used in `gwa` dumps)
-generateURL :: Path -> MetadataItem -> String
-generateURL _ (_,_,_,_,[],_) = ""
-generateURL url (_,a,d,_,ts,_) = let ident = T.unpack $ generateID url a d in
-                                   if null ident then "" else
-                                     "https://www.gwern.net/docs/" ++ head ts ++ "/index#" ++ ident ++ "-section"
-
-authorsToCite :: String -> String -> String -> String
-authorsToCite url author date =
-  let year = if date=="" then show currentYear else take 4 date -- YYYY-MM-DD
-      authors = split ", " $ sedMany [(" \\([A-Za-z ]+\\)", "")] author -- affiliations like "Schizophrenia Working Group of the Psychiatric Genomics Consortium (PGC), Stephan Foo" or "Foo Bar (Atlas Obscura)" would break the later string-munging & eventually the HTML
-      authorCount = length authors
-      firstAuthorSurname = if authorCount==0 then "" else filter (\c -> isAlphaNum c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse $ replaceMany [(" Senior",""), (" Junior" ,"")] $ head authors -- 'John Smith Junior 2020' is a weird cite if it turns into 'Junior 2020'! easiest fix is to just delete it, so as to get the expected 'Smith 2020'.
-  in
-       if authorCount == 0 then "" else
-           let
-             -- hashes: "https://www.google.com/foo.pdf#page=14" → "-page-14"; this is most useful for cases where we link a PDF but also specific pages in it, which produces colliding ids (eg. '/docs/psychology/2013-kurzban.pdf#page=14' vs '/docs/psychology/2013-kurzban.pdf')
-             -- We skip this for annotations like '#deepmind', however. There's no need to have to write IDs like 'silver-et-al-2016-deepmind', when 'silver-et-al-2016' is entirely adequate for a unique short ID.
-             extension = if not ("#page=" `isInfixOf` url) then "" else
-                           " (" ++ drop 1 (map (\c -> if isAlphaNum c then c else ' ') $ uriFragment $ fromJust $ parseURIReference url) ++ ")"
-             -- handle cases like '/docs/statistics/peer-review/1975-johnson.pdf' vs '/docs/statistics/peer-review/1975-johnson-2.pdf'
-             suffix' = (let suffix = sedMany [("^/docs/.*-([0-9][0-9]?)\\.[a-z]+$", "\\1")] url in
-                          -- eg. "/docs/economics/2019-brynjolfsson-3.pdf" → "Brynjolfsson et al 2019c"
-                           if suffix == url then "" else [['a'..'z'] !! ((read suffix :: Int) - 1)]  ) ++ extension
-
-           in
-           if authorCount >= 3 then
-                           firstAuthorSurname ++ " et al " ++ year ++ suffix' else
-                             if authorCount == 2 then
-                               let secondAuthorSurname = filter (\c -> isAlphaNum c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse (authors !! 1) in
-                                 firstAuthorSurname ++ " & " ++ secondAuthorSurname ++ " " ++ year ++ suffix'
-                             else
-                               firstAuthorSurname ++ " " ++ year ++ suffix'
-citeToID :: String -> String
-citeToID = filter (\c -> c/='.' && c/='\'' && c/='’'&& c/='('&&c/=')') . map toLower . replace " " "-" . replace " & " "-"

@@ -61,7 +61,7 @@ main = do
           when (length args < 2) $ error "Error: Insufficient arguments (<2)."
           when ("gwt" `elem` args) $ error "Invalid tag/URL 'gwt' detected! Is this entire command malformed? Exiting immediately."
 
-          let links = filter (\arg -> " "/= arg && (head arg == '/' || "http" `isPrefixOf` arg)) args
+          let links = filter (\arg -> " "/= arg && ""/=arg && (head arg == '/' || "http" `isPrefixOf` arg)) args
           allTags <- listTagsAll
           let tags = (filter (\t -> t `elem` allTags || tail t `elem` allTags) $ map (\t -> if head t == '-' then "-" ++ guessTagFromShort allTags (filter (/=',') $ tail t)
                                                                                             else guessTagFromShort allTags $ filter (/=',') t) $ -- we store tags comma-separated so sometimes we might leave in a stray tag when copy-pasting
