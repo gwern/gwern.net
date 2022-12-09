@@ -1,7 +1,7 @@
-{- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
+ {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-12-08 23:23:11 gwern"
+When:  Time-stamp: "2022-12-09 17:35:22 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -78,6 +78,8 @@ urlLive u | u'      `elem`  goodDomainsSimple = Just True
           | u'     `elem`   badDomainsSimple  = Just False
           | anySuffixT u'   badDomainsSub     = Just False
           | ".wikipedia.org" `T.isInfixOf` u  = wikipedia u
+          -- Markdeep is a self-contained JS in-page-Markdown library, so the main homepage (regular HTML) works as a live popup, but not any of the demos (which need to run JS, which live popup iframes don't allow)
+          | "https://casual-effects.com" `T.isPrefixOf` u = Just $ not $ ".md.html" `T.isInfixOf` u
           | otherwise                         = Nothing
    where u' = host u
 
@@ -187,10 +189,8 @@ goodDomainsSimple =
     , "caniuse.com"
     , "carbonplan.org"
     , "care.diabetesjournals.org"
-    , "casual-effects.com"
     , "cat-unbound.org"
     , "catonmat.net"
-    , "causal-effects.com"
     , "cdn.discordapp.com"
     , "cdn.openai.com"
     , "citeseerx.ist.psu.edu"
@@ -4719,4 +4719,5 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://annals.org/article.aspx?articleid=745807", False)
             , ("https://www.teds.ac.uk/about-teds", False)
             , ("https://stability.ai/blog/stable-diffusion-public-release", False)
+            , ("https://casual-effects.com/markdeep/features.md.html#basicformatting/admonitions", False)
             ]
