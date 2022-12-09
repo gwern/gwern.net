@@ -221,6 +221,8 @@ tagsLong2Short = [
           , ("tominaga-nakamoto", "Tominaga Nakamoto")
           , ("conscientiousness", "Conscientiousness")
           , ("ai/text-style-transfer", "text style transfer")
+          , ("ai/video/generation", "video generation")
+          , ("ai/video/analysis", "video analysis")
           , ("modafinil/darknet-market", "modafinil DNM")
           , ("history/s-l-a-marshall", "SLAM")
           , ("cs/cellular-automaton", "cellular automata")

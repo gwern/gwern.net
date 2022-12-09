@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-12-06 09:51:55 gwern"
+When:  Time-stamp: "2022-12-08 12:41:00 gwern"
 License: CC-0
 -}
 
@@ -1348,6 +1348,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^\\{([.0-9]+)\\}\\$",       "\\1 × \\2^\\3^")
          , ("<span class=\"math inline\">\\\\\\(([0-9.]+) ?\\\\times\\\\\\)</span>", "\\1×") -- '<span class="math inline">\(1.5\times\)</span>'
          , ("<span class=\"math inline\">\\\\\\(([0-9.]+) ?\\\\times ([0-9.]+)\\\\\\)</span>", "\\1×\\2") -- '<span class="math inline">\(224\times\ 224)</span>'
+         , ("<span class=\"math inline\">\\\\\\(([0-9.]+) \\\\\\%\\\\\\)</span>", "\\1%") -- '<span class="math inline">\(90 \%\)</span>'
          , ("<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\\\%\\\\\\)</span>", "\\1%") -- '<span class=\"math inline\">\\(83.6\\%\\)</span>'
          , ("<span class=\"math inline\">\\\\\\(\\\\texttt\\{([A-Za-z]+)\\}\\\\\\)</span>", "<code>\\1</code>") -- 'we present the <span class=\"math inline\">\\(\\texttt{GamePhysics}\\)</span> dataset'
          , ("<span class=\"math inline\">\\\\\\(\\\\textbf\\{([A-Za-z]+)\\}\\\\\\)</span>", "<strong>\\1</strong>") -- 'We dub ρ the <span class="math inline">\(\textbf{polarity}\)</span> parameter'

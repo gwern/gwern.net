@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-11-27 20:28:50 gwern"
+When:  Time-stamp: "2022-12-08 23:23:11 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -1647,7 +1647,6 @@ badDomainsSimple = [ "2chan.us"
    , "www.byrnehobart.com"
    , "www.cabinetmagazine.org"
    , "www.calnewport.com"
-   , "www.cambridge-news.co.uk"
    , "www.cambridge.org"
    , "www.cambridgebrainsciences.com"
    , "www.campbellrivermirror.com"
@@ -1708,7 +1707,6 @@ badDomainsSimple = [ "2chan.us"
    , "www.dcscience.net"
    , "www.dea.gov"
    , "www.delawareonline.com"
-   , "www.derbytelegraph.co.uk"
    , "www.designboom.com"
    , "www.detectiveconanworld.com"
    , "www.devever.net"
@@ -4229,7 +4227,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://www.bvp.com/anti-portfolio", False)
             , ("https://www.cabinetmagazine.org/issues/42/wiles.php", False)
             , ("https://www.calnewport.com/books/deep-work/", False)
-            , ("https://www.cambridge-news.co.uk/Pok-mon-cards-used-supply-drugs-international/story-26465044-detail/story.html", False)
             , ("https://www.cambridge.org/core/journals/journal-of-economic-history/article/two-centuries-of-productivity-growth-in-computing/856EC5947A5857296D3328FA154BA3A3", False)
             , ("https://www.cambridgebrainsciences.com/", False)
             , ("https://www.campbellrivermirror.com/news/257558681.html", False)
@@ -4285,7 +4282,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://www.dea.gov/druginfo/ftp3.shtml", False)
             , ("https://www.deepmind.com/blog/agents-that-imagine-and-plan", False)
             , ("https://www.delawareonline.com/story/news/local/2015/01/13/doctor-sentenced-months-silk-road-drug-case/21716135/", False)
-            , ("https://www.derbytelegraph.co.uk/Derby-worker-Toyota-bought-drugs-dark-web/story-29112765-detail/story.html", False)
             , ("https://www.designboom.com/technology/evolution-desk-harvard-innovation-lab-09-30-2014/", False)
             , ("https://www.detectiveconanworld.com/wiki/The_Last_Wizard_of_the_Century#Situation", False)
             , ("https://www.devever.net/~hl/growupdown", False)
@@ -4532,7 +4528,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
             , ("https://www.phillymag.com/news/2007/06/18/medicine-this-will-keep-you-awake/", False)
             , ("https://www.pixiv.net/users/38983753", False)
             , ("https://www.pluralsight.com/search?q=R", False)
-            , ("https://www.plymouthherald.co.uk/Devon-man-partner-jailed-selling-drugs-dark-web/story-28829157-detail/story.html", False)
+            , ("https://www.bbc.com/news/uk-england-35690394", False)
             , ("https://www.pnas.org/doi/full/10.1073/pnas.1320040111", False)
             , ("https://www.poetrynook.com/poem/birdless-country", False)
             , ("https://www.politie.nl/nieuws/2015/maart/9/01-onderzoek-naar-verzilveren-440.000-euro-aan-bitcoins.html", False)
