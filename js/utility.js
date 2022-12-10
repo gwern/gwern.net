@@ -180,6 +180,15 @@ DOMTokenList.prototype.containsAnyOf = function (tokens) {
 /**************************************************/
 /*	The obvious equivalent of Element’s .innerHTML.
  */
+Object.defineProperty(Document.prototype, "innerHTML", {
+    get() {
+        return Array.from(this.childNodes).map(node => (node.nodeValue || node.outerHTML)).join("");
+    }
+});
+
+/**************************************************/
+/*	The obvious equivalent of Element’s .innerHTML.
+ */
 Object.defineProperty(DocumentFragment.prototype, "innerHTML", {
     get() {
         return Array.from(this.childNodes).map(node => (node.nodeValue || node.outerHTML)).join("");

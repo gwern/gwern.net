@@ -179,8 +179,9 @@
  */
 
 /******************************************************************************/
-/*	Extract template data from an HTML string by looking for elements with  
-	either the `data-template-field` or the `data-template-fields` attribute.
+/*	Extract template data from an HTML string or DOM object by looking for 
+	elements with either the `data-template-field` or the 
+	`data-template-fields` attribute.
 
 	If the `data-template-fields` attribute is not present but the 
 	`data-template-field` attribute is present, then the value of the latter
@@ -230,11 +231,14 @@
 
 	This element defines no data fields.
  */
-//	(string) => object
+//	(string|Document|DocumentFragment|Element) => object
 function templateDataFromHTML(html) {
 	let dataObject = { };
 
-	newDocument(html).querySelectorAll("[data-template-field], [data-template-fields]").forEach(element => {
+	if (typeof html == "string")
+		html = newDocument(html);
+
+	html.querySelectorAll("[data-template-field], [data-template-fields]").forEach(element => {
 		if (element.dataset.templateFields) {
 			element.dataset.templateFields.split(",").forEach(templateField => {
 				let [ beforeColon, afterColon ] = templateField.trim().split(":");
@@ -884,8 +888,8 @@ Transclude = {
         let pageContent = sourceDocument.querySelector("#markdownBody") ?? sourceDocument.querySelector("body");
         let content = pageContent ? newDocument(pageContent.childNodes) : newDocument(sourceDocument);
 
-        //  If the hash specifies part of the page, extract that.
-        let anchors = includeLink.hash.match(/#[^#]*/g) ?? [ ];
+        //  If the link’s anchor(s) specify part of the page, extract that.
+        let anchors = anchorsForLink(includeLink);
         if (anchors.length == 2) {
             //  PmWiki-like transclude range syntax.
 
@@ -1138,43 +1142,78 @@ Transclude = {
 		}
 
 		//	When data loads (or if it is already loaded), transclude.
+		let processData = (templateName) => {
+			//	Cached document (if applicable).
+			let cachedDocument = Transclude.isAnnotationTransclude(includeLink)
+								 ? null
+								 : Content.cachedDocumentForLink(includeLink);
+
+			//	Reference data (from all sources).
+			let referenceData = Transclude.isAnnotationTransclude(includeLink)
+								? Annotations.referenceDataForTarget(includeLink)
+								: templateDataFromHTML(cachedDocument);
+			let linkTemplateData = templateDataFromHTML(includeLink);
+			for ([key, value] of Object.entries(linkTemplateData))
+				referenceData[key] = value;
+
+			//	Template fill context.
+			let context = {
+				loadEventInfo: {
+					source: "transclude",
+					contentType: (Transclude.isAnnotationTransclude(includeLink) ? "annotation" : null),
+					includeLink: includeLink
+				}
+			};
+
+			//	Fill template, if there’s any reference data to fill with.
+			let content = null;
+			if (Object.entries(referenceData).length > 0) {
+				//	Template fill options.
+				let options = {
+					fireContentLoadEvent: true
+				};
+
+				//	Template.
+				let template = templateName 
+							   ? Transclude.templates[templateName] 
+							   : cachedDocument.innerHTML;
+
+				//	Fill template.
+				content = fillTemplate(template, referenceData, context, options);
+			} else {
+				content = cachedDocument;
+			}
+
+			//	Slice and include, or else handle failure.
+			if (content) {
+				includeContent(includeLink, Transclude.sliceContentFromDocument(content, includeLink));
+			} else {
+				Transclude.setLinkStateLoadingFailed(includeLink);
+
+				//	Send request to record failure in server logs.
+				GWServerLogError(includeLink.href + `--transclude-template-fill-failed`, 
+								 "failed transclude template fill");
+			}
+		};
 		provider.waitForDataLoad(identifier, 
 		   (identifier) => {
 		   	//	Load success handler.
 
-			if (Transclude.isAnnotationTransclude(includeLink)) {
+			/*	If a template is specified by name, then we’ll need to make sure
+				that it’s loaded before we can fill it with data.
+			 */
+			let templateName;
+			if (includeLink.dataset.template > "") {
+				templateName = includeLink.dataset.template;
+			} else if (Transclude.isAnnotationTransclude(includeLink)) {
 				let referenceData = Annotations.referenceDataForTarget(includeLink);
-
-				let templateName = (includeLink.dataset.template || referenceData.template);
-				let linkTemplateData = templateDataFromHTML(includeLink.outerHTML);
-				let context = {
-					loadEventInfo: {
-						source: "transclude",
-						contentType: "annotation",
-						includeLink: includeLink
-					}
-				};
-				for ([key, value] of Object.entries(linkTemplateData)) {
-					context[key] = value;
-				}
-				let options = {
-					fireContentLoadEvent: true
-				};
+				if (referenceData.template > "")
+					templateName = referenceData.template;
+			}
+			if (templateName) {
 				Transclude.doWhenTemplateLoaded(templateName, (delayed) => {
-					let content = Transclude.fillTemplateNamed(templateName, referenceData, context, options);
-
-					if (content == null) {
-						Transclude.setLinkStateLoadingFailed(includeLink);
-
-						//	Send request to record failure in server logs.
-						GWServerLogError(includeLink.href + `--annotation-transclude-template-fill-failed`, 
-										 "failed annotation transclude template fill");
-					} else {
-						includeLink.delayed = true;
-						requestAnimationFrame(() => {
-							includeContent(includeLink, content);
-						});
-					}
+					includeLink.delayed = delayed;
+					processData(templateName);
 				}, (delayed) => {
 					Transclude.setLinkStateLoadingFailed(includeLink);
 
@@ -1182,14 +1221,8 @@ Transclude = {
 					GWServerLogError(templateName + `--include-template-load-failed`, 
 									 "failed include template load");
 				});
-
-				return;
 			} else {
-				let cachedDocument = Content.cachedDocumentForLink(includeLink);
-				let content = Transclude.sliceContentFromDocument(cachedDocument, includeLink);
-				includeContent(includeLink, content);
-
-				return;
+				processData();
 			}
 		}, (identifier) => {
 		   	//	Load fail handler.
@@ -1203,8 +1236,6 @@ Transclude = {
 			//  Send request to record failure in server logs.
 			GWServerLogError(includeLink.href + `--transclude-failed`, 
 							 "failed transclude");
-
-			return;
 		});
     },
 

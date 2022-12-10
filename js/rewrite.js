@@ -167,7 +167,11 @@ function nearestBlockElement(element, blockElementSelectors = GW.defaultBlockEle
 	given link (which may be a URL object or an HTMLAnchorElement).
  */
 function targetElementInDocument(link, doc) {
-	let element = doc.querySelector(selectorFromHash(link.hash));
+	let element = (   link instanceof HTMLAnchorElement
+				   && Annotations.isAnnotatedLink(link))
+				  ? doc.querySelector(selectorFromHash(link.dataset.targetId))
+				  : doc.querySelector(selectorFromHash(link.hash));
+
 	if (element)
 		return element;
 
@@ -188,11 +192,35 @@ function targetElementInDocument(link, doc) {
 	specific element within a page, rather than to a whole page. (This is
 	usually because the link has a URL hash, but may also be because the link
 	is a backlink, in which case it implicitly points to that link in the 
-	target page which points back at the target page for the backlink.)
+	target page which points back at the target page for the backlink; or it 
+	may be because the link is an annotated link with a value for the 
+	`data-target-id` attribute.)
  */
 function isAnchorLink(link) {
-	return (   link.hash > ""
-			|| link.getQueryVariable("backlinkTargetURL") > "");
+	if (   link instanceof HTMLAnchorElement
+		&& Annotations.isAnnotatedLink(link)) {
+		return (   link.dataset.targetId > ""
+				|| link.getQueryVariable("backlinkTargetURL") > "");
+	} else {
+		return (   link.hash > ""
+				|| link.getQueryVariable("backlinkTargetURL") > "");
+	}
+}
+
+/****************************************************************************/
+/*	Returns an array of anchors for the given link. This array may have zero,
+	one, or two elements.
+ */
+function anchorsForLink(link) {
+	if (   link instanceof HTMLAnchorElement
+		&& Annotations.isAnnotatedLink(link)
+		&& link.dataset.targetId > "") {
+		return link.dataset.targetId.split(" ").map(x => `#${x}`);
+	} else if (link.getQueryVariable("backlinkTargetURL") > "") {
+		return [ link.getQueryVariable("backlinkTargetURL") ];
+	} else {
+		return link.hash.match(/#[^#]*/g) ?? [ ];
+	}
 }
 
 /******************************************************************************/
