@@ -89,7 +89,7 @@ HTMLAnchorElement.prototype.setQueryVariable = function (key, value) {
 /*	Delete a URL search parameter with the given key from the given 
 	HTMLAnchorElement.
  */
-URL.HTMLAnchorElement.deleteQueryVariable = function (key) {
+HTMLAnchorElement.prototype.deleteQueryVariable = function (key) {
 	let url = new URL(this.href);
 	url.deleteQueryVariable(key);
 	this.search = url.search;
