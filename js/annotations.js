@@ -32,9 +32,12 @@ Annotations = { ...Annotations,
         if (target.dataset.urlOriginal) {
             return originalURLForLink(target).href;
         } else {
-            return (target.hostname == location.hostname
-                   ? target.pathname + target.hash
-                   : target.href);
+        	let url = new URL(target.href);
+        	url.deleteQueryVariable("backlinkTargetURL");
+
+            return (url.hostname == url.hostname
+                   ? url.pathname + url.hash
+                   : url.href);
         }
 	},
 
