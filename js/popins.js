@@ -148,10 +148,10 @@ Popins = {
 	//	Called by: extracts.js
 	//	Called by: Popins.containingDocumentForTarget
 	//	Called by: Popins.scrollElementIntoViewInPopFrame
-	containingPopFrame: (target) => {
-		let popin = target.closest(".popin");
+	containingPopFrame: (element) => {
+		let popin = element.closest(".popin");
 		if (!popin) {
-			let shadowBody = target.closest(".shadow-body");
+			let shadowBody = element.closest(".shadow-body");
 			if (shadowBody)
 				popin = shadowBody.popin;
 		}
@@ -251,7 +251,7 @@ Popins = {
 			button.buttonAction = (event) => {
 				event.stopPropagation();
 
-				let popin = event.target.closest(".popin");
+				let popin = Popins.containingPopFrame(event);
 				if (popin) {
 					Popins.removePopin(popin);
 				}

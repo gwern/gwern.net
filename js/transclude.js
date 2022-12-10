@@ -514,9 +514,14 @@ function includeContent(includeLink, content) {
 	let flags = GW.contentDidInjectEventFlags.clickable;
 	if (containingDocument == document)
 		flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
+	let contentType = null;
+	if (   Transclude.isAnnotationTransclude(includeLink)
+		|| (   Content.contentTypes.localFragment.matchesLink(includeLink)
+			&& includeLink.pathname.startsWith("/metadata/annotations/")))
+		contentType = "annotation";
 	GW.notificationCenter.fireEvent("GW.contentDidInject", {
 		source: "transclude",
-		contentType: (Transclude.isAnnotationTransclude(includeLink) ? "annotation" : null),
+		contentType: contentType,
 		container: wrapper,
 		document: containingDocument,
 		loadLocation: loadLocationForIncludeLink(includeLink),
@@ -1012,7 +1017,17 @@ Transclude = {
             	content = newDocument();
             } else {
 				//	Optional block context.
-				if (includeLink.classList.contains("include-block-context")) {
+            	/*	Check for whether the target element is *itself* an
+            		include-link which will bring in a content block. If so,
+            		do not include any *additional* block context, even if
+            		the include-link we’re currently processing requests it!
+            	 */
+				let isBlockTranscludeLink = (   Transclude.isIncludeLink(targetElement)
+											 && (   targetElement.classList.contains("include-block-context")
+												 || (   targetElement.id > ""
+													 && targetElement.classList.contains("include-identify-not") == false)));
+				if (   includeLink.classList.contains("include-block-context")
+					&& isBlockTranscludeLink == false) {
 					let nearestBlock = nearestBlockElement(targetElement);
 					if (nearestBlock) {
 						content = newDocument(nearestBlock);
@@ -1086,7 +1101,9 @@ Transclude = {
             requestAnimationFrame(() => {
                 lazyLoadObserver(() => {
                     Transclude.transclude(includeLink, true);
-                }, includeLink, { rootMargin: Transclude.lazyLoadViewportMargin });
+                }, includeLink, { 
+                	rootMargin: Transclude.lazyLoadViewportMargin 
+                });
             });
 
             return;

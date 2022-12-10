@@ -65,13 +65,14 @@ function updateDisclosureButtonTitle(disclosureButton) {
     GWLog("updateDisclosureButtonTitle", "collapse.js", 3);
 
 	//	No tooltip for hover-expandable collapse blocks.
-	if (disclosureButton.closest(".collapse").classList.contains("expand-on-hover"))
-		return;
+	if (disclosureButton.closest(".collapse").classList.contains("expand-on-hover")) {
+		disclosureButton.title = "";
+	} else {
+		let collapsedStateTitle = "This is a collapsed region; mouse click to expand it. Collapsed text can be sections, code, text samples, or long digressions which most users will not read, and interested readers can opt into.";
+		let expandedStateTitle = "This is an expanded collapse region; mouse click to collapse it.";
 
-	let collapsedStateTitle = "This is a collapsed region; mouse click to expand it. Collapsed text can be sections, code, text samples, or long digressions which most users will not read, and interested readers can opt into.";
-	let expandedStateTitle = "This is an expanded collapse region; mouse click to collapse it.";
-
-	disclosureButton.title = disclosureButton.checked ? expandedStateTitle : collapsedStateTitle;
+		disclosureButton.title = disclosureButton.checked ? expandedStateTitle : collapsedStateTitle;
+	}
 }
 
 /*******************************************************************/
@@ -203,7 +204,7 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 
 			//	“Scroll into view” in main document vs. pop-frames.
 			let scrollCollapseBlockIntoView = (collapseBlock) => {
-				if (collapseBlock.closest(".popframe-body"))
+				if (Extracts.popFrameProvider.containingPopFrame(collapseBlock))
 					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(collapseBlock);
 				else
 					scrollElementIntoView(collapseBlock);
