@@ -498,9 +498,6 @@ Content = {
 				//	Find the target element and/or containing block, if any.
 				let url = new URL(identifier);
 				let element = targetElementInDocument(url, pageContent);
-				let block = element
-							? nearestBlockElement(element)
-							: null;
 
 				//	Pop-frame title text.
 				let popFrameTitleTextParts = [ ];
@@ -508,8 +505,8 @@ Content = {
 					popFrameTitleTextParts.push(page.title);
 
 				//	Section title or block id.
-				let nearestSection = block
-									 ? block.closest("section")
+				let nearestSection = element
+									 ? element.closest("section")
 									 : null;
 				if (nearestSection) {
 					//	Section mark (§) for sections.
@@ -529,10 +526,6 @@ Content = {
 					pageThumbnailHTML:       page.thumbnailHTML,
 					content:                 pageContent,
 					contentHTML:             pageContent.innerHTML,
-					targetElement:           element,
-					targetElementHTML:       element ? element.innerHTML : null,
-					targetBlock:             block,
-					targetBlockHTML:         block ? block.innerHTML : null,
 					titleLinkHref:           url.href,
 					popFrameTitleText:       popFrameTitleTextParts.join(" "),
 					popFrameTitleTextShort:  popFrameTitleTextParts.first
