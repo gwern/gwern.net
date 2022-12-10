@@ -514,9 +514,14 @@ function includeContent(includeLink, content) {
 	let flags = GW.contentDidInjectEventFlags.clickable;
 	if (containingDocument == document)
 		flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
+	let contentType = null;
+	if (   Transclude.isAnnotationTransclude(includeLink)
+		|| (   Content.contentTypes.localFragment.matchesLink(includeLink)
+			&& includeLink.pathname.startsWith("/metadata/annotations/")))
+		contentType = "annotation";
 	GW.notificationCenter.fireEvent("GW.contentDidInject", {
 		source: "transclude",
-		contentType: (Transclude.isAnnotationTransclude(includeLink) ? "annotation" : null),
+		contentType: contentType,
 		container: wrapper,
 		document: containingDocument,
 		loadLocation: loadLocationForIncludeLink(includeLink),
@@ -1096,7 +1101,9 @@ Transclude = {
             requestAnimationFrame(() => {
                 lazyLoadObserver(() => {
                     Transclude.transclude(includeLink, true);
-                }, includeLink, { rootMargin: Transclude.lazyLoadViewportMargin });
+                }, includeLink, { 
+                	rootMargin: Transclude.lazyLoadViewportMargin 
+                });
             });
 
             return;

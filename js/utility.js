@@ -401,7 +401,7 @@ function lazyLoadObserver(f, target, options = { }) {
 
     if (   options.root == null
         && (options.threshold ?? 0) == 0
-        && (options.rootMargin ?? "0px") == "0px"
+        && (options.rootMargin ?? "0px").includes("-") == false
         && isOnScreen(target)) {
         f();
         return;
