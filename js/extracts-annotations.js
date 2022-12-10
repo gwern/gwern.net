@@ -41,7 +41,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.annotationForTarget", "extracts-annotations.js", 2);
 
 		return newDocument(synthesizeIncludeLink(target, {
-			"class": "link-annotated include-annotation include-strict",
+			"class": "link-annotated include-annotation",
 			"data-template": "annotation-blockquote-not",
 			"data-template-fields": "linkTarget:$",
 			"data-link-target": ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank")
@@ -106,11 +106,12 @@ Extracts = { ...Extracts,
         	&& referenceData.dataSourceClass)
             Extracts.popFrameProvider.addClassesToPopFrame(popFrame, referenceData.dataSourceClass.split(" "));
 
-        //  Fire contentDidLoad event (to trigger transclude).
-        GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+        //  Trigger transclude.
+        Transclude.triggerTranscludesInContainer(popFrame.body, {
             source: "Extracts.rewritePopFrameContent_ANNOTATION",
             container: popFrame.body,
-            document: popFrame.document
+            document: popFrame.document,
+            context: "popFrame"
         });
     },
 

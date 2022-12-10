@@ -109,7 +109,7 @@ Extracts = { ...Extracts,
         }
 
 		//	Synthesize include-link (with or without hash, as appropriate).
-		let includeLink = synthesizeIncludeLink(target, { class: "include-strict include-block-context" });
+		let includeLink = synthesizeIncludeLink(target, { class: "include-block-context" });
 		if (fullPage)
 			includeLink.hash = "";
 		return newDocument(includeLink);
@@ -207,11 +207,12 @@ Extracts = { ...Extracts,
 				once: true
 			});
 
-			//  Fire a contentDidLoad event (to trigger transclude).
-			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
 				source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
 				container: popFrame.body,
-				document: popFrame.document
+				document: popFrame.document,
+				context: "popFrame"
 			});
 
 			return;
@@ -411,7 +412,7 @@ Extracts = { ...Extracts,
     auxLinksForTarget: (target) => {
         GWLog("Extracts.auxLinksForTarget", "extracts-content.js", 2);
 
-		return newDocument(synthesizeIncludeLink(target, { class: `${AuxLinks.auxLinksLinkType(target)} include-strict` }));
+		return newDocument(synthesizeIncludeLink(target, { class: AuxLinks.auxLinksLinkType(target) }));
     },
 
     //  Called by: Extracts.preparePopFrame (as `preparePopFrame_${targetTypeName}`)
@@ -429,11 +430,12 @@ Extracts = { ...Extracts,
     rewritePopFrameContent_AUX_LINKS_LINK: (popFrame) => {
         let target = popFrame.spawningTarget;
 
-        //  Fire a contentDidLoad event (to trigger transclude).
-        GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+		//	Trigger transcludes.
+		Transclude.triggerTranscludesInContainer(popFrame.body, {
             source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK",
             container: popFrame.body,
-            document: popFrame.document
+            document: popFrame.document,
+            context: "popFrame"
         });
     },
 
@@ -532,11 +534,12 @@ Extracts = { ...Extracts,
 				once: true
 			});
 
-			//  Fire a contentDidLoad event (to trigger transclude).
-			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
 				source: "Extracts.rewritePopFrameContent_CITATION",
 				container: popFrame.body,
-				document: popFrame.document
+				document: popFrame.document,
+				context: "popFrame"
 			});
 
 			return;
@@ -619,11 +622,12 @@ Extracts = { ...Extracts,
 				once: true
 			});
 
-			//  Fire a contentDidLoad event (to trigger transclude).
-			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
 				source: "Extracts.rewritePopupContent_CITATION_BACK_LINK",
 				container: popup.body,
-				document: popup.document
+				document: popup.document,
+				context: "popFrame"
 			});
 
 			return;
@@ -950,18 +954,19 @@ Extracts = { ...Extracts,
     localCodeFileForTarget: (target) => {
         GWLog("Extracts.localCodeFileForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target, { class: "include-strict" }));
+        return newDocument(synthesizeIncludeLink(target));
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_CODE_FILE: (popFrame) => {
         let target = popFrame.spawningTarget;
 
-        //  Fire a contentDidLoad event (to trigger transclude).
-        GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+		//	Trigger transcludes.
+		Transclude.triggerTranscludesInContainer(popFrame.body, {
             source: "Extracts.rewritePopFrameContent_LOCAL_CODE_FILE",
             container: popFrame.body,
-            document: popFrame.document
+            document: popFrame.document,
+            context: "popFrame"
         });
 
         //  Mark truncated code blocks, so layout can be adjusted properly.

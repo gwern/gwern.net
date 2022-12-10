@@ -526,6 +526,7 @@ function includeContent(includeLink, content) {
 	GW.notificationCenter.fireEvent("GW.contentDidInject", {
 		source: "transclude",
 		contentType: contentType,
+		context: includeLink.eventInfo.context,
 		container: wrapper,
 		document: containingDocument,
 		loadLocation: loadLocationForIncludeLink(includeLink),
@@ -1212,7 +1213,9 @@ Transclude = {
 			}
 			if (templateName) {
 				Transclude.doWhenTemplateLoaded(templateName, (delayed) => {
-					includeLink.delayed = delayed;
+					if (delayed)
+						includeLink.delayed = true;
+
 					processData(templateName);
 				}, (delayed) => {
 					Transclude.setLinkStateLoadingFailed(includeLink);
@@ -1244,8 +1247,11 @@ Transclude = {
      */
 
     //  Called by: "beforeprint" listener (rewrite.js)
-    triggerTranscludesInContainer: (container) => {
+    triggerTranscludesInContainer: (container, eventInfo) => {
         Transclude.allIncludeLinksInContainer(container).forEach(includeLink => {
+        	if (eventInfo)
+        		includeLink.eventInfo = eventInfo;
+
             Transclude.transclude(includeLink, true);
         });
     },
