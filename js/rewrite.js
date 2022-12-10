@@ -1066,7 +1066,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteAuxLinksLinksInTransclud
 	if (annotation == null)
 		return;
 
-	let inPopFrame = (annotation.closest(".popframe-body") != null);
+	let inPopFrame = (Extracts.popFrameProvider.containingPopFrame(annotation) != null);
 
 	annotation.querySelectorAll(".data-field.aux-links a.aux-links").forEach(auxLinksLink => {
 		let auxLinksLinkType = AuxLinks.auxLinksLinkType(auxLinksLink);

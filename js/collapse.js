@@ -204,7 +204,7 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 
 			//	“Scroll into view” in main document vs. pop-frames.
 			let scrollCollapseBlockIntoView = (collapseBlock) => {
-				if (collapseBlock.closest(".popframe-body"))
+				if (Extracts.popFrameProvider.containingPopFrame(collapseBlock))
 					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(collapseBlock);
 				else
 					scrollElementIntoView(collapseBlock);

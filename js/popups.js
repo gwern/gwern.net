@@ -194,10 +194,10 @@ Popups = {
 
 	//	Called by: extracts.js
 	//	Called by: many functions, all in popups.js
-	containingPopFrame: (target) => {
-		let popup = target.closest(".popup");
+	containingPopFrame: (element) => {
+		let popup = element.closest(".popup");
 		if (!popup) {
-			let shadowBody = target.closest(".shadow-body");
+			let shadowBody = element.closest(".shadow-body");
 			if (shadowBody)
 				popup = shadowBody.popup;
 		}
@@ -218,7 +218,7 @@ Popups = {
 		*/
 	//	Called by: extracts-content.js
 	isVisible: (element) => {
-		let containingPopup = element.closest(".popup");
+		let containingPopup = Popups.containingPopFrame(element);
 		return (containingPopup ? isWithinRect(element, containingPopup.getBoundingClientRect()) : isOnScreen(element));
 	},
 
@@ -1012,7 +1012,7 @@ Popups = {
 			button.buttonAction = (event) => {
 				event.stopPropagation();
 
-				let popup = button.closest(".popup");
+				let popup = Popups.containingPopFrame(button);
 
 				if (button.classList.contains("zoom")) {
 					Popups.zoomPopup(popup, "full");
@@ -1022,7 +1022,7 @@ Popups = {
 			};
 
 			button.updateState = () => {
-				let popup = button.closest(".popup");
+				let popup = Popups.containingPopFrame(button);
 
 				let alternateStateEnabled = (Popups.popupIsZoomed(popup) || Popups.popupWasResized(popup));
 
@@ -1052,7 +1052,7 @@ Popups = {
 				button.buttonAction = (event) => {
 					event.stopPropagation();
 
-					let popup = button.closest(".popup");
+					let popup = Popups.containingPopFrame(button);
 
 					Popups.zoomPopup(popup, place);
 				};
@@ -1077,11 +1077,11 @@ Popups = {
 			button.buttonAction = (event) => {
 				event.stopPropagation();
 
-				Popups.pinOrUnpinPopup(button.closest(".popup"));
+				Popups.pinOrUnpinPopup(Popups.containingPopFrame(button));
 			};
 
 			button.updateState = () => {
-				let popup = button.closest(".popup");
+				let popup = Popups.containingPopFrame(button);
 
 				button.innerHTML = Popups.popupIsEphemeral(popup) ? button.defaultHTML : button.alternateHTML;
 				button.title = Popups.popupIsPinned(popup) ? button.alternateTitle : button.defaultTitle;
@@ -1110,7 +1110,7 @@ Popups = {
 			*/
 		//	Called by: Popups.addTitleBarToPopup
 		addSubmenuToButton: (button, submenuClass, submenuButtons) => {
-			let popup = button.closest(".popup");
+			let popup = Popups.containingPopFrame(button);
 
 			button.classList.add("has-submenu");
 
