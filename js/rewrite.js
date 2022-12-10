@@ -126,8 +126,7 @@ GW.assetVersions = (GW.assetVersions ?? { });
 function versionedAssetURL(pathname) {
 	let version = GW.assetVersions[pathname];
 	let versionString = (version ? `?v=${version}` : ``);
-	return new URL(  "https://"
-				   + location.hostname
+	return new URL(  location.origin
 				   + pathname
 				   + versionString);
 }
@@ -165,25 +164,35 @@ function nearestBlockElement(element, blockElementSelectors = GW.defaultBlockEle
 
 /****************************************************************************/
 /*	Return the element, in the target document, pointed to by the hash of the
-	given link (which may be a URL object or an <a> Element).
+	given link (which may be a URL object or an HTMLAnchorElement).
  */
 function targetElementInDocument(link, doc) {
 	let element = doc.querySelector(selectorFromHash(link.hash));
 	if (element)
 		return element;
 
-	if (link instanceof Element) {
-		let backlinksList = link.closest(".backlinks-list");
-		if (backlinksList) {
-			let escapedURL = CSS.escape(backlinksList.dataset.targetUrl);
-			element = doc.querySelector(`a.link-page[id][href*='${escapedURL}']`);
-		}
+	let backlinkTargetURL = link.getQueryVariable("backlinkTargetURL");
+	if (backlinkTargetURL > "") {
+		let escapedURL = CSS.escape(decodeURIComponent(backlinkTargetURL));
+		element = doc.querySelector(`a[href*='${escapedURL}']`);
 	}
 
 	if (element == null)
 		reportBrokenAnchorLink(link);
 
 	return element;
+}
+
+/*****************************************************************************/
+/*	Returns true if the given link (a URL or an HTMLAnchorElement) points to a 
+	specific element within a page, rather than to a whole page. (This is
+	usually because the link has a URL hash, but may also be because the link
+	is a backlink, in which case it implicitly points to that link in the 
+	target page which points back at the target page for the backlink.)
+ */
+function isAnchorLink(link) {
+	return (   link.hash > ""
+			|| link.getQueryVariable("backlinkTargetURL") > "");
 }
 
 /******************************************************************************/
@@ -215,10 +224,11 @@ function originalURLForLink(link) {
 
 /*****************************************************************************/
 /*	Construct synthetic include-link. The optional ‘link’ argument may be 
-	a string, a URL object, or an <a> Element, in which case it, or its .href 
-	property, is used as the ‘href’ attribute of the synthesized include-link.
+	a string, a URL object, or an HTMLAnchorElement, in which case it, or its 
+	.href property, is used as the ‘href’ attribute of the synthesized 
+	include-link.
 
-	If the ‘link’ argument is an <a> Element and has a ‘data-url-original’ 
+	If the ‘link’ argument is an HTMLAnchorElement and has a ‘data-url-original’ 
 	attribute, then the same attribute is assigned the same value on the
 	synthesized include-link.
  */
@@ -230,11 +240,11 @@ function synthesizeIncludeLink(link, attributes, properties) {
 
 	if (typeof link == "string")
 		includeLink.href = link;
-	else if (   link instanceof Element
+	else if (   link instanceof HTMLAnchorElement
 			 || link instanceof URL)
 		includeLink.href = link.href;
 
-	if (   link instanceof Element
+	if (   link instanceof HTMLAnchorElement
 		&& link.dataset.urlOriginal)
 		includeLink.dataset.urlOriginal = link.dataset.urlOriginal;
 

@@ -186,6 +186,9 @@ Popups = {
 	//	Called by: extracts.js
 	//	Called by: many functions, all in popups.js
 	allSpawnedPopups: () => {
+		if (Popups.popupContainer == null)
+			return [ ];
+
 		return Array.from(Popups.popupContainer.children).filter(popup => !popup.classList.contains("fading"));
 	},
 

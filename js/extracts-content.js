@@ -39,7 +39,9 @@ Extracts = { ...Extracts,
      */
     //  Called by: Extracts.targetTypeInfo (as `predicateFunctionName`)
     isLocalPageLink: (target) => {
-        return Content.contentTypes.localPage.matchesLink(target);
+        return (   Content.contentTypes.localPage.matchesLink(target)
+				&& (   isAnchorLink(target)
+					|| Extracts.targetDocument(target) == null));
     },
 
     /*  TOC links.
@@ -87,7 +89,7 @@ Extracts = { ...Extracts,
 
 			Otherwise, display the entire linked page.
 		 */
-		let fullPage = !(   target.hash > ""
+		let fullPage = !(   isAnchorLink(target)
         				 && (   forceNarrow
         					 || target.closest(".TOC")
         					 || Extracts.targetDocument(target)));

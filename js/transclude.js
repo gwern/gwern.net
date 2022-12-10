@@ -484,7 +484,7 @@ function includeContent(includeLink, content) {
     //  Wrap (unwrapping first, if need be).
     let wrapper = newElement("SPAN", { "class": "include-wrapper" });
     if (   includeLink.classList.contains("include-unwrap")
-        && includeLink.hash > ""
+        && isAnchorLink(includeLink)
         && content.childElementCount == 1) {
 		wrapper.id = content.firstElementChild.id;
 		wrapper.append(...content.firstElementChild.childNodes);
@@ -881,25 +881,7 @@ Transclude = {
 
         //  If the hash specifies part of the page, extract that.
         let anchors = includeLink.hash.match(/#[^#]*/g) ?? [ ];
-        if (anchors.length == 1) {
-            //  Simple element tranclude.
-            let targetElement = targetElementInDocument(includeLink, content);
-            if (targetElement == null) {
-            	content = newDocument();
-            } else {
-				//	Optional block context.
-				if (includeLink.classList.contains("include-block-context")) {
-					let nearestBlock = nearestBlockElement(targetElement);
-					if (nearestBlock) {
-						content = newDocument(nearestBlock);
-					} else {
-						content = newDocument(targetElement);
-					}
-				} else {
-					content = newDocument(targetElement);
-				}
-            }
-        } else if (anchors.length == 2) {
+        if (anchors.length == 2) {
             //  PmWiki-like transclude range syntax.
 
 			//	Start element.
@@ -1023,6 +1005,24 @@ Transclude = {
             }
 
             content = slicedContent;
+        } else if (isAnchorLink(includeLink)) {
+            //  Simple element tranclude.
+            let targetElement = targetElementInDocument(includeLink, content);
+            if (targetElement == null) {
+            	content = newDocument();
+            } else {
+				//	Optional block context.
+				if (includeLink.classList.contains("include-block-context")) {
+					let nearestBlock = nearestBlockElement(targetElement);
+					if (nearestBlock) {
+						content = newDocument(nearestBlock);
+					} else {
+						content = newDocument(targetElement);
+					}
+				} else {
+					content = newDocument(targetElement);
+				}
+            }
         }
 
         return content;

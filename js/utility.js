@@ -39,6 +39,43 @@ String.prototype.includesAnyOf = function (substrings) {
     return false;
 }
 
+/***************************************************************************/
+/*	Returns the value of the search param with the given key for a the given
+	URL object.
+ */
+URL.prototype.getQueryVariable = function (key) {
+	return this.searchParams.get(key);
+}
+
+/**************************************************************************/
+/*	Set a URL search parameter with the given key to the given value on the
+	given URL object.
+ */
+URL.prototype.setQueryVariable = function (key, value) {
+	let query = new URLSearchParams(this.search);
+	query.set(key, value);
+	this.search = query.toString();
+}
+
+/***************************************************************************/
+/*	Returns the value of the search param with the given key for a the given
+	HTMLAnchorElement object.
+ */
+HTMLAnchorElement.prototype.getQueryVariable = function (key) {
+	let url = new URL(this.href);
+	return url.searchParams.get(key);
+}
+
+/**************************************************************************/
+/*	Set a URL search parameter with the given key to the given value on the
+	given HTMLAnchorElement.
+ */
+HTMLAnchorElement.prototype.setQueryVariable = function (key, value) {
+	let url = new URL(this.href);
+	url.setQueryVariable(key, value);
+	this.search = url.search;
+}
+
 /******************************************************************************/
 /*  Adds an event listener to a button (or other clickable element), attaching
     it to both ‘click’ and ‘keyup’ events (for use with keyboard navigation).
@@ -510,21 +547,6 @@ function selectorFromHash(hash) {
         return null;
 
     return "#" + CSS.escape(decodeURIComponent(hash.slice(1)));
-}
-
-/*****************************************************************************/
-/*  Returns a URL object with no hash, and otherwise the `href` equal to that
-    represented by the passed object (either a string, or some object that has
-    the `href` property, such as an <A> element, or the `location` object).
- */
-function urlSansHash(url) {
-    let fixedURL = null;
-    if (typeof url == "string")
-        fixedURL = new URL(url);
-    else
-        fixedURL = new URL(url.href);
-    fixedURL.hash = "";
-    return fixedURL;
 }
 
 /*************************************************************************/
