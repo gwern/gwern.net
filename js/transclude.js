@@ -1012,7 +1012,17 @@ Transclude = {
             	content = newDocument();
             } else {
 				//	Optional block context.
-				if (includeLink.classList.contains("include-block-context")) {
+            	/*	Check for whether the target element is *itself* an
+            		include-link which will bring in a content block. If so,
+            		do not include any *additional* block context, even if
+            		the include-link we’re currently processing requests it!
+            	 */
+				let isBlockTranscludeLink = (   Transclude.isIncludeLink(targetElement)
+											 && (   targetElement.classList.contains("include-block-context")
+												 || (   targetElement.id > ""
+													 && targetElement.classList.contains("include-identify-not") == false)));
+				if (   includeLink.classList.contains("include-block-context")
+					&& isBlockTranscludeLink == false) {
 					let nearestBlock = nearestBlockElement(targetElement);
 					if (nearestBlock) {
 						content = newDocument(nearestBlock);

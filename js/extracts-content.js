@@ -108,34 +108,11 @@ Extracts = { ...Extracts,
 														   "page-" + target.pathname.slice(1));
         }
 
-		//	Ask for a content load, if need be.
-		let contentIdentifier = Content.targetIdentifier(target);
-		if (Content.cachedDataExists(contentIdentifier) == false)
-			Content.load(contentIdentifier);
-
-        //  Get content reference data (if it’s been loaded).
-        let referenceData = Content.referenceDataForTarget(target);
-        if (   referenceData == null
-        	|| referenceData == "LOADING_FAILED") {
-        	//	Handle if not loaded yet, or load failed.
-	        Extracts.handleIncompleteReferenceData(target, referenceData, Content);
-
-            return newDocument();
-        }
-
-        if (fullPage) {
-			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, ...referenceData.pageBodyClasses.split(" "));
-			return newDocument(referenceData.content);
-        } else {
-//         	return newDocument(referenceData.targetBlock);
-			let isBlockTranscludeLink = (   Transclude.isIncludeLink(referenceData.targetElement)
-										 && (   referenceData.targetElement.classList.contains("include-block-context")
-										 	 || (   referenceData.targetElement.id > ""
-												 && referenceData.targetElement.classList.contains("include-identify-not") == false)));
-			return (isBlockTranscludeLink
-					? newDocument(referenceData.targetElement)
-					: newDocument(referenceData.targetBlock));
-        }
+		//	Synthesize include-link (with or without hash, as appropriate).
+		let includeLink = synthesizeIncludeLink(target, { class: "include-strict include-block-context" });
+		if (fullPage)
+			includeLink.hash = "";
+		return newDocument(includeLink);
     },
 
     //  Called by: Extracts.titleForPopFrame (as `titleForPopFrame_${targetTypeName}`)
@@ -220,13 +197,35 @@ Extracts = { ...Extracts,
     rewritePopFrameContent_LOCAL_PAGE: (popFrame) => {
         GWLog("Extracts.rewritePopFrameContent_LOCAL_PAGE", "extracts.js", 2);
 
+		if (Transclude.isIncludeLink(popFrame.body.firstElementChild)) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_LOCAL_PAGE(popFrame);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//  Fire a contentDidLoad event (to trigger transclude).
+			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+				source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
+				container: popFrame.body,
+				document: popFrame.document
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
         let target = popFrame.spawningTarget;
 
-		//	Make collapse blocks expand on hover.
-		popFrame.document.querySelectorAll(".collapse").forEach(collapseBlock => {
-			collapseBlock.classList.add("expand-on-hover");
-			updateDisclosureButtonTitleForCollapseBlock(collapseBlock);
-		});
+		//	Provider-specific rewrites.
+		if (Extracts.popFrameProvider == Popups)
+			Extracts.rewritePopupContent_LOCAL_PAGE(popFrame);
+		else // if (Extracts.popFrameProvider == Popins)
+			Extracts.rewritePopinContent_LOCAL_PAGE(popFrame);
 
 		//	Make first image load eagerly.
 		let firstImage = (   popFrame.body.querySelector(".page-thumbnail")
@@ -236,6 +235,20 @@ Extracts = { ...Extracts,
 			firstImage.decoding = "sync";
 		}
 
+		//	Make collapse blocks expand on hover.
+		popFrame.document.querySelectorAll(".collapse").forEach(collapseBlock => {
+			collapseBlock.classList.add("expand-on-hover");
+			updateDisclosureButtonTitleForCollapseBlock(collapseBlock);
+		});
+
+		//	Strip a single collapse block encompassing the top level content.
+		if (   isOnlyChild(popFrame.body.firstElementChild)
+			&& popFrame.body.firstElementChild.classList.contains("collapse"))
+			expandLockCollapseBlock(popFrame.body.firstElementChild);
+
+		//  Scroll to the target.
+		Extracts.scrollToTargetedElementInPopFrame(target, popFrame);
+
 		//	Lazy-loading of adjacent sections.
 		//	WARNING: Experimental code!
 // 		if (target.hash > "") {
@@ -243,27 +256,16 @@ Extracts = { ...Extracts,
 // 				Extracts.loadAdjacentSections(popFrame, "next,prev");
 // 			});
 // 		}
-
-        //  Fire a contentDidInject event.
-        GW.notificationCenter.fireEvent("GW.contentDidInject", {
-            source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
-            container: popFrame.body,
-            document: popFrame.document,
-            loadLocation: new URL(target.href)
-        });
-
-		//	Strip a single collapse block encompassing the top level content.
-		if (   isOnlyChild(popFrame.body.firstElementChild)
-			&& popFrame.body.firstElementChild.classList.contains("collapse"))
-			expandLockCollapseBlock(popFrame.body.firstElementChild);
-
-        //  Scroll to the target.
-        Extracts.scrollToTargetedElementInPopFrame(target, popFrame);
     },
 
     //  Called by: Extracts.rewritePopupContent (as `rewritePopupContent_${targetTypeName}`)
     rewritePopupContent_LOCAL_PAGE: (popup) => {
         GWLog("Extracts.rewritePopupContent_LOCAL_PAGE", "extracts.js", 2);
+
+		if (Transclude.isIncludeLink(popup.body.firstElementChild)) {
+			Extracts.rewritePopFrameContent_LOCAL_PAGE(popup);
+			return;
+		}
 
         let target = popup.spawningTarget;
 
@@ -280,20 +282,21 @@ Extracts = { ...Extracts,
 
         //  Make anchorlinks scroll popup instead of opening normally.
 		Extracts.constrainLinkClickBehaviorInPopFrame(popup);
-
-        Extracts.rewritePopFrameContent_LOCAL_PAGE(popup);
     },
 
     //  Called by: Extracts.rewritePopinContent (as `rewritePopinContent_${targetTypeName}`)
     rewritePopinContent_LOCAL_PAGE: (popin) => {
         GWLog("Extracts.rewritePopinContent_LOCAL_PAGE", "extracts.js", 2);
 
+		if (Transclude.isIncludeLink(popin.body.firstElementChild)) {
+			Extracts.rewritePopFrameContent_LOCAL_PAGE(popup);
+			return;
+		}
+
         /*  Make anchorlinks scroll popin instead of opening normally
         	(but only for non-popin-spawning anchorlinks).
          */
 		Extracts.constrainLinkClickBehaviorInPopFrame(popin, (link => link.classList.contains("no-popin")));
-
-        Extracts.rewritePopFrameContent_LOCAL_PAGE(popin);
     },
 
 	loadAdjacentSections: (popFrame, which) => {
@@ -474,15 +477,7 @@ Extracts = { ...Extracts,
     citationForTarget: (target) => {
         GWLog("Extracts.citationForTarget", "extracts-content.js", 2);
 
-		let content = Extracts.localPageForTarget(target, true);
-
-		//	Remove extraneous elements.
-		content.querySelectorAll(".footnote-self-link, .footnote-back").forEach(element => {
-			element.remove();
-		});
-
-		//	Fully unwrap, returning only footnote content.
-		return newDocument(content.querySelector("li.footnote, .sidenote-inner-wrapper").childNodes);
+		return Extracts.localPageForTarget(target, true);
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
@@ -525,14 +520,37 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_CITATION: (popFrame) => {
-        let target = popFrame.spawningTarget;
+        GWLog("Extracts.rewritePopFrameContent_CITATION", "extracts.js", 2);
 
-        //  Fire a contentDidInject event.
-        GW.notificationCenter.fireEvent("GW.contentDidInject", {
-            source: "Extracts.rewritePopFrameContent_CITATION",
-            container: popFrame.body,
-            document: popFrame.document
-        });
+		if (Transclude.isIncludeLink(popFrame.body.firstElementChild)) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_CITATION(popFrame);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//  Fire a contentDidLoad event (to trigger transclude).
+			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+				source: "Extracts.rewritePopFrameContent_CITATION",
+				container: popFrame.body,
+				document: popFrame.document
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
+		//	Remove extraneous elements.
+		popFrame.document.querySelectorAll(".footnote-self-link, .footnote-back").forEach(element => {
+			element.remove();
+		});
+
+		//	Fully unwrap, keeping only footnote content.
+		unwrap(popFrame.document.querySelector("li.footnote, .sidenote-inner-wrapper"));
     },
 };
 
@@ -591,6 +609,28 @@ Extracts = { ...Extracts,
     rewritePopupContent_CITATION_BACK_LINK: (popup) => {
         let target = popup.spawningTarget;
 
+		if (Transclude.isIncludeLink(popup.body.firstElementChild)) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopupContent_CITATION_BACK_LINK(popup);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popup.document),
+				once: true
+			});
+
+			//  Fire a contentDidLoad event (to trigger transclude).
+			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+				source: "Extracts.rewritePopupContent_CITATION_BACK_LINK",
+				container: popup.body,
+				document: popup.document
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
         //  Highlight citation in popup.
         /*  Remove the .targeted class from a targeted citation (if any)
             inside the popup (to prevent confusion with the citation that
@@ -603,13 +643,6 @@ Extracts = { ...Extracts,
         let citationInPopup = targetElementInDocument(target, popup.document);
         //  Highlight the citation.
         citationInPopup.classList.add("targeted");
-
-        //  Fire a contentDidInject event.
-        GW.notificationCenter.fireEvent("GW.contentDidInject", {
-            source: "Extracts.rewritePopupContent_CITATION_BACK_LINK",
-            container: popup.body,
-            document: popup.document
-        });
 
         //  Scroll to the citation.
         Extracts.scrollToTargetedElementInPopFrame(target, popup);

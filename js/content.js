@@ -30,6 +30,10 @@ Content = {
 	},
 
 	cachedContentForIdentifier: (identifier) => {
+		let sourceURL = Content.sourceURLsForIdentifier(identifier).first;
+		if (sourceURL.pathname == location.pathname)
+			Content.load(identifier);
+
 		return Content.cachedContent[Content.contentCacheKeyForIdentifier(identifier)];
 	},
 
