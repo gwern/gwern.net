@@ -408,9 +408,7 @@ Extracts = { ...Extracts,
     auxLinksForTarget: (target) => {
         GWLog("Extracts.auxLinksForTarget", "extracts-content.js", 2);
 
-        let auxLinksLinkType = AuxLinks.auxLinksLinkType(target);
-
-        return newDocument(`<a href="${target.href}" class="${auxLinksLinkType} include-strict"></a>`);
+		return newDocument(synthesizeIncludeLink(target, { class: `${AuxLinks.auxLinksLinkType(target)} include-strict` }));
     },
 
     //  Called by: Extracts.preparePopFrame (as `preparePopFrame_${targetTypeName}`)
@@ -919,26 +917,20 @@ Extracts = { ...Extracts,
     localCodeFileForTarget: (target) => {
         GWLog("Extracts.localCodeFileForTarget", "extracts-content.js", 2);
 
-		//	Ask for a content load, if need be.
-		let contentIdentifier = Content.targetIdentifier(target);
-		if (Content.cachedDataExists(contentIdentifier) == false)
-			Content.load(contentIdentifier);
-
-        //  Get content reference data (if it’s been loaded).
-        let referenceData = Content.referenceDataForTarget(target);
-        if (   referenceData == null
-        	|| referenceData == "LOADING_FAILED") {
-        	//	Handle if not loaded yet, or load failed.
-	        Extracts.handleIncompleteReferenceData(target, referenceData, Content);
-
-            return newDocument();
-        }
-
-		return newDocument(referenceData.content);
+        return newDocument(synthesizeIncludeLink(target, { class: "include-strict" }));
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_CODE_FILE: (popFrame) => {
+        let target = popFrame.spawningTarget;
+
+        //  Fire a contentDidLoad event (to trigger transclude).
+        GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+            source: "Extracts.rewritePopFrameContent_LOCAL_CODE_FILE",
+            container: popFrame.body,
+            document: popFrame.document
+        });
+
         //  Mark truncated code blocks, so layout can be adjusted properly.
         if (popFrame.body.lastElementChild.tagName == "P")
             popFrame.body.firstElementChild.classList.add("truncated");

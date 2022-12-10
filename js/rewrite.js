@@ -248,6 +248,10 @@ function synthesizeIncludeLink(link, attributes, properties) {
 		&& link.dataset.urlOriginal)
 		includeLink.dataset.urlOriginal = link.dataset.urlOriginal;
 
+	//	In case no include classes have been added yet...
+	if (Transclude.isIncludeLink(includeLink) == false)
+		includeLink.classList.add("include");
+
 	return includeLink;
 }
 
