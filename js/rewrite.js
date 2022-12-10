@@ -207,6 +207,18 @@ function isAnchorLink(link) {
 	}
 }
 
+/***********************************************/
+/*	Removes all anchor data from the given link.
+ */
+function stripAnchorsFromLink(link) {
+	if (   link instanceof HTMLAnchorElement
+		&& Annotations.isAnnotatedLink(link))
+		link.removeAttribute("data-target-id");
+
+	link.hash = "";
+	link.deleteQueryVariable("backlinkTargetURL");
+}
+
 /****************************************************************************/
 /*	Returns an array of anchors for the given link. This array may have zero,
 	one, or two elements.

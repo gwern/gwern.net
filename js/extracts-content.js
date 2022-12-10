@@ -111,7 +111,7 @@ Extracts = { ...Extracts,
 		//	Synthesize include-link (with or without hash, as appropriate).
 		let includeLink = synthesizeIncludeLink(target, { class: "include-block-context" });
 		if (fullPage)
-			includeLink.hash = "";
+			stripAnchorsFromLink(includeLink);
 		return newDocument(includeLink);
     },
 
