@@ -41,7 +41,7 @@ Extracts = { ...Extracts,
     isLocalPageLink: (target) => {
         return (   Content.contentTypes.localPage.matchesLink(target)
 				&& (   isAnchorLink(target)
-					|| Extracts.targetDocument(target) == null));
+					|| target.pathname != location.pathname));
     },
 
     /*  TOC links.
