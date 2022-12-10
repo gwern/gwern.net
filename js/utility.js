@@ -57,6 +57,15 @@ URL.prototype.setQueryVariable = function (key, value) {
 	this.search = query.toString();
 }
 
+/******************************************************************************/
+/*	Delete a URL search parameter with the given key from the given URL object.
+ */
+URL.prototype.deleteQueryVariable = function (key) {
+	let query = new URLSearchParams(this.search);
+	query.delete(key);
+	this.search = query.toString();
+}
+
 /***************************************************************************/
 /*	Returns the value of the search param with the given key for a the given
 	HTMLAnchorElement object.
@@ -73,6 +82,16 @@ HTMLAnchorElement.prototype.getQueryVariable = function (key) {
 HTMLAnchorElement.prototype.setQueryVariable = function (key, value) {
 	let url = new URL(this.href);
 	url.setQueryVariable(key, value);
+	this.search = url.search;
+}
+
+/******************************************************************/
+/*	Delete a URL search parameter with the given key from the given 
+	HTMLAnchorElement.
+ */
+URL.HTMLAnchorElement.deleteQueryVariable = function (key) {
+	let url = new URL(this.href);
+	url.deleteQueryVariable(key);
 	this.search = url.search;
 }
 
