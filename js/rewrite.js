@@ -169,7 +169,7 @@ function nearestBlockElement(element, blockElementSelectors = GW.defaultBlockEle
 function targetElementInDocument(link, doc) {
 	let element = (   link instanceof HTMLAnchorElement
 				   && Annotations.isAnnotatedLink(link))
-				  ? doc.querySelector(selectorFromHash(link.dataset.targetId))
+				  ? doc.querySelector(selectorFromHash("#" + link.dataset.targetId))
 				  : doc.querySelector(selectorFromHash(link.hash));
 
 	if (element)
