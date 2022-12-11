@@ -333,7 +333,7 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
  */
 
 .sourceCode {
-	clear: both;
+    clear: both;
 }
 
 .sourceCode .collapse,
@@ -962,15 +962,15 @@ video + .caption-wrapper {
     padding-bottom: 1px;
 }
 
-/*	Enable the various `![caption](/images/foo.jpg){.width-full}` uses;
-	analogous to width-full tables
+/*  Enable the various `![caption](/images/foo.jpg){.width-full}` uses;
+    analogous to width-full tables
  */
 figure.width-full {
     position: relative;
     max-width: unset;
 }
 
-/*	Floating figures. (Mostly for amusing asides/memes.)
+/*  Floating figures. (Mostly for amusing asides/memes.)
  */
 @media all and (min-width: 650px) {
     figure.float-right {
@@ -1025,8 +1025,8 @@ blockquote {
 }
 
 #markdownBody blockquote {
-	clear: none;
-	overflow: auto;
+    clear: none;
+    overflow: auto;
 }
 
 blockquote blockquote {
@@ -1099,7 +1099,7 @@ blockquote table table {
 /*  EPITAPH (eg /LARPing)
  */
 .text-center {
-	text-align: center;
+    text-align: center;
 }
 
 /*************/
@@ -2679,8 +2679,6 @@ a .cite-author-plural::after {
     margin-left: 0.1em;
     white-space: nowrap;
 }
-a .cite-date { margin-left: 0em; }
-
 
 /******************************/
 /* “FURTHER READING” SECTIONS */
@@ -2709,9 +2707,9 @@ a .cite-date { margin-left: 0em; }
 /*= Index page =*/
 /*=------------=*/
 
-/*	Link bibliography on index page. */
+/*  Link bibliography on index page. */
 body.index section#link-bibliography {
-	grid-column: 1 / span 2;
+    grid-column: 1 / span 2;
 }
 
 /*  Index’s special appearance requires some more v-space for the nav UI. */
@@ -2775,7 +2773,7 @@ body.index #markdownBody section > h1:first-child a::after {
 /*=-------------=*/
 
 body.index-long section > .include-wrapper-block + .include-wrapper-block {
-	margin-top: 2.5em;
+    margin-top: 2.5em;
 }
 
 /*=----------------=*/
@@ -3480,9 +3478,9 @@ body.index-directory #footer {
     height: calc(100% - 1.75em);
 }
 .popframe-body.local-code-file div.sourceCode.truncated + p {
-	font-family: var(--GW-sans-serif-font-stack);
-	height: 1.75em;
-	text-align: center;
+    font-family: var(--GW-sans-serif-font-stack);
+    height: 1.75em;
+    text-align: center;
 }
 .popframe-body.local-code-file pre {
     height: 100%;
@@ -4751,7 +4749,7 @@ body.index-directory #footer {
 }
 .popin-open:not(.footnote-ref)::before,
 .popin-open:not(.footnote-ref):hover::before {
-	content: "";
+    content: "";
     display: block;
     position: absolute;
     background-image: none;
@@ -4763,7 +4761,7 @@ body.index-directory #footer {
     top: unset;
 }
 .popin-open:not(.footnote-ref) .indicator-hook {
-	display: none;
+    display: none;
 }
 
 /*=-------------=*/
@@ -4909,7 +4907,7 @@ section.highlight-fading::before {
 
 .annotation .data-field.title .title-link,
 .annotation-partial .data-field.title .title-link {
-	font-weight: bold;
+    font-weight: bold;
 }
 .annotation .data-field.title + p {
     text-indent: 0;
@@ -4955,7 +4953,7 @@ section.highlight-fading::before {
 }
 
 .annotation .image-row-wrapper {
-	display: flex;
+    display: flex;
 }
 
 .annotation .page-description-annotation {
@@ -4973,7 +4971,7 @@ section.highlight-fading::before {
     font-size: 0.9em;
 }
 .annotation.wikipedia-entry .infobox table {
-	font-size: 0.935em;
+    font-size: 0.935em;
 }
 .annotation.wikipedia-entry .infobox tbody tr:hover {
     outline: none;
@@ -5018,27 +5016,27 @@ section.highlight-fading::before {
     word-break: break-all;
 }
 .annotation.wikipedia-entry .side-box {
-	border: 1px dotted currentColor;
-	float: right;
-	padding: 0.5em 0.75em;
-	max-width: calc(50% - 2em);
-	margin: 0 0 1em 1em;
-	overflow: auto;
-	position: relative;
+    border: 1px dotted currentColor;
+    float: right;
+    padding: 0.5em 0.75em;
+    max-width: calc(50% - 2em);
+    margin: 0 0 1em 1em;
+    overflow: auto;
+    position: relative;
 }
 .annotation.wikipedia-entry .side-box.sister-box ul {
-	padding: 0;
-	margin: 1em 0 0 0;
+    padding: 0;
+    margin: 1em 0 0 0;
 }
 .annotation.wikipedia-entry .side-box.sister-box ul li::before {
-	content: none;
+    content: none;
 }
 .annotation.wikipedia-entry .side-box.sister-box ul .sister-logo {
-	margin: 0 0.5em 0 0;
-	display: inline-block;
-	vertical-align: text-top;
-	width: 1.5em;
-	text-align: center;
+    margin: 0 0.5em 0 0;
+    display: inline-block;
+    vertical-align: text-top;
+    width: 1.5em;
+    text-align: center;
 }
 
 /*  Special case for inline math in Wikipedia pop-frames.
@@ -5076,9 +5074,9 @@ section.highlight-fading::before {
  */
 
 .aux-links-append {
-	margin-top: 0.5em;
-	padding-left: 2px;
-	padding-bottom: 0.125em;
+    margin-top: 0.5em;
+    padding-left: 2px;
+    padding-bottom: 0.125em;
 }
 .aux-links-append + .aux-links-append {
     margin-top: 1em;
@@ -5097,12 +5095,12 @@ section.highlight-fading::before {
     margin-top: 1em;
 }
 
-/*	“Aux links” in link bibliographies, directory indexes, and other transcluded
-	(rather than pop-framed) annotations.
+/*  “Aux links” in link bibliographies, directory indexes, and other transcluded
+    (rather than pop-framed) annotations.
  */
 
 .annotation .collapse.aux-links-container {
-	clear: right;
+    clear: right;
     border-top: 1px solid var(--GW-TOC-border-color);
 }
 .annotation .collapse.aux-links-container:not(:last-child) {
@@ -5119,7 +5117,7 @@ section.highlight-fading::before {
 }
 
 .annotation .collapse.aux-links-container .aux-links-append {
-	padding-left: 0;
+    padding-left: 0;
 }
 
 .annotation :not(section).collapse.aux-links-container:not(.expanded) > .disclosure-button::before {
@@ -5132,7 +5130,7 @@ section.highlight-fading::before {
 }
 
 ol.link-bibliography-list-compact {
-	list-style-type: lower-alpha;
+    list-style-type: lower-alpha;
     padding-left: 1.75em;
 }
 ol.link-bibliography-list-compact > li::marker {
@@ -5140,13 +5138,13 @@ ol.link-bibliography-list-compact > li::marker {
     font-size: 0.9em;
 }
 @media all and (max-width: 649px) {
-	ol.link-bibliography-list-compact {
-		padding-left: 1.75em;
-	}
+    ol.link-bibliography-list-compact {
+        padding-left: 1.75em;
+    }
 }
 
 #link-bibliography > ol > li > p + p {
-	text-indent: 0;
+    text-indent: 0;
     margin-top: 0.5em;
 }
 
@@ -5704,31 +5702,31 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 /***********/
 
 #console {
-	position: absolute;
-	background-color: #fff;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	border-top: 3px double #000;
-	font-family: var(--GW-monospaced-font-stack);
+    position: absolute;
+    background-color: #fff;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 3px double #000;
+    font-family: var(--GW-monospaced-font-stack);
     max-height: 50vh;
     display: flex;
     flex-flow: column;
     z-index: 1;
     opacity: 1;
     transition:
-    	opacity 0.1s ease-out,
-    	bottom 0.1s ease-out;
+        opacity 0.1s ease-out,
+        bottom 0.1s ease-out;
 }
 #console.hidden {
     transition:
-    	opacity 0.1s ease-in,
-    	bottom 0.1s ease-in;
+        opacity 0.1s ease-in,
+        bottom 0.1s ease-in;
 }
 
 #console .console-scroll-view {
-	border-bottom: 1px solid #000;
-	min-height: 2em;
+    border-bottom: 1px solid #000;
+    min-height: 2em;
     overflow-y: scroll;
     overscroll-behavior: none;
     display: flex;
@@ -5750,37 +5748,37 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 }
 
 #console .console-command-line {
-	display: flex;
-	height: 1.75em;
+    display: flex;
+    height: 1.75em;
 }
 
 #console .console-command-line-prompt {
-	padding: 0 0.5em 0 0.25em;
+    padding: 0 0.5em 0 0.25em;
     display: flex;
     line-height: 1.75;
     font-size: 1rem;
 }
 #console .console-command-line-prompt::after {
-	content: ">";
+    content: ">";
     padding: 0 0 0 0.5em;
     margin: 0 0 0 0.375em;
     border-left: 1px solid #000;
 }
 
 #console .console-command-line-entry-field {
-	flex: 1 0 auto;
+    flex: 1 0 auto;
 }
 #console .console-command-line-entry-field input {
-	appearance: none;
-	border: none;
-	background-color: inherit;
-	height: 100%;
-	display: block;
-	width: 100%;
-	padding: 0 0.5em 0 0;
-	font-family: var(--GW-monospaced-font-stack);
+    appearance: none;
+    border: none;
+    background-color: inherit;
+    height: 100%;
+    display: block;
+    width: 100%;
+    padding: 0 0.5em 0 0;
+    font-family: var(--GW-monospaced-font-stack);
     font-size: 1rem;
 }
 #console .console-command-line-entry-field input:focus {
-	outline: none;
+    outline: none;
 }
