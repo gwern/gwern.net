@@ -1,21 +1,21 @@
 <[IF originalURL]>
-[<a
-	class="popframe-title-link-archived"
-	title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>."
-    href="<{titleLinkHref}>"
-	target="<{linkTarget}>"
-		>ARCHIVED</a>]<span class="separator">·</span>
 <a
-	class="popframe-title-link"
-	title="Open <{originalURL}> in <{whichTab}> <{tabOrWindow}>."
-	href="<{originalURL}>"
-	target="<{linkTarget}>"
-		><{popFrameTitleText}></a>
+    class="popframe-title-link"
+    title="Open <{originalURL}> in <{whichTab}> <{tabOrWindow}>."
+    href="<{originalURL}>"
+    target="<{linkTarget}>"
+        ><{popFrameTitleText}></a><span class="separator">·</span>
+[<a
+    class="popframe-title-link-archived"
+    title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>."
+    href="<{titleLinkHref}>"
+    target="<{linkTarget}>"
+        >ARCHIVED</a>]
 <[ELSE]>
 <a
-	class="popframe-title-link"
-	href="<{titleLinkHref}>"
-	title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>."
-	target="<{linkTarget}>"
-		><{popFrameTitleText}></a>
+    class="popframe-title-link"
+    href="<{titleLinkHref}>"
+    title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>."
+    target="<{linkTarget}>"
+        ><{popFrameTitleText}></a>
 <[IFEND]>
