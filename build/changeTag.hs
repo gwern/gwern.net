@@ -32,32 +32,18 @@ import Data.Maybe (isJust, fromJust)
 import System.Environment (getArgs)
 import System.Directory (doesDirectoryExist, doesFileExist)
 import Text.Pandoc (Inline(Link), nullAttr)
-import Data.Text as T (lines, pack, unpack)
+import Data.Text as T (pack)
 
 import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml)
 import LinkMetadataTypes (MetadataList, MetadataItem)
 import Tags (guessTagFromShort, listTagsAll)
 import Utils (printGreen, replace)
-import Query (extractLinks)
-
-import System.IO (stdin)
-import qualified Data.ByteString (hGetNonBlocking)
-import Data.Text.Encoding as E (decodeUtf8)
 
 main :: IO ()
 main = do
           -- read the regular CLI arguments
-          argsCLI <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://www.gwern.net/" "/") getArgs
+          args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://www.gwern.net/" "/") getArgs
 
-          -- Optional input: read stdin but in a non-blocking way, just in case the user is piping in a list of URLs or Markdown/HTML fragments
-          -- (WARNING: This is a race condition but if there *are* any inputs being piped in, they should be available long before this code runs so it's safe-ish... Likewise, we have to provide an arbitrary length limit, so it's set to a high value.)
-          stdinContents <- fmap E.decodeUtf8 $ Data.ByteString.hGetNonBlocking System.IO.stdin 999999
-
-          -- attempt to support both freeform newline-delimited URLs, and also arbitrary Markdown/HTML fragments pasted in.
-          -- since URLs are deduplicated, we do this by blindly trying it both ways
-          let linksStdin = map T.unpack (T.lines stdinContents ++ extractLinks True stdinContents)
-
-          let args = argsCLI ++ linksStdin
           when (length args < 2) $ error "Error: Insufficient arguments (<2)."
           when ("gwt" `elem` args) $ error "Invalid tag/URL 'gwt' detected! Is this entire command malformed? Exiting immediately."
 
@@ -117,6 +103,9 @@ addNewLink tag p = do md <- readLinkMetadata
                       changeOneTag p tag -- if returnValue then changeOneTag p tag else error ("annotateLink returned False! " ++ show tag ++ " : " ++ show p)
 
 changeTag, addTag, removeTag :: String -> MetadataList -> String -> MetadataList
+changeTag "" a b  = error $ "changeTag called with empty arguments: " ++ "\"\""  ++ ":" ++ show a  ++ ":" ++ show b  ++ "; this should never happen."
+changeTag  a [] b = error $ "changeTag called with empty arguments: " ++ show a  ++ ":" ++ "[]"    ++ ":" ++ show b  ++ "; this should never happen."
+changeTag  a b "" = error $ "changeTag called with empty arguments: " ++ show a  ++ ":" ++ show b  ++ ":" ++ "\"\""  ++ "; this should never happen."
 changeTag i ml tag = if head tag /= '-' then addTag i ml tag else removeTag i ml (tail tag)
 addTag i ml tag = map (\(path,item@(a,b,c,d,e,f)) -> if i /= path || (tag `elem` e) then (path,item) else
                                                       (path,(a,b,c,d,e++[tag],f)) ) ml
