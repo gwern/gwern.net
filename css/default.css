@@ -4918,6 +4918,7 @@ section.highlight-fading::before {
 .annotation .originalURL,
 .annotation-partial .originalURL {
     font-variant-caps: small-caps;
+    margin-left: 0.25em;
 }
 .annotation div.data-field.annotation-abstract {
     margin-top: 0.5em;
@@ -5715,12 +5716,12 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     flex-flow: column;
     z-index: 1;
     opacity: 1;
-    transition: 
+    transition:
     	opacity 0.1s ease-out,
     	bottom 0.1s ease-out;
 }
 #console.hidden {
-    transition: 
+    transition:
     	opacity 0.1s ease-in,
     	bottom 0.1s ease-in;
 }
