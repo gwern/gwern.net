@@ -35,7 +35,7 @@ Annotations = { ...Annotations,
         	let url = new URL(target.href);
         	url.deleteQueryVariable("backlinkTargetURL");
 
-            return (url.hostname == url.hostname
+            return (url.hostname == location.hostname
                    ? url.pathname + url.hash
                    : url.href);
         }
