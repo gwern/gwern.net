@@ -23,7 +23,7 @@ import LinkAuto (linkAutoFiltered)
 import LinkID (generateID)
 import LinkMetadata (hasAnnotation, isPagePath, readLinkMetadata, parseRawInline)
 import LinkMetadataTypes (Metadata, MetadataItem)
-import LinkBacklink (readBacklinksDB, writeBacklinksDB, getAnnotationLink)
+import LinkBacklink (readBacklinksDB, writeBacklinksDB)
 import Query (extractLinksWith)
 import Typography (typographyTransform)
 import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed, replace, safeHtmlWriterOptions)
@@ -76,8 +76,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                              -- if the backlink caller is actually another annotation (and so has a '.' in it), we want to add no anchor because that will break the annotation lookup:
                                                              -- it'll look at '/metadata/annotations/$FOO.html#$ID' instead2 of the actual '/metadata/annotations/$FOO.html'.
                                                              -- (eg. for Boehm et al 1993's "backlinks", there will be a 'Hierarchy in the Library' backlink which would point at 'https://www.gwern.net/docs/culture/2008-johnson.pdf#boehm-et-al-1993' , which has no annotation, because it's annotated as '/docs/culture/2008-johnson.pdf').
-                                                             Just (_,aut,dt,_,_,_) -> let i = generateID (T.unpack target) aut dt in
-                                                                                        if i=="" then "" else "#" `T.append` i
+                                                             Just (_,aut,dt,_,_,_) -> generateID (T.unpack target) aut dt
                                        let callerDatesTitles = map (\u -> case M.lookup (T.unpack u) md of
                                                                       Nothing -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
                                                                       Just ("",_,"",_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
@@ -95,16 +94,19 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                    -- do we transclude the context on page load? If it's an annotation, annotations are very cheap (~4kb average), so we can.
                                                    -- we can't if it's an entire page like /GPT-3, however!
                                                    let includeStrict = if isPagePath u then [] else ["include-strict"] in
-                                                                   [Para ([Link ("", "id-not":"backlink-not":c, [])
+                                                                   [Para ([Link ("", "backlink-not":c, [])
                                                                           [parseRawInline nullAttr $ RawInline (Format "html") t]
                                                                           (u, "")] ++
                                                                           -- for top-level pages, we need a second link, like 'Foo (context)', because 'Foo' will popup the scraped abstract/annotation, but it will not pop up the reverse citation context displayed right below; this leads to a UI trap: the reader might be interested in navigating to the context, but they can't! The transclusion has replaced itself, so it doesn't provide any way to navigate to the actual page, and the provided annotation link doesn't know anything about the reverse citation because it is about the entire page. So we provide a backup non-transcluding link to the actual context.
-                                                                          (if isPagePath u then [Str " (", Link nullAttr [Str "context"] (if isPagePath u then u`T.append`selfIdent else u,""), Str ")"] else []) ++
+                                                                          (if isPagePath u then [Str " (", Link ("",["link-annotated-not"],[]) [Str "context"] (if isPagePath u && selfIdent/="" then u`T.append`"#"`T.append`selfIdent else u,""), Str ")"] else []) ++
                                                                           [Str ":"]),
                                                                -- use transclusion to default to display inline the context of the reverse citation, akin to how it would display if the reader popped the link up as a live cross-page transclusion, but without needing to hover over each one:
-                                                               BlockQuote [Para [Link ("",(["id-not", "backlink-not", "include-replace-container", "include-block-context"]++includeStrict),[]) -- TODO: need '.include-strict' for better reader experience?
+                                                               BlockQuote [Para [Link ("",
+                                                                                        (["link-annotated-not", "backlink-not", "include-replace-container", "include-block-context"]++includeStrict),
+                                                                                        if selfIdent=="" then [] else [("target-id",selfIdent)]
+                                                                                      )
                                                                                       [Str "[backlink context]"]
-                                                                                      ((if isPagePath u then u else T.pack (snd $ getAnnotationLink $ T.unpack u)) `T.append` selfIdent, "")
+                                                                                      (u, "")
                                                                                 ]
                                                                           ]
                                                              ]
@@ -116,7 +118,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                        let html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
                                                   in case htmlEither of
                                                               Left e -> error $ show target ++ show callers ++ show e
-                                                              Right output -> output
+                                                              Right output -> output `T.append` "\n"
 
                                        let backLinksHtmlFragment = html -- if C.listLength content > 60 || length callers' < 4 then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>" -- FIXME: temporarily removed while the context transclusion is worked out
 
