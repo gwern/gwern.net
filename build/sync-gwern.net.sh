@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-12-09 11:16:04 gwern"
+# When:  Time-stamp: "2022-12-10 20:03:32 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -192,7 +192,9 @@ else
             fi
              echo -e "\n~~~~~~~~~~~~~~~~~~~~~"
              if (( $FILELENGTH >= 1000 )); then echo -e "\n\n…[File truncated due to length; see <a class=\"link-page\" href=\"$FILEORIGINAL\">original file</a>]…"; fi;
-            ) | pandoc --mathjax --write=html5 --from=markdown+smart >> $FILE.html
+            ) | pandoc --mathjax --write=html5 --from=markdown+smart | \
+                ## delete annoying self-link links: Pandoc/skylighting doesn't make this configurable
+                sed -e 's/^<span id="cb[0-9]\+-[0-9]\+"><a href="#cb[0-9]\+-[0-9]\+" aria-hidden="true" tabindex="-1"><\/a>//' >> $FILE.html
         done
     }
     export -f syntaxHighlight
