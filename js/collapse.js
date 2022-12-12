@@ -127,6 +127,9 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 		if (checked > "")
 			aBlockDidStartExpanded = true;
 
+		//	Add ‘expand-on-hover’ class.
+		collapseBlock.classList.add("expand-on-hover");
+
 		if (collapseBlock.tagName == "SECTION") {
 			//  Inject the disclosure button.
 			collapseBlock.firstElementChild.insertAdjacentHTML("afterend", disclosureButtonHTML);
@@ -139,18 +142,16 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 				collapseBlock.removeAttribute("class");
 		} else if (   collapseBlock.parentElement.tagName == "DIV"
 				   && isOnlyChild(collapseBlock)) {
-			//  Use parent div as collapse block wrapper.
+			//  Use parent div as collapse block.
 			let realCollapseBlock = collapseBlock.parentElement;
-			realCollapseBlock.classList.add("collapse");
-			if (collapseBlock.classList.contains("expand-on-hover"))
-				realCollapseBlock.classList.add("expand-on-hover");
+			realCollapseBlock.classList.add("collapse", "expand-on-hover");
 
 			//	Inject the disclosure button.
 			realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
 			if (checked > "")
 				realCollapseBlock.classList.add("expanded");
 
-			//  Remove the ‘collapse’ class.
+			//  Remove collapse classes.
 			collapseBlock.classList.remove("collapse", "expand-on-hover");
 			collapseBlock.classList.add("collapse-content-wrapper");
 		} else {

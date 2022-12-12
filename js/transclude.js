@@ -897,16 +897,16 @@ Transclude = {
 			if (loadFailHandler)
 				loadFailHandler();
 		} else if (template) {
-			loadHandler();
+			loadHandler(template);
 		} else {
 			let loadOrFailHandler = (info) => {
 				if (info.eventName == "Transclude.templateDidLoad") {
-					loadHandler(true);
+					loadHandler(Transclude.templates[templateName], true);
 
 					GW.notificationCenter.removeHandlerForEvent("Transclude.templateLoadDidFail", loadOrFailHandler);
 				} else {
 					if (loadFailHandler) 
-						loadFailHandler(true);
+						loadFailHandler(null, true);
 
 					GW.notificationCenter.removeHandlerForEvent("Transclude.templateDidLoad", loadOrFailHandler);
 				}
@@ -1215,16 +1215,17 @@ Transclude = {
 		}
 
 		//	When data loads (or if it is already loaded), transclude.
-		let processData = (templateName) => {
+		let processData = (template) => {
 			//	Reference data.
 			let referenceData = Transclude.isAnnotationTransclude(includeLink)
 								? Annotations.referenceDataForTarget(includeLink)
 								: Content.referenceDataForTarget(includeLink).content;
 
-			//	Template.
-			let template = templateName 
-						   ? Transclude.templates[templateName] 
-						   : referenceData;
+			/*	If no template specified, use reference data as template.
+				(In this case, reference data should be an HTML string or a
+				 DocumentFragment.)
+			 */
+			template = template ?? referenceData;
 
 			//	Template fill context.
 			let context = templateDataFromHTML(includeLink);
@@ -1269,11 +1270,11 @@ Transclude = {
 					templateName = referenceData.template;
 			}
 			if (templateName) {
-				Transclude.doWhenTemplateLoaded(templateName, (delayed) => {
+				Transclude.doWhenTemplateLoaded(templateName, (template, delayed) => {
 					if (delayed)
 						includeLink.delayed = true;
 
-					processData(templateName);
+					processData(template);
 				}, (delayed) => {
 					Transclude.setLinkStateLoadingFailed(includeLink);
 
