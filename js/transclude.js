@@ -949,10 +949,6 @@ Transclude = {
 			].join(", ")
 	],
 
-	unwrapBlockElementSelector: [
-		"blockquote"
-	].join(", "),
-
 	generalBlockContextMinimumLength: 200,
 
 	//	Called by: Transclude.sliceContentFromDocument
@@ -961,13 +957,13 @@ Transclude = {
 		let selectors = [ ...Transclude.specificBlockElementSelectors, ...Transclude.generalBlockElementSelectors ];
 		for (selector of selectors)
 			if (block = element.closest(selector) ?? block)
-				if (   Transclude.specificBlockElementSelectors.includes(selector)
-					|| block.textContent.length > Transclude.generalBlockContextMinimumLength
-					|| (   block.parentNode == null
-						|| block.parentNode instanceof Element == false))
+// 				if (   Transclude.specificBlockElementSelectors.includes(selector)
+// 					|| block.textContent.length > Transclude.generalBlockContextMinimumLength
+// 					|| (   block.parentNode == null
+// 						|| block.parentNode instanceof Element == false))
 					break;
 
-		return (block.closest(Transclude.unwrapBlockElementSelector) == block
+		return ([ "BLOCKQUOTE" ].includes(block.tagName)
 				? block.childNodes
 				: block);
 	},
