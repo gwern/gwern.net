@@ -139,22 +139,36 @@ function targetElementInDocument(link, doc) {
 	if (isAnchorLink(link) == false)
 		return null;
 
+	let exclusionSelector = [
+		"#page-metadata a",
+		".aux-links-list a"
+	].join(", ");
+
 	let element = null;
 	if (   link instanceof HTMLAnchorElement
-		&& link.dataset.targetId > "")
+		&& link.dataset.targetId > "") {
 		element = doc.querySelector(selectorFromHash("#" + link.dataset.targetId));
+		if (   element
+			&& element.closest(exclusionSelector) == element)
+			element = null;
+	}
 
 	if (   element == null
 		&& (   link instanceof HTMLAnchorElement
-			&& Annotations.isAnnotatedLink(link)) == false)
+			&& Annotations.isAnnotatedLink(link)) == false) {
 		element = doc.querySelector(selectorFromHash(link.hash));
+		if (   element
+			&& element.closest(exclusionSelector) == element)
+			element = null;
+	}
 
 	if (element == null) {
 		let backlinkTargetURL = link.getQueryVariable("backlinkTargetURL");
 		if (backlinkTargetURL > "") {
 			let decodedURL = decodeURIComponent(backlinkTargetURL);
 			element = Array.from(doc.querySelectorAll(`a[href*='${CSS.escape(decodedURL)}']`)).filter(backlink => {
-				return (backlink.href == decodedURL);
+				return (   backlink.href == decodedURL
+						&& backlink.closest(exclusionSelector) == null);
 			}).first;
 		}
 	}
