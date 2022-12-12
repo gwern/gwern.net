@@ -427,6 +427,39 @@ function fillTemplate (template, data = null, context = null, options = { }) {
 	return outputDocument;
 }
 
+/*****************************************************************************/
+/*	Construct synthetic include-link. The optional ‘link’ argument may be 
+	a string, a URL object, or an HTMLAnchorElement, in which case it, or its 
+	.href property, is used as the ‘href’ attribute of the synthesized 
+	include-link.
+
+	If the ‘link’ argument is an HTMLAnchorElement and has a ‘data-url-original’ 
+	attribute, then the same attribute is assigned the same value on the
+	synthesized include-link.
+ */
+function synthesizeIncludeLink(link, attributes, properties) {
+	let includeLink = newElement("A", attributes, properties);
+
+	if (link == null)
+		return includeLink;
+
+	if (typeof link == "string")
+		includeLink.href = link;
+	else if (   link instanceof HTMLAnchorElement
+			 || link instanceof URL)
+		includeLink.href = link.href;
+
+	if (   link instanceof HTMLAnchorElement
+		&& link.dataset.urlOriginal)
+		includeLink.dataset.urlOriginal = link.dataset.urlOriginal;
+
+	//	In case no include classes have been added yet...
+	if (Transclude.isIncludeLink(includeLink) == false)
+		includeLink.classList.add("include");
+
+	return includeLink;
+}
+
 /*************************************************************************/
 /*	Return appropriate loadLocation for given include-link. (May be null.)
  */
@@ -883,6 +916,30 @@ Transclude = {
     /*  Retrieved content processing.
      */
 
+	//	Used in: Transclude.blockContext
+	blockElementSelectors: [
+		[	".footnote",
+			".sidenote"
+			].join(", "),
+		".aux-links-append",
+		"li",
+		"p",
+		[	"section",
+			".markdownBody > *",
+			".include-wrapper-block"
+			].join(", ")
+	],
+
+	//	Called by: Transclude.sliceContentFromDocument
+	blockContext: (element) => {
+		let block = null;
+		for (selector of Transclude.blockElementSelectors)
+			if (block = element.closest(selector))
+				break;
+
+		return block;
+	},
+
     //  Called by: Transclude.transclude
     sliceContentFromDocument: (sourceDocument, includeLink) => {
         //  If it’s a full page, extract just the page content.
@@ -1033,9 +1090,9 @@ Transclude = {
 													 && targetElement.classList.contains("include-identify-not") == false)));
 				if (   includeLink.classList.contains("include-block-context")
 					&& isBlockTranscludeLink == false) {
-					let nearestBlock = nearestBlockElement(targetElement);
-					if (nearestBlock) {
-						content = newDocument(nearestBlock);
+					let blockContext = Transclude.blockContext(targetElement);
+					if (blockContext) {
+						content = newDocument(blockContext);
 					} else {
 						content = newDocument(targetElement);
 					}
