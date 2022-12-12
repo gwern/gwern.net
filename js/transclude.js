@@ -932,11 +932,14 @@ Transclude = {
      */
 
 	//	Used in: Transclude.blockContext
-	blockElementSelectors: [
+	specificBlockElementSelectors: [
 		[	".footnote",
 			".sidenote"
 			].join(", "),
-		".aux-links-append",
+		".aux-links-append"
+	],
+
+	generalBlockElementSelectors: [
 		"li",
 		"p",
 		"blockquote",
@@ -946,16 +949,18 @@ Transclude = {
 			].join(", ")
 	],
 
-	blockContextMinimumLength: 200,
+	generalBlockContextMinimumLength: 200,
 
 	//	Called by: Transclude.sliceContentFromDocument
 	blockContext: (element) => {
 		let block = null;
-		for (selector of Transclude.blockElementSelectors)
+		let selectors = [ ...Transclude.specificBlockElementSelectors, ...Transclude.generalBlockElementSelectors ];
+		for (selector of selectors)
 			if (block = element.closest(selector) ?? block)
-				if (   block.textContent.length > Transclude.blockContextMinimumLength
-					|| (   block.parentNode == null
-						|| block.parentNode instanceof Element == false))
+// 				if (   Transclude.specificBlockElementSelectors.includes(selector)
+// 					|| block.textContent.length > Transclude.generalBlockContextMinimumLength
+// 					|| (   block.parentNode == null
+// 						|| block.parentNode instanceof Element == false))
 					break;
 
 		return ([ "BLOCKQUOTE" ].includes(block.tagName)

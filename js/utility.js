@@ -427,23 +427,25 @@ function lazyLoadObserver(f, target, options = { }) {
     if (target == null)
         return;
 
-    if (   options.root == null
-        && (options.threshold ?? 0) == 0
-        && (options.rootMargin ?? "0px").includes("-") == false
-        && isOnScreen(target)) {
-        f();
-        return;
-    }
+	requestAnimationFrame(() => {
+		if (   options.root == null
+			&& (options.threshold ?? 0) == 0
+			&& (options.rootMargin ?? "0px").includes("-") == false
+			&& isOnScreen(target)) {
+			f();
+			return;
+		}
 
-    let observer = new IntersectionObserver((entries) => {
-        if (entries.first.isIntersecting == false)
-            return;
+		let observer = new IntersectionObserver((entries) => {
+			if (entries.first.isIntersecting == false)
+				return;
 
-        f();
-        observer.disconnect();
-    }, options);
+			f();
+			observer.disconnect();
+		}, options);
 
-    observer.observe(target);
+		observer.observe(target);
+	});
 }
 
 /*******************************************************************************/

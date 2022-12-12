@@ -543,7 +543,7 @@ Extracts = {
     scrollToTargetedElementInPopFrame: (target, popFrame) => {
         GWLog("Extracts.scrollToTargetedElementInPopFrame", "extracts.js", 3);
 
-        if (target.hash > "") {
+        if (isAnchorLink(target)) {
             requestAnimationFrame(() => {
             	let element = null;
                 if (   popFrame
