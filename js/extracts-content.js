@@ -236,12 +236,6 @@ Extracts = { ...Extracts,
 			firstImage.decoding = "sync";
 		}
 
-		//	Make collapse blocks expand on hover.
-		popFrame.document.querySelectorAll(".collapse").forEach(collapseBlock => {
-			collapseBlock.classList.add("expand-on-hover");
-			updateDisclosureButtonTitleForCollapseBlock(collapseBlock);
-		});
-
 		//	Strip a single collapse block encompassing the top level content.
 		if (   isOnlyChild(popFrame.body.firstElementChild)
 			&& popFrame.body.firstElementChild.classList.contains("collapse"))

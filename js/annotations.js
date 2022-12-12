@@ -459,12 +459,6 @@ Annotations = { ...Annotations,
 					if (collapseBlock)
 						collapseBlock.classList.add("aux-links-container");
 				});
-
-				//	Rewrite collapse blocks to make them expand on hover.
-				referenceEntry.querySelectorAll(".collapse").forEach(collapseBlock => {
-					collapseBlock.classList.add("expand-on-hover");
-					updateDisclosureButtonTitleForCollapseBlock(collapseBlock);
-				});
 			},
 
 			basePathname: "/metadata/annotations/",
