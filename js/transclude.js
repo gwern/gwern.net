@@ -1090,9 +1090,7 @@ Transclude = {
         } else if (isAnchorLink(includeLink)) {
             //  Simple element tranclude.
             let targetElement = targetElementInDocument(includeLink, content);
-            if (targetElement == null) {
-            	content = newDocument();
-            } else {
+            if (targetElement) {
 				//	Optional block context.
             	/*	Check for whether the target element is *itself* an
             		include-link which will bring in a content block. If so,
@@ -1114,6 +1112,8 @@ Transclude = {
 				} else {
 					content = newDocument(targetElement);
 				}
+            } else {
+            	content = newDocument();
             }
         }
 
