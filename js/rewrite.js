@@ -131,37 +131,6 @@ function versionedAssetURL(pathname) {
 				   + versionString);
 }
 
-/********************************/
-/*	Used in nearestBlockElement()
- */
-GW.defaultBlockElementSelectors = [
-	[	".footnote",
-		".sidenote"
-		].join(", "),
-	".aux-links-append",
-	"li",
-	"p",
-	[	"section",
-		".markdownBody > *",
-		".include-wrapper-block"
-		].join(", ")
-];
-
-/********************************************************************/
-/*	Return the nearest block element that contains the given element.
- */
-function nearestBlockElement(element, blockElementSelectors = GW.defaultBlockElementSelectors) {
-	if (typeof blockElementSelectors == "string")
-		blockElementSelectors = [ blockElementSelectors ];
-
-	let block = null;
-	for (selector of blockElementSelectors)
-		if (block = element.closest(selector))
-			break;
-
-	return block;
-}
-
 /****************************************************************************/
 /*	Return the element, in the target document, pointed to by the hash of the
 	given link (which may be a URL object or an HTMLAnchorElement).
@@ -260,39 +229,6 @@ function originalURLForLink(link) {
 	}
 
 	return originalURL;
-}
-
-/*****************************************************************************/
-/*	Construct synthetic include-link. The optional ‘link’ argument may be 
-	a string, a URL object, or an HTMLAnchorElement, in which case it, or its 
-	.href property, is used as the ‘href’ attribute of the synthesized 
-	include-link.
-
-	If the ‘link’ argument is an HTMLAnchorElement and has a ‘data-url-original’ 
-	attribute, then the same attribute is assigned the same value on the
-	synthesized include-link.
- */
-function synthesizeIncludeLink(link, attributes, properties) {
-	let includeLink = newElement("A", attributes, properties);
-
-	if (link == null)
-		return includeLink;
-
-	if (typeof link == "string")
-		includeLink.href = link;
-	else if (   link instanceof HTMLAnchorElement
-			 || link instanceof URL)
-		includeLink.href = link.href;
-
-	if (   link instanceof HTMLAnchorElement
-		&& link.dataset.urlOriginal)
-		includeLink.dataset.urlOriginal = link.dataset.urlOriginal;
-
-	//	In case no include classes have been added yet...
-	if (Transclude.isIncludeLink(includeLink) == false)
-		includeLink.classList.add("include");
-
-	return includeLink;
 }
 
 /******************************************************************************/
