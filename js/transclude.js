@@ -1327,7 +1327,7 @@ Transclude = {
 			/*	Add loading spinner for whole-page transcludes and link
 				bibliography entries.
 			 */
-			if (   link.hash == ""
+			if (   isAnchorLink(link) == false
 				&& Content.contentTypes.localPage.matchesLink(link)) {
 				link.classList.add("include-spinner");
 			} else {
