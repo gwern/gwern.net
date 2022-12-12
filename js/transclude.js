@@ -355,9 +355,25 @@ function fillTemplate (template, data = null, context = null, options = { }) {
 	if (data == null)
 		data = template;
 
-	//	If the data source is a string, assume it to be HTML and extract data.
-	if (typeof data == "string")
+	/*	If the data source is a string, assume it to be HTML and extract data;
+		likewise, if the data source is a DocumentFragment, extract data.
+	 */
+	if (   typeof data == "string"
+		|| data instanceof DocumentFragment)
 		data = templateDataFromHTML(data);
+
+	//	If there’s no data to fill, then just return the template as-is.
+	if ((  Object.entries(data).length
+		 + Object.entries(context).length) == 0) {
+		if (typeof template == "string")
+			template = newDocument(template);
+
+		return template;
+	}
+
+	//	Otherwise, stringify the template, if need be, and proceed...
+	if (typeof template != "string")
+		template = template.innerHTML;
 
 	/*	Data variables specified in the provided context argument (if any)
 		take precedence over the reference data.
@@ -368,17 +384,14 @@ function fillTemplate (template, data = null, context = null, options = { }) {
 				: (data ? data[fieldName] : null));
 	};
 
-	//	Make a copy of the template.
-	let filledTemplate = template;
-
 	//	Line continuations.
-	filledTemplate = filledTemplate.replace(
+	template = template.replace(
 		/>\\\n\s*</gs,
 		(match) => "><"
 	);
 
 	//	Comments.
-	filledTemplate = filledTemplate.replace(
+	template = template.replace(
 		/<\(.+?\)>/gs,
 		(match) => ""
 	);
@@ -389,7 +402,7 @@ function fillTemplate (template, data = null, context = null, options = { }) {
 	let didReplace;
 	do {
 		didReplace = false;
-		filledTemplate = filledTemplate.replace(
+		template = template.replace(
 			/<\[IF([0-9]*)\s+(.+?)\]>(.+?)(?:<\[ELSE\1\]>(.+?))?<\[IF\1END\]>/gs,
 			(match, nestLevel, expr, ifValue, elseValue) => {
 				didReplace = true;
@@ -403,21 +416,23 @@ function fillTemplate (template, data = null, context = null, options = { }) {
 	} while (didReplace);
 
 	//	Data variable substitution.
-	filledTemplate = filledTemplate.replace(
+	template = template.replace(
 		/<\{(.+?)\}>/g,
 		(match, fieldName) => (valueFunction(fieldName) ?? "")
 	);
 
-	let outputDocument = newDocument(filledTemplate);
+	//	Construct DOM tree from filled template.
+	let outputDocument = newDocument(template);
 
+	//	Fire GW.contentDidLoad event, if need be.
 	if (options.fireContentLoadEvent) {
 		let loadEventInfo = {
             container: outputDocument,
             document: outputDocument
         };
 
-		if (context.loadEventInfo)
-			for ([key, value] of Object.entries(context.loadEventInfo))
+		if (options.loadEventInfo)
+			for ([key, value] of Object.entries(options.loadEventInfo))
 				if ([ "container", "document" ].includes(key) == false)
 					loadEventInfo[key] = value;
 
@@ -1201,21 +1216,22 @@ Transclude = {
 
 		//	When data loads (or if it is already loaded), transclude.
 		let processData = (templateName) => {
-			//	Cached document (if applicable).
-			let cachedDocument = Transclude.isAnnotationTransclude(includeLink)
-								 ? null
-								 : Content.cachedDocumentForLink(includeLink);
-
-			//	Reference data (from all sources).
+			//	Reference data.
 			let referenceData = Transclude.isAnnotationTransclude(includeLink)
 								? Annotations.referenceDataForTarget(includeLink)
-								: templateDataFromHTML(cachedDocument);
-			let linkTemplateData = templateDataFromHTML(includeLink);
-			for ([key, value] of Object.entries(linkTemplateData))
-				referenceData[key] = value;
+								: Content.referenceDataForTarget(includeLink).content;
+
+			//	Template.
+			let template = templateName 
+						   ? Transclude.templates[templateName] 
+						   : referenceData;
 
 			//	Template fill context.
-			let context = {
+			let context = templateDataFromHTML(includeLink);
+
+			//	Template fill options.
+			let options = {
+				fireContentLoadEvent: true,
 				loadEventInfo: {
 					source: "transclude",
 					contentType: (Transclude.isAnnotationTransclude(includeLink) ? "annotation" : null),
@@ -1223,24 +1239,8 @@ Transclude = {
 				}
 			};
 
-			//	Fill template, if there’s any reference data to fill with.
-			let content = null;
-			if (Object.entries(referenceData).length > 0) {
-				//	Template fill options.
-				let options = {
-					fireContentLoadEvent: true
-				};
-
-				//	Template.
-				let template = templateName 
-							   ? Transclude.templates[templateName] 
-							   : cachedDocument.innerHTML;
-
-				//	Fill template.
-				content = fillTemplate(template, referenceData, context, options);
-			} else {
-				content = cachedDocument;
-			}
+			//	Fill template.
+			let content = fillTemplate(template, referenceData, context, options);
 
 			//	Slice and include, or else handle failure.
 			if (content) {
