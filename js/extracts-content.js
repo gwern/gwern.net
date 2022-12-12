@@ -194,12 +194,12 @@ Extracts = { ...Extracts,
     //  Called by: Extracts.rewritePopupContent_LOCAL_PAGE
     //  Called by: Extracts.rewritePopinContent (as `rewritePopFrameContent_${targetTypeName}`)
     //  Called by: Extracts.rewritePopupContent (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_LOCAL_PAGE: (popFrame) => {
+    rewritePopFrameContent_LOCAL_PAGE: (popFrame, injectEventInfo = null) => {
         GWLog("Extracts.rewritePopFrameContent_LOCAL_PAGE", "extracts.js", 2);
 
-		if (Transclude.isIncludeLink(popFrame.body.firstElementChild)) {
+		if (injectEventInfo == null) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_LOCAL_PAGE(popFrame);
+				Extracts.rewritePopFrameContent_LOCAL_PAGE(popFrame, info);
 			}, {
 				phase: "rewrite",
 				condition: (info) => (   info.source == "transclude"
@@ -224,9 +224,9 @@ Extracts = { ...Extracts,
 
 		//	Provider-specific rewrites.
 		if (Extracts.popFrameProvider == Popups)
-			Extracts.rewritePopupContent_LOCAL_PAGE(popFrame);
+			Extracts.rewritePopupContent_LOCAL_PAGE(popFrame, injectEventInfo);
 		else // if (Extracts.popFrameProvider == Popins)
-			Extracts.rewritePopinContent_LOCAL_PAGE(popFrame);
+			Extracts.rewritePopinContent_LOCAL_PAGE(popFrame, injectEventInfo);
 
 		//	Make first image load eagerly.
 		let firstImage = (   popFrame.body.querySelector(".page-thumbnail")
@@ -237,9 +237,9 @@ Extracts = { ...Extracts,
 		}
 
 		//	Strip a single collapse block encompassing the top level content.
-		if (   isOnlyChild(popFrame.body.firstElementChild)
-			&& popFrame.body.firstElementChild.classList.contains("collapse"))
-			expandLockCollapseBlock(popFrame.body.firstElementChild);
+		if (   isOnlyChild(injectEventInfo.container.firstElementChild)
+			&& injectEventInfo.container.firstElementChild.classList.contains("collapse"))
+			expandLockCollapseBlock(injectEventInfo.container.firstElementChild);
 
 		//  Scroll to the target.
 		Extracts.scrollToTargetedElementInPopFrame(target, popFrame);
@@ -254,10 +254,10 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: Extracts.rewritePopupContent (as `rewritePopupContent_${targetTypeName}`)
-    rewritePopupContent_LOCAL_PAGE: (popup) => {
+    rewritePopupContent_LOCAL_PAGE: (popup, injectEventInfo = null) => {
         GWLog("Extracts.rewritePopupContent_LOCAL_PAGE", "extracts.js", 2);
 
-		if (Transclude.isIncludeLink(popup.body.firstElementChild)) {
+		if (injectEventInfo == null) {
 			Extracts.rewritePopFrameContent_LOCAL_PAGE(popup);
 			return;
 		}
@@ -280,10 +280,10 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: Extracts.rewritePopinContent (as `rewritePopinContent_${targetTypeName}`)
-    rewritePopinContent_LOCAL_PAGE: (popin) => {
+    rewritePopinContent_LOCAL_PAGE: (popin, injectEventInfo = null) => {
         GWLog("Extracts.rewritePopinContent_LOCAL_PAGE", "extracts.js", 2);
 
-		if (Transclude.isIncludeLink(popin.body.firstElementChild)) {
+		if (injectEventInfo == null) {
 			Extracts.rewritePopFrameContent_LOCAL_PAGE(popup);
 			return;
 		}
@@ -515,12 +515,12 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_CITATION: (popFrame) => {
+    rewritePopFrameContent_CITATION: (popFrame, injectEventInfo = null) => {
         GWLog("Extracts.rewritePopFrameContent_CITATION", "extracts.js", 2);
 
-		if (Transclude.isIncludeLink(popFrame.body.firstElementChild)) {
+		if (injectEventInfo == null) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_CITATION(popFrame);
+				Extracts.rewritePopFrameContent_CITATION(popFrame, info);
 			}, {
 				phase: "rewrite",
 				condition: (info) => (   info.source == "transclude"
@@ -603,12 +603,12 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `rewritePopupContent_${targetTypeName}`)
-    rewritePopupContent_CITATION_BACK_LINK: (popup) => {
+    rewritePopupContent_CITATION_BACK_LINK: (popup, injectEventInfo = null) => {
         let target = popup.spawningTarget;
 
-		if (Transclude.isIncludeLink(popup.body.firstElementChild)) {
+		if (injectEventInfo == null) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopupContent_CITATION_BACK_LINK(popup);
+				Extracts.rewritePopupContent_CITATION_BACK_LINK(popup, info);
 			}, {
 				phase: "rewrite",
 				condition: (info) => (   info.source == "transclude"
@@ -617,7 +617,7 @@ Extracts = { ...Extracts,
 			});
 
 			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popFrame.body, {
+			Transclude.triggerTranscludesInContainer(popup.body, {
 				source: "Extracts.rewritePopupContent_CITATION_BACK_LINK",
 				container: popup.body,
 				document: popup.document,
@@ -952,16 +952,31 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_LOCAL_CODE_FILE: (popFrame) => {
+    rewritePopFrameContent_LOCAL_CODE_FILE: (popFrame, injectEventInfo = null) => {
         let target = popFrame.spawningTarget;
 
-		//	Trigger transcludes.
-		Transclude.triggerTranscludesInContainer(popFrame.body, {
-            source: "Extracts.rewritePopFrameContent_LOCAL_CODE_FILE",
-            container: popFrame.body,
-            document: popFrame.document,
-            context: "popFrame"
-        });
+		if (injectEventInfo == null) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_LOCAL_CODE_FILE(popFrame, info);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
+				source: "Extracts.rewritePopFrameContent_LOCAL_CODE_FILE",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
 
         //  Mark truncated code blocks, so layout can be adjusted properly.
         if (popFrame.body.lastElementChild.tagName == "P")

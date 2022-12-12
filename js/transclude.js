@@ -939,20 +939,28 @@ Transclude = {
 		".aux-links-append",
 		"li",
 		"p",
+		"blockquote",
 		[	"section",
 			".markdownBody > *",
 			".include-wrapper-block"
 			].join(", ")
 	],
 
+	blockContextMinimumLength: 200,
+
 	//	Called by: Transclude.sliceContentFromDocument
 	blockContext: (element) => {
 		let block = null;
 		for (selector of Transclude.blockElementSelectors)
-			if (block = element.closest(selector))
-				break;
+			if (block = element.closest(selector) ?? block)
+				if (   block.textContent.length > Transclude.blockContextMinimumLength
+					|| (   block.parentNode == null
+						|| block.parentNode instanceof Element == false))
+					break;
 
-		return block;
+		return ([ "BLOCKQUOTE" ].includes(block.tagName)
+				? block.childNodes
+				: block);
 	},
 
     //  Called by: Transclude.transclude
@@ -1090,9 +1098,7 @@ Transclude = {
         } else if (isAnchorLink(includeLink)) {
             //  Simple element tranclude.
             let targetElement = targetElementInDocument(includeLink, content);
-            if (targetElement == null) {
-            	content = newDocument();
-            } else {
+            if (targetElement) {
 				//	Optional block context.
             	/*	Check for whether the target element is *itself* an
             		include-link which will bring in a content block. If so,
@@ -1114,6 +1120,8 @@ Transclude = {
 				} else {
 					content = newDocument(targetElement);
 				}
+            } else {
+            	content = newDocument();
             }
         }
 
@@ -1327,7 +1335,7 @@ Transclude = {
 			/*	Add loading spinner for whole-page transcludes and link
 				bibliography entries.
 			 */
-			if (   link.hash == ""
+			if (   isAnchorLink(link) == false
 				&& Content.contentTypes.localPage.matchesLink(link)) {
 				link.classList.add("include-spinner");
 			} else {

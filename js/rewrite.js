@@ -136,18 +136,27 @@ function versionedAssetURL(pathname) {
 	given link (which may be a URL object or an HTMLAnchorElement).
  */
 function targetElementInDocument(link, doc) {
-	let element = (   link instanceof HTMLAnchorElement
-				   && Annotations.isAnnotatedLink(link))
-				  ? doc.querySelector(selectorFromHash("#" + link.dataset.targetId))
-				  : doc.querySelector(selectorFromHash(link.hash));
+	if (isAnchorLink(link) == false)
+		return null;
 
-	if (element)
-		return element;
+	let element = null;
+	if (   link instanceof HTMLAnchorElement
+		&& link.dataset.targetId > "")
+		element = doc.querySelector(selectorFromHash("#" + link.dataset.targetId));
 
-	let backlinkTargetURL = link.getQueryVariable("backlinkTargetURL");
-	if (backlinkTargetURL > "") {
-		let escapedURL = CSS.escape(decodeURIComponent(backlinkTargetURL));
-		element = doc.querySelector(`a[href*='${escapedURL}']`);
+	if (   element == null
+		&& (   link instanceof HTMLAnchorElement
+			&& Annotations.isAnnotatedLink(link)) == false)
+		element = doc.querySelector(selectorFromHash(link.hash));
+
+	if (element == null) {
+		let backlinkTargetURL = link.getQueryVariable("backlinkTargetURL");
+		if (backlinkTargetURL > "") {
+			let decodedURL = decodeURIComponent(backlinkTargetURL);
+			element = Array.from(doc.querySelectorAll(`a[href*='${CSS.escape(decodedURL)}']`)).filter(backlink => {
+				return (backlink.href == decodedURL);
+			}).first;
+		}
 	}
 
 	if (element == null)
@@ -166,10 +175,15 @@ function targetElementInDocument(link, doc) {
 	`data-target-id` attribute.)
  */
 function isAnchorLink(link) {
-	if (   link instanceof HTMLAnchorElement
-		&& Annotations.isAnnotatedLink(link)) {
-		return (   link.dataset.targetId > ""
-				|| link.getQueryVariable("backlinkTargetURL") > "");
+	if (link instanceof HTMLAnchorElement) {
+		if (Annotations.isAnnotatedLink(link)) {
+			return (   link.dataset.targetId > ""
+					|| link.getQueryVariable("backlinkTargetURL") > "");
+		} else {
+			return (   link.hash > ""
+					|| link.dataset.targetId > ""
+					|| link.getQueryVariable("backlinkTargetURL") > "");
+		}
 	} else {
 		return (   link.hash > ""
 				|| link.getQueryVariable("backlinkTargetURL") > "");
@@ -180,8 +194,7 @@ function isAnchorLink(link) {
 /*	Removes all anchor data from the given link.
  */
 function stripAnchorsFromLink(link) {
-	if (   link instanceof HTMLAnchorElement
-		&& Annotations.isAnnotatedLink(link))
+	if (link instanceof HTMLAnchorElement)
 		link.removeAttribute("data-target-id");
 
 	link.hash = "";
@@ -194,13 +207,15 @@ function stripAnchorsFromLink(link) {
  */
 function anchorsForLink(link) {
 	if (   link instanceof HTMLAnchorElement
-		&& Annotations.isAnnotatedLink(link)
 		&& link.dataset.targetId > "") {
 		return link.dataset.targetId.split(" ").map(x => `#${x}`);
 	} else if (link.getQueryVariable("backlinkTargetURL") > "") {
 		return [ link.getQueryVariable("backlinkTargetURL") ];
-	} else {
+	} else if ((   link instanceof HTMLAnchorElement
+				&& Annotations.isAnnotatedLink(link)) == false) {
 		return link.hash.match(/#[^#]*/g) ?? [ ];
+	} else {
+		return [ ];
 	}
 }
 
