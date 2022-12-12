@@ -949,6 +949,10 @@ Transclude = {
 			].join(", ")
 	],
 
+	unwrapBlockElementSelector: [
+		"blockquote"
+	].join(", "),
+
 	generalBlockContextMinimumLength: 200,
 
 	//	Called by: Transclude.sliceContentFromDocument
@@ -958,12 +962,12 @@ Transclude = {
 		for (selector of selectors)
 			if (block = element.closest(selector) ?? block)
 				if (   Transclude.specificBlockElementSelectors.includes(selector)
-					|| block.textContent.length > Transclude.blockContextMinimumLength
+					|| block.textContent.length > Transclude.generalBlockContextMinimumLength
 					|| (   block.parentNode == null
 						|| block.parentNode instanceof Element == false))
 					break;
 
-		return ([ "BLOCKQUOTE" ].includes(block.tagName)
+		return (block.closest(Transclude.unwrapBlockElementSelector) == block
 				? block.childNodes
 				: block);
 	},
