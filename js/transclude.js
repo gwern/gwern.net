@@ -939,20 +939,28 @@ Transclude = {
 		".aux-links-append",
 		"li",
 		"p",
+		"blockquote",
 		[	"section",
 			".markdownBody > *",
 			".include-wrapper-block"
 			].join(", ")
 	],
 
+	blockContextMinimumLength: 200,
+
 	//	Called by: Transclude.sliceContentFromDocument
 	blockContext: (element) => {
 		let block = null;
 		for (selector of Transclude.blockElementSelectors)
-			if (block = element.closest(selector))
-				break;
+			if (block = element.closest(selector) ?? block)
+				if (   block.textContent.length > Transclude.blockContextMinimumLength
+					|| (   block.parentNode == null
+						|| block.parentNode instanceof Element == false))
+					break;
 
-		return block;
+		return ([ "BLOCKQUOTE" ].includes(block.tagName)
+				? block.childNodes
+				: block);
 	},
 
     //  Called by: Transclude.transclude
