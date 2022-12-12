@@ -371,6 +371,7 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
 /**********************/
 /*  Collapsible tables.
  */
+ 
 .table-wrapper > .collapse {
     margin: 0;
     min-height: unset;
@@ -390,6 +391,7 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
 /****************************/
 /*  Collapses in blockquotes.
  */
+ 
 blockquote :not(section).collapse:not(.expanded),
 blockquote :not(section).collapse.expanded {
     padding-left: 1.25em;
@@ -438,6 +440,19 @@ blockquote .disclosure-button::before {
 blockquote .disclosure-button::after {
     color: var(--GW-collapse-in-blockquote-disclosure-button-bottom-part-text-color);
 }
+
+/***********************/
+/*  Collapse edge cases.
+ */
+
+li > :not(section).collapse {
+    margin-left: calc(-1 * var(--GW-list-left-padding));
+}
+li > :not(section).collapse.expanded,
+li > :not(section).collapse:not(.expanded) {
+    padding-left: var(--GW-list-left-padding);
+}
+
 
 /************/
 /* HEADINGS */
@@ -761,9 +776,11 @@ a:hover,
 
 ul,
 ol {
+	--GW-list-left-padding: 2.5em;
+
     list-style-type: none;
     margin: 1.25em 0 1.5em 0;
-    padding: 0 0 0 2.5em;
+    padding: 0 0 0 var(--GW-list-left-padding);
 }
 #markdownBody ul,
 #markdownBody ol {
@@ -796,7 +813,7 @@ ul > li::before {
 @media all and (max-width: 649px) {
     ul,
     ol {
-        padding: 0 0 0 1.75em;
+        --GW-list-left-padding: 1.75em;
     }
 }
 
@@ -1677,7 +1694,7 @@ section.footnotes > hr:first-child.highlighted::before {
 
 #markdownBody .sidenote ul,
 #markdownBody .sidenote ol {
-    padding: 0 0 0 1.75em;
+	--GW-list-left-padding: 1.75em;
 }
 
 #markdownBody .sidenote li {
@@ -5130,8 +5147,9 @@ section.highlight-fading::before {
 }
 
 ol.link-bibliography-list-compact {
+	--GW-list-left-padding: 2.25em;
+
     list-style-type: lower-alpha;
-    padding-left: 1.75em;
 }
 ol.link-bibliography-list-compact > li::marker {
     font-family: var(--GW-monospaced-font-stack);
