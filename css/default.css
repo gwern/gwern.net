@@ -5714,6 +5714,31 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     bottom: 0;
 }
 
+/*****************/
+/*	Block context.
+ */
+.markdownBody a.targeted {
+    position: relative;
+    display: inline-block;
+    height: 1.5em;
+    z-index: 1;
+    text-indent: 0;
+}
+.markdownBody a.targeted::before {
+    content: "";
+    position: absolute;
+    width: calc(100% + 0.5em);
+    height: 115%;
+    left: calc(-0.4em);
+    top: -15%;
+    z-index: -1;
+    border-color: transparent;
+    border-style: double;
+    border-width: 3px;
+    border-color: var(--GW-footnote-ref-highlight-box-shadow-color);
+    outline: none;
+}
+
 
 /***********/
 /* CONSOLE */
