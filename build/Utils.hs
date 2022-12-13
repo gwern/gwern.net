@@ -68,6 +68,11 @@ toMarkdown abst = let clean = runPure $ do
                                   Left e -> error $ ppShow e ++ ": " ++ abst
                                   Right output -> output
 
+toPandoc :: String -> Pandoc
+toPandoc abst = let clean = runPure $ readHtml def{readerExtensions=pandocExtensions} $ T.pack abst
+                in case clean of
+                     Left e -> error $ ppShow e ++ ": " ++ abst
+                     Right output -> output
 
 -- Add or remove a class to a Link or Span; this is a null op if the class is already present or it
 -- is not a Link/Span.

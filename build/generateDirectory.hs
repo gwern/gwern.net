@@ -34,7 +34,7 @@ import Tags (tagsToLinksSpan, listTagDirectories, abbreviateTag)
 import LinkBacklink (getBackLinkCheck, getSimilarLinkCheck, getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy)
-import Utils (replace, writeUpdatedFile, printRed)
+import Utils (replace, writeUpdatedFile, printRed, toPandoc)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -102,7 +102,8 @@ generateDirectory md dirs dir'' = do
   let untitledLinksSection  = generateListItems untitledLinks
 
   -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnailText'
-  let imageFirst = take 1 $ extractImages (Pandoc nullMeta titledLinksSections)
+  let imageFirst = take 1 $ concatMap (\(_,(_,_,_,_,_,abstract),_,_,_) -> extractImages (toPandoc abstract)) links'
+
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst)) ++ "\n"
   let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if captionText /= "" then captionText else if altText /= "" then altText else "") (head imageFirst))) ++ "'\n"
 

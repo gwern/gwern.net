@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-12-11 12:29:07 gwern"
+# When:  Time-stamp: "2022-12-13 13:25:33 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -68,7 +68,7 @@ else
           s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ignored=irrelevant' ''
 
           ## name/entity consistency:
-          s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant';
+          s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant'; s ' CIFAR10' 'CIFAR-10'
 
           ## abbreviation consistency:
           s '(ie,' '(ie.'; s '(ie ' '(ie. '; s '(i.e.,' '(ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
@@ -387,8 +387,8 @@ else
                    -e '^link-bibliography-append$' -e '^expand-on-hover$' -e '^include-block-context$'; }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
-    λ(){ echo "$PAGES_ALL" | xargs --max-args=500 grep -F --with-filename -e ")'s " -e "}'s " -e '">?' | \
-             grep -F --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">';
+    λ(){ echo "$PAGES_ALL" | xargs --max-args=500 grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
+             grep -F -e ")'s " -e "}'s " -e '">?';
          echo "$PAGES_ALL" | xargs --max-args=500 grep -E --with-filename --color=always -e '<a .*href=".*">\?';
        }
     wrap λ "Punctuation like possessives should go *inside* the link (unless it is an apostrophe in which case it should go outside due to Pandoc bug #8381)."
@@ -413,7 +413,7 @@ else
        grep -F --invert-match -e 'cssExtension: drop-caps-cheshire' -e 'cssExtension: drop-caps-cheshire reader-mode' -e 'cssExtension: drop-caps-de-zs' -e 'cssExtension: drop-caps-goudy' -e 'cssExtension: drop-caps-goudy reader-mode' -e 'cssExtension: drop-caps-kanzlei' -e 'cssExtension: "drop-caps-kanzlei reader-mode"' -e 'cssExtension: drop-caps-yinit'; }
     wrap λ "Incorrect drop caps in Markdown."
 
-    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | grep -F --invert-match 'Lorem-code.page' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 "grep --color=always -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out Lorem-code.page's deliberate CSS test-case use of it in the syntax-highlighting section
+    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | grep -F --invert-match -e 'Lorem-code.page' -e 'AB-testing.page' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 "grep --color=always -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out Lorem-code.page's deliberate CSS test-case use of it in the syntax-highlighting section
     wrap λ "Broken code in Markdown."
 
     λ(){ find ./ -type f -name "*.page" | parallel --max-args=500 "grep -F --with-filename -e '<span class=\"supsub\">' -e 'class=\"subsup\"><sup>' --"; }
@@ -743,6 +743,11 @@ else
     λ(){ curl --silent 'https://www.gwern.net/' | tr -d '­' | grep -F --quiet 'This Is The Website</span> of <strong>Gwern Branwen</strong>' || echo "/ content-check failed";
          curl --silent 'https://www.gwern.net/Zeo'   | tr -d '­' | grep -F --quiet 'lithium orotate' || echo "/Zeo Content-check failed"; }
     wrap λ "Known-content check of index/Zeo"
+
+    ## check that tag-directories have the right thumbnails (ie. *not* the fallback thumbnail):
+    λ(){ curl --silent 'https://www.gwern.net/docs/sociology/index' 'https://www.gwern.net/docs/psychology/index' 'https://www.gwern.net/docs/economics/index' | \
+             grep -F 'https://www.gwern.net/static/img/logo/logo-whitebg-large-border.png-530px.jpg'; }
+    wrap λ "Tag-directories missing their automatically-extracted-from-annotation thumbnails & instead having the site-wide default thumbnail?"
 
     ## did any of the key pages mysteriously vanish from the live version?
     linkchecker --threads=5 --check-extern --recursion-level=1 'https://www.gwern.net/'
