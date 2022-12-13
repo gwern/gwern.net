@@ -241,6 +241,16 @@ Extracts = { ...Extracts,
 			&& injectEventInfo.container.firstElementChild.classList.contains("collapse"))
 			expandLockCollapseBlock(injectEventInfo.container.firstElementChild);
 
+		/*	In the case where the spawning link points to a specific element
+			within the transcluded content, but we’re transcluding the full 
+			page and not just the block context of the targeted element, 
+			transclude.js has not marked the targeted element for us already.
+			So we must do it here.
+		 */
+		if (   isAnchorLink(target)
+			&& popFrame.classList.contains("full-page"))
+			targetElementInDocument(target, popFrame.document).classList.add("targeted");
+
 		//  Scroll to the target.
 		Extracts.scrollToTargetedElementInPopFrame(target, popFrame);
 

@@ -1125,6 +1125,9 @@ Transclude = {
 				} else {
 					content = newDocument(targetElement);
 				}
+
+				//	Mark targeted element, for styling purposes.
+				targetElementInDocument(includeLink, content).classList.add("targeted");
             } else {
             	content = newDocument();
             }
