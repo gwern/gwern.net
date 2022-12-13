@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-12-08 12:41:00 gwern"
+When:  Time-stamp: "2022-12-12 19:05:26 gwern"
 License: CC-0
 -}
 
@@ -1328,7 +1328,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("([0-9]) [x×] 10[-–—]([0-9]+)", "\\1 × 10<sup>−\\2</sup>")
          , ("([0-9]) [x×] 10\\([-–—]([0-9]+)\\)", "\\1 × 10<sup>−\\2</sup>")
          , ("<sup>-([0-9]+)</sup>", "<sup>−\\1</sup>") -- eg. '10<sup>-7</sup>', HYPHEN to MINUS SIGN
-         , ("([0-9]+%?)-([0-9]+)", "\\1–\\2")
+         , (" ([0-9]+%?)-([0-9]+)", " \\1–\\2")
+         , ("([0-9]+%?)-([0-9]+) ", "\\1–\\2 ")
          , ("([0-9]) %", "\\1%")
          , ("([.0-9]+)[xX]", "\\1×")
          , ("=-\\.([.0-9]+)", " = -0.\\1")
@@ -1644,6 +1645,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<span class=\"math inline\">\\(S^<em>(0)\\)</span>", "<em>S</em><sup>✱</sup>(0)")
          , ("<span class=\"math inline\">\\(S^</em>(0.8)\\)</span>", "<em>S</em><sup>✱</sup>(0.8)")
          , ("<span class=\"math inline\">\\(1 - \\frac{1}{e}\\)</span>", "1 − 1⁄<em>e</em>")
+         , ("<span class=\"math inline\">\\(N \\times T\\)</span>", "<em>N</em> × <em>T</em>")
          , (" N pixels", " <em>N</em> pixels")
          , ("a n layer", "a <em>n</em> layer")
          , (" n-step", " <em>n</em>-step")
