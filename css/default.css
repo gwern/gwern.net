@@ -1000,6 +1000,9 @@ figure.width-full {
         max-width: calc(50% - 1.5em);
         margin: 0.5em 1.5em 1em 0;
     }
+    figure.outline-not {
+    	margin-bottom: 0.5em;
+    }
 }
 
 /* try to get edge-to-edge images on mobile to maximize horizontal space usage */
