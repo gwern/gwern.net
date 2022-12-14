@@ -1351,11 +1351,10 @@ Transclude = {
             return;
 
 		if (link.classList.containsAnyOf([ "include-spinner", "include-spinner-not" ]) == false) {
-			/*	Add loading spinner for whole-page transcludes and link
-				bibliography entries.
+			/*	Add loading spinner for link bibliography entries and also any
+				include-link not within a collapsed block.
 			 */
-			if (   isAnchorLink(link) == false
-				&& Content.contentTypes.localPage.matchesLink(link)) {
+			if (isWithinCollapsedBlock(link) == false) {
 				link.classList.add("include-spinner");
 			} else {
 				let containingAuxLinksBlock = link.closest(".aux-links-list, .aux-links-append");
