@@ -5739,6 +5739,15 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     outline: none;
 }
 
+.markdownBody a.footnote-ref.targeted {
+    display: initial;
+}
+.markdownBody a.footnote-ref.targeted::before {
+    height: 125%;
+    left: calc(-0.25em - 3px);
+    top: -3px;
+}
+
 
 /***********/
 /* CONSOLE */
