@@ -681,6 +681,18 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (event
     }, null, eventInfo.container);
 }, "rewrite", (info) => info.fullWidthPossible);
 
+/*************************************************************************/
+/*  Fix code block styling glitch by setting code block height to rendered 
+	height, eliminating fractional pixels.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.rectifyCodeBlockHeights = (eventInfo) => {
+    GWLog("rectifyCodeBlockHeights", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("pre").forEach(preBlock => {
+		preBlock.style.height = preBlock.offsetHeight + "px";
+	});
+}, ">rewrite");
+
 
 /***********/
 /* COLUMNS */
