@@ -91,9 +91,10 @@ Popups = {
 				return;
 			}
 
-			//	Bind mouseenter/mouseleave events.
+			//	Bind mouseenter/mouseleave/mousedown events.
 			target.addEventListener("mouseenter", Popups.targetMouseEnter);
 			target.addEventListener("mouseleave", Popups.targetMouseLeave);
+			target.addEventListener("mousedown", Popups.targetMouseDown);
 
 			//  Set prepare function.
 			target.preparePopup = prepareFunction;
@@ -130,9 +131,10 @@ Popups = {
 				return;
 			}
 
-			//	Unbind existing mouseenter/mouseleave events, if any.
+			//	Unbind existing mouseenter/mouseleave/mousedown events, if any.
 			target.removeEventListener("mouseenter", Popups.targetMouseEnter);
 			target.removeEventListener("mouseleave", Popups.targetMouseLeave);
+			target.removeEventListener("mousedown", Popups.targetMouseDown);
 
 			//  Clear timers for target.
 			Popups.clearPopupTimers(target);
@@ -1503,7 +1505,7 @@ Popups = {
 	/*  Event listeners.
 		*/
 
-    /*	The “user moved mouse out of popup” mouseleave event.
+   /*	The “user moved mouse out of popup” mouseleave event.
     	*/
     //	Added by: Popups.injectPopup
 	popupMouseLeave: (event) => {
@@ -1908,6 +1910,33 @@ Popups = {
 
 		if (event.target.popup)
 			Popups.setPopupFadeTimer(event.target);
+	},
+
+     /*	The “user (left- or right-) clicked target” mousedown event.
+    	*/
+    //	Added by: Popups.addTargetsWithin
+	targetMouseDown: (event) => {
+		GWLog("Popups.targetMouseDown", "popups.js", 2);
+
+		if (window.popupBeingDragged)
+			return;
+
+		/*	Unlike ‘mouseenter’ and ‘mouseleave’, ‘mousedown’ behaves like 
+			‘mouseover’/‘mouseout’ in that it attaches to the innermost element,
+			which might not be our spawning target (but instead some descendant
+			element); we must find the actual spawning target.
+		 */
+		let target = event.target.closest(".spawns-popup");
+
+		//	Cancel spawning of popups from the target.
+		Popups.clearPopupTimers(target);
+
+		//	Despawn any (ephemeral) popups already spawned from the target.
+		if (target.popup) {
+			Popups.getPopupAncestorStack(target.popup).reverse().forEach(popupInStack => {
+				Popups.despawnPopup(popupInStack);
+			});
+		}
 	},
 
 	/*  The keyup event.
