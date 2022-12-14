@@ -547,11 +547,22 @@ function includeContent(includeLink, content) {
     //  Inject wrapper.
     insertWhere.parentNode.insertBefore(wrapper, insertWhere);
 
-    //  Delete footnotes section, if any, when transcluding into a full page.
+    /*  When transcluding into a full page, delete various “metadata” sections
+    	such as page-metadata, footnotes, etc. (Save references to some.)
+     */
 	let newContentFootnotesSection = wrapper.querySelector("#footnotes");
-    if (   newContentFootnotesSection
-    	&& containingDocument.querySelector("#page-metadata") != null)
-		newContentFootnotesSection.remove();
+    if (containingDocument.querySelector("#page-metadata") != null) {
+    	let metadataSectionsSelector = [
+    		"#page-metadata",
+    		"#footnotes",
+    		"#further-reading",
+    		"#similars-section",
+    		"#link-bibliography-section"
+    	].join(", ");
+    	wrapper.querySelectorAll(metadataSectionsSelector).forEach(section => {
+    		section.remove();
+    	});
+    }
 
     //  ID transplantation.
     if (   includeLink.id > ""
@@ -607,13 +618,12 @@ function includeContent(includeLink, content) {
 
 	//	Intelligent rectification of contained HTML structure.
 	if (   wrapper.parentElement != null
-		&& wrapper.parentElement != wrapper.parentElement.closest("#footnotes > ol")) {
-		wrapper.querySelectorAll("li.footnote").forEach(footnote => {
-			footnote.querySelectorAll(".footnote-self-link, .footnote-back").forEach(link => {
-				link.remove();
-			});
-			unwrap(footnote);
+		&& wrapper.parentElement != wrapper.parentElement.closest("#footnotes > ol")
+		&& wrapper.firstElementChild == wrapper.firstElementChild.closest("li.footnote")) {
+		wrapper.firstElementChild.querySelectorAll(".footnote-self-link, .footnote-back").forEach(link => {
+			link.remove();
 		});
+		unwrap(wrapper.firstElementChild);
 	}
 
     //  Intelligent rectification of surrounding HTML structure.
