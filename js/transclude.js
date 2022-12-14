@@ -605,6 +605,17 @@ function includeContent(includeLink, content) {
     if (replaceContainer == false)
         includeLink.remove();
 
+	//	Intelligent rectification of contained HTML structure.
+	if (   wrapper.parentElement != null
+		&& wrapper.parentElement != wrapper.parentElement.closest("#footnotes > ol")) {
+		wrapper.querySelectorAll("li.footnote").forEach(footnote => {
+			footnote.querySelectorAll(".footnote-self-link, .footnote-back").forEach(link => {
+				link.remove();
+			});
+			unwrap(footnote);
+		});
+	}
+
     //  Intelligent rectification of surrounding HTML structure.
     if (   Transclude.isAnnotationTransclude(includeLink)
         && replaceContainer == false) {

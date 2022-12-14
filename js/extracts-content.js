@@ -550,14 +550,6 @@ Extracts = { ...Extracts,
 		}
 
 		//	REAL REWRITES BEGIN HERE
-
-		//	Remove extraneous elements.
-		popFrame.document.querySelectorAll(".footnote-self-link, .footnote-back").forEach(element => {
-			element.remove();
-		});
-
-		//	Fully unwrap, keeping only footnote content.
-		unwrap(popFrame.document.querySelector("li.footnote, .sidenote-inner-wrapper"));
     },
 };
 
