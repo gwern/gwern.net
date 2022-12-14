@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-12-13 13:25:33 gwern"
+# When:  Time-stamp: "2022-12-14 12:56:41 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -68,7 +68,7 @@ else
           s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ignored=irrelevant' ''
 
           ## name/entity consistency:
-          s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant'; s ' CIFAR10' 'CIFAR-10'
+          s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant'; s ' CIFAR10' 'CIFAR-10'; s 'TyDi QA' 'TyDiQA'
 
           ## abbreviation consistency:
           s '(ie,' '(ie.'; s '(ie ' '(ie. '; s '(i.e.,' '(ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
@@ -389,7 +389,7 @@ else
 
     λ(){ echo "$PAGES_ALL" | xargs --max-args=500 grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
              grep -F -e ")'s " -e "}'s " -e '">?';
-         echo "$PAGES_ALL" | xargs --max-args=500 grep -E --with-filename --color=always -e '<a .*href=".*">\?';
+         echo "$PAGES_ALL" | grep -F -v 'Hafu' | xargs --max-args=500 grep -E --with-filename --color=always -e '<a .*href=".*">\?';
        }
     wrap λ "Punctuation like possessives should go *inside* the link (unless it is an apostrophe in which case it should go outside due to Pandoc bug #8381)."
     ## NOTE: 8381 <https://github.com/jgm/pandoc/issues/8381> is a WONTFIX by jgm, so no solution but to manually check for it. Fortunately, it is rare.
@@ -624,21 +624,27 @@ else
 
  if [ "$SLOW" ]; then
     # test a random page modified in the past month for W3 validation & dead-link/anchor errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
-    CHECK_RANDOM=$(find . -type f -mtime -31 -name "*.page" | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/www\.gwern\.net\/\1/' \
+    CHECK_RANDOM_PAGE=$(find . -type f -mtime -31 -name "*.page" | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/www\.gwern\.net\/\1/' \
                        | shuf | head -1 | xargs urlencode)
+    CHECK_RANDOM_ANNOTATION=$(find metadata/annotations/ -maxdepth 1 -name "*.html" -type f -size +2k | \
+                                  shuf | head -1 | \
+                                  sed -e 's/metadata\/annotations\/\(.*\)/\1/' | xargs urlencode | \
+                                  sed -e 's/^\(.*\)$/https:\/\/www\.gwern\.net\/metadata\/annotations\/\1/')
     ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
             --header "X-Auth-Email:gwern@gwern.net" \
             --header "Authorization: Bearer $CLOUDFLARE_CACHE_TOKEN" \
             --header "Content-Type: application/json" \
-            --data "{\"files\":[\"$CHECK_RANDOM\"]}" > /dev/null; )
+            --data "{\"files\":[\"$CHECK_RANDOM_PAGE\", \"$CHECK_RANDOM_ANNOTATION\"]}" > /dev/null; )
     # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
-    (sleep 20s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM"; sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM&no_referer=on"; )
+    (sleep 30s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE";
+     sleep 10s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
+     sleep 10s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on"; )
 
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
-    if ((RANDOM % 100 > 99)); then $X_BROWSER "https://wave.webaim.org/report#/$CHECK_RANDOM"; fi
+    if ((RANDOM % 100 > 99)); then $X_BROWSER "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"; fi
 
     # some of the live popups have probably broken, since websites keep adding X-FRAME options...
-    if ((RANDOM % 100 > 99)); then ghci -istatic/build/ ./static/build/LinkLive.hs  -e 'linkLiveTestHeaders'; fi
+    if ((RANDOM % 100 > 99)); then ghci -istatic/build/ ./static/build/LinkLive.hs -e 'linkLiveTestHeaders'; fi
 
     # Testing post-sync:
     bold "Checking MIME types, redirects, content…"
