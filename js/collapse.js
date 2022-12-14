@@ -240,13 +240,18 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 
 				disclosureButton.checked = true;
 				disclosureButton.stateChangedHandler(event);
-				disclosureButton.classList.add("expanded-temp");
+
+				collapseBlock.classList.add("expanded-temp");
 
 				let removeUnhoverHandler;
 				let collapseBlockMouseleaveHandler = (event) => {
+					if (collapseBlock.classList.contains("expanded-temp") == false)
+						return;
+
 					disclosureButton.checked = false;
 					disclosureButton.stateChangedHandler(event);
-					disclosureButton.classList.remove("expanded-temp");
+
+					collapseBlock.classList.remove("expanded-temp");
 
 					removeUnhoverHandler();
 				};
@@ -255,7 +260,7 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 				}, "mouseenter");
 
 				let collapseBlockClickHandler = (event) => {
-					disclosureButton.classList.remove("expanded-temp");
+					collapseBlock.classList.remove("expanded-temp");
 
 					removeUnhoverHandler();
 					collapseBlock.removeEventListener("click", collapseBlockClickHandler);
