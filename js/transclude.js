@@ -503,14 +503,12 @@ function includeContent(includeLink, content) {
                       ? includeLink.parentElement
                       : includeLink;
 
-	/*  We don’t retry failed loads. We also skip include-links for which a
-		transclude operation is already in progress or has completed (which
-		might happen if we’re given an include-link to process, but that
-		link has already been replaced by its transcluded content and has
-		been removed from the document).
+	/*  We skip include-links for which a transclude operation is already in 
+		progress or has completed (which might happen if we’re given an 
+		include-link to process, but that link has already been replaced by its 
+		transcluded content and has been removed from the document).
 	 */
 	if (includeLink.classList.containsAnyOf([
-		"include-loading-failed",
 		"include-in-progress",
 		"include-complete"
 	])) return;
@@ -572,6 +570,9 @@ function includeContent(includeLink, content) {
         idBearerBlock.append(...wrapper.childNodes);
         wrapper.append(idBearerBlock);
     }
+
+	//	Clear loading state of all include-links.
+	Transclude.allIncludeLinksInContainer(wrapper).forEach(Transclude.clearLinkState);
 
     //  Fire GW.contentDidInject event.
 	let flags = GW.contentDidInjectEventFlags.clickable;
@@ -1167,16 +1168,12 @@ Transclude = {
     transclude: (includeLink, now = false) => {
         GWLog("Transclude.transclude", "transclude.js", 2);
 
-       /*  We don’t retry failed loads. We also skip include-links for which a
-            transclude operation is already in progress or has completed (which
-            might happen if we’re given an include-link to process, but that
-            link has already been replaced by its transcluded content and has
-            been removed from the document).
+		/*  We don’t retry failed loads, nor do we replicate ongoing loads.
          */
-        if (includeLink.classList.containsAnyOf([
-            "include-loading-failed",
-            "include-in-progress",
-            "include-complete"
+        if (   now == false
+        	&& includeLink.classList.containsAnyOf([
+        	"include-loading",
+            "include-loading-failed"
         ])) return;
 
 		/*  We exclude cross-origin transclusion for security reasons, but from
@@ -1208,6 +1205,9 @@ Transclude = {
             return;
         }
 
+        //  Set loading state.
+        Transclude.setLinkStateLoading(includeLink);
+
         //  Transclusion is lazy by default.
         if (   now == false
             && includeLink.classList.contains("include-strict") == false) {
@@ -1222,9 +1222,6 @@ Transclude = {
 
             return;
         }
-
-        //  Set loading state (for visual/interaction purposes).
-        Transclude.setLinkStateLoading(includeLink);
 
         /*  Check whether provider object is loaded; if not, then wait until it 
         	loads to attempt transclusion.
@@ -1360,6 +1357,10 @@ Transclude = {
         if (Transclude.isIncludeLink(link) == false)
             return;
 
+		//	Designate loading state.
+        link.classList.add("include-loading");
+
+		//	Intelligently add loading spinner, unless override class set.
 		if (link.classList.containsAnyOf([ "include-spinner", "include-spinner-not" ]) == false) {
 			/*	Add loading spinner for link bibliography entries and also any
 				include-link not within a collapsed block.
@@ -1375,12 +1376,15 @@ Transclude = {
 			}
 		}
 
-        link.classList.add("include-loading");
+		//	Disable link icon, if loading spinner present.
         if (   link.classList.contains("include-spinner")
         	&& link.textContent > "")
             link.classList.add("icon-not");
 
+		//	Disable normal link functionality.
         link.onclick = () => { return false; };
+
+		//	Set temporary tooltip.
         link.savedTitle = link.title ?? "";
         link.title = "Content is loading. Please wait.";
     },
@@ -1390,14 +1394,11 @@ Transclude = {
         if (Transclude.isIncludeLink(link) == false)
             return;
 
+		//	Record load failure.
         link.swapClasses([ "include-loading", "include-loading-failed" ], 1);
-        if (link.textContent > "")
-            link.classList.remove("icon-not");
-        link.onclick = null;
-        if (link.savedTitle != null) {
-            link.title = link.savedTitle;
-            link.savedTitle = null;
-        }
+
+		//	Revert to normal link functionality.
+		Transclude.resetLinkBehavior(link);
 
         //  Fire event, if need be.
         if (link.delayed) {
@@ -1406,7 +1407,36 @@ Transclude = {
                 document: link.eventInfo.document
             });
         }
-    }
+    },
+
+    //  Called by: includeContent
+	clearLinkState: (link) => {
+        if (Transclude.isIncludeLink(link) == false)
+            return;
+
+		//	Clear classes.
+		link.classList.remove("include-loading", "inclide-loading-failed");
+
+		//	Revert to normal link functionality.
+		Transclude.resetLinkBehavior(link);
+	},
+
+	//	Called by: Transclude.setLinkStateLoadingFailed
+	//	Called by: Transclude.clearLinkState
+	resetLinkBehavior: (link) => {
+		//	Re-enable link icon.
+        if (link.textContent > "")
+            link.classList.remove("icon-not");
+
+		//	Re-enable normal link behavior.
+        link.onclick = null;
+
+		//	Replace normal tooltip.
+        if (link.savedTitle != null) {
+            link.title = link.savedTitle;
+            link.savedTitle = null;
+        }
+	}
 };
 
 /***************************/

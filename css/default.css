@@ -5708,13 +5708,12 @@ a.include-loading.include-spinner:not(:empty)::after {
     width: var(--spinner-size);
     height: var(--spinner-size);
     margin: 0 0.1em 0 0.2em;
+    top: unset;
+    bottom: 0;
 }
 a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     padding: 0;
     background-position: 0 0;
-    position: relative;
-    top: unset;
-    bottom: 0;
 }
 
 /*****************/
