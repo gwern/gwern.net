@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-12-12 19:05:26 gwern"
+When:  Time-stamp: "2022-12-14 19:34:06 gwern"
 License: CC-0
 -}
 
@@ -1392,6 +1392,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<i>", "<em>")
          , ("</i>", "</em>")
            -- math substitutions:
+         , ("<span class=\"math inline\">\\((x, f(10))\\)</span>", "(<em>x</em>, <em>f</em>(10))")
          , ("<span class=\"math inline\">\\(2^{\\Omega(k)}\\)</span>", "2<sup>Ω(<em>k</em>)</sup>")
          , ("<span class=\"math inline\">\\(k = \\log n\\)</span>", "<em>k</em> = log <em>n</em>")
          , ("<span class=\"math inline\">\\(\\perp\\)</span>", "⟂")
