@@ -425,7 +425,7 @@ linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start wi
        , ("https://www.theatlantic.com/magazine/archive/2006/08/nightfall/305030/", "leithauser-2006-nightfall")
        , ("https://www.thisfursonadoesnotexist.com/", "arfafax-tfdne")
        , ("https://www.thiswaifudoesnotexist.net/", "gwern-twdne-website")
-       , ("/docs/statistics/bias/2021-yang.pdf", "yang-et-al-2021-bargraph")
+       , ("/docs/psychology/cognitive-bias/2021-yang.pdf", "yang-et-al-2021-bargraph")
        , ("https://arxiv.org/abs/2110.04725#inspur", "wu-et-al-2021-yuan-1")
        , ("https://www.medrxiv.org/content/10.1101/2022.06.24.22276728.full", "chen-et-al-2022-rare-variants")
        , ("https://arxiv.org/abs/2210.11399#google", "tay-et-al-2022-upalm")

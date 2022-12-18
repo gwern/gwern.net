@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-11-29 11:43:45 gwern"
+When:  Time-stamp: "2022-12-17 20:09:38 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -384,7 +384,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Richard Hamming|Hamming)", "https://en.wikipedia.org/wiki/Richard_Hamming")
         , ("(SAD|Seasonal [Aa]ffective [Dd]isorder)", "https://en.wikipedia.org/wiki/Seasonal_affective_disorder")
         , ("(SCZ|[Ss]chizophreni[ac]s?)", "https://en.wikipedia.org/wiki/Schizophrenia")
-        , ("(BPD|[Bb]ipolar [Dd]isorder|[Bb]ipolar)", "https://en.wikipedia.org/wiki/Bipolar_disorder")
+        , ("(BPD|[Bb]ipolar [Dd]isorders?|[Bb]ipolar)", "https://en.wikipedia.org/wiki/Bipolar_disorder")
         , ("(SGD|[Ss]tochastic [Gg]radient [Dd]escent)", "https://en.wikipedia.org/wiki/Stochastic_gradient_descent")
         , ("(SMPY|Study [Oo]f Mathematically Precocious Youth)", "/SMPY")
         , ("(SNP|[Ss]ingle[ -][Nn]ucleotide [Pp]olymorphism)", "https://en.wikipedia.org/wiki/Single-nucleotide_polymorphism")
@@ -832,7 +832,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("R\\. ?A\\. ?Lafferty", "https://en.wikipedia.org/wiki/R._A._Lafferty")
         , ("R2D2", "https://openreview.net/forum?id=r1lyTjAqYX#deepmind")
         , ("RAND", "https://en.wikipedia.org/wiki/RAND_Corporation")
-        , ("REALM", "https://kentonl.com/pub/gltpc.2020.pdf#google")
+        , ("REALM", "https://arxiv.org/abs/2002.08909#google")
         , ("REINFORCE", "/docs/reinforcement-learning/model-free/1992-williams.pdf")
         , ("ROUGE", "https://en.wikipedia.org/wiki/ROUGE_(metric)")
         , ("R[Ee][Ll][Uu]", "https://en.wikipedia.org/wiki/Rectifier_(neural_networks)")
@@ -952,7 +952,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Universal Transformers?", "https://arxiv.org/abs/1807.03819#googledeepmind")
         , ("Unsong", "https://unsongbook.com/")
         , ("Usenet", "https://en.wikipedia.org/wiki/Usenet")
-        , ("V100", "https://en.wikipedia.org/wiki/Volta_(microarchitecture)#Products")
+        , ("V100s?", "https://en.wikipedia.org/wiki/Volta_(microarchitecture)#Products")
         , ("VGG(-?1[169])", "https://arxiv.org/abs/1409.1556") -- VGG-11/VGG-16/VGG-19
         , ("([Vv]ector [Qq]uantized [Vv]ariational [Aa]uto[Ee]ncoder|VQ-VAE)(-?[:graph:]+)?.?", "https://arxiv.org/abs/1906.00446#deepmind")
         , ("Vi[Zz][Dd]oom", "https://arxiv.org/abs/1605.02097")
@@ -1270,7 +1270,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("([Ee]xecutive [Ff]unction(.|ing)?|EFs?)", "https://en.wikipedia.org/wiki/Executive_functions")
         , ("(Rich Sutton|Rich S. Sutton|Richard S. Sutton|Richard Sutton|Sutton)", "https://en.wikipedia.org/wiki/Richard_S._Sutton")
         , ("[Oo]bject.detection", "https://en.wikipedia.org/wiki/Object_detection")
-        , ("([Aa]utomated|[Ii]mage|[Pp]anoptic|[Pp]ixel|[S]emantic) segmentation", "https://en.wikipedia.org/wiki/Image_segmentation")
+        , ("([Aa]utomated|[Ii]mage|[Pp]anoptic|[Pp]ixel|[S]emantic) segmentations?", "https://en.wikipedia.org/wiki/Image_segmentation")
         , ("[Bb]ounding.box.?.?", "https://en.wikipedia.org/wiki/Minimum_bounding_box")
         , ("[Pp]ropensity[ -][Ss]core(s|[ -][Mm]atching|analysis|model|methods?)?", "https://en.wikipedia.org/wiki/Propensity_score_matching")
         , ("([Cc]atnip|[Nn]epeta [cc]ataria|[Cc]at nip|[Cc]atmint)", "https://en.wikipedia.org/wiki/Catnip")

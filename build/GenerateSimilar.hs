@@ -299,7 +299,7 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
                -- We require a title, to display as a link; and an abstract, to make it worth recommending (if it has no abstract, the embedding will also probably be garbage):
                Just ("",_,_,_,_,_)  -> []
                Just (_,_,_,_,_,"")  -> []
-               Just (title,_,_,doi,_,_) -> let doiEscaped = urlEncode doi -- TEST: this is to work around /docs/sunk-cost/2001-nolet.pdf's crazy DOI '10.1890/0012-9658(2001)082[1655:SVITDB]2.0.CO;2' but might break other DOIs?
+               Just (title,_,_,doi,_,_) -> let doiEscaped = urlEncode doi -- TEST: this is to work around /docs/psychology/cognitive-bias/sunk-cost/2001-nolet.pdf's crazy DOI '10.1890/0012-9658(2001)082[1655:SVITDB]2.0.CO;2' but might break other DOIs?
                                                doiQuery = "doi:" ++ doiEscaped
                                                title' = simplifiedString title -- need to strip out HTML formatting like "<em>Peep Show</em>—The Most Realistic Portrayal of Evil Ever Made"
                                                titleQuery = urlEncode $ "\"" ++ title' ++ "\""

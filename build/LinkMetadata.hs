@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-12-14 19:34:06 gwern"
+When:  Time-stamp: "2022-12-17 17:57:00 gwern"
 License: CC-0
 -}
 
@@ -1514,6 +1514,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<span class=\"math inline\">\\(1/2 H_n\\)</span>", "1⁄2<em>H<sub>n</sub></em>")
          , ("<span class=\"math inline\">\\(H_n \\sim \\ln n\\)</span>", "<em>H<sub>n</sub></em> ln <em>n</em>")
          , ("<span class=\"math inline\">\\(f_\\theta\\)</span>", "<em>f</em><sub>θ</sub>")
+         , ("<span class=\"math inline\">\\(\\epsilon <em>n</em> \\log <em>n</em> + \\U0001D4AA(<em>n</em>)\\)</span>", "ε <em>n</em> log <em>n</em> + 𝒪(<em>n</em>)")
          , ("<math>A</math>", "<em>A</em>")
          , ("<math>B</math>", "<em>B</em>")
          , ("<math>C</math>", "<em>C</em>")
@@ -1521,7 +1522,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" O(sqrt(n)) ", " 𝒪(√<em>n</em>) ")
          , ("O(log n) ", "𝒪(log <em>n</em>) ")
          , (" O(log n)", " 𝒪(log <em>n</em>)")
-         , (" O(n log n) ", " 𝒪(<em>n</em> log <em>n</em>) ")
+         , (" O(n log n)", " 𝒪(<em>n</em> log <em>n</em>)")
+         , (" O<em>n</em> log n)", " 𝒪(<em>n</em> log <em>n</em>)")
          , ("<span class=\"math inline\">\\(O(K^2 \\log T)\\)</span>", "𝒪(<em>K</em><sup>2</sup> log <em>T</em>)")
          , ("<span class=\"math inline\">\\(O(K \\log T + K^2 \\log \\log T)\\)</span>", "𝒪(<em>K</em> log <em>T</em> + <em>K</em><sup>2</sup> log log <em>T</em>)")
          , ("<span class=\"math inline\">\\(Q\\)</span>", "<em>Q</em>")
