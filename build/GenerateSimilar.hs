@@ -1,15 +1,15 @@
 #!/usr/bin/env runghc
 {-# LANGUAGE OverloadedStrings #-}
 
--- dependencies: pandoc, iconv, filestore, vector, rp-tree...
+-- dependencies: pandoc, filestore, vector, rp-tree...
 
 module GenerateSimilar where
 
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str, Strong), Format(..), runPure, Pandoc(..), nullAttr)
 import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T  (append, intercalate, length, pack, strip, take, unlines, unpack, Text)
+import qualified Data.Text as T  (append, intercalate, isPrefixOf, length, pack, strip, take, unlines, unpack, Text)
 import Data.List ((\\), intercalate,  nub, isPrefixOf, isSuffixOf)
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, fromMaybe)
 import qualified Data.Map.Strict as M (filter, keys, lookup, fromList, toList, difference, withoutKeys)
 import System.Directory (doesFileExist, renameFile)
 import System.IO.Temp (emptySystemTempFile)
@@ -24,9 +24,6 @@ import System.FilePath (takeBaseName)
 import Control.Monad (when)
 import Data.Set as S (fromList)
 
-import qualified Codec.Text.IConv as I (Fuzzy(Transliterate), convertFuzzy)
-import qualified Data.ByteString.Lazy.Char8 as BL (pack, unpack)
-
 import qualified Data.Vector as V (toList, Vector)
 import Control.Monad.Identity (runIdentity, Identity)
 import Data.RPTree (knn, forest, metricL2, rpTreeCfg, fpMaxTreeDepth, fpDataChunkSize, fpProjNzDensity, fromListDv, DVector, Embed(..), RPForest, serialiseRPForest)
@@ -39,7 +36,7 @@ import LinkMetadata (readLinkMetadata, authorsTruncate, parseRawInline)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, replaceManyT, safeHtmlWriterOptions, printGreen, printStdErr, anyPrefixT)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, safeHtmlWriterOptions, printGreen, printStdErr, anyPrefixT)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
@@ -62,6 +59,10 @@ bestNEmbeddings = 20
 -- how many characters long should a formatted annotation be before it is worth trying to embed?
 minimumLength :: Int
 minimumLength = 700
+
+-- how long is too long? OA guesstimates 1 BPE = 4 characters on average (https://beta.openai.com/tokenizer), so text-embedding-ada-002's 8191 BPEs ~ 32764 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
+maximumLength :: Int
+maximumLength = 32700
 
 -- how few suggestions is too few to bother the reader with the existence of a 'Similar Links' link? 1 is way too few, but 5 might be demanding too much?
 minimumSuggestions :: Int
@@ -111,11 +112,46 @@ missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, 
                                in map (\u -> (u, fromJust $ M.lookup u md)) missing
 
 -- convert an annotated item into a single text string: concatenate the useful metadata in an OA API-aware way.
--- We need to avoid Unicode, newlines, HTML, and try to write everything in an 'obvious' way that a NN model will understand 'out of the box' without finetuning.
+-- We need to avoid HTML, and try to write everything in an 'obvious' way that a NN model will understand 'out of the box' without finetuning.
 -- Example of a processed text string for embedding:
 --
--- "'Neural Machine Translation of Rare Words with Subword Units' (https://arxiv.org/abs/1508.07909), by Rico Sennrich, Barry Haddow, Alexandra Birch (2015). Keywords: ai/nn/tokenization. Neural machine translation (NMT) models typically operate with a fixed vocabulary, but translation is an open-vocabulary problem. Previous work addresses the translation of out-of-vocabulary words by backing off to a dictionary. In this paper, we introduce a simpler and more effective approach, making the NMT model capable of open-vocabulary translation by encoding rare and unknown words as sequences of subword units. This is based on the intuition that various word classes are translatable via smaller units than words, for instance names (via character copying or transliteration), compounds (via compositional translation), and cognates and loanwords (via phonological and morphological transformations). We discuss the suitability of different word segmentation techniques, including simple character n-gram models and a segmentation based on the byte pair encoding compression algorithm, and empirically show that subword models improve over a back-off dictionary baseline for the WMT 15 translation tasks English-German and English-Russian by 1.1 and 1.3 BLEU, respectively. References: 1. https://en.wikipedia.org/wiki/BLEU"
--- "'A real-life Lord of the Flies: the troubling legacy of the Robbers Cave experiment; In the early 1950s, the psychologist Muzafer Sherif brought together a group of boys at a US summer camp - and tried to make them fight each other. Does his work teach us anything about our age of resurgent tribalism? [an extract from The Lost Boys]' (https://www.theguardian.com/science/2018/apr/16/a-real-life-lord-of-the-flies-the-troubling-legacy-of-the-robbers-cave-experiment), by David Shariatmadari (2018). Keywords: statistics/bias. In 50s Middle Grove, things didn't go according to plan either, though the surprise was of a different nature. Despite his pretence of leaving the 11-year-olds to their own devices, Sherif and his research staff, posing as camp counsellors and caretakers, interfered to engineer the result they wanted. He believed he could make the two groups, called the Pythons and the Panthers, sworn enemies via a series of well-timed 'frustration exercises'. These included his assistants stealing items of clothing from the boys' tents and cutting the rope that held up the Panthers' homemade flag, in the hope they would blame the Pythons. One of the researchers crushed the Panthers' tent, flung their suitcases into the bushes and broke a boy's beloved ukulele. To Sherif's dismay, however, the children just couldn't be persuaded to hate each other...The robustness of the boy's 'civilised' values came as a blow to Sherif, making him angry enough to want to punch one of his young academic helpers. It turned out that the strong bonds forged at the beginning of the camp weren't easily broken. Thankfully, he never did start the forest fire - he aborted the experiment when he realised it wasn't going to support his hypothesis. But the Rockefeller Foundation had given Sherif $38,000. In his mind, perhaps, if he came back empty-handed, he would face not just their anger but the ruin of his reputation. So, within a year, he had recruited boys for a second camp, this time in Robbers Cave state park in Oklahoma. He was determined not to repeat the mistakes of Middle Grove. ...At Robbers Cave, things went more to plan. After a tug-of-war in which they were defeated, the Eagles burned the Rattler's flag. Then all hell broke loose, with raids on cabins, vandalism and food fights. Each moment of confrontation, however, was subtly manipulated by the research team. They egged the boys on, providing them with the means to provoke one another - who else, asks Perry in her book, could have supplied the matches for the flag-burning? ...Sherif was elated. And, with the publication of his findings that same year, his status as world-class scholar was confirmed. The 'Robbers Cave experiment' is considered seminal by social psychologists, still one of the best-known examples of 'realistic conflict theory'. It is often cited in modern research. But was it scientifically rigorous? And why were the results of the Middle Grove experiment - where the researchers couldn't get the boys to fight - suppressed? 'Sherif was clearly driven by a kind of a passion', Perry says. 'That shaped his view and it also shaped the methods he used. He really did come from that tradition in the 30s of using experiments as demonstrations - as a confirmation, not to try to find something new.' In other words, think of the theory first and then find a way to get the results that match it. If the results say something else? Bury them...'I think people are aware now that there are real ethical problems with Sherif's research', she tells me, 'but probably much less aware of the backstage [manipulation] that I've found. And that's understandable because the way a scientist writes about their research is accepted at face value.' The published report of Robbers Cave uses studiedly neutral language. 'It's not until you are able to compare the published version with the archival material that you can see how that story is shaped and edited and made more respectable in the process.' That polishing up still happens today, she explains. 'I wouldn't describe him as a charlatan...every journal article, every textbook is written to convince, persuade and to provide evidence for a point of view. So I don't think Sherif is unusual in that way.' References: 1. $1953. Reverse citations: "Does Mouse Utopia Exist?", Gwern Branwen (2019). - "The Replication Crisis: Flaws in Mainstream Science", Gwern Branwen (2010)"
+-- > ‘Littlewood’s Law and the Global Media’, by Gwern Branwen (2018). Keywords: insight-porn, philosophy/epistemology, politics, psychology/cognitive-bias, psychology/personality/psychopathy, sociology/technology, statistics/bias.
+-- >
+-- > Selection effects in media become increasingly strong as populations and media increase, meaning that rare datapoints driven by unusual processes such as the mentally ill or hoaxers are increasingly unreliable as evidence of anything at all and must be ignored. At scale, anything that can happen will happen a small but nonzero times.
+-- >
+-- > Online & mainstream media and social networking have become increasingly misleading as to the state of the world by focusing on ‘stories’ and ‘events’ rather than trends and averages. This is because as the global population increases and the scope of media increases, media’s urge for narrative focuses on the most extreme outlier datapoints—but such datapoints are, at a global scale, deeply misleading as they are driven by unusual processes such as the mentally ill or hoaxers.
+-- >
+-- > At a global scale, anything that can happen will happen a small but nonzero times: this has been epitomized as “Littlewood’s Law: in the course of any normal person’s life, miracles happen at a rate of roughly one per month.” This must now be extended to a global scale for a hyper-networked global media covering anomalies from 8 billion people—all coincidences, hoaxes, mental illnesses, psychological oddities, extremes of continuums, mistakes, misunderstandings, terrorism, unexplained phenomena etc. Hence, there will be enough ‘miracles’ that all media coverage of events can potentially be composed of nothing but extreme outliers, even though it would seem like an ‘extraordinary’ claim to say that all media-reported events may be flukes.
+-- >
+-- > This creates an epistemic environment deeply hostile to understanding reality, one which is dedicated to finding arbitrary amounts of and amplifying the least representative datapoints.
+-- >
+-- > Given this, it is important to maintain extreme skepticism of any individual anecdotes or stories which are selectively reported but still claimed (often implicitly) to be representative of a general trend or fact about the world. Standard techniques like critical thinking, emphasizing trends & averages, and demanding original sources can help fight the biasing effect of news.
+-- >
+-- > -   Littlewood’s Law
+-- >     -   Politics
+-- >     -   Technology
+-- >     -   Science
+-- >     -   Media
+-- >     -   Tails at Scales
+-- > -   Epistemological Implications
+-- > -   Coping
+-- > -   See Also
+-- > -   External Links
+-- > -   Appendix
+-- >     -   Origin Of “Littlewood’s Law of Miracles”
+-- >
+-- > Reverse citations:
+-- >
+-- > - "Blackmail fail", Gwern Branwen (2013)
+-- > - "Hydrocephalus and Intelligence: The Hollow Men", Gwern Branwen (2015)
+-- > - "Leprechaun Hunting & Citogenesis", Gwern Branwen (2014)
+-- > - "Origin of ‘Littlewood’s Law of Miracles’", Gwern Branwen (2019)
+-- > - "One Man’s Modus Ponens", Gwern Branwen (2012)
+-- > - "How Should We Critique Research?", Gwern Branwen (2019)
+-- > - "On Seeing Through and Unseeing: The Hacker Mindset", Gwern Branwen (2012)
+-- > - "Lizardman Constant in Surveys", Gwern Branwen (2013)
+-- > - "Book Reviews", Gwern Branwen (2013)
+-- >
 formatDoc :: (String,MetadataItem) -> T.Text
 formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
     let document = T.pack $ replace "\n" "\n\n" $ unlines [
@@ -126,29 +162,22 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
 
           (if null tags then "" else "Keywords: " ++ intercalate ", " tags ++ "."),
 
-          replace "<hr />" "" abst]
+          replace "\n[]\n" "" $ replace "<hr />" "" abst]
         parsedEither = let parsed = runPure $ readHtml def{readerExtensions = pandocExtensions } document
                        in case parsed of
                           Left e -> error $ "Failed to parse HTML document into Pandoc AST: error: " ++ show e ++ " : " ++ show mi ++ " : " ++ T.unpack document
                           Right p -> p
         -- create a numbered list of URL references inside each document to expose it to the embedding model, as 'simplifiedDoc' necessarily strips URLs:
-        documentURLs = filter (\(u,_) -> anyPrefixT u ["/", "http"]) $ extractURLsAndAnchorTooltips parsedEither
-        documentURLsText = if null documentURLs then "" else "References:\n" `T.append` T.unlines (map (\(n, (url,titles)) -> T.pack n `T.append` ". " `T.append` url `T.append` " " `T.append` (T.intercalate ", " $ tail titles)) $ zip (map show [(1::Int)..]) documentURLs)
+        documentURLs = filter (\(u,_) -> not (T.pack path `T.isPrefixOf` u) && anyPrefixT u ["/", "http"]) $ extractURLsAndAnchorTooltips parsedEither
+        documentURLsText = if null documentURLs then "" else "\nReferences:\n\n" `T.append` T.unlines (map (\(n, (url,titles)) -> T.pack n `T.append` ". " `T.append` url `T.append` " " `T.append` (T.intercalate ", " $ tail titles)) $ zip (map show [(1::Int)..]) documentURLs)
         -- simple plaintext ASCII-ish version, which hopefully is more comprehensible to NN models than full-blown HTML
         plainText = simplifiedDoc parsedEither `T.append` documentURLsText
-        -- post-processing: 'We suggest replacing newlines (\n) in your input with a single space, as we have observed inferior results when newlines are present.' https://beta.openai.com/docs/api-reference/embeddings/create
-        -- GPT-3 apparently doesn't do well with Unicode punctuation either (they get a bad BPE expansion factor too), so smart quotes are right out.
-        gptPlainText = T.take maxLength $ T.strip $
-                       (T.pack . BL.unpack . I.convertFuzzy I.Transliterate "UTF-8" "ASCII" . BL.pack . T.unpack) $
-                       replaceManyT [("  ", " "), ("\8203",""), ("\8212", " - "), ("–", " - "), ("—", "---"), (" § ", ": "), ("\n"," "), ("  "," "), ("…","..."), ("“","'"), ("”","'"), ("‘","'"), ("’","'"), ("\\",""), ("\"","'"), ("\"","'"), (" ", " "), (" ", " ")] plainText
+        gptPlainText = T.take maximumLength $ T.strip plainText
     in
       gptPlainText
-  where
-    maxLength :: Int
-    maxLength = 7900 -- how long is too long? OA guesstimates 1 BPE = 4 characters on average (https://beta.openai.com/tokenizer), so 2047 BPEs ~ 8192 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
 
 embed :: Embeddings -> Metadata -> Backlinks -> (String,MetadataItem) -> IO Embedding
-embed edb mdb bdb i@(p,_) = do
+embed edb mdb bdb i@(p,_) =
   -- an embedding may already exist for this, and the embedding firing because of a rename. As a heuristic, we check for any existing embedding with the same base filename, to catch cases of '/docs/foo/bar.pdf' → 'docs/foo/baz/bar.pdf'; when we bulk-rename large directories of annotated files, the false-positive embeddings can get expensive!
   if not (null olds) then let (_,b,c,d,e) = head olds in return (p,b,c,d,e)
     else do
@@ -157,12 +186,12 @@ embed edb mdb bdb i@(p,_) = do
                               Nothing -> []
                               Just bl -> map T.unpack bl
             let backlinksMetadata = if null backlinks then "" else
-                                      ". Reverse citations: " ++ (intercalate ". - " $
+                                      "\n\nReverse citations:\n\n- " ++ (intercalate "\n- " $
                                         map (\b -> case M.lookup b mdb of
                                                     Nothing -> ""
                                                     Just (t,a,d,_,_,_) -> "\"" ++ t ++ "\", " ++ authorsTruncate a ++ (if d=="" then "" else " (" ++ take 4 d ++ ")")) backlinks)
 
-            let doc = formatDoc i `T.append` (T.pack backlinksMetadata)
+            let doc = formatDoc i `T.append` T.pack backlinksMetadata
             printGreen "Formatted document as embedded (`embed`):\n" >> printStdErr (T.unpack doc)
             (modelType,embedding) <- oaAPIEmbed doc
             today <- currentDay
@@ -177,7 +206,7 @@ oaAPIEmbed :: T.Text -> IO (String,[Double])
 oaAPIEmbed doc = do (status,stderr,mb) <- runShellCommand "./" Nothing "bash" ["static/build/embed.sh", replace "\n" "\\n" $ -- JSON escaping of newlines
                                                                                                    T.unpack doc]
                     case status of
-                      ExitFailure err -> error $ "Exit Failure: " ++ (intercalate " ::: " [show (T.length doc), T.unpack doc, ppShow status, ppShow err, ppShow mb, show stderr])
+                      ExitFailure err -> error $ "Exit Failure: " ++ intercalate " ::: " [show (T.length doc), T.unpack doc, ppShow status, ppShow err, ppShow mb, show stderr]
                       _ -> do let results = lines $ U.toString mb
                               case results of
                                 [] -> error $ "Failed to read any embed.sh output at all? " ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc ++ "\n" ++ U.toString mb ++ "\n" ++ show stderr
@@ -233,7 +262,7 @@ findNearest f k e = map (\(_,Embed _ p) -> p) $ knnEmbedding f k e
 findN :: Forest -> Int -> Int -> Embedding -> (String,[String])
 findN _ 0 _ e = error ("findN called for k=0; embedding target: " ++ show e)
 findN _ _ 0 e = error ("findN failed to return enough candidates within iteration loop limit. Something went wrong! Embedding target: " ++ show e)
-findN f k iter e@(p1,_,_,_,_) = let results = take bestNEmbeddings $ nub $ filter (\p2 -> not $ blackList p2 && not (p1==p2)) $ findNearest f k e in
+findN f k iter e@(p1,_,_,_,_) = let results = take bestNEmbeddings $ nub $ filter (\p2 -> not $ blackList p2 && p1/=p2) $ findNearest f k e in
                  -- NOTE: 'knn' is the fastest (and most accurate?), but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
                  -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed…)
                  -- If that happens, back off and request more k up to a max of 50.
@@ -287,9 +316,7 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
          let p' = T.pack p
              alreadyLinkedAbstract  = extractLinks False $ T.pack abst
              alreadyLinkedBody      = getForwardLinks bdb p'
-             alreadyLinkedBacklinks = case M.lookup p' bdb of
-                                        Nothing        -> []
-                                        Just backlinks -> backlinks
+             alreadyLinkedBacklinks = fromMaybe [] (M.lookup p' bdb)
              alreadyLinked = [p'] ++ alreadyLinkedAbstract ++ alreadyLinkedBody ++ alreadyLinkedBacklinks
              matchesPruned = filter (\p2 -> T.pack p2 `notElem` alreadyLinked) matches
 
