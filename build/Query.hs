@@ -1,7 +1,7 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2022-12-09 11:08:06 gwern"
+When:  Time-stamp: "2022-12-19 11:56:28 gwern"
 License: CC-0
 -}
 
@@ -59,7 +59,7 @@ extractURLsAndAnchorTooltips = queryWith extractURLSquashed . walk convertInterw
  where
    extractURLSquashed :: Inline -> [(T.Text,[T.Text])]
    extractURLSquashed (Link _ il (u,""))     = [(u, [cleanURL $ inlinesToText il])]
-   extractURLSquashed (Link _ il (u,tooltip)) = [(u, [cleanURL $ inlinesToText il]), (u, [tooltip])]
+   extractURLSquashed (Link _ il (u,tooltip)) = [(u, (cleanURL $ inlinesToText il) : [tooltip])]
    extractURLSquashed _ = []
 
    -- NOTE: apparently due to nested Spans (from the smallcaps) and the RawInline issue (yet again), some link suggestions look like ">ADHD<". Very undesirable replacement targets. So we special-case clean those:
