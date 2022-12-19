@@ -86,7 +86,7 @@ readEmbeddings = readEmbeddingsPath embeddingsPath
 readEmbeddingsPath :: FilePath -> IO Embeddings
 readEmbeddingsPath p = do exists <- doesFileExist p
                           if not exists then return [] else
-                            do eE <- DB.decodeFileOrFail embeddingsPath
+                            do eE <- DB.decodeFileOrFail p
                                case eE of
                                  Right e -> return e
                                  Left err -> error $ show err
@@ -95,7 +95,7 @@ writeEmbeddings :: Embeddings -> IO ()
 writeEmbeddings es = do tempf <- emptySystemTempFile "hakyll-embeddings"
                         DB.encodeFile tempf es
                         es' <- readEmbeddingsPath tempf
-                        if length es' < 1 then error "Embeddings corrupted! Not writing out." else renameFile tempf embeddingsPath
+                        if length es' < 0 then error "Embeddings corrupted! Not writing out." else renameFile tempf embeddingsPath
 
 -- remove all embeddings without a corresponding Metadata entry; this generally means that it is a 'stale' embedding, corresponding to an outdated
 -- URL, and so is a false positive or bloating the embeddings database.
@@ -169,7 +169,9 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
                           Right p -> p
         -- create a numbered list of URL references inside each document to expose it to the embedding model, as 'simplifiedDoc' necessarily strips URLs:
         documentURLs = filter (\(u,_) -> not (T.pack path `T.isPrefixOf` u) && anyPrefixT u ["/", "http"]) $ extractURLsAndAnchorTooltips parsedEither
-        documentURLsText = if null documentURLs then "" else "\nReferences:\n\n" `T.append` T.unlines (map (\(n, (url,titles)) -> T.pack n `T.append` ". " `T.append` url `T.append` " " `T.append` (T.intercalate ", " $ tail titles)) $ zip (map show [(1::Int)..]) documentURLs)
+        documentURLsText = if null documentURLs then "" else "\nReferences:\n\n" `T.append` T.unlines
+          (map (\(n, (url,titles)) -> T.pack n `T.append` ". " `T.append` url `T.append` " " `T.append` (T.intercalate ", " titles)) $
+            zip (map show [(1::Int)..]) documentURLs)
         -- simple plaintext ASCII-ish version, which hopefully is more comprehensible to NN models than full-blown HTML
         plainText = simplifiedDoc parsedEither `T.append` documentURLsText
         gptPlainText = T.take maximumLength $ T.strip plainText
