@@ -16,7 +16,7 @@ import LinkMetadata (readLinkMetadata)
 import Utils (printGreen)
 
 maxEmbedAtOnce :: Int
-maxEmbedAtOnce = 500
+maxEmbedAtOnce = 750
 
 main :: IO ()
 main = do md  <- readLinkMetadata

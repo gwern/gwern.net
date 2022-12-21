@@ -3,7 +3,7 @@
 # similar.sh: get a neural net summary (embedding) of a text string (usually an annotation)
 # Author: Gwern Branwen
 # Date: 2021-12-05
-# When:  Time-stamp: "2022-12-18 15:32:06 gwern"
+# When:  Time-stamp: "2022-12-18 22:09:09 gwern"
 # License: CC-0
 #
 # Shell script to pass a document into the OpenAI API Embedding endpoint ( https://beta.openai.com/docs/api-reference/embeddings
@@ -74,7 +74,7 @@ null" ]; then
             echo "Length error? $TEXT_LENGTH $(echo $RESULT | jq .)" 1>&2
             TEXT_LENGTH="$(($TEXT_LENGTH - 50))"
             TEXT="${TEXT:0:$TEXT_LENGTH}"
-            sleep 2s
+            sleep 1s
         else
             echo "$PARSED"
             break
