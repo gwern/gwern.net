@@ -140,15 +140,19 @@ Annotations = { ...Annotations,
 
 	//	Called by: extracts.annotationForTarget (extracts-annotations.js)
 	waitForDataLoad: (identifier, loadHandler = null, loadFailHandler = null) => {
-
 		if (Annotations.cachedAPIResponseForIdentifier(identifier) == "LOADING_FAILED") {
             if (loadFailHandler)
             	loadFailHandler(identifier);
 
 			return;
 		} else if (Annotations.cachedAPIResponseForIdentifier(identifier)) {
-            if (loadHandler)
-            	loadHandler(identifier);
+			if (Annotations.referenceDataForIdentifier(identifier) == "LOADING_FAILED") {
+				if (loadFailHandler)
+					loadFailHandler(identifier);
+			} else {
+				if (loadHandler)
+					loadHandler(identifier);
+			}
 
 			return;
 		}

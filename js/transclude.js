@@ -352,7 +352,8 @@ function fillTemplate (template, data = null, context = null, options = { }) {
 		return null;
 
 	//	If no data source is provided, use the template itself as data source.
-	if (data == null)
+	if (   data == null
+		|| data == "LOADING_FAILED")
 		data = template;
 
 	/*	If the data source is a string, assume it to be HTML and extract data;
@@ -362,18 +363,17 @@ function fillTemplate (template, data = null, context = null, options = { }) {
 		|| data instanceof DocumentFragment)
 		data = templateDataFromHTML(data);
 
-	//	If there’s no data to fill, then just return the template as-is.
-	if ((  Object.entries(data).length
-		 + Object.entries(context).length) == 0) {
-		if (typeof template == "string")
-			template = newDocument(template);
-
-		return template;
+	//	For non-string templates…
+	if (typeof template != "string") {
+		//	If there’s no data to fill, then just return the template as-is.
+		if ((  Object.entries(data).length
+			 + Object.entries(context).length) == 0) {
+			return template;
+		} else {
+		//	Otherwise, stringify the template.
+			template = template.innerHTML;
+		}
 	}
-
-	//	Otherwise, stringify the template, if need be, and proceed...
-	if (typeof template != "string")
-		template = template.innerHTML;
 
 	/*	Data variables specified in the provided context argument (if any)
 		take precedence over the reference data.
