@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2022-12-14 13:04:40 gwern"
+# When:  Time-stamp: "2022-12-17 20:09:27 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -391,7 +391,7 @@ else
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
     λ(){ echo "$PAGES_ALL" | xargs --max-args=500 grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
-             grep -F -e ")'s " -e "}'s " -e '">?';
+             grep -F -e ")'s " -e "}'s " -e '">?' -e '</a>s';
          echo "$PAGES_ALL" | grep -F -v 'Hafu' | xargs --max-args=500 grep -E --with-filename --color=always -e '<a .*href=".*">\?';
        }
     wrap λ "Punctuation like possessives should go *inside* the link (unless it is an apostrophe in which case it should go outside due to Pandoc bug #8381)."
@@ -503,7 +503,8 @@ else
             -e '<strong>Abstract' -e ' ]' -e "</a>’s" -e 'title="&#39; ' -e 'collapseAbstract' -e 'utm_' \
             -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -e ' : ' -e " ' " -e '>/>a' -e '</a></a>' -e '(, ' \
             -e '&lt;figcaption' -e '{.}' -e ' ?' -e " ’’" -e 'lt;/td&gt;' -e "‘’" -e "’‘" -e "’’" -e '<li></li>' -e '</em<em>' -e '𝑂' \
-            -e '</a.>' -e ' . ' -e ' , ' -e ' ; ' -e 'class=”collapse”' -e '‘’' -e ' ’' -e '<bold>' -e '</bold>' -e '<jats:bold>' -e  '</jats:bold>' -- ./metadata/*.yaml;
+            -e '</a.>' -e ' . ' -e ' , ' -e ' ; ' -e 'class=”collapse”' -e '‘’' -e ' ’' -e '<bold>' -e '</bold>' -e '<jats:bold>' \
+            -e  '</jats:bold>' -e 'Ã©' -e '</a>s' -- ./metadata/*.yaml;
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
 
@@ -631,7 +632,9 @@ else
                        | shuf | head -1 | xargs urlencode)
     CHECK_RANDOM_ANNOTATION=$(find metadata/annotations/ -maxdepth 1 -name "*.html" -type f -size +2k | \
                                   shuf | head -1 | \
-                                  sed -e 's/metadata\/annotations\/\(.*\)/\1/' | xargs urlencode | \
+                                  sed -e 's/metadata\/annotations\/\(.*\)/\1/' | \
+                                  # once for the on-disk escaping, once for the URL argument to the W3C checker
+                                  xargs urlencode | xargs urlencode | \
                                   sed -e 's/^\(.*\)$/https:\/\/www\.gwern\.net\/metadata\/annotations\/\1/')
     ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
             --header "X-Auth-Email:gwern@gwern.net" \

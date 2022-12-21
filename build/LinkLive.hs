@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-12-09 22:01:14 gwern"
+When:  Time-stamp: "2022-12-14 11:18:11 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -924,6 +924,7 @@ goodDomainsSimple =
     , "xtools.wmflabs.org"
     , "zlkj.in"
     , "www.cs.toronto.edu"
+    , "parti.research.google"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com",
@@ -3276,13 +3277,14 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://xtools.wmflabs.org/pages/index.php?name=Rhwawn&lang=en&wiki=wikipedia&namespace=0&redirects=noredirects"
             , "https://zlkj.in/"
             , "https://www.cs.toronto.edu/~kriz/cifar.html"
+            , "https://parti.research.google"
             ]
 
 badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "/docs/iq/2004-gottfredson.pdf"
             , "/docs/sociology/2013-feldman.pdf"
             , "/docs/statistics/bayes/2003-korb.pdf"
-            , "/docs/sunk-cost/2005-parker.pdf"
+            , "/docs/psychology/cognitive-bias/sunk-cost/2005-parker.pdf"
             , "/docs/vitamin-d/2005-grant.pdf"
             , "/images/gan/stylegan/2021-li-dplase-ganlatentspaceeditingvideo.mp4"
             , "http://2chan.us/wordpress/2012/07/12/c82-genre-stats/"
@@ -3622,7 +3624,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://circ.ahajournals.org/cgi/content/meeting_abstract/120/18_MeetingAbstracts/S461-a"
             , "https://cis.org/articles/2010/teen-study.pdf"
             , "https://clarkesworldmagazine.com/watts_01_10/"
-            , "https://clinicalepigeneticsjournal.biomedcentral.com/articles/10.1186/s13148%E2%80%93021%E2%80%9301218-y#Tab1"
+            , "https://clinicalepigeneticsjournal.biomedcentral.com/articles/10.1186/s13148-021-01218-y#Tab1"
             , "https://cloud.google.com/tpu/pricing"
             , "https://code.google.com/archive/p/amphetype"
             , "https://code.visualstudio.com/blogs/2021/09/29/bracket-pair-colorization"
@@ -3710,7 +3712,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://faculty.virginia.edu/cogage/links/publications/"
             , "https://fdaaa.trialstracker.net/"
             , "https://fifteen.ai/"
-            , "https://finance.yahoo.com/news/Construction-Of-Chip-twst-2711924876.html"
+            , "https://finance.yahoo.com"
             , "https://fis.fda.gov/sense/app/d10be6bb-494e-4cd2-82e4-0135608ddc13/sheet/45beeb74-30ab-46be-8267-5756582633b4/state/analysis"
             , "https://fivethirtyeight.com/features/the-complicated-legacy-of-a-panda-who-was-really-good-at-sex/"
             , "https://flatisjustice.moe/TADNE"
@@ -3740,7 +3742,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://gigazine.net/news/20190812-death-note-anonymity-entropy/"
             , "https://gist.github.com/SigridK/c16ddc7b0f2a5bc01ea23d69569c6c0b"
             , "https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks"
-            , "https://gitcoin.co/blog/gitcoin-grants-clr-matching/"
+            , "https://go.gitcoin.co/blog/gitcoin-grants-clr-matching"
             , "https://gitgud.io/AuroraPurgatio/aurorapurgatio"
             , "https://github.com/google-research/google-research/tree/master/supcon"
             , "https://github.com/lightonai/akronomicon"
@@ -4578,7 +4580,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.sdfertility.com/fertility-treatments/genetic-testing/pgd"
             , "https://www.seacoastonline.com/story/news/local/hampton-union/2014/05/07/hampton-man-to-plead-guilty/37408765007/"
             , "https://www.sec.gov/Archives/edgar/data/1766502/000119312519124430/d665122ds1.htm"
-            , "https://www.semanticscholar.org/paper/Donor-Sibling-Networks-as-a-Vehicle-for-Expanding-Hertz-Nelson/6e736c71cd499fa03af6dabad3009335a8259745?p2df#page=14"
+            , "https://www.semanticscholar.org/paper/Donor-Sibling-Networks-as-a-Vehicle-for-Expanding-Hertz-Nelson/6e736c71cd499fa03af6dabad3009335a8259745?pdf#page=14"
             , "https://www.sendspace.com/file/ozr19p"
             , "https://www.shine.cn/news/metro/1909101776/"
             , "https://www.shroomery.org/forums/showflat.php/Number/18993960"

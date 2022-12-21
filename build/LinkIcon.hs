@@ -348,7 +348,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | aU' [".tensorflow.org", "github.com/tensorflow/", "medium.com/tensorflow/"] = aI "tensorflow" "svg" -- <https://simpleicons.org/?q=tensorflow>; NOTE: hosted on Github, so override Github
  | aU'' ["github.com", "copilot.github.com", "archiveprogram.github.com", "gist.github.com", "github.blog", "compvis.github.io"] = aI "github" "svg" -- Github; I exclude *.github.io & raw.githubusercontent.com because that’s blogs/papers.
  | u'' "www.paulgraham.com" || u' "ycombinator.com" = aI "hn" "svg" -- PG/HN/YC (shared logo). primary user: news.ycombinator.com
- | aU' ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today"] = aI "internetarchive" "svg"
+ | aU' ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today", "babel.hathitrust.org"] = aI "internetarchive" "svg" -- HathiTrust <https://en.wikipedia.org/wiki/HathiTrust> is confusingly nebulous but its cute elephant logo is unrecognizable and I regard it as basically a wrapper around Google Books+Internet Archive, so I think it's less confusing to put it under the IA logo.
  | u'' "mega.nz" = aI "mega" "svg" -- MegaUpload/Mega: filesharing (used for big files).
  | u'' "intelligence.org" = aI "miri" "svg" -- MIRI/intelligence.org.
  | u' ".nytimes.com" = aI "newyorktimes" "svg" -- The New York Times: manual edit, reducing full 'NEW YORK TIMES' SVG logo to just the ‘T’ they use as an icon.
@@ -604,6 +604,7 @@ linkIconTestUnitsText =
          , ("http://timetravel.mementoweb.org/",  "internetarchive","svg")
          , ("https://web.archive.org/web/19981202185145/http://www.ex.org/2.4/11-news.html",  "internetarchive","svg")
          , ("https://www.webcitation.org/6Qj7v6mqd",  "internetarchive","svg")
+         , ("https://babel.hathitrust.org/cgi/pt?id=uc1.c101988734&view=1up&seq=1", "internetarchive","svg")
          , ("https://www.justice.gov/archive/usao/cac/Pressroom/2012/045.html",  "DoJ","text,tri")
          , ("https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/414283", "JAMA", "text,sans,quad")
          , ("https://jamanetwork.com/journals/jama/fullarticle/201218", "JAMA", "text,sans,quad")
@@ -661,7 +662,7 @@ linkIconTestUnitsText =
          , ("https://www.khara.co.jp/hideakianno/personal-biography/",  "NGE","text,tri")
          , ("https://eva-fan.com/blog-entry-1198.html",  "NGE","text,tri")
          , ("https://eva.onegeek.org/",  "NGE","text,tri")
-         , ("https://web.archive.org/web/20080127001226/https://web.archive.org/web/20080127001226/http://johakyu.net/lib/2007/07/2007-07-27-000535.php", "NGE","text,tri")
+         , ("https://web.archive.org/web/20080127001226//http://johakyu.net/lib/2007/07/2007-07-27-000535.php", "NGE","text,tri")
          , ("http://kanzaki.sub.jp/archives/000272.html", "NGE", "text,tri")
          , ("https://web.archive.org/web/20090713005058/http://homepage3.nifty.com/mana/ecom4.htm", "NGE", "text,tri")
          , ("http://www.cjas.org/~leng/daihist.htm", "NGE", "text,tri")

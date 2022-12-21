@@ -13,8 +13,8 @@
     <!-- SSI: Inlined mappings of SVG linkicon identifiers to SVG files -->
     <!-- INLINED-GRAPHICAL-LINKICON-STYLES-BEGIN --><!--#include virtual="/static/includes/inlined-graphical-linkicon-styles.html" --><!-- INLINED-GRAPHICAL-LINKICON-STYLES-END -->
 
-	<!-- SSI: Inlined asset versions -->
-	<!-- INLINED-ASSET-VERSIONS-BEGIN--><!--#include virtual="/static/includes/inlined-asset-versions.html" --><!-- INLINED-ASSET-VERSIONS-END -->
+    <!-- SSI: Inlined asset versions -->
+    <!-- INLINED-ASSET-VERSIONS-BEGIN--><!--#include virtual="/static/includes/inlined-asset-versions.html" --><!-- INLINED-ASSET-VERSIONS-END -->
 
     $if(index)$
     <!-- Google Webmaster requires this tag, but only on the index/homepage -->
@@ -114,13 +114,14 @@
               $if(linkbibYes)$<span class="link-bibliography"><a href="#link-bibliography" title="Bibliography of links cited in this page (forward citations).">bibliography</a></span>$endif$
           </div>
         </div>
-
-        <noscript><div id="noscriptWarning" class="admonition warning"><div class="admonition-title"><p>[JS Disabled!]</p></div> <p>[For support of <a href="/Design" title="About: Gwern.net Design: principles, features, links, tricks">website features</a> (tablesorting, collapsible sections, image zooming, link annotation popups/popins & transclusions, sidenotes), please enable JavaScript.]</p></div></noscript>
         $endif$
+
+        <noscript><div id="noscript-warning-header" class="admonition warning"><div class="admonition-title"><p>[<strong>Warning</strong>: JS Disabled!]</p></div> <p>[For support of <a href="/Design" title="About: Gwern.net Design: principles, features, links, tricks">website features</a> (tablesorting, collapsible sections, image zooming, link annotation popups/popins & transclusions, sidenotes), please enable JavaScript.]</p></div></noscript>
 
         $body$
 
         $if(index)$ $else$
+        <noscript><div id="noscript-warning-footer" class="admonition error"><div class="admonition-title"><p>[<strong>Error</strong>: JS disabled.]</p></div> <p>[Backlinks, similar links, and the link-bibliography require JS enabled to transclude.]</p></div></noscript>
         $if(backlinksYes)$<section id="backlinks-section" class="level1">
           <h1><a href="#backlinks-section" title="Link to section: § 'Further Reading'">Further Reading</a></h1>
           <a id="backlinks" href="/metadata/annotations/backlinks/$escapedURL$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="backlinks include-strict">backlinks</a>
