@@ -77,7 +77,8 @@
         trigger at load time; instead, it will trigger only when it is revealed
         by expansion of its containing collapse block(s). The `include-when-collapsed`
         class disables this delay, forcing the include-link to trigger at load time
-        (if it is marked as `include-strict`!) even if, when loaded, it is
+        (if it is marked as `include-strict`) or when revealed by scrolling
+        (if it is not marked as `include-strict`) even if, at such time, it is
         within a collapsed block.
 
         Note that the `include-strict` and `include-when-collapsed` options are
@@ -496,13 +497,6 @@ function loadLocationForIncludeLink(includeLink) {
 function includeContent(includeLink, content) {
     GWLog("includeContent", "transclude.js", 2);
 
-	//	Where to inject?
-    let replaceContainer = (   includeLink.parentElement != null
-                            && includeLink.classList.contains("include-replace-container"));
-    let insertWhere = replaceContainer
-                      ? includeLink.parentElement
-                      : includeLink;
-
 	/*  We skip include-links for which a transclude operation is already in 
 		progress or has completed (which might happen if we’re given an 
 		include-link to process, but that link has already been replaced by its 
@@ -512,6 +506,13 @@ function includeContent(includeLink, content) {
 		"include-in-progress",
 		"include-complete"
 	])) return;
+
+	//	Where to inject?
+    let replaceContainer = (   includeLink.parentElement != null
+                            && includeLink.classList.contains("include-replace-container"));
+    let insertWhere = replaceContainer
+                      ? includeLink.parentElement
+                      : includeLink;
 
     /*  Just in case, do nothing if the element-to-be-replaced (either the 
     	include-link itself, or its container, as appropriate) isn’t attached 
@@ -621,6 +622,7 @@ function includeContent(includeLink, content) {
 	//	Intelligent rectification of contained HTML structure.
 	if (   wrapper.parentElement != null
 		&& wrapper.parentElement != wrapper.parentElement.closest("#footnotes > ol")
+		&& wrapper.firstElementChild != null
 		&& wrapper.firstElementChild == wrapper.firstElementChild.closest("li.footnote")) {
 		wrapper.firstElementChild.querySelectorAll(".footnote-self-link, .footnote-back").forEach(link => {
 			link.remove();
