@@ -720,6 +720,7 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
 
     let containingDocument = includeLink.eventInfo.document;
 
+	//	If the host page doesn’t have a footnotes section, construct one.
     let footnotesSection = containingDocument.querySelector(".markdownBody > #footnotes");
     if (!footnotesSection) {
         //  Construct footnotes section.
@@ -764,7 +765,8 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
         let footnote = newContentFootnotesSection.querySelector(Notes.footnoteSelectorMatching(citation));
 
         //  Copy the footnote.
-        let newFootnote = newFootnotesWrapper.appendChild(document.importNode(footnote, true));
+        citation.footnote = newFootnotesWrapper.appendChild(document.importNode(footnote, true));
+        console.log(citation.footnote);
     });
 
 	//	Inject wrapper.
@@ -787,7 +789,10 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
 	//	Re-number citations/footnotes, and re-order footnotes.
 	let footnoteNumber = 1;
 	containingDocument.querySelectorAll(".footnote-ref").forEach(citation => {
-		let footnote = footnotesSection.querySelector(Notes.footnoteSelectorMatching(citation));
+		if (citation.closest(".sidenote"))
+			return;
+
+		let footnote = citation.footnote ?? footnotesSection.querySelector(Notes.footnoteSelectorMatching(citation));
 
 		Notes.setCitationNumber(citation, footnoteNumber);
 		Notes.setFootnoteNumber(footnote, footnoteNumber);
