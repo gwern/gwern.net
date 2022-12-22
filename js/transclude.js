@@ -766,7 +766,6 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
 
         //  Copy the footnote.
         citation.footnote = newFootnotesWrapper.appendChild(document.importNode(footnote, true));
-        console.log(citation.footnote);
     });
 
 	//	Inject wrapper.
