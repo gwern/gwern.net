@@ -356,10 +356,7 @@ Content = {
 
 						if (auxLinksLinkType == "backlinks") {
 							auxLinksList.querySelectorAll("a").forEach(link => {
-								if (Annotations.isAnnotatedLink(link))
-									return;
-
-								link.setQueryVariable("backlinkTargetURL", AuxLinks.targetOfAuxLinksLink(loadURL));
+								link.dataset.backlinkTargetUrl = AuxLinks.targetOfAuxLinksLink(loadURL);
 							});
 						}
 					}

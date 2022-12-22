@@ -162,14 +162,13 @@ function targetElementInDocument(link, doc) {
 			element = null;
 	}
 
-	if (element == null) {
-		let backlinkTargetURL = link.getQueryVariable("backlinkTargetURL");
-		if (backlinkTargetURL > "") {
-			element = Array.from(doc.querySelectorAll(`a[href*='${CSS.escape(backlinkTargetURL)}']`)).filter(backlink => {
-				return (   backlink.pathname == backlinkTargetURL
-						&& backlink.closest(exclusionSelector) == null);
-			}).first;
-		}
+	if (   element == null
+		&& (   link instanceof HTMLAnchorElement
+			&& link.dataset.backlinkTargetUrl > "")) {
+		element = Array.from(doc.querySelectorAll(`a[href*='${CSS.escape(link.dataset.backlinkTargetUrl)}']`)).filter(backlink => {
+			return (   backlink.pathname == link.dataset.backlinkTargetUrl
+					&& backlink.closest(exclusionSelector) == null);
+		}).first;
 	}
 
 	if (element == null)
@@ -184,22 +183,21 @@ function targetElementInDocument(link, doc) {
 	usually because the link has a URL hash, but may also be because the link
 	is a backlink, in which case it implicitly points to that link in the 
 	target page which points back at the target page for the backlink; or it 
-	may be because the link is an annotated link with a value for the 
-	`data-target-id` attribute.)
+	may be because the link is a link with a value for the `data-target-id` 
+	or `data-backlink-target-url` attributes.)
  */
 function isAnchorLink(link) {
 	if (link instanceof HTMLAnchorElement) {
 		if (Annotations.isAnnotatedLink(link)) {
 			return (   link.dataset.targetId > ""
-					|| link.getQueryVariable("backlinkTargetURL") > "");
+					|| link.dataset.backlinkTargetUrl > "");
 		} else {
 			return (   link.hash > ""
 					|| link.dataset.targetId > ""
-					|| link.getQueryVariable("backlinkTargetURL") > "");
+					|| link.dataset.backlinkTargetUrl > "");
 		}
 	} else {
-		return (   link.hash > ""
-				|| link.getQueryVariable("backlinkTargetURL") > "");
+		return (link.hash > "");
 	}
 }
 
@@ -207,11 +205,12 @@ function isAnchorLink(link) {
 /*	Removes all anchor data from the given link.
  */
 function stripAnchorsFromLink(link) {
-	if (link instanceof HTMLAnchorElement)
+	if (link instanceof HTMLAnchorElement) {
 		link.removeAttribute("data-target-id");
+		link.removeAttribute("data-backlink-target-url");
+	}
 
 	link.hash = "";
-	link.deleteQueryVariable("backlinkTargetURL");
 }
 
 /****************************************************************************/
@@ -222,12 +221,13 @@ function anchorsForLink(link) {
 	if (   link instanceof HTMLAnchorElement
 		&& link.dataset.targetId > "") {
 		return link.dataset.targetId.split(" ").map(x => `#${x}`);
-	} else if (link.getQueryVariable("backlinkTargetURL") > "") {
-		return [ link.getQueryVariable("backlinkTargetURL") ];
 	} else if ((   link instanceof HTMLAnchorElement
 				&& Annotations.isAnnotatedLink(link)) == false) {
 		return link.hash.match(/#[^#]*/g) ?? [ ];
-	} else {
+	} else if (   link instanceof HTMLAnchorElement
+			   && link.dataset.backlinkTargetUrl > "") {
+		return link.dataset.backlinkTargetUrl;
+	}  else {
 		return [ ];
 	}
 }
