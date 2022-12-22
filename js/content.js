@@ -359,7 +359,7 @@ Content = {
 								if (Annotations.isAnnotatedLink(link))
 									return;
 
-								link.setQueryVariable("backlinkTargetURL", fixedEncodeURIComponent(AuxLinks.targetOfAuxLinksLink(loadURL)));
+								link.setQueryVariable("backlinkTargetURL", AuxLinks.targetOfAuxLinksLink(loadURL));
 							});
 						}
 					}
