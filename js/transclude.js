@@ -525,6 +525,7 @@ function includeContent(includeLink, content) {
 
     //  Document into which the transclusion is being done.
     let containingDocument = includeLink.eventInfo.document;
+    let transcludingIntoFullPage = (containingDocument.querySelector("#page-metadata") != null);
 
     //  Save reference for potential removal later.
     let includeLinkParentElement = includeLink.parentElement;
@@ -549,7 +550,7 @@ function includeContent(includeLink, content) {
     	such as page-metadata, footnotes, etc. (Save references to some.)
      */
 	let newContentFootnotesSection = wrapper.querySelector("#footnotes");
-    if (containingDocument.querySelector("#page-metadata") != null) {
+    if (transcludingIntoFullPage) {
     	let metadataSectionsSelector = [
     		"#page-metadata",
     		"#footnotes",
@@ -597,7 +598,7 @@ function includeContent(includeLink, content) {
 	//	WITHIN-WRAPPER MODIFICATIONS END; OTHER MODIFICATIONS BEGIN
 
     //  Update footnotes, if need be, when transcluding into a full page.
-    if (   containingDocument.querySelector("#page-metadata") != null
+    if (   transcludingIntoFullPage
     	&& Transclude.isAnnotationTransclude(includeLink) == false)
         updateFootnotesAfterInclusion(includeLink, wrapper, newContentFootnotesSection);
 

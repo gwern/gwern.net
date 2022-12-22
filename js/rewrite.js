@@ -165,9 +165,8 @@ function targetElementInDocument(link, doc) {
 	if (element == null) {
 		let backlinkTargetURL = link.getQueryVariable("backlinkTargetURL");
 		if (backlinkTargetURL > "") {
-			let decodedURL = decodeURIComponent(backlinkTargetURL);
-			element = Array.from(doc.querySelectorAll(`a[href*='${CSS.escape(decodedURL)}']`)).filter(backlink => {
-				return (   backlink.href == decodedURL
+			element = Array.from(doc.querySelectorAll(`a[href*='${CSS.escape(backlinkTargetURL)}']`)).filter(backlink => {
+				return (   backlink.pathname == backlinkTargetURL
 						&& backlink.closest(exclusionSelector) == null);
 			}).first;
 		}
