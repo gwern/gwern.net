@@ -251,7 +251,7 @@ Popins = {
 			button.buttonAction = (event) => {
 				event.stopPropagation();
 
-				let popin = Popins.containingPopFrame(event);
+				let popin = Popins.containingPopFrame(event.target);
 				if (popin) {
 					Popins.removePopin(popin);
 				}

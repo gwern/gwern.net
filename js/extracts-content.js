@@ -294,7 +294,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.rewritePopinContent_LOCAL_PAGE", "extracts.js", 2);
 
 		if (injectEventInfo == null) {
-			Extracts.rewritePopFrameContent_LOCAL_PAGE(popup);
+			Extracts.rewritePopFrameContent_LOCAL_PAGE(popin);
 			return;
 		}
 
