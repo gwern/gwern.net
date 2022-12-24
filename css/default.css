@@ -5722,9 +5722,13 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .markdownBody a.targeted {
     position: relative;
     display: inline-block;
-    height: 1.5em;
     z-index: 1;
     text-indent: 0;
+}
+@media all and (min-width: 650px) {
+    .markdownBody a.targeted {
+        height: 1.5em;
+    }
 }
 .markdownBody a.targeted::before {
     content: "";
