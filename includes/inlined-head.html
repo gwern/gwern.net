@@ -2504,10 +2504,10 @@ function GWLog (string, source = "", level = 1) {
 
 	let outputString = (`[${GWTimestamp()}]  ` + sourcestamp + string);
 
-    console.log(outputString);
-
 	if (GW.console)
 		GW.console.print(outputString);
+	else
+		console.log(outputString);
 }
 GW.setLogLevel = (level, permanently = false) => {
     if (permanently)
