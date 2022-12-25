@@ -230,7 +230,8 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 		/*	Collapse block expand-on-hover. Clicking within the block while it
 			is temporarily expanded causes it to stay expanded permanently.
 		 */
-		if (collapseBlock.classList.contains("expand-on-hover")) {
+		if (   collapseBlock.classList.contains("expand-on-hover")
+			&& GW.isMobile() == false) {
 			let expandOnHoverDelay = 800;
 			let collapseOnUnhoverDelay = 300;
 
