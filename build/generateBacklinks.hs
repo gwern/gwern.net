@@ -90,19 +90,15 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
 
                                        let preface = [Para [Strong [Str (if length callers' > 1 then "Backlinks" else "Backlink")], Str ":"]]
                                        let content = BulletList $ -- WARNING: critical to insert '.backlink-not' or we might get weird recursive blowup!
-                                            map (\(u,c,t) ->
-                                                   -- do we transclude the context on page load? If it's an annotation, annotations are very cheap (~4kb average), so we can.
-                                                   -- we can't if it's an entire page like /GPT-3, however!
-                                                   let includeStrict = if isPagePath u then [] else ["include-strict"] in
-                                                                   [Para ([Link ("", "backlink-not":c, [])
-                                                                          [parseRawInline nullAttr $ RawInline (Format "html") t]
-                                                                          (u, "")] ++
-                                                                          -- for top-level pages, we need a second link, like 'Foo (full context)', because 'Foo' will popup the scraped abstract/annotation, but it will not pop up the reverse citation context displayed right below; this leads to a UI trap: the reader might be interested in navigating to the context, but they can't! The transclusion has replaced itself, so it doesn't provide any way to navigate to the actual page, and the provided annotation link doesn't know anything about the reverse citation because it is about the entire page. So we provide a backup non-transcluding link to the actual context.
-                                                                          (if isPagePath u then [Str " (", Link ("",["link-annotated-not"],[]) [Str "full context"] (if isPagePath u && selfIdent/="" then u`T.append`"#"`T.append`selfIdent else u,""), Str ")"] else []) ++
-                                                                          [Str ":"]),
+                                            map (\(u,c,t) -> [Para ([Link ("", "backlink-not":c, [])
+                                                                     [parseRawInline nullAttr $ RawInline (Format "html") t]
+                                                                     (u, "")] ++
+                                                                     -- for top-level pages, we need a second link, like 'Foo (full context)', because 'Foo' will popup the scraped abstract/annotation, but it will not pop up the reverse citation context displayed right below; this leads to a UI trap: the reader might be interested in navigating to the context, but they can't! The transclusion has replaced itself, so it doesn't provide any way to navigate to the actual page, and the provided annotation link doesn't know anything about the reverse citation because it is about the entire page. So we provide a backup non-transcluding link to the actual context.
+                                                                     (if isPagePath u then [Str " (", Link ("",["link-annotated-not"],[]) [Str "full context"] (if isPagePath u && selfIdent/="" then u`T.append`"#"`T.append`selfIdent else u,""), Str ")"] else []) ++
+                                                                     [Str ":"]),
                                                                -- use transclusion to default to display inline the context of the reverse citation, akin to how it would display if the reader popped the link up as a live cross-page transclusion, but without needing to hover over each one:
                                                                BlockQuote [Para [Link ("",
-                                                                                        (["backlink-not", "include-replace-container", "include-block-context"]++includeStrict++(if isPagePath u then ["link-annotated-not"] else ["link-annotated"])),
+                                                                                        (["backlink-not", "include-replace-container", "include-block-context"]++(if isPagePath u then ["link-annotated-not"] else ["link-annotated"])),
                                                                                         if selfIdent=="" then [] else [("target-id",selfIdent)]
                                                                                       )
                                                                                       [Str "[backlink context]"]
