@@ -7,10 +7,10 @@
 
     These events are fired whenever any new local page content is loaded and
     injected into the page, respectively. (Here “loaded” may mean “loaded via a
-    network request”, “constructed from a template”, or any other process by 
-    which a new unit of page content is created. This includes the initial page 
+    network request”, “constructed from a template”, or any other process by
+    which a new unit of page content is created. This includes the initial page
     load, but also such things as annotations being lazy-loaded, etc. Likewise,
-    “injected” may mean “injected into the base page”, “injected into a 
+    “injected” may mean “injected into the base page”, “injected into a
     pop-frame shadow-root”, “injected into a DocumentFragment in cache”, etc.)
 
     Many event handlers are attached to these, because a great deal of
@@ -19,10 +19,10 @@
     structure of certain page elements (such as tables, figures, etc.) must be
     reconfigured; CSS classes must be added; various event listeners attached;
     etc. Most of this file (rewrite.js) consists of exactly such “content load
-    handlers” and “content inject handlers”, a.k.a. “rewrite functions”. 
-    (Additional content load and inject handlers are defined elsewhere in the 
-    code, as appropriate; e.g. the handler that attaches event listeners to 
-    annotated links to load annotations when the user mouses over such links, 
+    handlers” and “content inject handlers”, a.k.a. “rewrite functions”.
+    (Additional content load and inject handlers are defined elsewhere in the
+    code, as appropriate; e.g. the handler that attaches event listeners to
+    annotated links to load annotations when the user mouses over such links,
     which is found in extracts-annotations.js.)
 
     The GW.contentDidLoad event has the following named handler phases (see
@@ -34,8 +34,8 @@
 
         [ "rewrite", "eventListeners" ]
 
-    The GW.contentDidLoad and GW.contentDidInject events should have the 
-    following keys and values in their event info dictionary (see gw-inline.js 
+    The GW.contentDidLoad and GW.contentDidInject events should have the
+    following keys and values in their event info dictionary (see gw-inline.js
     for details on event info dictionaries):
 
         ‘source’ (key) (required)
@@ -48,16 +48,16 @@
             event fired on the initial page load, the value of this key is
             `document`, i.e. the root document of the page. For pop-frames, this
             may be the `document` property of the pop-frame, or a
-            DocumentFragment containing the embedded page elements.) The 
+            DocumentFragment containing the embedded page elements.) The
             container will contain nothing but the newly-loaded content.
             (This key can be thought of as “what has been loaded?”.)
 
         ‘document’ (key) (required)
-            Document into which the content was loaded. May or may not be 
+            Document into which the content was loaded. May or may not be
             identical with the value of the ‘container’ key (in those cases when
-            the loaded content is a whole document itself). The value of this 
+            the loaded content is a whole document itself). The value of this
             key is necessarily either a Document (i.e., the root document of the
-            page) or a DocumentFragment. (This key can be thought of as “into 
+            page) or a DocumentFragment. (This key can be thought of as “into
             where has the loaded content been loaded?”.)
 
 		‘contentType’ (key)
@@ -74,7 +74,7 @@
             loaded/injected content is not sourced from any page, this key will
             have a null value.)
 
-    The GW.contentDidInject event should additionally have a value for the 
+    The GW.contentDidInject event should additionally have a value for the
     following key:
 
         ‘flags’ (key) (required)
@@ -98,8 +98,8 @@
 
             ‘stripCollapses’
                 Specifies whether the loaded content is permitted to have
-                collapsed sections. Generally false. If the value of this key is 
-                true, then any collapse blocks in the loaded content will be 
+                collapsed sections. Generally false. If the value of this key is
+                true, then any collapse blocks in the loaded content will be
                 automatically expanded and stripped, and all content in
                 collapsible sections will be visible at all times.
 
@@ -178,12 +178,12 @@ function targetElementInDocument(link, doc) {
 }
 
 /*****************************************************************************/
-/*	Returns true if the given link (a URL or an HTMLAnchorElement) points to a 
+/*	Returns true if the given link (a URL or an HTMLAnchorElement) points to a
 	specific element within a page, rather than to a whole page. (This is
 	usually because the link has a URL hash, but may also be because the link
-	is a backlink, in which case it implicitly points to that link in the 
-	target page which points back at the target page for the backlink; or it 
-	may be because the link is a link with a value for the `data-target-id` 
+	is a backlink, in which case it implicitly points to that link in the
+	target page which points back at the target page for the backlink; or it
+	may be because the link is a link with a value for the `data-target-id`
 	or `data-backlink-target-url` attributes.)
  */
 function isAnchorLink(link) {
@@ -250,10 +250,10 @@ function originalURLForLink(link) {
 	if (originalURL.hostname == "ar5iv.labs.arxiv.org") {
 		originalURL.hostname = "arxiv.org";
 		originalURL.pathname = originalURL.pathname.replace("/html/", "/abs/");
-		/*	Erase the ?fallback=original query parameter necessary to 
+		/*	Erase the ?fallback=original query parameter necessary to
 			make it redirect if no Ar5iv version is available.
 		 */
-		originalURL.search = ""; 
+		originalURL.search = "";
 	}
 
 	return originalURL;
@@ -288,7 +288,7 @@ function addContentLoadHandler(handler, phase, condition = null) {
 GW.contentLoadHandlers = { };
 
 /*************************************************************/
-/*  Add content inject handler (i.e., an event handler for the 
+/*  Add content inject handler (i.e., an event handler for the
 	GW.contentDidInject event).
  */
 function addContentInjectHandler(handler, phase, condition = null) {
@@ -399,7 +399,7 @@ AuxLinks = {
 /*********/
 
 Notes = {
-	/*	Get the (side|foot)note number from the URL hash (which might point to a 
+	/*	Get the (side|foot)note number from the URL hash (which might point to a
 		footnote, a sidenote, or a citation).
 	 */
 	noteNumberFromHash: (hash = location.hash) => {
@@ -681,16 +681,16 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (event
 }, "rewrite", (info) => info.fullWidthPossible);
 
 /*************************************************************************/
-/*  Fix code block styling glitch by setting code block height to rendered 
+/*  Fix code block styling glitch by setting code block height to rendered
 	height, eliminating fractional pixels.
  */
-addContentInjectHandler(GW.contentInjectHandlers.rectifyCodeBlockHeights = (eventInfo) => {
-    GWLog("rectifyCodeBlockHeights", "rewrite.js", 1);
+// addContentInjectHandler(GW.contentInjectHandlers.rectifyCodeBlockHeights = (eventInfo) => {
+//     GWLog("rectifyCodeBlockHeights", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("pre").forEach(preBlock => {
-		preBlock.style.height = preBlock.offsetHeight + "px";
-	});
-}, ">rewrite");
+// 	eventInfo.container.querySelectorAll("pre").forEach(preBlock => {
+// 		preBlock.style.height = preBlock.offsetHeight + "px";
+// 	});
+// }, ">rewrite");
 
 
 /***********/
@@ -1051,7 +1051,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventI
 		referenceLink.classList.add("link-annotated-partial");
 
 		//	Load data into Annotations.
-		Annotations.cacheAPIResponseForIdentifier(newDocument(partialAnnotation), 
+		Annotations.cacheAPIResponseForIdentifier(newDocument(partialAnnotation),
 												  Annotations.targetIdentifier(referenceLink));
 
 		//	Replace reference block contents with synthetic include-link.
@@ -1682,7 +1682,7 @@ addContentLoadHandler(GW.contentLoadHandlers.designateIndexPageSectionLinkLists 
 	eventInfo.container.querySelectorAll("section > ul").forEach(sectionLinkList => {
 		sectionLinkList.classList.add("section-link-list");
 	});
-}, "rewrite", (info) => (   info.container == document.body 
+}, "rewrite", (info) => (   info.container == document.body
 						 && (   info.loadLocation.pathname == "/"
 						 	 || info.loadLocation.pathname == "/index")));
 
@@ -1991,7 +1991,7 @@ GW.console = {
 	},
 
 	scrollToBottom: () => {
-		GW.console.view.scrollView.scrollTop = GW.console.view.contentView.clientHeight 
+		GW.console.view.scrollView.scrollTop = GW.console.view.contentView.clientHeight
 											 - GW.console.view.scrollView.clientHeight;
 	},
 
