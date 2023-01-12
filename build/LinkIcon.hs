@@ -662,7 +662,7 @@ linkIconTestUnitsText =
          , ("https://www.khara.co.jp/hideakianno/personal-biography/",  "NGE","text,tri")
          , ("https://eva-fan.com/blog-entry-1198.html",  "NGE","text,tri")
          , ("https://eva.onegeek.org/",  "NGE","text,tri")
-         , ("https://web.archive.org/web/20080127001226//http://johakyu.net/lib/2007/07/2007-07-27-000535.php", "NGE","text,tri")
+         , ("https://web.archive.org/web/20080127001226/http://johakyu.net/lib/2007/07/2007-07-27-000535.php", "NGE","text,tri")
          , ("http://kanzaki.sub.jp/archives/000272.html", "NGE", "text,tri")
          , ("https://web.archive.org/web/20090713005058/http://homepage3.nifty.com/mana/ecom4.htm", "NGE", "text,tri")
          , ("http://www.cjas.org/~leng/daihist.htm", "NGE", "text,tri")

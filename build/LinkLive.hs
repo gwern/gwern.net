@@ -4343,7 +4343,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.fs.fed.us/rm/pubs_journals/2000/rmrs_2000_mcdaniel_g001.pdf"
             , "https://www.fsigenetics.com/article/S1872-4973(18)30248-5/fulltext"
             , "https://www.ftc.gov/reports/new-drug-development-estimating-entry-human-clinical-trials"
-            , "https://www.garda.ie/en/?Page=14304"
+            , "https://www.garda.ie/en/about-us/our-departments/office-of-corporate-communications/press-releases/2014/november/-darknet-drug-seizure-dublin-5th-nov-2014.html"
             , "https://www.genome.gov/about-genomics/fact-sheets/DNA-Sequencing-Costs-Data"
             , "https://www.girlschase.com/content/how-have-sex-asian-girls"
             , "https://www.girlscouts.org/en/cookies/how-to-buy-cookies/cookies-frequently-asked-questions.html#bestselling"

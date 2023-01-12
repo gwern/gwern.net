@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-12-20 16:42:58 gwern"
+When:  Time-stamp: "2023-01-10 10:42:18 gwern"
 License: CC-0
 -}
 
@@ -1672,6 +1672,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" L0", " 𝓁<sub>0</sub>")
          , (" L-infinity", " 𝓁<sub>∞</sub>")
          , ("<span class=\"math inline\">\\(L_\\infty\\)</span>", "𝓁<sub>∞</sub>")
+         , ("<span class=\"math inline\">\\(\\ell_p\\)</span>", "𝓁<sub>p</sub>")
+         , ("<span class=\"math inline\">\\(0&lt;p&lt;1\\)</span>", "0 &lt; <em>p</em> &lt; 1")
          , (" L-∞", " 𝓁<sub>∞</sub>")
          , (" L∞", " 𝓁<sub>∞</sub>")
            -- rest:
@@ -2022,6 +2024,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("\nIntervention: ", "\n<strong>Intervention</strong>: ")
          , ("\nData Sources: ", "\n<strong>Data Sources</strong>: ")
          , ("\nMain Outcomes & Measures: ", "\n<strong>Main Outcomes & Measures</strong>: ")
+         , ("<strong>Main Outcomes and Measures</strong", "<strong>Main Outcomes & Measures</strong")
          , ("\nMeasurements: ", "\n<strong>Measurements</strong>: ")
          , (". Results. ", ".</p> <p><strong>Results</strong>: ")
          , ("\nResults: ", "\n<strong>Results</strong>: ")
@@ -2180,6 +2183,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<abbr>", "<span>")
          , ("</abbr>", "</span>")
          , ("</a> .", "</a>.")
+         , ("</jats:ext-link>", "</a>")
+         , ("<jats:ext-link xmlns:xlink=\"http://www.w3.org/1999/xlink\" ext-link-type=\"uri\" xlink:href=", "<a href=")
          , ("<ext-link ext-link-type=\"uri\"", "<a")
          , ("<ext-link ext-link-type=\"uri\" xlink:href=", "<a href=")
          , ("xlink:type=\"simple\"", "")
