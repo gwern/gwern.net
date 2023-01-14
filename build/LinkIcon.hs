@@ -337,6 +337,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.teds.ac.uk" = aI "TEDS" "text,quad,sans" -- UK twin registry founded by Robert Plomin, heavily used in behavioral genetics & sociology/psychology; it has a clever little logo (https://www.teds.ac.uk/Content/Images/TEDSlogo.png) & a monochrome SVG version would work… but unfortunately no one ever uses it & it is always known as "Twins Early Development Study (TEDS)"
  | u'' "stability.ai" || u' "#stability" = aI "SD" "text,sans"
  | u'' "patrickcollison.com" = aI "PC" "text,sans"
+ | u'' "oeis.org" = aI "OEIS" "text,quad,sans" -- On-Line Encyclopedia of Integer Sequences
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -1072,4 +1073,5 @@ linkIconTestUnitsText =
          , ("https://stability.ai/blog/stable-diffusion-public-release", "SD", "text,sans")
          , ("https://patrickcollison.com/labs", "PC", "text,sans")
          , ("https://www.pewresearch.org/social-trends/2012/02/16/the-rise-of-intermarriage/", "Pew", "text,tri")
+         , ("https://oeis.org/A001006", "OEIS", "text,quad,sans")
         ]

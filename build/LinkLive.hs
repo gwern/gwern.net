@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-12-18 16:59:40 gwern"
+When:  Time-stamp: "2023-01-13 21:53:05 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -665,7 +665,6 @@ goodDomainsSimple =
     , "www.cylab.cmu.edu"
     , "www.daemonology.net"
     , "www.dafont.com"
-    , "www.dagbladet.no"
     , "www.dailydot.com"
     , "www.dailymail.co.uk"
     , "www.dailymail.co.uk"
@@ -1950,7 +1949,6 @@ badDomainsSimple = [ "2chan.us"
    , "www.northjersey.com"
    , "www.northwestgeorgianews.com"
    , "www.notion.so"
-   , "www.nottinghampost.com"
    , "www.nrdc.org"
    , "www.nsa.gov"
    , "www.ntticc.or.jp"
@@ -2172,7 +2170,6 @@ badDomainsSimple = [ "2chan.us"
    , "www.worksinprogress.co"
    , "www.worldcat.org"
    , "www.wsmv.com"
-   , "www.wwltv.com"
    , "www.wzzm13.com"
    , "www.xilinx.com"
    , "www.xinhuanet.com"
@@ -2448,6 +2445,7 @@ badDomainsSimple = [ "2chan.us"
   , "www.teds.ac.uk"
   , "stability.ai"
   , "dzone.com"
+  , "droitwichstandard.co.uk"
    ]
 
 url :: T.Text -> Inline
@@ -3059,7 +3057,6 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://www.cylab.cmu.edu/"
             , "https://www.daemonology.net/blog/2011-06-03-insecurity-in-the-jungle.html"
             , "https://www.dafont.com/deutsche-zierschrif.font"
-            , "https://www.dagbladet.no/nyheter/politiet-mener-fire-norske-narkoselgere-har-omsatt-for-millioner-i-virtuell-valuta-pa-morkenettet/60700845"
             , "https://www.dailydot.com/crime/dark-web-black-market-reloaded-adam-bunger-gun-sales-arrest/"
             , "https://www.dailymail.co.uk/health/article-2126761/Bertold-Wiesner-British-scientist-fathered-600-children-donating-sperm-fertility-clinic.html"
             , "https://www.dartmouth.edu/~milton/reading_room/conscience/text.shtml"
@@ -4349,7 +4346,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.girlscouts.org/en/cookies/how-to-buy-cookies/cookies-frequently-asked-questions.html#bestselling"
             , "https://www.global.toshiba/ww/news/corporate/2010/07/pr1401.html"
             , "https://www.globaltimes.cn/content/1161960.shtml"
-            , "https://www.gloucestershirelive.co.uk/Cheltenham-student-jailed-importing-cocaine-Costa/story-28599085-detail/story.html"
+            , "https://droitwichstandard.co.uk/news/droitwich-student-jailed-two-years-importing-cocaine-costa-rica/"
             , "https://www.gnu.org/software/emacs/manual/html_node/emacs/Keyboard-Macro-Counter.html"
             , "https://www.goodreads.com/interviews/show/21.Malcolm_Gladwell"
             , "https://www.goodtherapy.org/blog/natural-lighting-increases-productivity-0104112/"
@@ -4498,7 +4495,6 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.nola.com/news/crime_police/article_bd297d74-f2e1-5c15-9db3-c96545f38688.html"
             , "https://www.northwestgeorgianews.com/road-check-leads-to-meth-charges-for-rome-woman/article_367ea18e-1532-11eb-92a7-cf0f8ab22367.html"
             , "https://www.notion.so/GPT3-Dataset-Task-Model-b97a267d6f5f44e688ba4f7ec85c00cc"
-            , "https://www.nottinghampost.com/Nottingham-philosophy-student-caught-importing/story-27890513-detail/story.html"
             , "https://www.nrdc.org/issues/minimize-harm-and-security-risks-nuclear-energy"
             , "https://www.nsa.gov/news-features/press-room/Article/1630570/national-cryptologic-museum-opens-new-exhibit-on-dr-john-nash/"
             , "https://www.ntticc.or.jp/pub/ic_mag/ic018/intercity/higashi_E.html"
@@ -4699,7 +4695,6 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.worldcat.org/title/educational-and-vocational-preferences-of-a-cohort-spatially-gifted-females-and-males-from-the-study-of-mathematically-precocious-youth/oclc/42465636&referer=brief_results"
             , "https://www.wsmv.com/story/25667210/metro-police-seize"
             , "https://www.wunderground.com/history/airport/KNHK/2012/7/11/CustomHistory.html?dayend=22&monthend=3&yearend=2013&req_city=NA&req_state=NA&req_statename=NA&format=1"
-            , "https://www.wwltv.com/news/Laundry-List-of-Drugs-at-Uptown-Frat-House-Leads-to-Tulane-Student-Arrests-193450441.html"
             , "https://www.wzzm13.com/mb/news/crime/meth-laden-express-mail-parcel-brings-charges-for-holland-man/287645651"
             , "https://www.xilinx.com/prs_rls/silicon_spart/0333spartan3.htm"
             , "https://www.xn--4dbcyzi5a.com/%d7%9e%d7%94%d7%95%d7%9c%d7%a0%d7%93-%d7%91%d7%90%d7%94%d7%91%d7%94-%d7%a0%d7%aa%d7%a4%d7%a1-%d7%a6%d7%a2%d7%99%d7%a8-%d7%a9%d7%94%d7%96%d7%9e%d7%99%d7%9f-%d7%97%d7%91%d7%99%d7%9c%d7%95%d7%aa-%d7%a7/"

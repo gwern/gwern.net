@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-01-10 10:42:18 gwern"
+When:  Time-stamp: "2023-01-12 18:12:23 gwern"
 License: CC-0
 -}
 
@@ -2442,6 +2442,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" itis ", " it is ")
          , (" k ", " <em>k</em> ")
          , (" k-shot", " <em>k</em>-shot")
+         , (" k-nearest", " <em>k</em>-nearest")
          , ("one- or five-shot", "one-shot or five-shot")
          , ("lan- guage", "language")
          , ("pro-posed", "proposed")
