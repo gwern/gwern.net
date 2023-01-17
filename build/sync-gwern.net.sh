@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-01-13 18:35:32 gwern"
+# When:  Time-stamp: "2023-01-14 12:55:48 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -344,7 +344,7 @@ else
          grep -F -- '–' ./metadata/*.hs || true; }
     wrap λ "En-dashes in URLs?"
 
-    λ(){ grep -F -e 'http' ./metatadata/*.hs ./metatadata/*.yaml | grep -F -v -e 'https://en.wikipedia.org/wiki/' -e '10/arc-1-gestation/1' -e 'the-elves-leave-middle-earth-' -e '2011/05/from-the-bookcase-no-2' -e 'd-a-rovinskiis-collection-of-russian-lubki-18th' | grep -F -e "%E2%80%93" -e "%E2%80%94" -e "%E2%88%92"; }
+    λ(){ grep -F -e 'http' ./metadata/*.hs ./metadata/*.yaml | grep -F -v -e 'https://en.wikipedia.org/wiki/' -e '10/arc-1-gestation/1' -e 'the-elves-leave-middle-earth-' -e '2011/05/from-the-bookcase-no-2' -e 'd-a-rovinskiis-collection-of-russian-lubki-18th' | grep -F -e "%E2%80%93" -e "%E2%80%94" -e "%E2%88%92"; }
     wrap λ "*Escaped* En/em/minus dashes in URLs?"
 
     λ(){ gf '\\' ./static/css/*.css; }

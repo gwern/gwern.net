@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-01-13 21:53:05 gwern"
+When:  Time-stamp: "2023-01-16 10:21:36 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -2169,7 +2169,6 @@ badDomainsSimple = [ "2chan.us"
    , "www.wolframalpha.com"
    , "www.worksinprogress.co"
    , "www.worldcat.org"
-   , "www.wsmv.com"
    , "www.wzzm13.com"
    , "www.xilinx.com"
    , "www.xinhuanet.com"
@@ -4693,7 +4692,6 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.wolframalpha.com/input/?i=male+height+distribution"
             , "https://www.worksinprogress.co/issue/better-eats/"
             , "https://www.worldcat.org/title/educational-and-vocational-preferences-of-a-cohort-spatially-gifted-females-and-males-from-the-study-of-mathematically-precocious-youth/oclc/42465636&referer=brief_results"
-            , "https://www.wsmv.com/story/25667210/metro-police-seize"
             , "https://www.wunderground.com/history/airport/KNHK/2012/7/11/CustomHistory.html?dayend=22&monthend=3&yearend=2013&req_city=NA&req_state=NA&req_statename=NA&format=1"
             , "https://www.wzzm13.com/mb/news/crime/meth-laden-express-mail-parcel-brings-charges-for-holland-man/287645651"
             , "https://www.xilinx.com/prs_rls/silicon_spart/0333spartan3.htm"
