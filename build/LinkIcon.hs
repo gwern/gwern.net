@@ -526,7 +526,7 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                      "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com",
                      "palladiummag.com", "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "www.silcom.com", "esolangs.org",
                      "www.aiweirdness.com", "etherscan.io", "www.theringer.com", "cs.stanford.edu", "mmlab.ie.cuhk.edu.hk", "www.cs.toronto.edu",
-                     "www.centauri-dreams.org"]
+                     "www.centauri-dreams.org", "www.alexirpan.com"]
         linkIconMin = 4 :: Int
 
 -- Test suite:
@@ -894,7 +894,7 @@ linkIconTestUnitsText =
          , ("http://rspb.royalsocietypublishing.org/content/284/1851/20162562", "RS", "text")
          , ("http://rstb.royalsocietypublishing.org/content/365/1537/73.full", "RS", "text")
          , ("https://royalsocietypublishing.org/doi/10.1098/rsos.181393", "RS", "text")
-         , ("https://nautil.us/mapping-the-human-exposome-10595/", "nautilus", "svg")
+         , ("https://nautil.us/mapping-the-human-exposome-236726/", "nautilus", "svg")
          , ("http://www.sequentialtart.com/archive/july00/grant.shtml", "ST", "text,sans")
          , ("https://www.psychologytoday.com/us/blog/life-bilingual/201906/the-bilingual-advantage-three-years-later", "PT", "text,sans")
          , ("https://www.odt.co.nz/news/dunedin/student-drug-dealer-jailed", "ODT", "text,tri")

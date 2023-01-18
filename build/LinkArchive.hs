@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-12-06 17:05:55 gwern"
+When:  Time-stamp: "2023-01-19 10:16:40 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1286,5 +1286,6 @@ whiteList url
       , "https://realsinger.github.io/" -- low quality (audio embeds)
       , "https://www.ibd.la/" -- interactive
       , "http://www.complexity-calculator.com/" -- interactive
+      , "https://drugs.globalincidentmap.com/" -- interactive (visualization)
       ] = True
     | otherwise = False

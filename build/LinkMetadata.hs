@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-01-17 22:19:56 gwern"
+When:  Time-stamp: "2023-01-18 10:32:13 gwern"
 License: CC-0
 -}
 
@@ -1716,10 +1716,14 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("Alzheimer9", "Alzheimer'")
          , ("<br/> <br/>", "<br/>")
          , ("1.<p>", "<p>")
+         , ("<li> <p>➢ ", "<li>")
+         , ("<p><ul></p>", "<ul>")
+         , ("</strong> :</p> <ul>", "</strong>:</p> <ul>")
          , ("<list list-type=\"bullet\">", "<ul>")
          , ("</list>", "</ul>")
          , ("</list-item>", "</li>")
          , ("<list-item>", "<li>")
+         , ("<list list-type=\"simple\">", "<ul>")
          , ("<p> ", "<p>")
          , (" <p>", "<p>")
          , ("</p> ", "</p>")
