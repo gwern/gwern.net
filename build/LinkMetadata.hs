@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-01-12 18:12:23 gwern"
+When:  Time-stamp: "2023-01-17 22:19:56 gwern"
 License: CC-0
 -}
 
@@ -1964,6 +1964,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<h3>Abstract</h3>", "")
          , ("<h3>SUMMARY</h3>", "")
          , ("<h3>Summary</h3>", "")
+         , ("▪ Abstract", "")
          , ("<abstract abstract-type=\"summary\">", "")
          , ("<p><abstract abstract-type=\"short\"></p>", "")
          , ("</abstract>", "")
