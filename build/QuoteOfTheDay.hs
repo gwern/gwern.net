@@ -3,7 +3,7 @@ module QuoteOfTheDay where
 -- A simple 'quote of the day' database for storing text snippets which can be transcluded.
 --
 -- 'Quote of the day' is an old website feature where, for visitors' edification or amusement, a random quote from a list of quotes would be display, often in the website footer or homepage.
--- An example is <https://en.wikiquote.org/wiki/Wikiquote:Quote_of_the_day> which is transcluded in the middle of <https://en.wikiquote.org/wiki/Main_Page>.
+-- An example is <https://en.wikiquote.org/wiki/Wikiquote:Quote_of_the_day> which is transcluded in the middle of <https://en.wikiquote.org/wiki/Main_Page>, or <https://web.archive.org/web/20150410044208/http://bbs.stardestroyer.net/SiteBanner.php?display=history>.
 -- A common source of quotes used to be <https://en.wikipedia.org/wiki/Fortune_(Unix)>; see also <https://www.lesswrong.com/tag/rationality-quotes>.
 --
 -- A QOTD database is a `[Quote]` Haskell file, read with read/show. A `Quote` is a 3-tuple `(String, String, Bool)`: HTML "quote", HTML "attribution [or other commentary/metadata]", and whether it has been "used yet" (not entirely necessary, since one could sample randomly, but tracked to minimize reuse of quotes).' When all quotes have been used and are `True`, they get reset to `False` and the cycle begins again (with, presumably, new quotes added since the last time).
@@ -16,6 +16,8 @@ module QuoteOfTheDay where
 
 import Control.Monad (when)
 import qualified Data.Set as S (delete, empty, filter, fromList, toList, insert, map)
+import System.Directory (doesFileExist)
+import Text.Show.Pretty (ppShow)
 
 type QOTDB = [Quote]
 type Quote = (String, String, Bool)
@@ -25,17 +27,16 @@ quoteDBPath = "metadata/quotes.hs"
 quotePath   = "metadata/today-quote.html"
 
 readQuoteDB :: IO QOTDB
-readQuoteDB = fmap read $ readFile quoteDBPath
+readQuoteDB = do exists <- doesFileExist quoteDBPath
+                 if not exists then return [] else fmap read $ readFile quoteDBPath
 
 writeQuoteDB :: QOTDB -> IO ()
-writeQuoteDB = writeFile quoteDBPath . show
+writeQuoteDB = writeFile quoteDBPath . ppShow
 
 writeQuote :: Quote -> IO ()
 writeQuote (quote,attribution,_) = writeFile quotePath quoted
-  where quoted = "<div class=\"epigraph\">\n<blockquote><p>\"" ++ quote ++ "</p>\n<p>" ++ attribution ++ "</p></blockquote>\n</div>"
-
-qnegate :: Quote -> Quote
-qnegate (a,b,s) = (a,b,not s)
+  where quoted :: String
+        quoted = "<div class=\"epigraph\">\n<blockquote><p>“" ++ quote ++ "”</p>" ++ if null attribution then "" else ("\n<p>" ++ attribution ++ "</p>") ++ "</blockquote>\n</div>"
 
 writeQotD :: IO ()
 writeQotD = do db <- fmap S.fromList readQuoteDB
@@ -51,3 +52,6 @@ writeQotD = do db <- fmap S.fromList readQuoteDB
 
                let db'' = S.insert (qnegate qotd) $ S.delete qotd db' -- update the now-used quote
                writeQuoteDB $ S.toList db''
+  where
+    qnegate :: Quote -> Quote
+    qnegate (a,b,s) = (a,b,not s)
