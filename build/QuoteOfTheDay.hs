@@ -14,7 +14,7 @@ module QuoteOfTheDay where
 --
 -- `<div class="qotd"><a class="include" href="/metadata/today-quote.html">Quote Of The Day</a></div>`
 
-import Control.Monad (when)
+import Control.Monad (unless, when)
 import qualified Data.Set as S (delete, empty, filter, fromList, toList, insert, map)
 import System.Directory (doesFileExist)
 import Text.Show.Pretty (ppShow)
@@ -39,18 +39,20 @@ writeQuote (quote,attribution,_) = writeFile quotePath quoted
         quoted = "<div class=\"epigraph\">\n<blockquote><p>“" ++ quote ++ "”</p>" ++ if null attribution then "" else ("\n<p>" ++ attribution ++ "</p>") ++ "</blockquote>\n</div>"
 
 writeQotD :: IO ()
-writeQotD = do db <- fmap S.fromList readQuoteDB
-               when (null db) $ error "Fatal error: quote-of-the-day database is empty?"
+writeQotD = do dblist <- readQuoteDB
+               when (null dblist) $ error "Fatal error: quote-of-the-day database is empty?"
+               unless (not $ any (\(q,_,_) -> null q) dblist) $ error $ "Fatal error: quote-of-the-day database has empty quotes? " ++ show dblist
+               let db = S.fromList dblist
 
                -- get set of usable quotes, and if there are none, reset the entire set and use that:
                let dbUnused = S.filter (\(_,_,status) -> not status) db
                let dbReset = if dbUnused /= S.empty then db else S.map qnegate db
-               let db' = S.filter (\(_,_,status) -> not status) dbReset
+               let dbUnused' = S.filter (\(_,_,status) -> not status) dbReset
 
-               let qotd = head $ S.toList db'
+               let qotd = head $ S.toList dbUnused'
                writeQuote qotd
 
-               let db'' = S.insert (qnegate qotd) $ S.delete qotd db' -- update the now-used quote
+               let db'' = S.insert (qnegate qotd) $ S.delete qotd db -- update the now-used quote
                writeQuoteDB $ S.toList db''
   where
     qnegate :: Quote -> Quote
