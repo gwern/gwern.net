@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-12-06 18:49:53 gwern"
+When:  Time-stamp: "2023-01-21 16:21:32 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -21,7 +21,7 @@ module LinkBacklink (getBackLinkCount, getSimilarLinkCount, Backlinks, readBackl
                     getAnnotationLinkCheck, getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck) where
 
 import Data.List (sort)
-import qualified Data.Map.Strict as M (empty, filter, fromList, keys, toList, Map) -- fromListWith,
+import qualified Data.Map.Strict as M (empty, filter, fromList, keys, map, toList, Map) -- fromListWith,
 import qualified Data.Text as T (count, pack, unpack, Text)
 import Data.Text.IO as TIO (readFile)
 import Text.Read (readMaybe)
@@ -31,19 +31,24 @@ import System.Directory (doesFileExist)
 
 import Utils (writeUpdatedFile)
 
-type Backlinks = M.Map T.Text [T.Text]
+-- base URL, then fragment+links. eg "/Improvements" has links from "/Notes" etc, but those links may target anchors like "#microsoft", and those are conceptually distinct from the page as a whole - they are sub-pages. So to preserve that, we nest.
+-- eg ("/Improvements",
+--                     [("/Improvements#microsoft", ["/Notes", "/reviews/Books"])
+--                      , ("/Improvements", ["/index"])]
+--     )
+type Backlinks = M.Map T.Text [(T.Text, [T.Text])]
 
 readBacklinksDB :: IO Backlinks
 readBacklinksDB = do exists <- doesFileExist "metadata/backlinks.hs"
                      bll <- if exists then TIO.readFile "metadata/backlinks.hs" else return ""
                      if bll=="" then return M.empty else
-                       let bllM = readMaybe (T.unpack bll) :: Maybe [(T.Text,[T.Text])]
+                       let bllM = readMaybe (T.unpack bll) :: Maybe [(T.Text,[(T.Text,[T.Text])])]
                        in case bllM of
                          Nothing   -> error ("Failed to parse backlinks.hs; read string: " ++ show bll)
                          Just bldb -> return $ M.fromList bldb
 writeBacklinksDB :: Backlinks -> IO ()
-writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[T.Text])]
-                           let bll' = sort $ map (\(a,b) -> (T.unpack a, sort $ map T.unpack b)) bll
+writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[(T.Text, [T.Text])])]
+                           let bll' = sort $ map (\(a,b) -> (T.unpack a, map (\(c,d) -> (T.unpack c, sort $ map T.unpack d)) b)) bll
                            writeUpdatedFile "hakyll-backlinks" "metadata/backlinks.hs" (T.pack $ ppShow bll')
 
 -- return the raw FilePath of an x-link, and also the URL-encoded version safe to substitute into HTML:
@@ -90,7 +95,7 @@ getSimilarLinkCount p = do (file,_) <- getSimilarLinkCheck p
 
 -- a backlinks database implicitly defines all the forward links as well. It's not efficient compared to converting it to a 'forwardlinks database', but we can support one-off searches easily:
 getForwardLinks :: Backlinks -> T.Text -> [T.Text]
-getForwardLinks bdb p = M.keys $ M.filter (p `elem`) bdb
+getForwardLinks bdb p = M.keys $  M.filter (p `elem`) $ M.map (concatMap snd) bdb
 
 ----------------------
 
