@@ -136,7 +136,9 @@ guessTagFromShort m t = let allTags = nubOrd $ sort m in
    case lookup t tagsShort2Long of
      Just tl -> tl -- is an existing short/petname
      Nothing -> let shortFallbacks =
-                      (map (\a->(a,"")) $ filter (\tag -> ("/"++t) `isSuffixOf` tag || (t++"/") `isInfixOf` tag) allTags) ++ -- look for matches by path segment eg. 'transformer' → 'ai/nn/transformer' (but not 'ai/nn/transformer/alphafold' or 'ai/nn/transformer/gpt')
+                      (map (\a->(a,"")) $ filter (\tag -> ("/"++ t) `isSuffixOf` tag) allTags) ++
+                      (map (\a->(a,"")) $ filter (\tag -> ("/"++ t++"/") `isInfixOf` tag) allTags) ++ -- look for matches by path segment eg. 'transformer' → 'ai/nn/transformer' (but not 'ai/nn/transformer/alphafold' or 'ai/nn/transformer/gpt')
+                      (map (\a->(a,"")) $ filter (\tag -> ("/"++t) `isSuffixOf` tag || (t++"/") `isInfixOf` tag) allTags) ++ -- look for matches by partial path segment eg. 'bias' → ' psychology/cognitive-bias/illusion-of-depth'
                       filter (\(short,_) -> t `isSuffixOf` short) tagsShort2Long ++
                       filter (\(short,_) -> t `isPrefixOf` short) tagsShort2Long ++
                       filter (\(short,_) -> t `isInfixOf` short) tagsShort2Long

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-01-18 10:32:13 gwern"
+When:  Time-stamp: "2023-01-20 10:56:35 gwern"
 License: CC-0
 -}
 
@@ -254,7 +254,7 @@ readLinkMetadataAndCheck = do
              unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in YAMLs!: " >> printGreen (show (titles \\ nubOrd titles))
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) finalL
-             Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex) (printRed $ "Mixed up author & date?: " ++ a) ) authors
+             Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex) (printRed "Mixed up author & date?: " >> printGreen a) ) authors
              let authorsBadChars = filter (\a -> anyInfix a [";", "&", "?", "!"] || isPunctuation (last a)) $ filter (not . null) authors
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
@@ -2545,7 +2545,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("small saple", "small sample")
          , ("ofsmoking", "of smoking")
          , (" u.s. ", " U.S. ")
-         , ("ofthe", "of the")
+         , (" ofthe", " of the")
          , ("ofdata", "of data")
          , ("\8201", " ")
          , ("ADE20k", "ADE20K")
