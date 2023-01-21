@@ -81,7 +81,7 @@ addPageLink y@(Link (a,b,c) e (f,g)) = if "link-page" `elem` b || "link-page-not
 addPageLink x = x
 
 isPagePath :: T.Text -> Bool
-isPagePath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
+isPagePath f = let f' = replace "https://gwern.net" "" $ T.unpack f in
     (if
         not ("/" `isPrefixOf` f') ||
       ("/images/" `isPrefixOf` f' || "/static/" `isPrefixOf` f')
@@ -121,7 +121,7 @@ updateGwernEntries = do rescrapeYAML gwernEntries "metadata/full.yaml"
                         rescrapeYAML gwernEntries "metadata/half.yaml"
                         rescrapeYAML gwernEntries "metadata/auto.yaml"
                         readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting…"
-  where gwernEntries path = ("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path || "#manual-annotation" `isInfixOf` path)
+  where gwernEntries path = ("/" `isPrefixOf` path || "https://gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path || "#manual-annotation" `isInfixOf` path)
 
 -- eg to rescrape a specific abstract: `rescrapeYAML (\p -> p == "/notes/Attention") "metadata/half.yaml"`
 rescrapeYAML :: (Path -> Bool) -> Path -> IO ()
@@ -374,9 +374,9 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
   do let target = T.unpack targetT
      when (null target) $ error (show x)
      when ((reverse $ take 3 $ reverse target) == "%20" || last target == ' ') $ error $ "URL ends in space? " ++ target ++ " (" ++ show x ++ ")"
-     -- normalize: convert 'https://www.gwern.net/docs/foo.pdf' to '/docs/foo.pdf' and './docs/foo.pdf' to '/docs/foo.pdf'
+     -- normalize: convert 'https://gwern.net/docs/foo.pdf' to '/docs/foo.pdf' and './docs/foo.pdf' to '/docs/foo.pdf'
      -- the leading '/' indicates this is a local Gwern.net file
-     let target' = replace "https://www.gwern.net/" "/" target
+     let target' = replace "https://gwern.net/" "/" target
      let target'' = if head target' == '.' then drop 1 target' else target'
 
      -- check local link validity: every local link except tags should exist on-disk:
@@ -1010,7 +1010,7 @@ dateTruncateBad :: String -> String
 dateTruncateBad d = if "-01-01" `isSuffixOf` d then take 4 d else d
 
 linkCanonicalize :: String -> String
-linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l
+linkCanonicalize l | "https://gwern.net/" `isPrefixOf` l = replace "https://gwern.net/" "/" l
                    -- | head l == '#' = l
                    | otherwise = l
 
@@ -1028,11 +1028,11 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
         | p =~ sectionAnonymousRegex = return (Left Permanent) -- unnamed sections are unstable, and also will never have abstracts because they would've gotten a name as part of writing it.
         | p =~ footnoteRegex= return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
         | otherwise =
-            do let p' = sed "^/" "" $ replace "https://www.gwern.net/" "" p
+            do let p' = sed "^/" "" $ replace "https://gwern.net/" "" p
                let indexP = "docs/" `isPrefixOf` p' && "/index" `isInfixOf` p'
                printGreen p'
                checkURL p
-               (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--silent", "https://www.gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"] -- we strip `--location` because we do *not* want to follow redirects. Redirects creating duplicate annotations is a problem.
+               (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--silent", "https://gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"] -- we strip `--location` because we do *not* want to follow redirects. Redirects creating duplicate annotations is a problem.
                case status of
                  ExitFailure _ -> printRed ("Gwern.net download failed: " ++ p) >> return (Left Permanent)
                  _ -> do
@@ -1048,7 +1048,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas
-                        let thumbnail' = if ("https://www.gwern.net/static/img/logo/logo-whitebg-large-border.png" `isPrefixOf` thumbnail) then "" else replace "https://www.gwern.net/" "" thumbnail
+                        let thumbnail' = if ("https://gwern.net/static/img/logo/logo-whitebg-large-border.png" `isPrefixOf` thumbnail) then "" else replace "https://gwern.net/" "" thumbnail
                         let thumbnailText = if not (any filterThumbnailText metas) then "" else -- WARNING: if there is no thumbnailText, then bad things will happen downstream as the thumbnail gets rendered as solely an <img> rather than a <figure><img>. We will assume the author will always have a thumbnailText set.
                                           (\(TagOpen _ [_, ("content", thumbt)]) -> thumbt) $ head $ filter filterThumbnailText metas
                         when (null thumbnailText) $ printRed ("Warning: no thumbnailText alt text defined for URL " ++ p)

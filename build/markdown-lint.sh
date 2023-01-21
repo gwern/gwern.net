@@ -1,6 +1,6 @@
 #!/bin/bash
-# When:  Time-stamp: "2022-12-09 10:20:05 gwern"
-# see https://www.gwern.net/About#markdown-checker
+# When:  Time-stamp: "2023-01-20 19:42:04 gwern"
+# see https://gwern.net/About#markdown-checker
 
 set +x
 
@@ -177,7 +177,7 @@ do
 
         ## reused later as well:
         HTML=$(mktemp  --suffix=".html")
-        cat "$PAGE" | pandoc --metadata lang=en --metadata title="Test" --mathml --to=html5 --standalone --number-sections --toc --reference-links --css=https://www.gwern.net/static/css/default.css -f markdown+smart --template=/home/gwern/bin/bin/pandoc-template-html5-articleedit.html5 - --output="$HTML"
+        cat "$PAGE" | pandoc --metadata lang=en --metadata title="Test" --mathml --to=html5 --standalone --number-sections --toc --reference-links --css=https://gwern.net/static/css/default.css -f markdown+smart --template=/home/gwern/bin/bin/pandoc-template-html5-articleedit.html5 - --output="$HTML"
 
         λ() { tidy -quiet -errors --doctype html5 "$HTML" 2>&1 >/dev/null | grep -F -v -e 'Warning: <img> proprietary attribute "loading"'; }
         wrap λ "HTML validation problems"
@@ -202,7 +202,7 @@ do
                         -e ' _ ' -e '[^' -e '^]' -e '/* ' -e ' */' -e '<!--' -e '-->' -e '<-- ' -e '<—' -e '—>' \
                         -e '$title$' -e '<del>' -e '.smallcaps' -e '</q<' -e '<q>' -e '</q>' \
                         -e '$description$' -e '$author$' -e '$tags$' -e '$category$' \
-                        -e '(!Wikipedia' -e '(!Hoogle' -e 'http://www.gwern.net' -e 'http://gwern.net' -e 'smallcaps}' \
+                        -e '(!Wikipedia' -e '(!Hoogle' -e 'http://www.gwern.net' -e 'http://gwern.net' -e 'https://www.gwern.net' -e 'smallcaps}' \
                         -e '!Marin' -e '**'  \
                    | egp -e '\!Margin:.*↩'; } # ))
         wrap λ "look for syntax errors making it to the final HTML output"
@@ -235,7 +235,7 @@ do
               ## checkPDF 'http://www.nytimes.com/2009/11/15/business/economy/15view.html ' # no
               ## checkPDF 'http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.208.2314&rep=rep1&type=pdf' # yes
               ## checkPDF 'https://files.osf.io/v1/resources/np2jd/providers/osfstorage/59614dec594d9002288271b6?action=download&version=1&direct' # yes
-              runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E "^http" | grep -F -v -e 'https://www.gwern.net' -e arxiv.org -e pnas.org | sort -u | shuf | parallel -n 1 checkPDF; }
+              runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E "^http" | grep -F -v -e 'https://gwern.net' -e arxiv.org -e pnas.org | sort -u | shuf | parallel -n 1 checkPDF; }
         wrap λ "Non-icon/warned PDF links"
 
         λ() { for PDF in $(runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -e '^/docs/' -e 'https:\/\/www\.gwern\.net\/' | \

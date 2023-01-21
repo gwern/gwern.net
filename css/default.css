@@ -1089,7 +1089,7 @@ blockquote blockquote {
     margin-top: 0.5em;
 }
 
-/*  Interviews (e.g. https://www.gwern.net/Morning-writing#examples).
+/*  Interviews (e.g. https://gwern.net/Morning-writing#examples).
  */
 blockquote p > code:first-child,
 blockquote p > a:first-child code:first-child {
@@ -1290,7 +1290,7 @@ a.footnote-ref {
 /*  On directory indexes, titles may include ‘19th’ century, which with the
     default size & padding makes the ‘TH’ really stand out. e.g.
 
-    https://www.gwern.net/docs/sociology/index#johow-et-al-2019-section ‘“HIGH CONSANGUINITY PROMOTES INTERGENERATIONAL WEALTH CONCENTRATION IN SOCIOECONOMICALLY PRIVILEGED KRUMMHÖRN FAMILIES OF THE 18TH AND 19TH CENTURIES”, JOHOW ET AL 2019’
+    https://gwern.net/docs/sociology/index#johow-et-al-2019-section ‘“HIGH CONSANGUINITY PROMOTES INTERGENERATIONAL WEALTH CONCENTRATION IN SOCIOECONOMICALLY PRIVILEGED KRUMMHÖRN FAMILIES OF THE 18TH AND 19TH CENTURIES”, JOHOW ET AL 2019’
  */
 h1 sub, h1 sup, h2 sub, h2 sup {
     font-size: 0.6em;

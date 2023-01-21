@@ -75,7 +75,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                              -- if we link to a top-level essay, then we want to insert the anchor to jump to the link use.
                                                              -- if the backlink caller is actually another annotation (and so has a '.' in it), we want to add no anchor because that will break the annotation lookup:
                                                              -- it'll look at '/metadata/annotations/$FOO.html#$ID' instead2 of the actual '/metadata/annotations/$FOO.html'.
-                                                             -- (eg. for Boehm et al 1993's "backlinks", there will be a 'Hierarchy in the Library' backlink which would point at 'https://www.gwern.net/docs/culture/2008-johnson.pdf#boehm-et-al-1993' , which has no annotation, because it's annotated as '/docs/culture/2008-johnson.pdf').
+                                                             -- (eg. for Boehm et al 1993's "backlinks", there will be a 'Hierarchy in the Library' backlink which would point at 'https://gwern.net/docs/culture/2008-johnson.pdf#boehm-et-al-1993' , which has no annotation, because it's annotated as '/docs/culture/2008-johnson.pdf').
                                                              Just (_,aut,dt,_,_,_) -> generateID (T.unpack target) aut dt
                                        let callerDatesTitles = map (\u -> case M.lookup (T.unpack u) md of
                                                                       Nothing -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
@@ -136,10 +136,10 @@ parseFileForLinks mdp m = do text <- TIO.readFile m
                              let links = map truncateAnchorsForPages $ filter blackList $ filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
                                           extractLinksWith backLinksNot mdp text
 
-                             let caller = T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "https://www.gwern.net/" "/" $ replace ".page" "" m
+                             let caller = T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "https://gwern.net/" "/" $ replace ".page" "" m
                              if not (blackList caller) then return [] else
                               do
-                                let called = filter (/= caller) (map (T.replace "https://www.gwern.net/" "/") links)
+                                let called = filter (/= caller) (map (T.replace "https://gwern.net/" "/") links)
                                 return $ zip called (repeat caller)
 
 -- filter out links with the 'backlink-not' class. This is for when we want to insert a link, but not have it 'count' as a backlink for the purpose of linking the reader. eg. the 'similar links' which are put into a 'See Also' in annotations - they're not really 'backlinks' even if they are semi-automatically approved as relevant.

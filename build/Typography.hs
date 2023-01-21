@@ -94,7 +94,7 @@ lowercaseUnicode = "a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûü�
 
 -------------------------------------------
 
--- add '<wbr>'/ZERO WIDTH SPACE (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr) HTML element to inline uses of forward slashes, such as in lists, to tell Chrome to linebreak there (see https://www.gwern.net/Lorem#inline-formatting in Chrome for examples of how its linebreaking is incompetent, sadly).
+-- add '<wbr>'/ZERO WIDTH SPACE (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr) HTML element to inline uses of forward slashes, such as in lists, to tell Chrome to linebreak there (see https://gwern.net/Lorem#inline-formatting in Chrome for examples of how its linebreaking is incompetent, sadly).
 --
 -- WARNING: this will affect link texts like '[AC/DC](!W)', so make sure you do the rewrite after
 -- the interwiki and any passes which insert inline HTML - right now 'breakSlashes' tests for

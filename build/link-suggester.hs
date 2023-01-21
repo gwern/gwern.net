@@ -103,7 +103,7 @@ filterURLs :: T.Text -> Bool
 filterURLs u = anyPrefixT u ["$","\8383","#","/static/img/","/newsletter/20","dropbox.com","https://www.harney.com"] ||
                u `elem` ["https://www.reuters.com/article/us-germany-cyber-idUSKCN1071KW"] ||
                "/docs/" `T.isPrefixOf` u && "/index" `T.isSuffixOf` u ||
-               "https://www.gwern.net/docs/" `T.isPrefixOf` u && "/index" `T.isSuffixOf` u
+               "https://gwern.net/docs/" `T.isPrefixOf` u && "/index" `T.isSuffixOf` u
 
 filterAnchors :: T.Text -> Bool
 filterAnchors   t = T.length t > anchorLengthMaximum ||

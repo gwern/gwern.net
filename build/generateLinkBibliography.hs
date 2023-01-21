@@ -54,14 +54,14 @@ writeLinkBibliographyFragment md path =
        Just (_,_,_,_,_,"") -> return ()
        Just (_,_,_,_,_,abstract) -> do
         let self = takeWhile (/='#') path
-            selfAbsolute = "https://www.gwern.net"++self
+            selfAbsolute = "https://gwern.net"++self
         -- toggle between parsing the full original Markdown page, and just the annotation abstract:
         linksRaw <- if head path == '/' && '.'`notElem`path then
                       if '#' `elem` path && abstract=="" then return [] -- if it's just an empty annotation triggered by a section existing, ignore
                       else
                         extractLinksFromPage (tail (takeWhile (/='#') path) ++ ".page")
                     else return $ map T.unpack $ nub $ extractLinks False (T.pack abstract)
-            -- delete self-links, such as in the ToC of scraped abstracts, or newsletters linking themselves as the first link (eg '/newsletter/2022/05' will link to 'https://www.gwern.net/newsletter/2022/05' at the beginning)
+            -- delete self-links, such as in the ToC of scraped abstracts, or newsletters linking themselves as the first link (eg '/newsletter/2022/05' will link to 'https://gwern.net/newsletter/2022/05' at the beginning)
         let links = filter (\l -> not (self `isPrefixOf` l || selfAbsolute `isPrefixOf` l)) linksRaw
         when (length (filter (\l -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` l))  links) >= mininumLinkBibliographyFragment) $
           do backlinks    <- mapM (fmap snd . getBackLinkCheck) links
@@ -124,7 +124,7 @@ extractLinksFromPage path =
                        return $ case pE of
                                   Left  _ -> []
                                   -- make the list unique, but keep the original ordering
-                                  Right p -> map (replace "https://www.gwern.net/" "/") $
+                                  Right p -> map (replace "https://gwern.net/" "/") $
                                                      filter (\l -> head l /= '#') $ -- self-links are not useful in link bibliographies
                                                      nub $ map T.unpack $ extractURLs p -- TODO: maybe extract the title from the metadata for nicer formatting?
 

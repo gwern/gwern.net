@@ -17,7 +17,7 @@ Demo command (for the full script, with all static checks & generation & optimiz
 $ cd ~/wiki/ && ghc -rtsopts -threaded -O2 -fforce-recomp -optl-s --make hakyll.hs &&
   ./hakyll rebuild +RTS -N3 -RTS && echo -n -e '\a'  &&
   s3cmd -v -v --human-readable-sizes --reduced-redundancy --no-mime-magic --guess-mime-type --default-mime-type=text/html
-        --add-header="Cache-Control: max-age=604800, public" --delete-removed sync _site/ s3://www.gwern.net/ &&
+        --add-header="Cache-Control: max-age=604800, public" --delete-removed sync _site/ s3://gwern.net/ &&
   rm -rf ~/wiki/_cache/ ~/wiki/_site/ && rm ./hakyll *.o *.hi ;
   git push; echo -n -e '\a'
 

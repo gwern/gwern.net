@@ -208,7 +208,7 @@ findRegexMatch ((_,r,u):rs) s = let (a,b,c) = R.match r s in
 -- So to disable the modafinil rewrite on /Modafinil, one could insert into the Markdown a line like:
 -- `<span style="display:none;">[null](/Modafinil)</span> <!-- LinkAuto override: disable self-linking -->`
 filterDefinitions :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
-filterDefinitions p = let allLinks = S.fromList $ map (T.replace "https://www.gwern.net/" "/") $ extractURLs p in
+filterDefinitions p = let allLinks = S.fromList $ map (T.replace "https://gwern.net/" "/") $ extractURLs p in
                                           filter (\(_,_,linkTarget) -> linkTarget `notElem` allLinks)
 
 -- Optimization: try to prune a set of definitions and a document. Convert document to plain text,

@@ -492,7 +492,7 @@ linkIconTestUnitsLink = [(Link ("", ["directory-indexes-upwards"],     []) [Str 
 -- are enough work that below a certain level of prevalence, they are not worthwhile even if completely
 -- transparent/self-explanatory.)
 --
--- The original raw results are particularly useful when piped into <https://www.gwern.net/haskell/lcps.hs> to
+-- The original raw results are particularly useful when piped into <https://gwern.net/haskell/lcps.hs> to
 -- get suggested prefixes/domains worth adding link-icons for, or one can just look at the domains by `host`:
 linkIconPrioritize :: IO [(Int,T.Text)]
 linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
@@ -592,7 +592,7 @@ linkIconTestUnitsText =
          , ("https://about.google/",  "google","svg")
          , ("https://arxiv.org/abs/1706.04972#google",  "google","svg")
          , ("https://arxiv.org/pdf/2009.06732.pdf#org=google&page=6",  "google","svg")
-         , ("https://www.gwern.net/docs/cs/hardware/2015-kanev.pdf#google",  "google","svg")
+         , ("https://gwern.net/docs/cs/hardware/2015-kanev.pdf#google",  "google","svg")
          , ("https://www.lesswrong.com/posts/37sHjeisS9uJufi4u/scholarship-how-to-do-it-efficiently",  "LW","text")
          , ("https://www.lesswrong.com",  "LW","text")
          , ("http://sl4.org/archive/0812/index.html#19570",  "LW","text")

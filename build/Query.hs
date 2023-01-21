@@ -53,7 +53,7 @@ extractURL = extractURLWith (const True)
 -- similar-links on both the short noun 'GPT-3' and the paper title, but we can't if we arbitrarily
 -- return one but not the other).
 --
--- Special links: this will convert interwiki links to the full URLs, but it will leave alone any local links (it will not prefix 'https://www.gwern.net') or any inflation-adjusted links (currently, links starting with '$' or '₿').
+-- Special links: this will convert interwiki links to the full URLs, but it will leave alone any local links (it will not prefix 'https://gwern.net') or any inflation-adjusted links (currently, links starting with '$' or '₿').
 extractURLsAndAnchorTooltips :: Pandoc -> [(T.Text,[T.Text])]
 extractURLsAndAnchorTooltips = queryWith extractURLSquashed . walk convertInterwikiLinks
  where

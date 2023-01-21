@@ -56,7 +56,7 @@ notInvertP :: [T.Text] -> Bool
 notInvertP classes = "invert-not" `elem` classes
 
 invertImage :: FilePath -> IO (Bool, String, String) -- invert / height / width
-invertImage f | "https://www.gwern.net/" `isPrefixOf` f = invertImageLocal $ Utils.replace "https://www.gwern.net/" "" f
+invertImage f | "https://gwern.net/" `isPrefixOf` f = invertImageLocal $ Utils.replace "https://gwern.net/" "" f
               | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-invert"
                                            -- NOTE: while wget preserves it, curl erases the original modification time reported by server in favor of local file creation; this is useful for `invertImagePreview` --- we want to check downloaded images manually before their annotation gets stored permanently.
                                            (status,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", f, "--output", temp]
@@ -112,7 +112,7 @@ imageMagickDimensions :: FilePath -> IO (String,String)
 imageMagickDimensions f =
   let f'
         | "/" `isPrefixOf` f && not ("/tmp" `isPrefixOf` f) = tail f
-        | "https://www.gwern.net/" `isPrefixOf` f = drop 22 f
+        | "https://gwern.net/" `isPrefixOf` f = drop 22 f
         | otherwise = f
   in
     do exists <- doesFileExist f'
@@ -153,8 +153,8 @@ imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
 -- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
 imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = let p' = T.takeWhile (/='#') p in -- it is possible to have links which have '.png' or '.jpg' infix, but are not actually images, such as, in tag-directories, section headers for images: '/docs/statistics/survival-analysis/index#filenewbie-survival-by-semester-rows.png'; special-case that
                                                          if (".png" `T.isSuffixOf` p' || ".jpg" `T.isSuffixOf` p') &&
-                                                          ("https://www.gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
-                                                         do exists <- doesFileExist $ tail $ replace "https://www.gwern.net" "" $ T.unpack  p'
+                                                          ("https://gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
+                                                         do exists <- doesFileExist $ tail $ replace "https://gwern.net" "" $ T.unpack  p'
                                                             if not exists then printRed ("imageSrcset (Link): " ++ show x ++ " does not exist?") >> return x else
                                                               do (h,w) <- imageMagickDimensions $ T.unpack p'
                                                                  return (Link (htmlid, classes,

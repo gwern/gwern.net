@@ -77,7 +77,7 @@ main = do printN:_ <- getArgs
 
 isAnnotated :: Metadata -> String -> Bool
 isAnnotated md target =
-  let target' = replace "https://www.gwern.net/" "/" target in
+  let target' = replace "https://gwern.net/" "/" target in
     let annotated = M.lookup target' md in
       case annotated of
        -- the link has a valid annotation already defined (>100 chars, no meaningful abstract can be written in <100), so build & return;

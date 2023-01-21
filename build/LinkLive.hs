@@ -715,7 +715,7 @@ goodDomainsSimple =
     , "www.grandforksherald.com"
     , "www.greaterwrong.com"
     , "www.gutenberg.org"
-    , "www.gwern.net"
+    , "gwern.net"
     , "www.harrowell.org.uk"
     , "www.haskell.org"
     , "www.hbs.edu"

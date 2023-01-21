@@ -30,8 +30,8 @@ generateID url author date
   -- hardwire tricky cases where unique IDs can't easily be derived from the URL/metadata:
   | any (\(u,_) -> u == url) linkIDOverrides = fromJust $ lookup url linkIDOverrides
   -- indexes or tag-directories shouldn't be cited/have IDs (often linked many times on a page)
-  | ("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index" `isSuffixOf` url) = ""
-  -- eg. '/Faces' = '#gwern-faces'; `generateID "https://www.gwern.net/Fonts" "Gwern Branwen" "2021-01-01"` → "gwern-fonts" (since we are using the short URL/slug, we don't need a year/date to disambiguate, and those are often meaningless on Gwern.net anyway).
+  | ("https://gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index" `isSuffixOf` url) = ""
+  -- eg. '/Faces' = '#gwern-faces'; `generateID "https://gwern.net/Fonts" "Gwern Branwen" "2021-01-01"` → "gwern-fonts" (since we are using the short URL/slug, we don't need a year/date to disambiguate, and those are often meaningless on Gwern.net anyway).
   -- EXPERIMENTAL: we have hitherto not set IDs on *section* or *anchor* links like '/Improvements#microsoft'. Those got no ID, because no authorship metadata is available (unless metadata had been manually added via an annotation for that URL specifically). If we *assume*, no contrary metadata being available, that they were written by me, then they would get an ID like 'gwern-improvements-microsoft'. (Tacking on the hash to the baseline ID of '/Improvements' → 'gwern-improvements'.)
   | ("Gwern Branwen" == author || "" == author) &&
     (("/" `isPrefixOf` url') && notElem '.' url' && not ("/index"`isInfixOf`url'))
@@ -45,14 +45,14 @@ generateID url author date
   -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
   | otherwise = T.pack $ citeToID $ authorsToCite url author date
   where
-    url' = replace "https://www.gwern.net" "" url
+    url' = replace "https://gwern.net" "" url
 
 -- attempt to guess the URL for a specific annotation somewhere in the tag-directories for easier reference (used in `gwa` dumps)
 generateURL :: Path -> MetadataItem -> String
 generateURL _ (_,_,_,_,[],_) = ""
 generateURL url (_,a,d,_,ts,_) = let ident = T.unpack $ generateID url a d in
                                    if null ident then "" else
-                                     "https://www.gwern.net/docs/" ++ head ts ++ "/index#" ++ ident ++ "-section"
+                                     "https://gwern.net/docs/" ++ head ts ++ "/index#" ++ ident ++ "-section"
 
 authorsToCite :: String -> String -> String -> String
 authorsToCite url author date =
@@ -411,7 +411,7 @@ linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start wi
        , ("https://www.biorxiv.org/content/early/2017/12/31/241414.full", "ma-rrblup")
        , ("https://www.biorxiv.org/content/early/2018/07/25/376897.full", "belsky-et-al-2018-2")
        , ("https://www.cl.cam.ac.uk/~bjc63/tight_scrape.pdf", "turk-et-al-2020-2")
-       , ("https://www.gwern.net/docs/advertising/2020-aral.pdf", "aral-dhillon-2020-paper")
+       , ("https://gwern.net/docs/advertising/2020-aral.pdf", "aral-dhillon-2020-paper")
        , ("https://www.lesswrong.com/posts/baTWMegR42PAsH9qJ/generalizing-from-one-example", "alexander-2009-typical-mind")
        , ("https://www.lesswrong.com/posts/reitXJgJXFzKpdKyd/beware-trivial-inconveniences", "alexander-2009-trivial-inconveniences")
        , ("https://www.nature.com/articles/s41467-019-13585-5", "hill-et-al-20192")

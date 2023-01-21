@@ -42,7 +42,7 @@ import Utils (printGreen, replace)
 main :: IO ()
 main = do
           -- read the regular CLI arguments
-          args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://www.gwern.net/" "/") getArgs
+          args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://gwern.net/" "/") getArgs
 
           when (length args < 2) $ error "Error: Insufficient arguments (<2)."
           when ("gwt" `elem` args) $ error "Invalid tag/URL 'gwt' detected! Is this entire command malformed? Exiting immediately."
@@ -66,7 +66,7 @@ main = do
 
 changeOneTag :: String -> String -> IO ()
 changeOneTag link tag = do
-          let link' = replace "https://www.gwern.net/" "/" link
+          let link' = replace "https://gwern.net/" "/" link
           -- allow shortcut additions like 'changeTag.hs docs/foo.pdf psychology'
           link'' <- if not (head link' /= '/' && take 4 link' /= "http") then return link' else
                      do existP <- doesFileExist link'

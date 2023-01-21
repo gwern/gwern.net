@@ -10,7 +10,7 @@ Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension,
 {- Local Mirror design:
 
 Because link rot has proven difficult to keep up with on `gwern.net` using [ordinary reactive link
-archiving methods](https://www.gwern.net/Archiving-URLs), I am switching to *pre-emptive archiving*:
+archiving methods](https://gwern.net/Archiving-URLs), I am switching to *pre-emptive archiving*:
 for most external links on Gwern.net, they will now point to a local (stored on Gwern.net) mirror of
 the original external link as the default. As the cost of disk/bandwidth falls while the value of
 human attention increases, if something is worth linking, it is worth hosting—assuming good tooling.
@@ -21,7 +21,7 @@ from the current domain's CDN and are the final DOMs saved using adblock etc (be
 fraction of Gwern.net readers who do not have ad blockers installed).
 
 The implementation strategy is, similar to the [link
-popups](https://www.gwern.net/static/build/LinkMetadata.hs), a Pandoc Hakyll plugin which at
+popups](https://gwern.net/static/build/LinkMetadata.hs), a Pandoc Hakyll plugin which at
 Markdown → HTML compile-time traverses the Markdown AST for non-whitelisted external links, looks
 for a local mirror of each one, create a local mirror via SingleFile
 (https://github.com/gildas-lormeau/SingleFile/) if necessary, and rewrites the link to point to the
@@ -29,7 +29,7 @@ local mirror.
 
 Details:
 
-- at compile-time, [`hakyll.hs`](https://www.gwern.net/static/build/hakyll.hs) reads the local
+- at compile-time, [`hakyll.hs`](https://gwern.net/static/build/hakyll.hs) reads the local
   database, and feeds it into a `localizeLink` function which walks the Pandoc AST and processes all
   external links
 - mirror metadata is stored in a local database (a Haskell association list read in as a
@@ -308,7 +308,7 @@ While the logic is a little opaque to readers, I think this handles Arxiv much m
 whiteList :: String -> Bool
 whiteList url
   | anyInfix url ["citeseerx.ist.psu.edu"] = False -- TODO: after fixing all existing Citeseer links, set this rule to False
-  | anyPrefix url ["/", "./", "../", "https://www.gwern.net", "#", "!", "$", "mailto", "irc", "/metadata/", "/docs/"] = True
+  | anyPrefix url ["/", "./", "../", "https://gwern.net", "#", "!", "$", "mailto", "irc", "/metadata/", "/docs/"] = True
   | anySuffix url [".pdf", "/pdf", ".pdf#"] = False
   | anyInfix url [".txt" -- TODO: generalize the PDF download to handle all non-HTML filetypes
       , ".xlsx"
@@ -748,7 +748,7 @@ whiteList url
       , "touhouwiki.net" -- stable
       , "epjournal.net"
       , "gwern.net" -- redundant
-      , "www.gwern.net" -- redundant
+      , "gwern.net" -- redundant
       , "lwn.net" -- stable
       , "incompleteideas.net" -- stable
       , "videolectures.net" -- service/interactive
