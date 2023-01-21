@@ -1,14 +1,14 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2022-12-19 11:56:28 gwern"
+When:  Time-stamp: "2023-01-21 14:53:19 gwern"
 License: CC-0
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module Query (extractImages, extractLinks, extractLinksWith, extractURLs, extractURLsWith, extractURL, extractURLWith, extractURLsAndAnchorTooltips, parseMarkdownOrHTML, truncateTOCHTML, extractLinksInlines) where
+module Query (extractImages, extractLinks, extractLinksWith, extractURLs, extractURLsWith, extractURL, extractURLWith, extractURLsAndAnchorTooltips, parseMarkdownOrHTML, truncateTOCHTML, extractLinksInlines, extractLinkIDsWith) where
 
-import qualified Data.Text as T (append, init, drop, head, last, Text)
+import qualified Data.Text as T (append, init, drop, head, last, takeWhile, Text)
 import Text.Pandoc (def, pandocExtensions, queryWith, readerExtensions, readHtml, readMarkdown, Inline(Image, Link), runPure, Pandoc(..), Block(BulletList, OrderedList), nullMeta)
 import Text.Pandoc.Walk (query, walk)
 
@@ -21,13 +21,13 @@ parseMarkdownOrHTML md txt = let parsedEither = if md then runPure $ readMarkdow
                               Left e    -> error $ "Failed to parse document: " ++ show md ++ show txt ++ show e
                               Right doc -> doc
 
--- takes a filter function (to ignore & take all links, just `(const True)` it); boolean option: True: Markdown; False: must be HTML
-extractLinksWith :: (Inline -> Bool) -> Bool -> T.Text -> [T.Text]
-extractLinksWith rule md txt = extractURLsWith rule $ parseMarkdownOrHTML md txt
-
 -- | Parse one Text string as a Pandoc Markdown (True) or HTML (False) document and return its URLs (as Strings). Note: this can return duplicates.
 extractLinks :: Bool -> T.Text -> [T.Text]
 extractLinks = extractLinksWith (const True)
+
+-- | takes a filter function (to ignore & take all links, just `(const True)` it); boolean option: True: Markdown; False: must be HTML
+extractLinksWith :: (Inline -> Bool) -> Bool -> T.Text -> [T.Text]
+extractLinksWith rule md txt = extractURLsWith rule $ parseMarkdownOrHTML md txt
 
 extractURLsWith :: (Inline -> Bool) -> Pandoc -> [T.Text]
 extractURLsWith rule = queryWith (map (\(url,_,_) -> url) . extractURLWith rule) . walk convertInterwikiLinks
@@ -43,6 +43,13 @@ extractURLWith rule x@(Link _ anchorText (url, tooltip))
     | rule x = [(url, inlinesToText anchorText, tooltip)]
     | otherwise = []
 extractURLWith _ _ = []
+
+extractLinkIDsWith :: (Inline -> Bool) -> T.Text -> Bool -> T.Text -> [(T.Text, T.Text)]
+extractLinkIDsWith rule filename md txt = queryWith extractIDs $ walk convertInterwikiLinks $ parseMarkdownOrHTML md txt
+  where extractIDs :: Inline -> [(T.Text, T.Text)]
+        extractIDs x@(Link ("",_,_) _ (url,_)) = if rule x then [(url, filename)] else []
+        extractIDs x@(Link (ident,_,_) _ (url,_)) = if rule x then [(url, (T.takeWhile (/='#') $ filename) `T.append` "#" `T.append` ident)] else []
+        extractIDs _ = []
 
 extractURL :: Inline -> [(T.Text,T.Text,T.Text)]
 extractURL = extractURLWith (const True)

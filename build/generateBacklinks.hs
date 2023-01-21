@@ -7,7 +7,7 @@ import Text.Pandoc (nullMeta,
                      runPure, writeHtml5String,
                      Pandoc(Pandoc), Block(BlockQuote, BulletList, Para), Inline(Link, RawInline, Strong, Str), Format(..), nullAttr)
 import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack, tail, takeWhile, Text)
+import qualified Data.Text as T (append, isInfixOf, head, pack, unpack, tail, takeWhile, Text)
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isSuffixOf, sort)
 import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter)
@@ -24,7 +24,7 @@ import LinkID (generateID)
 import LinkMetadata (hasAnnotation, isPagePath, readLinkMetadata, parseRawInline)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB)
-import Query (extractLinksWith)
+import Query (extractLinkIDsWith)
 import Typography (typographyTransform)
 import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed, replace, safeHtmlWriterOptions)
 
@@ -94,11 +94,11 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                                      [parseRawInline nullAttr $ RawInline (Format "html") t]
                                                                      (u, "")] ++
                                                                      -- for top-level pages, we need a second link, like 'Foo (full context)', because 'Foo' will popup the scraped abstract/annotation, but it will not pop up the reverse citation context displayed right below; this leads to a UI trap: the reader might be interested in navigating to the context, but they can't! The transclusion has replaced itself, so it doesn't provide any way to navigate to the actual page, and the provided annotation link doesn't know anything about the reverse citation because it is about the entire page. So we provide a backup non-transcluding link to the actual context.
-                                                                     (if isPagePath u then [Str " (", Link ("",["link-annotated-not"],[]) [Str "full context"] (if isPagePath u && selfIdent/="" then u`T.append`"#"`T.append`selfIdent else u,""), Str ")"] else []) ++
+                                                                     (if isPagePath u then [Str " (", Link ("",["link-annotated-not"],[]) [Str "full context"] (if isPagePath u && selfIdent/="" && not ("#" `T.isInfixOf` u) then u`T.append`"#"`T.append`selfIdent else u,""), Str ")"] else []) ++
                                                                      [Str ":"]),
                                                                -- use transclusion to default to display inline the context of the reverse citation, akin to how it would display if the reader popped the link up as a live cross-page transclusion, but without needing to hover over each one:
                                                                BlockQuote [Para [Link ("",
-                                                                                        (["backlink-not", "include-replace-container", "include-block-context"]++(if isPagePath u then ["link-annotated-not"] else ["link-annotated"])),
+                                                                                        ["backlink-not", "include-replace-container", "include-block-context"]++(if isPagePath u then ["link-annotated-not"] else ["link-annotated"]),
                                                                                         if selfIdent=="" then [] else [("target-id",selfIdent)]
                                                                                       )
                                                                                       [Str "[backlink context]"]
@@ -122,41 +122,36 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
 
 parseAnnotationForLinks :: T.Text -> MetadataItem -> [(T.Text,T.Text)]
 parseAnnotationForLinks caller (_,_,_,_,_,abstract) =
-                            let links = map truncateAnchorsForPages $ filter blackList $ filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
-                                         extractLinksWith backLinksNot False (T.pack abstract)
-
-                                in if not (blackList caller) then [] else
-                                     let called =  filter (\u -> truncateAnchors u /= truncateAnchors caller) -- avoid self-links
-                                           links
-                                     in zip called (repeat caller)
-
+                            let linkPairs = extractLinkIDsWith backLinksNot path False (T.pack abstract)
+                                linkPairs' = map (\(c,d) -> (truncateAnchors c,d)) $ filter (\(a,b) -> not (blackList a || blackList b  || truncateAnchors a == truncateAnchors b)) linkPairs
+                            in
+                            linkPairs'
+                            where path = let temp = replace "https://gwern.net/" "/" $ replace ".page" "" $ T.unpack caller in
+                                              T.pack (if not (anyPrefix temp ["/", "https://", "http://"]) then "/" ++ temp else temp)
 parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
 parseFileForLinks mdp m = do text <- TIO.readFile m
 
-                             let links = map truncateAnchorsForPages $ filter blackList $ filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
-                                          extractLinksWith backLinksNot mdp text
+                             let linkPairs = extractLinkIDsWith backLinksNot path mdp text
+                             let linkPairs' = map (\(c,d) -> (truncateAnchors c,d)) $ filter (\(a,b) -> not (blackList a || blackList b || truncateAnchors a == truncateAnchors b)) linkPairs
+                             return linkPairs'
 
-                             let caller = T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "https://gwern.net/" "/" $ replace ".page" "" m
-                             if not (blackList caller) then return [] else
-                              do
-                                let called = filter (/= caller) (map (T.replace "https://gwern.net/" "/") links)
-                                return $ zip called (repeat caller)
+                               where path = let temp = replace "https://gwern.net/" "/" $ replace ".page" "" m in
+                                              T.pack (if not (anyPrefix temp ["/", "https://", "http://"]) then "/" ++ temp else temp)
 
 -- filter out links with the 'backlink-not' class. This is for when we want to insert a link, but not have it 'count' as a backlink for the purpose of linking the reader. eg. the 'similar links' which are put into a 'See Also' in annotations - they're not really 'backlinks' even if they are semi-automatically approved as relevant.
 backLinksNot :: Inline -> Bool
 backLinksNot (Link (_, classes, _) _ _) = "backlink-not" `notElem` classes
 backLinksNot _ = True
 
--- for URLs like 'arxiv.org/123#google' or 'docs/reinforcement-learning/2021-foo.pdf#deepmind', we want to preserve anchors; for on-site pages like '/GPT-3#prompt-programming' we want to merge all such anchor links into just callers of '/GPT-3'
-truncateAnchors, truncateAnchorsForPages :: T.Text -> T.Text
-truncateAnchorsForPages str = if "." `T.isInfixOf` str then str else T.takeWhile (/='#') str
+-- -- for URLs like 'arxiv.org/123#google' or 'docs/reinforcement-learning/2021-foo.pdf#deepmind', we want to preserve anchors; for on-site pages like '/GPT-3#prompt-programming' we want to merge all such anchor links into just callers of '/GPT-3'
+truncateAnchors :: T.Text -> T.Text
 truncateAnchors = T.takeWhile (/='#')
 
 blackList :: T.Text -> Bool
 blackList f
-  | anyInfixT f ["/backlinks/", "/link-bibliography/", "/similars/", "wikipedia.org/wiki/"] = False
-  | anyPrefixT f ["/images", "/docs/www/", "/newsletter/", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem",
+  | anyInfixT f ["/backlinks/", "/link-bibliography/", "/similars/", "wikipedia.org/wiki/"] = True
+  | anyPrefixT f ["$", "#", "!", "mailto:", "\8383", "/images", "/docs/www/", "/newsletter/", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem",
                    -- WARNING: do not filter out 'metadata/annotations' because that leads to empty databases & infinite loops
-                   "/static/404", "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = False
-  | anySuffixT f ["/index", "/index-long"] = False
-  | otherwise = True
+                   "/static/404", "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = True
+  | anySuffixT f ["/index", "/index-long"] = True
+  | otherwise = False
