@@ -470,7 +470,7 @@ whiteList = M.fromList [
       "Prefrontal cortex as a meta-reinforcement learning system"
       ]
     )
-  , ( "https://www.deepmind.com/blog/wavenet-generative-model-raw-audio/"
+  , ( "https://www.deepmind.com/blog/wavenet-a-generative-model-for-raw-audio"
     , [ "WaveNet: A Generative Model for Raw Audio" ]
     )
   , ( "https://edwardtufte.github.io/tufte-css/"

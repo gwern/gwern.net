@@ -186,7 +186,7 @@ embed edb mdb bdb i@(p,_) =
             -- Flourish: look up the backlinks and append their title/author/date to the embedded document; should add useful keywords & context
             let backlinks = case M.lookup (T.pack p) bdb of
                               Nothing -> []
-                              Just bl -> map T.unpack bl
+                              Just bl -> map T.unpack (concatMap snd bl)
             let backlinksMetadata = if null backlinks then "" else
                                       "\n\nReverse citations:\n\n- " ++ (intercalate "\n- " $
                                         map (\b -> case M.lookup b mdb of
@@ -318,7 +318,7 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
          let p' = T.pack p
              alreadyLinkedAbstract  = extractLinks False $ T.pack abst
              alreadyLinkedBody      = getForwardLinks bdb p'
-             alreadyLinkedBacklinks = fromMaybe [] (M.lookup p' bdb)
+             alreadyLinkedBacklinks = fromMaybe [] (fmap (concatMap snd) $ M.lookup p' bdb)
              alreadyLinked = [p'] ++ alreadyLinkedAbstract ++ alreadyLinkedBody ++ alreadyLinkedBacklinks
              matchesPruned = filter (\p2 -> T.pack p2 `notElem` alreadyLinked) matches
 
