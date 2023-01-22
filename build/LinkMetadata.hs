@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-01-20 10:56:35 gwern"
+When:  Time-stamp: "2023-01-22 17:40:07 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, simplifiedHTMLString, tooltipToMetadata, dateTruncateBad) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, simplifiedHTMLString, tooltipToMetadata, dateTruncateBad) where
 
 import Control.Monad (unless, void, when, foldM_)
 import Data.Aeson (eitherDecode, FromJSON)
@@ -283,11 +283,24 @@ readLinkMetadataAndCheck = do
              let tagPairsOverused = filter (\(c,_) -> c > tagPairMax) $ tagPairsCount final
              unless (null tagPairsOverused) $ printRed "Overused pairs of tags: " >> printGreen (show tagPairsOverused)
 
-             -- See-Alsos in annotations get put in multi-columns due to their typical length, but if I cut them down to 1–2 items, the default columns will look bad. `preprocess-markdown.hs` can't do a length check because it has no idea how I will edit the list of similar-links down, so I can't remove the .columns class *there*; only way to do it is check finished annotations for having .columns set but also too few similar-links:
+             -- 'See Also' links in annotations get put in multi-columns due to their typical length, but if I cut them down to 1–2 items, the default columns will look bad. `preprocess-markdown.hs` can't do a length check because it has no idea how I will edit the list of similar-links down, so I can't remove the .columns class *there*; only way to do it is check finished annotations for having .columns set but also too few similar-links:
              let badSeeAlsoColumnsUse = M.keys $ M.filterWithKey (\_ (_,_,_,_,_,abst) -> let count = length (Data.List.HT.search "data-embeddingdistance" abst) in (count == 1 || count == 2) && "<div class=\"columns\">" `isInfixOf` abst ) final
              unless (null badSeeAlsoColumnsUse) $ printRed "Remove columns from skimpy See-Also annotations: " >> printGreen (show badSeeAlsoColumnsUse)
 
              return final
+
+-- return the n most recent/newest annotations, in terms of created, not publication date.
+-- HACK: Because we do not (yet) track annotation creation date, we guess at it. *Usually* a new annotation is appended to the end of custom.yaml/half.yaml, and so the newest n are the last n from custom+half. (Auto.yaml is automatically sorted to deduplicate, erasing the temporal order of additions; however, this is not a big loss, as most auto.yaml entries which have a generated annotation worth reading would've been created by `gwtag`ing a link, which would put them into half.yaml instead.)
+readLinkMetadataNewest :: Int -> IO Metadata
+readLinkMetadataNewest n = do custom  <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readYaml "metadata/full.yaml"
+                              half    <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readYaml "metadata/half.yaml"
+                              let ratio = fromIntegral (length custom) / fromIntegral (length (custom++half)) :: Double
+                              let n1 = round (fromIntegral n * ratio)
+                              let custom' = take n1 custom
+                              let n2 = round (fromIntegral n * (1-ratio))
+                              let half' = take n2 half
+                              let final = M.union (M.fromList custom') $ M.fromList half'
+                              return final
 
 dateRegex, footnoteRegex, sectionAnonymousRegex, badUrlRegex :: String
 dateRegex             = "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$"

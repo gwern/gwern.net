@@ -28,7 +28,7 @@ import Text.Pandoc.Walk (walk)
 
 import Interwiki (inlinesToText)
 import LinkID (generateID, authorsToCite)
-import LinkMetadata (readLinkMetadata, generateAnnotationTransclusionBlock, authorsTruncate, parseRawBlock, hasAnnotation, dateTruncateBad, parseRawInline, annotateLink)
+import LinkMetadata (readLinkMetadata, readLinkMetadataNewest, generateAnnotationTransclusionBlock, authorsTruncate, parseRawBlock, hasAnnotation, dateTruncateBad, parseRawInline, annotateLink)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Tags (tagsToLinksSpan, listTagDirectories, abbreviateTag)
 import LinkBacklink (getBackLinkCheck, getSimilarLinkCheck, getLinkBibLinkCheck)
@@ -38,14 +38,20 @@ import Utils (replace, writeUpdatedFile, printRed, toPandoc)
 
 main :: IO ()
 main = do dirs <- getArgs
+          -- result: '["docs/","docs/ai/","docs/ai/anime/","docs/ai/anime/danbooru/","docs/ai/dataset/", ..., "newsletter/2022/","nootropics/","notes/","reviews/","zeo/"]'
           let dirs' = map (\dir -> replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) $ sort dirs
 
           meta <- readLinkMetadata
 
-          Par.mapM_ (generateDirectory meta dirs') dirs' -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
+          Par.mapM_ (generateDirectory True meta dirs') dirs' -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
 
-generateDirectory :: Metadata -> [FilePath] -> FilePath -> IO ()
-generateDirectory md dirs dir'' = do
+          -- Special-case directories:
+          -- 'newest': the _n_ newest link annotations created (currently, 'newest' is not properly tracked, and is inferred from being at the bottom/end of full.yaml/partial.yaml TODO: actually track annotation creation dates...)
+          metaNewest <- readLinkMetadataNewest 200
+          generateDirectory False metaNewest ["docs/", "docs/newest/", "/"] "docs/newest/"
+
+generateDirectory :: Bool -> Metadata -> [FilePath] -> FilePath -> IO ()
+generateDirectory filterp md dirs dir'' = do
 
   -- for the arabesque navbar 'previous'/'next', we want to fill more useful than the default values, but also not be too redundant with the up/sideways/downwards tag-directory links; so we pass in the (lexicographically) sorted list of all tag-directories being created this run, and try to provide previous/next links to the 'previous' and the 'next' directory, which may be a parent, sibling, or nothing at all.
   -- so eg. /docs/cryonics/index will point to `previous: /docs/crime/terrorism/index \n next: /docs/cs/index`
@@ -55,7 +61,7 @@ generateDirectory md dirs dir'' = do
                             (if null before || last before == dir'' then "" else "previous: /"++last before++"index",
                               if length after < 2 || head (drop 1 after) == dir'' then "" else "next: /"++head (drop 1 after)++"index")
 
-  tagged <- listTagged md (init dir'')
+  tagged <- listTagged filterp md (init dir'')
 
   -- actual subdirectories:
   let parentDirectory = takeDirectory $ takeDirectory dir''
@@ -65,11 +71,11 @@ generateDirectory md dirs dir'' = do
   let direntries' = sort $ map (\entry -> "/"++dir''++entry) direntries
 
   -- We allow tags to be cross-listed, not just children.
-  -- So '/docs/exercise/index' can be tagged with 'longevity', and it'll show up in the Directory section (not the Files/Links section!) of '/docs/longevity/index'.
+  -- So '/docs/exercise/index' can be tagged with 'longevity', and it'll show up in the Directory section (not the Files/me section!) of '/docs/longevity/index'.
   -- This allows cross-references without requiring deep nesting—'longevity/exercise' might seem OK enough (although it runs roughshod over a lot of the links in there...), but what about if there was a third? Or fourth?
   let taggedDirs = sort $ map (\(f,_,_,_,_) -> f) $ filter (\(f,_,_,_,_) -> "/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f && f `notElem` direntries') tagged
 
-  -- we suppress what would be duplicate entries in the File/Links section
+  -- we suppress what would be duplicate entries in the File/me section
   let tagged' = filter (\(f,_,_,_,_) -> not ("/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
 
   dirsChildren   <- listTagDirectories [dir'']
@@ -215,10 +221,10 @@ listFiles m direntries' = do
 --
 -- tags are only in "docs/*", so "haskell/" etc is out. Tags drop the docs/ prefix, and we want to avoid
 -- the actual files inside the current directory, because they'll be covered by the `listFiles` version, of course.
-listTagged :: Metadata -> FilePath -> IO [(FilePath,MetadataItem,FilePath,FilePath,FilePath)]
-listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else
+listTagged :: Bool -> Metadata -> FilePath -> IO [(FilePath,MetadataItem,FilePath,FilePath,FilePath)]
+listTagged filterp m dir = if not ("docs/" `isPrefixOf` dir) then return [] else
                    let dirTag = replace "docs/" "" dir in
-                     let tagged = M.filterWithKey (\u (_,_,_,_,tgs,_) -> not (dir `isInfixOf` u) && dirTag `elem` tgs) m in
+                     let tagged = if not filterp then m else M.filterWithKey (\u (_,_,_,_,tgs,_) -> not (dir `isInfixOf` u) && dirTag `elem` tgs) m in
                        do let files = nub $ map truncateAnchors $ M.keys tagged
                           backlinks    <- mapM (fmap snd . getBackLinkCheck)    files
                           similarlinks <- mapM (fmap snd . getSimilarLinkCheck) files
