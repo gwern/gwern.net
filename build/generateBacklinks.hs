@@ -7,7 +7,7 @@ import Text.Pandoc (nullMeta,
                      runPure, writeHtml5String,
                      Pandoc(Pandoc), Block(BlockQuote, BulletList, Para), Inline(Link, RawInline, Strong, Str), Format(..), nullAttr)
 import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T (append, isInfixOf, head, pack, unpack, tail, takeWhile, Text)
+import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack, tail, takeWhile, Text)
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isSuffixOf, sort)
 import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter)
@@ -26,7 +26,7 @@ import LinkMetadataTypes (Metadata, MetadataItem)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB)
 import Query (extractLinkIDsWith)
 import Typography (typographyTransform)
-import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed, replace, safeHtmlWriterOptions)
+import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed, safeHtmlWriterOptions)
 
 main :: IO ()
 main = do
@@ -44,7 +44,7 @@ main' = do
   let filesCheck = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $
         filter (\f -> not (anyInfix f ["/index","/link-bibliography/"])) $
         filter ("/"`isPrefixOf`) $ map T.unpack $
-        M.keys bldb ++ (concatMap snd $ concat $ M.elems bldb)
+        M.keys bldb ++ concatMap snd (concat $ M.elems bldb)
   forM_ filesCheck (\f -> do exist <- doesFileExist f
                              unless exist $ printRed ("Backlinks: files annotation error: file does not exist? " ++ f))
 
@@ -129,21 +129,25 @@ generateCaller md target (caller, callers) =
 
 parseAnnotationForLinks :: T.Text -> MetadataItem -> [(T.Text,T.Text)]
 parseAnnotationForLinks caller (_,_,_,_,_,abstract) =
-                            let linkPairs = extractLinkIDsWith backLinksNot path False (T.pack abstract)
+                            let linkPairs = map (\(a,b) -> (localize a, localize b)) $ extractLinkIDsWith backLinksNot path False (T.pack abstract)
                                 linkPairs' = filter (\(a,b) -> not (blackList a || blackList b  || truncateAnchors a == truncateAnchors b)) linkPairs
                             in
                             linkPairs'
-                            where path = let temp = replace "https://gwern.net/" "/" $ replace ".page" "" $ T.unpack caller in
-                                              T.pack (if not (anyPrefix temp ["/", "https://", "http://"]) then "/" ++ temp else temp)
+                               where m' = localize caller
+                                     path = if not (anyPrefixT m' ["/", "https://", "http://"]) then "/" `T.append` m' else m'
+
 parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
 parseFileForLinks mdp m = do text <- TIO.readFile m
 
-                             let linkPairs = extractLinkIDsWith backLinksNot path mdp text
+                             let linkPairs = map (\(a,b) -> (localize a, localize b)) $ extractLinkIDsWith backLinksNot path mdp text
                              let linkPairs' = filter (\(a,b) -> not (blackList a || blackList b || truncateAnchors a == truncateAnchors b)) linkPairs
                              return linkPairs'
 
-                               where path = let temp = replace "https://gwern.net/" "/" $ replace ".page" "" m in
-                                              T.pack (if not (anyPrefix temp ["/", "https://", "http://"]) then "/" ++ temp else temp)
+                               where m' = localize $ T.pack m
+                                     path = if not (anyPrefixT m' ["/", "https://", "http://"]) then "/" `T.append` m' else m'
+
+localize :: T.Text -> T.Text
+localize = T.replace "https://gwern.net/" "/" . T.replace ".page" ""
 
 -- filter out links with the 'backlink-not' class. This is for when we want to insert a link, but not have it 'count' as a backlink for the purpose of linking the reader. eg. the 'similar links' which are put into a 'See Also' in annotations - they're not really 'backlinks' even if they are semi-automatically approved as relevant.
 backLinksNot :: Inline -> Bool
@@ -157,7 +161,7 @@ truncateAnchors = T.takeWhile (/='#')
 blackList :: T.Text -> Bool
 blackList f
   | anyInfixT f ["/backlinks/", "/link-bibliography/", "/similars/", "wikipedia.org/wiki/"] = True
-  | anyPrefixT f ["$", "#", "!", "mailto:", "\8383", "/images", "/docs/www/", "/newsletter/", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem",
+  | anyPrefixT f ["$", "#", "!", "mailto:", "irc://", "\8383", "/images", "/docs/www/", "/newsletter/", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem",
                    -- WARNING: do not filter out 'metadata/annotations' because that leads to empty databases & infinite loops
                    "/static/404", "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = True
   | anySuffixT f ["/index", "/index-long"] = True
