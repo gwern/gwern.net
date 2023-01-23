@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-01-22 17:40:07 gwern"
+When:  Time-stamp: "2023-01-22 20:59:05 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, simplifiedHTMLString, tooltipToMetadata, dateTruncateBad) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, simplifiedHTMLString, tooltipToMetadata, dateTruncateBad, typesetHtmlField) where
 
 import Control.Monad (unless, void, when, foldM_)
 import Data.Aeson (eitherDecode, FromJSON)

@@ -19,6 +19,8 @@ import qualified Data.Set as S (delete, empty, filter, fromList, toList, insert,
 import System.Directory (doesFileExist)
 import Text.Show.Pretty (ppShow)
 
+import LinkMetadata (typesetHtmlField)
+
 type QOTDB = [Quote]
 type Quote = (String, String, Bool)
 
@@ -36,7 +38,7 @@ writeQuoteDB = writeFile quoteDBPath . ppShow
 writeQuote :: Quote -> IO ()
 writeQuote (quote,attribution,_) = writeFile quotePath quoted
   where quoted :: String
-        quoted = "<div class=\"epigraph\">\n<blockquote><p>“" ++ quote ++ "”</p>" ++ if null attribution then "" else ("\n<p>" ++ attribution ++ "</p>") ++ "</blockquote>\n</div>"
+        quoted = "<div class=\"epigraph\">\n<blockquote><p>“" ++ typesetHtmlField quote ++ "”</p>" ++ if null attribution then "" else ("\n<p>" ++ typesetHtmlField attribution ++ "</p>") ++ "</blockquote>\n</div>"
 
 writeQotD :: IO ()
 writeQotD = do dblist <- readQuoteDB
@@ -52,7 +54,7 @@ writeQotD = do dblist <- readQuoteDB
                let qotd = head $ S.toList dbUnused'
                writeQuote qotd
 
-               let db'' = S.insert (qnegate qotd) $ S.delete qotd db -- update the now-used quote
+               let db'' = S.insert (qnegate qotd) $ S.delete qotd dbReset -- update the now-used quote
                writeQuoteDB $ S.toList db''
   where
     qnegate :: Quote -> Quote
