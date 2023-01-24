@@ -3524,7 +3524,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://advancedfertility.com/2020/08/17/weight-bmi-and-fertility-and-ivf-success/"
             , "https://aeon.co/essays/why-fake-miniatures-depicting-islamic-science-are-everywhere"
             , "https://ai-alignment.com/"
-            , "https://ai.facebook.com/blog/harmful-content-can-evolve-quickly-our-new-ai-system-adapts-to-tackle-it"
+            , "https://ai.facebook.com/blog/harmful-content-can-evolve-quickly-our-new-ai-system-adapts-to-tackle-it/"
             , "https://aidungeon.medium.com/ai-dungeon-dragon-model-upgrade-7e8ea579abfe"
             , "https://ajcn.nutrition.org/content/69/5/842.full"
             , "https://ajp.psychiatryonline.org/doi/abs/10.1176/appi.ajp.2020.19080834"

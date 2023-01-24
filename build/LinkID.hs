@@ -440,4 +440,6 @@ linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start wi
        , ("https://www.newyorker.com/magazine/2020/08/31/how-wagner-shaped-hollywood", "ross-2020-wagner")
        , ("https://openreview.net/forum?id=TXqemS7XEH#alibaba", "lin-et-al-2021-m610t")
        , ("https://arxiv.org/abs/2202.01994#google", "bansal-et-al-2022-nmtscaling")
+       , ("https://groups.google.com/g/pandoc-discuss/c/BDNfhctWJpg/m/bGk0wEtfBgAJ", "branwen-2020-smallcaps-filter")
+       , ("https://docs.google.com/document/d/1MhA3M5ucBD7ZXcWk57_MKZ5jEgPX6_YiKye_EFP-adg/edit", "branwen-2020-gpt2-poetry-collaboration")
       ]

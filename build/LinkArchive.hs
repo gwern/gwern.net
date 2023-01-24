@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-01-19 10:16:40 gwern"
+When:  Time-stamp: "2023-01-23 10:45:31 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1106,6 +1106,7 @@ whiteList url
       , "https://dominicfrisby.com/" -- homepage
       , "https://forum.effectivealtruism.org" -- stable
       , "https://old.reddit.com/r/hangovereffect/" -- homepage
+      , "https://old.reddit.com/r/AnimeResearch/" -- homepage
       , "https://bwc.thelab.dc.gov/" -- low quality
       , "https://www.trubrain.com/" -- homepage
       , "https://energycontrol.org/quienes-somos/proyectos/" -- homepage
