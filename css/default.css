@@ -1193,7 +1193,7 @@ blockquote table table {
 
 /* Quote of the Day styling: too large a gap on desktop */
 @media all and (min-width: 650px) {
-    #footer .epigraph { margin-top: -1em; }
+    #footer .epigraph { margin-top: -1.2em; }
 }
 
 @media all and (max-width: 649px) {
