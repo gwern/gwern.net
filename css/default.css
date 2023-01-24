@@ -371,7 +371,7 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
 /**********************/
 /*  Collapsible tables.
  */
- 
+
 .table-wrapper > .collapse {
     margin: 0;
     min-height: unset;
@@ -391,7 +391,7 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
 /****************************/
 /*  Collapses in blockquotes.
  */
- 
+
 blockquote :not(section).collapse:not(.expanded),
 blockquote :not(section).collapse.expanded {
     padding-left: 1.25em;
@@ -776,7 +776,7 @@ a:hover,
 
 ul,
 ol {
-	--GW-list-left-padding: 2.5em;
+    --GW-list-left-padding: 2.5em;
 
     list-style-type: none;
     margin: 1.25em 0 1.5em 0;
@@ -1001,7 +1001,7 @@ figure.width-full {
         margin: 0.5em 1.5em 1em 0;
     }
     figure.outline-not {
-    	margin-bottom: 0.5em;
+        margin-bottom: 0.5em;
     }
 }
 
@@ -1189,6 +1189,11 @@ blockquote table table {
     content: "\201D";
     right: -0.975em;
     bottom: -1em;
+}
+
+/* Quote of the Day styling: too large a gap on desktop */
+@media all and (min-width: 650px) {
+    #footer .epigraph { margin-top: -1em; }
 }
 
 @media all and (max-width: 649px) {
@@ -1697,7 +1702,7 @@ section.footnotes > hr:first-child.highlighted::before {
 
 #markdownBody .sidenote ul,
 #markdownBody .sidenote ol {
-	--GW-list-left-padding: 1.75em;
+    --GW-list-left-padding: 1.75em;
 }
 
 #markdownBody .sidenote li {
@@ -5150,7 +5155,7 @@ section.highlight-fading::before {
 }
 
 ol.link-bibliography-list-compact {
-	--GW-list-left-padding: 2.25em;
+    --GW-list-left-padding: 2.25em;
 
     list-style-type: lower-alpha;
 }
@@ -5717,7 +5722,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 }
 
 /*****************/
-/*	Block context.
+/*  Block context.
  */
 .markdownBody a.targeted {
     position: relative;
