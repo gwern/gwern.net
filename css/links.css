@@ -279,33 +279,12 @@ a[data-link-icon='𝔊']::after {
     opacity: 0.75;
 }
 
-#page-metadata a.link-page::after {
-    content: none;
-}
-
 /*  Index page, and embeds thereof, do not need the G icon.
+    NOTE: we do not use the usual method of suppressing G icons (`.icon-not` class), because /index and /static/404 are *so* long and routinely modified/expanded, so doing it 'manually' would risk occasional omissions or syntax errors.
  */
 body.index a.link-page::after,
 body.static-404 a.link-page::after,
 .popframe-body.index a.link-page::after {
-    content: none;
-}
-
-/*  Also remove ‘G’ icon from the tags / aux-links links inside annotations
-	(which aren’t really top-level/essay content, and the G is clutter).
- */
-.data-field .backlinks a::after,
-.data-field .similars a::after,
-.data-field .link-tags a::after {
-    content: none;
-}
-
-/*  Remove the ‘W’ document icon from the anonymous feedback link icon; it is
-    true, but not useful (a ‘document’ doesn’t look like ‘a thing I can interact
-    with & type in text to), and it looks bad/cluttered given that icons are
-    removed from the rest of the ‘surrounding’ UI (*especially* in /index).
- */
-#footer a[href*='docs.google.com'i]::after {
     content: none;
 }
 
