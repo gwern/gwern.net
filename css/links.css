@@ -48,7 +48,7 @@
     background-repeat: no-repeat;
 }
 .has-content:hover {
-	--GW-link-underline-gradient-line-color: var(--GW-link-underline-gradient-line-color-hover);
+    --GW-link-underline-gradient-line-color: var(--GW-link-underline-gradient-line-color-hover);
 }
 .TOC .has-content,
 #sidebar .has-content,
@@ -59,7 +59,7 @@ body.index .has-content {
 .TOC .has-content .indicator-hook,
 #sidebar .has-content .indicator-hook,
 body.index .has-content .indicator-hook {
-	display: none;
+    display: none;
 }
 
 .markdownBody a.has-annotation {
@@ -81,10 +81,10 @@ body[class*='-index'] #TOC a:link * {
     background: none;
     text-shadow: none;
 }
-/*	Restore proper hover highlighting.
+/*  Restore proper hover highlighting.
  */
 .popframe-body .TOC a:hover {
-	background-color: var(--GW-TOC-link-hover-background-color);
+    background-color: var(--GW-TOC-link-hover-background-color);
 }
 
 .popframe-body .TOC a::after,
@@ -352,12 +352,12 @@ a[data-link-icon='MS']::after {
     --link-icon-offset-y: 0.35em;
 }
 
-a[data-link-icon='n']::after {
-    --link-icon-size: 1em;
-    --link-icon-offset-y: 0.2em;
-    --link-icon-offset-x: 0.05em;
+a[data-link-icon='n']::after { /* Nature */
+    --link-icon-size: 0.9em;
+    --link-icon-offset-y: 0.3em;
+    --link-icon-offset-x: 0.1em;
 
-    opacity: 0.7;
+    opacity: 0.75;
 }
 
 a[data-link-icon='s']::after {
@@ -393,7 +393,7 @@ a[data-link-icon='▅▇▃']::after {
     opacity: 0.7;
 }
 
-a[data-link-icon='▲']::after { /* Melting Asphalt / Simmler */
+a[data-link-icon='▲']::after { /* Melting Asphalt (Kevin Simler) */
     --link-icon-offset-x: 0;
     --link-icon-offset-y: 0.25em;
 
