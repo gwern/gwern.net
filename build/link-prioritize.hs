@@ -4,7 +4,7 @@
                       creation of manual link annotations.
 Author: Gwern Branwen
 Date: 2019-11-22
-When:  Time-stamp: "2022-11-17 17:59:54 gwern"
+When:  Time-stamp: "2023-01-27 10:35:41 gwern"
 License: CC-0
 Dependencies: gwern.net Hakyll libraries
 
@@ -70,7 +70,7 @@ main = do printN:_ <- getArgs
           db <- readLinkMetadata
           when (M.size db < 1000) $ error $ "Database too small? " ++ show db
           bdb <- readBacklinksDB
-          let urls = M.toList $ M.map length bdb
+          let urls = M.toList $ M.map length $ M.fromListWith (++) $ concat $ M.elems bdb
           let urls' = filter (\(url,_) -> not (isAnnotated db (T.unpack url)) && "." `T.isInfixOf` url) urls
           let uses = reverse $ sort $ map (\(a,b) -> (b,a)) urls'
           putStrLn $ unlines $ take printN' $ map (\(n,url) -> show n ++ " " ++ T.unpack url) uses
