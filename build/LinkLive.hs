@@ -3673,7 +3673,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://drugs-forum.com/threads/116671/"
             , "https://dspace.mit.edu/handle/1721.1/10589"
             , "https://dual-n-back.com/nback.html"
-            , "https://duckduckgo.com/bang#bangs-list"
+            , "https://duckduckgo.com/bangs#bangs-list"
             , "https://e621.net/posts"
             , "https://eab.sagepub.com/content/23/1/3.short"
             , "https://ec.toranoana.jp/joshi_r/ec/item/040030048682/"

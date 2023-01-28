@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-01-24 10:17:25 gwern"
+When:  Time-stamp: "2023-01-26 23:03:01 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1290,5 +1290,7 @@ whiteList url
       , "https://drugs.globalincidentmap.com/" -- interactive (visualization)
       , "https://coveryourtracks.eff.org/" -- interactive (tool)
       , "https://ppubs.uspto.gov/pubwebapp/static/pages/landing.html" -- interactive (database)
+      , "https://textsynth.com/" -- interactive (service)
+      , "https://dl.acm.org/doi/abs/10.1145/3526113.3545612" -- low quality (video embeds)
       ] = True
     | otherwise = False

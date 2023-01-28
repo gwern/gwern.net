@@ -31,8 +31,8 @@ import System.Directory (doesFileExist)
 
 import Utils (writeUpdatedFile)
 
--- base URL, then fragment+links. eg "/Improvements" has links from "/Notes" etc, but those links may target anchors like "#microsoft", and those are conceptually distinct from the page as a whole - they are sub-pages. So to preserve that, we nest.
--- eg ("/Improvements",
+-- base URL, then fragment+links. eg. "/Improvements" has links from "/Notes" etc, but those links may target anchors like "#microsoft", and those are conceptually distinct from the page as a whole - they are sub-pages. So to preserve that, we nest.
+-- eg. ("/Improvements",
 --                     [("/Improvements#microsoft", ["/Notes", "/reviews/Books"])
 --                      , ("/Improvements", ["/index"])]
 --     )
@@ -65,7 +65,7 @@ getXLinkExists linkType p = do let x@(linkRaw,_) = getXLink linkType p
                                if not linkExists then return ("","")
                                  else return x
 
--- convert a URL to the local path of its annotation (which may not exist because it hasn't been written yet so no need to do IO to check disk), eg 'http://www2.biology.ualberta.ca/locke.hp/dougandbill.htm' → 'metadata/annotations/http%3A%2F%2Fwww2.biology.ualberta.ca%2Flocke.hp%2Fdougandbill.htm.html'
+-- convert a URL to the local path of its annotation (which may not exist because it hasn't been written yet so no need to do IO to check disk), eg. 'http://www2.biology.ualberta.ca/locke.hp/dougandbill.htm' → 'metadata/annotations/http%3A%2F%2Fwww2.biology.ualberta.ca%2Flocke.hp%2Fdougandbill.htm.html'
 getAnnotationLink, getBackLink, getLinkBibLink, getSimilarLink :: FilePath -> (FilePath,FilePath)
 getAnnotationLink = getXLink ""
 getBackLink       = getXLink "backlinks"

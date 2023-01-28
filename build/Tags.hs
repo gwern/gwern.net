@@ -171,6 +171,7 @@ tagsLong2Short = [
           , ("ai/nn/vae/mae", "masked auto-encoder")
           , ("ai/scaling", "AI scaling")
           , ("ai/scaling/mixture-of-experts", "MoE NN")
+          , ("ai/scaling/emergence", "emergence (AI)")
           , ("ai/nn/tokenization", "LM tokenization")
           , ("ai/nn/retrieval", "retrieval AI")
           , ("iq/animal", "animal cognition")

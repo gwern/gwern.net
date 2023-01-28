@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2023-01-17 15:42:50 gwern"
+When:  Time-stamp: "2023-01-27 12:02:15 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -1243,7 +1243,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Dd]rop-?caps?", "https://en.wikipedia.org/wiki/Initial")
         , ("[Ee]ntorhinal-hippocampal", "https://en.wikipedia.org/wiki/EC-hippocampus_system")
         , ("gMLP", "https://arxiv.org/abs/2105.08050#google")
-        , ("[Gg]scan2pdf", "http://gscan2pdf.sourceforge.net/")
+        , ("[Gg]scan2pdf", "https://gscan2pdf.sourceforge.net/")
         , ("iGPT", "https://openai.com/blog/image-gpt/")
         , ("InstructGPT", "https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf")
         , ("[Ii]nbreeding[ -]depression", "https://en.wikipedia.org/wiki/Inbreeding_depression")
@@ -1257,7 +1257,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ss]ocial[- ]engineering", "https://en.wikipedia.org/wiki/Social_engineering_(security)")
         , ("[Ss]tyle[- ]transfers?", "https://arxiv.org/abs/1508.06576") -- style transfer, Gatys et al 2015
         , ("t-SNE", "https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding")
-        , ("t-distribution", "https://en.wikipedia.org/wiki/Student%27s_t-distribution")
+        , ("(t-distribution|_t_-distribution)", "https://en.wikipedia.org/wiki/Student%27s_t-distribution")
         , ("textgenrnn", "https://github.com/minimaxir/textgenrnn")
         , ("torch-rnn", "https://github.com/jcjohnson/torch-rnn")
         , ("uBlock [Oo]rigin", "https://github.com/gorhill/uBlock")
@@ -1320,4 +1320,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("family history", "https://en.wikipedia.org/wiki/Family_history_(medicine)")
         , ("ADE20K", "https://paperswithcode.com/dataset/ade20k")
         , ("Cityscapes", "https://arxiv.org/abs/1604.01685")
+        , ("PaLM", "https://arxiv.org/abs/2204.02311#google")
         ]

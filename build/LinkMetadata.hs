@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-01-25 19:11:07 gwern"
+When:  Time-stamp: "2023-01-26 23:04:09 gwern"
 License: CC-0
 -}
 
@@ -2566,10 +2566,10 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("behaviour", "behavior")
          , ("de Novo", "De Novo")
          , ("small saple", "small sample")
-         , ("ofsmoking", "of smoking")
+         , (" ofsmoking", " of smoking")
          , (" u.s. ", " U.S. ")
          , (" ofthe", " of the")
-         , ("ofdata", "of data")
+         , (" ofdata", " of data")
          , ("\8201", " ")
          , ("ADE20k", "ADE20K")
          , (" XSUM", " XSum")
