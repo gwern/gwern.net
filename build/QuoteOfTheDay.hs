@@ -20,7 +20,6 @@ import System.Directory (doesFileExist)
 import Text.Show.Pretty (ppShow)
 
 import LinkMetadata (typesetHtmlField)
-import Utils (replace)
 
 type QOTDB = [Quote]
 type Quote = (String, String, Bool)
@@ -39,8 +38,7 @@ writeQuoteDB = writeFile quoteDBPath . ppShow
 writeQuote :: Quote -> IO ()
 writeQuote (quote,attribution,_) = writeFile quotePath quoted
   where quoted :: String
-        quoted = replace "““" "“ “" $ replace "””" "” ”" -- because we may be substituting in dialogue, we can wind up with double double-quotes; add HAIR SPACE
-          $ "<div class=\"epigraph\">\n<blockquote><p>“" ++ typesetHtmlField quote ++ "”</p>" ++ if null attribution then "" else ("\n<p>" ++ typesetHtmlField attribution ++ "</p>") ++ "</blockquote>\n</div>"
+        quoted = "<div class=\"epigraph\">\n<blockquote><p>" ++ typesetHtmlField quote ++ "</p>" ++ if null attribution then "" else ("\n<p>" ++ typesetHtmlField attribution ++ "</p>") ++ "</blockquote>\n</div>"
 
 writeQotD :: IO ()
 writeQotD = do dblist <- readQuoteDB
