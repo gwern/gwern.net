@@ -53,7 +53,7 @@ ImageFocus = {
 				<p><strong>Escape</strong> or <strong>click</strong>: Hide zoomed image</p>
 				<p><strong>Space bar:</strong> Reset image size & position</p>
 				<p><strong>Scroll</strong> to zoom in/out</p>
-				<p>(When zoomed in, <strong>drag</strong> to pan; <br/><strong>double-click</strong> to close)</p>
+				<p>(When zoomed in, <strong>drag</strong> to pan; <br /><strong>double-click</strong> to close)</p>
 			</div>
 			<div class="image-number"></div>
 			<div class="slideshow-buttons">
@@ -139,7 +139,7 @@ ImageFocus = {
 			wrapper.appendChild(image);
 			imageContainer.insertBefore(wrapper, imageContainer.firstChild);
 
-			/*  Set ‘focusable’ class on the wrapper, for CSS to apply the hover 
+			/*  Set ‘focusable’ class on the wrapper, for CSS to apply the hover
 				style and tooltip.
 			 */
 			wrapper.classList.toggle("focusable", true);
@@ -231,8 +231,8 @@ ImageFocus = {
 		if (!focusedImage)
 			return;
 
-		let sourceImage = useSelf 
-						  ? focusedImage 
+		let sourceImage = useSelf
+						  ? focusedImage
 						  : document.querySelector(ImageFocus.focusedImageSelector);
 
 		//  Make sure that initially, the image fits into the viewport.
@@ -380,8 +380,8 @@ ImageFocus = {
 		let captionHTML;
 		if (   (T.enclosingFigure = currentlyFocusedImage.closest("figure"))
 			&& (T.figcaption = T.enclosingFigure.querySelector("figcaption"))) {
-			captionHTML = T.figcaption.querySelector("p") 
-						  ? T.figcaption.innerHTML 
+			captionHTML = T.figcaption.querySelector("p")
+						  ? T.figcaption.innerHTML
 						  : "<p>" + T.figcaption.innerHTML + "</p>";
 		} else if (currentlyFocusedImage.title != "") {
 			captionHTML = `<p>${currentlyFocusedImage.title}</p>`;

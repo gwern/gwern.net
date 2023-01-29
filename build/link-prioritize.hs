@@ -4,7 +4,7 @@
                       creation of manual link annotations.
 Author: Gwern Branwen
 Date: 2019-11-22
-When:  Time-stamp: "2023-01-27 10:35:41 gwern"
+When:  Time-stamp: "2023-01-27 22:22:06 gwern"
 License: CC-0
 Dependencies: gwern.net Hakyll libraries
 
@@ -54,7 +54,7 @@ $ find ~/wiki/ -name "*.page" -type f -print0 | parallel --null ~/wiki/haskell/l
 module Main where
 
 import Control.Monad (when)
-import qualified Data.Map.Strict as M (lookup, map, size, toList)
+import qualified Data.Map.Strict as M (elems, fromListWith, lookup, map, size, toList)
 import Utils (replace)
 import Data.List (sort)
 import qualified Data.Text as T (isInfixOf, unpack)

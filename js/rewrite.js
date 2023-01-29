@@ -2032,7 +2032,7 @@ GW.console = {
 					 			  ).replace(/</g, "&lt;"
 					 			  ).replace(/>/g, "&gt;"
 					 			  ).replace(/\n+/g, "\n"
-					 			  ).replace(/\\n/g, "<br>")
+					 			  ).replace(/\\n/g, "<br />")
 				output = jsonString;
 			} else {
 				console.log(entity);
