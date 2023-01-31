@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-01-28 16:12:38 gwern"
+When:  Time-stamp: "2023-01-31 16:40:46 gwern"
 License: CC-0
 -}
 
@@ -56,7 +56,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
-import Image (invertImage, imageSrcset, addImgDimensions)
+import Image (invertImage, invertImageInline, imageSrcset, addImgDimensions)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAutoHtml5String)
 import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
@@ -357,7 +357,8 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                                                   walk addPageLinkWalk $
                                                   walk (parseRawBlock nullAttr) pandoc
                                           p' <- walkM (localizeLink am archived) p
-                                          walkM imageSrcset p' -- add 'srcset' HTML <img> property - helps toggle between the small/large image versions for mobile vs desktop
+                                          p'' <- walkM invertImageInline p'
+                                          walkM imageSrcset p'' -- add 'srcset' HTML <img> property - helps toggle between the small/large image versions for mobile vs desktop
                       let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
                       when (length (urlEncode u') > 273) (printRed "Warning, annotation fragment path → URL truncated!" >>
                                                           putStrLn ("Was: " ++ urlEncode u' ++ " but truncated to: " ++ take 247 u' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"))
@@ -1349,6 +1350,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" ([0-9]+%?)-([0-9]+)", " \\1–\\2")
          , ("([0-9]+%?)-([0-9]+) ", "\\1–\\2 ")
          , ("([0-9]) %", "\\1%")
+         , ("([0-9]+) out of ([0-9]+)", "\\1⁄\\2")
+         , ("([0-9]+) of ([0-9]+)", "\\1⁄\\2")
          , ("([.0-9]+)[xX]", "\\1×")
          , ("=-\\.([.0-9]+)", " = -0.\\1")
          , ("([0-9]*[02456789])th ", "\\1<sup>th</sup> ")
@@ -1545,6 +1548,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<span class=\"math inline\">\\(O(K^2 \\log T)\\)</span>", "𝒪(<em>K</em><sup>2</sup> log <em>T</em>)")
          , ("<span class=\"math inline\">\\(O(K \\log T + K^2 \\log \\log T)\\)</span>", "𝒪(<em>K</em> log <em>T</em> + <em>K</em><sup>2</sup> log log <em>T</em>)")
          , ("<span class=\"math inline\">\\(Q\\)</span>", "<em>Q</em>")
+         , ("<span class=\"math inline\">\\(\\unicode{x2014}\\)</span>", "—")
          , ("<span></span>-greedy", "ε-greedy")
          , ("{\\epsilon}-greedy", "ε-greedy")
          , ("<span class=\"math inline\">\\(\\epsilon\\)</span>", "ε")
@@ -2553,6 +2557,12 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("Excess significance", "Excess statistical-significance")
          , ("their scientific significance", "their scientific importance")
          , ("behavioral significance", "behavioral importance")
+         , (" utilise", "use")
+         , (" utilize", "use")
+         , (" utilising", " using")
+         , (" utilizing", " using")
+         , (" utilisation", " usage")
+         , (" utilization", " usage")
          , ("parametris", "parameteriz")
          , ("normalis", "normaliz")
          , ("generalizt", "generalist")
