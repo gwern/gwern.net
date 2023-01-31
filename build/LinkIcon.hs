@@ -991,7 +991,7 @@ linkIconTestUnitsText =
          , ("http://www.thelancet.com/journals/lancet/article/PIIS0140-6736%2811%2960693-4/abstract", "L", "text")
          , ("https://www.nngroup.com/articles/aesthetic-usability-effect/", "NN", "text,sans")
          , ("https://replicationindex.com/2016/04/18/is-replicability-report-ego-depletionreplicability-report-of-165-ego-depletion-articles/", "RI", "text,sans")
-         , ("https://au.news.yahoo.com/brothers-in-court-over-online-drugs-14980079.html", "Y!", "text,sans")
+         , ("https://sg.news.yahoo.com/japan-makes-bitcoin-linked-drug-arrest-165138422--finance.html", "Y!", "text,sans")
          , ("https://vitalik.ca/general/2017/09/14/prehistory.html", "V.B.", "text,sans")
          , ("/docs/economics/2018-buterin.pdf", "V.B.", "text,sans")
          , ("https://github.com/huggingface/transformers", "\129303", "text")

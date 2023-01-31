@@ -53,7 +53,7 @@ ImageFocus = {
 				<p><strong>Escape</strong> or <strong>click</strong>: Hide zoomed image</p>
 				<p><strong>Space bar:</strong> Reset image size & position</p>
 				<p><strong>Scroll</strong> to zoom in/out</p>
-				<p>(When zoomed in, <strong>drag</strong> to pan; <br /><strong>double-click</strong> to close)</p>
+				<p>(When zoomed in, <strong>drag</strong> to pan;<br /><strong>double-click</strong> to close)</p>
 			</div>
 			<div class="image-number"></div>
 			<div class="slideshow-buttons">
