@@ -24,7 +24,7 @@ import Data.FileStore.Utils (runShellCommand)
 
 import Text.Pandoc (Inline(Image, Link))
 
-import Utils (addClass, printRed, replace)
+import Utils (addClass, printRed, replace, anySuffix)
 
 -------------------------------------------
 
@@ -74,12 +74,14 @@ invertImage f | "https://gwern.net/" `isPrefixOf` f = invertImageLocal $ Utils.r
 
 invertImageLocal :: FilePath -> IO (Bool, String, String)
 invertImageLocal "" = return (False, "0", "0")
-invertImageLocal f = do does <- doesFileExist f
-                        if not does then printRed ("invertImageLocal: " ++ f ++ " " ++ "does not exist") >> return (False, "0", "0") else
-                          do c <- imageMagickColor f f
-                             (h,w) <- imageMagickDimensions f
-                             let invertp = c <= invertThreshold
-                             return (invertp, h, w)
+invertImageLocal f = do let f' = takeWhile (/='#') f
+                        if not (anySuffix f' [".png", ".jpg", ".webp"]) then return (False, "0", "0")  else
+                         do does <- doesFileExist f'
+                            if not does then printRed ("invertImageLocal: " ++ f ++ " " ++ f' ++ " does not exist") >> return (False, "0", "0") else
+                              do c <- imageMagickColor f' f'
+                                 (h,w) <- imageMagickDimensions f'
+                                 let invertp = c <= invertThreshold
+                                 return (invertp, h, w)
 invertThreshold :: Float
 invertThreshold = 0.09
 
@@ -127,7 +129,8 @@ imageMagickDimensions f =
 -- type Text.Pandoc.Definition.Attr = (T.Text, [T.Text], [(T.Text, T.Text)])
 -- WARNING: image hotlinking is a bad practice: hotlinks will often break, sometimes just because of hotlinking. We assume that all images are locally hosted! Woe betide the cheapskate parasite who fails to heed this.
 imageSrcset :: Inline -> IO Inline
-imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
+imageSrcset x@(Image (c, t, pairs) inlines (targt, title)) =
+  let target = T.takeWhile (/='#') targt in -- it is possible to have links which have '.png' or '.jpg' infix, but are not actually images, such as, in tag-directories, section headers for images: '/docs/statistics/survival-analysis/index#filenewbie-survival-by-semester-rows.png' or in articles like /Red ('docs/design/typography/rubrication/index#filenachf%C3%BClleisengallustinte-pelikan-0.5-liter-g%C3%BCnther-wagner.jpg'); special-case that
   if not (".png" `T.isSuffixOf` target || ".jpg" `T.isSuffixOf` target) || "page-thumbnail" `elem` t then return x else
   do let ext = takeExtension $ T.unpack target
      let target' = replace "%2F" "/" $ T.unpack target
@@ -151,7 +154,7 @@ imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
              return $ Image (c, t, pairs++[("srcset", srcset), ("sizes", T.pack ("(max-width: 768px) 100vw, "++w++"px"))])
                             inlines (target, title)
 -- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
-imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = let p' = T.takeWhile (/='#') p in -- it is possible to have links which have '.png' or '.jpg' infix, but are not actually images, such as, in tag-directories, section headers for images: '/docs/statistics/survival-analysis/index#filenewbie-survival-by-semester-rows.png'; special-case that
+imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = let p' = T.takeWhile (/='#') p in
                                                          if (".png" `T.isSuffixOf` p' || ".jpg" `T.isSuffixOf` p') &&
                                                           ("https://gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
                                                          do exists <- doesFileExist $ tail $ replace "https://gwern.net" "" $ T.unpack  p'
