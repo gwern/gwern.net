@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-01-21 16:21:32 gwern"
+When:  Time-stamp: "2023-02-01 18:16:09 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -31,10 +31,10 @@ import System.Directory (doesFileExist)
 
 import Utils (writeUpdatedFile)
 
--- base URL, then fragment+links. eg. "/Improvements" has links from "/Notes" etc, but those links may target anchors like "#microsoft", and those are conceptually distinct from the page as a whole - they are sub-pages. So to preserve that, we nest.
+-- base URL, then fragment+links. eg. "/improvement" has links from "/note/note" etc, but those links may target anchors like "#microsoft", and those are conceptually distinct from the page as a whole - they are sub-pages. So to preserve that, we nest.
 -- eg. ("/Improvements",
---                     [("/Improvements#microsoft", ["/Notes", "/reviews/Books"])
---                      , ("/Improvements", ["/index"])]
+--                     [("/improvement#microsoft", ["/note/note", "/review/book"])
+--                      , ("/improvement", ["/index"])]
 --     )
 type Backlinks = M.Map T.Text [(T.Text, [T.Text])]
 

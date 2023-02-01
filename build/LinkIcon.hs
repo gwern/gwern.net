@@ -56,13 +56,13 @@ rebuildSVGIconCSS = do unless (null linkIconTest) $ error ("Error! Link icons fa
 --
 -- λ linkIcon $ Link nullAttr [Str "foo"] ("https://forum.evageeks.org/forum?id=2222", "")
 -- Link ("",[],[("link-icon","EG"),("link-icon-type","text")]) [Str "foo"] ("https://forum.evageeks.org/forum?id=2222","")
--- λ linkIcon $ Link nullAttr [Str "foo"] ("/docs/foo.pdf", "Foo & Bar 2022")
--- → Link ("",[],[("link-icon","pdf"),("link-icon-type","svg")]) [Str "foo"] ("/docs/foo.pdf","Foo & Bar 2022")
--- → <a href="/docs/foo.pdf" data-link-icon="pdf" data-link-icon-type="svg" title="Foo &amp; Bar 2022">foo</a>
+-- λ linkIcon $ Link nullAttr [Str "foo"] ("/doc/foo.pdf", "Foo & Bar 2022")
+-- → Link ("",[],[("link-icon","pdf"),("link-icon-type","svg")]) [Str "foo"] ("/doc/foo.pdf","Foo & Bar 2022")
+-- → <a href="/doc/foo.pdf" data-link-icon="pdf" data-link-icon-type="svg" title="Foo &amp; Bar 2022">foo</a>
 --
--- In cases of local archive links, matches on the `/docs/www/$DOMAIN/$ARCHIVE.html` aren't necessarily *exactly*
+-- In cases of local archive links, matches on the `/doc/www/$DOMAIN/$ARCHIVE.html` aren't necessarily *exactly*
 -- as powerful; local archives deliberately throw away directory structure for simpler addresses, so 2 matches for
--- 'foo.com/bar/*' and 'foo.com/quux/*' would collide when trying to match just '/docs/www/foo.com/$ARCHIVE.html'.
+-- 'foo.com/bar/*' and 'foo.com/quux/*' would collide when trying to match just '/doc/www/foo.com/$ARCHIVE.html'.
 -- For this case, we detect & exploit the `data-original-URL` attribute which is around for just such problems,
 -- and we run matches on the original URL, and everything should work as expected then.
 --
@@ -149,7 +149,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.theparisreview.org" = aI "PR" "text" -- The Paris Review: not even going to try to make their weird bird logo work
  | u'' "www.theverge.com" = aI "▽" "text" -- The Verge uses a sort of delta Escher triangle-esque 'V' stylization <https://en.wikipedia.org/wiki/The_Verge> which looks like a triangle pointing down, so, ▽ WHITE DOWN-POINTING TRIANGLE (Nabla operator) &#x25BD; &#9661;
  | u'' "www.quora.com" = aI "Q" "text" -- surprisingly, no one's taken 'Q' yet
- | aU'' ["www.edwardtufte.com", "edwardtufte.github.io"] || aU' ["github.com/edwardtufte/", "github.com/jez/tufte-pandoc-jekyll", "github.com/jez/tufte", "github.com/clayh53/tufte", "/docs/design/typography/rubrication/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "cran.r-project.org/web/packages/tufte/"] = aI "ET" "text"
+ | aU'' ["www.edwardtufte.com", "edwardtufte.github.io"] || aU' ["github.com/edwardtufte/", "github.com/jez/tufte-pandoc-jekyll", "github.com/jez/tufte", "github.com/clayh53/tufte", "/doc/design/typography/rubrication/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "cran.r-project.org/web/packages/tufte/"] = aI "ET" "text"
  | aU'' ["cran.r-project.org", "www.r-project.org", "lme4.r-forge.r-project.org", "www.metafor-project.org", "rstudio.com"] || u' "github.com/paul-buerkner/brms" = aI "R" "text" -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too… primary user: cran.r-project.org
  | u'' "www.science.org" || u'' "sciencemag.org" = aI "S" "text" -- Science is just typeset in red
  | u'' "www.sciencedaily.com" = aI "SD" "text,sans"
@@ -185,7 +185,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.mirror.co.uk" = aI "M" "text,sans"
  | u'' "www.stuff.co.nz" = aI "NZ" "text,sans" -- even their official name 'Stuff' is lazy and unmemorable. I just think of them as 'that New Zealand website reporting on crime & DNM stuff'…
  | u'' "chronopause.com" = aI "M.D." "text,sans" -- Mike Darwin, similarly TODO: experiment with initials using periods - does this work as-is? How about quad? '﹒' SMALL FULL STOP U+FE52 does not work.
- | u'' "vitalik.ca" || u' "/docs/economics/2018-buterin.pdf" = aI "V.B." "text,sans" -- Vitalik Buterin, similarly
+ | u'' "vitalik.ca" || u' "/doc/economics/2018-buterin.pdf" = aI "V.B." "text,sans" -- Vitalik Buterin, similarly
  | u'' "unenumerated.blogspot.com" || u' "szabo.best.vwh.net" || u' "nick-szabo" = aI "N.S." "text,sans" -- Nick Szabo
  | u'' "scottaaronson.blog" || u'' "www.scottaaronson.com" = aI "S.A." "text,sans" -- Scott Aaronson
  | u'' "www.rifters.com" = aI "P.W." "text,sans" -- Peter Watts
@@ -288,7 +288,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "www.ssc.wisc.edu/wlsresearch/" = aI "WLS" "text,tri,sans" -- Wisconsin Longitudinal Study
  | u' "host.robots.ox.ac.uk/pascal/VOC" = aI "VOC" "text,tri,sans" -- PASCAL VOC (Visual Object Classes) machine learning image dataset/competition
  | u'' "www.tandfonline.com" = aI "T&F" "text,tri,sans" -- Taylor & Francis: their icon is a small white oil lamp on a blue background, but it's illegible as a favicon and just looks like a white blob on a blue square; since these need to be monochrome, that makes it useless. Plus I recognize 'Taylor & Francis' (sans serif, as usual for STEM publishers) more anyway, so 'T&F' is the natural tri-text icon. A possible Unicode alternative for the AMPERSAND if it is too big is 'U+FE60 ﹠ SMALL AMPERSAND'.
- | u' "omega0.xyz/omega8008/" || aU' ["/docs/statistics/bayes/1988-jaynes-maximumentropyandbayesianmethods.pdf", "www-biba.inrialpes.fr/Jaynes/cc18i.pdf"] = aI "ETJ" "text,tri,sans" -- E. T. Jaynes book/paper website
+ | u' "omega0.xyz/omega8008/" || aU' ["/doc/statistics/bayes/1988-jaynes-maximumentropyandbayesianmethods.pdf", "www-biba.inrialpes.fr/Jaynes/cc18i.pdf"] = aI "ETJ" "text,tri,sans" -- E. T. Jaynes book/paper website
  | u' "paperswithcode.com" = aI "PwC" "text,tri,sans" -- 'Papers With Code' does have a weird '[|⏐|⏐|]' icon (supposed to be a bar graph of different performances, I guess) which would work monochrome, but I don't recognize it and I doubt anyone else would either, especially as a link icon, but 'PwC' *might* be recognizable, so we'll go with that for now.
  | u'' "www.pewresearch.org" = aI "Pew" "text,tri" -- Pew Research Center: logo <https://en.wikipedia.org/wiki/File:Pew_Research_Center.svg>. While very cool, and worthy of a Scandinavian black death metal band, it is unrecognizable and would 'shimmer' intensely if scaled down to a link icon & would have to be recreated. So, another text icon it is. Everyone knows what "Pew" means.
 
@@ -419,7 +419,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  -- Fallback
  | otherwise = x
  where u', u'' :: T.Text -> Bool
-       -- simplest check for string anywhere; note that if it is a full domain name like `https://foo.com` (intended to match `https://foo.com/xyz.html`), then it will *not* match when the local-archive code fires and the URL gets rewritten to "/docs/foo.com/$HASH.html". So we error out if the user tries this, having forgotten that u' ≠ u'' in that respect.
+       -- simplest check for string anywhere; note that if it is a full domain name like `https://foo.com` (intended to match `https://foo.com/xyz.html`), then it will *not* match when the local-archive code fires and the URL gets rewritten to "/doc/foo.com/$HASH.html". So we error out if the user tries this, having forgotten that u' ≠ u'' in that respect.
        u' v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v then error ("Overly strict prefix in infix matching: " ++ show u ++ ":" ++ show v) else
          if originalURL=="" then v `T.isInfixOf` u else v `T.isInfixOf` originalURL
        -- more stringent check, matching exactly the domain name:
@@ -476,14 +476,14 @@ extension = T.pack . maybe "" (takeExtension . uriPath) . parseURIReference . T.
 
 isHostOrArchive :: T.Text -> T.Text -> Bool
 isHostOrArchive domain url = let h = host url in
-                                h == domain || ("/docs/www/"`T.append`domain) `T.isPrefixOf` url
+                                h == domain || ("/doc/www/"`T.append`domain) `T.isPrefixOf` url
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
-linkIconTestUnitsLink = [(Link ("", ["directory-indexes-upwards"],     []) [Str "Test"] ("/docs/index", "Link to parent directory (ascending)"),
+linkIconTestUnitsLink = [(Link ("", ["directory-indexes-upwards"],     []) [Str "Test"] ("/doc/index", "Link to parent directory (ascending)"),
                            "arrow-up-left", "svg")
-                        , (Link ("", ["directory-indexes-downwards"],  []) [Str "Test"] ("/docs/zeo/index", "Link to child directory zeo (descending)"),
+                        , (Link ("", ["directory-indexes-downwards"],  []) [Str "Test"] ("/doc/zeo/index", "Link to child directory zeo (descending)"),
                            "arrow-down-right", "svg")
-                          , (Link ("", ["directory-indexes-sideways"], []) [Str "Test"] ("/docs/ai/nn/transformer/alphafold/index", "Link to other directory ai/nn/transformer/alphafold (descending)"),
+                          , (Link ("", ["directory-indexes-sideways"], []) [Str "Test"] ("/doc/ai/nn/transformer/alphafold/index", "Link to other directory ai/nn/transformer/alphafold (descending)"),
                            "arrow-right", "svg")
                           ]
 
@@ -570,7 +570,7 @@ linkIconTestUnitsText =
          , ("https://derpibooru.org/tags/artist-colon-thisponydoesnotexist", "❐", "text")
          , ("https://safebooru.org/index.php?page=post&s=list&tags=heterochromia", "❐", "text")
          , ("https://www.deepmind.com/blog/alphastar-mastering-the-real-time-strategy-game-starcraft-ii",  "deepmind","svg")
-         , ("/docs/reinforcement-learning/model/alphago/2016-silver.pdf#deepmind",  "deepmind","svg")
+         , ("/doc/reinforcement-learning/model/alphago/2016-silver.pdf#deepmind",  "deepmind","svg")
          , ("https://arxiv.org/abs/1612.08810#deepmind",  "deepmind","svg")
          , ("https://distill.pub/2016/augmented-rnns/",  "distillpub","svg")
          , ("https://dl.dropboxusercontent.com/u/182368464/umineko-compress.tar.xz",  "dropbox","svg")
@@ -579,7 +579,7 @@ linkIconTestUnitsText =
          , ("https://www.drugsdata.org/results.php?start=0&search_field=all&s=modafinil", "erowid","svg")
          , ("https://everything2.com/title/2015+%253A+The+Last+Year+of+Ryoji+Kaji", "E2", "text")
          , ("https://examine.com/supplements/Bacopa+monnieri/", "Eχ", "text,sans")
-         , ("/docs/ai/scaling/2020-bell.pdf#facebook",  "facebook","svg")
+         , ("/doc/ai/scaling/2020-bell.pdf#facebook",  "facebook","svg")
          , ("https://ai.facebook.com/blog/a-highly-efficient-real-time-text-to-speech-system-deployed-on-cpus/",  "facebook","svg")
          , ("https://engineering.fb.com/2014/11/14/production-engineering/solving-the-mystery-of-link-imbalance-a-metastable-failure-state-at-scale/",  "facebook","svg")
          , ("https://arxiv.org/abs/2004.13637#facebook",  "facebook","svg")
@@ -592,7 +592,7 @@ linkIconTestUnitsText =
          , ("https://about.google/",  "google","svg")
          , ("https://arxiv.org/abs/1706.04972#google",  "google","svg")
          , ("https://arxiv.org/pdf/2009.06732.pdf#org=google&page=6",  "google","svg")
-         , ("https://gwern.net/docs/cs/hardware/2015-kanev.pdf#google",  "google","svg")
+         , ("https://gwern.net/doc/cs/hardware/2015-kanev.pdf#google",  "google","svg")
          , ("https://www.lesswrong.com/posts/37sHjeisS9uJufi4u/scholarship-how-to-do-it-efficiently",  "LW","text")
          , ("https://www.lesswrong.com",  "LW","text")
          , ("http://sl4.org/archive/0812/index.html#19570",  "LW","text")
@@ -683,7 +683,7 @@ linkIconTestUnitsText =
          , ("https://nvlabs.github.io/stylegan2/versions.html",  "n","text,sans,italic")
          , ("https://archive.nytimes.com/6thfloor.blogs.nytimes.com/2013/03/20/a-sham-procedure-leads-to-disappointing-m-s-news/",  "newyorktimes","svg")
          , ("https://www.wsj.com/articles/SB10000872396390443696604577647870908169992",  "WSJ","text,tri")
-         , ("/docs/ai/nn/transformer/gpt/dall-e/2020-chen.pdf#openai",  "openai","svg")
+         , ("/doc/ai/nn/transformer/gpt/dall-e/2020-chen.pdf#openai",  "openai","svg")
          , ("https://openai.com/blog/better-language-models/",  "openai","svg")
          , ("https://openreview.net/forum?id=xTJEN-ggl1b", "OR", "text,sans")
          , ("https://arxiv.org/abs/1611.02779#openai",  "openai","svg")
@@ -718,7 +718,7 @@ linkIconTestUnitsText =
          , ("https://slate.com/health-and-science/2017/06/daryl-bem-proved-esp-is-real-showed-science-is-broken.html",  "S","text,sans")
          , ("https://slatestarcodex.com/2015/01/15/depression-is-not-a-proxy-for-social-dysfunction/",  "SSC","text,tri")
          , ("https://unsongbook.com/",  "\8501","text")
-         , ("/docs/fiction/poetry/2011-yvain-iliadaslawsuit.html",  "SSC","text,tri")
+         , ("/doc/fiction/poetry/2011-yvain-iliadaslawsuit.html",  "SSC","text,tri")
          , ("https://astralcodexten.substack.com/p/know-your-amphetamines",  "SSC","text,tri")
          , ("https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3774989", "SSRN", "text,quad")
          , ("https://stackoverflow.com/questions/1197575/can-scripts-be-inserted-with-innerhtml",  "stackexchange","svg")
@@ -736,7 +736,7 @@ linkIconTestUnitsText =
          , ("https://www.theverge.com/2021/8/7/22614450/unopened-copy-super-mario-bros-sells-2-million-record", "▽", "text")
          , ("https://econlolcats.tumblr.com/",  "tumblr","svg")
          , ("https://tvtropes.org/pmwiki/pmwiki.php/Anime/MobileSuitGundamCharscounterattack",  "TV","text")
-         , ("https://developer.twitter.com/en/docs/twitter-api/v1/rules-and-filtering/search-operators",  "twitter","svg")
+         , ("https://developer.twitter.com/en/doc/twitter-api/v1/rules-and-filtering/search-operators",  "twitter","svg")
          , ("https://nitter.net/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg")
          , ("https://www.uptontea.com/formosa-oolong-tea/taiwan-loose-leaf-oolong-tea/p/V00252/",  "uptontea","svg")
          , ("http://lists.urth.net/pipermail/urth-urth.net/2010-December/019108.html",  "U","text")
@@ -780,36 +780,36 @@ linkIconTestUnitsText =
          , ("https://yunnansourcing.com/",  "ys","text")
          , ("https://yunnansourcing.us/", "ys","text")
          , ("https://what-if.xkcd.com/145/",  "XKCD","text,quad,sans")
-         , ("/docs/cat/catnip/survey/2017-07-30-gs-pilot.csv",  "csv","svg")
-         , ("/docs/iq/2014-tenijenhuis-supplement.doc",  "worddoc","svg")
-         , ("/docs/genetics/heritable/2015-mosing-supplement.docx",  "worddoc","svg")
-         , ("/docs/dual-n-back/2012-zhong.ebt",  "misc","svg")
-         , ("/docs/ai/1992-dreyfus-whatcomputerstillcantdo.epub",  "EPUB","text,quad,sans")
-         , ("/docs/touhou/2013-c84-downloads.json",  "txt","svg")
-         , ("/docs/ai/anime/danbooru/2020-06-08-danbooru2019-palm-handannotations-export.jsonl",  "txt","svg")
-         , ("/docs/touhou/2013-06-08-acircle-tohoarrange.mdb",  "misc","svg")
-         , ("/docs/cs/linkrot/2009-08-20-b3ta-fujitsuhtml.mht",  "misc","svg")
-         , ("/docs/psychology/2019-01-21-eric-socksurvey.ods",  "spreadsheet","svg")
-         , ("/docs/personal/rss-subscriptions.opml",  "txt","svg")
+         , ("/doc/cat/catnip/survey/2017-07-30-gs-pilot.csv",  "csv","svg")
+         , ("/doc/iq/2014-tenijenhuis-supplement.doc",  "worddoc","svg")
+         , ("/doc/genetics/heritable/2015-mosing-supplement.docx",  "worddoc","svg")
+         , ("/doc/dual-n-back/2012-zhong.ebt",  "misc","svg")
+         , ("/doc/ai/1992-dreyfus-whatcomputerstillcantdo.epub",  "EPUB","text,quad,sans")
+         , ("/doc/touhou/2013-c84-downloads.json",  "txt","svg")
+         , ("/doc/ai/anime/danbooru/2020-06-08-danbooru2019-palm-handannotations-export.jsonl",  "txt","svg")
+         , ("/doc/touhou/2013-06-08-acircle-tohoarrange.mdb",  "misc","svg")
+         , ("/doc/cs/linkrot/2009-08-20-b3ta-fujitsuhtml.mht",  "misc","svg")
+         , ("/doc/psychology/2019-01-21-eric-socksurvey.ods",  "spreadsheet","svg")
+         , ("/doc/personal/rss-subscriptions.opml",  "txt","svg")
          , ("/lorem.page",  "txt","svg")
-         , ("/docs/ai/poetry/2019-10-17-117m-poetry-cleanprojectgutenberg-samples.txt",  "txt","svg")
+         , ("/doc/ai/poetry/2019-10-17-117m-poetry-cleanprojectgutenberg-samples.txt",  "txt","svg")
          , ("/static/font/drop-cap/de-zs/DeutscheZierschrift-M.ttf",  "misc","svg")
-         , ("/docs/creatine/2009-ling-data.xls",  "spreadsheet","svg")
-         , ("/docs/cs/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx",  "spreadsheet","svg")
-         , ("/docs/personal/google-cse.xml",  "google","svg")
+         , ("/doc/creatine/2009-ling-data.xls",  "spreadsheet","svg")
+         , ("/doc/cs/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx",  "spreadsheet","svg")
+         , ("/doc/personal/google-cse.xml",  "google","svg")
          , ("https://docs.google.com/document/d/1MhA3M5ucBD7ZXcWk57_MKZ5jEgPX6_YiKye_EFP-adg/edit",  "worddoc","svg")
-         , ("/docs/ai/1986-michie-onmachineintelligence.pdf#page=99",  "pdf","svg")
-         , ("/docs/ai/1962-bryson.pdf",  "pdf","svg")
+         , ("/doc/ai/1986-michie-onmachineintelligence.pdf#page=99",  "pdf","svg")
+         , ("/doc/ai/1962-bryson.pdf",  "pdf","svg")
          , ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.108.7127&rep=rep1&type=pdf",  "pdf","svg")
          , ("https://pdfs.semanticscholar.org/00d3/6b267777b670abd1a3b98a21bf662245a7c4.pdf",  "pdf","svg")
          , ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.2289&rep=rep1&type=pdf",  "pdf","svg")
-         , ("/docs/rotten.com/library/bio/hackers/robert-morris/morris.bmp",  "image","svg")
-         , ("/docs/rotten.com/library/sex/sexual-ethics-in-psychology/55403_m.gif",  "image","svg")
+         , ("/doc/rotten.com/library/bio/hackers/robert-morris/morris.bmp",  "image","svg")
+         , ("/doc/rotten.com/library/sex/sexual-ethics-in-psychology/55403_m.gif",  "image","svg")
          , ("/static/img/favicon.ico",  "image","svg")
-         , ("/docs/anime/eva/2010-1000enpark-tokyo-oota-heiwajimakoen.jpg",  "image","svg")
-         , ("/images/iq/2011-gensowski-figure7-totaleffectofiqandpersonalityonlifetimeearnings.png",  "image","svg")
+         , ("/doc/anime/eva/2010-1000enpark-tokyo-oota-heiwajimakoen.jpg",  "image","svg")
+         , ("/image/iq/2011-gensowski-figure7-totaleffectofiqandpersonalityonlifetimeearnings.png",  "image","svg")
          , ("/static/img/icons/video.svg",  "image","svg")
-         , ("/docs/personal/businesscard-front-draft.xcf",  "image","svg")
+         , ("/doc/personal/businesscard-front-draft.xcf",  "image","svg")
          , ("https://i.imgur.com/3Jb0b.jpg",  "image","svg")
          , ("/static/build/linkAbstract.R",  "code","svg")
          , ("/static/css/links.css",  "code","svg")
@@ -817,23 +817,23 @@ linkIconTestUnitsText =
          , ("https://wiki.haskell.org/Xmonad/Config_archive/Gwern's_xmonad.hs",  "code","svg")
          , ("/static/templates/default.html",  "code","svg")
          , ("/static/js/sidenotes.js",  "code","svg")
-         , ("/docs/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch",  "code","svg")
+         , ("/doc/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch",  "code","svg")
          , ("/static/build/markdown-lint.sh",  "code","svg")
          , ("/static/build/build_css.php",  "code","svg")
          , ("http://www.metafor-project.org/doku.php",  "R","text")
          , ("/static/nginx/twdne.conf",  "code","svg")
-         , ("/docs/zeo/firmware-v2.6.3R-zeo.img",  "archive","svg")
+         , ("/doc/zeo/firmware-v2.6.3R-zeo.img",  "archive","svg")
          , ("https://hivemind-repo.s3-us-west-2.amazonaws.com/twdne3/twdne3.onnx",  "archive","svg")
-         , ("/docs/psychology/spaced-repetition/michaellee-memoryretentionexperiments-data.tar",  "archive","svg")
-         , ("/docs/ai/nn/rnn/2015-06-03-karpathy-charrnn-visualization.tar.xz",  "archive","svg")
-         , ("/docs/ai/anime/danbooru/2019-02-10-stylegan-holo-handselectedsamples.zip",  "archive","svg")
-         , ("/docs/darknet-markets/usareshipper-profile.maff", "archive","svg")
-         , ("/images/cs/2017-reddit-dhieno-theplace-timelapseevolution.mp4",  "file-video","svg")
+         , ("/doc/psychology/spaced-repetition/michaellee-memoryretentionexperiments-data.tar",  "archive","svg")
+         , ("/doc/ai/nn/rnn/2015-06-03-karpathy-charrnn-visualization.tar.xz",  "archive","svg")
+         , ("/doc/ai/anime/danbooru/2019-02-10-stylegan-holo-handselectedsamples.zip",  "archive","svg")
+         , ("/doc/darknet-markets/usareshipper-profile.maff", "archive","svg")
+         , ("/image/cs/2017-reddit-dhieno-theplace-timelapseevolution.mp4",  "file-video","svg")
          , ("http://iqtest.dk/main.swf",  "file-video","svg")
-         , ("/images/tea/tea-mineralwaters-bestarm-sequential.webm",  "file-video","svg")
-         , ("/docs/ai/music/2020-03-06-fifteenai-fluttershy-sithcode.mp3",  "audio","svg")
-         , ("/docs/rotten.com/library/culture/batman/theme-song/batmantv.rm",  "audio","svg")
-         , ("/docs/rotten.com/library/bio/entertainers/comic/david-letterman/letterman_any_sense.wav",  "audio","svg")
+         , ("/image/tea/tea-mineralwaters-bestarm-sequential.webm",  "file-video","svg")
+         , ("/doc/ai/music/2020-03-06-fifteenai-fluttershy-sithcode.mp3",  "audio","svg")
+         , ("/doc/rotten.com/library/culture/batman/theme-song/batmantv.rm",  "audio","svg")
+         , ("/doc/rotten.com/library/bio/entertainers/comic/david-letterman/letterman_any_sense.wav",  "audio","svg")
          , ("http://silkroadvb5piz3r.onion/index.php/silkroad/user/69a6bec290", "SR1", "text,sans")
          , ("http://silkroad5v7dywlc.onion/index.php?topic=2889.0", "SR1", "text,sans")
          , ("https://beepb00p.xyz/pkm-search.html", "\129302", "text")
@@ -915,7 +915,7 @@ linkIconTestUnitsText =
          , ("https://jaspervdj.be/hakyll/reference/Hakyll-Web-Redirect.html", "JVDJ", "text,quad,mono")
          , ("https://gizmodo.com/weird-and-wonderful-movies-that-youll-never-get-to-see-5877874", "GIZM", "text,quad,mono")
          , ("https://www.edwardtufte.com/bboard/images/0000yO-774.gif", "ET", "text")
-         , ("/docs/design/typography/rubrication/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "ET", "text")
+         , ("/doc/design/typography/rubrication/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "ET", "text")
          , ("https://cran.r-project.org/web/packages/tufte/index.html", "ET", "text")
          , ("https://edwardtufte.github.io/tufte-css/#epigraphs", "ET", "text")
          , ("https://github.com/clayh53/tufte-jekyll", "ET", "text")
@@ -993,7 +993,7 @@ linkIconTestUnitsText =
          , ("https://replicationindex.com/2016/04/18/is-replicability-report-ego-depletionreplicability-report-of-165-ego-depletion-articles/", "RI", "text,sans")
          , ("https://sg.news.yahoo.com/japan-makes-bitcoin-linked-drug-arrest-165138422--finance.html", "Y!", "text,sans")
          , ("https://vitalik.ca/general/2017/09/14/prehistory.html", "V.B.", "text,sans")
-         , ("/docs/economics/2018-buterin.pdf", "V.B.", "text,sans")
+         , ("/doc/economics/2018-buterin.pdf", "V.B.", "text,sans")
          , ("https://github.com/huggingface/transformers", "\129303", "text")
          , ("https://huggingface.co/calculator/", "\129303", "text")
          , ("https://medium.com/huggingface/distilbert-8cf3380435b5", "\129303", "text")
@@ -1017,7 +1017,7 @@ linkIconTestUnitsText =
          , ("https://longreads.com/2015/01/28/friendship-is-complicated/", "Long", "text,quad")
          , ("https://crookedtimber.org/2012/05/30/in-soviet-union-optimization-problem-solves-you/", "CT", "text")
          , ("http://articles.latimes.com/print/1988-07-17/magazine/tm-9636_1_x-ray-laser", "𝔏A", "text")
-         , ("/images/fiction/batman/2022-04-15-manasuka-artdecobatmantriptych-batman.psd",  "image","svg")
+         , ("/image/fiction/batman/2022-04-15-manasuka-artdecobatmantriptych-batman.psd",  "image","svg")
          , ("https://warontherocks.com/2021/08/foreign-fighters-and-cheese-bells/", "WOTR", "text,quad,sans")
          , ("https://www.connectedpapers.com/main/1ffe143b40a9f8c01940c7397280de4cf666d635/Lessons-from-AlphaZero-for-Optimal%2C-Model-Predictive%2C-and-Adaptive-Control/graph", "connected-papers","svg")
          , ("https://krebsonsecurity.com/2013/07/mail-from-the-velvet-cybercrime-underground/", "Kreb", "text,quad,sans")
@@ -1057,7 +1057,7 @@ linkIconTestUnitsText =
          , ("https://people.idsia.ch/~juergen/creativity.html", "SMDH", "text,quad,sans")
          , ("https://arxiv.org/abs/1404.7828#schmidhuber", "SMDH", "text,quad,sans")
          , ("https://innsbigdata.wordpress.com/2015/02/09/interview-with-juergen-schmidhuber/", "SMDH", "text,quad,sans")
-         , ("/docs/ai/nn/rnn/1991-schmidhuber.pdf", "SMDH", "text,quad,sans")
+         , ("/doc/ai/nn/rnn/1991-schmidhuber.pdf", "SMDH", "text,quad,sans")
          , ("https://www.bloomberg.com/news/features/2018-05-15/google-amazon-and-facebook-owe-j-rgen-schmidhuber-a-fortune","SMDH", "text,quad,sans")
          , ("https://www.nytimes.com/2016/11/27/technology/artificial-intelligence-pioneer-jurgen-schmidhuber-overlooked.html", "SMDH", "text,quad,sans")
          , ("https://www.ssc.wisc.edu/wlsresearch/about/description.php", "WLS", "text,tri,sans")
@@ -1068,7 +1068,7 @@ linkIconTestUnitsText =
          , ("https://www.teds.ac.uk/about-teds", "TEDS", "text,quad,sans")
          , ("https://www.tandfonline.com/doi/abs/10.1080/02783190209554137", "T&F", "text,tri,sans")
          , ("https://omega0.xyz/omega8008/JaynesBookPdf.html", "ETJ", "text,tri,sans")
-         , ("/docs/statistics/bayes/1988-jaynes-maximumentropyandbayesianmethods.pdf", "ETJ", "text,tri,sans")
+         , ("/doc/statistics/bayes/1988-jaynes-maximumentropyandbayesianmethods.pdf", "ETJ", "text,tri,sans")
          , ("http://www-biba.inrialpes.fr/Jaynes/cc18i.pdf", "ETJ", "text,tri,sans")
          , ("https://paperswithcode.com/method/dilated-convolution", "PwC", "text,tri,sans")
          , ("https://stability.ai/blog/stable-diffusion-public-release", "SD", "text,sans")

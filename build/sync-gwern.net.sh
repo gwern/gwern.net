@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-02-01 17:03:34 gwern"
+# When:  Time-stamp: "2023-02-02 10:41:36 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -116,11 +116,11 @@ else
     # Update the directory listing index pages: there are a number of directories we want to avoid,
     # like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of
     # docs, so we'll blacklist those:
-    DIRECTORY_TAGS="$(find docs/ fiction/ haskell/ newsletter/ nootropics/ notes/ reviews/ zeo/ -type d \
-                      | sort | grep -F --invert-match -e 'docs/www' -e 'docs/rotten.com' -e 'docs/genetics/selection/www.mountimprobable.com' \
-                                        -e 'docs/biology/2000-iapac-norvir' -e 'docs/gwern.net-gitstats' -e 'docs/rl/armstrong-controlproblem' \
-                                        -e 'docs/statistics/order/beanmachine-multistage' -e 'docs/personal/2011-gwern-yourmorals.org/')"
-    PAGES_BIBLIOGRAPHIES="$(find . -type f -name "*.page" | sort | grep -F --invert-match -e 'index.page' -e '404.page' | sed -e 's/\.\///' | shuf; find . -type f -name "index.page"|grep -F --invert-match -e 'docs/') index.page"
+    DIRECTORY_TAGS="$(find doc/ fiction/ haskell/ newsletter/ nootropic/ note/ review/ zeo/ -type d \
+                      | sort | grep -F --invert-match -e 'doc/www' -e 'doc/rotten.com' -e 'doc/genetics/selection/www.mountimprobable.com' \
+                                        -e 'doc/biology/2000-iapac-norvir' -e 'doc/gwern.net-gitstats' -e 'doc/rl/armstrong-controlproblem' \
+                                        -e 'doc/statistics/order/beanmachine-multistage' -e 'doc/personal/2011-gwern-yourmorals.org/')"
+    PAGES_BIBLIOGRAPHIES="$(find . -type f -name "*.page" | sort | grep -F --invert-match -e 'index.page' -e '404.page' | sed -e 's/\.\///' | shuf; find . -type f -name "index.page"|grep -F --invert-match -e 'doc/') index.page"
 
     # wait for generateLinkBibliography to finish to ensure the annotation link-bibs are all created:
     bold "Updating link bibliographies…"
@@ -159,11 +159,11 @@ else
     ## possible alternative implementation in hakyll: https://www.rohanjain.in/hakyll-sitemap/
     (echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
      ## very static files which rarely change: PDFs, images, site infrastructure:
-     find -L _site/docs/ _site/images/ _site/static/ -not -name "*.page" -type f | grep -F --invert-match -e 'docs/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/templates/default.html' -e '-530px.jpg' -e '-768px.png' | grep -E --invert-match -e '/docs/.*/index' -e 'static/.*\..*\.html$' -e 'docs/.*\..*\.html$' | \
+     find -L _site/doc/ _site/image/ _site/static/ -not -name "*.page" -type f | grep -F --invert-match -e 'doc/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/templates/default.html' -e '-530px.jpg' -e '-768px.png' | grep -E --invert-match -e '/doc/.*/index' -e 'static/.*\..*\.html$' -e 'doc/.*\..*\.html$' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>never<\/changefreq><\/url>/'
      ## Everything else changes once in a while:
-     find -L _site/ -not -name "*.page" -type f | grep -F --invert-match -e 'static/' -e 'docs/' -e 'images/' -e 'Fulltext' -e 'metadata/' -e '-768px.'  -e '.page.html'| \
+     find -L _site/ -not -name "*.page" -type f | grep -F --invert-match -e 'static/' -e 'doc/' -e 'image/' -e 'Fulltext' -e 'metadata/' -e '-768px.'  -e '.page.html'| \
          grep -E --invert-match -e '/.*/index' -e '.page$' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/'
@@ -205,7 +205,7 @@ else
         sort |  grep -F --invert-match \
                  `# Pandoc fails on embedded Unicode/regexps in JQuery` \
                  -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'index.page' \
-                 -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'docs/www/' -e 'sitemap.xml' | parallel  --jobs 25 syntaxHighlight
+                 -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'doc/www/' -e 'sitemap.xml' | parallel  --jobs 25 syntaxHighlight
     set -e
 
     bold "Stripping compile-time-only classes unnecessary at runtime…"
@@ -302,15 +302,15 @@ else
     PAGES_ALL="$(find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotations/ -type f -name '*.html' | sort)"
     λ(){
          echo "$PAGES_ALL" | xargs grep -F -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
-                                     grep -F --invert-match -e '/1955-nash' -e '/backstop' -e '/death-note-anonymity' -e '/differences' \
+                                     grep -F --invert-match -e '/1955-nash' -e '/backstop' -e '/death-note-anonymity' -e '/difference' \
                                                           -e '/lorem' -e '/modus' -e '/order-statistics' -e '/conscientiousness-and-online-education' \
-                                -e 'docs%2Fmath%2Fhumor%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
+                                -e 'doc%2Fmath%2Fhumor%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
                                 -e '/the-existential-risk-of-mathematical-error' -e '/replication' \
-                                -e '%2fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index' -e '/coin-flip' \
-                                -e '/nootropics/magnesium' -e '/selection' -e 'docs/statistics/bayes/1994-falk' -e '/zeo' \
+                                -e '%2fperformance-pay-nobel.html' -e '/doc/cs/index' -e '/doc/math/index' -e '/coin-flip' \
+                                -e '/nootropic/magnesium' -e '/selection' -e 'doc/statistics/bayes/1994-falk' -e '/zeo' \
                                 -e '/mail-delivery' \
-                                -e '/docs/math/humor/index' -e '/docs/ai/index' -e '/docs/statistics/bias/index' -e '/variables' -e '1400861560180858880' \
-                                -e 'w28340%2Fw28340.pdf' -e 'docs/statistics/order/index' -e 'docs/statistics/decision/index' -e 'docs/cs/algorithm/index' -e 'docs/economics/index';
+                                -e '/doc/math/humor/index' -e '/doc/ai/index' -e '/doc/statistics/bias/index' -e '/variable' -e '1400861560180858880' \
+                                -e 'w28340%2Fw28340.pdf' -e 'doc/statistics/order/index' -e 'doc/statistics/decision/index' -e 'doc/cs/algorithm/index' -e 'doc/economics/index';
        }
     wrap λ "Warning: unauthorized LaTeX users somewhere"
 
@@ -338,7 +338,7 @@ else
          [ "$SIMILARLINKS_FILES_N" -le 9540 ] && echo "$SIMILARLINKS_FILES_N"; }
     wrap λ "Similar-links files are missing?"
 
-    ## NOTE: transclude.js supports some special 'range' syntax for transclusions, so a link like '/notes/lion#history#'/'/notes/lion##history'/'/notes/lion##'/'/notes/lion#history#foo' is in fact valid
+    ## NOTE: transclude.js supports some special 'range' syntax for transclusions, so a link like '/note/lion#history#'/'/note/lion##history'/'/note/lion##'/'/note/lion#history#foo' is in fact valid
     λ(){ grep -E -e '#[[:alnum:]-]+#' -e '[[:alnum:]-]+##[[:alnum:]-]+' metadata/*.yaml metadata/*.hs | grep -E --invert-match -e '#[[:alnum:]-]+#$'; }
     wrap λ "Broken double-hash anchors in links somewhere?"
 
@@ -440,13 +440,13 @@ else
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=500 "grep -F --color=always --with-filename -- '————–'"; }
     wrap λ "Broken tables in HTML."
 
-    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -F --with-filename --color=always -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a '; }
+    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -F --with-filename --color=always -e '](/​image/​' -e '](/image/' -e '<p>[[' -e ' _</span><a ' -e ' _<a '; }
     wrap λ "Miscellaneous fixed-string errors in compiled HTML."
 
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -E --with-filename --color=always -e ' __[A-Z][a-z]'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
-    λ(){ eg -e '^"~/' -e '\$";$' -e '$" "docs' -e '\|' ./static/redirects/nginx*.conf; }
+    λ(){ eg -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' ./static/redirects/nginx*.conf; }
     wrap λ "Warning: caret/tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
 
     λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeYAML "metadata/full.yaml"'; }
@@ -550,7 +550,7 @@ else
     λ(){ gf -e ' significant'  ./metadata/full.yaml; }
     wrap λ "Misleading language in full.yaml"
 
-    λ(){ gf -e '/docs/www/'  ./metadata/full.yaml; }
+    λ(){ gf -e '/doc/www/'  ./metadata/full.yaml; }
     wrap λ "Generated local archive links showing up in manual annotations."
 
     λ(){ gf -e 'backlinks/' -e 'metadata/annotations/' -e '?gi=' -- ./metadata/backlinks.hs; }
@@ -611,7 +611,7 @@ else
     set -e
     ## sync to Hetzner server: (`--size-only` because Hakyll rebuilds mean that timestamps will always be different, forcing a slower rsync)
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
-    ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. docs/*), just force a hash-based sync every time:
+    ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. doc/*), just force a hash-based sync every time:
     bold "Syncing static/…"
     rsync --perms --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='generateSimilar' --exclude='hakyll' --exclude='guessTag' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie. non-generated files):
@@ -626,7 +626,7 @@ else
     bold "Expiring ≤100 updated files…"
     # expire CloudFlare cache to avoid hassle of manual expiration: (if more than 100, we've probably done some sort of major systemic change & better to flush whole cache or otherwise investigate manually)
     # NOTE: 'bot-fighting' CloudFlare settings must be largely disabled, otherwise CF will simply CAPTCHA or block outright the various curl/linkchecker tests as 'bots'.
-    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | grep -F --invert-match -e '/images/thumbnails/' -e '/docs/www' -e '/static/build/' -e '/static/templates/' -e '/static/includes/' -e '/metadata/annotations/backlinks/' -e '/metadata/annotations/similars/' | xargs ls -t 2>/dev/null | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' | head -50) https://gwern.net/sitemap.xml https://gwern.net/lorem https://gwern.net/ https://gwern.net/index https://gwern.net/metadata/today-quote.html"
+    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | grep -F --invert-match -e '/image/thumbnails/' -e '/doc/www' -e '/static/build/' -e '/static/templates/' -e '/static/includes/' -e '/metadata/annotations/backlinks/' -e '/metadata/annotations/similars/' | xargs ls -t 2>/dev/null | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' | head -50) https://gwern.net/sitemap.xml https://gwern.net/lorem https://gwern.net/ https://gwern.net/index https://gwern.net/metadata/today-quote.html"
     for URL in $EXPIRE; do
         echo -n "Expiring: $URL "
         ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
@@ -668,97 +668,97 @@ else
     c () { curl --compressed --silent --output /dev/null --head "$@"; }
     λ(){ cr () { [[ "$2" != $(c --location --write-out '%{url_effective}' "$1") ]] && echo "$1" "$2"; }
          cr 'https://gwern.net/DNM-archives' 'https://gwern.net/dnm-archive'
-         cr 'https://gwern.net/docs/dnb/1978-zimmer.pdf' 'https://gwern.net/docs/music/music-distraction/1978-zimmer.pdf'
+         cr 'https://gwern.net/doc/dnb/1978-zimmer.pdf' 'https://gwern.net/doc/music/music-distraction/1978-zimmer.pdf'
          cr 'https://gwern.net/AB%20testing' 'https://gwern.net/ab-testing'
          cr 'https://gwern.net/Archiving%20URLs.html' 'https://gwern.net/archiving'
-         cr 'https://gwern.net/Book-reviews' 'https://gwern.net/reviews/book'
-         cr 'https://gwern.net/docs/ai/2019-10-21-gwern-gpt2-folkrnn-samples.ogg' 'https://gwern.net/docs/ai/music/2019-10-21-gwern-gpt2-folkrnn-samples.mp3';
-         cr 'https://gwern.net/docs/sr/2013-06-07-premiumdutch-profile.htm' 'https://gwern.net/docs/darknet-markets/silk-road/1/2013-06-07-premiumdutch-profile.htm'
-         cr 'https://gwern.net/docs/elections/2012-gwern-notes.txt' 'https://gwern.net/docs/statistics/prediction/election/2012-gwern-notes.txt'
-         cr 'https://gwern.net/docs/statistics/peerreview/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf' 'https://gwern.net/docs/statistics/peer-review/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf'
-         cr 'https://gwern.net/docs/longnow/form990-longnowfoundation-2001-12.pdf' 'https://gwern.net/docs/long-now/form990-longnowfoundation-2001-12.pdf'
-         cr 'https://gwern.net/docs/eva/2011-house' 'https://gwern.net/docs/anime/eva/2011-house'
-         cr 'https://gwern.net/docs/cs/1955-nash' 'https://gwern.net/docs/cs/cryptography/1955-nash'
-         cr 'https://www.gwern.net/docs/cs/cryptography/1955-nash' 'https://gwern.net/docs/cs/cryptography/1955-nash' # check www.gwern.net → gwern.net redirect
+         cr 'https://gwern.net/Book-reviews' 'https://gwern.net/review/book'
+         cr 'https://gwern.net/doc/ai/2019-10-21-gwern-gpt2-folkrnn-samples.ogg' 'https://gwern.net/doc/ai/music/2019-10-21-gwern-gpt2-folkrnn-samples.mp3';
+         cr 'https://gwern.net/doc/sr/2013-06-07-premiumdutch-profile.htm' 'https://gwern.net/doc/darknet-markets/silk-road/1/2013-06-07-premiumdutch-profile.htm'
+         cr 'https://gwern.net/doc/elections/2012-gwern-notes.txt' 'https://gwern.net/doc/statistics/prediction/election/2012-gwern-notes.txt'
+         cr 'https://gwern.net/doc/statistics/peerreview/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf' 'https://gwern.net/doc/statistics/peer-review/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf'
+         cr 'https://gwern.net/doc/longnow/form990-longnowfoundation-2001-12.pdf' 'https://gwern.net/doc/long-now/form990-longnowfoundation-2001-12.pdf'
+         cr 'https://gwern.net/doc/eva/2011-house' 'https://gwern.net/doc/anime/eva/2011-house'
+         cr 'https://gwern.net/doc/cs/1955-nash' 'https://gwern.net/doc/cs/cryptography/1955-nash'
+         cr 'https://gwern.net/doc/cs/cryptography/1955-nash' 'https://gwern.net/doc/cs/cryptography/1955-nash' # check www.gwern.net → gwern.net redirect
        }
     wrap λ "Check that some redirects go where they should"
     λ() { cm () { [[ "$1" != $(c --write-out '%{content_type}' "$2") ]] && echo "$1" "$2"; }
           ### check key pages:
           ## check every possible extension:
           ## check some random ones:
-          cm "application/epub+zip" 'https://gwern.net/docs/anime/eva/2002-takeda-notenkimemoirs.epub'
+          cm "application/epub+zip" 'https://gwern.net/doc/anime/eva/2002-takeda-notenkimemoirs.epub'
           cm "application/font-sfnt" 'https://gwern.net/static/font/drop-cap/kanzlei/Kanzlei-Initialen-M.ttf'
-          cm "application/javascript" 'https://gwern.net/docs/statistics/order/beanmachine-multistage/script.js'
+          cm "application/javascript" 'https://gwern.net/doc/statistics/order/beanmachine-multistage/script.js'
           cm "application/javascript" 'https://gwern.net/static/js/rewrite.js'
           cm "application/javascript" 'https://gwern.net/static/js/sidenotes.js'
-          cm "application/json" 'https://gwern.net/docs/touhou/2013-c84-downloads.json'
-          cm "application/msaccess" 'https://gwern.net/docs/touhou/2013-06-08-acircle-tohoarrange.mdb'
-          cm "application/msword" 'https://gwern.net/docs/iq/2014-tenijenhuis-supplement.doc'
-          cm "application/octet-stream" 'https://gwern.net/docs/zeo/firmware-v2.6.3R-zeo.img'
-          cm "application/pdf" 'https://gwern.net/docs/cs/hardware/2010-bates.pdf'
-          cm "application/pdf" 'https://gwern.net/docs/history/1694-gregory.pdf'
-          cm "application/vnd.ms-excel" 'https://gwern.net/docs/dual-n-back/2012-05-30-kundu-dnbrapm.xls'
-          cm "application/vnd.oasis.opendocument.spreadsheet" 'https://gwern.net/docs/genetics/heritable/1980-osborne-twinsblackandwhite-appendix.ods'
-          cm "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 'https://gwern.net/docs/cs/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx'
-          cm "application/vnd.openxmlformats-officedocument.wordprocessingml.document" 'https://gwern.net/docs/genetics/heritable/2015-mosing-supplement.docx'
-          cm "application/vnd.rn-realmedia" 'https://gwern.net/docs/rotten.com/library/bio/crime/serial-killers/elmer-wayne-henley/areyouguilty.rm'
-          cm "application/x-maff" 'https://gwern.net/docs/anime/eva/2001-pulpmag-hernandez-2.html.maff'
-          cm "application/x-shockwave-flash" 'https://gwern.net/docs/rotten.com/library/bio/entertainers/comic/patton-oswalt/patton.swf'
-          cm "application/x-tar" 'https://gwern.net/docs/dual-n-back/2011-zhong.tar'
-          cm "application/x-xz" 'https://gwern.net/docs/personal/2013-09-25-gwern-googlealertsemails.tar.xz'
-          cm "application/zip" 'https://gwern.net/docs/statistics/bayes/2014-tenan-supplement.zip'
-          cm "audio/mpeg" 'https://gwern.net/docs/history/1969-schirra-apollo11flighttothemoon.mp3'
-          cm "audio/wav" 'https://gwern.net/docs/rotten.com/library/bio/entertainers/comic/david-letterman/letterman_any_sense.wav'
-          cm "image/gif" 'https://gwern.net/docs/gwern.net-gitstats/arrow-none.gif'
-          cm "image/gif" 'https://gwern.net/docs/rotten.com/library/religion/creationism/creationism6.GIF'
-          cm "image/jpeg" 'https://gwern.net/docs/personal/2011-gwern-yourmorals.org/schwartz_process.php_files/schwartz_graph.jpg'
-          cm "image/jpeg" 'https://gwern.net/docs/rotten.com/library/bio/pornographers/al-goldstein/goldstein-fuck-you.jpeg'
-          cm "image/jpeg" 'https://gwern.net/docs/rotten.com/library/religion/heresy/circumcellions/circumcellions-augustine.JPG'
-          cm "image/png" 'https://gwern.net/docs/statistics/order/beanmachine-multistage/beanmachine-demo.png'
+          cm "application/json" 'https://gwern.net/doc/touhou/2013-c84-downloads.json'
+          cm "application/msaccess" 'https://gwern.net/doc/touhou/2013-06-08-acircle-tohoarrange.mdb'
+          cm "application/msword" 'https://gwern.net/doc/iq/2014-tenijenhuis-supplement.doc'
+          cm "application/octet-stream" 'https://gwern.net/doc/zeo/firmware-v2.6.3R-zeo.img'
+          cm "application/pdf" 'https://gwern.net/doc/cs/hardware/2010-bates.pdf'
+          cm "application/pdf" 'https://gwern.net/doc/history/1694-gregory.pdf'
+          cm "application/vnd.ms-excel" 'https://gwern.net/doc/dual-n-back/2012-05-30-kundu-dnbrapm.xls'
+          cm "application/vnd.oasis.opendocument.spreadsheet" 'https://gwern.net/doc/genetics/heritable/1980-osborne-twinsblackandwhite-appendix.ods'
+          cm "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 'https://gwern.net/doc/cs/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx'
+          cm "application/vnd.openxmlformats-officedocument.wordprocessingml.document" 'https://gwern.net/doc/genetics/heritable/2015-mosing-supplement.docx'
+          cm "application/vnd.rn-realmedia" 'https://gwern.net/doc/rotten.com/library/bio/crime/serial-killers/elmer-wayne-henley/areyouguilty.rm'
+          cm "application/x-maff" 'https://gwern.net/doc/anime/eva/2001-pulpmag-hernandez-2.html.maff'
+          cm "application/x-shockwave-flash" 'https://gwern.net/doc/rotten.com/library/bio/entertainers/comic/patton-oswalt/patton.swf'
+          cm "application/x-tar" 'https://gwern.net/doc/dual-n-back/2011-zhong.tar'
+          cm "application/x-xz" 'https://gwern.net/doc/personal/2013-09-25-gwern-googlealertsemails.tar.xz'
+          cm "application/zip" 'https://gwern.net/doc/statistics/bayes/2014-tenan-supplement.zip'
+          cm "audio/mpeg" 'https://gwern.net/doc/history/1969-schirra-apollo11flighttothemoon.mp3'
+          cm "audio/wav" 'https://gwern.net/doc/rotten.com/library/bio/entertainers/comic/david-letterman/letterman_any_sense.wav'
+          cm "image/gif" 'https://gwern.net/doc/gwern.net-gitstats/arrow-none.gif'
+          cm "image/gif" 'https://gwern.net/doc/rotten.com/library/religion/creationism/creationism6.GIF'
+          cm "image/jpeg" 'https://gwern.net/doc/personal/2011-gwern-yourmorals.org/schwartz_process.php_files/schwartz_graph.jpg'
+          cm "image/jpeg" 'https://gwern.net/doc/rotten.com/library/bio/pornographers/al-goldstein/goldstein-fuck-you.jpeg'
+          cm "image/jpeg" 'https://gwern.net/doc/rotten.com/library/religion/heresy/circumcellions/circumcellions-augustine.JPG'
+          cm "image/png" 'https://gwern.net/doc/statistics/order/beanmachine-multistage/beanmachine-demo.png'
           cm "image/png" 'https://gwern.net/static/img/logo/logo.png'
-          cm "image/svg+xml" 'https://gwern.net/images/spaced-repetition/forgetting-curves.svg'
+          cm "image/svg+xml" 'https://gwern.net/image/spaced-repetition/forgetting-curves.svg'
           cm "image/x-icon" 'https://gwern.net/static/img/favicon.ico'
-          cm "image/x-ms-bmp" 'https://gwern.net/docs/rotten.com/library/bio/hackers/robert-morris/morris.bmp'
-          cm "image/x-xcf" 'https://gwern.net/docs/personal/businesscard-front-draft.xcf'
-          cm "message/rfc822" 'https://gwern.net/docs/cs/linkrot/2009-08-20-b3ta-fujitsuhtml.mht'
-          cm "text/css; charset=utf-8" 'https://gwern.net/docs/gwern.net-gitstats/gitstats.css'
-          cm "text/css; charset=utf-8" 'https://gwern.net/docs/statistics/order/beanmachine-multistage/offsets.css'
-          cm "text/css; charset=utf-8" 'https://gwern.net/docs/statistics/order/beanmachine-multistage/style.css'
+          cm "image/x-ms-bmp" 'https://gwern.net/doc/rotten.com/library/bio/hackers/robert-morris/morris.bmp'
+          cm "image/x-xcf" 'https://gwern.net/doc/personal/businesscard-front-draft.xcf'
+          cm "message/rfc822" 'https://gwern.net/doc/cs/linkrot/2009-08-20-b3ta-fujitsuhtml.mht'
+          cm "text/css; charset=utf-8" 'https://gwern.net/doc/gwern.net-gitstats/gitstats.css'
+          cm "text/css; charset=utf-8" 'https://gwern.net/doc/statistics/order/beanmachine-multistage/offsets.css'
+          cm "text/css; charset=utf-8" 'https://gwern.net/doc/statistics/order/beanmachine-multistage/style.css'
           cm "text/css; charset=utf-8" 'https://gwern.net/static/css/default.css'
           cm "text/css; charset=utf-8" 'https://gwern.net/static/css/fonts.css'
           cm "text/css; charset=utf-8" 'https://gwern.net/static/css/include/initial.css'
           cm "text/css; charset=utf-8" 'https://gwern.net/static/css/links.css'
-          cm "text/csv; charset=utf-8" 'https://gwern.net/docs/statistics/2013-google-index.csv'
+          cm "text/csv; charset=utf-8" 'https://gwern.net/doc/statistics/2013-google-index.csv'
           cm "text/html" 'https://gwern.net/atom.xml'
-          cm "text/html; charset=utf-8" 'https://gwern.net/docs/cs/2012-terencetao-anonymity.html'
-          cm "text/html; charset=utf-8" 'https://gwern.net/docs/darknet-markets/silk-road/1/2013-06-07-premiumdutch-profile.htm'
+          cm "text/html; charset=utf-8" 'https://gwern.net/doc/cs/2012-terencetao-anonymity.html'
+          cm "text/html; charset=utf-8" 'https://gwern.net/doc/darknet-markets/silk-road/1/2013-06-07-premiumdutch-profile.htm'
           cm "text/html; charset=utf-8" 'https://gwern.net/'
-          cm "text/html; charset=utf-8" 'https://gwern.net/notes/attention'
-          cm "text/html; charset=utf-8" 'https://gwern.net/notes/faster'
-          cm "text/html; charset=utf-8" 'https://gwern.net/nootropics/magnesium'
+          cm "text/html; charset=utf-8" 'https://gwern.net/note/attention'
+          cm "text/html; charset=utf-8" 'https://gwern.net/note/faster'
+          cm "text/html; charset=utf-8" 'https://gwern.net/nootropic/magnesium'
           cm "text/html; charset=utf-8" 'https://gwern.net/zeo/co2'
-          cm "text/html; charset=utf-8" 'https://gwern.net/reviews/book'
-          cm "text/html; charset=utf-8" 'https://gwern.net/reviews/anime'
-          cm "text/html; charset=utf-8" 'https://gwern.net/reviews/movie'
-          cm "text/html; charset=utf-8" 'https://gwern.net/docs/existential-risk/1985-hofstadter'
-          cm "text/html; charset=utf-8" 'https://gwern.net/reviews/bakewell'
+          cm "text/html; charset=utf-8" 'https://gwern.net/review/book'
+          cm "text/html; charset=utf-8" 'https://gwern.net/review/anime'
+          cm "text/html; charset=utf-8" 'https://gwern.net/review/movie'
+          cm "text/html; charset=utf-8" 'https://gwern.net/doc/existential-risk/1985-hofstadter'
+          cm "text/html; charset=utf-8" 'https://gwern.net/review/bakewell'
           cm "text/html; charset=utf-8" 'https://gwern.net/backfire-effect'
           cm "text/markdown; charset=utf-8" 'https://gwern.net/2014-spirulina.page'
-          cm "text/plain; charset=utf-8" 'https://gwern.net/docs/personal/2009-sleep.txt'
+          cm "text/plain; charset=utf-8" 'https://gwern.net/doc/personal/2009-sleep.txt'
           cm "text/plain; charset=utf-8" 'https://gwern.net/static/redirects/nginx.conf'
-          cm "text/x-adobe-acrobat-drm" 'https://gwern.net/docs/dual-n-back/2012-zhong.ebt'
+          cm "text/x-adobe-acrobat-drm" 'https://gwern.net/doc/dual-n-back/2012-zhong.ebt'
           cm "text/x-haskell; charset=utf-8" 'https://gwern.net/static/build/hakyll.hs'
-          cm "text/x-opml; charset=utf-8" 'https://gwern.net/docs/personal/rss-subscriptions.opml'
-          cm "text/x-patch; charset=utf-8" 'https://gwern.net/docs/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch'
+          cm "text/x-opml; charset=utf-8" 'https://gwern.net/doc/personal/rss-subscriptions.opml'
+          cm "text/x-patch; charset=utf-8" 'https://gwern.net/doc/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch'
           cm "text/x-r; charset=utf-8" 'https://gwern.net/static/build/linkAbstract.R'
           cm "text/plain; charset=utf-8" 'https://gwern.net/static/build/linkArchive.sh'
           cm "text/yaml; charset=utf-8" 'https://gwern.net/metadata/full.yaml'
-          cm "video/mp4"  'https://gwern.net/images/genetics/selection/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
-          cm "video/webm" 'https://gwern.net/images/statistics/2003-murray-humanaccomplishment-region-proportions-bootstrap.webm'
-          cm "image/jpeg" 'https://gwern.net/images/technology/security/lobel-frogandtoadtogether-thebox-crop.jpg'
-          cm "image/jpeg" 'https://gwern.net/images/google/15-predicted-survivorship-curves.png-530px.jpg'
-          cm "image/png"  'https://gwern.net/images/technology/search/googlesearch-tools-daterange.png'
-          cm "image/png"  'https://gwern.net/images/google/15-predicted-survivorship-curves.png'
+          cm "video/mp4"  'https://gwern.net/image/genetics/selection/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
+          cm "video/webm" 'https://gwern.net/image/statistics/2003-murray-humanaccomplishment-region-proportions-bootstrap.webm'
+          cm "image/jpeg" 'https://gwern.net/image/technology/security/lobel-frogandtoadtogether-thebox-crop.jpg'
+          cm "image/jpeg" 'https://gwern.net/image/google/15-predicted-survivorship-curves.png-530px.jpg'
+          cm "image/png"  'https://gwern.net/image/technology/search/googlesearch-tools-daterange.png'
+          cm "image/png"  'https://gwern.net/image/google/15-predicted-survivorship-curves.png'
           cm "application/wasm"  'https://gwern.net/static/js/patterns/en-us.wasm'
         }
     wrap λ "The live MIME types are incorrect"
@@ -769,7 +769,7 @@ else
     wrap λ "Known-content check of /index and /zeo/Zeo"
 
     ## check that tag-directories have the right thumbnails (ie. *not* the fallback thumbnail):
-    λ(){ curl --silent 'https://gwern.net/docs/sociology/index' 'https://gwern.net/docs/psychology/index' 'https://gwern.net/docs/economics/index' | \
+    λ(){ curl --silent 'https://gwern.net/doc/sociology/index' 'https://gwern.net/doc/psychology/index' 'https://gwern.net/doc/economics/index' | \
              grep -F 'https://gwern.net/static/img/logo/logo-whitebg-large-border.png-530px.jpg'; }
     wrap λ "Tag-directories missing their automatically-extracted-from-annotation thumbnails & instead having the site-wide default thumbnail?"
 
@@ -795,7 +795,7 @@ else
     λ(){ gf -e 'RealObjects' -e '404 Not Found Error: No Page' -e ' may refer to:' ./metadata/auto.yaml; }
     wrap λ "Broken links, corrupt authors', or links to Wikipedia disambiguation pages in auto.yaml."
 
-    λ(){ (find . -type f -name "*--*"; find . -type f -name "*~*"; ) | grep -F --invert-match -e images/thumbnails/ -e metadata/annotations/; }
+    λ(){ (find . -type f -name "*--*"; find . -type f -name "*~*"; ) | grep -F --invert-match -e image/thumbnails/ -e metadata/annotations/; }
     wrap λ "No files should have double hyphens or tildes in their names."
 
     λ(){ grep -F --before-context=1 -e 'Right Nothing' -e 'Just ""' ./metadata/archive.hs; }
@@ -847,7 +847,7 @@ else
             if [ "$HEADER" != "" ]; then echo "Header: $@"; fi;
         }
         export -f checkSpamHeader
-        find ./docs/ -type f -name "*.pdf" | grep -F --invert-match -e 'docs/www/' | sort | parallel checkSpamHeader
+        find ./doc/ -type f -name "*.pdf" | grep -F --invert-match -e 'doc/www/' | sort | parallel checkSpamHeader
     }
     wrap λ "Remove junk from PDF & add metadata"
 
@@ -857,7 +857,7 @@ else
     λ(){ find ./ -type f -name "*.png" | parallel --max-args=500 file | grep -F --invert-match 'PNG image data'; }
     wrap λ "Corrupted PNGs"
 
-    λ(){  find ./ -name "*.png" | grep -F --invert-match -e '/static/img/' -e '/docs/www/misc/' | sort | xargs identify -format '%F %[opaque]\n' | grep -F ' false'; }
+    λ(){  find ./ -name "*.png" | grep -F --invert-match -e '/static/img/' -e '/doc/www/misc/' | sort | xargs identify -format '%F %[opaque]\n' | grep -F ' false'; }
     wrap λ "Partially transparent PNGs (may break in dark mode, convert with 'mogrify -background white -alpha remove -alpha off')"
 
     ## 'file' throws a lot of false negatives on HTML pages, often detecting XML and/or ASCII instead, so we whitelist some:
@@ -883,11 +883,11 @@ else
     λ(){ find ./ -type f -name "*.djvu"; }
     wrap λ "DjVu detected (convert to PDF)"
 
-    ## having noindex tags causes conflicts with the robots.txt and throws SEO errors; except in the ./docs/www/ mirrors, where we don't want them to be crawled:
-    λ(){ find ./ -type f -name "*.html" | grep -F --invert-match -e './docs/www/' -e './static/404' -e './static/templates/default.html' | xargs grep -F --files-with-matches 'noindex'; }
+    ## having noindex tags causes conflicts with the robots.txt and throws SEO errors; except in the ./doc/www/ mirrors, where we don't want them to be crawled:
+    λ(){ find ./ -type f -name "*.html" | grep -F --invert-match -e './doc/www/' -e './static/404' -e './static/templates/default.html' | xargs grep -F --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages"
 
-    λ(){ find ./ -type f -name "*.gif" | grep -F --invert-match -e 'static/img/' -e 'docs/gwern.net-gitstats/' -e 'docs/rotten.com/' -e 'docs/genetics/selection/www.mountimprobable.com/' -e 'images/thumbnails/' | parallel --max-args=500 identify | grep -E '\.gif\[[0-9]\] '; }
+    λ(){ find ./ -type f -name "*.gif" | grep -F --invert-match -e 'static/img/' -e 'doc/gwern.net-gitstats/' -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' -e 'image/thumbnails/' | parallel --max-args=500 identify | grep -E '\.gif\[[0-9]\] '; }
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4"
 
     λ(){ JPGS_BIG="$(find ./ -type f -name "*.jpg" | parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | grep -E -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')";
@@ -896,7 +896,7 @@ else
     wrap λ "Compress JPGs to ≤65% quality"
 
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
-    λ() { for IMAGE in $(find ./images/ -type f -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'images/fiction/batman/' -e 'images/ai/dall-e/2/' -e '2022-09-21-gwern-stablediffusionv14-circulardropcapinitialsamples.png' -e '2022-09-22-gwern-stablediffusionv14-textualinversion-yinit-dropcapsexperiments.png' -e '2022-09-27-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png'); do
+    λ() { for IMAGE in $(find ./image/ -type f -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'image/fiction/batman/' -e 'image/ai/dall-e/2/' -e '2022-09-21-gwern-stablediffusionv14-circulardropcapinitialsamples.png' -e '2022-09-22-gwern-stablediffusionv14-textualinversion-yinit-dropcapsexperiments.png' -e '2022-09-27-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png'); do
               SIZE_W=$(identify -format "%w" "$IMAGE")
               if (( SIZE_W > 1600  )); then echo "Too wide image: $IMAGE $SIZE_W; shrinking…";
                                             mogrify  -resize 1600x10000 "$IMAGE";

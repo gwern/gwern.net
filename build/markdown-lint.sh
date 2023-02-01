@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2023-01-20 19:42:04 gwern"
+# When:  Time-stamp: "2023-02-01 17:56:32 gwern"
 # see https://gwern.net/About#markdown-checker
 
 set +x
@@ -90,8 +90,8 @@ do
                   -e ' percent ' -e "    Pearson'" -e '~~~{.sh}' -e 'library("' -e ' +-' -e ' -+' -e '"collapse Summary"' -e '"CollapseSummary"' -e 'collapseSumary' -e '<!_-' -e ' bu ' \
                   -e ']{.dropcaps}' -e '{,smallcaps}' -e '[.smallcaps}' -e '[PMC]{.smallcaps}' -e 'nsheppard' -e '<div class-' \
                   -e '^ > [a-Z]' -e '^  > [a-Z]' -e '^   > [a-Z]' -e '^  - [a-Z]' -e '^   - [a-Z]' \
-                  -e '<p class="drop-cap' -e 'class="drop-caps-' -e ' n_=' -e '~~~{.collape}' -e '~~~~' -e '{.fullwidth}' -e 'Wikiepdia' -e 'Wikipdia' -e '/docs/genetic/' \
-                  -e '" ](' -e '!Marin:' -e '](images/' -e '\Mathcal{' -e "''" -e '``' -e ' " ' -e '\mathcal{O}(log' -e 'preload="metadata"' \
+                  -e '<p class="drop-cap' -e 'class="drop-caps-' -e ' n_=' -e '~~~{.collape}' -e '~~~~' -e '{.fullwidth}' -e 'Wikiepdia' -e 'Wikipdia' -e '/doc/genetic/' \
+                  -e '" ](' -e '!Marin:' -e '](image/' -e '\Mathcal{' -e "''" -e '``' -e ' " ' -e '\mathcal{O}(log' -e 'preload="metadata"' \
                   -e '#close' -e '#page=page' -e '.pdf#section' -e '.pdf#subsection' -e '^<sup>' -e '<sup>^' -e '^</sup>' -e '</sup>^' -e ' : ' -e ']^[' -- "$PAGE"; }
         wrap λ "look for broken syntax in original Markdown: (NOTE: footnotes should not be linked to because they are unstable; they should either be sections/appendices, or given a long-term div ID)"
 
@@ -217,7 +217,7 @@ do
         wrap λ "image hotlinking deprecated; impolite, and slows page loads & site compiles"
 
         # Note links which need to be annotated (probably most of them...)
-        λ() { runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -v -e '^\!' -e '^\$' -e '^/docs/.*txt' -e '.xz$' -e '^#' -e '.patch$' -e '.jpg$' -e '.png$' -e '.mp4' -e '.mp3' -e 'news.ycombinator.com' -e 'old.reddit.com' -e 'youtube.com' -e 'youtu.be/' -e 'amazon.com' -e 'bandcamp.com' -e 'dropbox.com' -e 'vocadb.net' -e 'twitter.com' -e 'nitter.cc' -e 'nitter.hu' -e '#link-bibliography' -e 'https://en.wikipedia.org/wiki' | runghc -istatic/build/ static/build/link-prioritize.hs; }
+        λ() { runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -v -e '^\!' -e '^\$' -e '^/doc/.*txt' -e '.xz$' -e '^#' -e '.patch$' -e '.jpg$' -e '.png$' -e '.mp4' -e '.mp3' -e 'news.ycombinator.com' -e 'old.reddit.com' -e 'youtube.com' -e 'youtu.be/' -e 'amazon.com' -e 'bandcamp.com' -e 'dropbox.com' -e 'vocadb.net' -e 'twitter.com' -e 'nitter.cc' -e 'nitter.hu' -e '#link-bibliography' -e 'https://en.wikipedia.org/wiki' | runghc -istatic/build/ static/build/link-prioritize.hs; }
         wrap λ "Link annotations required"
 
         # we use link annotations on URLs to warn readers about PDFs; if a URL ends in 'pdf', it gets a PDF icon. What about URLs which redirect to or serve PDF?
@@ -238,8 +238,8 @@ do
               runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E "^http" | grep -F -v -e 'https://gwern.net' -e arxiv.org -e pnas.org | sort -u | shuf | parallel -n 1 checkPDF; }
         wrap λ "Non-icon/warned PDF links"
 
-        λ() { for PDF in $(runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -e '^/docs/' -e 'https:\/\/www\.gwern\.net\/' | \
-                               grep -E '\.pdf$' | sed -e 's/\/docs/docs/' -e 's/https:\/\/www\.gwern\.net//' ); do
+        λ() { for PDF in $(runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -e '^/doc/' -e 'https:\/\/www\.gwern\.net\/' | \
+                               grep -E '\.pdf$' | sed -e 's/\/doc/doc/' -e 's/https:\/\/www\.gwern\.net//' ); do
 
                   TITLE=$(exiftool -printFormat '$Title' -Title ~/wiki/"$PDF")
                   AUTHOR=$(exiftool -printFormat '$Author' -Author ~/wiki/"$PDF")

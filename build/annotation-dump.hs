@@ -37,7 +37,7 @@ main = do custom  <- readYamlFast "/home/gwern/wiki/metadata/full.yaml"  -- for 
 blacklist :: String -> [(Path,MetadataItem)] -> [(String,(MetadataItem,String))]
 blacklist sourceLabel = map (\(a,b) -> (a,(b,sourceLabel))) . filter (\(f,(title,_,_,_,_,_)) -> not (title=="" ||
                                                                                                   "en.wikipedia.org" `isInfixOf` f ||
-                                                                                                  ("/docs/"`isPrefixOf`f && "/index" `isSuffixOf` f)))
+                                                                                                  ("/doc/"`isPrefixOf`f && "/index" `isSuffixOf` f)))
 
 toSingleLine :: (Path,(MetadataItem,String)) -> String
 toSingleLine ("",_) = ""

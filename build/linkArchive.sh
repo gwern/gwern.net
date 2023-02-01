@@ -7,17 +7,17 @@
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
-# extract the location of the static serialized HTML, and move it to the wiki's `./docs/www/$DOMAIN/$SHA1($URL).html`;
+# extract the location of the static serialized HTML, and move it to the wiki's `./doc/www/$DOMAIN/$SHA1($URL).html`;
 # if the MIME type indicates a PDF, we download & host locally.
 #
 # Example:
 # $ linkArchive.sh "https://www.framerated.co.uk/the-haunting-1963/" →
-#   /home/gwern/wiki/docs/www/www.framerated.co.uk/31900688e194a1ffa443c2895aaab8f8513370f3.html
+#   /home/gwern/wiki/doc/www/www.framerated.co.uk/31900688e194a1ffa443c2895aaab8f8513370f3.html
 #
 # $ linkArchive.sh 'http://www.jacurutu.com/viewtopic.php?p=101694'
-# /home/gwern/wiki/docs/www/www.jacurutu.com/718b0de585ef3dcd778a196fb2b8c842b42c7bc2.html
+# /home/gwern/wiki/doc/www/www.jacurutu.com/718b0de585ef3dcd778a196fb2b8c842b42c7bc2.html
 # $ linkArchive.sh 'http://www.jacurutu.com/viewtopic.php?p=101694#p101694'
-# /home/gwern/wiki/docs/www/www.jacurutu.com/718b0de585ef3dcd778a196fb2b8c842b42c7bc2.html
+# /home/gwern/wiki/doc/www/www.jacurutu.com/718b0de585ef3dcd778a196fb2b8c842b42c7bc2.html
 #
 # Requires: sha1sum, SingleFile+chromium, timeout, curl, wget, ocrmypdf; pdftk recommended for 'decrypting' PDFs
 
@@ -37,12 +37,12 @@ if [[ -n $(echo "$1" | grep -F '#') ]]; then
     ANCHOR="#$(echo -n "$1" | cut -d '#' -f 2)"
 fi
 
-FILE=$(ls -U "docs/www/$DOMAIN/$HASH."* 2> /dev/null) || true
+FILE=$(ls -U "doc/www/$DOMAIN/$HASH."* 2> /dev/null) || true
 if [[ -n "$FILE" || "$2" == "--check" ]]; then # use of `--check` means that we always skip archiving and return either the path or its failure, an empty string
     echo -n "$FILE$ANCHOR"
 else
 
-    URL=$(echo "$@" | sed -e 's/https:\/\/arxiv\.org/https:\/\/export.arxiv.org/') # NOTE: http://export.arxiv.org/help/robots (we do the rewrite here to keep the directories & URLs as expected like `/docs/www/arxiv.org/`).
+    URL=$(echo "$@" | sed -e 's/https:\/\/arxiv\.org/https:\/\/export.arxiv.org/') # NOTE: http://export.arxiv.org/help/robots (we do the rewrite here to keep the directories & URLs as expected like `/doc/www/arxiv.org/`).
     ## 404?
     HTTP_STATUS=$(timeout 20s curl --user-agent "$USER_AGENT" \
                           --head --write-out '%{http_code}' --silent -L -o /dev/null "$URL" || echo "Unsuccessful: $1 $HASH" 1>&2 && exit 1)
@@ -68,13 +68,13 @@ else
                    [[ "$MIME_REMOTE" =~ "application/pdf".*  || "$MIME_REMOTE" =~ "application/octet-stream".* ]] || \
                    [[ ! "$MIME_LOCAL" == "" ]];
             then
-                mkdir --parents "./docs/www/$DOMAIN/"
+                mkdir --parents "./doc/www/$DOMAIN/"
                 ## move the PDF into the Gwern.net repo:
-                mv "$TARGET" "./docs/www/$DOMAIN/$HASH.pdf"
-                echo -n "docs/www/$DOMAIN/$HASH.pdf$ANCHOR"
+                mv "$TARGET" "./doc/www/$DOMAIN/$HASH.pdf"
+                echo -n "doc/www/$DOMAIN/$HASH.pdf$ANCHOR"
                 ## use my local custom installation of recent ocrmypdf + JBIG2 encoder to OCR & optimize PDFs I'm hosting:
-                (source activate fastai && ocrmypdf --skip-text --optimize 3 --jbig2-lossy "./docs/www/$DOMAIN/$HASH.pdf" "./docs/www/$DOMAIN/$HASH.pdf" &)
-                $WWW_BROWSER "./docs/www/$DOMAIN/$HASH.pdf"
+                (source activate fastai && ocrmypdf --skip-text --optimize 3 --jbig2-lossy "./doc/www/$DOMAIN/$HASH.pdf" "./doc/www/$DOMAIN/$HASH.pdf" &)
+                $WWW_BROWSER "./doc/www/$DOMAIN/$HASH.pdf"
             else
                 echo "Unsuccessful: $1 $HASH" 1>&2
                 exit 1
@@ -106,12 +106,12 @@ else
                 ## Check for error pages which nevertheless returned validly:
                 ERROR_404=$(grep -F -e '404 Not Found' -e 'Download Limit Exceeded' -e 'Access Denied' "$TARGET")
                 if [[ -z "$ERROR_404" ]]; then
-                    mkdir --parents "./docs/www/$DOMAIN/"
-                    mv "$TARGET" "./docs/www/$DOMAIN/$HASH.html"
+                    mkdir --parents "./doc/www/$DOMAIN/"
+                    mv "$TARGET" "./doc/www/$DOMAIN/$HASH.html"
                     ## everything successful, so return the filepath of the final result to our caller:
-                    echo -n "docs/www/$DOMAIN/$HASH.html$ANCHOR"
+                    echo -n "doc/www/$DOMAIN/$HASH.html$ANCHOR"
                     ## open original vs archived in web browser so the user can check that it preserved OK, or if it needs to be handled manually or domain blacklisted:
-                    $WWW_BROWSER "./docs/www/$DOMAIN/$HASH.html$ANCHOR" "$1" &
+                    $WWW_BROWSER "./doc/www/$DOMAIN/$HASH.html$ANCHOR" "$1" &
                 else
                     rm "$TARGET"
                     echo "Unsuccessful: $1 $HASH" 1>&2

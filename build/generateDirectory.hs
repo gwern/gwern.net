@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
--- Read directories like "docs/iodine/" for its files, as well as any files/links with annotations &
+-- Read directories like "doc/iodine/" for its files, as well as any files/links with annotations &
 -- the tag 'iodine'; generate a list item with the abstract in a blockquote where available; the
 -- full list is then turned into a directory listing, which gets compiled with Hakyll and gets the
 -- usual popup annotations. We can then treat directories as 'tags', unifying two
@@ -38,7 +38,7 @@ import Utils (replace, replaceManyT, writeUpdatedFile, printRed, toPandoc)
 
 main :: IO ()
 main = do dirs <- getArgs
-          -- result: '["docs/","docs/ai/","docs/ai/anime/","docs/ai/anime/danbooru/","docs/ai/dataset/", ..., "newsletter/2022/","nootropics/","notes/","reviews/","zeo/"]'
+          -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
           let dirs' = map (\dir -> replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) $ sort dirs
 
           meta <- readLinkMetadata
@@ -48,13 +48,13 @@ main = do dirs <- getArgs
           -- Special-case directories:
           -- 'newest': the _n_ newest link annotations created (currently, 'newest' is not properly tracked, and is inferred from being at the bottom/end of full.yaml/partial.yaml TODO: actually track annotation creation dates...)
           metaNewest <- readLinkMetadataNewest 200
-          generateDirectory False metaNewest ["docs/", "docs/newest/", "/"] "docs/newest/"
+          generateDirectory False metaNewest ["doc/", "doc/newest/", "/"] "doc/newest/"
 
 generateDirectory :: Bool -> Metadata -> [FilePath] -> FilePath -> IO ()
 generateDirectory filterp md dirs dir'' = do
 
   -- for the arabesque navbar 'previous'/'next', we want to fill more useful than the default values, but also not be too redundant with the up/sideways/downwards tag-directory links; so we pass in the (lexicographically) sorted list of all tag-directories being created this run, and try to provide previous/next links to the 'previous' and the 'next' directory, which may be a parent, sibling, or nothing at all.
-  -- so eg. /docs/cryonics/index will point to `previous: /docs/crime/terrorism/index \n next: /docs/cs/index`
+  -- so eg. /doc/cryonics/index will point to `previous: /doc/crime/terrorism/index \n next: /doc/cs/index`
   let i = fromJust $ elemIndex dir'' dirs
   let (before,after) = splitAt i dirs
   let (previous,next) = if length dirs < 2 || before==after then ("","") else
@@ -71,12 +71,12 @@ generateDirectory filterp md dirs dir'' = do
   let direntries' = sort $ map (\entry -> "/"++dir''++entry) direntries
 
   -- We allow tags to be cross-listed, not just children.
-  -- So '/docs/exercise/index' can be tagged with 'longevity', and it'll show up in the Directory section (not the Files/me section!) of '/docs/longevity/index'.
+  -- So '/doc/exercise/index' can be tagged with 'longevity', and it'll show up in the Directory section (not the Files/me section!) of '/doc/longevity/index'.
   -- This allows cross-references without requiring deep nesting—'longevity/exercise' might seem OK enough (although it runs roughshod over a lot of the links in there...), but what about if there was a third? Or fourth?
-  let taggedDirs = sort $ map (\(f,_,_,_,_) -> f) $ filter (\(f,_,_,_,_) -> "/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f && f `notElem` direntries') tagged
+  let taggedDirs = sort $ map (\(f,_,_,_,_) -> f) $ filter (\(f,_,_,_,_) -> "/doc/"`isPrefixOf`f && "/index"`isSuffixOf`f && f `notElem` direntries') tagged
 
   -- we suppress what would be duplicate entries in the File/me section
-  let tagged' = filter (\(f,_,_,_,_) -> not ("/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
+  let tagged' = filter (\(f,_,_,_,_) -> not ("/doc/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
 
   dirsChildren   <- listTagDirectories [dir'']
   dirsSeeAlsos   <- listTagDirectories taggedDirs
@@ -94,8 +94,8 @@ generateDirectory filterp md dirs dir'' = do
                          _ -> return ()
         ) links
 
-  -- remove the tag for *this* directory; it is redundant to display 'cat/catnip' on every doc/link inside '/docs/cat/catnip/index.page', after all.
-  let tagSelf = if dir'' == "docs/" then "" else init $ replace "docs/" "" dir'' -- "docs/cat/catnip/" → 'cat/catnip'
+  -- remove the tag for *this* directory; it is redundant to display 'cat/catnip' on every doc/link inside '/doc/cat/catnip/index.page', after all.
+  let tagSelf = if dir'' == "doc/" then "" else init $ replace "doc/" "" dir'' -- "doc/cat/catnip/" → 'cat/catnip'
   let links' = map (\(y,(a,b,c,d,tags,f),z,zz,zzz) -> (y,(a,b,c,d, filter (/= tagSelf) tags,f),z,zz,zzz)) links
 
   -- a very long List can be hard to browse, and doesn't provide a useful ToC. If we have titles, we can use those as section headers.
@@ -118,7 +118,7 @@ generateDirectory filterp md dirs dir'' = do
   let sectionDirectorySeeAlsos = generateDirectoryItems Nothing dir'' dirsSeeAlsos
   let sectionDirectory = Div ("see-alsos", ["directory-indexes", "columns"], []) [BulletList $ sectionDirectoryChildren ++ sectionDirectorySeeAlsos]
 
-  -- A tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at the ID '/docs/foo/index#manual-annotation'
+  -- A tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at the ID '/doc/foo/index#manual-annotation'
   let abstract = case M.lookup ("/"++dir''++"index#manual-annotation") md of
                    Nothing -> []
                    Just (_,_,_,_,_,"") -> []
@@ -183,12 +183,12 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_),_,_,lb)  =
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String
 generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail
   = concat [ "---\n",
-             "title: " ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (replace "docs/" "" d)))) ++ " tag\n",
+             "title: " ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (replace "doc/" "" d)))) ++ " tag\n",
              "author: 'N/A'\n",
              "description: \"Bibliography for tag <code>" ++ (if d=="" then "docs" else d) ++ "</code>, most recent first: " ++
-              (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not link-annotated-not' href='/docs/" ++ (if d=="" then "" else d++"/") ++ "index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
-              (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='icon-not link-annotated-not' href='/docs/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++
-              (if linkN == 0 then ""       else (if (directoryN+annotationN) > 0 then ", & " else "") ++ show linkN ++ " <a class='icon-not link-annotated-not' href='/docs/" ++ d ++ "/index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
+              (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not link-annotated-not' href='/doc/" ++ (if d=="" then "" else d++"/") ++ "index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
+              (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='icon-not link-annotated-not' href='/doc/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++
+              (if linkN == 0 then ""       else (if (directoryN+annotationN) > 0 then ", & " else "") ++ show linkN ++ " <a class='icon-not link-annotated-not' href='/doc/" ++ d ++ "/index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
               " (<a href='" ++ parent ++ "' class='link-page link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>)" ++
                ".\"\n",
              thumbnail,
@@ -210,7 +210,7 @@ listFiles m direntries' = do
                    files <- filterM (doesFileExist . tail) direntries'
                    let files'          = (sort . filter (not . ("index"`isSuffixOf`)) . map (replace ".page" "") . filter ('#' `notElem`) . filter (not . isSuffixOf ".tar") ) files
                    let fileAnnotationsMi = map (lookupFallback m) files'
-                   -- NOTE: files may be annotated only under a hash, eg. '/docs/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/docs/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/docs/ai/scaling/hardware/2021-norrie.pdf' → `('/docs/ai/scaling/hardware/2021-norrie.pdf#google',_)`
+                   -- NOTE: files may be annotated only under a hash, eg. '/doc/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/doc/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/doc/ai/scaling/hardware/2021-norrie.pdf' → `('/doc/ai/scaling/hardware/2021-norrie.pdf#google',_)`
                    backlinks    <- mapM (fmap snd . getBackLinkCheck . fst)    fileAnnotationsMi
                    similarlinks <- mapM (fmap snd . getSimilarLinkCheck . fst) fileAnnotationsMi
                    linkbiblios  <- mapM (fmap snd . getLinkBibLinkCheck . fst) fileAnnotationsMi
@@ -219,11 +219,11 @@ listFiles m direntries' = do
 
 -- Fetch URLs/file 'tagged' with the current directory but not residing in it.
 --
--- tags are only in "docs/*", so "haskell/" etc is out. Tags drop the docs/ prefix, and we want to avoid
+-- tags are only in "doc/*", so "haskell/" etc is out. Tags drop the doc/ prefix, and we want to avoid
 -- the actual files inside the current directory, because they'll be covered by the `listFiles` version, of course.
 listTagged :: Bool -> Metadata -> FilePath -> IO [(FilePath,MetadataItem,FilePath,FilePath,FilePath)]
-listTagged filterp m dir = if not ("docs/" `isPrefixOf` dir) then return [] else
-                   let dirTag = replace "docs/" "" dir in
+listTagged filterp m dir = if not ("doc/" `isPrefixOf` dir) then return [] else
+                   let dirTag = replace "doc/" "" dir in
                      let tagged = if not filterp then m else M.filterWithKey (\u (_,_,_,_,tgs,_) -> not (dir `isInfixOf` u) && dirTag `elem` tgs) m in
                        do let files = nub $ map truncateAnchors $ M.keys tagged
                           backlinks    <- mapM (fmap snd . getBackLinkCheck)    files
@@ -252,7 +252,7 @@ getNewestDate :: [(FilePath,MetadataItem,FilePath,FilePath,FilePath)] -> String
 getNewestDate [] = ""
 getNewestDate ((_,(_,_,date,_,_,_),_,_,_):_) = date
 
--- how do we handle files with appended data, which are linked like '/docs/reinforcement-learning/model-free/2020-bellemare.pdf#google' but exist as files as '/docs/reinforcement-learning/model-free/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
+-- how do we handle files with appended data, which are linked like '/doc/reinforcement-learning/model-free/2020-bellemare.pdf#google' but exist as files as '/doc/reinforcement-learning/model-free/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
 lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
 lookupFallback m u = case M.lookup u m of
                        Nothing -> tryPrefix
@@ -263,7 +263,7 @@ lookupFallback m u = case M.lookup u m of
                                          in
                                                (if (".page" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", [], "")) else
                                                   -- sometimes the fallback is useless eg, a link to a section will trigger a 'longer' hit, like
-                                                  -- '/reviews/Cat-Sense.page' will trigger a fallback to /reviews/cat#fuzz-testing'; the
+                                                  -- '/review/cat.page' will trigger a fallback to /review/cat#fuzz-testing'; the
                                                   -- longer hit will also be empty, usually, and so not better. We check for that case and return
                                                   -- the original path and not the longer path.
                                                   let possibleFallback = lookupFallback m u' in
@@ -272,9 +272,9 @@ lookupFallback m u = case M.lookup u m of
 
 generateDirectoryItems :: Maybe FilePath -> FilePath -> [FilePath] -> [[Block]]
 generateDirectoryItems parent current ds =
-  -- all directories have a parent directory with an index (eg. /docs/index has the parent /index), so we always link it.
+  -- all directories have a parent directory with an index (eg. /doc/index has the parent /index), so we always link it.
   -- (We pass in the parent path to write an absolute link instead of the easier '../' relative link, because relative links break inside popups.)
-      -- for directories like ./docs/statistics/ where there are 9+ subdirectories, we'd like to multi-column the directory section to make it more compact (we can't for annotated files/links because there are so many annotations & they are too long to work all that nicely):
+      -- for directories like ./doc/statistics/ where there are 9+ subdirectories, we'd like to multi-column the directory section to make it more compact (we can't for annotated files/links because there are so many annotations & they are too long to work all that nicely):
      parent'' ++ (filter (not . null) (map generateDirectoryItem ds))
  where
        parent'' = case parent of
@@ -292,7 +292,7 @@ generateDirectoryItems parent current ds =
                                                ["link-tag", if downP then "directory-indexes-downwards" else "directory-indexes-sideways"],
                                                [("rel","tag")]
                                              )
-                                               [Emph [RawInline (Format "html") $ abbreviateTag $ T.pack $ replace "/docs/" "" $ takeDirectory d]] (T.pack d, "")]
+                                               [Emph [RawInline (Format "html") $ abbreviateTag $ T.pack $ replace "/doc/" "" $ takeDirectory d]] (T.pack d, "")]
                                  ]
        directoryPrefixDown :: FilePath -> FilePath -> Bool
        directoryPrefixDown currentd d' = ("/"++currentd) `isPrefixOf` d'

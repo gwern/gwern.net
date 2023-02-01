@@ -24,32 +24,32 @@ tagCount = frequency . concatMap (\(_,(_,_,_,_,tags,_)) -> tags) . M.toList
 tagPairsCount :: Metadata -> [(Int,(String,String))]
 tagPairsCount md = reverse $ frequency $ concatMap pairs $ M.elems $ M.map (\(_,_,_,_,ts,abst) -> if null abst || null ts then [] else ts) md
 
--- Compile tags down into a Span containing a list of links to the respective /docs/ directory indexes which will contain a copy of all annotations corresponding to that tag/directory.
+-- Compile tags down into a Span containing a list of links to the respective /doc/ directory indexes which will contain a copy of all annotations corresponding to that tag/directory.
 --
 -- Simple version:
 -- > tagsToLinksSpan "economics, genetics/heritable, psychology/writing"
 -- →
 -- Span ("",["link-tags"],[])
---   [Link ("",["link-tag"],[]) [Str "economics"] ("/docs/economics/index",""),Str ", ",
---     Link ("",["link-tag"],[]) [Str "genetics/heritable"] ("/docs/genetics/heritable/index",""),Str ", ",
---     Link ("",["link-tag"],[]) [Str "psychology/writing"] ("/docs/psychology/writing/index","")
+--   [Link ("",["link-tag"],[]) [Str "economics"] ("/doc/economics/index",""),Str ", ",
+--     Link ("",["link-tag"],[]) [Str "genetics/heritable"] ("/doc/genetics/heritable/index",""),Str ", ",
+--     Link ("",["link-tag"],[]) [Str "psychology/writing"] ("/doc/psychology/writing/index","")
 --   ]
 -- Markdown:
 -- →
--- [[economics](/docs/economics/index){.link-tag}, [genetics/heritable](/docs/genetics/heritable/index){.link-tag}, [psychology/writing](/docs/psychology/writing/index){.link-tag}]{.link-tags}
+-- [[economics](/doc/economics/index){.link-tag}, [genetics/heritable](/doc/genetics/heritable/index){.link-tag}, [psychology/writing](/doc/psychology/writing/index){.link-tag}]{.link-tags}
 -- HTML:
 -- →
 -- <span class="link-tags">
---   <a href="/docs/economics/index" class="link-tag">economics</a>,
---   <a href="/docs/genetics/heritable/index" class="link-tag">genetics/heritable</a>,
---   <a href="/docs/psychology/writing/index" class="link-tag">psychology/writing</a>
+--   <a href="/doc/economics/index" class="link-tag">economics</a>,
+--   <a href="/doc/genetics/heritable/index" class="link-tag">genetics/heritable</a>,
+--   <a href="/doc/psychology/writing/index" class="link-tag">psychology/writing</a>
 -- </span>
 tagsToLinksSpan :: [T.Text] -> Inline
 tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = sort ts in
                        Span ("", ["link-tags"], []) $
-                       intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-page", "link-annotated", "icon-not"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
+                       intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-page", "link-annotated", "icon-not"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/doc/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
 -- Ditto; but since a Div is a Block element, we copy-paste a separate function:
 tagsToLinksDiv :: [T.Text] -> Block
@@ -57,17 +57,17 @@ tagsToLinksDiv [] = Div nullAttr []
 tagsToLinksDiv [""] = Div nullAttr []
 tagsToLinksDiv ts = let tags = sort ts in
                        Div ("", ["link-tags"], []) $
-                       [Para $ intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-page", "link-annotated", "icon-not"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags]
+                       [Para $ intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-page", "link-annotated", "icon-not"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/doc/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags]
 
--- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg. '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
+-- if a local '/doc/*' file and no tags available, try extracting a tag from the path; eg. '/doc/ai/2021-santospata.pdf' → 'ai', '/doc/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
 tag2TagsWithDefault :: String -> String -> [String]
 tag2TagsWithDefault path tags = let tags' = map trim $ split ", " $ map toLower tags
-                                    defTag = if ("/docs/" `isPrefixOf` path) && (not ("/docs/biology/2000-iapac-norvir"`isPrefixOf`path || "/docs/rotten.com/"`isPrefixOf`path || "/docs/statistics/order/beanmachine-multistage"`isPrefixOf`path||"/docs/www/"`isPrefixOf`path)) then tag2Default path else ""
+                                    defTag = if ("/doc/" `isPrefixOf` path) && (not ("/doc/biology/2000-iapac-norvir"`isPrefixOf`path || "/doc/rotten.com/"`isPrefixOf`path || "/doc/statistics/order/beanmachine-multistage"`isPrefixOf`path||"/doc/www/"`isPrefixOf`path)) then tag2Default path else ""
                                 in
                                   if defTag `elem` tags' || defTag == "" || defTag == "/docs" then tags' else defTag:tags'
 
 tag2Default :: String -> String
-tag2Default path = if "/docs/" `isPrefixOf` path && not ("/docs/" `isPrefixOf` path && ("/index" `isSuffixOf` path || "/index#" `isInfixOf` path)) then replace "/docs/" "" $ takeDirectory path else ""
+tag2Default path = if "/doc/" `isPrefixOf` path && not ("/doc/" `isPrefixOf` path && ("/index" `isSuffixOf` path || "/index#" `isInfixOf` path)) then replace "/doc/" "" $ takeDirectory path else ""
 
 -- de-duplicate tags: uniquefy, and remove the more general tags in favor of nested (more specific) tags. eg. ["ai", "ai/nn/transformer/gpt", "reinforcement-learning"] → ["ai/nn/transformer/gpt", "reinforcement-learning"]
 uniqTags :: [String] -> [String]
@@ -97,7 +97,7 @@ url2Tags p = concatMap (\(match,tag) -> if match p then [tag] else []) urlTagDB
 
 -- Abbreviate displayed tag names to make tag lists more readable. For some tags, like 'reinforcement-learning/*' or 'genetics/*', they might be used very heavily and densely, leading to cluttered unreadable tag lists, and discouraging use of meaningful directory names: 'reinforcement-learning/exploration, reinforcement-learning/alphago, reinforcement-learning/meta-learning, reinforcement-learning/...' would be quite difficult to read. But we also would rather not abbreviate the tag itself down to just 'rl/', as that is not machine-readable or explicit. So we can abbreviate them just for display, while rendering the tags to Inline elements.
 abbreviateTag :: T.Text -> T.Text
-abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagsLong2Short . replace "/docs/" "" . T.unpack
+abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagsLong2Short . replace "/doc/" "" . T.unpack
   where
         tagRewritesRegexes  :: [(String,String)]
         tagRewritesRegexes = [("^cs/", "CS/")
@@ -117,9 +117,9 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagsLong2Short
                              ]
 
 listTagsAll :: IO [String]
-listTagsAll = fmap (map (replace "docs/" "") . sort . filter (\f' -> not $ anyInfix f' ["personal/2011-gwern-yourmorals.org", "rotten.com", "2000-iapac-norvir", "beanmachine-multistage", "docs/www/"]) ) $ getDirFiltered (\f -> doesFileExist (f++"/index.page")) "docs/"
+listTagsAll = fmap (map (replace "doc/" "") . sort . filter (\f' -> not $ anyInfix f' ["personal/2011-gwern-yourmorals.org", "rotten.com", "2000-iapac-norvir", "beanmachine-multistage", "doc/www/"]) ) $ getDirFiltered (\f -> doesFileExist (f++"/index.page")) "doc/"
 
--- given a list of ["docs/foo/index.page"] directories, convert them to what will be the final absolute path ("/docs/foo/index"), while checking they exist (typos are easy, eg. dropping 'docs/' is common).
+-- given a list of ["doc/foo/index.page"] directories, convert them to what will be the final absolute path ("/doc/foo/index"), while checking they exist (typos are easy, eg. dropping 'doc/' is common).
 listTagDirectories :: [FilePath] -> IO [FilePath]
 listTagDirectories direntries' = do
                        directories <- mapM getSubdirsRecursive $ map (sed "^/" "" . sed "/index$" "/" . replace "/index.page" "/")  direntries'

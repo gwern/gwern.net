@@ -94,7 +94,7 @@ generateCaller md target (caller, callers) =
                                                              -- if we link to a top-level essay, then we want to insert the anchor to jump to the link use.
                                                              -- if the backlink caller is actually another annotation (and so has a '.' in it), we want to add no anchor because that will break the annotation lookup:
                                                              -- it'll look at '/metadata/annotations/$FOO.html#$ID' instead2 of the actual '/metadata/annotations/$FOO.html'.
-                                                             -- (eg. for Boehm et al 1993's "backlinks", there will be a 'Hierarchy in the Library' backlink which would point at 'https://gwern.net/docs/culture/2008-johnson.pdf#boehm-et-al-1993' , which has no annotation, because it's annotated as '/docs/culture/2008-johnson.pdf').
+                                                             -- (eg. for Boehm et al 1993's "backlinks", there will be a 'Hierarchy in the Library' backlink which would point at 'https://gwern.net/doc/culture/2008-johnson.pdf#boehm-et-al-1993' , which has no annotation, because it's annotated as '/doc/culture/2008-johnson.pdf').
                                                              Just (_,aut,dt,_,_,_) -> generateID (T.unpack caller) aut dt
                                            callerDatesTitles = map (\u -> case M.lookup (T.unpack u) md of
                                                                       Nothing -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
@@ -154,14 +154,14 @@ backLinksNot :: Inline -> Bool
 backLinksNot (Link (_, classes, _) _ _) = "backlink-not" `notElem` classes
 backLinksNot _ = True
 
--- -- for URLs like 'arxiv.org/123#google' or 'docs/reinforcement-learning/2021-foo.pdf#deepmind', we want to preserve anchors; for on-site pages like '/GPT-3#prompt-programming' we want to merge all such anchor links into just callers of '/GPT-3'
+-- -- for URLs like 'arxiv.org/123#google' or 'doc/reinforcement-learning/2021-foo.pdf#deepmind', we want to preserve anchors; for on-site pages like '/GPT-3#prompt-programming' we want to merge all such anchor links into just callers of '/GPT-3'
 truncateAnchors :: T.Text -> T.Text
 truncateAnchors = T.takeWhile (/='#')
 
 blackList :: T.Text -> Bool
 blackList f
   | anyInfixT f ["/backlinks/", "/link-bibliography/", "/similars/", "wikipedia.org/wiki/"] = True
-  | anyPrefixT f ["$", "#", "!", "mailto:", "irc://", "\8383", "/images", "/docs/www/", "/newsletter/", "/changelog", "/mistakes", "/traffic", "/me", "/lorem",
+  | anyPrefixT f ["$", "#", "!", "mailto:", "irc://", "\8383", "/images", "/doc/www/", "/newsletter/", "/changelog", "/mistakes", "/traffic", "/me", "/lorem",
                    -- WARNING: do not filter out 'metadata/annotations' because that leads to empty databases & infinite loops
                    "/static/404", "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = True
   | anySuffixT f ["/index", "/index-long"] = True

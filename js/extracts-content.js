@@ -34,7 +34,7 @@ Extracts.targetTypeDefinitions.push([
 /*= LOCAL PAGES =*/
 /*=-------------=*/
 
-Extracts = { ...Extracts, 
+Extracts = { ...Extracts,
     /*  Local links (to sections of the current page, or other site pages).
      */
     //  Called by: Extracts.targetTypeInfo (as `predicateFunctionName`)
@@ -80,11 +80,11 @@ Extracts = { ...Extracts,
 		/*  Check to see if the target location matches an already-displayed
 			page (which can be the root page of the window).
 
-			If the entire linked page is already displayed, and if the 
+			If the entire linked page is already displayed, and if the
 			target points to an anchor in that page, display the linked
 			section or element.
 
-			Also display just the linked block if we’re spawning this 
+			Also display just the linked block if we’re spawning this
 			pop-frame from an in-pop-frame TOC.
 
 			Otherwise, display the entire linked page.
@@ -103,8 +103,8 @@ Extracts = { ...Extracts,
 			/*  Mark the pop-frame as a full page embed, and give it suitable
 				identifying classes.
 			 */
-			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, 
-														   "full-page", 
+			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame,
+														   "full-page",
 														   "page-" + target.pathname.slice(1));
         }
 
@@ -153,20 +153,20 @@ Extracts = { ...Extracts,
 
         let target = popFrame.spawningTarget;
 
-		/*	For local content embed pop-frames, add handler to trigger 
+		/*	For local content embed pop-frames, add handler to trigger
 			transcludes in source content when they trigger in the pop-frame.
 		 */
 		let identifier = Content.targetIdentifier(target);
 		if (Content.cachedDataExists(identifier)) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 				Content.updateCachedContent(identifier, (content) => {
-					Transclude.allIncludeLinksInContainer(content).filter(includeLink => 
+					Transclude.allIncludeLinksInContainer(content).filter(includeLink =>
 						includeLink.href == info.includeLink.href
 					).forEach(includeLink => {
 						Transclude.transclude(includeLink, true);
 					});
 				});
-			}, { condition: (info) => (   info.source == "transclude" 
+			}, { condition: (info) => (   info.source == "transclude"
 									   && info.document == popFrame.document) });
 		}
 
@@ -242,8 +242,8 @@ Extracts = { ...Extracts,
 			expandLockCollapseBlock(injectEventInfo.container.firstElementChild);
 
 		/*	In the case where the spawning link points to a specific element
-			within the transcluded content, but we’re transcluding the full 
-			page and not just the block context of the targeted element, 
+			within the transcluded content, but we’re transcluding the full
+			page and not just the block context of the targeted element,
 			transclude.js has not marked the targeted element for us already.
 			So we must do it here.
 		 */
@@ -889,8 +889,8 @@ Extracts = { ...Extracts,
             || Extracts.isAnnotatedLink(target))
             return false;
 
-        return (   target.pathname.startsWith("/docs/www/")
-                || (   target.pathname.startsWith("/docs/")
+        return (   target.pathname.startsWith("/doc/www/")
+                || (   target.pathname.startsWith("/doc/")
                     && target.pathname.match(/\.(html|pdf)$/i) != null));
     },
 
@@ -1131,7 +1131,7 @@ Extracts = { ...Extracts,
 /*= CONTENT: HELPERS =*/
 /*=------------------=*/
 
-Extracts = { ...Extracts, 
+Extracts = { ...Extracts,
     //  Called by: Extracts.videoForTarget
     //  Called by: Extracts.localDocumentForTarget
     //  Called by: Extracts.foreignSiteForTarget
@@ -1161,7 +1161,7 @@ Extracts = { ...Extracts,
         	provider. (Currently that is local page links, local fragment links,
         	and local code file links.)
          */
-        let allTargetsInContainer = Array.from(container.querySelectorAll("a[class*='has-content']")).filter(link => 
+        let allTargetsInContainer = Array.from(container.querySelectorAll("a[class*='has-content']")).filter(link =>
         	Content.contentTypeForTarget(link) != null
         );
 

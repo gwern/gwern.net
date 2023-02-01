@@ -125,12 +125,12 @@ imageMagickDimensions f =
              _             -> do let [height, width] = words $ head $ lines $ B8.unpack bs
                                  return (height, width)
 
--- Example: Image ("",["width-full"],[]) [Str "..."] ("/images/gan/thiswaifudoesnotexist.png","fig:")
+-- Example: Image ("",["width-full"],[]) [Str "..."] ("/image/gan/thiswaifudoesnotexist.png","fig:")
 -- type Text.Pandoc.Definition.Attr = (T.Text, [T.Text], [(T.Text, T.Text)])
 -- WARNING: image hotlinking is a bad practice: hotlinks will often break, sometimes just because of hotlinking. We assume that all images are locally hosted! Woe betide the cheapskate parasite who fails to heed this.
 imageSrcset :: Inline -> IO Inline
 imageSrcset x@(Image (c, t, pairs) inlines (targt, title)) =
-  let target = T.takeWhile (/='#') targt in -- it is possible to have links which have '.png' or '.jpg' infix, but are not actually images, such as, in tag-directories, section headers for images: '/docs/statistics/survival-analysis/index#filenewbie-survival-by-semester-rows.png' or in articles like /red ('docs/design/typography/rubrication/index#filenachf%C3%BClleisengallustinte-pelikan-0.5-liter-g%C3%BCnther-wagner.jpg'); special-case that
+  let target = T.takeWhile (/='#') targt in -- it is possible to have links which have '.png' or '.jpg' infix, but are not actually images, such as, in tag-directories, section headers for images: '/doc/statistics/survival-analysis/index#filenewbie-survival-by-semester-rows.png' or in articles like /red ('doc/design/typography/rubrication/index#filenachf%C3%BClleisengallustinte-pelikan-0.5-liter-g%C3%BCnther-wagner.jpg'); special-case that
   if not (".png" `T.isSuffixOf` target || ".jpg" `T.isSuffixOf` target) || "page-thumbnail" `elem` t then return x else
   do let ext = takeExtension $ T.unpack target
      let target' = replace "%2F" "/" $ T.unpack target
@@ -158,7 +158,7 @@ imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = let p' = T.takeWhile (/='
                                                          if (".png" `T.isSuffixOf` p' || ".jpg" `T.isSuffixOf` p') &&
                                                           ("https://gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
                                                          do exists <- doesFileExist $ tail $ replace "https://gwern.net" "" $ T.unpack  p'
-                                                            if not exists then printRed ("imageSrcset (Link): " ++ show x ++ " does not exist?") >> return x else
+                                                            if not exists then printRed "imageSrcset (Link): " >> putStr (show x) >> printRed " does not exist?" >> return x else
                                                               do (h,w) <- imageMagickDimensions $ T.unpack p'
                                                                  return (Link (htmlid, classes,
                                                                                kvs++[("image-height",T.pack h),
@@ -178,7 +178,7 @@ addImgDimensions = fmap (renderTagsOptions renderOptions{optMinimize=whitelist, 
                  where whitelist s = s /= "div" && s /= "script" && s /= "style"
 
 {- example illustration:
- TagOpen "img" [("src","/images/traffic/201201-201207-traffic-history.png")
+ TagOpen "img" [("src","/image/traffic/201201-201207-traffic-history.png")
                 ("alt","Plot of page-hits (y-axis) versus date (x-axis)")],
  TagOpen "figcaption" [],TagText "Plot of page-hits (y-axis) versus date (x-axis)",
  TagClose "figcaption",TagText "\n",TagClose "figure" -}
@@ -199,7 +199,7 @@ staticImg x@(TagOpen "img" xs) = do
        do
          let p' = urlDecode $ if head p == '/' then tail p else p
          exists <- doesFileExist p'
-         if not exists then printRed ("staticImg: File does not exist: " ++ p') >> return x else
+         if not exists then printRed "staticImg: File does not exist: " >> putStr p' >> return x else
           do (height,width) <- imageMagickDimensions p' `onException` printRed p
              -- body max-width is 1600 px, sidebar is 150px, so any image wider than ~1400px
              -- will wind up being reflowed by the 'img { max-width: 100%; }' responsive-image CSS declaration;
@@ -207,9 +207,9 @@ staticImg x@(TagOpen "img" xs) = do
              let width' =  readMaybe width  ::Maybe Int
              let height' = readMaybe height ::Maybe Int
              case width' of
-                Nothing       -> printRed ("staticImg: Image width can't be read: " ++ show x) >> return x
+                Nothing       -> printRed ("staticImg: Image width can't be read: ") >> putStr (show x) >> return x
                 Just width'' -> case height' of
-                                 Nothing       -> printRed ("staticImg: Image height can't be read: " ++ show x) >> return x
+                                 Nothing       -> printRed "staticImg: Image height can't be read: " >> putStr (show x) >> return x
                                  Just height'' -> return (TagOpen "img" (uniq (loading ++  -- lazy load & async render all images
                                                                                 [("decoding", "async"),
                                                                                 ("height", show height''), ("width", show (width'' `min` 1400))]++xs)))

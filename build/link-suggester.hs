@@ -102,8 +102,8 @@ parseURLs file = do
 filterURLs :: T.Text -> Bool
 filterURLs u = anyPrefixT u ["$","\8383","#","/static/img/","/newsletter/20","dropbox.com","https://www.harney.com"] ||
                u `elem` ["https://www.reuters.com/article/us-germany-cyber-idUSKCN1071KW"] ||
-               "/docs/" `T.isPrefixOf` u && "/index" `T.isSuffixOf` u ||
-               "https://gwern.net/docs/" `T.isPrefixOf` u && "/index" `T.isSuffixOf` u
+               "/doc/" `T.isPrefixOf` u && "/index" `T.isSuffixOf` u ||
+               "https://gwern.net/doc/" `T.isPrefixOf` u && "/index" `T.isSuffixOf` u
 
 filterAnchors :: T.Text -> Bool
 filterAnchors   t = T.length t > anchorLengthMaximum ||
@@ -228,7 +228,7 @@ whiteList = M.fromList [
   , ("https://en.wikipedia.org/wiki/Derek_Lowe_(chemist)", ["Derek Lowe"])
   , ("https://en.wikipedia.org/wiki/California_Institute_of_Technology", ["Caltech"])
   , ("https://www.teds.ac.uk/about-teds", ["TEDS", "Twins Early Development Study"])
-  , ("/docs/iq/2018-lee.pdf", ["Lee et al 2018"])
+  , ("/doc/iq/2018-lee.pdf", ["Lee et al 2018"])
   , ("https://en.wikipedia.org/wiki/Reliability_(statistics)", ["reliability", "reliable"])
   , ("https://en.wikipedia.org/wiki/Functional_magnetic_resonance_imaging", ["fMRI", "functional magnetic resonance imaging"])
   , ("regret", ["https://en.wikipedia.org/wiki/Regret_(decision_theory)"])
@@ -250,56 +250,56 @@ whiteList = M.fromList [
   , ( "/Turing-complete#security-implications"
     , [ "weird machines" ]
     )
-    , ( "/docs/ai/scaling/2013-yudkowsky.pdf#miri"
+    , ( "/doc/ai/scaling/2013-yudkowsky.pdf#miri"
     , [ "Intelligence Explosion Microeconomics" , "Yudkowsky 2013" ]
     )
-  , ( "/docs/ai/nn/diffusion/2018-sharma.pdf#google" , [ "Conceptual Captions" ] )
-  , ( "/docs/dual-n-back/2010-zhang.pdf"
+  , ( "/doc/ai/nn/diffusion/2018-sharma.pdf#google" , [ "Conceptual Captions" ] )
+  , ( "/doc/dual-n-back/2010-zhang.pdf"
     , [ "Chinese journal finds 31% of submissions plagiarized', Zhang 2010"])
-      , ( "/docs/anime/eva/2002-takeda-notenkimemoirs#opening-the-general-products-store"
+      , ( "/doc/anime/eva/2002-takeda-notenkimemoirs#opening-the-general-products-store"
     , [ "General Products" ]
     )
-  , ( "/docs/anime/eva/2002-takeda-notenkimemoirs#the-daicon-3-decision"
+  , ( "/doc/anime/eva/2002-takeda-notenkimemoirs#the-daicon-3-decision"
     , [ "DAICON III" ]
     )
-  , ( "/docs/genetics/heritable/correlation/2014-mosing.pdf"
+  , ( "/doc/genetics/heritable/correlation/2014-mosing.pdf"
     , [ "Practice Does Not Make Perfect: No Causal Effect of Music Practice on Music Ability"
       ]
     )
-  , ( "/docs/genetics/heritable/correlation/2015-krapohl.pdf"
+  , ( "/doc/genetics/heritable/correlation/2015-krapohl.pdf"
     , [ "Krapohl et al 2015"
       , "Phenome-wide analysis of genome-wide polygenic scores"
       ]
     )
-  , ( "/docs/genetics/heritable/correlation/2015-pettersson.pdf"
+  , ( "/doc/genetics/heritable/correlation/2015-pettersson.pdf"
     , [ "Common psychiatric disorders [and violent crime] share the same genetic origin: a multivariate sibling study of the Swedish population"
       ]
     )
-  , ( "/docs/genetics/heritable/correlation/2015-zhu.pdf"
+  , ( "/doc/genetics/heritable/correlation/2015-zhu.pdf"
     , [ "Educational attainment-related loci identified by GWAS are associated with select personality traits and mathematics and language abilities"
       , "Zhu et al 2015"
       ]
     )
-  , ( "/docs/genetics/heritable/1987-plomin.pdf"
+  , ( "/doc/genetics/heritable/1987-plomin.pdf"
     , [ "Why are children in the same family so different from one another"
       ]
     )
-  , ( "/docs/genetics/heritable/2014-pellegrino.pdf"
+  , ( "/doc/genetics/heritable/2014-pellegrino.pdf"
     , [ "A Novel BHLHE41 Variant is Associated with Short Sleep and Resistance to Sleep Deprivation in Humans"
       , "Pellegrino et al 2014"
       ]
     )
-  , ( "/docs/genetics/selection/artificial/1933-student.pdf"
+  , ( "/doc/genetics/selection/artificial/1933-student.pdf"
     , ["Evolution By Selection: The Implications of Winter’s Selection Experiment [in <em>Student's Collected Papers</em>]"
       , "Student 1933"
       ]
     )
-  , ( "/docs/iq/2014-shulman.pdf"
+  , ( "/doc/iq/2014-shulman.pdf"
     , [ "Embryo Selection for Cognitive Enhancement: Curiosity or Game-changer"
       , "Shulman & Bostrom 2014"
       ]
     )
-  , ( "/docs/genetics/heritable/correlation/2015-zhu.pdf"
+  , ( "/doc/genetics/heritable/correlation/2015-zhu.pdf"
     , [ "Educational attainment-related loci identified by GWAS are associated with select personality traits and mathematics and language abilities"
       , "Zhu et al 2015"
       ]
@@ -310,54 +310,54 @@ whiteList = M.fromList [
       , "Okbay et al 2016"
       ]
     )
-  , ( "/docs/psychiatry/lithium/2015-helbich.pdf"
+  , ( "/doc/psychiatry/lithium/2015-helbich.pdf"
     , [ "Helbich et al 2015"
       , "Lithium in drinking water and suicide mortality: interplay with lithium prescriptions"
       ]
     )
-      , ( "/docs/nicotine/2009-lecacheux.pdf"
+      , ( "/doc/nicotine/2009-lecacheux.pdf"
     , [ "Cognitive modifications associated with tobacco smoking [review]', Lecacheux et al 2009"
       ]
     )
-  , ( "/docs/reinforcement-learning/model-free/1992-williams.pdf"
+  , ( "/doc/reinforcement-learning/model-free/1992-williams.pdf"
     , [ "REINFORCE" ]
     )
-  , ( "/docs/reinforcement-learning/model-free/2016-graves.pdf#deepmind"
+  , ( "/doc/reinforcement-learning/model-free/2016-graves.pdf#deepmind"
     , [ "Hybrid computing using a neural network with dynamic external memory"
       ]
     )
-  , ( "/docs/reinforcement-learning/model/alphago/2017-silver.pdf#page=3&org=deepmind"
+  , ( "/doc/reinforcement-learning/model/alphago/2017-silver.pdf#page=3&org=deepmind"
     , [ "AlphaGo Zero"
       , "Mastering the game of Go without human knowledge', Silver et al 2017"
       ]
     )
-  , ( "/docs/reinforcement-learning/model/alphago/2017-silver.pdf#page=3&org=deepmind"
+  , ( "/doc/reinforcement-learning/model/alphago/2017-silver.pdf#page=3&org=deepmind"
     , [ "AlphaGo Zero"
       , "Mastering the game of Go without human knowledge', Silver et al 2017"
       ]
     )
-  , ( "/docs/reinforcement-learning/meta-learning/2018-wang.pdf#deepmind"
+  , ( "/doc/reinforcement-learning/meta-learning/2018-wang.pdf#deepmind"
     , [ "Prefrontal cortex as a meta-reinforcement learning system"
       , "Wang et al 2018"
       ]
     )
-  , ( "/docs/sociology/1987-rossi.pdf"
+  , ( "/doc/sociology/1987-rossi.pdf"
     , [ "The Iron Law Of Evaluation And Other Metallic Rules', Rossi 1987"      ]
     )
-  , ( "/docs/sociology/1993-boehm.pdf"
+  , ( "/doc/sociology/1993-boehm.pdf"
     , [ "Egalitarian Behavior and Reverse Dominance Hierarchy [and Comments and Reply]', Boehm et al 1993"
       ]
     )
-  , ( "/docs/sociology/2003-murray-humanaccomplishment.pdf"
+  , ( "/doc/sociology/2003-murray-humanaccomplishment.pdf"
     , [ "Human Accomplishment" ]
     )
-  , ( "/docs/statistics/bayes/1994-falk.pdf"
+  , ( "/doc/statistics/bayes/1994-falk.pdf"
     , [ "The Ups and Downs of the Hope Function In a Fruitless Search', Falk et al 1994"      ]
     )
-  , ( "/docs/statistics/bayes/2009-kaas.html"
+  , ( "/doc/statistics/bayes/2009-kaas.html"
     , [ "A New Challenge to 98% Confidence"]
     )
-  , ( "/docs/wikipedia/2018-teblunthuis.pdf"
+  , ( "/doc/wikipedia/2018-teblunthuis.pdf"
     , [ "Revisiting The Rise and Decline in a Population of Peer Production Projects [769 wikis"
       ]
     )
@@ -1054,7 +1054,7 @@ whiteList = M.fromList [
     , [ "Hell is the Absence of God" ]
     ), ( "https://www.nplusonemag.com/issue-3/reviews/adventures-of-a-man-of-science/"
     , [ "Adventures of a Man of Science" , "Batuman 2005" ]
-    ), ( "/docs/genetics/selection/artificial/index-selection/2011-cole.pdf"
+    ), ( "/doc/genetics/selection/artificial/index-selection/2011-cole.pdf"
     , [ "Cole & VanRaden 2011"
       , "Use of haplotypes to estimate Mendelian sampling effects and selection limits"
       ]
@@ -1134,7 +1134,7 @@ whiteList = M.fromList [
     ), ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4313871/"
     , [ "The contribution of <em>de novo</em> coding mutations to autism spectrum disorder"
       ]
-    ), ( "/docs/psychiatry/lithium/2015-helbich.pdf"
+    ), ( "/doc/psychiatry/lithium/2015-helbich.pdf"
     , [ "Helbich et al 2015"
       , "Lithium in drinking water and suicide mortality: interplay with lithium prescriptions"
       ]

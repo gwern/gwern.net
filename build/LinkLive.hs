@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-01-31 10:05:02 gwern"
+When:  Time-stamp: "2023-02-02 10:47:17 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -3277,12 +3277,12 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             ]
 
 badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
-            , "/docs/iq/2004-gottfredson.pdf"
-            , "/docs/sociology/2013-feldman.pdf"
-            , "/docs/statistics/bayes/2003-korb.pdf"
-            , "/docs/psychology/cognitive-bias/sunk-cost/2005-parker.pdf"
-            , "/docs/vitamin-d/2005-grant.pdf"
-            , "/images/gan/stylegan/2021-li-dplase-ganlatentspaceeditingvideo.mp4"
+            , "/doc/iq/2004-gottfredson.pdf"
+            , "/doc/sociology/2013-feldman.pdf"
+            , "/doc/statistics/bayes/2003-korb.pdf"
+            , "/doc/psychology/cognitive-bias/sunk-cost/2005-parker.pdf"
+            , "/doc/vitamin-d/2005-grant.pdf"
+            , "/image/gan/stylegan/2021-li-dplase-ganlatentspaceeditingvideo.mp4"
             , "http://2chan.us/wordpress/2012/07/12/c82-genre-stats/"
             , "http://antiagingcentral.com/store/catalog/index.php?cPath=29"
             , "http://archinte.ama-assn.org/cgi/content/abstract/172/6/494"

@@ -222,8 +222,8 @@ Links = {
         //  Get the true hostname of the link’s content.
         let hostname = link.hostname;
         if (   link.hostname == location.hostname
-            && link.pathname.startsWith("/docs/www/"))
-            hostname = /\/docs\/www\/([^\/]+?)(\/.+)?$/.exec(link.pathname)[1];
+            && link.pathname.startsWith("/doc/www/"))
+            hostname = /\/doc\/www\/([^\/]+?)(\/.+)?$/.exec(link.pathname)[1];
 
         //  Hostname matched by regular expression.
         if (   pattern instanceof RegExp

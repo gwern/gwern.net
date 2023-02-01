@@ -11,7 +11,7 @@ Content = {
 
 	cachedDataExists: (identifier) => {
 		let cachedContent = Content.cachedContentForIdentifier(identifier);
-        return (   cachedContent != null 
+        return (   cachedContent != null
         		&& cachedContent != "LOADING_FAILED");
 	},
 
@@ -94,8 +94,8 @@ Content = {
 
 			GW.notificationCenter.removeHandlerForEvent("Content.contentDidLoad", didLoadHandler);
         };
-		let options = { 
-        	once: true, 
+		let options = {
+        	once: true,
         	condition: (info) => (info.identifier == identifier)
         };
 
@@ -114,15 +114,15 @@ Content = {
 
 			if (content) {
 				Content.cacheContentForIdentifier(content, identifier);
-			
+
 				GW.notificationCenter.fireEvent("Content.contentDidLoad", {
 					identifier: identifier
 				});
 			} else {
 				Content.cacheContentForIdentifier("LOADING_FAILED", identifier);
-			
-				GW.notificationCenter.fireEvent("Content.contentLoadDidFail", { 
-					identifier: identifier 
+
+				GW.notificationCenter.fireEvent("Content.contentLoadDidFail", {
+					identifier: identifier
 				});
 
 				//	Send request to record failure in server logs.
@@ -157,8 +157,8 @@ Content = {
 
 					Content.cacheContentForIdentifier("LOADING_FAILED", identifier);
 
-					GW.notificationCenter.fireEvent("Content.contentLoadDidFail", { 
-						identifier: identifier 
+					GW.notificationCenter.fireEvent("Content.contentLoadDidFail", {
+						identifier: identifier
 					});
 
 					//	Send request to record failure in server logs.
@@ -238,8 +238,8 @@ Content = {
 					return false;
 
 				//	Maybe it’s a local document link?
-				if (   url.pathname.startsWith("/docs/www/")
-                	|| (   url.pathname.startsWith("/docs/")
+				if (   url.pathname.startsWith("/doc/www/")
+                	|| (   url.pathname.startsWith("/doc/")
                 		&& url.pathname.match(/\.(html|pdf)$/i) != null))
                 	return false;
 
@@ -264,10 +264,10 @@ Content = {
 				return Content.contentTypes.localCodeFile.matches(identifier);
 			},
 
-			/*  We first try to retrieve a syntax-highlighted version of the 
-				given code file, stored on the server as an HTML fragment. If 
-				present, we embed that. If there’s no such fragment, then we 
-				just embed the contents of the actual code file, in a 
+			/*  We first try to retrieve a syntax-highlighted version of the
+				given code file, stored on the server as an HTML fragment. If
+				present, we embed that. If there’s no such fragment, then we
+				just embed the contents of the actual code file, in a
 				<pre>-wrapped <code> element.
 			 */
 			sourceURLsForIdentifier: (identifier) => {
@@ -287,7 +287,7 @@ Content = {
 					codeBlock = newDocument(response);
 				} else {
 					let htmlEncodedResponse = response.replace(
-						/[<>]/g, 
+						/[<>]/g,
 						c => ('&#' + c.charCodeAt(0) + ';')
 					).split("\n").map(
 						line => (`<span class="line">${(line || "&nbsp;")}</span>`)
@@ -310,8 +310,8 @@ Content = {
 
 			codeFileExtensions: [
 				//	Truncated at 1000 lines for preview.
-				"bash", "c", "conf", "css", "csv", "diff", "hs", "html", "js", 
-				"json", "jsonl", "opml", "page", "patch", "php", "py", "R", 
+				"bash", "c", "conf", "css", "csv", "diff", "hs", "html", "js",
+				"json", "jsonl", "opml", "page", "patch", "php", "py", "R",
 				"sh", "xml", "yaml",
 				//	Non-syntax highlighted (due to lack of known format), but truncated:
 				"txt"
@@ -387,8 +387,8 @@ Content = {
 			matches: (identifier) => {
 				let url = new URL(identifier);
 
-				/*  If it has a period in it, it’s not a page, but is something 
-					else, like a file of some sort, or a locally archived 
+				/*  If it has a period in it, it’s not a page, but is something
+					else, like a file of some sort, or a locally archived
 					document.
 				 */
 				return (url.pathname.match(/\./) == null);

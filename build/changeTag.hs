@@ -21,8 +21,8 @@
 -- # https://en.wikipedia.org/wiki/Subvocalization : ( "Subvocalization" , "" , "" , "" , [] , "" )
 -- # Executing: psychology/inner-monologue tag on link: https://en.wikipedia.org/wiki/Subvocalization
 --
--- Tags can be tagged by tagging their directory-index file (`/docs/$TAG1/index`); to do a one-way tag (to make $TAG1 'see also' $TAG2),
--- one does `changeTag.hs $TAG1 /docs/$TAG2/index`. Since it's common to want tags to be reciprocal or bidirectional, this is a shortcut,
+-- Tags can be tagged by tagging their directory-index file (`/doc/$TAG1/index`); to do a one-way tag (to make $TAG1 'see also' $TAG2),
+-- one does `changeTag.hs $TAG1 /doc/$TAG2/index`. Since it's common to want tags to be reciprocal or bidirectional, this is a shortcut,
 -- just `changeTag.hs $TAG1 $TAG2`.
 module Main where
 
@@ -42,7 +42,7 @@ import Utils (printGreen, replace)
 main :: IO ()
 main = do
           -- read the regular CLI arguments
-          args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://gwern.net/" "/") getArgs
+          args <- fmap (map $ (\a -> if "doc/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://gwern.net/" "/") getArgs
 
           when (length args < 2) $ error "Error: Insufficient arguments (<2)."
           when ("gwt" `elem` args) $ error "Invalid tag/URL 'gwt' detected! Is this entire command malformed? Exiting immediately."
@@ -54,12 +54,12 @@ main = do
                 filter (\t -> t `notElem` links || ("-"++t) `notElem` links) args) :: [String]
 
           when (null tags) $ error ("Error: Forgot tags? " ++ show args)
-          mapM_ (\arg' -> do filep <- doesDirectoryExist ("docs/"++ if head arg' == '-' then tail arg' else arg')
+          mapM_ (\arg' -> do filep <- doesDirectoryExist ("doc/"++ if head arg' == '-' then tail arg' else arg')
                              if not filep then error ("Error: Specified tag not defined? '" ++ arg' ++ "'") else return arg') tags
           if length tags == 2 && null links then
-            -- setting up a bidirectional tag, equivalent to: changeTag.hs /docs/$TAG1/index $TAG2 && changeTag.hs /docs/$TAG2/index $TAG1
-            changeOneTag ("/docs/" ++ head tags ++ "/index") (tags !! 1) >>
-            changeOneTag ("/docs/" ++ (tags !! 1) ++ "/index") (head tags)
+            -- setting up a bidirectional tag, equivalent to: changeTag.hs /doc/$TAG1/index $TAG2 && changeTag.hs /doc/$TAG2/index $TAG1
+            changeOneTag ("/doc/" ++ head tags ++ "/index") (tags !! 1) >>
+            changeOneTag ("/doc/" ++ (tags !! 1) ++ "/index") (head tags)
            else do
             when (null links) $ error ("Error: Forgot links?" ++ show args)
             mapM_ (\link -> mapM_ (changeOneTag link) tags) links
@@ -67,7 +67,7 @@ main = do
 changeOneTag :: String -> String -> IO ()
 changeOneTag link tag = do
           let link' = replace "https://gwern.net/" "/" link
-          -- allow shortcut additions like 'changeTag.hs docs/foo.pdf psychology'
+          -- allow shortcut additions like 'changeTag.hs doc/foo.pdf psychology'
           link'' <- if not (head link' /= '/' && take 4 link' /= "http") then return link' else
                      do existP <- doesFileExist link'
                         if existP then return $ "/" ++ link' else

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-02-01 12:33:37 gwern"
+When:  Time-stamp: "2023-02-02 10:38:26 gwern"
 License: CC-0
 -}
 
@@ -68,7 +68,7 @@ import Tags (abbreviateTag, uniqTags, guessTagFromShort, tag2TagsWithDefault, gu
 import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass)
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
--- we exclude several directories (docs/, static/, images/) entirely; a Gwern.net page is then any
+-- we exclude several directories (doc/, static/, image/) entirely; a Gwern.net page is then any
 -- link without a file extension (ie. a '.' in the URL - we guarantee that no Markdown essay has a
 -- period inside its URL).
 -- Essay/page links get the 'link-page' class.
@@ -84,7 +84,7 @@ isPagePath :: T.Text -> Bool
 isPagePath f = let f' = replace "https://gwern.net" "" $ T.unpack f in
     (if
         not ("/" `isPrefixOf` f') ||
-      ("/images/" `isPrefixOf` f' || "/static/" `isPrefixOf` f')
+      ("/image/" `isPrefixOf` f' || "/static/" `isPrefixOf` f')
      then False else
        takeExtension f' == "")
 
@@ -171,7 +171,7 @@ readLinkMetadataAndCheck = do
              -- - authors must exist (if only as 'Anonymous' or 'N/A'), but are non-unique
              -- - dates are non-unique & optional/NA for always-updated things like Wikipedia. If they exist, they should be of the format 'YYYY[-MM[-DD]]'.
              -- - DOIs are optional since they usually don't exist, and non-unique (there might be annotations for separate pages/anchors for the same PDF and thus same DOI; DOIs don't have any equivalent of `#page=n` I am aware of unless the DOI creator chose to mint such DOIs, which they never (?) do). DOIs sometimes use hyphens and so are subject to the usual problems of em/en-dashes sneaking in by 'smart' systems screwing up.
-             -- - tags are optional, but all tags should exist on-disk as a directory of the form "docs/$TAG/"
+             -- - tags are optional, but all tags should exist on-disk as a directory of the form "doc/$TAG/"
              -- - annotations must exist and be unique inside full.yaml (overlap in auto.yaml can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
              let urlsC = map fst custom
              let normalizedUrlsC = map (replace "https://" "" . replace "http://" "") urlsC
@@ -268,8 +268,8 @@ readLinkMetadataAndCheck = do
              let titlesEmpty = M.filter (\(t,_,_,_,_,abst) -> t=="" && length abst > 100) final
              unless (null titlesEmpty) $ error ("Link Annotation Error: missing title despite abstract!" ++ show titlesEmpty)
 
-             let tagIsNarrowerThanFilename = M.map (\(title,_,_,_,tags,_) -> (title,tags)) $ M.filterWithKey (\f (_,_,_,_,tags,_) -> if not ("/docs/" `isPrefixOf` f) then False else
-                                                        let fileTag = replace "/docs/" "" $ takeDirectory f
+             let tagIsNarrowerThanFilename = M.map (\(title,_,_,_,tags,_) -> (title,tags)) $ M.filterWithKey (\f (_,_,_,_,tags,_) -> if not ("/doc/" `isPrefixOf` f) then False else
+                                                        let fileTag = replace "/doc/" "" $ takeDirectory f
                                                          in any ((fileTag++"/") `isPrefixOf`) tags) final
              unless (null tagIsNarrowerThanFilename) $ printRed "Files whose tags are more specific than their path: " >> printGreen (unlines $ map (\(f',(t',tag')) -> t' ++ " : " ++ f' ++ " " ++ unwords tag') $ M.toList tagIsNarrowerThanFilename)
 
@@ -313,7 +313,7 @@ dateRegex, footnoteRegex, sectionAnonymousRegex, badUrlRegex :: String
 dateRegex             = "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$"
 footnoteRegex         = "^/?[[:alnum:]-]+#fn[1-9][0-9]*$" -- '/Foo#fn3', 'Foo#fn1', 'Foo-Bar-2020#fn999' etc
 sectionAnonymousRegex = "^#section-[0-9]+$" -- unnamed sections which receive Pandoc positional auto-names like "#section-1", "#section-15"; unstable, should be named if ever to be linked to, etc.
-badUrlRegex           = "http.*http|docs/.*docs/"::String
+badUrlRegex           = "http.*http|doc/.*doc/"::String
 
 -- read a YAML database and look for annotations that need to be paragraphized.
 warnParagraphizeYAML :: FilePath -> IO ()
@@ -395,7 +395,7 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
   do let target = T.unpack targetT
      when (null target) $ error (show x)
      when ((reverse $ take 3 $ reverse target) == "%20" || last target == ' ') $ error $ "URL ends in space? " ++ target ++ " (" ++ show x ++ ")"
-     -- normalize: convert 'https://gwern.net/docs/foo.pdf' to '/docs/foo.pdf' and './docs/foo.pdf' to '/docs/foo.pdf'
+     -- normalize: convert 'https://gwern.net/doc/foo.pdf' to '/doc/foo.pdf' and './doc/foo.pdf' to '/doc/foo.pdf'
      -- the leading '/' indicates this is a local Gwern.net file
      let target' = replace "https://gwern.net/" "/" target
      let target'' = if head target' == '.' then drop 1 target' else target'
@@ -644,9 +644,9 @@ readYaml yaml = do yaml' <- do filep <- doesFileExist yaml
 
 -- If no accurate date is available, attempt to guess date from the local file schema of 'YYYY-surname-[title, disambiguation, etc].ext' or 'YYYY-MM-DD-...'
 -- This is useful for PDFs with bad metadata, or data files with no easy way to extract metadata (like HTML files with hopelessly inconsistent dirty metadata fields like `<meta>` tags) or where it's not yet supported (image files usually have a reliable creation date).
---  > guessDateFromLocalSchema "/docs/ai/2020-10-10-barr.png" ""
+--  > guessDateFromLocalSchema "/doc/ai/2020-10-10-barr.png" ""
 -- → "2020-10-10"
--- > guessDateFromLocalSchema "/docs/ai/2020-barr.pdf" ""
+-- > guessDateFromLocalSchema "/doc/ai/2020-barr.pdf" ""
 -- → "2020"
 -- > guessDateFromLocalSchema "http://cnn.com" ""
 -- → ""
@@ -686,7 +686,7 @@ linkDispatcher (Link _ _ (l, tooltip)) = do l' <- linkDispatcherURL (T.unpack l)
                                               Left Temporary -> return l'
 linkDispatcher x = error ("linkDispatcher passed a non-Link Inline element: " ++ show x)
 linkDispatcherURL :: Path -> IO (Either Failure (Path, MetadataItem))
-linkDispatcherURL l | anyPrefix l ["/metadata/annotations/backlinks/", "/metadata/annotations/similars/", "/docs/www/"] = return (Left Permanent)
+linkDispatcherURL l | anyPrefix l ["/metadata/annotations/backlinks/", "/metadata/annotations/similars/", "/doc/www/"] = return (Left Permanent)
                  -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for tags.
                  | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return $ Right (l, (wikipediaURLToTitle l, "", "", "", [], ""))
                  | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
@@ -995,7 +995,7 @@ paragraphized f a = f `elem` whitelist ||
    paragraphsHtml :: String -> [(T.Text,T.Text)]
    paragraphsHtml b = T.breakOnAll "<p>" (T.pack b)
    whitelist :: [String]
-   whitelist = ["/docs/cs/1980-rytter.pdf", "/docs/economics/1998-delong.pdf", "/docs/cs/algorithm/1980-rytter.pdf"]
+   whitelist = ["/doc/cs/1980-rytter.pdf", "/doc/economics/1998-delong.pdf", "/doc/cs/algorithm/1980-rytter.pdf"]
 
 -- If a String (which is not HTML!) is a single long paragraph (has no double-linebreaks), call out to paragraphizer.py, which will use GPT-3 to try to break it up into multiple more-readable paragraphs.
 -- This is quite tricky to use: it wants non-HTML plain text (any HTML will break GPT-3), but everything else wants HTML
@@ -1036,8 +1036,8 @@ linkCanonicalize l | "https://gwern.net/" `isPrefixOf` l = replace "https://gwer
                    | otherwise = l
 
 -- gwern :: Path -> IO (Either Failure (Path, MetadataItem))
-gwern "/docs/index" = gwerntoplevelDocAbstract -- special-case ToC generation of all subdirectories for a one-stop shop
-gwern "docs/index"  = gwerntoplevelDocAbstract
+gwern "/doc/index" = gwerntoplevelDocAbstract -- special-case ToC generation of all subdirectories for a one-stop shop
+gwern "doc/index"  = gwerntoplevelDocAbstract
 gwern p | p == "/" || p == "" = return (Left Permanent)
         | ".pdf" `isInfixOf` p = pdf p
         | anyInfix p [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
@@ -1050,7 +1050,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
         | p =~ footnoteRegex= return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
         | otherwise =
             do let p' = sed "^/" "" $ replace "https://gwern.net/" "" p
-               let indexP = "docs/" `isPrefixOf` p' && "/index" `isInfixOf` p'
+               let indexP = "doc/" `isPrefixOf` p' && "/index" `isInfixOf` p'
                printGreen p'
                checkURL p
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--silent", "https://gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"] -- we strip `--location` because we do *not* want to follow redirects. Redirects creating duplicate annotations is a problem.
@@ -1100,11 +1100,11 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
           filterThumbnailText (TagOpen "meta" [("property", "og:image:alt"), _]) = True
           filterThumbnailText _ = False
 
--- skip the complex gwernAbstract logic: /docs/index is special because it has only subdirectories, is not tagged, and is the entry point. We just generate the ToC directly from a recursive tree of subdirectories with 'index.page' entries:
+-- skip the complex gwernAbstract logic: /doc/index is special because it has only subdirectories, is not tagged, and is the entry point. We just generate the ToC directly from a recursive tree of subdirectories with 'index.page' entries:
 gwerntoplevelDocAbstract :: IO (Either Failure (Path, MetadataItem))
-gwerntoplevelDocAbstract = do allDirs <- listTagDirectories ["docs/"]
-                              let allDirLinks = unlines $ map (\d -> "<li><a class='link-page link-tag directory-indexes-downwards link-annotated link-annotated-partial' data-link-icon='arrow-down' data-link-icon-type='svg' rel='tag' href=\"" ++ d ++ "\">" ++ (T.unpack $ abbreviateTag (T.pack (replace "/docs/" "" $ takeDirectory d))) ++ "</a></li>") allDirs
-                              return $ Right ("/docs/index", ("docs tag","N/A","","",[],"<p>Bibliography for tag <em>docs</em>, most recent first: " ++ show (length allDirs) ++ " tags (<a href='/index' class='link-page link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>).</p> <div class=\"columns TOC\"> <ul>" ++ allDirLinks ++ "</ul> </div>"))
+gwerntoplevelDocAbstract = do allDirs <- listTagDirectories ["doc/"]
+                              let allDirLinks = unlines $ map (\d -> "<li><a class='link-page link-tag directory-indexes-downwards link-annotated link-annotated-partial' data-link-icon='arrow-down' data-link-icon-type='svg' rel='tag' href=\"" ++ d ++ "\">" ++ (T.unpack $ abbreviateTag (T.pack (replace "/doc/" "" $ takeDirectory d))) ++ "</a></li>") allDirs
+                              return $ Right ("/doc/index", ("docs tag","N/A","","",[],"<p>Bibliography for tag <em>docs</em>, most recent first: " ++ show (length allDirs) ++ " tags (<a href='/index' class='link-page link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>).</p> <div class=\"columns TOC\"> <ul>" ++ allDirLinks ++ "</ul> </div>"))
 
 gwernAbstract :: Bool -> String -> String -> String -> [Tag String] -> (String,String)
 gwernAbstract shortAllowed p' description toc f =

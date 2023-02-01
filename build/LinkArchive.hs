@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-01-28 18:27:13 gwern"
+When:  Time-stamp: "2023-02-02 10:37:58 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -66,19 +66,19 @@ Details:
       through and adding the necessary whitelists is infeasible; I have to rely on uBlock to get rid
       of bad JS.) And I want cookies because this allows cookies for logins (eg. subreddits marked
       NSFW like the darknet market ones) rather than archiving useless login wall pages.
-- mirrors are saved to `wiki/docs/www/$DOMAIN($URL)/SHA1($URL).html`; the additional nesting by
+- mirrors are saved to `wiki/doc/www/$DOMAIN($URL)/SHA1($URL).html`; the additional nesting by
   domain name is necessary to allow CSS link annotations to match rewritten links
 
-    - `/docs/www/` is excluded from the `sitemap.xml` & `sync-gwern.net` compile-time checks,
+    - `/doc/www/` is excluded from the `sitemap.xml` & `sync-gwern.net` compile-time checks,
       blocked in `robots.txt`, `rel="canonical"` is set in the mirrors by SingleFile,
       additional`rel="archive nofollow"` attributes are set on each link when used in Gwern.net, and
-      noarchive/noindex/nofollow/nocache are set as HTTP headers by nginx for `/docs/www/`; exposing
+      noarchive/noindex/nofollow/nocache are set as HTTP headers by nginx for `/doc/www/`; exposing
       thousands of mirrors to the rest of the Internet risks causing SEO issues, high bandwidth
       consumption, and legal or social problems
-- links are rewritten to point the `href` to `wiki/docs/www/$DOMAIN($URL)/SHA1($URL).html`; like
+- links are rewritten to point the `href` to `wiki/doc/www/$DOMAIN($URL)/SHA1($URL).html`; like
   inflation-adjustments or link popups, the original `href` is stored as a span (eg. `<a
   href="https://foo.com">foo</a>` → `<a rel="archive nofollow" data-url-original="https://foo.com"
-  href="/docs/www/foo.com/cf934d97a8012ba1c2d354d6cd39e77535fd0fb9.html">foo</a></span>`)
+  href="/doc/www/foo.com/cf934d97a8012ba1c2d354d6cd39e77535fd0fb9.html">foo</a></span>`)
 - the `data-url-original` metadata is used by `popups.js` to add to link popups a '[original]'
   hyperlink (using the JS templating, something like `<p>..."Title" [<a
   href="${target.dataset.urlOriginal}" title="Original (live) Internet version of
@@ -308,7 +308,7 @@ While the logic is a little opaque to readers, I think this handles Arxiv much m
 whiteList :: String -> Bool
 whiteList url
   | anyInfix url ["citeseerx.ist.psu.edu"] = False -- TODO: after fixing all existing Citeseer links, set this rule to False
-  | anyPrefix url ["/", "./", "../", "https://gwern.net", "#", "!", "$", "mailto", "irc", "/metadata/", "/docs/"] = True
+  | anyPrefix url ["/", "./", "../", "https://gwern.net", "#", "!", "$", "mailto", "irc", "/metadata/", "/doc/"] = True
   | anySuffix url [".pdf", "/pdf", ".pdf#"] = False
   | anyInfix url [".txt" -- TODO: generalize the PDF download to handle all non-HTML filetypes
       , ".xlsx"
@@ -1138,7 +1138,7 @@ whiteList url
       , "https://www.clinicaltrialsregister.eu/ctr-search/search" -- interactive
       , "https://imagelibrary.bgu.ac.il/pf.tlx/O6ORSOx-nut" -- already mirrored locally
       , "https://wudao.aminer.cn/CogView/index.html" -- interactive
-      , "https://tfhub.dev/google/collections/gtr/1" -- source code/docs/updated
+      , "https://tfhub.dev/google/collections/gtr/1" -- source code/doc/updated
       , "https://universome.github.io/stylegan-v" -- video embed
       , "https://openaipublic.blob.core.windows.net/webgpt-answer-viewer/index.html" -- interactive
       , "http://recur-env.eba-rm3fchmn.us-east-2.elasticbeanstalk.com/" -- interactive
