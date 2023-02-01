@@ -38,7 +38,7 @@ and then, on browser screen scroll, use JS to re-link-style the first instance o
 the first instance would be visible on each screen, minimizing redundancy/clutter/over-linking.)
 
 Bugs: will annotate phrases inside `Header` nodes, which breaks HTML validation. Does not attempt to
-handle `RawInline` or `RawBlock`, so writing raw HTML like `<a href="/Modafinil">foo</a>` will not
+handle `RawInline` or `RawBlock`, so writing raw HTML like `<a href="/modafinil">foo</a>` will not
 be detected for the purposes of rewrite-short-circuiting or possibly rewriting at all.
 
 Dependencies: Pandoc, text, regex-tdfa, /static/build/Utils.hs, /static/build/Query.hs
@@ -201,12 +201,12 @@ findRegexMatch ((_,r,u):rs) s = let (a,b,c) = R.match r s in
 -- This avoids redundancy with links added by hand or other filters.
 --
 -- NOTE: This can be used to disable link rewrites by manually adding a link. In cases of self-links
--- (eg. /Modafinil will contain the word 'modafinil' and get a rewrite to /Modafinil, leading to a
+-- (eg. /modafinil will contain the word 'modafinil' and get a rewrite to /modafinil, leading to a
 -- useless self-link), it is easier to add a link to disable the rewrite than to figure out how to
 -- filter out that one exact rewrite only on that page. This link can be hidden to avoid distracting
 -- the reader.
--- So to disable the modafinil rewrite on /Modafinil, one could insert into the Markdown a line like:
--- `<span style="display:none;">[null](/Modafinil)</span> <!-- LinkAuto override: disable self-linking -->`
+-- So to disable the modafinil rewrite on /modafinil, one could insert into the Markdown a line like:
+-- `<span style="display:none;">[null](/modafinil)</span> <!-- LinkAuto override: disable self-linking -->`
 filterDefinitions :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
 filterDefinitions p = let allLinks = S.fromList $ map (T.replace "https://gwern.net/" "/") $ extractURLs p in
                                           filter (\(_,_,linkTarget) -> linkTarget `notElem` allLinks)

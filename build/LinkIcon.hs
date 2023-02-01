@@ -531,10 +531,10 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
 
 -- Test suite:
 --
--- Test the /Lorem#link-icons test cases as unit-tests of `linkIcon`: it should, for every URL
+-- Test the /lorem#link-icons test cases as unit-tests of `linkIcon`: it should, for every URL
 -- unit-test, generate the specified link-icon/link-icon-type. Return the list of mismatches for
 -- fixing.
--- Here we test that URLs get assigned the appropriate icons; on /Lorem, we render them to check for
+-- Here we test that URLs get assigned the appropriate icons; on /lorem, we render them to check for
 -- CSS/visual glitches. Any new test-cases should be added to both (with different URLs where possible).
 linkIconTest, linkIconTestUnitsText :: [(T.Text,T.Text,T.Text)]
 linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
@@ -542,7 +542,7 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
                                           Link ("",[], [("link-icon",li), ("link-icon-type", lit)]) [] (url,"")
                                                    )
                linkIconTestUnitsText
--- in /Lorem order:
+-- in /lorem order:
 linkIconTestUnitsText =
         [("/static/img/icons/deepmind.svg",  "deepmind","svg")
          , ("https://academic.oup.com/ije/article/43/3/775/758445",  "OUP","text,tri")

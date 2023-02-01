@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-01-28 15:58:29 gwern"
+# When:  Time-stamp: "2023-02-01 09:29:52 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -302,14 +302,14 @@ else
     PAGES_ALL="$(find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotations/ -type f -name '*.html' | sort)"
     λ(){
          echo "$PAGES_ALL" | xargs grep -F -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
-                                     grep -F --invert-match -e '/1955-nash' -e '/Backstop' -e '/Death-Note-Anonymity' -e '/Differences' \
-                                                          -e '/Lorem' -e '/Modus' -e '/Order-statistics' -e '/Conscientiousness-and-online-education' \
+                                     grep -F --invert-match -e '/1955-nash' -e '/backstop' -e '/death-note-anonymity' -e '/differences' \
+                                                          -e '/lorem' -e '/modus' -e '/order-statistics' -e '/conscientiousness-and-online-education' \
                                 -e 'docs%2Fmath%2Fhumor%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
-                                -e '/The-Existential-Risk-of-Mathematical-Error' -e '/Replication' \
-                                -e '%2Fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index' -e '/Coin-flip' \
-                                -e '/nootropics/Magnesium' -e '/Selection' -e 'docs/statistics/bayes/1994-falk' -e '/Zeo' \
-                                -e '/Mail-delivery' \
-                                -e '/docs/math/humor/index' -e '/docs/ai/index' -e '/docs/statistics/bias/index' -e '/Variables' -e '1400861560180858880' \
+                                -e '/the-existential-risk-of-mathematical-error' -e '/replication' \
+                                -e '%2fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index' -e '/coin-flip' \
+                                -e '/nootropics/magnesium' -e '/selection' -e 'docs/statistics/bayes/1994-falk' -e '/zeo' \
+                                -e '/mail-delivery' \
+                                -e '/docs/math/humor/index' -e '/docs/ai/index' -e '/docs/statistics/bias/index' -e '/variables' -e '1400861560180858880' \
                                 -e 'w28340%2Fw28340.pdf' -e 'docs/statistics/order/index' -e 'docs/statistics/decision/index' -e 'docs/cs/algorithm/index' -e 'docs/economics/index';
        }
     wrap λ "Warning: unauthorized LaTeX users somewhere"
@@ -338,7 +338,7 @@ else
          [ "$SIMILARLINKS_FILES_N" -le 9540 ] && echo "$SIMILARLINKS_FILES_N"; }
     wrap λ "Similar-links files are missing?"
 
-    ## NOTE: transclude.js supports some special 'range' syntax for transclusions, so a link like '/notes/Lion#history#'/'/notes/Lion##history'/'/notes/Lion##'/'/notes/Lion#history#foo' is in fact valid
+    ## NOTE: transclude.js supports some special 'range' syntax for transclusions, so a link like '/notes/lion#history#'/'/notes/lion##history'/'/notes/lion##'/'/notes/lion#history#foo' is in fact valid
     λ(){ grep -E -e '#[[:alnum:]-]+#' -e '[[:alnum:]-]+##[[:alnum:]-]+' metadata/*.yaml metadata/*.hs | grep -E --invert-match -e '#[[:alnum:]-]+#$'; }
     wrap λ "Broken double-hash anchors in links somewhere?"
 
@@ -409,7 +409,7 @@ else
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-link-tags' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link' -e 'include-replace}' -e 'include-replace ' -e 'drop-caps-de-kanzlei' ; }
     wrap λ "Misspelled/outdated classes in Markdown/HTML."
 
-     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '/Variables' | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e '{#'; }
+     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '/variables' | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e '{#'; }
      wrap λ "Bad link ID overrides in Markdown."
 
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 grep -E --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]' -e '\#[a-z]\+\#[a-z]\+'; }
@@ -431,7 +431,7 @@ else
     λ(){ eg -e '<div class="admonition .*">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' **/*.page; }
     wrap λ "Broken admonition paragraph or epigraph in Markdown."
 
-    λ(){ eg -e ' a [aeio]' ./**/*.page | grep -E ' a [aeio]' | grep -F --invert-match -e 'static/build/' -e '/GPT-3' -e '/GPT-2-preference-learning' -e 'sicp/'; }
+    λ(){ eg -e ' a [aeio]' ./**/*.page | grep -E ' a [aeio]' | grep -F --invert-match -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/'; }
     wrap λ "Grammar: 'a' → 'an'?"
 
     λ(){ find -L . -type f -size 0  -printf 'Empty file: %p %s\n' | grep -F --invert-match '.git/FETCH_HEAD' -e './.git/modules/static/logs/refs/remotes/'; }
@@ -626,7 +626,7 @@ else
     bold "Expiring ≤100 updated files…"
     # expire CloudFlare cache to avoid hassle of manual expiration: (if more than 100, we've probably done some sort of major systemic change & better to flush whole cache or otherwise investigate manually)
     # NOTE: 'bot-fighting' CloudFlare settings must be largely disabled, otherwise CF will simply CAPTCHA or block outright the various curl/linkchecker tests as 'bots'.
-    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | grep -F --invert-match -e '/images/thumbnails/' -e '/docs/www' -e '/static/build/' -e '/static/templates/' -e '/static/includes/' -e '/metadata/annotations/backlinks/' -e '/metadata/annotations/similars/' | xargs ls -t 2>/dev/null | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' | head -50) https://gwern.net/sitemap.xml https://gwern.net/Lorem https://gwern.net/ https://gwern.net/index https://gwern.net/metadata/today-quote.html"
+    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | grep -F --invert-match -e '/images/thumbnails/' -e '/docs/www' -e '/static/build/' -e '/static/templates/' -e '/static/includes/' -e '/metadata/annotations/backlinks/' -e '/metadata/annotations/similars/' | xargs ls -t 2>/dev/null | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' | head -50) https://gwern.net/sitemap.xml https://gwern.net/lorem https://gwern.net/ https://gwern.net/index https://gwern.net/metadata/today-quote.html"
     for URL in $EXPIRE; do
         echo -n "Expiring: $URL "
         ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
@@ -639,7 +639,7 @@ else
 
  if [ "$SLOW" ]; then
     # test a random page modified in the past month for W3 validation & dead-link/anchor errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
-    CHECK_RANDOM_PAGE=$(echo "$PAGES" | grep -F -v -e '/Fulltext' | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
+    CHECK_RANDOM_PAGE=$(echo "$PAGES" | grep -F -v -e '/fulltext' | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
                        | shuf | head -1 | xargs urlencode)
     CHECK_RANDOM_ANNOTATION=$(find metadata/annotations/ -maxdepth 1 -name "*.html" -type f -size +2k | \
                                   shuf | head -1 | \
@@ -667,11 +667,11 @@ else
     bold "Checking MIME types, redirects, content…"
     c () { curl --compressed --silent --output /dev/null --head "$@"; }
     λ(){ cr () { [[ "$2" != $(c --location --write-out '%{url_effective}' "$1") ]] && echo "$1" "$2"; }
-         cr 'https://gwern.net/dnm-archives' 'https://gwern.net/DNM-archives'
+         cr 'https://gwern.net/DNM-archives' 'https://gwern.net/dnm-archives'
          cr 'https://gwern.net/docs/dnb/1978-zimmer.pdf' 'https://gwern.net/docs/music/music-distraction/1978-zimmer.pdf'
-         cr 'https://gwern.net/AB%20testing' 'https://gwern.net/AB-testing'
-         cr 'https://gwern.net/Archiving%20URLs.html' 'https://gwern.net/Archiving-URLs'
-         cr 'https://gwern.net/Book-reviews' 'https://gwern.net/reviews/Books'
+         cr 'https://gwern.net/AB%20testing' 'https://gwern.net/ab-testing'
+         cr 'https://gwern.net/Archiving%20URLs.html' 'https://gwern.net/archiving-urls'
+         cr 'https://gwern.net/Book-reviews' 'https://gwern.net/reviews/books'
          cr 'https://gwern.net/docs/ai/2019-10-21-gwern-gpt2-folkrnn-samples.ogg' 'https://gwern.net/docs/ai/music/2019-10-21-gwern-gpt2-folkrnn-samples.mp3';
          cr 'https://gwern.net/docs/sr/2013-06-07-premiumdutch-profile.htm' 'https://gwern.net/docs/darknet-markets/silk-road/1/2013-06-07-premiumdutch-profile.htm'
          cr 'https://gwern.net/docs/elections/2012-gwern-notes.txt' 'https://gwern.net/docs/statistics/prediction/election/2012-gwern-notes.txt'

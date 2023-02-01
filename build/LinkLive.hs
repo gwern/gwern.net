@@ -22,13 +22,13 @@ Perhaps only a quarter of external links work as live popups.
 So we can't just offer it as an option on all links, that will waste reader time & trust, and they will
 learn to avoid the feature entirely and resent the visual clutter and trap of this 'feature'.
 
-We instead whitelist domains based on manual testing using the list of links in /Lorem#live-link-popups.
+We instead whitelist domains based on manual testing using the list of links in /lorem#live-link-popups.
 Since there are so many domains, we need a testsuite to keep track of what domains have been tested & found good,
 tested & found bad, and testing is not done or ambiguous (due to practical issues like a test link having become
 a local archive or 404 or changed domain entirely).
 
 Finally, to keep up to date with new domains, each sync we rank domains by # of uses, and above a threshold,
-automatically generate a live-link testcase appended to /Lorem for manual review.
+automatically generate a live-link testcase appended to /lorem for manual review.
 
 For an independent JS NPM library implementation, see <https://github.com/Stvad/link-summoner>.
 -}
@@ -97,7 +97,7 @@ linkLivePrioritize = do b <- readBacklinksDB
                         return hits
   where blackList = ["omega.albany.edu"]
         linkLiveMinimum = 3
-        -- Append an example of a prioritized link to /Lorem#link-testcases for manual review, to skip copy-paste hassle
+        -- Append an example of a prioritized link to /lorem#link-testcases for manual review, to skip copy-paste hassle
         writeLinkLiveTestcase :: Backlinks -> T.Text -> IO ()
         writeLinkLiveTestcase b l = let link = head $ filter (l `T.isInfixOf`) $ M.keys b in -- take the first URL which matches the domain:
                                       TIO.appendFile "Lorem.page" $ "\n- <" `T.append` link `T.append` ">{.archive-not .link-annotated-not .link-live}"

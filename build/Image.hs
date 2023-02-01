@@ -130,7 +130,7 @@ imageMagickDimensions f =
 -- WARNING: image hotlinking is a bad practice: hotlinks will often break, sometimes just because of hotlinking. We assume that all images are locally hosted! Woe betide the cheapskate parasite who fails to heed this.
 imageSrcset :: Inline -> IO Inline
 imageSrcset x@(Image (c, t, pairs) inlines (targt, title)) =
-  let target = T.takeWhile (/='#') targt in -- it is possible to have links which have '.png' or '.jpg' infix, but are not actually images, such as, in tag-directories, section headers for images: '/docs/statistics/survival-analysis/index#filenewbie-survival-by-semester-rows.png' or in articles like /Red ('docs/design/typography/rubrication/index#filenachf%C3%BClleisengallustinte-pelikan-0.5-liter-g%C3%BCnther-wagner.jpg'); special-case that
+  let target = T.takeWhile (/='#') targt in -- it is possible to have links which have '.png' or '.jpg' infix, but are not actually images, such as, in tag-directories, section headers for images: '/docs/statistics/survival-analysis/index#filenewbie-survival-by-semester-rows.png' or in articles like /red ('docs/design/typography/rubrication/index#filenachf%C3%BClleisengallustinte-pelikan-0.5-liter-g%C3%BCnther-wagner.jpg'); special-case that
   if not (".png" `T.isSuffixOf` target || ".jpg" `T.isSuffixOf` target) || "page-thumbnail" `elem` t then return x else
   do let ext = takeExtension $ T.unpack target
      let target' = replace "%2F" "/" $ T.unpack target

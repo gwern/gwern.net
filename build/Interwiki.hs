@@ -206,7 +206,7 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
   , (Link nullAttr [Str "WP:RS#foobar"] ("!W",""),
      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "WP:RS#foobar"] ("https://en.wikipedia.org/wiki/Wikipedia:Reliable_sources#foobar", ""))
 
-  -- /Lorem testcases: Should popup (as an **annotation**):
+  -- /lorem testcases: Should popup (as an **annotation**):
   , (Link nullAttr [Emph [Str "Liber Figurarum"]] ("https://it.wikipedia.org/wiki/Liber_Figurarum",""),
      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Liber Figurarum"]] ("https://it.wikipedia.org/wiki/Liber_Figurarum", ""))
   , (Link nullAttr [Str "Small caps"] ("!W",""),
@@ -230,7 +230,7 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
   , (Link nullAttr [Str "MediaWiki:Citethispage-content"] ("!W",""),
       Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "MediaWiki:Citethispage-content"] ("https://en.wikipedia.org/wiki/MediaWiki:Citethispage-content", ""))
 
-   -- /Lorem testcases: should all be annotations, but check that the presence of the slash (these slashes are genuine, and in the true article name, they aren't redirects which can be skipped, so we do need to verify we handle them correctly) doesn't screw up and trigger false negatives on annotation/live status:
+   -- /lorem testcases: should all be annotations, but check that the presence of the slash (these slashes are genuine, and in the true article name, they aren't redirects which can be skipped, so we do need to verify we handle them correctly) doesn't screw up and trigger false negatives on annotation/live status:
   , (Link nullAttr  [Str "Bouba/kiki effect"] ("!W",""),
      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Bouba/kiki effect"] ("https://en.wikipedia.org/wiki/Bouba/kiki_effect", ""))
   , (Link nullAttr [Emph [Str "Fate/stay night"]] ("!W",""),

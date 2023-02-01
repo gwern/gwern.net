@@ -188,7 +188,7 @@ embed edb mdb bdb i@(p,_) =
                               Nothing -> []
                               Just bl -> map T.unpack (concatMap snd bl)
             let backlinksMetadata = if null backlinks then "" else
-                                      "\n\nReverse citations:\n\n- " ++ (intercalate "\n- " $
+                                      "\n\nReverse citations:\n\n- " ++ (intercalate "\n- " $ nub $
                                         map (\b -> case M.lookup b mdb of
                                                     Nothing -> ""
                                                     Just (t,a,d,_,_,_) -> "\"" ++ t ++ "\", " ++ authorsTruncate a ++ (if d=="" then "" else " (" ++ take 4 d ++ ")")) backlinks)
