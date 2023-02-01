@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-01-31 16:40:46 gwern"
+When:  Time-stamp: "2023-02-01 12:33:37 gwern"
 License: CC-0
 -}
 
@@ -238,6 +238,9 @@ readLinkMetadataAndCheck = do
              let balancedParens = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '(' || c == ')') abst in
                                                                      count > 0 && (count `mod` 2 == 1) ) finalL
              unless (null balancedParens) $ error $ "YAML: Link Annotation Error: unbalanced parentheses! " ++ show (map fst balancedParens)
+             let balancedParensTitle = filter (\(_,(t,_,_,_,_,_)) -> let count = length $ filter (\c -> c == '(' || c == ')') t in
+                                                                       count > 0 && (count `mod` 2 == 1) ) finalL
+             unless (null balancedParensTitle) $ error $ "YAML: Link Title Error: unbalanced parentheses! " ++ show (map fst balancedParensTitle)
 
              -- check validity of all external links:
              let urlsAll = filter (\(x@(u:_),_) -> if u `elem` ['/', '!', '$', '\8383'] ||

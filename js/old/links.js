@@ -113,7 +113,7 @@ Links = {
         array). Only if the link does not match any of those patterns does this
         function then check whether the link is to one of the defined file types
         (see the Links.fileLinkTypes array). (See explanation of the gwern.net
-        linkicon philosophy at https://gwern.net/Lorem#link-icons for more
+        linkicon philosophy at https://gwern.net/lorem#link-icons for more
         information on linkicon precedence.)
      */
     //  Called by: Links.decorateLinksWithin

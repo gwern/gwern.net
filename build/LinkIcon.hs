@@ -791,7 +791,7 @@ linkIconTestUnitsText =
          , ("/docs/cs/linkrot/2009-08-20-b3ta-fujitsuhtml.mht",  "misc","svg")
          , ("/docs/psychology/2019-01-21-eric-socksurvey.ods",  "spreadsheet","svg")
          , ("/docs/personal/rss-subscriptions.opml",  "txt","svg")
-         , ("/Lorem.page",  "txt","svg")
+         , ("/lorem.page",  "txt","svg")
          , ("/docs/ai/poetry/2019-10-17-117m-poetry-cleanprojectgutenberg-samples.txt",  "txt","svg")
          , ("/static/font/drop-cap/de-zs/DeutscheZierschrift-M.ttf",  "misc","svg")
          , ("/docs/creatine/2009-ling-data.xls",  "spreadsheet","svg")

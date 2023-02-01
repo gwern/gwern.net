@@ -1989,7 +1989,7 @@ blockquote table td + td {
     border-left: 1px solid var(--GW-blockquote-background-color);
 }
 
-/*  Corrected version of suppliers tables CSS on /Modafinil; original by cwillu
+/*  Corrected version of suppliers tables CSS on /modafinil; original by cwillu
     */
 #suppliers-prices th {
     padding: 3px 15px;
@@ -2503,7 +2503,7 @@ span.link-bibliography a {
 /* MULTI-COLUMNS */
 /*****************/
 /* Inspired by Markdeep (https://casual-effects.com/markdeep/features.md.html#multiplecolumns); limited multi-column support as a div class annotation */
-/* This is particularly useful for extremely long ('skinny') lists where items tend to be short, such as in /DNM-archives#overall-coverage or /Replication */
+/* This is particularly useful for extremely long ('skinny') lists where items tend to be short, such as in /dnm-archive#overall-coverage or /replication */
 /* Uses CSS3 columns: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Columns/Using_multi-column_layouts https://www.caniuse.com/#feat=multicolumn */
 /* Currently limited to lists due to issues with hidden:overflow in FF and sidenotes.js in Chrome. */
 .columns > ul,
@@ -2657,7 +2657,7 @@ span.link-bibliography a {
     filter: invert(1);
 }
 
-/*  Admonitions in/as page abstracts (e.g. /Archiving-GitHub).
+/*  Admonitions in/as page abstracts (e.g. /haskell/archiving-github).
  */
 .abstract .admonition {
     border-left-width: 0;
@@ -2673,7 +2673,7 @@ span.link-bibliography a {
 /* CITATIONS */
 /*************/
 
-/* Citation formatting: ellipsis'd "et al", subscripted date; see /Subscripts & /Lorem#citation-variants */
+/* Citation formatting: ellipsis'd "et al", subscripted date; see /subscripts & /lorem#citation-variants */
 /* This is variant #6, 'HORIZONTAL ELLIPSIS/​subscripted year'. */
 /* This relies on the 'citefyInline' pass in Typography.hs: the author ('Foo', or 'Foo & Bar') is put in span.cite-author, the 'et al' joiner (if any) in span.cite-joiner, and the year date in span.cite-date. For 'Foo 2020' or 'Foo & Bar 2020', there is no joiner, only for 'et al'; this lets us replace the et al with an ellipsis while subscripting the year in all cases. */
 /*  Author
@@ -2802,7 +2802,7 @@ body.index-long section > .include-wrapper-block + .include-wrapper-block {
 }
 
 /*=----------------=*/
-/*= /reviews/Books =*/
+/*= /reviews/book =*/
 /*=----------------=*/
 
 #markdownBody .book-review-meta {
@@ -2834,7 +2834,7 @@ body.index-long section > .include-wrapper-block + .include-wrapper-block {
 }
 
 /*=---------------=*/
-/*= /reviews/Mead =*/
+/*= /reviews/mead =*/
 /*=---------------=*/
 
 /*  This is for the pictures of mead bottles next to the reviews.
@@ -2849,7 +2849,7 @@ body.reviews-mead p > img {
 }
 
 /*=-------=*/
-/*= /Hafu =*/
+/*= /hafu =*/
 /*=-------=*/
 
 body.hafu .table-wrapper#hafu-list-table td:last-of-type {
@@ -2857,7 +2857,7 @@ body.hafu .table-wrapper#hafu-list-table td:last-of-type {
 }
 
 /*=--------------=*/
-/*= /DNM-arrests =*/
+/*= /dnm-arrest =*/
 /*=--------------=*/
 
 body.dnm-arrests .table-wrapper#data-table td:nth-of-type(6),
@@ -2870,7 +2870,7 @@ body.dnmarrests .table-wrapper#data-table td:last-of-type {
 }
 
 /*=--------=*/
-/*= /Lorem =*/
+/*= /lorem =*/
 /*=--------=*/
 
 body.lorem div[class^='drop-cap'] {

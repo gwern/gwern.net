@@ -1014,7 +1014,7 @@ whiteList url
       , "www.courtlistener.com/" -- stable
       , "console.cloud.google.com" -- cloud service requiring login
       , "imsdb.com" -- homepage
-      , "www.reg.ru/blog/anime-generation-with-stylegan/" -- unnecessary (mirror of /faces)
+      , "www.reg.ru/blog/anime-generation-with-stylegan/" -- unnecessary (mirror of /face)
       , "catscan2.toolforge.org" -- interactive/service
       , "www.mangafox.com/manga" -- service/pirated
       , "highlightcam.co.nz" -- homepage

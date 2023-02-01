@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-02-01 09:29:52 gwern"
+# When:  Time-stamp: "2023-02-01 17:03:34 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -85,7 +85,7 @@ else
           s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber';
 
           ## HTML/Markdown formatting:
-          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'
+          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s '530px.jpg-530px.jpg' '530px.jpg';
         ) &> /dev/null &
     sed -i -e 's/ data-link-?[Tt]ags="[a-z0-9 \/-]\+">/>/' ./metadata/*.yaml;
     fi
@@ -667,11 +667,11 @@ else
     bold "Checking MIME types, redirects, content…"
     c () { curl --compressed --silent --output /dev/null --head "$@"; }
     λ(){ cr () { [[ "$2" != $(c --location --write-out '%{url_effective}' "$1") ]] && echo "$1" "$2"; }
-         cr 'https://gwern.net/DNM-archives' 'https://gwern.net/dnm-archives'
+         cr 'https://gwern.net/DNM-archives' 'https://gwern.net/dnm-archive'
          cr 'https://gwern.net/docs/dnb/1978-zimmer.pdf' 'https://gwern.net/docs/music/music-distraction/1978-zimmer.pdf'
          cr 'https://gwern.net/AB%20testing' 'https://gwern.net/ab-testing'
-         cr 'https://gwern.net/Archiving%20URLs.html' 'https://gwern.net/archiving-urls'
-         cr 'https://gwern.net/Book-reviews' 'https://gwern.net/reviews/books'
+         cr 'https://gwern.net/Archiving%20URLs.html' 'https://gwern.net/archiving'
+         cr 'https://gwern.net/Book-reviews' 'https://gwern.net/reviews/book'
          cr 'https://gwern.net/docs/ai/2019-10-21-gwern-gpt2-folkrnn-samples.ogg' 'https://gwern.net/docs/ai/music/2019-10-21-gwern-gpt2-folkrnn-samples.mp3';
          cr 'https://gwern.net/docs/sr/2013-06-07-premiumdutch-profile.htm' 'https://gwern.net/docs/darknet-markets/silk-road/1/2013-06-07-premiumdutch-profile.htm'
          cr 'https://gwern.net/docs/elections/2012-gwern-notes.txt' 'https://gwern.net/docs/statistics/prediction/election/2012-gwern-notes.txt'
@@ -733,15 +733,15 @@ else
           cm "text/html; charset=utf-8" 'https://gwern.net/docs/cs/2012-terencetao-anonymity.html'
           cm "text/html; charset=utf-8" 'https://gwern.net/docs/darknet-markets/silk-road/1/2013-06-07-premiumdutch-profile.htm'
           cm "text/html; charset=utf-8" 'https://gwern.net/'
-          cm "text/html; charset=utf-8" 'https://gwern.net/notes/Attention'
-          cm "text/html; charset=utf-8" 'https://gwern.net/notes/Faster'
-          cm "text/html; charset=utf-8" 'https://gwern.net/nootropics/Magnesium'
-          cm "text/html; charset=utf-8" 'https://gwern.net/zeo/CO2'
-          cm "text/html; charset=utf-8" 'https://gwern.net/reviews/Anime'
-          cm "text/html; charset=utf-8" 'https://gwern.net/reviews/Anime'
-          cm "text/html; charset=utf-8" 'https://gwern.net/reviews/Movies'
+          cm "text/html; charset=utf-8" 'https://gwern.net/notes/attention'
+          cm "text/html; charset=utf-8" 'https://gwern.net/notes/faster'
+          cm "text/html; charset=utf-8" 'https://gwern.net/nootropics/magnesium'
+          cm "text/html; charset=utf-8" 'https://gwern.net/zeo/co2'
+          cm "text/html; charset=utf-8" 'https://gwern.net/reviews/book'
+          cm "text/html; charset=utf-8" 'https://gwern.net/reviews/anime'
+          cm "text/html; charset=utf-8" 'https://gwern.net/reviews/movie'
           cm "text/html; charset=utf-8" 'https://gwern.net/docs/existential-risk/1985-hofstadter'
-          cm "text/html; charset=utf-8" 'https://gwern.net/reviews/Bakewell'
+          cm "text/html; charset=utf-8" 'https://gwern.net/reviews/bakewell'
           cm "text/html; charset=utf-8" 'https://gwern.net/backfire-effect'
           cm "text/markdown; charset=utf-8" 'https://gwern.net/2014-spirulina.page'
           cm "text/plain; charset=utf-8" 'https://gwern.net/docs/personal/2009-sleep.txt'
@@ -765,8 +765,8 @@ else
 
     ## known-content check:
     λ(){ curl --silent 'https://gwern.net/' | tr -d '­' | grep -F --quiet 'This Is The Website</span> of <strong>Gwern Branwen</strong>' || echo "/ content-check failed";
-         curl --silent 'https://gwern.net/Zeo'   | tr -d '­' | grep -F --quiet 'lithium orotate' || echo "/Zeo Content-check failed"; }
-    wrap λ "Known-content check of index/Zeo"
+         curl --silent 'https://gwern.net/zeo/zeo'   | tr -d '­' | grep -F --quiet 'lithium orotate' || echo "/Zeo Content-check failed"; }
+    wrap λ "Known-content check of /index and /zeo/Zeo"
 
     ## check that tag-directories have the right thumbnails (ie. *not* the fallback thumbnail):
     λ(){ curl --silent 'https://gwern.net/docs/sociology/index' 'https://gwern.net/docs/psychology/index' 'https://gwern.net/docs/economics/index' | \

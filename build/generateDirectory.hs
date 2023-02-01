@@ -34,7 +34,7 @@ import Tags (tagsToLinksSpan, listTagDirectories, abbreviateTag)
 import LinkBacklink (getBackLinkCheck, getSimilarLinkCheck, getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy)
-import Utils (replace, writeUpdatedFile, printRed, toPandoc)
+import Utils (replace, replaceManyT, writeUpdatedFile, printRed, toPandoc)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -110,7 +110,7 @@ generateDirectory filterp md dirs dir'' = do
   -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnailText'
   let imageFirst = take 1 $ concatMap (\(_,(_,_,_,_,_,abstract),_,_,_) -> extractImages (toPandoc abstract)) links'
 
-  let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst)) ++ "\n"
+  let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> replaceManyT [("-768px.png", ""), ("-768px.jpg", ""), ("-530px.jpg",""), ("-530px.jpg","")] imagelink) (head imageFirst)) ++ "\n"
   let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if captionText /= "" then captionText else if altText /= "" then altText else "") (head imageFirst))) ++ "'\n"
 
   let header = generateYAMLHeader parentDirectory' previous next tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
@@ -263,7 +263,7 @@ lookupFallback m u = case M.lookup u m of
                                          in
                                                (if (".page" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", [], "")) else
                                                   -- sometimes the fallback is useless eg, a link to a section will trigger a 'longer' hit, like
-                                                  -- '/reviews/Cat-Sense.page' will trigger a fallback to /reviews/cat-sense#fuzz-testing'; the
+                                                  -- '/reviews/Cat-Sense.page' will trigger a fallback to /reviews/cat#fuzz-testing'; the
                                                   -- longer hit will also be empty, usually, and so not better. We check for that case and return
                                                   -- the original path and not the longer path.
                                                   let possibleFallback = lookupFallback m u' in
