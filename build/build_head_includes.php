@@ -7,7 +7,7 @@
 
  In <head> of template or page:
 
- 	<!--#include virtual="/static/includes/inlined-head.html"-->
+ 	<!--#include virtual="/static/include/inlined-head.html"-->
 
  (Pages must be .shtml (not .html) for this to work.)
 
@@ -60,7 +60,7 @@ foreach ($includes as $include) {
 	$outfile .= "</{$type}>\n";
 }
 
-$includes_dir = __DIR__ . "/../includes";
+$includes_dir = __DIR__ . "/../include";
 
 file_put_contents("{$includes_dir}/inlined-head.html", $outfile);
 

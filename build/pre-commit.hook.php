@@ -29,7 +29,7 @@ $head_includes = [
 $head_includes = implode(" ", $head_includes);
 if ($force || (`git diff-index --cached HEAD -- {$head_includes}`)) {
 	require_once("{$build_dir}/build_head_includes.php");
-	`git add {$static_dir}/includes/.`;
+	`git add {$static_dir}/include/.`;
 }
 
 ## Font spec.
@@ -82,27 +82,27 @@ $versioned_files = [
 	"{$static_dir}/js/transclude.js",
 	"{$static_dir}/js/typography.js",
 	"{$static_dir}/js/utility.js",
-	"{$static_dir}/templates/inlined-fonts-template.html",
-	"{$static_dir}/templates/inlined-foot-template.html"
+	"{$static_dir}/template/inlined-fonts-template.html",
+	"{$static_dir}/template/inlined-foot-template.html"
 ];
 $versioned_files = implode(" ", $versioned_files);
 if ($force || (`git diff-index --cached HEAD -- {$versioned_files}`)) {
 	require_once("{$build_dir}/build_versioned_includes.php");
-	`git add {$static_dir}/includes/.`;
+	`git add {$static_dir}/include/.`;
 }
 
 ## Templates and other assets.
 $versioned_assets = [ ];
 $versioned_asset_patterns = [
-	"{$static_dir}/templates/include/*.tmpl",
-	"{$static_dir}/templates/include/templates.json",
+	"{$static_dir}/template/include/*.tmpl",
+	"{$static_dir}/template/include/templates.json",
 ];
 foreach ($versioned_asset_patterns as $pattern)
 	$versioned_assets = array_merge($versioned_assets, glob($pattern));
 $versioned_assets = implode(" ", $versioned_assets);
 if ($force || (`git diff-index --cached HEAD -- {$versioned_assets}`)) {
 	require_once("{$build_dir}/build_asset_versions.php");
-	`git add {$static_dir}/includes/.`;
+	`git add {$static_dir}/include/.`;
 }
 
 ?>

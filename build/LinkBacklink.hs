@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-02-01 18:16:09 gwern"
+When:  Time-stamp: "2023-02-02 11:37:22 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -53,10 +53,10 @@ writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[(T.Text, [T.Text
 
 -- return the raw FilePath of an x-link, and also the URL-encoded version safe to substitute into HTML:
 getXLink :: String -> FilePath -> (FilePath,FilePath)
-getXLink linkType p = let linkType' = "/metadata/annotations/" ++ linkType
+getXLink linkType p = let linkType' = "/metadata/annotation/" ++ linkType
                           linkBase = if linkType=="" then linkType' else linkType'++"/"
                           linkRaw = linkBase ++ take 247 (urlEncode p) ++ ".html"
-                          -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg. `/metadata/annotations/$LINKTYPE/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotations/$LINKTYPE/%2Fdocs%2Frl%2Findex.html`)
+                          -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg. `/metadata/annotation/$LINKTYPE/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotation/$LINKTYPE/%2Fdocs%2Frl%2Findex.html`)
                           link' = linkBase ++ urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' || t=='+' then urlEncode [t] else [t]) (p++".html"))
                       in (tail linkRaw,link')
 getXLinkExists :: String -> FilePath -> IO (FilePath,FilePath)
@@ -65,19 +65,19 @@ getXLinkExists linkType p = do let x@(linkRaw,_) = getXLink linkType p
                                if not linkExists then return ("","")
                                  else return x
 
--- convert a URL to the local path of its annotation (which may not exist because it hasn't been written yet so no need to do IO to check disk), eg. 'http://www2.biology.ualberta.ca/locke.hp/dougandbill.htm' → 'metadata/annotations/http%3A%2F%2Fwww2.biology.ualberta.ca%2Flocke.hp%2Fdougandbill.htm.html'
+-- convert a URL to the local path of its annotation (which may not exist because it hasn't been written yet so no need to do IO to check disk), eg. 'http://www2.biology.ualberta.ca/locke.hp/dougandbill.htm' → 'metadata/annotation/http%3A%2F%2Fwww2.biology.ualberta.ca%2Flocke.hp%2Fdougandbill.htm.html'
 getAnnotationLink, getBackLink, getLinkBibLink, getSimilarLink :: FilePath -> (FilePath,FilePath)
 getAnnotationLink = getXLink ""
-getBackLink       = getXLink "backlinks"
+getBackLink       = getXLink "backlink"
 getLinkBibLink    = getXLink "link-bibliography"
-getSimilarLink    = getXLink "similars"
+getSimilarLink    = getXLink "similar"
 
 -- IO versions which check for existence on-disk:
 getAnnotationLinkCheck, getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck :: FilePath -> IO (FilePath,FilePath)
 getAnnotationLinkCheck = getXLinkExists ""
-getBackLinkCheck       = getXLinkExists "backlinks"
+getBackLinkCheck       = getXLinkExists "backlink"
 getLinkBibLinkCheck    = getXLinkExists "link-bibliography"
-getSimilarLinkCheck    = getXLinkExists "similars"
+getSimilarLinkCheck    = getXLinkExists "similar"
 
 -- avoid use of backlinks/similar-links database for convenience and just quickly grep the on-disk snippet:
 getBackLinkCount :: FilePath -> IO Int

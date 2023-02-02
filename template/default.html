@@ -4,17 +4,17 @@
     <meta charset="utf-8">
 
     <!-- SSI: CSS+JS inline for speed -->
-    <!-- INLINED-HEAD-BEGIN --><!--#include virtual="/static/includes/inlined-head.html" --><!-- INLINED-HEAD-END -->
+    <!-- INLINED-HEAD-BEGIN --><!--#include virtual="/static/include/inlined-head.html" --><!-- INLINED-HEAD-END -->
 
     <!-- SSI: fetch the title & body fonts immediately to avoid re-rendering -->
     <!-- SSI: also inline minimal set of font CSS needed for initial screen, for speed -->
-    <!-- INLINED-FONTS-BEGIN --><!--#include virtual="/static/includes/inlined-fonts.html" --><!-- INLINED-FONTS-END -->
+    <!-- INLINED-FONTS-BEGIN --><!--#include virtual="/static/include/inlined-fonts.html" --><!-- INLINED-FONTS-END -->
 
     <!-- SSI: Inlined mappings of SVG linkicon identifiers to SVG files -->
-    <!-- INLINED-GRAPHICAL-LINKICON-STYLES-BEGIN --><!--#include virtual="/static/includes/inlined-graphical-linkicon-styles.html" --><!-- INLINED-GRAPHICAL-LINKICON-STYLES-END -->
+    <!-- INLINED-GRAPHICAL-LINKICON-STYLES-BEGIN --><!--#include virtual="/static/include/inlined-graphical-linkicon-styles.html" --><!-- INLINED-GRAPHICAL-LINKICON-STYLES-END -->
 
     <!-- SSI: Inlined asset versions -->
-    <!-- INLINED-ASSET-VERSIONS-BEGIN--><!--#include virtual="/static/includes/inlined-asset-versions.html" --><!-- INLINED-ASSET-VERSIONS-END -->
+    <!-- INLINED-ASSET-VERSIONS-BEGIN--><!--#include virtual="/static/include/inlined-asset-versions.html" --><!-- INLINED-ASSET-VERSIONS-END -->
 
     $if(index)$
     <!-- Google Webmaster requires this tag, but only on the index/homepage -->
@@ -125,26 +125,26 @@
         <noscript><div id="noscript-warning-footer" class="admonition error"><div class="admonition-title"><p>[<strong>Error</strong>: JS disabled.]</p></div> <p>[Backlinks, similar links, and the link-bibliography require JS enabled to transclude.]</p></div></noscript>
         $if(backlinksYes)$<section id="backlinks-section" class="level1">
           <h1><a href="#backlinks-section" title="Link to section: § 'Further Reading'">Further Reading</a></h1>
-          <a id="backlinks" href="/metadata/annotations/backlinks/$escapedURL$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="backlinks include-strict">[backlinks]</a>
+          <a id="backlinks" href="/metadata/annotation/backlink/$escapedURL$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="backlinks include-strict">[backlinks]</a>
         </section>$endif$
         $if(linkbibYes)$<section id="link-bibliography-section" class="level1">
           <h1><a href="#link-bibliography-section" title="Link to section: § 'Link Bibliography'">Link Bibliography</a></h1>
-          <a id="link-bibliography" href="/metadata/annotations/link-bibliography/$escapedURL$" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include link-bibliography">[link bibliography]</a>$endif$
+          <a id="link-bibliography" href="/metadata/annotation/link-bibliography/$escapedURL$" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include link-bibliography">[link bibliography]</a>$endif$
         </section>
         $if(similarsYes)$<section id="similars-section" class="level1">
           <h1><a href="#similars-section" title="Link to section: § 'Similar Links'">Similar Links</a></h1>
-          <a id="similars" href="/metadata/annotations/similars/$escapedURL$" title="Similar links for this link (by text embedding). Lazily-transcluded version at footer of page for easier scrolling." class="similars include-strict">[similar]</a>
+          <a id="similars" href="/metadata/annotation/similar/$escapedURL$" title="Similar links for this link (by text embedding). Lazily-transcluded version at footer of page for easier scrolling." class="similars include-strict">[similar]</a>
           </section>$endif$
           $endif$
         </div> <!-- NOTE: unmatched, because it closes the opening div from the hakyll.hs $$body$$ Pandoc template -->
 
         <nav id="navigation">
           <a id="navigation-previous" class="link-page-not" rel="prev" href="$previous$" title="Link to previous page by topic, ‘$previous$’"
-            ><svg><use href="/static/img/icons/sequential-nav-icons-arabesque.svg#direction" /></svg></a>
+            ><svg><use href="/static/img/icon/sequential-nav-icons-arabesque.svg#direction" /></svg></a>
           <a id="navigation-center" class="link-page-not" title="Return to top of current page" href="#top"
-            ><svg><use href="/static/img/icons/sequential-nav-icons-arabesque.svg#center" /></svg></a>
+            ><svg><use href="/static/img/icon/sequential-nav-icons-arabesque.svg#center" /></svg></a>
           <a id="navigation-next" class="link-page-not" rel="next" href="$next$" title="Link to next page by topic, ‘$next$’"
-            ><svg><use href="/static/img/icons/sequential-nav-icons-arabesque.svg#direction" /></svg></a>
+            ><svg><use href="/static/img/icon/sequential-nav-icons-arabesque.svg#direction" /></svg></a>
         </nav>
 
         <div id="footer">
@@ -158,7 +158,7 @@
     </main>
 
     <!-- SSI: Versioned external CSS/JS assets -->
-    <!-- INLINED-FOOT-BEGIN --><!--#include virtual="/static/includes/inlined-foot.html" --><!-- INLINED-FOOT-END -->
+    <!-- INLINED-FOOT-BEGIN --><!--#include virtual="/static/include/inlined-foot.html" --><!-- INLINED-FOOT-END -->
 
     <!-- 2×2 A/B test of indentation vs newlining, and justified vs not  -->
     <script id="justificationindentation-abtest-js">

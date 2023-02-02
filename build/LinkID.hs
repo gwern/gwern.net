@@ -31,7 +31,7 @@ generateID url author date
   | any (\(u,_) -> u == url) linkIDOverrides = fromJust $ lookup url linkIDOverrides
   -- indexes or tag-directories shouldn't be cited/have IDs (often linked many times on a page)
   | ("https://gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index" `isSuffixOf` url) = ""
-  -- eg. '/Faces' = '#gwern-faces'; `generateID "https://gwern.net/Fonts" "Gwern Branwen" "2021-01-01"` → "gwern-fonts" (since we are using the short URL/slug, we don't need a year/date to disambiguate, and those are often meaningless on Gwern.net anyway).
+  -- eg. '/Faces' = '#gwern-faces'; `generateID "https://gwern.net/font" "Gwern Branwen" "2021-01-01"` → "gwern-fonts" (since we are using the short URL/slug, we don't need a year/date to disambiguate, and those are often meaningless on Gwern.net anyway).
   -- EXPERIMENTAL: we have hitherto not set IDs on *section* or *anchor* links like '/Improvements#microsoft'. Those got no ID, because no authorship metadata is available (unless metadata had been manually added via an annotation for that URL specifically). If we *assume*, no contrary metadata being available, that they were written by me, then they would get an ID like 'gwern-improvements-microsoft'. (Tacking on the hash to the baseline ID of '/Improvements' → 'gwern-improvements'.)
   | ("Gwern Branwen" == author || "" == author) &&
     (("/" `isPrefixOf` url') && notElem '.' url' && not ("/index"`isInfixOf`url'))
@@ -108,10 +108,10 @@ linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start wi
        , ("/doc/cs/2019-kleppmann.pdf", "kleppmann-et-al-2019-paper")
        , ("/doc/culture/1983-wolfe-thecitadeloftheautarch-thejustman", "just-man-2")
        , ("/doc/culture/2007-wolfe", "wolfe-2007")
-       , ("/doc/darknet-markets/2019-du.pdf", "du-et-al-2019-2")
-       , ("/doc/darknet-markets/2020-ladegaard.pdf", "ladegaard-2020-2")
-       , ("/doc/darknet-markets/2020-norbutas.pdf", "norbutas-et-al-2020-1")
-       , ("/doc/darknet-markets/2020-yang-2.pdf", "yang-et-al-2020-b")
+       , ("/doc/darknet-market/2019-du.pdf", "du-et-al-2019-2")
+       , ("/doc/darknet-market/2020-ladegaard.pdf", "ladegaard-2020-2")
+       , ("/doc/darknet-market/2020-norbutas.pdf", "norbutas-et-al-2020-1")
+       , ("/doc/darknet-market/2020-yang-2.pdf", "yang-et-al-2020-b")
        , ("/doc/design/typography/1954-chaundy-theprintingofmathematics.pdf", "chaundy-et-al-1954-2")
        , ("/doc/economics/2019-brynjolfsson-3.pdf", "brynjolfsson-et-al-2019-productivityparadox")
        , ("/doc/economics/2020-bloom.pdf", "bloom-et-al-2020-areideasgettinghardertofind-3")

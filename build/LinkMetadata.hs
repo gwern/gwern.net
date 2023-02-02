@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-02-02 10:38:26 gwern"
+When:  Time-stamp: "2023-02-02 11:36:52 gwern"
 License: CC-0
 -}
 
@@ -401,7 +401,7 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
      let target'' = if head target' == '.' then drop 1 target' else target'
 
      -- check local link validity: every local link except tags should exist on-disk:
-     when (head target'' == '/' && not ("/metadata/annotations/" `isPrefixOf` target'')) $
+     when (head target'' == '/' && not ("/metadata/annotation/" `isPrefixOf` target'')) $
        do isDirectory <- doesDirectoryExist (tail target'')
           when isDirectory $ error ("Attempted to annotate a directory, which is not allowed (links must be to files or $DIRECTORY/index): " ++ target' ++ " : " ++ target ++ " (" ++ show x ++ ")")
           let target''' = (\f -> if '.' `notElem` f then f ++ ".page" else f) $ takeWhile (/='#') $ tail target''
@@ -686,7 +686,7 @@ linkDispatcher (Link _ _ (l, tooltip)) = do l' <- linkDispatcherURL (T.unpack l)
                                               Left Temporary -> return l'
 linkDispatcher x = error ("linkDispatcher passed a non-Link Inline element: " ++ show x)
 linkDispatcherURL :: Path -> IO (Either Failure (Path, MetadataItem))
-linkDispatcherURL l | anyPrefix l ["/metadata/annotations/backlinks/", "/metadata/annotations/similars/", "/doc/www/"] = return (Left Permanent)
+linkDispatcherURL l | anyPrefix l ["/metadata/annotation/backlink/", "/metadata/annotation/similar/", "/doc/www/"] = return (Left Permanent)
                  -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for tags.
                  | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return $ Right (l, (wikipediaURLToTitle l, "", "", "", [], ""))
                  | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l

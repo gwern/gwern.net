@@ -360,9 +360,9 @@ doWhenDOMContentLoaded(() => {
 
 AuxLinks = {
     auxLinksLinkTypes: {
-        "/metadata/annotations/backlinks/":          "backlinks",
-        "/metadata/annotations/similars/":           "similars",
-        "/metadata/annotations/link-bibliography/":  "link-bibliography"
+        "/metadata/annotation/backlink/":          "backlinks",
+        "/metadata/annotation/similar/":           "similars",
+        "/metadata/annotation/link-bibliography/":  "link-bibliography"
     },
 
     auxLinksLinkType: (link) => {
@@ -1438,7 +1438,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
             width: defaultSize,
             height: defaultSize,
             alt: "↩ Right arrow curving left [footnote return link] arrow",
-            src: "/static/img/icons/arrow-hook-left.svg"
+            src: "/static/img/icon/arrow-hook-left.svg"
         }));
     });
 }, "rewrite");
@@ -1829,7 +1829,7 @@ addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (even
         mathBlock.insertAdjacentHTML("beforeend",
               `<span class="block-button-bar">`
             + `<button type="button" class="copy" tabindex="-1" title="Copy LaTeX source of this equation to clipboard">`
-            + `<img src="/static/img/icons/copy.svg">`
+            + `<img src="/static/img/icon/copy.svg">`
             + `</button>`
             + `<span class="scratchpad"></span>`
             + `</span>`);

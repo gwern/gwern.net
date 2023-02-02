@@ -11,4 +11,4 @@ foo arg1 arg2 = putStrLn $ ("git mv '." ++ arg1 ++ ".page' " ++ "'." ++ arg2 ++ 
                 ("gwsed '](" ++ arg1 ++ "' " ++ "'](" ++ arg2 ++ "' && ") ++
                 ("gwsed 'href=\"" ++ arg1 ++ "\"' " ++ "'href=\"" ++ arg2 ++ "\"' && ") ++
                 ("gwsed 'href=\\\"" ++ arg1 ++ "\\\"' " ++ "'href=\\\"" ++ arg2 ++ "\\\"' && ") ++
-                ("echo '\"~^" ++ arg1 ++ "$\" \"" ++ arg2 ++ "\";' >> ~/wiki/static/redirects/nginx.conf")
+                ("echo '\"~^" ++ arg1 ++ "$\" \"" ++ arg2 ++ "\";' >> ~/wiki/static/redirect/nginx.conf")

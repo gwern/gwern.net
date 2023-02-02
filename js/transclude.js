@@ -94,13 +94,13 @@
          a single element ID to transclude.)
 
 	include-block-context
-		Normally, when an include-link’s URL specifies an element ID to 
-		transclude, only (at most; see `include-unwrap`) that element is 
+		Normally, when an include-link’s URL specifies an element ID to
+		transclude, only (at most; see `include-unwrap`) that element is
 		transcluded. When the `include-block-context` option is used, not only
 		the identified element itself, but also its containing block element
 		(and everything within) will be included. (What “block element” means
-		in this context is not the same as what the HTML spec means by the 
-		term. Determination of what counts as a block element is done in a 
+		in this context is not the same as what the HTML spec means by the
+		term. Determination of what counts as a block element is done in a
 		content-aware way.)
 
 		If `include-unwrap` is used as well as `include-block-context`, then the
@@ -128,7 +128,7 @@
 
 	include-spinner
     include-spinner-not
-        Shows or hides the “loading spinner” that is shown at the site of the 
+        Shows or hides the “loading spinner” that is shown at the site of the
         include-link while content to be transcluded is being retrieved. In the
         absence of either of these classes, the spinner will be shown or not,
         depending on context. Using either class causes the spinner to be shown
@@ -180,27 +180,27 @@
  */
 
 /******************************************************************************/
-/*	Extract template data from an HTML string or DOM object by looking for 
-	elements with either the `data-template-field` or the 
+/*	Extract template data from an HTML string or DOM object by looking for
+	elements with either the `data-template-field` or the
 	`data-template-fields` attribute.
 
-	If the `data-template-fields` attribute is not present but the 
+	If the `data-template-fields` attribute is not present but the
 	`data-template-field` attribute is present, then the value of the latter
-	attribute is treated as the data field name; the .innerHTML of the 
+	attribute is treated as the data field name; the .innerHTML of the
 	element is the field value.
 
-	If the `data-template-fields` attribute is present, then the attribute 
-	value is treated as a comma-separated list of 
+	If the `data-template-fields` attribute is present, then the attribute
+	value is treated as a comma-separated list of
 	`fieldName:fieldValueIdentifier` pairs. For each pair, the part before the
 	colon (the fieldName) is the data field name. The part after the colon
 	(the fieldValueIdentifier) can be interpreted in one of two ways:
 
-	If the fieldValueIdentifier begins with a dollar sign (the ‘$’ character), 
-	then the rest of the identifier (after the dollar sign) is treated as the 
+	If the fieldValueIdentifier begins with a dollar sign (the ‘$’ character),
+	then the rest of the identifier (after the dollar sign) is treated as the
 	name of the attribute of the given element which holds the field value.
 
-	If the fieldValueIdentifier is _only_ the ‘$’ character, then the field 
-	value will be the value of the data attribute that corresponds to the 
+	If the fieldValueIdentifier is _only_ the ‘$’ character, then the field
+	value will be the value of the data attribute that corresponds to the
 	field name (i.e., if the field is `fooBar`, then the field value will be
 	taken from attribute `data-foo-bar`).
 
@@ -208,9 +208,9 @@
 	the rest of the identifier (after the period) is treated as the name of the
 	DOM object property of the given element which holds the field value.
 
-	If the fieldValueIdentifier is _only_ the ‘.’ character, then the field 
+	If the fieldValueIdentifier is _only_ the ‘.’ character, then the field
 	value will be the value of the element property matching the field name
-	(i.e., if the field name is `fooBar`, then the field value will be the 
+	(i.e., if the field name is `fooBar`, then the field value will be the
 	value of the element’s .fooBar property).
 
 	Examples:
@@ -292,7 +292,7 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 	return evaluateTemplateExpressionConstant(expr.replace(
 		//	Brackets.
 		/\s*\[\s*(.+?)\s*\]\s*/g,
-		(match, bracketedExpr) => 
+		(match, bracketedExpr) =>
 		(evaluateTemplateExpression(bracketedExpr, valueFunction)
 		 ? "_TRUE_"
 		 : "_FALSE_")
@@ -315,7 +315,7 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 		 ? "_FALSE_"
 		 : "_TRUE_")
 	).replace(/^\s*(.+)\s*$/g,
-		(match, fieldName) => 
+		(match, fieldName) =>
 		(/^_(.*)_$/.test(fieldName)
 		 ? fieldName
 		 : (valueFunction(fieldName) == null
@@ -340,7 +340,7 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 	Available options (defaults):
 
 		preserveSurroundingWhitespaceInConditionals (false)
-			If true, `<[IF foo]> bar <[IFEND]>` becomes ` bar `; 
+			If true, `<[IF foo]> bar <[IFEND]>` becomes ` bar `;
 			if false, `bar`.
 
 		fireContentLoadEvent (false)
@@ -407,8 +407,8 @@ function fillTemplate (template, data = null, context = null, options = { }) {
 			/<\[IF([0-9]*)\s+(.+?)\]>(.+?)(?:<\[ELSE\1\]>(.+?))?<\[IF\1END\]>/gs,
 			(match, nestLevel, expr, ifValue, elseValue) => {
 				didReplace = true;
-				let returnValue = evaluateTemplateExpression(expr, valueFunction) 
-								  ? (ifValue ?? "") 
+				let returnValue = evaluateTemplateExpression(expr, valueFunction)
+								  ? (ifValue ?? "")
 								  : (elseValue ?? "");
 				return options.preserveSurroundingWhitespaceInConditionals
 					   ? returnValue
@@ -444,12 +444,12 @@ function fillTemplate (template, data = null, context = null, options = { }) {
 }
 
 /*****************************************************************************/
-/*	Construct synthetic include-link. The optional ‘link’ argument may be 
-	a string, a URL object, or an HTMLAnchorElement, in which case it, or its 
-	.href property, is used as the ‘href’ attribute of the synthesized 
+/*	Construct synthetic include-link. The optional ‘link’ argument may be
+	a string, a URL object, or an HTMLAnchorElement, in which case it, or its
+	.href property, is used as the ‘href’ attribute of the synthesized
 	include-link.
 
-	If the ‘link’ argument is an HTMLAnchorElement and has a ‘data-url-original’ 
+	If the ‘link’ argument is an HTMLAnchorElement and has a ‘data-url-original’
 	attribute, then the same attribute is assigned the same value on the
 	synthesized include-link.
  */
@@ -497,9 +497,9 @@ function loadLocationForIncludeLink(includeLink) {
 function includeContent(includeLink, content) {
     GWLog("includeContent", "transclude.js", 2);
 
-	/*  We skip include-links for which a transclude operation is already in 
-		progress or has completed (which might happen if we’re given an 
-		include-link to process, but that link has already been replaced by its 
+	/*  We skip include-links for which a transclude operation is already in
+		progress or has completed (which might happen if we’re given an
+		include-link to process, but that link has already been replaced by its
 		transcluded content and has been removed from the document).
 	 */
 	if (includeLink.classList.containsAnyOf([
@@ -514,8 +514,8 @@ function includeContent(includeLink, content) {
                       ? includeLink.parentElement
                       : includeLink;
 
-    /*  Just in case, do nothing if the element-to-be-replaced (either the 
-    	include-link itself, or its container, as appropriate) isn’t attached 
+    /*  Just in case, do nothing if the element-to-be-replaced (either the
+    	include-link itself, or its container, as appropriate) isn’t attached
     	to anything.
      */
     if (insertWhere.parentNode == null)
@@ -583,7 +583,7 @@ function includeContent(includeLink, content) {
 	let contentType = null;
 	if (   Transclude.isAnnotationTransclude(includeLink)
 		|| (   Content.contentTypes.localFragment.matchesLink(includeLink)
-			&& includeLink.pathname.startsWith("/metadata/annotations/")))
+			&& includeLink.pathname.startsWith("/metadata/annotation/")))
 		contentType = "annotation";
 	GW.notificationCenter.fireEvent("GW.contentDidInject", {
 		source: "transclude",
@@ -705,7 +705,7 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
     GWLog("updateFootnotesAfterInclusion", "transclude.js", 2);
 
 	/*	If the transcluded content didn’t include the footnotes section of the
-		source page, attempt to get the footnotes section from the cached full 
+		source page, attempt to get the footnotes section from the cached full
 		document that the new content was sliced from.
 	 */
     if (   newContentFootnotesSection == null
@@ -876,7 +876,7 @@ Transclude = {
     /*  Templating.
      */
 
-	templateDirectoryPathname: "/static/templates/include/",
+	templateDirectoryPathname: "/static/template/include/",
 	templateListFileName: "templates.json",
 
 	templates: { },
@@ -934,7 +934,7 @@ Transclude = {
 
 					GW.notificationCenter.removeHandlerForEvent("Transclude.templateLoadDidFail", loadOrFailHandler);
 				} else {
-					if (loadFailHandler) 
+					if (loadFailHandler)
 						loadFailHandler(null, true);
 
 					GW.notificationCenter.removeHandlerForEvent("Transclude.templateDidLoad", loadOrFailHandler);
@@ -1204,7 +1204,7 @@ Transclude = {
             includeLink.delayed = true;
             GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (info) => {
                 Transclude.transclude(includeLink);
-            }, { 
+            }, {
             	once: true,
             	condition: (info) => (isWithinCollapsedBlock(includeLink) == false)
             });
@@ -1222,15 +1222,15 @@ Transclude = {
             requestAnimationFrame(() => {
                 lazyLoadObserver(() => {
                     Transclude.transclude(includeLink, true);
-                }, includeLink, { 
-                	rootMargin: Transclude.lazyLoadViewportMargin 
+                }, includeLink, {
+                	rootMargin: Transclude.lazyLoadViewportMargin
                 });
             });
 
             return;
         }
 
-        /*  Check whether provider object is loaded; if not, then wait until it 
+        /*  Check whether provider object is loaded; if not, then wait until it
         	loads to attempt transclusion.
          */
         let providerObjectName = Transclude.isAnnotationTransclude(includeLink)
@@ -1291,11 +1291,11 @@ Transclude = {
 				Transclude.setLinkStateLoadingFailed(includeLink);
 
 				//	Send request to record failure in server logs.
-				GWServerLogError(includeLink.href + `--transclude-template-fill-failed`, 
+				GWServerLogError(includeLink.href + `--transclude-template-fill-failed`,
 								 "failed transclude template fill");
 			}
 		};
-		provider.waitForDataLoad(identifier, 
+		provider.waitForDataLoad(identifier,
 		   (identifier) => {
 		   	//	Load success handler.
 
@@ -1320,7 +1320,7 @@ Transclude = {
 					Transclude.setLinkStateLoadingFailed(includeLink);
 
 					//	Send request to record failure in server logs.
-					GWServerLogError(templateName + `--include-template-load-failed`, 
+					GWServerLogError(templateName + `--include-template-load-failed`,
 									 "failed include template load");
 				});
 			} else {
@@ -1336,7 +1336,7 @@ Transclude = {
 			Transclude.setLinkStateLoadingFailed(includeLink);
 
 			//  Send request to record failure in server logs.
-			GWServerLogError(includeLink.href + `--transclude-failed`, 
+			GWServerLogError(includeLink.href + `--transclude-failed`,
 							 "failed transclude");
 		});
     },

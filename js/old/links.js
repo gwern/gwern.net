@@ -59,7 +59,7 @@ Links = {
         such as the following (the example is for an SVG linkicon with the name
         ‘worddoc’):
 
-        a[data-link-icon='worddoc'] { --link-icon-url: url('/static/img/icons/worddoc.svg'); }
+        a[data-link-icon='worddoc'] { --link-icon-url: url('/static/img/icon/worddoc.svg'); }
 
         And thus for every SVG linkicon used on the page.
 
@@ -98,7 +98,7 @@ Links = {
             block.
          */
         Links.graphicalLinkIconsStyleBlock.innerHTML = Links.graphicalLinkIcons.map(icon =>
-            `a[data-link-icon='${icon}'] { --link-icon-url: url('/static/img/icons/${icon}.svg'); }`
+            `a[data-link-icon='${icon}'] { --link-icon-url: url('/static/img/icon/${icon}.svg'); }`
         ).join("\n");
     },
 

@@ -689,21 +689,21 @@ hr::after {
 hr::after,
 .horizontal-rule-nth-0 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg */
-    content: url('/static/img/icons/sun-verginasun-black.svg');
+    content: url('/static/img/icon/sun-verginasun-black.svg');
     opacity: 0.87;
     width: 40px;
     height: 40px;
 }
 .horizontal-rule-nth-1 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg */
-    /* NOTE: alternative moon icon is /static/img/icons/japanesecrest-oookashippouofoookatadasuke-sun.svg modified from https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg - while nice, it lacks the intense moire effect of the Vergina Sun */
-    content: url('/static/img/icons/japanesecrest-tsukinihoshi-dottedmoon.svg');
+    /* NOTE: alternative moon icon is /static/img/icon/japanesecrest-oookashippouofoookatadasuke-sun.svg modified from https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg - while nice, it lacks the intense moire effect of the Vergina Sun */
+    content: url('/static/img/icon/japanesecrest-tsukinihoshi-dottedmoon.svg');
     opacity: 0.90;
     width: 25px;
     height: 25px;
 }
 .horizontal-rule-nth-2 hr::after {
-    content: url('/static/img/icons/asterism-triplewhitestar.svg');
+    content: url('/static/img/icon/asterism-triplewhitestar.svg');
     width: 36px;
     height: 30px;
 }
@@ -840,7 +840,7 @@ ul > li::before {
 
 ul > li::before,
 ul ul ul ul > li::before {
-    content: url('/static/img/icons/single-black-star.svg');
+    content: url('/static/img/icon/single-black-star.svg');
     opacity: 0.72;
 
 }
@@ -848,14 +848,14 @@ ul ul > li::before,
 ul ul ul ul ul > li::before,
 /* special /index override because the link compilation is not bolded */
 body.index .section-link-list > li::before {
-    content: url('/static/img/icons/single-white-star.svg');
+    content: url('/static/img/icon/single-white-star.svg');
     opacity: initial;
 }
 ul ul ul > li::before,
 ul ul ul ul ul ul > li::before,
 body.index .section-link-list ul > li::before {
     /* this rotates into more of a 'lozenge' square for variety's sake */
-    content: url('/static/img/icons/single-white-star-rotated.svg');
+    content: url('/static/img/icon/single-white-star-rotated.svg');
     opacity: initial;
 }
 
@@ -2600,18 +2600,18 @@ span.link-bibliography a {
 }
 
 .admonition.tip::before {
-    content: url('/static/img/icons/info-circle.svg');
+    content: url('/static/img/icon/info-circle.svg');
 }
 .admonition.note::before {
-    content: url('/static/img/icons/arrow-right-white.svg');
+    content: url('/static/img/icon/arrow-right-white.svg');
     padding: 0.85em;
 }
 .admonition.warning::before {
-    content: url('/static/img/icons/exclamation-triangle-white.svg');
+    content: url('/static/img/icon/exclamation-triangle-white.svg');
     padding-top: 0.75em;
 }
 .admonition.error::before {
-    content: url('/static/img/icons/skull-crossbones-white.svg');
+    content: url('/static/img/icon/skull-crossbones-white.svg');
     padding: 0.75em;
 }
 
@@ -5338,13 +5338,13 @@ ol.link-bibliography-list-compact > li::marker {
 }
 
 .dark-mode-selector button.select-mode-auto::before {
-    content: url('/static/img/icons/adjust-solid.svg');
+    content: url('/static/img/icon/adjust-solid.svg');
 }
 .dark-mode-selector button.select-mode-light::before {
-    content: url('/static/img/icons/sun-solid.svg');
+    content: url('/static/img/icon/sun-solid.svg');
 }
 .dark-mode-selector button.select-mode-dark::before {
-    content: url('/static/img/icons/moon-solid.svg');
+    content: url('/static/img/icon/moon-solid.svg');
 }
 
 .dark-mode-selector button.select-mode-dark {
@@ -5440,13 +5440,13 @@ ol.link-bibliography-list-compact > li::marker {
 }
 
 .reader-mode-selector button.select-mode-auto::before {
-    content: url('/static/img/icons/book-with-gear.svg');
+    content: url('/static/img/icon/book-with-gear.svg');
 }
 .reader-mode-selector button.select-mode-on::before {
-    content: url('/static/img/icons/book-open-solid.svg');
+    content: url('/static/img/icon/book-open-solid.svg');
 }
 .reader-mode-selector button.select-mode-off::before {
-    content: url('/static/img/icons/book-open.svg');
+    content: url('/static/img/icon/book-open.svg');
     bottom: 0.15em;
 }
 

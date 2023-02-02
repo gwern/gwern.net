@@ -264,8 +264,8 @@ a[data-link-icon='arrow-up']:hover::after,
 a[data-link-icon='arrow-down']:hover::after {
     opacity: 0.4;
 }
-a[data-link-icon='arrow-up'] { --link-icon-url: url('/static/img/icons/arrow-up.svg'); }
-a[data-link-icon='arrow-down'] { --link-icon-url: url('/static/img/icons/arrow-down.svg'); }
+a[data-link-icon='arrow-up'] { --link-icon-url: url('/static/img/icon/arrow-up.svg'); }
+a[data-link-icon='arrow-down'] { --link-icon-url: url('/static/img/icon/arrow-down.svg'); }
 
 /*=------------------------------=*/
 /*= Internal (within-site) links =*/
@@ -306,9 +306,9 @@ a[data-link-icon='arrow-down-right']:hover::after,
 a[data-link-icon='arrow-right']:hover::after {
     opacity: 0.4;
 }
-a[data-link-icon='arrow-up-left'] { --link-icon-url: url('/static/img/icons/arrow-up-left.svg'); }
-a[data-link-icon='arrow-down-right'] { --link-icon-url: url('/static/img/icons/arrow-down-right.svg'); }
-a[data-link-icon='arrow-right'] { --link-icon-url: url('/static/img/icons/arrow-right.svg'); }
+a[data-link-icon='arrow-up-left'] { --link-icon-url: url('/static/img/icon/arrow-up-left.svg'); }
+a[data-link-icon='arrow-down-right'] { --link-icon-url: url('/static/img/icon/arrow-down-right.svg'); }
+a[data-link-icon='arrow-right'] { --link-icon-url: url('/static/img/icon/arrow-right.svg'); }
 
 /*=-------------------------------=*/
 /*= Textual per-domain link icons =*/

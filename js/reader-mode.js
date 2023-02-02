@@ -331,7 +331,7 @@ ReaderMode = { ...ReaderMode,
 			//	Inject info alert.
 			ReaderMode.maskedLinksKeyToggleInfoAlert = addUIElement(`<div id="masked-links-key-toggle-info-alert">`
 				+ `<p>`
-				+ `<img src="/static/img/icons/book-open-solid.svg">`
+				+ `<img src="/static/img/icon/book-open-solid.svg">`
 				+ `Hold <span class="key">alt</span> / <span class="key">option</span> key to show links</p>`
 				+ `</div>`);
 

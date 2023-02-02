@@ -462,7 +462,7 @@ Annotations = { ...Annotations,
 				});
 			},
 
-			basePathname: "/metadata/annotations/",
+			basePathname: "/metadata/annotation/",
 			referenceElementSelector: [ Annotations.annotatedLinkFullClass,  Annotations.annotatedLinkPartialClass ].map(className => `a.${className}`).join(", ")
 		}
 	}

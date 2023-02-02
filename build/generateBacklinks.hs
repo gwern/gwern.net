@@ -30,8 +30,8 @@ import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix
 
 main :: IO ()
 main = do
-  createDirectoryIfMissing False "metadata/annotations/backlinks/"
-  priorBacklinksN <- fmap length $ listDirectory "metadata/annotations/backlinks/"
+  createDirectoryIfMissing False "metadata/annotation/backlink/"
+  priorBacklinksN <- fmap length $ listDirectory "metadata/annotation/backlink/"
   -- for uninteresting reasons probably due to a bad architecture, when the existing set of backlinks is deleted for a clean start, apparently you have to run generateBacklinks.hs twice...? So if we appear to be at a clean start, we run twice:
   if priorBacklinksN > 0 then main' else main' >> main'
 
@@ -50,7 +50,7 @@ main' = do
 
   -- if all are valid, write out:
   _ <- M.traverseWithKey (writeOutCallers md) bldb
-  fs <- fmap (filter (\f -> not (anyPrefix f ["/backlinks/","#",".#"])) .  map (sed "^\\.\\/" "") . lines) getContents
+  fs <- fmap (filter (\f -> not (anyPrefix f ["/backlink/","#",".#"])) .  map (sed "^\\.\\/" "") . lines) getContents
 
   let markdown = filter (".page" `isSuffixOf`) fs
   links1 <- Par.mapM (parseFileForLinks True) markdown
@@ -65,7 +65,7 @@ main' = do
 
 writeOutCallers :: Metadata -> T.Text -> [(T.Text, [T.Text])] -> IO ()
 writeOutCallers md target callerPairs
-                                  = do let f = take 274 $ "metadata/annotations/backlinks/" ++ urlEncode (T.unpack target) ++ ".html"
+                                  = do let f = take 274 $ "metadata/annotation/backlink/" ++ urlEncode (T.unpack target) ++ ".html"
                                        -- guess at the anchor ID in the calling page, so the cross-page popup will pop up at the calling site,
                                        -- rather than merely popping up the entire page (and who knows *where* in it the reverse citation is).
                                        -- (NOTE: This will fail if the default generated link ID has been overridden to disambiguate, unfortunately, and
@@ -93,7 +93,7 @@ generateCaller md target (caller, callers) =
                                                              Nothing -> ""
                                                              -- if we link to a top-level essay, then we want to insert the anchor to jump to the link use.
                                                              -- if the backlink caller is actually another annotation (and so has a '.' in it), we want to add no anchor because that will break the annotation lookup:
-                                                             -- it'll look at '/metadata/annotations/$FOO.html#$ID' instead2 of the actual '/metadata/annotations/$FOO.html'.
+                                                             -- it'll look at '/metadata/annotation/$FOO.html#$ID' instead2 of the actual '/metadata/annotation/$FOO.html'.
                                                              -- (eg. for Boehm et al 1993's "backlinks", there will be a 'Hierarchy in the Library' backlink which would point at 'https://gwern.net/doc/culture/2008-johnson.pdf#boehm-et-al-1993' , which has no annotation, because it's annotated as '/doc/culture/2008-johnson.pdf').
                                                              Just (_,aut,dt,_,_,_) -> generateID (T.unpack caller) aut dt
                                            callerDatesTitles = map (\u -> case M.lookup (T.unpack u) md of
@@ -160,9 +160,9 @@ truncateAnchors = T.takeWhile (/='#')
 
 blackList :: T.Text -> Bool
 blackList f
-  | anyInfixT f ["/backlinks/", "/link-bibliography/", "/similars/", "wikipedia.org/wiki/"] = True
+  | anyInfixT f ["/backlink/", "/link-bibliography/", "/similar/", "wikipedia.org/wiki/"] = True
   | anyPrefixT f ["$", "#", "!", "mailto:", "irc://", "\8383", "/images", "/doc/www/", "/newsletter/", "/changelog", "/mistakes", "/traffic", "/me", "/lorem",
-                   -- WARNING: do not filter out 'metadata/annotations' because that leads to empty databases & infinite loops
+                   -- WARNING: do not filter out 'metadata/annotation' because that leads to empty databases & infinite loops
                    "/static/404", "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = True
   | anySuffixT f ["/index", "/index-long"] = True
   | otherwise = False

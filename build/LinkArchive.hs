@@ -10,7 +10,7 @@ Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension,
 {- Local Mirror design:
 
 Because link rot has proven difficult to keep up with on `gwern.net` using [ordinary reactive link
-archiving methods](https://gwern.net/Archiving-URLs), I am switching to *pre-emptive archiving*:
+archiving methods](https://gwern.net/archiving-urls), I am switching to *pre-emptive archiving*:
 for most external links on Gwern.net, they will now point to a local (stored on Gwern.net) mirror of
 the original external link as the default. As the cost of disk/bandwidth falls while the value of
 human attention increases, if something is worth linking, it is worth hosting—assuming good tooling.

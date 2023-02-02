@@ -24,9 +24,9 @@ import Utils (host, writeUpdatedFile, hasKeyAL, anyPrefixT)
 -- browser.
 
 -- Generate a HTML <style>-delimited CSS block written to
--- `static/includes/inlined-graphical-linkicon-styles.html` for transclusion into `default.html`.
+-- `static/include/inlined-graphical-linkicon-styles.html` for transclusion into `default.html`.
 -- The SVG icons need to be specified like `("wikipedia","svg")` → `a[data-link-icon='wikipedia'] {
--- --link-icon-url: url('/static/img/icons/wikipedia.svg'); }`.
+-- --link-icon-url: url('/static/img/icon/wikipedia.svg'); }`.
 -- These could be written by hand every time a SVG-related icon is added/deleted/renamed, but that
 -- risks getting out of sync and triggering the bugs that moving our CSS link icons to compile-time
 -- server generation was supposed to end. We want more of a single source of truth.
@@ -41,18 +41,18 @@ rebuildSVGIconCSS = do unless (null linkIconTest) $ error ("Error! Link icons fa
                        let svgs1 = nubOrd $ map (\(_,icon,_) -> T.unpack icon) $ filter (\(_, _, icontype) -> icontype == "svg") linkIconTestUnitsText
                        let svgs2 = nubOrd $ map (\(_,icon,_) -> T.unpack icon) $ filter (\(_, _, icontype) -> icontype == "svg") linkIconTestUnitsLink
                        let svg = svgs1++svgs2
-                       mapM_ (\s -> do existsP <- doesFileExist $ "static/img/icons/" ++ s ++ ".svg"
+                       mapM_ (\s -> do existsP <- doesFileExist $ "static/img/icon/" ++ s ++ ".svg"
                                        unless existsP (error ("ERROR: SVG icon " ++ s ++ " does not exist!")))
                          svg
                        let html = unlines $ ["<style id=\"graphical-link-icons\">"] ++
-                             map (\s -> "a[data-link-icon='" ++ s ++ "'] { --link-icon-url: url('/static/img/icons/" ++ s ++ ".svg'); }") svg ++
+                             map (\s -> "a[data-link-icon='" ++ s ++ "'] { --link-icon-url: url('/static/img/icon/" ++ s ++ ".svg'); }") svg ++
                              ["</style>"]
-                       writeUpdatedFile "svgicons" "static/includes/inlined-graphical-linkicon-styles.html" (T.pack html)
+                       writeUpdatedFile "svgicons" "static/include/inlined-graphical-linkicon-styles.html" (T.pack html)
 
 -- Based on <links.js>.
 -- The idea is to annotate every `<a>` with two new `data-` attributes, `data-link-icon` and
 -- `data-link-icon-type` which jointly specify the type & content of the icon. The link-icon for
--- 'svg' type is overloaded to be a filename in `/static/img/icons/$LINKICON.svg`.
+-- 'svg' type is overloaded to be a filename in `/static/img/icon/$LINKICON.svg`.
 --
 -- λ linkIcon $ Link nullAttr [Str "foo"] ("https://forum.evageeks.org/forum?id=2222", "")
 -- Link ("",[],[("link-icon","EG"),("link-icon-type","text")]) [Str "foo"] ("https://forum.evageeks.org/forum?id=2222","")
@@ -79,7 +79,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  -- NOTE: 'gwern': the Fraktur '𝔊' for local essay links (where 'local' is defined as '/' but with no '.' in it) is set dynamically clients-ide by rewrite.js:l1075 (`designateSpecialLinkIcons`) and so we do not handle it here. (It is also overridden by 'icon-not'; WARNING: 'icon-not' is used at runtime and should not be erased!)
  | hasIcon x           = x
  | hasKeyAL u overrideLinkIcons = let (i,it) = fromJust $ lookup u overrideLinkIcons in addIcon x i it
- | anyPrefixT u ["/metadata/annotations/"] = x
+ | anyPrefixT u ["/metadata/annotation/"] = x
 
  | "directory-indexes-upwards"   `elem` cl = aI "arrow-up-left"    "svg"
  | "directory-indexes-downwards" `elem` cl = aI "arrow-down-right" "svg"
@@ -544,7 +544,7 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
                linkIconTestUnitsText
 -- in /lorem order:
 linkIconTestUnitsText =
-        [("/static/img/icons/deepmind.svg",  "deepmind","svg")
+        [("/static/img/icon/deepmind.svg",  "deepmind","svg")
          , ("https://academic.oup.com/ije/article/43/3/775/758445",  "OUP","text,tri")
          , ("https://ajcn.nutrition.org/content/69/5/842.full", "OUP", "text,tri")
          , ("https://ageing.oxfordjournals.org/content/36/5/507.long", "OUP", "text,tri")
@@ -808,14 +808,14 @@ linkIconTestUnitsText =
          , ("/static/img/favicon.ico",  "image","svg")
          , ("/doc/anime/eva/2010-1000enpark-tokyo-oota-heiwajimakoen.jpg",  "image","svg")
          , ("/image/iq/2011-gensowski-figure7-totaleffectofiqandpersonalityonlifetimeearnings.png",  "image","svg")
-         , ("/static/img/icons/video.svg",  "image","svg")
+         , ("/static/img/icon/video.svg",  "image","svg")
          , ("/doc/personal/businesscard-front-draft.xcf",  "image","svg")
          , ("https://i.imgur.com/3Jb0b.jpg",  "image","svg")
          , ("/static/build/linkAbstract.R",  "code","svg")
          , ("/static/css/links.css",  "code","svg")
          , ("/static/build/hakyll.hs",  "code","svg")
          , ("https://wiki.haskell.org/Xmonad/Config_archive/Gwern's_xmonad.hs",  "code","svg")
-         , ("/static/templates/default.html",  "code","svg")
+         , ("/static/template/default.html",  "code","svg")
          , ("/static/js/sidenotes.js",  "code","svg")
          , ("/doc/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch",  "code","svg")
          , ("/static/build/markdown-lint.sh",  "code","svg")
@@ -827,7 +827,7 @@ linkIconTestUnitsText =
          , ("/doc/psychology/spaced-repetition/michaellee-memoryretentionexperiments-data.tar",  "archive","svg")
          , ("/doc/ai/nn/rnn/2015-06-03-karpathy-charrnn-visualization.tar.xz",  "archive","svg")
          , ("/doc/ai/anime/danbooru/2019-02-10-stylegan-holo-handselectedsamples.zip",  "archive","svg")
-         , ("/doc/darknet-markets/usareshipper-profile.maff", "archive","svg")
+         , ("/doc/darknet-market/usareshipper-profile.maff", "archive","svg")
          , ("/image/cs/2017-reddit-dhieno-theplace-timelapseevolution.mp4",  "file-video","svg")
          , ("http://iqtest.dk/main.swf",  "file-video","svg")
          , ("/image/tea/tea-mineralwaters-bestarm-sequential.webm",  "file-video","svg")

@@ -298,7 +298,7 @@ findN f 20 iterationLimit $ head edb
 -}
 
 similaritemExistsP :: String -> IO Bool
-similaritemExistsP p = doesFileExist $ take 274 $ "metadata/annotations/similars/" ++ urlEncode p ++ ".html"
+similaritemExistsP p = doesFileExist $ take 274 $ "metadata/annotation/similar/" ++ urlEncode p ++ ".html"
 
 writeOutMatch :: Metadata -> Backlinks -> (String, [String]) -> IO ()
 writeOutMatch md bdb (p,matches) =
@@ -309,8 +309,8 @@ writeOutMatch md bdb (p,matches) =
        Just ("",_,_,_,_,_) -> return ()
        Just (_,_,_,_,_,abst) -> do
              let similarLinksHtmlFragment = generateMatches md bdb False False p abst matches
-             let f = take 274 $ "metadata/annotations/similars/" ++ urlEncode p ++ ".html"
-             writeUpdatedFile "similars" f similarLinksHtmlFragment
+             let f = take 274 $ "metadata/annotation/similar/" ++ urlEncode p ++ ".html"
+             writeUpdatedFile "similar" f similarLinksHtmlFragment
 
 generateMatches :: Metadata -> Backlinks -> Bool -> Bool -> String -> String -> [String] -> T.Text
 generateMatches md bdb linkTagsP singleShot p abst matches =

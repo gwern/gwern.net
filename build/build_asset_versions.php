@@ -1,8 +1,8 @@
 <?php
 
 $static_root = __DIR__ . "/..";
-$include_dir = "{$static_root}/includes";
-$include_templates_dir = "{$static_root}/templates/include";
+$include_dir = "{$static_root}/include";
+$include_templates_dir = "{$static_root}/template/include";
 
 $patterns = [
 	"{$include_templates_dir}/*.tmpl",
