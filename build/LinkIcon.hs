@@ -241,6 +241,9 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.pragmatic.ml" = aI "𝕄" "text" -- Madison May, machine learning blog
  | u'' "www.research.va.gov" = aI "VA" "text,sans" -- US Department of Veterans Affair (mostly linked for Million Veteran Project)
  | u'' "apnews.com" = aI "AP" "text,sans"
+ | aU' ["www.unz.com/gnxp/", "razib.substack.com", "www.razib.com", "www.gnxp.com", "nitter.net/razibkhan"] = aI "RK" "text,sans" -- Razib Khan
+ | u'' "www.outsideonline.com" = aI "𝕆" "text,sans" -- imitate the shadowing on Outside Online's 'O' <https://www.outsideonline.com/wp-content/uploads/2021/07/favicon-194x194-1.png>
+ | u'' "jaymans.wordpress.com" = aI "J👨🏾" "text,sans" -- JayMan
 
  -- Tri/triple TLAs
  | u' "animenewsnetwork.com" = aI "ANN" "text,tri"
@@ -291,13 +294,14 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "omega0.xyz/omega8008/" || aU' ["/doc/statistics/bayes/1988-jaynes-maximumentropyandbayesianmethods.pdf", "www-biba.inrialpes.fr/Jaynes/cc18i.pdf"] = aI "ETJ" "text,tri,sans" -- E. T. Jaynes book/paper website
  | u' "paperswithcode.com" = aI "PwC" "text,tri,sans" -- 'Papers With Code' does have a weird '[|⏐|⏐|]' icon (supposed to be a bar graph of different performances, I guess) which would work monochrome, but I don't recognize it and I doubt anyone else would either, especially as a link icon, but 'PwC' *might* be recognizable, so we'll go with that for now.
  | u'' "www.pewresearch.org" = aI "Pew" "text,tri" -- Pew Research Center: logo <https://en.wikipedia.org/wiki/File:Pew_Research_Center.svg>. While very cool, and worthy of a Scandinavian black death metal band, it is unrecognizable and would 'shimmer' intensely if scaled down to a link icon & would have to be recreated. So, another text icon it is. Everyone knows what "Pew" means.
+ | u'' "thelastpsychiatrist.com" = aI "TLP" "text,tri,sans"
 
  -- Quad-letter-square icons.
  | aU'' ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
  | u'' "www.cell.com" = aI "CELL" "text,quad,sans" -- Cell: their logo is unrecognizable (and dumb)
  | u'' "mlp.fandom.com" = aI "MLPW" "text,quad,sans" -- NOTE: override Fandom catch-all
  | u'' "www.fimfiction.net" = aI "FIMF" "text,quad,mono"
- | u'' "www.nber.org" && (extension u /= ".pdf") = aI "NBER" "text,quad"
+ | u'' "www.nber.org" && (extension u /= ".pdf") || u'' "ideas.repec.org" = aI "NBER" "text,quad" -- IDEAS/RePEc doesn't seem to actually be run by or affiliated with NBER, but it's so close topically that I think readers can forgive it.
  | u'' "www.pnas.org" = aI "PNAS" "text,quad" -- PNAS: they don’t have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (but just as black text on white background, per our monochrome theme) [On second thought, all of the icons using background squares, like HN/YC, are very intense and hard to visually balance. It's probably better to leave PNAS as just a quad-letter.]
  | u'' "www.rand.org" = aI "RAND" "text,quad,sans"
  | u' ".sagepub.com" = aI "SAGE" "text,quad,sans" -- Sage Journals’s logo is a circled S… but would anyone recognize it? Primary user: journals.sagepub.com
@@ -526,7 +530,7 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                      "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com",
                      "palladiummag.com", "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "www.silcom.com", "esolangs.org",
                      "www.aiweirdness.com", "etherscan.io", "www.theringer.com", "cs.stanford.edu", "mmlab.ie.cuhk.edu.hk", "www.cs.toronto.edu",
-                     "www.centauri-dreams.org", "www.alexirpan.com"]
+                     "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org", "takimag.com", "oll.libertyfund.org"]
         linkIconMin = 4 :: Int
 
 -- Test suite:
@@ -1075,4 +1079,12 @@ linkIconTestUnitsText =
          , ("https://patrickcollison.com/labs", "PC", "text,sans")
          , ("https://www.pewresearch.org/social-trends/2012/02/16/the-rise-of-intermarriage/", "Pew", "text,tri")
          , ("https://oeis.org/A001006", "OEIS", "text,quad,sans")
+         , ("https://www.unz.com/gnxp/through-the-wormhole-are-we-here-for-a-reason-premier-may-13th/", "RK", "text,sans")
+         , ("https://razib.substack.com/p/get-lucky", "RK", "text,sans")
+         , ("https://www.gnxp.com/WordPress/2017/12/12/most-people-say-they-think-nurture-is-more-important-than-nature-especially-white-americans/", "RK", "text,sans")
+         , ("https://nitter.net/razibkhan/status/1463204399954776073", "RK", "text,sans")
+         , ("https://www.outsideonline.com/culture/books-media/how-athletes-get-great/", "𝕆", "text,sans")
+         , ("https://thelastpsychiatrist.com/2011/01/why_chinese_mothers_are_not_su.html", "TLP", "text,tri,sans")
+         , ("https://jaymans.wordpress.com/2015/07/04/demography-is-destiny/", "J👨🏾", "text,sans")
+         , ("https://ideas.repec.org/p/nbr/nberwo/27053.html", "NBER", "text,quad")
         ]
