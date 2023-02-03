@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-02-02 11:36:52 gwern"
+When:  Time-stamp: "2023-02-02 21:17:07 gwern"
 License: CC-0
 -}
 
@@ -1104,7 +1104,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
 gwerntoplevelDocAbstract :: IO (Either Failure (Path, MetadataItem))
 gwerntoplevelDocAbstract = do allDirs <- listTagDirectories ["doc/"]
                               let allDirLinks = unlines $ map (\d -> "<li><a class='link-page link-tag directory-indexes-downwards link-annotated link-annotated-partial' data-link-icon='arrow-down' data-link-icon-type='svg' rel='tag' href=\"" ++ d ++ "\">" ++ (T.unpack $ abbreviateTag (T.pack (replace "/doc/" "" $ takeDirectory d))) ++ "</a></li>") allDirs
-                              return $ Right ("/doc/index", ("docs tag","N/A","","",[],"<p>Bibliography for tag <em>docs</em>, most recent first: " ++ show (length allDirs) ++ " tags (<a href='/index' class='link-page link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>).</p> <div class=\"columns TOC\"> <ul>" ++ allDirLinks ++ "</ul> </div>"))
+                              return $ Right ("/doc/index", ("doc tag","N/A","","",[],"<p>Bibliography for tag <em>doc</em>, most recent first: " ++ show (length allDirs) ++ " tags (<a href='/index' class='link-page link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>).</p> <div class=\"columns TOC\"> <ul>" ++ allDirLinks ++ "</ul> </div>"))
 
 gwernAbstract :: Bool -> String -> String -> String -> [Tag String] -> (String,String)
 gwernAbstract shortAllowed p' description toc f =

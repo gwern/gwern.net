@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-02-02 14:02:40 gwern"
+# When:  Time-stamp: "2023-02-02 22:02:14 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -306,7 +306,7 @@ else
                                                           -e '/lorem' -e '/modus' -e '/order-statistics' -e '/conscientiousness-and-online-education' \
                                 -e 'doc%2Fmath%2Fhumor%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
                                 -e '/the-existential-risk-of-mathematical-error' -e '/replication' \
-                                -e '%2fperformance-pay-nobel.html' -e '/doc/cs/index' -e '/doc/math/index' -e '/coin-flip' \
+                                -e 'performance-pay-nobel.html' -e '/doc/cs/index' -e '/doc/math/index' -e '/coin-flip' \
                                 -e '/nootropic/magnesium' -e '/selection' -e 'doc/statistics/bayes/1994-falk' -e '/zeo' \
                                 -e '/mail-delivery' \
                                 -e '/doc/math/humor/index' -e '/doc/ai/index' -e '/doc/statistics/bias/index' -e '/variable' -e '1400861560180858880' \
@@ -419,7 +419,7 @@ else
        grep -F --invert-match -e 'cssExtension: drop-caps-cheshire' -e 'cssExtension: drop-caps-cheshire reader-mode' -e 'cssExtension: drop-caps-de-zs' -e 'cssExtension: drop-caps-goudy' -e 'cssExtension: drop-caps-goudy reader-mode' -e 'cssExtension: drop-caps-kanzlei' -e 'cssExtension: "drop-caps-kanzlei reader-mode"' -e 'cssExtension: drop-caps-yinit'; }
     wrap λ "Incorrect drop caps in Markdown."
 
-    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | grep -F --invert-match -e 'Lorem-code.page' -e 'AB-testing.page' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 "grep --color=always -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out Lorem-code.page's deliberate CSS test-case use of it in the syntax-highlighting section
+    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | grep -F --invert-match -e 'lorem-code.page' -e 'ab-test.page' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 "grep --color=always -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out Lorem-code.page's deliberate CSS test-case use of it in the syntax-highlighting section
     wrap λ "Broken code in Markdown."
 
     λ(){ find ./ -type f -name "*.page" | parallel --max-args=500 "grep -F --with-filename -e '<span class=\"supsub\">' -e 'class=\"subsup\"><sup>' --"; }
@@ -639,7 +639,7 @@ else
 
  if [ "$SLOW" ]; then
     # test a random page modified in the past month for W3 validation & dead-link/anchor errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
-    CHECK_RANDOM_PAGE=$(echo "$PAGES" | grep -F -v -e '/fulltext' | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
+    CHECK_RANDOM_PAGE=$(echo "$PAGES" | grep -F -v -e '/fulltext' -e '/lorem' | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
                        | shuf | head -1 | xargs urlencode)
     CHECK_RANDOM_ANNOTATION=$(find metadata/annotation/ -maxdepth 1 -name "*.html" -type f -size +2k | \
                                   shuf | head -1 | \
@@ -669,11 +669,11 @@ else
     λ(){ cr () { [[ "$2" != $(c --location --write-out '%{url_effective}' "$1") ]] && echo "$1" "$2"; }
          cr 'https://gwern.net/DNM-archives' 'https://gwern.net/dnm-archive'
          cr 'https://gwern.net/doc/dnb/1978-zimmer.pdf' 'https://gwern.net/doc/music/music-distraction/1978-zimmer.pdf'
-         cr 'https://gwern.net/AB%20testing' 'https://gwern.net/ab-testing'
+         cr 'https://gwern.net/AB%20testing' 'https://gwern.net/ab-test'
          cr 'https://gwern.net/Archiving%20URLs.html' 'https://gwern.net/archiving'
          cr 'https://gwern.net/Book-reviews' 'https://gwern.net/review/book'
          cr 'https://gwern.net/doc/ai/2019-10-21-gwern-gpt2-folkrnn-samples.ogg' 'https://gwern.net/doc/ai/music/2019-10-21-gwern-gpt2-folkrnn-samples.mp3';
-         cr 'https://gwern.net/doc/sr/2013-06-07-premiumdutch-profile.htm' 'https://gwern.net/doc/darknet-markets/silk-road/1/2013-06-07-premiumdutch-profile.htm'
+         cr 'https://gwern.net/doc/sr/2013-06-07-premiumdutch-profile.htm' 'https://gwern.net/doc/darknet-market/silk-road/1/2013-06-07-premiumdutch-profile.htm'
          cr 'https://gwern.net/doc/elections/2012-gwern-notes.txt' 'https://gwern.net/doc/statistics/prediction/election/2012-gwern-notes.txt'
          cr 'https://gwern.net/doc/statistics/peerreview/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf' 'https://gwern.net/doc/statistics/peer-review/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf'
          cr 'https://gwern.net/doc/longnow/form990-longnowfoundation-2001-12.pdf' 'https://gwern.net/doc/long-now/form990-longnowfoundation-2001-12.pdf'
@@ -731,7 +731,7 @@ else
           cm "text/csv; charset=utf-8" 'https://gwern.net/doc/statistics/2013-google-index.csv'
           cm "text/html" 'https://gwern.net/atom.xml'
           cm "text/html; charset=utf-8" 'https://gwern.net/doc/cs/2012-terencetao-anonymity.html'
-          cm "text/html; charset=utf-8" 'https://gwern.net/doc/darknet-markets/silk-road/1/2013-06-07-premiumdutch-profile.htm'
+          cm "text/html; charset=utf-8" 'https://gwern.net/doc/darknet-market/silk-road/1/2013-06-07-premiumdutch-profile.htm'
           cm "text/html; charset=utf-8" 'https://gwern.net/'
           cm "text/html; charset=utf-8" 'https://gwern.net/note/attention'
           cm "text/html; charset=utf-8" 'https://gwern.net/note/faster'

@@ -64,7 +64,7 @@ tag2TagsWithDefault :: String -> String -> [String]
 tag2TagsWithDefault path tags = let tags' = map trim $ split ", " $ map toLower tags
                                     defTag = if ("/doc/" `isPrefixOf` path) && (not ("/doc/biology/2000-iapac-norvir"`isPrefixOf`path || "/doc/rotten.com/"`isPrefixOf`path || "/doc/statistics/order/beanmachine-multistage"`isPrefixOf`path||"/doc/www/"`isPrefixOf`path)) then tag2Default path else ""
                                 in
-                                  if defTag `elem` tags' || defTag == "" || defTag == "/docs" then tags' else defTag:tags'
+                                  if defTag `elem` tags' || defTag == "" || defTag == "/doc" then tags' else defTag:tags'
 
 tag2Default :: String -> String
 tag2Default path = if "/doc/" `isPrefixOf` path && not ("/doc/" `isPrefixOf` path && ("/index" `isSuffixOf` path || "/index#" `isInfixOf` path)) then replace "/doc/" "" $ takeDirectory path else ""
