@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-02-02 22:06:03 gwern"
+When:  Time-stamp: "2023-02-03 10:05:00 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1295,5 +1295,6 @@ whiteList url
       , "https://dataprivacylab.org/dataprivacy/projects/ssnwatch/index.html" -- interactive
       , "https://www.chronophoto.app/game.html" -- interactive (game)
       , "https://people.csail.mit.edu/tzumao/diffvg/" -- low quality (video embeds)
+      , "https://discuss.huggingface.co/" -- low quality (layout is very screwed up)
       ] = True
     | otherwise = False

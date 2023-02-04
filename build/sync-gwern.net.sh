@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-02-02 22:02:14 gwern"
+# When:  Time-stamp: "2023-02-03 12:28:25 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -939,14 +939,14 @@ else
     # once a year, check all on-site local links to make sure they point to the true current URL; this avoids excess redirects and various possible bugs (such as an annotation not being applied because it's defined for the true current URL but not the various old ones, or going through HTTP nginx redirects first)
     if [ "$(date +"%j")" == "002" ]; then
         bold "Checking all URLs for redirects…"
-        for URL in $(find . -type f -name "*.page" | parallel --max-args=500 runghc ./static/build/link-extractor.hs | \
+        for URL in $(find . -type f -name "*.page" | parallel --max-args=500 runghc -istatic/build/ ./static/build/link-extractor.hs | \
                          grep -E -e '^/' | cut --delimiter=' ' --field=1 | sort -u); do
             echo "$URL"
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "https://gwern.net$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL (MIME: $MIME)"; fi;
         done
 
-        for URL in $(find . -type f -name "*.page" | parallel --max-args=500 ./static/build/link-extractor.hs | \
+        for URL in $(find . -type f -name "*.page" | parallel --max-args=500 runghc -istatic/build/ ./static/build/link-extractor.hs | \
                          grep -E -e '^https://gwern.net' | sort -u); do
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL"; fi;

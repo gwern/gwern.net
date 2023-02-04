@@ -119,9 +119,12 @@ sedMany regexps s = foldr (uncurry sed) s regexps
 replaceMany :: [(String,String)] -> (String -> String)
 replaceMany rewrites s = foldr (uncurry replace) s rewrites
 
+replaceT :: T.Text -> T.Text -> T.Text -> T.Text
+replaceT = T.replace
+
 -- list of fixed string rewrites
 replaceManyT :: [(T.Text,T.Text)] -> (T.Text -> T.Text)
-replaceManyT rewrites s = foldr (uncurry T.replace) s rewrites
+replaceManyT rewrites s = foldr (uncurry replaceT) s rewrites
 
 -- replace/split/hasKeyAL copied from https://hackage.haskell.org/package/MissingH-1.5.0.1/docs/src/Data.List.Utils.html to avoid MissingH's dependency of regex-compat
 replace :: (Eq a, Show a) => [a] -> [a] -> [a] -> [a]

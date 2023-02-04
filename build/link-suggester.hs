@@ -12,7 +12,7 @@ module Main where
 import Data.List (intercalate, nub, sort, sortBy)
 import qualified Data.Map.Strict as M (difference, elems, filter, filterWithKey, fromList, fromListWith, toList, map, union, Map)
 import qualified Data.Set as S (fromList, member, Set)
-import qualified Data.Text as T (append, dropWhile, dropWhileEnd, length, lines, intercalate, pack, toLower, isPrefixOf, isSuffixOf, Text)
+import qualified Data.Text as T (append, dropWhile, dropWhileEnd, length, lines, intercalate, pack, toLower, isPrefixOf, isSuffixOf, Text, replace)
 import Data.Char (isSpace, isPunctuation)
 import qualified Data.Text.IO as TIO (readFile)
 import System.Environment (getArgs)
@@ -26,11 +26,11 @@ import Data.List.Unique as U (repeated) -- Unique
 import Text.Regex.TDFA ((=~))
 
 import Query (extractURLsAndAnchorTooltips, parseMarkdownOrHTML)
-import Utils (writeUpdatedFile, printGreen, anyInfixT, anyPrefixT)
+import Utils (writeUpdatedFile, printGreen, anyInfixT, anyPrefixT, replaceT)
 
 hitsMinimum, anchorLengthMaximum :: Int
-hitsMinimum = 2
-anchorLengthMaximum = 100
+hitsMinimum = 4
+anchorLengthMaximum = 80
 
 -- | Map over the filenames
 main :: IO ()
@@ -96,11 +96,11 @@ parseURLs :: FilePath -> IO [(T.Text, [T.Text])]
 parseURLs file = do
   input <- TIO.readFile file
   let converted = extractURLsAndAnchorTooltips $ parseMarkdownOrHTML True input
-  return converted
+  return $ map (\(url, text) -> (T.replace "https://gwern.net/" "/" url, text)) converted
 
 -- return True if matches any blacklist conditions
 filterURLs :: T.Text -> Bool
-filterURLs u = anyPrefixT u ["$","\8383","#","/static/img/","/newsletter/20","dropbox.com","https://www.harney.com"] ||
+filterURLs u = anyPrefixT u ["$","\8383","#","/static/img/","/metadata/","/newsletter/20","dropbox.com","https://www.harney.com"] ||
                u `elem` ["https://www.reuters.com/article/us-germany-cyber-idUSKCN1071KW"] ||
                "/doc/" `T.isPrefixOf` u && "/index" `T.isSuffixOf` u ||
                "https://gwern.net/doc/" `T.isPrefixOf` u && "/index" `T.isSuffixOf` u
@@ -110,7 +110,7 @@ filterAnchors   t = T.length t > anchorLengthMaximum ||
                     -- filter out tag-directories: I don't usually want to link them because they are either redundant with the tag that will be on the annotation as a whole, or they have probably a better definition link. This comes up a lot with 'IQ' or 'heritability' or 'GPT' etc.
                     t =~ regex ||
                     anyInfixT t ["$","%","[","]"] ||
-                    anyPrefixT t ["(","."] ||
+                    anyPrefixT t ["(",".", "Wikipedia link about "] ||
                     "&"==t ||
                     elem t badStrings
   where regex = intercalate "|" $ map (\r -> "^"++r++"$") ["[0-9]+[kmgbt]?", "[0-9]+[\\.,;–-][0-9]+", "pg[0-9]+", "p\\.[0-9]+", "[0-9]+[a-f]", "in [12][0-9][0-9][0-9]", "[Ff]igure S?[0-9]+[a-f]?", "[Tt]able S?[0-9]+[a-f]?", "[Cc]hapter [0-9]+"]
@@ -222,7 +222,7 @@ whiteList = M.fromList [
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
-  , ("PaLM", "https://arxiv.org/abs/2204.02311#google")
+  , ("PaLM", ["https://arxiv.org/abs/2204.02311#google"])
   , ("https://en.wikipedia.org/wiki/Medical_school", ["medical school"])
   , ("https://en.wikipedia.org/wiki/Reinforcement_learning", ["RL", "reinforcement learning"])
   , ("https://en.wikipedia.org/wiki/Derek_Lowe_(chemist)", ["Derek Lowe"])

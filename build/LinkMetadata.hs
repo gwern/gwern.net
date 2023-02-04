@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-02-02 21:17:07 gwern"
+When:  Time-stamp: "2023-02-03 19:53:57 gwern"
 License: CC-0
 -}
 
@@ -302,7 +302,7 @@ readLinkMetadataNewest n = do custom  <- fmap (reverse . filter (\(_,(_,_,_,_,_,
                               let custom' = take n1 custom
                               let n2 = round (fromIntegral n * (1-ratio))
                               let half' = take n2 half
-                              let final = M.fromList $ interleave custom' half' -- TODO: we'd like to preserve the ordering, but the Map erases it, and generateDirectory insists on sorting by the publication-date. Hm...
+                              let final = M.fromList $ filter (\(path,(_,_,_,_,_,_)) -> not (anySuffix path ["#manual-annotation"])) $ interleave custom' half' -- TODO: we'd like to preserve the ordering, but the Map erases it, and generateDirectory insists on sorting by the publication-date. Hm...
                               return final
   where
     interleave :: [a] -> [a] -> [a]
