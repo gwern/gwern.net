@@ -12,9 +12,10 @@ module Main where
 import Data.List (intercalate, nub, sort, sortBy)
 import qualified Data.Map.Strict as M (difference, elems, filter, filterWithKey, fromList, fromListWith, toList, map, union, Map)
 import qualified Data.Set as S (fromList, member, Set)
-import qualified Data.Text as T (append, dropWhile, dropWhileEnd, length, lines, intercalate, pack, toLower, isPrefixOf, isSuffixOf, Text, replace)
+import qualified Data.Text as T (append, dropWhile, dropWhileEnd, head, length, lines, intercalate, pack, unpack, toLower, isPrefixOf, isSuffixOf, Text, replace)
 import Data.Char (isSpace, isPunctuation)
 import qualified Data.Text.IO as TIO (readFile)
+import Network.URI (isURI)
 import System.Environment (getArgs)
 
 import Text.Show.Pretty (ppShow)
@@ -26,7 +27,7 @@ import Data.List.Unique as U (repeated) -- Unique
 import Text.Regex.TDFA ((=~))
 
 import Query (extractURLsAndAnchorTooltips, parseMarkdownOrHTML)
-import Utils (writeUpdatedFile, printGreen, anyInfixT, anyPrefixT, replaceT)
+import Utils (writeUpdatedFile, printGreen, anyInfixT, anyPrefixT)
 
 hitsMinimum, anchorLengthMaximum :: Int
 hitsMinimum = 4
@@ -42,7 +43,7 @@ main = do
   printGreen "Parsed all files for links."
 
   -- blacklist bad URLs, which don't count
-  let db = M.filterWithKey (\k _ -> not $ filterURLs k) $ M.fromListWith (++) pairs :: M.Map T.Text [T.Text]
+  let db = M.filterWithKey (\k _ -> not (k == "") && (T.head k == '/' || isURI (T.unpack k)) && not (filterURLs k)) $ M.fromListWith (++) pairs :: M.Map T.Text [T.Text]
 
   -- we de-duplicate *after* checking for minimum. Particularly for citations, each use counts, but we don't need each instance of 'Foo et al 2021' in the DB (`/usr/share/dict/words`), so we unique the list of anchors
   let dbMinimumLess = M.union whiteList $ M.map (nub . sort . cleanAnchors) $ M.filter (\texts -> length texts >= hitsMinimum) db
@@ -210,11 +211,11 @@ filterAnchors   t = T.length t > anchorLengthMaximum ||
                        "matrix multiplication", "Silk Road 2", "Silk Road 2.0", "online", "Online", "side effects",
                        "status", "transcription/translation", "ADHD", "more difficult", "June 2016", "decline with age",
                        "criminal records", "the appendix", "API", "another page", "at least once", "must be", "expected from their",
-                       "animal welfare", "psychiatry", "the initial screening", "average-case", "go", "been removed", "mystical experience", "research in general", "been examined", "November 2021", "court records", "in a", "The Guardian", "suggests that", "learn faster", "project page", "lifetime income", "December 2017", "January 2010", "another suggestion", "at all", "how long it takes", "music generation", "LW", "HN", "survey results", "1kg", "~6", "3D", "Rumi", ">>", "<<", "@9", "for example", "@8", "a laptop", "This paper", "this paper", "The results", "The problem", "Co", "field experiment", "@9", "@7", "@10", "body weight", "pdf", "on average", "one month", "for example", "For example", "into English", "meta", "8 years", "better performance", "more samples", "classifier", "I have", "an example", "scales with model size", "Appendix G", "delusional", "Code is available", "de facto", "the problem", "an article", "increased mortality", "young adults", "at night", "raw data", "into the abdomen", "well-known", "Human Intelligence", "Part 3", "autoregressive", "a new era", "vice-versa", "another example", "struggled for years", "a study", "1990s", "more examples", "Appendix B", "trans", "generalizability", "to test", "shut down", "English translation", "can influence", "some evidence", "as a teacher", "a survey", "2000s", "who would", "last year", "1 Second", "he says", "a game", "See also", "a meta-analysis", "we see", "smaller model", "This one", "as necessary", "URLs", "other examples", "S1", "it uses", "The data", "index.html", "October 2021", "original paper", "elderly individuals", "side-effects", "Tables 2", "This interview", "show off", "Why not", "SF", "Mr", "basic idea", "dreams can", "this post", "used it", "just regression", "a collection", "surprising abilities", "as usual", "at least 4", "1980s", "1960s",  "a good thing", "Codex models", "scaled-up", "regression tasks", "~", "the movie", "book reviews", "been abandoned", "Section 5", "inversely correlated", "Spring 2019", "CEOs", "the cellular level", "April 2019", "pregnancy rates", "school-based", "There are many ways", "much more expensive", "world model", "had planned", "weak evidence", "review article", "the cause", "a co-founder", "This technique", "summarization", "recent research", "a second experiment", "that low", "Multivariable", "Data sources", "No benefits", "we have created", "those affected", "followup paper", "top journals", "Organizational Behavior and Human Decision Processes", "DNA", "UK", "one buyer", "emphasis added", "is available", "smallcaps", "policy implications", "ecology & evolution", "evidence of publication bias", "full translation", "bio", "many problems", "I love", "Appendix A", "a lot of things", "August 2002", "a decade later", "January 2022", "blog post", "first calculation", "turns out to be", "October 2022", "publicly available", "the mean", "video calls", "the devil is in the details", "rare mutations", "Caltech", "New York", "financial incentive", "March 2022", "3.5 years", "annual survey", "April 2021", "wikipedia.org", "png", "twitter.com", "arxiv.org", "nytimes.com", "independent replication", "finetuned", "analytics",  "rewriting history", "psychiatry", "July 2022", "great results", "especially well", "has announced", "allow an", "learned representation", "in Minecraft", "1920s", "neurobiology", "the research literature", "background information", "web pages", "instructional technology", "understand"]
+                       "animal welfare", "psychiatry", "the initial screening", "average-case", "go", "been removed", "mystical experience", "research in general", "been examined", "November 2021", "court records", "in a", "The Guardian", "suggests that", "learn faster", "project page", "lifetime income", "December 2017", "January 2010", "another suggestion", "at all", "how long it takes", "music generation", "LW", "HN", "survey results", "1kg", "~6", "3D", "Rumi", ">>", "<<", "@9", "for example", "@8", "a laptop", "This paper", "this paper", "The results", "The problem", "Co", "field experiment", "@9", "@7", "@10", "body weight", "pdf", "on average", "one month", "for example", "For example", "into English", "meta", "8 years", "better performance", "more samples", "classifier", "I have", "an example", "scales with model size", "Appendix G", "delusional", "Code is available", "de facto", "the problem", "an article", "increased mortality", "young adults", "at night", "raw data", "into the abdomen", "well-known", "Human Intelligence", "Part 3", "autoregressive", "a new era", "vice-versa", "another example", "struggled for years", "a study", "1990s", "more examples", "Appendix B", "trans", "generalizability", "to test", "shut down", "English translation", "can influence", "some evidence", "as a teacher", "a survey", "2000s", "who would", "last year", "1 Second", "he says", "a game", "See also", "a meta-analysis", "we see", "smaller model", "This one", "as necessary", "URLs", "other examples", "S1", "it uses", "The data", "index.html", "October 2021", "original paper", "elderly individuals", "side-effects", "Tables 2", "This interview", "show off", "Why not", "SF", "Mr", "basic idea", "dreams can", "this post", "used it", "just regression", "a collection", "surprising abilities", "as usual", "at least 4", "1980s", "1960s",  "a good thing", "Codex models", "scaled-up", "regression tasks", "~", "the movie", "book reviews", "been abandoned", "Section 5", "inversely correlated", "Spring 2019", "CEOs", "the cellular level", "April 2019", "pregnancy rates", "school-based", "There are many ways", "much more expensive", "world model", "had planned", "weak evidence", "review article", "the cause", "a co-founder", "This technique", "summarization", "recent research", "a second experiment", "that low", "Multivariable", "Data sources", "No benefits", "we have created", "those affected", "followup paper", "top journals", "Organizational Behavior and Human Decision Processes", "DNA", "UK", "one buyer", "emphasis added", "is available", "smallcaps", "policy implications", "ecology & evolution", "evidence of publication bias", "full translation", "bio", "many problems", "I love", "Appendix A", "a lot of things", "August 2002", "a decade later", "January 2022", "blog post", "first calculation", "turns out to be", "October 2022", "publicly available", "the mean", "video calls", "the devil is in the details", "rare mutations", "Caltech", "New York", "financial incentive", "March 2022", "3.5 years", "annual survey", "April 2021", "wikipedia.org", "png", "twitter.com", "arxiv.org", "nytimes.com", "independent replication", "finetuned", "analytics",  "rewriting history", "psychiatry", "July 2022", "great results", "especially well", "has announced", "allow an", "learned representation", "in Minecraft", "1920s", "neurobiology", "the research literature", "background information", "web pages", "instructional technology", "understand", "serious threat"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteList :: M.Map T.Text [T.Text]
-whiteList = M.fromList [
+whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || isURI (T.unpack k))) [
   ( "/Crops#hands"
     , [ "PALM"
       , "PALM ('PALM Anime Locator Model') is a dataset of k=5,382 anime-style Danbooru2019 images annotated with the locations of _n_ = 14,394 hands, a YOLOv3 model trained using those annotations to detect hands in anime-style images, and a second dataset of _n_ = 96,534 hands cropped from the Danbooru2019 dataset using the PALM YOLO model and _n_ = 58,536 of them upscaled to \8805\&512px"
@@ -222,7 +223,9 @@ whiteList = M.fromList [
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
-  , ("PaLM", ["https://arxiv.org/abs/2204.02311#google"])
+  , ("https://en.wikipedia.org/wiki/The_New_York_Times", ["NYT", "New York Times", "The New York Times"])
+  , ("https://en.wikipedia.org/wiki/Jeff_Dean", ["Jeff Dean"])
+  , ("https://arxiv.org/abs/2204.02311#google", ["PaLM"])
   , ("https://en.wikipedia.org/wiki/Medical_school", ["medical school"])
   , ("https://en.wikipedia.org/wiki/Reinforcement_learning", ["RL", "reinforcement learning"])
   , ("https://en.wikipedia.org/wiki/Derek_Lowe_(chemist)", ["Derek Lowe"])
@@ -1066,12 +1069,12 @@ whiteList = M.fromList [
      )
     , ( "https://www.lesswrong.com" , [ "LessWrong" , "LessWrong.com" ] )
     , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4417674/"
-                                                                         , [ "CRISPR/Cas9-mediated gene editing in human tripronuclear zygotes"
-                                                                           ]
+      , [ "CRISPR/Cas9-mediated gene editing in human tripronuclear zygotes"
+        ]
                                                                          )
     , ( "https://longbets.org/661/"
-                                                                            , [ "661, By 2020, Urban and vertical farms will replace 10% of city produce in Chicago"
-                                                                              , "By 2020, Urban and vertical farms will replace 10% of city produce in Chicago"
+      , [ "661, By 2020, Urban and vertical farms will replace 10% of city produce in Chicago"
+        , "By 2020, Urban and vertical farms will replace 10% of city produce in Chicago"
       ]
                                                                             )
     , ( "https://michaelnielsen.org/" , [ "Michael Nielsen" ] )
