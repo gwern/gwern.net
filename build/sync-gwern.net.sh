@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-02-05 10:08:12 gwern"
+# When:  Time-stamp: "2023-02-05 12:08:09 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -84,7 +84,7 @@ else
           s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber';
 
           ## HTML/Markdown formatting:
-          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s '530px.jpg-530px.jpg' '530px.jpg';
+          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s '530px.jpg-530px.jpg' '530px.jpg'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' '';
         ) &> /dev/null &
     sed -i -e 's/ data-link-?[Tt]ags="[a-z0-9 \/-]\+">/>/' ./metadata/*.yaml;
     fi
@@ -322,7 +322,7 @@ else
          [ "$COMPILED_BYTES" -le 77000000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
     wrap λ "Sanity-check: number of files & file-size too small?"
 
-    λ(){ SUGGESTIONS_N=$(cat ./metadata/linkSuggestions.el | wc --lines); [ "$SUGGESTIONS_N" -le 38000 ] && echo "$SUGGESTIONS_N"; }
+    λ(){ SUGGESTIONS_N=$(cat ./metadata/linkSuggestions.el | wc --lines); [ "$SUGGESTIONS_N" -le 10000 ] && echo "$SUGGESTIONS_N"; }
     wrap λ "Link-suggestion database broken?"
     λ(){ BACKLINKS_N=$(cat ./metadata/backlinks.hs | wc --lines);         [ "$BACKLINKS_N"   -le 73000 ] && echo "$BACKLINKS_N"; }
     wrap λ "Backlinks database broken?"
@@ -464,7 +464,7 @@ else
     λ(){ grep -F ' ?' ./metadata/full.yaml; }
     wrap λ "Problem with question-marks (perhaps the crossref/Emacs copy-paste problem?)."
 
-    λ(){ grep -F --invert-match -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -- ./metadata/full.yaml ./metadata/half.yaml | \
+    λ(){ grep -F --invert-match -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -- ./metadata/full.yaml ./metadata/half.yaml | \
              eg -e ',[A-Za-z]'; }
     wrap λ "Look for run-together commas (but exclude chemical names where that's correct)."
 
@@ -480,7 +480,7 @@ else
     λ(){ gf -e 'amp#' -- ./metadata/*.yaml; }
     wrap λ "Unicode/HTML entity encoding error?"
 
-    λ(){ grep -E --color=always -e '^- - /doc/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]\+ [A-Z]' \
+    λ(){ grep -E --color=always -e '^- - /docs/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]\+ [A-Z]' \
             -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
             -e '[⁰ⁱ⁴⁵⁶⁷⁸⁹⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]' -e '<p>Table [0-9]' -e '<p>Figure [0-9]' \
             -e 'id="[0-9]' -e '</[a-z][a-z]\+\?' -e 'via.*ihub' -e " '$" -e "’’" -e ' a [aeio]' -e '</[0-9]\+' \

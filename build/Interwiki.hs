@@ -1640,7 +1640,7 @@ redirectDB = [
           , ( "https://en.wikipedia.org/wiki/National_Inquirer", "https://en.wikipedia.org/wiki/National_Enquirer")
           , ( "https://en.wikipedia.org/wiki/National_Longitudinal_Survey_of_Youth", "https://en.wikipedia.org/wiki/National_Longitudinal_Surveys")
           , ( "https://en.wikipedia.org/wiki/National_Security_Advisor", "https://en.wikipedia.org/wiki/National_security_advisor")
-          , ( "https://en.wikipedia.org/wiki/Nat_Turner", "https://en.wikipedia.org/wiki/Nat_Turner%27s_slave_rebellion#Nat_Turner's_background")
+          , ( "https://en.wikipedia.org/wiki/Nat_Turner", "https://en.wikipedia.org/wiki/Nat_Turner%27s_slave_rebellion")
           , ( "https://en.wikipedia.org/wiki/Navier-Stokes_equations", "https://en.wikipedia.org/wiki/Navier%E2%80%93Stokes_equations")
           , ( "https://en.wikipedia.org/wiki/Neal_Bush", "https://en.wikipedia.org/wiki/Neil_Bush")
           , ( "https://en.wikipedia.org/wiki/Near_(Death_Note)", "https://en.wikipedia.org/wiki/List_of_Death_Note_characters#Near")
