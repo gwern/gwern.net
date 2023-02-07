@@ -1,6 +1,6 @@
 module QuoteOfTheDay where
 
--- A simple 'quote of the day' database for storing text snippets which can be transcluded.
+-- A simple 2-tuple database for storing text snippets which can be transcluded. The initial use of this was for 'quote of the day' snippet generation.
 --
 -- 'Quote of the day' is an old website feature where, for visitors' edification or amusement, a random quote from a list of quotes would be display, often in the website footer or homepage.
 -- An example is <https://en.wikiquote.org/wiki/Wikiquote:Quote_of_the_day> which is transcluded in the middle of <https://en.wikiquote.org/wiki/Main_Page>, or <https://web.archive.org/web/20150410044208/http://bbs.stardestroyer.net/SiteBanner.php?display=history>.
@@ -23,41 +23,52 @@ import Text.Show.Pretty (ppShow)
 
 import LinkMetadata (typesetHtmlField)
 
-type QOTDB = [Quote]
-type Quote = (String, String, Bool)
+type TTDB = [Snippet]
+type Snippet = (String, String, Bool)
 
-quoteDBPath, quotePath :: String
+quoteDBPath, quotePath :: FilePath
 quoteDBPath = "metadata/quotes.hs"
 quotePath   = "metadata/today-quote.html"
+quoted :: Snippet -> String
+quoted (quote,attribution,_) = "<div class=\"epigraph\">\n<blockquote><p>" ++ typesetHtmlField quote ++ "</p>" ++ if null attribution then "" else ("\n<p>" ++ typesetHtmlField attribution ++ "</p>") ++ "</blockquote>\n</div>"
 
-readQuoteDB :: IO QOTDB
-readQuoteDB = do exists <- doesFileExist quoteDBPath
-                 if not exists then return [] else fmap read $ readFile quoteDBPath
+linkDBPath, linkPath :: FilePath
+linkDBPath = "metadata/links.hs"
+linkPath   = "metadata/today-link.html"
+linked :: Snippet -> String
+linked (link,attribution,_) = "<div class=\"link-of-the-day\">\n<blockquote><p><a href=\"" ++ attribution ++ "\">" ++ typesetHtmlField link ++ "</a></p>" ++ "</blockquote>\n</div>"
 
-writeQuoteDB :: QOTDB -> IO ()
-writeQuoteDB = writeFile quoteDBPath . ppShow
+readTTDB :: FilePath -> IO TTDB
+readTTDB path = do exists <- doesFileExist path
+                   if not exists then return [] else fmap read $ readFile path
 
-writeQuote :: Quote -> IO ()
-writeQuote (quote,attribution,_) = writeFile quotePath quoted
-  where quoted :: String
-        quoted = "<div class=\"epigraph\">\n<blockquote><p>" ++ typesetHtmlField quote ++ "</p>" ++ if null attribution then "" else ("\n<p>" ++ typesetHtmlField attribution ++ "</p>") ++ "</blockquote>\n</div>"
+writeTTDB :: FilePath -> TTDB -> IO ()
+writeTTDB path = writeFile path . ppShow
 
-writeQotD :: IO ()
-writeQotD = do dblist <- readQuoteDB
-               when (null dblist) $ error "Fatal error: quote-of-the-day database is empty?"
-               unless (not $ any (\(q,_,_) -> null q) dblist) $ error $ "Fatal error: quote-of-the-day database has empty quotes? " ++ show dblist
-               let db = S.fromList dblist
+writeSnippet :: FilePath -> (Snippet -> String) -> Snippet -> IO ()
+writeSnippet path formatter x = writeFile path (formatter x)
 
-               -- get set of usable quotes, and if there are none, reset the entire set and use that:
-               let dbUnused = S.filter (\(_,_,status) -> not status) db
-               let dbReset = if dbUnused /= S.empty then db else S.map qnegate db
-               let dbUnused' = S.filter (\(_,_,status) -> not status) dbReset
+generateSnippetAndWriteTTDB :: FilePath -> FilePath -> (Snippet -> String) -> IO ()
+generateSnippetAndWriteTTDB dbpath path formatter =
+  do dblist <- readTTDB dbpath
+     when (null dblist) $ error $ "Fatal error: tuple database " ++ path ++ " is empty?"
+     unless (not $ any (\(q,_,_) -> null q) dblist) $ error $ "Fatal error: tuple database has empty first-fields? " ++ show dblist
+     let db = S.fromList dblist
 
-               let qotd = head $ S.toList dbUnused'
-               writeQuote qotd
+     -- get set of usable quotes, and if there are none, reset the entire set and use that:
+     let dbUnused = S.filter (\(_,_,status) -> not status) db
+     let dbReset = if dbUnused /= S.empty then db else S.map snegate db
+     let dbUnused' = S.filter (\(_,_,status) -> not status) dbReset
 
-               let db'' = S.insert (qnegate qotd) $ S.delete qotd dbReset -- update the now-used quote
-               writeQuoteDB $ S.toList db''
-  where
-    qnegate :: Quote -> Quote
-    qnegate (a,b,s) = (a,b,not s)
+     let snippet = head $ S.toList dbUnused'
+     writeSnippet path formatter snippet
+
+     let db'' = S.insert (snegate snippet) $ S.delete snippet dbReset -- update the now-used quote
+     writeTTDB dbpath $ S.toList db''
+
+ where snegate :: Snippet -> Snippet
+       snegate (a,b,s) = (a,b,not s)
+
+qotd, lotd :: IO ()
+qotd = generateSnippetAndWriteTTDB quoteDBPath quotePath quoted
+lotd = generateSnippetAndWriteTTDB linkDBPath linkPath linked
