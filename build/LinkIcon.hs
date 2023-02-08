@@ -221,6 +221,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "variety.com" = aI "𝓥" "text"
  | u'' "theconversation.com" = aI "🗨" "text"
  | u'' "patch.com" = aI "P" "text,sans"
+ | u'' "www.palladiummag.com" = aI "Pd" "text,sans" -- "P" is their logo but that is too generic and collides, so take 'palladium' literally & use the element abbreviation
  | u'' "www.gq.com" = aI "GQ" "text,sans"
  | aU'' ["bls.gov", "data.bls.gov", "www.bls.gov"] = aI "BLS" "text,sans"
  | u'' "thegradient.pub" = aI "∇" "text"
@@ -528,7 +529,7 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                      "thepharmacyexpress.com", "thegrandnarrative.com", "srconstantin.wordpress.com", "penelope.uchicago.edu",
                      "bmk.sh","www.jstatsoft.org","www.japantimes.co.jp","www.impactcybertrust.org", "www.ex.org", "www.eetimes.com",
                      "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com",
-                     "palladiummag.com", "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "www.silcom.com", "esolangs.org",
+                     "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "www.silcom.com", "esolangs.org",
                      "www.aiweirdness.com", "etherscan.io", "www.theringer.com", "cs.stanford.edu", "mmlab.ie.cuhk.edu.hk", "www.cs.toronto.edu",
                      "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org", "takimag.com", "oll.libertyfund.org"]
         linkIconMin = 4 :: Int
@@ -1087,4 +1088,5 @@ linkIconTestUnitsText =
          , ("https://thelastpsychiatrist.com/2011/01/why_chinese_mothers_are_not_su.html", "TLP", "text,tri,sans")
          , ("https://jaymans.wordpress.com/2015/07/04/demography-is-destiny/", "J👨🏾", "text,sans")
          , ("https://ideas.repec.org/p/nbr/nberwo/27053.html", "NBER", "text,quad")
+         , ("https://www.palladiummag.com/2019/05/09/what-botswana-can-teach-us-about-political-stability/", "Pd", "text,sans")
         ]

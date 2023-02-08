@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-02-05 12:10:39 gwern"
+When:  Time-stamp: "2023-02-07 10:31:20 gwern"
 License: CC-0
 -}
 
@@ -990,7 +990,7 @@ paragraphized f a = f `elem` whitelist ||
    paragraphsMarkdown b = "\n\n" `isInfixOf` b
    blockElements :: String -> Bool
    -- full-blown lists or blockquotes also imply it's fully-formatted
-   blockElements b = anyInfix b ["<ul>", "<ol>", "<ul type=", "<ol type=", "<blockquote>", "<figure>"]
+   blockElements b = anyInfix b ["<ul>", "<ol>", "<ul type=", "<ol type=", "<blockquote>", "<figure>", "<table>"]
    -- annotations are wrapped in a '<p>...</p>' pair, unless they start with another block element; if there are two or more '<p>', then, there are at least two paragraphs (because it must be '<p>...</p> ... <p>...</p>') and it counts as being paragraphized.
    paragraphsHtml :: String -> [(T.Text,T.Text)]
    paragraphsHtml b = T.breakOnAll "<p>" (T.pack b)
@@ -1682,6 +1682,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<span class=\"math inline\">\\(k=3\\)</span>", "<em>k</em> = 3")
          , ("<span class=\"math inline\">\\(O(\\sqrt{nT})\\)</span>", "𝒪(√<em>nT</em>)")
          , ("<span class=\"math inline\">\\(O(n^2 \\log T)\\)</span>", "𝒪(<em>n</em><sup>2</sup> log<em>T</em>")
+         , ("<span class=\"math inline\">\\(f &lt; n\\)</span>", "<em>f</em> &lt; <em>n</em>")
+         , ("<span class=\"math inline\">\\<em>n</em> \\geq 6f+1\\)</span>", "<em>n</em> ≥ 6<em>f</em> + 1")
+         , ("<span class=\"math inline\">\\<em>n</em> \\geq 3f+1\\)</span>", "<em>n</em> ≥ 3<em>f</em> + 1")
          , (" N pixels", " <em>N</em> pixels")
          , ("a n layer", "a <em>n</em> layer")
          , (" n-step", " <em>n</em>-step")
@@ -2647,5 +2650,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("twenty six", "26")
          , ("<br/>", "<br />")
          , ("<br>", "<br />")
+         , (",”", "”,")
+         , (",’", "’,")
          , ("\160", " ") -- NO BREAK SPACE
          ]

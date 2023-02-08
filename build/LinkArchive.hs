@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-02-05 09:40:03 gwern"
+When:  Time-stamp: "2023-02-07 10:33:51 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1302,5 +1302,6 @@ whiteList url
       , "https://replicate.com/methexis-inc/img2prompt" -- interactive
       , "https://replicate.com/tommoore515/material_stable_diffusion" -- interactive
       , "https://imagen.research.google/video/" -- low quality (video embeds)
+      , "https://juretriglav.si/compressing-global-illumination-with-neural-networks/" -- low quality (video embeds)
       ] = True
     | otherwise = False

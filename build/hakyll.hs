@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-02-02 11:42:15 gwern"
+When: Time-stamp: "2023-02-07 15:38:57 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -69,7 +69,7 @@ import LinkIcon (rebuildSVGIconCSS)
 import LinkLive (linkLiveTest, linkLivePrioritize)
 import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, createAnnotations, hasAnnotation, simplifiedHTMLString)
 import LinkMetadataTypes (Metadata)
-import QuoteOfTheDay (writeQotD)
+import QuoteOfTheDay (qotd)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
 import Utils (printGreen, printRed, replace, safeHtmlWriterOptions)
@@ -80,7 +80,7 @@ main =
     let slow = "--slow" == fromMaybe "" arg
     hakyll $ do
                preprocess $ printGreen ("Generating quote-of-the-day…" :: String)
-               preprocess writeQotD
+               preprocess qotd
 
                when slow $ do preprocess $ printGreen ("Testing link icon matches & updating inlined CSS…" :: String)
                               preprocess rebuildSVGIconCSS

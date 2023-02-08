@@ -2682,6 +2682,7 @@ span.link-bibliography a {
     content: "...";
     margin-left: 0.05em;
     margin-right: -0.05em;
+    font-size: 75%;
 }
 a .cite-author-plural::after {
     margin-right: 0;
