@@ -350,7 +350,7 @@
 	 */
 	--GW-mode-selector-mobile-background-color: rgba(18, 18, 18, 0.75);
 
-	/*	Wikipedia images assume a white background; transparent images don’t 
+	/*	Wikipedia images assume a white background; transparent images don’t
 		look right if that assumption is violated.
 	 */
 	--GW-wikipedia-image-background-color: #fff;
@@ -372,6 +372,11 @@
 .collapse .disclosure-button:checked:hover::before {
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="%23000"/></svg>');
 }
+
+/* some SVGs used in annotations/essays (eg. /image/genetics/selection/2023-meyer-figure1-moralacceptabilityandpersonalwillingnesstouseembryoselectionorgeneticeditinginausapopulationsurvey.svg ) were authored as transparent SVGs, assuming a *white* background. In dark-mode, with a black background set, they are illegible.
+So, in dark mode only, impose a white background on SVGs in <figure>s.
+(This is scoped narrowly to only apply to SVGs which are displayed in <figure>, and not SVGs elsewhere—because SVGs elsewhere are probably part of the site design, and will have been designed to work with dark mode; forcing a white background on them may have unpredictable bad effects. If it turns out that this is still too broad, we may have to instead manually edit SVGs to force a white background, or selectively whitelist them for a white background.) */
+figure img[src$=".svg"] { background-color: #fff; }
 
 /*	Create a ‘footer’ at the bottom of pages which looks like ‘—————𝔊—————’,
 	similar to the arabesque navbar.
