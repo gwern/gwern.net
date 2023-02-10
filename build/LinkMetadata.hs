@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-02-07 10:31:20 gwern"
+When:  Time-stamp: "2023-02-08 16:57:30 gwern"
 License: CC-0
 -}
 
@@ -2229,8 +2229,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" = 0", " = 0")
          , ("cm3", "cm<sup>3</sup>")
          , (" cm(3)", " cm<sup>3</sup>")
+         , ("R2 ", "R<sup>2</sup> ")
          , (" R2", " R<sup>2</sup>")
-         , ("R2 = ", "R<sup>2</sup> = ")
          , (" R(2)", " R<sup>2</sup>")
          , ("top-k", "top-<em>k</em>")
          , ("Top-k", "Top-<em>k</em>")

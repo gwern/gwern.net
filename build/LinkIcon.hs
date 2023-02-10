@@ -114,7 +114,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "guzey.com" = aI "A" "text,sans"
  | u'' "www.forbes.com" = aI "F" "text"
  | (u' "haskell.org" && (extension u /= ".hs")) || u' "haskellers.com" = aI "𝛌" "text" -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
- | u'' "arxiv.org" || u'' "ar5iv.labs.arxiv.org" = aI "𝛘" "text" --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny)
+ | u'' "arxiv.org" || u'' "ar5iv.labs.arxiv.org" || u'' "proceedings.mlr.press" = aI "𝛘" "text" --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny); I lump in 'PMLR' ("Proceedings of Machine Learning Research") because many PMLR were just Arxiv preprints beforehand & it amounts to about the same thing, really.
  | u' ".bloomberg.com" || u'' "www.businessweek.com" = aI "𝐁" "text" -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B
  | u' "theatlantic.com" = aI "A" "text,italic" -- The Atlantic: replicate sloping by italics
  | u' "alignmentforum.org" || (u'' "www.greaterwrong.com" && u' "view=alignment-forum") = aI "AF" "text,sans"
@@ -561,6 +561,7 @@ linkIconTestUnitsText =
          , ("https://arstechnica.com/gadgets/2011/09/the-post-jobs-era-tim-cook-brings-philanthropy-back-to-apple/",  "ars","text,tri,sans")
          , ("https://arxiv.org/abs/0707.1051",  "\120536","text")
          , ("https://ar5iv.labs.arxiv.org/html/2112.11848",  "\120536","text")
+         , ("https://proceedings.mlr.press/v37/xuc15.pdf",  "\120536","text")
          , ("https://www.bbc.com/news/business-43365710",  "BBC","text,tri,sans")
          , ("http://news.bbc.co.uk/2/hi/8448731.stm",  "BBC","text,tri,sans")
          , ("https://www.biorxiv.org/content/10.1101/013896.full",  "chi-dna","svg")

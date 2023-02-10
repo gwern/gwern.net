@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-02-07 11:40:51 gwern"
+# When:  Time-stamp: "2023-02-09 15:45:23 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -428,7 +428,7 @@ else
     λ(){ find ./ -type f -name "*.page" | parallel --max-args=500 "grep -F --with-filename -e 'class=\"subsup\"><sup>'"; }
     wrap λ "Incorrect ordering of '<sup>' (the superscript '<sup>' must come second, or else risk Pandoc misinterpreting as footnote while translating HTML↔Markdown)."
 
-    λ(){ eg -e '<div class="admonition .*">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' **/*.page; }
+    λ(){ eg -e '<div class="admonition .*">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' -e 'class="epigraph>' **/*.page; }
     wrap λ "Broken admonition paragraph or epigraph in Markdown."
 
     λ(){ eg -e ' a [aeio]' ./**/*.page | grep -E ' a [aeio]' | grep -F --invert-match -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/'; }
@@ -514,7 +514,7 @@ else
             -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -e ' : ' -e " ' " -e '>/>a' -e '</a></a>' -e '(, ' \
             -e '&lt;figcaption' -e '{.}' -e ' ?' -e " ’’" -e 'lt;/td&gt;' -e "‘’" -e "’‘" -e "’’" -e '<li></li>' -e '</em<em>' -e '𝑂' \
             -e '</a.>' -e ' . ' -e ' , ' -e ' ; ' -e 'class=”collapse”' -e '‘’' -e ' ’' -e '<bold>' -e '</bold>' -e '<jats:bold>' \
-            -e  '</jats:bold>' -e 'Ã©' -e '</a>s' -e '/&gt;'  -e '&lt;figcaption'  -e 'aria-hidden=">' -e '&gt;</a>' -e '<A Href' -- ./metadata/*.yaml | \
+            -e  '</jats:bold>' -e 'Ã©' -e '</a>s' -e '/&gt;'  -e '&lt;figcaption'  -e 'aria-hidden=">' -e '&gt;</a>' -e '<A Href' -e '</strong>:,' -- ./metadata/*.yaml | \
              grep -F -v 'popular_shelves';
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
@@ -544,7 +544,7 @@ else
     λ(){ eg -e 'up>T[Hh]<' -e 'up>R[Dd]<' -e 'up>N[Dd]<' -e 'up>S[Tt]<' -- ./metadata/*.yaml; }
     wrap λ "Superscript abbreviations are weirdly capitalized?"
 
-    λ(){ eg -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
+    λ(){ eg -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"' -e 'class="width-full' ./metadata/*.yaml; }
     wrap λ "Check <figure> vs <img> usage, image hotlinking, non-absolute relative image paths in YAML metadata database"
 
     λ(){ gf -e ' significant'  ./metadata/full.yaml; }

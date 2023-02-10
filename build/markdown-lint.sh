@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2023-02-01 17:56:32 gwern"
+# When:  Time-stamp: "2023-02-09 11:01:36 gwern"
 # see https://gwern.net/About#markdown-checker
 
 set +x
@@ -187,7 +187,7 @@ do
 
         λ() {  COLLAPSED=$(cat "$HTML" | grep -E --after-context=3 '<h[0-7] class="collapse"')
                COLLAPSED_SECTION_COUNT=$(echo "$COLLAPSED" | grep -E '<h[0-7] class="collapse"' | wc --lines)
-               COLLAPSED_SUMMARY_COUNT=$(echo "$COLLAPSED" | grep -F '<div class="collapseSummary">' | wc --lines)
+               COLLAPSED_SUMMARY_COUNT=$(echo "$COLLAPSED" | grep -F '<div class="abstract-collapse">' | wc --lines)
                MISSING=$(( COLLAPSED_SECTION_COUNT - COLLAPSED_SUMMARY_COUNT ))
                if [[ $MISSING != 0 ]];
                then echo "Missing collapsed section summaries?"

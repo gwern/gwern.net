@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2023-02-04 10:14:20 gwern"
+When:  Time-stamp: "2023-02-10 15:01:19 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -350,7 +350,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Jorge Luis Borges|Borges)", "https://en.wikipedia.org/wiki/Jorge_Luis_Borges")
         , ("(LDSC|LD [Ss]core [Rr]egression)", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4495769/")
         , ("(LD|[Ll]inkage [Dd]isequilibrium|[Ll]inkage [Ee]quilibrium)", "https://en.wikipedia.org/wiki/Linkage_disequilibrium")
-        , ("(LSTM|[Ll]ong [Ss]hort[ -][Tt]erm [Mm]emory)", "https://en.wikipedia.org/wiki/Long_short-term_memory")
+        , ("(LSTMs?|[Ll]ong [Ss]hort[ -][Tt]erm [Mm]emor(y|ies))", "https://en.wikipedia.org/wiki/Long_short-term_memory")
         , ("(Leta Stetter Hollingworth|Hollingworth)", "https://en.wikipedia.org/wiki/Leta_Stetter_Hollingworth")
         , ("(Lewis Terman|Terman)", "https://en.wikipedia.org/wiki/Lewis_Terman")
         , ("(MAOI|[Mm]onoamine [Oo]xidase [Ii]nhibitor)", "https://en.wikipedia.org/wiki/Monoamine_oxidase_inhibitor")
@@ -1244,7 +1244,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("gMLP", "https://arxiv.org/abs/2105.08050#google")
         , ("[Gg]scan2pdf", "https://gscan2pdf.sourceforge.net/")
         , ("iGPT", "https://openai.com/blog/image-gpt/")
-        , ("InstructGPT", "https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf")
+        , ("(InstructGPT|GPT ?3\\.5)", "https://arxiv.org/abs/2203.02155#openai")
         , ("[Ii]nbreeding[ -]depression", "https://en.wikipedia.org/wiki/Inbreeding_depression")
         , ("lbpcascade_animeface", "https://github.com/nagadomi/lbpcascade_animeface")
         , ("[Ll]inkchecker", "https://github.com/linkchecker/linkchecker")
