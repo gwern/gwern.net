@@ -7,7 +7,7 @@
 /**********/
 /* COLORS */
 /**********/
-/* colors are now in /static/css/colors.css or dark-mode.css */
+/* colors are now in /static/css/colors.css (light-mode) or /include/dark-mode-GENERATED.css + /include/components/dark-mode-adjustments.css +/include/components/colors-dark-GENERATED.css (dark-mode) */
 
 /*******************/
 /* OTHER VARIABLES */
