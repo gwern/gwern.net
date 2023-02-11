@@ -326,7 +326,7 @@
 :root {
     /*  Adjust background color to prevent pixels from turning off (contrary to popular belief, pixels turning off saves trivial energy, like <1% in measurements, and causes nasty scrolling/update jank due to delay in pixels turning back on), and improve contrast with the white.
      */
-    --GW-body-background-color: #111111;
+    --GW-body-background-color: #161616;
 
     /*  Dial back from pure white to keep contrast from being *too* high & 'stark' (#fff bg / #000 text seems to work in light mode, but not in dark mode, perhaps because of differences in lighting environment?)
      */
@@ -376,7 +376,7 @@
 /* some SVGs used in annotations/essays (eg. /image/genetics/selection/2023-meyer-figure1-moralacceptabilityandpersonalwillingnesstouseembryoselectionorgeneticeditinginausapopulationsurvey.svg ) were authored as transparent SVGs, assuming a *white* background. In dark-mode, with a black background set, they are illegible.
 So, in dark mode only, impose a white background on SVGs in <figure>s.
 (This is scoped narrowly to only apply to SVGs which are displayed in <figure>, and not SVGs elsewhere—because SVGs elsewhere are probably part of the site design, and will have been designed to work with dark mode; forcing a white background on them may have unpredictable bad effects. If it turns out that this is still too broad, we may have to instead manually edit SVGs to force a white background, or selectively whitelist them for a white background.) */
-figure img[src$=".svg"] { background-color: #fff; }
+figure img[src$=".svg"] { background-color: var(--GW-wikipedia-image-background-color); }
 
 /*	Create a ‘footer’ at the bottom of pages which looks like ‘—————𝔊—————’,
 	similar to the arabesque navbar.
