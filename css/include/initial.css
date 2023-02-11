@@ -187,6 +187,9 @@ body {
         margin: 0.55em 0 0.45em 0;
         border-top: 1px dotted var(--GW-sidebar-horizontal-rule-color);
     }
+    #sidebar a.patreon {
+        font-size: 0.9em;
+    }
 }
 
 @media only screen and (max-width: 649px) {
