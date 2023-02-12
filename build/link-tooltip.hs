@@ -8,7 +8,8 @@ import qualified Data.Map.Strict as M (lookup, fromList, Map)
 import qualified Data.Text as T (unpack)
 import qualified Data.Text.IO as TIO (readFile)
 
-import LinkMetadata (walkAndUpdateLinkMetadata, tooltipToMetadata)
+import LinkMetadata (walkAndUpdateLinkMetadata)
+import Annotation (tooltipToMetadata)
 import LinkMetadataTypes (MetadataItem)
 import Query (parseMarkdownOrHTML)
 

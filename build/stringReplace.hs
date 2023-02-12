@@ -14,7 +14,7 @@
 module Main where
 
 import Control.Monad (when)
-import System.IO (getContents)
+-- import System.IO (getContents)
 import System.Environment (getArgs)
 
 import Data.Containers.ListUtils (nubOrd)
