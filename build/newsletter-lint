@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -e
+
+# check latest edition of gwern.net newsletter for Markdown errors, local URLs which will break when used in the email, any dead links, and view in browser for any issues:
+# use: $ newsletter-lint 2016/10
+
+NEWSLETTER="/home/gwern/wiki/newsletter/$1.page"
+
+cloudflare-expire "$NEWSLETTER"
+
+cd ~/wiki/
+markdown-lint.sh "$NEWSLETTER" || true
+
+## function to wrap checks and print highlighted warning if non-zero output (self-documenting):
+wrap() { OUTPUT=$($1 2>&1)
+         WARN="$2"
+         if [ -n "$OUTPUT" ]; then
+             echo -e "\e[41m$WARN\e[0m":
+             echo -e "$OUTPUT";
+         fi; }
+
+λ() { grep -F -- '](/' "$NEWSLETTER"; }
+wrap λ "Local link detected in newsletter (needs to be absolute full URL to avoid breaking in email)"
+
+linkchecker --no-status --check-extern --threads=1 --timeout=20 -r1 "https://gwern.net/newsletter/$1"
+
+set -x
+CHECK=$(echo "https://gwern.net/newsletter/$1" | xargs urlencode)
+$X_WWW_BROWSER "https://validator.w3.org/nu/?doc=$CHECK"
+
+TARGET="$(mktemp --suffix=.html)"
+pandoc --metadata lang=en --metadata title="$1" --standalone -f markdown+smart --reference-links --css=https://gwern.net/static/css/default.css "$NEWSLETTER" > "$TARGET"
+$X_WWW_BROWSER "$TARGET"

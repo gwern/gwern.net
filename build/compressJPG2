@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# compressJPG2.sh: compress a JPG with mozjpeg if the savings are worthwhile.
+# Author: Gwern Branwen
+# Date: 2020-02-07
+# When:  Time-stamp: "2023-02-11 20:35:20 gwern"
+# License: CC-0
+
+set -e
+
+if [ $# -eq 0 ]; then
+    return 0;
+else
+    JPG="$(mktemp /tmp/XXXXXX-original.jpg)";
+    TMP="$(mktemp /tmp/XXXXXX-temp.jpg)"
+    cp "$1" "$JPG"
+    /opt/mozjpeg/bin/jpegtran -copy none -progressive -optimize -outfile "$TMP" "$JPG"
+    mogrify -quality 60 "$TMP"
+
+    ORIGINAL=$(wc -c < "$JPG")
+    SMALL=$(wc -c < "$TMP")
+    RATIO=$(echo "$ORIGINAL / $SMALL" | bc -l)
+    echo "$1 : from $ORIGINAL to $SMALL ($RATIO)"
+
+    if (( $(echo "$RATIO > 1.2" | bc -l) ));
+    then
+        mv "$TMP" "$1"
+    fi
+    rm "$JPG" "$TMP" &> /dev/null || true
+
+    shift;
+    compressJPG2 "$@";
+fi
