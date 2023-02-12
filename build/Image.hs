@@ -59,7 +59,7 @@ invertImage :: FilePath -> IO (Bool, String, String) -- invert / height / width
 invertImage f | "https://gwern.net/" `isPrefixOf` f = invertImageLocal $ Utils.replace "https://gwern.net/" "" f
               | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-invert"
                                            -- NOTE: while wget preserves it, curl erases the original modification time reported by server in favor of local file creation; this is useful for `invertImagePreview` --- we want to check downloaded images manually before their annotation gets stored permanently.
-                                           (status,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", f, "--output", temp]
+                                           (status,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+imagescraping@gwern.net", f, "--output", temp]
                                            case status of
                                              ExitFailure _ -> do printRed ("Download failed (unable to check image invertibility): " ++ f)
                                                                  removeFile temp
