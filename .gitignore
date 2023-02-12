@@ -6,6 +6,7 @@ metadata/archive.hs
 404.shtml
 **.o
 **.hi
+**.elc
 build/hakyll
 build/generateDirectory
 build/generateBacklinks
