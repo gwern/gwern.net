@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-02-11 19:44:48 gwern"
+;;; When:  Time-stamp: "2023-02-12 21:17:06 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -458,6 +458,8 @@
        (query-replace "βE" "β~E~" nil begin end)
        (query-replace "CH4" "CH~4~" nil begin end)
        (query-replace "PH3" "PH~3~" nil begin end)
+       (query-replace "PM2.5" "PM<sub>2.5</sub>" nil begin end)
+       (query-replace "μg/m3" "μg⁄m<sup>3</sup>" nil begin end)
        (query-replace "H2" "H~2~" nil begin end)
        (query-replace "H2O" "H~2~O" nil begin end)
        (query-replace "cm-2" "cm^−2^" nil begin end)

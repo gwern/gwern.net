@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveGeneric, OverloadedStrings #-}
 module Annotation.PDF where
 
 import System.Directory (doesFileExist)
@@ -44,10 +44,6 @@ pdf p = do let p' = takeWhile (/='#') $ if head p == '/' then tail p else p
                   return $ Right (p, (title, author, trim $ replace ":" "-" (U.toString mbDate), edoi', ts, at))
                   else
                   return (Left Permanent)
-                -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:
-                -- case aMaybe of
-                --   Nothing -> return (Left Permanent)
-                --   Just a -> return $ Right (p, (trimTitle etitle, author, trim $ replace ":" "-" edate, edoi', a))
            else printRed "PDF annotation failed, insufficient data or unreadable file; exiftool returned: " >> putStrLn ("title/author/date: " ++ show mbTitle ++ " ; DOI: " ++ show mbDoi) >> return (Left Permanent)
 
 

@@ -1180,6 +1180,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" gf ", " <em>gf</em> ")
          , (" gc ", " <em>gc</em> ")
          , ("( g = ", "(<em>g</em> = ")
+         , (" g-factor", " <em>g</em>-factor")
          , ("<i><em>h</em><sup>2</sup></i>", "<em>h</em><sup>2</sup>")
          , ("<i><em>h</em><sup>2</sup><sub>SNP</sub></i>", "<em>h</em><span class=\"subsup\"><sub>SNP</sub><sup>2</sup></span>")
          , ("h2SNP", "<em>h</em><span class=\"subsup\"><sub>SNP</sub><sup>2</sup></span>")

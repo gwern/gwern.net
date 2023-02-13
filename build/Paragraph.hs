@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Paragraph where
 
 import Data.List (isInfixOf, intercalate)

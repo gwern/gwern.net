@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-02-10 10:09:11 gwern"
+When:  Time-stamp: "2023-02-12 10:22:46 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1305,5 +1305,6 @@ whiteList url
       , "https://juretriglav.si/compressing-global-illumination-with-neural-networks/" -- low quality (video embeds)
       , "https://cs.stanford.edu/~yzzhang/projects/rose/" -- interactive
       , "https://aihabitat.org/" -- low quality (video embeds)
+      , "https://magvit.cs.cmu.edu/" -- low quality (video embeds)
       ] = True
     | otherwise = False
