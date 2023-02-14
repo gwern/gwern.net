@@ -98,6 +98,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "openai" || u'' "gptprompts.wikidot.com" = aI "openai" "svg" -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
  | u' "microsoft" = aI "MS" "text,sans,italic" -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
  | u' "#anthropic" || u'' "transformer-circuits.pub" || u'' "www.anthropic.com" = aI "anthropic" "svg" -- need to override Arxiv
+ | u' "#laion" || u'' "laion.ai" = aI "laion" "svg" -- <https://laion.ai/favicon.svg>; need to override Arxiv & Github & Hugging Face
 
  -- Domains:
  | aU'' ["psyarxiv.com", "files.osf.io", "osf.io"] = aI "ψ" "text" -- Unicode trickery icons: GREEK SMALL LETTER PSI
@@ -1090,4 +1091,7 @@ linkIconTestUnitsText =
          , ("https://jaymans.wordpress.com/2015/07/04/demography-is-destiny/", "J👨🏾", "text,sans")
          , ("https://ideas.repec.org/p/nbr/nberwo/27053.html", "NBER", "text,quad")
          , ("https://www.palladiummag.com/2019/05/09/what-botswana-can-teach-us-about-political-stability/", "Pd", "text,sans")
+         , ("https://arxiv.org/abs/2111.02114#laion", "laion", "svg")
+         , ("https://github.com/LAION-AI/laion-datasets/blob/main/laion-aesthetic.md", "laion", "svg")
+         , ("https://laion.ai/blog/coca/", "laion", "svg")
         ]
