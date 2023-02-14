@@ -27,8 +27,8 @@ linkchecker --no-status --check-extern --threads=1 --timeout=20 -r1 "https://gwe
 
 set -x
 CHECK=$(echo "https://gwern.net/newsletter/$1" | xargs urlencode)
-$X_WWW_BROWSER "https://validator.w3.org/nu/?doc=$CHECK"
+$WWW_BROWSER "https://validator.w3.org/nu/?doc=$CHECK"
 
 TARGET="$(mktemp --suffix=.html)"
 pandoc --metadata lang=en --metadata title="$1" --standalone -f markdown+smart --reference-links --css=https://gwern.net/static/css/default.css "$NEWSLETTER" > "$TARGET"
-$X_WWW_BROWSER "$TARGET"
+$WWW_BROWSER "$TARGET"

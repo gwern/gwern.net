@@ -42,4 +42,4 @@ processPubMedAbstract abst = let clean = runPure $ do
                                    return $ T.unpack html
                              in case clean of
                                   Left e -> error $ ppShow e ++ " : " ++ abst
-                                  Right output -> linkAutoHtml5String $ cleanAbstractsHTML $ trim $ replace "<br/>" "" $ cleanAbstractsHTML output
+                                  Right output -> linkAutoHtml5String $ cleanAbstractsHTML $ trim $ replace "<br />" "" $ cleanAbstractsHTML output

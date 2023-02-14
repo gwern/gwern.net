@@ -131,7 +131,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "examine.com" = aI "Eχ" "text,sans"
  | u'' "www.sciencedirect.com" = aI "E" "text" -- Elsevier/Sciencedirect.com: also an ‘E’
  | u'' "www.esquire.com" = aI "ℰ" "text"
- | aU'' ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' "www.evacommentary.org" || u' "nitter.net/EvaMonkey/" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
+ | aU'' ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' "www.evacommentary.org" || u' "nitter.moomoo.me/EvaMonkey/" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
  | aU'' ["www.fda.gov","fis.fda.gov","clinicaltrials.gov"] = aI "FDA" "text,tri,sans" -- U.S. Food & Drug Administration
  | u'' "www.hpmor.com" || u' "www.fanfiction.net/r/5782108/" || u' "old.reddit.com/r/HPMOR/" = aI "MoR" "text,tri,italic"
  | u' "mozilla.org" = aI "FF" "text,sans" -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized, and confusable with DeepMind.
@@ -242,7 +242,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.pragmatic.ml" = aI "𝕄" "text" -- Madison May, machine learning blog
  | u'' "www.research.va.gov" = aI "VA" "text,sans" -- US Department of Veterans Affair (mostly linked for Million Veteran Project)
  | u'' "apnews.com" = aI "AP" "text,sans"
- | aU' ["www.unz.com/gnxp/", "razib.substack.com", "www.razib.com", "www.gnxp.com", "nitter.net/razibkhan"] = aI "RK" "text,sans" -- Razib Khan
+ | aU' ["www.unz.com/gnxp/", "razib.substack.com", "www.razib.com", "www.gnxp.com", "nitter.moomoo.me/razibkhan"] = aI "RK" "text,sans" -- Razib Khan
  | u'' "www.outsideonline.com" = aI "𝕆" "text,sans" -- imitate the shadowing on Outside Online's 'O' <https://www.outsideonline.com/wp-content/uploads/2021/07/favicon-194x194-1.png>
  | u'' "jaymans.wordpress.com" = aI "J👨🏾" "text,sans" -- JayMan
 
@@ -367,7 +367,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.theguardian.com" || u'' "www.guardian.co.uk" = aI "theguardian" "svg" -- El Grauniad.
  | u'' "www.newyorker.com" = aI "thenewyorker" "svg" -- The New Yorker: the Dandy SVG, simplified & rotated more vertically.
  | u' "tumblr.com" = aI "tumblr" "svg"
- | aU'' ["twitter.com", "blog.twitter.com", "developer.twitter.com", "nitter.net"] = aI "twitter" "svg"
+ | aU'' ["twitter.com", "blog.twitter.com", "developer.twitter.com", "nitter.moomoo.me"] = aI "twitter" "svg"
  | u'' "www.uptontea.com" = aI "uptontea" "svg"
  | u'' "soundcloud.com" = aI "audio" "svg"
  | u' ".bandcamp.com" = aI "audio" "svg"
@@ -663,7 +663,7 @@ linkIconTestUnitsText =
          , ("https://17th-angel.tumblr.com/post/11409371268/anno-a-transfer-student-opens-the-door-with-a",  "NGE","text,tri")
          , ("https://forum.evageeks.org/index.php",  "EG","text")
          , ("https://www.evamonkey.com/ask-john/has-evangelion-influenced-contemporary-gundam-anime.php",  "EG","text")
-         , ("https://nitter.net/EvaMonkey/", "EG", "text")
+         , ("https://nitter.moomoo.me/EvaMonkey/", "EG", "text")
          , ("https://web.archive.org/web/20151106005148/http://www.evacommentary.org/appendix/character-names.html", "EG", "text")
          , ("http://evaotaku.com/html/programbooks.html",  "NGE","text,tri")
          , ("http://gainax.co.jp/",  "NGE","text,tri")
@@ -743,7 +743,7 @@ linkIconTestUnitsText =
          , ("https://econlolcats.tumblr.com/",  "tumblr","svg")
          , ("https://tvtropes.org/pmwiki/pmwiki.php/Anime/MobileSuitGundamCharscounterattack",  "TV","text")
          , ("https://developer.twitter.com/en/doc/twitter-api/v1/rules-and-filtering/search-operators",  "twitter","svg")
-         , ("https://nitter.net/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg")
+         , ("https://nitter.moomoo.me/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg")
          , ("https://www.uptontea.com/formosa-oolong-tea/taiwan-loose-leaf-oolong-tea/p/V00252/",  "uptontea","svg")
          , ("http://lists.urth.net/pipermail/urth-urth.net/2010-December/019108.html",  "U","text")
          , ("https://www.wolfewiki.com/pmwiki/pmwiki.php?n=Stories.SuzanneDelage", "U","text")
@@ -1084,7 +1084,7 @@ linkIconTestUnitsText =
          , ("https://www.unz.com/gnxp/through-the-wormhole-are-we-here-for-a-reason-premier-may-13th/", "RK", "text,sans")
          , ("https://razib.substack.com/p/get-lucky", "RK", "text,sans")
          , ("https://www.gnxp.com/WordPress/2017/12/12/most-people-say-they-think-nurture-is-more-important-than-nature-especially-white-americans/", "RK", "text,sans")
-         , ("https://nitter.net/razibkhan/status/1463204399954776073", "RK", "text,sans")
+         , ("https://nitter.moomoo.me/razibkhan/status/1463204399954776073", "RK", "text,sans")
          , ("https://www.outsideonline.com/culture/books-media/how-athletes-get-great/", "𝕆", "text,sans")
          , ("https://thelastpsychiatrist.com/2011/01/why_chinese_mothers_are_not_su.html", "TLP", "text,tri,sans")
          , ("https://jaymans.wordpress.com/2015/07/04/demography-is-destiny/", "J👨🏾", "text,sans")

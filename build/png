@@ -1,0 +1,15 @@
+#!/bin/bash
+set -euo pipefail
+
+# do a mix of lossless then lossy optimization:
+pngOne () { if [[ "$1" =~ .*\.png ]]; then du -h "$1"
+         # WARNING: can't overwrite on Ubuntu as pngnq is buggy and will simply delete the file! so create lossy version and overwrite manually:
+         nice -n 19 pngnq -v -s1 "$1"
+         FILE="${1%.*}"
+         mv "$FILE"-nq8.png "$1";
+         nice -n 19 advpng --iter 20 -z "$1";
+         nice -n 19 optipng -o9 "$1"
+         du -h "$1"; fi; }
+export -f pngOne
+
+find "$@" -type f | sort | parallel pngOne

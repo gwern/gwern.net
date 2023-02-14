@@ -90,7 +90,7 @@ isPagePath f = let f' = replace "https://gwern.net" "" $ T.unpack f in
 --
 -- > walkAndUpdateLinkMetadata (\x@(path,(title,author,date,doi,tags,abstrct)) -> if not ("https://arxiv.org" `isPrefixOf` path) || (doi /= "") then return x else return (path,(title,author,date,processDOIArxiv path,tags,abstrct)))
 --
--- To rewrite a tag, eg 'conscientiousness' → 'psychology/personality/conscientiousness':
+-- To rewrite a tag, eg. 'conscientiousness' → 'psychology/personality/conscientiousness':
 --
 -- > walkAndUpdateLinkMetadata True (\(path,(title,author,date,doi,tags,abst)) -> return (path,(title,author,date,doi,
 --      map (\t -> if t/="conscientiousness" then t else "psychology/personality/conscientiousness") tags,  abst)) )
@@ -118,7 +118,7 @@ updateGwernEntries = do rescrapeYAML gwernEntries "metadata/full.yaml"
                         readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting…"
   where gwernEntries path = ("/" `isPrefixOf` path || "https://gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path || "#manual-annotation" `isInfixOf` path)
 
--- eg to rescrape a specific abstract: `rescrapeYAML (\p -> p == "/notes/Attention") "metadata/half.yaml"`
+-- eg. to rescrape a specific abstract: `rescrapeYAML (\p -> p == "/notes/Attention") "metadata/half.yaml"`
 rescrapeYAML :: (Path -> Bool) -> Path -> IO ()
 rescrapeYAML filterF yamlpath = do dbl <- readYaml yamlpath
                                    let paths = filter filterF $ map fst dbl

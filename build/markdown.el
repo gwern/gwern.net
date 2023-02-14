@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-02-12 21:17:06 gwern"
+;;; When:  Time-stamp: "2023-02-13 10:56:25 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -332,6 +332,8 @@
        (replace-all "(_n_=" "(_n_ = ")
        (query-replace "n = " "_n_ = " nil begin end)
        (query-replace "N = " "_n_ = " nil begin end)
+       (query-replace " n≤" " _n_ ≤ " nil begin end)
+       (query-replace " n≥" " _n_ ≥ " nil begin end)
        (query-replace " O(" " 𝒪(" nil begin end)
        (query-replace "( r =" "(_r_ =" nil begin end)
        (query-replace "(r)" "(_r_)" nil begin end)

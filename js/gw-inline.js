@@ -503,7 +503,7 @@ GW.notificationCenter = {
         }
 
         /*  If there’s not already a handlers array for the given event (which
-            may be, eg., because no event handlers have yet been registered
+            may be, eg. because no event handlers have yet been registered
             for this event), create the array.
          */
         if (GW.notificationCenter.eventHandlers[eventName] == null)
@@ -796,7 +796,7 @@ GW.notificationCenter = {
         GW.notificationCenter.currentEvents.push(eventName);
 
         /*  Store event name in info dictionary, so that event handlers can
-            access it. (This permits, eg., the same handler to handle multiple
+            access it. (This permits, eg. the same handler to handle multiple
             events, and conditionally select behavior based on which event is
             calling the handler.)
          */
