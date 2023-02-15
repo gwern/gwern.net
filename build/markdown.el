@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-02-13 10:56:25 gwern"
+;;; When:  Time-stamp: "2023-02-14 19:29:34 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -266,6 +266,7 @@
        (replace-all " utilizing" " using")
        (replace-all " utilisation" " usage")
        (replace-all " utilization" " usage")
+       (replace-all "\n• " "\n- ")
 
        (query-replace " · " ", " nil begin end)
        ; remove subtle whitespace problems: double space
@@ -1136,6 +1137,7 @@
        (query-replace "*8" "**" nil begin end)
        (query-replace "8*" "**" nil begin end)
        (query-replace "!{" "![" nil begin end)
+       (query-replace-regexp " \"'\\(.+\\)', " " \"‘\\1’, " nil begin end) ; avoid downstream YAML errors from titles encoded in tooltips with single straight quotes
        (replace-all "\n\n\n" "\n\n")
 
        (message "%s %s" begin end)

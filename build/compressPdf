@@ -4,7 +4,7 @@
 #
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-02-11 21:10:45 gwern"
+# When:  Time-stamp: "2023-02-14 12:57:33 gwern"
 # License: CC-0
 
 set -e
@@ -16,7 +16,7 @@ cp "$1" "$PDF"
 TMP=$(mktemp /tmp/XXXXXX-small.pdf)
 
 source activate fastai
-nice -n 20 ocrmypdf --skip-text --optimize 3 --jbig2-lossy "$PDF" "$TMP" &> /dev/null
+nice -n 20 ocrmypdf --skip-text --optimize 3 --jbig2-lossy "$PDF" "$TMP" &> /dev/null || true
 
 ORIGINAL=$(wc -c < "$PDF")
 SMALL=$(wc -c < "$TMP")
@@ -26,7 +26,7 @@ echo "$PDF : from $ORIGINAL to $SMALL ($RATIO)"
 if (( $(echo "$RATIO > 1.5" | bc -l) ));
 then
     # overwrite original with compressed
-    exiftool -TagsFromFile "$PDF" "$TMP" # copy over all the metadata that ocrmypdf/Ghostscript erases by default: <https://ocrmypdf.readthedocs.io/en/latest/introduction.html#limitations>
+    exiftool -TagsFromFile "$PDF" "$TMP" || true # copy over all the metadata that ocrmypdf/Ghostscript erases by default: <https://ocrmypdf.readthedocs.io/en/latest/introduction.html#limitations>
     mv "$TMP" "$1"
 else
     # Perhaps we didn't ocrmypdf because it didn't save space, but we may want to for OCR anyway.
@@ -40,7 +40,7 @@ else
         pdftotext "$TMP" - | head -5
         echo "----"
         ocrmypdf --force-ocr --optimize 3 --jbig2-lossy "$PDF" "$TMP"
-        exiftool -TagsFromFile "$PDF" "$TMP"
+        exiftool -TagsFromFile "$PDF" "$TMP" || true
         mv "$TMP" "$1"
     fi
 fi
