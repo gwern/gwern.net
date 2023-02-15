@@ -93,12 +93,12 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "groups.google.com" = aI "✉" "text"
  | u'' "scholar.google.com" = aI "google-scholar" "svg" -- Google Scholar.
  | u'' "docs.google.com" = aI "worddoc" "svg"
- | u' "google" || u'' "magenta.tensorflow.org" = aI "google" "svg" -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option.
+ | u' "google" || u'' "magenta.tensorflow.org" = aI "alphabet" "svg" -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option. [the SVG has been renamed 'alphabet' instead of the expected 'google' because two default uBlock lists block the regexp 'icons/google.*' as it is usually abused for social-media spamming icons]
  | u' "nvidia"  || aU'' ["nvlabs.github.io", "nv-adlr.github.io", "nv-tlabs.github.io"] = aI "n" "text,sans,italic" -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
  | u' "openai" || u'' "gptprompts.wikidot.com" = aI "openai" "svg" -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
  | u' "microsoft" = aI "MS" "text,sans,italic" -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
  | u' "#anthropic" || u'' "transformer-circuits.pub" || u'' "www.anthropic.com" = aI "anthropic" "svg" -- need to override Arxiv
- | u' "#laion" || u'' "laion.ai" = aI "laion" "svg" -- <https://laion.ai/favicon.svg>; need to override Arxiv & Github & Hugging Face
+ | u' "#laion"  || u' "LAION-AI" || u'' "laion.ai" = aI "laion" "svg" -- <https://laion.ai/favicon.svg>; need to override Arxiv & Github & Hugging Face
 
  -- Domains:
  | aU'' ["psyarxiv.com", "files.osf.io", "osf.io"] = aI "ψ" "text" -- Unicode trickery icons: GREEK SMALL LETTER PSI
@@ -596,10 +596,10 @@ linkIconTestUnitsText =
          , ("https://archiveprogram.github.com/",  "github","svg")
          , ("https://compvis.github.io/taming-transformers/",  "github","svg")
          , ("https://www.goodreads.com/api",  "GR","text")
-         , ("https://about.google/",  "google","svg")
-         , ("https://arxiv.org/abs/1706.04972#google",  "google","svg")
-         , ("https://arxiv.org/pdf/2009.06732.pdf#org=google&page=6",  "google","svg")
-         , ("https://gwern.net/doc/cs/hardware/2015-kanev.pdf#google",  "google","svg")
+         , ("https://about.google/",  "alphabet","svg")
+         , ("https://arxiv.org/abs/1706.04972#google",  "alphabet","svg")
+         , ("https://arxiv.org/pdf/2009.06732.pdf#org=google&page=6",  "alphabet","svg")
+         , ("https://gwern.net/doc/cs/hardware/2015-kanev.pdf#google",  "alphabet","svg")
          , ("https://www.lesswrong.com/posts/37sHjeisS9uJufi4u/scholarship-how-to-do-it-efficiently",  "LW","text")
          , ("https://www.lesswrong.com",  "LW","text")
          , ("http://sl4.org/archive/0812/index.html#19570",  "LW","text")
@@ -803,7 +803,7 @@ linkIconTestUnitsText =
          , ("/static/font/drop-cap/de-zs/DeutscheZierschrift-M.ttf",  "misc","svg")
          , ("/doc/creatine/2009-ling-data.xls",  "spreadsheet","svg")
          , ("/doc/cs/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx",  "spreadsheet","svg")
-         , ("/doc/personal/google-cse.xml",  "google","svg")
+         , ("/doc/personal/google-cse.xml",  "alphabet","svg")
          , ("https://docs.google.com/document/d/1MhA3M5ucBD7ZXcWk57_MKZ5jEgPX6_YiKye_EFP-adg/edit",  "worddoc","svg")
          , ("/doc/ai/1986-michie-onmachineintelligence.pdf#page=99",  "pdf","svg")
          , ("/doc/ai/1962-bryson.pdf",  "pdf","svg")
@@ -975,7 +975,7 @@ linkIconTestUnitsText =
          , ("https://old.reddit.com/r/AIDungeon/comments/i1qhg0/the_dragon_ai_just_got_worse/", "AID", "text,tri,sans")
          , ("https://www.patreon.com/AIDungeon", "AID", "text,tri,sans")
          , ("https://www.fimfiction.net/story/62074/Friendship-is-Optimal", "FIMF", "text,quad,mono")
-         , ("https://magenta.tensorflow.org/music-transformer", "google", "svg")
+         , ("https://magenta.tensorflow.org/music-transformer", "alphabet", "svg")
          , ("https://www.gq.com/story/the-last-true-hermit", "GQ", "text,sans")
          , ("https://bls.gov/news.release/archives/ecec_031986.pdf", "BLS", "text,sans")
          , ("https://data.bls.gov/cgi-bin/cpicalc.pl?cost1=100&year1=1992&year2=2011", "BLS", "text,sans")
