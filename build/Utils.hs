@@ -665,8 +665,6 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("O(n)", "𝒪(<em>n</em>)")
          , ("O(N) ", "𝒪(<em>N</em>) ")
          , (" O(N)", " 𝒪(<em>N</em>)")
-         , (" n ", " <em>n</em> ")
-         , ("(n ", "<em>n</em> ") -- it's safe to replace 'n', but not 'N' because 'N' is used fairly often in chemistry for nitrogen
          , ("<span class=\"math inline\">\\(n^{O(k)}\\)</span>", "<em>n</em><sup>𝒪(<em>k</em>)</sup>")
          , ("<span class=\"math inline\">\\(S^</em>(0.8)\\)</span>", "<em>S</em><sup>✱</sup>(0.8)")
          , ("<span class=\"math inline\">\\(S^</em>(0)\\)</span>", "<em>S</em><sup>✱</sup>(0)")
@@ -1287,6 +1285,11 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" P&lte;", " <em>p</em> ≤ ")
          , ("<em>p</em> = .", "<em>p</em> = 0.")
          , ("<em>p</em> < .", "<em>p</em> < 0.")
+         , (" n ", " <em>n</em> ")
+         , ("(n=", "(<em>n</em> = ")
+         , ("(N = ", "(<em>n</em> = ")
+         , ("(N=", "(<em>n</em> = ")
+         , ("(n ", "(<em>n</em> ") -- it's safe to replace 'n', but not 'N' because 'N' is used fairly often in chemistry for nitrogen, and chemical names often have parentheses, so we can't search-and-replace it in general
          , (" N=",     " <em>N</em> = ")
          , (" N = ",     " <em>N</em> = ")
          , (" n=",     " <em>n</em> = ")

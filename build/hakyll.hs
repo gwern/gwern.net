@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-02-07 15:38:57 gwern"
+When: Time-stamp: "2023-02-15 16:12:26 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -59,6 +59,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import qualified Data.Text as T (append, isInfixOf, pack, unpack, length)
 
 -- local custom modules:
+import Annotation (tooltipToMetadataTest)
 import Image (invertImageInline, imageMagickDimensions, addImgDimensions, imageSrcset)
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToText, interwikiTestSuite)
@@ -93,6 +94,8 @@ main =
                               preprocess $ printGreen ("Testing interwiki rewrite rules…" :: String)
                               let interwikiPopupTestCases = interwikiTestSuite
                               unless (null interwikiPopupTestCases) $ preprocess $ printRed ("Interwiki rules have errors in: " ++ show interwikiPopupTestCases)
+
+                              unless (null tooltipToMetadataTest) $ preprocess $ printRed ("Tooltip-parsing rules have errors in: " ++ show tooltipToMetadataTest)
 
                preprocess $ printGreen ("Local archives parsing…" :: String)
                am           <- preprocess readArchiveMetadata

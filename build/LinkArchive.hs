@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-02-13 10:49:55 gwern"
+When:  Time-stamp: "2023-02-15 16:00:33 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -774,7 +774,6 @@ whiteList url
       , "archive.today" -- archive
       , "archive.ph" -- archive
       , "quantum.country" -- interactive
-      , "www.michaelnielsen.org" -- stable
       , "numinous.productions" -- stable/interactive
       , "neuralnetworksanddeeplearning.com" -- stable
       , "mega.nz"  -- service

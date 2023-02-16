@@ -147,9 +147,9 @@ imageSrcset x@(Image (c, t, pairs) inlines (targt, title)) =
                case status of
                  ExitFailure _ -> error $ show status ++ show bs
                  _ -> void $ forkIO $ if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
-                                        void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [smallerPath]
+                                        void $ runShellCommand "./" Nothing "static/build/png" [smallerPath]
                                       else
-                                        void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/compressJPG" [smallerPath]
+                                        void $ runShellCommand "./" Nothing "static/build/compressJPG2" [smallerPath]
              let srcset = T.pack ("/"++smallerPath++" 768w, " ++ target'++" "++w++"w")
              return $ Image (c, t, pairs++[("srcset", srcset), ("sizes", T.pack ("(max-width: 768px) 100vw, "++w++"px"))])
                             inlines (target, title)

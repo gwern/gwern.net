@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2023-02-12 18:34:27 gwern"
+When:  Time-stamp: "2023-02-15 21:01:48 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -299,7 +299,8 @@ definitionsValidate defs
 -- more sensible to require them to be marked up explicitly, which is vastly easier to program &
 -- more efficient. We'll see.
 customDefinitions :: ([(T.Text, T.Text)] -> [(T.Text, T.Text)]) -> [(T.Text, R.Regex, T.Text)]
-customDefinitions subsetter = customDefinitionsR $ definitionsValidate $ subsetter custom -- delimit & compile
+customDefinitions subsetter = if length custom > 1007 then error ("LinkAuto.hs (customDefinitions): 'custom' too long (" ++ show (length custom) ++ "), which will trigger the LA slowdown, making site compiles unacceptably slow. Delete some unused regexpo rewrite rules!")
+                              else customDefinitionsR $ definitionsValidate $ subsetter custom -- delimit & compile
 
 -- descending order, longest match to shortest (for regex priority):
 -- WARNING: we appear to be hitting some sort of exponential slowdown despite the optimizations. From now on, delete at least one rewrite for every added rewrite. Many are unnecessary.
@@ -312,6 +313,8 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Akaike [Ii]nformation [Cc]riterion|AIC)", "https://en.wikipedia.org/wiki/Akaike_information_criterion")
         , ("(Alexey )?Guzey", "https://guzey.com/")
         , ("(Alpha ?Zero|Alpha0)", "/doc/reinforcement-learning/model/alphago/2018-silver.pdf#deepmind")
+        , ("Kolmogorov axioms?", "https://en.wikipedia.org/wiki/Probability_axioms")
+        , ("Kolmogorov [Cc]omplexity", "https://en.wikipedia.org/wiki/Kolmogorov_complexity")
         , ("(Andrey )?Kolmogorov.?.?.?", "https://en.wikipedia.org/wiki/Andrey_Kolmogorov")
         , ("Anime News Network", "https://en.wikipedia.org/wiki/Anime_News_Network")
         , ("(ArXiv|Arxiv|arxiv)", "https://en.wikipedia.org/wiki/ArXiv")
@@ -680,7 +683,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Hideo Azuma", "https://en.wikipedia.org/wiki/Hideo_Azuma")
         , ("Higurashi", "https://en.wikipedia.org/wiki/Higurashi_When_They_Cry")
         , ("Hiroki Azuma", "https://en.wikipedia.org/wiki/Hiroki_Azuma")
-        , ("Hiroshi Miyauchi", "https://en.wikipedia.org/wiki/Hiroshi_Miyauchi")
         , ("Hiroyuki Yamaga", "https://en.wikipedia.org/wiki/Hiroyuki_Yamaga")
         , ("Homeric Question", "https://en.wikipedia.org/wiki/Homeric_Question")
         , ("Hsu 2014", "https://arxiv.org/abs/1408.3421")
@@ -721,7 +723,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Kinect", "https://en.wikipedia.org/wiki/Kinect")
         , ("Kirk Allen", "https://en.wikipedia.org/wiki/Kirk_Allen")
         , ("Known Space", "https://en.wikipedia.org/wiki/Known_Space")
-        , ("Kolmogorov axioms", "https://en.wikipedia.org/wiki/Probability_axioms")
         , ("Krummhörn", "https://en.wikipedia.org/wiki/Krummh%C3%B6rn")
         , ("LAMBADA", "https://arxiv.org/abs/1606.06031")
         , ("LD ?Hub", "http://ldsc.broadinstitute.org/about/")
@@ -770,8 +771,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Mnemosyne", "https://en.wikipedia.org/wiki/Mnemosyne_%28software%29")
         , ("Mobile Suit Gundam", "https://en.wikipedia.org/wiki/Mobile_Suit_Gundam")
         , ("Modern Synthesis", "https://en.wikipedia.org/wiki/Neo-Darwinism")
-        , ("Moebius-like", "https://en.wikipedia.org/wiki/Jean_Giraud")
-        , ("MojoNation", "https://en.wikipedia.org/wiki/MojoNation")
         , ("Montaillou: The Promised Land of Error", "https://en.wikipedia.org/wiki/Montaillou_(book)")
         , ("Monte Carlo (simulates?|estimates?|simulations?|approximations?|implementations?|methods?)?", "https://en.wikipedia.org/wiki/Monte_Carlo_method")
         , ("Monte Carlo algorithm", "https://en.wikipedia.org/wiki/Monte_Carlo_algorithm")
@@ -938,7 +937,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("TransGAN", "https://arxiv.org/abs/2102.07074")
         , ("Transformer[ -]XLs?", "https://arxiv.org/abs/1901.02860")
         , ("Transformers?", "https://arxiv.org/abs/1706.03762#google")
-        , ("Trithemius", "https://en.wikipedia.org/wiki/Johannes_Trithemius")
         , ("True[Tt]ype", "https://en.wikipedia.org/wiki/TrueType")
         , ("Trusted[ -][Tt]imestamping", "https://en.wikipedia.org/wiki/Trusted_timestamping")
         , ("Tufte[- ]CSS", "https://edwardtufte.github.io/tufte-css/")
@@ -1006,7 +1004,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Cc]ache-oblivious", "https://en.wikipedia.org/wiki/Cache-oblivious_algorithm")
         , ("[Cc]affein(e|ate|ated)", "https://en.wikipedia.org/wiki/Caffeine")
         , ("[Cc]aloric restriction", "https://en.wikipedia.org/wiki/Caloric_restriction")
-        , ("[Cc]ard marking", "https://en.wikipedia.org/wiki/Card_marking")
         , ("[Cc]arfentanil", "https://en.wikipedia.org/wiki/Carfentanil")
         , ("[Cc]ase.?[Cc]ontrol", "https://en.wikipedia.org/wiki/Case%E2%80%93control_study")
         , ("[Cc]eiling effects?", "https://en.wikipedia.org/wiki/Ceiling_effect_(statistics)")
@@ -1133,7 +1130,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("([Gg]enerali([zs]ed)? [Ll]inear [Mm]odels?|GLMs)", "https://en.wikipedia.org/wiki/Generalized_linear_model") -- exclude 'GLM' because that's https://arxiv.org/abs/2210.02414#baai
         , ("[Mm]ultivariate linear model", "https://en.wikipedia.org/wiki/Multivariate_linear_model")
         , ("([Mm]utation load|[Gg]enetic load)", "https://en.wikipedia.org/wiki/Genetic_load")
-        , ("[Mm]yxoma virus", "https://en.wikipedia.org/wiki/Myxoma_virus")
         , ("[Nn]-grams?", "https://en.wikipedia.org/wiki/N-grams")
         , ("[Nn][- ]?body problems?", "https://en.wikipedia.org/wiki/N-body_problem")
         , ("[Nn]atural experiment", "https://en.wikipedia.org/wiki/Natural_experiment")
@@ -1161,7 +1157,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Pp]entobarbital", "https://en.wikipedia.org/wiki/Pentobarbital")
         , ("[Pp]erpetual futures", "https://en.wikipedia.org/wiki/Perpetual_futures")
         , ("[Pp]harmacogenomics", "https://en.wikipedia.org/wiki/Pharmacogenomics")
-        , ("[Pp]hotoplethysmography", "https://en.wikipedia.org/wiki/Photoplethysmogram")
         , ("[Pp]iracetam", "https://en.wikipedia.org/wiki/Piracetam")
         , ("[Pp]olyphasic sleep", "https://en.wikipedia.org/wiki/Polyphasic_sleep")
         , ("[Pp]opulation genetics?", "https://en.wikipedia.org/wiki/Population_genetics")
@@ -1178,7 +1173,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Pp]sychopath(y|ic|s)?", "https://en.wikipedia.org/wiki/Psychopathy")
         , ("[Pp]ublic [Dd]omain", "https://en.wikipedia.org/wiki/Public_domain")
         , ("[Pp]ublic[ -]key cryptography", "https://en.wikipedia.org/wiki/Public-key_cryptography")
-        , ("[Pp]unctuated equilibriums?", "https://en.wikipedia.org/wiki/Punctuated_equilibrium")
         , ("[Qq]-learning", "https://en.wikipedia.org/wiki/Q-learning")
         , ("[Rr]adium", "https://en.wikipedia.org/wiki/Radium")
         , ("[Rr]amjet", "https://en.wikipedia.org/wiki/Ramjet")
@@ -1209,7 +1203,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ss]peedrunning", "https://en.wikipedia.org/wiki/Speedrun")
         , ("[Ss]um of normally distributed random variables", "https://en.wikipedia.org/wiki/Sum_of_normally_distributed_random_variables")
         , ("[Ss]uperflat", "https://en.wikipedia.org/wiki/Superflat")
-        , ("[Ss]uperpressure balloons?", "https://en.wikipedia.org/wiki/Superpressure_balloon")
         , ("[Ss]urvival analysis", "https://en.wikipedia.org/wiki/Survival_analysis")
         , ("[Ss]urvivorship curve", "https://en.wikipedia.org/wiki/Survivorship_curve")
         , ("[Tt]ime[ -]preference", "https://en.wikipedia.org/wiki/Time_preference")
