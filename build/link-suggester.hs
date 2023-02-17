@@ -915,7 +915,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
   , ( "https://en.wikipedia.org/wiki/Redshift_%28software%29"
     , [ "Redshift" ]
     )
-  , ( "https://en.wikipedia.org/wiki/Replication_Crisis"
+  , ( "https://en.wikipedia.org/wiki/replication_Crisis"
     , [ "Replication Crisis" ]
     )
   , ( "https://en.wikipedia.org/wiki/Reproducibility"

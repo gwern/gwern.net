@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-02-15 16:13:14 gwern"
+# When:  Time-stamp: "2023-02-16 13:37:20 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -24,7 +24,7 @@ wrap () { OUTPUT=$($1 2>&1)
              echo -e "$OUTPUT";
              echo -n "End: "; red "$WARN";
          fi; }
-eg () { grep -E --color=always "$@"; }
+ge () { grep -E --color=always "$@"; }
 gf () { grep -F --color=always "$@"; }
 
 # key dependencies: GHC, Hakyll, s3cmd, emacs, curl, tidy (HTML5 version), urlencode
@@ -406,7 +406,7 @@ else
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e '<div>' | grep -F --invert-match -e 'I got around this by adding in the Hakyll template an additional'; }
     wrap λ "Stray <div>?"
 
-    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-link-tags' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link' -e 'include-replace}' -e 'include-replace ' -e 'drop-caps-de-kanzlei' ; }
+    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-link-tags' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link' -e 'include-replace}' -e 'include-replace ' -e 'drop-caps-de-kanzlei' -e '.backlink-not)'; }
     wrap λ "Misspelled/outdated classes in Markdown/HTML."
 
      λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '/variables' | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e '{#'; }
@@ -428,10 +428,10 @@ else
     λ(){ find ./ -type f -name "*.page" | parallel --max-args=500 "grep -F --with-filename -e 'class=\"subsup\"><sup>'"; }
     wrap λ "Incorrect ordering of '<sup>' (the superscript '<sup>' must come second, or else risk Pandoc misinterpreting as footnote while translating HTML↔Markdown)."
 
-    λ(){ eg -e '<div class="admonition .*">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' -e 'class="epigraph>' **/*.page; }
+    λ(){ ge -e '<div class="admonition .*">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' -e 'class="epigraph>' **/*.page; }
     wrap λ "Broken admonition paragraph or epigraph in Markdown."
 
-    λ(){ eg -e ' a [aeio]' ./**/*.page | grep -E ' a [aeio]' | grep -F --invert-match -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/'; }
+    λ(){ ge -e ' a [aeio]' ./**/*.page | grep -E ' a [aeio]' | grep -F --invert-match -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/'; }
     wrap λ "Grammar: 'a' → 'an'?"
 
     λ(){ find -L . -type f -size 0  -printf 'Empty file: %p %s\n' | grep -F --invert-match '.git/FETCH_HEAD' -e './.git/modules/static/logs/refs/remotes/'; }
@@ -446,7 +446,7 @@ else
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -E --with-filename --color=always -e ' __[A-Z][a-z]'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
-    λ(){ eg -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' ./static/redirect/nginx*.conf; }
+    λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' ./static/redirect/nginx*.conf; }
     wrap λ "Warning: caret/tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
 
     λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeYAML "metadata/full.yaml"'; }
@@ -455,24 +455,24 @@ else
     λ(){ runghc -istatic/build/ ./static/build/link-prioritize.hs 20; }
     wrap λ "Links needing annotations by priority:"
 
-    λ(){ eg -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -e 'https://goo.gl' -- ./metadata/*.yaml | \
+    λ(){ ge -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -e 'https://goo.gl' -- ./metadata/*.yaml | \
          grep -F -v -e 'https://web.archive.org/web/'; }
     wrap λ "Check possible typo in YAML metadata database."
 
-    λ(){ eg '  - .*[a-z]–[a-Z]' ./metadata/full.yaml ./metadata/half.yaml; }
+    λ(){ ge '  - .*[a-z]–[a-Z]' ./metadata/full.yaml ./metadata/half.yaml; }
     wrap λ "Look for en-dash abuse."
 
     λ(){ grep -F ' ?' ./metadata/full.yaml; }
     wrap λ "Problem with question-marks (perhaps the crossref/Emacs copy-paste problem?)."
 
     λ(){ grep -F --invert-match -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -- ./metadata/full.yaml ./metadata/half.yaml | \
-             eg -e ',[A-Za-z]'; }
+             ge -e ',[A-Za-z]'; }
     wrap λ "Look for run-together commas (but exclude chemical names where that's correct)."
 
-    λ(){ grep -E --invert-match '^- - http' ./metadata/*.yaml | eg '[a-zA-Z0-9>]-$'; }
+    λ(){ grep -E --invert-match '^- - http' ./metadata/*.yaml | ge '[a-zA-Z0-9>]-$'; }
     wrap λ "Look for YAML line breaking at a hyphen."
 
-    λ(){ grep -E -e '[.,:;-<]</a>' -e '\]</a>' -- ./metadata/*.yaml | grep -F --invert-match -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>' -e '#' -e '[review]</a>' | eg -e '[.,:;-<]</a>'; }
+    λ(){ grep -E -e '[.,:;-<]</a>' -e '\]</a>' -- ./metadata/*.yaml | grep -F --invert-match -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>' -e '#' -e '[review]</a>' | ge -e '[.,:;-<]</a>'; }
     wrap λ "Look for punctuation inside links; unless it's a full sentence or a quote or a section link, generally prefer to put punctuation outside."
 
     λ(){ gf -e '**' -e ' _' -e '_ ' -e '!!' -e '*' -- ./metadata/full.yaml ./metadata/half.yaml; }
@@ -528,23 +528,26 @@ else
     λ(){ grep -F -e "'''" -- ./metadata/full.yaml ./metadata/half.yaml; }
     wrap λ "Triple quotes in YAML, should be curly quotes for readability/safety."
 
-    λ(){ eg -v '^- - ' -- ./metadata/*.yaml | gf -e ' -- ' -e '---'; }
+    λ(){ ge -v '^- - ' -- ./metadata/*.yaml | gf -e ' -- ' -e '---'; }
     wrap λ "Markdown hyphen problems in YAML metadata database"
 
-    λ(){ eg -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/full.yaml; }
+    λ(){ ge -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/full.yaml; }
     wrap λ "Wikipedia annotations in YAML metadata database, but will be ignored by popups! Override with non-WP URL?"
 
-    λ(){ eg -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.yaml; }
+    λ(){ ge -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.yaml; }
     wrap λ "Wrong filepaths in YAML metadata database—missing prefix?"
 
-    λ(){ eg -e ' [0-9]*[02456789]th' -e ' [0-9]*[3]rd' -e ' [0-9]*[2]nd' -e ' [0-9]*[1]st' -- ./metadata/*.yaml | \
+    λ(){ ge -e ' [0-9]*[02456789]th' -e ' [0-9]*[3]rd' -e ' [0-9]*[2]nd' -e ' [0-9]*[1]st' -- ./metadata/*.yaml | \
              grep -F --invert-match -e '%' -e '<figure>' -e 'alt="Figure ' -e http -e '- - /' -e "- - ! '" -e 'src=' -e "- - '#"; }
     wrap λ "Missing superscript abbreviations in YAML metadata database"
 
-    λ(){ eg -e 'up>T[Hh]<' -e 'up>R[Dd]<' -e 'up>N[Dd]<' -e 'up>S[Tt]<' -- ./metadata/*.yaml; }
+    λ(){ ge -e 'up>T[Hh]<' -e 'up>R[Dd]<' -e 'up>N[Dd]<' -e 'up>S[Tt]<' -- ./metadata/*.yaml; }
     wrap λ "Superscript abbreviations are weirdly capitalized?"
 
-    λ(){ eg -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"' -e 'class="width-full' ./metadata/*.yaml; }
+    λ(){ gf -e ' <sup>' -e ' <sub>' -e ' </sup>' -e ' </sub>' -- ./metadata/*.yaml | gf -e ' <sup>242m</sup>Am' -e ' <sup>60</sup>Co' -e ' <sup>2</sup> This is because of the principle' -e ' <sup>3</sup> There are some who' -e ' <sup>4</sup> Such as setting' -e ' <sup>5</sup> Such as buying gifts' -e ' <sup>31</sup>P-Magnetic' ; }
+    wrap λ "Superscripts/subscripts have spaces in front?"
+
+    λ(){ ge -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"' -e 'class="width-full' ./metadata/*.yaml; }
     wrap λ "Check <figure> vs <img> usage, image hotlinking, non-absolute relative image paths in YAML metadata database"
 
     λ(){ gf -e ' significant'  ./metadata/full.yaml; }
@@ -556,7 +559,7 @@ else
     λ(){ gf -e 'backlink/' -e 'metadata/annotation/' -e '?gi=' -- ./metadata/backlinks.hs; }
     wrap λ "Bad paths in backlinks databases: metadata paths are being annotated when they should not be!"
 
-    λ(){ eg -e '#[[:alnum:]]\+#' -- ./metadata/*.hs ./metadata/*.yaml; }
+    λ(){ ge -e '#[[:alnum:]]\+#' -- ./metadata/*.hs ./metadata/*.yaml; }
     wrap λ "Bad paths in metadata databases: redundant anchors"
 
     λ(){ gf '{#' $(find _site/ -type f -name "index"); }

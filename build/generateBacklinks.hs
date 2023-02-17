@@ -154,7 +154,7 @@ backLinksNot :: Inline -> Bool
 backLinksNot (Link (_, classes, _) _ _) = "backlink-not" `notElem` classes
 backLinksNot _ = True
 
--- -- for URLs like 'arxiv.org/123#google' or 'doc/reinforcement-learning/2021-foo.pdf#deepmind', we want to preserve anchors; for on-site pages like '/GPT-3#prompt-programming' we want to merge all such anchor links into just callers of '/GPT-3'
+-- -- for URLs like 'arxiv.org/123#google' or 'doc/reinforcement-learning/2021-foo.pdf#deepmind', we want to preserve anchors; for on-site pages like '/gpt-3#prompt-programming' we want to merge all such anchor links into just callers of '/gpt-3'
 truncateAnchors :: T.Text -> T.Text
 truncateAnchors = T.takeWhile (/='#')
 

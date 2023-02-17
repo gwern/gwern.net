@@ -1975,7 +1975,7 @@ redirectDB = [
           , ( "https://en.wikipedia.org/wiki/Renormalized", "https://en.wikipedia.org/wiki/Renormalization")
           , ( "https://en.wikipedia.org/wiki/Rent_control_in_New_York", "https://en.wikipedia.org/wiki/Rent_regulation_in_New_York")
           , ( "https://en.wikipedia.org/wiki/REPL", "https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop")
-          , ( "https://en.wikipedia.org/wiki/Replication_Crisis", "https://en.wikipedia.org/wiki/Replication_crisis")
+          , ( "https://en.wikipedia.org/wiki/replication_Crisis", "https://en.wikipedia.org/wiki/replication_crisis")
           , ( "https://en.wikipedia.org/wiki/Repl.it", "https://en.wikipedia.org/wiki/Replit")
           , ( "https://en.wikipedia.org/wiki/Reproductive-Cell_Cycle_Theory", "https://en.wikipedia.org/wiki/Reproductive-cell_cycle_theory")
           , ( "https://en.wikipedia.org/wiki/Republican_Contract_with_America", "https://en.wikipedia.org/wiki/Contract_with_America")

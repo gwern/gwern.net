@@ -1151,7 +1151,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Op]perations research", "https://en.wikipedia.org/wiki/Operations_research")
         , ("[Op]pportunity cost", "https://en.wikipedia.org/wiki/Opportunity_cost")
         , ("[Pp]aracosm", "https://en.wikipedia.org/wiki/Paracosm")
-        , ("[Pp]arasocial", "/notes/parasocial")
+        , ("[Pp]arasocial", "/note/parasocial")
         , ("[Pp]areidolia", "https://en.wikipedia.org/wiki/Pareidolia")
         , ("[Pp]article filtering", "https://en.wikipedia.org/wiki/Particle_filter")
         , ("[Pp]entobarbital", "https://en.wikipedia.org/wiki/Pentobarbital")

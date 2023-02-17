@@ -72,7 +72,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
 
                         let title' = if null sectTitle then title else title ++ " § " ++ sectTitle
 
-                        let combinedAnnotation = (if "</figure>" `isInfixOf` gabstract || "<img>" `isInfixOf` gabstract || null gabstract then "" else thumbnailFigure) ++ -- some pages like /Questions have an image inside the abstract; preserve that if it's there
+                        let combinedAnnotation = (if "</figure>" `isInfixOf` gabstract || "<img>" `isInfixOf` gabstract || null gabstract then "" else thumbnailFigure) ++ -- some pages like /question have an image inside the abstract; preserve that if it's there
                                                  gabstract
 
                         if gabstract == "404 Not Found Error: no page by this name!" || title' == "404 Not Found" || (null keywordTags && null gabstract) then

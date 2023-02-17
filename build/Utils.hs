@@ -276,6 +276,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" ### Competing Interest Statement .*$", "")
          , (" Study ([0-9][a-z]?)", " <strong>Study \\1</strong>")
          , (" Experiment ([0-9][a-z]?)", " <strong>Experiment \\1</strong>")
+         , ("<strong>Section ([a-zA-Z0-9.-]+)</strong>", "§\\1")
+         , ("\\*\\*Section ([a-zA-Z0-9.-]+)\\*\\*", "§\\1")
          -- <https://en.wikipedia.org/wiki/ClinicalTrials.gov>
          , (" (NCT[0-9]+)", "<a href=\"https://clinicaltrials.gov/show/\1\">\1</a>")
          , (" (NCT[0-9]+)</p>", "<a href=\"https://clinicaltrials.gov/show/\1\">\1</a>.</p>")
@@ -1187,6 +1189,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("h<sup>2</sup>", "<em>h</em><sup>2</sup>")
          , ("|rA|", "|r<sub>A</sub>|")
          , ("|rE|", "|r<sub>E</sub>|")
+         , ("R <sup>2</sup>", "R<sup>2</sup>")
          , ("<em>r</em> <sub>g</sub>", "<em>r</em><sub>g</sub>")
          , ("r(g)",    "<em>r</em><sub><em>g</em></sub>")
          , (" rg:", " <em>r</em><sub><em>g</em></sub>:")
