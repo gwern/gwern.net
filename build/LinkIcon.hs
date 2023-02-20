@@ -991,7 +991,7 @@ linkIconTestUnitsText =
          , ("https://medium.com/tensorflow/fitting-larger-networks-into-memory-583e3c758ff9", "tensorflow", "svg")
          , ("https://playground.tensorflow.org/", "tensorflow", "svg")
          , ("https://www.tensorflow.org/tensorboard/get_started", "tensorflow", "svg")
-         , ("https://www.supermemo.com/en/archives1990-2015/articles/20rules", "SM", "text,sans")
+         , ("https://www.supermemo.com/en/blog/twenty-rules-of-formulating-knowledge", "SM", "text,sans")
          , ("https://qwantz.com/index.php?comic=1896", "DC", "text,sans")
          , ("https://vndb.org/c582", "VNDB", "text,quad,sans")
          , ("https://qualiacomputing.com/2015/05/22/how-to-secretly-communicate-with-people-on-lsd/", "QC", "text,sans")

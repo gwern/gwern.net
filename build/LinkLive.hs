@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-02-11 10:55:20 gwern"
+When:  Time-stamp: "2023-02-18 23:06:00 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -2088,7 +2088,6 @@ badDomainsSimple = [ "2chan.us"
    , "www.typography.com"
    , "www.uber.com"
    , "www.ukbiobank.ac.uk"
-   , "www.ummah.com"
    , "www.unicef.org"
    , "www.unirioja.es"
    , "www.unitedpharmacies-uk.md"
@@ -3261,7 +3260,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "http://blog.platypope.org/2012/4/5/restore-features/"
             , "http://blog.sigfpe.com/2012/12/shuffles-bayes-theorem-and-continuations.html"
             , "http://boinngerionn.blog.fc2.com/blog-entry-203.html"
-            , "http://book.realworldhaskell.org/read/data-structures.html#id637702"
+            , "https://book.realworldhaskell.org/read/data-structures.html#id637702"
             , "http://book.webtypography.net/"
             , "http://boston.conman.org/2013/01/22.2"
             , "http://brainworkshop.sourceforge.net/tutorial.html"
@@ -3639,7 +3638,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://ehp.niehs.nih.gov/1104789/"
             , "https://ehp.niehs.nih.gov/doi/full/10.1289/ehp.1510037"
             , "https://eiga.com/news/20110830/11/"
-            , "https://ejlt.org/article/view/320/424"
+            , "https://www.ejlt.org/index.php/ejlt/article/view/320/424"
             , "https://elifesciences.org/articles/66920"
             , "https://en.chessbase.com/post/a-history-of-cheating-in-chess-4"
             , "https://en.wik%20ipedia.org/wiki/Va%20nishing_bird_cage"
@@ -4610,7 +4609,6 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.typography.com/blog/text-for-proofing-fonts"
             , "https://www.uber.com/us/en/beacon/"
             , "https://www.ukbiobank.ac.uk/frontiers-meeting-london-2014"
-            , "https://www.ummah.com/forum/forum/library/learn-arabic-and-other-languages/qur-an-and-islamic/390413-how-to-memorize-the-quran-and-never-forget-it?381181-How-to-Memorize-the-Quran-and-Never-Forget-it="
             , "https://www.unicef.org/pon95/nutr0009.html"
             , "https://www.unirioja.es/cu/anromero/MofC12.pdf"
             , "https://www.upi.com/Health_News/2011/04/27/Omega-3-may-up-aggressive-prostate-cancer/31131303903320/?u3L=1"

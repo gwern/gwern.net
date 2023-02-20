@@ -255,6 +255,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
+  , ("https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Adam", ["Adam"])
   , ("https://en.wikipedia.org/wiki/Big_data", ["big data"])
   , ("https://en.wikipedia.org/wiki/The_New_York_Times", ["NYT", "New York Times", "The New York Times"])
   , ("https://en.wikipedia.org/wiki/Jeff_Dean", ["Jeff Dean"])
