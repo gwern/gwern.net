@@ -336,7 +336,7 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
                                                  | null title' && not (null doi) = doiQuery
                                                  | null doi && not (null title) = titleQuery
                                                  | otherwise = doiQuery ++ "+OR+" ++ titleQuery
-                                               linkMetadataG  = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "google"), ("link-icon-type", "svg")])
+                                               linkMetadataG  = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "alphabet"), ("link-icon-type", "svg")])
                                                linkMetadataGS = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "google-scholar"), ("link-icon-type", "svg")])
                                                linkMetadataCP = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "connected-papers"), ("link-icon-type", "svg")])
                                            in
