@@ -43,7 +43,7 @@
             browser event listener) from which the event is fired (such as
             ‘Annotation.load’).
 
-		‘container’ (key) (required)
+        ‘container’ (key) (required)
             DOM object containing the loaded content. (For the GW.contentDidLoad
             event fired on the initial page load, the value of this key is
             `document`, i.e. the root document of the page. For pop-frames, this
@@ -60,10 +60,10 @@
             page) or a DocumentFragment. (This key can be thought of as “into
             where has the loaded content been loaded?”.)
 
-		‘contentType’ (key)
-			String that indicates content type of the loaded content. Might be
-			null (which indicates the default content type: local page content).
-			Otherwise may be `annotation` or something else.
+        ‘contentType’ (key)
+            String that indicates content type of the loaded content. Might be
+            null (which indicates the default content type: local page content).
+            Otherwise may be `annotation` or something else.
 
         ‘loadLocation’ (key)
             URL object (https://developer.mozilla.org/en-US/docs/Web/API/URL)
@@ -120,158 +120,158 @@
 GW.assetVersions = (GW.assetVersions ?? { });
 
 /*****************************************************************************/
-/*	Return fully qualified, versioned (if possible) URL for asset at the given
-	path.
+/*  Return fully qualified, versioned (if possible) URL for asset at the given
+    path.
  */
 function versionedAssetURL(pathname) {
-	let version = GW.assetVersions[pathname];
-	let versionString = (version ? `?v=${version}` : ``);
-	return new URL(  location.origin
-				   + pathname
-				   + versionString);
+    let version = GW.assetVersions[pathname];
+    let versionString = (version ? `?v=${version}` : ``);
+    return new URL(  location.origin
+                   + pathname
+                   + versionString);
 }
 
 /****************************************************************************/
-/*	Return the element, in the target document, pointed to by the hash of the
-	given link (which may be a URL object or an HTMLAnchorElement).
+/*  Return the element, in the target document, pointed to by the hash of the
+    given link (which may be a URL object or an HTMLAnchorElement).
  */
 function targetElementInDocument(link, doc) {
-	if (isAnchorLink(link) == false)
-		return null;
+    if (isAnchorLink(link) == false)
+        return null;
 
-	let exclusionSelector = [
-		"#page-metadata a",
-		".aux-links-list a"
-	].join(", ");
+    let exclusionSelector = [
+        "#page-metadata a",
+        ".aux-links-list a"
+    ].join(", ");
 
-	let element = null;
-	if (   link instanceof HTMLAnchorElement
-		&& link.dataset.targetId > "") {
-		element = doc.querySelector(selectorFromHash("#" + link.dataset.targetId));
-		if (   element
-			&& element.closest(exclusionSelector) == element)
-			element = null;
-	}
+    let element = null;
+    if (   link instanceof HTMLAnchorElement
+        && link.dataset.targetId > "") {
+        element = doc.querySelector(selectorFromHash("#" + link.dataset.targetId));
+        if (   element
+            && element.closest(exclusionSelector) == element)
+            element = null;
+    }
 
-	if (   element == null
-		&& (   link instanceof HTMLAnchorElement
-			&& Annotations.isAnnotatedLink(link)) == false) {
-		element = doc.querySelector(selectorFromHash(link.hash));
-		if (   element
-			&& element.closest(exclusionSelector) == element)
-			element = null;
-	}
+    if (   element == null
+        && (   link instanceof HTMLAnchorElement
+            && Annotations.isAnnotatedLink(link)) == false) {
+        element = doc.querySelector(selectorFromHash(link.hash));
+        if (   element
+            && element.closest(exclusionSelector) == element)
+            element = null;
+    }
 
-	if (   element == null
-		&& (   link instanceof HTMLAnchorElement
-			&& link.dataset.backlinkTargetUrl > "")) {
-		element = Array.from(doc.querySelectorAll(`a[href*='${CSS.escape(link.dataset.backlinkTargetUrl)}']`)).filter(backlink => {
-			return (   backlink.pathname == link.dataset.backlinkTargetUrl
-					&& backlink.closest(exclusionSelector) == null);
-		}).first;
-	}
+    if (   element == null
+        && (   link instanceof HTMLAnchorElement
+            && link.dataset.backlinkTargetUrl > "")) {
+        element = Array.from(doc.querySelectorAll(`a[href*='${CSS.escape(link.dataset.backlinkTargetUrl)}']`)).filter(backlink => {
+            return (   backlink.pathname == link.dataset.backlinkTargetUrl
+                    && backlink.closest(exclusionSelector) == null);
+        }).first;
+    }
 
-	if (element == null)
-		reportBrokenAnchorLink(link);
+    if (element == null)
+        reportBrokenAnchorLink(link);
 
-	return element;
+    return element;
 }
 
 /*****************************************************************************/
-/*	Returns true if the given link (a URL or an HTMLAnchorElement) points to a
-	specific element within a page, rather than to a whole page. (This is
-	usually because the link has a URL hash, but may also be because the link
-	is a backlink, in which case it implicitly points to that link in the
-	target page which points back at the target page for the backlink; or it
-	may be because the link is a link with a value for the `data-target-id`
-	or `data-backlink-target-url` attributes.)
+/*  Returns true if the given link (a URL or an HTMLAnchorElement) points to a
+    specific element within a page, rather than to a whole page. (This is
+    usually because the link has a URL hash, but may also be because the link
+    is a backlink, in which case it implicitly points to that link in the
+    target page which points back at the target page for the backlink; or it
+    may be because the link is a link with a value for the `data-target-id`
+    or `data-backlink-target-url` attributes.)
  */
 function isAnchorLink(link) {
-	if (link instanceof HTMLAnchorElement) {
-		if (Annotations.isAnnotatedLink(link)) {
-			return (   link.dataset.targetId > ""
-					|| link.dataset.backlinkTargetUrl > "");
-		} else {
-			return (   link.hash > ""
-					|| link.dataset.targetId > ""
-					|| link.dataset.backlinkTargetUrl > "");
-		}
-	} else {
-		return (link.hash > "");
-	}
+    if (link instanceof HTMLAnchorElement) {
+        if (Annotations.isAnnotatedLink(link)) {
+            return (   link.dataset.targetId > ""
+                    || link.dataset.backlinkTargetUrl > "");
+        } else {
+            return (   link.hash > ""
+                    || link.dataset.targetId > ""
+                    || link.dataset.backlinkTargetUrl > "");
+        }
+    } else {
+        return (link.hash > "");
+    }
 }
 
 /***********************************************/
-/*	Removes all anchor data from the given link.
+/*  Removes all anchor data from the given link.
  */
 function stripAnchorsFromLink(link) {
-	if (link instanceof HTMLAnchorElement) {
-		link.removeAttribute("data-target-id");
-		link.removeAttribute("data-backlink-target-url");
-	}
+    if (link instanceof HTMLAnchorElement) {
+        link.removeAttribute("data-target-id");
+        link.removeAttribute("data-backlink-target-url");
+    }
 
-	link.hash = "";
+    link.hash = "";
 }
 
 /****************************************************************************/
-/*	Returns an array of anchors for the given link. This array may have zero,
-	one, or two elements.
+/*  Returns an array of anchors for the given link. This array may have zero,
+    one, or two elements.
  */
 function anchorsForLink(link) {
-	if (   link instanceof HTMLAnchorElement
-		&& link.dataset.targetId > "") {
-		return link.dataset.targetId.split(" ").map(x => `#${x}`);
-	} else if ((   link instanceof HTMLAnchorElement
-				&& Annotations.isAnnotatedLink(link)) == false) {
-		return link.hash.match(/#[^#]*/g) ?? [ ];
-	} else if (   link instanceof HTMLAnchorElement
-			   && link.dataset.backlinkTargetUrl > "") {
-		return link.dataset.backlinkTargetUrl;
-	}  else {
-		return [ ];
-	}
+    if (   link instanceof HTMLAnchorElement
+        && link.dataset.targetId > "") {
+        return link.dataset.targetId.split(" ").map(x => `#${x}`);
+    } else if ((   link instanceof HTMLAnchorElement
+                && Annotations.isAnnotatedLink(link)) == false) {
+        return link.hash.match(/#[^#]*/g) ?? [ ];
+    } else if (   link instanceof HTMLAnchorElement
+               && link.dataset.backlinkTargetUrl > "") {
+        return link.dataset.backlinkTargetUrl;
+    }  else {
+        return [ ];
+    }
 }
 
 /******************************************************************************/
-/*	Return original URL for a link. (Equal to the link’s URL itself for all but
-	locally archived links.)
+/*  Return original URL for a link. (Equal to the link’s URL itself for all but
+    locally archived links.)
  */
 function originalURLForLink(link) {
-	if (   link.dataset.urlOriginal == null
-		|| link.dataset.urlOriginal == "")
-		return new URL(link.href);
+    if (   link.dataset.urlOriginal == null
+        || link.dataset.urlOriginal == "")
+        return new URL(link.href);
 
-	let originalURL = new URL(link.dataset.urlOriginal);
+    let originalURL = new URL(link.dataset.urlOriginal);
 
-	/*  Special cases where the original URL of the target does not
-		match the target’s proper identifier (possibly due to outgoing
-		link rewriting).
-	 */
-	if (originalURL.hostname == "ar5iv.labs.arxiv.org") {
-		originalURL.hostname = "arxiv.org";
-		originalURL.pathname = originalURL.pathname.replace("/html/", "/abs/");
-		/*	Erase the ?fallback=original query parameter necessary to
-			make it redirect if no Ar5iv version is available.
-		 */
-		originalURL.search = "";
-	}
+    /*  Special cases where the original URL of the target does not
+        match the target’s proper identifier (possibly due to outgoing
+        link rewriting).
+     */
+    if (originalURL.hostname == "ar5iv.labs.arxiv.org") {
+        originalURL.hostname = "arxiv.org";
+        originalURL.pathname = originalURL.pathname.replace("/html/", "/abs/");
+        /*  Erase the ?fallback=original query parameter necessary to
+            make it redirect if no Ar5iv version is available.
+         */
+        originalURL.search = "";
+    }
 
-	return originalURL;
+    return originalURL;
 }
 
 /******************************************************************************/
-/*	Returns the heading level of a <section> element. (Given by a class of the
-	form ‘levelX’ where X is a positive integer. Defaults to 1 if no such class
-	is present.)
+/*  Returns the heading level of a <section> element. (Given by a class of the
+    form ‘levelX’ where X is a positive integer. Defaults to 1 if no such class
+    is present.)
  */
 function sectionLevel(section) {
-	if (  !section
-		|| section.tagName != "SECTION")
-		return null;
+    if (  !section
+        || section.tagName != "SECTION")
+        return null;
 
-	//	Note: ‘m’ is a regexp matches array.
-	let m = Array.from(section.classList).map(c => c.match(/^level([0-9]*)$/)).find(m => m);
-	return (m ? parseInt(m[1]) : 1);
+    //  Note: ‘m’ is a regexp matches array.
+    let m = Array.from(section.classList).map(c => c.match(/^level([0-9]*)$/)).find(m => m);
+    return (m ? parseInt(m[1]) : 1);
 }
 
 /*****************************************************************************/
@@ -289,7 +289,7 @@ GW.contentLoadHandlers = { };
 
 /*************************************************************/
 /*  Add content inject handler (i.e., an event handler for the
-	GW.contentDidInject event).
+    GW.contentDidInject event).
  */
 function addContentInjectHandler(handler, phase, condition = null) {
     let options = { phase: phase };
@@ -347,10 +347,10 @@ function registerCopyProcessorsForDocument(doc) {
 }
 
 /*******************************************/
-/*	Set up copy processors in main document.
+/*  Set up copy processors in main document.
  */
 doWhenDOMContentLoaded(() => {
-	registerCopyProcessorsForDocument(document);
+    registerCopyProcessorsForDocument(document);
 });
 
 
@@ -399,46 +399,46 @@ AuxLinks = {
 /*********/
 
 Notes = {
-	/*	Get the (side|foot)note number from the URL hash (which might point to a
-		footnote, a sidenote, or a citation).
-	 */
-	noteNumberFromHash: (hash = location.hash) => {
-		if (hash.startsWith("#") == false)
-			hash = "#" + hash;
+    /*  Get the (side|foot)note number from the URL hash (which might point to a
+        footnote, a sidenote, or a citation).
+     */
+    noteNumberFromHash: (hash = location.hash) => {
+        if (hash.startsWith("#") == false)
+            hash = "#" + hash;
 
-		if (hash.match(/#[sf]n[0-9]/))
-			return hash.substr(3);
-		else if (hash.match(/#fnref[0-9]/))
-			return hash.substr(6);
-		else
-			return "";
-	},
+        if (hash.match(/#[sf]n[0-9]/))
+            return hash.substr(3);
+        else if (hash.match(/#fnref[0-9]/))
+            return hash.substr(6);
+        else
+            return "";
+    },
 
-	citationSelectorMatching: (element) => {
-		return ("#" + Notes.idForCitationNumber(Notes.noteNumberFromHash(element.hash)));
-	},
+    citationSelectorMatching: (element) => {
+        return ("#" + Notes.idForCitationNumber(Notes.noteNumberFromHash(element.hash)));
+    },
 
-	footnoteSelectorMatching: (element) => {
-		return ("#" + Notes.idForFootnoteNumber(Notes.noteNumberFromHash(element.hash)));
-	},
+    footnoteSelectorMatching: (element) => {
+        return ("#" + Notes.idForFootnoteNumber(Notes.noteNumberFromHash(element.hash)));
+    },
 
-	sidenoteSelectorMatching: (element) => {
-		return ("#" + Notes.idForSidenoteNumber(Notes.noteNumberFromHash(element.hash)));
-	},
+    sidenoteSelectorMatching: (element) => {
+        return ("#" + Notes.idForSidenoteNumber(Notes.noteNumberFromHash(element.hash)));
+    },
 
-	idForCitationNumber: (number) => {
-		return `fnref${number}`;
-	},
+    idForCitationNumber: (number) => {
+        return `fnref${number}`;
+    },
 
-	idForFootnoteNumber: (number) => {
-		return `fn${number}`;
-	},
+    idForFootnoteNumber: (number) => {
+        return `fn${number}`;
+    },
 
-	idForSidenoteNumber: (number) => {
-		return `sn${number}`;
-	},
+    idForSidenoteNumber: (number) => {
+        return `sn${number}`;
+    },
 
-	setCitationNumber: (citation, number) => {
+    setCitationNumber: (citation, number) => {
         //  #fnN
         citation.hash = citation.hash.slice(0, 3) + number;
 
@@ -447,9 +447,9 @@ Notes = {
 
         //  Link text.
         citation.firstElementChild.textContent = number;
-	},
+    },
 
-	setFootnoteNumber: (footnote, number) => {
+    setFootnoteNumber: (footnote, number) => {
         //  fnN
         footnote.id = footnote.id.slice(0, 2) + number;
 
@@ -457,32 +457,32 @@ Notes = {
         let footnoteBackLink = footnote.querySelector("a.footnote-back");
         footnoteBackLink.hash = footnoteBackLink.hash.slice(0, 6) + number;
 
-		//	#fnN
-		let footnoteSelfLink = footnote.querySelector("a.footnote-self-link");
-		footnoteSelfLink.hash = footnoteSelfLink.hash.slice(0, 3) + number;
-		footnoteSelfLink.title = "Link to footnote " + number;
-	},
+        //  #fnN
+        let footnoteSelfLink = footnote.querySelector("a.footnote-self-link");
+        footnoteSelfLink.hash = footnoteSelfLink.hash.slice(0, 3) + number;
+        footnoteSelfLink.title = "Link to footnote " + number;
+    },
 
-	/**************************************************************************/
-	/*  Return all {side|foot}note elements associated with the given citation.
-	 */
-	allNotesForCitation: (citation) => {
-		if (!citation.classList.contains("footnote-ref"))
-			return null;
+    /**************************************************************************/
+    /*  Return all {side|foot}note elements associated with the given citation.
+     */
+    allNotesForCitation: (citation) => {
+        if (!citation.classList.contains("footnote-ref"))
+            return null;
 
-		let citationNumber = citation.id.substr(5);
-		/*  We must check to ensure that the note in question is from the same
-			page as the citation (to distinguish between main document and any
-			full-page embeds that may be spawned).
-		 */
-		let selector = `#fn${citationNumber}, #sn${citationNumber}`;
-		let allNotes = Array.from(document.querySelectorAll(selector)).concat(Array.from(citation.getRootNode().querySelectorAll(selector)));
-		return allNotes.filter(note => {
-			let footnoteBackLink = note.querySelector(".footnote-back");
-			return (   footnoteBackLink != null
-					&& footnoteBackLink.pathname == citation.pathname);
-		});
-	}
+        let citationNumber = citation.id.substr(5);
+        /*  We must check to ensure that the note in question is from the same
+            page as the citation (to distinguish between main document and any
+            full-page embeds that may be spawned).
+         */
+        let selector = `#fn${citationNumber}, #sn${citationNumber}`;
+        let allNotes = Array.from(document.querySelectorAll(selector)).concat(Array.from(citation.getRootNode().querySelectorAll(selector)));
+        return allNotes.filter(note => {
+            let footnoteBackLink = note.querySelector(".footnote-back");
+            return (   footnoteBackLink != null
+                    && footnoteBackLink.pathname == citation.pathname);
+        });
+    }
 };
 
 /**********/
@@ -533,12 +533,12 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
     let exclusionSelector = ".footnote-back, td, th";
     wrapAll("img", (image) => {
         if (   image.classList.contains("figure-not")
-        	|| image.closest(exclusionSelector))
+            || image.closest(exclusionSelector))
             return;
 
         let figure = image.closest("figure");
         if (   figure
-        	&& figure.querySelector("figcaption") != null)
+            && figure.querySelector("figcaption") != null)
             return;
 
         wrapElement(image, null, "FIGURE", true,
@@ -554,13 +554,13 @@ addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) =>
     GWLog("setImageDimensions", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll("figure img[width][height]").forEach(image => {
-		let width = image.getAttribute("width");
-		let height = image.getAttribute("height");
+        let width = image.getAttribute("width");
+        let height = image.getAttribute("height");
 
-    	image.style.aspectRatio = `${width} / ${height}`;
+        image.style.aspectRatio = `${width} / ${height}`;
 
-		if (eventInfo.contentType == "annotation")
-			image.style.width = `${width}px`;
+        if (eventInfo.contentType == "annotation")
+            image.style.width = `${width}px`;
     });
 }, "rewrite");
 
@@ -570,7 +570,7 @@ addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) =>
 addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
     GWLog("wrapFigures", "rewrite.js", 1);
 
-	let mediaSelector = "img, audio, video";
+    let mediaSelector = "img, audio, video";
 
     eventInfo.container.querySelectorAll("figure").forEach(figure => {
         let media = figure.querySelector(mediaSelector);
@@ -585,8 +585,8 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
 
         //  Re-insert the (possibly wrapped) media into the figure.
         figure.querySelectorAll(mediaSelector).forEach(mediaElement => {
-        	let mediaBlock = mediaElement.closest(".image-wrapper") || mediaElement;
-        	innerWrapper.appendChild(mediaBlock);
+            let mediaBlock = mediaElement.closest(".image-wrapper") || mediaElement;
+            innerWrapper.appendChild(mediaBlock);
         });
 
         //  Wrap the caption in the wrapper span.
@@ -596,7 +596,7 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
         //  Re-insert the wrapped caption into the figure.
         innerWrapper.appendChild(captionWrapper);
 
-        //	Tag the figure with the first (or only) media element’s float class.
+        //  Tag the figure with the first (or only) media element’s float class.
         if (media.classList.contains("float-left"))
             media.closest("figure").classList.add("float-left");
         if (media.classList.contains("float-right"))
@@ -634,32 +634,32 @@ addContentInjectHandler(GW.contentInjectHandlers.markFullWidthFigures = (eventIn
 
 /*****************************************************************/
 /*  Allow for floated figures at the start of annotation abstracts
-	(only on sufficiently wide viewports).
+    (only on sufficiently wide viewports).
  */
 addContentLoadHandler(GW.contentLoadHandlers.relocateThumbnailInAnnotation = (eventInfo) => {
     GWLog("relocateThumbnailInAnnotation", "rewrite.js", 1);
 
-	if (GW.mediaQueries.mobileWidth.matches)
-		return;
+    if (GW.mediaQueries.mobileWidth.matches)
+        return;
 
-	let annotationAbstract = eventInfo.container.querySelector(".annotation-abstract");
-	if (   annotationAbstract == null
-		|| annotationAbstract.tagName == "BLOCKQUOTE")
-		return;
+    let annotationAbstract = eventInfo.container.querySelector(".annotation-abstract");
+    if (   annotationAbstract == null
+        || annotationAbstract.tagName == "BLOCKQUOTE")
+        return;
 
-	let container = annotationAbstract.closest(".annotation");
-	if (   container == null
-		|| container == annotationAbstract)
-		return;
+    let container = annotationAbstract.closest(".annotation");
+    if (   container == null
+        || container == annotationAbstract)
+        return;
 
-	let initialFigure = annotationAbstract.querySelector(".annotation-abstract > figure.float-right:first-child");
-	if (initialFigure == null) {
-		let pageThumbnailImage = annotationAbstract.querySelector("img.page-thumbnail");
-		if (pageThumbnailImage)
-			initialFigure = pageThumbnailImage.closest("figure");
-	}
+    let initialFigure = annotationAbstract.querySelector(".annotation-abstract > figure.float-right:first-child");
+    if (initialFigure == null) {
+        let pageThumbnailImage = annotationAbstract.querySelector("img.page-thumbnail");
+        if (pageThumbnailImage)
+            initialFigure = pageThumbnailImage.closest("figure");
+    }
     if (initialFigure)
-		container.insertBefore(initialFigure, container.firstElementChild);
+        container.insertBefore(initialFigure, container.firstElementChild);
 }, "rewrite");
 
 
@@ -682,14 +682,14 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (event
 
 /*************************************************************************/
 /*  Fix code block styling glitch by setting code block height to rendered
-	height, eliminating fractional pixels.
+    height, eliminating fractional pixels.
  */
 // addContentInjectHandler(GW.contentInjectHandlers.rectifyCodeBlockHeights = (eventInfo) => {
 //     GWLog("rectifyCodeBlockHeights", "rewrite.js", 1);
 
-// 	eventInfo.container.querySelectorAll("pre").forEach(preBlock => {
-// 		preBlock.style.height = preBlock.offsetHeight + "px";
-// 	});
+//  eventInfo.container.querySelectorAll("pre").forEach(preBlock => {
+//      preBlock.style.height = preBlock.offsetHeight + "px";
+//  });
 // }, ">rewrite");
 
 
@@ -1022,83 +1022,83 @@ addContentInjectHandler(GW.contentInjectHandlers.setMarginsOnFullWidthBlocks = (
 /***************/
 
 /******************************************************************************/
-/*	Make the page thumbnail (or just the first figure, if no thumbnail present)
-	in an annotation load eagerly instead of lazily.
+/*  Make the page thumbnail (or just the first figure, if no thumbnail present)
+    in an annotation load eagerly instead of lazily.
  */
 addContentLoadHandler(GW.contentLoadHandlers.setEagerLoadingForAnnotationImages = (eventInfo) => {
     GWLog("setEagerLoadingForAnnotationImages", "rewrite.js", 1);
 
-	let firstImage = (   eventInfo.container.querySelector(".page-thumbnail")
-					  || eventInfo.container.querySelector("figure img"))
-	if (firstImage) {
-		firstImage.loading = "eager";
-		firstImage.decoding = "sync";
-	}
+    let firstImage = (   eventInfo.container.querySelector(".page-thumbnail")
+                      || eventInfo.container.querySelector("figure img"))
+    if (firstImage) {
+        firstImage.loading = "eager";
+        firstImage.decoding = "sync";
+    }
 }, "rewrite", (info) => (info.contentType == "annotation"));
 
 /*****************************************************************/
-/*	Partial annotations, defined inline (in directories and such).
+/*  Partial annotations, defined inline (in directories and such).
  */
 addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventInfo) => {
     GWLog("rewritePartialAnnotations", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".annotation-partial").forEach(partialAnnotation => {
-		if (partialAnnotation.firstElementChild.classList.contains("data-field"))
-			return;
+    eventInfo.container.querySelectorAll(".annotation-partial").forEach(partialAnnotation => {
+        if (partialAnnotation.firstElementChild.classList.contains("data-field"))
+            return;
 
-		//	Designate reference link, for annotations.js to identify it.
-		let referenceLink = partialAnnotation.querySelector("a");
-		referenceLink.classList.add("link-annotated-partial");
+        //  Designate reference link, for annotations.js to identify it.
+        let referenceLink = partialAnnotation.querySelector("a");
+        referenceLink.classList.add("link-annotated-partial");
 
-		//	Load data into Annotations.
-		Annotations.cacheAPIResponseForIdentifier(newDocument(partialAnnotation),
-												  Annotations.targetIdentifier(referenceLink));
+        //  Load data into Annotations.
+        Annotations.cacheAPIResponseForIdentifier(newDocument(partialAnnotation),
+                                                  Annotations.targetIdentifier(referenceLink));
 
-		//	Replace reference block contents with synthetic include-link.
-		partialAnnotation.replaceChildren(synthesizeIncludeLink(referenceLink, {
-			"class": "include-annotation include-replace-container link-annotated-partial",
-			"data-template-fields": "annotationClassSuffix:$",
-			"data-annotation-class-suffix": "-partial"
-		}));
+        //  Replace reference block contents with synthetic include-link.
+        partialAnnotation.replaceChildren(synthesizeIncludeLink(referenceLink, {
+            "class": "include-annotation include-replace-container link-annotated-partial",
+            "data-template-fields": "annotationClassSuffix:$",
+            "data-annotation-class-suffix": "-partial"
+        }));
 
-		//	Fire GW.contentDidLoadEvent (to trigger transclude).
-		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-			source: "rewritePartialAnnotations",
-			container: partialAnnotation,
-			document: eventInfo.document
-		});
-	});
+        //  Fire GW.contentDidLoadEvent (to trigger transclude).
+        GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+            source: "rewritePartialAnnotations",
+            container: partialAnnotation,
+            document: eventInfo.document
+        });
+    });
 }, "rewrite");
 
 /***************************************************************************/
-/*	Because annotations transclude aux-links, we make the aux-links links in
-	the metadata line of annotations scroll down to the appended aux-links
-	blocks.
+/*  Because annotations transclude aux-links, we make the aux-links links in
+    the metadata line of annotations scroll down to the appended aux-links
+    blocks.
  */
 addContentInjectHandler(GW.contentInjectHandlers.rewriteAuxLinksLinksInTranscludedAnnotations = (eventInfo) => {
     GWLog("rewriteAuxLinksLinksInTranscludedAnnotations", "rewrite.js", 1);
 
-	let annotation = eventInfo.container.querySelector(".annotation");
-	if (annotation == null)
-		return;
+    let annotation = eventInfo.container.querySelector(".annotation");
+    if (annotation == null)
+        return;
 
-	let inPopFrame = (Extracts.popFrameProvider.containingPopFrame(annotation) != null);
+    let inPopFrame = (Extracts.popFrameProvider.containingPopFrame(annotation) != null);
 
-	annotation.querySelectorAll(".data-field.aux-links a.aux-links").forEach(auxLinksLink => {
-		let auxLinksLinkType = AuxLinks.auxLinksLinkType(auxLinksLink);
-		let includedAuxLinksBlock = annotation.querySelector(`.${auxLinksLinkType}-append`);
-		if (includedAuxLinksBlock) {
-			auxLinksLink.onclick = () => { return false; };
-			auxLinksLink.addActivateEvent((event) => {
-				if (inPopFrame) {
-					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(includedAuxLinksBlock);
-				} else {
-					revealElement(includedAuxLinksBlock, true);
-				}
-				return false;
-			});
-		}
-	});
+    annotation.querySelectorAll(".data-field.aux-links a.aux-links").forEach(auxLinksLink => {
+        let auxLinksLinkType = AuxLinks.auxLinksLinkType(auxLinksLink);
+        let includedAuxLinksBlock = annotation.querySelector(`.${auxLinksLinkType}-append`);
+        if (includedAuxLinksBlock) {
+            auxLinksLink.onclick = () => { return false; };
+            auxLinksLink.addActivateEvent((event) => {
+                if (inPopFrame) {
+                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(includedAuxLinksBlock);
+                } else {
+                    revealElement(includedAuxLinksBlock, true);
+                }
+                return false;
+            });
+        }
+    });
 }, "eventListeners", (info) => (info.contentType == "annotation"));
 
 /*******************************************************************************/
@@ -1166,29 +1166,29 @@ addContentInjectHandler(GW.contentInjectHandlers.bindSectionHighlightEventsToAnn
 /*********************/
 
 /*********************************************************************/
-/*	Remove the “Link Bibliography:” bold text when transcluding a link
-	bibliography into a page’s Link Bibliography section.
+/*  Remove the “Link Bibliography:” bold text when transcluding a link
+    bibliography into a page’s Link Bibliography section.
  */
 addContentInjectHandler(GW.contentInjectHandlers.removeSubheadingFromLinkBibliography = (eventInfo) => {
     GWLog("removeSubheadingFromLinkBibliography", "rewrite.js", 1);
 
-	if (eventInfo.container.closest("section#link-bibliography")) {
-		let subheading = eventInfo.container.querySelector("div#link-bibliography-link-footer-transclusion > p:first-child");
-		if (subheading)
-			subheading.remove();
-	}
+    if (eventInfo.container.closest("section#link-bibliography")) {
+        let subheading = eventInfo.container.querySelector("div#link-bibliography-link-footer-transclusion > p:first-child");
+        if (subheading)
+            subheading.remove();
+    }
 }, "rewrite", (info) => (info.source == "transclude"));
 
 /*****************************************************************************/
-/*	Apply a class to those link-bibs that should use the more compact styling.
+/*  Apply a class to those link-bibs that should use the more compact styling.
  */
 addContentInjectHandler(GW.contentInjectHandlers.applyLinkBibliographyStylingClass = (eventInfo) => {
     GWLog("applyLinkBibliographyStylingClass", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".link-bibliography-list").forEach(linkBibList => {
-		if (linkBibList.closest("li, .link-bibliography-append, .popframe-body.link-bibliography"))
-			linkBibList.classList.add("link-bibliography-list-compact");
-	});
+    eventInfo.container.querySelectorAll(".link-bibliography-list").forEach(linkBibList => {
+        if (linkBibList.closest("li, .link-bibliography-append, .popframe-body.link-bibliography"))
+            linkBibList.classList.add("link-bibliography-list-compact");
+    });
 }, "rewrite");
 
 
@@ -1209,7 +1209,7 @@ addContentLoadHandler(GW.contentLoadHandlers.stripTOCLinkSpans = (eventInfo) => 
 /*  Updates the page TOC with any sections within the given container that don’t
     already have TOC entries.
  */
-//	Called by: updateMainPageTOC
+//  Called by: updateMainPageTOC
 //  Called by: includeContent (transclude.js)
 function updatePageTOC(newContent, needsProcessing = false) {
     GWLog("updatePageTOC", "transclude.js", 2);
@@ -1218,14 +1218,14 @@ function updatePageTOC(newContent, needsProcessing = false) {
     if (!TOC)
         return;
 
-	//	Don’t nest TOC entries any deeper than this.
-	let maxNestingDepth = 4;
+    //  Don’t nest TOC entries any deeper than this.
+    let maxNestingDepth = 4;
 
     //  Find where to insert the new TOC entries.
     let parentSection = newContent.closest("section") ?? document.querySelector("#markdownBody");
     let nextSection = Array.from(parentSection.children).filter(child =>
-    	   child.tagName == "SECTION"
-    	&& child.compareDocumentPosition(newContent) == Node.DOCUMENT_POSITION_PRECEDING
+           child.tagName == "SECTION"
+        && child.compareDocumentPosition(newContent) == Node.DOCUMENT_POSITION_PRECEDING
     ).first;
 
     //  Any already-existing <section> should have a TOC entry.
@@ -1233,8 +1233,8 @@ function updatePageTOC(newContent, needsProcessing = false) {
                            ? TOC
                            : TOC.querySelector(`#toc-${CSS.escape(parentSection.id)}`).parentElement;
     let followingTOCElement = nextSection
-    						  ? parentTOCElement.querySelector(`#toc-${CSS.escape(nextSection.id)}`).parentElement
-    						  : null;
+                              ? parentTOCElement.querySelector(`#toc-${CSS.escape(nextSection.id)}`).parentElement
+                              : null;
 
     //  TOC entry insertion function, called recursively.
     function addToPageTOC(newContent, parentTOCElement, followingTOCElement) {
@@ -1247,10 +1247,10 @@ function updatePageTOC(newContent, needsProcessing = false) {
             if (parentTOCElement.querySelector(`a[href$='#${fixedEncodeURIComponent(section.id)}']`) != null)
                 return;
 
-			/*	If this section is too deeply nested, do not add it.
-			 */
-			if (sectionLevel(section) > maxNestingDepth)
-				return;
+            /*  If this section is too deeply nested, do not add it.
+             */
+            if (sectionLevel(section) > maxNestingDepth)
+                return;
 
             //  Construct entry.
             let entry = newElement("LI");
@@ -1296,60 +1296,60 @@ addContentLoadHandler(GW.contentLoadHandlers.updateMainPageTOC = (eventInfo) => 
 }, "rewrite", (info) => (info.container == document.body));
 
 /**********************************************************/
-/*	Relocate and clean up TOC on tag directory index pages.
+/*  Relocate and clean up TOC on tag directory index pages.
  */
 addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (eventInfo) => {
     GWLog("rewriteDirectoryIndexTOC", "rewrite.js", 1);
 
-	let TOC = eventInfo.container.querySelector("#TOC");
-	let seeAlsoSection = eventInfo.container.querySelector("#see-also");
+    let TOC = eventInfo.container.querySelector("#TOC");
+    let seeAlsoSection = eventInfo.container.querySelector("#see-also");
 
-	if (   TOC == null
-		|| seeAlsoSection == null)
-		return;
+    if (   TOC == null
+        || seeAlsoSection == null)
+        return;
 
-	/*	Place the TOC after the “See Also” section (which also places it after
-		the page abstract, if such exists, because that comes before the
-		“See Also” section).
-	 */
-	seeAlsoSection.parentElement.insertBefore(TOC, seeAlsoSection.nextElementSibling);
+    /*  Place the TOC after the “See Also” section (which also places it after
+        the page abstract, if such exists, because that comes before the
+        “See Also” section).
+     */
+    seeAlsoSection.parentElement.insertBefore(TOC, seeAlsoSection.nextElementSibling);
 
-	//	The “See Also” section no longer needs a TOC entry.
-	TOC.querySelector("#toc-see-also").closest("li").remove();
+    //  The “See Also” section no longer needs a TOC entry.
+    TOC.querySelector("#toc-see-also").closest("li").remove();
 
-	/*	If “Links” is the only remaining section, then it does not itself need
-		a TOC entry; shift its children up one TOC level.
-	 */
-	let linksTOCEntry = TOC.querySelector("#toc-links");
-	if (isOnlyChild(linksTOCEntry.closest("li"))) {
-		let outerTOCList = TOC.querySelector("ul");
-		let innerTOCList = TOC.querySelector("#toc-links + ul");
+    /*  If “Links” is the only remaining section, then it does not itself need
+        a TOC entry; shift its children up one TOC level.
+     */
+    let linksTOCEntry = TOC.querySelector("#toc-links");
+    if (isOnlyChild(linksTOCEntry.closest("li"))) {
+        let outerTOCList = TOC.querySelector("ul");
+        let innerTOCList = TOC.querySelector("#toc-links + ul");
 
-		TOC.insertBefore(innerTOCList, null);
-		outerTOCList.remove();
+        TOC.insertBefore(innerTOCList, null);
+        outerTOCList.remove();
 
-		//	Mark with special class, for styling purposes.
-		TOC.classList.add("TOC-links-only");
-	}
+        //  Mark with special class, for styling purposes.
+        TOC.classList.add("TOC-links-only");
+    }
 }, "rewrite", (info) => (   info.container == document.body
-						 && info.loadLocation
-						 && /^\/docs\/.+\/index$/.test(info.loadLocation.pathname)));
+                         && info.loadLocation
+                         && /^\/docs\/.+\/index$/.test(info.loadLocation.pathname)));
 
 /**************************************************************************/
-/*	If the table of contents has but one entry (or none at all), remove it.
+/*  If the table of contents has but one entry (or none at all), remove it.
  */
 addContentLoadHandler(GW.contentLoadHandlers.removeTOCIfSingleEntry = (eventInfo) => {
     GWLog("removeTOCIfSingleEntry", "rewrite.js", 1);
 
-	let TOC = eventInfo.container.querySelector(".TOC");
-	if (TOC == null)
-		return;
+    let TOC = eventInfo.container.querySelector(".TOC");
+    if (TOC == null)
+        return;
 
-	let numEntries = TOC.querySelectorAll("li").length;
-	if (   (   TOC.id == "TOC"
-		    && numEntries <= 1)
-		|| numEntries == 0)
-		TOC.remove();
+    let numEntries = TOC.querySelectorAll("li").length;
+    if (   (   TOC.id == "TOC"
+            && numEntries <= 1)
+        || numEntries == 0)
+        TOC.remove();
 }, "rewrite");
 
 
@@ -1502,13 +1502,13 @@ addContentInjectHandler(GW.contentInjectHandlers.bindHighlightEventsToFootnoteSe
     //  Bind events.
     allCitations.forEach(bindEventsToCitation);
 
-	if (allCitations.length > 0) {
-		//  Add handler to re-bind events if more notes are injected.
-		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-			allCitations.forEach(bindEventsToCitation);
-		}, { condition: (info) => (   info.document == document
-								   || info.document == eventInfo.document)
-		});
+    if (allCitations.length > 0) {
+        //  Add handler to re-bind events if more notes are injected.
+        GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+            allCitations.forEach(bindEventsToCitation);
+        }, { condition: (info) => (   info.document == document
+                                   || info.document == eventInfo.document)
+        });
     }
 }, "eventListeners");
 
@@ -1535,23 +1535,23 @@ addContentInjectHandler(GW.contentInjectHandlers.bindNoteHighlightEventsToCitati
 /*********/
 
 /********************************************************/
-/*	Return the location (URL) associated with a document.
-	(Document|DocumentFragment) => URL
+/*  Return the location (URL) associated with a document.
+    (Document|DocumentFragment) => URL
  */
 function baseLocationForDocument(doc) {
-	if (doc == document) {
-		return new URL(location.href);
-	} else if (   doc.body instanceof Element
-			   && doc.body.classList.contains("popframe-body")) {
-		let spawningTarget = (Extracts.popFrameProvider == Popups
-							  ? doc.body.popup.spawningTarget
-							  : doc.body.popin.spawningTarget);
-		return new URL(spawningTarget.href);
-	} else if (doc.baseLocation) {
-		return new URL(doc.baseLocation.href);
-	} else {
-		return null;
-	}
+    if (doc == document) {
+        return new URL(location.href);
+    } else if (   doc.body instanceof Element
+               && doc.body.classList.contains("popframe-body")) {
+        let spawningTarget = (Extracts.popFrameProvider == Popups
+                              ? doc.body.popup.spawningTarget
+                              : doc.body.popin.spawningTarget);
+        return new URL(spawningTarget.href);
+    } else if (doc.baseLocation) {
+        return new URL(doc.baseLocation.href);
+    } else {
+        return null;
+    }
 }
 
 /**********************************************************************/
@@ -1561,29 +1561,29 @@ function baseLocationForDocument(doc) {
 addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo) => {
     GWLog("qualifyAnchorLinks", "rewrite.js", 1);
 
-	let baseLocation = baseLocationForDocument(eventInfo.document);
-	if (baseLocation == null)
-		return;
+    let baseLocation = baseLocationForDocument(eventInfo.document);
+    if (baseLocation == null)
+        return;
 
-	let loadLocation = (eventInfo.loadLocation ?? baseLocation);
+    let loadLocation = (eventInfo.loadLocation ?? baseLocation);
 
     eventInfo.container.querySelectorAll("a[href]").forEach(link => {
         if (   (   link.getAttribute("href").startsWith("#")
                 || link.pathname == loadLocation.pathname)
                 // if initial base page load
             && (   eventInfo.container == document.body
-            	// if the link refers to an element also in the loaded content
+                // if the link refers to an element also in the loaded content
                 || eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
                 // if the link refers to the loaded content container itself
                 || (   eventInfo.container instanceof Element
                     && eventInfo.container == eventInfo.container.closest(selectorFromHash(link.hash)))
                 || (   eventInfo.document.querySelector("#page-metadata") != null
-			        		// if we’re transcluding a citation (because we merge footnotes)
-                	&& (   (   eventInfo.source == "transclude"
-							&& link.classList.contains("footnote-ref"))
-							// if we’re merging a footnote for transcluded content
-						|| (   eventInfo.source == "transclude.footnotes"
-							&& link.classList.contains("footnote-back")))))) {
+                            // if we’re transcluding a citation (because we merge footnotes)
+                    && (   (   eventInfo.source == "transclude"
+                            && link.classList.contains("footnote-ref"))
+                            // if we’re merging a footnote for transcluded content
+                        || (   eventInfo.source == "transclude.footnotes"
+                            && link.classList.contains("footnote-back")))))) {
             link.pathname = baseLocation.pathname;
         } else if (link.getAttribute("href").startsWith("#")) {
             link.pathname = loadLocation.pathname;
@@ -1598,9 +1598,9 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
 addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventInfo) => {
     GWLog("addSpecialLinkClasses", "rewrite.js", 1);
 
-	let baseLocation = baseLocationForDocument(eventInfo.document);
-	if (baseLocation == null)
-		return;
+    let baseLocation = baseLocationForDocument(eventInfo.document);
+    if (baseLocation == null)
+        return;
 
     eventInfo.container.querySelectorAll(".markdownBody a[href]").forEach(link => {
         if (   link.hostname != location.hostname
@@ -1611,7 +1611,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
         if (   link.pathname == baseLocation.pathname
                 // if initial base page load
             && (   eventInfo.container == document.body
-            	// if the link refers to an element also in the loaded content
+                // if the link refers to an element also in the loaded content
                 || eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
                // if the link refers to the loaded content container itself
                 || (   eventInfo.container instanceof Element
@@ -1630,10 +1630,10 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
 addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (eventInfo) => {
     GWLog("designateSpecialLinkIcons", "rewrite.js", 1);
 
-	//	Internal links on the home page need no decoration.
-	if (   eventInfo.container == document.body
-		&& eventInfo.container.classList.contains("index"))
-		return;
+    //  Internal links on the home page need no decoration.
+    if (   eventInfo.container == document.body
+        && eventInfo.container.classList.contains("index"))
+        return;
 
     //  Self-links (anchorlinks to the current page).
     eventInfo.container.querySelectorAll(".link-self:not(.icon-not)").forEach(link => {
@@ -1674,17 +1674,17 @@ addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (ev
 /*********/
 
 /***************************************************************/
-/*	Mark the link lists on the index page, for styling purposes.
+/*  Mark the link lists on the index page, for styling purposes.
  */
 addContentLoadHandler(GW.contentLoadHandlers.designateIndexPageSectionLinkLists = (eventInfo) => {
     GWLog("designateIndexPageSectionLinkLists", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("section > ul").forEach(sectionLinkList => {
-		sectionLinkList.classList.add("section-link-list");
-	});
+    eventInfo.container.querySelectorAll("section > ul").forEach(sectionLinkList => {
+        sectionLinkList.classList.add("section-link-list");
+    });
 }, "rewrite", (info) => (   info.container == document.body
-						 && (   info.loadLocation.pathname == "/"
-						 	 || info.loadLocation.pathname == "/index")));
+                         && (   info.loadLocation.pathname == "/"
+                             || info.loadLocation.pathname == "/index")));
 
 /***************************************************************************/
 /*  Clean up image alt-text. (Shouldn’t matter, because all image URLs work,
@@ -1764,14 +1764,14 @@ addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) 
 addContentInjectHandler(GW.contentInjectHandlers.preventDropCapsOverlap = (eventInfo) => {
     GWLog("preventDropCapsOverlap", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("[class*='drop-cap-']").forEach(dropCapBlock => {
-		if (dropCapBlock.nextElementSibling) {
-			if (   dropCapBlock.nextElementSibling.classList.containsAnyOf([ "columns" ])
-				|| [ "OL", "UL" ].includes(dropCapBlock.nextElementSibling.tagName)
-				|| [ "0", "0px" ].includes(getComputedStyle(dropCapBlock.nextElementSibling).borderWidth) == false)
-				dropCapBlock.classList.add("overlap-not");
-		}
-	});
+    eventInfo.container.querySelectorAll("[class*='drop-cap-']").forEach(dropCapBlock => {
+        if (dropCapBlock.nextElementSibling) {
+            if (   dropCapBlock.nextElementSibling.classList.containsAnyOf([ "columns" ])
+                || [ "OL", "UL" ].includes(dropCapBlock.nextElementSibling.tagName)
+                || [ "0", "0px" ].includes(getComputedStyle(dropCapBlock.nextElementSibling).borderWidth) == false)
+                dropCapBlock.classList.add("overlap-not");
+        }
+    });
 }, "rewrite", (info) => (info.document == document))
 
 /********/
@@ -1837,28 +1837,28 @@ addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (even
 }, "rewrite");
 
 /************************************************/
-/*	Activate copy buttons of math block elements.
+/*  Activate copy buttons of math block elements.
  */
 addContentInjectHandler(GW.contentInjectHandlers.activateMathBlockButtons = (eventInfo) => {
     GWLog("activateMathBlockButtons", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll(".mjpage__block").forEach(mathBlock => {
-		//  Copy button (copies LaTeX source).
-		let latexSource = mathBlock.querySelector(".mjx-math").getAttribute("aria-label");
-		let scratchpad = mathBlock.querySelector(".scratchpad");
-		mathBlock.querySelector("button.copy").addActivateEvent((event) => {
-			GWLog("mathBlockCopyButtonClicked", "rewrite.js", 3);
+        //  Copy button (copies LaTeX source).
+        let latexSource = mathBlock.querySelector(".mjx-math").getAttribute("aria-label");
+        let scratchpad = mathBlock.querySelector(".scratchpad");
+        mathBlock.querySelector("button.copy").addActivateEvent((event) => {
+            GWLog("mathBlockCopyButtonClicked", "rewrite.js", 3);
 
-			//  Perform copy operation.
-			scratchpad.innerText = latexSource;
-			selectElementContents(scratchpad);
-			document.execCommand("copy");
-			scratchpad.innerText = "";
+            //  Perform copy operation.
+            scratchpad.innerText = latexSource;
+            selectElementContents(scratchpad);
+            document.execCommand("copy");
+            scratchpad.innerText = "";
 
-			//  Flash math block, for visual feedback of copy operation.
-			mathBlock.classList.add("flash");
-			setTimeout(() => { mathBlock.classList.remove("flash"); }, 150);
-		});
+            //  Flash math block, for visual feedback of copy operation.
+            mathBlock.classList.add("flash");
+            setTimeout(() => { mathBlock.classList.remove("flash"); }, 150);
+        });
     });
 }, "eventListeners");
 
@@ -1967,286 +1967,286 @@ doWhenPageLoaded(() => {
 /***********/
 
 function $ (f) {
-	try {
-		let result = typeof f == "function"
-					 ? f()
-					 : eval(f);
-		if (result != undefined)
-			GW.console.print(result);
-	} catch (e) {
-		GW.console.print(e);
-	}
+    try {
+        let result = typeof f == "function"
+                     ? f()
+                     : eval(f);
+        if (result != undefined)
+            GW.console.print(result);
+    } catch (e) {
+        GW.console.print(e);
+    }
 }
 
 GW.console = {
-	outputBuffer: newDocument(),
+    outputBuffer: newDocument(),
 
-	flushBuffer: () => {
-		if (GW.console.view == false)
-			return;
+    flushBuffer: () => {
+        if (GW.console.view == false)
+            return;
 
-		GW.console.view.contentView.append(GW.console.outputBuffer);
-		GW.console.updateHeight();
-		GW.console.scrollToBottom();
-	},
+        GW.console.view.contentView.append(GW.console.outputBuffer);
+        GW.console.updateHeight();
+        GW.console.scrollToBottom();
+    },
 
-	scrollToBottom: () => {
-		GW.console.view.scrollView.scrollTop = GW.console.view.contentView.clientHeight
-											 - GW.console.view.scrollView.clientHeight;
-	},
+    scrollToBottom: () => {
+        GW.console.view.scrollView.scrollTop = GW.console.view.contentView.clientHeight
+                                             - GW.console.view.scrollView.clientHeight;
+    },
 
-	clearOutput: () => {
-		GW.console.view.contentView.replaceChildren();
-		GW.console.updateHeight();
-		GW.console.scrollToBottom();
-	},
+    clearOutput: () => {
+        GW.console.view.contentView.replaceChildren();
+        GW.console.updateHeight();
+        GW.console.scrollToBottom();
+    },
 
-	print: (entity, flush = true) => {
-		let style = "";
-		if (   entity == undefined
-			|| entity == null)
-			style = "color: #777;"
-		if (entity instanceof Error)
-			style = "color: #f00;"
+    print: (entity, flush = true) => {
+        let style = "";
+        if (   entity == undefined
+            || entity == null)
+            style = "color: #777;"
+        if (entity instanceof Error)
+            style = "color: #f00;"
 
-		let output;
-		if (entity instanceof Error) {
-			output = entity.stack;
-			console.error(entity);
-		} else if (typeof entity == "string") {
-			output = entity.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-			console.log(entity);
-		} else if (entity instanceof Element) {
-			output = entity.outerHTML.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-			console.log(entity);
-		} else {
-			if (entity) {
-				let jsonString = JSON.stringify(entity, null, "\n"
-					 				  ).replace(/\\n/g, "\n"
-					 				  ).replace(/\\t/g, "\t"
-					 				  ).replace(/\\"/g, "\"")
-				console.log(jsonString);
-				jsonString = JSON.stringify(entity, null, "\n"
-					 			  ).replace(/\\t/g, "    "
-					 			  ).replace(/\\"/g, "&quot;"
-					 			  ).replace(/</g, "&lt;"
-					 			  ).replace(/>/g, "&gt;"
-					 			  ).replace(/\n+/g, "\n"
-					 			  ).replace(/\\n/g, "<br />")
-				output = jsonString;
-			} else {
-				console.log(entity);
-				output = entity;
-			}
-		}
+        let output;
+        if (entity instanceof Error) {
+            output = entity.stack;
+            console.error(entity);
+        } else if (typeof entity == "string") {
+            output = entity.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            console.log(entity);
+        } else if (entity instanceof Element) {
+            output = entity.outerHTML.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            console.log(entity);
+        } else {
+            if (entity) {
+                let jsonString = JSON.stringify(entity, null, "\n"
+                                      ).replace(/\\n/g, "\n"
+                                      ).replace(/\\t/g, "\t"
+                                      ).replace(/\\"/g, "\"")
+                console.log(jsonString);
+                jsonString = JSON.stringify(entity, null, "\n"
+                                  ).replace(/\\t/g, "    "
+                                  ).replace(/\\"/g, "&quot;"
+                                  ).replace(/</g, "&lt;"
+                                  ).replace(/>/g, "&gt;"
+                                  ).replace(/\n+/g, "\n"
+                                  ).replace(/\\n/g, "<br />")
+                output = jsonString;
+            } else {
+                console.log(entity);
+                output = entity;
+            }
+        }
 
-		GW.console.outputBuffer.appendChild(newElement("P", { style: style }, { innerHTML: output }));
+        GW.console.outputBuffer.appendChild(newElement("P", { style: style }, { innerHTML: output }));
 
-		if (flush)
-			GW.console.flushBuffer();
-	},
+        if (flush)
+            GW.console.flushBuffer();
+    },
 
-	setInputCursorPosition: (pos) => {
-		GW.console.view.input.setSelectionRange(pos, pos);
-	},
+    setInputCursorPosition: (pos) => {
+        GW.console.view.input.setSelectionRange(pos, pos);
+    },
 
-	show: () => {
-		GW.console.scrollToBottom();
-		GW.console.view.classList.toggle("hidden", false);
-		GW.console.view.input.focus();
-	},
+    show: () => {
+        GW.console.scrollToBottom();
+        GW.console.view.classList.toggle("hidden", false);
+        GW.console.view.input.focus();
+    },
 
-	hide: () => {
-		GW.console.view.input.blur();
-		GW.console.view.classList.toggle("hidden", true);
-	},
+    hide: () => {
+        GW.console.view.input.blur();
+        GW.console.view.classList.toggle("hidden", true);
+    },
 
-	isVisible: () => {
-		return (GW.console.view.classList.contains("hidden") == false);
-	},
+    isVisible: () => {
+        return (GW.console.view.classList.contains("hidden") == false);
+    },
 
-	updateHeight: () => {
-		GW.console.view.style.setProperty("--GW-console-view-height", GW.console.view.offsetHeight + "px");
-	},
+    updateHeight: () => {
+        GW.console.view.style.setProperty("--GW-console-view-height", GW.console.view.offsetHeight + "px");
+    },
 
-	setPrompt: (string) => {
-		GW.console.view.prompt.innerHTML = string;
-	},
+    setPrompt: (string) => {
+        GW.console.view.prompt.innerHTML = string;
+    },
 
-	clearCommandLine: () => {
-		GW.console.view.input.value = "";
-	},
+    clearCommandLine: () => {
+        GW.console.view.input.value = "";
+    },
 
-	keyDown: (event) => {
-		if (GW.console.isVisible() == false)
-			return;
+    keyDown: (event) => {
+        if (GW.console.isVisible() == false)
+            return;
 
-		let allowedKeys = [ "Enter", "ArrowUp", "ArrowDown" ];
-		if (allowedKeys.includes(event.key) == false)
-			return;
+        let allowedKeys = [ "Enter", "ArrowUp", "ArrowDown" ];
+        if (allowedKeys.includes(event.key) == false)
+            return;
 
-		if (document.activeElement != GW.console.view.input)
-			return;
+        if (document.activeElement != GW.console.view.input)
+            return;
 
-		switch (event.key) {
-			case "Enter":
-				GW.console.commandLineCommandReceived();
-				break;
+        switch (event.key) {
+            case "Enter":
+                GW.console.commandLineCommandReceived();
+                break;
 
-			case "ArrowUp":
-				event.preventDefault();
-				if (GW.console.commandLog_pointer == GW.console.commandLog.length)
-					GW.console.commandLog_currentCommandLine = GW.console.view.input.value;
-				let prevLine = GW.console.commandLog_prevEntry();
-				if (prevLine != null) {
-					GW.console.view.input.value = prevLine;
-					GW.console.setInputCursorPosition(GW.console.view.input.value.length);
-				}
-				break;
+            case "ArrowUp":
+                event.preventDefault();
+                if (GW.console.commandLog_pointer == GW.console.commandLog.length)
+                    GW.console.commandLog_currentCommandLine = GW.console.view.input.value;
+                let prevLine = GW.console.commandLog_prevEntry();
+                if (prevLine != null) {
+                    GW.console.view.input.value = prevLine;
+                    GW.console.setInputCursorPosition(GW.console.view.input.value.length);
+                }
+                break;
 
-			case "ArrowDown":
-				event.preventDefault();
-				let nextLine = GW.console.commandLog_nextEntry();
-				if (nextLine != null) {
-					GW.console.view.input.value = nextLine;
-					GW.console.setInputCursorPosition(GW.console.view.input.value.length);
-				}
-				break;
-		}
-	},
+            case "ArrowDown":
+                event.preventDefault();
+                let nextLine = GW.console.commandLog_nextEntry();
+                if (nextLine != null) {
+                    GW.console.view.input.value = nextLine;
+                    GW.console.setInputCursorPosition(GW.console.view.input.value.length);
+                }
+                break;
+        }
+    },
 
-	keyUp: (event) => {
-		let allowedKeys = [ "`", "Esc", "Escape" ];
-		if (allowedKeys.includes(event.key) == false)
-			return;
+    keyUp: (event) => {
+        let allowedKeys = [ "`", "Esc", "Escape" ];
+        if (allowedKeys.includes(event.key) == false)
+            return;
 
-		switch (event.key) {
-			case "`":
-				if (GW.console.isVisible() == false)
-					GW.console.show();
-				break;
-			case "Esc":
-			case "Escape":
-				if (GW.console.isVisible() == true)
-					GW.console.hide();
-				break;
-		};
-	},
+        switch (event.key) {
+            case "`":
+                if (GW.console.isVisible() == false)
+                    GW.console.show();
+                break;
+            case "Esc":
+            case "Escape":
+                if (GW.console.isVisible() == true)
+                    GW.console.hide();
+                break;
+        };
+    },
 
-	commandLineInputReceived: (event) => {
-		//	Nothing… yet.
-	},
+    commandLineInputReceived: (event) => {
+        //  Nothing… yet.
+    },
 
-	commandLog: [ ],
-	commandLog_currentCommandLine: "",
-	commandLog_pointer: 0,
-	commandLog_prevEntry: () => {
-		if (GW.console.commandLog_pointer == 0)
-			return null;
+    commandLog: [ ],
+    commandLog_currentCommandLine: "",
+    commandLog_pointer: 0,
+    commandLog_prevEntry: () => {
+        if (GW.console.commandLog_pointer == 0)
+            return null;
 
-		return GW.console.commandLog_entryAtIndex(--(GW.console.commandLog_pointer));
-	},
-	commandLog_nextEntry: () => {
-		if (GW.console.commandLog_pointer == GW.console.commandLog.length)
-			return null;
+        return GW.console.commandLog_entryAtIndex(--(GW.console.commandLog_pointer));
+    },
+    commandLog_nextEntry: () => {
+        if (GW.console.commandLog_pointer == GW.console.commandLog.length)
+            return null;
 
-		return GW.console.commandLog_entryAtIndex(++(GW.console.commandLog_pointer));
-	},
-	commandLog_entryAtIndex: (index) => {
-		return (index == GW.console.commandLog.length
-				? GW.console.commandLog_currentCommandLine
-				: GW.console.commandLog[index]);
-	},
+        return GW.console.commandLog_entryAtIndex(++(GW.console.commandLog_pointer));
+    },
+    commandLog_entryAtIndex: (index) => {
+        return (index == GW.console.commandLog.length
+                ? GW.console.commandLog_currentCommandLine
+                : GW.console.commandLog[index]);
+    },
 
-	commandLineCommandReceived: () => {
-		let inputLine = event.target.value;
+    commandLineCommandReceived: () => {
+        let inputLine = event.target.value;
 
-		GW.console.print("> " + inputLine);
-		GW.console.clearCommandLine();
+        GW.console.print("> " + inputLine);
+        GW.console.clearCommandLine();
 
-		GW.console.commandLog.push(inputLine);
-		GW.console.commandLog_currentCommandLine = "";
-		GW.console.commandLog_pointer = GW.console.commandLog.length;
+        GW.console.commandLog.push(inputLine);
+        GW.console.commandLog_currentCommandLine = "";
+        GW.console.commandLog_pointer = GW.console.commandLog.length;
 
-		if (/^`.*`$/.test(inputLine))
-			GW.console.jsExecLine(inputLine.slice(1, -1));
-		else
-			GW.console.execLine(inputLine);
-	},
+        if (/^`.*`$/.test(inputLine))
+            GW.console.jsExecLine(inputLine.slice(1, -1));
+        else
+            GW.console.execLine(inputLine);
+    },
 
-	execLine: (line) => {
-		let command = line;
-		switch (command.toLowerCase()) {
-			case "clear":
-				GW.console.clearOutput();
-				break;
-			default:
-				GW.console.print(`gwrnsh: ${line}: command not found.`);
-				break;
-		}
-	},
+    execLine: (line) => {
+        let command = line;
+        switch (command.toLowerCase()) {
+            case "clear":
+                GW.console.clearOutput();
+                break;
+            default:
+                GW.console.print(`gwrnsh: ${line}: command not found.`);
+                break;
+        }
+    },
 
-	jsExecLine: (line) => {
-		$(line);
-	}
+    jsExecLine: (line) => {
+        $(line);
+    }
 };
 
-//	Dump temporary buffer.
+//  Dump temporary buffer.
 if (GW.consoleTempBuffer > "") {
-	GW.consoleTempBuffer.split("\n").forEach(line => {
-		GW.console.print(line, false);
-	});
-	GW.consoleTempBuffer = null;
+    GW.consoleTempBuffer.split("\n").forEach(line => {
+        GW.console.print(line, false);
+    });
+    GW.consoleTempBuffer = null;
 }
 
 doWhenBodyExists(() => {
-	//	Construct views.
-	GW.console.view = addUIElement(`<div id="console" class="hidden">
-		<div class="console-scroll-view">
-			<div class="console-content-view"></div>
-		</div>
-		<div class="console-command-line">
-			<div class="console-command-line-prompt">
-				<span></span>
-			</div>
-			<div class="console-command-line-entry-field">
-				<input name="console-command" type="text" autocomplete="off"></input>
-			</div>
-		</div>
-	</div>`);
+    //  Construct views.
+    GW.console.view = addUIElement(`<div id="console" class="hidden">
+        <div class="console-scroll-view">
+            <div class="console-content-view"></div>
+        </div>
+        <div class="console-command-line">
+            <div class="console-command-line-prompt">
+                <span></span>
+            </div>
+            <div class="console-command-line-entry-field">
+                <input name="console-command" title="JS REPL" type="text" autocomplete="off"></input>
+            </div>
+        </div>
+    </div>`);
 
-	//	Convenience references.
-	GW.console.view.scrollView = GW.console.view.querySelector(".console-scroll-view");
-	GW.console.view.contentView = GW.console.view.querySelector(".console-content-view");
-	GW.console.view.prompt = GW.console.view.querySelector(".console-command-line-prompt span");
-	GW.console.view.input  = GW.console.view.querySelector(".console-command-line-entry-field input");
+    //  Convenience references.
+    GW.console.view.scrollView = GW.console.view.querySelector(".console-scroll-view");
+    GW.console.view.contentView = GW.console.view.querySelector(".console-content-view");
+    GW.console.view.prompt = GW.console.view.querySelector(".console-command-line-prompt span");
+    GW.console.view.input  = GW.console.view.querySelector(".console-command-line-entry-field input");
 
-	//	Set prompt.
-	GW.console.setPrompt(location.pathname);
+    //  Set prompt.
+    GW.console.setPrompt(location.pathname);
 
-	//	Flush output buffer.
-	GW.console.flushBuffer();
+    //  Flush output buffer.
+    GW.console.flushBuffer();
 
-	//	Update height.
-	GW.console.updateHeight();
+    //  Update height.
+    GW.console.updateHeight();
 
-	//	Add event listeners, if console enabled.
-	if (   getQueryVariable("console") == "1"
-		|| getQueryVariable("console") == "2"
-		|| localStorage.getItem("console-enabled") == "true") {
-		//	Add show/hide key event listener.
-		document.addEventListener("keyup", GW.console.keyUp);
+    //  Add event listeners, if console enabled.
+    if (   getQueryVariable("console") == "1"
+        || getQueryVariable("console") == "2"
+        || localStorage.getItem("console-enabled") == "true") {
+        //  Add show/hide key event listener.
+        document.addEventListener("keyup", GW.console.keyUp);
 
-		//	Add command line “Enter” key event listener.
-		document.addEventListener("keydown", GW.console.keyDown);
+        //  Add command line “Enter” key event listener.
+        document.addEventListener("keydown", GW.console.keyDown);
 
-		//	Add command line input (text entry) event listener.
-		GW.console.view.input.addEventListener("input", GW.console.commandLineInputReceived);
-	}
+        //  Add command line input (text entry) event listener.
+        GW.console.view.input.addEventListener("input", GW.console.commandLineInputReceived);
+    }
 
-	//	Show console, if auto-show enabled.
-	if (getQueryVariable("console") == "2")
-		GW.console.show();
+    //  Show console, if auto-show enabled.
+    if (getQueryVariable("console") == "2")
+        GW.console.show();
 });
 
 
@@ -2346,30 +2346,30 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
 /************/
 
 /*********************************************************************/
-/*	Trigger transcludes and expand-lock collapse blocks when printing.
+/*  Trigger transcludes and expand-lock collapse blocks when printing.
  */
 window.addEventListener("beforeprint", (event) => {
-	GWLog("Print command received.", "rewrite.js", 1);
+    GWLog("Print command received.", "rewrite.js", 1);
 
-	function expand(container) {
-		if (   container instanceof Element
-			&& container.closest("#link-bibliography"))
-			return;
+    function expand(container) {
+        if (   container instanceof Element
+            && container.closest("#link-bibliography"))
+            return;
 
-		Transclude.triggerTranscludesInContainer(container);
-		expandLockCollapseBlocks({ container: container });
-	}
+        Transclude.triggerTranscludesInContainer(container);
+        expandLockCollapseBlocks({ container: container });
+    }
 
-	GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView = (info) => {
-		expand(info.container);
-	});
+    GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView = (info) => {
+        expand(info.container);
+    });
 
-	expand(document);
+    expand(document);
 });
 window.addEventListener("afterprint", (event) => {
-	GWLog("Print command completed.", "rewrite.js", 1);
+    GWLog("Print command completed.", "rewrite.js", 1);
 
-	GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView);
+    GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView);
 });
 
 
