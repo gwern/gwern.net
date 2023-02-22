@@ -591,7 +591,7 @@ header h1 {
     line-height: 1.5;
 }
 
-/* Override normal handling of italics: before, we wrapped descriptions in `<em>`; however, they compile to HTML which can contain italics of their own (eg. book titles). This causes HTML Tidy to warn about nested italics (which is valid HTML but *usually* means you've made an error - this often triggers when I mess up bolding, for example, like on /gpt-3 ). So we removed the wrapper in favor of the above `font-style: italic`. However, now the titles don't unitalicize automatically like they would for nested italics! So we force italicized titles back to normal Roman font to match the expected typographic convention. */
+/* Override normal handling of italics: before, we wrapped descriptions in `<em>`; however, they compile to HTML which can contain italics of their own (eg. book titles). This causes HTML Tidy to warn about nested italics (which is valid HTML but *usually* means you've made an error - this often triggers when I mess up bolding, for example, like on /GPT-3 ). So we removed the wrapper in favor of the above `font-style: italic`. However, now the titles don't unitalicize automatically like they would for nested italics! So we force italicized titles back to normal Roman font to match the expected typographic convention. */
 #page-description {
     display: block;
     font-style: italic;
@@ -2132,10 +2132,23 @@ body.special-halloween-dark h6 {
 	 */
 	--GW-mode-selector-mobile-background-color: rgba(18, 18, 18, 0.75);
 
-	/*	Wikipedia images assume a white background; transparent images don’t
-		look right if that assumption is violated.
+	/*	Wikipedia math images assume a white background; transparent images 
+		don’t look right if that assumption is violated.
+
+		NOTE: This color value is --GW-body-background-color with the CSS
+		`invert(1)` filter applied. If you modify --GW-body-background-color, 
+		modify this also!
+	 */
+	--GW-wikipedia-math-image-background-color: #e9e9e9;
+
+	/*	Wikipedia images in figures likewise assume a white background, but
+		might be transparent (and don’t get inverted).
 	 */
 	--GW-wikipedia-image-background-color: #fff;
+
+	/*	Similar to the above, but for all SVGs, which don’t get inverted.
+	 */
+	--GW-transparent-svg-background-color: #fff;
 }
 
 /*  The ‘fill’ attribute of the SVGs is modified in dark mode.
@@ -2158,7 +2171,9 @@ body.special-halloween-dark h6 {
 /* some SVGs used in annotations/essays (eg. /image/genetics/selection/2023-meyer-figure1-moralacceptabilityandpersonalwillingnesstouseembryoselectionorgeneticeditinginausapopulationsurvey.svg ) were authored as transparent SVGs, assuming a *white* background. In dark-mode, with a black background set, they are illegible.
 So, in dark mode only, impose a white background on SVGs in <figure>s.
 (This is scoped narrowly to only apply to SVGs which are displayed in <figure>, and not SVGs elsewhere—because SVGs elsewhere are probably part of the site design, and will have been designed to work with dark mode; forcing a white background on them may have unpredictable bad effects. If it turns out that this is still too broad, we may have to instead manually edit SVGs to force a white background, or selectively whitelist them for a white background.) */
-figure img[src$=".svg"] { background-color: var(--GW-wikipedia-image-background-color); }
+figure img[src$=".svg"] {
+	background-color: var(--GW-transparent-svg-background-color);
+}
 
 /*	Create a ‘footer’ at the bottom of pages which looks like ‘—————𝔊—————’,
 	similar to the arabesque navbar.
@@ -2435,9 +2450,12 @@ a[data-link-icon-type*='svg']::after {
  */
 .annotation.wikipedia-entry .mwe-math-element img {
 	filter: invert(1);
+	background-color: var(--GW-wikipedia-math-image-background-color);
 }
 
-.annotation.wikipedia-entry img {
+/*	Images in figures in Wikipedia pop-frames.
+ */
+.annotation.wikipedia-entry figure img {
 	background-color: var(--GW-wikipedia-image-background-color);
 }
 
