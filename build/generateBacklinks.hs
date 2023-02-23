@@ -96,7 +96,8 @@ generateCaller md target (caller, callers) =
                                                              -- it'll look at '/metadata/annotation/$FOO.html#$ID' instead2 of the actual '/metadata/annotation/$FOO.html'.
                                                              -- (eg. for Boehm et al 1993's "backlinks", there will be a 'Hierarchy in the Library' backlink which would point at 'https://gwern.net/doc/culture/2008-johnson.pdf#boehm-et-al-1993' , which has no annotation, because it's annotated as '/doc/culture/2008-johnson.pdf').
                                                              Just (_,aut,dt,_,_,_) -> generateID (T.unpack caller) aut dt
-                                           callerDatesTitles = map (\u -> case M.lookup (T.unpack u) md of
+                                           callerDatesTitles = map (\url -> let u = if isPagePath url then T.takeWhile (/='#') url else url in
+                                                                     case M.lookup (T.unpack u) md of
                                                                       Nothing -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
                                                                       Just ("",_,"",_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
                                                                       Just ("",_,_,_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
