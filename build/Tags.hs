@@ -162,6 +162,7 @@ tagsLong2Short = [
           , ("ai/anime/danbooru", "Danbooru AI")
           , ("anime/eva/little-boy", "<em>Little Boy</em>")
           , ("ai/nn", "neural net")
+          , ("ai/nn/sampling", "NN sampling")
           , ("ai/nn/cnn", "CNN")
           , ("ai/nn/rnn", "RNN")
           , ("ai/nn/fully-connected", "MLP NN")

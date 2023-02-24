@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-02-18 23:06:00 gwern"
+When:  Time-stamp: "2023-02-22 20:31:58 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -1565,7 +1565,6 @@ badDomainsSimple = [ "2chan.us"
    , "www.antonhowes.com"
    , "www.apa.org"
    , "www.apa.org"
-   , "www.appbrain.com"
    , "www.arkansasonline.com"
    , "www.arknights.global"
    , "www.army.mil"
@@ -3948,7 +3947,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://qz.com/1311732/openai-built-gaming-bots-that-can-work-as-a-team-with-inhuman-precision/"
             , "https://rachelbythebay.com/"
             , "https://radiopublic.com/longform-MG7XaW/s1!316e8"
-            , "https://raw.githubusercontent.com/google-research/google-research/master/automl_zero/best_algo.gif"
+            , "https://raw.githubusercontent.com/Riashat/Active-Learning-Bayesian-Convolutional-Neural-Networks/master/Presentations/Thesis/Islam%20Riashat%20MPhil%20MLSALT%20Thesis.pdf"
             , "https://rbej.biomedcentral.com/articles/10.1186/s12958-015-0029-9"
             , "https://rd.springer.com/chapter/10.1007/978-3-030-42504-3_15"
             , "https://readonlymemory.vg/shop/book/arcade-game-typography/"
@@ -4132,7 +4131,6 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.annualreviews.org/doi/10.1146/annurev-psych-010416-044022"
             , "https://www.antonhowes.com/"
             , "https://www.apa.org/monitor/2011/09/achievement.aspx"
-            , "https://www.appbrain.com/app/n-back-maestro/org.urbian.android.games.nback"
             , "https://www.arkansasonline.com/news/2019/nov/28/airport-beagles-sniff-out-illicit-foods/"
             , "https://www.arknights.global/"
             , "https://www.army.mil/article/56965/military_working_dogs_guardians_of_the_night"

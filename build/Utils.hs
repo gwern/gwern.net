@@ -1664,6 +1664,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("twenty six", "26")
          , ("<br/>", "<br />")
          , ("<br>", "<br />")
+         , ("ﬃ", "ffi")
          , (",”", "”,")
          , (",’", "’,")
          , ("\160", " ") -- NO BREAK SPACE

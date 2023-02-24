@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-02-17 09:36:20 gwern"
+When:  Time-stamp: "2023-02-23 09:01:47 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1310,5 +1310,7 @@ whiteList url
       , "https://www.instagram.com/p/Be8vrJAH-8D/" -- low quality (video embeds)
       , "https://overturemaps.org/resources/faq/" -- low quality (collapse/disclosures in the FAQ questions do not work)
       , "https://www.autoregex.xyz/" -- interactive
+      , "https://thisimagedoesnotexist.com/" -- interactive (quiz)
+      , "https://podcast.ai/" -- low quality (audio embed)
       ] = True
     | otherwise = False

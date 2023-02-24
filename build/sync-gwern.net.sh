@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-02-18 12:28:49 gwern"
+# When:  Time-stamp: "2023-02-23 09:19:10 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -547,7 +547,7 @@ else
     λ(){ gf -e ' <sup>' -e ' <sub>' -e ' </sup>' -e ' </sub>' -- ./metadata/*.yaml | gf -e ' <sup>242m</sup>Am' -e ' <sup>60</sup>Co' -e ' <sup>2</sup> This is because of the principle' -e ' <sup>3</sup> There are some who' -e ' <sup>4</sup> Such as setting' -e ' <sup>5</sup> Such as buying gifts' -e ' <sup>31</sup>P-Magnetic' ; }
     wrap λ "Superscripts/subscripts have spaces in front?"
 
-    λ(){ ge -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"' -e 'class="width-full' ./metadata/*.yaml; }
+    λ(){ ge -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"' ./metadata/*.yaml; }
     wrap λ "Check <figure> vs <img> usage, image hotlinking, non-absolute relative image paths in YAML metadata database"
 
     λ(){ gf -e ' significant'  ./metadata/full.yaml; }

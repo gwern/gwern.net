@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-02-15 16:12:26 gwern"
+When: Time-stamp: "2023-02-23 09:18:12 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -171,9 +171,18 @@ main =
                                        "static/**.php",
                                        "static/**.py",
                                        "static/**.wasm",
+                                       "static/**.el",
                                        "**.yaml",
                                        "metadata/**",
                                        "static/build/.htaccess",
+                                       "static/build/upload",
+                                       "static/build/png",
+                                       "static/build/newsletter-lint",
+                                       "static/build/gwsed",
+                                       "static/build/gwa",
+                                       "static/build/crossref",
+                                       "static/build/compressPdf",
+                                       "static/build/compressJPG2",
                                        "atom.xml"] -- copy stub of deprecated RSS feed
 
                match "static/template/*.html" $ compile templateCompiler
