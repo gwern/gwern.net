@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-03-24 11:02:48 gwern"
+When:  Time-stamp: "2023-03-25 22:22:55 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1321,5 +1321,11 @@ whiteList url
       , "https://flavioschneider.notion.site/flavioschneider/Audio-Generation-with-Diffusion-c4f29f39048d4f03a23da13078a44cdb" -- low quality (audio embeds)
       , "https://kinyugo.github.io/msanii-demo/" -- low quality (audio embeds)
       , "https://www.tiktok.com/" -- low quality (video embeds)
+      , "https://avinayak.github.io/algorithms/programming/2021/02/19/finding-mona-lisa-in-the-game-of-life.html" -- low quality (not sure if video embed?)
+      , "https://blog.amandaghassaei.com/2022/10/25/digital-marbling/" -- low quality (video embeds)
+      , "https://btm.qva.mybluehost.me/building-arbitrary-life-patterns-in-15-gliders/" -- low quality (video embeds)
+      , "https://n-e-r-v-o-u-s.com/blog/?p=9225" -- low quality (video embeds)
+      , "https://oimo.io/works/life/" -- interactive
+      , "https://incredible.pm/" -- interactive
       ] = True
     | otherwise = False

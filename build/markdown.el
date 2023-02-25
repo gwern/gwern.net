@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-03-23 13:18:17 gwern"
+;;; When:  Time-stamp: "2023-03-25 12:19:07 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -229,6 +229,8 @@
        (replace-all "gF" "_g~f~_")
        (replace-all "ﬁ" "fi")
        (replace-all "ﬀ" "ff")
+       (replace-all "ﬃ" "ffi")
+       (replace-all "ﬂ" "fl")
        (replace-all "￿" "fi")
        (replace-all "Æ" "fi")
        (replace-all "𝑥" "<em>x</em>")
@@ -960,7 +962,9 @@
          (query-replace "(g value" "(_g_ value" nil begin end)
          (query-replace "(m = " "(_m_ =" nil begin end)
          (query-replace "LaTeX" "<span class=\"logotype-latex\">L<span class=\"logotype-latex-a\">a</span>T<span class=\"logotype-latex-e\">e</span>X</span>" nil begin end)
-         (query-replace "TeX" "<span class=\"logotype-tex\">T<sub>e</sub>X</span>" nil begin end))
+         (query-replace "LATEX" "<span class=\"logotype-latex\">L<span class=\"logotype-latex-a\">a</span>T<span class=\"logotype-latex-e\">e</span>X</span>" nil begin end)
+         (query-replace "TeX" "<span class=\"logotype-tex\">T<sub>e</sub>X</span>" nil begin end)
+         (query-replace "TEX" "<span class=\"logotype-tex\">T<sub>e</sub>X</span>" nil begin end))
        (query-replace "Nepeta cataria" "_Nepeta cataria_" nil begin end)
        (query-replace "MC4R" "_MC4R_" nil begin end)
        (query-replace "two thirds" "2⁄3" nil begin end)
