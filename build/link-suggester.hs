@@ -1157,7 +1157,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
     ), ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3652710/"
     , [ "Common DNA Markers Can Account for More Than Half of the Genetic Influence on Cognitive Abilities"
       ]
-    ), ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3751588/"
+    ), ( "/doc/iq/2013-rietveld.pdf"
     , [ "GWAS of 126,559 Individuals Identifies Genetic Variants Associated with Educational Attainment"
       , "Rietveld et al 2013"
       ]

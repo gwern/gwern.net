@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-02-23 09:19:10 gwern"
+# When:  Time-stamp: "2023-02-26 11:31:55 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -297,8 +297,10 @@ else
     set +e
 
     # essays only:
+    ## eg. './2012-election.page \n...\n ./doc/cs/cryptography/1955-nash.page \n...\n ./newsletter/2022/09.page \n...\n ./review/mcnamara.page \n...\n ./wikipedia-and-knol.page \n...\n ./zeo/zma.page'
     PAGES="$(find . -type f -name "*.page" | grep -F --invert-match -e '_site/' -e 'index' | sort -u)"
     # essays+tags+annotations+similars+backlinks:
+    # eg "_site/2012-election _site/2014-spirulina _site/3-grenades ... _site/doc/ai/text-style-transfer/index ... _site/doc/anime/2010-sarrazin ... _site/fiction/erl-king ... _site/lorem-admonition ... _site/newsletter/2013/12 ... _site/note/attention ... _site/review/umineko ... _site/zeo/zma"
     PAGES_ALL="$(find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotation/ -type f -name '*.html' | sort)"
     λ(){
          echo "$PAGES_ALL" | xargs grep -F -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
@@ -428,10 +430,10 @@ else
     λ(){ find ./ -type f -name "*.page" | parallel --max-args=500 "grep -F --with-filename -e 'class=\"subsup\"><sup>'"; }
     wrap λ "Incorrect ordering of '<sup>' (the superscript '<sup>' must come second, or else risk Pandoc misinterpreting as footnote while translating HTML↔Markdown)."
 
-    λ(){ ge -e '<div class="admonition .*">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' -e 'class="epigraph>' **/*.page; }
+    λ(){ ge -e '<div class="admonition .*">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' -e 'class="epigraph>' "$PAGES"; }
     wrap λ "Broken admonition paragraph or epigraph in Markdown."
 
-    λ(){ ge -e ' a [aeio]' ./**/*.page | grep -E ' a [aeio]' | grep -F --invert-match -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/'; }
+    λ(){ ge -e ' a [aeio]' "$PAGES" | grep -E ' a [aeio]' | grep -F --invert-match -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/'; }
     wrap λ "Grammar: 'a' → 'an'?"
 
     λ(){ find -L . -type f -size 0  -printf 'Empty file: %p %s\n' | grep -F --invert-match '.git/FETCH_HEAD' -e './.git/modules/static/logs/refs/remotes/'; }
@@ -813,7 +815,7 @@ else
     λ(){ find . -type f -name "*.html.html.html"; }
     wrap λ "Found a triple-.html HTML file; weird! Syntax-highlighting gone astray?"
 
-    λ(){ find . -type f -mtime +3 -name "*#*"; }
+    λ(){ find . -type f -mtime +3 -name "*#*" -or -type f -name "temp[0-9]*"; }
     wrap λ "Stale temporary files?"
 
     bold "Checking for HTML/PDF/image anomalies…"

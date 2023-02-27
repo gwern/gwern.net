@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-02-22 20:31:58 gwern"
+When:  Time-stamp: "2023-02-24 22:26:54 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -1005,7 +1005,6 @@ badDomainsSimple = [ "2chan.us"
    , "catless.ncl.ac.uk"
    , "cep.lse.ac.uk"
    , "cfa.org"
-   , "chem.tufts.edu"
    , "chrome.google.com"
    , "chroniclingamerica.loc.gov"
    , "chronopause.com"
@@ -1308,7 +1307,6 @@ badDomainsSimple = [ "2chan.us"
    , "omega.albany.edu:8008"
    , "omega0.xyz"
    , "openaipublic.blob.core.windows.net"
-   , "openscience.bmj.com"
    , "opensnp.org"
    , "opensource.org"
    , "orbit.dtu.dk"
@@ -3568,7 +3566,6 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://cdm16630.contentdm.oclc.org/digital/collection/p16630coll2/id/534"
             , "https://cep.lse.ac.uk/pubs/download/dp1490.pdf"
             , "https://cfa.org/cfa-history/"
-            , "https://chem.tufts.edu/answersinscience/relativityofwrong.htm"
             , "https://chrome.google.com/webstore/detail/singlefile/mpiodijhokgodhhofbcjdecpffjipkle"
             , "https://chroniclingamerica.loc.gov/newspapers/"
             , "https://ciechanow.ski/lights-and-shadows/"
@@ -3866,7 +3863,6 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://onlinelibrary.wiley.com/doi/full/10.1111/acel.12880"
             , "https://openaipublic.blob.core.windows.net/webgpt-answer-viewer/index.html"
             , "https://openreview.net/forum?id=qVyeW-grC2k#google"
-            , "https://openscience.bmj.com/content/4/1/e100051"
             , "https://opensnp.org/"
             , "https://opensource.org/licenses"
             , "https://orbis.stanford.edu/"
@@ -3895,7 +3891,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://perma.cc/"
             , "https://phabricator.wikimedia.org/T270650"
             , "https://pharmrev.aspetjournals.org/content/57/1/79.long"
-            , "https://philarchive.org/archive/SOTAOAv1"
+            , "https://philpapers.org/archive/SOTAOA.pdf#miri"
             , "https://physics.aps.org/articles/v7/47"
             , "https://physicstoday.scitation.org/do/10.1063/PT.6.1.20180822a/full/"
             , "https://physoc.onlinelibrary.wiley.com/doi/pdf/10.1113/jphysiol.2011.217919"

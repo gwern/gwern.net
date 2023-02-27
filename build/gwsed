@@ -13,7 +13,7 @@ else
             exit 2;
         fi
 
-        # special-case: if the transformation is merely 'http://' → 'https://' (most common rewrite I do), we call out to `gwhttp` instead
+        # special-case: if the transformation is merely 'http://' → 'https://' (most common rewrite I do), we call out to `gwhttp` (defined in /static/build/bash.sh because it's simple) instead
         # which will rewrite all links of that domain, not just this one instance. This can save a lot of time over doing rewrites one-by-one as they are noticed.
         HTTPS2=${1//http:/https:}
         HTTP="http://$(echo "$1" | sed -e 's/[^/]*\/\/\([^@]*@\)\?\([^:/]*\).*/\2/')"
@@ -26,6 +26,7 @@ else
                 echo "No matches; exiting while doing nothing." 1>&2
             else
                 echo "Replacing in: $FILES"
+                # /static/build/stringReplace.hs is a simple Haskell script which does brute string replacement: the first string turns into the second, *period*. No regexp no interpretation no escaping no nothing! It also is compiled & parallelized for a nice speedup.
                 echo "$FILES" | stringReplace "$1" "$2";
                 stringReplace "$1" "$2" ~/wiki/metadata/archive.hs # for some reason, archive.hs doesn't seem to update properly with just one gwsed call; I'm not sure why.
                 gw () { ( find ~/wiki/ -type f -name "*.page"

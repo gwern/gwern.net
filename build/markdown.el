@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-02-16 13:02:09 gwern"
+;;; When:  Time-stamp: "2023-02-26 15:45:01 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -979,12 +979,12 @@
        (query-replace-regexp "Supplementary ([fF]igure \\([0-9]+[a-fA-F]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Figure 3b)
        (query-replace-regexp "Supplementary ([fF]ig\\. \\([0-9]+[a-fA-F]*\\),"  "(**Supplementary Figure \\1**," nil begin end) ; (Fig. 3b,
        (query-replace-regexp "Supplementary [fF]igures \\([0-9]+[a-fA-F]*\\) and \\([0-9]+[a-fA-F]*\\)"  "**Supplementary Figures \\1** & **\\2**" nil begin end)
-       (query-replace-regexp "[fF]ig\\.? \\(S?\\)\\([0-9]+[a-fA-F]*\\)\\." "**Figure \\1\\2**."  nil begin end) ; 'Fig. 1. ', 'Fig. 2a)' etc
-       (query-replace-regexp "[fF]ig\\.? \\(S?\\)\\([0-9]+[a-fA-F]*\\)"    "**Figure \\1\\2**"   nil begin end) ; 'Fig. 1,', 'Fig. 2a,' etc
-       (query-replace-regexp "[fF]igure \\(S?\\)\\([0-9]+[a-fA-F]*\\.?\\)" "**Figure \\1\\2**"  nil begin end) ; 'Figure 1. The graph' etc
-       (query-replace-regexp "([fF]ig\\.? \\(S?\\)\\([0-9]+[a-fA-F]*\\))"  "(**Figure \\1\\2**)" nil begin end) ; (Fig. 3b)
-       (query-replace-regexp "([fF]igure \\(S?\\)\\([0-9]+[a-fA-F]*\\))"  "(**Figure \\1\\2**)" nil begin end) ; (Figure 3b)
-       (query-replace-regexp "([fF]ig\\.? \\(S?\\)\\([0-9]+[a-fA-F]*\\),"  "(**Figure \\1\\2**," nil begin end) ; (Fig. S3b,
+       (query-replace-regexp "[fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\)\\." "**Figure \\1\\2**."  nil begin end) ; 'Fig. 1. ', 'Fig. 2a)', 'Figure 1.5' etc
+       (query-replace-regexp "[fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\)"    "**Figure \\1\\2**"   nil begin end) ; 'Fig. 1,', 'Fig. 2a,' etc
+       (query-replace-regexp "[fF]igure \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\.?\\)" "**Figure \\1\\2**"  nil begin end) ; 'Figure 1. The graph' etc
+       (query-replace-regexp "([fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\))"  "(**Figure \\1\\2**)" nil begin end) ; (Fig. 3b)
+       (query-replace-regexp "([fF]igure \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\))"  "(**Figure \\1\\2**)" nil begin end) ; (Figure 3b)
+       (query-replace-regexp "([fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\),"  "(**Figure \\1\\2**," nil begin end) ; (Fig. S3b,
 
        ; '§ SECTION SIGN' is better than writing out '<strong>Section N</strong>' everywhere. It's much shorter, we already use SECTION SIGN heavily, it reduces overuse of bold, is easier to grep for, and it saves a bit of time formatting annotations (because of the lack of lookahead/lookbehind in these regexp rewrites, 'Section N' will match every time, even if it's already wrapped in <strong></strong>/**bolding**, and I have to waste time skipping them). It would be nice to symbolize Figure/Table/Experiment/Data as well, but there's no widely-understood symbol which could be used, and usually no abbreviation either. (Perhaps 'Supplement.*' could be replaced by just 'S' and 'Figure' by 'Fig.' at some point...)
        (query-replace-regexp "[Ss]ection ?\\([0-9.]+[a-fA-F]*\\)"  "§\\1" nil begin end) ; 'Section 9' → '§9'
@@ -1057,6 +1057,7 @@
        (query-replace "3rd" "3^rd^" nil begin end)
        (query-replace ":.0" ": 0.0" nil begin end)
        (query-replace "−." "−0." nil begin end)
+       (query-replace " -." " −0." nil begin end)
        (query-replace "\\([[:digit:]]\\) %" "\\1%" nil begin end)
        (query-replace-regexp "\\([a-zA-Z,]\\) \\.\\([[:digit:]]\\)" "\\1 0.\\2" nil begin end)
        (query-replace-regexp "^\\.\\([[:digit:]]\\)" "0.\\1" nil begin end)
@@ -1064,6 +1065,7 @@
        (query-replace-regexp "= −\\.\\([[:digit:]]\\)" "= −0.\\1" nil begin end)
        (query-replace-regexp "= -\\.\\([[:digit:]]\\)" "= −0.\\1" nil begin end)
        (query-replace-regexp ", -\\.\\([[:digit:]]\\)" ", −0.\\1" nil begin end)
+       (query-replace-regexp " \\.\\([[:digit:]]+\\)" " 0.\\1" nil begin end) ; eg " .47"
        (query-replace-regexp "and -\\.\\([[:digit:]]\\)" "and −0.\\1" nil begin end)
        (query-replace-regexp "\\([[:digit:]]\\.[[:digit:]]+\\)-\\.\\([[:digit:]]\\)" "\\1--0.\\2" nil begin end)
        (query-replace-regexp "--\\.\\([[:digit:]]+\\)" "--0.\\1" nil begin end)

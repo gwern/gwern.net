@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-02-12 12:38:29 gwern"
+When:  Time-stamp: "2023-02-26 21:39:04 gwern"
 License: CC-0
 -}
 
@@ -19,7 +19,7 @@ module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMeta
 import Control.Monad (unless, void, when, foldM_)
 
 import qualified Data.ByteString as B (appendFile, readFile)
-import Data.Char (isPunctuation)
+import Data.Char (isPunctuation, toLower)
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union) -- traverseWithKey, union, Map
 import qualified Data.Text as T (append, head, isInfixOf, isPrefixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
@@ -247,7 +247,7 @@ readLinkMetadataAndCheck = do
              let urlsDuplicateAffiliation = findDuplicatesURLsByAffiliation final
              unless (null urlsDuplicateAffiliation) $ printRed "Duplicated URLs by affiliation:" >> printGreen (show urlsDuplicateAffiliation)
 
-             let titlesSimilar = sort $ map (\(u,(t,_,_,_,_,_)) -> (u, t)) $ filter (\(u,_) -> '.' `elem` u && not ("wikipedia.org" `isInfixOf` u)) $ M.toList final
+             let titlesSimilar = sort $ map (\(u,(t,_,_,_,_,_)) -> (u, map toLower t)) $ filter (\(u,_) -> '.' `elem` u && not ("wikipedia.org" `isInfixOf` u)) $ M.toList final
              let titles = filter (\title -> length title > 10) $ map snd titlesSimilar
              unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in YAMLs!: " >> printGreen (show (titles \\ nubOrd titles))
 
