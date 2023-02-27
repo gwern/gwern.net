@@ -407,7 +407,6 @@ a[data-link-icon='𝔐']::after {
 
 a[data-link-icon='▽']::after { /* The Verge */
     --link-icon-size: 0.9em;
-    opacity: 0.80;
 }
 
 a[data-link-icon='∇']::after { /* The Gradient.pub */
@@ -451,16 +450,12 @@ a[data-link-icon='𝛘']::after {
 
 a[data-link-icon='෴']::after { /* Moustache / antilop.cc */
     --link-icon-offset-y: 0.5em;
-
-    opacity: 0.8;
 }
 
 a[data-link-icon='🤖']::after { /* ROBOT FACE U+1F916 beepb00p.xyz */
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.3em;
-
-    opacity: 0.8;
 
     opacity: 0.75;
 }
@@ -498,7 +493,13 @@ a[data-link-icon='𝛌']::after { /* Haskell */
 }
 
 a[data-link-icon='𝓝']::after { /* Nintil */
-    --link-icon-size: 0.8em;
+    --link-icon-size: 0.85em;
+    opacity: 0.9;
+}
+
+a[data-link-icon='𝓥']::after { /* Variety */
+    --link-icon-size: 0.85em;
+    opacity: 0.9;
 }
 
 a[data-link-icon='ρ']::after { /* Project Rho */

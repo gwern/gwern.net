@@ -49,7 +49,24 @@ rebuildSVGIconCSS = do unless (null linkIconTest) $ error ("Error! Link icons fa
                              ["</style>"]
                        writeUpdatedFile "svgicons" "static/include/inlined-graphical-linkicon-styles.html" (T.pack html)
 
--- Based on <links.js>.
+-- Rules for URL→icon. All supported examples: <https://gwern.net/lorem-link>
+-- Supported icon types:
+-- - "svg" (+$NAME of the SVG filename in </static/img/icons/$NAME>; must be dark-mode compatible);
+-- - "text"+(1-4 Unicode characters) + comma-separated modifiers; text supports additional control:
+--   - "sans" (given Gwern.net's default font is Source Serif Pro, it is serif by default, while many logotypes are deliberately sans so this enables Source Sans Pro),
+--   - "mono" (IBM Plex),
+--   - "italic" (serif italic weight),
+--   - "overline",
+--   - "tri" (for 3-letters, squeezing in horizontally),
+--   - "quad" (turned into a 2×2 grid).
+--  Most combinations will be valid so one can write "text,quad,mono" (eg for a computing organization like 'IEEE'). Text effects beyond this can usually be achieved by some Unicode trickery, such as adding in HAIR SPACEs or using BOLD versions of characters. Emoji should also work with appropriate combining-characters but can be tricky to get working reliably cross-platform.
+--
+-- Rules: arbitrary pure Haskell can be used to match, and the order of rules matters to allow overrides/precedence (first rule to match wins, so higher=stronger); convenience helpers are provided to match a domain(s), anywhere(s) infix, or by extension(s). These also check for malformedness.
+--
+-- All rules MUST have a test-case exercising each sub-rule (if multiple domains are matched, each domain should have a test-case). Only one testcase is necessary in /lorem-link (because that's just testing that the link-icon itself looks right rendered by browsers, and not that said link-icon is being put on all the links it should be).
+--
+-- HTML/CSS implementation details:
+-- Based on </static/js/links.js>. Text and SVG are styled as groups in </static/css/links.css>, and individual text-strings or SVGs can be styled individually (as is usually required).
 -- The idea is to annotate every `<a>` with two new `data-` attributes, `data-link-icon` and
 -- `data-link-icon-type` which jointly specify the type & content of the icon. The link-icon for
 -- 'svg' type is overloaded to be a filename in `/static/img/icon/$LINKICON.svg`.
@@ -60,13 +77,15 @@ rebuildSVGIconCSS = do unless (null linkIconTest) $ error ("Error! Link icons fa
 -- → Link ("",[],[("link-icon","pdf"),("link-icon-type","svg")]) [Str "foo"] ("/doc/foo.pdf","Foo & Bar 2022")
 -- → <a href="/doc/foo.pdf" data-link-icon="pdf" data-link-icon-type="svg" title="Foo &amp; Bar 2022">foo</a>
 --
+-- URL rewrite handling:
 -- In cases of local archive links, matches on the `/doc/www/$DOMAIN/$ARCHIVE.html` aren't necessarily *exactly*
--- as powerful; local archives deliberately throw away directory structure for simpler addresses, so 2 matches for
+-- as powerful; local archives deliberately throw away sub-directory structure for simpler addresses, so 2 matches for
 -- 'foo.com/bar/*' and 'foo.com/quux/*' would collide when trying to match just '/doc/www/foo.com/$ARCHIVE.html'.
 -- For this case, we detect & exploit the `data-original-URL` attribute which is around for just such problems,
 -- and we run matches on the original URL, and everything should work as expected then.
 --
--- TODO: the PDF checks are incomplete (and only look for ".pdf" essentially) but since I'm trying
+-- TODO: the PDF checks are incomplete (and only look for ".pdf" essentially) but it would require IO or perhaps
+-- a caching database to actually detect what MIME type a live URL returns, which is a PITA, and since I'm trying
 -- to remove all weird non-standard PDFs and host locally all PDFs with clean names & extensions,
 -- maybe that's a vestigial concern?
 linkIcon :: Inline -> Inline
@@ -231,7 +250,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "foreignpolicy.com" = aI "FP" "text"
  | u'' "www.unqualified-reservations.org" = aI "UR" "text"
  | u'' "www.thenewatlantis.com" = aI "NA" "text"
- | u'' "www.supermemo.com" = aI "SM" "text,sans"
+ | aU'' ["www.supermemo.com", "www.super-memory.com"] = aI "SM" "text,sans"
  | u'' "qwantz.com" = aI "DC" "text,sans"
  | u'' "qualiacomputing.com" = aI "QC" "text,sans"
  | u'' "www.thelancet.com" = aI "L" "text"
@@ -992,6 +1011,7 @@ linkIconTestUnitsText =
          , ("https://playground.tensorflow.org/", "tensorflow", "svg")
          , ("https://www.tensorflow.org/tensorboard/get_started", "tensorflow", "svg")
          , ("https://www.supermemo.com/en/blog/twenty-rules-of-formulating-knowledge", "SM", "text,sans")
+         , ("https://www.super-memory.com/articles/theory.htm", "SM", "text,sans")
          , ("https://qwantz.com/index.php?comic=1896", "DC", "text,sans")
          , ("https://vndb.org/c582", "VNDB", "text,quad,sans")
          , ("https://qualiacomputing.com/2015/05/22/how-to-secretly-communicate-with-people-on-lsd/", "QC", "text,sans")
