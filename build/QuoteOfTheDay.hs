@@ -21,6 +21,11 @@ import qualified Data.Set as S (delete, empty, filter, fromList, toList, insert,
 import System.Directory (doesFileExist)
 import Text.Show.Pretty (ppShow)
 
+
+import LinkMetadataTypes (Metadata)
+import qualified Data.Map.Strict as M (toList, filterWithKey)
+import Data.List (isSuffixOf, sortOn)
+
 import LinkMetadata (typesetHtmlField)
 
 type TTDB = [Snippet]
@@ -36,7 +41,7 @@ linkDBPath, linkPath :: FilePath
 linkDBPath = "metadata/links.hs"
 linkPath   = "metadata/today-link.html"
 linked :: Snippet -> String
-linked (link,attribution,_) = "<div class=\"link-of-the-day\">\n<blockquote><p><a href=\"" ++ attribution ++ "\">" ++ typesetHtmlField link ++ "</a></p>" ++ "</blockquote>\n</div>"
+linked (link,attribution,_) = "<div class=\"link-of-the-day\">\n<blockquote><p><a href=\"" ++ attribution ++ "\">" ++ typesetHtmlField link ++ "</a></p></blockquote>\n</div>"
 
 readTTDB :: FilePath -> IO TTDB
 readTTDB path = do exists <- doesFileExist path
@@ -72,3 +77,42 @@ generateSnippetAndWriteTTDB dbpath path formatter =
 qotd, lotd :: IO ()
 qotd = generateSnippetAndWriteTTDB quoteDBPath quotePath quoted
 lotd = generateSnippetAndWriteTTDB linkDBPath linkPath linked
+aotd :: Metadata -> IO ()
+aotd md = generateAnnotationOfTheDay md annotDayDB annotPath annotated
+
+-------
+
+-- same idea: each build, we pick an annotation which hasn't been shown before (uses are tracked in a simple Haskell DB), currently picking by what is the 'longest annotation' (as measured by raw string length) as a crude proxy for 'best', and---directory-tag style---write an `{.annotation-include}` snippet for transcluding into the footer of each page after the quote-of-the-day.
+
+annotDayDB, annotPath :: String
+annotDayDB = "metadata/annotations.hs"
+annotPath = "metadata/today-annotation.html"
+
+minAbstractLength :: Int
+minAbstractLength = 500
+
+type AotD = [String]
+
+annotated :: String -> String
+annotated url = "<div class=\"annotation-of-the-day\">\n<p><a href=\"" ++ url ++ "\" class=\"include-annotation\">[Annotation Of The Day]</a></p></blockquote>\n</div>"
+
+readAnnotDayDB :: FilePath -> IO AotD
+readAnnotDayDB path = do exists <- doesFileExist path
+                         if not exists then return [] else fmap read $ readFile path
+writeAnnotDayDB :: FilePath -> AotD -> IO ()
+writeAnnotDayDB path = writeFile path . ppShow
+
+generateAnnotationOfTheDay :: Metadata -> FilePath -> FilePath -> (String -> String) -> IO ()
+generateAnnotationOfTheDay md dbpath annotpath formatter =
+  do db <- readAnnotDayDB dbpath
+     let md' = M.toList $ M.filterWithKey (\k (_,author,_,_,_,abstract1) ->
+                                              length abstract1 > minAbstractLength &&
+                                              author /= "Gwern Branwen" &&
+                                              k `notElem` db &&
+                                              not ("/index" `isSuffixOf` k)) md
+     let lengthList = sortOn (\(_, (_,_,_,_,_,abstract2)) -> length abstract2) md'
+     if null lengthList then writeFile [] dbpath else
+       do let (url,_) = last lengthList
+          let db' = url : db
+          writeFile annotpath (formatter url)
+          writeAnnotDayDB dbpath db'
