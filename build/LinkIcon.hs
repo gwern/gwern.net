@@ -59,7 +59,7 @@ rebuildSVGIconCSS = do unless (null linkIconTest) $ error ("Error! Link icons fa
 --   - "overline",
 --   - "tri" (for 3-letters, squeezing in horizontally),
 --   - "quad" (turned into a 2×2 grid).
---  Most combinations will be valid so one can write "text,quad,mono" (eg for a computing organization like 'IEEE'). Text effects beyond this can usually be achieved by some Unicode trickery, such as adding in HAIR SPACEs or using BOLD versions of characters. Emoji should also work with appropriate combining-characters but can be tricky to get working reliably cross-platform.
+--  Most combinations will be valid so one can write "text,quad,mono" (eg. for a computing organization like 'IEEE'). Text effects beyond this can usually be achieved by some Unicode trickery, such as adding in HAIR SPACEs or using BOLD versions of characters. Emoji should also work with appropriate combining-characters but can be tricky to get working reliably cross-platform.
 --
 -- Rules: arbitrary pure Haskell can be used to match, and the order of rules matters to allow overrides/precedence (first rule to match wins, so higher=stronger); convenience helpers are provided to match a domain(s), anywhere(s) infix, or by extension(s). These also check for malformedness.
 --
@@ -250,7 +250,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "foreignpolicy.com" = aI "FP" "text"
  | u'' "www.unqualified-reservations.org" = aI "UR" "text"
  | u'' "www.thenewatlantis.com" = aI "NA" "text"
- | aU'' ["www.supermemo.com", "www.super-memory.com"] = aI "SM" "text,sans"
+ | aU'' ["www.supermemo.com", "super-memory.com"] = aI "SM" "text,sans"
  | u'' "qwantz.com" = aI "DC" "text,sans"
  | u'' "qualiacomputing.com" = aI "QC" "text,sans"
  | u'' "www.thelancet.com" = aI "L" "text"
@@ -396,7 +396,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' ".fandom.com" = aI "♡" "text" -- formerly known as Wikia, renamed to 'Fandom' and adopted a heart-based logo: <https://en.wikipedia.org/wiki/Fandom_(website)#2016%E2%80%932018:_Fandom_brand>; this is an umbrella covering all the subdomains; more specific Fandom wikis go before in the list (like MLP)
  | u' "www.wired.com" || u' "www.wired.co.uk" = aI "wired" "svg" -- an inverse "W" on a black background (Wiley is just a "W")
  | u'' "www.youtube.com" || u'' "www.youtu.be" = aI "youtube" "svg"
- | u'' "vimeo.com" = aI "file-video" "svg"
+ | aU'' ["vimeo.com", "player.vimeo.com"] = aI "file-video" "svg"
  | u'' "www.telegraph.co.uk" = aI "the-telegraph" "svg" -- edited from <https://en.wikipedia.org/wiki/File:The_Telegraph.svg>
  | u'' "www.openphilanthropy.org" = aI "open-philanthropy" "svg"
  | u'' "www.atlasobscura.com" = aI "atlas-obscura" "svg"
@@ -803,6 +803,7 @@ linkIconTestUnitsText =
          , ("https://www.youtube.com/watch?v=cG7v9eCq2u4&t=33m49s",  "youtube","svg")
          , ("https://www.youtube.com/channel/UCeNwyKuv5SMnN6ovlpbz1SQ",  "youtube","svg")
          , ("https://vimeo.com/28735982", "file-video", "svg")
+         , ("https://player.vimeo.com/video/218478638", "file-video", "svg")
          , ("https://yunnansourcing.com/",  "ys","text")
          , ("https://yunnansourcing.us/", "ys","text")
          , ("https://what-if.xkcd.com/145/",  "XKCD","text,quad,sans")
@@ -1011,7 +1012,7 @@ linkIconTestUnitsText =
          , ("https://playground.tensorflow.org/", "tensorflow", "svg")
          , ("https://www.tensorflow.org/tensorboard/get_started", "tensorflow", "svg")
          , ("https://www.supermemo.com/en/blog/twenty-rules-of-formulating-knowledge", "SM", "text,sans")
-         , ("https://www.super-memory.com/articles/theory.htm", "SM", "text,sans")
+         , ("https://super-memory.com/articles/theory.htm", "SM", "text,sans")
          , ("https://qwantz.com/index.php?comic=1896", "DC", "text,sans")
          , ("https://vndb.org/c582", "VNDB", "text,quad,sans")
          , ("https://qualiacomputing.com/2015/05/22/how-to-secretly-communicate-with-people-on-lsd/", "QC", "text,sans")

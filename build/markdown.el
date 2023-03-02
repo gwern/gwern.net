@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-02-26 15:45:01 gwern"
+;;; When:  Time-stamp: "2023-02-28 16:51:35 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -442,6 +442,7 @@
        (replace-all " ω 2" " ω<sup>2</sup>")
        (replace-all "τ2" "τ<sup>2</sup>")
        (replace-all "ω2" "ω<sup>2</sup>")
+       (replace-all "chi-squared" "<em>χ</em><sup>2</sup>")
        (replace-all " Escherichia coli" " <em>Escherichia coli</em>")
        (replace-all "two-by-two" "2×2")
        (replace-all " B.M.I" " BMI")
@@ -1049,9 +1050,9 @@
        (query-replace-regexp "\\([[:alnum:]]\\)- " "\\1---" nil begin end)
        (query-replace-regexp "\\([[:alnum:]]\\)\\.\\. " "\\1... " nil begin end)
        (query-replace-regexp "\\([0-9]\\) % " "\\1% " nil begin end)
-       (query-replace-regexp "\\([0-9]\\)fold" "\\1×" nil begin end)
-       (query-replace-regexp "\\([0-9]\\)-fold" "\\1×" nil begin end)
-       (query-replace-regexp "\\([0-9]\\) fold" "\\1×" nil begin end)
+       (query-replace-regexp "\\([0-9]\\)folds?" "\\1×" nil begin end)
+       (query-replace-regexp "\\([0-9]\\)-folds?" "\\1×" nil begin end)
+       (query-replace-regexp "\\([0-9]\\) folds?" "\\1×" nil begin end)
        (query-replace "1st" "1^st^" nil begin end)
        (query-replace "2nd" "2^nd^" nil begin end)
        (query-replace "3rd" "3^rd^" nil begin end)
@@ -1124,7 +1125,7 @@
        (query-replace-regexp "\\*\\*\\*\\(.*\\)\\*\\*\\*" "**_\\1_**" nil begin end) ; '***' is a bad way to write bold-italics in Markdown because it's unreliable to read/parse
        (replace-all "<Strong>" "**")
        (replace-all "</Strong>" "**")
-       (query-replace-regexp "\\([a-zA-Z]+\\) et al\\.? (\\([[:digit:]]+\\))" "\\1 et al \\2" nil begin end) ; 'Heald et al (2015)' → 'Heald et al 2015'
+       (query-replace-regexp "\\([a-zA-Z]+\\) et al\\.? (\\([[:digit:]]+[a-z]?\\))" "\\1 et al \\2" nil begin end) ; 'Heald et al. (2015a)' → 'Heald et al 2015a'
        (query-replace-regexp "\\([a-zA-Z]+\\) et al\\. \\([[:digit:]]+\\)" "\\1 et al \\2" nil begin end)
        (query-replace-regexp "\\([A-Z][a-zñü]+\\) [&and]+ \\([A-Z][a-z]+\\), \\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\\)" "\\1 & \\2 \\3" nil begin end) ; '(Darwin & Darwin, 1880)' → '(Darwin & Darwin 1980)'
        (query-replace-regexp "\\([A-Z][a-zñü]+\\) (\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\\))" "\\1 \\2" nil begin end) ; 'Darwin (1875)' → 'Darwin 1875'

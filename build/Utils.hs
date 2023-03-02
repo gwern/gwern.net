@@ -347,7 +347,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("([a-zA-Z’]) – ([a-zA-Z])", "\\1—\\2") -- eg: "Aspects of General Intelligence – a Deep Phenotyping Approach"
          , ("([a-zA-Z’]) - ([a-zA-Z])", "\\1—\\2") -- spaced hyphens: also usually em dashes: "Towards personalized human AI interaction - adapting the behavior of AI agents"
          , (" = -([0-9])", " = −\\1") -- eg. 'β = -0.08', HYPHEN to MINUS SIGN
-         , ("× ?10[-–—]([0-9]+)", "× 10<sup>−\\1</sup>") -- the Unicode '×' seems to never match when used inside a range...?
+         , ("×10[-–—]([0-9]+)", " × 10<sup>−\\1</sup>")
+         , (" × 10[-–—]([0-9]+)", " × 10<sup>−\\1</sup>") -- the Unicode '×' seems to never match when used inside a range...?
          , ("([0-9]) [x×] 10[-–—]([0-9]+)", "\\1 × 10<sup>−\\2</sup>")
          , ("([0-9]) [x×] 10\\([-–—]([0-9]+)\\)", "\\1 × 10<sup>−\\2</sup>")
          , ("<sup>-([0-9]+)</sup>", "<sup>−\\1</sup>") -- eg. '10<sup>-7</sup>', HYPHEN to MINUS SIGN
@@ -419,6 +420,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<i>", "<em>")
          , ("</i>", "</em>")
            -- math substitutions:
+         , ("<span class=\"math inline\">\\(&lt;2\\%\\)</span>", "&lt;2%")
+         , ("<span class=\"math inline\">\\(&lt;4\\%\\)</span>", "&lt;4%")
          , ("<span class=\"math inline\">\\((x, f(10))\\)</span>", "(<em>x</em>, <em>f</em>(10))")
          , ("<span class=\"math inline\">\\(2^{\\Omega(k)}\\)</span>", "2<sup>Ω(<em>k</em>)</sup>")
          , ("<span class=\"math inline\">\\(k = \\log n\\)</span>", "<em>k</em> = log <em>n</em>")
@@ -1625,6 +1628,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("Fr’echet", "Fréchet")
          , ("Frechet", "Fréchet")
          , ("h20ttps://", "https://")
+         , ("p16INK4a", "p16<sup>INK4a</sup>")
          , ("mm(2)", "mm<sup>2</sup>")
          , ("²", "<sup>2</sup>")
          , ("₂", "<sub>2</sub>")

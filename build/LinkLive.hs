@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-02-24 22:26:54 gwern"
+When:  Time-stamp: "2023-03-01 09:47:06 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -3228,6 +3228,7 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://zlkj.in/"
             , "https://www.cs.toronto.edu/~kriz/cifar.html"
             , "https://parti.research.google"
+            , "https://philpapers.org/archive/SOTAOA.pdf#miri"
             ]
 
 badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
@@ -3891,7 +3892,6 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://perma.cc/"
             , "https://phabricator.wikimedia.org/T270650"
             , "https://pharmrev.aspetjournals.org/content/57/1/79.long"
-            , "https://philpapers.org/archive/SOTAOA.pdf#miri"
             , "https://physics.aps.org/articles/v7/47"
             , "https://physicstoday.scitation.org/do/10.1063/PT.6.1.20180822a/full/"
             , "https://physoc.onlinelibrary.wiley.com/doi/pdf/10.1113/jphysiol.2011.217919"
@@ -4549,7 +4549,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.stevepetersen.net/wittgenstein-fog.html"
             , "https://www.stroudnewsandjournal.co.uk/news/14491113.Bussage_cannabis_dealer_Chance_Gough_avoids_jail_after_ordering_cocaine_delivery_from_Holland/"
             , "https://www.sudowrite.com/"
-            , "https://www.super-memory.com/articles/theory.htm"
+            , "https://super-memory.com/articles/theory.htm"
             , "https://www.tandfonline.com/doi/full/10.1080/03949370.2021.1893826"
             , "https://www.taylorusa.com/kitchen/thermometers/5-commercial-anti-microbial-instant-read-thermometer.html"
             , "https://www.teamten.com/lawrence/writings/coding-machines/"
