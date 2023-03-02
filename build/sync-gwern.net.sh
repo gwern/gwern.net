@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-02-26 11:31:55 gwern"
+# When:  Time-stamp: "2023-03-01 14:22:05 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -62,10 +62,10 @@ else
         bold "Executing string rewrite cleanups…" # automatically clean up some Gwern.net bad URL patterns, typos, inconsistencies, house-styles:
         ( s() { gwsed "$@"; }
           ## domain rewrites:
-          s 'https://mobile.twitter.com' 'https://twitter.com'; s 'https://twitter.com/' 'https://nitter.moomoo.me/'; s 'https://mobile.twitter.com/' 'https://nitter.moomoo.me/'; s 'https://www.twitter.com/' 'https://nitter.moomoo.me/'; s 'https://www.reddit.com/r/' 'https://old.reddit.com/r/'; s 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'http://en.wikipedia.org' 'https://en.wikipedia.org'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com';
+          s 'https://mobile.twitter.com' 'https://twitter.com'; s 'https://twitter.com/' 'https://nitter.moomoo.me/'; s 'https://mobile.twitter.com/' 'https://nitter.moomoo.me/'; s 'https://www.twitter.com/' 'https://nitter.moomoo.me/'; s 'https://www.reddit.com/r/' 'https://old.reddit.com/r/'; s 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'http://en.wikipedia.org' 'https://en.wikipedia.org'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com'; s 'www.super-memory.com' 'super-memory.com'
 
           ## link cruft rewrites:
-          s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ignored=irrelevant' '';
+          s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ignored=irrelevant' ''; s '](/docs/' '](/doc/'; s 'href="/docs/' 'href="/doc/';
 
           ## name/entity consistency:
           s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant'; s ' CIFAR10' 'CIFAR-10'; s 'TyDi QA' 'TyDiQA'; s 'Türkiye' 'Turkey'; s ' Poincare' ' Poincaré'; s 'Francois de La Rochefoucauld' 'François de La Rochefoucauld'; s 'Moliere' 'Molière'; s 'behavioural genetic' 'behavioral genetic';
@@ -516,7 +516,7 @@ else
             -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -e ' : ' -e " ' " -e '>/>a' -e '</a></a>' -e '(, ' \
             -e '&lt;figcaption' -e '{.}' -e ' ?' -e " ’’" -e 'lt;/td&gt;' -e "‘’" -e "’‘" -e "’’" -e '<li></li>' -e '</em<em>' -e '𝑂' \
             -e '</a.>' -e ' . ' -e ' , ' -e ' ; ' -e 'class=”collapse”' -e '‘’' -e ' ’' -e '<bold>' -e '</bold>' -e '<jats:bold>' \
-            -e  '</jats:bold>' -e 'Ã©' -e '</a>s' -e '/&gt;'  -e '&lt;figcaption'  -e 'aria-hidden=">' -e '&gt;</a>' -e '<A Href' -e '</strong>:,' -- ./metadata/*.yaml | \
+            -e  '</jats:bold>' -e 'Ã©' -e '</a>s' -e '/&gt;'  -e '&lt;figcaption'  -e 'aria-hidden=">' -e '&gt;</a>' -e '<A Href' -e '</strong>:,' -e ' et al.' -- ./metadata/*.yaml | \
              grep -F -v 'popular_shelves';
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
@@ -631,7 +631,7 @@ else
     bold "Expiring ≤100 updated files…"
     # expire CloudFlare cache to avoid hassle of manual expiration: (if more than 100, we've probably done some sort of major systemic change & better to flush whole cache or otherwise investigate manually)
     # NOTE: 'bot-fighting' CloudFlare settings must be largely disabled, otherwise CF will simply CAPTCHA or block outright the various curl/linkchecker tests as 'bots'.
-    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | grep -F --invert-match -e '/doc/www' -e '/static/build/' -e '/static/template/' -e '/static/include/' -e '/metadata/annotation/backlink/' -e '/metadata/annotation/similar/' | xargs ls -t 2>/dev/null | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' | head -50) https://gwern.net/sitemap.xml https://gwern.net/lorem https://gwern.net/ https://gwern.net/index https://gwern.net/metadata/today-quote.html"
+    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | grep -F --invert-match -e '/doc/www' -e '/static/build/' -e '/static/template/' -e '/static/include/' -e '/metadata/annotation/backlink/' -e '/metadata/annotation/similar/' | xargs ls -t 2>/dev/null | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' | head -50) https://gwern.net/sitemap.xml https://gwern.net/lorem https://gwern.net/ https://gwern.net/index https://gwern.net/metadata/today-quote.html https://gwern.net/metadata/today-annotation.html"
     for URL in $EXPIRE; do
         echo -n "Expiring: $URL "
         ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
@@ -871,7 +871,7 @@ else
                                                 -e f0cab2b23e1929d87f060beee71f339505da5cad -e a9abc8e6fcade0e4c49d531c7d9de11aaea37fe5 \
                                                 -e 2015-01-15-outlawmarket-index.html -e ac4f5ed5051405ddbb7deabae2bce48b7f43174c.html \
                                                 -e %3FDaicon-videos.html -e 86600697f8fd73d008d8383ff4878c25eda28473.html \
-                                                -e '16aacaabe05dfc07c0e966b994d7dd0a727cd90e' -e 'metadata/today-quote.html' \
+                                                -e '16aacaabe05dfc07c0e966b994d7dd0a727cd90e' -e 'metadata/today-quote.html' -e 'metadata/today-annotation.html' \
                                                 -e '023a48cb80d48b1438d2accbceb5dc8ad01e8e02' \
              | parallel --max-args=500 file | grep -F --invert-match -e 'HTML document, ' -e 'ASCII text' -e 'LaTeX document, UTF-8 Unicode text'; }
     wrap λ "Corrupted HTMLs"

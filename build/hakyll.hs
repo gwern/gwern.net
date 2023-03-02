@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-02-23 09:18:12 gwern"
+When: Time-stamp: "2023-02-28 18:07:09 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -70,7 +70,7 @@ import LinkIcon (rebuildSVGIconCSS)
 import LinkLive (linkLiveTest, linkLivePrioritize)
 import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, createAnnotations, hasAnnotation, simplifiedHTMLString)
 import LinkMetadataTypes (Metadata)
-import QuoteOfTheDay (qotd)
+import QuoteOfTheDay (qotd, aotd)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
 import Utils (printGreen, printRed, replace, safeHtmlWriterOptions)
@@ -103,6 +103,8 @@ main =
 
                preprocess $ printGreen ("Popup annotations parsing…" :: String)
                meta <- preprocess $ if slow then readLinkMetadataAndCheck else readLinkMetadata
+               preprocess $ printGreen ("Generating annotation-of-the-day…" :: String)
+               preprocess $ aotd meta
                preprocess $ if slow then do printGreen ("Writing all annotations…" :: String)
                                             writeAnnotationFragments am meta hasArchivedN False
                                        else do printGreen ("Writing only missing annotations…" :: String)
@@ -178,7 +180,7 @@ main =
                                        "static/build/upload",
                                        "static/build/png",
                                        "static/build/newsletter-lint",
-                                       "static/build/gwsed",
+                                       "static/build/gwsed.sh",
                                        "static/build/gwa",
                                        "static/build/crossref",
                                        "static/build/compressPdf",
