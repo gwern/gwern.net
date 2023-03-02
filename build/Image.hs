@@ -24,7 +24,7 @@ import Data.FileStore.Utils (runShellCommand)
 
 import Text.Pandoc (Inline(Image, Link))
 
-import Utils (addClass, printRed, replace, anySuffix)
+import Utils (addClass, printRed, replace, replaceMany, anySuffix)
 
 -------------------------------------------
 
@@ -74,7 +74,7 @@ invertImage f | "https://gwern.net/" `isPrefixOf` f = invertImageLocal $ Utils.r
 
 invertImageLocal :: FilePath -> IO (Bool, String, String)
 invertImageLocal "" = return (False, "0", "0")
-invertImageLocal f = do let f' = takeWhile (/='#') f
+invertImageLocal f = do let f' = replaceMany [("-530px.jpg", ""), ("-768px.jpg", ""), ("-530px.png", ""), ("-768px.png", "")] $ takeWhile (/='#') f
                         if not (anySuffix f' [".png", ".jpg", ".webp"]) then return (False, "0", "0")  else
                          do does <- doesFileExist f'
                             if not does then printRed ("invertImageLocal: " ++ f ++ " " ++ f' ++ " does not exist") >> return (False, "0", "0") else
