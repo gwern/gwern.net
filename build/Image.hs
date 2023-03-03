@@ -57,19 +57,22 @@ notInvertP classes = "invert-not" `elem` classes
 
 invertImage :: FilePath -> IO (Bool, String, String) -- invert / height / width
 invertImage f | "https://gwern.net/" `isPrefixOf` f = invertImageLocal $ Utils.replace "https://gwern.net/" "" f
-              | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-invert"
-                                           -- NOTE: while wget preserves it, curl erases the original modification time reported by server in favor of local file creation; this is useful for `invertImagePreview` --- we want to check downloaded images manually before their annotation gets stored permanently.
-                                           (status,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+imagescraping@gwern.net", f, "--output", temp]
-                                           case status of
-                                             ExitFailure _ -> do printRed ("Download failed (unable to check image invertibility): " ++ f)
-                                                                 removeFile temp
-                                                                 return (False, "320", "320") -- NOTE: most WP thumbnails are 320/320px squares, so to be safe we'll use that as a default value
-                                             _ -> do c <- imageMagickColor f temp
-                                                     (h,w) <- imageMagickDimensions temp
-                                                     let invertp = c < invertThreshold
-                                                     when invertp $ invertImagePreview temp
-                                                     removeFile temp
-                                                     return (invertp, h, w)
+              | "http" `isPrefixOf` f =
+                do (_,_,mimetype) <- runShellCommand "./" Nothing "curl" ["--silent", "--user-agent", "gwern+imagescraping@gwern.net", f, "--write-out", "'%{content_type}'"]
+                   if not ("image/" `isPrefixOf` unpack mimetype) then return (False, "320", "320") else
+                     do (temp,_) <- mkstemp "/tmp/image-invert"
+                        -- NOTE: while wget preserves it, curl erases the original modification time reported by server in favor of local file creation; this is useful for `invertImagePreview` --- we want to check downloaded images manually before their annotation gets stored permanently.
+                        (status,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+imagescraping@gwern.net", f, "--output", temp]
+                        case status of
+                          ExitFailure _ -> do printRed ("Download failed (unable to check image invertibility): " ++ f)
+                                              removeFile temp
+                                              return (False, "320", "320") -- NOTE: most WP thumbnails are 320/320px squares, so to be safe we'll use that as a default value
+                          _ -> do c <- imageMagickColor f temp
+                                  (h,w) <- imageMagickDimensions temp
+                                  let invertp = c < invertThreshold
+                                  when invertp $ invertImagePreview temp
+                                  removeFile temp
+                                  return (invertp, h, w)
               | otherwise = invertImageLocal f
 
 invertImageLocal :: FilePath -> IO (Bool, String, String)
@@ -199,7 +202,7 @@ staticImg x@(TagOpen "img" xs) = do
        do
          let p' = urlDecode $ if head p == '/' then tail p else p
          exists <- doesFileExist p'
-         if not exists then printRed "staticImg: File does not exist: " >> putStr p' >> return x else
+         if not exists then printRed "staticImg: File does not exist: " >> putStrLn p >> return x else
           do (height,width) <- imageMagickDimensions p' `onException` printRed p
              -- body max-width is 1600 px, sidebar is 150px, so any image wider than ~1400px
              -- will wind up being reflowed by the 'img { max-width: 100%; }' responsive-image CSS declaration;
@@ -207,9 +210,9 @@ staticImg x@(TagOpen "img" xs) = do
              let width' =  readMaybe width  ::Maybe Int
              let height' = readMaybe height ::Maybe Int
              case width' of
-                Nothing       -> printRed ("staticImg: Image width can't be read: ") >> putStr (show x) >> return x
+                Nothing       -> printRed "staticImg: Image width can't be read: " >> print x >> return x
                 Just width'' -> case height' of
-                                 Nothing       -> printRed "staticImg: Image height can't be read: " >> putStr (show x) >> return x
+                                 Nothing       -> printRed "staticImg: Image height can't be read: " >> print x >> return x
                                  Just height'' -> return (TagOpen "img" (uniq (loading ++  -- lazy load & async render all images
                                                                                 [("decoding", "async"),
                                                                                 ("height", show height''), ("width", show (width'' `min` 1400))]++xs)))
