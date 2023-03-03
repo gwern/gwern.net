@@ -131,6 +131,16 @@ function versionedAssetURL(pathname) {
                    + versionString);
 }
 
+/******************************************************************************/
+/*	Returns true if the link is an annotated link, OR if it is an include-link
+	which transclude.js treats  as an annotation transclude. (This is relevant 
+	because in either case, the link hash should be ignored, when deciding what 
+	to do with a link on the basis of it having or not having a link hash.)
+ */
+function isAnnotationLink(link) {
+	return (Annotations.isAnnotatedLink(link) || Transclude.isAnnotationTransclude(link));
+}
+
 /****************************************************************************/
 /*  Return the element, in the target document, pointed to by the hash of the
     given link (which may be a URL object or an HTMLAnchorElement).
@@ -155,7 +165,7 @@ function targetElementInDocument(link, doc) {
 
     if (   element == null
         && (   link instanceof HTMLAnchorElement
-            && Annotations.isAnnotatedLink(link)) == false) {
+            && isAnnotationLink(link)) == false) {
         element = doc.querySelector(selectorFromHash(link.hash));
         if (   element
             && element.closest(exclusionSelector) == element)
@@ -188,7 +198,7 @@ function targetElementInDocument(link, doc) {
  */
 function isAnchorLink(link) {
     if (link instanceof HTMLAnchorElement) {
-        if (Annotations.isAnnotatedLink(link)) {
+        if (isAnnotationLink(link)) {
             return (   link.dataset.targetId > ""
                     || link.dataset.backlinkTargetUrl > "");
         } else {
@@ -221,8 +231,8 @@ function anchorsForLink(link) {
     if (   link instanceof HTMLAnchorElement
         && link.dataset.targetId > "") {
         return link.dataset.targetId.split(" ").map(x => `#${x}`);
-    } else if ((   link instanceof HTMLAnchorElement
-                && Annotations.isAnnotatedLink(link)) == false) {
+    } else if (   link instanceof HTMLAnchorElement
+               && isAnnotationLink(link) == false) {
         return link.hash.match(/#[^#]*/g) ?? [ ];
     } else if (   link instanceof HTMLAnchorElement
                && link.dataset.backlinkTargetUrl > "") {
