@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-02-28 18:07:09 gwern"
+When: Time-stamp: "2023-03-02 17:15:32 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -70,7 +70,6 @@ import LinkIcon (rebuildSVGIconCSS)
 import LinkLive (linkLiveTest, linkLivePrioritize)
 import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, createAnnotations, hasAnnotation, simplifiedHTMLString)
 import LinkMetadataTypes (Metadata)
-import QuoteOfTheDay (qotd, aotd)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
 import Utils (printGreen, printRed, replace, safeHtmlWriterOptions)
@@ -80,9 +79,6 @@ main =
  do arg <- lookupEnv "SLOW" -- whether to do the more expensive stuff; Hakyll eats the CLI arguments, so we pass it in as an exported environment variable instead
     let slow = "--slow" == fromMaybe "" arg
     hakyll $ do
-               preprocess $ printGreen ("Generating quote-of-the-day…" :: String)
-               preprocess qotd
-
                when slow $ do preprocess $ printGreen ("Testing link icon matches & updating inlined CSS…" :: String)
                               preprocess rebuildSVGIconCSS
 
@@ -103,8 +99,6 @@ main =
 
                preprocess $ printGreen ("Popup annotations parsing…" :: String)
                meta <- preprocess $ if slow then readLinkMetadataAndCheck else readLinkMetadata
-               preprocess $ printGreen ("Generating annotation-of-the-day…" :: String)
-               preprocess $ aotd meta
                preprocess $ if slow then do printGreen ("Writing all annotations…" :: String)
                                             writeAnnotationFragments am meta hasArchivedN False
                                        else do printGreen ("Writing only missing annotations…" :: String)
