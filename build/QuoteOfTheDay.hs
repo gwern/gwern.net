@@ -65,7 +65,7 @@ generateSnippetAndWriteTTDB dbpath path formatter =
      let dbReset = if dbUnused /= S.empty then db else S.map snegate db
      let dbUnused' = S.filter (\(_,_,status) -> not status) dbReset
 
-     let snippet = head $ S.toList dbUnused'
+     let snippet = head $ sortOn (\(q, _, _) -> length q) $ S.toList dbUnused' -- take the smallest quote, for symmetry with the annotation being largest (for links, won't matter how it's sorted, really)
      writeSnippet path formatter snippet
 
      let db'' = S.insert (snegate snippet) $ S.delete snippet dbReset -- update the now-used quote
@@ -94,7 +94,7 @@ minAbstractLength = 500
 type AotD = [String]
 
 annotated :: String -> String
-annotated url = "<div class=\"annotation-of-the-day\">\n<p><a href=\"" ++ url ++ "\" class=\"include-annotation\">[Annotation Of The Day]</a></p></blockquote>\n</div>"
+annotated url = "<div class=\"annotation-of-the-day\">\n<p><a href=\"" ++ url ++ "\" class=\"include-annotation backlink-not include-spinner-not icon-not\">[Annotation Of The Day]</a></p></blockquote>\n</div>"
 
 readAnnotDayDB :: FilePath -> IO AotD
 readAnnotDayDB path = do exists <- doesFileExist path
@@ -110,9 +110,9 @@ generateAnnotationOfTheDay md dbpath annotpath formatter =
                                               author /= "Gwern Branwen" &&
                                               k `notElem` db &&
                                               not ("/index" `isSuffixOf` k)) md
-     let lengthList = sortOn (\(_, (_,_,_,_,_,abstract2)) -> length abstract2) md'
+     let lengthList = sortOn (\(_, (_,_,_,_,_,abstract2)) -> length abstract2) md' -- ascending order (ie. largest last)
      if null lengthList then writeFile [] dbpath else
-       do let (url,_) = last lengthList
+       do let (url,_) = last lengthList -- grab the largest
           let db' = url : db
           writeFile annotpath (formatter url)
           writeAnnotDayDB dbpath db'
