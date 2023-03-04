@@ -837,7 +837,7 @@ linkIconTestUnitsText =
          , ("/image/iq/2011-gensowski-figure7-totaleffectofiqandpersonalityonlifetimeearnings.png",  "image","svg")
          , ("/static/img/icon/video.svg",  "image","svg")
          , ("/doc/personal/businesscard-front-draft.xcf",  "image","svg")
-         , ("https://i.imgur.com/3Jb0b.jpg",  "image","svg")
+         , ("https://i.imgur.com/atMz0jg.png",  "image","svg")
          , ("/static/build/linkAbstract.R",  "code","svg")
          , ("/static/css/links.css",  "code","svg")
          , ("/static/build/hakyll.hs",  "code","svg")
