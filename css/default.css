@@ -70,7 +70,7 @@
     position: relative;
     z-index: 13;
 }
-.collapse:not(.expanded) > .disclosure-button ~ :not(.abstract-collapse) {
+.collapse:not(.expanded) > .disclosure-button ~ :not(.abstract):not(.abstract-collapse) {
     max-height: 0;
     min-height: unset;
     overflow: hidden;
@@ -98,23 +98,25 @@
 /********************/
 /*  Collapse summary.
  */
+.collapse .abstract,
 .collapse .abstract-collapse {
     margin: 0;
     position: relative;
     z-index: 1;
 }
-.collapse .abstract-collapse.abstract {
+.collapse .abstract {
     margin-left: calc(-0.5em - 2px);
 }
+.collapse:not(.expanded) > .abstract,
 .collapse:not(.expanded) > .abstract-collapse {
     pointer-events: none;
     position: relative;
 }
-.collapse:not(.expanded) > .abstract-collapse blockquote {
+.collapse:not(.expanded) > .abstract blockquote {
     margin: 0;
     border-color: var(--GW-abstract-background-color);
 }
-.collapse:not(.expanded) > .disclosure-button:hover + .abstract-collapse blockquote {
+.collapse:not(.expanded) > .disclosure-button:hover + .abstract blockquote {
     background-color: var(--GW-abstract-collapse-blockquote-hover-color);
     border-color: var(--GW-abstract-collapse-blockquote-hover-color);
 }
@@ -250,6 +252,16 @@ section.collapse > h2:first-child {
 section.collapse > h2:first-child::after {
     content: none;
 }
+section.collapse > h1:first-child,
+section.collapse > h2:first-child,
+section.collapse > h3:first-child,
+section.collapse > h4:first-child,
+section.collapse > h5:first-child,
+section.collapse > h6:first-child {
+    height: 3rem;
+    margin-bottom: 0;
+    padding: 0;
+}
 section.collapse > *:first-child a {
     text-shadow: none;
 }
@@ -274,7 +286,7 @@ section.collapse.expanded > .abstract-collapse:not(.abstract) {
 :not(section).collapse:not(.expanded) {
     padding: 0 0 0 1em;
 }
-:not(section).collapse:not(.expanded) > .disclosure-button ~ :not(.abstract-collapse) {
+:not(section).collapse:not(.expanded) > .disclosure-button ~ :not(.abstract):not(.abstract-collapse) {
     max-height: 5rem;
 }
 

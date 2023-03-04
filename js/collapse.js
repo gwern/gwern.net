@@ -111,6 +111,17 @@ function isWithinCollapsedBlock(element) {
     return isWithinCollapsedBlock(collapseParent.parentElement);
 }
 
+/*******************************************************************/
+/*	Unwrap a div whose only purpose is to apply a `.collapse` class.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.preProcessCollapseElements = (eventInfo) => {
+	GWLog("preProcessCollapseElements", "collapse.js", 1);
+
+	eventInfo.container.querySelectorAll("div.abstract-collapse:not(.abstract)").forEach(lightweightCollapseSummary => {
+		unwrap(lightweightCollapseSummary, true);
+	});
+}, "rewrite");
+
 /***********************************************************************/
 /*  Inject disclosure buttons and otherwise prepare the collapse blocks.
  */
