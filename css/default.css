@@ -53,7 +53,7 @@
 /* SECTIONS */
 /************/
 /*  Use: annotate collapsible section headers with '{.collapse}' (in the Markdown);
-    for sections where I want a summary/abstract of that (eg. in Notes.page/Statistical-notes.page),
+    for sections where I want a summary/abstract of that (eg. in /note/note.page),
     one annotate summaries to keep uncollapsed with '<div class="abstract-collapse">summary</div>'.
     (Pandoc Markdown does support a native div syntax, but it's long and ugly.)
  */
@@ -209,8 +209,10 @@
     position: absolute;
     text-align: center;
     pointer-events: none;
-    content: "… Click to expand …";
+    content: "Click to expand";
     color: var(--GW-collapse-disclosure-button-bottom-part-text-color);
+    text-decoration: underline;
+    text-underline-offset: 3px;
     bottom: 0;
     display: flex;
     align-items: center;
