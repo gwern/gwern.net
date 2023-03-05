@@ -179,7 +179,7 @@ a[data-link-icon-type='svg']::after {
     background-position-x: center;
     background-position-y: var(--link-icon-offset-y);
     background-repeat: no-repeat;
-    opacity: 0.45;
+    opacity: 0.6;
 }
 a[data-link-icon-type='svg']:hover::after {
     opacity: 0.3;
@@ -357,7 +357,7 @@ a[data-link-icon='n']::after { /* Nature */
     --link-icon-offset-y: 0.3em;
     --link-icon-offset-x: 0.1em;
 
-    opacity: 0.75;
+    opacity: 0.85;
 }
 
 a[data-link-icon='s']::after {
@@ -369,7 +369,7 @@ a[data-link-icon='Ss']::after {
 }
 
 a[data-link-icon='Vox']::after {
-    --link-icon-size: 0.75em;
+    --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.1em; /* shift left a bit */
 }
 
@@ -508,6 +508,11 @@ a[data-link-icon='ρ']::after { /* Project Rho */
     --link-icon-offset-x: 0.10em;
 
     opacity: 0.75;
+}
+
+a[data-link-icon='ℰ']::after { /* Esquire */
+    opacity: 0.9;
+    --link-icon-size: 0.8em;
 }
 
 /****************************/
@@ -684,11 +689,11 @@ a[data-link-icon='google-scholar']:hover::after {
 }
 
 a[data-link-icon='hn']::after {
-    --link-icon-size: 0.65em;
+    --link-icon-size: 0.7em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
 
-    opacity: 0.45;
+    opacity: 0.65;
 }
 a[data-link-icon='hn']:hover::after {
     opacity: 0.2;
@@ -730,11 +735,11 @@ a[data-link-icon='nasa']::after {
 }
 
 a[data-link-icon='nautilus']::after {
-    --link-icon-size: 0.7em;
+    --link-icon-size: 0.8em;
     --link-icon-offset-y: 0.25em;
     --link-icon-offset-x: 0.15em;
 
-    opacity: 0.6;
+    opacity: 0.7;
 }
 
 a[data-link-icon='newyorktimes']::after {
