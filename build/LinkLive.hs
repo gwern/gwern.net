@@ -15,7 +15,7 @@ the annotation and wants to go further.
 However, due to the March of Web Progress™, many websites set X headers <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options>
 or just plain don't work in a frame (often due to JS, and then often due to extremely reader-unfriendly design
 like giant headers or stickies), or are 'mixed content' - that is, the HTTP (or HTTPS) version would work perfectly
-*except browsers block it* in the name of security, so a reader who visits HTTPS gwern.net can't load the HTTP version
+*except browsers block it* in the name of security, so a reader who visits HTTPS Gwern.net can't load the HTTP version
 and I have to test the HTTPS version instead, which even when it exists, will often be broken by things like
 self-signed certificates etc.
 Perhaps only a quarter of external links work as live popups.

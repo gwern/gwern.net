@@ -4,7 +4,7 @@
 
 -- usage: 'link-extractor.hs [--print-filenames] [file]'; prints out a newline-delimited list of hyperlinks found in
 -- targeted Pandoc Markdown .page files (or simple Pandoc-readable HTML .html files) when parsed.
--- Local anchor links are rewritten assuming gwern.net-style paths of Markdown .page files (ie. a link like `[discriminator ranking](#discriminator-ranking)` in ~/wiki/face.page will be parsed to `/face#discriminator-ranking`). Interwiki links are rewritten to their full URLs.
+-- Local anchor links are rewritten assuming Gwern.net-style paths of Markdown .page files (ie. a link like `[discriminator ranking](#discriminator-ranking)` in ~/wiki/face.page will be parsed to `/face#discriminator-ranking`). Interwiki links are rewritten to their full URLs.
 --
 -- If no filename arguments, link-extractor will instead read stdin as Markdown and attempt to parse that instead. This makes it easy to pipe in arbitrary sections of pages or annotations, such as `$ xclip -o | runghc -i/home/gwern/wiki/static/build/ /home/gwern/wiki/static/build/link-extractor.hs`.
 --

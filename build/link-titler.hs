@@ -7,7 +7,7 @@
 -- When:  Time-stamp: "2023-02-12 13:16:55 gwern"
 -- License: CC-0
 --
--- Read a Markdown page, parse links out, look up their titles, generate a standard gwern.net-style citation ('"Title", Author1 et al Year[a-z]'),
+-- Read a Markdown page, parse links out, look up their titles, generate a standard Gwern.net-style citation ('"Title", Author1 et al Year[a-z]'),
 -- and edit the raw text file to insert that title after links which have no title set in the Markdown source.
 -- This will also update the link metadata database itself.
 -- (Note: while LinkMetadata does generate & create these tooltip titles automatically if missing, that is not helpful while *writing*

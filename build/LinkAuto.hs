@@ -113,7 +113,7 @@ annotateFirstDefinitions doc = evalState (walkM addFirstDefn doc) S.empty
             else return x
         addFirstDefn x = return x
 
--- HACK: Somehow we can, very rarely on gwern.net (maybe a dozen cases site-wide) wind up with Links nested inside of Links, despite attempts to block the substitution going too deep in `defineLinks`. This is bad, and also generates invalid HTML of nested <a><a></a></a>s.
+-- HACK: Somehow we can, very rarely on Gwern.net (maybe a dozen cases site-wide) wind up with Links nested inside of Links, despite attempts to block the substitution going too deep in `defineLinks`. This is bad, and also generates invalid HTML of nested <a><a></a></a>s.
 -- I can't figure out what is going on, and this may be related to various weird issues which makes me suspect that Pandoc's traverse operations aren't *quite* defined right.
 -- So, as a workaround, let's walk the AST looking for any nested Links, and erasing the Link wrapper.
 cleanupNestedLinks :: Pandoc -> Pandoc

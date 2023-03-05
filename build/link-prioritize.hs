@@ -6,7 +6,7 @@ Author: Gwern Branwen
 Date: 2019-11-22
 When:  Time-stamp: "2023-01-27 22:22:06 gwern"
 License: CC-0
-Dependencies: gwern.net Hakyll libraries
+Dependencies: Gwern.net Hakyll libraries
 
 For writing manual link annotations, a simple way to go is count un-annotated links by frequency.
 Links can be extracted from Markdown documents with `link-extractor.hs` but counting is harder: not

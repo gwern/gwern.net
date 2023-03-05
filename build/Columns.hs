@@ -4,11 +4,11 @@
 
 -- usage: 'lost-columns.hs [file]'; reads a Pandoc Markdown (or Pandoc-generated-HTML) file and
 -- looks for 'skinny tall' lists which are better rendered as multiple columns (supported on
--- gwern.net by special CSS triggered by '<div class="columns"></div>' wrappers).
+-- Gwern.net by special CSS triggered by '<div class="columns"></div>' wrappers).
 --
 -- A skinny tall list is defined as a list which is at least 8 items long (so you get at least 2×4
 -- columns—a 2×2 square or 2×3 rectangle looks dumb), and where the individual lines are all <75
--- characters wide (>half the width of a gwern.net line at the utmost).
+-- characters wide (>half the width of a Gwern.net line at the utmost).
 --
 -- If a file already has the string '<div class="columns"' in it, it will be presumed to have been
 -- manually checked & all skinny lists correctly annotated, and skipped to avoid unnecessary

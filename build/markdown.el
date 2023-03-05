@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-02-28 16:51:35 gwern"
+;;; When:  Time-stamp: "2023-03-04 11:11:42 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -267,6 +267,7 @@
        (replace-all " utilisation" " usage")
        (replace-all " utilization" " usage")
        (replace-all "\n• " "\n- ")
+       (replace-all " colour" " color")
 
        (query-replace " · " ", " nil begin end)
        ; remove subtle whitespace problems: double space
@@ -655,6 +656,7 @@
          (replace-all "\nObjective " "\n**Objective**: ")
          (replace-all "\nDesign, Setting, and Participants " "\n**Design, Setting, & Participants**: ")
          (replace-all "\nSearch methods\n\n" "\n\n<strong>Search Methods</strong>: ")
+         (replace-all " (Methods)" " (<strong>Methods</strong>)")
          (replace-all "\nSelection criteria\n\n" "\n\n<strong>Selection Criteria</strong>: ")
          (replace-all "\nInterventions " "\n**Interventions**: ")
          (replace-all "\nMain Outcomes and Measures " "\n**Main Outcomes & Measures**: ")
@@ -959,6 +961,7 @@
        (query-replace "three-fifths" "3⁄5" nil begin end)
        (query-replace-regexp "\\([0-9]+\\) of \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
        (query-replace-regexp "\\([0-9]+\\) of the \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
+       (query-replace-regexp " \\([0-9][0-9]?[0-9]?\\) of \\([0-9][0-9]?[0-9]?\\) " " \\1⁄\\2 " nil begin end)
        (query-replace-regexp "\\([0-9]+\\) out of \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
        (query-replace "...." "..." nil begin end)
        (query-replace "....." "..." nil begin end)

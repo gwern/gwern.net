@@ -9,7 +9,7 @@ which is the usual simple unidirectional form of a hyperlink. Backlinks are the 
 link *to* the current one. As a global property over all documents, they cannot be computed locally or easily.
 We generate them inside the `generateBacklinks.hs` executable and store them in a database.
 (Most of the complexity is inside `generateBacklinks.hs` in dealing with what files to parse, what to filter out,
-how to write out the HTML snippets used to provide 'backlinks' links as gwern.net popups, etc.)
+how to write out the HTML snippets used to provide 'backlinks' links as Gwern.net popups, etc.)
 
 This module provides helper functions for reading & writing the backlinks database.
 Because every used link necessarily has a backlink (the document in which it is used), the backlinks database

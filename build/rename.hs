@@ -1,4 +1,4 @@
--- renaming gwern.net pages while not breaking links is fairly difficult... This spits out a multi-step script to rename 'foo.page' to 'bar.page'
+-- renaming Gwern.net pages while not breaking links is fairly difficult... This spits out a multi-step script to rename 'foo.page' to 'bar.page'
 import System.Environment (getArgs)
 
 main :: IO ()
