@@ -5189,6 +5189,74 @@ ol.link-bibliography-list-compact > li::marker {
     margin-top: 0.5em;
 }
 
+
+/****************/
+/* X OF THE DAY */
+/****************/
+
+.link-of-the-day {
+	--box-size: 4em;
+	--box-padding-top: 1em;
+	--box-padding-bottom: 3em;
+
+	--box-total-size: calc(var(--box-size) + var(--box-padding-top) + var(--box-padding-bottom));
+
+	--box-horizontal-offset: calc(var(--box-padding-top) * 2.0);
+
+    padding-right: calc(var(--box-horizontal-offset) * 0.5);
+}
+
+.link-of-the-day blockquote {
+    margin: 2.5em auto 3em auto;
+    position: relative;
+	height: var(--box-size);
+    width: -moz-fit-content;
+    width: fit-content;
+	padding: 
+		var(--box-padding-top) 
+		calc(var(--box-size) + 2.0 * var(--box-padding-top)) 
+		var(--box-padding-bottom) 
+		calc(var(--box-size) + 2.0 * var(--box-padding-top) + var(--box-horizontal-offset));
+	background-image: url('/static/img/icon/swisspiralroll#svgView(preserveAspectRatio(none)).svg');
+	background-size: 1000% 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-color: var(--GW-body-background-color);
+	border: none;
+    display: flex;
+    align-items: center;
+}
+
+.link-of-the-day blockquote::before,
+.link-of-the-day blockquote::after {
+	content: "";
+	position: absolute;
+	width: var(--box-total-size);
+	height: var(--box-total-size);
+	background-image: url('/static/img/icon/swisspiralroll.svg');
+	background-repeat: no-repeat;
+	background-color: inherit;
+	background-size: cover;
+	top: 0;
+}
+.link-of-the-day blockquote::before {
+	left: 0;
+}
+.link-of-the-day blockquote::after {
+	right: 0;
+	background-position: right;
+}
+
+.link-of-the-day blockquote p {
+    position: relative;
+    z-index: 1;
+}
+#footer .link-of-the-day blockquote p {
+	margin: 0;
+    line-height: 1;
+}
+
+
 /*********************/
 /* BOTTOM DECORATION */
 /*********************/
