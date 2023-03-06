@@ -2793,13 +2793,13 @@ body.index #markdownBody section > h1:first-child a::after {
 }
 @media only screen and (min-width: 1145px) {
     body.index #back-to-top {
-        left: calc(108px + (100% - 1145px)/2);
+        left: calc(88px + (100% - 1145px)/2);
         right: unset;
     }
 }
 @media only screen and (min-width: 1761px) {
     body.index #back-to-top {
-        left: calc(64px + (100% - 1145px)/2);
+        left: calc(54px + (100% - 1145px)/2);
     }
 }
 @media only screen and (max-width: 649px) {
