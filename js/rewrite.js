@@ -1906,8 +1906,11 @@ function updateBackToTopLinkVisibility(event) {
             GW.backToTop.classList.toggle("hidden", false);
     } else {
         //  Show back-to-top link when scrolling a full page down from the top.
-        if (GW.scrollState.unbrokenDownScrollDistance > onePageScrollDistance)
+        if (GW.scrollState.unbrokenDownScrollDistance > onePageScrollDistance * 2.0)
             GW.backToTop.classList.toggle("hidden", false);
+        //	Hide back-to-top link on half a page’s worth of scroll up.
+        else if (GW.scrollState.unbrokenUpScrollDistance > onePageScrollDistance * 0.5)
+        	GW.backToTop.classList.toggle("hidden", true);
     }
 
     //  Hide back-to-top link when scrolling to top.
