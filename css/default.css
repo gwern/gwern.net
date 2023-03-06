@@ -5288,7 +5288,10 @@ ol.link-bibliography-list-compact > li::marker {
 }
 #back-to-top a {
     display: block;
-    width: 1.25em;
+	width: 2.25em;
+	height: 2.25em;
+	padding: 0.25em 0.25em;
+	box-sizing: border-box;
     color: var(--GW-back-to-top-link-color);
     filter:
         drop-shadow(0 0 1px var(--GW-body-background-color))
@@ -5304,6 +5307,14 @@ ol.link-bibliography-list-compact > li::marker {
     height: 100%;
 }
 
+@media only screen and (min-width: 650px) {
+    #back-to-top a {
+		border: 3px double transparent;
+    }
+    #back-to-top a:hover {
+        border-color: currentColor;
+    }
+}
 @media only screen and (max-width: 1144px) {
     #back-to-top {
         left: 4rem;
@@ -5317,7 +5328,7 @@ ol.link-bibliography-list-compact > li::marker {
 @media only screen and (min-width: 1761px) {
     #back-to-top {
         left: unset;
-        right: calc(64px + (100% - 1145px) / 2);
+        right: calc(54px + (100% - 1145px) / 2);
     }
 }
 @media only screen and (max-width: 649px) {
@@ -5327,11 +5338,7 @@ ol.link-bibliography-list-compact > li::marker {
         bottom: 1rem;
     }
     #back-to-top a {
-        width: 2.25em;
-        height: 2.25em;
         border: 1px solid currentColor;
-        padding: 0.25em 0.25em;
-        box-sizing: border-box;
     }
     #back-to-top {
         background-color: var(--GW-body-background-color);
