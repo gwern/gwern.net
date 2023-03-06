@@ -162,13 +162,16 @@ body {
 /* SIDEBAR */
 /***********/
 
+#sidebar {
+	font-variant: small-caps;
+}
+
 #sidebar a {
     display: block;
 }
 
 @media only screen and (min-width: 650px) {
-    #sidebar {
-        font-variant: small-caps;
+	#sidebar {
         padding: 0 40px 0 10px;
         width: 100px;
     }
@@ -215,15 +218,24 @@ body {
     #sidebar a#logo {
         margin: 1px 1px 1px 0;
         padding: 0.5em 0.375em;
+        display: flex;
     }
     #sidebar a#logo svg {
         display: block;
         width: 2.5rem;
     }
     #sidebar a:not(#logo) {
-        flex: 1 1 25%;
+        flex: 1 1 auto;
     }
-    #sidebar .site, #sidebar .me { min-width: 33%; }
+    #sidebar a.new,
+    #sidebar a.mail, 
+    #sidebar a.annotations-newest {
+		max-width: 30%;
+	}
+    #sidebar a.site,
+    #sidebar a.me { 
+    	min-width: 33%;
+    }
     #sidebar a.patreon {
         display: none;
     }
