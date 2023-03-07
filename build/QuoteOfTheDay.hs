@@ -41,7 +41,7 @@ linkDBPath, linkPath :: FilePath
 linkDBPath = "metadata/links.hs"
 linkPath   = "metadata/today-link.html"
 linked :: Snippet -> String
-linked (link,attribution,_) = "<div class=\"link-of-the-day\">\n<blockquote><p><a href=\"" ++ attribution ++ "\">" ++ typesetHtmlField link ++ "</a></p></blockquote>\n</div>"
+linked (link,attribution,_) = "<div class=\"link-of-the-day\">\n<blockquote><p><a href=\"" ++ link ++ "\">" ++ typesetHtmlField attribution ++ "</a></p></blockquote>\n</div>"
 
 readTTDB :: FilePath -> IO TTDB
 readTTDB path = do exists <- doesFileExist path
@@ -74,15 +74,15 @@ generateSnippetAndWriteTTDB dbpath path formatter =
  where snegate :: Snippet -> Snippet
        snegate (a,b,s) = (a,b,not s)
 
-qotd, lotd :: IO ()
-qotd = generateSnippetAndWriteTTDB quoteDBPath quotePath quoted
-lotd = generateSnippetAndWriteTTDB linkDBPath linkPath linked
 aotd :: Metadata -> IO ()
-aotd md = generateAnnotationOfTheDay md annotDayDB annotPath annotated
+aotd md = generateAnnotationOfTheDay md annotDayDB  annotPath annotated
+qotd, lotd :: IO ()
+qotd    = generateSnippetAndWriteTTDB   quoteDBPath quotePath quoted
+lotd    = generateSnippetAndWriteTTDB   linkDBPath  linkPath  linked
 
 -------
 
--- same idea: each build, we pick an annotation which hasn't been shown before (uses are tracked in a simple Haskell DB), currently picking by what is the 'longest annotation' (as measured by raw string length) as a crude proxy for 'best', and---directory-tag style---write an `{.annotation-include}` snippet for transcluding into the footer of each page after the quote-of-the-day.
+-- same idea: each build, we pick an annotation which hasn't been shown before (uses are tracked in a simple Haskell DB), currently picking by what is the 'longest annotation' (as measured by raw string length) as a crude proxy for 'best', and—tag-directory style—write an `{.annotation-include-partial}` snippet for transcluding into the footer of each page after the quote-of-the-day.
 
 annotDayDB, annotPath :: String
 annotDayDB = "metadata/annotations.hs"
@@ -94,7 +94,7 @@ minAbstractLength = 500
 type AotD = [String]
 
 annotated :: String -> String
-annotated url = "<div class=\"annotation-of-the-day\">\n<p><a href=\"" ++ url ++ "\" class=\"include-annotation backlink-not include-spinner-not icon-not\">[Annotation Of The Day]</a></p></blockquote>\n</div>"
+annotated url = "<div class=\"annotation-of-the-day\">\n<p><a href=\"" ++ url ++ "\" class=\"include-annotation-partial backlink-not include-spinner-not icon-not\">[Annotation Of The Day]</a></p></blockquote>\n</div>"
 
 readAnnotDayDB :: FilePath -> IO AotD
 readAnnotDayDB path = do exists <- doesFileExist path

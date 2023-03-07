@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-03-04 20:29:23 gwern"
+# When:  Time-stamp: "2023-03-06 14:13:55 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -140,8 +140,10 @@ else
     cd ../../ # go to site root
     bold "Building site…"
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
-    bold "Updating annotation/quote-of-the-day…" #  NOTE: we do this at the end, instead of inside hakyll.hs, to avoid spurious uses when a compile fails
-    ghci -i/home/gwern/wiki/static/build/ ./static/build/QuoteOfTheDay.hs  -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; qotd; }'
+    if [ "$SLOW" ]; then
+        bold "Updating annotation/quote-of-the-day…" #  NOTE: we do this at the end, instead of inside hakyll.hs, to avoid spurious uses when a compile fails
+        ghci -i/home/gwern/wiki/static/build/ ./static/build/QuoteOfTheDay.hs  -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; qotd; lotd; }'
+    fi
 
     bold "Results size:"
     du -chs ./_cache/ ./_site/

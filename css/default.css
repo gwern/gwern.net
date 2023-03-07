@@ -5219,7 +5219,7 @@ ol.link-bibliography-list-compact > li::marker {
 		calc(var(--box-size) + 2.0 * var(--box-padding-top)) 
 		var(--box-padding-bottom) 
 		calc(var(--box-size) + 2.0 * var(--box-padding-top) + var(--box-horizontal-offset));
-	background-image: url('/static/img/icon/swisspiralroll.svg#svgView(preserveAspectRatio(none))');
+	background-image: url('/static/img/icon/swissspiralroll.svg#svgView(preserveAspectRatio(none))');
 	background-size: 1000% 100%;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -5235,7 +5235,7 @@ ol.link-bibliography-list-compact > li::marker {
 	position: absolute;
 	width: var(--box-total-size);
 	height: var(--box-total-size);
-	background-image: url('/static/img/icon/swisspiralroll.svg');
+	background-image: url('/static/img/icon/swissspiralroll.svg');
 	background-repeat: no-repeat;
 	background-color: inherit;
 	background-size: cover;
