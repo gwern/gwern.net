@@ -5217,7 +5217,7 @@ ol.link-bibliography-list-compact > li::marker {
 		calc(var(--box-size) + 2.0 * var(--box-padding-top)) 
 		var(--box-padding-bottom) 
 		calc(var(--box-size) + 2.0 * var(--box-padding-top) + var(--box-horizontal-offset));
-	background-image: url('/static/img/icon/swisspiralroll#svgView(preserveAspectRatio(none)).svg');
+	background-image: url('/static/img/icon/swisspiralroll.svg#svgView(preserveAspectRatio(none))');
 	background-size: 1000% 100%;
 	background-position: center;
 	background-repeat: no-repeat;
