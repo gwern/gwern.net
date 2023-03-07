@@ -5207,6 +5207,8 @@ ol.link-bibliography-list-compact > li::marker {
 }
 
 .link-of-the-day blockquote {
+    --GW-link-underline-background-color: var(--GW-body-background-color);
+
     margin: 2.5em auto 3em auto;
     position: relative;
 	height: var(--box-size);
