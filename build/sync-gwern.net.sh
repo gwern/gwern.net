@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-03-06 14:13:55 gwern"
+# When:  Time-stamp: "2023-03-06 20:35:01 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -453,7 +453,7 @@ else
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -E --with-filename --color=always -e ' __[A-Z][a-z]'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
-    λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' ./static/redirect/nginx*.conf; }
+    λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '.*.*' -e '.*";' ./static/redirect/nginx*.conf; }
     wrap λ "Warning: caret/tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
 
     λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeYAML "metadata/full.yaml"'; }

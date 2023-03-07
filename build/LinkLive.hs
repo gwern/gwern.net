@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-03-01 09:47:06 gwern"
+When:  Time-stamp: "2023-03-05 11:44:17 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -805,7 +805,6 @@ goodDomainsSimple =
     , "www.sfgate.com"
     , "www.shawlocal.com"
     , "www.shawwn.com"
-    , "www.siliconera.com"
     , "www.silverhandmeadery.com"
     , "www.simplify.so"
     , "www.sirlin.net"
@@ -3159,7 +3158,6 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://www.sfgate.com/news/article/viral-video-bear-dogs-terriers-california-home-16104193.php"
             , "https://www.shawlocal.com/northwest-herald/2016/06/27/kane-county-sheriffs-deputy-wife-of-ex-mchenry-county-undersheriff-faces-drug-charges/axibe17/"
             , "https://www.shawwn.com/swarm"
-            , "https://www.siliconera.com/"
             , "https://www.simplify.so/"
             , "https://www.sirlin.net/articles/playing-to-win"
             , "https://www.sjsu.edu/faculty/watkins/longevity.htm"

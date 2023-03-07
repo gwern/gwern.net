@@ -21,7 +21,8 @@ import Utils (host, writeUpdatedFile, hasKeyAL, anyPrefixT)
 -- & bug-prone because of CSS properties like cascading & longest-matches, and exceptions like
 -- 'organization icon overrides PDF icon' become fertile sources of errors & regressions.
 -- Doing this at compile-time in Haskell is easier and also reduces performance burden on the client
--- browser.
+-- browser. For a more detailed discussion of the problems & solution, and history of prior link-icon
+-- implementations, see <https://gwern.net/design-graveyard#link-icon-css-regexps>.
 
 -- Generate a HTML <style>-delimited CSS block written to
 -- `static/include/inlined-graphical-linkicon-styles.html` for transclusion into `default.html`.
