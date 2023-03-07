@@ -243,7 +243,7 @@ filterAnchors   t = T.length t > anchorLengthMaximum ||
                        "png", "twitter.com", "arxiv.org", "nytimes.com", "independent replication", "finetuned", "analytics",
                        "rewriting history", "psychiatry", "July 2022", "great results", "especially well", "has announced", "allow an",
                        "learned representation", "in Minecraft", "1920s", "neurobiology", "the research literature", "background information", "web pages",
-                       "instructional technology", "understand", "serious threat", "the paper",  "eg", "published version", "II", "original vision", "there are many ways", "movie adaptation"]
+                       "instructional technology", "understand", "serious threat", "the paper",  "eg", "published version", "II", "original vision", "there are many ways", "movie adaptation", "of data"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteList :: M.Map T.Text [T.Text]
