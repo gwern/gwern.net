@@ -52,13 +52,13 @@
 }
 .TOC .has-content,
 #sidebar .has-content,
-body.index .has-content {
+body.index #markdownBody .has-content {
     margin: 0;
     padding-left: 0;
 }
 .TOC .has-content .indicator-hook,
 #sidebar .has-content .indicator-hook,
-body.index .has-content .indicator-hook {
+body.index #markdownBody .has-content .indicator-hook {
     display: none;
 }
 

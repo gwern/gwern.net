@@ -1046,6 +1046,27 @@ addContentLoadHandler(GW.contentLoadHandlers.setEagerLoadingForAnnotationImages 
     }
 }, "rewrite", (info) => (info.contentType == "annotation"));
 
+/***********************************************************************/
+/*	Exclude body of annotations being transcluded as partials; transform 
+	title-link to allow access to the full annotation.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.truncatePartialAnnotationIncludes = (eventInfo) => {
+    GWLog("truncatePartialAnnotationIncludes", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".annotation-partial .annotation-abstract").forEach(abstract => {
+		abstract.remove();
+
+		//	Rewrite title-link.
+		let titleLink = eventInfo.container.querySelector("a.title-link");
+		titleLink.classList.add("link-annotated");
+
+		//	Substitute original URL, as that is how annotation is stored.
+		eventInfo.container.querySelectorAll(".title-link + .originalURL a").forEach(originalURLLink => {
+			titleLink.href = originalURLLink.href;
+		});
+	});
+}, "<rewrite", (info) => (info.contentType == "annotation"));
+
 /*****************************************************************/
 /*  Partial annotations, defined inline (in directories and such).
  */
