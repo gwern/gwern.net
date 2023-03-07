@@ -43,10 +43,12 @@
     Several optional classes modify the behavior of include-links:
 
     include-annotation
+    include-annotation-partial
     include-content
-        If the include-link is a full-annotated (as opposed to
-        partial-annotated) link, then instead of transcluding the linked
-        content, the annotation for the linked content may be transcluded.
+        If the include-link is an annotated link, then instead of transcluding 
+        the linked content, the annotation for the linked content may be 
+        transcluded.
+
         The default behavior is set via the
         Transclude.transcludeAnnotationsByDefault property. If this is set to
         `true`, then annotated links transclude the annotation unless the
@@ -833,6 +835,7 @@ Transclude = {
     permittedClassNames: [
         "include",
         "include-annotation",
+        "include-annotation-partial",
         "include-content",
         "include-strict",
         "include-when-collapsed",
@@ -859,17 +862,19 @@ Transclude = {
     },
 
     isAnnotationTransclude: (includeLink) => {
-        if ((Transclude.hasAnnotation(includeLink) || includeLink.classList.contains("include-annotation")) == false)
+        if ((   Transclude.hasAnnotation(includeLink) 
+        	 || includeLink.classList.containsAnyOf([ "include-annotation", "include-annotation-partial" ])
+        	 ) == false)
             return false;
 
         return ((   Transclude.transcludeAnnotationsByDefault
         		 && Transclude.hasAnnotation(includeLink))
                 ? includeLink.classList.contains("include-content") == false
-                : includeLink.classList.contains("include-annotation"));
+                : includeLink.classList.containsAnyOf([ "include-annotation", "include-annotation-partial" ]));
     },
 
 	hasAnnotation: (includeLink) => {
-		return (Annotations.isAnnotatedLinkFull(includeLink));
+		return (Annotations.isAnnotatedLink(includeLink));
 	},
 
     /**************/
@@ -1261,6 +1266,11 @@ Transclude = {
 			let referenceData = Transclude.isAnnotationTransclude(includeLink)
 								? Annotations.referenceDataForTarget(includeLink)
 								: Content.referenceDataForTarget(includeLink).content;
+
+			//	Exclude body of annotations being transcluded as partials.
+			if (   Transclude.isAnnotationTransclude(includeLink)
+				&& includeLink.classList.contains("include-annotation-partial"))
+				referenceData.abstract = null;
 
 			/*	If no template specified, use reference data as template.
 				(In this case, reference data should be an HTML string or a
