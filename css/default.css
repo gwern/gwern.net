@@ -5194,6 +5194,15 @@ ol.link-bibliography-list-compact > li::marker {
 /* X OF THE DAY */
 /****************/
 
+/*	Annotation of the day.
+ */
+#aotd {
+	margin-bottom: 2em;
+}
+
+/*	Link of the day.
+ */
+
 .link-of-the-day {
 	--box-size: 4em;
 	--box-padding-top: 1em;
