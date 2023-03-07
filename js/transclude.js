@@ -1267,11 +1267,6 @@ Transclude = {
 								? Annotations.referenceDataForTarget(includeLink)
 								: Content.referenceDataForTarget(includeLink).content;
 
-			//	Exclude body of annotations being transcluded as partials.
-			if (   Transclude.isAnnotationTransclude(includeLink)
-				&& includeLink.classList.contains("include-annotation-partial"))
-				referenceData.abstract = null;
-
 			/*	If no template specified, use reference data as template.
 				(In this case, reference data should be an HTML string or a
 				 DocumentFragment.)
@@ -1280,6 +1275,11 @@ Transclude = {
 
 			//	Template fill context.
 			let context = templateDataFromHTML(includeLink);
+
+			//	Designate partial annotation transcludes.
+			if (   Transclude.isAnnotationTransclude(includeLink)
+				&& includeLink.classList.contains("include-annotation-partial"))
+				context.annotationClassSuffix = "-partial";
 
 			//	Template fill options.
 			let options = {
