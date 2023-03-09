@@ -6,7 +6,7 @@ import Control.Monad (unless)
 import Data.List (sort)
 import qualified Data.Map.Strict as M (toList, fromListWith, map)
 import Data.Maybe (fromJust)
-import Data.Text as T (append, drop, head, isInfixOf, isPrefixOf, pack, unpack, Text)
+import qualified Data.Text as T (append, drop, head, isInfixOf, isPrefixOf, pack, unpack, Text)
 import Text.Pandoc (Inline(Link,Str), nullAttr)
 import Network.URI (parseURIReference, uriPath)
 import System.FilePath (takeExtension)
@@ -132,7 +132,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "marginalrevolution.com" = aI "M𝐑" "text" -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
  | u'' "www.frontiersin.org" = aI "FS" "text,sans" -- <https://en.wikipedia.org/wiki/Frontiers_Media> multiple-cubes logo too busy for an icon, no Unicode equivalent
  | aU'' ["www.gutenberg.org", "gutenberg.ca", "gutenberg.net.au", "www.fadedpage.com"] = aI "PG" "text" -- Faded Pages isn't strictly-speaking a Project Gutenberg org, but they work with Distributed Proofreaders & their work is in PG Canada and they do similar things so meh.
- | u'' "guzey.com" = aI "A" "text,sans"
+ | u'' "guzey.com" = aI "A.G." "text,sans"
  | u'' "www.forbes.com" = aI "F" "text"
  | (u' "haskell.org" && (extension u /= ".hs")) || u' "haskellers.com" = aI "𝛌" "text" -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
  | u'' "arxiv.org" || u'' "ar5iv.labs.arxiv.org" || u'' "proceedings.mlr.press" = aI "𝛘" "text" --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny); I lump in 'PMLR' ("Proceedings of Machine Learning Research") because many PMLR were just Arxiv preprints beforehand & it amounts to about the same thing, really.
@@ -518,7 +518,7 @@ linkIconTestUnitsLink = [(Link ("", ["directory-indexes-upwards"],     []) [Str 
 -- are enough work that below a certain level of prevalence, they are not worthwhile even if completely
 -- transparent/self-explanatory.)
 --
--- The original raw results are particularly useful when piped into <https://gwern.net/haskell/lcps.hs> to
+-- The original raw results are particularly useful when piped into <https://gwern.net/haskell/lcp.hs> to
 -- get suggested prefixes/domains worth adding link-icons for, or one can just look at the domains by `host`:
 linkIconPrioritize :: IO [(Int,T.Text)]
 linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
@@ -661,7 +661,7 @@ linkIconTestUnitsText =
          , ("https://gutenberg.net.au/ebooks02/0201141h.html", "PG","text")
          , ("https://www.gutenberg.org/files/31663/31663-h/31663-h.htm", "PG","text")
          , ("https://www.fadedpage.com/showbook.php?pid=20160325", "PG", "text")
-         , ("https://guzey.com/how-life-sciences-actually-work/", "A", "text,sans")
+         , ("https://guzey.com/how-life-sciences-actually-work/", "A.G.", "text,sans")
          , ("https://www.forbes.com/sites/andygreenberg/2013/09/05/follow-the-bitcoins-how-we-got-busted-buying-drugs-on-silk-roads-black-market/", "F", "text")
          , ("https://mattlakeman.org/2020/01/22/hill-billy-elegy-the-culture-of-white-american-poverty/",  "MATT", "text,quad,sans")
          , ("https://www.mdpi.com/2220-9964/8/5/232/htm", "MDPI","text,quad,sans")

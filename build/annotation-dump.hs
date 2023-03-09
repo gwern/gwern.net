@@ -5,7 +5,7 @@
 
 import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, nub)
 import Data.Map as M (lookup, union, toList, fromList)
-import Data.Text as T (unpack)
+import qualified Data.Text as T (unpack)
 import Data.Text.IO as TIO (getContents)
 
 import LinkID (authorsToCite, generateURL)

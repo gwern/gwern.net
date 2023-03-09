@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2023-02-22 21:54:36 gwern"
+When:  Time-stamp: "2023-03-08 22:19:58 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -680,7 +680,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Hermann Hesse", "https://en.wikipedia.org/wiki/Hermann_Hesse")
         , ("Hex", "https://en.wikipedia.org/wiki/Hex_(board_game)")
         , ("Hideaki Anno", "https://en.wikipedia.org/wiki/Hideaki_Anno")
-        , ("Hideo Azuma", "https://en.wikipedia.org/wiki/Hideo_Azuma")
         , ("Higurashi", "https://en.wikipedia.org/wiki/Higurashi_When_They_Cry")
         , ("Hiroki Azuma", "https://en.wikipedia.org/wiki/Hiroki_Azuma")
         , ("Hiroyuki Yamaga", "https://en.wikipedia.org/wiki/Hiroyuki_Yamaga")
@@ -692,7 +691,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("I. A. Richards", "https://en.wikipedia.org/wiki/I._A._Richards")
         , ("I. J. Good", "https://en.wikipedia.org/wiki/I._J._Good")
         , ("IBM Plex", "https://en.wikipedia.org/wiki/IBM_Plex")
-        , ("ID3", "https://en.wikipedia.org/wiki/ID3_algorithm")
         , ("IMPALA", "https://arxiv.org/abs/1802.01561#deepmind")
         , ("(ILSVRC|Image[Nn]et)", "https://arxiv.org/abs/1409.0575")
         , ("PASCAL (VOC|Visual Object Classes)", "http://host.robots.ox.ac.uk/pascal/VOC/")
@@ -770,7 +768,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Minecraft", "https://en.wikipedia.org/wiki/Minecraft")
         , ("Mnemosyne", "https://en.wikipedia.org/wiki/Mnemosyne_%28software%29")
         , ("Mobile Suit Gundam", "https://en.wikipedia.org/wiki/Mobile_Suit_Gundam")
-        , ("Modern Synthesis", "https://en.wikipedia.org/wiki/Neo-Darwinism")
         , ("Montaillou: The Promised Land of Error", "https://en.wikipedia.org/wiki/Montaillou_(book)")
         , ("Monte Carlo (simulates?|estimates?|simulations?|approximations?|implementations?|methods?)?", "https://en.wikipedia.org/wiki/Monte_Carlo_method")
         , ("Monte Carlo algorithm", "https://en.wikipedia.org/wiki/Monte_Carlo_algorithm")
@@ -999,7 +996,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Bb]lessings [Oo]f [Ss]cale", "/scaling-hypothesis#blessings-of-scale")
         , ("[Bb]ody double", "https://en.wikipedia.org/wiki/Political_decoy")
         , ("[Bb]rown adipose tissues?", "https://en.wikipedia.org/wiki/Brown_adipose_tissue")
-        , ("[Bb]rown-nosed coatis", "https://en.wikipedia.org/wiki/South_American_coati")
         , ("[Cc]ache-oblivious", "https://en.wikipedia.org/wiki/Cache-oblivious_algorithm")
         , ("[Cc]affein(e|ate|ated)", "https://en.wikipedia.org/wiki/Caffeine")
         , ("[Cc]aloric restriction", "https://en.wikipedia.org/wiki/Caloric_restriction")
@@ -1075,7 +1071,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Gg]lucagon", "https://en.wikipedia.org/wiki/Glucagon")
         , ("[Hg]awala", "https://en.wikipedia.org/wiki/Hawala")
         , ("[Hh]angul", "https://en.wikipedia.org/wiki/Hangul")
-        , ("[Hh]eavy water", "https://en.wikipedia.org/wiki/Heavy_water")
         , ("[Hh]eterozygo(sity|us)", "https://en.wikipedia.org/wiki/Zygosity#Heterozygous")
         , ("[Hh]idden-variable theor(y|ies)", "https://en.wikipedia.org/wiki/Hidden-variable_theory")
         , ("[Hh]igh jumping", "https://en.wikipedia.org/wiki/High_jump")
@@ -1085,7 +1080,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Hh]omomorphic encryption", "https://en.wikipedia.org/wiki/Homomorphic_encryption")
         , ("[Hh]omozygo(sity|us)", "https://en.wikipedia.org/wiki/Zygosity#Homozygous")
         , ("[Hh]uperzine-A", "https://en.wikipedia.org/wiki/Huperzine-A")
-        , ("[Hh]yalin", "https://en.wikipedia.org/wiki/Hyalin")
         , ("[Hh]ybridization", "https://en.wikipedia.org/wiki/Hybrid_(biology)")
         , ("[Hh]ydrocephalus", "https://en.wikipedia.org/wiki/Hydrocephalus")
         , ("[Hh]yper ?[Nn]etworks", "https://arxiv.org/abs/1609.09106#google")
@@ -1174,7 +1168,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Pp]ublic[ -]key cryptography", "https://en.wikipedia.org/wiki/Public-key_cryptography")
         , ("[Qq]-learning", "https://en.wikipedia.org/wiki/Q-learning")
         , ("[Rr]adium", "https://en.wikipedia.org/wiki/Radium")
-        , ("[Rr]amjet", "https://en.wikipedia.org/wiki/Ramjet")
         , ("[Rr]andom [Ff]orests?", "https://en.wikipedia.org/wiki/Random_forest")
         , ("[Rr]ecognition memory", "https://en.wikipedia.org/wiki/Recognition_memory")
         , ("[Rr]ecombination", "https://en.wikipedia.org/wiki/Genetic_recombination")
@@ -1209,7 +1202,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Tt]ragedy of the anticommons", "https://en.wikipedia.org/wiki/Tragedy_of_the_anticommons")
         , ("[Tt]ransfer RNAs?", "https://en.wikipedia.org/wiki/Transfer_RNA")
         , ("[Tt]ree induction", "https://en.wikipedia.org/wiki/Decision_tree_learning")
-        , ("[Tt]rophic level", "https://en.wikipedia.org/wiki/Trophic_level")
         , ("[Tt]runcation selection", "https://en.wikipedia.org/wiki/Truncation_selection")
         , ("[Vv]alue [Ii]teration [Nn]etworks?", "https://arxiv.org/abs/1602.02867#deepmind")
         , ("[Vv]alue-[Ee]quivalence", "https://arxiv.org/abs/2011.03506#deepmind")

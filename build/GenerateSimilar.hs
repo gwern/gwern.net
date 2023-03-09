@@ -36,7 +36,7 @@ import LinkMetadata (readLinkMetadata, authorsTruncate, parseRawInline)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, safeHtmlWriterOptions, printGreen, printStdErr, anyPrefixT)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, safeHtmlWriterOptions, printStdErr, anyPrefixT)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
@@ -194,7 +194,6 @@ embed edb mdb bdb i@(p,_) =
                                                     Just (t,a,d,_,_,_) -> "\"" ++ t ++ "\", " ++ authorsTruncate a ++ (if d=="" then "" else " (" ++ take 4 d ++ ")")) backlinks)
 
             let doc = formatDoc i `T.append` T.pack backlinksMetadata
-            printGreen "Formatted document as embedded (`embed`):\n" >> printStdErr (T.unpack doc)
             (modelType,embedding) <- oaAPIEmbed doc
             today <- currentDay
             return (p,today,T.unpack doc,modelType,embedding)

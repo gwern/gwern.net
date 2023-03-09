@@ -32,7 +32,7 @@ import Data.Maybe (isJust, fromJust)
 import System.Environment (getArgs)
 import System.Directory (doesDirectoryExist, doesFileExist)
 import Text.Pandoc (Inline(Link), nullAttr)
-import Data.Text as T (pack)
+import qualified Data.Text as T (pack)
 
 import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml)
 import LinkMetadataTypes (MetadataList, MetadataItem)

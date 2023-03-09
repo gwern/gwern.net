@@ -68,7 +68,7 @@ import Text.Printf (printf, PrintfArg)
 import Text.Read (readMaybe)
 import Data.List (intercalate, unfoldr)
 import qualified Data.Map.Strict as M (findMax, findMin, fromList, lookup, lookupGE, lookupLE, mapWithKey, Map)
-import Data.Text as T (head, length, pack, unpack, tail)
+import qualified Data.Text as T (head, length, pack, unpack, tail)
 
 import Utils (currentYear)
 

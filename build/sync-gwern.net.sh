@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-03-07 22:49:24 gwern"
+# When:  Time-stamp: "2023-03-08 19:12:59 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -707,6 +707,7 @@ else
           cm "application/octet-stream" 'https://gwern.net/doc/zeo/firmware-v2.6.3R-zeo.img'
           cm "application/pdf" 'https://gwern.net/doc/cs/hardware/2010-bates.pdf'
           cm "application/pdf" 'https://gwern.net/doc/history/1694-gregory.pdf'
+          cm "application/pdf" 'https://gwern.net/doc/statistics/decision/1994-benter.pdf'
           cm "application/vnd.ms-excel" 'https://gwern.net/doc/dual-n-back/2012-05-30-kundu-dnbrapm.xls'
           cm "application/vnd.oasis.opendocument.spreadsheet" 'https://gwern.net/doc/genetics/heritable/1980-osborne-twinsblackandwhite-appendix.ods'
           cm "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 'https://gwern.net/doc/cs/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx'
@@ -753,7 +754,10 @@ else
           cm "text/html; charset=utf-8" 'https://gwern.net/doc/existential-risk/1985-hofstadter'
           cm "text/html; charset=utf-8" 'https://gwern.net/review/bakewell'
           cm "text/html; charset=utf-8" 'https://gwern.net/backfire-effect'
+          cm "text/html; charset=utf-8" 'https://gwern.net/console-insurance'
+          cm "text/xml" 'https://gwern.net/sitemap.xml'
           cm "text/markdown; charset=utf-8" 'https://gwern.net/2014-spirulina.page'
+          cm "text/markdown; charset=utf-8" 'https://gwern.net/dnm-archive.page'
           cm "text/plain; charset=utf-8" 'https://gwern.net/doc/personal/2009-sleep.txt'
           cm "text/plain; charset=utf-8" 'https://gwern.net/static/redirect/nginx.conf'
           cm "text/x-adobe-acrobat-drm" 'https://gwern.net/doc/dual-n-back/2012-zhong.ebt'
