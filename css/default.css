@@ -1028,7 +1028,7 @@ figure.width-full {
 
 /*  Figures in sidenotes should take up the full width of the sidenote.
     */
-.sidenote figure {
+#markdownBody .sidenote figure {
     margin: 1.5em auto;
     max-width: calc(100% - 2px);
 }
@@ -1556,7 +1556,7 @@ section.footnotes > hr:first-child.highlighted::before {
 /*= Sidenote blocks =*/
 /*=-----------------=*/
 
-.sidenote {
+#markdownBody .sidenote {
     position: absolute;
     left: 0;
     width: 100%;
@@ -1567,37 +1567,37 @@ section.footnotes > hr:first-child.highlighted::before {
         opacity 0.25s ease-in,
         transform 0.25s ease-in;
 }
-.sidenote.displaced {
+#markdownBody .sidenote.displaced {
     transition:
         opacity 0.25s ease-out,
         transform 0.25s ease-out;
 }
-.sidenote.hidden {
+#markdownBody .sidenote.hidden {
     display: none;
 }
-.sidenote.displaced,
-.sidenote.highlighted,
-.sidenote:hover,
-.sidenote:target,
-.sidenote.targeted {
+#markdownBody .sidenote.displaced,
+#markdownBody .sidenote.highlighted,
+#markdownBody .sidenote:hover,
+#markdownBody .sidenote:target,
+#markdownBody .sidenote.targeted {
     background-color: var(--GW-sidenote-highlight-background-color);
     opacity: 1.0;
     box-shadow: 0 0 0 16px var(--GW-sidenote-highlight-background-color);
 }
-.sidenote:target {
+#markdownBody .sidenote:target {
     z-index: 1;
 }
-.sidenote.displaced {
+#markdownBody .sidenote.displaced {
     z-index: 2;
 }
-.sidenote.highlighted,
-.sidenote:hover {
+#markdownBody .sidenote.highlighted,
+#markdownBody .sidenote:hover {
     z-index: 3;
 }
 
 /*  This provides a solid hover margin.
     */
-.sidenote::after {
+#markdownBody .sidenote::after {
     content: "";
     position: absolute;
     width: calc(100% + 20px);
@@ -1605,15 +1605,15 @@ section.footnotes > hr:first-child.highlighted::before {
     top: -13px;
     left: -13px;
 }
-.sidenote.displaced::after,
-.sidenote.highlighted::after,
-.sidenote:hover::after,
-.sidenote:target::after,
-.sidenote.targeted::after {
+#markdownBody .sidenote.displaced::after,
+#markdownBody .sidenote.highlighted::after,
+#markdownBody .sidenote:hover::after,
+#markdownBody .sidenote:target::after,
+#markdownBody .sidenote.targeted::after {
     border: 3px double var(--GW-sidenote-highlight-box-shadow-color);
 }
 
-.sidenote.cut-off::before {
+#markdownBody .sidenote.cut-off::before {
     content: "…";
     position: absolute;
     border: 1px dotted var(--GW-sidenote-border-color);
@@ -1631,7 +1631,7 @@ section.footnotes > hr:first-child.highlighted::before {
     line-height: 0.5;
     pointer-events: none;
 }
-.sidenote.cut-off.hide-more-indicator::before {
+#markdownBody .sidenote.cut-off.hide-more-indicator::before {
     visibility: hidden;
 }
 
@@ -1650,7 +1650,7 @@ section.footnotes > hr:first-child.highlighted::before {
     border-color: var(--GW-sidenote-border-color);
     border-width: 1px 0;
 }
-.sidenote.cut-off .sidenote-outer-wrapper {
+#markdownBody .sidenote.cut-off .sidenote-outer-wrapper {
     overflow-y: auto;
     overscroll-behavior: none;
     width: 100%;
@@ -1659,25 +1659,25 @@ section.footnotes > hr:first-child.highlighted::before {
 
 /*  Scroll bar styles (for WebKit/Chromium).
     */
-.sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar {
+#markdownBody .sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar {
     width: 12px;
 }
-.sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb {
+#markdownBody .sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMXd3d////ywAAAAABAAEAAACBgQShqgJBQA7');
     box-shadow:
         0 0 0 2px var(--GW-sidenote-scrollbar-track-color) inset;
     background-size: 2px;
 }
-.sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb:hover {
+#markdownBody .sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb:hover {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAP///ywAAAAABAAEAAACBgQShqgJBQA7');
 }
 
 /*  Scroll bar styles (for Firefox).
     */
-.sidenote.cut-off .sidenote-outer-wrapper {
+#markdownBody .sidenote.cut-off .sidenote-outer-wrapper {
     scrollbar-color: var(--GW-sidenote-scrollbar-thumb-color) var(--GW-sidenote-scrollbar-track-color);
 }
-.sidenote.cut-off .sidenote-outer-wrapper:hover {
+#markdownBody .sidenote.cut-off .sidenote-outer-wrapper:hover {
     scrollbar-color: var(--GW-sidenote-scrollbar-thumb-hover-color) var(--GW-sidenote-scrollbar-track-color);
 }
 
@@ -1699,18 +1699,18 @@ section.footnotes > hr:first-child.highlighted::before {
 /*= Sidenote contents layout corrections =*/
 /*=--------------------------------------=*/
 
-.sidenote blockquote {
+#markdownBody .sidenote blockquote {
     margin: 1.5em 0 0.75em 0;
 }
-.sidenote pre {
+#markdownBody .sidenote pre {
     margin: 1.75em 0 0.75em 0;
 }
-.sidenote blockquote + *,
-.sidenote pre + * {
+#markdownBody .sidenote blockquote + *,
+#markdownBody .sidenote pre + * {
     margin-top: 1.75em;
 }
 
-.sidenote p + p {
+#markdownBody .sidenote p + p {
     text-indent: 1.25em;
 }
 
@@ -1727,7 +1727,7 @@ section.footnotes > hr:first-child.highlighted::before {
 /*= Sidenote self-links (numbers) =*/
 /*=-------------------------------=*/
 
-.sidenote > .sidenote-self-link {
+#markdownBody .sidenote > .sidenote-self-link {
     font-weight: 600;
     position: absolute;
     top: 0;
@@ -1746,10 +1746,10 @@ section.footnotes > hr:first-child.highlighted::before {
 .markdownBody .sidenote > .sidenote-self-link {
     background-image: none;
 }
-#sidenote-column-left .sidenote > .sidenote-self-link {
+#markdownBody #sidenote-column-left .sidenote > .sidenote-self-link {
     right: 0;
 }
-#sidenote-column-right .sidenote > .sidenote-self-link {
+#markdownBody #sidenote-column-right .sidenote > .sidenote-self-link {
     left: 0;
 }
 
@@ -1757,17 +1757,17 @@ section.footnotes > hr:first-child.highlighted::before {
 /*= Edge cases =*/
 /*=-------------=*/
 
-.sidenote .footnote-self-link {
+#markdownBody .sidenote .footnote-self-link {
     display: none;
 }
 
-.footnotes .sidenote .footnote-back {
+#markdownBody .sidenote .footnote-back {
     vertical-align: text-top;
 }
 
-.footnotes .sidenote blockquote + a.footnote-back,
-.footnotes .sidenote pre + a.footnote-back,
-.footnotes .sidenote .sourceCode + a.footnote-back {
+#markdownBody .sidenote blockquote + a.footnote-back,
+#markdownBody .sidenote pre + a.footnote-back,
+#markdownBody .sidenote .sourceCode + a.footnote-back {
     top: unset;
     bottom: 0;
 }
@@ -1786,7 +1786,7 @@ section.footnotes > hr:first-child.highlighted::before {
 .marginnote.inline {
     color: inherit;
 }
-.marginnote.sidenote {
+#markdownBody .marginnote.sidenote {
     display: flex;
     justify-content: right;
     /*  925px because that’s the width of #markdownBody at the widths where we
@@ -1813,24 +1813,24 @@ section.footnotes > hr:first-child.highlighted::before {
     opacity: 0.85;
     z-index: 1;
 }
-.marginnote.sidenote .marginnote-inner-wrapper {
+#markdownBody .marginnote.sidenote .marginnote-inner-wrapper {
     display: block;
     width: -moz-fit-content;
     width: fit-content;
 }
 
-.marginnote.sidenote:hover {
+#markdownBody .marginnote.sidenote:hover {
     box-shadow: none;
 }
 /* make links in margin notes (somewhat unusual but should be supported simply because that's what one would expect) clickable/hover-able */
-.sidenote.marginnote::after {
+#markdownBody .marginnote.sidenote::after {
     z-index: -1;
 }
 
 /*  Margin notes within admonitions need special layout.
     This is based on the width of the admonition icon area.
     */
-.admonition .marginnote.sidenote {
+#markdownBody .admonition .marginnote.sidenote {
     width: calc(50vw - ((100% + (2.875em / (0.85/0.875)))/2 + 96px));
 }
 
