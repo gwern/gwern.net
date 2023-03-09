@@ -3,16 +3,16 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2023-02-11 10:42:47 gwern"
+# When:  Time-stamp: "2023-03-09 16:15:46 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
 # extract the location of the static serialized HTML, and move it to the wiki's `./doc/www/$DOMAIN/$SHA1($URL).html`;
 # if the MIME type indicates a PDF, we download & host locally.
+# For detailed background on how this is used & the overall design, see LinkArchive.hs & <https://gwern.net/archiving#preemptive-local-archiving>.
 #
 # Example:
-# $ linkArchive.sh "https://www.framerated.co.uk/the-haunting-1963/" →
-#   /home/gwern/wiki/doc/www/www.framerated.co.uk/31900688e194a1ffa443c2895aaab8f8513370f3.html
+# "https://www.framerated.co.uk/the-haunting-1963/" → /home/gwern/wiki/doc/www/www.framerated.co.uk/31900688e194a1ffa443c2895aaab8f8513370f3.html
 #
 # $ linkArchive.sh 'http://www.jacurutu.com/viewtopic.php?p=101694'
 # /home/gwern/wiki/doc/www/www.jacurutu.com/718b0de585ef3dcd778a196fb2b8c842b42c7bc2.html

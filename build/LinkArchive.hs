@@ -2,15 +2,15 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-03-07 17:49:06 gwern"
+When:  Time-stamp: "2023-03-09 16:37:58 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
 
-{- Local Mirror design:
+{- Local Mirror design: <https://gwern.net/archiving#preemptive-local-archiving>
 
 Because link rot has proven difficult to keep up with on `gwern.net` using [ordinary reactive link
-archiving methods](https://gwern.net/archiving-urls), I am switching to *pre-emptive archiving*:
+archiving methods](https://gwern.net/archiving), I am switching to *pre-emptive archiving*:
 for most external links on Gwern.net, they will now point to a local (stored on Gwern.net) mirror of
 the original external link as the default. As the cost of disk/bandwidth falls while the value of
 human attention increases, if something is worth linking, it is worth hosting—assuming good tooling.
@@ -80,15 +80,16 @@ Details:
   href="https://foo.com">foo</a>` → `<a rel="archive nofollow" data-url-original="https://foo.com"
   href="/doc/www/foo.com/cf934d97a8012ba1c2d354d6cd39e77535fd0fb9.html">foo</a></span>`)
 - the `data-url-original` metadata is used by `popups.js` to add to link popups a '[original]'
-  hyperlink (using the JS templating, something like `<p>..."Title" [<a
+  hyperlink (using the JS templating, something like `<p>…"Title" [<a
   href="${target.dataset.urlOriginal}" title="Original (live) Internet version of
-  ${target.dataset.popupTitle}">original</a>]...</p>`)
+  ${target.dataset.popupTitle}">original</a>]…</p>`)
 
 There are approximately 30k external links on Gwern.net as of October 2019, of which perhaps 5k need
 to be mirrored; I estimate this will take up somewhere on the order of ~50GB and add a few dollars
-to S3 hosting costs. (After exclusions, my archive was 5300 links (excluding optional PDFs) / 20GB
-in February 2020.) But it'll be worth it to forestall thousands of dying links, regular reader
-frustration, and a considerable waste of my time every month dealing with the latest broken links. -}
+to S3 hosting costs. (After exclusions, my archive was 5,300 links (excluding optional PDFs) / 20GB
+in February 2020. It has grown to 14,352 / 47G as of 2023-03-09.) But it'll be worth it to forestall
+thousands of dying links, regular reader frustration, and a considerable waste of my time every month
+dealing with the latest broken links. -}
 
 {-# LANGUAGE OverloadedStrings #-}
 module LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata) where
@@ -253,19 +254,19 @@ transformURLsForLinking   = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
 {- re URL transforms: Why?
 
 The status quo of Arxiv links is unsatisfactory. Linking to the abstract page is the worst of all worlds. The
-annotations for your standard Arxiv /abs/ landing page link provide almost all of the information that the abstract page
+annotations for your standard Arxiv `/abs/` landing page link provide almost all of the information that the abstract page
 does, and so the abstract page is redundant; the abstract page can't be popped-up either, as Arxiv is one of the many
 websites which sets headers blocking cross-site loads so your web browser will refuse to pop it up. So an Arxiv link
 requires at least 2 clicks to do anything useful: click on the title link, and then click on the `PDF` link. What to do?
 
-We could use only PDF links. Arxiv /abs/ links *could* be rewritten to go straight to /pdf/. The upside is that this
+We could use only PDF links. Arxiv `/abs/` links *could* be rewritten to go straight to `/pdf/`. The upside is that this
 would make clicking on the link meaningful (saving 1 click), and it would integrate into my local archiving system
 cleanly, so the link would be to a local mirror of the Arxiv PDF, which would be both faster & popup-able (saving 2
 clicks while being nicer).
 But the downside is that then mobile users will have a bad experience (it might need to download and be viewed in an
 entirely separate app!) and people who don't want to deal with PDFs at that moment (eg. no night mode) would also prefer
 to not be shunted into a PDF when they could have been linked to a HTML landing page. Thus, if you hang around Reddit or
-Twitter or HN, you will see people or even outright bots responding to Arxiv PDF links with the /abs/ instead. This
+Twitter or HN, you will see people or even outright bots responding to Arxiv PDF links with the `/abs/` instead. This
 strikes me as fussy (I don't mind PDF links) but I can't deny that these people exist and seem to care.
 
 Could we use non-abstract HTML links? Unlike BioRxiv/MedRxiv, where you can simply append `.full` and get a nice usable
@@ -274,19 +275,19 @@ is that there turns out there are projects to create HTML versions of Arxiv PDFs
 [Arxiv-vanity](https://www.arxiv-vanity.com/) and a new one, [Ar5iv](https://ar5iv.labs.arxiv.org/). Both use the same
 trick: a LaTeX→HTML compiler <https://github.com/brucemiller/LaTeXML>. (As they use the same compiler, they are fairly
 similar, but Ar5iv appears to be much more ambitious & actively maintained and may be merged into Arxiv proper at some
-point, so I will consider just Ar5iv.) Compiling LaTeX to anything else is... hard. And many of the papers have
+point, so I will consider just Ar5iv.) Compiling LaTeX to anything else is… hard. And many of the papers have
 rendering problems, major or minor, or are not present at all. (Ar5iv is about a month out of date. They served an error
 page before, but at my request changed it to redirect to Arxiv proper with the query parameter `fallback=original`
 (redirecting without an option apparently confuses non-gwern.net readers), so you can just rewrite your Arxiv links and
 not need to care about whether Ar5iv has it or not.) But they provide responsive reflowable HTML,
-justification/hyphenation, and dark mode, so for a mobile smartphone user, this is, for many users and many papers and
+justification/hyphenation, and dark mode; so for a mobile smartphone user, this is, for many users and many papers and
 many circumstances, better than your average 1-column paper, or constantly dragging on a 2-column paper. Still, it's not
-so much better that all the PDF readers will want to see the HTML version instead of the PDF version.
+*so* much better that all the PDF readers will want to see the HTML version instead of the PDF version…
 
-So linking to the /abs/ makes no one happy; linking the PDF makes all mobile and some desktop users unhappy; and linking
+So, linking to the `/abs/` makes no one happy; linking the PDF makes all mobile and some desktop users unhappy; and linking
 to the Ar5iv HTML version is the opposite. What to do? Well, why not link *both*? Popups already have a system for
 linking a local PDF or HTML archive of a URL, and also the URL: the PDF is the main link, and then a small `[LIVE]` link
-is provided to the original live un-archived URL. So we could rewrite every /abs/ link to /pdf/, which will then get
+is provided to the original live un-archived URL. So we could rewrite every `/abs/` link to `/pdf/`, which will then get
 archived & rewritten to the local archive, and then the 'original' URL gets quietly rewritten Arxiv → Ar5iv. To make it
 even more transparent, we swap 'LIVE' for 'HTML' (it's not really the 'live' link anymore, and 'HTML' tells the mobile
 user it may serve them better.) Mobile users see the PDF icon, avoid it, and go to `[HTML]`, desktop or PDF-enjoyers
@@ -294,8 +295,7 @@ hover on it and without a click get their PDF, and after a bit of learning & adj
 the icons & text labels), everyone gets their preferred medium to read the paper.
 
 The implementation is a little uglier than that because the popups JS code does not expect the original-URL data to be
-fiddled with, but it works now and is live on Gwern.net. (On some Arxiv links. Trying to download all the PDFs got my IP
-banned temporarily. I'll get the rest eventually.)
+fiddled with, but it works now and is live on Gwern.net.
 
 While the logic is a little opaque to readers, I think this handles Arxiv much more cleanly than before. -}
 
@@ -310,7 +310,10 @@ whiteList url
   | anyInfix url ["citeseerx.ist.psu.edu"] = False -- TODO: after fixing all existing Citeseer links, set this rule to False
   | anyPrefix url ["/", "./", "../", "https://gwern.net", "#", "!", "$", "mailto", "irc", "/metadata/", "/doc/"] = True
   | anySuffix url [".pdf", "/pdf", ".pdf#"] = False
-  | anyInfix url [".txt" -- TODO: generalize the PDF download to handle all non-HTML filetypes
+  | anyInfix url [
+      "archive.org"
+      , "web.archive.org" -- TODO: we want to avoid IA links long-term (see <https://gwern.net/archiving#why-not-internet-archive>), so once all the regular links are archived, remove IA from the whitelist so they start archiving too
+      , ".txt" -- TODO: generalize the PDF download to handle all non-HTML filetypes
       , ".xlsx"
       , ".xz"
       , ".csv"
@@ -373,8 +376,6 @@ whiteList url
       , "antipope.org"
       , "nixnote.org"
       , "wikiquote.org"
-      , "archive.org"
-      , "web.archive.org"
       , "philarchive.org"
       , "httparchive.org"
       , "ietf.org"
