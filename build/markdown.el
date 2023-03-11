@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-03-07 17:35:31 gwern"
+;;; When:  Time-stamp: "2023-03-10 20:16:57 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -135,7 +135,6 @@
        (de-unicode)
        (de-unicode)
        (flyspell-buffer)
-       (check-parens)
 
        (replace-all "﻿" "") ; byte order mark?
        (replace-all "" "fi")
@@ -268,6 +267,9 @@
        (replace-all " utilization" " usage")
        (replace-all "\n• " "\n- ")
        (replace-all " colour" " color")
+       (replace-all "](/docs/" "](/doc/")
+       (replace-all "href=\"/docs/" "href=\"/doc/")
+       (replace-all "href='/docs/" "href='/doc/")
 
        (query-replace " · " ", " nil begin end)
        ; remove subtle whitespace problems: double space
@@ -634,7 +636,9 @@
 
        ; format abstract sub-headings with bold if we are writing an abstract and not a Markdown file:
        (unless (buffer-file-name)
+         (query-replace " -\n    " "" nil begin end)
          (query-replace " -\n" "" nil begin end)
+         (query-replace "-\n    " "" nil begin end)
          (query-replace "-\n" "" nil begin end)
          (query-replace "- \n" "" nil begin end)
          (query-replace "-\n" "-" nil begin end)
@@ -993,6 +997,7 @@
 
        ; '§ SECTION SIGN' is better than writing out '<strong>Section N</strong>' everywhere. It's much shorter, we already use SECTION SIGN heavily, it reduces overuse of bold, is easier to grep for, and it saves a bit of time formatting annotations (because of the lack of lookahead/lookbehind in these regexp rewrites, 'Section N' will match every time, even if it's already wrapped in <strong></strong>/**bolding**, and I have to waste time skipping them). It would be nice to symbolize Figure/Table/Experiment/Data as well, but there's no widely-understood symbol which could be used, and usually no abbreviation either. (Perhaps 'Supplement.*' could be replaced by just 'S' and 'Figure' by 'Fig.' at some point...)
        (query-replace-regexp "[Ss]ection ?\\([0-9.]+[a-fA-F]*\\)"  "§\\1" nil begin end) ; 'Section 9' → '§9'
+       (query-replace-regexp "[Ss]ections ?\\([0-9.]+[a-fA-F]*\\) and \\([0-9.]+[a-fA-F]*\\)"  "§\\1 & §\\2" nil begin end) ; 'Sections 1 and 2' → '§1 & §2'
 
        (query-replace-regexp "Chapter \\([0-9]+[a-fA-F]*\\)" "**Ch\\1**"  nil begin end) ; 'Chapter 1', 'Chapter 7a' etc
 
@@ -1033,6 +1038,7 @@
        (query-replace " 8)" " (8)" nil begin end)
        (query-replace " 9)" " (9)" nil begin end)
        (query-replace " 10)" " (10)" nil begin end)
+       (check-parens)
 
        (query-replace-regexp " percent\\([[:punct:]]\\)" "%\\1" nil begin end)
        (query-replace-regexp "\\([[:digit:]]\\)×10−\\([[:digit:]]+\\)" "\\1×10<sup>−\\2</sup>" nil begin end) ; minus sign version
@@ -1051,6 +1057,9 @@
        (query-replace-regexp " \\[\\([0-9, -]+\\)\\]\\([[:punct:]]\\)" "\\2<sup>\\1</sup> " nil begin end) ; 'contributing to higher energy intake [42].'
        (query-replace-regexp "\\[\\([0-9, -]+\\)\\] " "<sup>\\1</sup> " nil begin end)
        (query-replace-regexp "\\([A-Z][a-z]+\\) and \\([A-Z][a-z]+\\),? \\([0-9]+\\)" "\\1 & \\2 \\3") ; eg 'Lofquist and Dawis 1991'
+       (query-replace-regexp "\\([0-9]+\\)- to \\([0-9]+\\)-" "\\1--\\2-" nil begin end) ; "18- to 20-year-olds" → "18--20-year-olds"
+       (query-replace-regexp "\\([0-9]+\\)- and \\([0-9]+\\)-" "\\1 & \\2-" nil begin end) ; "We use 1979- and 1997-cohort National Longitudinal Survey of Youth (NLSY) data" → "We use 1979 & 1997-cohort"
+
        (query-replace-regexp "\\([[:alnum:]]\\)- " "\\1---" nil begin end)
        (query-replace-regexp "\\([[:alnum:]]\\)\\.\\. " "\\1... " nil begin end)
        (query-replace-regexp "\\([0-9]\\) % " "\\1% " nil begin end)
@@ -1073,6 +1082,7 @@
        (query-replace-regexp " \\.\\([[:digit:]]+\\)" " 0.\\1" nil begin end) ; eg " .47"
        (query-replace-regexp "and -\\.\\([[:digit:]]\\)" "and −0.\\1" nil begin end)
        (query-replace-regexp "\\([[:digit:]]\\.[[:digit:]]+\\)-\\.\\([[:digit:]]\\)" "\\1--0.\\2" nil begin end)
+
        (query-replace-regexp "--\\.\\([[:digit:]]+\\)" "--0.\\1" nil begin end)
        (query-replace-regexp " \\+\\.\\([[:digit:]]+\\)" " +0.\\1" nil begin end) ; '_r_ = +.33.'
        (query-replace-regexp "\\[\\.\\([[:digit:]]+\\)" "[0.\\1" nil begin end)

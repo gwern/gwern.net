@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-03-08 19:12:59 gwern"
+# When:  Time-stamp: "2023-03-10 20:29:10 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -86,6 +86,7 @@ else
 
           ## HTML/Markdown formatting:
           s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s '530px.jpg-530px.jpg' '530px.jpg'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' '';
+          s '  ' ' '; s '​ ' ' ';
         ) &> /dev/null &
     sed -i -e 's/ data-link-?[Tt]ags="[a-z0-9 \/-]\+">/>/' ./metadata/*.yaml;
     fi
@@ -285,7 +286,7 @@ else
                               -e 's/\([a-z]\)…\([0-9]\)/\1⁠…⁠\2/g' -e 's/\([a-z]\)…<sub>\([0-9]\)/\1⁠…⁠<sub>\2/g' -e 's/\([a-z]\)<sub>…\([0-9]\)/\1⁠<sub>…⁠\2/g' -e 's/\([a-z]\)<sub>…<\/sub>\([0-9]\)/\1⁠<sub>…⁠<\/sub>\2/g' \
                               -e 's/\([a-z]\)⋯\([0-9]\)/\1⁠⋯⁠\2/g' -e 's/\([a-z]\)⋯<sub>\([0-9]\)/\1⁠⋯⁠<sub>\2/g' \
                               -e 's/\([a-z]\)⋱<sub>\([0-9]\)/\1⁠⋱⁠<sub>\2/g' -e 's/\([a-z]\)<sub>⋱\([0-9]\)/\1<sub>⁠⋱⁠\2/g' \
-                              -e 's/ \+/ /g' -e 's/​​\+/​/g' -e 's/​ ​​ ​\+/​ /g' -e 's/​ ​\+/ /g' -e 's/​ ​ ​ \+/ /g' -e 's/​ ​ ​ \+/ /g' -e 's/  / /g' -e 's/​ ​​ ​/ /g' \
+                              -e 's/ \+/ /g' -e 's/​​\+/​/g' -e 's/​ ​​ ​\+/​ /g' -e 's/​ ​\+/ /g' -e 's/​ ​ ​ \+/ /g' -e 's/​ ​ ​ \+/ /g' -e 's/  / /g' -e 's/​ ​​ \+​/ /g' \
                               -e 's/““/“ “/g' -e 's/””/” ”/g' \
                               `# Big O notation: '𝒪(n)' in some browsers like my Chromium will touch the O/parenthesis (particularly noticeable in /Problem-14's abstract), so add a HAIR SPACE:` \
                               -e 's/𝒪(/𝒪 (/g' \
@@ -435,10 +436,10 @@ else
     λ(){ find ./ -type f -name "*.page" | parallel --max-args=500 "grep -F --with-filename -e 'class=\"subsup\"><sup>'"; }
     wrap λ "Incorrect ordering of '<sup>' (the superscript '<sup>' must come second, or else risk Pandoc misinterpreting as footnote while translating HTML↔Markdown)."
 
-    λ(){ ge -e '<div class="admonition .*">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' -e 'class="epigraph>' "$PAGES"; }
+    λ(){ ge -e '<div class="admonition .*">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' -e 'class="epigraph>' $PAGES; }
     wrap λ "Broken admonition paragraph or epigraph in Markdown."
 
-    λ(){ ge -e ' a [aeio]' "$PAGES" | grep -E ' a [aeio]' | grep -F --invert-match -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/'; }
+    λ(){ ge -e ' a [aeio]' $PAGES | grep -E ' a [aeio]' | grep -F --invert-match -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/'; }
     wrap λ "Grammar: 'a' → 'an'?"
 
     λ(){ find -L . -type f -size 0  -printf 'Empty file: %p %s\n' | grep -F --invert-match '.git/FETCH_HEAD' -e './.git/modules/static/logs/refs/remotes/'; }
@@ -453,7 +454,7 @@ else
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -E --with-filename --color=always -e ' __[A-Z][a-z]'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
-    λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '.*.*' -e '.*";' ./static/redirect/nginx*.conf; }
+    λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' ./static/redirect/nginx*.conf; }
     wrap λ "Warning: caret/tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
 
     λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeYAML "metadata/full.yaml"'; }
@@ -666,6 +667,7 @@ else
     (sleep 30s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE";
      sleep 10s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
      sleep 10s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on"; )
+    sleep 60s; chromium --temp-profile "https://gwern.net/index#footer" # check the x-of-the-day in a different & cache-free browser instance
 
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
     if ((RANDOM % 100 > 99)); then $X_BROWSER "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"; fi
@@ -728,6 +730,11 @@ else
           cm "image/png" 'https://gwern.net/doc/statistics/order/beanmachine-multistage/beanmachine-demo.png'
           cm "image/png" 'https://gwern.net/static/img/logo/logo.png'
           cm "image/svg+xml" 'https://gwern.net/image/spaced-repetition/forgetting-curves.svg'
+          cm "image/svg+xml" 'https://gwern.net/static/img/logo/logo-smooth.svg'
+          cm "image/svg+xml" 'https://gwern.net/static/img/icon/alcor.svg'
+          cm "image/svg+xml" 'https://gwern.net/doc/genetics/selection/www.mountimprobable.com/assets/images/verm_darkeryellow.svg'
+          cm "image/svg+xml" 'https://gwern.net/static/img/triple-question-mark.svg'
+          cm "image/svg+xml" 'https://gwern.net/static/img/icon/arrow-up.svg'
           cm "image/x-icon" 'https://gwern.net/static/img/favicon.ico'
           cm "image/x-ms-bmp" 'https://gwern.net/doc/rotten.com/library/bio/hackers/robert-morris/morris.bmp'
           cm "image/x-xcf" 'https://gwern.net/doc/personal/businesscard-front-draft.xcf'

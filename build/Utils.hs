@@ -987,6 +987,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("</bold>", "</strong>")
          , ("<jats:title>Abstract</jats:title>\n\t  <jats:p>", "<p>")
          , ("<jats:title>Abstract</jats:title><jats:p>The</jats:p>", "")
+         , ("<strong>AUTHOR SUMMARY</strong>", "<strong>Author Summary</strong>")
          , ("<p><strong>Author Summary</strong></p> <p>", "<p><strong>Author Summary</strong>: ")
          , ("<p><strong>Author Summary</strong></p>\n<p>", "<p><strong>Author Summary</strong>: ")
          , ("<strong>Author Summary</strong> :", "<strong>Author Summary</strong>:")

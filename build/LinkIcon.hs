@@ -129,6 +129,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | aU'' ["blog.givewell.org", "www.givewell.org", "files.givewell.org"] || u' "groups.yahoo.com/group/givewell/" = aI "GW" "text"
  | u'' "groups.yahoo.com" = aI "✉" "text"
  | u'' "www.mail-archive.com" = aI "✉" "text"
+ | u' "carryiton.net/chain-letter/" = aI "✉" "text" -- linked only for the archive, so this is an appropriate icon
  | u'' "marginalrevolution.com" = aI "M𝐑" "text" -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
  | u'' "www.frontiersin.org" = aI "FS" "text,sans" -- <https://en.wikipedia.org/wiki/Frontiers_Media> multiple-cubes logo too busy for an icon, no Unicode equivalent
  | aU'' ["www.gutenberg.org", "gutenberg.ca", "gutenberg.net.au", "www.fadedpage.com"] = aI "PG" "text" -- Faded Pages isn't strictly-speaking a Project Gutenberg org, but they work with Distributed Proofreaders & their work is in PG Canada and they do similar things so meh.
@@ -364,6 +365,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "stability.ai" || u' "#stability" = aI "SD" "text,sans"
  | u'' "patrickcollison.com" = aI "PC" "text,sans"
  | u'' "oeis.org" = aI "OEIS" "text,quad,sans" -- On-Line Encyclopedia of Integer Sequences
+ | u'' "bldgblog.com" = aI "bldg" "text,quad,monospace" -- BLDGBLOG (“building blog”, 2004), by Geoff Manaugh
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -1116,4 +1118,6 @@ linkIconTestUnitsText =
          , ("https://arxiv.org/abs/2111.02114#laion", "laion", "svg")
          , ("https://github.com/LAION-AI/laion-datasets/blob/main/laion-aesthetic.md", "laion", "svg")
          , ("https://laion.ai/blog/coca/", "laion", "svg")
+         , ("https://carryiton.net/chain-letter/bibliography.htm", "✉", "text")
+         , ("https://bldgblog.com/2015/12/four-floor-war/", "bldg", "text,quad,monospace")
         ]

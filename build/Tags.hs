@@ -288,6 +288,7 @@ tagsLong2Short = [
           , ("reinforcement-learning/scaling", "RL scaling")
           , ("statistics/prediction/election", "election forecast")
           , ("statistics/prediction", "forecasting")
+          , ("statistics/bias/animal", "animal study biases")
           , ("psychology/cognitive-bias", "cognitive biases")
           , ("psychology/dark-knowledge", "human dark knowledge")
           , ("psychology/nature", "psych of nature")
