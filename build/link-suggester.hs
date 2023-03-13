@@ -243,7 +243,7 @@ filterAnchors   t = T.length t > anchorLengthMaximum ||
                        "png", "twitter.com", "arxiv.org", "nytimes.com", "independent replication", "finetuned", "analytics",
                        "rewriting history", "psychiatry", "July 2022", "great results", "especially well", "has announced", "allow an",
                        "learned representation", "in Minecraft", "1920s", "neurobiology", "the research literature", "background information", "web pages",
-                       "instructional technology", "understand", "serious threat", "the paper",  "eg", "published version", "II", "original vision", "there are many ways", "movie adaptation", "of data", "an excerpt", "I make", "only so much", "I estimate"]
+                       "instructional technology", "understand", "serious threat", "the paper",  "eg", "published version", "II", "original vision", "there are many ways", "movie adaptation", "of data", "an excerpt", "I make", "only so much", "I estimate", "an email interview"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteList :: M.Map T.Text [T.Text]
@@ -255,6 +255,8 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
+  , ("https://en.wikipedia.org/wiki/Sam_Altman", ["Sam Altman"])
+  , ("https://en.wikipedia.org/wiki/Satya_Nadella", ["Satya Nadella"])
   , ("https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Adam", ["Adam"])
   , ("https://en.wikipedia.org/wiki/Big_data", ["big data"])
   , ("https://en.wikipedia.org/wiki/The_New_York_Times", ["NYT", "New York Times", "The New York Times"])

@@ -36,7 +36,7 @@ import LinkMetadata (readLinkMetadata, authorsTruncate, parseRawInline)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, safeHtmlWriterOptions, printStdErr, anyPrefixT)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, safeHtmlWriterOptions, anyPrefixT)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text

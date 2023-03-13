@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-03-09 16:37:58 gwern"
+When:  Time-stamp: "2023-03-12 13:12:55 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1316,5 +1316,6 @@ whiteList url
       , "https://csm.ai/commonsim-1-generating-3d-worlds-2/" -- low quality (video embeds)
       , "https://wilson1yan.github.io/teco/" -- low quality (video embeds)
       , "https://www.matthewtancik.com/nerf" -- low quality (video embeds)
+      , "https://old.reddit.com/r/thisisthewayitwillbe/" -- private
       ] = True
     | otherwise = False

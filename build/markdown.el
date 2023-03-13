@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-03-10 20:16:57 gwern"
+;;; When:  Time-stamp: "2023-03-12 12:54:39 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1206,7 +1206,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
                         (query-replace original (concat "[" original "](" replacement ")") t begin end)
                         ))))))))
 
-(defun markdown-link-annotation ()
+(defun markdown-annotation-compile ()
   "Turn a Markdown buffer into a HTML5 snippet without newlines and with escaped quotes, suitable for using as a YAML string inside annotated gwern.net links (see full.yaml)."
   (interactive)
   (call-interactively #'fmt)
@@ -1249,6 +1249,8 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
       (replace-all "%3Csup%3End%3C/sup%3E" "nd")
       (replace-all "%3Csup%3Erd%3C/sup%3E" "rd")
       (replace-all "<!-- -->" "")
+      (query-replace "'" "’" nil begin end) ; unescaped single quotation marks will often break the YAML, so they need to either be replaced with the intended Unicode, or double-quoted to 'escape' them
+      (query-replace "'" "''" nil begin end)
       (delete-trailing-whitespace)
       (forward-line)
       (ding)
@@ -1259,11 +1261,11 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
   )
 (add-hook 'markdown-mode-hook
           (lambda ()
-            (define-key markdown-mode-map "\C-c\ w" 'markdown-link-annotation)))
+            (define-key markdown-mode-map "\C-c\ w" 'markdown-annotation-compile)))
 (defvar html-mode-map) ; suppress reference-to-free-variable bytecompile warning
 (add-hook 'html-mode-hook
           (lambda ()
-            (define-key html-mode-map "\C-c\ w" 'markdown-link-annotation)))
+            (define-key html-mode-map "\C-c\ w" 'markdown-annotation-compile)))
 
 ; add new-line / paragraph snippet
 (add-hook 'yaml-mode-hook

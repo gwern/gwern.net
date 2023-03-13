@@ -4,17 +4,17 @@
 #
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-02-11 20:45:57 gwern"
+# When:  Time-stamp: "2023-03-12 17:06:56 gwern"
 # License: CC-0
 #
 # Dependencies: curl, exiftool, jq, gwa
 
-TARGET_ORIGINAL="$(echo "$@" | sed -e 's/\/home\/gwern\/wiki\/docs/docs/g' -e 's/.*wiki\/docs/docs/g' -e 's/^\/docs/docs/g' -e 's/^\///' -e 's/https:\/\/www\.gwern\.net\///' )"
+TARGET_ORIGINAL="$(echo "$@" | sed -e 's/\/home\/gwern\/wiki\/doc/doc/g' -e 's/.*wiki\/doc/doc/g' -e 's/^\/doc/doc/g' -e 's/^\///' -e 's/https:\/\/www\.gwern\.net\///' )"
 
 if [ ! -f "$TARGET_ORIGINAL" ]; then
     TARGET=$(echo "/home/gwern/wiki/"$TARGET_ORIGINAL)
     if [ ! -f "$TARGET" ]; then
-        echo "Error: '$@' does not exist?" && exit 1
+        echo "Error: '$@' ('$TARGET') does not exist?" && exit 1
     fi
 else TARGET="$TARGET_ORIGINAL"; fi
 
