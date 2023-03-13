@@ -390,6 +390,10 @@ body {
     max-width: 1080px;
 }
 
+article {
+	position: relative;
+}
+
 @media only screen and (min-width: 650px) {
     body {
         padding: 0 25px 0 10px;
@@ -2262,6 +2266,12 @@ ul > li::before {
  */
 .TOC ul > li::before {
     filter: none;
+}
+
+/*	TOC uncollapse icon.
+ */
+#TOC.collapsed::after {
+	filter: invert(1);
 }
 
 /*  For sortable table column headings, we use dark versions of the up/down/both

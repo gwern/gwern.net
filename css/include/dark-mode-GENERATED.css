@@ -469,6 +469,12 @@ ul > li::before {
     filter: none;
 }
 
+/*	TOC uncollapse icon.
+ */
+#TOC.collapsed::after {
+	filter: invert(1);
+}
+
 /*  For sortable table column headings, we use dark versions of the up/down/both
     arrow icons.
  */

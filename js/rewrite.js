@@ -1227,6 +1227,51 @@ addContentInjectHandler(GW.contentInjectHandlers.applyLinkBibliographyStylingCla
 /* TABLE OF CONTENTS */
 /*********************/
 
+/******************************************************************/
+/*	Sets TOC collapse state and updates the collapse toggle button.
+ */
+function setTOCCollapseState(collapsed = false) {
+	let TOC = document.querySelector("#TOC");
+	if (!TOC)
+		return;
+
+	TOC.classList.toggle("collapsed", collapsed);
+
+	let button = TOC.querySelector(".toc-collapse-toggle-button");
+	if (!button)
+		return;
+
+	button.innerHTML = collapsed ? "" : (GW.mediaQueries.mobileWidth.matches ? "" : "[hide]");
+	button.title = collapsed ? "Expand table of contents" : "Collapse table of contents";
+}
+
+/*******************************************************/
+/*	Add the collapse toggle button to the main page TOC.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.injectTOCMinimizeButton = (eventInfo) => {
+    GWLog("injectTOCMinimizeButton", "rewrite.js", 1);
+
+    let TOC = document.querySelector("#TOC");
+    if (!TOC)
+        return;
+
+	let button = newElement("BUTTON", { 
+		"class": "toc-collapse-toggle-button", 
+		"title": "Collapse table of contents" 
+	}, { 
+		"innerHTML": "[hide]" 
+	});
+	TOC.appendChild(button);
+
+	let defaultTOCCollapseState = "false";
+	setTOCCollapseState((localStorage.getItem("toc-collapsed") ?? defaultTOCCollapseState) == "true");
+
+	button.addActivateEvent((event) => {
+		setTOCCollapseState(TOC.classList.contains("collapsed") == false);
+		localStorage.setItem("toc-collapsed", TOC.classList.contains("collapsed"));
+	});
+}, "rewrite", (info) => (info.container == document.body));
+
 /***************************************************************************/
 /*  Strip spurious <span> tags (unavoidably added by Pandoc) from TOC links.
  */
@@ -1316,8 +1361,8 @@ function updatePageTOC(newContent, needsProcessing = false) {
     }
 }
 
-/****************************************************************************/
-/*  Update main page TOC within any sections within the initially loaded page
+/**************************************************************************/
+/*  Update main page TOC with any sections within the initially loaded page
     that don’t already have TOC entries.
  */
 addContentLoadHandler(GW.contentLoadHandlers.updateMainPageTOC = (eventInfo) => {

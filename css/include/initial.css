@@ -62,6 +62,10 @@ body {
     max-width: 1080px;
 }
 
+article {
+	position: relative;
+}
+
 @media only screen and (min-width: 650px) {
     body {
         padding: 0 25px 0 10px;
