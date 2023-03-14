@@ -1241,7 +1241,6 @@ function setTOCCollapseState(collapsed = false) {
 	if (!button)
 		return;
 
-	button.innerHTML = collapsed ? "" : (GW.mediaQueries.mobileWidth.matches ? "" : "[hide]");
 	button.title = collapsed ? "Expand table of contents" : "Collapse table of contents";
 }
 
@@ -1258,8 +1257,6 @@ addContentLoadHandler(GW.contentLoadHandlers.injectTOCMinimizeButton = (eventInf
 	let button = newElement("BUTTON", { 
 		"class": "toc-collapse-toggle-button", 
 		"title": "Collapse table of contents" 
-	}, { 
-		"innerHTML": "[hide]" 
 	});
 	TOC.appendChild(button);
 
