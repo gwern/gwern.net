@@ -674,7 +674,7 @@ section:target > :first-child a::after {
 	border: none;
 	background-color: transparent;
     background-image: none;
-	top: 340px;
+	top: 400px;
 	left: 10px;
 }
 @media all and (max-width: 900px) {
