@@ -686,6 +686,9 @@ section:target > :first-child a::after {
         height: 1.75rem;
         margin: -0.5em auto 1.25em auto;
     }
+    body[class*='-index'] #TOC.collapsed {
+    	margin: 0 auto -1em auto;
+    }
 }
 
 #TOC.collapsed > ul {
