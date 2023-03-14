@@ -1160,9 +1160,11 @@ section#see-also:only-of-type > h1:first-child a {
     #TOC.TOC-links-only::before {
         left: 0.5em;
     }
+    body[class*='-index'] #TOC {
+        background-image: none;
+    }
     body[class*='-index'] #TOC > ul {
         column-count: 1;
-        background-image: none;
     }
 }
 
