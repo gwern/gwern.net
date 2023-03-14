@@ -154,29 +154,18 @@ function targetElementInDocument(link, doc) {
         ".aux-links-list a"
     ].join(", ");
 
+	let anchor = anchorsForLink(link)[0];
     let element = null;
-    if (   link instanceof HTMLAnchorElement
-        && link.dataset.targetId > "") {
-        element = doc.querySelector(selectorFromHash("#" + link.dataset.targetId));
+
+    if (anchor.startsWith("#")) {
+        element = doc.querySelector(selectorFromHash(anchor));
         if (   element
             && element.closest(exclusionSelector) == element)
             element = null;
-    }
-
-    if (   element == null
-        && (   link instanceof HTMLAnchorElement
-            && isAnnotationLink(link)) == false) {
-        element = doc.querySelector(selectorFromHash(link.hash));
-        if (   element
-            && element.closest(exclusionSelector) == element)
-            element = null;
-    }
-
-    if (   element == null
-        && (   link instanceof HTMLAnchorElement
-            && link.dataset.backlinkTargetUrl > "")) {
-        element = Array.from(doc.querySelectorAll(`a[href*='${CSS.escape(link.dataset.backlinkTargetUrl)}']`)).filter(backlink => {
-            return (   backlink.pathname == link.dataset.backlinkTargetUrl
+    } else {
+    	//	The “anchor” must actually be a data-backlink-target-url value.
+        element = Array.from(doc.querySelectorAll(`a[href*='${CSS.escape(anchor)}']`)).filter(backlink => {
+            return (   backlink.pathname == anchor
                     && backlink.closest(exclusionSelector) == null);
         }).first;
     }
@@ -197,18 +186,7 @@ function targetElementInDocument(link, doc) {
     or `data-backlink-target-url` attributes.)
  */
 function isAnchorLink(link) {
-    if (link instanceof HTMLAnchorElement) {
-        if (isAnnotationLink(link)) {
-            return (   link.dataset.targetId > ""
-                    || link.dataset.backlinkTargetUrl > "");
-        } else {
-            return (   link.hash > ""
-                    || link.dataset.targetId > ""
-                    || link.dataset.backlinkTargetUrl > "");
-        }
-    } else {
-        return (link.hash > "");
-    }
+    return (anchorsForLink(link).length == 1);
 }
 
 /***********************************************/
@@ -228,18 +206,19 @@ function stripAnchorsFromLink(link) {
     one, or two elements.
  */
 function anchorsForLink(link) {
-    if (   link instanceof HTMLAnchorElement
-        && link.dataset.targetId > "") {
-        return link.dataset.targetId.split(" ").map(x => `#${x}`);
-    } else if (   link instanceof HTMLAnchorElement
-               && isAnnotationLink(link) == false) {
-        return link.hash.match(/#[^#]*/g) ?? [ ];
-    } else if (   link instanceof HTMLAnchorElement
-               && link.dataset.backlinkTargetUrl > "") {
-        return link.dataset.backlinkTargetUrl;
-    }  else {
-        return [ ];
-    }
+	if (link instanceof HTMLAnchorElement) {
+		if (link.dataset.targetId > "") {
+			return link.dataset.targetId.split(" ").map(x => `#${x}`);
+		} else if (isAnnotationLink(link) == false) {
+			return link.hash.match(/#[^#]*/g) ?? [ ];
+		} else if (link.dataset.backlinkTargetUrl > "") {
+			return link.dataset.backlinkTargetUrl;
+		} else {
+			return [ ];
+		}
+	} else {
+		 return link.hash.match(/#[^#]*/g) ?? [ ];
+	}
 }
 
 /******************************************************************************/
