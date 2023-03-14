@@ -797,10 +797,10 @@ body.index #markdownBody .section-link-list ul > li:nth-of-type(n+2) {
 /*= Directory indexes =*/
 /*=-------------------=*/
 
-section#see-also:only-child > h1:first-child {
+section#see-also:only-of-type > h1:first-child {
     margin-top: 0.25em;
 }
-section#see-also:only-child > h1:first-child a {
+section#see-also:only-of-type > h1:first-child a {
     display: none;
 }
 
@@ -840,10 +840,6 @@ section#see-also:only-child > h1:first-child a {
         max-width: unset;
         margin-right: unset;
         margin-top: 3.5em;
-    }
-    body[class='docs-index'] #TOC,
-    body[class='docs-index'] #see-also h1 {
-        display: none;
     }
 }
 @media all and (max-width: 649px) {
