@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-03-12 13:12:55 gwern"
+When:  Time-stamp: "2023-03-14 22:39:53 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -562,7 +562,6 @@ whiteList url
       , "bloomberg.com"
       , "f1000research.com"
       , "patch.com"
-      , "openai.com"
       , "mdpi.com"
       , "bmj.com"
       , "peerj.com"
@@ -628,7 +627,6 @@ whiteList url
       , "hpmor.com" -- stable
       , "cryonicscalculator.com" -- interactive/service
       , "wikifur.com" -- stable
-      , "overcomingbias.com" -- stable
       , "waifulabs.com" -- interactive/service
       , "rpubs.com"
       , "smbc-comics.com"
@@ -1253,7 +1251,6 @@ whiteList url
       , "https://baghunter.com/" -- homepage
       , "https://www.talkrl.com/episodes/" -- low quality (audio embeds)
       , "https://www.ultimagenomics.com/" -- homepage
-      , "http://tweet.onerandom.com/" -- randomized
       , "https://google.github.io/deepmac/" -- low quality (video embeds)
       , "https://semantle.pimanrul.es/" -- interactive
       , "https://labelerrors.com/" -- interactive

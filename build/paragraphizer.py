@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using GPT-3 neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2023-03-12 13:09:23 gwern"
+# When:  Time-stamp: "2023-03-12 22:48:39 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python paragraphizer.py
@@ -76,7 +76,7 @@
 import sys
 import openai
 
-prompt = """Rewrite into paragraphs:
+prompt = """Add double-newlines `\n\n` to split this abstract into paragraphs (one topic per paragraph). From:
 
 \""""
 
@@ -87,11 +87,13 @@ else:
 
 postPrompt="\"\n\nTo:\n\n\""
 
-result = openai.Completion.create(engine="gpt-3.5-turbo",
+result = openai.Completion.create(engine="text-davinci-003",
                                 prompt=prompt+target+postPrompt,
                                 temperature=0, max_tokens=1024, stop="\"")['choices'][0]['text']
-if target == result.replace('\n\n', ' '):
-    print(result)
-else:
-    # sys.stderr.write(result+'\n-----------------------------------------\n')
-    print(target)
+print(result)
+# if target == (result.replace('\n', '')).replace(' ', ''):
+#     print(result)
+# else:
+#     sys.stderr.write(result+'\n-----------------------------------------\n')
+#     print("mangled")
+-

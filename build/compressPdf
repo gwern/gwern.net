@@ -4,7 +4,7 @@
 #
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-02-14 12:57:33 gwern"
+# When:  Time-stamp: "2023-03-13 23:04:02 gwern"
 # License: CC-0
 
 set -e
@@ -39,7 +39,7 @@ else
         echo "----"
         pdftotext "$TMP" - | head -5
         echo "----"
-        ocrmypdf --force-ocr --optimize 3 --jbig2-lossy "$PDF" "$TMP"
+        ocrmypdf --force-ocr --optimize 3 --jbig2-lossy "$PDF" "$TMP" &> /dev/null || true
         exiftool -TagsFromFile "$PDF" "$TMP" || true
         mv "$TMP" "$1"
     fi

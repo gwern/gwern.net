@@ -1504,7 +1504,7 @@ redirectDB = [
           , ( "https://en.wikipedia.org/wiki/Makyo", "https://en.wikipedia.org/wiki/Maky%C5%8D")
           , ( "https://en.wikipedia.org/wiki/Malinois_dog", "https://en.wikipedia.org/wiki/Belgian_Shepherd")
           , ( "https://en.wikipedia.org/wiki/Malloc", "https://en.wikipedia.org/wiki/C_dynamic_memory_allocation")
-          , ( "https://en.wikipedia.org/wiki/Mandela_effect", "https://en.wikipedia.org/wiki/False_memory#Mandela_Effect")
+          , ( "https://en.wikipedia.org/wiki/Mandela_effect", "https://en.wikipedia.org/wiki/False_memory#Mandela_effect")
           , ( "https://en.wikipedia.org/wiki/Mangaka", "https://en.wikipedia.org/wiki/Manga_artist")
           , ( "https://en.wikipedia.org/wiki/Man_in_the_middle_attack", "https://en.wikipedia.org/wiki/Man-in-the-middle_attack")
           , ( "https://en.wikipedia.org/wiki/Mann-Whitney_U", "https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test")

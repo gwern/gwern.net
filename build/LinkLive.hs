@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-03-13 22:43:07 gwern"
+When:  Time-stamp: "2023-03-14 11:23:40 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -100,7 +100,7 @@ linkLivePrioritize = do b <- readBacklinksDB
         -- Append an example of a prioritized link to /lorem#link-testcases for manual review, to skip copy-paste hassle
         writeLinkLiveTestcase :: Backlinks -> T.Text -> IO ()
         writeLinkLiveTestcase b l = let link = head $ filter (l `T.isInfixOf`) $ M.keys b in -- take the first URL which matches the domain:
-                                      TIO.appendFile "Lorem.page" $ "\n- <" `T.append` link `T.append` ">{.archive-not .link-annotated-not .link-live}"
+                                      TIO.appendFile "lorem.page" $ "\n- <" `T.append` link `T.append` ">{.archive-not .link-annotated-not .link-live}"
 
 -- Wikipedia link-live capabilities are page-dependent: anything in the Special namespace is blocked by headers (which makes sense given how many queries/capabilities are inside it). But it looks like pretty much all other namespaces (see Interwiki.hs's nonArticleNamespace for a list) should be live?
 wikipedia :: T.Text -> Maybe Bool
@@ -408,7 +408,6 @@ goodDomainsSimple =
     , "okmij.org"
     , "online.wsj.com"
     , "ooo.ghostbows.ooo"
-    , "openai.com/blog/"
     , "opensource.adobe.com"
     , "opinionator.blogs.nytimes.com"
     , "originstamp.com"
@@ -2425,6 +2424,7 @@ badDomainsSimple = [ "2chan.us"
    , "iqtest.com"
    , "clinicaltrials.gov"
    , "www.4nrx-uk.md"
+   , "openai.com"
    ]
 
 url :: T.Text -> Inline
@@ -2562,7 +2562,7 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://b-ok.cc/fulltext/"
             , "https://bair.berkeley.edu/blog/2020/07/11/auction/"
             , "https://bam-dataset.org/"
-            , "https://bam.kalzumeus.com/archive/financial-innovation-is-happening/"
+            , "https://www.bitsaboutmoney.com/archive/financial-innovation-is-happening/"
             , "https://beepb00p.xyz/pkm-search.html#appendix_cloudmacs"
             , "https://behavioralscientist.org/mindware-the-high-cost-of-not-doing-experiments/"
             , "https://bellard.org/jslinux/tech.html"
@@ -2955,7 +2955,7 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://whyevolutionistrue.com/2018/03/04/a-human-chimera/"
             , "https://wiki.archiveteam.org/index.php/Google_Reader"
             , "https://wiki.haskell.org/index.php?title=&search=&fulltext=Search"
-            , "https://wiki.lesswrong.com/wiki/Egan%27s_law"
+            , "https://www.lesswrong.com/tag/adding-up-to-normality"
             , "https://wikimediafoundation.org/wiki/Planned_Spending_Distribution_2008-2009"
             , "https://writeswith.com/"
             , "https://writings.stephenwolfram.com/2012/03/the-personal-analytics-of-my-life/"
@@ -3166,7 +3166,7 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://www.themtank.org/a-year-in-computer-vision"
             , "https://www.theparisreview.org/interviews/4155/the-art-of-the-essay-no-1-e-b-white"
             , "https://www.theregister.com/2001/01/10/nsa_runs_best_fab/"
-            , "https://www.thestranger.com/seattle/the-lying-disease/Content?oid=15337239"
+            , "https://www.thestranger.com/features/2012/11/21/15337239/the-lying-disease"
             , "https://www.thisfursonadoesnotexist.com/"
             , "https://www.thisworddoesnotexist.com/"
             , "https://www.thriftbooks.com/"
@@ -4669,6 +4669,9 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://sociologicalscience.com/download/vol-6/april/SocSci_v6_219to234.pdf"
             , "https://www.overcomingbias.com/2014/10/why-not-egg-futures.html"
             , "https://openai.com/blog/learning-to-summarize-with-human-feedback/"
+            , "https://openai.com/dall-e-2/"
+            , "https://openai.com/five/"
+            , "https://openai.com/fund/"
             , "https://quadrant.org.au/magazine/2015/05/eugenics-ready/"
             , "https://www.broadinstitute.org/news/broad-institute-sequences-its-100000th-whole-human-genome-national-dna-day"
             , "https://iqtest.com/"

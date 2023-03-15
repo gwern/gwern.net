@@ -117,7 +117,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "nvidia"  || aU'' ["nvlabs.github.io", "nv-adlr.github.io", "nv-tlabs.github.io"] = aI "n" "text,sans,italic" -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
  | u' "openai" || u'' "gptprompts.wikidot.com" = aI "openai" "svg" -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
  | u' "microsoft" = aI "MS" "text,sans,italic" -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
- | u' "#anthropic" || u'' "transformer-circuits.pub" || u'' "www.anthropic.com" = aI "anthropic" "svg" -- need to override Arxiv
+ | u' "#anthropic" || u' "nitter.moomoo.me/jackclarkSF/" || aU'' ["transformer-circuits.pub", "www.anthropic.com", "https://jack-clark.net"] = aI "anthropic" "svg" -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media
  | u' "#laion"  || u' "LAION-AI" || u'' "laion.ai" = aI "laion" "svg" -- <https://laion.ai/favicon.svg>; need to override Arxiv & Github & Hugging Face
 
  -- Domains:
@@ -366,6 +366,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "patrickcollison.com" = aI "PC" "text,sans"
  | u'' "oeis.org" = aI "OEIS" "text,quad,sans" -- On-Line Encyclopedia of Integer Sequences
  | u'' "bldgblog.com" = aI "BLDG" "text,quad,monospace" -- BLDGBLOG (“building blog”, 2004), by Geoff Manaugh <https://en.wikipedia.org/wiki/BLDGBLOG>
+ | u' "https://twitter.com/patio11" || aU'' ["www.bitsaboutmoney.com", "training.kalzumeus.com", "kalzumeus.com"] = aI "pt11" "text,quad,monospace" -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -554,7 +555,7 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                      "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com",
                      "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "www.silcom.com", "esolangs.org",
                      "www.aiweirdness.com", "etherscan.io", "www.theringer.com", "cs.stanford.edu", "mmlab.ie.cuhk.edu.hk", "www.cs.toronto.edu",
-                     "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org", "takimag.com", "oll.libertyfund.org"]
+                     "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org", "takimag.com", "oll.libertyfund.org", "every.to"]
         linkIconMin = 4 :: Int
 
 -- Test suite:
@@ -1096,6 +1097,8 @@ linkIconTestUnitsText =
          , ("https://www.anthropic.com/news/announcement", "anthropic", "svg")
          , ("https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html#anthropic", "anthropic", "svg")
          , ("https://arxiv.org/abs/2207.05221#anthropic", "anthropic", "svg")
+         , ("https://jack-clark.net/2022/10/31/import-ai-308-recursively-self-improving-lms-3-1tb-of-code-data-dall-e2-makes-alien-errors/", "anthropic", "svg")
+         , ("https://nitter.moomoo.me/jackclarkSF/status/1571125410108407808", "anthropic", "svg")
          , ("https://www.teds.ac.uk/about-teds", "TEDS", "text,quad,sans")
          , ("https://www.tandfonline.com/doi/abs/10.1080/02783190209554137", "T&F", "text,tri,sans")
          , ("https://omega0.xyz/omega8008/JaynesBookPdf.html", "ETJ", "text,tri,sans")
@@ -1120,4 +1123,8 @@ linkIconTestUnitsText =
          , ("https://laion.ai/blog/coca/", "laion", "svg")
          , ("https://carryiton.net/chain-letter/bibliography.htm", "✉", "text")
          , ("https://bldgblog.com/2015/12/four-floor-war/", "BLDG", "text,quad,monospace")
+         , ("https://twitter.com/patio11/status/1635413289449721856", "pt11", "text,quad,monospace")
+         , ("https://www.bitsaboutmoney.com/archive/the-infrastructure-behind-atms/", "pt11", "text,quad,monospace")
+         , ("https://training.kalzumeus.com/newsletters/archive/saas_pricing", "pt11", "text,quad,monospace")
+         , ("https://www.kalzumeus.com/2018/10/19/japanese-hometown-tax/", "pt11", "text,quad,monospace")
         ]
