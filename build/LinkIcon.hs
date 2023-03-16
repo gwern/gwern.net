@@ -117,7 +117,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "nvidia"  || aU'' ["nvlabs.github.io", "nv-adlr.github.io", "nv-tlabs.github.io"] = aI "n" "text,sans,italic" -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
  | u' "openai" || u'' "gptprompts.wikidot.com" = aI "openai" "svg" -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
  | u' "microsoft" = aI "MS" "text,sans,italic" -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
- | u' "#anthropic" || u' "nitter.moomoo.me/jackclarkSF/" || aU'' ["transformer-circuits.pub", "www.anthropic.com", "https://jack-clark.net"] = aI "anthropic" "svg" -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media
+ | u' "#anthropic" || u' "nitter.moomoo.me/jackclarkSF/" || aU'' ["transformer-circuits.pub", "www.anthropic.com", "jack-clark.net"] = aI "anthropic" "svg" -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media
  | u' "#laion"  || u' "LAION-AI" || u'' "laion.ai" = aI "laion" "svg" -- <https://laion.ai/favicon.svg>; need to override Arxiv & Github & Hugging Face
 
  -- Domains:
@@ -366,7 +366,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "patrickcollison.com" = aI "PC" "text,sans"
  | u'' "oeis.org" = aI "OEIS" "text,quad,sans" -- On-Line Encyclopedia of Integer Sequences
  | u'' "bldgblog.com" = aI "BLDG" "text,quad,monospace" -- BLDGBLOG (“building blog”, 2004), by Geoff Manaugh <https://en.wikipedia.org/wiki/BLDGBLOG>
- | u' "https://twitter.com/patio11" || aU'' ["www.bitsaboutmoney.com", "training.kalzumeus.com", "kalzumeus.com"] = aI "pt11" "text,quad,monospace" -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...
+ | u' "nitter.moomoo.me/patio11" || aU'' ["www.bitsaboutmoney.com", "training.kalzumeus.com", "www.kalzumeus.com"] = aI "pt11" "text,quad,monospace" -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -382,7 +382,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "mega.nz" = aI "mega" "svg" -- MegaUpload/Mega: filesharing (used for big files).
  | u'' "intelligence.org" = aI "miri" "svg" -- MIRI/intelligence.org.
  | u' ".nytimes.com" = aI "newyorktimes" "svg" -- The New York Times: manual edit, reducing full 'NEW YORK TIMES' SVG logo to just the ‘T’ they use as an icon.
- | aU'' ["www.ncbi.nlm.nih.gov", "pubmed.ncbi.nlm.nih.gov", "www.clinicaltrials.gov"] = aI "nlm-ncbi" "svg" -- NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg). primary user: ncbi.nlm.nih.gov
+ | aU'' ["www.ncbi.nlm.nih.gov", "pubmed.ncbi.nlm.nih.gov"] = aI "nlm-ncbi" "svg" -- NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg). primary user: ncbi.nlm.nih.gov
  | u'' "www.patreon.com" = aI "patreon" "svg" -- Patreon. (Used the old one (https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg) because I don’t like the new one.)
  | aU' ["plos.org", "plosone.org", "plosmedicine.org"] = aI "plos" "svg" -- PLOS ONE in all their domain permutations… primary user: journals.plos.org
  | u' "reddit.com" = aI "reddit" "svg" -- old.reddit.com
@@ -449,10 +449,11 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | otherwise = x
  where u', u'' :: T.Text -> Bool
        -- simplest check for string anywhere; note that if it is a full domain name like `https://foo.com` (intended to match `https://foo.com/xyz.html`), then it will *not* match when the local-archive code fires and the URL gets rewritten to "/doc/foo.com/$HASH.html". So we error out if the user tries this, having forgotten that u' ≠ u'' in that respect.
-       u' v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v then error ("Overly strict prefix in infix matching: " ++ show u ++ ":" ++ show v) else
+       u' v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v then error ("LinkIcon.hs: Overly strict prefix in infix matching (u'): " ++ show u ++ ":" ++ show v) else
          if originalURL=="" then v `T.isInfixOf` u else v `T.isInfixOf` originalURL
        -- more stringent check, matching exactly the domain name:
-       u'' v = if originalURL=="" then isHostOrArchive v u else isHostOrArchive v originalURL
+       u'' v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v then error ("LinkIcon.hs: Overly strict prefix in infix matching (u''): " ++ show u ++ ":" ++ show v) else
+                 if originalURL=="" then isHostOrArchive v u else isHostOrArchive v originalURL
        originalURL :: T.Text
        originalURL = case lookup "data-url-original" attributes of
                        Nothing -> ""
@@ -614,7 +615,8 @@ linkIconTestUnitsText =
          , ("https://engineering.fb.com/2014/11/14/production-engineering/solving-the-mystery-of-link-imbalance-a-metastable-failure-state-at-scale/",  "facebook","svg")
          , ("https://arxiv.org/abs/2004.13637#facebook",  "facebook","svg")
          , ("https://fis.fda.gov/sense/app/d10be6bb-494e-4cd2-82e4-0135608ddc13/sheet/45beeb74-30ab-46be-8267-5756582633b4/state/analysis",  "FDA","text,tri,sans")
-         , ("http://clinicaltrials.gov/show/NCT03429075",  "FDA","text,tri,sans")
+         , ("https://clinicaltrials.gov/show/NCT03429075",  "FDA","text,tri,sans")
+         , ("https://clinicaltrials.gov/ct2/show/NCT01684306", "FDA","text,tri,sans")
          , ("https://www.filfre.net/2016/08/ibms-new-flavor/",  "TDA","text,tri,sans")
          , ("https://archiveprogram.github.com/",  "github","svg")
          , ("https://compvis.github.io/taming-transformers/",  "github","svg")
@@ -706,7 +708,6 @@ linkIconTestUnitsText =
          , ("https://wavemotioncannon.com/2016/11/08/interview-hideaki-anno-vs-yoshiyuki-tomino-animage-071994/", "NGE", "text,tri")
          , ("https://www.angelfire.com/anime4/mdwigs/Asuka.html", "NGE", "text,tri")
          , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2793346/",  "nlm-ncbi","svg")
-         , ("https://www.clinicaltrials.gov/ct2/show/NCT01684306",  "nlm-ncbi","svg")
          , ("https://blogs.nvidia.com/blog/2019/03/18/gaugan-photorealistic-landscapes-nvidia-research/",  "n","text,sans,italic")
          , ("https://nv-adlr.github.io/MegatronLM",  "n","text,sans,italic")
          , ("https://nv-tlabs.github.io/big-datasetgan/",  "n","text,sans,italic")
@@ -1123,7 +1124,7 @@ linkIconTestUnitsText =
          , ("https://laion.ai/blog/coca/", "laion", "svg")
          , ("https://carryiton.net/chain-letter/bibliography.htm", "✉", "text")
          , ("https://bldgblog.com/2015/12/four-floor-war/", "BLDG", "text,quad,monospace")
-         , ("https://twitter.com/patio11/status/1635413289449721856", "pt11", "text,quad,monospace")
+         , ("https://nitter.moomoo.me/patio11/status/1635413289449721856", "pt11", "text,quad,monospace")
          , ("https://www.bitsaboutmoney.com/archive/the-infrastructure-behind-atms/", "pt11", "text,quad,monospace")
          , ("https://training.kalzumeus.com/newsletters/archive/saas_pricing", "pt11", "text,quad,monospace")
          , ("https://www.kalzumeus.com/2018/10/19/japanese-hometown-tax/", "pt11", "text,quad,monospace")

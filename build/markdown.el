@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-03-12 12:54:39 gwern"
+;;; When:  Time-stamp: "2023-03-15 21:26:45 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1262,7 +1262,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
 (add-hook 'markdown-mode-hook
           (lambda ()
             (define-key markdown-mode-map "\C-c\ w" 'markdown-annotation-compile)))
-(defvar html-mode-map) ; suppress reference-to-free-variable bytecompile warning
+(defvar html-mode-map) ; suppress reference-to-free-variable byte-compile warning
 (add-hook 'html-mode-hook
           (lambda ()
             (define-key html-mode-map "\C-c\ w" 'markdown-annotation-compile)))

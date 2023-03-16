@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using GPT-3 neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2023-03-12 22:48:39 gwern"
+# When:  Time-stamp: "2023-03-15 15:44:48 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python paragraphizer.py
@@ -96,4 +96,3 @@ print(result)
 # else:
 #     sys.stderr.write(result+'\n-----------------------------------------\n')
 #     print("mangled")
--

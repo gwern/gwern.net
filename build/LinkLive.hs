@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-03-14 11:23:40 gwern"
+When:  Time-stamp: "2023-03-15 20:30:24 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -620,7 +620,6 @@ goodDomainsSimple =
     , "www.cia.gov"
     , "www.cjas.org"
     , "www.cleveland.com"
-    , "www.clinicaltrials.gov"
     , "www.cnn.com"
     , "www.cnn.com"
     , "www.coderelay.io"
@@ -878,6 +877,7 @@ goodDomainsSimple =
     , "zlkj.in"
     , "www.cs.toronto.edu"
     , "parti.research.google"
+    , "www.bitsaboutmoney.com"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com",
@@ -4675,6 +4675,6 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://quadrant.org.au/magazine/2015/05/eugenics-ready/"
             , "https://www.broadinstitute.org/news/broad-institute-sequences-its-100000th-whole-human-genome-national-dna-day"
             , "https://iqtest.com/"
-            , "https://www.clinicaltrials.gov/ct2/show/NCT03548935"
+            , "https://clinicaltrials.gov/ct2/show/NCT03548935"
             , "https://www.4nrx-uk.md/general-health/modalert-modafinil.html"
             ]

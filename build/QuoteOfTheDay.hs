@@ -326,7 +326,7 @@ sitePrioritize = do lotdb <- readTTDB linkDBPath
           "www.cap-lore.com", "www.catalogtree.net", "www.catb.org", "www.cato.org", "www.cato-unbound.org",
           "www.cbsnews.com", "www.cdc.gov", "www.cehd.umn.edu", "www.cell.com", "www.census.gov",
           "www.chicagomag.com", "www.chicagotribune.com", "www.chinadaily.com.cn", "www.chronicle.com", "www.cia.gov",
-          "www.city-journal.org", "www.cjas.org", "www.cjr.org", "www.cl.cam.ac.uk", "www.clinicaltrials.gov",
+          "www.city-journal.org", "www.cjas.org", "www.cjr.org", "www.cl.cam.ac.uk", "clinicaltrials.gov",
           "www.cnbc.com", "www.cnn.com", "www.cochranelibrary.com", "www.cognitiongroup.com", "www.collectorsweekly.com",
           "www.collisiondetection.net", "www.columbia.edu", "www.comicbox.co.jp", "www.communicationcache.com", "www.computerworld.com",
           "www.copenhagenconsensus.com", "www.copyright.gov", "www.couriermail.com.au", "www.courtlistener.com", "www.cram.com",
