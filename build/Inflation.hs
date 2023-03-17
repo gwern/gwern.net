@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2023-02-02 10:37:34 gwern"
+-- When:  Time-stamp: "2023-03-17 12:29:29 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -76,7 +76,7 @@ minPercentage :: Float
 minPercentage = 1 + 0.20
 
 nominalToRealInflationAdjuster :: Inline -> Inline
-nominalToRealInflationAdjuster x@(Link _ _ ("", _)) = error $ "Inflation adjustment (nominalToRealInflationAdjuster) failed on malformed link: " ++ show x
+nominalToRealInflationAdjuster x@(Link _ _ ("", _)) = error $ "Inflation adjustment (Inflation.hs: nominalToRealInflationAdjuster) failed on malformed link: " ++ show x
 nominalToRealInflationAdjuster x@(Link _ _ (ts, _))
   | t == '$' = dollarAdjuster x
   | t == '\8383' = bitcoinAdjuster x --- official Bitcoin Unicode: '₿'/'\8383'; obsoletes THAI BAHT SIGN
@@ -100,7 +100,7 @@ dollarAdjuster l@(Link _ text (oldYears, _)) =
       [Str (T.pack $ "$"++adjustedDollarString),  Span ("",["subsup"],[]) [Superscript [Str $ T.pack $ "$" ++ oldDollarString'], Subscript [Str oldYear]]]
     where -- oldYear = '$1970' → '1970'
           oldYear = if T.length oldYears /= 5 || T.head oldYears /= '$' then error (show l) else T.tail oldYears
-          oldDollarString = filter (/= '$') $ inlinesToText text -- '$50.50' → '50.50'
+          oldDollarString = multiplyByUnits $ filter (/= '$') $ inlinesToText text -- '$50.50' → '50.50'; '$50.50k' → '50500.0'; '$50.50m' → 5.05e7; '$50.50b' → 5.05e10; '$50.50t' → 5.05e13
           oldDollar = case (readMaybe (filter (/=',') oldDollarString) :: Maybe Float) of
                         Just d -> d
                         Nothing -> error (show l)
@@ -111,6 +111,15 @@ dollarAdjuster l@(Link _ text (oldYears, _)) =
           oldDollarString' = formatDecimal oldDollar precision
           adjustedDollar = dollarAdjust oldDollar (T.unpack oldYear)
           adjustedDollarString = formatDecimal adjustedDollar precision
+          multiplyByUnits :: String -> String
+          multiplyByUnits "" = error $ "Inflation.hs (dollarAdjuster): an empty amount was processed from 'text' variable. Original input: " ++ show l
+          multiplyByUnits amount = let (unit, rest) = (last amount, read (init amount) :: Float) in -- eg '100m' → ('m',"100")
+                                     if unit `elem` ("0123456789"::String) then amount else show $ case unit of
+                                                                                        'k' -> rest*1000
+                                                                                        'm' -> rest*1000000
+                                                                                        'b' -> rest*1000000000
+                                                                                        't' -> rest*1000000000000
+                                                                                        e -> error $ "Inflation.hs (dollarAdjuster:multiplyByUnits): a malformed unit multiplier appeared in 'text' variable. Attempted unit multiplication by '" ++ show e ++ "'; original: " ++ show l
 
 dollarAdjuster x = x
 

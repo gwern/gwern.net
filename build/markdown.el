@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-03-15 21:26:45 gwern"
+;;; When:  Time-stamp: "2023-03-17 12:41:41 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1056,7 +1056,6 @@
        (query-replace-regexp "\\([[:punct:]]\\)\\([0-9,- ]+\\)$" "\\1<sup>\\2</sup>" nil begin end) ; looser: handle end of line
        (query-replace-regexp " \\[\\([0-9, -]+\\)\\]\\([[:punct:]]\\)" "\\2<sup>\\1</sup> " nil begin end) ; 'contributing to higher energy intake [42].'
        (query-replace-regexp "\\[\\([0-9, -]+\\)\\] " "<sup>\\1</sup> " nil begin end)
-       (query-replace-regexp "\\([A-Z][a-z]+\\) and \\([A-Z][a-z]+\\),? \\([0-9]+\\)" "\\1 & \\2 \\3") ; eg 'Lofquist and Dawis 1991'
        (query-replace-regexp "\\([0-9]+\\)- to \\([0-9]+\\)-" "\\1--\\2-" nil begin end) ; "18- to 20-year-olds" → "18--20-year-olds"
        (query-replace-regexp "\\([0-9]+\\)- and \\([0-9]+\\)-" "\\1 & \\2-" nil begin end) ; "We use 1979- and 1997-cohort National Longitudinal Survey of Youth (NLSY) data" → "We use 1979 & 1997-cohort"
 
@@ -1126,6 +1125,8 @@
        (query-replace-regexp "\\([ ,(\[]\\)-\\([[:digit:]]\\)"                   "\\1−\\2" nil begin end) ; minus sign instead of hyphen
        (query-replace-regexp " --\\([[:digit:]]\\)"   " −\\1"      nil begin end) ; replace mistaken en-dashes with minus signs
        (query-replace-regexp " -\\[\\$" " −[$" nil begin end) ; minus sign: replace "It saves -[$1]($2021)" → "It saves −[$1]($2021)"
+       ; move units outside inflation-adjusted amounts (they keep slipping into annotations when excerpting or rewriting units to be consistent); Inflation.hs handles these but inelegantly & adds a lot of complexity vs a simple compact notation of suffixing. So '[$10k]($2023)' → '[$10]($2023)k', for k/m/b/t:
+       (query-replace-regexp "\\[\\$\\([0-9.]+\\)\\([kmbt]\\)\\](\\$\\([12][0-9][0-9][0-9]\\))" "[$\\1]($\\3)\\2" nil begin end)
        (query-replace        "=-"                                                " = −" nil begin end)
        (query-replace-regexp "\\([[:digit:]]\\) \\([[:digit:]][[:digit:]][[:digit:]]\\)" "\\1&thinsp;\\2" nil begin end) ; improve formatting of European-style space numerals
        (query-replace-regexp "\\([[a-zA-Z]]\\) " "\\1 " nil begin end)
@@ -1141,7 +1142,6 @@
        (replace-all "</Strong>" "**")
        (query-replace-regexp "\\([a-zA-Z]+\\) et al\\.? (\\([[:digit:]]+[a-z]?\\))" "\\1 et al \\2" nil begin end) ; 'Heald et al. (2015a)' → 'Heald et al 2015a'
        (query-replace-regexp "\\([a-zA-Z]+\\) et al\\. \\([[:digit:]]+\\)" "\\1 et al \\2" nil begin end)
-       (query-replace-regexp "\\([A-Z][a-zñü]+\\) [&and]+ \\([A-Z][a-z]+\\), \\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\\)" "\\1 & \\2 \\3" nil begin end) ; '(Darwin & Darwin, 1880)' → '(Darwin & Darwin 1980)'
        (query-replace-regexp "\\([A-Z][a-zñü]+\\) (\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\\))" "\\1 \\2" nil begin end) ; 'Darwin (1875)' → 'Darwin 1875'
        (query-replace-regexp "\\([A-Z][a-zñü]+\\), \\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\\)" "\\1 \\2" nil begin end) ; 'Fitts, 1954;' → 'Fitts 1954'
        (query-replace-regexp "\\([A-Z][a-zñü]+\\) and \\([A-Z][a-zñ]+\\) (\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\\))" "\\1 & \\2 \\3" nil begin end) ; 'Goriely and Neukirch (2006)' → 'Goriely & Neukirch 2006'
@@ -1150,6 +1150,9 @@
        (query-replace-regexp "\\([A-Z][a-zñü]+\\), [A-Z][a-zñü]+, [A-Z][a-zñü]+, [A-Z][a-zñü]+, [&and]+ [A-Z][a-zñü]+ \\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\\)" "\\1 et al \\2" nil begin end) ; 5-fold
        (query-replace-regexp "\\([A-Z][a-zñü]+\\), [A-Z][a-zñü]+, [A-Z][a-zñü]+, [A-Z][a-zñü]+, [A-Z][a-zñü]+, [&and]+ [A-Z][a-zñü]+ \\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\\)" "\\1 et al \\2" nil begin end) ; 6-fold
        (query-replace-regexp "\\([A-Z][a-zñü]+\\), [A-Z][a-zñü]+, [A-Z][a-zñü]+, [A-Z][a-zñü]+, [A-Z][a-zñü]+, [A-Z][a-zñü]+, [&and]+ [A-Z][a-zñü]+ \\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\\)" "\\1 et al \\2" nil begin end) ; 7-fold
+       (query-replace-regexp "\\([A-Z][a-z]+\\) and \\([A-Z][a-z]+\\),? \\([0-9]+\\)" "\\1 & \\2 \\3") ; eg 'Lofquist and Dawis 1991' → 'Lofquist & Dawis 1991'
+       (query-replace-regexp "\\([A-Z][a-zñü]+\\) [&and]+ \\([A-Z][a-z]+\\), \\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\\)" "\\1 & \\2 \\3" nil begin end) ; '(Darwin & Darwin, 1880)' → '(Darwin & Darwin 1980)', or '(Darwin and Darwin, 1880)' → '(Darwin & Darwin 1980)'
+
        ; (query-replace-regexp "’\\([A-Za-qt-z]+\\)" "’ \\1" nil begin end) ; run-together apostrophes from PDFs
        (query-replace-regexp "^  \\([A-Za-z[:punct:]]+.*\\)" "    \\1" nil begin end) ; sometimes we get pseudo-indented text which I expect to get a code block but isn't enough.
        (query-replace-regexp "^\\([0-9]\\)) " "\\1. " nil begin end) ; convert single-parenthesis ordered lists to normal ordered list
