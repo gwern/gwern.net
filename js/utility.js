@@ -254,6 +254,18 @@ function newDocument(content) {
     return docFrag;
 }
 
+/***************************************************************************/
+/*	Transfer any of the given CSS classes that the source has to the target.
+ */
+function transferClasses(source, target, classes) {
+	classes.forEach(cssClass => {
+		if (source.classList.contains(cssClass)) {
+			source.classList.remove(cssClass);
+			target.classList.add(cssClass);
+		}
+	});
+}
+
 /****************************************/
 /*  Wrap an element in a wrapper element.
  */
@@ -281,15 +293,8 @@ function wrapElement(element, wrapClass, wrapTagName = "DIV", useExistingWrapper
         return;
     }
 
-    if (!(moveClasses instanceof Array))
-        return;
-
-    moveClasses.forEach(cssClass => {
-        if (element.classList.contains(cssClass)) {
-            element.classList.remove(cssClass);
-            element.parentElement.classList.add(cssClass);
-        }
-    });
+    if (moveClasses instanceof Array)
+        transferClasses(element, element.parentElement, moveClasses);
 }
 
 /*****************************************************/
