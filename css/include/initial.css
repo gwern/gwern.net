@@ -1176,6 +1176,7 @@ body.indented-not .abstract + p {
 
 blockquote {
     --GW-link-underline-background-color: var(--GW-blockquote-background-color);
+    --GW-table-full-width-background-color: var(--GW-blockquote-background-color);
 
     margin: 1.625em 0 1.75em 0;
     border: 1px solid var(--GW-blockquote-border-color);
