@@ -1163,7 +1163,7 @@ blockquote {
 
 #markdownBody blockquote {
     clear: none;
-    overflow: auto;
+    overflow: visible;
 }
 
 blockquote blockquote {
