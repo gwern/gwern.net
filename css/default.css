@@ -673,7 +673,7 @@ section:target > :first-child a::after {
  */
 
 #TOC.collapsed {
-	height: 1.75rem;
+	height: 2em;
     box-sizing: border-box;
 }
 #TOC.collapsed + * {
