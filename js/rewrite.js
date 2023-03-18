@@ -478,30 +478,39 @@ Notes = {
 /* TABLES */
 /**********/
 
-/****************************************************************/
-/*  Wrap each table in a div.table-wrapper (for layout purposes).
+/************************************************************************/
+/*  Wrap each table in a div.table-wrapper and a div.table-scroll-wrapper 
+	(for layout purposes).
  */
 addContentLoadHandler(GW.contentLoadHandlers.wrapTables = (eventInfo) => {
     GWLog("wrapTables", "rewrite.js", 1);
 
-    wrapAll("table", "table-wrapper", "DIV", eventInfo.container, true)
+    wrapAll("table", "table-wrapper", "DIV", eventInfo.container, true);
+    wrapAll("table", "table-scroll-wrapper", "DIV", eventInfo.container, false);
+
+    eventInfo.container.querySelectorAll(".table-scroll-wrapper").forEach(tableScrollWrapper => {
+    	transferClasses(tableScrollWrapper.closest(".table-wrapper"), tableScrollWrapper, [ "width-full" ]);
+    });
 }, "rewrite");
 
-/*****************************************************************************/
-/*  Wrap each full-width table in a div.full-width-table-inner-wrapper, and
-    also move the .collapse class (if any) from the outer wrapper to the table
-    (for consistency).
+/********************************************************************/
+/*  Rectify wrapper structure of full-width tables:
+
+	div.table-wrapper.table.width-full
+		div.table-scroll-wrapper
+			table
+
+	or
+
+	div.table-wrapper.collapse
+		div.collapse-content-wrapper.table.width-full
+			div.table-scroll-wrapper
+				table
  */
 addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthTables = (eventInfo) => {
     GWLog("wrapFullWidthTables", "rewrite.js", 1);
 
-    wrapAll(".table-wrapper.width-full > table", "full-width-table-inner-wrapper", "DIV", eventInfo.container, false);
-
-    //  Move ‘collapse’ class from wrappers to tables.
-    eventInfo.container.querySelectorAll(".table-wrapper.width-full.collapse table").forEach(table => {
-        table.closest(".table-wrapper").classList.remove("collapse");
-        table.classList.add("collapse");
-    });
+	wrapAll(".table-wrapper .width-full", "table width-full", "DIV", eventInfo.container, true, [ "width-full" ]);
 }, "rewrite", (info) => info.fullWidthPossible);
 
 
@@ -663,10 +672,7 @@ addContentLoadHandler(GW.contentLoadHandlers.relocateThumbnailInAnnotation = (ev
 addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (eventInfo) => {
     GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
-    wrapAll("pre.width-full", (fullWidthPre) => {
-        wrapElement(fullWidthPre, "width-full", "DIV", true);
-        wrapElement(fullWidthPre.parentElement, "full-width-code-block-wrapper", "DIV", false);
-    }, null, eventInfo.container);
+	wrapAll("pre.width-full", "width-full", "DIV", eventInfo.container, true, [ "sourceCode" ]);
 }, "rewrite", (info) => info.fullWidthPossible);
 
 /*************************************************************************/

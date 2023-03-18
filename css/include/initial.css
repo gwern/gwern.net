@@ -1243,19 +1243,6 @@ pre {
     overflow: auto;
 }
 
-/*  Full-width code blocks.
- */
-.full-width-code-block-wrapper {
-    max-width: -moz-fit-content;
-    max-width: fit-content;
-    margin: auto;
-    position: relative;
-    z-index: 1;
-}
-.full-width-code-block-wrapper pre {
-    padding-right: 1px;
-}
-
 /********/
 /* MATH */
 /********/
@@ -1269,22 +1256,24 @@ pre {
 /* TABLES */
 /**********/
 
-.table-wrapper {
+div.table-wrapper {
     margin: 2em 0 2.125em 0;
+}
+
+.table-scroll-wrapper {
     overflow-x: auto;
     overflow-y: hidden;
-    box-sizing: border-box;
 }
 
 /*=-------------------=*/
 /*= Full-width tables =*/
 /*=-------------------=*/
 
-.table-wrapper.width-full {
+.table-wrapper .width-full {
     position: relative;
     z-index: 1;
 }
-.table-wrapper.width-full table {
+.table-wrapper .width-full table {
     width: -moz-fit-content;
     width: fit-content;
     margin: 0 auto;

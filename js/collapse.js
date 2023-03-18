@@ -141,16 +141,27 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 		//	Add ‘expand-on-hover’ class.
 		collapseBlock.classList.add("expand-on-hover");
 
-		if (collapseBlock.tagName == "SECTION") {
-			//  Inject the disclosure button.
-			collapseBlock.firstElementChild.insertAdjacentHTML("afterend", disclosureButtonHTML);
-			if (checked > "")
-				collapseBlock.classList.add("expanded");
-		} else if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].includes(collapseBlock.tagName)) {
+		if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].includes(collapseBlock.tagName)) {
 			//  Remove collapse classes and do nothing else.
 			collapseBlock.classList.remove("collapse", "expand-on-hover");
 			if (collapseBlock.className == "")
 				collapseBlock.removeAttribute("class");
+		} else if (collapseBlock.tagName == "SECTION") {
+			//  Inject the disclosure button.
+			collapseBlock.firstElementChild.insertAdjacentHTML("afterend", disclosureButtonHTML);
+
+			//	Expand.
+			if (checked > "")
+				collapseBlock.classList.add("expanded");
+
+			//	Construct wrapper.
+			let collapseContentWrapper = newElement("DIV", { "class": "collapse-content-wrapper" });
+			let childNodesArray = Array.from(collapseBlock.childNodes);
+			collapseContentWrapper.append(...childNodesArray.slice(childNodesArray.findLastIndex(node => {
+				return (   node instanceof Element 
+						&& node.classList.containsAnyOf([ "disclosure-button", "abstract-collapse", "abstract" ]));
+			}) + 1));
+			collapseBlock.append(collapseContentWrapper);
 		} else if (   collapseBlock.parentElement.tagName == "DIV"
 				   && isOnlyChild(collapseBlock)) {
 			//  Use parent div as collapse block.
@@ -159,21 +170,34 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 
 			//	Inject the disclosure button.
 			realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
+
+			//	Expand.
 			if (checked > "")
 				realCollapseBlock.classList.add("expanded");
 
 			//  Remove collapse classes.
 			collapseBlock.classList.remove("collapse", "expand-on-hover");
-			collapseBlock.classList.add("collapse-content-wrapper");
+
+			//	Designate or construct wrapper.
+			if (   collapseBlock.tagName == "DIV"
+				&& collapseBlock.className == "") {
+				collapseBlock.classList.add("collapse-content-wrapper");
+			} else {
+				let collapseContentWrapper = newElement("DIV", { "class": "collapse-content-wrapper" });
+				collapseContentWrapper.append(collapseBlock);
+				realCollapseBlock.append(collapseContentWrapper);
+			}
 		} else {
-			//  Construct collapse block wrapper and inject the disclosure button.
+			//  Construct collapse content wrapper and inject the disclosure button.
+
+			//	Expand.
 			if (checked > "")
 				collapseBlock.classList.add("expanded");
 
 			//	Construct wrapper.
-			let collapseBlockWrapper = newElement("DIV", { "class": "collapse-content-wrapper" });
-			collapseBlockWrapper.append(...collapseBlock.childNodes);
-			collapseBlock.append(collapseBlockWrapper);
+			let collapseContentWrapper = newElement("DIV", { "class": "collapse-content-wrapper" });
+			collapseContentWrapper.append(...collapseBlock.childNodes);
+			collapseBlock.append(collapseContentWrapper);
 
 			//	Inject disclosure button.
 			collapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);

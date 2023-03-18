@@ -30,8 +30,9 @@ Sidenotes = {
 		".width-full img",
 		".width-full video",
 		".width-full .caption-wrapper",
-		".width-full.table-wrapper",
-		".full-width-code-block-wrapper .width-full",
+		".table-wrapper.width-full",
+		".table-wrapper .width-full",
+		".sourceCode.width-full",
 		".marginnote"
 	],
 
