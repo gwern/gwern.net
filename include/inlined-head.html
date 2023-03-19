@@ -40,7 +40,7 @@
     /*  Sidebar.
      */
     --GW-sidebar-horizontal-rule-color: #aaa;
-    --GW-sidebar-mobile-link-border-color: #000;
+    --GW-sidebar-link-border-color: #000;
 
     /*  Table of contents.
      */
@@ -449,12 +449,13 @@ main {
 /***********/
 
 #sidebar {
-	font-variant: small-caps;
+	display: flex;
 	justify-content: center;
+	font-variant: small-caps;
 }
 @media all and (min-width: 650px) {
 	#sidebar {
-		margin: 0.5em -1px 0 -1px;
+		margin: 0.5em 0 0 0;
 	}
 }
 @media all and (max-width: 649px) {
@@ -463,50 +464,64 @@ main {
 	}
 }
 
-#sidebar,
-#sidebar-links {
-	display: flex;
-}
 #sidebar a {
     display: block;
-	border: 1px dotted var(--GW-sidebar-mobile-link-border-color);
-	padding: 0.25em 0.5em;
+	border: 1px dotted var(--GW-sidebar-link-border-color);
 	text-align: center;
-	margin: 1px 0 1px 1px;
+	margin: 1px 0 1px 2px;
 }
 
 #sidebar a#logo {
-	margin: 1px 1px 1px 0;
 	display: flex;
-}
-@media all and (min-width: 650px) {
-	#sidebar a#logo {
-		padding: 0.25em 0.375em;
-	}
-	#sidebar a#logo svg {
-		width: 1rem;
-	}
+	margin: 1px 0;
 }
 @media all and (max-width: 649px) {
 	#sidebar a#logo {
 		padding: 0.5em 0.375em;
 	}
 	#sidebar a#logo svg {
-		width: 2.5rem;
+		width: 2.5em;
+	}
+}
+@media all and (min-width: 650px) {
+	@media all and (max-width: 1119px) {
+		#sidebar a#logo {
+			padding: 0.25em 0.375em;
+		}
+		#sidebar a#logo svg {
+			width: 1em;
+		}
+	}
+	@media all and (min-width: 1120px) {
+		#sidebar a#logo {
+			padding: 0.375em;
+			position: absolute;
+			right: 100%;
+		}
+		#sidebar a#logo svg {
+			width: 2.5em;
+		}
 	}
 }
 
 #sidebar-links {
+	display: flex;
 	flex-flow: row wrap;
 	flex: 1 1 100%;
 	margin: 0;
 }
-#sidebar #sidebar-links a {
+#sidebar-links a {
 	flex: 1 1 auto;
+	padding: 0.25em 0.75em;
 }
 
 @media all and (max-width: 649px) {
-	#sidebar a.patreon {
+	#sidebar-links a:nth-child(1),
+	#sidebar-links a:nth-child(2),
+	#sidebar-links a:nth-child(3) {
+		min-width: 25%;
+	}
+	#sidebar-links a.patreon {
 		display: none;
 	}
 }
@@ -519,6 +534,16 @@ main {
 header {
     overflow: auto;
 }
+@media all and (max-width: 649px) {
+	header {
+		padding: 0 1em;
+	}
+}
+@media all and (min-width: 650px) {
+	header {
+		padding: 0 2em;
+	}
+}
 
 header h1 {
     margin: 0.75em 0;
@@ -530,7 +555,6 @@ header h1 {
     font-weight: 600;
     letter-spacing: -1px;
 }
-
 @media all and (max-width: 649px) {
     header h1 {
         font-size: 2em;
@@ -1769,7 +1793,7 @@ body.special-halloween-dark h6 {
     /*  Sidebar.
      */
     --GW-sidebar-horizontal-rule-color: #7c7c7c;
-    --GW-sidebar-mobile-link-border-color: #fff;
+    --GW-sidebar-link-border-color: #fff;
 
     /*  Table of contents.
      */
