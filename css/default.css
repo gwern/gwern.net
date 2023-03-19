@@ -1639,17 +1639,15 @@ section.footnotes > hr:first-child.highlighted::before {
 #sidenote-column-left,
 #sidenote-column-right {
     position: absolute;
+    top: 0;
+    height: 100%;
     z-index: 1;
     pointer-events: none;
 }
 #sidenote-column-left {
-    height: calc(100% - 7rem);
-    top: 7rem;
     right: calc(100% + 64px);
 }
 #sidenote-column-right {
-    height: 100%;
-    top: 0;
     left: calc(100% + 64px);
 }
 #sidenote-column-left:empty,
