@@ -451,7 +451,6 @@ main {
 #sidebar {
 	display: flex;
 	justify-content: center;
-	font-variant: small-caps;
 }
 @media all and (min-width: 650px) {
 	#sidebar {
@@ -496,12 +495,12 @@ main {
 		#sidebar a#logo {
 			position: absolute;
 			right: 100%;
-			margin: 0 1em 0 0;
+			margin: 0 0.75em 0 0;
 			padding: 0.125em;
 			border: none;
 		}
 		#sidebar a#logo svg {
-			width: 4em;
+			width: 3.75em;
 		}
 	}
 }
@@ -515,6 +514,8 @@ main {
 #sidebar-links a {
 	flex: 1 1 auto;
 	padding: 0.25em 0.75em;
+	text-transform: uppercase;
+	font-weight: 600;
 }
 
 @media all and (max-width: 649px) {
