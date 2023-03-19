@@ -331,10 +331,12 @@
 /*********/
 /* fonts are now loaded from /static/css/fonts.css */
 
+
 /**********/
 /* COLORS */
 /**********/
 /* colors are now in /static/css/colors.css (light-mode) or /include/dark-mode-GENERATED.css + /include/components/dark-mode-adjustments.css +/include/components/colors-dark-GENERATED.css (dark-mode) */
+
 
 /*************/
 /* VARIABLES */
@@ -354,6 +356,7 @@
         --GW-base-font-size: 18px;
     }
 }
+
 
 /***********/
 /* GENERAL */
@@ -377,6 +380,7 @@ svg {
     fill: currentColor;
 }
 
+
 /**********/
 /* LAYOUT */
 /**********/
@@ -387,7 +391,9 @@ html {
 }
 
 body {
-    max-width: 1080px;
+    max-width: 935px;
+	padding: 0 15px;
+    margin: 0 auto;
 }
 
 main {
@@ -395,69 +401,16 @@ main {
 }
 
 @media only screen and (min-width: 650px) {
-    body {
-        padding: 0 25px 0 10px;
-        margin: 0 auto;
-    }
-    @media only screen and (min-width: 1160px) {
-        body {
-            padding: 0 75px 0 5px;
-        }
-    }
     main {
         min-height: 100vh;
         display: flex;
         flex-flow: column;
     }
-    /*  Breakpoint for sidenotes.
-        */
-    @media only screen and (min-width: 1761px) {
-        main {
-            position: relative;
-            right: 40px;
-        }
-    }
     article {
         flex: 1 1 auto;
     }
-    #sidebar {
-        position: absolute;
-    }
-    header,
-    article {
-        margin-left: 155px;
-    }
-    @media only screen and (max-width: 1200px) {
-        header,
-        article {
-            margin-left: 145px;
-        }
-    }
-    @media only screen and (max-width: 1120px) {
-        header,
-        article {
-            margin-left: 140px;
-        }
-    }
-    @media only screen and (max-width: 1040px) {
-        header,
-        article {
-            margin-left: 135px;
-        }
-    }
-    @media only screen and (max-width: 960px) {
-        header,
-        article {
-            margin-left: 130px;
-        }
-    }
 }
 
-@media only screen and (max-width: 649px) {
-    body {
-        margin: 0 15px;
-    }
-}
 
 /*****************/
 /* ACCESSIBILITY */
@@ -490,88 +443,74 @@ main {
         top 0.1s ease-in;
 }
 
+
 /***********/
 /* SIDEBAR */
 /***********/
 
 #sidebar {
 	font-variant: small-caps;
+	justify-content: center;
+}
+@media all and (min-width: 650px) {
+	#sidebar {
+		margin: 0.5em -1px 0 -1px;
+	}
+}
+@media all and (max-width: 649px) {
+	#sidebar {
+		margin: 0.75em 0 0.5em 0;
+	}
 }
 
+#sidebar,
+#sidebar-links {
+	display: flex;
+}
 #sidebar a {
     display: block;
+	border: 1px dotted var(--GW-sidebar-mobile-link-border-color);
+	padding: 0.25em 0.5em;
+	text-align: center;
+	margin: 1px 0 1px 1px;
 }
 
-@media only screen and (min-width: 650px) {
-	#sidebar {
-        padding: 0 40px 0 10px;
-        width: 100px;
-    }
-    #sidebar a#logo {
-        margin: 1em 0 2.25em 0;
-        width: fit-content;
-    }
-    #sidebar a#logo svg {
-        display: block;
-        width: 64px;
-    }
-    #sidebar a.me::after,
-    #sidebar a.annotations-newest::after {
-        content: "";
-        display: block;
-        margin: 0.55em 0 0.45em 0;
-        border-top: 1px dotted var(--GW-sidebar-horizontal-rule-color);
-    }
-    #sidebar a.patreon {
-        font-size: 0.9em;
-    }
+#sidebar a#logo {
+	margin: 1px 1px 1px 0;
+	display: flex;
 }
-
-@media only screen and (max-width: 649px) {
-    #sidebar {
-        justify-content: center;
-        margin: 0.75em 0 0.5em 0;
-    }
-    #sidebar a {
-        border: 1px dotted var(--GW-sidebar-mobile-link-border-color);
-        padding: 0.25em 0.5em;
-        text-align: center;
-        margin: 1px;
-    }
-    #sidebar,
-    #sidebar-links {
-        display: flex;
-    }
-    #sidebar-links {
-        flex-flow: row wrap;
-        flex: 1 1 100%;
-        margin: 0;
-    }
-    #sidebar a#logo {
-        margin: 1px 1px 1px 0;
-        padding: 0.5em 0.375em;
-        display: flex;
-    }
-    #sidebar a#logo svg {
-        display: block;
-        width: 2.5rem;
-    }
-    #sidebar a:not(#logo) {
-        flex: 1 1 auto;
-    }
-    #sidebar a.new,
-    #sidebar a.mail, 
-    #sidebar a.annotations-newest {
-		max-width: 30%;
+@media all and (min-width: 650px) {
+	#sidebar a#logo {
+		padding: 0.25em 0.375em;
 	}
-    #sidebar a.site,
-    #sidebar a.me { 
-    	min-width: 33%;
-    }
-    #sidebar a.patreon {
-        display: none;
-    }
+	#sidebar a#logo svg {
+		width: 1rem;
+	}
 }
+@media all and (max-width: 649px) {
+	#sidebar a#logo {
+		padding: 0.5em 0.375em;
+	}
+	#sidebar a#logo svg {
+		width: 2.5rem;
+	}
+}
+
+#sidebar-links {
+	flex-flow: row wrap;
+	flex: 1 1 100%;
+	margin: 0;
+}
+#sidebar #sidebar-links a {
+	flex: 1 1 auto;
+}
+
+@media all and (max-width: 649px) {
+	#sidebar a.patreon {
+		display: none;
+	}
+}
+
 
 /***************/
 /* PAGE HEADER */
