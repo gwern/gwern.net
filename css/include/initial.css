@@ -186,11 +186,12 @@ main {
 #sidebar-links a {
 	flex: 1 1 auto;
 	padding: 0.25em 0.75em;
-	text-transform: uppercase;
-	font-weight: 600;
 }
 
 @media all and (max-width: 649px) {
+	#sidebar-links a {
+		font-variant: small-caps;
+	}
 	#sidebar-links a:nth-child(1),
 	#sidebar-links a:nth-child(2),
 	#sidebar-links a:nth-child(3) {
@@ -198,6 +199,12 @@ main {
 	}
 	#sidebar-links a.patreon {
 		display: none;
+	}
+}
+@media all and (min-width: 650px) {
+	#sidebar-links a {
+		text-transform: uppercase;
+		font-weight: 600;
 	}
 }
 
