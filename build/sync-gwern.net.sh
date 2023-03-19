@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-03-15 10:35:41 gwern"
+# When:  Time-stamp: "2023-03-19 18:17:40 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -76,7 +76,7 @@ else
           s ',”' '”,'; s ",’" "’,";
 
           ## spelling errors:
-          s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook'; s 'Tartarian' 'Tatarian'; s 'tartarian' 'tatarian';
+          s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook'; s 'Tartarian' 'Tatarian'; s 'tartarian' 'tatarian'; s ' an One' ' a One'; s ' an one' ' a one'
 
           ## citation consistency:
           s ']^[' '] ^['; s 'et al. (' 'et al ('; s ' et al. 1'  ' et al 1'; s ' et al. 2'  ' et al 2'; s ' et al., ' ' et al '; s 'et al., ' 'et al '; sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' metadata/*.yaml  `find . -name "*.page" -or -name "*.yaml"`; sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g'  `find . -name "*.page" -or -name "*.yaml"`;
@@ -85,7 +85,7 @@ else
           s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber';
 
           ## HTML/Markdown formatting:
-          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s '530px.jpg-530px.jpg' '530px.jpg'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' '';
+          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s '530px.jpg-530px.jpg' '530px.jpg'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' ''; s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
         ) &> /dev/null &
     sed -i -e 's/ data-link-?[Tt]ags="[a-z0-9 \/-]\+">/>/' ./metadata/*.yaml;
@@ -143,8 +143,11 @@ else
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
     if [ "$SLOW" ]; then
         bold "Updating annotation/quote-of-the-day…" #  NOTE: we do this at the end, instead of inside hakyll.hs, to avoid spurious uses when a compile fails
-        ghci -i/home/gwern/wiki/static/build/ ./static/build/QuoteOfTheDay.hs -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; qotd; lotd; sitePrioritize; }'
-        λ(){ ghci -i/home/gwern/wiki/static/build/ ./static/build/QuoteOfTheDay.hs -e 'sitePrioritize'; }
+        ghci -i/home/gwern/wiki/static/build/ ./static/build/QuoteOfTheDay.hs \
+             -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; qotd; lotd; }' | \
+            grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]';
+        λ(){ ghci -i/home/gwern/wiki/static/build/ ./static/build/QuoteOfTheDay.hs -e 'sitePrioritize' | \
+              grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' || true; }
         wrap λ "Site-of-the-day: check for recommendation?"
     fi
 
@@ -167,11 +170,11 @@ else
     ## possible alternative implementation in hakyll: https://www.rohanjain.in/hakyll-sitemap/
     (echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
      ## very static files which rarely change: PDFs, images, site infrastructure:
-     find -L _site/doc/ _site/image/ _site/static/ -not -name "*.page" -type f | grep -F --invert-match -e 'doc/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/template/default.html' -e '-530px.jpg' -e '-768px.png' | grep -E --invert-match -e '/doc/.*/index' -e 'static/.*\..*\.html$' -e 'doc/.*\..*\.html$' | \
+     find -L _site/doc/ _site/image/ _site/static/ -not -name "*.page" -type f | grep -F --invert-match -e 'doc/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/template/default.html' -e '-530px.jpg' -e '-768px.png' -e 'lorem' | grep -E --invert-match -e '/doc/.*/index' -e 'static/.*\..*\.html$' -e 'doc/.*\..*\.html$' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>never<\/changefreq><\/url>/'
      ## Everything else changes once in a while:
-     find -L _site/ -not -name "*.page" -type f | grep -F --invert-match -e 'static/' -e 'doc/' -e 'image/' -e 'Fulltext' -e 'metadata/' -e '-768px.'  -e '.page.html'| \
+     find -L _site/ -not -name "*.page" -type f | grep -F --invert-match -e 'static/' -e 'doc/' -e 'image/' -e 'fulltext' -e 'lorem' -e 'metadata/' -e '-768px.'  -e '.page.html'| \
          grep -E --invert-match -e '/.*/index' -e '.page$' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/'
@@ -441,7 +444,7 @@ else
     λ(){ ge -e '<div class="admonition .*">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' -e 'class="epigraph>' $PAGES; }
     wrap λ "Broken admonition paragraph or epigraph in Markdown."
 
-    λ(){ ge -e ' a [aeio]' $PAGES | grep -E ' a [aeio]' | grep -F --invert-match -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/'; }
+    λ(){ ge -e ' a [aeio]' $PAGES | ge -e ' a [aeio]' | grep -F --invert-match -e ' a one' -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/'; }
     wrap λ "Grammar: 'a' → 'an'?"
 
     λ(){ find -L . -type f -size 0  -printf 'Empty file: %p %s\n' | grep -F --invert-match '.git/FETCH_HEAD' -e './.git/modules/static/logs/refs/remotes/'; }
@@ -494,7 +497,7 @@ else
     λ(){ grep -E --color=always -e '^- - /docs/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]\+ [A-Z]' \
             -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
             -e '[⁰ⁱ⁴⁵⁶⁷⁸⁹⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]' -e '<p>Table [0-9]' -e '<p>Figure [0-9]' \
-            -e 'id="[0-9]' -e '</[a-z][a-z]\+\?' -e 'via.*ihub' -e " '$" -e "’’" -e ' a [aeio]' -e '</[0-9]\+' \
+            -e 'id="[0-9]' -e '</[a-z][a-z]\+\?' -e 'via.*ihub' -e " '$" -e "’’" -e ' a [aei]' -e '</[0-9]\+' \
             -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' -e '#googl$' -e "#googl$'" -e 'gwtag' -e ' <p><strong>[A-Z][A-Z][A-Z]\+</strong>' \
             -e '&org=.*&org=' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database (regexp matches)."
@@ -639,7 +642,7 @@ else
     bold "Expiring ≤100 updated files…"
     # expire CloudFlare cache to avoid hassle of manual expiration: (if more than 100, we've probably done some sort of major systemic change & better to flush whole cache or otherwise investigate manually)
     # NOTE: 'bot-fighting' CloudFlare settings must be largely disabled, otherwise CF will simply CAPTCHA or block outright the various curl/linkchecker tests as 'bots'.
-    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | grep -F --invert-match -e '/doc/www' -e '/static/build/' -e '/static/template/' -e '/static/include/' -e '/metadata/annotation/backlink/' -e '/metadata/annotation/similar/' | xargs ls -t 2>/dev/null | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' | head -50) https://gwern.net/sitemap.xml https://gwern.net/lorem https://gwern.net/ https://gwern.net/index https://gwern.net/metadata/today-quote.html https://gwern.net/metadata/today-annotation.html"
+    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | grep -F --invert-match -e '/doc/www' -e '/static/build/' -e '/static/template/' -e '/static/include/' -e '/metadata/annotation/backlink/' -e '/metadata/annotation/similar/' | xargs ls -t 2>/dev/null | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' | head -50) https://gwern.net/sitemap.xml https://gwern.net/lorem https://gwern.net/ https://gwern.net/index https://gwern.net/metadata/today-quote.html https://gwern.net/metadata/today-annotation.html https://gwern.net/metadata/today-link.html"
     for URL in $EXPIRE; do
         echo -n "Expiring: $URL "
         ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
@@ -669,7 +672,7 @@ else
     (sleep 30s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE";
      sleep 10s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
      sleep 10s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on"; )
-    sleep 60s; chromium --temp-profile "https://gwern.net/index#footer" # check the x-of-the-day in a different & cache-free browser instance
+    sleep 60s; chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null & # check the x-of-the-day in a different & cache-free browser instance
 
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
     if ((RANDOM % 100 > 99)); then $X_BROWSER "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"; fi
@@ -934,7 +937,7 @@ else
     wrap λ "Too-wide images (downscale)"
 
     ## Look for domains that may benefit from link icons or link live status now:
-    λ() { ghci -istatic/build/ ./static/build/LinkIcon.hs  -e 'linkIconPrioritize' | grep -F --invert-match -e ' secs,' -e 'it :: [(Int, Text)]' -e '[]'; }
+    λ() { ghci -istatic/build/ ./static/build/LinkIcon.hs  -e 'linkIconPrioritize' | grep -F --invert-match -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
     wrap λ "Need link icons?"
     λ() { ghci -istatic/build/ ./static/build/LinkLive.hs  -e 'linkLivePrioritize' | grep -F --invert-match -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
     wrap λ "Need link live whitelist/blacklisting?"
