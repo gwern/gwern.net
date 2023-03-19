@@ -51,7 +51,6 @@
     --GW-link-underline-gradient-line-color: var(--GW-link-underline-gradient-line-color-hover);
 }
 .TOC .has-content,
-#sidebar .has-content,
 body.index #markdownBody .has-content {
     margin: 0;
     padding-left: 0;
