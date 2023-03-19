@@ -228,6 +228,9 @@ section.collapse {
     padding-left: 1em;
     margin: 2.5em 0 2.25em -1em;
 }
+section.collapse:not(.expanded) {
+    overflow: hidden;
+}
 section.collapse > *:first-child {
     margin-top: 0;
     position: relative;
@@ -451,6 +454,10 @@ li > :not(section).collapse {
 li > :not(section).collapse.expanded,
 li > :not(section).collapse:not(.expanded) {
     padding-left: var(--GW-list-left-padding);
+}
+
+.collapse [class^='horizontal-rule'] {
+    clear: none;
 }
 
 
@@ -1157,13 +1164,8 @@ img::before {
  */
 
 blockquote {
-    /* Avoid problems with floating */
-    clear: both;
-}
-
-#markdownBody blockquote {
-    clear: none;
     overflow: visible;
+    display: flow-root;
 }
 
 blockquote blockquote {
