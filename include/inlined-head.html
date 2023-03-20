@@ -4,7 +4,7 @@
      */
     --GW-body-background-color: #fff;
     --GW-body-text-color: #000;
-    --GW-body-link-color: #272727;
+    --GW-body-link-color: #333;
     --GW-body-link-hover-color: #888;
 
     /*  Selection.
@@ -318,6 +318,11 @@
 	--GW-skip-to-content-text-color: #fff;
 	--GW-skip-to-content-border-color: #fff;
 	--GW-skip-to-content-background-color: #bf1722;
+
+	/*	Nav header.
+	 */
+	--GW-nav-header-link-color: #999;
+	--GW-nav-header-link-hover-color: #000;
 }
 </style>
 <style id="inlined-styles">
@@ -449,7 +454,7 @@ main {
 }
 @media all and (min-width: 650px) {
 	#sidebar {
-		margin: 0.5em 0 0 0;
+		margin: 0.5em 0 0.25em 0;
 	}
 }
 @media all and (max-width: 649px) {
@@ -478,6 +483,12 @@ main {
 	}
 }
 @media all and (min-width: 650px) {
+	#sidebar a {
+		color: var(--GW-nav-header-link-color);
+	}
+	#sidebar a:hover {
+		color: var(--GW-nav-header-link-hover-color);
+	}
 	@media all and (max-width: 1179px) {
 		#sidebar a#logo {
 			padding: 0.25em 0.375em;
@@ -500,7 +511,7 @@ main {
 			color: currentColor;
 		}
 		#sidebar a#logo svg {
-			width: 3.75em;
+			width: 4em;
 		}
 	}
 }
@@ -1779,7 +1790,7 @@ body.special-halloween-dark h6 {
      */
     --GW-body-background-color: #000;
     --GW-body-text-color: #fff;
-    --GW-body-link-color: #e5e5e5;
+    --GW-body-link-color: #dcdcdc;
     --GW-body-link-hover-color: #999;
 
     /*  Selection.
@@ -2093,6 +2104,11 @@ body.special-halloween-dark h6 {
 	--GW-skip-to-content-text-color: #000;
 	--GW-skip-to-content-border-color: #000;
 	--GW-skip-to-content-background-color: #ff8272;
+
+	/*	Nav header.
+	 */
+	--GW-nav-header-link-color: #8b8b8b;
+	--GW-nav-header-link-hover-color: #fff;
 }
 :root {
     /*  Adjust background color to prevent pixels from turning off (contrary to popular belief, pixels turning off saves trivial energy, like <1% in measurements, and causes nasty scrolling/update jank due to delay in pixels turning back on), and improve contrast with the white.

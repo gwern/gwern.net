@@ -3,7 +3,7 @@
      */
     --GW-body-background-color: #000;
     --GW-body-text-color: #fff;
-    --GW-body-link-color: #e5e5e5;
+    --GW-body-link-color: #dcdcdc;
     --GW-body-link-hover-color: #999;
 
     /*  Selection.
@@ -317,4 +317,9 @@
 	--GW-skip-to-content-text-color: #000;
 	--GW-skip-to-content-border-color: #000;
 	--GW-skip-to-content-background-color: #ff8272;
+
+	/*	Nav header.
+	 */
+	--GW-nav-header-link-color: #8b8b8b;
+	--GW-nav-header-link-hover-color: #fff;
 }
