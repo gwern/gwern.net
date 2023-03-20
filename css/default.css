@@ -882,9 +882,7 @@ table, code, pre, a, h1, h2, h3, h4, h5, h6 {
 /* LINKS */
 /*********/
 
-a:hover,
-#footer a:hover,
-#sidebar a:hover {
+a:hover {
     color: var(--GW-body-link-hover-color);
 }
 

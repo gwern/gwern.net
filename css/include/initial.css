@@ -126,7 +126,7 @@ main {
 }
 @media all and (min-width: 650px) {
 	#sidebar {
-		margin: 0.5em 0 0 0;
+		margin: 0.5em 0 0.25em 0;
 	}
 }
 @media all and (max-width: 649px) {
@@ -155,6 +155,12 @@ main {
 	}
 }
 @media all and (min-width: 650px) {
+	#sidebar a {
+		color: var(--GW-nav-header-link-color);
+	}
+	#sidebar a:hover {
+		color: var(--GW-nav-header-link-hover-color);
+	}
 	@media all and (max-width: 1179px) {
 		#sidebar a#logo {
 			padding: 0.25em 0.375em;
@@ -177,7 +183,7 @@ main {
 			color: currentColor;
 		}
 		#sidebar a#logo svg {
-			width: 3.75em;
+			width: 4em;
 		}
 	}
 }
