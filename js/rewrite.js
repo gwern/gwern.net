@@ -1390,7 +1390,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (eventIn
     }
 }, "rewrite", (info) => (   info.container == document.body
                          && info.loadLocation
-                         && /^\/docs\/.+\/index$/.test(info.loadLocation.pathname)));
+                         && /\/(index)?$/.test(info.loadLocation.pathname)));
 
 /**************************************************************************/
 /*  If the table of contents has but one entry (or none at all), remove it.
