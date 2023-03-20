@@ -36,11 +36,6 @@
     --GW-abstract-border-color: #bbb;
     --GW-abstract-background-color: var(--GW-blockquote-background-color-level-one);
 
-    /*  Sidebar.
-     */
-    --GW-sidebar-horizontal-rule-color: #aaa;
-    --GW-sidebar-link-border-color: #000;
-
     /*  Table of contents.
      */
     --GW-TOC-border-color: #ccc;
