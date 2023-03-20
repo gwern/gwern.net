@@ -374,6 +374,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          -- math regexes
          , ("<span class=\"math inline\">\\\\\\(([a-zA-Z])\\\\\\)</span>", "<em>\\1</em>") -- '<span class="math inline">\(d\)</span>', 'the state matrix <span class="math inline">\(A\)</span>'
          , ("<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\\\)</span>", "\\1") -- '<span class="math inline">\(30\)</span>'
+         , ("<span class=\"math inline\">\\\\\\(\\(\\\\leq ([0-9.]+)\\)\\\\\\)</span>", "(≤\\1)") -- "<span class=\"math inline\">\\((\\leq 500)\\)</span>" -> '(≤500)'
          , ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^([.0-9]+)\\$",             "\\1 × \\2^\\3^")
          , ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^\\{([.0-9]+)\\}\\$",       "\\1 × \\2^\\3^")
          , ("<span class=\"math inline\">\\\\\\(([0-9.]+) ?\\\\times\\\\\\)</span>", "\\1×") -- '<span class="math inline">\(1.5\times\)</span>'

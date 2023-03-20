@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-03-15 20:30:24 gwern"
+When:  Time-stamp: "2023-03-16 10:43:39 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -678,7 +678,6 @@ goodDomainsSimple =
     , "www.gizmodo.com.au"
     , "www.globalsecurity.org"
     , "www.gnxp.com"
-    , "www.google-melange.com"
     , "www.gq.com"
     , "www.grandforksherald.com"
     , "www.greaterwrong.com"
@@ -4496,7 +4495,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.scientificamerican.com/article/the-mind-of-an-octopus/"
             , "https://www.scmp.com/news/china/science/article/3002346/chinas-first-cloned-police-dog-reports-duty"
             , "https://www.scotthyoung.com/blog/"
-            , "https://www.scq.ubc.ca/files/63401nature.pdf"
+            , "/doc/genetics/editing/1999-tang.pdf"
             , "https://www.screendaily.com/awards/hideaki-anno-evangelion/5081255.article?blocktitle=INTERVIEWS&contentID=41866"
             , "https://www.sdfertility.com/fertility-treatments/genetic-testing/pgd"
             , "https://www.seacoastonline.com/story/news/local/hampton-union/2014/05/07/hampton-man-to-plead-guilty/37408765007/"

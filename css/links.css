@@ -790,11 +790,11 @@ a[data-link-icon='plos']::after {
 }
 
 a[data-link-icon='reddit']::after {
-    --link-icon-size: 0.75em;
+    --link-icon-size: 0.80em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
 
-    opacity: 0.60;
+    opacity: 0.65;
 }
 
 a[data-link-icon='springerlink']::after {
@@ -878,11 +878,11 @@ a[data-link-icon='video']:hover::after {
 }
 
 a[data-link-icon='washingtonpost']::after {
-    --link-icon-size: 0.8em;
+    --link-icon-size: 0.85em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.25em;
 
-    opacity: 0.75;
+    opacity: 0.85;
 }
 a[data-link-icon='washingtonpost']:hover::after {
     opacity: 0.55;

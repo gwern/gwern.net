@@ -113,7 +113,7 @@ dollarAdjuster l@(Link _ text (oldYears, _)) =
           adjustedDollarString = formatDecimal adjustedDollar precision
           multiplyByUnits :: String -> String
           multiplyByUnits "" = error $ "Inflation.hs (dollarAdjuster): an empty amount was processed from 'text' variable. Original input: " ++ show l
-          multiplyByUnits amount = let (unit, rest) = (last amount, read (init amount) :: Float) in -- eg '100m' → ('m',"100")
+          multiplyByUnits amount = let (unit, rest) = (last amount, read (init amount) :: Float) in -- eg. '100m' → ('m',"100")
                                      if unit `elem` ("0123456789"::String) then amount else show $ case unit of
                                                                                         'k' -> rest*1000
                                                                                         'm' -> rest*1000000

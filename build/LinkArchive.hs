@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-03-14 22:39:53 gwern"
+When:  Time-stamp: "2023-03-19 10:03:38 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1314,5 +1314,6 @@ whiteList url
       , "https://wilson1yan.github.io/teco/" -- low quality (video embeds)
       , "https://www.matthewtancik.com/nerf" -- low quality (video embeds)
       , "https://old.reddit.com/r/thisisthewayitwillbe/" -- private
+      , "https://valle-demo.github.io/" -- low quality (audio embeds)
       ] = True
     | otherwise = False
