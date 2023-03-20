@@ -141,6 +141,14 @@ main {
 	text-align: center;
 	margin: 1px 0 1px 2px;
 }
+@media all and (min-width: 650px) {
+	#sidebar a {
+		color: var(--GW-nav-header-link-color);
+	}
+	#sidebar a:hover {
+		color: var(--GW-nav-header-link-hover-color);
+	}
+}
 
 #sidebar a#logo {
 	display: flex;
@@ -155,12 +163,6 @@ main {
 	}
 }
 @media all and (min-width: 650px) {
-	#sidebar a {
-		color: var(--GW-nav-header-link-color);
-	}
-	#sidebar a:hover {
-		color: var(--GW-nav-header-link-hover-color);
-	}
 	@media all and (max-width: 1179px) {
 		#sidebar a#logo {
 			padding: 0.25em 0.375em;
@@ -176,11 +178,10 @@ main {
 			margin: 0 0.75em 0 0;
 			padding: 0.125em;
 			border: none;
-			opacity: 0.35;
+			opacity: 0.5;
 		}
 		#sidebar a#logo:hover {
 			opacity: 1.0;
-			color: currentColor;
 		}
 		#sidebar a#logo svg {
 			width: 4em;
@@ -216,6 +217,11 @@ main {
 	#sidebar-links a {
 		text-transform: uppercase;
 		font-weight: 600;
+	}
+}
+@media all and (min-width: 1180px) {
+	#sidebar-links a:first-child {
+		margin-left: 0;
 	}
 }
 
@@ -415,6 +421,15 @@ body.index header {
 /*  No index self-link. */
 body.index #sidebar a#logo {
     pointer-events: none;
+}
+/*	Special nav link styling on /index. */
+@media all and (min-width: 650px) {
+	body.index #sidebar a {
+		color: var(--GW-nav-header-link-hover-color);
+	}
+	body.index #sidebar a:hover {
+		color: var(--GW-nav-header-link-color);
+	}
 }
 @media all and (min-width: 1180px) {
 	body.index #sidebar a#logo {
