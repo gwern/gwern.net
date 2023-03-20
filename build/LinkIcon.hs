@@ -396,7 +396,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "soundcloud.com" = aI "audio" "svg"
  | u' ".bandcamp.com" = aI "audio" "svg"
  | u'' "www.washingtonpost.com" = aI "washingtonpost" "svg" -- The Washington Post: truncated their blackletter to ‘WP’.
- | aU' ["wikipedia.org", "wikimedia.org", "wiktionary.org", "wikisource.org", "wikimediafoundation.org", "stats.grok.se", "wikibooks.org", "wikiquote.org", "xtools.wmflabs.org"] = aI "wikipedia" "svg" -- primary user: en.wikipedia.org, meta.wikimedia.org, en.wiktionary.org, en.wikisource.org
+ | aU' ["wikipedia.org", "wikimedia.org", "wiktionary.org", "wikisource.org", "wikimediafoundation.org", "stats.grok.se", "wikibooks.org", "wikiquote.org", "xtools.wmflabs.org", "www.mediawiki.org"] = aI "wikipedia" "svg" -- primary user: en.wikipedia.org, meta.wikimedia.org, en.wiktionary.org, en.wikisource.org
  | u' ".fandom.com" = aI "♡" "text" -- formerly known as Wikia, renamed to 'Fandom' and adopted a heart-based logo: <https://en.wikipedia.org/wiki/Fandom_(website)#2016%E2%80%932018:_Fandom_brand>; this is an umbrella covering all the subdomains; more specific Fandom wikis go before in the list (like MLP)
  | u' "www.wired.com" || u' "www.wired.co.uk" = aI "wired" "svg" -- an inverse "W" on a black background (Wiley is just a "W")
  | u'' "www.youtube.com" || u'' "www.youtu.be" = aI "youtube" "svg"
@@ -609,7 +609,7 @@ linkIconTestUnitsText =
          , ("https://www.erowid.org/",  "erowid","svg")
          , ("https://www.drugsdata.org/results.php?start=0&search_field=all&s=modafinil", "erowid","svg")
          , ("https://everything2.com/title/2015+%253A+The+Last+Year+of+Ryoji+Kaji", "E2", "text")
-         , ("https://examine.com/supplements/Bacopa+monnieri/", "Eχ", "text,sans")
+         , ("https://examine.com/supplements/bacopa-monnieri/", "Eχ", "text,sans")
          , ("/doc/ai/scaling/2020-bell.pdf#facebook",  "facebook","svg")
          , ("https://ai.facebook.com/blog/a-highly-efficient-real-time-text-to-speech-system-deployed-on-cpus/",  "facebook","svg")
          , ("https://engineering.fb.com/2014/11/14/production-engineering/solving-the-mystery-of-link-imbalance-a-metastable-failure-state-at-scale/",  "facebook","svg")
@@ -783,7 +783,8 @@ linkIconTestUnitsText =
          , ("http://stats.grok.se/en/201109/Accountancy", "wikipedia","svg")
          , ("https://en.wikibooks.org/wiki/Category:Book:Accountancy", "wikipedia","svg")
          , ("https://en.wikiquote.org/wiki/Talk:Edsger_W._Dijkstra#Telescope", "wikipedia","svg")
-         , ("https://xtools.wmflabs.org/pages/index.php?name=Gwern&lang=en&wiki=wikipedia&namespace=0&redirects=noredirects",  "wikipedia","svg")
+         , ("https://xtools.wmflabs.org/pages/index.php?name=Gwern&lang=en&wiki=wikipedia&namespace=0&redirects=noredirects", "wikipedia","svg")
+         , ("https://www.mediawiki.org/wiki/Multilingual_MediaWiki", "wikipedia","svg")
          , ("https://samuraijack.fandom.com/wiki/Episode_XL:_Jack_vs._the_Ninja", "♡","text")
          , ("https://onlinelibrary.wiley.com/doi/full/10.1111/brv.12407",  "W","text,sans")
          , ("https://www.wired.com/2012/01/everything-about-learning/",  "wired","svg")
