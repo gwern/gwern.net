@@ -532,7 +532,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
     , [ "acrostic" , "acrostics" ]
     )
   , ( "https://en.wikipedia.org/wiki/Adderall" , [ "Adderall" ] )
-  , ( "https://en.wikipedia.org/wiki/Advanced_Micro_Devices"
+  , ( "https://en.wikipedia.org/wiki/AMD"
     , [ "AMD" ]
     )
   , ( "https://en.wikipedia.org/wiki/Agrippina_(opera)"
@@ -547,10 +547,10 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
   , ( "https://en.wikipedia.org/wiki/Amphetamine"
     , [ "amphetamine" ]
     )
-  , ( "https://en.wikipedia.org/wiki/Amphetamines"
+  , ( "https://en.wikipedia.org/wiki/Substituted_amphetamine"
     , [ "amphetamines" ]
     )
-  , ( "https://en.wikipedia.org/wiki/Anchoring"
+  , ( "https://en.wikipedia.org/wiki/Anchoring_(cognitive_bias)"
     , [ "Anchor"
       , "Anchored"
       , "Anchoring"
@@ -665,7 +665,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
     , [ "Epilepsy" , "epilepsy" ]
     )
   , ( "https://en.wikipedia.org/wiki/Escrow" , [ "escrow" ] )
-  , ( "https://en.wikipedia.org/wiki/Experience_curve"
+  , ( "https://en.wikipedia.org/wiki/Experience_curve_effects"
     , [ "experience curve" ]
     )
   , ( "https://en.wikipedia.org/wiki/Extraversion_and_introversion"
@@ -697,7 +697,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
   , ( "https://en.wikipedia.org/wiki/Global_Burden_of_Disease_Study"
     , [ "Global Burden of Disease" ]
     )
-  , ( "https://en.wikipedia.org/wiki/Gompertz_curve"
+  , ( "https://en.wikipedia.org/wiki/Gompertz_function"
     , [ "Gompertz curve" ]
     )
   , ( "https://en.wikipedia.org/wiki/Google_Alerts"
@@ -710,7 +710,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
     , [ "Hangul" , "hangul" ]
     )
   , ( "https://en.wikipedia.org/wiki/Hans_Eysenck" , [ "Eysenck" ] )
-  , ( "https://en.wikipedia.org/wiki/Haskell_(programming_language)"
+  , ( "https://en.wikipedia.org/wiki/Haskell"
     , [ "Haskell" ]
     )
   , ( "https://en.wikipedia.org/wiki/Hells_Angels_(manga)"
@@ -740,7 +740,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
   , ( "https://en.wikipedia.org/wiki/Isaac_Asimov"
     , [ "Isaac Asimov" ]
     )
-  , ( "https://en.wikipedia.org/wiki/J.B.S._Haldane"
+  , ( "https://en.wikipedia.org/wiki/J._B._S._Haldane"
     , [ "J.B.S. Haldane" ]
     )
   , ( "https://en.wikipedia.org/wiki/J.K._Rowling"
@@ -860,7 +860,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
   , ( "https://en.wikipedia.org/wiki/Of_Miracles"
     , [ "Of Miracles" ]
     )
-  , ( "https://en.wikipedia.org/wiki/Order_statistics"
+  , ( "https://en.wikipedia.org/wiki/Order_statistic"
     , [ "order statistics" ]
     )
   , ( "https://en.wikipedia.org/wiki/Paris_Review"
@@ -881,7 +881,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
     )
   , ( "https://en.wikipedia.org/wiki/Petard" , [ "petard" ] )
   , ( "https://en.wikipedia.org/wiki/Polyamory" , [ "polyamory" ] )
-  , ( "https://en.wikipedia.org/wiki/Polygenic_scores"
+  , ( "https://en.wikipedia.org/wiki/Polygenic_score"
     , [ "polygenic scores" ]
     )
   , ( "https://en.wikipedia.org/wiki/PostScript" , [ "PostScript" ] )
@@ -1187,7 +1187,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
     , ["z-score", "z-scores", "Z-score", "_z_-score", "_z_-scores", "_Z_-score", "<em>z</em>-score", "<em>z</em>-scores", "<em>Z</em>-score"]
     )
     , ("https://en.wikipedia.org/wiki/Silk_Road_(marketplace)#Silk_Road_2.0", ["Silk Road 2", "Silk Road 2.0"])
-    , ("https://en.wikipedia.org/wiki/Lysergic_acid_diethylamide", ["LSD-25", "LSD", "lysergic acid diethylamide"])
+    , ("https://en.wikipedia.org/wiki/LSD", ["LSD-25", "LSD", "lysergic acid diethylamide"])
     , ("https://en.wikipedia.org/wiki/Animal_welfare", ["animal welfare"])
     , ("https://en.wikipedia.org/wiki/Dungeons_%26_Dragons", ["D&D"])
     , ("https://en.wikipedia.org/wiki/The_Guardian", ["_The Guardian_", "The Guardian"])

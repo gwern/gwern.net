@@ -777,7 +777,7 @@ linkIconTestUnitsText =
          , ("https://www.washingtonpost.com/graphics/2018/investigations/dog-auction-rescue-groups-donations/",  "washingtonpost","svg")
          , ("https://diff.wikimedia.org/2009/11/26/wikipedias-volunteer-story/",  "wikipedia","svg")
          , ("https://foundation.wikimedia.org/wiki/Privacy_policy",  "wikipedia","svg")
-         , ("https://en.wikipedia.org/wiki/File:Energy_density.svg",  "wikipedia","svg")
+         , ("https://commons.wikimedia.org/wiki/File:Energy_density.svg",  "wikipedia","svg")
          , ("https://en.wikisource.org/wiki/Essays_on_Political_Economy/That_Which_Is_Seen,_and_That_Which_Is_Not_Seen",  "wikipedia","svg")
          , ("https://en.wiktionary.org/wiki/bien_pensant",  "wikipedia","svg")
          , ("http://stats.grok.se/en/201109/Accountancy", "wikipedia","svg")
