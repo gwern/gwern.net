@@ -885,12 +885,11 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyTypography = (info) => {
     rectifyLineHeights(info);
 }, "rewrite");
 
-/****************************************/
-/*  Remove soft hyphens from copied text.
+/************************************************************************/
+/*  Remove soft hyphens and other extraneous characters from copied text.
  */
 addCopyProcessor((event, selection) => {
-    //  Passing `true` for the third argument also removes zero-width spaces.
-    Typography.processElement(selection, Typography.replacementTypes.SOFTHYPHENS, true);
+    Typography.processElement(selection, Typography.replacementTypes.CLEAN);
 
     return true;
 });

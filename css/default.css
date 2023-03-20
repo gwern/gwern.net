@@ -40,10 +40,10 @@
 }
 
 :root {
-	--GW-svg-chevron-left: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23CCC"/></svg>');
-	--GW-svg-chevron-left-hover: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23FFF"/></svg>');
-	--GW-svg-chevron-down: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="%23CCC"/></svg>');
-	--GW-svg-chevron-down-hover: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="%23FFF"/></svg>');
+    --GW-svg-chevron-left: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23CCC"/></svg>');
+    --GW-svg-chevron-left-hover: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23FFF"/></svg>');
+    --GW-svg-chevron-down: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="%23CCC"/></svg>');
+    --GW-svg-chevron-down-hover: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="%23FFF"/></svg>');
 }
 
 
@@ -655,11 +655,11 @@ section:target > :first-child a::after {
     margin-bottom: 0;
 }
 
-/*	TOC collapsing.
+/*  TOC collapsing.
  */
 
 #TOC.collapsed {
-	height: 2em;
+    height: 2em;
     box-sizing: border-box;
 }
 #TOC.collapsed + * {
@@ -681,9 +681,9 @@ section:target > :first-child a::after {
     opacity: 0.5;
 }
 @media only screen and (hover: hover) {
-	#TOC.collapsed:hover::before {
-		opacity: 1.0;
-	}
+    #TOC.collapsed:hover::before {
+        opacity: 1.0;
+    }
 }
 @media all and (max-width: 900px) {
     #TOC.collapsed::before {
@@ -700,7 +700,7 @@ section:target > :first-child a::after {
 }
 
 #TOC .toc-collapse-toggle-button {
-	appearance: none;
+    appearance: none;
     border: none;
     background-color: inherit;
     background-image: var(--GW-svg-chevron-down);
@@ -732,14 +732,14 @@ section:target > :first-child a::after {
     padding: 0.25em 0.375em 0.25em 0.375em;
 }
 @media only screen and (hover: hover) {
-	#TOC .toc-collapse-toggle-button:hover {
-		background-color: var(--GW-collapse-disclosure-button-hover-color);
-		background-image: var(--GW-svg-chevron-down-hover);
-		outline: 1px dotted currentColor;
-	}
-	#TOC.collapsed .toc-collapse-toggle-button:hover {
-		background-image: var(--GW-svg-chevron-left-hover);
-	}
+    #TOC .toc-collapse-toggle-button:hover {
+        background-color: var(--GW-collapse-disclosure-button-hover-color);
+        background-image: var(--GW-svg-chevron-down-hover);
+        outline: 1px dotted currentColor;
+    }
+    #TOC.collapsed .toc-collapse-toggle-button:hover {
+        background-image: var(--GW-svg-chevron-left-hover);
+    }
 }
 
 @media all and (max-width: 649px) {
@@ -759,7 +759,7 @@ section:target > :first-child a::after {
         box-sizing: border-box;
         opacity: 1.0;
     }
-    /*	Extended tap area.
+    /*  Extended tap area.
      */
     #TOC:not(.collapsed) .toc-collapse-toggle-button::after {
         content: "";
@@ -2385,7 +2385,7 @@ p {
 /*  LaTeX/TeX: Format the logotypes correctly (a higher up, e lower)
     (borrowed from https://latex.now.sh/ )
     */
-.latex span:nth-child(1) {
+.latex .logotype-latex-a {
     text-transform: uppercase;
     font-size: 0.76em;
     vertical-align: 0.25em;
@@ -2393,7 +2393,7 @@ p {
     margin-right: -0.08em;
     line-height: 1ex;
 }
-.latex span:nth-child(2) {
+.latex .logotype-latex-e {
     text-transform: uppercase;
     vertical-align: -0.5ex;
     margin-left: -0.160em;
@@ -5295,23 +5295,23 @@ ol.link-bibliography-list-compact > li::marker {
 /* X OF THE DAY */
 /****************/
 
-/*	Annotation of the day.
+/*  Annotation of the day.
  */
 #aotd {
-	margin-bottom: 2em;
+    margin-bottom: 2em;
 }
 
-/*	Link of the day.
+/*  Link of the day.
  */
 
 .link-of-the-day {
-	--box-size: 4em;
-	--box-padding-top: 1em;
-	--box-padding-bottom: 3em;
+    --box-size: 4em;
+    --box-padding-top: 1em;
+    --box-padding-bottom: 3em;
 
-	--box-total-size: calc(var(--box-size) + var(--box-padding-top) + var(--box-padding-bottom));
+    --box-total-size: calc(var(--box-size) + var(--box-padding-top) + var(--box-padding-bottom));
 
-	--box-horizontal-offset: calc(var(--box-padding-top) * 2.0);
+    --box-horizontal-offset: calc(var(--box-padding-top) * 2.0);
 
     padding-right: calc(var(--box-horizontal-offset) * 0.5);
 }
@@ -5321,42 +5321,42 @@ ol.link-bibliography-list-compact > li::marker {
 
     margin: 2.5em auto 3em auto;
     position: relative;
-	height: var(--box-size);
+    height: var(--box-size);
     width: -moz-fit-content;
     width: fit-content;
-	padding: 
-		var(--box-padding-top) 
-		calc(var(--box-size) + 2.0 * var(--box-padding-top)) 
-		var(--box-padding-bottom) 
-		calc(var(--box-size) + 2.0 * var(--box-padding-top) + var(--box-horizontal-offset));
-	background-image: url('/static/img/icon/swissspiralroll.svg#svgView(preserveAspectRatio(none))');
-	background-size: 1000% 100%;
-	background-position: center;
-	background-repeat: no-repeat;
-	background-color: var(--GW-body-background-color);
-	border: none;
+    padding:
+        var(--box-padding-top)
+        calc(var(--box-size) + 2.0 * var(--box-padding-top))
+        var(--box-padding-bottom)
+        calc(var(--box-size) + 2.0 * var(--box-padding-top) + var(--box-horizontal-offset));
+    background-image: url('/static/img/icon/swissspiralroll.svg#svgView(preserveAspectRatio(none))');
+    background-size: 1000% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: var(--GW-body-background-color);
+    border: none;
     display: flex;
     align-items: center;
 }
 
 .link-of-the-day blockquote::before,
 .link-of-the-day blockquote::after {
-	content: "";
-	position: absolute;
-	width: var(--box-total-size);
-	height: var(--box-total-size);
-	background-image: url('/static/img/icon/swissspiralroll.svg');
-	background-repeat: no-repeat;
-	background-color: inherit;
-	background-size: cover;
-	top: 0;
+    content: "";
+    position: absolute;
+    width: var(--box-total-size);
+    height: var(--box-total-size);
+    background-image: url('/static/img/icon/swissspiralroll.svg');
+    background-repeat: no-repeat;
+    background-color: inherit;
+    background-size: cover;
+    top: 0;
 }
 .link-of-the-day blockquote::before {
-	left: 0;
+    left: 0;
 }
 .link-of-the-day blockquote::after {
-	right: 0;
-	background-position: right;
+    right: 0;
+    background-position: right;
 }
 
 .link-of-the-day blockquote p {
@@ -5364,7 +5364,7 @@ ol.link-bibliography-list-compact > li::marker {
     z-index: 1;
 }
 #footer .link-of-the-day blockquote p {
-	margin: 0;
+    margin: 0;
     line-height: 1;
 }
 
@@ -5468,10 +5468,10 @@ ol.link-bibliography-list-compact > li::marker {
 }
 #back-to-top a {
     display: block;
-	width: 2.25em;
-	height: 2.25em;
-	padding: 0.25em 0.25em;
-	box-sizing: border-box;
+    width: 2.25em;
+    height: 2.25em;
+    padding: 0.25em 0.25em;
+    box-sizing: border-box;
     color: var(--GW-back-to-top-link-color);
     filter:
         drop-shadow(0 0 1px var(--GW-body-background-color))
@@ -5489,7 +5489,7 @@ ol.link-bibliography-list-compact > li::marker {
 
 @media only screen and (min-width: 650px) {
     #back-to-top a {
-		border: 3px double transparent;
+        border: 3px double transparent;
     }
     #back-to-top a:hover {
         border-color: currentColor;

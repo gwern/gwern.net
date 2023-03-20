@@ -137,7 +137,7 @@ main {
 
 #sidebar a {
     display: block;
-	border: 1px dotted var(--GW-sidebar-link-border-color);
+	border: 1px dotted currentColor;
 	text-align: center;
 	margin: 1px 0 1px 2px;
 }
@@ -170,6 +170,11 @@ main {
 			margin: 0 0.75em 0 0;
 			padding: 0.125em;
 			border: none;
+			opacity: 0.35;
+		}
+		#sidebar a#logo:hover {
+			opacity: 1.0;
+			color: currentColor;
 		}
 		#sidebar a#logo svg {
 			width: 3.75em;
@@ -404,6 +409,11 @@ body.index header {
 /*  No index self-link. */
 body.index #sidebar a#logo {
     pointer-events: none;
+}
+@media all and (min-width: 1180px) {
+	body.index #sidebar a#logo {
+		opacity: 1.0;
+	}
 }
 
 body.index #markdownBody section h1 {

@@ -25,7 +25,9 @@ Typography = {
 			[ Typography.replacementTypes.ARROWS,		Typography.replacementDefinitionGroups.arrows		],
 			[ Typography.replacementTypes.WORDBREAKS,	Typography.replacementDefinitionGroups.wordbreaks	],
 			[ Typography.replacementTypes.MISC,			Typography.replacementDefinitionGroups.misc			],
-			[ Typography.replacementTypes.SOFTHYPHENS,	Typography.replacementDefinitionGroups.softHyphens	]
+			[ Typography.replacementTypes.SOFTHYPHENS,	Typography.replacementDefinitionGroups.softHyphens	],
+			[ Typography.replacementTypes.JOINERS,		Typography.replacementDefinitionGroups.joiners		],
+			[ Typography.replacementTypes.SEPARATORS,	Typography.replacementDefinitionGroups.separators	]
 		];
 		for ([ replacementTypeCode, replacementGroup ] of replacementTypeDefinitions) {
 			if (types & replacementTypeCode)
@@ -35,6 +37,7 @@ Typography = {
 		return allReplacements;
 	},
 	replacementTypes: {
+		NONE:			0x0000,
 		QUOTES:			0x0001,
 		HYPHENS:		0x0002,
 		ELLIPSES:		0x0004,
@@ -42,7 +45,9 @@ Typography = {
 		WORDBREAKS:		0x0010,
 		MISC:			0x0020,
 		SOFTHYPHENS:	0x0040,
-		ALL: 			(0x0001 + 0x0002 + 0x0004 + 0x0008 + 0x0010 + 0x0020 + 0x0040)
+		JOINERS:		0x0080,
+		SEPARATORS:		0x0100,
+		CLEAN: 			(0x0040 + 0x0080 + 0x0100)
 	},
 	replacementDefinitionGroups: {
 		quotes: [
@@ -118,9 +123,17 @@ Typography = {
 		softHyphens: [
 			// Strip soft hyphens.
 			[ /\u00ad/g, retainLength => (retainLength ? '\u2063' : '') ]
+		],
+		joiners: [
+			// Strip joiners.
+			[ /\u2060/g, retainLength => (retainLength ? '\u2063' : '') ]
+		],
+		separators: [
+			// Strip zero-width spaces.
+			[ /\u200b/g, retainLength => (retainLength ? '\u2063' : '') ]
 		]
 	},
-	processString: (str, replacementTypes = Typography.replacementTypes.ALL, options = { }) => {
+	processString: (str, replacementTypes = Typography.replacementTypes.NONE, options = { }) => {
 		Typography.replacements(replacementTypes).forEach(replace => {
 			replacement = typeof replace[1] === "function"
 						  ? replace[1](options.retainLength)
@@ -164,7 +177,7 @@ Typography = {
 			}
 		}
 	},
-	processElement: (element, replacementTypes = Typography.replacementTypes.ALL, replaceZeroWidthSpaces = true) => {
+	processElement: (element, replacementTypes = Typography.replacementTypes.NONE, replaceZeroWidthSpaces = true) => {
 		if ([ 'CODE', 'PRE', 'SCRIPT', 'STYLE', 'NOSCRIPT' ].includes(element.nodeName))
 			return;
 
