@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-03-02 17:15:32 gwern"
+When: Time-stamp: "2023-03-21 12:19:42 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -70,7 +70,7 @@ import LinkIcon (rebuildSVGIconCSS)
 import LinkLive (linkLiveTest, linkLivePrioritize)
 import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, createAnnotations, hasAnnotation, simplifiedHTMLString)
 import LinkMetadataTypes (Metadata)
-import Tags (tagsToLinksDiv)
+import Tags (tagsToLinksDiv, testTags)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
 import Utils (printGreen, printRed, replace, safeHtmlWriterOptions)
 
@@ -81,6 +81,9 @@ main =
     hakyll $ do
                when slow $ do preprocess $ printGreen ("Testing link icon matches & updating inlined CSS…" :: String)
                               preprocess rebuildSVGIconCSS
+
+                              preprocess $ printGreen ("Testing tag rewrites…" :: String)
+                              preprocess testTags
 
                               preprocess $ printGreen ("Testing live-link-popup rules…" :: String)
                               let livelinks = linkLiveTest
