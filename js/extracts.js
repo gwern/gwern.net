@@ -37,11 +37,17 @@ Extracts = {
                     return false;
 
                 //  Do not allow pop-frames to spawn themselves.
-                //	TODO: verify!
                 let containingPopFrame = Extracts.popFrameProvider.containingPopFrame(target);
                 if (   containingPopFrame
                 	&& Extracts.targetsMatch(containingPopFrame.spawningTarget, target))
                     return false;
+
+				//	Don’t spawn duplicate popins.
+				if (Extracts.popFrameProvider == Popins) {
+					let popinStack = Popins.allSpawnedPopins();
+					if (popinStack.findIndex(popin => Extracts.targetsMatch(popin.spawningTarget, target)) !== -1)
+						return false;
+				}
 
                 //  Added specified classes to the target.
                 if (targetTypeInfo.targetClasses) {
@@ -79,22 +85,23 @@ Extracts = {
     /*  General.
      */
 
+	//	Called by: popups.js and popins.js when removing a target
+	//	(see Extracts.removeTargetsWithin)
+	restoreTarget: (target) => {
+		//  Restore title attribute, if any.
+		if (target.dataset.attributeTitle) {
+			target.title = target.dataset.attributeTitle;
+			target.removeAttribute("data-attribute-title");
+		}
+
+		target.classList.remove("has-content", "has-annotation", "has-annotation-partial");
+	},
+
     //  Called by: Extracts.cleanup
     removeTargetsWithin: (container) => {
         GWLog("Extracts.removeTargetsWithin", "extracts.js", 1);
 
-        //  Target restore function (same for popups and popins).
-        let restoreTarget = (target) => {
-            //  Restore title attribute, if any.
-            if (target.dataset.attributeTitle) {
-                target.title = target.dataset.attributeTitle;
-                target.removeAttribute("data-attribute-title");
-            }
-
-            target.classList.remove("has-content", "has-annotation", "has-annotation-partial");
-        };
-
-        Extracts.popFrameProvider.removeTargetsWithin(container, Extracts.targets, restoreTarget);
+        Extracts.popFrameProvider.removeTargetsWithin(container, Extracts.targets, Extracts.restoreTarget);
     },
 
     //  Called by: extracts-options.js
@@ -135,9 +142,9 @@ Extracts = {
         GWLog("Extracts.addTargetsWithin", "extracts.js", 1);
 
         if (Extracts.popFrameProvider == Popups) {
-            Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, Extracts.preparePopupTarget);
+            Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, Extracts.preparePopupTarget, Extracts.restoreTarget);
         } else if (Extracts.popFrameProvider == Popins) {
-            Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin, Extracts.preparePopinTarget);
+            Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin, Extracts.preparePopinTarget, Extracts.restoreTarget);
         }
 
 		Extracts.setUpAnnotationLoadEventsWithin(container);
@@ -743,6 +750,9 @@ Extracts = {
         let specialRewriteFunction = Extracts[`rewritePopinContent_${targetTypeName}`] || Extracts[`rewritePopFrameContent_${targetTypeName}`];
         if (specialRewriteFunction)
             specialRewriteFunction(popin);
+
+		//	Clean any existing popins.
+		Popins.removeAllPopinsInDocument(popin.document);
 
 		//	Register copy processors in popin.
 		registerCopyProcessorsForDocument(popin.document);

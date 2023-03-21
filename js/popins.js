@@ -34,7 +34,7 @@ Popins = {
 	},
 
 	//	Called by: extracts.js
-	addTargetsWithin: (contentContainer, targets, prepareFunction, targetPrepareFunction = null) => {
+	addTargetsWithin: (contentContainer, targets, prepareFunction, targetPrepareFunction, targetRestoreFunction) => {
 		if (typeof contentContainer == "string")
 			contentContainer = document.querySelector(contentContainer);
 
@@ -51,6 +51,7 @@ Popins = {
 
 			if (!targets.testTarget(target)) {
 				target.classList.toggle("no-popin", true);
+				targetRestoreFunction(target);
 				return;
 			}
 
@@ -59,6 +60,9 @@ Popins = {
 
 			//  Set prepare function.
 			target.preparePopin = prepareFunction;
+
+			//	Set target restore function.
+			target.restoreTarget = targetRestoreFunction;
 
 			//  Run any custom processing.
 			if (targetPrepareFunction)
@@ -103,6 +107,7 @@ Popins = {
 			target.classList.toggle("spawns-popin", false);
 
 			//  Run any custom processing.
+			targetRestoreFunction = targetRestoreFunction ?? target.restoreTarget;
 			if (targetRestoreFunction)
 				targetRestoreFunction(target);
 		});
@@ -149,13 +154,11 @@ Popins = {
 	//	Called by: Popins.containingDocumentForTarget
 	//	Called by: Popins.scrollElementIntoViewInPopFrame
 	containingPopFrame: (element) => {
-		let popin = element.closest(".popin");
-		if (!popin) {
-			let shadowBody = element.closest(".shadow-body");
-			if (shadowBody)
-				popin = shadowBody.popin;
-		}
-		return popin;
+		let shadowBody = element.closest(".shadow-body");
+		if (shadowBody)
+			return shadowBody.popin;
+
+		return element.closest(".popin");
 	},
 
 	//	Called by: many functions in many places
@@ -379,6 +382,23 @@ Popins = {
 		} else if (popinViewportRect.top < 0) {
 			window.scrollBy(0, (window.innerHeight * -0.1) + popinViewportRect.top);
 		}
+	},
+
+	//	Called by: extracts.js
+	removeAllPopinsInDocument: (doc = document) => {
+		GWLog("Popins.removeAllPopinsInDocument", "popins.js", 2);
+
+		doc.querySelectorAll(".popin").forEach(popin => {
+			popin.remove();
+			if (popin.spawningTarget)
+				Popins.detachPopinFromTarget(popin);
+		});
+
+		doc.querySelectorAll(".popin-open").forEach(spawningTarget => {
+			spawningTarget.popin = null;
+			spawningTarget.popFrame = null;
+			spawningTarget.classList.remove("popin-open", "highlighted");
+		});
 	},
 
 	//	Called by: Popins.cleanup
