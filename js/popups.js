@@ -68,7 +68,7 @@ Popups = {
 	},
 
 	//	Called by: extracts.js
-	addTargetsWithin: (contentContainer, targets, prepareFunction, targetPrepareFunction = null) => {
+	addTargetsWithin: (contentContainer, targets, prepareFunction, targetPrepareFunction, targetRestoreFunction) => {
 		GWLog("Popups.addTargetsWithin", "popups.js", 1);
 
 		if (typeof contentContainer == "string")
@@ -88,6 +88,7 @@ Popups = {
 			//  Apply the test function to the target.
 			if (!targets.testTarget(target)) {
 				target.classList.toggle("no-popup", true);
+				targetRestoreFunction(target);
 				return;
 			}
 
@@ -98,6 +99,9 @@ Popups = {
 
 			//  Set prepare function.
 			target.preparePopup = prepareFunction;
+
+			//	Set target restore function.
+			target.restoreTarget = targetRestoreFunction;
 
 			//  Run any custom processing.
 			if (targetPrepareFunction)
@@ -150,6 +154,7 @@ Popups = {
 			target.classList.toggle("spawns-popup", false);
 
 			//  Run any custom processing.
+			targetRestoreFunction = targetRestoreFunction ?? target.restoreTarget;
 			if (targetRestoreFunction)
 				targetRestoreFunction(target);
 		});
@@ -197,13 +202,11 @@ Popups = {
 	//	Called by: extracts.js
 	//	Called by: many functions, all in popups.js
 	containingPopFrame: (element) => {
-		let popup = element.closest(".popup");
-		if (!popup) {
-			let shadowBody = element.closest(".shadow-body");
-			if (shadowBody)
-				popup = shadowBody.popup;
-		}
-		return popup;
+		let shadowBody = element.closest(".shadow-body");
+		if (shadowBody)
+			return shadowBody.popup;
+
+		return element.closest(".popup");
 	},
 
 	//	Called by: many functions in many places
