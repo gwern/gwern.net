@@ -2413,11 +2413,11 @@ window.addEventListener("beforeprint", (event) => {
 
     function expand(container) {
         if (   container instanceof Element
-            && container.closest("#link-bibliography"))
+            && container.closest("#link-bibliography, .aux-links-container"))
             return;
 
         Transclude.triggerTranscludesInContainer(container);
-        expandLockCollapseBlocks({ container: container });
+        container.querySelectorAll(".collapse").forEach(expandLockCollapseBlock);
     }
 
     GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView = (info) => {
