@@ -162,10 +162,13 @@ function targetElementInDocument(link, doc) {
         if (   element
             && element.closest(exclusionSelector) == element)
             element = null;
-    } else {
-    	//	The “anchor” must actually be a data-backlink-target-url value.
-        element = Array.from(doc.querySelectorAll(`a[href*='${CSS.escape(anchor)}']`)).filter(backlink => {
-            return (   backlink.pathname == anchor
+    }
+    
+	if (   element == null
+		&& link instanceof HTMLAnchorElement
+		&& link.dataset.backlinkTargetUrl > "") {
+        element = Array.from(doc.querySelectorAll(`a[href*='${CSS.escape(link.dataset.backlinkTargetUrl)}']`)).filter(backlink => {
+            return (   backlink.pathname == link.dataset.backlinkTargetUrl
                     && backlink.closest(exclusionSelector) == null);
         }).first;
     }
