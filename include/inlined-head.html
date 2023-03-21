@@ -1690,51 +1690,6 @@ This allows the user to toggle dark-mode at runtime.
 */
 
 
-/****************/
-/* PRINT STYLES */
-/****************/
-
-@media print {
-    :root {
-        --GW-TOC-background-color: transparent;
-        --GW-abstract-background-color: transparent;
-        --GW-code-element-background-color: transparent;
-        --GW-math-block-background-color: transparent;
-    }
-
-    blockquote {
-        --GW-blockquote-background-color: transparent !important;
-    }
-
-    #skip-to-content-link,
-    #ui-elements-container,
-    #sidebar,
-    #page-metadata-block .similars,
-    #page-metadata-block .link-bibliography,
-    #page-importance::after,
-    #navigation,
-    .toc-collapse-toggle-button,
-    #footer,
-    #aotd {
-        display: none;
-    }
-
-    body {
-        margin: 0;
-    }
-    main {
-        margin: 1em;
-    }
-    h1, h2, h3, h4, h5, h6 {
-        margin-left: 0;
-    }
-    .markdownBody {
-        line-height: 1.6;
-        text-align: justify;
-    }
-}
-
-
 /*********************/
 /* SPECIAL OCCASIONS */
 /*********************/
