@@ -372,7 +372,7 @@ Extracts = {
 			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
 			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
 			tabOrWindow:  (GW.isMobile() ? "tab" : "window")
-		}).innerHTML;
+		});
     },
 
     /*  Returns the contents of the title element for a pop-frame.
@@ -394,6 +394,18 @@ Extracts = {
         else
             return Extracts.standardPopFrameTitleElementForTarget(target);
     },
+
+	//	Called by: Extracts.rewritePopinContent
+	//	Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
+	updatePopFrameTitle: (popFrame, title) => {
+        GWLog("Extracts.updatePopFrameTitle", "extracts.js", 2);
+
+		if (popFrame.titleBar) {
+			popFrame.titleBar.querySelector(".popframe-title").replaceChildren(Extracts.titleForPopFrame(popFrame));
+		} else if (popFrame.titleBarContents) {
+			popFrame.titleBarContents.find(x => x.classList.contains("popframe-title")).replaceChildren(Extracts.titleForPopFrame(popFrame));
+		}
+	},
 
     /*  This function’s purpose is to allow for the transclusion of entire pages
         on the same website (displayed to the user in popups, or injected in
@@ -691,7 +703,7 @@ Extracts = {
         let popinTitle = Extracts.titleForPopFrame(popin);
         if (popinTitle) {
             popin.titleBarContents = [
-                `<span class="popframe-title">${popinTitle}</span>`,
+            	newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popinTitle.innerHTML }),
                 Popins.titleBarComponents.closeButton()
             ];
 
@@ -724,8 +736,7 @@ Extracts = {
         let target = popin.spawningTarget;
 
         //  Update the title.
-        if (popin.titleBar)
-            popin.titleBar.querySelector(".popframe-title").innerHTML = Extracts.titleForPopFrame(popin);
+        Extracts.updatePopFrameTitle(popin, Extracts.titleForPopFrame(popin));
 
         //  Special handling for certain popin types.
         let targetTypeName = Extracts.targetTypeInfo(target).typeName;
@@ -815,7 +826,7 @@ Extracts = {
                 Popups.titleBarComponents.closeButton(),
                 Popups.titleBarComponents.zoomButton().enableSubmenu(),
                 Popups.titleBarComponents.pinButton(),
-                `<span class="popframe-title">${popupTitle}</span>`
+                newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popupTitle.innerHTML }),
             ];
 
             //  Add the options button.

@@ -145,7 +145,7 @@ Extracts = { ...Extracts,
 			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
 			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
 			tabOrWindow:  (GW.isMobile() ? "tab" : "window")
-		}).innerHTML;
+		});
     },
 
 	preparePopFrame_LOCAL_PAGE: (popFrame) => {
@@ -221,6 +221,9 @@ Extracts = { ...Extracts,
 		//	REAL REWRITES BEGIN HERE
 
         let target = popFrame.spawningTarget;
+
+		//	Update pop-frame title.
+		Extracts.updatePopFrameTitle(popFrame, Extracts.titleForPopFrame(popFrame));
 
 		//	Provider-specific rewrites.
 		if (Extracts.popFrameProvider == Popups)
@@ -450,13 +453,13 @@ Extracts = { ...Extracts,
         let auxLinksLinkType = AuxLinks.auxLinksLinkType(target);
         switch (auxLinksLinkType) {
             case "backlinks":
-                return `${targetPage} (Backlinks)`;
+                return newDocument(`${targetPage} (Backlinks)`);
             case "similars":
-                return `${targetPage} (Similar links)`;
+                return newDocument(`${targetPage} (Similar links)`);
             case "link-bibliography":
-                return `${targetPage} (Link bibliography)`;
+                return newDocument(`${targetPage} (Link bibliography)`);
             default:
-                return `${targetPage}`;
+                return newDocument(`${targetPage}`);
         }
     },
 };

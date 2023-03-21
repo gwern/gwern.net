@@ -68,7 +68,7 @@ Extracts = { ...Extracts,
 			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
 			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
 			tabOrWindow:  (GW.isMobile() ? "tab" : "window")
-		}).innerHTML;
+		});
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
