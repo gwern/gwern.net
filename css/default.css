@@ -5934,6 +5934,13 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     .markdownBody a.targeted {
         height: 1.5em;
     }
+    /*	Correct off-by-one-pixel error in backlinks block context.
+     */
+    .markdownBody blockquote a.targeted.has-content .indicator-hook::before {
+        background-position: 
+            0 0.15em,
+            0 calc(100% - 0.05em);
+    }
 }
 .markdownBody a.targeted::before {
     content: "";
