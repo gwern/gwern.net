@@ -339,7 +339,7 @@ div#masked-links-key-toggle-info-alert img {
     pixel-grid-checkerboard background-image. We use an alternate version of
     this image in dark mode.
  */
-.markdownBody a.has-annotation:hover {
+.markdownBody a[href].has-annotation:hover {
     background-image: var(--GW-dotted-underline-hover-dark-background-image);
 }
 
