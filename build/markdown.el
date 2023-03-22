@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-03-19 20:51:45 gwern"
+;;; When:  Time-stamp: "2023-03-22 10:09:32 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -222,10 +222,11 @@
        (replace-all "<p> " "<p>")
        (replace-all " </p>" "</p>")
        (replace-all "View ORCID Profile" "")
-       (replace-all " gf " " _gf_ ")
-       (replace-all " gf." " _gf_.")
-       (replace-all "(gf)" "(_gf_)")
+       (replace-all " gf " " _g~f~_ ")
+       (replace-all " gf." " _g~f~_.")
+       (replace-all "(gf)" "(_g~f~_)")
        (replace-all "_gf_" "_g~f~_")
+       (replace-all "gF" "_g~f~_")
        (replace-all "ﬁ" "fi")
        (replace-all "ﬀ" "ff")
        (replace-all "￿" "fi")

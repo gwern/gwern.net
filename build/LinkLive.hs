@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-03-16 10:43:39 gwern"
+When:  Time-stamp: "2023-03-21 15:13:31 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -337,7 +337,6 @@ goodDomainsSimple =
     , "kalzumeus.com"
     , "keras.io"
     , "kev.town"
-    , "kevinlynagh.com"
     , "kill-the-newsletter.com"
     , "kk.org"
     , "knightcolumbia.org"
@@ -2469,7 +2468,7 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "http://langsec.org/"
             , "http://learning.mpi-sws.org/memorize/"
             , "http://libgen.rs/scimag/"
-            , "http://mlg.eng.cam.ac.uk/yarin/blog_3d801aa532c1ce.html"
+            , "https://www.cs.ox.ac.uk/people/yarin.gal/website/blog_3d801aa532c1ce.html"
             , "http://neojaponisme.com/"
             , "http://ngm.nationalgeographic.com/print/2011/10/teenage-brains/dobbs-text"
             , "http://norvig.com/norvigs-law.html"
@@ -2569,7 +2568,7 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://bits.blogs.nytimes.com/2012/06/07/good-night-moon-good-night-little-bird/"
             , "https://bldgblog.com/2017/01/the-season-of-burning-trucks/"
             , "https://blog.8faces.com/post/132017260619/eric-gill-advance"
-            , "https://blog.aboutamazon.com/company-news/2016-letter-to-shareholders"
+            , "https://www.aboutamazon.com/news/company-news/2016-letter-to-shareholders"
             , "https://blog.acolyer.org/2018/02/22/dynamic-word-embeddings-for-evolving-semantic-discovery/"
             , "https://blog.beeminder.com/hieroglyphs/"
             , "https://blog.codinghorror.com/why-cant-programmers-program/"
@@ -2730,7 +2729,6 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://kajsotala.fi/2012/10/technology-will-destroy-human-nature/"
             , "https://keras.io/"
             , "https://kev.town/2013/04/30/why-did-why-the-lucky-stiff-quit/"
-            , "https://kevinlynagh.com/notes/pricing-niche-products/"
             , "https://kill-the-newsletter.com/"
             , "https://kk.org/thetechnium/the-shirky-prin/"
             , "https://knightcolumbia.org/content/the-case-for-digital-public-infrastructure"

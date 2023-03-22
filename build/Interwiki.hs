@@ -265,6 +265,10 @@ interwikiTestSuite = let redirectsCircular = (map fst redirectDB) `intersect` (m
              Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Log/Marudubshinki"] ("https://en.wikipedia.org/wiki/Special:Log/Marudubshinki", ""))
           , (Link nullAttr [Str "Deletion log"] ("https://en.wikipedia.org/w/index.php?title=Special:Log&type=delete&user=&page=Gernot+Pfl%C3%BCger&year=&month=-1&tagfilter=",""),
               Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Deletion log"] ("https://en.wikipedia.org/w/index.php?title=Special:Log&type=delete&user=&page=Gernot+Pfl%C3%BCger&year=&month=-1&tagfilter=", ""))
+
+            -- TODO: historical page versions should be queryable, but the WP popups code doesn't support that yet, so for now we must mark them non-popuable
+          , (Link nullAttr [Str "GCTA"] ("https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308", ""),
+             Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "GCTA"] ("https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308", ""))
           ]
 
 -- Set link-live/link-live-not and link-annotated/link-annotated-not classes on a WP link depending on its namespace. As the quality of WP API annotations, and the possibility of iframe popups, varies across WP namespaces, we can't simply set them universally.

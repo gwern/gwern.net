@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-03-19 10:03:38 gwern"
+When:  Time-stamp: "2023-03-22 18:04:45 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -119,7 +119,7 @@ import Utils (writeUpdatedFile, printGreen, printRed, sed, addClass, anyInfix, a
 
 archiveDelay, archivePerRunN :: Integer
 archiveDelay = 60
-archivePerRunN = 12
+archivePerRunN = 13
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg. 2019-11-22 = 58810
@@ -158,7 +158,7 @@ readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/ar
                                      Right (Just "") -> printRed ("Error! Invalid empty archive link: ") >> print (show p ++ show ami) >> return False
                                      Right u@(Just ('/':'/':_)) -> printRed "Error! Invalid double-slash archive link: " >> print (show p ++ show ami ++ show u) >> return False
                                      Right (Just u)  -> if not ("http" `isPrefixOf` p || "\n" `isInfixOf` p) then
-                                                          printRed "Error! Did a local link slip in somehow? " >> print (show p ++ show u ++ show ami) >> return False
+                                                          printRed "Warning: Did a local link slip in somehow? (this will be removed automatically) " >> print (show p ++ show u ++ show ami) >> return False
                                                         else
                                                           if isNothing (parseTLD p) then
                                                            printRed "Error! Invalid URI link in archive? " >> print (show p ++ show u ++ show ami) >> return False
@@ -1315,5 +1315,9 @@ whiteList url
       , "https://www.matthewtancik.com/nerf" -- low quality (video embeds)
       , "https://old.reddit.com/r/thisisthewayitwillbe/" -- private
       , "https://valle-demo.github.io/" -- low quality (audio embeds)
+      , "https://www.riffusion.com/about" -- low quality (audio embeds)
+      , "https://flavioschneider.notion.site/flavioschneider/Audio-Generation-with-Diffusion-c4f29f39048d4f03a23da13078a44cdb" -- low quality (audio embeds)
+      , "https://kinyugo.github.io/msanii-demo/" -- low quality (audio embeds)
+      , "https://www.tiktok.com/" -- low quality (video embeds)
       ] = True
     | otherwise = False
