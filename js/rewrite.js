@@ -167,7 +167,8 @@ function targetElementInDocument(link, doc) {
 	if (   element == null
 		&& link instanceof HTMLAnchorElement
 		&& link.dataset.backlinkTargetUrl > "") {
-        element = Array.from(doc.querySelectorAll(`a[href*='${CSS.escape(link.dataset.backlinkTargetUrl)}']`)).filter(backlink => {
+		let backlinkSelector = `a[href*='${CSS.escape(link.dataset.backlinkTargetUrl)}']:not(.backlink-not)`;
+        element = Array.from(doc.querySelectorAll(backlinkSelector)).filter(backlink => {
             return (   backlink.pathname == link.dataset.backlinkTargetUrl
                     && backlink.closest(exclusionSelector) == null);
         }).first;
