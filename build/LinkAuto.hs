@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2023-03-08 22:19:58 gwern"
+When:  Time-stamp: "2023-03-21 11:18:44 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -561,7 +561,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Cowboy Bebop", "https://en.wikipedia.org/wiki/Cowboy_Bebop")
         , ("Creative Commons", "https://en.wikipedia.org/wiki/Creative_Commons")
         , ("Cryptonomicon", "https://en.wikipedia.org/wiki/Cryptonomicon")
-        , ("Cyphernomicon", "https://en.wikipedia.org/wiki/Timothy_C._May")
+        , ("(Cyphernomicon|Timothy C\\. May)", "https://en.wikipedia.org/wiki/Timothy_C._May")
         , ("D4PG", "https://arxiv.org/abs/1804.08617#deepmind")
         -- , ("DALL[-·]E 2", "https://openai.com/dall-e-2/")
         -- , ("DALL[-·]E 1", "https://openai.com/blog/dall-e/")
@@ -924,7 +924,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Thompson [Ss]ampling", "https://en.wikipedia.org/wiki/Thompson_sampling")
         , ("Thrawn [Tt]rilogy", "https://en.wikipedia.org/wiki/Thrawn_trilogy")
         , ("Tim Powers", "https://en.wikipedia.org/wiki/Tim_Powers")
-        , ("Timothy C\\. May", "https://en.wikipedia.org/wiki/Timothy_C._May")
         , ("TinyBERT", "https://arxiv.org/abs/1909.10351")
         , ("Tom Wolfe", "https://en.wikipedia.org/wiki/Tom_Wolfe")
         , ("Tommy Wiseau", "https://en.wikipedia.org/wiki/Tommy_Wiseau")
@@ -1095,7 +1094,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ll]avaan", "https://lavaan.ugent.be/")
         , ("[Ll]azy evaluation", "https://en.wikipedia.org/wiki/Lazy_evaluation")
         , ("[Ll]evamisole", "https://en.wikipedia.org/wiki/Levamisole")
-        , ("[Ll]iability[ -]threshold", "https://en.wikipedia.org/wiki/Threshold_model#Liability_threshold_model")
         , ("[Ll]inear[ -][Pp]rogramming", "https://en.wikipedia.org/wiki/Linear_programming")
         , ("[Ll]ipofuscin", "https://en.wikipedia.org/wiki/Lipofuscin")
         , ("[Ll]iraglutide", "https://en.wikipedia.org/wiki/Liraglutide")
