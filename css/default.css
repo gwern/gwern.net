@@ -4587,12 +4587,13 @@ body.index-directory #footer {
 .popin {
     /*  Layout. */
     display: block;
-    position: relative;
+    position: absolute;
+    left: 0;
     width: 100%;
     max-height: var(--GW-popins-popin-max-height);
     min-height: var(--GW-popins-popin-min-height);
     overflow: visible;
-    z-index: 11;
+    z-index: 100;
 
     margin: 1em 0;
 
