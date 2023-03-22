@@ -1418,7 +1418,8 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (eventIn
         a TOC entry; shift its children up one TOC level.
      */
     let linksTOCEntry = TOC.querySelector("#toc-links");
-    if (isOnlyChild(linksTOCEntry.closest("li"))) {
+    if (   linksTOCEntry
+    	&& isOnlyChild(linksTOCEntry.closest("li"))) {
         let outerTOCList = TOC.querySelector("ul");
         let innerTOCList = TOC.querySelector("#toc-links + ul");
 
