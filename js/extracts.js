@@ -229,7 +229,7 @@ Extracts = {
 		if (Extracts.popFrameProvider == Popins) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", Extracts.cleanPopinsFromInjectedContent = (eventInfo) => {
 				//	Clean any existing popins.
-				Popins.removeAllPopinsInDocument(eventInfo.document);
+				Popins.removeAllPopinsInContainer(eventInfo.container);
 			}, { phase: "rewrite" });
 		}
 

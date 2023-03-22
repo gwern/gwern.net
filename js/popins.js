@@ -385,16 +385,16 @@ Popins = {
 	},
 
 	//	Called by: extracts.js
-	removeAllPopinsInDocument: (doc = document) => {
-		GWLog("Popins.removeAllPopinsInDocument", "popins.js", 2);
+	removeAllPopinsInContainer: (container) => {
+		GWLog("Popins.removeAllPopinsInContainer", "popins.js", 2);
 
-		doc.querySelectorAll(".popin").forEach(popin => {
+		container.querySelectorAll(".popin").forEach(popin => {
 			popin.remove();
 			if (popin.spawningTarget)
 				Popins.detachPopinFromTarget(popin);
 		});
 
-		doc.querySelectorAll(".popin-open").forEach(spawningTarget => {
+		container.querySelectorAll(".popin-open").forEach(spawningTarget => {
 			spawningTarget.popin = null;
 			spawningTarget.popFrame = null;
 			spawningTarget.classList.remove("popin-open", "highlighted");
