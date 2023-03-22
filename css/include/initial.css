@@ -482,12 +482,16 @@ body.index #markdownBody #notable {
     the initial row being ‘meta’ blocks, we leave #notable visible
     (for a newest/popular/notable triplet)
  */
-@media only screen and (min-width: 2050px) {
+@media only screen and (min-width: 1761px) {
     body.index #markdownBody #notable {
         display: block;
     }
     body.index #markdownBody {
         grid-template-columns: 45ch 45ch 45ch;
+        margin-left: -22.5ch;
+    }
+    body.index #sidebar a#logo {
+    	right: calc(100% + 24ch);
     }
 }
 
