@@ -1200,6 +1200,14 @@ Transclude = {
             return;
         }
 
+		/*	We do not attempt to transclude annotation transclude links which 
+			do not (according to their set-by-the-server designation) actually 
+			have any annotation.
+		 */
+		if (   Transclude.isAnnotationTransclude(includeLink)
+			&& Transclude.hasAnnotation(includeLink) == false)
+			return;
+
         /*  By default, includes within collapse blocks only get transcluded
             if/when the collapse block is expanded.
          */

@@ -124,6 +124,10 @@ Extracts = {
         //  Remove content inject event handler.
     	GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Extracts.processTargetsOnContentInject);
 
+		//	Remove phantom popin cleaning handler.
+		if (Extracts.popFrameProvider == Popins)
+			GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Extracts.cleanPopinsFromInjectedContent);
+
         if (Extracts.popFrameProvider == Popups) {
             //  Remove “popups disabled” icon/button, if present.
             if (Extracts.popupOptionsEnabled)
@@ -220,6 +224,14 @@ Extracts = {
 				flags: info.flags
 			});
         }, { phase: "eventListeners" });
+
+		//	Add handler to prevent “phantom” popins.
+		if (Extracts.popFrameProvider == Popins) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", Extracts.cleanPopinsFromInjectedContent = (eventInfo) => {
+				//	Clean any existing popins.
+				Popins.removeAllPopinsInDocument(eventInfo.document);
+			}, { phase: "rewrite" });
+		}
 
         //  Fire setup-complete event.
         GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
@@ -750,9 +762,6 @@ Extracts = {
         let specialRewriteFunction = Extracts[`rewritePopinContent_${targetTypeName}`] || Extracts[`rewritePopFrameContent_${targetTypeName}`];
         if (specialRewriteFunction)
             specialRewriteFunction(popin);
-
-		//	Clean any existing popins.
-		Popins.removeAllPopinsInDocument(popin.document);
 
 		//	Register copy processors in popin.
 		registerCopyProcessorsForDocument(popin.document);
