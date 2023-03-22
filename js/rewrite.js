@@ -598,11 +598,25 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
         innerWrapper.appendChild(captionWrapper);
 
         //  Tag the figure with the first (or only) media element’s float class.
-        if (media.classList.contains("float-left"))
-            media.closest("figure").classList.add("float-left");
-        if (media.classList.contains("float-right"))
-            media.closest("figure").classList.add("float-right");
+	 	[ "float-left", "float-right" ].forEach(floatClass => {
+			if (media.classList.contains(floatClass))
+				figure.classList.add(floatClass);
+				media.classList.remove(floatClass);
+	 	});
     });
+}, "rewrite");
+
+/********************************/
+/*	Don’t float solitary figures.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.deFloatSolitaryFigures = (eventInfo) => {
+    GWLog("deFloatSolitaryFigures", "rewrite.js", 1);
+
+	let floatClasses = [ "float-left", "float-right" ];
+	eventInfo.container.querySelectorAll(floatClasses.map(x => `figure.${x}:only-child`).join(", ")).forEach(figure => {
+		if (isOnlyChild(figure))
+			figure.classList.remove(...floatClasses);
+	});
 }, "rewrite");
 
 /********************************************************************/

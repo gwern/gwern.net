@@ -974,6 +974,7 @@ Transclude = {
 	],
 
 	generalBlockElementSelectors: [
+		"figure",
 		"li",
 		"p",
 		"blockquote",
