@@ -2885,25 +2885,9 @@ body.index #markdownBody section > h1:first-child a::after {
 
 /*  Back-to-top link on home page.
     */
-@media only screen and (max-width: 1144px) {
-    body.index #back-to-top {
-        left: 4rem;
-    }
-}
-@media only screen and (min-width: 1145px) {
-    body.index #back-to-top {
-        left: calc(88px + (100% - 1145px)/2);
-        right: unset;
-    }
-}
 @media only screen and (min-width: 1761px) {
     body.index #back-to-top {
-        left: calc(54px + (100% - 1145px)/2);
-    }
-}
-@media only screen and (max-width: 649px) {
-    body.index #back-to-top {
-        left: unset;
+        left: calc((100% - 1430px - 50px)/2);
     }
 }
 
@@ -5487,6 +5471,9 @@ ol.link-bibliography-list-compact > li::marker {
 }
 
 @media only screen and (min-width: 650px) {
+    #back-to-top {
+        right: calc(((100% - 965px) / 2) - 35px);
+    }
     #back-to-top a {
         border: 3px double transparent;
     }
@@ -5494,25 +5481,8 @@ ol.link-bibliography-list-compact > li::marker {
         border-color: currentColor;
     }
 }
-@media only screen and (max-width: 1144px) {
-    #back-to-top {
-        left: 4rem;
-    }
-}
-@media only screen and (min-width: 1145px) {
-    #back-to-top {
-        right: 1rem;
-    }
-}
-@media only screen and (min-width: 1761px) {
-    #back-to-top {
-        left: unset;
-        right: calc(54px + (100% - 1145px) / 2);
-    }
-}
 @media only screen and (max-width: 649px) {
     #back-to-top {
-        left: unset;
         right: 1rem;
         bottom: 1rem;
     }
