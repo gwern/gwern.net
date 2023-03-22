@@ -167,11 +167,19 @@ function targetElementInDocument(link, doc) {
 	if (   element == null
 		&& link instanceof HTMLAnchorElement
 		&& link.dataset.backlinkTargetUrl > "") {
+		//	HAX. (Remove when link IDs are fixed. —SA 2023-03-22)
+		let exactBacklinkSelector = null;
+		if (anchor.startsWith("#gwern")) {
+			let targetID = "#" + anchor.slice(("#gwern" + link.dataset.backlinkTargetUrl.slice(1).replace("/", "-") + "-").length);
+			if (targetID > "")
+				exactBacklinkSelector = `a[href*='${CSS.escape(link.dataset.backlinkTargetUrl + targetID)}']`;
+		}
+
 		let backlinkSelector = `a[href*='${CSS.escape(link.dataset.backlinkTargetUrl)}']:not(.backlink-not)`;
-        element = Array.from(doc.querySelectorAll(backlinkSelector)).filter(backlink => {
+        element = doc.querySelector(exactBacklinkSelector) ?? (Array.from(doc.querySelectorAll(backlinkSelector)).filter(backlink => {
             return (   backlink.pathname == link.dataset.backlinkTargetUrl
                     && backlink.closest(exclusionSelector) == null);
-        }).first;
+        }).first);
     }
 
     if (element == null)
