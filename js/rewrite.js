@@ -1318,19 +1318,29 @@ function updatePageTOC(newContent, needsProcessing = false) {
     //  Don’t nest TOC entries any deeper than this.
     let maxNestingDepth = 4;
 
-    //  Find where to insert the new TOC entries.
+    /*  Find where to insert the new TOC entries.
+    	Any already-existing <section> should have a TOC entry.
+    	(Unless the TOC entry has been removed or is missing for some reason, 
+    	 in which case use the entry for the section after that, and so on.)
+     */
     let parentSection = newContent.closest("section") ?? document.querySelector("#markdownBody");
-    let nextSection = Array.from(parentSection.children).filter(child =>
-           child.tagName == "SECTION"
-        && child.compareDocumentPosition(newContent) == Node.DOCUMENT_POSITION_PRECEDING
-    ).first;
-
-    //  Any already-existing <section> should have a TOC entry.
     let parentTOCElement = parentSection.id == "markdownBody"
                            ? TOC
                            : TOC.querySelector(`#toc-${CSS.escape(parentSection.id)}`).parentElement;
-    let followingTOCElement = nextSection
-                              ? parentTOCElement.querySelector(`#toc-${CSS.escape(nextSection.id)}`).parentElement
+
+    let currentSection = newContent;
+    let nextSection = null;
+    let nextSectionTOCLink = null;
+    do {
+    	nextSection = Array.from(parentSection.children).filter(child =>
+			   child.tagName == "SECTION"
+			&& child.compareDocumentPosition(currentSection) == Node.DOCUMENT_POSITION_PRECEDING
+		).first;
+		currentSection = nextSection;
+		nextSectionTOCLink = nextSection ? parentTOCElement.querySelector(`#toc-${CSS.escape(nextSection.id)}`) : null;
+	} while (nextSection && nextSectionTOCLink == null);
+    let followingTOCElement = nextSectionTOCLink
+                              ? nextSectionTOCLink.parentElement
                               : null;
 
     //  TOC entry insertion function, called recursively.
