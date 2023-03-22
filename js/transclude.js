@@ -613,9 +613,12 @@ function includeContent(includeLink, content) {
     //  Remove extraneous text node after link, if any.
     if (   replaceContainer == false
         && includeLink.nextSibling
-        && includeLink.nextSibling.nodeType == Node.TEXT_NODE
-        && isNodeEmpty(includeLink.nextSibling))
-        includeLink.parentNode.removeChild(includeLink.nextSibling);
+        && includeLink.nextSibling.nodeType == Node.TEXT_NODE) {
+        let cleanedNodeContents = Typography.processString(includeLink.nextSibling.textContent, Typography.replacementTypes.CLEAN);
+        if (   cleanedNodeContents.match(/\S/) == null
+        	|| cleanedNodeContents == ".")
+	        includeLink.parentNode.removeChild(includeLink.nextSibling);
+    }
 
     //  Remove link.
     if (replaceContainer == false)
