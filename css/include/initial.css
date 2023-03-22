@@ -488,10 +488,11 @@ body.index #markdownBody #notable {
     }
     body.index #markdownBody {
         grid-template-columns: 45ch 45ch 45ch;
-        margin-left: -22.5ch;
+        margin-left: -20ch;
     }
-    body.index #sidebar a#logo {
-    	right: calc(100% + 24ch);
+    body.index #markdownBody .abstract {
+    	max-width: 935px;
+    	margin-left: 20ch;
     }
 }
 
