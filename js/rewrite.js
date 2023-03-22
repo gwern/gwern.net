@@ -1123,7 +1123,21 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteAuxLinksLinksInTransclud
             auxLinksLink.onclick = () => { return false; };
             auxLinksLink.addActivateEvent((event) => {
                 if (inPopFrame) {
-                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(includedAuxLinksBlock);
+                	if (includedAuxLinksBlock.querySelector("ul, ol") == null) {
+						GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+							Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(includedAuxLinksBlock);
+						}, { once: true });
+                	}
+                	if (includedAuxLinksBlock.closest(".collapse").classList.contains("expanded") == false) {
+						GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (info) => {
+							Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(includedAuxLinksBlock);
+						}, { once: true });
+					} else {
+						requestAnimationFrame(() => {
+							Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(includedAuxLinksBlock);
+						});
+					}
+                	revealElement(includedAuxLinksBlock, false);
                 } else {
                     revealElement(includedAuxLinksBlock, true);
                 }
