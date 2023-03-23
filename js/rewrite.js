@@ -2414,6 +2414,12 @@ function cleanLocationHash() {
     }
 }
 
+function realignHash() {
+	requestIdleCallback(() => {
+		location.hash = GW.locationHash;
+	});
+}
+
 GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayoutCompleteHashHandlingSetup = (info) => {
     GWLog("GW.pageLayoutCompleteHashHandlingSetup", "rewrite.js", 1);
 
@@ -2431,6 +2437,10 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
 
     //  Save hash, for change tracking.
     GW.locationHash = location.hash;
+
+	//	Correct for Firefox hash / scroll position bug.
+	if (GW.isFirefox())
+		realignHash();
 
     /*  Remove “#top” or “#” from the URL hash (e.g. after user clicks on the
         back-to-top link).
