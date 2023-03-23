@@ -702,7 +702,7 @@ section:target > :first-child a::after {
 #TOC .toc-collapse-toggle-button {
     appearance: none;
     border: none;
-    background-color: inherit;
+    background-color: var(--GW-TOC-collapse-button-background-color);
     background-image: var(--GW-svg-chevron-down);
     background-origin: content-box;
     background-repeat: no-repeat;

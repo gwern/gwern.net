@@ -40,6 +40,7 @@
      */
     --GW-TOC-border-color: #ccc;
     --GW-TOC-background-color: #f8f8f8;
+    --GW-TOC-collapse-button-background-color: rgba(248, 248, 248, 0.8);
     --GW-TOC-link-hover-background-color: #ececec;
     --GW-TOC-link-hover-color: #000;
     --GW-TOC-link-hover-indicator-bar-color: #ccc;
