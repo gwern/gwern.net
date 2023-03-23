@@ -570,82 +570,63 @@ body.index #markdownBody .section-link-list ul > li:nth-of-type(n+2) {
 /* TABLE OF CONTENTS */
 /*********************/
 
+div.TOC:empty {
+    display: none;
+}
+
 #TOC {
-    margin: 0 2rem 1.5rem 0;
-    padding: 0.5em 0.5em 0.75em 0.75em;
+    margin: 0 2.25em 1.5em 0;
+    padding: 0.625em 0.75em;
     position: relative;
     z-index: 20;
 }
-.TOC {
+div.TOC {
     border: 1px solid var(--GW-TOC-border-color);
     background-color: var(--GW-TOC-background-color);
     font-family: var(--GW-sans-serif-font-stack);
     line-height: 1.25;
 }
 
-.TOC:empty {
-    display: none;
-}
-
-/*  On mobile, we want the TOC to be inline, but for desktop, we want it
-    side by side with the content.
- */
-@media all and (max-width: 1280px) {
-    #TOC {
-        font-size: 0.95rem;
-    }
-}
-@media all and (max-width: 1200px) {
-    #TOC {
-        font-size: 0.90rem;
-    }
-}
-@media all and (max-width: 1120px) {
-    #TOC {
-        font-size: 0.85rem;
-        margin: 0 1.5rem 1.25rem 0;
-    }
-}
-@media all and (max-width: 1040px) {
-    #TOC {
-        font-size: 0.80rem;
-        margin: 0 1.25rem 1rem 0;
-    }
-}
-@media all and (max-width: 960px) {
-    #TOC {
-        margin: 0 1rem 1rem 0;
-    }
-}
 @media all and (min-width: 901px) {
+	/*	On desktop, we want the TOC side by side with the content.
+	 */
     #TOC {
         float: left;
         max-width: 285px;
     }
 }
 @media all and (max-width: 900px) {
+	/*  On mobile, we want the TOC to be inline.
+	 */
     #TOC {
-        float: none;
         clear: both;
         margin: 2em auto;
-        font-size: 1rem;
     }
-    #TOC {
-        padding: 0.5em 0.5em 0.5em 0.625em;
-    }
-    #TOC li {
-        padding-left: 0;
-    }
-    #TOC ul li::before {
-        content: none;
-    }
+}
 
+/*=-----------------=*/
+/*= TOC list layout =*/
+/*=-----------------=*/
+
+div.TOC ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    text-indent: 0;
+}
+
+@media all and (max-width: 900px) {
+	/*	Two-column layout.
+	 */
     #TOC > ul {
         column-count: 2;
-        margin: 0;
         column-gap: 1.25em;
     }
-
+	#TOC ul > li:first-child {
+		break-before: avoid-column;
+	}
+	/*	Divider line between the columns.
+	 */
     #TOC {
         background-image:
             linear-gradient(var(--GW-TOC-border-color),
@@ -655,80 +636,59 @@ body.index #markdownBody .section-link-list ul > li:nth-of-type(n+2) {
         background-position: 50% 0;
     }
 }
-@media all and (max-width: 649px) {
-    #TOC a {
-        display: inline-block;
-    }
-    #TOC > ul > li > ul {
-        column-count: 1;
-    }
-    #TOC li li a {
-        padding: 0 0 1px 0;
-    }
-    #TOC li li li a {
-        padding: 0 0 2px 0;
-    }
-    #TOC li li li li a {
-        padding: 0 0 3px 0;
-    }
-    #TOC li li li li a {
-        padding: 0 0 4px 0;
-    }
-}
 
-/*=-----------------=*/
-/*= TOC list layout =*/
-/*=-----------------=*/
-
-.TOC ul {
-    list-style-type: none;
-    padding-left: 0em;
-    margin-bottom: 0;
-    margin-top: 0.2em;
-    padding-left: 1.4em;
-    text-indent: 0;
-    padding: 0;
-    overflow: unset;
-}
-
-.TOC ul ul {
-    list-style-type: none;
+div.TOC ul ul {
     padding-left: 0.7em;
-    padding-top: 0.25em;
-    margin-top: 0.1em;
+    padding-top: 0.35em;
 }
 
-.TOC li {
+div.TOC ul > li {
     font-weight: bold;
     margin: 0 0 0.5em 0;
     padding-left: 1.125em;
     position: relative;
     overflow-wrap: break-word;
 }
-
-.TOC li:first-child {
-    break-before: avoid-column;
-}
-
-.TOC li li {
-    margin-bottom: 0.25em;
-    font-weight: normal;
-    font-size: 0.9em;
-}
-.TOC li li:last-child {
+div.TOC ul > li:last-child {
     margin-bottom: 0;
 }
 
-.TOC p {
-    margin-top: 0.5em;
-    margin-bottom: 0.1em;
+@media all and (max-width: 900px) {
+	/*	No numbers on mobile.
+	 */
+    #TOC ul > li {
+        padding-left: 0;
+    }
+    #TOC ul > li::before {
+        content: none;
+    }
+}
+
+div.TOC ul > li li {
+    font-weight: normal;
+    font-size: 0.9em;
+}
+
+@media all and (max-width: 649px) {
+    #TOC ul > li li a {
+        padding: 1px 0 0 0;
+    }
+    #TOC ul > li li li a {
+        padding: 2px 0 0 0;
+    }
+    #TOC ul > li li li li a {
+        padding: 3px 0 0 0;
+    }
+    #TOC ul > li li li li a {
+        padding: 4px 0 0 0;
+    }
 }
 
 /*=------------------=*/
 /*= TOC link styling =*/
 /*=------------------=*/
 
-.TOC a {
+div.TOC a {
     border: 0;
     display: inline-block;
     width: 100%;
@@ -737,11 +697,25 @@ body.index #markdownBody .section-link-list ul > li:nth-of-type(n+2) {
     padding: 0 0.25rem 0 0;
 }
 
+@media only screen and (hover: none) {
+	div.TOC a {
+		position: relative;
+	}
+	div.TOC a::before {
+		content: "";
+		position: absolute;
+		left: -0.50em;
+		top: -0.25em;
+		width: calc(100% + 0.75em);
+		height: calc(100% + 0.50em);
+	}
+}
+
 /*=--------------------------=*/
 /*= Inline code in TOC links =*/
 /*=--------------------------=*/
 
-.TOC code {
+div.TOC code {
     font-family: inherit;
     font-size: inherit;
     border: none;
@@ -753,49 +727,49 @@ body.index #markdownBody .section-link-list ul > li:nth-of-type(n+2) {
 /*= Wikipedia-style TOC numbering =*/
 /*=-------------------------------=*/
 
-.TOC > ul {
+div.TOC > ul {
     counter-reset: htoc_1;
 }
-.TOC > ul > li::before {
+div.TOC > ul > li::before {
     counter-increment: htoc_1;
     content: counter(htoc_1) "\2006  ";
 }
-.TOC > ul ul {
+div.TOC > ul ul {
     counter-reset: htoc_2;
 }
-.TOC > ul ul li::before {
+div.TOC > ul ul > li::before {
     counter-increment: htoc_2;
     content: counter(htoc_1) "." counter(htoc_2) "\2006  ";
 }
-.TOC > ul ul ul {
+div.TOC > ul ul ul {
     counter-reset: htoc_3;
 }
-.TOC > ul ul ul li::before {
+div.TOC > ul ul ul > li::before {
     counter-increment: htoc_3;
     content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "\2006  ";
 }
-.TOC > ul ul ul ul {
+div.TOC > ul ul ul ul {
     counter-reset: htoc_4;
 }
-.TOC > ul ul ul ul li::before {
+div.TOC > ul ul ul ul li::before {
     counter-increment: htoc_4;
     content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "\2006  ";
 }
-.TOC > ul ul ul ul ul {
+div.TOC > ul ul ul ul ul {
     counter-reset: htoc_5;
 }
-.TOC > ul ul ul ul ul li::before {
+div.TOC > ul ul ul ul ul > li::before {
     counter-increment: htoc_5;
     content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "\2006  ";
 }
-.TOC > ul ul ul ul ul ul {
+div.TOC > ul ul ul ul ul ul {
     counter-reset: htoc_6;
 }
-.TOC > ul ul ul ul ul ul li::before {
+div.TOC > ul ul ul ul ul ul > li::before {
     counter-increment: htoc_6;
     content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "." counter(htoc_6) "\2006  ";
 }
-.TOC ul li::before {
+div.TOC ul > li::before {
     position: absolute;
     right: calc(100% - 1em);
     left: unset;
@@ -805,13 +779,13 @@ body.index #markdownBody .section-link-list ul > li:nth-of-type(n+2) {
     pointer-events: none;
     color: var(--GW-TOC-number-color);
 }
-.TOC ul li:hover::before {
+div.TOC ul > li:hover::before {
     color: var(--GW-TOC-number-hover-color);
 }
 
 /*  The table of contents is a *table*, so align
  */
-.TOC {
+div.TOC {
     font-variant-numeric: tabular-nums;
 }
 
@@ -950,7 +924,7 @@ section#see-also:only-of-type > h1:first-child a {
     .markdownBody li {
         text-align: justify;
     }
-    .markdownBody .TOC li {
+    .markdownBody div.TOC li {
         text-align: left;
     }
 }

@@ -896,8 +896,8 @@ a:hover {
 /* LISTS */
 /*********/
 
-ul,
-ol {
+.markdownBody ul,
+.markdownBody ol {
     --GW-list-left-padding: 2.5em;
 
     list-style-type: none;
@@ -908,45 +908,45 @@ ol {
 #markdownBody ol {
     display: flow-root;
 }
-li > ul,
-li > ol {
+.markdownBody li > ul,
+.markdownBody li > ol {
     margin: 0.5em 0;
 }
 
-ul > li,
-ol > li {
+.markdownBody ul > li,
+.markdownBody ol > li {
     position: relative;
     margin: 0;
 }
-ul > li:nth-of-type(n+2),
-ol > li:nth-of-type(n+2) {
+.markdownBody ul > li:nth-of-type(n+2),
+.markdownBody ol > li:nth-of-type(n+2) {
     margin: 0.5em 0 0 0;
 }
 
-ul > li::before {
+.markdownBody ul > li::before {
     position: absolute;
     z-index: 1;
 }
 
-:not(ul):not(ol) > li {
+.markdownBody :not(ul):not(ol) > li {
     list-style-type: none;
 }
 
 @media all and (max-width: 649px) {
-    ul,
-    ol {
+    .markdownBody ul,
+    .markdownBody ol {
         --GW-list-left-padding: 1.75em;
     }
 }
 
-ul ul:last-child,
-ul ol:last-child,
-ol ol:last-child,
-ol ul:last-child {
+.markdownBody ul ul:last-child,
+.markdownBody ul ol:last-child,
+.markdownBody ol ol:last-child,
+.markdownBody ol ul:last-child {
     margin-bottom: 0;
 }
-p + ul,
-p + ol {
+.markdownBody p + ul,
+.markdownBody p + ol {
     margin-top: 0.5em;
 }
 
@@ -954,28 +954,28 @@ p + ol {
 /*= Bulleted list markers =*/
 /*=-----------------------=*/
 /* NOTE: should be able to simplify list markers ~2026 using ::marker, see https://web.dev/css-marker-pseudo-element/ https://www.caniuse.com/css-marker-pseudo */
-ul > li::before {
+.markdownBody ul > li::before {
     display: block;
     left: -1.375em;
     width: 0.75em;
 }
 
-ul > li::before,
-ul ul ul ul > li::before {
+.markdownBody ul > li::before,
+.markdownBody ul ul ul ul > li::before {
     content: url('/static/img/icon/single-black-star.svg');
     opacity: 0.72;
 
 }
-ul ul > li::before,
-ul ul ul ul ul > li::before,
+.markdownBody ul ul > li::before,
+.markdownBody ul ul ul ul ul > li::before,
 /* special /index override because the link compilation is not bolded */
 body.index .section-link-list > li::before {
     content: url('/static/img/icon/single-white-star.svg');
     opacity: initial;
 }
-ul ul ul > li::before,
-ul ul ul ul ul ul > li::before,
-body.index .section-link-list ul > li::before {
+.markdownBody ul ul ul > li::before,
+.markdownBody ul ul ul ul ul ul > li::before,
+body.index .markdownBody .section-link-list ul > li::before {
     /* this rotates into more of a 'lozenge' square for variety's sake */
     content: url('/static/img/icon/single-white-star-rotated.svg');
     opacity: initial;
@@ -985,19 +985,19 @@ body.index .section-link-list ul > li::before {
 /*= Numbered list markers =*/
 /*=-----------------------=*/
 
-ol,
-ol ol ol ol {
+.markdownBody ol,
+.markdownBody ol ol ol ol {
     list-style-type: decimal;
 }
-ol li::marker {
+.markdownBody ol li::marker {
     font-feature-settings: 'onum';
 }
-ol ol,
-ol ol ol ol ol {
+.markdownBody ol ol,
+.markdownBody ol ol ol ol ol {
     list-style-type: upper-roman;
 }
-ol ol ol,
-ol ol ol ol ol ol {
+.markdownBody ol ol ol,
+.markdownBody ol ol ol ol ol ol {
     list-style-type: lower-alpha;
 }
 
@@ -1005,8 +1005,8 @@ ol ol ol ol ol ol {
 /*= Weird edge cases =*/
 /*=------------------=*/
 
-li > ul + p,
-li > ol + p {
+.markdownBody li > ul + p,
+.markdownBody li > ol + p {
     margin-top: 1em;
 }
 
