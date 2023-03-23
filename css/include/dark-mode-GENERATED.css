@@ -40,6 +40,7 @@
      */
     --GW-TOC-border-color: #5c5c5c;
     --GW-TOC-background-color: #212121;
+    --GW-TOC-collapse-button-background-color: rgba(33, 33, 33, 0.8);
     --GW-TOC-link-hover-background-color: #363636;
     --GW-TOC-link-hover-color: #fff;
     --GW-TOC-link-hover-indicator-bar-color: #5c5c5c;
@@ -596,6 +597,12 @@ img.invert-auto:hover {
  */
 .popframe.loading-failed::after {
     opacity: 0.4;
+}
+
+/*	Include-link loading spinner.
+ */
+a.include-loading.include-spinner::after {
+	filter: invert(1);
 }
 
 /*	All mode selectors.
