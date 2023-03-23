@@ -164,6 +164,21 @@ Array.prototype.insertBefore = function (item, test) {
     }
 };
 
+/*	Polyfill for findLastIndex, for older browser versions 
+	(Firefox 103 and lower, Chrome 96 and lower).
+	https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findLastIndex
+	NOTE: Does not support the `thisArg` parameter.
+ */
+if (Array.prototype.findLastIndex === undefined) {
+	Array.prototype.findLastIndex = function (test) {
+		for (let i = this.length - 1; i >= 0; i--) {
+			if (test(this[i], i, this))
+				return i;
+		}
+		return -1;
+	}
+}
+
 /***********/
 /* PAGE UI */
 /***********/
