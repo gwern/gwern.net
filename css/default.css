@@ -3865,6 +3865,7 @@ body.index-directory #footer {
 /*  Popup title.
     */
 .popup .popframe-title {
+	display: flex;
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.8rem;
     font-weight: bold;
@@ -3873,7 +3874,6 @@ body.index-directory #footer {
     padding: 0 4rem 0 1rem;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
     text-decoration: none;
     text-align: center;
 }
@@ -3882,6 +3882,11 @@ body.index-directory #footer {
     padding: 0;
     flex: 0 1 100%;
     line-height: 0;
+}
+.popup .popframe-title-link {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .popup .popframe-title,
 .popup .popframe-title span,
