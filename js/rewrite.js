@@ -1389,6 +1389,11 @@ function updatePageTOC(newContent, needsProcessing = false) {
     if (needsProcessing) {
         //  Process the new entries to activate pop-frame spawning.
         newEntries.forEach(Extracts.addTargetsWithin);
+
+		//	Rectify typography in new entries.
+        newEntries.forEach(entry => {
+	        Typography.processElement(entry, Typography.replacementTypes.WORDBREAKS, true);
+        });
     }
 }
 
@@ -1401,6 +1406,15 @@ addContentLoadHandler(GW.contentLoadHandlers.updateMainPageTOC = (eventInfo) => 
 
     updatePageTOC(eventInfo.container.querySelector("#markdownBody"));
 }, "rewrite", (info) => (info.container == document.body));
+
+/*************************************************/
+/*	Apply typography rectification to TOC entries.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInTOC = (eventInfo) => {
+	eventInfo.container.querySelectorAll(".TOC").forEach(TOC => {
+		Typography.processElement(TOC, Typography.replacementTypes.WORDBREAKS, true);
+	});
+}, "rewrite");
 
 /**********************************************************/
 /*  Relocate and clean up TOC on tag directory index pages.
