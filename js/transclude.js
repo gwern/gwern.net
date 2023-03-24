@@ -610,6 +610,12 @@ function includeContent(includeLink, content) {
     	&& Transclude.isAnnotationTransclude(includeLink) == false)
         updatePageTOC(wrapper, true);
 
+	//	Import style sheets, if need be.
+	if (   Transclude.isAnnotationTransclude(includeLink) == false
+		&& (   containingDocument == document
+			|| containingDocument instanceof ShadowRoot))
+		importStylesAfterTransclusion(includeLink, wrapper);
+
     //  Remove extraneous text node after link, if any.
     if (   replaceContainer == false
         && includeLink.nextSibling
@@ -698,6 +704,48 @@ function includeContent(includeLink, content) {
             document: containingDocument
         });
     }
+}
+
+function documentHasStyleSheet(doc, selector) {
+	if (doc == document)
+		return (doc.head.querySelector(selector) != null);
+	else if (doc instanceof ShadowRoot)
+		return (doc.body.querySelector(selector) != null);
+	else
+		return false;
+}
+
+/*****************************************************************************/
+/*	Imports needed styles (<style> and/or <link> elements) after transclusion.
+ */
+function importStylesAfterTransclusion(includeLink, wrapper) {
+	let containingDocument = includeLink.eventInfo.document;
+	let newContentSourceDocument = Content.cachedDocumentForLink(includeLink);
+
+	let styleDefs = [
+		[ "#mathjax-styles", ".mjpage" ]
+	];
+
+	styleDefs.forEach(styleDef => {
+		let [ styleSheetSelector, elementSelector ] = styleDef;
+		let stylesheet = newContentSourceDocument.querySelector(styleSheetSelector);
+		if (   stylesheet
+			&& (elementSelector 
+				? containingDocument.querySelector(elementSelector) != null
+				: true)) {
+			/*	Add stylesheet to root document in all cases, if need be.
+				(If this is not done, then fonts will not be loaded.)
+			 */
+			if (documentHasStyleSheet(document, styleSheetSelector) == false)
+				document.head.append(stylesheet.cloneNode(true));
+
+			/*	If containing document is a shadow root, give it a copy of the
+				style sheet also.
+			 */
+			if (containingDocument instanceof ShadowRoot)
+				containingDocument.insertBefore(stylesheet.cloneNode(true), containingDocument.body);
+		}
+	});
 }
 
 /**************************************************************************/
