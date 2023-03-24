@@ -1789,7 +1789,7 @@ section.footnotes > hr:first-child.highlighted::before {
     margin: 0.5em 0;
 }
 
-/*  Ensure content is interactable.
+/*  Ensure content is interactive.
     */
 .sidenote-inner-wrapper > * {
     position: relative;
@@ -2208,7 +2208,7 @@ pre code {
 }
 
 /*=------------------------------------------------------------------------------------------=*/
-/*= Source code highlighting for pandoc/skylighting-generated syntax classes (not Pygments)  =*/
+/*= Source code highlighting for Pandoc/skylighting-generated syntax classes (not Pygments)  =*/
 /*=------------------------------------------------------------------------------------------=*/
 
 /* Monochrome-ish code highlighting theme, loosely based on Pygments's algol_nu (CSS: https://github.com/lukelbd/proplot/blob/master/docs/_static/pygments/algol_nu.css demo: https://xyproto.github.io/splash/docs/longer/algol_nu.html ; Python: https://github.com/pycom/EricShort/blob/master/ThirdParty/Pygments/pygments/styles/algol.py ). */
@@ -2963,7 +2963,7 @@ body.dnm-arrest .table-wrapper#data-table td:nth-of-type(12),
 body.dnm-arrest .table-wrapper#data-table td:nth-of-type(13) {
     white-space: nowrap;
 }
-body.dnmarrest .table-wrapper#data-table td:last-of-type {
+body.dnm-arrest .table-wrapper#data-table td:last-of-type {
     width: 20%;
 }
 
@@ -3945,7 +3945,7 @@ body.index-directory #footer {
     display: none;
 }
 
-/*  Submenus of buttons in the popup title bar.
+/*  Sub-menus of buttons in the popup title bar.
     */
 
 .popup .popframe-title-bar .submenu {
@@ -5913,7 +5913,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     /*	Correct off-by-one-pixel error in backlinks block context.
      */
     .markdownBody blockquote a.targeted.has-content .indicator-hook::before {
-        background-position: 
+        background-position:
             0 0.15em,
             0 calc(100% - 0.05em);
     }
