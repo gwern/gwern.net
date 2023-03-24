@@ -500,7 +500,7 @@ h6 code {
 /* h1 defined in initial.css */
 section:not(.collapse) > h1:first-child {
     line-height: 1;
-    margin: 1.75em 0 0.375em 0;
+    margin: 1.75em 0.05em 0.375em 0;
     text-align: right;
     font-weight: 600;
     box-shadow:
@@ -519,7 +519,7 @@ section:not(.collapse) > h1:first-child {
         margin: 1.75em 0 0.375em -0.75rem;
         font-size: 2em;
         overflow: hidden;
-        padding: 0 0 7px 1.25rem;
+        padding: 0 0.05em 7px 1.25rem;
         box-shadow:
             0 -5px 0 0 var(--GW-H1-box-shadow-background-color) inset,
             0 -6px 0 0 var(--GW-H1-box-shadow-line-color) inset;
