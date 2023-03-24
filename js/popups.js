@@ -215,6 +215,12 @@ Popups = {
 		popup.body.classList.add(...args);
 	},
 
+	//	Called by: many functions in many places
+	removeClassesFromPopFrame: (popup, ...args) => {
+		popup.classList.remove(...args);
+		popup.body.classList.remove(...args);
+	},
+
 	/****************************************/
 	/*  Visibility of elements within popups.
 		*/
@@ -340,7 +346,7 @@ Popups = {
 		requestAnimationFrame(() => {
 			//	Disable rendering progress indicator (spinner).
 			if (target.popup)
-				target.popup.classList.toggle("rendering", false);
+				Popups.removeClassesFromPopFrame(target.popup, "rendering");
 
 			//	Reset cursor to normal.
 			Popups.clearWaitCursorForTarget(target);
@@ -361,7 +367,7 @@ Popups = {
 		popup.popupStack.push(popup);
 
 		//	Set rendering progress indicator (spinner).
-		popup.classList.toggle("rendering", true);
+		Popups.addClassesToPopFrame(popup, "rendering");
 
 		//  Inject popup into page.
 		Popups.popupContainer.appendChild(popup);
@@ -515,7 +521,7 @@ Popups = {
 		GWLog("Popups.collapsePopup", "popups.js", 3);
 
 		//  Update class.
-		popup.classList.toggle("collapsed", true);
+		Popups.addClassesToPopFrame(popup, "collapsed");
 
 		//  Save and unset height, if need be.
 		if (popup.style.height) {
@@ -541,7 +547,7 @@ Popups = {
 		GWLog("Popups.uncollapsePopup", "popups.js", 3);
 
 		//  Update class.
-		popup.classList.toggle("collapsed", false);
+		Popups.removeClassesFromPopFrame(popup, "collapsed");
 
 		//  Restore height, if need be.
 		if (popup.dataset.previousHeight) {
@@ -652,9 +658,8 @@ Popups = {
 			Popups.uncollapsePopup(popup);
 
 		//  Update classes.
-		popup.swapClasses([ "zoomed", "restored" ], 0);
-		popup.classList.remove(...(Popups.titleBarComponents.popupPlaces));
-		popup.classList.add(place);
+		Popups.addClassesToPopFrame(popup, "zoomed", place);
+		Popups.removeClassesFromPopFrame(popup, "restored", ...(Popups.titleBarComponents.popupPlaces));
 
 		//  Viewport width must account for vertical scroll bar.
 		let viewportWidth = document.documentElement.offsetWidth;
@@ -749,9 +754,8 @@ Popups = {
 		GWLog("Popups.restorePopup", "popups.js", 2);
 
 		//  Update classes.
-		popup.swapClasses([ "zoomed", "restored" ], 1);
-		popup.classList.remove(...(Popups.titleBarComponents.popupPlaces));
-		popup.classList.remove("resized");
+		Popups.addClassesToPopFrame(popup, "restored");
+		Popups.removeClassesFromPopFrame(popup, "resized", ...(Popups.titleBarComponents.popupPlaces));
 
 		//  Update popup size.
 		popup.style.width = "";
@@ -1202,12 +1206,12 @@ Popups = {
 
 		//  Un-focus any focused popups.
 		Popups.allSpawnedPopups().forEach(spawnedPopup => {
-			spawnedPopup.classList.toggle("focused", false);
+			Popups.removeClassesFromPopFrame(spawnedPopup, "focused");
 		});
 
 		//  Focus the given popup.
 		if (popup)
-			popup.classList.toggle("focused", true);
+			Popups.addClassesToPopFrame(popup, "focused");
 	},
 
 	/*********************/
@@ -1352,7 +1356,7 @@ Popups = {
 				delete popup.dataset.previousXPosition;
 				delete popup.dataset.previousYPosition;
 
-				popup.classList.toggle("restored", false);
+				Popups.removeClassesFromPopFrame(popup, "restored");
 
 				return [ xPos, yPos ];
 			};
@@ -1371,7 +1375,7 @@ Popups = {
 					provisionalPopupXPosition = popup.viewportRect.left;
 					provisionalPopupYPosition = popup.viewportRect.top;
 
-					popup.classList.toggle("unpinned", false);
+					Popups.removeClassesFromPopFrame(popup, "unpinned");
 				} else if (Popups.popupWasRestored(popup)) {
 					[ provisionalPopupXPosition, provisionalPopupYPosition ] = getPositionToRestore(popup);
 				}
@@ -1428,7 +1432,7 @@ Popups = {
 	    GWLog("Popups.clearPopupTimers", "popups.js", 3);
 
 		if (target.popup)
-			target.popup.classList.remove("fading");
+			Popups.removeClassesFromPopFrame(target.popup, "fading");
 
         clearTimeout(target.popupFadeTimer);
         clearTimeout(target.popupDespawnTimer);
@@ -1471,7 +1475,7 @@ Popups = {
     setPopupDespawnTimer: (target) => {
 		GWLog("Popups.setPopupDespawnTimer", "popups.js", 2);
 
-		target.popup.classList.add("fading");
+		Popups.addClassesToPopFrame(target.popup, "fading");
 		target.popupDespawnTimer = setTimeout(() => {
 			GWLog("popupDespawnTimer fired", "popups.js", 2);
 
@@ -1583,7 +1587,7 @@ Popups = {
 		event.preventDefault();
 
 		//  Mark popup as currently being resized.
-		popup.classList.toggle("resizing", true);
+		Popups.addClassesToPopFrame(popup, "resizing");
 
 		//  Save position, if need be.
 		if (!("previousXPosition" in popup.dataset) && !("previousYPosition" in popup.dataset)) {
@@ -1621,7 +1625,7 @@ Popups = {
 		window.onmousemove = (event) => {
 			window.popupBeingResized = popup;
 
-			popup.classList.toggle("resized", true);
+			Popups.addClassesToPopFrame(popup, "resized");
 
 			let deltaX = event.clientX - dragStartMouseCoordX;
 			let deltaY = event.clientY - dragStartMouseCoordY;
@@ -1691,7 +1695,7 @@ Popups = {
 
 		let popup = window.popupBeingResized;
 		if (popup) {
-			popup.classList.toggle("resizing", false);
+			Popups.removeClassesFromPopFrame(popup, "resizing");
 
 			if (Popups.popupWasResized(popup))
 				popup.titleBar.updateState();
@@ -1743,7 +1747,7 @@ Popups = {
 		event.preventDefault();
 
 		//  Mark popup as grabbed.
-		popup.classList.toggle("grabbed", true);
+		Popups.addClassesToPopFrame(popup, "grabbed");
 
 		//  Change cursor to “grabbing hand”.
 		document.documentElement.style.cursor = "grabbing";
@@ -1780,7 +1784,7 @@ Popups = {
 			window.popupBeingDragged = popup;
 
 			//  Mark popup as being dragged.
-			popup.classList.toggle("dragging", true);
+			Popups.addClassesToPopFrame(popup, "dragging");
 
 			//  If dragging by the title, disable its normal click handler.
 			if (popup.linkDragTarget)
@@ -1820,8 +1824,7 @@ Popups = {
 
 		let popup = window.popupBeingDragged;
 		if (popup) {
-			popup.classList.toggle("grabbed", false);
-			popup.classList.toggle("dragging", false);
+			Popups.removeClassesFromPopFrame(popup, "grabbed", "dragging");
 
 			//  Re-enable clicking on the title.
 			if (popup.linkDragTarget) {

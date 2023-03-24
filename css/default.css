@@ -4091,10 +4091,10 @@ body.index-directory #footer {
     height: 100%;
 }
 
-.popup.object.zoomed iframe,
-.popup.object.zoomed object ,
-.popup.object.resized iframe,
-.popup.object.resized object {
+.popup-body.object.zoomed iframe,
+.popup-body.object.zoomed object ,
+.popup-body.object.resized iframe,
+.popup-body.object.resized object {
     width: 100%;
     height: 100%;
 }
