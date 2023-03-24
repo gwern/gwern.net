@@ -167,6 +167,12 @@ Popins = {
 		popin.body.classList.add(...args);
 	},
 
+	//	Called by: many functions in many places
+	removeClassesFromPopFrame: (popin, ...args) => {
+		popin.classList.remove(...args);
+		popin.body.classList.remove(...args);
+	},
+
 	/********************/
 	/*	Popin title bars.
 		*/

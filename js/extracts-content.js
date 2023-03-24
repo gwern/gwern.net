@@ -239,6 +239,12 @@ Extracts = { ...Extracts,
 			firstImage.decoding = "sync";
 		}
 
+		//	Something failed somehow.
+		if (isNodeEmpty(injectEventInfo.container)) {
+			popFrame.classList.toggle("loading-failed", true);
+			return;
+		}
+
 		//	Strip a single collapse block encompassing the top level content.
 		if (   isOnlyChild(injectEventInfo.container.firstElementChild)
 			&& injectEventInfo.container.firstElementChild.classList.contains("collapse"))
