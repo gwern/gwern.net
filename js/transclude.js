@@ -1057,7 +1057,7 @@ Transclude = {
 // 						|| block.parentNode instanceof Element == false))
 					break;
 
-		return ([ "BLOCKQUOTE" ].includes(block.tagName)
+		return ([ "BLOCKQUOTE", "LI" ].includes(block.tagName)
 				? block.childNodes
 				: block);
 	},
