@@ -42,9 +42,11 @@ Annotations = { ...Annotations,
 	cachedDocumentForLink: (link) => {
 		let identifier = Annotations.targetIdentifier(link);
 		let cachedAPIResponse = Annotations.cachedAPIResponseForIdentifier(identifier);
-		return (cachedAPIResponse != "LOADING_FAILED"
-				? cachedAPIResponse
-				: null);
+
+		if (   cachedAPIResponse
+			&& cachedAPIResponse != "LOADING_FAILED"
+			&& cachedAPIResponse instanceof DocumentFragment)
+			return cachedAPIResponse;
 	},
 
     /*  Storage for retrieved and cached annotations.

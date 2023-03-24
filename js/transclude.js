@@ -725,7 +725,10 @@ function importStylesAfterTransclusion(includeLink, wrapper) {
 	let containingDocument = includeLink.eventInfo.document;
 	let newContentSourceDocument = (Transclude.isAnnotationTransclude(includeLink)
 									? Annotations.cachedDocumentForLink(includeLink)
-									: Content.cachedDocumentForLink(includeLink))
+									: Content.cachedDocumentForLink(includeLink));
+
+	if (newContentSourceDocument == null)
+		return;
 
 	let styleDefs = [
 		[ "#mathjax-styles", ".mjpage" ]
