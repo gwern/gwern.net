@@ -406,6 +406,7 @@ tagsLong2Short = [
           , ("co2", "CO<sub>2</sub>")
           , ("traffic", "web traffic")
           , ("psychology/neuroscience/tcs", "TDCS")
+          , ("economics/automation/metcalfes-law", "Metcalfe’s Law")
           ]
 
 testTags :: IO ()
