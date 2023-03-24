@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-03-22 18:04:45 gwern"
+When:  Time-stamp: "2023-03-24 11:02:48 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -197,21 +197,23 @@ rewriteLink adb archivedN url = do
   fromMaybe url <$> if whiteList url then return Nothing else
     case M.lookup url adb of
       Nothing               -> Nothing <$ insertLinkIntoDB (Left today) url
-      Just (Left firstSeen) -> if ((today - firstSeen) < archiveDelay) && not ("pdf" `isInfixOf` url && not ("twitter" `isInfixOf` url))
-        then return Nothing
-        else do
-                 let url' = transformURLsForArchiving url
-                 archivedP <- archiveURLCheck url'
-                 if archivedP then do archive <- archiveURL url'
-                                      insertLinkIntoDB (Right archive) url
-                                      return archive
-                 else do archivedNAlreadyP <- readIORef archivedN
-                         -- have we already used up our link archive 'budget' this run? If so, skip all additional link archives
-                         if archivedNAlreadyP > 0 then do archive <- archiveURL url'
-                                                          insertLinkIntoDB (Right archive) url
-                                                          writeIORef archivedN (archivedNAlreadyP - 1)
-                                                          return archive
-                         else return Nothing
+      Just (Left firstSeen) -> let cheapArchive = "pdf" `isInfixOf` url || "twitter" `isInfixOf` url -- some URLs are so cheap & easy to archive that we don't need to count them against our manual-review limit, because we won't meaningfully manually review them
+
+       in if ((today - firstSeen) < archiveDelay) && not cheapArchive
+          then return Nothing
+          else do
+                   let url' = transformURLsForArchiving url
+                   archivedP <- archiveURLCheck url'
+                   if archivedP then do archive <- archiveURL url'
+                                        insertLinkIntoDB (Right archive) url
+                                        return archive
+                   else do archivedNAlreadyP <- readIORef archivedN
+                           -- have we already used up our link archive 'budget' this run? If so, skip all additional link archives
+                           if archivedNAlreadyP < 1 then return Nothing
+                           else  do archive <- archiveURL url'
+                                    insertLinkIntoDB (Right archive) url
+                                    unless cheapArchive $ writeIORef archivedN (archivedNAlreadyP - 1)
+                                    return archive
       Just (Right archive) -> if archive == Just "" then printRed "Error! Tried to return a link to a non-existent archive! " >> print url >> return Nothing else return archive
 
 insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
