@@ -500,7 +500,7 @@ h6 code {
 /* h1 defined in initial.css */
 section:not(.collapse) > h1:first-child {
     line-height: 1;
-    margin: 1.75em 0 0.375em 0;
+    margin: 1.75em 0.05em 0.375em 0;
     text-align: right;
     font-weight: 600;
     box-shadow:
@@ -519,7 +519,7 @@ section:not(.collapse) > h1:first-child {
         margin: 1.75em 0 0.375em -0.75rem;
         font-size: 2em;
         overflow: hidden;
-        padding: 0 0 7px 1.25rem;
+        padding: 0 0.05em 7px 1.25rem;
         box-shadow:
             0 -5px 0 0 var(--GW-H1-box-shadow-background-color) inset,
             0 -6px 0 0 var(--GW-H1-box-shadow-line-color) inset;
@@ -3866,11 +3866,14 @@ body.index-directory #footer {
     */
 .popup .popframe-title {
 	display: flex;
+	justify-content: center;
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.8rem;
     font-weight: bold;
     flex: 1 1 100%;
-    /*  Extra 3rem padding on left to accommodate 2 extra buttons. */
+    /*  Extra 3rem padding on right to maintain centeredness despite
+    	2 extra buttons on left.
+     */
     padding: 0 4rem 0 1rem;
     white-space: nowrap;
     overflow: hidden;
@@ -3938,6 +3941,10 @@ body.index-directory #footer {
 .popup .popframe-title-bar-button:disabled {
     pointer-events: none;
     opacity: 0.35;
+}
+
+.popup .popframe-title-bar-button.zoom-button {
+    padding: 5px;
 }
 
 .popup.mini-title-bar button.zoom-button,
@@ -4629,6 +4636,7 @@ body.index-directory #footer {
     */
 .popin .popframe-title {
     display: flex;
+    justify-content: center;
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.875rem;
     flex: 1 1 100%;
