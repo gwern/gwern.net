@@ -114,7 +114,7 @@ generateAnnotationOfTheDay md dbpath annotpath formatter =
      let lengthList = sortOn (\(_, (_,_,_,_,_,abstract2)) -> length abstract2) md' -- ascending order (ie. largest last)
      if null lengthList then writeFile [] dbpath else
        do let (url,_) = last lengthList -- grab the largest
-          let db' = url : db
+          let db' = db ++ [url]
           writeFile annotpath (formatter url)
           writeAnnotDayDB dbpath db'
 
@@ -589,4 +589,4 @@ sitePrioritize = do lotdb <- readTTDB linkDBPath
           "allendowney.blogspot.com", "alexanderetz.com", "alessonislearned.com", "ajjacobs.com", "aiindex.stanford.edu",
           "agingfree.org", "adidkh.bandcamp.com", "actualfacebookgraphsearches.tumblr.com", "abstrusegoose.com", "abahlali.org",
           "2015phage.org", "0fps.net", "www.theinformation.com", "assets.aeaweb.org", "www.greaterwrong.com", "git.sr.ht",
-          "casetext.com", "archive.is", "phabricator.wikimedia.org"]
+          "casetext.com", "archive.is", "phabricator.wikimedia.org", "www.cs.ox.ac.uk", "www.aboutamazon.com"]

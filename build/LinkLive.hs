@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-03-21 15:13:31 gwern"
+When:  Time-stamp: "2023-03-23 14:17:16 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -161,7 +161,7 @@ goodDomainsSimple =
     , "bits.blogs.nytimes.com"
     , "bldgblog.com"
     , "blog.8faces.com"
-    , "blog.aboutamazon.com"
+    , "aboutamazon.com"
     , "blog.acolyer.org"
     , "blog.beeminder.com"
     , "blog.codinghorror.com"
@@ -382,7 +382,6 @@ goodDomainsSimple =
     , "mitpress.mit.edu"
     , "mkv25.net"
     , "ml.berkeley.edu"
-    , "mlg.eng.cam.ac.uk"
     , "mmlab.ie.cuhk.edu.hk"
     , "mssv.net"
     , "my.pgp-hms.org"

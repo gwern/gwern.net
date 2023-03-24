@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-03-22 10:09:32 gwern"
+;;; When:  Time-stamp: "2023-03-23 13:18:17 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -271,6 +271,8 @@
        (replace-all "](/docs/" "](/doc/")
        (replace-all "href=\"/docs/" "href=\"/doc/")
        (replace-all "href='/docs/" "href='/doc/")
+       (replace-all "]/doc" "](/doc")
+       (query-replace "]/" "](/" nil begin end)
 
        (query-replace " · " ", " nil begin end)
        ; remove subtle whitespace problems: double space
@@ -982,19 +984,21 @@
 
        (query-replace "Figs. " "Figures " nil begin end)
        (query-replace "Fig. " "Figure " nil begin end)
-       (query-replace-regexp "Supplementary [fF]ig\\. \\([0-9]+[a-fA-F]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Fig. 1. ', 'Fig. 2a)' etc
-       (query-replace-regexp "Supplementary [fF]ig\\. \\([0-9]+[a-fA-F]*\\)"    "**Supplementary Figure \\1**"   nil begin end) ; 'Fig. 1,', 'Fig. 2a,' etc
-       (query-replace-regexp "Supplementary [fF]igure \\([0-9]+[a-fA-F]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Figure 1. The graph' etc
-       (query-replace-regexp "Supplementary ([fF]ig\\. \\([0-9]+[a-fA-F]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Fig. 3b)
-       (query-replace-regexp "Supplementary ([fF]igure \\([0-9]+[a-fA-F]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Figure 3b)
-       (query-replace-regexp "Supplementary ([fF]ig\\. \\([0-9]+[a-fA-F]*\\),"  "(**Supplementary Figure \\1**," nil begin end) ; (Fig. 3b,
+       (query-replace-regexp "Supplementary [fF]ig\\. \\([0-9]+[a-fA-F]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Supp Fig. 1. ', 'Fig. 2a)' etc
+       (query-replace-regexp "Supplementary [fF]ig\\. \\([0-9]+[a-fA-F]*\\)"    "**Supplementary Figure \\1**"   nil begin end) ; 'Supp Fig. 1,', 'Fig. 2a,' etc
+       (query-replace-regexp "Supplementary [fF]igure \\([0-9]+[a-fA-F]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Supp Figure 1. The graph' etc
+       (query-replace-regexp "Supplementary ([fF]ig\\. \\([0-9]+[a-fA-F]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Supp Fig. 3b)
+       (query-replace-regexp "Supplementary ([fF]igure \\([0-9]+[a-fA-F]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Supp Figure 3b)
+       (query-replace-regexp "Supplementary ([fF]ig\\. \\([0-9]+[a-fA-F]*\\),"  "(**Supplementary Figure \\1**," nil begin end) ; (Supp Fig. 3b,
        (query-replace-regexp "Supplementary [fF]igures \\([0-9]+[a-fA-F]*\\) and \\([0-9]+[a-fA-F]*\\)"  "**Supplementary Figures \\1** & **\\2**" nil begin end)
-       (query-replace-regexp "[fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\)\\." "**Figure \\1\\2**."  nil begin end) ; 'Fig. 1. ', 'Fig. 2a)', 'Figure 1.5' etc
+       (query-replace-regexp "[fF]ig\\.? ?\\(S?\\)\\([0-9\\.]+[a-fA-F]*\\)\\.?" "**Figure \\1\\2**."  nil begin end) ; 'Fig. 1. ', 'Fig. 2a)', 'Figure 1.5' etc
        (query-replace-regexp "[fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\)"    "**Figure \\1\\2**"   nil begin end) ; 'Fig. 1,', 'Fig. 2a,' etc
        (query-replace-regexp "[fF]igure \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\.?\\)" "**Figure \\1\\2**"  nil begin end) ; 'Figure 1. The graph' etc
        (query-replace-regexp "([fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\))"  "(**Figure \\1\\2**)" nil begin end) ; (Fig. 3b)
        (query-replace-regexp "([fF]igure \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\))"  "(**Figure \\1\\2**)" nil begin end) ; (Figure 3b)
        (query-replace-regexp "([fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\),"  "(**Figure \\1\\2**," nil begin end) ; (Fig. S3b,
+
+       (query-replace-regexp "[aA]ppendix.? ?\\([a-zA-Z]?\\)\\([0-9\\.]+[a-fA-F]*\\)"  "**Appendix \\1\\2**" nil begin end) ; 'Appendix A2'
 
        ; '§ SECTION SIGN' is better than writing out '<strong>Section N</strong>' everywhere. It's much shorter, we already use SECTION SIGN heavily, it reduces overuse of bold, is easier to grep for, and it saves a bit of time formatting annotations (because of the lack of lookahead/lookbehind in these regexp rewrites, 'Section N' will match every time, even if it's already wrapped in <strong></strong>/**bolding**, and I have to waste time skipping them). It would be nice to symbolize Figure/Table/Experiment/Data as well, but there's no widely-understood symbol which could be used, and usually no abbreviation either. (Perhaps 'Supplement.*' could be replaced by just 'S' and 'Figure' by 'Fig.' at some point...)
        (query-replace-regexp "[Ss]ection ?\\([0-9.]+[a-fA-F]*\\)"  "§\\1" nil begin end) ; 'Section 9' → '§9'
@@ -1253,7 +1257,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
       (replace-all "%3Csup%3End%3C/sup%3E" "nd")
       (replace-all "%3Csup%3Erd%3C/sup%3E" "rd")
       (replace-all "<!-- -->" "")
-      (query-replace "'" "’" nil begin end) ; unescaped single quotation marks will often break the YAML, so they need to either be replaced with the intended Unicode, or double-quoted to 'escape' them
+      ; unescaped single quotation marks will often break the YAML, so they need to either be replaced with the intended Unicode, or double-quoted to 'escape' them
       (query-replace "'" "''" nil begin end)
       (delete-trailing-whitespace)
       (forward-line)
