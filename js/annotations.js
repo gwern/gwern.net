@@ -713,8 +713,9 @@ Annotations.dataSources.wikipedia = {
 			if (tableElement.style.display != "none")
 				stripStyles(tableElement, null, [ "text-align" ]);
 
-			tableElement.removeAttribute("width");
-			tableElement.removeAttribute("height");
+			[ "width", "height", "align" ].forEach(attribute => {
+				tableElement.removeAttribute(attribute);
+			});
 		});
 
 		//  Rectify table classes.
