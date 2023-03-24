@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-03-22 11:22:53 gwern"
+# When:  Time-stamp: "2023-03-24 10:06:28 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -321,12 +321,12 @@ else
                                      grep -F --invert-match -e '/1955-nash' -e '/backstop' -e '/death-note-anonymity' -e '/difference' \
                                                           -e '/lorem' -e '/modus' -e '/order-statistics' -e '/conscientiousness-and-online-education' \
                                 -e 'doc%2Fmath%2Fhumor%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
-                                -e '/the-existential-risk-of-mathematical-error' -e '/replication' \
-                                -e 'performance-pay-nobel.html' -e '/doc/cs/index' -e '/doc/math/index' -e '/coin-flip' \
-                                -e '/nootropic/magnesium' -e '/selection' -e 'doc/statistics/bayes/1994-falk' -e '/zeo' \
+                                -e '/math-error' -e '/replication' \
+                                -e 'performance-pay-nobel.html' -e '/coin-flip' \
+                                -e '/nootropic/magnesium' -e '/selection' -e 'doc/statistics/bayes/1994-falk' -e '/zeo/zeo' \
                                 -e '/mail-delivery' \
-                                -e '/doc/math/humor/index' -e '/doc/ai/index' -e '/doc/statistics/bias/index' -e '/variable' -e '1400861560180858880' \
-                                -e 'w28340%2Fw28340.pdf' -e 'doc/statistics/order/index' -e 'doc/statistics/decision/index' -e 'doc/cs/algorithm/index' -e 'doc/economics/index';
+                                -e '/variable' -e '1400861560180858880' \
+                                -e 'w28340%2Fw28340.pdf';
        }
     wrap λ "Warning: unauthorized LaTeX users somewhere"
 
