@@ -611,9 +611,8 @@ function includeContent(includeLink, content) {
         updatePageTOC(wrapper, true);
 
 	//	Import style sheets, if need be.
-	if (   Transclude.isAnnotationTransclude(includeLink) == false
-		&& (   containingDocument == document
-			|| containingDocument instanceof ShadowRoot))
+	if (   containingDocument == document
+		|| containingDocument instanceof ShadowRoot)
 		importStylesAfterTransclusion(includeLink, wrapper);
 
     //  Remove extraneous text node after link, if any.
@@ -706,6 +705,10 @@ function includeContent(includeLink, content) {
     }
 }
 
+/*****************************************************************************/
+/*	Returns true iff a given document contains a style sheet identified by the
+	given selector.
+ */
 function documentHasStyleSheet(doc, selector) {
 	if (doc == document)
 		return (doc.head.querySelector(selector) != null);
@@ -720,7 +723,9 @@ function documentHasStyleSheet(doc, selector) {
  */
 function importStylesAfterTransclusion(includeLink, wrapper) {
 	let containingDocument = includeLink.eventInfo.document;
-	let newContentSourceDocument = Content.cachedDocumentForLink(includeLink);
+	let newContentSourceDocument = (Transclude.isAnnotationTransclude(includeLink)
+									? Annotations.cachedDocumentForLink(includeLink)
+									: Content.cachedDocumentForLink(includeLink))
 
 	let styleDefs = [
 		[ "#mathjax-styles", ".mjpage" ]

@@ -38,6 +38,15 @@ Annotations = { ...Annotations,
         }
 	},
 
+	//	Convenience method.
+	cachedDocumentForLink: (link) => {
+		let identifier = Annotations.targetIdentifier(link);
+		let cachedAPIResponse = Annotations.cachedAPIResponseForIdentifier(identifier);
+		return (cachedAPIResponse != "LOADING_FAILED"
+				? cachedAPIResponse
+				: null);
+	},
+
     /*  Storage for retrieved and cached annotations.
         */
     cachedReferenceData: { },
