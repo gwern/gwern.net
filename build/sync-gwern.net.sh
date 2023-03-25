@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-03-24 18:28:09 gwern"
+# When:  Time-stamp: "2023-03-25 13:22:34 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -380,7 +380,8 @@ else
                    -e '^backlinks$' -e '^backlinks-append$' -e 'aux-links-append' -e '^bash$' -e '^Bash$' -e '^book-review-author$' \
                    -e '^book-review-date$' -e '^book-review-rating$' -e '^book-review-title$' -e '^cite-author$' -e '^cite-author-plural$' \
                    -e '^cite-date$' -e '^date$' -e '^display$' -e '^email$' -e '^external-page-embed$' -e '^id-not$' -e '^include$' \
-                   -e '^include-strict$' -e '^inflation-adjusted$' -e '^logotype-latex$' -e '^logotype-latex-a$' -e '^logotype-latex-e$' -e '^link-annotated$' -e '^link-live$' -e '^link-page$' -e '^link-page-not$' \
+                   -e '^include-strict$' -e '^inflation-adjusted$' -e '^logotype-tex$' -e '^logotype-latex$' -e '^logotype-latex-a$' -e '^logotype-latex-e$' \
+                   -e '^link-annotated$' -e '^link-live$' -e '^link-page$' -e '^link-page-not$' \
                    -e '^link-tag$' -e '^link-tags$' -e '^cite$' -e '^cite-joiner$' -e '^collapse$' -e '^columns$' -e '^directory-indexes-downwards$' \
                    -e '^directory-indexes-upwards$' -e '^epigraph$' -e '^even$' -e '^float-right$' -e '^float-left$' -e '^footnote-ref$' \
                    -e '^full-width$' -e '^haskell$' -e '^header$' -e '^horizontal-rule-nth-0$' -e '^horizontal-rule-nth-1$' \
@@ -672,11 +673,18 @@ else
             --header "Authorization: Bearer $CLOUDFLARE_CACHE_TOKEN" \
             --header "Content-Type: application/json" \
             --data "{\"files\":[\"$CHECK_RANDOM_PAGE\", \"$CHECK_RANDOM_ANNOTATION\"]}" > /dev/null; )
-    # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
-    (if ((RANDOM % 100 > 90)); then sleep 30s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE"; fi;
-     sleep 10s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
-     sleep 10s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on"; )
-    sleep 60s; chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null & # check the x-of-the-day in a different & cache-free browser instance
+
+    # every other sync, check 4 pages in the W3 link-checker. (The error count has been going down thanks to local-archives, so more convenient to check in larger blocks. We'll shift to 8 checks every 4 syncs at some point, and so on.)
+    if ((RANDOM % 100 > 50)); then
+        # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
+        (if ((RANDOM % 100 > 90)); then sleep 30s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE"; fi;
+         sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
+         sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
+         sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on";
+         sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on"; )
+    fi
+
+    sleep 30s; chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null & # check the x-of-the-day in a different & cache-free browser instance
 
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
     if ((RANDOM % 100 > 99)); then $X_BROWSER "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"; fi
