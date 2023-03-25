@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-02-21 16:41:07 gwern"
+# When:  Time-stamp: "2023-03-24 12:07:50 gwern"
 # License: CC-0
 #
 # This will reformat, run PDFs through `ocrmypdf` (via the `compressPdf` wrapper), and `git commit` new files.
@@ -39,6 +39,7 @@ else
     if [[ "$1" =~ .*\.jpg || "$1" =~ .*\.png || "$1" =~ .*\.mp4 || "$1" =~ .*\.webm || "$1" =~ .*\.svg ]];
     then
         TARGET_DIR=image/"$2"
+        if [ ! -d ~/wiki/"$TARGET_DIR"  ]; then echo "Can't upload image $1 there (~/wiki/$TARGET_DIR), no image-directory?"; return 3; fi
     else
         TARGET_DIR=doc/"$2"
     fi

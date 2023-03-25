@@ -100,11 +100,11 @@ lowercaseUnicode = "a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûü�
 -- the interwiki and any passes which insert inline HTML - right now 'breakSlashes' tests for
 -- possible HTML and bails out to avoid damaging it.
 breakSlashes :: Block -> Block
--- skip CodeBlock/RawBlock/Header/Table: enabling line-breaking on slashes there is a bad idea or not possible:
-breakSlashes x@CodeBlock{} = x
-breakSlashes x@RawBlock{}  = x
-breakSlashes x@Header{}    = x
-breakSlashes x@Table{}     = x
+-- skip CodeBlock/RawBlock: enabling line-breaking on slashes there is a bad idea or not possible:
+breakSlashes x@CodeBlock{}  = x
+breakSlashes x@RawBlock{}   = x
+breakSlashes (Header a b c) = Header a b $ topDown breakSlashesInline c
+breakSlashes x@Table{}      = x -- should we do slashing here too or is that unnecessary / actually a bad idea? Generally, table contents shouldn't be linebreaking... right?
 breakSlashes x = topDown breakSlashesInline x
 breakSlashesInline, breakSlashesPlusHairSpaces :: Inline -> Inline
 breakSlashesInline x@Code{}        = x

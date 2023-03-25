@@ -1442,6 +1442,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("kg/m(2)", "kg⁄m<sup>2</sup>")
          , ("Cmax", "C<sub>max</sub>")
          , ("<small></small>", "")
+         , ("Hazard Ratio", "hazard ratio")
          , (" et al ", " et al ") -- et al: try to ensure no linebreaking of citations
          , (" et al. ", " et al ")
          , (" et al., ", " et al ")
