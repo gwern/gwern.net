@@ -358,6 +358,9 @@ Content = {
 							auxLinksList.querySelectorAll("a").forEach(link => {
 								link.dataset.backlinkTargetUrl = AuxLinks.targetOfAuxLinksLink(loadURL);
 							});
+							auxLinksList.querySelectorAll("blockquote").forEach(blockquote => {
+								blockquote.classList.add("backlink-context");
+							});
 						}
 					}
 				}

@@ -36,6 +36,10 @@ Sidenotes = {
 		".marginnote"
 	],
 
+	constrainMarginNotesWithinSelectors: [
+		".backlink-context"
+	],
+
 	/*	The greatest width (in CSS dimensions) at which sidenotes will _not_ be
 		shown. If the viewport is wider than this, then sidenotes are enabled.
 	 */
@@ -663,7 +667,9 @@ Sidenotes = { ...Sidenotes,
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
 				document.querySelectorAll(".marginnote").forEach(marginNote => {
-					marginNote.swapClasses([ "inline", "sidenote" ], (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches ? 0 : 1));
+					let inline = (   marginNote.closest(Sidenotes.constrainMarginNotesWithinSelectors.join(", "))
+								  || Sidenotes.mediaQueries.viewportWidthBreakpoint.matches);
+					marginNote.swapClasses([ "inline", "sidenote" ], (inline ? 0 : 1));
 				});
 			});
 		}, { 
@@ -673,7 +679,10 @@ Sidenotes = { ...Sidenotes,
 		});
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 			info.container.querySelectorAll(".marginnote").forEach(marginNote => {
-				marginNote.swapClasses([ "inline", "sidenote" ], ((Sidenotes.mediaQueries.viewportWidthBreakpoint.matches || info.document != document) ? 0 : 1));
+				let inline = (   marginNote.closest(Sidenotes.constrainMarginNotesWithinSelectors.join(", "))
+							  || Sidenotes.mediaQueries.viewportWidthBreakpoint.matches
+							  || info.document != document);
+				marginNote.swapClasses([ "inline", "sidenote" ], (inline ? 0 : 1));
 			});
 		});
 

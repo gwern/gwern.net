@@ -1356,11 +1356,11 @@ h1 {
 /*= Margin notes =*/
 /*=--------------=*/
 
-/*  On wide viewports, hide the margin notes until it is styled as a sidenote (i.e,
-    until it gets the `.sidenote` class applied to it).
+/*  On wide viewports, hide the margin notes until it is determined which layout
+	form it should take (‘sidenote’ or ‘inline’).
  */
 @media only screen and (min-width: 1761px) {
-    .marginnote {
+    .marginnote:not(.inline):not(.sidenote) {
         display: none;
     }
 }
