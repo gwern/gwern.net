@@ -575,6 +575,17 @@ function includeContent(includeLink, content) {
         wrapper.append(idBearerBlock);
     }
 
+	//	Intelligent rectification of contained HTML structure.
+	if (   wrapper.parentElement != null
+		&& wrapper.parentElement.closest("#footnotes > ol") == null
+		&& wrapper.firstElementChild != null) {
+		wrapper.querySelectorAll(".footnote-self-link, .footnote-back").forEach(link => {
+			link.remove();
+		});
+		if (wrapper.firstElementChild == wrapper.firstElementChild.closest("li.footnote"))
+			unwrap(wrapper.firstElementChild);
+	}
+
 	//	Clear loading state of all include-links.
 	Transclude.allIncludeLinksInContainer(wrapper).forEach(Transclude.clearLinkState);
 
@@ -628,17 +639,6 @@ function includeContent(includeLink, content) {
     //  Remove link.
     if (replaceContainer == false)
         includeLink.remove();
-
-	//	Intelligent rectification of contained HTML structure.
-	if (   wrapper.parentElement != null
-		&& wrapper.parentElement != wrapper.parentElement.closest("#footnotes > ol")
-		&& wrapper.firstElementChild != null
-		&& wrapper.firstElementChild == wrapper.firstElementChild.closest("li.footnote")) {
-		wrapper.firstElementChild.querySelectorAll(".footnote-self-link, .footnote-back").forEach(link => {
-			link.remove();
-		});
-		unwrap(wrapper.firstElementChild);
-	}
 
     //  Intelligent rectification of surrounding HTML structure.
     if (   Transclude.isAnnotationTransclude(includeLink)
