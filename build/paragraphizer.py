@@ -82,8 +82,8 @@ else:
     target = sys.argv[1]
 
 messages = [
-    {"role": "system", "content": "You are a helpful assistant that adds double-newlines to split abstracts into paragraphs."},
-    {"role": "user", "content": f"Add double-newlines to this abstract: {target}"}
+    {"role": "system", "content": "You are a helpful assistant that adds double-newlines to split abstracts into paragraphs (one topic per paragraph.)"},
+    {"role": "user", "content": f"Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) Please include ONLY the resulting text in your output, and NO other conversation or comments.\n\n<abstract>\n{target}\n</abstract>"}
 ]
 
 result = openai.ChatCompletion.create(
@@ -91,7 +91,6 @@ result = openai.ChatCompletion.create(
     messages=messages,
     max_tokens=1024,
     temperature=0,
-    stop=["User:", "Assistant:"]
 )['choices'][0]['message']['content']
 
 print(result)
