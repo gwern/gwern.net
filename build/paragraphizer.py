@@ -76,20 +76,24 @@
 import sys
 import openai
 
-prompt = """Add double-newlines `\n\n` to split this abstract into paragraphs (one topic per paragraph). From:
-
-\""""
-
 if len(sys.argv) == 1:
     target = sys.stdin.read().strip()
 else:
     target = sys.argv[1]
 
-postPrompt="\"\n\nTo:\n\n\""
+messages = [
+    {"role": "system", "content": "You are a helpful assistant that adds double-newlines to split abstracts into paragraphs."},
+    {"role": "user", "content": f"Add double-newlines to this abstract: {target}"}
+]
 
-result = openai.Completion.create(engine="text-davinci-003",
-                                prompt=prompt+target+postPrompt,
-                                temperature=0, max_tokens=1024, stop="\"")['choices'][0]['text']
+result = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=messages,
+    max_tokens=1024,
+    temperature=0,
+    stop=["User:", "Assistant:"]
+)['choices'][0]['message']['content']
+
 print(result)
 # if target == (result.replace('\n', '')).replace(' ', ''):
 #     print(result)
