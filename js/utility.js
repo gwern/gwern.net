@@ -264,6 +264,8 @@ function transferClasses(source, target, classes) {
 			target.classList.add(cssClass);
 		}
 	});
+	if (source.className == "")
+		source.removeAttribute("class");
 }
 
 /****************************************/
@@ -285,16 +287,18 @@ function wrapElement(element, wrapClass, wrapTagName = "DIV", useExistingWrapper
     }
 
     if (moveClasses === false)
-        return;
+        return element.parentElement;
 
     if (moveClasses === true) {
         element.parentElement.classList.add(...(element.classList));
         element.removeAttribute("class");
-        return;
+        return element.parentElement;
     }
 
     if (moveClasses instanceof Array)
         transferClasses(element, element.parentElement, moveClasses);
+
+	return element.parentElement;
 }
 
 /*****************************************************/
@@ -654,6 +658,15 @@ function doAjax(options) {
  */
 function relocate(s) {
     history.replaceState(null, null, s);
+}
+
+/********************************************************/
+/*  Return the element targeted by the URL hash, or null.
+ */
+function getHashTargetedElement() {
+	return (location.hash.length > 1
+		    ? document.querySelector(selectorFromHash(location.hash))
+		    : null);
 }
 
 /**************************/

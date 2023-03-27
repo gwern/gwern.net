@@ -40,7 +40,11 @@
      */
     --GW-TOC-border-color: #ccc;
     --GW-TOC-background-color: #f8f8f8;
-    --GW-TOC-collapse-button-background-color: rgba(248, 248, 248, 0.8);
+    --GW-TOC-collapse-button-text-color: #ccc;
+    --GW-TOC-collapse-button-text-hover-color: #fff;
+    --GW-TOC-collapse-button-color: rgba(248, 248, 248, 0.8);
+    --GW-TOC-collapse-button-hover-color: #ddd;
+    --GW-TOC-collapse-button-border-hover-color: #000;
     --GW-TOC-link-hover-background-color: #ececec;
     --GW-TOC-link-hover-color: #000;
     --GW-TOC-link-hover-indicator-bar-color: #ccc;
@@ -52,19 +56,12 @@
 	--GW-abstract-collapse-blockquote-hover-color: #eee;
 	--GW-collapse-disclosure-button-color: #eee;
 	--GW-collapse-disclosure-button-hover-color: #ddd;
-	--GW-collapse-disclosure-button-color-15-percent-transparent: rgba(238, 238, 238, 0.85);
-	--GW-collapse-disclosure-button-hover-color-15-percent-transparent: rgba(221, 221, 221, 0.85);
-	--GW-collapse-disclosure-button-color-30-percent-transparent: rgba(238, 238, 238, 0.70);
-	--GW-collapse-disclosure-button-hover-color-30-percent-transparent: rgba(221, 221, 221, 0.70);
 	--GW-collapse-in-blockquote-disclosure-button-color: #ddd;
 	--GW-collapse-in-blockquote-disclosure-button-hover-color: #ccc;
-	--GW-collapse-in-blockquote-disclosure-button-color-30-percent-transparent: rgba(221, 221, 221, 0.70);
-	--GW-collapse-in-blockquote-disclosure-button-hover-color-30-percent-transparent: rgba(204, 204, 204, 0.70);
-	--GW-collapse-disclosure-button-top-part-text-color: #bbb;
-	--GW-collapse-disclosure-button-bottom-part-text-color: #aaa;
-	--GW-collapse-in-blockquote-disclosure-button-top-part-text-color: #aaa;
-	--GW-collapse-in-blockquote-disclosure-button-bottom-part-text-color: #888;
+	--GW-collapse-disclosure-button-text-color: #bbb;
 	--GW-collapse-disclosure-button-text-hover-color: #fff;
+	--GW-collapse-in-blockquote-disclosure-button-text-color: #999;
+	--GW-collapse-in-blockquote-disclosure-button-text-hover-color: #888;
 
     /*  Headings.
      */

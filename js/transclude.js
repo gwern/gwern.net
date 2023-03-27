@@ -1213,17 +1213,21 @@ Transclude = {
 					let blockContext = Transclude.blockContext(targetElement);
 					if (blockContext) {
 						content = newDocument(blockContext);
+
+						//	Mark targeted element, for styling purposes.
+						targetElement = targetElementInDocument(includeLink, content);
+						if (targetElement)
+							targetElement.classList.add("targeted");
 					} else {
 						content = newDocument(targetElement);
 					}
 				} else {
 					content = newDocument(targetElement);
 				}
-
-				//	Mark targeted element, for styling purposes.
-				targetElementInDocument(includeLink, content).classList.add("targeted");
             } else {
             	content = newDocument();
+
+            	reportBrokenAnchorLink(includeLink);
             }
         }
 

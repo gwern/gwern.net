@@ -40,7 +40,11 @@
      */
     --GW-TOC-border-color: #5c5c5c;
     --GW-TOC-background-color: #212121;
-    --GW-TOC-collapse-button-background-color: rgba(33, 33, 33, 0.8);
+    --GW-TOC-collapse-button-text-color: #5c5c5c;
+    --GW-TOC-collapse-button-text-hover-color: #000;
+    --GW-TOC-collapse-button-color: rgba(33, 33, 33, 0.8);
+    --GW-TOC-collapse-button-hover-color: #494949;
+    --GW-TOC-collapse-button-border-hover-color: #fff;
     --GW-TOC-link-hover-background-color: #363636;
     --GW-TOC-link-hover-color: #fff;
     --GW-TOC-link-hover-indicator-bar-color: #5c5c5c;
@@ -52,19 +56,12 @@
 	--GW-abstract-collapse-blockquote-hover-color: #333;
 	--GW-collapse-disclosure-button-color: #333;
 	--GW-collapse-disclosure-button-hover-color: #494949;
-	--GW-collapse-disclosure-button-color-15-percent-transparent: rgba(51, 51, 51, 0.85);
-	--GW-collapse-disclosure-button-hover-color-15-percent-transparent: rgba(73, 73, 73, 0.85);
-	--GW-collapse-disclosure-button-color-30-percent-transparent: rgba(51, 51, 51, 0.70);
-	--GW-collapse-disclosure-button-hover-color-30-percent-transparent: rgba(73, 73, 73, 0.70);
 	--GW-collapse-in-blockquote-disclosure-button-color: #494949;
 	--GW-collapse-in-blockquote-disclosure-button-hover-color: #5c5c5c;
-	--GW-collapse-in-blockquote-disclosure-button-color-30-percent-transparent: rgba(73, 73, 73, 0.70);
-	--GW-collapse-in-blockquote-disclosure-button-hover-color-30-percent-transparent: rgba(92, 92, 92, 0.70);
-	--GW-collapse-disclosure-button-top-part-text-color: #6c6c6c;
-	--GW-collapse-disclosure-button-bottom-part-text-color: #7c7c7c;
-	--GW-collapse-in-blockquote-disclosure-button-top-part-text-color: #7c7c7c;
-	--GW-collapse-in-blockquote-disclosure-button-bottom-part-text-color: #999;
+	--GW-collapse-disclosure-button-text-color: #6c6c6c;
 	--GW-collapse-disclosure-button-text-hover-color: #000;
+	--GW-collapse-in-blockquote-disclosure-button-text-color: #8b8b8b;
+	--GW-collapse-in-blockquote-disclosure-button-text-hover-color: #999;
 
     /*  Headings.
      */

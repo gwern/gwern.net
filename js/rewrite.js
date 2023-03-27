@@ -182,9 +182,6 @@ function targetElementInDocument(link, doc) {
         }).first);
     }
 
-    if (element == null)
-        reportBrokenAnchorLink(link);
-
     return element;
 }
 
@@ -1281,7 +1278,9 @@ addContentLoadHandler(GW.contentLoadHandlers.injectTOCMinimizeButton = (eventInf
 
 	let button = newElement("BUTTON", { 
 		"class": "toc-collapse-toggle-button", 
-		"title": "Collapse table of contents" 
+		"title": "Collapse table of contents"
+	}, {
+		"innerHTML": `<span>${GW.assets.collapseChevron}</span>`
 	});
 	TOC.appendChild(button);
 
@@ -1889,10 +1888,12 @@ addContentInjectHandler(GW.contentInjectHandlers.preventDropCapsOverlap = (event
 
     eventInfo.container.querySelectorAll("[class*='drop-cap-']").forEach(dropCapBlock => {
         if (dropCapBlock.nextElementSibling) {
-            if (   dropCapBlock.nextElementSibling.classList.containsAnyOf([ "columns" ])
-                || [ "OL", "UL" ].includes(dropCapBlock.nextElementSibling.tagName)
+            if (   dropCapBlock.nextElementSibling.classList.containsAnyOf([ "columns", "collapse" ])
+                || [ "SECTION", "OL", "UL" ].includes(dropCapBlock.nextElementSibling.tagName)
                 || [ "0", "0px" ].includes(getComputedStyle(dropCapBlock.nextElementSibling).borderWidth) == false)
                 dropCapBlock.classList.add("overlap-not");
+        } else {
+        	dropCapBlock.classList.add("overlap-not");
         }
     });
 }, "rewrite", (info) => (info.document == document))

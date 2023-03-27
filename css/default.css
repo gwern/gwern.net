@@ -39,13 +39,6 @@
     --GW-popins-popin-footer-bar-height: 1.75rem;
 }
 
-:root {
-    --GW-svg-chevron-left: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23CCC"/></svg>');
-    --GW-svg-chevron-left-hover: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23FFF"/></svg>');
-    --GW-svg-chevron-down: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="%23CCC"/></svg>');
-    --GW-svg-chevron-down-hover: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="%23FFF"/></svg>');
-}
-
 
 /*********************/
 /* ARTICLE CONTAINER */
@@ -56,9 +49,9 @@
     */
 
 
-/************/
-/* SECTIONS */
-/************/
+/*******************/
+/* COLLAPSE BLOCKS */
+/*******************/
 /*  Use: annotate collapsible section headers with '{.collapse}' (in the Markdown);
     for sections where I want a summary/abstract of that (eg. in /note/note.page),
     one annotate summaries to keep uncollapsed with '<div class="abstract-collapse">summary</div>'.
@@ -66,27 +59,53 @@
  */
 
 .collapse {
-    min-height: 5rem;
+	--collapse-toggle-top-height: 3rem;
+	--collapse-toggle-bottom-height: 2rem;
+	--collapse-toggle-left-width: 0.5rem;
+	--collapse-left-offset: 1em;
+
     position: relative;
-    padding: 0 0 2rem 0;
+    min-height: calc(  var(--collapse-toggle-top-height) 
+    				 + var(--collapse-toggle-bottom-height));
     box-sizing: border-box;
     margin: 1em 0;
 }
+
+.collapse.expanded {
+    margin-left: calc(-1 * var(--collapse-left-offset));
+    padding-left: var(--collapse-left-offset);
+	padding-top: var(--collapse-toggle-top-height);
+	padding-bottom: var(--collapse-toggle-bottom-height);
+}
+
+/***************************/
+/*	Collapse block contents.
+ */
+
 .collapse.expanded > :not(.disclosure-button) {
     position: relative;
     z-index: 13;
 }
+
 .collapse:not(.expanded) > .collapse-content-wrapper {
-    max-height: 0;
+    max-height: calc(  var(--collapse-toggle-top-height) 
+    				 + var(--collapse-toggle-bottom-height));
     overflow: hidden;
 }
+.collapse:not(.expanded) > .abstract-collapse + .collapse-content-wrapper {
+	max-height: 0;
+}
+
+/*****************************/
+/*	Collapse block background.
+ */
 
 .collapse::before {
     content: "";
     position: absolute;
-    left: 0.5em;
-    top: 3rem;
-    bottom: 2rem;
+    left: var(--collapse-toggle-left-width);
+    top: var(--collapse-toggle-top-height);
+    bottom: var(--collapse-toggle-bottom-height);
     right: 0;
     background-color: var(--GW-body-background-color);
 }
@@ -94,37 +113,18 @@
     z-index: 12;
 }
 
-/********************/
-/*  Collapse summary.
- */
-.collapse .abstract,
-.collapse .abstract-collapse {
-    margin: 0;
-    position: relative;
-    z-index: 1;
-}
-.collapse .abstract {
-    margin-left: calc(-0.5em - 2px);
-}
-.collapse:not(.expanded) > .abstract blockquote {
-    margin: 0;
-    border-color: var(--GW-abstract-background-color);
-}
-.collapse:not(.expanded) > .disclosure-button:hover + .abstract blockquote {
-    background-color: var(--GW-abstract-collapse-blockquote-hover-color);
-    border-color: var(--GW-abstract-collapse-blockquote-hover-color);
-}
-
 /*********************/
 /*  Disclosure button.
  */
 .disclosure-button {
-    --button-color: var(--GW-collapse-disclosure-button-color);
+    --collapse-button-background-color: var(--GW-collapse-disclosure-button-color);
+    --collapse-button-text-color: var(--GW-collapse-disclosure-button-text-color);
 
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    cursor: pointer;
+    appearance: none;
+    border: none;
+    background-color: transparent;
     margin: 0;
+    padding: 0;
     position: absolute;
     top: 0;
     right: 0;
@@ -133,227 +133,235 @@
     z-index: 10;
     font-weight: inherit;
     font-style: inherit;
-    font-size: 0.875em;
+    font-size: 0.875rem;
     font-family: var(--GW-sans-serif-font-stack);
+    color: var(--collapse-button-text-color);
     box-shadow:
-        0.5em 0 0 0 var(--button-color) inset;
+        0.5em 0 0 0 var(--collapse-button-background-color) inset;
     transition:
-        box-shadow 0.1s ease;
+        color 0.1s ease;
+    cursor: pointer;
 }
 .disclosure-button:hover {
-    --button-color: var(--GW-collapse-disclosure-button-hover-color);
+    --collapse-button-background-color: var(--GW-collapse-disclosure-button-hover-color);
+    --collapse-button-text-color: var(--GW-collapse-disclosure-button-text-hover-color);
 
     z-index: 11;
 }
 .disclosure-button:focus {
     outline: none;
 }
-/*
-.disclosure-button:checked {
-    pointer-events: none;
-}
-.disclosure-button:checked::before,
-.disclosure-button:checked::after {
-    pointer-events: auto;
-}
- */
 
 /*  Top and bottom parts of disclosure button.
  */
-.disclosure-button::before,
-.disclosure-button::after {
-    background-color: var(--button-color);
+.disclosure-button .part {
+    position: absolute;
+    right: 0;
+    width: 100%;
+	box-sizing: border-box;
+	display: flex;
+	align-items: stretch;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.disclosure-button .part::before {
+	content: "";
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	background-color: var(--collapse-button-background-color);
     transition:
-        color 0.1s ease,
+        background-color 0.1s ease;
+}
+
+.disclosure-button .part > span {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+    background-color: var(--collapse-button-background-color);
+    transition:
         background-color 0.1s ease;
 }
 
 /*  Top part of disclosure button.
  */
-.disclosure-button::before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 3rem;
-    text-align: right;
-    color: var(--GW-collapse-disclosure-button-top-part-text-color);
-    padding: 1rem 3rem 0.75rem 3rem;
-    background-image: var(--GW-svg-chevron-left);
-    background-repeat: no-repeat;
-    background-position: calc(100% - 1rem) 0.625rem;
-    background-size: auto 1.5rem;
-    box-sizing: border-box;
+.disclosure-button .part.top {
+    top: 0;
+    height: var(--collapse-toggle-top-height);
+	justify-content: flex-end;
 }
-.disclosure-button:hover::before {
-    background-image: var(--GW-svg-chevron-left-hover);
-    color: var(--GW-collapse-disclosure-button-text-hover-color);
+
+.disclosure-button .part.top .icon {
+	width: var(--collapse-toggle-top-height);
+	height: 100%;
+	box-sizing: border-box;
+	padding: calc(var(--collapse-toggle-top-height) / 4);
 }
-.disclosure-button:checked::before {
-    content: "Click to collapse";
-    background-image: var(--GW-svg-chevron-down);
-    background-position: calc(100% - 0.75rem) 0.75rem;
+
+.disclosure-button .part.top .icon svg {
+	height: 100%;
+	transition:
+		transform 0.1s ease;
 }
-.disclosure-button:checked:hover::before {
-    background-image: var(--GW-svg-chevron-down-hover);
+.collapse.expanded > .disclosure-button .part.top .icon svg {
+	transform: rotate(-0.25turn)
+}
+
+.disclosure-button .part.top .label {
+	padding: 0 0 0 1.25em;
 }
 
 /*  Bottom part of disclosure button.
  */
-.disclosure-button::after {
-    width: 100%;
-    height: 2rem;
-    position: absolute;
-    text-align: center;
-    pointer-events: none;
-    content: "Click to expand";
-    color: var(--GW-collapse-disclosure-button-bottom-part-text-color);
-    text-decoration: underline;
-    text-underline-offset: 3px;
+.disclosure-button .part.bottom {
     bottom: 0;
-    display: flex;
-    align-items: center;
+    height: var(--collapse-toggle-bottom-height);
     justify-content: center;
 }
-.disclosure-button:hover::after {
-    color: var(--GW-collapse-disclosure-button-text-hover-color);
+
+.disclosure-button .part.bottom .label {
+	padding: 0 1em;
 }
-.disclosure-button:checked::after {
-    content: "Click to collapse";
+
+.collapse:not(.expanded) > .disclosure-button .part.top .label {
+    display: none;
+}
+
+/********************/
+/*  Collapse summary.
+ */
+.collapse > .abstract-collapse {
+    position: relative;
+    z-index: 1;
+}
+
+.collapse > .abstract-collapse:not(.abstract) {
+	margin-top: 0.25em;
+	margin-bottom: 0.25em;
+}
+
+.collapse.has-abstract {
+	padding-top: var(--collapse-toggle-top-height);
+	padding-bottom: var(--collapse-toggle-bottom-height);
+}
+
+.collapse > .abstract-collapse.abstract {
+    margin-left: calc(-1 * (var(--collapse-toggle-left-width) + 2px));
+}
+.collapse:not(.expanded) > .abstract-collapse.abstract blockquote {
+    margin: 0;
+    border-color: var(--GW-abstract-background-color);
+}
+.collapse:not(.expanded) > .disclosure-button:hover + .abstract-collapse.abstract blockquote {
+    background-color: var(--GW-abstract-collapse-blockquote-hover-color);
+    border-color: var(--GW-abstract-collapse-blockquote-hover-color);
 }
 
 /************************************************/
 /*  Collapsible sections (the <section> element).
  */
 section.collapse {
-    padding-left: 1em;
-    margin: 2.5em 0 2.25em -1em;
+	margin-left: calc(-1 * var(--collapse-left-offset));
+    padding-left: var(--collapse-left-offset);
+
+    margin-top: 2.5em;
+    margin-bottom: 2.25em;
 }
+
 section.collapse:not(.expanded) {
-    overflow: hidden;
+	display: flow-root;
 }
-section.collapse > *:first-child {
-    margin-top: 0;
+
+section.collapse.has-abstract,
+section.collapse.expanded {
+	padding-top: 0;
+}
+
+section.collapse.expanded > .disclosure-button .part.top .label {
+    display: none;
+}
+
+section.collapse > :first-child {
     position: relative;
+    height: var(--collapse-toggle-top-height);
+    margin: 
+    	0 
+    	var(--collapse-toggle-top-height)
+    	0 
+    	calc(-1 * var(--collapse-toggle-left-width));
+    padding: 0;
+    white-space: nowrap;
+    overflow: hidden;
     z-index: 12;
     pointer-events: none;
-    margin-left: -0.5rem;
 }
-section.collapse > :first-child a::after {
+
+section.collapse > :first-child > a {
+    position: relative;
+    pointer-events: auto;
+}
+section.collapse > :first-child > a,
+section.collapse > :first-child > a * {
+    text-shadow: none;
+}
+
+section.collapse > :first-child > a::after {
     top: -0.1em;
     left: 0.5em;
 }
-section.collapse > h1:first-child {
-    margin-bottom: 0.375em;
+
+section.collapse > h1:first-child > a {
+	top: 0.1em;
 }
+
 section.collapse > h2:first-child {
     line-height: 1.75;
 }
 section.collapse > h2:first-child::after {
     content: none;
 }
-section.collapse > h1:first-child,
-section.collapse > h2:first-child,
-section.collapse > h3:first-child,
-section.collapse > h4:first-child,
-section.collapse > h5:first-child,
-section.collapse > h6:first-child {
-    height: 3rem;
-    margin-bottom: 0;
-    padding: 0;
+section.collapse > h2:first-child a::after {
+    top: -0.2em;
 }
-section.collapse > *:first-child a {
-    text-shadow: none;
-}
-section.collapse > :first-child > a {
-    pointer-events: auto;
-    position: relative;
+
+section.collapse:not(.expanded) > .collapse-content-wrapper {
+	max-height: 0;
 }
 
 /**********************************/
 /*  Collapsible non-section blocks.
  */
-:not(section).collapse {
-    margin-left: -1em;
-}
-:not(section).collapse:not(.expanded) {
-    padding: 0 0 0 1em;
-}
-:not(section).collapse:not(.expanded) > .collapse-content-wrapper {
-    max-height: 5rem;
-}
-
-:not(section).collapse:not(.expanded) > .disclosure-button {
-    --button-color: var(--GW-collapse-disclosure-button-color-15-percent-transparent);
-
-    background-color: var(--button-color);
-}
-:not(section).collapse > .disclosure-button {
-    transition:
-        box-shadow 0.1s ease,
-        color 0.1s ease,
-        background-color 0.1s ease;
-}
-:not(section).collapse:not(.expanded) > .disclosure-button:hover {
-    --button-color: var(--GW-collapse-disclosure-button-hover-color-15-percent-transparent);
-}
-:not(section).collapse:not(.expanded) > .disclosure-button::before,
-:not(section).collapse:not(.expanded) > .disclosure-button::after {
-    --button-color: var(--GW-collapse-disclosure-button-color);
-}
-:not(section).collapse:not(.expanded) > .disclosure-button:hover::before,
-:not(section).collapse:not(.expanded) > .disclosure-button:hover::after {
-    --button-color: var(--GW-collapse-disclosure-button-hover-color);
-}
-:not(section).collapse:not(.expanded) > .disclosure-button::before {
-    width: 3rem;
-    height: 3rem;
-    padding: 0;
-    top: 0;
-    right: 0;
-    background-position: calc(100% - 1rem) 0.75rem;
-}
-:not(section).collapse:not(.expanded) > .disclosure-button::after {
-    width: 10em;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
-}
-:not(section).collapse:not(.expanded) > .disclosure-button {
+div.collapse:not(.has-abstract):not(.expanded) > .disclosure-button {
     box-shadow: none;
 }
-:not(section).collapse.expanded {
-    padding-top: 3.5rem;
-    padding-bottom: 2.5rem;
-    padding: 3.5rem 0 2.5rem 1em;
-}
 
-:not(section).collapse:not(.expanded) .abstract-collapse:not(.abstract) {
-    margin: 0.5em 0;
+div.collapse:not(.expanded) > .disclosure-button .part::before {
+    opacity: 0.85;
+}
+div.collapse.has-abstract:not(.expanded) > .disclosure-button .part::before {
+    opacity: 1.0;
 }
 
 /***************************/
 /*  Collapsible code blocks.
  */
 
-.sourceCode {
-    clear: both;
-}
-
 .sourceCode.collapse {
-    margin: 1.75em 0;
+	margin-top: 1.75em;
+	margin-bottom: 1.75em;
 }
-.sourceCode.collapse .collapse-content-wrapper pre {
+.sourceCode.collapse pre {
     margin: 0;
 }
-.sourceCode.collapse:not(.expanded) {
-    padding: 0;
-}
-.sourceCode.collapse.expanded {
-    margin-left: -1em;
+.sourceCode.collapse.expanded .sourceCode {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
 }
 .sourceCode.collapse:not(.expanded) .collapse-content-wrapper pre {
-    max-height: 5rem;
+    max-height: calc(  var(--collapse-toggle-top-height) 
+    				 + var(--collapse-toggle-bottom-height));
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -363,18 +371,19 @@ section.collapse > :first-child > a {
     margin: 0 !important;
 }
 
-.sourceCode.collapse:not(.expanded) > .disclosure-button {
-    --button-color: var(--GW-collapse-disclosure-button-color-30-percent-transparent);
+.sourceCode.collapse:not(.expanded) > .disclosure-button .part::before {
+    opacity: 0.70;
 }
-.sourceCode.collapse:not(.expanded) > .disclosure-button:hover {
-    --button-color: var(--GW-collapse-disclosure-button-hover-color-30-percent-transparent);
+
+.sourceCode.collapse > .disclosure-button .part.top .label,
+.sourceCode.collapse > .disclosure-button .part.top .icon {
+    margin-top: 1px;
 }
-.sourceCode.collapse:not(.expanded) > .disclosure-button::before {
-    top: 1px;
-    right: 1px;
+.sourceCode.collapse > .disclosure-button .part.top .icon {
+	margin-right: 1px;
 }
-.sourceCode.collapse:not(.expanded) > .disclosure-button::after {
-    bottom: 1px;
+.sourceCode.collapse > .disclosure-button .part.bottom .label {
+    margin-bottom: 1px;
 }
 
 /**********************/
@@ -383,65 +392,108 @@ section.collapse > :first-child > a {
 
 .table-wrapper.collapse:not(.expanded) {
     overflow: hidden;
-    margin-left:  0;
+    margin-left: 0;
     padding: 0;
 }
 
-.table-wrapper.collapse:not(.expanded) > .disclosure-button::before {
-    top: 2px;
+.table-wrapper.collapse > .disclosure-button .part.top .label,
+.table-wrapper.collapse > .disclosure-button .part.top .icon {
+    margin-top: 2px;
+}
+
+.table-wrapper.collapse.expanded .table {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
 }
 
 /****************************/
 /*  Collapses in blockquotes.
  */
 
-blockquote :not(section).collapse:not(.expanded),
-blockquote :not(section).collapse.expanded {
-    padding-left: 1.25em;
-    padding-right: 1.25em;
-    margin-left: -1.25em;
-    margin-right: -1.25em;
+blockquote .collapse {
+	--collapse-blockquote-side-padding: 1.25em;
+	--collapse-blockquote-bottom-padding: 1em;
 }
-.markdownBody blockquote :not(section).collapse:last-child {
-    margin-bottom: -1em;
+@media all and (max-width: 649px) {
+	blockquote .collapse {
+		--collapse-blockquote-side-padding: 1em;
+		--collapse-blockquote-bottom-padding: 0.75em;
+	}
 }
 
-@media all and (max-width: 649px) {
-    blockquote :not(section).collapse:not(.expanded),
-    blockquote :not(section).collapse.expanded {
-        padding-left: 1em;
-        padding-right: 1em;
-        margin-left: -1em;
-        margin-right: -1em;
-    }
-    .markdownBody blockquote :not(section).collapse:last-child {
-        margin-bottom: -0.75em;
-    }
+blockquote .collapse,
+blockquote .collapse.expanded {
+    padding-left: var(--collapse-blockquote-side-padding);
+    padding-right: var(--collapse-blockquote-side-padding);
+    margin-left: calc(-1 * var(--collapse-blockquote-side-padding));
+    margin-right: calc(-1 * var(--collapse-blockquote-side-padding));
+}
+.markdownBody blockquote > .collapse:last-child {
+    margin-bottom: calc(-1 * var(--collapse-blockquote-bottom-padding));
 }
 
 blockquote .collapse::before {
     background-color: var(--GW-blockquote-background-color);
 }
-blockquote .collapse:not(.expanded) > .disclosure-button {
-    --button-color: var(--GW-collapse-in-blockquote-disclosure-button-color-30-percent-transparent);
+
+blockquote .collapse > .disclosure-button {
+	--collapse-button-text-color: var(--GW-collapse-in-blockquote-disclosure-button-text-color);
+    --collapse-button-background-color: var(--GW-collapse-in-blockquote-disclosure-button-color);
 }
-blockquote .collapse:not(.expanded) > .disclosure-button:hover {
-    --button-color: var(--GW-collapse-in-blockquote-disclosure-button-hover-color-30-percent-transparent);
+blockquote .collapse > .disclosure-button:hover {
+	--collapse-button-text-color: var(--GW-collapse-in-blockquote-disclosure-button-text-hover-color);
+    --collapse-button-background-color: var(--GW-collapse-in-blockquote-disclosure-button-hover-color);
 }
-blockquote :not(section).collapse:not(.expanded) > .disclosure-button::before,
-blockquote :not(section).collapse:not(.expanded) > .disclosure-button::after {
-    --button-color: var(--GW-collapse-in-blockquote-disclosure-button-color);
+
+blockquote .collapse:not(.expanded) > .disclosure-button .part::before {
+    opacity: 0.70;
 }
-blockquote :not(section).collapse:not(.expanded) > .disclosure-button:hover::before,
-blockquote :not(section).collapse:not(.expanded) > .disclosure-button:hover::after {
-    --button-color: var(--GW-collapse-in-blockquote-disclosure-button-hover-color);
+blockquote .collapse.has-abstract:not(.expanded) > .disclosure-button .part::before {
+    opacity: 1.0;
 }
-blockquote .disclosure-button::before {
-    color: var(--GW-collapse-in-blockquote-disclosure-button-top-part-text-color);
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23AAA"/></svg>');
+
+/*******************************************************************/
+/*  “Aux links” in link bibliographies, directory indexes, and other 
+	transcluded (rather than pop-framed) annotations.
+ */
+
+.annotation .collapse.aux-links-container {
+	--collapse-toggle-top-height: 2.25rem;
+
+    border-top: 1px solid var(--GW-TOC-border-color);
+	margin-bottom: 0;
 }
-blockquote .disclosure-button::after {
-    color: var(--GW-collapse-in-blockquote-disclosure-button-bottom-part-text-color);
+.annotation p + .collapse.aux-links-container {
+    margin-top: 1.25em;
+}
+.annotation .collapse.aux-links-container + .collapse.aux-links-container {
+    margin-top: 0;
+}
+.annotation .TOC + .collapse.aux-links-container {
+    margin-top: 0.75em;
+}
+
+.annotation .collapse.aux-links-container .aux-links-append {
+    padding-left: 0;
+}
+
+/******************************/
+/*	Content in collapse blocks.
+ */
+.collapse.expanded > .collapse-content-wrapper > :last-child {
+	margin-bottom: 0.5em;
+}
+
+.collapse:not(.has-abstract).expanded > .collapse-content-wrapper > p:first-child {
+	margin-top: 0.5em;
+}
+
+div.collapse:not(.has-abstract):not(.expanded) > .collapse-content-wrapper > p {
+	margin-left: 0.375em;
+}
+
+.collapse section > :first-child {
+	margin-left: 0;
 }
 
 /***********************/
@@ -458,6 +510,21 @@ li > :not(section).collapse:not(.expanded) {
 
 .collapse [class^='horizontal-rule'] {
     clear: none;
+}
+
+body.indented .abstract-collapse + .collapse-content-wrapper > p:not([class^='drop-cap']):first-child {
+    text-indent: 2.5em;
+}
+body.indented-not .abstract-collapse + .collapse-content-wrapper > p:not([class^='drop-cap']):first-child {
+    margin-top: 1em;
+}
+@media all and (max-width: 649px) {
+    body.indented .abstract-collapse + .collapse-content-wrapper > p:not([class^='drop-cap']):first-child {
+        text-indent: 1.75em;
+    }
+    body.indented-not .abstract-collapse + .collapse-content-wrapper > p:not([class^='drop-cap']):first-child {
+        margin-top: 1em;
+    }
 }
 
 
@@ -559,9 +626,6 @@ h2::after {
     top: 0.1em;
     left: unset;
     right: -0.75em;
-}
-.markdownBody section.collapse > h2:first-child a::after {
-    top: -0.2em;
 }
 @media all and (min-width: 650px) {
     section:not(.collapse) > h2:first-child {
@@ -702,18 +766,15 @@ section:target > :first-child a::after {
 #TOC .toc-collapse-toggle-button {
     appearance: none;
     border: none;
-    background-color: var(--GW-TOC-collapse-button-background-color);
-    background-image: var(--GW-svg-chevron-down);
-    background-origin: content-box;
-    background-repeat: no-repeat;
-    background-position: center;
+    background-color: var(--GW-TOC-collapse-button-color);
     position: absolute;
-    width: 2em;
-    height: 1.75em;
-    padding: 0.25em 0.375em 0.25em 0.375em;
+    height: calc(2em - 2px);
+    padding: 0.3em 0.4em;
     top: 0;
     right: 0;
-    color: inherit;
+    display: flex;
+    justify-content: flex-end;
+    color: var(--GW-TOC-collapse-button-text-color);
     font-family: var(--GW-sans-serif-font-stack);
     font-weight: inherit;
     font-style: inherit;
@@ -721,24 +782,34 @@ section:target > :first-child a::after {
     z-index: 1;
     cursor: pointer;
 }
+#TOC .toc-collapse-toggle-button span {
+	display: flex;
+    width: calc(1.4em - 2px);
+	height: 100%;
+	justify-content: center;
+	align-items: center;
+}
+#TOC .toc-collapse-toggle-button svg {
+	width: 100%;
+	height: 100%;
+	transform: rotate(-0.25turn);
+	transition:
+		transform 0.1s ease;
+}
+
 #TOC.collapsed .toc-collapse-toggle-button {
-    background-image: var(--GW-svg-chevron-left);
-    background-position: center right;
     width: 100%;
     height: 100%;
-    top: 0;
-    right: 0;
-    border: none;
-    padding: 0.25em 0.375em 0.25em 0.375em;
 }
+#TOC.collapsed .toc-collapse-toggle-button svg {
+	transform: rotate(0);
+}
+
 @media only screen and (hover: hover) {
     #TOC .toc-collapse-toggle-button:hover {
-        background-color: var(--GW-collapse-disclosure-button-hover-color);
-        background-image: var(--GW-svg-chevron-down-hover);
-        outline: 1px dotted currentColor;
-    }
-    #TOC.collapsed .toc-collapse-toggle-button:hover {
-        background-image: var(--GW-svg-chevron-left-hover);
+	    color: var(--GW-TOC-collapse-button-text-hover-color);
+        background-color: var(--GW-TOC-collapse-button-hover-color);
+        outline: 1px dotted var(--GW-TOC-collapse-button-border-hover-color);
     }
 }
 
@@ -2352,7 +2423,6 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     }
 }
 .mjpage__block .block-button-bar button {
-    -moz-appearance: none;
     appearance: none;
     display: block;
     font-size: inherit;
@@ -3928,7 +3998,6 @@ body.index-directory #footer {
 /*  Buttons in the popup title bar.
     */
 .popup .popframe-title-bar-button {
-    -moz-appearance: none;
     appearance: none;
     border: none;
     background-color: transparent;
@@ -4425,7 +4494,6 @@ body.index-directory #footer {
 }
 
 #popup-options-dialog button {
-    -moz-appearance: none;
     appearance: none;
     border: none;
     background-color: inherit;
@@ -4514,7 +4582,6 @@ body.index-directory #footer {
 
 #popup-options-dialog .option-buttons input {
     appearance: none;
-    -moz-appearance: none;
     font-family: inherit;
     font-size: inherit;
     border: 1px solid var(--GW-popups-popup-options-dialog-radio-button-border-color);
@@ -4559,7 +4626,6 @@ body.index-directory #footer {
     transition: none;
 }
 #popups-disabled-show-popup-options-dialog-button button {
-    -moz-appearance: none;
     appearance: none;
     border: none;
     font-family: inherit;
@@ -4682,7 +4748,6 @@ body.index-directory #footer {
 /*  Buttons in the popin title bar.
     */
 .popin .popframe-title-bar-button {
-    -moz-appearance: none;
     appearance: none;
     border: none;
     background-color: transparent;
@@ -5154,6 +5219,15 @@ section.highlight-fading::before {
     margin: 0.25em 0;
     padding: 0 0 0 1.5em;
 }
+.annotation.wikipedia-entry .quotebox-title {
+	text-align: center;
+	font-weight: bold;
+	font-size: 1.25em;
+	margin: -0.125em 0 0.25em 0;
+}
+.annotation.wikipedia-entry .quotebox-cite {
+	margin-top: 0.5em;
+}
 .annotation.wikipedia-entry > figure.float-right {
     margin: 0.125em 0 0.75em 1.5em;
 }
@@ -5257,36 +5331,6 @@ section.highlight-fading::before {
 /*  “Aux links” in link bibliographies, directory indexes, and other transcluded
     (rather than pop-framed) annotations.
  */
-
-.annotation .collapse.aux-links-container {
-    clear: right;
-    border-top: 1px solid var(--GW-TOC-border-color);
-}
-.annotation .collapse.aux-links-container:not(:last-child) {
-    border-bottom: 1px solid var(--GW-TOC-border-color);
-}
-.annotation p + .collapse.aux-links-container {
-    margin-top: 1.25em;
-}
-.annotation .collapse.aux-links-container + .collapse.aux-links-container {
-    margin-top: 1.5em;
-}
-.annotation .TOC + .collapse.aux-links-container {
-    margin-top: 0.75em;
-}
-
-.annotation .collapse.aux-links-container .aux-links-append {
-    padding-left: 0;
-}
-
-.annotation :not(section).collapse.aux-links-container:not(.expanded) > .disclosure-button::before {
-    content: "Click to expand";
-    width: 10rem;
-    padding: 1rem 3rem 0.75rem 0;
-}
-.annotation :not(section).collapse.aux-links-container:not(.expanded) > .disclosure-button::after {
-    display: none;
-}
 
 ol.link-bibliography-list-compact {
     --GW-list-left-padding: 2.25em;
@@ -5706,7 +5750,6 @@ ol.link-bibliography-list-compact > li::marker {
 .mode-selector button {
     --mode-selector-button-left-adjust: 0px;
 
-    -moz-appearance: none;
     appearance: none;
     border: none;
     background-color: transparent;

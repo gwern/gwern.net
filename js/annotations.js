@@ -740,6 +740,25 @@ Annotations.dataSources.wikipedia = {
 			br.remove();
 		});
 
+		//	Rectify quoteboxes.
+		referenceEntry.querySelectorAll("div.quotebox").forEach(quotebox => {
+			let blockquote = quotebox.querySelector("blockquote");
+			blockquote.classList.add("quotebox");
+			
+			let title = quotebox.querySelector(".quotebox-title");
+			if (title) {
+				blockquote.insertBefore(title, blockquote.firstElementChild);
+			}
+
+			let cite = quotebox.querySelector("blockquote + p");
+			if (cite) {
+				blockquote.insertBefore(cite, null);
+				cite.classList.add("quotebox-citation");
+			}
+
+			unwrap(quotebox);
+		});
+
 		//  Separate out the thumbnail and float it.
 		let thumbnail = referenceEntry.querySelector("img");
 		let thumbnailContainer;
