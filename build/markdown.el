@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-03-23 13:18:17 gwern"
+;;; When:  Time-stamp: "2023-03-26 16:57:43 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -229,6 +229,8 @@
        (replace-all "gF" "_g~f~_")
        (replace-all "ﬁ" "fi")
        (replace-all "ﬀ" "ff")
+       (replace-all "ﬃ" "ffi")
+       (replace-all "ﬂ" "fl")
        (replace-all "￿" "fi")
        (replace-all "Æ" "fi")
        (replace-all "𝑥" "<em>x</em>")
@@ -960,7 +962,9 @@
          (query-replace "(g value" "(_g_ value" nil begin end)
          (query-replace "(m = " "(_m_ =" nil begin end)
          (query-replace "LaTeX" "<span class=\"logotype-latex\">L<span class=\"logotype-latex-a\">a</span>T<span class=\"logotype-latex-e\">e</span>X</span>" nil begin end)
-         (query-replace "TeX" "<span class=\"logotype-tex\">T<sub>e</sub>X</span>" nil begin end))
+         (query-replace "LATEX" "<span class=\"logotype-latex\">L<span class=\"logotype-latex-a\">a</span>T<span class=\"logotype-latex-e\">e</span>X</span>" nil begin end)
+         (query-replace "TeX" "<span class=\"logotype-tex\">T<sub>e</sub>X</span>" nil begin end)
+         (query-replace "TEX" "<span class=\"logotype-tex\">T<sub>e</sub>X</span>" nil begin end))
        (query-replace "Nepeta cataria" "_Nepeta cataria_" nil begin end)
        (query-replace "MC4R" "_MC4R_" nil begin end)
        (query-replace "two thirds" "2⁄3" nil begin end)
@@ -1274,6 +1278,23 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
 (add-hook 'html-mode-hook
           (lambda ()
             (define-key html-mode-map "\C-c\ w" 'markdown-annotation-compile)))
+
+; for the `foo` buffer I do most of my annotation work in, on the first copy-paste of a block of text, detect if it has any paragraph breaks (ie. double newlines), and if it does not, then automatically run paragraphizer.py on it to try to break it up into logical paragraphs.
+; (Note/warning: written by GPT-3.5. Curiously, GPT-4 failed when I tried to repeat this exercise in it using the same starting prompt & kind of feedback: because it tries to implement solutions using advice, buffer-local variables, and :properties—which are subtly buggy in their handling of state, and so wind up running paragraphizer.py on every paste.)
+(defun annotation-abstract-paragraphize ()
+  "Automatically paragraphize single-paragraph abstracts."
+  (let ((double-newline-found nil))
+    (when (and (equal (buffer-name) "foo")
+               (eq last-command 'yank))
+      (save-excursion
+        (goto-char (point-min))
+        (unless (search-forward-regexp "\n\n" nil t)
+          (shell-command-on-region (point-min) (point-max) "~/wiki/static/build/paragraphizer.py" nil t)
+          (setq double-newline-found t))))
+    (when double-newline-found
+      (goto-char (point-max))
+      (message "Paragraphizing abstract..."))))
+(add-hook 'post-command-hook #'annotation-abstract-paragraphize)
 
 ; add new-line / paragraph snippet
 (add-hook 'yaml-mode-hook

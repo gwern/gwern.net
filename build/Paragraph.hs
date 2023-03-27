@@ -18,7 +18,7 @@ processParagraphizer p a =
       if length a < 1024 || paragraphized p a then return a
       else do let a' = replace "<p>" "" $ replace "</p>" "" a
               let a'' = trim $ replace "\160" " " $ toMarkdown a'
-              (status,_,mb) <- runShellCommand "./" Nothing "python" ["static/build/paragraphizer.py", a'']
+              (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/paragraphizer.py", a'']
               case status of
                 ExitFailure err -> printGreen (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb]) >> printRed "Paragraphizer failed!" >> return a
                 _ -> do let clean = runPure $ do

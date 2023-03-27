@@ -159,7 +159,7 @@ sitePrioritize = do lotdb <- readTTDB linkDBPath
           "beepb00p.xyz", "behavioralscientist.org", "benanne.github.io", "beneinstein.medium.com", "bentilly.blogspot.com",
           "beta.openai.com", "betsofbitco.in", "betterhumans.coach.me", "bifunctor.homelinux.net", "bitcoincharts.com",
           "bitcoin-otc.com", "bitcointalk.org", "bjp.rcpsych.org", "blakemasters.tumblr.com", "blockchain.info",
-          "blog.23andme.com", "blog.8faces.com", "blog.aboutamazon.com", "blog.archive.org", "blog.codinghorror.com",
+          "blog.23andme.com", "blog.8faces.com", "www.aboutamazon.com", "blog.archive.org", "blog.codinghorror.com",
           "blog.cr.yp.to", "blog.cryptographyengineering.com", "blog.csdn.net", "blog.darcs.net", "blog.eleuther.ai",
           "blog.ethereum.org", "blog.givewell.org", "blog.google", "blog.johantibell.com", "blog.ml.cmu.edu",
           "blog.mozilla.org", "blog.novelai.net", "blog.nuclearsecrecy.com", "blog.platypope.org", "blog.regehr.org",
@@ -589,4 +589,4 @@ sitePrioritize = do lotdb <- readTTDB linkDBPath
           "allendowney.blogspot.com", "alexanderetz.com", "alessonislearned.com", "ajjacobs.com", "aiindex.stanford.edu",
           "agingfree.org", "adidkh.bandcamp.com", "actualfacebookgraphsearches.tumblr.com", "abstrusegoose.com", "abahlali.org",
           "2015phage.org", "0fps.net", "www.theinformation.com", "assets.aeaweb.org", "www.greaterwrong.com", "git.sr.ht",
-          "casetext.com", "archive.is", "phabricator.wikimedia.org", "www.cs.ox.ac.uk", "www.aboutamazon.com"]
+          "casetext.com", "archive.is", "phabricator.wikimedia.org", "www.cs.ox.ac.uk", "www.aboutamazon.com", "yosefk.com", "www.informit.com", "inews.co.uk", "en.wikibooks.org"]

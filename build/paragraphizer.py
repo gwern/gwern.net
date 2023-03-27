@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using GPT-3 neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2023-03-15 15:44:48 gwern"
+# When:  Time-stamp: "2023-03-26 16:12:28 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python paragraphizer.py
@@ -76,20 +76,23 @@
 import sys
 import openai
 
-prompt = """Add double-newlines `\n\n` to split this abstract into paragraphs (one topic per paragraph). From:
-
-\""""
-
 if len(sys.argv) == 1:
     target = sys.stdin.read().strip()
 else:
     target = sys.argv[1]
 
-postPrompt="\"\n\nTo:\n\n\""
+messages = [
+    {"role": "system", "content": "You are a helpful assistant that adds double-newlines to split abstracts into paragraphs (one topic per paragraph.)"},
+    {"role": "user", "content": f"Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) Please include ONLY the resulting text in your output, and NO other conversation or comments.\n\n<abstract>\n{target}\n</abstract>"}
+]
 
-result = openai.Completion.create(engine="text-davinci-003",
-                                prompt=prompt+target+postPrompt,
-                                temperature=0, max_tokens=1024, stop="\"")['choices'][0]['text']
+result = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=messages,
+    max_tokens=1024,
+    temperature=0,
+)['choices'][0]['message']['content']
+
 print(result)
 # if target == (result.replace('\n', '')).replace(' ', ''):
 #     print(result)

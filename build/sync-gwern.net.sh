@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-03-25 13:22:34 gwern"
+# When:  Time-stamp: "2023-03-26 10:06:21 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -362,7 +362,7 @@ else
          grep -F -- '–' ./metadata/*.hs || true; }
     wrap λ "En-dashes in URLs?"
 
-    λ(){ grep -F -e 'http' ./metadata/*.hs ./metadata/*.yaml | grep -F -v -e 'https://en.wikipedia.org/wiki/' -e '10/arc-1-gestation/1' -e 'the-elves-leave-middle-earth-' -e '2011/05/from-the-bookcase-no-2' -e 'd-a-rovinskiis-collection-of-russian-lubki-18th' | grep -F -e "%E2%80%93" -e "%E2%80%94" -e "%E2%88%92"; }
+    λ(){ grep -F -e 'http' ./metadata/*.hs ./metadata/*.yaml | grep -F -v -e 'https://en.wikipedia.org/wiki/' -e '10/arc-1-gestation/1' -e 'the-elves-leave-middle-earth-' -e '2011/05/from-the-bookcase-no-2' -e 'd-a-rovinskiis-collection-of-russian-lubki-18th' -e 'commons.wikimedia.org/wiki/File:Flag_of_the_NSDAP_' | grep -F -e "%E2%80%93" -e "%E2%80%94" -e "%E2%88%92"; }
     wrap λ "*Escaped* En/em/minus dashes in URLs?"
 
     λ(){ gf '\\' ./static/css/*.css; }
@@ -479,7 +479,7 @@ else
     λ(){ ge '  - .*[a-z]–[a-Z]' ./metadata/full.yaml ./metadata/half.yaml; }
     wrap λ "Look for en-dash abuse."
 
-    λ(){ grep -F ' ?' ./metadata/full.yaml; }
+    λ(){ gf ' ?' ./metadata/full.yaml; }
     wrap λ "Problem with question-marks (perhaps the crossref/Emacs copy-paste problem?)."
 
     λ(){ grep -F --invert-match -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -- ./metadata/full.yaml ./metadata/half.yaml | \
@@ -679,8 +679,8 @@ else
         # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
         (if ((RANDOM % 100 > 90)); then sleep 30s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE"; fi;
          sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
-         sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
-         sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on";
+         # sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
+         # sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on";
          sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on"; )
     fi
 
