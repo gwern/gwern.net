@@ -333,7 +333,7 @@ Content = {
 
 				//	Maybe it’s an annotated link?
 				if (Annotations.isAnnotatedLink(link))
-					return false
+					return false;
 
 				let identifier = Content.targetIdentifier(link);
 				return Content.contentTypes.localFragment.matches(identifier);
