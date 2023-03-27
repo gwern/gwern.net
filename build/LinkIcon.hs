@@ -181,7 +181,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.salon.com" = aI "s" "text"
  | u'' "scholars-stage.org" = aI "Ss" "text" -- Avoid the unfortunate connotations of ‘SS’
  | u'' "www.technologyreview.com" = aI "T" "text,sans" -- Technology Review (their logo has a little slash in it which you probably can’t see at low-res) but is otherwise just a ‘T’ so meh
- | aU'' ["texample.net", "ctan.org", "www.tug.org", "tug.org"] = aI "TₑX" "text" -- ₑ LATIN SUBSCRIPT SMALL LETTER E U+2091; can't use the official logo: <https://commons.wikimedia.org/wiki/File:TeX_logo.svg> is unworkable as a tiny icon, Computer Modern's thinness issues are massively exacerbated & it's unreadable
+ | aU'' ["texample.net", "ctan.org", "www.tug.org", "tug.org"] = aI "tex" "svg" -- ₑ LATIN SUBSCRIPT SMALL LETTER E U+2091; can't use the official logo: <https://commons.wikimedia.org/wiki/File:TeX_logo.svg> is unworkable as a tiny icon, Computer Modern's thinness issues are massively exacerbated & it's unreadable
  | u'' "tvtropes.org" = aI "TV" "text" -- TV Tropes: their lampshade icon is unrecognizable & hard to see small
  | aU'' ["www.urth.net", "lists.urth.net", "www.wolfewiki.com"] = aI "U" "text" -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
  | u'' "www.vanityfair.com" = aI "VF" "text"
@@ -755,10 +755,10 @@ linkIconTestUnitsText =
          , ("https://stackoverflow.com/questions/1197575/can-scripts-be-inserted-with-innerhtml",  "stackexchange","svg")
          , ("https://mathoverflow.net/questions/32967/have-any-long-suspected-irrational-numbers-turned-out-to-be-rational",  "stackexchange","svg")
          , ("https://crypto.stackexchange.com/questions/2507/can-i-encrypt-user-input-in-a-way-i-cant-decrypt-it-for-a-certain-period-of-tim",  "stackexchange","svg")
-         , ("https://ctan.org/pkg/marginnote", "TₑX","text")
-         , ("https://tug.org/FontCatalogue/goudyinitialen/", "TₑX","text")
-         , ("https://www.tug.org/whatis.html", "TₑX","text")
-         , ("https://texample.net/tikz/examples/andler-optimal-lot-size/", "TₑX","text")
+         , ("https://ctan.org/pkg/marginnote", "tex","svg")
+         , ("https://tug.org/FontCatalogue/goudyinitialen/", "tex","svg")
+         , ("https://www.tug.org/whatis.html", "tex","svg")
+         , ("https://texample.net/tikz/examples/andler-optimal-lot-size/", "tex","svg")
          , ("https://www.technologyreview.com/2011/06/21/193829/the-measured-life/",  "T","text,sans")
          , ("https://www.alignmentforum.org/posts/HhWhaSzQr6xmBki8F/birds-planes-brains-and-ai-against-appeals-to-the-complexity", "AF","text,sans")
          , ("https://www.theatlantic.com/business/archive/2011/06/beware-the-stunning-pilot-program/240352/",  "A","text,italic")
