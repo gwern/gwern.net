@@ -182,9 +182,6 @@ function targetElementInDocument(link, doc) {
         }).first);
     }
 
-    if (element == null)
-        reportBrokenAnchorLink(link);
-
     return element;
 }
 
