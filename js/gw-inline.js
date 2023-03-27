@@ -3,6 +3,14 @@
 if (typeof window.GW == "undefined")
     window.GW = { };
 
+
+/********/
+/* MISC */
+/********/
+
+GW.assets = { };
+
+
 /*****************/
 /* MEDIA QUERIES */
 /*****************/
