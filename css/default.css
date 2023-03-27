@@ -3653,15 +3653,14 @@ body.index-directory #footer {
     margin-bottom: 0.375em;
 }
 
-.popframe-body > div.annotation > div.annotation-abstract > :not(section).collapse:not(.expanded),
-.popframe-body > div.annotation > div.annotation-abstract > :not(section).collapse.expanded {
-    margin-left: 0;
+.popframe-body > div.annotation > div.annotation-abstract > .collapse {
+    margin-left: calc(-1 * var(--collapse-left-offset));
+    padding-left: var(--collapse-left-offset);
     margin-right: -2px;
     padding-right: 0.5em;
-    border-left: 1px solid var(--GW-TOC-border-color);
     border-right: 1px solid var(--GW-TOC-border-color);
 }
-.popframe-body > div.annotation > div.annotation-abstract > :not(section).collapse:last-child {
+.popframe-body > div.annotation > div.annotation-abstract > .collapse:last-child {
     margin-bottom: 0.25em;
     border-bottom: 1px solid var(--GW-TOC-border-color);
 }
