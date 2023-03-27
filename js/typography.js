@@ -146,20 +146,39 @@ Typography = {
 		return text.substr(position, value.length).replace('\u2063', '');
 	},
 	replaceZeroWidthSpaces: (element) => {
-		let mustReplace = false;
+		let replacements = [ ];
 		for (node of element.childNodes) {
 			if (node.nodeType === Node.ELEMENT_NODE) {
 				Typography.replaceZeroWidthSpaces(node);
-			} else if (   node.nodeType === Node.TEXT_NODE
-					   && node.textContent.match(/\u200b|&ZeroWidthSpace;/) != null) {
-				mustReplace = true;
+			} else if (node.nodeType === Node.TEXT_NODE) {
+				let zwsRegExp = /\u200b|&ZeroWidthSpace;/g;
+				let parts = [ ];
+				let start = 0;
+				let match = null;
+				while (match = zwsRegExp.exec(node.textContent)) {
+					parts.push([ start, match.index ]);
+					start = match.index + match[0].length;
+				}
+				if (parts.length > 0) {
+					let replacementNodes = [ ];
+					parts.forEach(part => {
+						if (part[1] > part[0])
+							replacementNodes.push(document.createTextNode(node.textContent.slice(...part)));
+						replacementNodes.push(newElement("WBR"));
+					});
+					replacementNodes.push(document.createTextNode(node.textContent.slice(start)));
+					replacements.push([ node, replacementNodes ]);
+				}
 			}
 		}
-		if (mustReplace) {
-			// Replace U+200B ZERO-WIDTH SPACE with <wbr> tag.
-			element.innerHTML = element.innerHTML.replace(/\u200b|&ZeroWidthSpace;/g, "<wbr>");
+		if (replacements.length > 0) {
+			//	Replace.
+			replacements.forEach(replacement => {
+				let [ replacedNode, replacementNodes ] = replacement;
+				replacedNode.parentNode.replaceChild(newDocument(replacementNodes), replacedNode);
+			});
 
-			// Remove all but one of each set of consecutive <wbr> tags.
+			//	Remove all but one of each set of consecutive <wbr> tags.
 			let prevNodeIsWBR = false;
 			for (let i = 0; i < element.childNodes.length; i++) {
 				let node = element.childNodes[i];
