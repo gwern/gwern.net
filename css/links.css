@@ -318,7 +318,7 @@ a[data-link-icon='arrow-right'] { --link-icon-url: url('/static/img/icon/arrow-r
     */
 
 a[data-link-icon='𝛘']::after { /* Arxiv */
---link-icon-size: 0.7em;
+    --link-icon-size: 0.7em;
     --link-icon-offset-x: 0.1em;
     --link-icon-offset-y: 0.6em;
 
@@ -1076,6 +1076,13 @@ a[data-link-icon='laion']::after {
     --link-icon-offset-y: 0.1em;
 
     opacity: 0.7;
+}
+
+a[data-link-icon='tex']::after { /* TeX logotype (actually uses Source Serif) */
+    --link-icon-size: 1em;
+    --link-icon-offset-x: 0.05em;
+
+    opacity: 0.8;
 }
 
 /*=------------------=*/

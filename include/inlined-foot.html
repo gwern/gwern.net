@@ -1,46 +1,46 @@
     <!-- Load the rest of the CSS. Note that we do not need any JS hacks here: HTML allows <link> stylesheets in the body: https://html.spec.whatwg.org/multipage/links.html#body-ok https://jakearchibald.com/2016/link-in-body/ -->
-    <link rel="stylesheet" type="text/css" href="/static/css/fonts.css?v=1655420134">
-    <link rel="stylesheet" type="text/css" href="/static/css/default.css?v=1679954581">
-    <link rel="stylesheet" type="text/css" href="/static/css/links.css?v=1679319143">
+    <link rel="stylesheet" type="text/css" href="/static/css/fonts.css?v=1655421673">
+    <link rel="stylesheet" type="text/css" href="/static/css/default.css?v=1679954671">
+    <link rel="stylesheet" type="text/css" href="/static/css/links.css?v=1679960841">
 
     <!-- JS library with utility functions used in rest of code -->
-    <script src="/static/js/utility.js?v=1679869803" defer></script>
+    <script src="/static/js/utility.js?v=1679954614" defer></script>
     <!-- JS library for Tufte-style 'sidenotes' (footnotes popped into the left & right margins on sufficiently-wide screens); much more convenient than floating footnotes & endnotes -->
-    <script src="/static/js/sidenotes.js?v=1679748616" async></script>
+    <script src="/static/js/sidenotes.js?v=1679751918" async></script>
     <!-- JS library for spawning popups -->
-    <script src="/static/js/popups.js?v=1679672655" defer></script>
-    <script src="/static/js/popins.js?v=1679672110" defer></script>
+    <script src="/static/js/popups.js?v=1679696723" defer></script>
+    <script src="/static/js/popins.js?v=1679696723" defer></script>
     <!-- JS library for annotating hyperlinks with introduction/summary from various sources; not lazy-loaded as (almost) all pages have popups -->
-    <script src="/static/js/annotations.js?v=1679954045" defer></script>
-    <script src="/static/js/content.js?v=1679927184" defer></script>
-    <script src="/static/js/extracts.js?v=1679502596" defer></script>
-    <script src="/static/js/extracts-annotations.js?v=1679399897" defer></script>
-    <script src="/static/js/extracts-content.js?v=1679670897" defer></script>
-    <script src="/static/js/extracts-options.js?v=1669582509" defer></script>
+    <script src="/static/js/annotations.js?v=1679954614" defer></script>
+    <script src="/static/js/content.js?v=1679945087" defer></script>
+    <script src="/static/js/extracts.js?v=1679505092" defer></script>
+    <script src="/static/js/extracts-annotations.js?v=1679405732" defer></script>
+    <script src="/static/js/extracts-content.js?v=1679696723" defer></script>
+    <script src="/static/js/extracts-options.js?v=1669597260" defer></script>
 
     <!-- Misc JS -->
-	<script src="/static/js/Hyphenopoly_Loader.js?v=1650818540" defer></script>
-    <script src="/static/js/typography.js?v=1679317879" defer></script>
-    <script src="/static/js/rewrite.js?v=1679953839" defer></script>
-    <script src="/static/js/transclude.js?v=1679953870" defer></script>
-    <script src="/static/js/collapse.js?v=1679949741" defer></script>
+	<script src="/static/js/Hyphenopoly_Loader.js?v=1650821831" defer></script>
+    <script src="/static/js/typography.js?v=1679318915" defer></script>
+    <script src="/static/js/rewrite.js?v=1679954614" defer></script>
+    <script src="/static/js/transclude.js?v=1679954614" defer></script>
+    <script src="/static/js/collapse.js?v=1679954614" defer></script>
 
     <!-- Dark Mode theme switcher (lets users toggle between regular black-on-white CSS, and dark mode) -->
-    <script src="/static/js/dark-mode.js?v=1667249190" defer></script>
+    <script src="/static/js/dark-mode.js?v=1663383996" defer></script>
 
     <!-- Reader Mode theme switcher (lets users toggle distraction-free ‘reader mode’ on and off) -->
-    <script src="/static/js/reader-mode.js?v=1676590455" defer></script>
+    <script src="/static/js/reader-mode.js?v=1675354947" defer></script>
     <!-- JS library for clickable/zoomable images, for images larger than can be displayed in -->
     <!-- the body: /static/js/image-focus.js -->
     <!-- not lazy-loaded due to various bugs -->
-    <script src="/static/js/image-focus.js?v=1676590455" defer></script>
+    <script src="/static/js/image-focus.js?v=1675203106" defer></script>
 
     <!-- sort tables: https://mottie.github.io/tablesorter/docs/ ; requires JQuery, which has been prepended to avoid multiple JS page loads & race conditions -->
     <script>
     if (document.querySelector("table")) {
         var js = document.createElement("script");
         js.type = "text/javascript";
-        js.src = "/static/js/tablesorter.js?v=1656018097";
+        js.src = "/static/js/tablesorter.js?v=1655848739";
         document.body.appendChild(js);
     }
     </script>
