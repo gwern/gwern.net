@@ -499,6 +499,10 @@ blockquote .collapse.has-abstract:not(.expanded) > .disclosure-button .part::bef
     padding-left: 0;
 }
 
+.annotation .collapse.aux-links-container .aux-links-append ul {
+	margin-bottom: 0.5em;
+}
+
 /******************************/
 /*	Content in collapse blocks.
  */
@@ -5333,7 +5337,7 @@ section.highlight-fading::before {
     padding-bottom: 0.125em;
 }
 .aux-links-append + .aux-links-append {
-    margin-top: 1em;
+    margin-top: 1.5em;
 }
 
 .TOC + .aux-links-container {
