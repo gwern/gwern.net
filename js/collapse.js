@@ -321,7 +321,8 @@ function revealElement(element, scrollIntoView = true) {
 
 	let didExpandCollapseBlocks = expandCollapseBlocksToReveal(element);
 
-	if (scrollIntoView)
+	if (   scrollIntoView
+		&& isOnScreen(element) == false)
 		scrollElementIntoView(element);
 
 	return didExpandCollapseBlocks;
@@ -368,12 +369,16 @@ GW.notificationCenter.addHandlerForEvent("GW.hashHandlingSetupDidComplete", GW.r
 	focus/blur because that is unreliable and in any case doesn’t work for
 	“Search Again” key command.)
  */
-document.addEventListener("selectionchange", GW.selectionChanged = (event) => {
-	GWLog("GW.selectionChangedCheckForCollapsedContainer", "collapse.js", 3);
+document.addEventListener("selectionchange", GW.selectionChangedRevealElement = (event) => {
+	GWLog("GW.selectionChangedRevealElement", "collapse.js", 3);
 
 	let newSelection = document.getSelection();
 	if (   newSelection
 		&& newSelection.rangeCount > 0
-		&& newSelection.getRangeAt(0).toString().length > 0)
-		expandCollapseBlocksToReveal(newSelection.anchorNode);
+		&& newSelection.getRangeAt(0).toString().length > 0) {
+		let element = (newSelection.anchorNode.nodeType === Node.ELEMENT_NODE
+					   ? newSelection.anchorNode
+					   : newSelection.anchorNode.parentElement);
+		revealElement(element);
+	}
 });
