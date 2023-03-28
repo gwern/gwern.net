@@ -285,15 +285,13 @@ section.collapse.expanded > .disclosure-button .part.top .label {
 
 section.collapse > :first-child {
     position: relative;
-    height: var(--collapse-toggle-top-height);
+    min-height: var(--collapse-toggle-top-height);
     margin: 
     	0 
     	var(--collapse-toggle-top-height)
     	0 
     	calc(-1 * var(--collapse-toggle-left-width));
     padding: 0;
-    white-space: nowrap;
-    overflow: hidden;
     z-index: 12;
     pointer-events: none;
 }
@@ -317,13 +315,13 @@ section.collapse > h1:first-child > a {
 }
 
 section.collapse > h2:first-child {
-    line-height: 1.75;
+	line-height: 1.1;
 }
 section.collapse > h2:first-child::after {
     content: none;
 }
-section.collapse > h2:first-child a::after {
-    top: -0.2em;
+section.collapse > h2:first-child > a {
+	top: 0.15em;
 }
 
 /*	“Bare” nested sections.

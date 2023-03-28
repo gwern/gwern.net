@@ -321,8 +321,7 @@ function revealElement(element, scrollIntoView = true) {
 
 	let didExpandCollapseBlocks = expandCollapseBlocksToReveal(element);
 
-	if (   scrollIntoView
-		&& isOnScreen(element) == false)
+	if (scrollIntoView)
 		scrollElementIntoView(element);
 
 	return didExpandCollapseBlocks;
