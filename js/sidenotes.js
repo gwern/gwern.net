@@ -100,7 +100,12 @@ Sidenotes = { ...Sidenotes,
 
 		/*  Clear existing targeting.
 			*/
-		document.querySelectorAll(".targeted").forEach(element => {
+		let targetedElementSelectors = [
+			".footnote-ref", 
+			".footnote",
+			".sidenote"
+		];
+		document.querySelectorAll(targetedElementSelectors.join(", ")).forEach(element => {
 			element.classList.remove("targeted");
 		});
 
