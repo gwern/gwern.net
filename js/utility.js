@@ -247,7 +247,8 @@ function newDocument(content) {
 
     if (content instanceof Node) {
         docFrag.append(document.importNode(content, true));
-    } else if (content instanceof NodeList) {
+    } else if (   content instanceof NodeList
+    		   || content instanceof Array) {
         docFrag.append(...(Array.from(content).map(node => document.importNode(node, true))));
     }
 

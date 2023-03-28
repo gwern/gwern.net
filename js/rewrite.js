@@ -799,7 +799,7 @@ function hyphenate(eventInfo) {
 
     let doHyphenation = (selector) => {
         Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
-            eventInfo.document.querySelectorAll(selector).forEach(block => {
+            eventInfo.container.querySelectorAll(selector).forEach(block => {
                 hyphenate(block);
 				Typography.processElement(block, Typography.replacementTypes.NONE, true);
             });
