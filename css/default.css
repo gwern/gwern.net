@@ -326,6 +326,12 @@ section.collapse > h2:first-child a::after {
     top: -0.2em;
 }
 
+/*	“Bare” nested sections.
+ */
+section > :first-child + section.collapse {
+	margin-top: 0;
+}
+
 section.collapse:not(.expanded) > .collapse-content-wrapper {
 	max-height: 0;
 }
