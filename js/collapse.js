@@ -410,6 +410,7 @@ document.addEventListener("selectionchange", GW.selectionChangedRevealElement = 
 		let element = (newSelection.anchorNode.nodeType === Node.ELEMENT_NODE
 					   ? newSelection.anchorNode
 					   : newSelection.anchorNode.parentElement);
-		revealElement(element);
+		if (isWithinCollapsedBlock(element))
+			revealElement(element);
 	}
 });
