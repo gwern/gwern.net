@@ -202,15 +202,36 @@
 
 .disclosure-button .part.top .icon svg {
 	height: 100%;
+}
+.collapse:not(.expanded) .disclosure-button:hover .part.top .icon svg {
+	transform: rotate(-0.25turn);
 	transition:
-		transform 0.1s ease;
+		transform 1.0s ease;
 }
 .collapse.expanded > .disclosure-button .part.top .icon svg {
-	transform: rotate(-0.25turn)
+	transform: rotate(-0.25turn);
+}
+.collapse.expanded-temp:not(:hover) > .disclosure-button .part.top .icon svg {
+	transform: none;
+	transition:
+		transform 2.0s ease-in;
+}
+.collapse:not(.expanded).just-clicked > .disclosure-button:hover .part.top .icon svg {
+	transform: none;
+	transition: none;
 }
 
 .disclosure-button .part.top .label {
 	padding: 0 0 0 1.25em;
+}
+.collapse:not(.expanded) > .disclosure-button .part.top .label,
+.collapse.just-auto-expanded > .disclosure-button .part.top .label {
+	visibility: hidden;
+}
+.collapse.expanded-temp:not(.just-auto-expanded) > .disclosure-button .part.top .label.fading {
+	opacity: 0.1;
+	transition:
+		opacity 2.0s ease-in;
 }
 
 /*  Bottom part of disclosure button.
@@ -225,9 +246,6 @@
 	padding: 0 1em;
 }
 
-.collapse:not(.expanded) > .disclosure-button .part.top .label {
-    display: none;
-}
 
 /********************/
 /*  Collapse summary.

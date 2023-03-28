@@ -190,8 +190,14 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 		disclosureButton.addActivateEvent(disclosureButton.actionHandler = (event) => {
 			GWLog("Collapse.collapseBlockDisclosureButtonActivated", "collapse.js", 2);
 
-			collapseBlock.classList.toggle("expanded");
+			if (collapseBlock.classList.contains("just-auto-expanded"))
+				return;
 
+			//	Set proper classes.
+			collapseBlock.classList.toggle("expanded");
+			collapseBlock.classList.remove("just-clicked", "just-auto-expanded");
+
+			//	Update label text and other HTML-based UI state.
 			updateDisclosureButtonState(collapseBlock);
 
 			//	“Scroll into view” in main document vs. pop-frames.
@@ -215,6 +221,24 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 					 && collapseBlock.getBoundingClientRect().top < 0)
 				scrollCollapseBlockIntoView(collapseBlock);
 
+			//	Update temporary state.
+			if (   collapseBlock.classList.contains("expand-on-hover")
+				&& GW.isMobile() == false) {
+				let tempClass = null;
+				switch (event.type) {
+					case "click":
+						tempClass = "just-clicked"; break;
+					case "mouseenter":
+						tempClass = "just-auto-expanded"; break;
+				}
+				if (tempClass) {
+					collapseBlock.classList.add(tempClass);
+					collapseBlock.addEventListener("mouseleave", (event) => {
+						collapseBlock.classList.remove(tempClass);
+					}, { once: true });
+				}
+			}
+
 			GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", { source: "Collapse.collapseBlockDisclosureButtonStateChanged" });
 		});
 
@@ -223,16 +247,23 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 		 */
 		if (   collapseBlock.classList.contains("expand-on-hover")
 			&& GW.isMobile() == false) {
-			let expandOnHoverDelay = 800;
-			let collapseOnUnhoverDelay = 300;
+			let expandOnHoverDelay = 1000;
+			let collapseOnUnhoverDelay = 2000;
 
 			onEventAfterDelayDo(collapseBlock, "mouseenter", expandOnHoverDelay, (event) => {
 				if (isCollapsed(collapseBlock) == false)
 					return;
 
+				if (collapseBlock.classList.contains("just-clicked"))
+					return;
+
 				disclosureButton.actionHandler(event);
 
 				collapseBlock.classList.add("expanded-temp");
+
+				collapseBlock.addEventListener("mouseleave", (event) => {
+					disclosureButton.querySelector(".part.top .label").classList.add("fading");
+				}, { once: true });
 
 				let removeUnhoverHandler;
 				let collapseBlockMouseleaveHandler = (event) => {
@@ -242,6 +273,7 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 					disclosureButton.actionHandler(event);
 
 					collapseBlock.classList.remove("expanded-temp");
+					disclosureButton.querySelector(".part.top .label").classList.remove("fading");
 
 					removeUnhoverHandler();
 				};
