@@ -353,6 +353,7 @@ Content = {
 					let auxLinksList = fragment.querySelector("ul, ol");
 					if (auxLinksList) {
 						auxLinksList.classList.add("aux-links-list", auxLinksLinkType + "-list");
+						auxLinksList.previousElementSibling.classList.add("aux-links-list-label", auxLinksLinkType + "-list-label");
 
 						if (auxLinksLinkType == "backlinks") {
 							auxLinksList.querySelectorAll("a").forEach(link => {
@@ -360,6 +361,9 @@ Content = {
 							});
 							auxLinksList.querySelectorAll("blockquote").forEach(blockquote => {
 								blockquote.classList.add("backlink-context");
+							});
+							auxLinksList.querySelectorAll("li > p").forEach(p => {
+								p.classList.add("backlink-source");
 							});
 						}
 					}
