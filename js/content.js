@@ -537,7 +537,7 @@ Content = {
 			},
 
 		    permittedContentTypes: [ "text/html" ],
-			pageTitleRegexp: /^(.+?) · Gwern\.net$/,
+			pageTitleRegexp: /^(.+?) · Gwern\.net( \(reader mode\))?$/,
 			defaultPageThumbnailPathnamePrefix: "/static/img/logo/logo-"
 		}
 	}

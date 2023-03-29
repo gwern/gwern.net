@@ -296,7 +296,7 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 					collapseBlock.removeEventListener("click", collapseBlockClickHandler);
 				};
 				collapseBlock.addEventListener("click", collapseBlockClickHandler);
-			}, "mouseleave");
+			}, [ "mouseleave", "mousedown" ]);
 		}
 	});
 }, "eventListeners");
