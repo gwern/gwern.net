@@ -3950,6 +3950,11 @@ body.index-directory #footer {
     pointer-events: auto;
 }
 
+.popup.hidden,
+.popup-body.hidden {
+	visibility: hidden;
+}
+
 /*  The three nested boxes that make up a popup:
     1. Outer frame (positioned within the popup container)
     2. Scroll view

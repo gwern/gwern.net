@@ -169,6 +169,9 @@ Popups = {
 		GWLog("Popups.hidePopupContainer", "popups.js", 3);
 
 		Popups.popupContainer.style.visibility = "hidden";
+		Popups.allSpawnedPopups().forEach(popup => {
+			Popups.addClassesToPopFrame(popup, "hidden");
+		});
 	},
 
 	//	Called by: extracts-options.js
@@ -176,6 +179,9 @@ Popups = {
 		GWLog("Popups.unhidePopupContainer", "popups.js", 3);
 
 		Popups.popupContainer.style.visibility = "";
+		Popups.allSpawnedPopups().forEach(popup => {
+			Popups.removeClassesFromPopFrame(popup, "hidden");
+		});
 	},
 
 	//	Called by: Popups.despawnPopup
@@ -1247,9 +1253,6 @@ Popups = {
 		let targetViewportRect =    Array.from(target.getClientRects()).find(rect => pointWithinRect(spawnPoint, rect))
 								 || target.getBoundingClientRect();
 
-		//	Prevent popup cycling in Chromium.
-// 		popup.style.visibility = "hidden";
-
 		//  Wait for the “naive” layout to be completed, and then...
 		requestAnimationFrame(() => {
 			//	Clear popup position.
@@ -1386,9 +1389,6 @@ Popups = {
 
 			//  Cache the viewport rect.
 			popup.viewportRect = popup.getBoundingClientRect();
-
-			//	Prevent popup cycling in Chromium.
-// 			popup.style.visibility = "";
 
 			document.activeElement.blur();
 		});
