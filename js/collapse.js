@@ -27,7 +27,8 @@ function expandCollapseBlocksToReveal(node) {
     let collapseBlock = element.closest(".collapse");
     let expansionOccurred = isCollapsed(collapseBlock);
     collapseBlock.classList.toggle("expanded", true);
-	updateDisclosureButtonState(collapseBlock);
+    if (expansionOccurred)
+		updateDisclosureButtonState(collapseBlock);
 
     /*  Expand any higher-level collapse blocks!
         Fire state change event only if we did NOT have to do any further
@@ -44,6 +45,9 @@ function expandCollapseBlocksToReveal(node) {
 /*  Returns true if the given collapse block is currently collapsed.
  */
 function isCollapsed(collapseBlock) {
+	if (Array.from(collapseBlock.children).findIndex(child => child.classList.contains("collapse-content-wrapper")) === -1)
+		return false;
+
     return (collapseBlock.classList.contains("expanded") == false);
 }
 
@@ -126,6 +130,10 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 						collapseAbstract.classList.add("abstract");
 						
 				});
+
+				//	Designate “bare content” collapses.
+				if (collapseBlock.firstElementChild.tagName == "P")
+					collapseBlock.classList.add("bare-content");
 			} else {
 				collapseWrapper = wrapElement(collapseBlock, null, "DIV", true, [ "collapse", "expand-on-hover" ]);
 			}

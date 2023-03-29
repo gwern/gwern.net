@@ -358,8 +358,8 @@ doWhenDOMContentLoaded(() => {
 
 AuxLinks = {
     auxLinksLinkTypes: {
-        "/metadata/annotation/backlink/":          "backlinks",
-        "/metadata/annotation/similar/":           "similars",
+        "/metadata/annotation/backlink/":           "backlinks",
+        "/metadata/annotation/similar/":            "similars",
         "/metadata/annotation/link-bibliography/":  "link-bibliography"
     },
 
@@ -459,6 +459,16 @@ Notes = {
         let footnoteSelfLink = footnote.querySelector("a.footnote-self-link");
         footnoteSelfLink.hash = footnoteSelfLink.hash.slice(0, 3) + number;
         footnoteSelfLink.title = "Link to footnote " + number;
+
+		//	Footnote backlinks.
+		let backlinksListLabelLink = footnote.querySelector(".section-backlinks .backlinks-list-label a");
+		if (backlinksListLabelLink) {
+			//  #fnN
+			backlinksListLabelLink.hash = backlinksListLabelLink.hash.slice(0, 3) + number;
+
+			//	N
+			backlinksListLabelLink.querySelector("span.footnote-number").innerText = number;
+		}
     },
 
     /**************************************************************************/
@@ -1689,7 +1699,14 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
 
     let loadLocation = (eventInfo.loadLocation ?? baseLocation);
 
+	let exclusionSelector = [
+		".backlink-source"
+	].join(", ");
+
     eventInfo.container.querySelectorAll("a[href]").forEach(link => {
+		if (link.closest(exclusionSelector) != null)
+			return;
+
         if (   (   link.getAttribute("href").startsWith("#")
                 || link.pathname == loadLocation.pathname)
                 // if initial base page load
@@ -1724,10 +1741,19 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
     if (baseLocation == null)
         return;
 
+	let exclusionSelector = [
+		"h1, h2, h3, h4, h5, h6",
+		".section-self-link",
+		".footnote-ref",
+		".footnote-back",
+		".footnote-self-link",
+		".sidenote-self-link",
+		".backlink-context"
+	].join(", ");
+
     eventInfo.container.querySelectorAll(".markdownBody a[href]").forEach(link => {
         if (   link.hostname != location.hostname
-            || link.closest("h1, h2, h3, h4, h5, h6")
-            || link.closest(".section-self-link, .footnote-ref, .footnote-back, .footnote-self-link, .sidenote-self-link"))
+            || link.closest(exclusionSelector))
             return;
 
         if (   link.pathname == baseLocation.pathname

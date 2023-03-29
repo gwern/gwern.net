@@ -576,14 +576,10 @@ function includeContent(includeLink, content) {
     }
 
 	//	Intelligent rectification of contained HTML structure.
-	if (   wrapper.parentElement != null
-		&& wrapper.parentElement.closest("#footnotes > ol") == null
-		&& wrapper.firstElementChild != null) {
+	if (wrapper.closest("#footnotes > ol") == null) {
 		wrapper.querySelectorAll(".footnote-self-link, .footnote-back").forEach(link => {
 			link.remove();
 		});
-		if (wrapper.firstElementChild == wrapper.firstElementChild.closest("li.footnote"))
-			unwrap(wrapper.firstElementChild);
 	}
 
 	//	Clear loading state of all include-links.
@@ -596,7 +592,7 @@ function includeContent(includeLink, content) {
 	let contentType = null;
 	if (   Transclude.isAnnotationTransclude(includeLink)
 		|| (   Content.contentTypes.localFragment.matchesLink(includeLink)
-			&& includeLink.pathname.startsWith("/metadata/annotation/")))
+			&& /^\/metadata\/annotation\/[^\/]+$/.test(includeLink.pathname)))
 		contentType = "annotation";
 	GW.notificationCenter.fireEvent("GW.contentDidInject", {
 		source: "transclude",
@@ -610,6 +606,12 @@ function includeContent(includeLink, content) {
 	});
 
 	//	WITHIN-WRAPPER MODIFICATIONS END; OTHER MODIFICATIONS BEGIN
+
+	//	Distribute backlinks, if need be.
+	if (   transcludingIntoFullPage
+		&& AuxLinks.auxLinksLinkType(includeLink) == "backlinks"
+		&& wrapper.closest("#backlinks-section") != null)
+		distributeSectionBacklinks(includeLink, wrapper);
 
     //  Update footnotes, if need be, when transcluding into a full page.
     if (   transcludingIntoFullPage
@@ -703,6 +705,79 @@ function includeContent(includeLink, content) {
             document: containingDocument
         });
     }
+}
+
+/*****************************************************************************/
+/*	Distributes, to each section of the page, all backlinks that point to that
+	section specifically.
+ */
+function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
+	let containingDocument = includeLink.eventInfo.document;
+
+	let prefix = `gwern-${(includeLink.eventInfo.loadLocation.pathname.slice(1))}-`;
+
+	mainBacklinksBlockWrapper.querySelectorAll(".backlink-context a[data-target-id]").forEach(backlinkContextLink => {
+		let id = backlinkContextLink.dataset.targetId.slice(prefix.length);
+		if (id == "")
+			return;
+
+		let targetBlock = containingDocument.querySelector("#" + id).closest("section, li.footnote");
+		let backlinksBlock = targetBlock.querySelector(".section-backlinks");
+		if (backlinksBlock == null) {
+			//	Backlinks block.
+			backlinksBlock = newElement("DIV", { "class": "section-backlinks", "id": `${id}-backlinks` });
+
+			//	Label.
+			backlinksBlock.append(mainBacklinksBlockWrapper.querySelector("#backlinks").firstElementChild.cloneNode(true));
+			let sectionLabelLinkTarget = baseLocationForDocument(containingDocument).pathname + "#" + targetBlock.id;
+			let sectionLabelHTML = targetBlock.tagName == "SECTION"
+								   ? `“${(targetBlock.firstElementChild.textContent)}”`
+								   : `footnote <span class="footnote-number">${(Notes.noteNumberFromHash(targetBlock.id))}</span>`;
+// 			backlinksBlock.querySelector("p strong").textContent = `Backlinks for ${sectionLabelText}`;
+			backlinksBlock.querySelector("p strong").innerHTML = `Backlinks for <a href="${sectionLabelLinkTarget}" class="link-page">${sectionLabelHTML}</a>`;
+
+			//	List.
+			backlinksBlock.append(newElement("UL", { "class": "aux-links-list backlinks-list" }));
+
+			//	Collapse wrapper.
+			let collapseWrapper = newElement("DIV", { "class": "collapse section-backlinks-container" });
+			collapseWrapper.append(backlinksBlock);
+
+			//	Include wrapper.
+			let includeWrapper = newElement("DIV", { "class": "include-wrapper section-backlinks-include-wrapper" });
+			includeWrapper.append(collapseWrapper);
+			targetBlock.append(includeWrapper);
+		}
+
+		backlinksBlock.querySelector(".backlinks-list").append(backlinkContextLink.closest("li").cloneNode(true));
+	});
+
+	containingDocument.querySelectorAll(".section-backlinks-include-wrapper").forEach(includeWrapper => {
+		//	Clear loading state of all include-links.
+		Transclude.allIncludeLinksInContainer(includeWrapper).forEach(Transclude.clearLinkState);
+
+		//	Fire load event.
+		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			source: "transclude.section-backlinks",
+			container: includeWrapper,
+			document: containingDocument,
+			loadLocation: loadLocationForIncludeLink(includeLink)
+		});
+
+		//	Fire inject event.
+		let flags = GW.contentDidInjectEventFlags.clickable;
+		if (containingDocument == document)
+			flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
+		GW.notificationCenter.fireEvent("GW.contentDidInject", {
+			source: "transclude.section-backlinks",
+			container: includeWrapper,
+			document: containingDocument,
+			loadLocation: loadLocationForIncludeLink(includeLink),
+			flags: flags
+		});
+
+		unwrap(includeWrapper);
+	});
 }
 
 /*****************************************************************************/

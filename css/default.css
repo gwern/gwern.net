@@ -503,6 +503,34 @@ blockquote .collapse.has-abstract:not(.expanded) > .disclosure-button .part::bef
 	margin-bottom: 0.5em;
 }
 
+/*************************/
+/*	Per-section backlinks.
+ */
+.collapse.section-backlinks-container {
+	--collapse-toggle-top-height: 2.75rem;
+	
+	margin-top: 1.25em;
+	margin-bottom: 2em;
+	margin-left: calc(-1 * var(--collapse-left-offset));
+    padding-left: var(--collapse-left-offset);
+}
+
+.collapse.section-backlinks-container:not(.expanded) > .disclosure-button .part::before {
+	opacity: 0.70;
+}
+
+.collapse.section-backlinks-container .section-backlinks {
+	margin-top: 0.5em;
+}
+
+.collapse.section-backlinks-container .section-backlinks > ul {
+	margin-top: 0.75em;
+	margin-bottom: 0.5em;
+}
+.collapse.section-backlinks-container .section-backlinks > ul > li:last-child > blockquote {
+	margin-bottom: 0.5em;
+}
+
 /******************************/
 /*	Content in collapse blocks.
  */
@@ -510,12 +538,15 @@ blockquote .collapse.has-abstract:not(.expanded) > .disclosure-button .part::bef
 	margin-bottom: 0.5em;
 }
 
-.collapse:not(.has-abstract).expanded > .collapse-content-wrapper > p:first-child {
-	margin-top: 0.5em;
-}
-
-div.collapse:not(.has-abstract):not(.expanded) > .collapse-content-wrapper > p {
+.collapse.bare-content:not(.expanded) > .collapse-content-wrapper > p {
 	margin-left: 0.375em;
+	margin-right: 0.375em;
+}
+.collapse.bare-content:not(.expanded) > .collapse-content-wrapper > p:first-child {
+	margin-top: 0.375em;
+}
+.collapse.bare-content.expanded > .collapse-content-wrapper > p:first-child {
+	margin-top: 0.5em;
 }
 
 .collapse section > :first-child {
@@ -526,12 +557,11 @@ div.collapse:not(.has-abstract):not(.expanded) > .collapse-content-wrapper > p {
 /*  Collapse edge cases.
  */
 
-li > :not(section).collapse {
-    margin-left: calc(-1 * var(--GW-list-left-padding));
+li > .collapse > .collapse-content-wrapper > ul {
+	margin-top: 0.125em;
 }
-li > :not(section).collapse.expanded,
-li > :not(section).collapse:not(.expanded) {
-    padding-left: var(--GW-list-left-padding);
+li > .collapse.expanded > .collapse-content-wrapper > ul {
+	margin-top: 0.5em;
 }
 
 .collapse [class^='horizontal-rule'] {
@@ -551,6 +581,10 @@ body.indented-not .abstract-collapse + .collapse-content-wrapper > p:not([class^
     body.indented-not .abstract-collapse + .collapse-content-wrapper > p:not([class^='drop-cap']):first-child {
         margin-top: 1em;
     }
+}
+
+.footnote .collapse {
+	--collapse-left-offset: 0.75em;
 }
 
 
@@ -3861,6 +3895,17 @@ body.index-directory #footer {
     border-bottom: 1px dotted currentColor;
     width: calc(100% + 2em);
     margin: 1em -1em 1.125em -1em;
+}
+
+.popframe-body .collapse.section-backlinks-container {
+	margin-top: 1em;
+	padding-right: 0.5em;
+	border-color: var(--GW-TOC-border-color);
+	border-style: solid;
+	border-width: 1px 1px 1px 0;
+}
+.popframe-body .collapse.section-backlinks-container:last-child {
+	margin-bottom: 0;
 }
 
 /*┌─────────────────┐*/
