@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-03-26 10:06:21 gwern"
+# When:  Time-stamp: "2023-03-28 14:26:33 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -144,7 +144,7 @@ else
     bold "Building site…"
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
     if [ "$SLOW" ]; then
-        bold "Updating annotation/quote-of-the-day…" #  NOTE: we do this at the end, instead of inside hakyll.hs, to avoid spurious uses when a compile fails
+        bold "Updating X-of-the-day…" #  NOTE: we do this at the end, instead of inside hakyll.hs, to avoid spurious uses when a compile fails
         ghci -i/home/gwern/wiki/static/build/ ./static/build/QuoteOfTheDay.hs \
              -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; qotd; lotd; }' | \
             grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]';
@@ -532,7 +532,7 @@ else
             -e '&lt;figcaption' -e '{.}' -e ' ?' -e " ’’" -e 'lt;/td&gt;' -e "‘’" -e "’‘" -e "’’" -e '<li></li>' -e '</em<em>' -e '𝑂' \
             -e '</a.>' -e ' . ' -e ' , ' -e ' ; ' -e 'class=”collapse”' -e "‘’" -e " ’" -e '<bold>' -e '</bold>' -e '<jats:bold>' \
             -e  '</jats:bold>' -e 'Ã©' -e '</a>s' -e '/&gt;'  -e '&lt;figcaption'  -e 'aria-hidden=">' -e '&gt;</a>' -e '<A Href' \
-            -e '</strong>:,' -e ' et al.' -e '<span class="latex">LaTeX</span>' -- ./metadata/*.yaml | \
+            -e '</strong>:,' -e ' et al.' -e '<span class="latex">LaTeX</span>' -e '<div>' -- ./metadata/*.yaml | \
              grep -F -v 'popular_shelves';
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
@@ -690,7 +690,7 @@ else
     if ((RANDOM % 100 > 99)); then $X_BROWSER "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"; fi
 
     # some of the live popups have probably broken, since websites keep adding X-FRAME options…
-    if ((RANDOM % 100 > 15)); then ghci -istatic/build/ ./static/build/LinkLive.hs -e 'linkLiveTestHeaders'; fi
+    if ((RANDOM % 100 > 90)); then ghci -istatic/build/ ./static/build/LinkLive.hs -e 'linkLiveTestHeaders'; fi
 
     # Testing post-sync:
     bold "Checking MIME types, redirects, content…"

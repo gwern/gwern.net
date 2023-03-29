@@ -21,7 +21,7 @@ main = do custom  <- readYamlFast "/home/gwern/wiki/metadata/full.yaml"  -- for 
           half <- readYamlFast "/home/gwern/wiki/metadata/half.yaml" -- tagged but not handwritten/cleaned-up
           auto    <- readYamlFast "/home/gwern/wiki/metadata/auto.yaml"    -- auto-generated cached definitions; can be deleted if gone stale
           let incompleteDB = M.union (M.fromList custom) $ M.union (M.fromList half) (M.fromList auto)
-          let finalDB = M.union (M.fromList $ blacklist "c" custom) $ M.union (M.fromList $ blacklist "h" half) (M.fromList $ blacklist "a" auto)
+          let finalDB = M.union (M.fromList $ blacklist "f" custom) $ M.union (M.fromList $ blacklist "h" half) (M.fromList $ blacklist "a" auto)
           let final = sortItemPathDate $ M.toList finalDB
           let finalSingleLine = map toSingleLine final
 

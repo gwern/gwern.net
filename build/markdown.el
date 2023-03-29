@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-03-26 16:57:43 gwern"
+;;; When:  Time-stamp: "2023-03-27 13:52:02 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -192,6 +192,8 @@
     (replace-all "â¤" "≤")
     (replace-all "](wiki/" "](/")
     (replace-all "](//doc" "](/doc")
+    (replace-all "]]http" "](https")
+    (replace-all "]]/" "](/")
        (replace-all "" "=")
        (replace-all "  " ", ")
        (replace-all "Author links open overlay panel" "")

@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2023-03-25 22:25:42 gwern"
+When:  Time-stamp: "2023-03-27 21:07:18 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -381,7 +381,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(President|Barack) Obama", "https://en.wikipedia.org/wiki/Barack_Obama")
         , ("(Pretty Good Privacy|PGP)", "https://en.wikipedia.org/wiki/Pretty_Good_Privacy")
         , ("(PubMed|PMC)", "https://en.wikipedia.org/wiki/PubMed")
-        , ("(RNN|[Rr]ecurrent [Nn]eural [Nn]etwork|[Rr]ecurrent network)", "https://en.wikipedia.org/wiki/Recurrent_neural_network")
+        , ("(RNNs?|[Rr]ecurrent [Nn]eural [Nn]etworks?|[Rr]ecurrent [Nn]etworks?)", "https://en.wikipedia.org/wiki/Recurrent_neural_network")
         , ("(ResNet-?(18|34|50|101|152)|[Rr]es[Nn]et|[Rr]esidual[ -][Nn]etwork|[Rr]esidual[ -][Cc]onnection)s?", "https://arxiv.org/abs/1512.03385#microsoft") -- resnets / residual networks / residual connections
         , ("(Richard Hamming|Hamming)", "https://en.wikipedia.org/wiki/Richard_Hamming")
         , ("(SAD|Seasonal [Aa]ffective [Dd]isorder)", "https://en.wikipedia.org/wiki/Seasonal_affective_disorder")

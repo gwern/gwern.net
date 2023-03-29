@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-03-25 13:20:08 gwern"
+When:  Time-stamp: "2023-03-28 11:44:20 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -713,7 +713,6 @@ goodDomainsSimple =
     , "www.lesswrong.com"
     , "www.librarything.com"
     , "www.lifeview.com"
-    , "www.links.org"
     , "www.livestrong.com"
     , "www.mail-archive.com"
     , "www.math.uwaterloo.ca"
@@ -2606,7 +2605,7 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://crookedtimber.org/2012/05/30/in-soviet-union-optimization-problem-solves-you/#comment-415931"
             , "https://cs.stanford.edu/people/karpathy/reinforcejs/gridworld_dp.html"
             , "https://ctan.org/pkg/yinit?lang=en"
-            , "https://culture.org/a-natural-mother/"
+            , "https://culture.org/oulipo-ends-where-the-work-begins/"
             , "https://daniellakens.blogspot.com/2017/07/impossibly-hungry-judges.html"
             , "https://danluu.com/input-lag/"
             , "https://danwang.co/college-girardian-terror/"
@@ -3075,7 +3074,6 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://www.lesswrong.com/posts/wTKjRFeSjKLDSWyww/possible-takeaways-from-the-coronavirus-pandemic-for-slow-ai"
             , "https://www.librarything.com/work/13068"
             , "https://www.lifeview.com/tests_pgtp.html"
-            , "https://www.links.org/?p=1171#comment-415465"
             , "https://www.livestrong.com/article/283811-vitamin-d-deficiency-heart-palpitations/"
             , "https://www.mail-archive.com/cryptography@metzdowd.com/msg09975.html"
             , "https://www.math.uwaterloo.ca/tsp/pla85900/index.html"

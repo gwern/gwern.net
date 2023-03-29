@@ -1375,6 +1375,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" p-level ", " <em>p</em>-level ")
          , ("ﬁ", "fi")
          , (" ", " ")
+         , (" LaTeX", " <span class=\"logotype-latex\">L<span class=\"logotype-latex-a\">a</span>T<span class=\"logotype-latex-e\">e</span>X</span>")
+         , (" TeX", " <span class=\"logotype-tex\">T<sub>e</sub>X</span>")
          , ("DALL-E", "DALL·E")
            -- many uses of 'approximately' are weasel-wordy which add nothing whatsoever semantically, so we can drop the '~':
          , ("~linearly", "linearly")
@@ -1619,6 +1621,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("generalisa", "generaliza")
          , (" disincentivis", " disincentiviz")
          , (" incentivis", " incentiviz")
+         , ("stabilising", "stabilizing")
+         , ("stabilisation", "stabilization")
          , ("benefitt", "benefit")
          , ("noninsight", "non-insight")
          , (" colour", " color")
