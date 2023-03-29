@@ -707,7 +707,7 @@ function doIfAllowed(f, passHolder, passName, releaseImmediately = false) {
     occurs. (If `cancelEventName` is null, then `func` will be called after
     `delay` unconditionally.)
  */
-function onEventAfterDelayDo(target, triggerEventName, delay, func, cancelEventName = null) {
+function onEventAfterDelayDo(target, triggerEventName, delay, func, cancelEventNames = [ ]) {
     if (delay <= 0) {
         target.addEventListener(triggerEventName, func);
         return (() => {
@@ -719,15 +719,25 @@ function onEventAfterDelayDo(target, triggerEventName, delay, func, cancelEventN
         target.addEventListener(triggerEventName, events.triggerEvent = (event) => {
             timer = setTimeout(func, delay, event);
         });
-        if (cancelEventName != null) {
-            target.addEventListener(cancelEventName, events.cancelEvent = (event) => {
-                clearTimeout(timer);
-            });
+        if (typeof cancelEventNames == "string") {
+        	cancelEventNames = cancelEventNames > "" 
+        					   ? [ cancelEventNames ] 
+        					   : [ ];
+        }
+        if (cancelEventNames.length > 0) {
+        	cancelEventNames.forEach(cancelEventName => {
+				target.addEventListener(cancelEventName, events.cancelEvent = (event) => {
+					clearTimeout(timer);
+				});
+			});
         }
         return (() => {
             target.removeEventListener(triggerEventName, events.triggerEvent);
-            if (cancelEventName != null)
-                target.removeEventListener(cancelEventName, events.cancelEvent);
+            if (cancelEventNames.length > 0) {
+	        	cancelEventNames.forEach(cancelEventName => {
+	                target.removeEventListener(cancelEventName, events.cancelEvent);
+	            });
+            }
         });
     }
 }
