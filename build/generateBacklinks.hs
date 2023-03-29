@@ -163,7 +163,7 @@ truncateAnchors = T.takeWhile (/='#')
 blackList :: T.Text -> Bool
 blackList f
   | anyInfixT f ["/backlink/", "/link-bibliography/", "/similar/", "wikipedia.org/wiki/"] = True
-  | anyPrefixT f ["$", "#", "!", "mailto:", "irc://", "\8383", "/images", "/doc/www/", "/newsletter/", "/changelog", "/mistakes", "/traffic", "/me", "/lorem",
+  | anyPrefixT f ["$", "#", "!", "mailto:", "irc://", "\8383", "/doc/www/", "/newsletter/", "/changelog", "/mistakes", "/traffic", "/me", "/lorem",
                    -- WARNING: do not filter out 'metadata/annotation' because that leads to empty databases & infinite loops
                    "/static/404", "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = True
   | anySuffixT f ["/index", "/index-long"] = True

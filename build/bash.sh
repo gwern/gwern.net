@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-02-11 21:07:06 gwern"
+# When:  Time-stamp: "2023-03-29 11:26:34 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -217,3 +217,17 @@ complete -W "$GWERNNET_DIRS_FULL $GWERNNET_DIRS_SHORT $GWERNNET_DIRS_SUFFIXES" g
 complete -W "$GWERNNET_DIRS_FULL $GWERNNET_DIRS_SHORT $GWERNNET_DIRS_SUFFIXES" gwt
 alias u="upload"
 # 'upload' moved to ~/wiki/static/build/upload for easier calling from XMonad
+
+# GPT-3-written:
+# shortcut for handling link-archiving review:
+# Bash shell function named `mvuri` which will take a filename with a URI encoding like `file:///home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html` and transform that argument into `/home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html` and then `mv` the URL snapshot to that like normal.
+# eg  `$ mvuri file:///home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
+mvuri () {
+  local SOURCE
+  SOURCE="$(find ~/ -name "*.html" | head -1)"
+  local ENCODED_PATH="$1"
+  local DECODED_PATH="${ENCODED_PATH//\%/\\x}"
+  DECODED_PATH="${DECODED_PATH#file://}"
+  local DESTINATION="$DECODED_PATH"
+  mv "$SOURCE" "$DESTINATION"
+}

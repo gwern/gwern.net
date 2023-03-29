@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-03-28 14:26:33 gwern"
+# When:  Time-stamp: "2023-03-29 18:07:40 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -172,11 +172,11 @@ else
     ## possible alternative implementation in hakyll: https://www.rohanjain.in/hakyll-sitemap/
     (echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
      ## very static files which rarely change: PDFs, images, site infrastructure:
-     find -L _site/doc/ _site/image/ _site/static/ -not -name "*.page" -type f | grep -F --invert-match -e 'doc/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/template/default.html' -e '-530px.jpg' -e '-768px.png' -e 'lorem' | grep -E --invert-match -e '/doc/.*/index' -e 'static/.*\..*\.html$' -e 'doc/.*\..*\.html$' | \
+     find -L _site/doc/ _site/ _site/static/ -not -name "*.page" -type f | grep -F --invert-match -e 'doc/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/template/default.html' -e '-530px.jpg' -e '-768px.png' -e 'lorem' | grep -E --invert-match -e '/doc/.*/index' -e 'static/.*\..*\.html$' -e 'doc/.*\..*\.html$' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>never<\/changefreq><\/url>/'
      ## Everything else changes once in a while:
-     find -L _site/ -not -name "*.page" -type f | grep -F --invert-match -e 'static/' -e 'doc/' -e 'image/' -e 'fulltext' -e 'lorem' -e 'metadata/' -e '-768px.'  -e '.page.html'| \
+     find -L _site/ -not -name "*.page" -type f | grep -F --invert-match -e 'static/' -e 'doc/' -e 'fulltext' -e 'lorem' -e 'metadata/' -e '-768px.'  -e '.page.html'| \
          grep -E --invert-match -e '/.*/index' -e '.page$' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/'
@@ -368,7 +368,7 @@ else
     λ(){ gf '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
 
-    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match -e '_site' -e 'Modafinil' -e 'Blackmail' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' | \
+    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match -e '_site' -e 'Modafinil' -e 'Blackmail' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' | \
          grep -E -e 'https://web.archive.org/web/.*www\.gwern\.net.*' -e 'Blackmail';
        }
     wrap λ "Stray or bad URL links in Markdown-sourced HTML."
@@ -457,10 +457,10 @@ else
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=500 "grep -F --color=always --with-filename -- '————–'"; }
     wrap λ "Broken tables in HTML."
 
-    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -F --with-filename --color=always -e '](/​image/​' -e '](/image/' -e '<p>[[' -e ' _</span><a ' -e ' _<a '; }
+    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -F --with-filename --color=always -e '](/​image/​' -e '](/image/' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a '; }
     wrap λ "Miscellaneous fixed-string errors in compiled HTML."
 
-    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -E --with-filename --color=always -e ' __[A-Z][a-z]'; }
+    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -E --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]\+"' -e 'href="#fn[0-9]\+"'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
     λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' ./static/redirect/nginx*.conf; }
@@ -532,7 +532,7 @@ else
             -e '&lt;figcaption' -e '{.}' -e ' ?' -e " ’’" -e 'lt;/td&gt;' -e "‘’" -e "’‘" -e "’’" -e '<li></li>' -e '</em<em>' -e '𝑂' \
             -e '</a.>' -e ' . ' -e ' , ' -e ' ; ' -e 'class=”collapse”' -e "‘’" -e " ’" -e '<bold>' -e '</bold>' -e '<jats:bold>' \
             -e  '</jats:bold>' -e 'Ã©' -e '</a>s' -e '/&gt;'  -e '&lt;figcaption'  -e 'aria-hidden=">' -e '&gt;</a>' -e '<A Href' \
-            -e '</strong>:,' -e ' et al.' -e '<span class="latex">LaTeX</span>' -e '<div>' -- ./metadata/*.yaml | \
+            -e '</strong>:,' -e ' et al.' -e '<span class="latex">LaTeX</span>' -e '<div>' -e '>LaTeX</a>' -e '>TeX</a>' -- ./metadata/*.yaml | \
              grep -F -v 'popular_shelves';
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
@@ -582,6 +582,9 @@ else
 
     λ(){ gf '{#' $(find _site/ -type f -name "index"); }
     wrap λ "Broken anchors in directory indexes."
+
+    λ(){ gf '{#' $(find * -type f -name '*\$*' -or -name '*=*' -or -name '*\?*' -or -name '*gwner*'); }
+    wrap λ "Malformed filenames: dangerous characters in them?"
 
     λ(){
         set +e;
@@ -746,7 +749,7 @@ else
           cm "image/jpeg" 'https://gwern.net/doc/rotten.com/library/religion/heresy/circumcellions/circumcellions-augustine.JPG'
           cm "image/png" 'https://gwern.net/doc/statistics/order/beanmachine-multistage/beanmachine-demo.png'
           cm "image/png" 'https://gwern.net/static/img/logo/logo.png'
-          cm "image/svg+xml" 'https://gwern.net/image/spaced-repetition/forgetting-curves.svg'
+          cm "image/svg+xml" 'https://gwern.net/doc/psychology/spaced-repetition/gwern-forgetting-curves.svg'
           cm "image/svg+xml" 'https://gwern.net/static/img/logo/logo-smooth.svg'
           cm "image/svg+xml" 'https://gwern.net/static/img/icon/alcor.svg'
           cm "image/svg+xml" 'https://gwern.net/doc/genetics/selection/www.mountimprobable.com/assets/images/verm_darkeryellow.svg'
@@ -791,12 +794,12 @@ else
           cm "text/x-r; charset=utf-8" 'https://gwern.net/static/build/linkAbstract.R'
           cm "text/plain; charset=utf-8" 'https://gwern.net/static/build/linkArchive.sh'
           cm "text/yaml; charset=utf-8" 'https://gwern.net/metadata/full.yaml'
-          cm "video/mp4"  'https://gwern.net/image/genetics/selection/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
-          cm "video/webm" 'https://gwern.net/image/statistics/2003-murray-humanaccomplishment-region-proportions-bootstrap.webm'
-          cm "image/jpeg" 'https://gwern.net/image/technology/security/lobel-frogandtoadtogether-thebox-crop.jpg'
-          cm "image/jpeg" 'https://gwern.net/image/google/15-predicted-survivorship-curves.png-530px.jpg'
-          cm "image/png"  'https://gwern.net/image/technology/search/googlesearch-tools-daterange.png'
-          cm "image/png"  'https://gwern.net/image/google/15-predicted-survivorship-curves.png'
+          cm "video/mp4"  'https://gwern.net/doc/genetics/selection/artificial/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
+          cm "video/webm" 'https://gwern.net/doc/statistics/2003-murray-humanaccomplishment-region-proportions-bootstrap.webm'
+          cm "image/jpeg" 'https://gwern.net/doc/cs/security/lobel-frogandtoadtogether-thebox-crop.jpg'
+          cm "image/jpeg" 'https://gwern.net/doc/technology/google/gwern-15-predicted-survivorship-curves.png-530px.jpg'
+          cm "image/png"  'https://gwern.net/technology/google/gwern-googlesearch-tools-daterange.png'
+          cm "image/png"  'https://gwern.net/doc/technology/google/gwern-15-predicted-survivorship-curves.png'
           cm "application/wasm"  'https://gwern.net/static/js/patterns/en-us.wasm'
         }
     wrap λ "The live MIME types are incorrect"
@@ -851,6 +854,9 @@ else
     λ(){ find . -type f -mtime +3 -name "*#*" -or -type f -name "temp[0-9]*"; }
     wrap λ "Stale temporary files?"
 
+    λ(){ find * -type d -empty; }
+    wrap λ "Unused or empty directories?"
+
     bold "Checking for HTML/PDF/image anomalies…"
     λ(){ BROKEN_HTMLS="$(find ./ -type f -name "*.html" | grep -F --invert-match 'static/' | \
                          parallel --max-args=500 "grep -F --ignore-case --files-with-matches \
@@ -890,13 +896,13 @@ else
     }
     wrap λ "Remove junk from PDF & add metadata"
 
-    λ(){ find ./image/ -type f -name "*.jpg" | parallel --max-args=500 file | grep -F --invert-match 'JPEG image data'; }
+    λ(){ find ./doc/ -type f -name "*.jpg" | parallel --max-args=500 file | grep -F --invert-match 'JPEG image data'; }
     wrap λ "Corrupted JPGs"
 
-    λ(){ find ./image/ -type f -name "*.png" | parallel --max-args=500 file | grep -F --invert-match 'PNG image data'; }
+    λ(){ find ./doc/ -type f -name "*.png" | parallel --max-args=500 file | grep -F --invert-match 'PNG image data'; }
     wrap λ "Corrupted PNGs"
 
-    λ(){  find ./image/ -name "*.png" | grep -F --invert-match -e '/static/img/' -e '/doc/www/misc/' | sort | xargs identify -format '%F %[opaque]\n' | grep -F ' false'; }
+    λ(){  find ./doc/ -name "*.png" | grep -F --invert-match -e '/static/img/' -e '/doc/www/misc/' | sort | xargs identify -format '%F %[opaque]\n' | grep -F ' false'; }
     wrap λ "Partially transparent PNGs (may break in dark mode, convert with 'mogrify -background white -alpha remove -alpha off')"
 
     ## 'file' throws a lot of false negatives on HTML pages, often detecting XML and/or ASCII instead, so we whitelist some:
@@ -931,15 +937,15 @@ else
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4"
 
     bold "Compressing high-quality JPGs to ≤65% quality…"
-    JPGS_BIG="$(find ./image/ -type f -name "*.jpg" | parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | grep -E -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
+    JPGS_BIG="$(find ./co/ -type f -name "*.jpg" | parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | grep -E -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
     echo "$JPGS_BIG"
     compressJPG2 $(echo "$JPGS_BIG" | cut --delimiter=' ' --field=2)
 
     bold "Compressing new PNGs…"
-    png $(find ./image/ -type f -name "*.png" -mtime -3)
+    png $(find ./doc/ -type f -name "*.png" -mtime -3)
 
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
-    λ() { for IMAGE in $(find ./image/ -type f -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'image/fiction/batman/' -e 'image/ai/dall-e/2/' -e '2022-09-21-gwern-stablediffusionv14-circulardropcapinitialsamples.png' -e '2022-09-22-gwern-stablediffusionv14-textualinversion-yinit-dropcapsexperiments.png' -e '2022-09-27-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/image/eva/'); do
+    λ() { for IMAGE in $(find ./doc/ -type f -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-gwern-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'doc/ai/nn/transformer/gpt/dall-e/2/' -e '2022-09-21-gwern-stablediffusionv14-circulardropcapinitialsamples.png' -e '2022-09-22-gwern-stablediffusionv14-textualinversion-yinit-dropcapsexperiments.png' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/'); do
               SIZE_W=$(identify -format "%w" "$IMAGE")
               if (( SIZE_W > 1600  )); then
                   echo "Too wide image: $IMAGE $SIZE_W; shrinking…";

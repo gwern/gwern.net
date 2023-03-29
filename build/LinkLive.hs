@@ -3211,7 +3211,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "/doc/statistics/bayes/2003-korb.pdf"
             , "/doc/psychology/cognitive-bias/sunk-cost/2005-parker.pdf"
             , "/doc/vitamin-d/2005-grant.pdf"
-            , "/image/gan/stylegan/2021-li-dplase-ganlatentspaceeditingvideo.mp4"
+            , "/doc/ai/anime/danbooru/2021-li-dplase-ganlatentspaceeditingvideo.mp4"
             , "http://2chan.us/wordpress/2012/07/12/c82-genre-stats/"
             , "http://antiagingcentral.com/store/catalog/index.php?cPath=29"
             , "http://archinte.ama-assn.org/cgi/content/abstract/172/6/494"

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-03-06 16:32:26 gwern"
+When:  Time-stamp: "2023-03-29 18:01:47 gwern"
 License: CC-0
 -}
 
@@ -63,7 +63,7 @@ import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
--- we exclude several directories (doc/, static/, image/) entirely; a Gwern.net page is then any
+-- we exclude several directories (doc/, static/) entirely; a Gwern.net page is then any
 -- link without a file extension (ie. a '.' in the URL - we guarantee that no Markdown essay has a
 -- period inside its URL).
 -- Essay/page links get the 'link-page' class.
@@ -79,7 +79,7 @@ isPagePath :: T.Text -> Bool
 isPagePath f = let f' = replace "https://gwern.net" "" $ T.unpack f in
     (if
         not ("/" `isPrefixOf` f') ||
-      ("/image/" `isPrefixOf` f' || "/static/" `isPrefixOf` f')
+      ("/static/" `isPrefixOf` f')
      then False else
        takeExtension f' == "")
 

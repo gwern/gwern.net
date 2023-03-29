@@ -128,7 +128,7 @@ imageMagickDimensions f =
              _             -> do let [height, width] = words $ head $ lines $ B8.unpack bs
                                  return (height, width)
 
--- Example: Image ("",["width-full"],[]) [Str "..."] ("/image/gan/thiswaifudoesnotexist.png","fig:")
+-- Example: Image ("",["width-full"],[]) [Str "..."] ("/doc/ai/nn/gan/stylegan/thiswaifudoesnotexist.png","fig:")
 -- type Text.Pandoc.Definition.Attr = (T.Text, [T.Text], [(T.Text, T.Text)])
 -- WARNING: image hotlinking is a bad practice: hotlinks will often break, sometimes just because of hotlinking. We assume that all images are locally hosted! Woe betide the cheapskate parasite who fails to heed this.
 imageSrcset :: Inline -> IO Inline
@@ -181,7 +181,7 @@ addImgDimensions = fmap (renderTagsOptions renderOptions{optMinimize=whitelist, 
                  where whitelist s = s /= "div" && s /= "script" && s /= "style"
 
 {- example illustration:
- TagOpen "img" [("src","/image/traffic/201201-201207-traffic-history.png")
+ TagOpen "img" [("src","/doc/traffic/201201-201207-gwern-traffic-history.png")
                 ("alt","Plot of page-hits (y-axis) versus date (x-axis)")],
  TagOpen "figcaption" [],TagText "Plot of page-hits (y-axis) versus date (x-axis)",
  TagClose "figcaption",TagText "\n",TagClose "figure" -}
