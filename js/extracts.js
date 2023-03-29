@@ -581,7 +581,7 @@ Extracts = {
                     && (element = targetElementInDocument(target, popFrame.document)))
                     revealElement(element, false);
                 	requestAnimationFrame(() => {
-	                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
+	                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element, true);
 	                });
             });
         }
@@ -600,7 +600,7 @@ Extracts = {
                 link.addActivateEvent((event) => {
                     let hashTarget = targetElementInDocument(link, popFrame.document);
                     if (hashTarget) {
-                        Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(hashTarget);
+                        Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(hashTarget, true);
                         return false;
                     } else {
                         return true;

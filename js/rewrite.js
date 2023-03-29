@@ -391,6 +391,53 @@ AuxLinks = {
     }
 };
 
+/*************************************************************************/
+/*	Add “backlinks” link to start of section popups, when that section has
+	a backlinks block.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.injectBacklinksLinkIntoLocalSectionPopFrame = (eventInfo) => {
+    GWLog("injectBacklinksLinkIntoLocalSectionPopFrame", "rewrite.js", 1);
+
+	let containingPopFrame = Extracts.popFrameProvider.containingPopFrame(eventInfo.container);
+	if (   containingPopFrame.classList.contains("local-page") == true
+		&& containingPopFrame.classList.contains("full-page") == false) {
+		let section = eventInfo.container.querySelector("section");
+		if (section == null)
+			return;
+
+		let backlinksBlock = eventInfo.container.querySelector(`#${(section.id)}-backlinks`);
+		if (backlinksBlock == null)
+			return;
+
+		//	Construct link and enclosing block.
+		let backlinksLink = newElement("A", {
+			"class": "aux-links backlinks",
+			"href": "#" + backlinksBlock.id
+		}, {
+			"innerHTML": "backlinks"
+		});
+		let sectionMetadataBlock = newElement("P", {
+			"class": "section-metadata"
+		});
+		sectionMetadataBlock.append(backlinksLink);
+		section.insertBefore(sectionMetadataBlock, section.children[1]);
+
+		//	Make a click on the link uncollapse the backlinks block.
+		backlinksLink.addActivateEvent((event) => {
+			if (backlinksBlock.closest(".collapse").classList.contains("expanded") == false) {
+				GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (info) => {
+					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(backlinksBlock);
+				}, { once: true });
+			} else {
+				requestAnimationFrame(() => {
+					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(backlinksBlock);
+				});
+			}
+			revealElement(backlinksBlock, false);
+		});
+	}
+}, "rewrite", (info) => (info.context == "popFrame"));
+
 
 /*********/
 /* NOTES */

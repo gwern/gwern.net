@@ -495,14 +495,6 @@ blockquote .collapse.has-abstract:not(.expanded) > .disclosure-button .part::bef
     margin-top: 0.75em;
 }
 
-.annotation .collapse.aux-links-container .aux-links-append {
-    padding-left: 0;
-}
-
-.annotation .collapse.aux-links-container .aux-links-append ul {
-	margin-bottom: 0.5em;
-}
-
 /*************************/
 /*	Per-section backlinks.
  */
@@ -3571,10 +3563,6 @@ body.index-directory #footer {
     opacity: unset;
 }
 
-.popframe-body > section:only-child {
-    display: contents;
-}
-
 .popframe-body ul,
 .popframe-body ol {
     overflow: unset;
@@ -3906,6 +3894,18 @@ body.index-directory #footer {
 }
 .popframe-body .collapse.section-backlinks-container:last-child {
 	margin-bottom: 0;
+}
+
+.popframe-body section .section-metadata {
+	margin-top: -0.5em;
+	margin-bottom: 1em;
+	text-align: right;
+}
+.popframe-body section.level1 .section-metadata {
+	text-align: left;
+}
+.popframe-body section .section-metadata + p {
+	text-indent: 0;
 }
 
 /*┌─────────────────┐*/
@@ -5381,26 +5381,32 @@ section.highlight-fading::before {
 /*  “Aux links” (backlinks, similars, “see also”, etc.) section of annotations.
  */
 
-.aux-links-append {
-    margin-top: 0.5em;
+.annotation .aux-links-append {
+	margin-top: 0.5em;
+    padding-left: 0;
     padding-left: 2px;
     padding-bottom: 0.125em;
 }
-.aux-links-append + .aux-links-append {
+
+.annotation .aux-links-append + .aux-links-append {
     margin-top: 1.5em;
 }
 
-.TOC + .aux-links-container {
+.annotation .TOC + .aux-links-container {
     margin-top: 1em;
 }
 
-.aux-links-append > .columns > ul {
+.annotation .aux-links-append > .columns > ul {
     margin-top: 0.5em;
     margin-bottom: 0.25em;
 }
 
-.aux-links-append > div > .columns:not(:first-child) {
+.annotation .aux-links-append > div > .columns:not(:first-child) {
     margin-top: 1em;
+}
+
+.annotation .aux-links-append ul {
+	margin-bottom: 0.5em;
 }
 
 /*  “Aux links” in link bibliographies, directory indexes, and other transcluded

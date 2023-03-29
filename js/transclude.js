@@ -740,7 +740,7 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 			backlinksBlock.append(newElement("UL", { "class": "aux-links-list backlinks-list" }));
 
 			//	Collapse wrapper.
-			let collapseWrapper = newElement("DIV", { "class": "collapse section-backlinks-container" });
+			let collapseWrapper = newElement("DIV", { "class": "collapse aux-links-append section-backlinks-container" });
 			collapseWrapper.append(backlinksBlock);
 
 			//	Include wrapper.
@@ -1114,7 +1114,7 @@ Transclude = {
 		"blockquote",
 		[	"section",
 			".markdownBody > *",
-			".include-wrapper-block"
+			".include-wrapper-block",
 			].join(", ")
 	],
 

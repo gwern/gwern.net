@@ -240,15 +240,16 @@ Popups = {
 	},
 
 	//	Called by: extracts.js
-	scrollElementIntoViewInPopFrame: (element) => {
+	scrollElementIntoViewInPopFrame: (element, alwaysRevealTopEdge = false) => {
 		let popup = Popups.containingPopFrame(element);
 
 		let elementRect = element.getBoundingClientRect();
 		let popupBodyRect = popup.body.getBoundingClientRect();
 		let popupScrollViewRect = popup.scrollView.getBoundingClientRect();
 
+		let bottomBound = alwaysRevealTopEdge ? elementRect.top : elementRect.bottom;
 		if (   popup.scrollView.scrollTop                              >= elementRect.top    - popupBodyRect.top
-			&& popup.scrollView.scrollTop + popupScrollViewRect.height <= elementRect.bottom - popupBodyRect.top)
+			&& popup.scrollView.scrollTop + popupScrollViewRect.height <= bottomBound - popupBodyRect.top)
 			return;
 
 		popup.scrollView.scrollTop = elementRect.top - popupBodyRect.top;

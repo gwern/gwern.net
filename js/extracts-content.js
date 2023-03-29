@@ -138,6 +138,10 @@ Extracts = { ...Extracts,
 			titleLinkHref = referenceData.titleLinkHref;
 		}
 
+		if (popFrame.classList.contains("backlinks")) {
+			popFrameTitleText += " (Backlinks)";
+		}
+
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			titleLinkHref:      titleLinkHref,
 			popFrameTitleText:  popFrameTitleText
@@ -231,6 +235,12 @@ Extracts = { ...Extracts,
 		else // if (Extracts.popFrameProvider == Popins)
 			Extracts.rewritePopinContent_LOCAL_PAGE(popFrame, injectEventInfo);
 
+		//	Something failed somehow.
+		if (isNodeEmpty(injectEventInfo.container)) {
+			popFrame.classList.toggle("loading-failed", true);
+			return;
+		}
+
 		//	Make first image load eagerly.
 		let firstImage = (   popFrame.body.querySelector(".page-thumbnail")
 						  || popFrame.body.querySelector("figure img"))
@@ -239,16 +249,14 @@ Extracts = { ...Extracts,
 			firstImage.decoding = "sync";
 		}
 
-		//	Something failed somehow.
-		if (isNodeEmpty(injectEventInfo.container)) {
-			popFrame.classList.toggle("loading-failed", true);
-			return;
-		}
-
 		//	Strip a single collapse block encompassing the top level content.
 		if (   isOnlyChild(injectEventInfo.container.firstElementChild)
 			&& injectEventInfo.container.firstElementChild.classList.contains("collapse"))
 			expandLockCollapseBlock(injectEventInfo.container.firstElementChild);
+
+		//	Designate section backlinks popups as such.
+		if (injectEventInfo.container.firstElementChild.classList.containsAnyOf([ "section-backlinks", "section-backlinks-container" ]))
+			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "aux-links", "backlinks");
 
 		/*	In the case where the spawning link points to a specific element
 			within the transcluded content, but we’re transcluding the full

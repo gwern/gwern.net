@@ -118,9 +118,19 @@ Popins = {
 		*/
 
 	//	Called by: extracts.js
-	scrollElementIntoViewInPopFrame: (element) => {
+	scrollElementIntoViewInPopFrame: (element, alwaysRevealTopEdge = false) => {
 		let popin = Popins.containingPopFrame(element);
-		popin.scrollView.scrollTop = element.getBoundingClientRect().top - popin.body.getBoundingClientRect().top;
+
+		let elementRect = element.getBoundingClientRect();
+		let popinBodyRect = popin.body.getBoundingClientRect();
+		let popinScrollViewRect = popin.scrollView.getBoundingClientRect();
+
+		let bottomBound = alwaysRevealTopEdge ? elementRect.top : elementRect.bottom;
+		if (   popin.scrollView.scrollTop                              >= elementRect.top    - popinBodyRect.top
+			&& popin.scrollView.scrollTop + popinScrollViewRect.height <= bottomBound - popinBodyRect.top)
+			return;
+
+		popin.scrollView.scrollTop = elementRect.top - popinBodyRect.top;
 	},
 
 	//	Called by: Popins.injectPopinForTarget
@@ -350,7 +360,7 @@ Popins = {
 
 		//  Inject the popin.
 		if (containingDocument.popin) {
-			/*  Save the parent popup’s scroll state when pushing it down the
+			/*  Save the parent popin’s scroll state when pushing it down the
 				‘stack’.
 				*/
 			containingDocument.popin.lastScrollTop = containingDocument.popin.scrollView.scrollTop;
