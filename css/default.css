@@ -229,7 +229,7 @@
 	visibility: hidden;
 }
 .collapse.expanded-temp:not(.just-auto-expanded) > .disclosure-button .part.top .label.fading {
-	opacity: 0.1;
+	opacity: 0;
 	transition:
 		opacity 2.0s ease-in;
 }
