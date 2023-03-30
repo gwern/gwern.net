@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using GPT-3 neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2023-03-26 16:12:28 gwern"
+# When:  Time-stamp: "2023-03-30 17:25:19 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python paragraphizer.py
@@ -73,8 +73,26 @@
 # higher scores. We run extensive ablations to measure the contributions of the components of our
 # proposed method.
 
+import signal
 import sys
 import openai
+
+# define timeout handling:
+def handler(signum, frame):
+    raise TimeoutError("Function call timed out")
+
+# define function to run with timeout:
+def run_with_timeout(func_name, args=(), kwargs={}, timeout=5):
+    func = getattr(openai.ChatCompletion, func_name)
+    signal.signal(signal.SIGALRM, handler)
+    signal.alarm(timeout)
+    try:
+        result = func(*args, **kwargs)
+    except TimeoutError as e:
+        result = None
+    finally:
+        signal.alarm(0)
+    return result
 
 if len(sys.argv) == 1:
     target = sys.stdin.read().strip()
@@ -86,14 +104,23 @@ messages = [
     {"role": "user", "content": f"Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) Please include ONLY the resulting text in your output, and NO other conversation or comments.\n\n<abstract>\n{target}\n</abstract>"}
 ]
 
-result = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=messages,
-    max_tokens=1024,
-    temperature=0,
-)['choices'][0]['message']['content']
+result = run_with_timeout(
+    "create",
+    kwargs={
+        "model": "gpt-3.5-turbo",
+        "messages": messages,
+        "max_tokens": 4096,
+        "temperature": 0
+    },
+    timeout=10
+)
 
-print(result)
+if result is None:
+                          sys.stderr.write("Function call timed out")
+else:
+                          print(result['choices'][0]['message']['content'])
+
+# print(result)
 # if target == (result.replace('\n', '')).replace(' ', ''):
 #     print(result)
 # else:
