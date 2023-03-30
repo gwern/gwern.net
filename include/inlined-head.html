@@ -1300,6 +1300,10 @@ body.justified-not .markdownBody li {
     font-feature-settings: 'smcp';
 }
 
+section.collapse.expanded-not {
+	display: flow-root;
+}
+
 h1 {
     margin: 0.6em 0 0.5em -0.75rem;
     font-weight: bold;
@@ -1333,6 +1337,15 @@ h1 {
     font-size: 1.75em;
     line-height: 1.25;
     letter-spacing: -0.75px;
+}
+
+/*=-------=*/
+/*= Other =*/
+/*=-------=*/
+
+#markdownBody ul,
+#markdownBody ol {
+    display: flow-root;
 }
 
 
@@ -1502,6 +1515,8 @@ blockquote {
     --GW-link-underline-background-color: var(--GW-blockquote-background-color);
     --GW-table-full-width-background-color: var(--GW-blockquote-background-color);
 
+    display: flow-root;
+    overflow: visible;
     margin: 1.625em 0 1.75em 0;
     border: 1px solid var(--GW-blockquote-border-color);
     background-color: var(--GW-blockquote-background-color);

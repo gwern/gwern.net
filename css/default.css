@@ -287,10 +287,6 @@ section.collapse {
     margin-bottom: 2.25em;
 }
 
-section.collapse.expanded-not {
-	display: flow-root;
-}
-
 section.collapse.has-abstract,
 section.collapse.expanded {
 	padding-top: 0;
@@ -1032,10 +1028,6 @@ a:hover {
     margin: 1.25em 0 1.5em 0;
     padding: 0 0 0 var(--GW-list-left-padding);
 }
-#markdownBody ul,
-#markdownBody ol {
-    display: flow-root;
-}
 .markdownBody li > ul,
 .markdownBody li > ol {
     margin: 0.5em 0;
@@ -1310,11 +1302,6 @@ img::before {
 
 /*  Main gray background is implemented in initial.css to avoid ‘flash’ on load.
  */
-
-blockquote {
-    overflow: visible;
-    display: flow-root;
-}
 
 blockquote blockquote {
     margin: 1em 1px;
