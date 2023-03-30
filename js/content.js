@@ -258,7 +258,7 @@ Content = {
 
 				//	Maybe it’s an annotated link?
 				if (Annotations.isAnnotatedLink(link))
-					return false
+					return false;
 
 				let identifier = Content.targetIdentifier(link);
 				return Content.contentTypes.localCodeFile.matches(identifier);
@@ -408,7 +408,7 @@ Content = {
 
 				//	Maybe it’s an annotated link?
 				if (Annotations.isAnnotatedLink(link))
-					return false
+					return false;
 
 				let identifier = Content.targetIdentifier(link);
 				return Content.contentTypes.localPage.matches(identifier);
