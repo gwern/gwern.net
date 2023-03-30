@@ -26,7 +26,7 @@ function expandCollapseBlocksToReveal(node) {
     //  Expand the nearest collapse block.
     let collapseBlock = element.closest(".collapse");
     let expansionOccurred = isCollapsed(collapseBlock);
-    collapseBlock.classList.toggle("expanded", true);
+    collapseBlock.swapClasses([ "expanded", "expanded-not" ], 0);
     if (expansionOccurred)
 		updateDisclosureButtonState(collapseBlock);
 
@@ -48,7 +48,7 @@ function isCollapsed(collapseBlock) {
 	if (Array.from(collapseBlock.children).findIndex(child => child.classList.contains("collapse-content-wrapper")) === -1)
 		return false;
 
-    return (collapseBlock.classList.contains("expanded") == false);
+    return (collapseBlock.classList.contains("expanded-not"));
 }
 
 /*****************************************************************************/
@@ -139,8 +139,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			}
 
 			//	Mark as expanded, if need be.
-			if (startExpanded)
-				collapseWrapper.classList.add("expanded");
+			collapseWrapper.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1)
 
 			//  Inject the disclosure button.
 			if ([ "SECTION" ].includes(collapseBlock.tagName)) {
@@ -157,6 +156,11 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 						&& node.classList.containsAnyOf([ "disclosure-button", "abstract-collapse" ]));
 			}) + 1));
 			collapseWrapper.append(collapseContentWrapper);
+
+			//	Designate abstract-less collapse blocks.
+			if (collapseContentWrapper.previousElementSibling.classList.contains("abstract") == false) {
+				collapseWrapper.classList.add("no-abstract");
+			}
 		}
 	});
 
@@ -202,7 +206,7 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 				return;
 
 			//	Set proper classes.
-			collapseBlock.classList.toggle("expanded");
+			collapseBlock.swapClasses([ "expanded", "expanded-not" ], isCollapsed(collapseBlock) ? 0 : 1);
 			collapseBlock.classList.remove("just-clicked", "just-auto-expanded");
 
 			//	Update label text and other HTML-based UI state.
@@ -311,7 +315,7 @@ function expandLockCollapseBlock(collapseBlock) {
 	//	Expand.
 	let wasCollapsed = isCollapsed(collapseBlock);
 
-	collapseBlock.classList.remove("collapse", "expanded", "expand-on-hover");
+	collapseBlock.classList.remove("collapse", "expanded", "expanded-not", "expand-on-hover");
 	if (collapseBlock.className == "")
 		collapseBlock.removeAttribute("class");
 

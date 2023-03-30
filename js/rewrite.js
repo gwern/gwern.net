@@ -424,7 +424,7 @@ addContentInjectHandler(GW.contentInjectHandlers.injectBacklinksLinkIntoLocalSec
 
 		//	Make a click on the link uncollapse the backlinks block.
 		backlinksLink.addActivateEvent((event) => {
-			if (backlinksBlock.closest(".collapse").classList.contains("expanded") == false) {
+			if (backlinksBlock.closest(".collapse").classList.contains("expanded-not")) {
 				GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (info) => {
 					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(backlinksBlock);
 				}, { once: true });
