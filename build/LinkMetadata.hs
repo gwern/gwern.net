@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-03-29 18:01:47 gwern"
+When:  Time-stamp: "2023-03-30 12:28:04 gwern"
 License: CC-0
 -}
 
@@ -454,7 +454,7 @@ addHasAnnotation (title,aut,dt,_,_,abstrct) (Link (a,b,c) e (f,g))  =
              -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
              if not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f then x'
              else -- so it's not a local link, doesn't have a full annotation, doesn't have an on-demand annotation like a Wikipedia article, but does have *some* partial annotation since it exists on disk, so it gets `.link-annotated-partial`
-               addClass "link-annotated" $ addClass "link-annotated-partial" x'
+               addClass "link-annotated-partial" x'
 addHasAnnotation _ z = z
 
 parseRawBlock :: Attr -> Block -> Block
