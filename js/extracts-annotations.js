@@ -2,24 +2,20 @@
 /*= ANNOTATIONS =*/
 /*=-------------=*/
 
-Extracts.targetTypeDefinitions.insertBefore([
+Extracts.targetTypeDefinitions.push([
     "ANNOTATION",               // Type name
     "isAnnotatedLink",          // Type predicate function
-    (target) =>                 // Target classes to add
-        ((   Annotations.isAnnotatedLinkPartial(target)
-          && Annotations.dataSourceForTarget(target) == Annotations.dataSources.local)
-         ? "has-annotation-partial"
-         : "has-annotation"),
+    "has-annotation",           // Target classes to add
     "annotationForTarget",      // Pop-frame fill function
     "annotation"                // Pop-frame classes
-], (def => def[0] == "LOCAL_PAGE"));
+]);
 
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     //  Called by: extracts.js
     //  Called by: extracts-content.js
     isAnnotatedLink: (target) => {
-        return Annotations.isAnnotatedLink(target);
+        return Annotations.isAnnotatedLinkFull(target);
     },
 
     /*  This “special testing function” is used to exclude certain targets which
@@ -113,12 +109,78 @@ Extracts = { ...Extracts,
             document: popFrame.document,
             context: "popFrame"
         });
+    }
+};
+
+/*=-----------------------=*/
+/*= ANNOTATIONS (PARTIAL) =*/
+/*=-----------------------=*/
+
+Extracts.targetTypeDefinitions.push([
+    "ANNOTATION_PARTIAL",            // Type name
+    "isPartialAnnotationLink",       // Type predicate function
+    "has-annotation-partial",        // Target classes to add
+    "partialAnnotationForTarget",    // Pop-frame fill function
+    "annotation annotation-partial"  // Pop-frame classes
+]);
+
+Extracts = { ...Extracts,
+    //  Called by: extracts.js (as `predicateFunctionName`)
+    //  Called by: extracts.js
+    //  Called by: extracts-content.js
+    isPartialAnnotationLink: (target) => {
+        return Annotations.isAnnotatedLinkPartial(target);
     },
 
-    /*=----------------------=*/
-    /*= ANNOTATIONS: HELPERS =*/
-    /*=----------------------=*/
+    /*  This “special testing function” is used to exclude certain targets which
+        have already been categorized as (in this case) `ANNOTATION` targets. It
+        returns false if the target is to be excluded, true otherwise. Excluded
+        targets will not spawn pop-frames.
+     */
+    //  Called by: Extracts.targets.testTarget (as `testTarget_${targetTypeInfo.typeName}`)
+    testTarget_ANNOTATION_PARTIAL: (target) => {
+    	return testTarget_ANNOTATION(target);
+    },
 
+    /*  A partial annotation for a link.
+        */
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
+    partialAnnotationForTarget: (target) => {
+        GWLog("Extracts.partialAnnotationForTarget", "extracts-annotations.js", 2);
+
+		return newDocument(synthesizeIncludeLink(target, {
+			"class": "link-annotated-partial include-annotation-partial",
+			"data-template": "annotation-blockquote-not",
+			"data-template-fields": "linkTarget:$",
+			"data-link-target": ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank")
+		}));
+    },
+
+    //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
+    titleForPopFrame_ANNOTATION_PARTIAL: (popFrame) => {
+        GWLog("Extracts.titleForPopFrame_ANNOTATION_PARTIAL", "extracts-annotations.js", 2);
+
+		return titleForPopFrame_ANNOTATION(popFrame);
+    },
+
+    //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
+    preparePopup_ANNOTATION_PARTIAL: (popup) => {
+    	return preparePopup_ANNOTATION(popup);
+    },
+
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    rewritePopFrameContent_ANNOTATION_PARTIAL: (popFrame) => {
+        GWLog("Extracts.rewritePopFrameContent_ANNOTATION_PARTIAL", "extracts-annotations.js", 2);
+
+		Extracts.rewritePopFrameContent_ANNOTATION(popFrame);
+    }
+};
+
+/*=----------------------=*/
+/*= ANNOTATIONS: HELPERS =*/
+/*=----------------------=*/
+
+Extracts = { ...Extracts,
     annotationLoadHoverDelay: 25,
 
     //  Called by: extracts.js

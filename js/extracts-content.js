@@ -14,6 +14,9 @@
 	href or other properties, and returns true if the target is a member of
 	that class of targets, false otherwise.
 
+	NOTE: These testing (a.k.a. “type predicate”) functions SHOULD NOT be used
+	directly, but only via Extracts.targetTypeInfo()!
+
 	Each set also contains the corresponding filling function, which
 	is called by fillPopFrame() (chosen on the basis of the return values
 	of the testing functions, and the specified order in which they’re
@@ -22,13 +25,13 @@
 	the pop-frame spawned by the given target.
  */
 
-Extracts.targetTypeDefinitions.push([
+Extracts.targetTypeDefinitions.insertBefore([
 	"LOCAL_PAGE",          // Type name
 	"isLocalPageLink",     // Type predicate function
 	"has-content",         // Target classes to add
 	"localPageForTarget",  // Pop-frame fill function
 	"local-page"           // Pop-frame classes
-]);
+], (def => def[0] == "ANNOTATION_PARTIAL"));
 
 /*=-------------=*/
 /*= LOCAL PAGES =*/
@@ -693,9 +696,6 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `predicateFunctionName`)
     isVideoLink: (target) => {
-        if (Extracts.isAnnotatedLink(target))
-            return false;
-
         if ([ "www.youtube.com", "youtube.com", "youtu.be" ].includes(target.hostname)) {
             return (Extracts.youtubeId(target.href) != null);
         } else {
@@ -745,8 +745,7 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalVideoLink: (target) => {
-        if (   target.hostname != location.hostname
-            || Extracts.isAnnotatedLink(target))
+        if (target.hostname != location.hostname)
             return false;
 
         let videoFileURLRegExp = new RegExp(
@@ -804,8 +803,7 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalImageLink: (target) => {
-        if (   target.hostname != location.hostname
-            || Extracts.isAnnotatedLink(target))
+        if (target.hostname != location.hostname)
             return false;
 
         let imageFileURLRegExp = new RegExp(
@@ -902,8 +900,7 @@ Extracts.targetTypeDefinitions.insertBefore([
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalDocumentLink: (target) => {
-        if (   target.hostname != location.hostname
-            || Extracts.isAnnotatedLink(target))
+        if (target.hostname != location.hostname)
             return false;
 
         return (   target.pathname.startsWith("/doc/www/")
@@ -1018,8 +1015,7 @@ Extracts.targetTypeDefinitions.insertBefore([
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isForeignSiteLink: (target) => {
-        if (   target.hostname == location.hostname
-            || Extracts.isAnnotatedLink(target))
+        if (target.hostname == location.hostname)
             return false;
 
         return target.classList.contains("link-live");
