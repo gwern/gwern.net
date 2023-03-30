@@ -139,7 +139,7 @@ Extracts = { ...Extracts,
      */
     //  Called by: Extracts.targets.testTarget (as `testTarget_${targetTypeInfo.typeName}`)
     testTarget_ANNOTATION_PARTIAL: (target) => {
-    	return testTarget_ANNOTATION(target);
+    	return Extracts.testTarget_ANNOTATION(target);
     },
 
     /*  A partial annotation for a link.
@@ -160,12 +160,12 @@ Extracts = { ...Extracts,
     titleForPopFrame_ANNOTATION_PARTIAL: (popFrame) => {
         GWLog("Extracts.titleForPopFrame_ANNOTATION_PARTIAL", "extracts-annotations.js", 2);
 
-		return titleForPopFrame_ANNOTATION(popFrame);
+		return Extracts.titleForPopFrame_ANNOTATION(popFrame);
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
     preparePopup_ANNOTATION_PARTIAL: (popup) => {
-    	return preparePopup_ANNOTATION(popup);
+    	return Extracts.preparePopup_ANNOTATION(popup);
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
