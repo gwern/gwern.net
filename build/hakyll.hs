@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-03-21 12:19:42 gwern"
+When: Time-stamp: "2023-03-29 17:06:06 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -127,7 +127,6 @@ main =
                let static = route idRoute >> compile symlinkFileCompiler -- WARNING: custom optimization requiring forked Hakyll installation; see https://github.com/jaspervdj/hakyll/issues/786
                version "static" $ mapM_ (`match` static) [
                                        "doc/**",
-                                       "image/**",
                                        "**.hs",
                                        "**.sh",
                                        "**.txt",

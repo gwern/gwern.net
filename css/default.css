@@ -65,7 +65,7 @@
 	--collapse-left-offset: 1em;
 
     position: relative;
-    min-height: calc(  var(--collapse-toggle-top-height) 
+    min-height: calc(  var(--collapse-toggle-top-height)
     				 + var(--collapse-toggle-bottom-height));
     box-sizing: border-box;
     margin: 1em 0;
@@ -301,10 +301,10 @@ section.collapse.expanded > .disclosure-button .part.top .label {
 section.collapse > :first-child {
     position: relative;
     min-height: var(--collapse-toggle-top-height);
-    margin: 
-    	0 
+    margin:
+    	0
     	var(--collapse-toggle-top-height)
-    	0 
+    	0
     	calc(-1 * var(--collapse-toggle-left-width));
     padding: 0;
     z-index: 12;
@@ -472,7 +472,7 @@ blockquote .collapse.has-abstract.expanded-not > .disclosure-button .part::befor
 }
 
 /*******************************************************************/
-/*  “Aux links” in link bibliographies, directory indexes, and other 
+/*  “Aux links” in link bibliographies, directory indexes, and other
 	transcluded (rather than pop-framed) annotations.
  */
 
@@ -497,7 +497,7 @@ blockquote .collapse.has-abstract.expanded-not > .disclosure-button .part::befor
  */
 .collapse.section-backlinks-container {
 	--collapse-toggle-top-height: 2.75rem;
-	
+
 	margin-top: 1.25em;
 	margin-bottom: 2em;
 	margin-left: calc(-1 * var(--collapse-left-offset));
@@ -1243,7 +1243,7 @@ video + .caption-wrapper {
     padding-bottom: 1px;
 }
 
-/*  Enable the various `![caption](/image/foo.jpg){.width-full}` uses;
+/*  Enable the various `![caption](/doc/foo/bar.jpg){.width-full}` uses;
     analogous to width-full tables
  */
 figure.width-full {
