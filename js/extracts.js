@@ -454,12 +454,12 @@ Extracts = {
         if (Extracts.popFrameProvider == Popups) {
             let popupForTargetDocument = Popups.allSpawnedPopups().find(popup => (   popup.classList.contains("full-page")
                                                                                   && popup.spawningTarget.pathname == target.pathname));
-            return popupForTargetDocument ? popupForTargetDocument.body : null;
+            return popupForTargetDocument ? popupForTargetDocument.document : null;
         } else if (Extracts.popFrameProvider == Popins) {
             let popinForTargetDocument = Popins.allSpawnedPopins().find(popin => (   popin.classList.contains("full-page")
                                                                                   && popin.spawningTarget.pathname == target.pathname)
                                                                                   && Extracts.popFrameHasLoaded(popin));
-            return popinForTargetDocument ? popinForTargetDocument.body : null;
+            return popinForTargetDocument ? popinForTargetDocument.document : null;
         }
     },
 
@@ -578,11 +578,12 @@ Extracts = {
             requestAnimationFrame(() => {
             	let element = null;
                 if (   popFrame
-                    && (element = targetElementInDocument(target, popFrame.document)))
+                    && (element = targetElementInDocument(target, popFrame.document))) {
                     revealElement(element, false);
                 	requestAnimationFrame(() => {
 	                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element, true);
 	                });
+	            }
             });
         }
     },

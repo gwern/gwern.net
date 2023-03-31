@@ -854,7 +854,7 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
     let citationsInNewContent = newContent.querySelectorAll(".footnote-ref");
     if (   citationsInNewContent.length == 0
         || newContentFootnotesSection == null)
-        return null;
+        return;
 
     let containingDocument = includeLink.eventInfo.document;
 
@@ -902,8 +902,23 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
         //  Original footnote (in source content/document).
         let footnote = newContentFootnotesSection.querySelector(Notes.footnoteSelectorMatching(citation));
 
-        //  Copy the footnote.
-        citation.footnote = newFootnotesWrapper.appendChild(document.importNode(footnote, true));
+		//	Determine footnote’s source page, and its note number on that page.
+		let sourcePagePathname = (footnote.dataset.sourcePagePathname ?? loadLocationForIncludeLink(includeLink).pathname);
+		let originalNoteNumber = (footnote.dataset.originalNoteNumber ?? Notes.noteNumber(citation));
+
+		//	Check for already added copy of this footnote.
+		let alreadyAddedFootnote = footnotesSection.querySelector(`li.footnote`
+								 + `[data-source-page-pathname='${(CSS.escape(sourcePagePathname))}']`
+								 + `[data-original-note-number='${originalNoteNumber}']`);
+
+        //  Copy the footnote, or keep a pointer to it.
+        citation.footnote = (alreadyAddedFootnote ?? newFootnotesWrapper.appendChild(document.importNode(footnote, true)));
+
+		if (alreadyAddedFootnote == null) {
+			//	Record source page and original number.
+			citation.footnote.dataset.sourcePagePathname = sourcePagePathname;
+			citation.footnote.dataset.originalNoteNumber = originalNoteNumber;
+		}
     });
 
 	//	Inject wrapper.
@@ -931,12 +946,16 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
 
 		let footnote = citation.footnote ?? footnotesSection.querySelector(Notes.footnoteSelectorMatching(citation));
 
-		Notes.setCitationNumber(citation, footnoteNumber);
-		Notes.setFootnoteNumber(footnote, footnoteNumber);
+		if (footnote.parentElement == newFootnotesWrapper) {
+			Notes.setCitationNumber(citation, Notes.noteNumber(footnote));
+		} else {
+			Notes.setCitationNumber(citation, footnoteNumber);
+			Notes.setFootnoteNumber(footnote, footnoteNumber);
 
-		newFootnotesWrapper.appendChild(footnote);
+			newFootnotesWrapper.appendChild(footnote);
 
-		footnoteNumber++;
+			footnoteNumber++;
+		}
 	});
 
 	//	Fire inject event.

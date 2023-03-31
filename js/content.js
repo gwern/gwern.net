@@ -509,19 +509,25 @@ Content = {
 					popFrameTitleTextParts.push(page.title);
 
 				//	Section title or block id.
-				let nearestSection = element
-									 ? element.closest("section")
-									 : null;
-				if (nearestSection) {
-					//	Section mark (§) for sections.
-					popFrameTitleTextParts.push("&#x00a7;");
-					if (nearestSection.id == "footnotes") {
-						popFrameTitleTextParts.push("Footnotes");
+				if (element) {
+					let nearestSection = element.closest("section");
+					let nearestFootnote = element.closest("li.footnote");
+					if (nearestFootnote) {
+						popFrameTitleTextParts.push("Footnote", Notes.noteNumber(nearestFootnote));
+						let identifyingSpan = nearestFootnote.querySelector("span[id]:empty");
+						if (identifyingSpan)
+							popFrameTitleTextParts.push(`(#${(identifyingSpan.id)})`);
+					} else if (nearestSection) {
+						//	Section mark (§) for sections.
+						popFrameTitleTextParts.push("&#x00a7;");
+						if (nearestSection.id == "footnotes") {
+							popFrameTitleTextParts.push("Footnotes");
+						} else {
+							popFrameTitleTextParts.push(nearestSection.firstElementChild.textContent);
+						}
 					} else {
-						popFrameTitleTextParts.push(nearestSection.firstElementChild.textContent);
+						popFrameTitleTextParts.push(url.hash);
 					}
-				} else if (element) {
-					popFrameTitleTextParts.push(url.hash);
 				}
 
 				return {
