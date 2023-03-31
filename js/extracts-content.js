@@ -614,9 +614,12 @@ Extracts = { ...Extracts,
 
         //  Do not spawn citation context popup if citation is visible.
         let targetDocument = Extracts.targetDocument(target);
-        if (   targetDocument
-            && Popups.isVisible(targetElementInDocument(target, targetDocument)))
-            return null;
+        if (targetDocument) {
+        	let targetElement = targetElementInDocument(target, targetDocument);
+        	if (   targetElement
+        		&& Popups.isVisible(targetElement))
+        		return null;
+        }
 
         //  Mini title bar.
         popup.classList.add("mini-title-bar");

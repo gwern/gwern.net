@@ -149,20 +149,11 @@ function targetElementInDocument(link, doc) {
     if (isAnchorLink(link) == false)
         return null;
 
-    let exclusionSelector = [
-        "#page-metadata a",
-        ".aux-links-list a"
-    ].join(", ");
-
 	let anchor = anchorsForLink(link)[0];
     let element = null;
 
-    if (anchor.startsWith("#")) {
+    if (anchor.startsWith("#"))
         element = doc.querySelector(selectorFromHash(anchor));
-        if (   element
-            && element.closest(exclusionSelector) == element)
-            element = null;
-    }
     
 	if (   element == null
 		&& link instanceof HTMLAnchorElement
@@ -176,6 +167,10 @@ function targetElementInDocument(link, doc) {
 		}
 
 		let backlinkSelector = `a[href*='${CSS.escape(link.dataset.backlinkTargetUrl)}']:not(.backlink-not)`;
+		let exclusionSelector = [
+			"#page-metadata a",
+			".aux-links-list a"
+		].join(", ");
         element = doc.querySelector(exactBacklinkSelector) ?? (Array.from(doc.querySelectorAll(backlinkSelector)).filter(backlink => {
             return (   backlink.pathname == link.dataset.backlinkTargetUrl
                     && backlink.closest(exclusionSelector) == null);
