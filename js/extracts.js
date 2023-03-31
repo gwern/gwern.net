@@ -578,11 +578,12 @@ Extracts = {
             requestAnimationFrame(() => {
             	let element = null;
                 if (   popFrame
-                    && (element = targetElementInDocument(target, popFrame.document)))
+                    && (element = targetElementInDocument(target, popFrame.document))) {
                     revealElement(element, false);
                 	requestAnimationFrame(() => {
 	                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element, true);
 	                });
+	            }
             });
         }
     },
