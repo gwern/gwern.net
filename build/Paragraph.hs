@@ -14,7 +14,7 @@ import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't 
 -- This is quite tricky to use: it wants non-HTML plain text (any HTML will break GPT-3), but everything else wants HTML
 processParagraphizer :: FilePath -> String -> IO String
 processParagraphizer _ "" = return ""
-processParagraphizer p a =
+processParagraphizer p a = -- the path is necessary to check against the whitelist
       if length a < 1024 || paragraphized p a then return a
       else do let a' = replace "<p>" "" $ replace "</p>" "" a
               let a'' = trim $ replace "\160" " " $ toMarkdown a'

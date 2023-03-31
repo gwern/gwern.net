@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-03-29 11:26:34 gwern"
+# When:  Time-stamp: "2023-03-30 16:27:34 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -223,11 +223,37 @@ alias u="upload"
 # Bash shell function named `mvuri` which will take a filename with a URI encoding like `file:///home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html` and transform that argument into `/home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html` and then `mv` the URL snapshot to that like normal.
 # eg  `$ mvuri file:///home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
 mvuri () {
-  local SOURCE
-  SOURCE="$(find ~/ -name "*.html" | head -1)"
   local ENCODED_PATH="$1"
   local DECODED_PATH="${ENCODED_PATH//\%/\\x}"
   DECODED_PATH="${DECODED_PATH#file://}"
   local DESTINATION="$DECODED_PATH"
+
+  local SOURCE
+  SOURCE="$(find ~/ -maxdepth 1 -name "*.html" -print -quit)"
+  echo "$SOURCE" "$DESTINATION"
   mv "$SOURCE" "$DESTINATION"
+}
+
+# downscale images for mobile viewports; the smallest 530px.jpg version is always 530px, the larger one is either JPG or PNG depending on original file type/. This replicates `imageSrcset` in Image.hs
+function resize_image() {
+  if [[ $# -ne 1 ]]; then
+    echo "Usage: resize_image <image>"
+    return 1
+  fi
+
+  IMAGE="$1"
+  EXT="${IMAGE##*.}"
+  BASE="${IMAGE%.*}"
+
+  if ! [[ -f "${BASE}.${EXT}-530px.jpg" ]]; then
+    echo "Creating ${BASE}.${EXT}-530px.jpg …"
+    convert "${IMAGE}" -resize 530x530 "${BASE}.${EXT}-530px.jpg"
+    compressJPG2 "${BASE}.${EXT}-530px.jpg"
+  fi
+
+  if ! [[ -f "${BASE}.${EXT}-768px.${EXT}" ]]; then
+    echo "Creating ${BASE}.${EXT}-768px.${EXT} …"
+    convert "${IMAGE}" -resize 768x768 "${BASE}.${EXT}-768px.${EXT}"
+    png "${BASE}.${EXT}-768px.${EXT}"
+  fi
 }

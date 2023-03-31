@@ -589,4 +589,5 @@ sitePrioritize = do lotdb <- readTTDB linkDBPath
           "allendowney.blogspot.com", "alexanderetz.com", "alessonislearned.com", "ajjacobs.com", "aiindex.stanford.edu",
           "agingfree.org", "adidkh.bandcamp.com", "actualfacebookgraphsearches.tumblr.com", "abstrusegoose.com", "abahlali.org",
           "2015phage.org", "0fps.net", "www.theinformation.com", "assets.aeaweb.org", "www.greaterwrong.com", "git.sr.ht",
-          "casetext.com", "archive.is", "phabricator.wikimedia.org", "www.cs.ox.ac.uk", "www.aboutamazon.com", "yosefk.com", "www.informit.com", "inews.co.uk", "en.wikibooks.org", "yougov.co.uk"]
+          "casetext.com", "archive.is", "phabricator.wikimedia.org", "www.cs.ox.ac.uk", "www.aboutamazon.com", "yosefk.com", "www.informit.com",
+          "inews.co.uk", "en.wikibooks.org", "yougov.co.uk", "nunosempere.com"]

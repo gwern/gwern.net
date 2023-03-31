@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-03-29 18:07:40 gwern"
+# When:  Time-stamp: "2023-03-31 10:39:28 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -113,6 +113,28 @@ else
     # duplicates a later check but if we have a fatal link error, we'd rather find out now rather than 30 minutes later while generating annotations:
     λ(){ grep -F -e 'href=""' -- ./metadata/*.yaml || true; }
     wrap λ "Malformed empty link in annotations?"
+
+    # another early fatal check: if there is a Markdown file 'foo.page' and also a subdirectory 'foo/' in the same directory, then this will result in, later, a fatal error when one tries to compile 'foo.page' → 'foo' (the HTML file) but 'foo' (the directory) already exists.
+    # Check if any files collide with directories of the same name (without the .page extension).
+    # Usage: find_colliding_files [path]
+    function find_colliding_files() { # GPT-3 written:
+      set -euo pipefail
+      path="${1:-.}"
+      find "$path" -depth -type f -name "*.page" -exec sh -c '
+        for file do
+          path="$(dirname "$file")/$(basename "$file" ".page")"
+          if [ -e "$path" ] && [ ! -L "$path" ]; then
+            if [ -d "$path" ]; then
+              printf "Fatal error: Directory exists with the same name as file %s\n" "$file" >&2
+              exit 1
+            else
+              printf "Fatal error: File exists with the same name as file %s\n" "$file" >&2
+              exit 1
+            fi
+          fi
+        done' sh {} +
+    }
+    find_colliding_files ./
 
     # We update the linkSuggestions.el in a cron job because too expensive, and vastly slows down build.
 
@@ -365,7 +387,7 @@ else
     λ(){ grep -F -e 'http' ./metadata/*.hs ./metadata/*.yaml | grep -F -v -e 'https://en.wikipedia.org/wiki/' -e '10/arc-1-gestation/1' -e 'the-elves-leave-middle-earth-' -e '2011/05/from-the-bookcase-no-2' -e 'd-a-rovinskiis-collection-of-russian-lubki-18th' -e 'commons.wikimedia.org/wiki/File:Flag_of_the_NSDAP_' | grep -F -e "%E2%80%93" -e "%E2%80%94" -e "%E2%88%92"; }
     wrap λ "*Escaped* En/em/minus dashes in URLs?"
 
-    λ(){ gf '\\' ./static/css/*.css; }
+    λ(){ gf -e '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
 
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match -e '_site' -e 'Modafinil' -e 'Blackmail' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' | \
@@ -426,7 +448,7 @@ else
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-link-tags' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link' -e 'include-replace}' -e 'include-replace ' -e 'drop-caps-de-kanzlei' -e '.backlink-not)'; }
     wrap λ "Misspelled/outdated classes in Markdown/HTML."
 
-     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '/variables' | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e '{#'; }
+     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '/variable' | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e '{#'; }
      wrap λ "Bad link ID overrides in Markdown."
 
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 grep -E --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]' -e '\#[a-z]\+\#[a-z]\+'; }
@@ -479,7 +501,7 @@ else
     λ(){ ge '  - .*[a-z]–[a-Z]' ./metadata/full.yaml ./metadata/half.yaml; }
     wrap λ "Look for en-dash abuse."
 
-    λ(){ gf ' ?' ./metadata/full.yaml; }
+    λ(){ gf -e ' ?' ./metadata/full.yaml; }
     wrap λ "Problem with question-marks (perhaps the crossref/Emacs copy-paste problem?)."
 
     λ(){ grep -F --invert-match -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -- ./metadata/full.yaml ./metadata/half.yaml | \
@@ -580,10 +602,10 @@ else
     λ(){ ge -e '#[[:alnum:]]\+#' -- ./metadata/*.hs ./metadata/*.yaml; }
     wrap λ "Bad paths in metadata databases: redundant anchors"
 
-    λ(){ gf '{#' $(find _site/ -type f -name "index"); }
+    λ(){ gf -e '{#' $(find _site/ -type f -name "index"); }
     wrap λ "Broken anchors in directory indexes."
 
-    λ(){ gf '{#' $(find * -type f -name '*\$*' -or -name '*=*' -or -name '*\?*' -or -name '*gwner*'); }
+    λ(){ find * -type f -name '*\$*' -or -name '*=*' -or -name '*\?*' -or -name '*gwner*'; }
     wrap λ "Malformed filenames: dangerous characters in them?"
 
     λ(){
@@ -795,19 +817,20 @@ else
           cm "text/plain; charset=utf-8" 'https://gwern.net/static/build/linkArchive.sh'
           cm "text/yaml; charset=utf-8" 'https://gwern.net/metadata/full.yaml'
           cm "video/mp4"  'https://gwern.net/doc/genetics/selection/artificial/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
-          cm "video/webm" 'https://gwern.net/doc/statistics/2003-murray-humanaccomplishment-region-proportions-bootstrap.webm'
+          cm "video/webm" 'https://gwern.net/doc/statistics/2003-gwern-murray-humanaccomplishment-region-proportions-bootstrap.webm'
           cm "image/jpeg" 'https://gwern.net/doc/cs/security/lobel-frogandtoadtogether-thebox-crop.jpg'
           cm "image/jpeg" 'https://gwern.net/doc/technology/google/gwern-15-predicted-survivorship-curves.png-530px.jpg'
-          cm "image/png"  'https://gwern.net/technology/google/gwern-googlesearch-tools-daterange.png'
+          cm "image/png"  'https://gwern.net/doc/technology/google/gwern-googlesearch-tools-daterange.png'
           cm "image/png"  'https://gwern.net/doc/technology/google/gwern-15-predicted-survivorship-curves.png'
           cm "application/wasm"  'https://gwern.net/static/js/patterns/en-us.wasm'
         }
     wrap λ "The live MIME types are incorrect"
 
     ## known-content check:
-    λ(){ curl --silent 'https://gwern.net/' | tr -d '­' | grep -F --quiet 'This Is The Website</span> of <strong>Gwern Branwen</strong>' || echo "/ content-check failed";
-         curl --silent 'https://gwern.net/zeo/zeo'   | tr -d '­' | grep -F --quiet 'lithium orotate' || echo "/Zeo Content-check failed"; }
-    wrap λ "Known-content check of /index and /zeo/Zeo"
+    λ(){ curl --silent 'https://gwern.net/index'     | grep -F --quiet -e 'This Is The Website</span> of <strong>Gwern Branwen</strong>' || echo "/index content-check failed"; }
+    wrap λ "Known-content check of /index failed?"
+    λ(){ curl --silent 'https://gwern.net/zeo/zeo'   | grep -F --quiet -e 'lithium orotate' || echo "/zeo/zeo content-check failed"; }
+    wrap λ "Known-content check of /zeo/zeo failed?"
 
     ## check that tag-directories have the right thumbnails (ie. *not* the fallback thumbnail):
     λ(){ curl --silent 'https://gwern.net/doc/sociology/index' 'https://gwern.net/doc/psychology/index' 'https://gwern.net/doc/economics/index' | \
@@ -923,7 +946,7 @@ else
                               fi; }
          export -f checkEncryption
          find ./ -type f -name "*.pdf" -not -size 0 | parallel checkEncryption; }
-    wrap λ "'Encrypted' PDFs (fix with pdftk: 'pdftk $PDF input_pw output foo.pdf')" &
+    wrap λ "'Encrypted' PDFs (fix with pdftk: 'pdftk \$PDF input_pw output foo.pdf')"
 
     ## DjVu is deprecated (due to SEO: no search engines will crawl DjVu, turns out!):
     λ(){ find ./ -type f -name "*.djvu"; }
@@ -937,7 +960,7 @@ else
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4"
 
     bold "Compressing high-quality JPGs to ≤65% quality…"
-    JPGS_BIG="$(find ./co/ -type f -name "*.jpg" | parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | grep -E -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
+    JPGS_BIG="$(find ./doc/ -type f -name "*.jpg" | parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | grep -E -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
     echo "$JPGS_BIG"
     compressJPG2 $(echo "$JPGS_BIG" | cut --delimiter=' ' --field=2)
 
@@ -945,7 +968,7 @@ else
     png $(find ./doc/ -type f -name "*.png" -mtime -3)
 
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
-    λ() { for IMAGE in $(find ./doc/ -type f -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-gwern-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'doc/ai/nn/transformer/gpt/dall-e/2/' -e '2022-09-21-gwern-stablediffusionv14-circulardropcapinitialsamples.png' -e '2022-09-22-gwern-stablediffusionv14-textualinversion-yinit-dropcapsexperiments.png' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/'); do
+    λ() { for IMAGE in $(find ./doc/ -type f -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-gwern-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'doc/ai/nn/transformer/gpt/dall-e/2/' -e '2022-09-21-gwern-stablediffusionv14-circulardropcapinitialsamples.png' -e '2022-09-22-gwern-stablediffusionv14-textualinversion-yinit-dropcapsexperiments.png' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/' -e 'doc/www/misc/' -e '2021-power-poster.png' -e '2002-change-table2-preandposttestscoresultsfrommindmappingshowminimaleffect.png' -e 'genetics/selection/www.mountimprobable.com/assets/images/card.png' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure6-successfulcicerohumandialogueexamplesfromtestgames.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure3-differentcicerointentsleadtodifferentdialogues.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure5-theeffectofdialogueoncicerosplanningandintents3possiblescenariosinanegotiationwithengland.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure2-trainingandinferenceofcicerointentcontrolleddialogue.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure1-architectureofcicerodiplomacyagent.jpg' -e '2021-roberts-figure2-manufacturingofhumanbloodbricks.jpg' ); do
               SIZE_W=$(identify -format "%w" "$IMAGE")
               if (( SIZE_W > 1600  )); then
                   echo "Too wide image: $IMAGE $SIZE_W; shrinking…";
