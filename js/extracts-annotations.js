@@ -176,6 +176,39 @@ Extracts = { ...Extracts,
     }
 };
 
+/*	Inject partial-annotation metadata into a popup that is not already a
+	partial annotation.
+ */
+Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (popFrame) => {
+    GWLog("Extracts.injectPartialAnnotationMetadata", "extracts.js", 2);
+
+	let target = popFrame.spawningTarget;
+    let targetTypeName = Extracts.targetTypeInfo(target).typeName;
+	if ((   Annotations.isAnnotatedLinkPartial(target)
+		 && targetTypeName != "ANNOTATION_PARTIAL") == false)
+		return;
+
+	if (Extracts.popFrameProvider == Popups) {
+		let infoLink = newElement("A", {
+			"class": "link-annotated-partial",
+			"href": (target.dataset.urlOriginal ?? target.href),
+			"data-attribute-title": (target.dataset.attributeTitle ?? null),
+		}, {
+			"innerHTML": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path d='M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z'/></svg>",
+		});
+		infoLink.onclick = (event) => { event.stopPropagation(); return false; };
+
+		let infoLinkContainer = newElement("DIV", {
+			"class": "partial-annotation-info-link-container"
+		});
+		infoLinkContainer.append(infoLink);
+		Extracts.addTargetsWithin(infoLinkContainer);
+
+		Popups.addUIElementsToPopFrame(popFrame, infoLinkContainer);
+	} else { // if (Extracts.popFrameProvider == Popins)
+	}
+});
+
 /*=----------------------=*/
 /*= ANNOTATIONS: HELPERS =*/
 /*=----------------------=*/

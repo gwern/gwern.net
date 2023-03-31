@@ -666,6 +666,8 @@ Extracts = {
         return popFrame;
     },
 
+	additionalRewrites: [ ],
+
     /**********/
     /*  Popins.
      */
@@ -763,6 +765,11 @@ Extracts = {
         let specialRewriteFunction = Extracts[`rewritePopinContent_${targetTypeName}`] || Extracts[`rewritePopFrameContent_${targetTypeName}`];
         if (specialRewriteFunction)
             specialRewriteFunction(popin);
+
+		//	Additional rewrites.
+		Extracts.additionalRewrites.forEach(rewriteFunction => {
+			rewriteFunction(popup);
+		});
 
 		//	Register copy processors in popin.
 		registerCopyProcessorsForDocument(popin.document);
@@ -882,6 +889,11 @@ Extracts = {
         let specialRewriteFunction = Extracts[`rewritePopupContent_${targetTypeName}`] || Extracts[`rewritePopFrameContent_${targetTypeName}`];
         if (specialRewriteFunction)
             specialRewriteFunction(popup);
+
+		//	Additional rewrites.
+		Extracts.additionalRewrites.forEach(rewriteFunction => {
+			rewriteFunction(popup);
+		});
 
 		//	Register copy processors in popup.
 		registerCopyProcessorsForDocument(popup.document);
