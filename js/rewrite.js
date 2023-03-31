@@ -454,6 +454,10 @@ Notes = {
             return "";
     },
 
+	noteNumber: (element) => {
+		return Notes.noteNumberFromHash(element.hash ?? element.id);
+	},
+
     citationSelectorMatching: (element) => {
         return ("#" + Notes.idForCitationNumber(Notes.noteNumberFromHash(element.hash)));
     },
