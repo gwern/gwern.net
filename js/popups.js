@@ -283,6 +283,8 @@ Popups = {
 
 		popup.titleBarContents = [ ];
 
+		popup.uiElementsContainer = popup.appendChild(newElement("DIV", { "class": "popframe-ui-elements-container" }));
+
 		//  Give the popup a reference to the target.
 		popup.spawningTarget = target;
 
@@ -1143,6 +1145,14 @@ Popups = {
 		},
 	},
 
+	/************************/
+	/*	Optional UI elements.
+	 */
+
+	addUIElementsToPopFrame: (popup, ...args) => {
+		popup.uiElementsContainer.append(...args);
+	},
+
 	/*********************/
 	/*	Popups z-ordering.
 		*/
@@ -1557,7 +1567,6 @@ Popups = {
 
 		event.stopPropagation();
 		Popups.clearPopupTimers(popup.spawningTarget);
-// 		Popups.despawnPopup(popup);
     },
 
 	/*  The popup mouse down event (for resizing by dragging an edge/corner).
@@ -1928,6 +1937,10 @@ Popups = {
 		if (window.popupBeingDragged)
 			return;
 
+		if (   event.target.closest(".popframe-ui-elements-container")
+			&& event.button == 0)
+			return;
+
 		/*	Unlike ‘mouseenter’ and ‘mouseleave’, ‘mousedown’ behaves like 
 			‘mouseover’/‘mouseout’ in that it attaches to the innermost element,
 			which might not be our spawning target (but instead some descendant
@@ -1938,12 +1951,9 @@ Popups = {
 		//	Cancel spawning of popups from the target.
 		Popups.clearPopupTimers(target);
 
-		//	Despawn any (ephemeral) popups already spawned from the target.
-		if (target.popup) {
-			Popups.getPopupAncestorStack(target.popup).reverse().forEach(popupInStack => {
-				Popups.despawnPopup(popupInStack);
-			});
-		}
+		//	Despawn any (ephemeral) popup already spawned from the target.
+		if (target.popup)
+			Popups.despawnPopup(target.popup);
 	},
 
 	/*  The keyup event.
