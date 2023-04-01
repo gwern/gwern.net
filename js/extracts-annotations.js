@@ -221,7 +221,8 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 	});
 
 	//	Add the whole thing to the pop-frame.
-	Popups.addPartToPopFrame(popFrame, partialAnnotationAppendDocument);
+	Extracts.popFrameProvider.addPartToPopFrame(popFrame, partialAnnotationAppendDocument);
+	Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "has-footer");
 });
 
 /*=----------------------=*/

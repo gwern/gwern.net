@@ -3968,6 +3968,8 @@ body.index-directory #footer {
 
 .popup {
     /*  Layout. */
+	--popups-popup-content-padding: 0.7em 0.9em 0.8em 0.9em;
+
     position: absolute;
     overflow: visible;
     max-width: var(--GW-popups-popup-max-width);
@@ -3975,8 +3977,10 @@ body.index-directory #footer {
     z-index: 1;
 
     /*  Styling. */
+	--popups-popup-box-shadow: 1px 2px 8px 0 var(--GW-popups-box-shadow-color);
+
     border: var(--GW-popups-popup-border-width) double var(--GW-popups-popup-border-color);
-    box-shadow: 1px 2px 8px 0 var(--GW-popups-box-shadow-color);
+    box-shadow: var(--popups-popup-box-shadow);
     background-color: var(--GW-popups-popup-background-color);
 }
 
@@ -4148,19 +4152,37 @@ body.index-directory #footer {
     width: calc(var(--popup-title-bar-button-size) - 8px);
 }
 
+/*┌─────────────────────────────┐*/
+/*│ Popup with appended footer. │*/
+/*└─────────────────────────────┘*/
+
+.popup.has-footer {
+	border-bottom-width: 0;
+}
+
 /*┌──────────────────────────────┐*/
 /*│ Appended partial annotation. │*/
 /*└──────────────────────────────┘*/
 
 .popup .partial-annotation-append-container {
 	background-color: var(--GW-popups-popup-background-color);
-	padding: 0.7em 0.9em 0.8em 0.9em;
+	padding: var(--popups-popup-content-padding);
 	position: absolute;
-	top: calc(100% + var(--GW-popups-popup-border-width) - 1px);
+	top: 100%;
 	left: calc(-1 * var(--GW-popups-popup-border-width));
 	right: calc(-1 * var(--GW-popups-popup-border-width));
-	border: inherit;
-	box-shadow: inherit;
+	border-color: inherit;
+	border-style: inherit;
+	border-width: 
+		0 
+		var(--GW-popups-popup-border-width) 
+		var(--GW-popups-popup-border-width) 
+		var(--GW-popups-popup-border-width);
+	box-shadow:
+		0 -3px 0 -2px var(--GW-popups-popup-border-color),
+		0 -4px 0 -2px var(--GW-popups-popup-background-color),
+		0 -5px 0 -2px var(--GW-popups-popup-border-color),
+		var(--popups-popup-box-shadow);
 }
 
 .popup .partial-annotation-append-container .data-field {
@@ -4214,7 +4236,7 @@ body.index-directory #footer {
     --GW-base-font-size: 0.9rem;
 
     background-color: var(--GW-popups-popup-background-color);
-    padding: 0.7em 0.9em 0.8em 0.9em;
+    padding: var(--popups-popup-content-padding);
     display: flow-root;
 }
 
