@@ -20,14 +20,19 @@ import Control.Monad (unless, when)
 import qualified Data.Set as S (delete, empty, filter, fromList, toList, insert, map)
 import System.Directory (doesFileExist)
 import Text.Show.Pretty (ppShow)
-import qualified Data.Text as T (isInfixOf, pack, Text)
+import qualified Data.Text as T (isInfixOf, pack, unpack, Text)
 import qualified Data.Map.Strict as M (toList, filterWithKey, map, fromListWith)
 import Data.List (isSuffixOf, sortOn, sort)
+import Text.Pandoc (Inline(Link,Str), runPure, writeHtml5String, Pandoc(..), nullAttr, nullMeta, Block(Div,BlockQuote,Para))
+import Data.IORef (newIORef, IORef)
+import System.IO.Unsafe as Unsafe (unsafePerformIO)
 
 import LinkMetadataTypes (Metadata)
 import LinkMetadata (typesetHtmlField)
 import LinkBacklink (readBacklinksDB)
-import Utils (host, anyInfixT)
+import Utils (host, anyInfixT, safeHtmlWriterOptions)
+import LinkArchive (readArchiveMetadata, localizeLink, ArchiveMetadata)
+import LinkIcon (linkIcon)
 
 type TTDB = [Snippet]
 type Snippet = (String, String, Bool)
@@ -41,8 +46,6 @@ quoted (quote,attribution,_) = "<div class=\"epigraph\">\n<blockquote><p>" ++ ty
 linkDBPath, linkPath :: FilePath
 linkDBPath = "metadata/links.hs"
 linkPath   = "metadata/today-link.html"
-linked :: Snippet -> String
-linked (link,attribution,_) = "<div class=\"link-of-the-day\">\n<blockquote><p><a href=\"" ++ link ++ "\">" ++ typesetHtmlField attribution ++ "</a></p></blockquote>\n</div>"
 
 readTTDB :: FilePath -> IO TTDB
 readTTDB path = do exists <- doesFileExist path
@@ -79,7 +82,18 @@ aotd :: Metadata -> IO ()
 aotd md = generateAnnotationOfTheDay md annotDayDB  annotPath annotated
 qotd, lotd :: IO ()
 qotd    = generateSnippetAndWriteTTDB   quoteDBPath quotePath quoted
-lotd    = generateSnippetAndWriteTTDB   linkDBPath  linkPath  linked
+-- it is important to run the archive pass on the annotation link for cases like Arxiv. Although this is quite ugly...
+lotd    = do am <- readArchiveMetadata
+             n <- newIORef (0::Integer)
+             generateSnippetAndWriteTTDB   linkDBPath  linkPath  (linked am n)
+
+linked :: ArchiveMetadata -> IORef Integer -> Snippet -> String
+linked a n (link,attribution,_) = Unsafe.unsafePerformIO $ do
+  lnk <- localizeLink a n $ linkIcon $ Link nullAttr [Str $ T.pack (typesetHtmlField attribution)] (T.pack link,"")
+  let htmlE = runPure $ writeHtml5String safeHtmlWriterOptions $ Pandoc nullMeta [Div ("", ["link-of-the-day"], []) [BlockQuote [Para [lnk]]]]
+  case htmlE of
+    Left err   -> error ("QuoteOfTheDay.hs: linked: failed to properly Pandoc-parse today's annotation? error:" ++ show err ++ " : " ++ show link ++ show attribution)
+    Right html -> return $ T.unpack html
 
 -------
 
