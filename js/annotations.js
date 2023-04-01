@@ -13,10 +13,7 @@ Annotations = { ...Annotations,
 	},
 
 	isAnnotatedLinkFull: (link) => {
-// 		return link.classList.contains(Annotations.annotatedLinkFullClass);
-		//	NOTE: TEMPORARY!!!
-		return (   link.classList.contains(Annotations.annotatedLinkFullClass) == true
-				&& link.classList.contains(Annotations.annotatedLinkPartialClass) == false);
+		return link.classList.contains(Annotations.annotatedLinkFullClass);
 	},
 
 	isAnnotatedLinkPartial: (link) => {
