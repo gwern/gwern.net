@@ -1442,7 +1442,6 @@ Transclude = {
 
 			//	Template fill context.
 			let context = templateDataFromHTML(includeLink);
-			console.trace(context);
 
 			//	Designate partial annotation transcludes.
 			if (   Transclude.isAnnotationTransclude(includeLink)
@@ -1460,7 +1459,6 @@ Transclude = {
 			};
 
 			//	Fill template.
-			console.log(includeLink);
 			let content = fillTemplate(template, referenceData, context, options);
 
 			//	Slice and include, or else handle failure.
