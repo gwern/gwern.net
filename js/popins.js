@@ -286,6 +286,22 @@ Popins = {
 	},
 
 	/******************/
+	/*	Optional parts.
+	 */
+
+	addPartToPopFrame: (popin, part) => {
+		popin.append(part);
+	},
+
+	/************************/
+	/*	Optional UI elements.
+	 */
+
+	addUIElementsToPopFrame: (popin, ...args) => {
+		popin.uiElementsContainer.append(...args);
+	},
+
+	/******************/
 	/*	Popin spawning.
 		*/
 

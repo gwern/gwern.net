@@ -4148,28 +4148,27 @@ body.index-directory #footer {
     width: calc(var(--popup-title-bar-button-size) - 8px);
 }
 
-/*┌─────────────────┐*/
-/*│ Popup metadata. │*/
-/*└─────────────────┘*/
+/*┌──────────────────────────────┐*/
+/*│ Appended partial annotation. │*/
+/*└──────────────────────────────┘*/
 
-.popup .partial-annotation-info-link-container {
+.popup .partial-annotation-append-container {
+	background-color: var(--GW-popups-popup-background-color);
+	padding: 0.7em 0.9em 0.8em 0.9em;
 	position: absolute;
-	top: calc(var(--popup-title-bar-height) + 4px);
-	right: 18px;
-	background-color: var(--GW-body-background-color);
-	border-radius: 50%;
+	top: calc(100% + var(--GW-popups-popup-border-width) - 1px);
+	left: calc(-1 * var(--GW-popups-popup-border-width));
+	right: calc(-1 * var(--GW-popups-popup-border-width));
+	border: inherit;
+	box-shadow: inherit;
 }
-.popup .partial-annotation-info-link-container a {
-	display: block;
-	box-sizing: border-box;
-	width: 1.25em;
-	display: flex;
-	justify-content: center;
-	color: var(--GW-popups-popup-title-bar-button-color);
+
+.popup .partial-annotation-append-container .data-field {
+	display: inline;
 }
-.popup .partial-annotation-info-link-container a svg {
-	display: block;
-	max-height: 100%;
+
+.popup .partial-annotation-append-container .data-field.title {
+	margin-right: 0.25em;
 }
 
 /*┌────────────────────┐*/

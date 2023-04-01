@@ -1145,6 +1145,14 @@ Popups = {
 		},
 	},
 
+	/******************/
+	/*	Optional parts.
+	 */
+
+	addPartToPopFrame: (popup, part) => {
+		popup.append(part);
+	},
+
 	/************************/
 	/*	Optional UI elements.
 	 */

@@ -39,8 +39,10 @@ Extracts = { ...Extracts,
 		return newDocument(synthesizeIncludeLink(target, {
 			"class": "link-annotated include-annotation",
 			"data-template": "annotation-blockquote-not",
-			"data-template-fields": "linkTarget:$",
-			"data-link-target": ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank")
+			"data-template-fields": "linkTarget:$,whichTab:$,tabOrWindow:$",
+			"data-link-target": ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
+			"data-which-tab": ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
+			"data-tab-or-window": (GW.isMobile() ? "tab" : "window")
 		}));
     },
 
@@ -151,8 +153,10 @@ Extracts = { ...Extracts,
 		return newDocument(synthesizeIncludeLink(target, {
 			"class": "link-annotated-partial include-annotation-partial",
 			"data-template": "annotation-blockquote-not",
-			"data-template-fields": "linkTarget:$",
-			"data-link-target": ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank")
+			"data-template-fields": "linkTarget:$,whichTab:$,tabOrWindow:$",
+			"data-link-target": ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
+			"data-which-tab": ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
+			"data-tab-or-window": (GW.isMobile() ? "tab" : "window")
 		}));
     },
 
@@ -188,25 +192,32 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 		 && targetTypeName != "ANNOTATION_PARTIAL") == false)
 		return;
 
-	if (Extracts.popFrameProvider == Popups) {
-		let infoLink = newElement("A", {
-			"class": "link-annotated-partial",
-			"href": (target.dataset.urlOriginal ?? target.href),
-			"data-attribute-title": (target.dataset.attributeTitle ?? null),
-		}, {
-			"innerHTML": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path d='M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z'/></svg>",
-		});
-		infoLink.onclick = (event) => { event.stopPropagation(); return false; };
+	//	Construct container and synthesized include-link.
+	let partialAnnotationAppendDocument = newDocument();
+	partialAnnotationAppendDocument.appendChild(newElement("DIV", {
+		"class": [ "partial-annotation-append-container",
+				   "markdownBody",
+				   "popframe-body",
+				   (Extracts.popFrameProvider == Popups ? "popup-body" : "popin-body")
+				   ].join(" ")
+	})).appendChild(synthesizeIncludeLink((target.dataset.urlOriginal ?? target.href), {
+		"class": "link-annotated-partial include-annotation-partial include-strict",
+		"data-template": "annotation-blockquote-not",
+		"data-template-fields": "linkTarget:$,whichTab:$,tabOrWindow:$",
+		"data-link-target": ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
+		"data-which-tab": ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
+		"data-tab-or-window": (GW.isMobile() ? "tab" : "window")
+	}));
 
-		let infoLinkContainer = newElement("DIV", {
-			"class": "partial-annotation-info-link-container"
-		});
-		infoLinkContainer.append(infoLink);
-		Extracts.addTargetsWithin(infoLinkContainer);
+	//	Trigger transclude of the partial annotation.
+	Transclude.triggerTranscludesInContainer(partialAnnotationAppendDocument.firstElementChild, {
+		source: "Extracts.injectPartialAnnotationMetadata",
+		container: partialAnnotationAppendDocument.firstElementChild,
+		document: partialAnnotationAppendDocument
+	});
 
-		Popups.addUIElementsToPopFrame(popFrame, infoLinkContainer);
-	} else { // if (Extracts.popFrameProvider == Popins)
-	}
+	//	Add the whole thing to the pop-frame.
+	Popups.addPartToPopFrame(popFrame, partialAnnotationAppendDocument);
 });
 
 /*=----------------------=*/
