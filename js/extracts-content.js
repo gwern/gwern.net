@@ -470,13 +470,13 @@ Extracts = { ...Extracts,
         let auxLinksLinkType = AuxLinks.auxLinksLinkType(target);
         switch (auxLinksLinkType) {
             case "backlinks":
-                return newDocument(`${targetPage} (Backlinks)`);
+                return newDocument(`<span>${targetPage} (Backlinks)</span>`);
             case "similars":
-                return newDocument(`${targetPage} (Similar links)`);
+                return newDocument(`<span>${targetPage} (Similar links)</span>`);
             case "link-bibliography":
-                return newDocument(`${targetPage} (Link bibliography)`);
+                return newDocument(`<span>${targetPage} (Link bibliography)</span>`);
             default:
-                return newDocument(`${targetPage}`);
+                return newDocument(`<span>${targetPage}</span>`);
         }
     },
 };

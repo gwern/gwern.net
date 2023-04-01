@@ -4049,7 +4049,8 @@ body.index-directory #footer {
     flex: 0 1 100%;
     line-height: 0;
 }
-.popup .popframe-title-link {
+.popup .popframe-title-link,
+.popup .popframe-title span {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -4853,7 +4854,8 @@ body.index-directory #footer {
     display: none;
 }
 
-.popin .popframe-title-link {
+.popin .popframe-title-link,
+.popin .popframe-title span {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
