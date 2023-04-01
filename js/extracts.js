@@ -769,7 +769,7 @@ Extracts = {
 
 		//	Additional rewrites.
 		Extracts.additionalRewrites.forEach(rewriteFunction => {
-			rewriteFunction(popup);
+			rewriteFunction(popin);
 		});
 
 		//	Register copy processors in popin.
