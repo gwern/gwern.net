@@ -764,7 +764,7 @@ Popups = {
 
 		//  Update classes.
 		Popups.addClassesToPopFrame(popup, "restored");
-		Popups.removeClassesFromPopFrame(popup, "resized", ...(Popups.titleBarComponents.popupPlaces));
+		Popups.removeClassesFromPopFrame(popup, "zoomed", "resized", ...(Popups.titleBarComponents.popupPlaces));
 
 		//  Update popup size.
 		popup.style.width = "";
