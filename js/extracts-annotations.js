@@ -192,6 +192,10 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 		 && targetTypeName != "ANNOTATION_PARTIAL") == false)
 		return;
 
+	//	NOTE: TEMPORARY!!!
+	if (Extracts.popFrameProvider == Popins)
+		return;
+
 	//	Construct container and synthesized include-link.
 	let partialAnnotationAppendDocument = newDocument();
 	partialAnnotationAppendDocument.appendChild(newElement("DIV", {
