@@ -4782,6 +4782,8 @@ body.index-directory #footer {
 
 .popin {
     /*  Layout. */
+    --popins-popin-content-padding: 0.7em 0.9em 0.8em 0.9em;
+
     display: block;
     position: absolute;
     left: 0;
@@ -4917,10 +4919,6 @@ body.index-directory #footer {
 /*│ Popin footer bar. │*/
 /*└───────────────────┘*/
 
-.popin.has-footer-bar {
-    margin-bottom: calc(1em + var(--GW-popins-popin-border-width) + var(--GW-popins-popin-footer-bar-height));
-}
-
 .popin .popin-footer-bar {
     position: absolute;
     left: calc(-1 * var(--GW-popins-popin-border-width));
@@ -4944,6 +4942,50 @@ body.index-directory #footer {
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.875rem;
     text-indent: 0;
+}
+
+/*┌─────────────────────────────┐*/
+/*│ Popup with appended footer. │*/
+/*└─────────────────────────────┘*/
+
+.popin.has-footer {
+	border-bottom-width: 0;
+}
+
+.popin.has-footer .popin-footer-bar {
+	display: none;
+}
+
+/*┌──────────────────────────────┐*/
+/*│ Appended partial annotation. │*/
+/*└──────────────────────────────┘*/
+
+.popin .partial-annotation-append-container {
+	background-color: var(--GW-popins-popin-background-color);
+	padding: var(--popins-popin-content-padding);
+	position: absolute;
+	top: 100%;
+	left: calc(-1 * var(--GW-popins-popin-border-width));
+	right: calc(-1 * var(--GW-popins-popin-border-width));
+	border-color: inherit;
+	border-style: inherit;
+	border-width: 
+		0 
+		var(--GW-popins-popin-border-width) 
+		var(--GW-popins-popin-border-width) 
+		var(--GW-popins-popin-border-width);
+	box-shadow:
+		0 -3px 0 -2px var(--GW-popins-popin-border-color),
+		0 -4px 0 -2px var(--GW-popins-popin-background-color),
+		0 -5px 0 -2px var(--GW-popins-popin-border-color);
+}
+
+.popin .partial-annotation-append-container .data-field {
+	display: inline;
+}
+
+.popin .partial-annotation-append-container .data-field.title {
+	margin-right: 0.25em;
 }
 
 /*┌────────────────────┐*/
@@ -4987,7 +5029,7 @@ body.index-directory #footer {
 .popin .popframe-content-view {
     background-color: var(--GW-popins-popin-background-color);
     --GW-link-underline-background-color: var(--GW-popins-popin-title-bar-background-color);
-    padding: 0.7em 0.9em 0.8em 0.9em;
+    padding: var(--popins-popin-content-padding);
     display: flow-root;
 }
 

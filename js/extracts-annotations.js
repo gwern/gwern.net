@@ -192,10 +192,6 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 		 && targetTypeName != "ANNOTATION_PARTIAL") == false)
 		return;
 
-	//	NOTE: TEMPORARY!!!
-	if (Extracts.popFrameProvider == Popins)
-		return;
-
 	//	Construct container and synthesized include-link.
 	let partialAnnotationAppendDocument = newDocument();
 	partialAnnotationAppendDocument.appendChild(newElement("DIV", {
@@ -208,8 +204,8 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 		"class": "link-annotated-partial include-annotation-partial include-strict",
 		"data-template": "annotation-blockquote-not",
 		"data-template-fields": "linkTarget:$,whichTab:$,tabOrWindow:$",
-		"data-link-target": ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
-		"data-which-tab": ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
+		"data-link-target": "_blank",
+		"data-which-tab": "new",
 		"data-tab-or-window": (GW.isMobile() ? "tab" : "window")
 	}));
 
