@@ -726,6 +726,10 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 		if (id == "")
 			return;
 
+		let targetElement = containingDocument.querySelector("#" + id);
+		if (targetElement == null)
+			return;
+
 		let targetBlock = containingDocument.querySelector("#" + id).closest("section, li.footnote");
 		let backlinksBlock = targetBlock.querySelector(".section-backlinks");
 		if (backlinksBlock == null) {
@@ -738,7 +742,6 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 			let sectionLabelHTML = targetBlock.tagName == "SECTION"
 								   ? `“${(targetBlock.firstElementChild.textContent)}”`
 								   : `footnote <span class="footnote-number">${(Notes.noteNumberFromHash(targetBlock.id))}</span>`;
-// 			backlinksBlock.querySelector("p strong").textContent = `Backlinks for ${sectionLabelText}`;
 			backlinksBlock.querySelector("p strong").innerHTML = `Backlinks for <a href="${sectionLabelLinkTarget}" class="link-page">${sectionLabelHTML}</a>`;
 
 			//	List.
