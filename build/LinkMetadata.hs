@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-03-30 12:28:04 gwern"
+When:  Time-stamp: "2023-04-01 21:11:00 gwern"
 License: CC-0
 -}
 
@@ -21,7 +21,7 @@ import Control.Monad (unless, void, when, foldM_)
 import qualified Data.ByteString as B (appendFile, readFile)
 import Data.Char (isPunctuation, toLower)
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union) -- traverseWithKey, union, Map
-import qualified Data.Text as T (append, head, isInfixOf, isPrefixOf, pack, unpack, Text)
+import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.IORef (IORef)
 import Data.Function (on)
@@ -448,13 +448,11 @@ addHasAnnotation (title,aut,dt,_,_,abstrct) (Link (a,b,c) e (f,g))  =
    if "https://en.wikipedia.org" `T.isPrefixOf` f then x' else
     if length abstrct > minimumAnnotationLength then -- full annotation, no problem:
       addClass "link-annotated" x'
-      -- TEMPORARY: we do not set '.link-annotated-partial' on local links, even when they are a normal partial link, as a compromise due to the weakness of 'partial' popups right now. They only popup the partial itself (so, maybe a title & backlinks, a tag, perhaps an author or date, and that's about it); for a local PDF, that's inferior to popping up the PDF itself, because you generally wouldn't learn much from the partial popup compared to popping up the full PDF, and adds an annoying extra mouse-search to every popup. Bad. So, instead, we just ignore partial status for local links. Ideally, the partial popup would pop up the full PDF, with a wrapper frame containing just the partial metadata. Then the partial popup is no worse than the non-partial popup, and usually better. (Once that is added, the link-page boolean can be removed.)
-      else if "link-page" `elem` b || T.head f == '/' then
-             x' else -- may be a partial...
-             -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
-             if not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f then x'
-             else -- so it's not a local link, doesn't have a full annotation, doesn't have an on-demand annotation like a Wikipedia article, but does have *some* partial annotation since it exists on disk, so it gets `.link-annotated-partial`
-               addClass "link-annotated-partial" x'
+      else -- may be a partial...
+           -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
+           if not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f then x'
+           else -- so it's not a local link, doesn't have a full annotation, doesn't have an on-demand annotation like a Wikipedia article, but does have *some* partial annotation since it exists on disk, so it gets `.link-annotated-partial`
+             addClass "link-annotated-partial" x'
 addHasAnnotation _ z = z
 
 parseRawBlock :: Attr -> Block -> Block
