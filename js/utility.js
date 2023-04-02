@@ -569,8 +569,24 @@ function isWithinRect(element, rect) {
 /******************************************************************************/
 /*  Returns true if the given element intersects the viewport, false otherwise.
  */
-function isOnScreen (element) {
+function isOnScreen(element) {
     return isWithinRect(element, new DOMRect(0, 0, window.innerWidth, window.innerHeight));
+}
+
+/******************************/
+/*	Returns union of two rects.
+ */
+function rectUnion (aRect, ...args) {
+	let union = aRect;
+	for (rect of args) {
+		union = new DOMRect(
+						Math.min(union.x, rect.x),
+						Math.min(union.y, rect.y),
+						Math.max(union.right, rect.right) - Math.min(union.x, rect.x),
+						Math.max(union.bottom, rect.bottom) - Math.min(union.y, rect.y)
+				);
+	}
+	return union;
 }
 
 /*******************************************************************************/

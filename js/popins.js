@@ -403,11 +403,18 @@ Popins = {
 		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
 	},
 
+	/*	Returns full viewport rect for popin and all auxiliary elements
+		(title bar, footers, etc.).
+	 */
+	getPopinViewportRect: (popin) => {
+		return rectUnion(popin.getBoundingClientRect(), ...(Array.from(popin.children).map(x => x.getBoundingClientRect())));
+	},
+
 	//	Called by: Popins.injectPopinForTarget
 	//	Called by: extracts.js
 	//	Called by: extracts-annotations.js
 	scrollPopinIntoView: (popin) => {
-		let popinViewportRect = popin.getBoundingClientRect();
+		let popinViewportRect = Popins.getPopinViewportRect(popin);
 
 		if (popinViewportRect.bottom > window.innerHeight) {
 			window.scrollBy(0, (window.innerHeight * 0.1) + popinViewportRect.bottom - window.innerHeight);

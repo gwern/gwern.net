@@ -1243,6 +1243,13 @@ Popups = {
 	/*  Popup positioning.
 		*/
 
+	/*	Returns full viewport rect for popup and all auxiliary elements
+		(footers, etc.).
+	 */
+	getPopupViewportRect: (popup) => {
+		return rectUnion(popup.getBoundingClientRect(), ...(Array.from(popup.children).map(x => x.getBoundingClientRect())));
+	},
+
 	//	Called by: Popups.positionPopup
 	//	See also: extracts.js
 	preferSidePositioning: (target) => {
@@ -1282,8 +1289,9 @@ Popups = {
 				by the layout system, and taking into account the popup’s content,
 				and the max-width, min-width, etc., CSS properties.
 				*/
-			let popupIntrinsicWidth = popup.offsetWidth;
-			let popupIntrinsicHeight = popup.offsetHeight;
+			let popupIntrinsicRect = Popups.getPopupViewportRect(popup);
+			let popupIntrinsicWidth = popupIntrinsicRect.width;
+			let popupIntrinsicHeight = popupIntrinsicRect.height;
 
 			let provisionalPopupXPosition = 0.0;
 			let provisionalPopupYPosition = 0.0;
