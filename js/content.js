@@ -356,7 +356,7 @@ Content = {
 						auxLinksList.previousElementSibling.classList.add("aux-links-list-label", auxLinksLinkType + "-list-label");
 
 						if (auxLinksLinkType == "backlinks") {
-							auxLinksList.querySelectorAll("a").forEach(link => {
+							auxLinksList.querySelectorAll("a.link-annotated-not").forEach(link => {
 								link.dataset.backlinkTargetUrl = AuxLinks.targetOfAuxLinksLink(loadURL);
 							});
 							auxLinksList.querySelectorAll("blockquote").forEach(blockquote => {

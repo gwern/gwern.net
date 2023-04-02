@@ -472,6 +472,10 @@ function synthesizeIncludeLink(link, attributes, properties) {
 		&& link.dataset.urlOriginal)
 		includeLink.dataset.urlOriginal = link.dataset.urlOriginal;
 
+	if (   link instanceof HTMLAnchorElement
+		&& link.dataset.backlinkTargetUrl)
+		includeLink.dataset.backlinkTargetUrl = link.dataset.backlinkTargetUrl;
+
 	//	In case no include classes have been added yet...
 	if (Transclude.isIncludeLink(includeLink) == false)
 		includeLink.classList.add("include");

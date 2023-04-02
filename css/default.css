@@ -6135,14 +6135,16 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 /*****************/
 /*  Block context.
  */
-.markdownBody a.targeted {
+.markdownBody a.targeted,
+.markdownBody a:not(.footnote-ref).highlighted {
     position: relative;
     display: inline-block;
     z-index: 1;
     text-indent: 0;
 }
 @media all and (min-width: 650px) {
-    .markdownBody a.targeted {
+    .markdownBody a.targeted,
+	.markdownBody a:not(.footnote-ref).highlighted {
         height: 1.5em;
     }
     /*	Correct off-by-one-pixel error in backlinks block context.
@@ -6153,7 +6155,8 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
             0 calc(100% - 0.05em);
     }
 }
-.markdownBody a.targeted::before {
+.markdownBody a.targeted::before,
+.markdownBody a:not(.footnote-ref).highlighted::before {
     content: "";
     position: absolute;
     width: calc(100% + 0.5em);

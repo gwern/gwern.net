@@ -571,8 +571,10 @@ Extracts = {
 
 	//	Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
 	//	Called by: Extracts.rewritePopupContent_CITATION_BACK_LINK
-    scrollToTargetedElementInPopFrame: (target, popFrame) => {
+    scrollToTargetedElementInPopFrame: (popFrame) => {
         GWLog("Extracts.scrollToTargetedElementInPopFrame", "extracts.js", 3);
+
+        let target = popFrame.spawningTarget;
 
         if (isAnchorLink(target)) {
             requestAnimationFrame(() => {

@@ -63,6 +63,13 @@ Extracts = { ...Extracts,
         return (target.closest("#sidebar") != null);
     },
 
+	/*	“Full context” links in backlinks lists.
+	 */
+	isFullBacklinkContextLink: (target) => {
+		return (   target.closest(".backlink-source") != null
+				&& target.classList.contains("link-page"));
+	},
+
     /*  This “special testing function” is used to exclude certain targets which
         have already been categorized as (in this case) `LOCAL_PAGE` targets. It
         returns false if the target is to be excluded, true otherwise. Excluded
@@ -71,8 +78,8 @@ Extracts = { ...Extracts,
     //  Called by: Extracts.targets.testTarget (as `testTarget_${targetTypeInfo.typeName}`)
     testTarget_LOCAL_PAGE: (target) => {
         return (!(   Extracts.popFrameProvider == Popins
-                  && (   Extracts.isTOCLink(target)
-                      || Extracts.isSidebarLink(target))));
+        		  && (   Extracts.isTOCLink(target)
+        			  || Extracts.isSidebarLink(target))));
     },
 
     //  Called by: Extracts.fillPopFrame (as `popFrameFillFunctionName`)
@@ -112,10 +119,26 @@ Extracts = { ...Extracts,
 														   "page-" + target.pathname.slice(1));
         }
 
+		//	Designate “full context” pop-frames for backlinks.
+		if (Extracts.isFullBacklinkContextLink(target))
+			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "full-backlink-context");
+
 		//	Synthesize include-link (with or without hash, as appropriate).
 		let includeLink = synthesizeIncludeLink(target, { class: "include-block-context" });
-		if (fullPage)
+		if (fullPage) {
 			stripAnchorsFromLink(includeLink);
+		} else if (   Extracts.isFullBacklinkContextLink(target)
+				   && target.pathname == location.pathname) {
+			/*	Since “full” context is just the base page, which we don’t want 
+				to pop up/in, we instead show the containing section or
+				footnote.
+			 */
+			let targetElement = targetElementInDocument(target, Extracts.rootDocument);
+			let nearestSection = targetElement.closest("section, li.footnote");
+			if (nearestSection)
+				includeLink.hash = "#" + nearestSection.id;
+		}
+
 		return newDocument(includeLink);
     },
 
@@ -189,7 +212,19 @@ Extracts = { ...Extracts,
 
 		popup = Extracts.preparePopFrame_LOCAL_PAGE(popup);
 
-        /*  Designate popups spawned from section links in the the TOC (for
+ 		if (   Extracts.isFullBacklinkContextLink(target)
+ 			&& popup.classList.contains("full-page") == false) {
+			//  Do not spawn “full context” popup if the link is visible.
+			let targetElement = targetElementInDocument(target, Extracts.rootDocument);
+			if (Popups.isVisible(targetElement)) {
+				return null;
+			} else {
+		        //  Mini title bar.
+				popup.classList.add("mini-title-bar");
+			}
+		}
+
+       /*  Designate popups spawned from section links in the the TOC (for
             special styling).
          */
         if (Extracts.isTOCLink(target))
@@ -269,11 +304,11 @@ Extracts = { ...Extracts,
 			So we must do it here.
 		 */
 		if (   isAnchorLink(target)
-			&& popFrame.classList.contains("full-page"))
+			&& popFrame.classList.containsAnyOf([ "full-page", "full-backlink-context" ]))
 			targetElementInDocument(target, popFrame.document).classList.add("targeted");
 
 		//  Scroll to the target.
-		Extracts.scrollToTargetedElementInPopFrame(target, popFrame);
+		Extracts.scrollToTargetedElementInPopFrame(popFrame);
 
 		//	Lazy-loading of adjacent sections.
 		//	WARNING: Experimental code!
@@ -452,16 +487,51 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_AUX_LINKS_LINK: (popFrame) => {
+    rewritePopFrameContent_AUX_LINKS_LINK: (popFrame, injectEventInfo = null) => {
         let target = popFrame.spawningTarget;
 
-		//	Trigger transcludes.
-		Transclude.triggerTranscludesInContainer(popFrame.body, {
-            source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK",
-            container: popFrame.body,
-            document: popFrame.document,
-            context: "popFrame"
-        });
+		if (injectEventInfo == null) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_AUX_LINKS_LINK(popFrame, info);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
+				source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
+		if (Extracts.popFrameProvider == Popups) {
+			popFrame.document.querySelectorAll(".backlink-source .link-annotated-not").forEach(fullContextLink => {
+				if (fullContextLink.pathname == location.pathname) {
+					let targetElement = targetElementInDocument(fullContextLink, Extracts.rootDocument);
+					fullContextLink.addEventListener("mouseenter", (event) => {
+						targetElement.classList.toggle("highlighted", true);
+					});
+					fullContextLink.addEventListener("mouseleave", (event) => {
+						targetElement.classList.toggle("highlighted", false);
+					});
+					GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", (info) => {
+						targetElement.classList.toggle("highlighted", false);
+					}, {
+						once: true,
+						condition: (info) => (info.popup == popFrame)
+					});
+				}
+			});
+		}
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
@@ -538,9 +608,12 @@ Extracts = { ...Extracts,
         popup.addEventListener("mouseleave", (event) => {
             target.classList.toggle("highlighted", false);
         });
-        GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", Extracts.footnotePopupDespawnHandler = (info) => {
+        GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", (info) => {
             target.classList.toggle("highlighted", false);
-        });
+        }, {
+			once: true,
+			condition: (info) => (info.popup == popup)
+		});
 
         return popup;
     },
@@ -669,7 +742,7 @@ Extracts = { ...Extracts,
         citationInPopup.classList.add("targeted");
 
         //  Scroll to the citation.
-        Extracts.scrollToTargetedElementInPopFrame(target, popup);
+        Extracts.scrollToTargetedElementInPopFrame(popup);
     }
 };
 
