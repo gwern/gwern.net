@@ -859,21 +859,18 @@ function hyphenate(eventInfo) {
     if (GW.isX11())
         return;
 
-    let doHyphenation = (selector) => {
-        Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
-            eventInfo.container.querySelectorAll(selector).forEach(block => {
-                hyphenate(block);
-				Typography.processElement(block, Typography.replacementTypes.NONE, true);
-            });
-        });
-    };
-
-    if (   GW.isMobile()
-        || eventInfo.document != document) {
-        doHyphenation((eventInfo.document == document) ? ".markdownBody p" : "p");
-    } else {
-        doHyphenation(".sidenote p, .abstract blockquote p");
-    }
+	let selector = (GW.isMobile()
+					? ".markdownBody p"
+					: (eventInfo.document == document
+					   ? ".sidenote p, .abstract blockquote p"
+					   : "p"));
+	let blocks = eventInfo.container.querySelectorAll(selector);
+	Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
+		blocks.forEach(block => {
+			hyphenate(block);
+			Typography.processElement(block, Typography.replacementTypes.NONE, true);
+		});
+	});
 }
 
 /*******************************************************************************/
