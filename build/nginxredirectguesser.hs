@@ -6,7 +6,8 @@
 
 import Text.EditDistance (levenshteinDistance, defaultEditCosts) -- <https://hackage.haskell.org/package/edit-distance>
 import Data.List.Split (splitOn)
-import Data.List (sort)
+import Data.List (sort, sortBy)
+import Data.Ord (comparing)
 import Utils (replaceMany)
 
 main :: IO ()
@@ -16,12 +17,16 @@ main = do errors <- fmap lines getContents
           let redirects = filter (\(_,b) -> b /= "/static/404\";") $ map (\(a:b:_) -> (a,b)) $ filter (\p -> length p == 2) $ map (splitOn "$\" \"") $ lines $ one ++ two
           let redirectsCleaned = map (\(a,b) -> (filter (`notElem` ("~^.*?+[]\""::String)) a, b)) redirects
           let errorDistances = zip errors $ map (filter (\(d,_,_) -> d <= minDistance) . diffAndRank redirectsCleaned) errors -- :: [(String, [(Int,String,String)])]
-          let redirectsGenerated = map (\(er, candidates) -> if null candidates then "\"~^" ++ escape er ++ "$\" \"\";"
-                                                             else "\"~^" ++ escape er ++ "$\" \"" ++ (\(_,_,target) -> target) (head candidates)) errorDistances
+          let redirectPairs = (sortBySecondField $ map (\(err,candidates) -> (err, if null candidates then "" else (\(_,_,target) -> target) (head candidates))) errorDistances) :: [(String,String)]
+          let redirectsGenerated = map (\(er, candidate) -> if null candidate then "\"~^" ++ escape er ++ "$\" \"\";"
+                                                             else "\"~^" ++ escape er ++ "$\" \"" ++ candidate) redirectPairs
           mapM_ putStrLn redirectsGenerated
 
 escape :: String -> String
 escape = replaceMany [("?","\\?"), ("[", "\\["), ("]", "\\]"), ("(", "\\("), (")", "\\)")]
+
+sortBySecondField :: [(String, String)] -> [(String, String)]
+sortBySecondField = sortBy (comparing snd)
 
 minDistance :: Int
 minDistance = 4
