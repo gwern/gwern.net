@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using GPT-3 neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2023-03-30 17:25:19 gwern"
+# When:  Time-stamp: "2023-03-31 11:40:21 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python paragraphizer.py
@@ -109,7 +109,7 @@ result = run_with_timeout(
     kwargs={
         "model": "gpt-3.5-turbo",
         "messages": messages,
-        "max_tokens": 4096,
+        # "max_tokens": 4090,
         "temperature": 0
     },
     timeout=10

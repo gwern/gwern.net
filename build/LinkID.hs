@@ -91,7 +91,7 @@ linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start wi
        , ("/doc/ai/nn/2019-brynjolfsson.pdf", "brynjolfsson-et-al-2019-nmt")
        , ("/doc/ai/anime/danbooru/2020-akita-2.pdf", "akita-et-al-2020-2")
        , ("/doc/ai/anime/danbooru/2020-ko.pdf", "ko-cho-2020")
-       , ("/doc/ai/nn/transformer/gpt/dall-e/2020-chen.pdf#openai", "chen-igpt-paper")
+       , ("/doc/ai/nn/transformer/gpt/dall-e/1/2020-chen.pdf#openai", "chen-igpt-paper")
        , ("/doc/ai/anime/danbooru/2018-zhang.pdf", "zhang-et-al-2018-twostagecolorization")
        , ("/doc/anime/eva/1996-animerica-conscience-otaking", "okada-2011-2")
        , ("/doc/anime/eva/1997-animeland-may-hideakianno-interview-english", "anno-2012-2")

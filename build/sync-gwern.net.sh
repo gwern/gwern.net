@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-03-31 10:39:28 gwern"
+# When:  Time-stamp: "2023-03-31 21:50:25 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -602,10 +602,13 @@ else
     λ(){ ge -e '#[[:alnum:]]\+#' -- ./metadata/*.hs ./metadata/*.yaml; }
     wrap λ "Bad paths in metadata databases: redundant anchors"
 
-    λ(){ gf -e '{#' $(find _site/ -type f -name "index"); }
+    λ(){ find _site/ -type f -name "index" | gf -e '{#'; }
     wrap λ "Broken anchors in directory indexes."
 
-    λ(){ find * -type f -name '*\$*' -or -name '*=*' -or -name '*\?*' -or -name '*gwner*'; }
+    λ(){ find ./ -type f -name '*gwner*'; }
+    wrap λ "Malformed filenames: dangerous strings in them?"
+
+    λ(){ find ./ -type f -wholename '*[^-a-zA-Z0-9_./~%#]*' | grep -F -v -e 'cattleya幻想写景' -e '緑華野菜子'; }
     wrap λ "Malformed filenames: dangerous characters in them?"
 
     λ(){

@@ -714,7 +714,7 @@ linkIconTestUnitsText =
          , ("https://nvlabs.github.io/stylegan2/versions.html",  "n","text,sans,italic")
          , ("https://archive.nytimes.com/6thfloor.blogs.nytimes.com/2013/03/20/a-sham-procedure-leads-to-disappointing-m-s-news/",  "newyorktimes","svg")
          , ("https://www.wsj.com/articles/SB10000872396390443696604577647870908169992",  "WSJ","text,tri")
-         , ("/doc/ai/nn/transformer/gpt/dall-e/2020-chen.pdf#openai",  "openai","svg")
+         , ("/doc/ai/nn/transformer/gpt/dall-e/1/2020-chen.pdf#openai",  "openai","svg")
          , ("https://openai.com/blog/better-language-models/",  "openai","svg")
          , ("https://openreview.net/forum?id=xTJEN-ggl1b", "OR", "text,sans")
          , ("https://arxiv.org/abs/1611.02779#openai",  "openai","svg")

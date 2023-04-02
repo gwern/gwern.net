@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-03-30 16:27:34 gwern"
+# When:  Time-stamp: "2023-04-01 09:30:00 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -156,12 +156,22 @@ gwmv () {
         OLD=$(echo "$1" | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g' )
         NEW=$(echo "$2" | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g')
 
-        cd ~/wiki/
+
+        if [ -d "$HOME/wiki$OLD" ] || [ -d "${OLD:1}" ]; then
+            echo "The first argument ($1 $OLD) is a directory. Please use 'gwmvdir' to rename entire directories."
+            return 3
+        elif [ ! -f "$HOME/wiki$OLD" ] && [ ! -f "${OLD:1}" ]; then
+            echo "File $OLD not found in current directory or ~/wiki"
+            return 3
+        fi
+
         # strip any slash prefix like '/doc/psychology/2021-foo.pdf' → 'doc/psychology/2021-foo.pdf' to turn it into a local relative link
 
         # eg "gwMv 'doc/psychology/2021-foo.pdf' 'doc/psychology/writing'" as a shortcut for "gwmv 'doc/psychology/2021-foo.pdf' 'doc/psychology/writing/2021-foo.pdf'"
         if [ -d ~/wiki$NEW ]; then NEW=$(echo $NEW/$(basename $OLD) | sed -e 's/\/\//\//'); fi
 
+
+        cd ~/wiki/
         # to rename a gwern.net file:
         # 1. git mv the old filename to new
         if [[ -a ~/wiki$OLD ]]; then

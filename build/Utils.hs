@@ -674,6 +674,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("O(n)", "𝒪(<em>n</em>)")
          , ("O(N) ", "𝒪(<em>N</em>) ")
          , (" O(N)", " 𝒪(<em>N</em>)")
+         , (" O(T)", " 𝒪(<em>T</em>)")
+         , (" O(1)", " 𝒪(1)")
          , ("<span class=\"math inline\">\\(n^{O(k)}\\)</span>", "<em>n</em><sup>𝒪(<em>k</em>)</sup>")
          , ("<span class=\"math inline\">\\(S^</em>(0.8)\\)</span>", "<em>S</em><sup>✱</sup>(0.8)")
          , ("<span class=\"math inline\">\\(S^</em>(0)\\)</span>", "<em>S</em><sup>✱</sup>(0)")
@@ -840,6 +842,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" - ", "—")
          , (" — ", "—")
          , (" -- ", "—") -- eg. 'Darknet Data Mining -- A Canadian Cyber-crime Perspective'
+         , (" statistically insignificant", " non-statistically-significant")
          , ("was significantly diminished", "was statistically-significantly diminished")
          , ("decreased significantly", "decreased statistically-significantly")
          , ("is significantly better than", "is statistically-significantly better than")
