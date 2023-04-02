@@ -257,7 +257,7 @@ Content = {
 					return false;
 
 				//	Maybe it’s an annotated link?
-				if (Annotations.isAnnotatedLink(link))
+				if (Annotations.isAnnotatedLinkFull(link))
 					return false;
 
 				let identifier = Content.targetIdentifier(link);
@@ -332,7 +332,7 @@ Content = {
 					return false;
 
 				//	Maybe it’s an annotated link?
-				if (Annotations.isAnnotatedLink(link))
+				if (Annotations.isAnnotatedLinkFull(link))
 					return false;
 
 				let identifier = Content.targetIdentifier(link);
@@ -407,7 +407,7 @@ Content = {
 					return false;
 
 				//	Maybe it’s an annotated link?
-				if (Annotations.isAnnotatedLink(link))
+				if (Annotations.isAnnotatedLinkFull(link))
 					return false;
 
 				let identifier = Content.targetIdentifier(link);

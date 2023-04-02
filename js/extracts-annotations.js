@@ -187,9 +187,11 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
     GWLog("Extracts.injectPartialAnnotationMetadata", "extracts.js", 2);
 
 	let target = popFrame.spawningTarget;
+	if (Annotations.isAnnotatedLinkPartial(target) == false)
+		return;
+
     let targetTypeName = Extracts.targetTypeInfo(target).typeName;
-	if ((   Annotations.isAnnotatedLinkPartial(target)
-		 && targetTypeName != "ANNOTATION_PARTIAL") == false)
+	if ([ "ANNOTATION_PARTIAL", "LOCAL_PAGE" ].includes(targetTypeName))
 		return;
 
 	//	Construct container and synthesized include-link.

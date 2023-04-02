@@ -42,7 +42,8 @@ Extracts = { ...Extracts,
      */
     //  Called by: Extracts.targetTypeInfo (as `predicateFunctionName`)
     isLocalPageLink: (target) => {
-        return (   Content.contentTypes.localPage.matchesLink(target)
+        return (   (   Content.contentTypes.localPage.matchesLink(target)
+        			|| target.classList.contains("link-page"))
 				&& (   isAnchorLink(target)
 					|| target.pathname != location.pathname));
     },
