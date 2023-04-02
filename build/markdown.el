@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-03-29 11:14:02 gwern"
+;;; When:  Time-stamp: "2023-04-02 17:50:57 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -98,6 +98,55 @@
               (add-hook 'before-save-hook
                         'de-unicode
                         nil t))))
+
+; do *one* replacement and then quit. This is particularly useful in doing rewrites of hyperlinks: typically, we only want to hyperlink one instance (usually the first) of a word or phrase, and then skip the rest. The default `query-replace` requires us to either manually `n` them all, or `q` to quit. It can be toilsome to go through a lot of this. So we write our own to auto-exit on the first replacement.
+; GPT-4-written. (Tried GPT-3.5 for most of it, but kept screwing up on parenthesis-matching. Neither version could remove the highlighting on substitutions.)
+(defun query-replace-regexp-once (regexp to-string &optional delimited start end)
+  "Replace the first occurrence of REGEXP with TO-STRING.
+If DELIMITED is non-nil, only match whole words.
+START and END specify the region to search."
+  (interactive
+   (list (read-from-minibuffer "Query replace regexp once (regexp): ")
+         (read-from-minibuffer "Query replace regexp once with: ")
+         nil
+         (when (use-region-p)
+           (region-beginning))
+         (when (use-region-p)
+           (region-end))))
+  (let ((inhibit-read-only t)
+        (case-fold-search nil)
+        (search-function (if delimited 're-search-forward-word 're-search-forward))
+        (replace-done nil))
+    (save-excursion
+      (goto-char (or start (point-min)))
+      (while (and (not replace-done) (funcall search-function regexp end t))
+        (isearch-highlight (match-beginning 0) (match-end 0))
+        (let ((response (read-char-choice
+                         (concat "Replace this occurrence? (y/n/q): "
+                                 (substring-no-properties (match-string 0)))
+                         '(?y ?n ?q))))
+          (cond ((eq response ?y)
+                 (replace-match to-string nil nil)
+                 (setq replace-done t))
+                ((eq response ?n)
+                 (forward-char))
+                ((eq response ?q)
+                 (keyboard-quit)))))
+      (lazy-highlight-cleanup t))))
+; currently primarily used by `getLinkSuggestions` (the regexp version was included for completeness):
+(defun query-replace-once (from-string to-string &optional delimited start end)
+  "Replace the first occurrence of FROM-STRING with TO-STRING.
+If DELIMITED is non-nil, only match whole words.
+START and END specify the region to search."
+  (interactive
+   (list (read-from-minibuffer "Query replace once (regexp): ")
+         (read-from-minibuffer "Query replace once with: ")
+         nil
+        (when (use-region-p)
+           (region-beginning))
+         (when (use-region-p)
+           (region-end))))
+  (query-replace-regexp-once (regexp-quote from-string) to-string delimited start end))
 
 ;; TODO Abbreviation ideas:
 ;; script outputs: https://pastebin.com/rU0TyG5B
@@ -1217,7 +1266,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
                   ; skip if already done
                   (if (not (buffer-contains-substring replacement))
                       (let ((case-fold-search t) (search-upper-case t) (case-replace nil))
-                        (query-replace original (concat "[" original "](" replacement ")") t begin end)
+                        (query-replace-once original (concat "[" original "](" replacement ")") t begin end)
                         ))))))))
 
 (defun markdown-annotation-compile ()
