@@ -27,6 +27,8 @@ Annotations = { ...Annotations,
     /*  Returns the target identifier: the original URL (for locally archived
         pages), or the relative url (for local links), or the full URL (for
         foreign links).
+
+        Used for loading annotations, and caching reference data.
      */
 	targetIdentifier: (target) => {
         if (target.dataset.urlOriginal) {
@@ -38,10 +40,13 @@ Annotations = { ...Annotations,
         }
 	},
 
+	/***************************/
+	/*	Caching (API responses).
+	 */
+
 	//	Convenience method.
 	cachedDocumentForLink: (link) => {
-		let identifier = Annotations.targetIdentifier(link);
-		let cachedAPIResponse = Annotations.cachedAPIResponseForIdentifier(identifier);
+		let cachedAPIResponse = Annotations.cachedAPIResponseForLink(link);
 
 		if (   cachedAPIResponse
 			&& cachedAPIResponse != "LOADING_FAILED"
@@ -49,117 +54,127 @@ Annotations = { ...Annotations,
 			return cachedAPIResponse;
 	},
 
-    /*  Storage for retrieved and cached annotations.
-        */
-    cachedReferenceData: { },
-
-    /*  Returns true iff a cached API response exists for the given identifier.
+    /*  Returns true iff a cached API response exists for the given link.
         */
     //	Called by: Extracts.setUpAnnotationLoadEventsWithin (extracts-annotations.js)
-    cachedDataExists: (identifier) => {
-        let cachedAPIResponse = Annotations.cachedAPIResponseForIdentifier(identifier);
+    cachedDataExists: (link) => {
+        let cachedAPIResponse = Annotations.cachedAPIResponseForLink(link);
         return (   cachedAPIResponse != null
         		&& cachedAPIResponse != "LOADING_FAILED");
     },
 
-    /*  Returns cached annotation reference data for a given identifier string,
-    	or else either “LOADING_FAILED” (if loading the annotation was attempted
-    	but failed) or null (if the annotation has not been loaded).
-        */
-    referenceDataForIdentifier: (identifier) => {
-    	/*	Perhaps we’ve got an API response cached, but we haven’t actually
-    		constructed reference data from it yet. (Maybe because the API 
-    		response was acquired other than by the usual load process. Or 
-    		because the API response is the same as that for a different 
-    		identifier, and we don’t want to ask for a load.)
-    	 */
-		if (   Annotations.cachedReferenceData[identifier] == null
-			&& Annotations.cachedDataExists(identifier)) {
-			//	Get parsed API response.
-			let cachedAPIResponse = Annotations.cachedAPIResponseForIdentifier(identifier);
+	//	Used by: Annotations.cachedAPIResponseForLink
+	//	Used by: Annotations.cacheAPIResponseForLink
+	cachedAPIResponses: { },
 
-			//	Attempt to construct reference data from API response.
-			let referenceData = Annotations.referenceDataFromParsedAPIResponse(cachedAPIResponse, identifier) ?? "LOADING_FAILED";
-			if (referenceData == "LOADING_FAILED")
-				//	Send request to record failure in server logs.
-				GWServerLogError(Annotations.sourceURLForIdentifier(identifier) + `--could-not-process`, "problematic annotation");
-
-			//	Cache reference data (successfully constructed or not).
-			Annotations.cachedReferenceData[identifier] = referenceData;
-		}
-
-        return Annotations.cachedReferenceData[identifier];
-    },
-
-    //	Called by: Extracts.annotationForTarget (extracts-annotations.js)
-	referenceDataForTarget: (target) => {
-		return Annotations.referenceDataForIdentifier(Annotations.targetIdentifier(target));
+	responseCacheKeyForLink: (link) => {
+		return Annotations.sourceURLForLink(link).href;
 	},
 
-	//	Called by: Annotations.sourceURLForIdentifier
-	//	Called by: Annotations.processedAPIResponseForIdentifier
+	//	Called by: Annotations.load
+	cachedAPIResponseForLink: (link) => {
+		return Annotations.cachedAPIResponses[Annotations.responseCacheKeyForLink(link)];
+	},
+
+	//	Called by: Annotations.load
+	cacheAPIResponseForLink: (response, link) => {
+		Annotations.cachedAPIResponses[Annotations.responseCacheKeyForLink(link)] = response;
+	},
+
+	/****************************/
+	/*	Caching (reference data).
+	 */
+
+    /*  Storage for retrieved and cached annotations.
+        */
+    cachedReferenceData: { },
+
+	referenceDataCacheKeyForLink: (link) => {
+		return Annotations.targetIdentifier(link);
+	},
+
+	cachedReferenceDataForLink: (link) => {
+		return Annotations.cachedReferenceData[Annotations.referenceDataCacheKeyForLink(link)];
+	},
+
+	cacheReferenceDataForlink: (referenceData, link) => {
+		Annotations.cachedReferenceData[Annotations.referenceDataCacheKeyForLink(link)] = referenceData;
+	},
+
+    /*  Returns cached annotation reference data for a given link, or else 
+    	either “LOADING_FAILED” (if loading the annotation was attempted but 
+    	failed) or null (if the annotation has not been loaded).
+        */
+    referenceDataForLink: (link) => {
+    	let referenceData = Annotations.cachedReferenceDataForLink(link);
+		if (   referenceData == null
+			&& Annotations.cachedDataExists(link)) {
+			/*	Perhaps we’ve got an API response cached, but we haven’t 
+				actually constructed reference data from it yet. (Maybe because 
+				the API response was acquired other than by the usual load 
+				process. Or because the API response is the same as that for a 
+				different link, so we don’t need to load it again.)
+			 */
+			//	Get parsed API response.
+			let cachedAPIResponse = Annotations.cachedAPIResponseForLink(link);
+
+			//	Attempt to construct reference data from API response.
+			referenceData = Annotations.referenceDataFromParsedAPIResponse(cachedAPIResponse, link) ?? "LOADING_FAILED";
+			if (referenceData == "LOADING_FAILED")
+				//	Send request to record failure in server logs.
+				GWServerLogError(Annotations.sourceURLForLink(link).href + `--could-not-process`, "problematic annotation");
+
+			//	Cache reference data (successfully constructed or not).
+			Annotations.cacheReferenceDataForlink(referenceData, link);
+		}
+
+        return referenceData;
+    },
+
+	/***********/
+	/*	Loading.
+	 */
+
+	//	Called by: Annotations.sourceURLForLink
+	//	Called by: Annotations.processedAPIResponseForLink
 	//	Called by: Annotations.referenceDataFromParsedAPIResponse
-	dataSourceForIdentifier: (identifier) => {
+	dataSourceForLink: (link) => {
 		for ([ sourceName, dataSource ] of Object.entries(Annotations.dataSources))
 			if (   sourceName != "local"
-				&& dataSource.matches(identifier))
+				&& dataSource.matches(link))
 				return dataSource;
 
 		return Annotations.dataSources.local;
 	},
 
-	//	Called by: extracts-annotations.js (ANNOTATION target type info)
-	dataSourceForTarget: (target) => {
-		return Annotations.dataSourceForIdentifier(Annotations.targetIdentifier(target));	
+	//	Called by: Annotations.load
+	processedAPIResponseForLink: (response, link) => {
+		return Annotations.dataSourceForLink(link).processAPIResponse(response);
 	},
 
-	/*	Returns the URL of the annotation resource for the given identifier.
+	/*	Returns the URL of the annotation resource for the given link.
 	 */
 	//	Called by: Annotations.load
-	//	Called by: Annotations.cachedAPIResponseForIdentifier
-	//	Called by: Annotations.cacheAPIResponseForIdentifier
-	sourceURLForIdentifier: (identifier) => {
-		return Annotations.dataSourceForIdentifier(identifier).sourceURLForIdentifier(identifier);
-	},
-
-	//	Called by: Extracts.rewritePopFrameContent_ANNOTATION
-	sourceURLForTarget: (target) => {
-		return Annotations.sourceURLForIdentifier(Annotations.targetIdentifier(target));
-	},
-
-	//	Called by: Annotations.load
-	processedAPIResponseForIdentifier: (response, identifier) => {
-		return Annotations.dataSourceForIdentifier(identifier).processAPIResponse(response);
-	},
-
-	//	Used by: Annotations.cachedAPIResponseForIdentifier
-	//	Used by: Annotations.cacheAPIResponseForIdentifier
-	cachedAPIResponses: { },
-
-	//	Called by: Annotations.load
-	cachedAPIResponseForIdentifier: (identifier) => {
-		return Annotations.cachedAPIResponses[Annotations.sourceURLForIdentifier(identifier)];
-	},
-
-	//	Called by: Annotations.load
-	cacheAPIResponseForIdentifier: (response, identifier) => {
-		Annotations.cachedAPIResponses[Annotations.sourceURLForIdentifier(identifier)] = response;
+	//	Called by: Annotations.cachedAPIResponseForLink
+	//	Called by: Annotations.cacheAPIResponseForLink
+	sourceURLForLink: (link) => {
+		return Annotations.dataSourceForLink(link).sourceURLForLink(link);
 	},
 
 	//	Called by: extracts.annotationForTarget (extracts-annotations.js)
-	waitForDataLoad: (identifier, loadHandler = null, loadFailHandler = null) => {
-		if (Annotations.cachedAPIResponseForIdentifier(identifier) == "LOADING_FAILED") {
+	waitForDataLoad: (link, loadHandler = null, loadFailHandler = null) => {
+		if (Annotations.cachedAPIResponseForLink(link) == "LOADING_FAILED") {
             if (loadFailHandler)
-            	loadFailHandler(identifier);
+            	loadFailHandler(link);
 
 			return;
-		} else if (Annotations.cachedAPIResponseForIdentifier(identifier)) {
-			if (Annotations.referenceDataForIdentifier(identifier) == "LOADING_FAILED") {
+		} else if (Annotations.cachedAPIResponseForLink(link)) {
+			if (Annotations.referenceDataForLink(link) == "LOADING_FAILED") {
 				if (loadFailHandler)
-					loadFailHandler(identifier);
+					loadFailHandler(link);
 			} else {
 				if (loadHandler)
-					loadHandler(identifier);
+					loadHandler(link);
 			}
 
 			return;
@@ -167,99 +182,99 @@ Annotations = { ...Annotations,
 
 		let didLoadHandler = (info) => {
             if (loadHandler)
-            	loadHandler(identifier);
+            	loadHandler(link);
 
 			GW.notificationCenter.removeHandlerForEvent("Annotations.annotationLoadDidFail", loadDidFailHandler);
         };
         let loadDidFailHandler = (info) => {
             if (loadFailHandler)
-            	loadFailHandler(identifier);
+            	loadFailHandler(link);
 
 			GW.notificationCenter.removeHandlerForEvent("Annotations.annotationDidLoad", didLoadHandler);
         };
 		let options = { 
         	once: true, 
-        	condition: (info) => info.identifier == identifier
+        	condition: (info) => info.link == link
         };
 
         GW.notificationCenter.addHandlerForEvent("Annotations.annotationDidLoad", didLoadHandler, options);
         GW.notificationCenter.addHandlerForEvent("Annotations.annotationLoadDidFail", loadDidFailHandler, options);
 	},
 
-    /*  Load and process the annotation for the given identifier string.
+    /*  Load and process the annotation for the given link.
         */
     //	Called by: Extracts.setUpAnnotationLoadEventsWithin (extracts-annotations.js)
-    load: (identifier, loadHandler = null, loadFailHandler = null) => {
+    load: (link, loadHandler = null, loadFailHandler = null) => {
         GWLog("Annotations.load", "annotations.js", 2);
 
 		/*	Get URL of the annotation resource.
 		 */
-        let sourceURL = Annotations.sourceURLForIdentifier(identifier);
+        let sourceURL = Annotations.sourceURLForLink(link);
 
 		/*	Depending on the data source, `response` could be HTML,
 			JSON, or other. We construct and cache a reference data object,
 			then fire the appropriate event.
 		 */
 		let processResponse = (response) => {
-			let referenceData = Annotations.referenceDataFromParsedAPIResponse(response, identifier);
+			let referenceData = Annotations.referenceDataFromParsedAPIResponse(response, link);
 
 			if (referenceData) {
-				Annotations.cachedReferenceData[identifier] = referenceData;
+				Annotations.cacheReferenceDataForlink(referenceData, link);
 
 				GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { 
-					identifier: identifier 
+					link: link 
 				});
 			} else {
-				Annotations.cachedReferenceData[identifier] = "LOADING_FAILED";
+				Annotations.cacheReferenceDataForlink("LOADING_FAILED", link);
 
 				GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { 
-					identifier: identifier 
+					link: link 
 				});
 
 				//	Send request to record failure in server logs.
-				GWServerLogError(sourceURL + `--could-not-process`, "problematic annotation");
+				GWServerLogError(sourceURL.href + `--could-not-process`, "problematic annotation");
 			}
 		};
 
 		/*	Retrieve, parse, and cache the annotation resource; or use an
 			already-cached API response.
 		 */
-		let response = Annotations.cachedAPIResponseForIdentifier(identifier);
+		let response = Annotations.cachedAPIResponseForLink(link);
 		if (response) {
 			processResponse(response);
 		} else {
 			doAjax({
 				location: sourceURL.href,
 				onSuccess: (event) => {
-					let response = Annotations.processedAPIResponseForIdentifier(event.target.responseText, identifier);
+					let response = Annotations.processedAPIResponseForLink(event.target.responseText, link);
 
-					Annotations.cacheAPIResponseForIdentifier(response, identifier);
+					Annotations.cacheAPIResponseForLink(response, link);
 
 					processResponse(response);
 				},
 				onFailure: (event) => {
-					Annotations.cacheAPIResponseForIdentifier("LOADING_FAILED", identifier);
-					Annotations.cachedReferenceData[identifier] = "LOADING_FAILED";
+					Annotations.cacheAPIResponseForLink("LOADING_FAILED", link);
+					Annotations.cacheReferenceDataForlink("LOADING_FAILED", link);
 
-					GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: identifier });
+					GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { link: link });
 
 					//	Send request to record failure in server logs.
-					GWServerLogError(sourceURL, "missing annotation");
+					GWServerLogError(sourceURL.href, "missing annotation");
 				}
 			});
 		}
 
 		//	Call any provided handlers, if/when appropriate.
 		if (loadHandler || loadFailHandler)
-			Annotations.waitForDataLoad(identifier, loadHandler, loadFailHandler);
+			Annotations.waitForDataLoad(link, loadHandler, loadFailHandler);
     },
 
 	//	Called by: Annotations.load
-	referenceDataFromParsedAPIResponse: (response, identifier) => {
+	referenceDataFromParsedAPIResponse: (response, link) => {
 		if (response == "LOADING_FAILED")
 			return null;
 
-		return Annotations.dataSourceForIdentifier(identifier).referenceDataFromParsedAPIResponse(response, identifier);
+		return Annotations.dataSourceForLink(link).referenceDataFromParsedAPIResponse(response, link);
 	},
 
 	/***************************/
@@ -270,10 +285,10 @@ Annotations = { ...Annotations,
 		More data sources may be added. Any data source object must have these
 		four properties, each a function with the given signature:
 
-		.matches(string) => boolean
-		.sourceURLForIdentifier(string) => URL
+		.matches(URL|Element) => boolean
+		.sourceURLForLink(URL|Element) => URL
 		.processAPIResponse(string) => object
-		.referenceDataFromParsedAPIResponse(object, string) => object
+		.referenceDataFromParsedAPIResponse(object, URL|Element) => object
 
 		(Most data source objects also have additional properties, functions,
 		 etc., as necessary to implement the above functionality.)
@@ -288,24 +303,24 @@ Annotations = { ...Annotations,
 		 */
 
 		local: {
-			/*	There could be a local annotation for any identifier. As this
-				returns true for all identifiers, it is the fallback data source
-				in the event that no other data sources match an identifier.
+			/*	There could be a local annotation for any link. As this returns
+				true for all links, it is the fallback data source in the event 
+				that no other data sources match a link.
 			 */
-			matches: (identifier) => {
+			matches: (link) => {
 				return true;
 			},
 
-			//	Called by: Annotations.processedAPIResponseForIdentifier
-			//	Called by: Annotations.sourceURLForIdentifier
-			sourceURLForIdentifier: (identifier) => {
+			//	Called by: Annotations.processedAPIResponseForLink
+			//	Called by: Annotations.sourceURLForLink
+			sourceURLForLink: (link) => {
 				return new URL(  location.origin 
 							   + Annotations.dataSources.local.basePathname
-							   + fixedEncodeURIComponent(fixedEncodeURIComponent(identifier))
+							   + fixedEncodeURIComponent(fixedEncodeURIComponent(Annotations.targetIdentifier(link)))
 							   + ".html");
 			},
 
-			//	Called by: Annotations.processedAPIResponseForIdentifier
+			//	Called by: Annotations.processedAPIResponseForLink
 			processAPIResponse: (response) => {
 				let responseDoc = newDocument(response);
 
@@ -318,7 +333,7 @@ Annotations = { ...Annotations,
 			},
 
 			//	Called by: Annotations.referenceDataFromParsedAPIResponse
-			referenceDataFromParsedAPIResponse: (referenceEntry, identifier = null) => {
+			referenceDataFromParsedAPIResponse: (referenceEntry, link = null) => {
 				let referenceElement = referenceEntry.querySelector(Annotations.dataSources.local.referenceElementSelector);
 
 				let titleHTML = referenceElement.innerHTML;
@@ -413,7 +428,7 @@ Annotations = { ...Annotations,
 				let abstractHTML = null;
 				if (abstractElement) {
 					let referenceEntry = newDocument(abstractElement.childNodes);
-					Annotations.dataSources.local.postProcessReferenceEntry(referenceEntry, identifier);
+					Annotations.dataSources.local.postProcessReferenceEntry(referenceEntry, link);
 					abstractHTML = referenceEntry.innerHTML;
 				}
 
@@ -421,17 +436,21 @@ Annotations = { ...Annotations,
 				let popFrameTitleText = titleText.trimQuotes();
 
 				return {
-					originalURL:        originalURL,
-					originalURLText:    originalURLText,
-					titleHTML:          titleHTML,
-					fullTitleHTML:      titleHTML,
-					titleText:          titleText,
-					titleLinkHref:      titleLinkHref,
-					titleLinkClass:     titleLinkClass,
-                    authorDateAux:      authorDateAux,
-					abstract:           abstractHTML,
-					popFrameTitleText:  popFrameTitleText,
-					template:           "annotation-blockquote-inside"
+					content: {
+						originalURL:        originalURL,
+						originalURLText:    originalURLText,
+						titleHTML:          titleHTML,
+						fullTitleHTML:      titleHTML,
+						titleText:          titleText,
+						titleLinkHref:      titleLinkHref,
+						titleLinkClass:     titleLinkClass,
+						authorDateAux:      authorDateAux,
+						abstract:           abstractHTML,
+					},
+					popFrameTitleText:              popFrameTitleText,
+					popFrameTitleLinkHref:          titleLinkHref,
+					popFrameTitleOriginalLinkHref:  originalURL,
+					template:                       "annotation-blockquote-inside"
 				};
 			},
 
@@ -439,7 +458,7 @@ Annotations = { ...Annotations,
 				(do HTML cleanup, etc.).
 				*/
 			//	Called by: Annotations.dataSources.local.referenceDataFromParsedAPIResponse
-			postProcessReferenceEntry: (referenceEntry, identifier) => {
+			postProcessReferenceEntry: (referenceEntry, link = null) => {
 				//	Unwrap extraneous <div>s, if present.
 				if (   referenceEntry.firstElementChild == referenceEntry.lastElementChild
 					&& referenceEntry.firstElementChild.tagName == "DIV")
@@ -486,23 +505,16 @@ Annotations.dataSources.wikipedia = {
 	/*	The Wikipedia API only gives usable responses for most, not all,
 		Wikipedia URLs.
 	 */
-	matches: (identifier) => {
-		//	The URL() constructor demands a fully qualified URL string.
-		if (/^[\/]/.test(identifier))
-			return false;
-
-		let url = new URL(identifier);
-
-		return (   url
-				&& /(.+?)\.wikipedia\.org/.test(url.hostname)
-				&& url.pathname.startsWith("/wiki/")
-				&& !(url.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:" ]))));
+	matches: (link) => {
+		return (   /(.+?)\.wikipedia\.org/.test(link.hostname)
+				&& link.pathname.startsWith("/wiki/")
+				&& !(link.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:" ]))));
 	},
 
-	//	Called by: Annotations.processedAPIResponseForIdentifier
-	//	Called by: Annotations.sourceURLForIdentifier
-	sourceURLForIdentifier: (identifier) => {
-		annotationURL = new URL(identifier);
+	//	Called by: Annotations.processedAPIResponseForLink
+	//	Called by: Annotations.sourceURLForLink
+	sourceURLForLink: (link) => {
+		annotationURL = new URL(link.href);
 
 		let wikiPageName = fixedEncodeURIComponent(/\/wiki\/(.+?)$/.exec(decodeURIComponent(annotationURL.pathname))[1]);
 		annotationURL.pathname = `/api/rest_v1/page/mobile-sections/${wikiPageName}`;
@@ -511,21 +523,20 @@ Annotations.dataSources.wikipedia = {
 		return annotationURL;
 	},
 
-	//	Called by: Annotations.processedAPIResponseForIdentifier
+	//	Called by: Annotations.processedAPIResponseForLink
 	processAPIResponse: (response) => {
 		return JSON.parse(response);
 	},
 
 	//	Called by: Annotations.referenceDataFromParsedAPIResponse
-	referenceDataFromParsedAPIResponse: (response, identifier) => {
-		let articleURL = new URL(identifier);
-		let titleLinkHref = articleURL.href;
+	referenceDataFromParsedAPIResponse: (response, articleLink) => {
+		let titleLinkHref = articleLink.href;
 
 		let responseHTML, titleHTML, fullTitleHTML;
-		if (articleURL.hash > "") {
+		if (articleLink.hash > "") {
 			let targetSection = response["remaining"]["sections"].find(section =>
 				//	This MUST be decodeURIComponent, and NOT selectorFromHash!!!
-				section["anchor"] == decodeURIComponent(articleURL.hash).slice(1)
+				section["anchor"] == decodeURIComponent(articleLink.hash).slice(1)
 			);
 
 			/*	Check whether we have tried to load a page section which does
@@ -563,7 +574,7 @@ Annotations.dataSources.wikipedia = {
 
 					//	We must encode, because the anchor might contain quotes.
 					let urlEncodedAnchor = fixedEncodeURIComponent(section["anchor"]);
-					responseHTML += `<li><a href='${articleURL}#${urlEncodedAnchor}'>${section["line"]}</a>`;
+					responseHTML += `<li><a href='${articleLink}#${urlEncodedAnchor}'>${section["line"]}</a>`;
 
 					headingLevel = newHeadingLevel;
 				}
@@ -572,28 +583,31 @@ Annotations.dataSources.wikipedia = {
 		}
 
 		let referenceEntry = newDocument(responseHTML);
-		Annotations.dataSources.wikipedia.postProcessReferenceEntry(referenceEntry, identifier);
+		Annotations.dataSources.wikipedia.postProcessReferenceEntry(referenceEntry, link);
 		let abstractHTML = referenceEntry.innerHTML;
 
 		let titleText = newElement("SPAN", null, { innerHTML: titleHTML }).textContent;
 
 		//	Pop-frame title text. Mark sections with ‘§’ symbol.
-		let popFrameTitleHTML = (articleURL.hash > ""
+		let popFrameTitleHTML = (articleLink.hash > ""
 								 ? `${response["lead"]["displaytitle"]} &#x00a7; ${titleHTML}`
 								 : titleHTML);
 		let popFrameTitleText = newElement("SPAN", null, { innerHTML: popFrameTitleHTML }).textContent;
 
 		return {
-			titleHTML:              titleHTML,
-			fullTitleHTML:          fullTitleHTML,
-			titleText:              titleText,
-			titleLinkHref:          titleLinkHref,
-			titleLinkClass:         `title-link link-live`,
-			titleLinkIconMetadata:  `data-link-icon-type="svg" data-link-icon="wikipedia"`,
-			abstract: 		        abstractHTML,
+			content: {
+				titleHTML:              titleHTML,
+				fullTitleHTML:          fullTitleHTML,
+				titleText:              titleText,
+				titleLinkHref:          titleLinkHref,
+				titleLinkClass:         `title-link link-live`,
+				titleLinkIconMetadata:  `data-link-icon-type="svg" data-link-icon="wikipedia"`,
+				abstract: 		        abstractHTML,
+				dataSourceClass:        "wikipedia-entry",
+			},
 			popFrameTitleText:      popFrameTitleText,
+			popFrameTitleLinkHref:  titleLinkHref,
 			dataSource:		        "wikipedia",
-			dataSourceClass:        "wikipedia-entry",
 			template:               "annotation-blockquote-inside"
 		};
 	},
@@ -637,9 +651,7 @@ Annotations.dataSources.wikipedia = {
 		entry (do HTML cleanup, etc.).
 		*/
 	//	Called by: Annotations.dataSources.wikipedia.referenceDataFromParsedAPIResponse
-	postProcessReferenceEntry: (referenceEntry, identifier) => {
-		let articleURL = new URL(identifier);
-
+	postProcessReferenceEntry: (referenceEntry, articleLink) => {
 		//  Remove unwanted elements.
 		referenceEntry.querySelectorAll(Annotations.dataSources.wikipedia.extraneousElementSelectors.join(", ")).forEach(element => {
 			element.remove();
@@ -671,16 +683,16 @@ Annotations.dataSources.wikipedia = {
 		referenceEntry.querySelectorAll("a").forEach(link => {
 			//	De-linkify non-anchor self-links.
 			if (   link.hash     == ""
-				&& link.pathname == articleURL.pathname) {
+				&& link.pathname == articleLink.pathname) {
 				unwrap(link);
 				return;
 			}
 
 			//  Qualify links.
 			if (link.getAttribute("href").startsWith("#"))
-				link.pathname = articleURL.pathname;
+				link.pathname = articleLink.pathname;
 			if (link.hostname == location.hostname)
-				link.hostname = articleURL.hostname;
+				link.hostname = articleLink.hostname;
 
 			//  Mark other Wikipedia links as also being annotated.
 			if (/(.+?)\.wikipedia\.org/.test(link.hostname)) {
@@ -694,7 +706,7 @@ Annotations.dataSources.wikipedia = {
 			}
 
 			//  Mark self-links (anchorlinks within the same article).
-			if (link.pathname == articleURL.pathname)
+			if (link.pathname == articleLink.pathname)
 				link.classList.add("link-self");
 		});
 

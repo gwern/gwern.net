@@ -42,7 +42,7 @@ Extracts = { ...Extracts,
      */
     //  Called by: Extracts.targetTypeInfo (as `predicateFunctionName`)
     isLocalPageLink: (target) => {
-        return (   (   Content.contentTypes.localPage.matchesLink(target)
+        return (   (   Content.contentTypes.localPage.matches(target)
         			|| target.classList.contains("link-page"))
 				&& (   isAnchorLink(target)
 					|| target.pathname != location.pathname));
@@ -114,9 +114,7 @@ Extracts = { ...Extracts,
 			/*  Mark the pop-frame as a full page embed, and give it suitable
 				identifying classes.
 			 */
-			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame,
-														   "full-page",
-														   "page-" + target.pathname.slice(1));
+			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "full-page");
         }
 
 		//	Designate “full context” pop-frames for backlinks.
@@ -147,7 +145,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.titleForPopFrame_LOCAL_PAGE", "extracts.js", 2);
 
         let target = popFrame.spawningTarget;
-        let referenceData = Content.referenceDataForTarget(target);
+        let referenceData = Content.referenceDataForLink(target);
 
 		let popFrameTitleText, titleLinkHref;
 		if (referenceData == null) {
@@ -162,7 +160,7 @@ Extracts = { ...Extracts,
 			popFrameTitleText = popFrame.classList.contains("full-page")
 								? referenceData.popFrameTitleTextShort
 								: referenceData.popFrameTitleText;
-			titleLinkHref = referenceData.titleLinkHref;
+			titleLinkHref = referenceData.popFrameTitleLinkHref;
 		}
 
 		if (popFrame.classList.contains("backlinks")) {
@@ -187,10 +185,9 @@ Extracts = { ...Extracts,
 		/*	For local content embed pop-frames, add handler to trigger
 			transcludes in source content when they trigger in the pop-frame.
 		 */
-		let identifier = Content.targetIdentifier(target);
-		if (Content.cachedDataExists(identifier)) {
+		if (Content.cachedDataExists(target)) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Content.updateCachedContent(identifier, (content) => {
+				Content.updateCachedContent(target, (content) => {
 					Transclude.allIncludeLinksInContainer(content).filter(includeLink =>
 						includeLink.href == info.includeLink.href
 					).forEach(includeLink => {
@@ -212,17 +209,11 @@ Extracts = { ...Extracts,
 
 		popup = Extracts.preparePopFrame_LOCAL_PAGE(popup);
 
+		//  Do not spawn “full context” popup if the link is visible.
  		if (   Extracts.isFullBacklinkContextLink(target)
- 			&& popup.classList.contains("full-page") == false) {
-			//  Do not spawn “full context” popup if the link is visible.
-			let targetElement = targetElementInDocument(target, Extracts.rootDocument);
-			if (Popups.isVisible(targetElement)) {
-				return null;
-			} else {
-		        //  Mini title bar.
-				popup.classList.add("mini-title-bar");
-			}
-		}
+ 			&& popup.classList.contains("full-page") == false
+ 			&& Popups.isVisible(targetElementInDocument(target, Extracts.rootDocument)))
+			return null;
 
        /*  Designate popups spawned from section links in the the TOC (for
             special styling).
@@ -264,6 +255,10 @@ Extracts = { ...Extracts,
 		//	REAL REWRITES BEGIN HERE
 
         let target = popFrame.spawningTarget;
+
+		//	Add page body classes.
+		let referenceData = Content.referenceDataForLink(target);
+		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...referenceData.pageBodyClasses);
 
 		//	Update pop-frame title.
 		Extracts.updatePopFrameTitle(popFrame, Extracts.titleForPopFrame(popFrame));
@@ -330,7 +325,7 @@ Extracts = { ...Extracts,
 
         let target = popup.spawningTarget;
 
-		let referenceData = Content.referenceDataForTarget(target);
+		let referenceData = Content.referenceDataForLink(target);
 		if (referenceData) {
 			//	Insert page thumbnail into page abstract.
 			if (   referenceData.pageThumbnailHTML
@@ -1034,7 +1029,7 @@ Extracts.targetTypeDefinitions.insertBefore([
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalCodeFileLink: (target) => {
-    	return Content.contentTypes.localCodeFile.matchesLink(target);
+    	return Content.contentTypes.localCodeFile.matches(target);
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
@@ -1252,19 +1247,16 @@ Extracts = { ...Extracts,
         	and local code file links.)
          */
         let allTargetsInContainer = Array.from(container.querySelectorAll("a[class*='has-content']")).filter(link =>
-        	Content.contentTypeForTarget(link) != null
+        	Content.contentTypeForLink(link) != null
         );
 
         if (Extracts.popFrameProvider == Popups) {
             //  Add hover event listeners to all the chosen targets.
             allTargetsInContainer.forEach(target => {
                 target.removeContentLoadEvents = onEventAfterDelayDo(target, "mouseenter", Extracts.contentLoadHoverDelay, (event) => {
-                    //  Get the unique identifier of the content for the target.
-                    let contentIdentifier = Content.targetIdentifier(target);
-
                     //  Do nothing if the content is already loaded.
-                    if (Content.cachedDataExists(contentIdentifier) == false)
-                        Content.load(contentIdentifier);
+                    if (Content.cachedDataExists(target) == false)
+                        Content.load(target);
                 }, "mouseleave");
             });
 
@@ -1283,12 +1275,9 @@ Extracts = { ...Extracts,
             //  Add click event listeners to all the chosen targets.
             allTargetsInContainer.forEach(target => {
                 target.addEventListener("click", target.contentLoad_click = (event) => {
-                    //  Get the unique identifier of the content for the target.
-                    let contentIdentifier = Content.targetIdentifier(target);
-
                     //  Do nothing if the content is already loaded.
-                    if (Content.cachedDataExists(contentIdentifier) == false)
-                        Content.load(contentIdentifier);
+                    if (Content.cachedDataExists(target) == false)
+                        Content.load(target);
                 });
             });
 

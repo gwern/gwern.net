@@ -1,53 +1,46 @@
 Content = {
-	targetIdentifier: (target) => {
-		return target.href;
-	},
-
 	/*******************/
 	/*	Content caching.
 	 */
 
 	cachedContent: { },
 
-	cachedDataExists: (identifier) => {
-		let cachedContent = Content.cachedContentForIdentifier(identifier);
+	contentCacheKeyForLink: (link) => {
+		return Content.sourceURLsForLink(link).first.href;
+	},
+
+	cacheContentForLink: (content, link) => {
+		Content.cachedContent[Content.contentCacheKeyForLink(link)] = content;
+	},
+
+	cachedContentForLink: (link) => {
+		//	Special case for the link being to the current page.
+		if (link.pathname == location.pathname)
+			Content.load(link);
+
+		return Content.cachedContent[Content.contentCacheKeyForLink(link)];
+	},
+
+	cachedDocumentForLink: (link) => {
+		let content = Content.cachedContentForLink(link);
+		return (content && content != "LOADING_FAILED"
+				? content.document 
+				: null);
+	},
+
+	cachedDataExists: (link) => {
+		let cachedContent = Content.cachedContentForLink(link);
         return (   cachedContent != null
         		&& cachedContent != "LOADING_FAILED");
 	},
 
-	//	Convenience method.
-	cachedDocumentForLink: (link) => {
-		let identifier = Content.targetIdentifier(link);
-		let cachedContent = Content.cachedContentForIdentifier(identifier);
-		return (cachedContent
-				? cachedContent.document
-				: null);
-	},
-
-	contentCacheKeyForIdentifier: (identifier) => {
-		let url = new URL(identifier);
-		return url.origin + url.pathname;
-	},
-
-	cachedContentForIdentifier: (identifier) => {
-		let sourceURL = Content.sourceURLsForIdentifier(identifier).first;
-		if (sourceURL.pathname == location.pathname)
-			Content.load(identifier);
-
-		return Content.cachedContent[Content.contentCacheKeyForIdentifier(identifier)];
-	},
-
-	cacheContentForIdentifier: (content, identifier) => {
-		Content.cachedContent[Content.contentCacheKeyForIdentifier(identifier)] = content;
-	},
-
-	updateCachedContent: (identifier, updateFunction) => {
-		if (Content.cachedDataExists(identifier) == false)
+	updateCachedContent: (link, updateFunction) => {
+		if (Content.cachedDataExists(link) == false)
 			return;
 
-		let content = Content.cachedContentForIdentifier(identifier);
+		let content = Content.cachedContentForLink(link);
 
-		switch (Content.contentTypeForIdentifier(identifier)) {
+		switch (Content.contentTypeForLink(link)) {
 			case Content.contentTypes.localPage:
 				updateFunction(content.document);
 				break;
@@ -60,69 +53,65 @@ Content = {
 	/*	Content loading.
 	 */
 
-	sourceURLsForIdentifier: (identifier) => {
-		return Content.contentTypeForIdentifier(identifier).sourceURLsForIdentifier(identifier);
-	},
-
-	sourceURLsForTarget: (target) => {
-		return Content.sourceURLsForIdentifier(Content.targetIdentifier(target));
+	sourceURLsForLink: (link) => {
+		return Content.contentTypeForLink(link).sourceURLsForLink(link);
 	},
 
 	//	Called by: Extracts.handleIncompleteReferenceData (extracts.js)
-	waitForDataLoad: (identifier, loadHandler = null, loadFailHandler = null) => {
-		if (Content.cachedContentForIdentifier(identifier) == "LOADING_FAILED") {
+	waitForDataLoad: (link, loadHandler = null, loadFailHandler = null) => {
+		if (Content.cachedContentForLink(link) == "LOADING_FAILED") {
             if (loadFailHandler)
-            	loadFailHandler(identifier);
+            	loadFailHandler(link);
 
 			return;
-		} else if (Content.cachedContentForIdentifier(identifier)) {
+		} else if (Content.cachedContentForLink(link)) {
             if (loadHandler)
-            	loadHandler(identifier);
+            	loadHandler(link);
 
 			return;
 		}
 
 		let didLoadHandler = (info) => {
             if (loadHandler)
-            	loadHandler(identifier);
+            	loadHandler(link);
 
 			GW.notificationCenter.removeHandlerForEvent("Content.contentLoadDidFail", loadDidFailHandler);
         };
         let loadDidFailHandler = (info) => {
             if (loadFailHandler)
-            	loadFailHandler(identifier);
+            	loadFailHandler(link);
 
 			GW.notificationCenter.removeHandlerForEvent("Content.contentDidLoad", didLoadHandler);
         };
 		let options = {
         	once: true,
-        	condition: (info) => (info.identifier == identifier)
+        	condition: (info) => (info.link == link)
         };
 
         GW.notificationCenter.addHandlerForEvent("Content.contentDidLoad", didLoadHandler, options);
         GW.notificationCenter.addHandlerForEvent("Content.contentLoadDidFail", loadDidFailHandler, options);
 	},
 
-	load: (identifier, loadHandler = null, loadFailHandler = null, sourceURLsRemaining = null) => {
+	load: (link, loadHandler = null, loadFailHandler = null, sourceURLsRemaining = null) => {
         GWLog("Content.load", "content.js", 2);
 
-		sourceURLsRemaining = sourceURLsRemaining ?? Content.sourceURLsForIdentifier(identifier);
+		sourceURLsRemaining = sourceURLsRemaining ?? Content.sourceURLsForLink(link);
 		let sourceURL = sourceURLsRemaining.shift();
 
 		let processResponse = (response) => {
-			let content = Content.contentFromResponse(response, identifier, sourceURL);
+			let content = Content.contentFromResponse(response, link, sourceURL);
 
 			if (content) {
-				Content.cacheContentForIdentifier(content, identifier);
+				Content.cacheContentForLink(content, link);
 
 				GW.notificationCenter.fireEvent("Content.contentDidLoad", {
-					identifier: identifier
+					link: link
 				});
 			} else {
-				Content.cacheContentForIdentifier("LOADING_FAILED", identifier);
+				Content.cacheContentForLink("LOADING_FAILED", link);
 
 				GW.notificationCenter.fireEvent("Content.contentLoadDidFail", {
-					identifier: identifier
+					link: link
 				});
 
 				//	Send request to record failure in server logs.
@@ -136,7 +125,7 @@ Content = {
 			doAjax({
 				location: sourceURL.href,
 				onSuccess: (event) => {
-					let contentType = Content.contentTypeForIdentifier(identifier);
+					let contentType = Content.contentTypeForLink(link);
 					let httpContentTypeHeader = event.target.getResponseHeader("Content-Type");
 					if (   contentType.permittedContentTypes
 						&& (   httpContentTypeHeader == null
@@ -151,14 +140,14 @@ Content = {
 				},
 				onFailure: (event) => {
 					if (sourceURLsRemaining.length > 0) {
-						Content.load(identifier, null, null, sourceURLsRemaining);
+						Content.load(link, null, null, sourceURLsRemaining);
 						return;
 					}
 
-					Content.cacheContentForIdentifier("LOADING_FAILED", identifier);
+					Content.cacheContentForLink("LOADING_FAILED", link);
 
 					GW.notificationCenter.fireEvent("Content.contentLoadDidFail", {
-						identifier: identifier
+						link: link
 					});
 
 					//	Send request to record failure in server logs.
@@ -169,60 +158,45 @@ Content = {
 
 		//	Call any provided handlers, if/when appropriate.
 		if (loadHandler || loadFailHandler)
-			Content.waitForDataLoad(identifier, loadHandler, loadFailHandler);
+			Content.waitForDataLoad(link, loadHandler, loadFailHandler);
 	},
 
-	contentFromResponse: (response, identifier, loadURL) => {
-		let contentType = Content.contentTypeForIdentifier(identifier);
-		return contentType.contentFromResponse(response, identifier, loadURL);
+	contentFromResponse: (response, link, loadURL) => {
+		return Content.contentTypeForLink(link).contentFromResponse(response, link, loadURL);
 	},
 
 	/****************************/
 	/*	Reference data retrieval.
 	 */
 
-	referenceDataForIdentifier: (identifier) => {
-		let content = Content.cachedContentForIdentifier(identifier);
+	referenceDataForLink: (link) => {
+		let content = Content.cachedContentForLink(link);
 		if (   content == null
 			|| content == "LOADING_FAILED") {
 			return content;
 		} else {
-			return Content.referenceDataFromContent(content, identifier);
+			return Content.referenceDataFromContent(content, link);
 		}
 	},
 
-	referenceDataForTarget: (target) => {
-		return Content.referenceDataForIdentifier(Content.targetIdentifier(target));
-	},
-
-	referenceDataFromContent: (content, identifier) => {
-		let contentType = Content.contentTypeForIdentifier(identifier);
-		return contentType.referenceDataFromContent(content, identifier);
+	referenceDataFromContent: (content, link) => {
+		return Content.contentTypeForLink(link).referenceDataFromContent(content, link);
 	},
 
 	/**************************************************************/
 	/*	CONTENT TYPES
 
-		Each has five necessary members:
+		Each has four necessary members:
 
-		.matches(string) => boolean
-		.matchesLink(URL|Element) => boolean
-		.sourceURLsForIdentifier(string) => [ URL ]
-		.contentFromResponse(string, string, URL) => object
-		.referenceDataFromContent(object, string) => object
+		.matches(URL|Element) => boolean
+		.sourceURLsForLink(URL|Element) => [ URL ]
+		.contentFromResponse(string, URL|Element, URL) => object
+		.referenceDataFromContent(object, URL|Element) => object
 	 */
 
-	contentTypeForIdentifier: (identifier) => {
+	contentTypeForLink: (link) => {
 		for ([ typeName, contentType ] of Object.entries(Content.contentTypes))
-			if (contentType.matches(identifier))
-				return contentType;
-
-		return null;
-	},
-
-	contentTypeForTarget: (target) => {
-		for ([ typeName, contentType ] of Object.entries(Content.contentTypes))
-			if (contentType.matchesLink(target))
+			if (contentType.matches(link))
 				return contentType;
 
 		return null;
@@ -230,28 +204,7 @@ Content = {
 
 	contentTypes: {
 		localCodeFile: {
-			matches: (identifier) => {
-				let url = new URL(identifier);
-
-				//	Maybe it’s an aux-links link?
-				if (url.pathname.startsWith("/metadata/"))
-					return false;
-
-				//	Maybe it’s a local document link?
-				if (   url.pathname.startsWith("/doc/www/")
-                	|| (   url.pathname.startsWith("/doc/")
-                		&& url.pathname.match(/\.(html|pdf)$/i) != null))
-                	return false;
-
-				let codeFileURLRegExp = new RegExp(
-					  '\\.('
-					+ Content.contentTypes.localCodeFile.codeFileExtensions.join("|")
-					+ ')$'
-				, 'i');
-				return (url.pathname.match(codeFileURLRegExp) != null);
-			},
-
-			matchesLink: (link) => {
+			matches: (link) => {
 				//	Maybe it’s a foreign link?
 				if (link.hostname != location.hostname)
 					return false;
@@ -260,8 +213,22 @@ Content = {
 				if (Annotations.isAnnotatedLinkFull(link))
 					return false;
 
-				let identifier = Content.targetIdentifier(link);
-				return Content.contentTypes.localCodeFile.matches(identifier);
+				//	Maybe it’s an aux-links link?
+				if (link.pathname.startsWith("/metadata/"))
+					return false;
+
+				//	Maybe it’s a local document link?
+				if (   link.pathname.startsWith("/doc/www/")
+                	|| (   link.pathname.startsWith("/doc/")
+                		&& link.pathname.match(/\.(html|pdf)$/i) != null))
+                	return false;
+
+				let codeFileURLRegExp = new RegExp(
+					  '\\.('
+					+ Content.contentTypes.localCodeFile.codeFileExtensions.join("|")
+					+ ')$'
+				, 'i');
+				return codeFileURLRegExp.test(link.pathname);
 			},
 
 			/*  We first try to retrieve a syntax-highlighted version of the
@@ -270,8 +237,9 @@ Content = {
 				just embed the contents of the actual code file, in a
 				<pre>-wrapped <code> element.
 			 */
-			sourceURLsForIdentifier: (identifier) => {
-				let codeFileURL = new URL(identifier);
+			sourceURLsForLink: (link) => {
+				let codeFileURL = new URL(link.href);
+
 				codeFileURL.hash = "";
 				codeFileURL.search = "";
 
@@ -281,7 +249,7 @@ Content = {
 				return [ syntaxHighlightedCodeFileURL, codeFileURL ];
 			},
 
-			contentFromResponse: (response, identifier, loadURL) => {
+			contentFromResponse: (response, link = null, loadURL) => {
 				let codeBlock;
 				if (response.slice(0, 1) == "<") {
 					codeBlock = newDocument(response);
@@ -302,7 +270,7 @@ Content = {
 				};
 			},
 
-			referenceDataFromContent: (codePage, identifier = null) => {
+			referenceDataFromContent: (codePage, link = null) => {
 				return {
 					content: codePage.document
 				};
@@ -319,14 +287,7 @@ Content = {
 		},
 
 		localFragment: {
-			matches: (identifier) => {
-				let url = new URL(identifier);
-
-				return (   url.pathname.startsWith("/metadata/")
-						&& url.pathname.endsWith(".html"));
-			},
-
-			matchesLink: (link) => {
+			matches: (link) => {
 				//	Maybe it’s a foreign link?
 				if (link.hostname != location.hostname)
 					return false;
@@ -335,17 +296,17 @@ Content = {
 				if (Annotations.isAnnotatedLinkFull(link))
 					return false;
 
-				let identifier = Content.targetIdentifier(link);
-				return Content.contentTypes.localFragment.matches(identifier);
+				return (   link.pathname.startsWith("/metadata/")
+						&& link.pathname.endsWith(".html"));
 			},
 
-			sourceURLsForIdentifier: (identifier) => {
-				let url = new URL(identifier);
+			sourceURLsForLink: (link) => {
+				let url = new URL(link);
 
 				return [ url ];
 			},
 
-			contentFromResponse: (response, identifier, loadURL) => {
+			contentFromResponse: (response, link = null, loadURL) => {
 				let fragment = newDocument(response);
 
 				let auxLinksLinkType = AuxLinks.auxLinksLinkType(loadURL);
@@ -356,8 +317,8 @@ Content = {
 						auxLinksList.previousElementSibling.classList.add("aux-links-list-label", auxLinksLinkType + "-list-label");
 
 						if (auxLinksLinkType == "backlinks") {
-							auxLinksList.querySelectorAll("a.link-annotated-not").forEach(link => {
-								link.dataset.backlinkTargetUrl = AuxLinks.targetOfAuxLinksLink(loadURL);
+							auxLinksList.querySelectorAll("a.link-annotated-not").forEach(auxLink => {
+								auxLink.dataset.backlinkTargetUrl = AuxLinks.targetOfAuxLinksLink(loadURL);
 							});
 							auxLinksList.querySelectorAll("blockquote").forEach(blockquote => {
 								blockquote.classList.add("backlink-context");
@@ -373,7 +334,8 @@ Content = {
 				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 					source: "Content.contentTypes.localFragment.load",
 					container: fragment,
-					document: fragment
+					document: fragment,
+					loadLocation: link
 				});
 
 				return {
@@ -381,7 +343,7 @@ Content = {
 				};
 			},
 
-			referenceDataFromContent: (fragment, identifier) => {
+			referenceDataFromContent: (fragment, link = null) => {
 				return {
 					content: fragment.document
 				};
@@ -391,17 +353,7 @@ Content = {
 		},
 
 		localPage: {
-			matches: (identifier) => {
-				let url = new URL(identifier);
-
-				/*  If it has a period in it, it’s not a page, but is something
-					else, like a file of some sort, or a locally archived
-					document.
-				 */
-				return (url.pathname.match(/\./) == null);
-			},
-
-			matchesLink: (link) => {
+			matches: (link) => {
 				//	Maybe it’s a foreign link?
 				if (link.hostname != location.hostname)
 					return false;
@@ -410,17 +362,20 @@ Content = {
 				if (Annotations.isAnnotatedLinkFull(link))
 					return false;
 
-				let identifier = Content.targetIdentifier(link);
-				return Content.contentTypes.localPage.matches(identifier);
+				/*  If it has a period in it, it’s not a page, but is something
+					else, like a file of some sort, or a locally archived
+					document.
+				 */
+				return (link.pathname.match(/\./) == null);
 			},
 
-			sourceURLsForIdentifier: (identifier) => {
-				let url = new URL(identifier);
+			sourceURLsForLink: (link) => {
+				let url = new URL(link);
 
 				return [ url ];
 			},
 
-			contentFromResponse: (response, identifier, loadURL) => {
+			contentFromResponse: (response, link = null, loadURL) => {
 				let page = response
 						   ? newDocument(response)
 						   : document;
@@ -429,7 +384,7 @@ Content = {
 					page.baseLocation = loadURL;
 
 				//	Get the body classes.
-				let pageBodyClasses = page.querySelector("meta[name='page-body-classes']").getAttribute("content");
+				let pageBodyClasses = page.querySelector("meta[name='page-body-classes']").getAttribute("content").trim().split(" ");
 
 				//  Get the page title.
 				let pageTitle = page.querySelector("title").innerHTML.match(Content.contentTypes.localPage.pageTitleRegexp)[1];
@@ -483,7 +438,7 @@ Content = {
 				};
 			},
 
-			referenceDataFromContent: (page, identifier) => {
+			referenceDataFromContent: (page, link) => {
 				//  The page content is the page body plus the metadata block.
 				let pageContent = newDocument();
 				//	Add the page metadata block.
@@ -500,12 +455,11 @@ Content = {
 				pageContent.append(newDocument(page.document.querySelector("#markdownBody").childNodes));
 
 				//	Find the target element and/or containing block, if any.
-				let url = new URL(identifier);
-				let element = targetElementInDocument(url, pageContent);
+				let element = targetElementInDocument(link, pageContent);
 
 				//	Pop-frame title text.
 				let popFrameTitleTextParts = [ ];
-				if (url.pathname != location.pathname)
+				if (link.pathname != location.pathname)
 					popFrameTitleTextParts.push(page.title);
 
 				//	Section title or block id.
@@ -526,17 +480,16 @@ Content = {
 							popFrameTitleTextParts.push(nearestSection.firstElementChild.textContent);
 						}
 					} else {
-						popFrameTitleTextParts.push(url.hash);
+						popFrameTitleTextParts.push(link.hash);
 					}
 				}
 
 				return {
+					content:                 pageContent,
 					pageTitle:               page.title,
 					pageBodyClasses:         page.bodyClasses,
 					pageThumbnailHTML:       page.thumbnailHTML,
-					content:                 pageContent,
-					contentHTML:             pageContent.innerHTML,
-					titleLinkHref:           url.href,
+					popFrameTitleLinkHref:   link.href,
 					popFrameTitleText:       popFrameTitleTextParts.join(" "),
 					popFrameTitleTextShort:  popFrameTitleTextParts.first
 				}

@@ -1,15 +1,15 @@
-<[IF originalURL]>
+<[IF popFrameTitleOriginalLinkHref]>
 <a
     class="popframe-title-link"
-    title="Open <{originalURL}> in <{whichTab}> <{tabOrWindow}>."
-    href="<{originalURL}>"
+    title="Open <{popFrameTitleOriginalLinkHref}> in <{whichTab}> <{tabOrWindow}>."
+    href="<{popFrameTitleOriginalLinkHref}>"
     target="<{linkTarget}>"
         ><{popFrameTitleText}></a>
 <[ELSE]>
 <a
     class="popframe-title-link"
-    href="<{titleLinkHref}>"
-    title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>."
+    href="<{popFrameTitleLinkHref}>"
+    title="Open <{popFrameTitleLinkHref}> in <{whichTab}> <{tabOrWindow}>."
     target="<{linkTarget}>"
         ><{popFrameTitleText}></a>
 <[IFEND]>

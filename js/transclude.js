@@ -350,7 +350,7 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 			If true, a GW.contentDidLoad event is fired on the filled template.
  */
 //	(string, string|object, object) => DocumentFragment
-function fillTemplate (template, data = null, context = null, options = { }) {
+function fillTemplate(template, data = null, context = null, options = { }) {
 	if (   template == null
 		|| template == "LOADING_FAILED")
 		return null;
@@ -488,7 +488,7 @@ function synthesizeIncludeLink(link, attributes, properties) {
  */
 function loadLocationForIncludeLink(includeLink) {
     if (Transclude.isAnnotationTransclude(includeLink) == false) {
-    	contentSourceURLs = Content.sourceURLsForTarget(includeLink);
+    	contentSourceURLs = Content.sourceURLsForLink(includeLink);
     	return contentSourceURLs
 			   ? contentSourceURLs.first
 			   : includeLink.eventInfo.loadLocation;
@@ -596,7 +596,7 @@ function includeContent(includeLink, content) {
 		flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
 	let contentType = null;
 	if (   Transclude.isAnnotationTransclude(includeLink)
-		|| (   Content.contentTypes.localFragment.matchesLink(includeLink)
+		|| (   Content.contentTypes.localFragment.matches(includeLink)
 			&& /^\/metadata\/annotation\/[^\/]+$/.test(includeLink.pathname)))
 		contentType = "annotation";
 	GW.notificationCenter.fireEvent("GW.contentDidInject", {
@@ -806,9 +806,7 @@ function documentHasStyleSheet(doc, selector) {
  */
 function importStylesAfterTransclusion(includeLink, wrapper) {
 	let containingDocument = includeLink.eventInfo.document;
-	let newContentSourceDocument = (Transclude.isAnnotationTransclude(includeLink)
-									? Annotations.cachedDocumentForLink(includeLink)
-									: Content.cachedDocumentForLink(includeLink));
+	let newContentSourceDocument = Transclude.dataProviderForLink(includeLink).cachedDocumentForLink(includeLink);
 
 	if (newContentSourceDocument == null)
 		return;
@@ -1340,6 +1338,22 @@ Transclude = {
     /*  Include-link handling.
      */
 
+	dataProviderNameForLink: (includeLink) => {
+		return (Transclude.isAnnotationTransclude(includeLink)
+				? "Annotations"
+				: "Content");
+	},
+
+	dataProviderForLink: (includeLink) => {
+		return window[Transclude.dataProviderNameForLink(includeLink)];
+	},
+
+	doWhenDataProviderLoaded: (includeLink, loadHandler) => {
+		GW.notificationCenter.addHandlerForEvent(`${(Transclude.dataProviderNameForLink(includeLink))}.didLoad`, 
+												 loadHandler, 
+												 { once: true });
+	},
+
     //  Called by: Transclude.transclude
     //  Called by: Transclude.triggerTranscludesInContainer
     //  Called by: handleTranscludes (rewrite function)
@@ -1409,43 +1423,35 @@ Transclude = {
             return;
         }
 
-        /*  Check whether provider object is loaded; if not, then wait until it
-        	loads to attempt transclusion.
-         */
-        let providerObjectName = Transclude.isAnnotationTransclude(includeLink)
-        						 ? "Annotations"
-        						 : "Content";
-        if (window[providerObjectName] == null) {
+		//	Get data provider.
+		let dataProvider = Transclude.dataProviderForLink(includeLink);
+        if (dataProvider == null) {
+			/*  If data provider is not loaded, wait until it loads to attempt 
+				transclusion.
+			 */
 			includeLink.delayed = true;
-			GW.notificationCenter.addHandlerForEvent(`${providerObjectName}.didLoad`, (info) => {
+			Transclude.doWhenDataProviderLoaded(includeLink, (info) => {
 				Transclude.transclude(includeLink, true);
-			}, { once: true });
+			});
 
 			return;
         }
 
-		//	Get data provider object and data identifier.
-		let provider = window[providerObjectName];
-		let identifier = provider.targetIdentifier(includeLink);
-
 		//	Request data load, if need be.
-		if (provider.cachedDataExists(identifier) == false) {
-			provider.load(identifier);
+		if (dataProvider.cachedDataExists(includeLink) == false) {
+			dataProvider.load(includeLink);
 	        includeLink.delayed = true;
 		}
 
 		//	When data loads (or if it is already loaded), transclude.
 		let processData = (template) => {
 			//	Reference data.
-			let referenceData = Transclude.isAnnotationTransclude(includeLink)
-								? Annotations.referenceDataForTarget(includeLink)
-								: Content.referenceDataForTarget(includeLink).content;
+			let referenceData = dataProvider.referenceDataForLink(includeLink).content;
 
-			/*	If no template specified, use reference data as template.
-				(In this case, reference data should be an HTML string or a
-				 DocumentFragment.)
-			 */
-			template = template ?? referenceData;
+			//	If no template specified, use reference data as template.
+			if (   template == null
+				&& referenceData instanceof DocumentFragment)
+				template = referenceData;
 
 			//	Template fill context.
 			let context = templateDataFromHTML(includeLink);
@@ -1479,8 +1485,8 @@ Transclude = {
 								 "failed transclude template fill");
 			}
 		};
-		provider.waitForDataLoad(identifier,
-		   (identifier) => {
+		dataProvider.waitForDataLoad(includeLink,
+		   (link) => {
 		   	//	Load success handler.
 
 			/*	If a template is specified by name, then we’ll need to make sure
@@ -1490,7 +1496,7 @@ Transclude = {
 			if (includeLink.dataset.template > "") {
 				templateName = includeLink.dataset.template;
 			} else if (Transclude.isAnnotationTransclude(includeLink)) {
-				let referenceData = Annotations.referenceDataForTarget(includeLink);
+				let referenceData = Annotations.referenceDataForLink(includeLink);
 				if (referenceData.template > "")
 					templateName = referenceData.template;
 			}
@@ -1510,7 +1516,7 @@ Transclude = {
 			} else {
 				processData();
 			}
-		}, (identifier) => {
+		}, (link) => {
 		   	//	Load fail handler.
 
 			/*  If we’ve already tried and failed to load the content, we

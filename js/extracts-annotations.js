@@ -51,14 +51,14 @@ Extracts = { ...Extracts,
         GWLog("Extracts.titleForPopFrame_ANNOTATION", "extracts-annotations.js", 2);
 
         let target = popFrame.spawningTarget;
-		let referenceData = Annotations.referenceDataForTarget(target);
+		let referenceData = Annotations.referenceDataForLink(target);
 		if (referenceData == null) {
 			referenceData = {
-				titleLinkHref:     target.href,
-				originalURL:       (target.dataset.urlOriginal ?? null),
-				popFrameTitleText: (target.hostname == location.hostname
-									? target.pathname + target.hash
-									: target.href)
+				popFrameTitleLinkHref:          target.href,
+				popFrameTitleOriginalLinkHref:  (target.dataset.urlOriginal ?? null),
+				popFrameTitleText:              (target.hostname == location.hostname
+												 ? target.pathname + target.hash
+												 : target.href)
 			};
 		}
 
@@ -97,7 +97,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.rewritePopFrameContent_ANNOTATION", "extracts-annotations.js", 2);
 
         let target = popFrame.spawningTarget;
-		let referenceData = Annotations.referenceDataForTarget(target)
+		let referenceData = Annotations.referenceDataForLink(target)
 
         //  Mark annotations from non-local data sources.
         if (   referenceData
@@ -241,12 +241,9 @@ Extracts = { ...Extracts,
             //  Add hover event listeners to all the annotated targets.
             allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
                 annotatedTarget.removeAnnotationLoadEvents = onEventAfterDelayDo(annotatedTarget, "mouseenter", Extracts.annotationLoadHoverDelay, (event) => {
-                    //  Get the unique identifier of the annotation for the target.
-                    let annotationIdentifier = Annotations.targetIdentifier(annotatedTarget);
-
                     //  Do nothing if the annotation is already loaded.
-                    if (Annotations.cachedDataExists(annotationIdentifier) == false)
-                        Annotations.load(annotationIdentifier);
+                    if (Annotations.cachedDataExists(annotatedTarget) == false)
+                        Annotations.load(annotatedTarget);
                 }, "mouseleave");
             });
 
@@ -265,12 +262,9 @@ Extracts = { ...Extracts,
             //  Add click event listeners to all the annotated targets.
             allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
                 annotatedTarget.addEventListener("click", annotatedTarget.annotationLoad_click = (event) => {
-                    //  Get the unique identifier of the annotation for the target.
-                    let annotationIdentifier = Annotations.targetIdentifier(annotatedTarget);
-
                     //  Do nothing if the annotation is already loaded.
-                    if (Annotations.cachedDataExists(annotationIdentifier) == false)
-                        Annotations.load(annotationIdentifier);
+                    if (Annotations.cachedDataExists(annotatedTarget) == false)
+                        Annotations.load(annotatedTarget);
                 });
             });
 

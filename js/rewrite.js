@@ -1149,8 +1149,8 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventI
         referenceLink.classList.add("link-annotated-partial");
 
         //  Load data into Annotations.
-        Annotations.cacheAPIResponseForIdentifier(newDocument(partialAnnotation),
-                                                  Annotations.targetIdentifier(referenceLink));
+        Annotations.cacheAPIResponseForLink(newDocument(partialAnnotation),
+                                            referenceLink);
 
         //  Replace reference block contents with synthetic include-link.
         partialAnnotation.replaceChildren(synthesizeIncludeLink(referenceLink, {
