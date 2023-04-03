@@ -1885,9 +1885,10 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyListHeadings = (eventInfo) =
 			boldElement.lastTextNode.nodeValue += ":";
 		}
 
-		if (boldElement.parentElement.childNodes.length == 1
+		if (   boldElement.parentElement.childNodes.length == 1
 			&& boldElement.parentElement.tagName == "P"
 			&& boldElement.parentElement.nextElementSibling
+			&& boldElement.closest("LI") == null
 			&& (   [ "UL", "OL" ].includes(boldElement.parentElement.nextElementSibling.tagName)
 				|| boldElement.parentElement.nextElementSibling.classList.contains("columns")))
 			boldElement.parentElement.classList.add("list-heading");
