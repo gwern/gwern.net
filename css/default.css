@@ -1181,7 +1181,6 @@ figure + figure {
 .figure-inner-wrapper {
     display: block;
     margin: auto;
-    width: -moz-fit-content;
     width: fit-content;
     max-width: 100%;
 }
@@ -1214,7 +1213,6 @@ figcaption {
     line-height: 1.50;
     margin: auto;
     padding: 0.25em 0.5em calc(0.25em + 1px) 0.5em;
-    width: -moz-fit-content;
     width: fit-content;
     text-align: center;
 }
@@ -1405,7 +1403,6 @@ blockquote table table {
     overflow: visible;
 }
 .epigraph > blockquote {
-    width: -moz-fit-content;
     width: fit-content;
     margin: auto;
 }
@@ -1863,7 +1860,6 @@ section.footnotes > hr:first-child.highlighted::before {
     left: 0;
     right: 0;
     margin: auto;
-    width: -moz-fit-content;
     width: fit-content;
     z-index: 2;
     background-color: var(--GW-body-background-color);
@@ -2057,7 +2053,6 @@ section.footnotes > hr:first-child.highlighted::before {
 }
 #markdownBody .marginnote.sidenote .marginnote-inner-wrapper {
     display: block;
-    width: -moz-fit-content;
     width: fit-content;
 }
 
@@ -3265,7 +3260,6 @@ body.index-directory #footer {
     right: 4.5em;
     margin: auto;
     max-width: calc(100% - 9em);
-    width: -moz-fit-content;
     width: fit-content;
     text-align: center;
     font-family: var(--SA-image-focus-sans-serif-font-stack);
@@ -3522,7 +3516,6 @@ body.index-directory #footer {
 }
 .image-wrapper,
 .image-wrapper::after {
-    width: -moz-fit-content;
     width: fit-content;
 }
 .image-wrapper.focusable:hover::after {
@@ -4840,7 +4833,7 @@ body.index-directory #footer {
     display: flex;
     flex-flow: row;
     align-items: center;
-    width: -moz-fit-content;
+    width: fit-content;
     z-index: 1;
 }
 
@@ -5405,7 +5398,6 @@ section.highlight-fading::before {
 }
 .annotation.wikipedia-entry #Timeline-row {
     display: flex;
-    width: -moz-fit-content;
     width: fit-content;
     margin: 0.25em auto;
 }
@@ -5562,7 +5554,6 @@ ol.link-bibliography-list-compact > li::marker {
     margin: 2.5em auto 3em auto;
     position: relative;
     height: var(--box-size);
-    width: -moz-fit-content;
     width: fit-content;
     padding:
         var(--box-padding-top)

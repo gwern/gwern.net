@@ -1305,7 +1305,6 @@ div.table-wrapper {
     z-index: 1;
 }
 .table-wrapper .width-full table {
-    width: -moz-fit-content;
     width: fit-content;
     margin: 0 auto;
 }
