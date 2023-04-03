@@ -43,11 +43,11 @@ quotePath   = "metadata/today-quote.html"
 quoted :: Snippet -> String
 quoted (quote,attribution,_) = "<div class=\"epigraph\">\n<blockquote><p>" ++ typesetHtmlField quote ++ "</p>" ++ if null attribution then "" else ("\n<p>" ++ typesetHtmlField attribution ++ "</p>") ++ "</blockquote>\n</div>"
 
-linkDBPath, linkPath :: FilePath
-linkDBPath = "metadata/links.hs"
-linkPath   = "metadata/today-link.html"
-linked :: Snippet -> String
-linked (link,attribution,_) = "<div class=\"link-of-the-day\">\n<blockquote><p><a href=\"" ++ link ++ "\">" ++ typesetHtmlField attribution ++ "</a></p></blockquote>\n</div>"
+siteDBPath, sitePath :: FilePath
+siteDBPath = "metadata/sites.hs"
+sitePath   = "metadata/today-site.html"
+sited :: Snippet -> String
+sited (site,name,_) = "<div class=\"site-of-the-day\">\n<blockquote><p><a href=\"" ++ site ++ "\">" ++ typesetHtmlField name ++ "</a></p></blockquote>\n</div>"
 
 readTTDB :: FilePath -> IO TTDB
 readTTDB path = do exists <- doesFileExist path
@@ -66,23 +66,23 @@ generateSnippetAndWriteTTDB dbpath path formatter =
      unless (not $ any (\(q,_,_) -> null q) dblist) $ error $ "Fatal error: tuple database has empty first-fields? " ++ show dblist
      let db = S.fromList dblist
 
-     -- get set of usable quotes, and if there are none, reset the entire set and use that:
+     -- get set of usable items, and if there are none, reset the entire set and use that:
      let dbUnused = S.filter (\(_,_,status) -> not status) db
      let dbReset = if dbUnused /= S.empty then db else S.map snegate db
      let dbUnused' = S.filter (\(_,_,status) -> not status) dbReset
 
-     let snippet = head $ sortOn (\(q, _, _) -> length q) $ S.toList dbUnused' -- take the smallest quote, for symmetry with the annotation being largest (for links, won't matter how it's sorted, really)
+     let snippet = head $ sortOn (\(q, _, _) -> length q) $ S.toList dbUnused' -- take the smallest quote, for symmetry with the annotation being largest (for sites, won't matter how it's sorted, really)
      writeSnippet path formatter snippet
 
-     let db'' = S.insert (snegate snippet) $ S.delete snippet dbReset -- update the now-used quote
+     let db'' = S.insert (snegate snippet) $ S.delete snippet dbReset -- update the now-used item
      writeTTDB dbpath $ S.toList db''
 
  where snegate :: Snippet -> Snippet
        snegate (a,b,s) = (a,b,not s)
 
-qotd, lotd :: IO ()
+qotd, sotd :: IO ()
 qotd    = generateSnippetAndWriteTTDB   quoteDBPath quotePath quoted
-lotd    = generateSnippetAndWriteTTDB   linkDBPath  linkPath  linked
+sotd    = generateSnippetAndWriteTTDB   siteDBPath  sitePath  sited
 
 -------
 
@@ -133,22 +133,20 @@ generateAnnotationOfTheDay md dbpath annotpath formatter =
           writeAnnotDayDB dbpath db'
 
 -----------
---- link-of-the-day prioritizing
+--- site-of-the-day prioritizing
 
--- to find URLs worth considering for lotd use, , pass through a list of URLs (perhaps extracted
--- from the backlinks database) and return domains with at least `linkMin` matches. (Link icons
--- are enough work that below a certain level of prevalence, they are not worthwhile even if completely
--- transparent/self-explanatory.)
+-- to find URLs worth considering for sotd use, , pass through a list of URLs (perhaps extracted
+-- from the backlinks database) and return domains with at least `linkMin` matches.
 --
 -- The original raw results are particularly useful when piped into <https://gwern.net/haskell/lcp.hs> to
 -- get suggested prefixes/domains, or one can just look at the domains by `host`:
 sitePrioritize :: IO [T.Text]
-sitePrioritize = do lotdb <- readTTDB linkDBPath
-                    let lotdbl = map (\(u,_,_) -> T.pack u) lotdb
+sitePrioritize = do sotdb <- readTTDB siteDBPath
+                    let sotdbl = map (\(u,_,_) -> T.pack u) sotdb
                     b <- LinkBacklink.readBacklinksDB
                     let b' = M.toList $ M.map length b
                     let b'' = map (\(y,z) -> (host y,z)) $ filter (\(url,_) ->  host url `notElem` blackList &&
-                                                                                not (anyInfixT url lotdbl) &&
+                                                                                not (anyInfixT url sotdbl) &&
                                                                                 ("." `T.isInfixOf` url)) b'
                     let b''' =  M.fromListWith (+) b''
                     return $ map snd $ reverse $ sort $ filter (\(e,f) -> e >= linkMin && f /="") $ map (\(c,d) -> (d,c)) $ M.toList b'''
