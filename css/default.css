@@ -2102,16 +2102,25 @@ table {
 	margin-right: auto;
 }
 
-/* Floating tables: float small by default because if they are 'small', they don't need the full body column */
-.table-small.float-left { float: left;
-                          max-width: calc(50% - 1.5em);
-                          margin: 1.5em 1.5em 1em 0;
-                        }
-/* We may wish to alternate side for many small tables in success: */
-.table-small.float-right { float: right;
-                           max-width: calc(50% - 1.5em);
-                           margin: 1.5em 0 1em 1em;
-                         }
+/*	Floating tables.
+ */
+.table-small.float-left {
+	float: left;
+	max-width: calc(50% - 1.5em);
+	margin: 0.25em 1.5em 1em 0;
+	clear: right;
+}
+.table-small.float-right {
+	float: right;
+	max-width: calc(50% - 1.5em);
+	margin: 0.25em 0 1em 1.5em;
+	clear: left;
+}
+
+body.indented-not .table-small.float-left,
+body.indented-not .table-small.float-right {
+	margin-top: 1.25em;
+}
 
 /*=-------------------=*/
 /*= Full-width tables =*/
@@ -2131,6 +2140,8 @@ table caption {
     font-size: 1.25em;
     border-top: 2px solid var(--GW-table-caption-border-color);
     background-color: inherit;
+	-webkit-hyphens: none;
+	hyphens: none;
 }
 
 table th,

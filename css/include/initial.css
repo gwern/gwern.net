@@ -1152,31 +1152,36 @@ a code {
 p {
     margin: 0;
 }
+.abstract + p {
+	margin-top: 1em;
+}
+
 body.indented p + p,
-body.indented p + figure[class^='float-'] + p,
+body.indented p + .float-left + p,
+body.indented p + .float-right + p,
 body.indented div[class^='drop-cap-'] + p {
     text-indent: 2.5em;
 }
 @media all and (max-width: 649px) {
     body.indented p + p,
-    body.indented p + figure[class^='float-'] + p,
-    body.indented div[class^='drop-cap-'] + p,
-    body.indented .abstract + p {
+	body.indented p + .float-left + p,
+	body.indented p + .float-right + p,
+    body.indented div[class^='drop-cap-'] + p {
         text-indent: 1.75em;
     }
 }
 
 body.indented-not p + p,
-body.indented-not p + figure[class^='float-'] + p,
-body.indented-not div[class^='drop-cap-'] + p,
-body.indented-not .abstract + p {
+body.indented-not p + .float-left + p,
+body.indented-not p + .float-right + p,
+body.indented-not div[class^='drop-cap-'] + p {
     margin-top: 1em;
 }
 @media all and (max-width: 649px) {
     body.indented-not p + p,
-    body.indented-not p + figure[class^='float-'] + p,
-    body.indented-not div[class^='drop-cap-'] + p,
-    body.indented-not .abstract + p {
+	body.indented-not p + .float-left + p,
+	body.indented-not p + .float-right + p,
+    body.indented-not div[class^='drop-cap-'] + p {
         margin-top: 1em;
     }
 }
