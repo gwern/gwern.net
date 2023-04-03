@@ -419,8 +419,8 @@ a[data-link-icon='✉']::after {
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.05em;
 
-    font-weight: normal;
-    opacity: 0.95;
+    font-weight: bold;
+    opacity: 0.80;
 }
 
 a[data-link-icon='M𝐑']::after {

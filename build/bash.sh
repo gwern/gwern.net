@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-01 09:30:00 gwern"
+# When:  Time-stamp: "2023-04-02 20:54:27 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -257,13 +257,13 @@ function resize_image() {
 
   if ! [[ -f "${BASE}.${EXT}-530px.jpg" ]]; then
     echo "Creating ${BASE}.${EXT}-530px.jpg …"
-    convert "${IMAGE}" -resize 530x530 "${BASE}.${EXT}-530px.jpg"
+    convert "${IMAGE}" -resize 530x530 "$IMAGE-530px.jpg"
     compressJPG2 "${BASE}.${EXT}-530px.jpg"
   fi
 
-  if ! [[ -f "${BASE}.${EXT}-768px.${EXT}" ]]; then
-    echo "Creating ${BASE}.${EXT}-768px.${EXT} …"
-    convert "${IMAGE}" -resize 768x768 "${BASE}.${EXT}-768px.${EXT}"
-    png "${BASE}.${EXT}-768px.${EXT}"
+  if ! [[ -f "$IMAGE-768px.${EXT}" ]]; then
+    echo "Creating $IMAGE-768px.${EXT} …"
+    convert "${IMAGE}" -resize 768x768 "$$IMAGE-768px.${EXT}"
+    png "$$IMAGE-768px.${EXT}"
   fi
 }

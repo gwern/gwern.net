@@ -399,7 +399,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | aU' ["wikipedia.org", "wikimedia.org", "wiktionary.org", "wikisource.org", "wikimediafoundation.org", "stats.grok.se", "wikibooks.org", "wikiquote.org", "xtools.wmflabs.org", "www.mediawiki.org"] = aI "wikipedia" "svg" -- primary user: en.wikipedia.org, meta.wikimedia.org, en.wiktionary.org, en.wikisource.org
  | u' ".fandom.com" = aI "♡" "text" -- formerly known as Wikia, renamed to 'Fandom' and adopted a heart-based logo: <https://en.wikipedia.org/wiki/Fandom_(website)#2016%E2%80%932018:_Fandom_brand>; this is an umbrella covering all the subdomains; more specific Fandom wikis go before in the list (like MLP)
  | u' "www.wired.com" || u' "www.wired.co.uk" = aI "wired" "svg" -- an inverse "W" on a black background (Wiley is just a "W")
- | u'' "www.youtube.com" || u'' "www.youtu.be" = aI "youtube" "svg"
+ | u'' "www.youtube.com" = aI "youtube" "svg"
  | aU'' ["vimeo.com", "player.vimeo.com"] = aI "file-video" "svg"
  | u'' "www.telegraph.co.uk" = aI "the-telegraph" "svg" -- edited from <https://en.wikipedia.org/wiki/File:The_Telegraph.svg>
  | u'' "www.openphilanthropy.org" = aI "open-philanthropy" "svg"
