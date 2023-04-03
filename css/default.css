@@ -88,7 +88,7 @@
 }
 
 .collapse.expanded-not > .collapse-content-wrapper {
-    max-height: calc(  var(--collapse-toggle-top-height) 
+    max-height: calc(  var(--collapse-toggle-top-height)
     				 + var(--collapse-toggle-bottom-height));
     overflow: hidden;
 }
@@ -379,7 +379,7 @@ div.collapse.has-abstract.expanded-not > .disclosure-button .part::before {
 	margin-bottom: 0.5em;
 }
 .sourceCode.collapse.expanded-not > .collapse-content-wrapper pre {
-    max-height: calc(  var(--collapse-toggle-top-height) 
+    max-height: calc(  var(--collapse-toggle-top-height)
     				 + var(--collapse-toggle-bottom-height));
     box-sizing: border-box;
     overflow: hidden;
@@ -4174,10 +4174,10 @@ body.index-directory #footer {
 	right: calc(-1 * var(--GW-popups-popup-border-width));
 	border-color: inherit;
 	border-style: inherit;
-	border-width: 
-		0 
-		var(--GW-popups-popup-border-width) 
-		var(--GW-popups-popup-border-width) 
+	border-width:
+		0
+		var(--GW-popups-popup-border-width)
+		var(--GW-popups-popup-border-width)
 		var(--GW-popups-popup-border-width);
 	box-shadow:
 		0 -3px 0 -2px var(--GW-popups-popup-border-color),
@@ -4971,10 +4971,10 @@ body.index-directory #footer {
 	right: calc(-1 * var(--GW-popins-popin-border-width));
 	border-color: inherit;
 	border-style: inherit;
-	border-width: 
-		0 
-		var(--GW-popins-popin-border-width) 
-		var(--GW-popins-popin-border-width) 
+	border-width:
+		0
+		var(--GW-popins-popin-border-width)
+		var(--GW-popins-popin-border-width)
 		var(--GW-popins-popin-border-width);
 	box-shadow:
 		0 -3px 0 -2px var(--GW-popins-popin-border-color),
@@ -5525,10 +5525,10 @@ ol.link-bibliography-list-compact > li::marker {
     margin-bottom: 2em;
 }
 
-/*  Link of the day.
+/*  Site of the day.
  */
 
-.link-of-the-day {
+.site-of-the-day {
     --box-size: 4em;
     --box-padding-top: 1em;
     --box-padding-bottom: 3em;
@@ -5540,7 +5540,7 @@ ol.link-bibliography-list-compact > li::marker {
     padding-right: calc(var(--box-horizontal-offset) * 0.5);
 }
 
-.link-of-the-day blockquote {
+.site-of-the-day blockquote {
     --GW-link-underline-background-color: var(--GW-body-background-color);
 
     margin: 2.5em auto 3em auto;
@@ -5563,8 +5563,8 @@ ol.link-bibliography-list-compact > li::marker {
     align-items: center;
 }
 
-.link-of-the-day blockquote::before,
-.link-of-the-day blockquote::after {
+.site-of-the-day blockquote::before,
+.site-of-the-day blockquote::after {
     content: "";
     position: absolute;
     width: var(--box-total-size);
@@ -5575,19 +5575,19 @@ ol.link-bibliography-list-compact > li::marker {
     background-size: cover;
     top: 0;
 }
-.link-of-the-day blockquote::before {
+.site-of-the-day blockquote::before {
     left: 0;
 }
-.link-of-the-day blockquote::after {
+.site-of-the-day blockquote::after {
     right: 0;
     background-position: right;
 }
 
-.link-of-the-day blockquote p {
+.site-of-the-day blockquote p {
     position: relative;
     z-index: 1;
 }
-#footer .link-of-the-day blockquote p {
+#footer .site-of-the-day blockquote p {
     margin: 0;
     line-height: 1;
 }

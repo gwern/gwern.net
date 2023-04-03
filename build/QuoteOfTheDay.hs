@@ -23,7 +23,7 @@ import Text.Show.Pretty (ppShow)
 import qualified Data.Text as T (isInfixOf, pack, unpack, Text)
 import qualified Data.Map.Strict as M (toList, filterWithKey, map, fromListWith)
 import Data.List (isSuffixOf, sortOn, sort)
-import Text.Pandoc (Inline(Link,Str), runPure, writeHtml5String, Pandoc(..), nullAttr, nullMeta, Block(Div,BlockQuote,Para))
+import Text.Pandoc (Inline(Link,Str), runPure, writeHtml5String, Pandoc(..), nullMeta, Block(Div,BlockQuote,Para))
 import Data.IORef (newIORef, IORef)
 import System.IO.Unsafe as Unsafe (unsafePerformIO)
 
@@ -43,9 +43,11 @@ quotePath   = "metadata/today-quote.html"
 quoted :: Snippet -> String
 quoted (quote,attribution,_) = "<div class=\"epigraph\">\n<blockquote><p>" ++ typesetHtmlField quote ++ "</p>" ++ if null attribution then "" else ("\n<p>" ++ typesetHtmlField attribution ++ "</p>") ++ "</blockquote>\n</div>"
 
-linkDBPath, linkPath :: FilePath
-linkDBPath = "metadata/links.hs"
-linkPath   = "metadata/today-link.html"
+siteDBPath, sitePath :: FilePath
+siteDBPath = "metadata/sites.hs"
+sitePath   = "metadata/today-site.html"
+sited :: Snippet -> String
+sited (site,name,_) = "<div class=\"site-of-the-day\">\n<blockquote><p><a href=\"" ++ site ++ "\">" ++ typesetHtmlField name ++ "</a></p></blockquote>\n</div>"
 
 readTTDB :: FilePath -> IO TTDB
 readTTDB path = do exists <- doesFileExist path
@@ -64,38 +66,30 @@ generateSnippetAndWriteTTDB dbpath path formatter =
      unless (not $ any (\(q,_,_) -> null q) dblist) $ error $ "Fatal error: tuple database has empty first-fields? " ++ show dblist
      let db = S.fromList dblist
 
-     -- get set of usable quotes, and if there are none, reset the entire set and use that:
+     -- get set of usable items, and if there are none, reset the entire set and use that:
      let dbUnused = S.filter (\(_,_,status) -> not status) db
      let dbReset = if dbUnused /= S.empty then db else S.map snegate db
      let dbUnused' = S.filter (\(_,_,status) -> not status) dbReset
 
-     let snippet = head $ sortOn (\(q, _, _) -> length q) $ S.toList dbUnused' -- take the smallest quote, for symmetry with the annotation being largest (for links, won't matter how it's sorted, really)
+     let snippet = head $ sortOn (\(q, _, _) -> length q) $ S.toList dbUnused' -- take the smallest quote, for symmetry with the annotation being largest (for sites, won't matter how it's sorted, really)
      writeSnippet path formatter snippet
 
-     let db'' = S.insert (snegate snippet) $ S.delete snippet dbReset -- update the now-used quote
+     let db'' = S.insert (snegate snippet) $ S.delete snippet dbReset -- update the now-used item
      writeTTDB dbpath $ S.toList db''
 
  where snegate :: Snippet -> Snippet
        snegate (a,b,s) = (a,b,not s)
 
-aotd :: Metadata -> IO ()
-aotd md = generateAnnotationOfTheDay md annotDayDB  annotPath annotated
-qotd, lotd :: IO ()
+qotd, sotd :: IO ()
 qotd    = generateSnippetAndWriteTTDB   quoteDBPath quotePath quoted
--- it is important to run the archive pass on the annotation link for cases like Arxiv. Although this is quite ugly...
-lotd    = do am <- readArchiveMetadata
-             n <- newIORef (0::Integer)
-             generateSnippetAndWriteTTDB   linkDBPath  linkPath  (linked am n)
-
-linked :: ArchiveMetadata -> IORef Integer -> Snippet -> String
-linked a n (link,attribution,_) = Unsafe.unsafePerformIO $ do
-  lnk <- localizeLink a n $ linkIcon $ Link nullAttr [Str $ T.pack (typesetHtmlField attribution)] (T.pack link,"")
-  let htmlE = runPure $ writeHtml5String safeHtmlWriterOptions $ Pandoc nullMeta [Div ("", ["link-of-the-day"], []) [BlockQuote [Para [lnk]]]]
-  case htmlE of
-    Left err   -> error ("QuoteOfTheDay.hs: linked: failed to properly Pandoc-parse today's annotation? error:" ++ show err ++ " : " ++ show link ++ show attribution)
-    Right html -> return $ T.unpack html
+sotd    = generateSnippetAndWriteTTDB   siteDBPath  sitePath  sited
 
 -------
+
+aotd :: Metadata -> IO ()
+aotd md = do am <- readArchiveMetadata
+             n <- newIORef (1::Integer)
+             generateAnnotationOfTheDay md annotDayDB annotPath (annotated am n)
 
 -- same idea: each build, we pick an annotation which hasn't been shown before (uses are tracked in a simple Haskell DB), currently picking by what is the 'longest annotation' (as measured by raw string length) as a crude proxy for 'best', and—tag-directory style—write an `{.annotation-include-partial}` snippet for transcluding into the footer of each page after the quote-of-the-day.
 
@@ -104,12 +98,18 @@ annotDayDB = "metadata/annotations.hs"
 annotPath = "metadata/today-annotation.html"
 
 minAbstractLength :: Int
-minAbstractLength = 2000 -- at min 500, yielded 10,046 on 2023-03-08; 2000 yielded a more reasonable 3313 (still far above requirements)
+minAbstractLength = 2000 -- at >500, yielded 10,046 on 2023-03-08; >2,000 yielded a more reasonable 3,313 (still far above requirements of 1/day)
 
 type AotD = [String]
 
-annotated :: String -> String
-annotated url = "<div class=\"annotation-of-the-day\">\n<p><a href=\"" ++ url ++ "\" class=\"link-annotated include-annotation-partial backlink-not include-spinner-not icon-not\">[Annotation Of The Day]</a></p></blockquote>\n</div>"
+-- it is important to run the archive pass on the annotation link for cases like Arxiv. Although this is quite ugly...
+annotated :: ArchiveMetadata -> IORef Integer -> String -> String
+annotated a n url = Unsafe.unsafePerformIO $ do
+  lnk <- localizeLink a n $ linkIcon $ Link ("", ["include-annotation-partial", "backlink-not", "include-spinner-not"], []) [Str "Annotation Of The Day"] (T.pack url,"")
+  let htmlE = runPure $ writeHtml5String safeHtmlWriterOptions $ Pandoc nullMeta [Div ("", ["annotation-of-the-day"], []) [BlockQuote [Para [lnk]]]]
+  case htmlE of
+    Left err   -> error ("QuoteOfTheDay.hs: annotated: failed to properly Pandoc-parse today's annotation-of-the-day? error:" ++ show err ++ " : " ++ show url)
+    Right html -> return $ T.unpack html
 
 readAnnotDayDB :: FilePath -> IO AotD
 readAnnotDayDB path = do exists <- doesFileExist path
@@ -133,22 +133,20 @@ generateAnnotationOfTheDay md dbpath annotpath formatter =
           writeAnnotDayDB dbpath db'
 
 -----------
---- link-of-the-day prioritizing
+--- site-of-the-day prioritizing
 
--- to find URLs worth considering for lotd use, , pass through a list of URLs (perhaps extracted
--- from the backlinks database) and return domains with at least `linkMin` matches. (Link icons
--- are enough work that below a certain level of prevalence, they are not worthwhile even if completely
--- transparent/self-explanatory.)
+-- to find URLs worth considering for sotd use, , pass through a list of URLs (perhaps extracted
+-- from the backlinks database) and return domains with at least `linkMin` matches.
 --
 -- The original raw results are particularly useful when piped into <https://gwern.net/haskell/lcp.hs> to
 -- get suggested prefixes/domains, or one can just look at the domains by `host`:
 sitePrioritize :: IO [T.Text]
-sitePrioritize = do lotdb <- readTTDB linkDBPath
-                    let lotdbl = map (\(u,_,_) -> T.pack u) lotdb
+sitePrioritize = do sotdb <- readTTDB siteDBPath
+                    let sotdbl = map (\(u,_,_) -> T.pack u) sotdb
                     b <- LinkBacklink.readBacklinksDB
                     let b' = M.toList $ M.map length b
                     let b'' = map (\(y,z) -> (host y,z)) $ filter (\(url,_) ->  host url `notElem` blackList &&
-                                                                                not (anyInfixT url lotdbl) &&
+                                                                                not (anyInfixT url sotdbl) &&
                                                                                 ("." `T.isInfixOf` url)) b'
                     let b''' =  M.fromListWith (+) b''
                     return $ map snd $ reverse $ sort $ filter (\(e,f) -> e >= linkMin && f /="") $ map (\(c,d) -> (d,c)) $ M.toList b'''

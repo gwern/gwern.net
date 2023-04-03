@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmp
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2023-03-30 09:47:11 gwern"
+When:  Time-stamp: "2023-04-02 11:57:17 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -429,7 +429,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("([Gg]enomic [Ss]election|[Mm]olecular breeding)", "https://en.wikipedia.org/wiki/Molecular_breeding")
         , ("([Gg]eometric distribution|geometrically[ -]distributed)", "https://en.wikipedia.org/wiki/Geometric_distribution")
         , ("([Gg]roup[ -]selection(ism)?|[Mm]ulti-level selection)", "https://en.wikipedia.org/wiki/Group_selection")
-        , ("([Ii]nferotemporal \\(IT\\) [Cc]ortex|[Ii]nferotemporal [Cc]ortex)", "https://en.wikipedia.org/wiki/Inferior_temporal_gyrus")
         , ("([Ll]-)?[Tt]heanine.?", "https://en.wikipedia.org/wiki/Theanine")
         , ("([Ll]iability[ -]threshold model(s|ing)?|[Ll]iability[ -]thresholds?)", "https://en.wikipedia.org/wiki/Threshold_model#Liability_threshold_model")
         , ("([Ll]ight[ -]therapy|[Pp]hototherapy)", "https://en.wikipedia.org/wiki/Light_therapy")
@@ -595,7 +594,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Donald Knuth", "https://en.wikipedia.org/wiki/Donald_Knuth")
         , ("Douglas Engelbart", "https://en.wikipedia.org/wiki/Douglas_Engelbart")
         , ("Douglas Hofstadter", "https://en.wikipedia.org/wiki/Douglas_Hofstadter")
-        , ("Dune", "https://en.wikipedia.org/wiki/Dune_%28novel%29")
         , ("E. ?T. Jaynes", "https://en.wikipedia.org/wiki/E.T._Jaynes")
         , ("E\\. ?O\\. ?Wilson", "https://en.wikipedia.org/wiki/E._O._Wilson")
         , ("E\\. ?T\\. ?Jaynes", "https://en.wikipedia.org/wiki/Edwin_Thompson_Jaynes")
@@ -628,7 +626,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Flynn [Ee]ffect", "https://en.wikipedia.org/wiki/Flynn_effect")
         , ("Francis Fukuyama", "https://en.wikipedia.org/wiki/Francis_Fukuyama")
         , ("Frank P. Ramsey", "https://en.wikipedia.org/wiki/Frank_Ramsey_(mathematician)")
-        , ("Franz Ferdinand", "https://en.wikipedia.org/wiki/Archduke_Franz_Ferdinand_of_Austria")
         , ("FreeBSD", "https://en.wikipedia.org/wiki/FreeBSD")
         , ("Freeman Dyson", "https://en.wikipedia.org/wiki/Freeman_Dyson")
         , ("Friendship [Ii]s Optimal", "https://www.fimfiction.net/story/62074/Friendship-is-Optimal")
@@ -737,7 +734,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Unix|UNIX)", "https://en.wikipedia.org/wiki/Unix")
         , ("(Lisp programming language|Lisp language|LISP|Lisp)", "https://en.wikipedia.org/wiki/Lisp_(programming_language)")
         , ("(Haskell programming language|Haskell language|Haskell)", "https://en.wikipedia.org/wiki/Haskell")
-        , ("Lord's [Pp]aradox", "https://en.wikipedia.org/wiki/Lord%27s_paradox")
         , ("Lotka's [Ll]aw", "https://en.wikipedia.org/wiki/Lotka%27s_law")
         , ("Lucretius", "https://en.wikipedia.org/wiki/Lucretius")
         , ("Lyft", "https://en.wikipedia.org/wiki/Lyft")
@@ -822,7 +818,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("ProGANs?", "https://arxiv.org/abs/1710.10196#nvidia")
         , ("Project 100,000", "https://en.wikipedia.org/wiki/Project_100,000")
         , ("Project Xanadu", "https://en.wikipedia.org/wiki/Project_Xanadu")
-        , ("Puccini", "https://en.wikipedia.org/wiki/Giacomo_Puccini")
         , ("Quantified Self", "https://en.wikipedia.org/wiki/Quantified_Self")
         , ("QuickCheck", "https://en.wikipedia.org/wiki/QuickCheck")
         , ("R\\. ?A\\. ?Fisher", "https://en.wikipedia.org/wiki/Ronald_Fisher")
@@ -1200,7 +1195,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Tt]okusatsu", "https://en.wikipedia.org/wiki/Tokusatsu")
         , ("[Tt]ragedy of the anticommons", "https://en.wikipedia.org/wiki/Tragedy_of_the_anticommons")
         , ("[Tt]ransfer RNAs?", "https://en.wikipedia.org/wiki/Transfer_RNA")
-        , ("[Tt]ree induction", "https://en.wikipedia.org/wiki/Decision_tree_learning")
         , ("[Tt]runcation selection", "https://en.wikipedia.org/wiki/Truncation_selection")
         , ("[Vv]alue [Ii]teration [Nn]etworks?", "https://arxiv.org/abs/1602.02867#deepmind")
         , ("[Vv]alue-[Ee]quivalence", "https://arxiv.org/abs/2011.03506#deepmind")
@@ -1223,7 +1217,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Cc]itronellol", "https://en.wikipedia.org/wiki/Citronellol")
         , ("[Dd]el\\.icio\\.us", "https://en.wikipedia.org/wiki/Delicious_(website)")
         , ("[Dd]rop-?caps?", "https://en.wikipedia.org/wiki/Initial")
-        , ("[Ee]ntorhinal-hippocampal", "https://en.wikipedia.org/wiki/EC-hippocampus_system")
         , ("gMLP", "https://arxiv.org/abs/2105.08050#google")
         , ("[Gg]scan2pdf", "https://gscan2pdf.sourceforge.net/")
         , ("iGPT", "https://openai.com/blog/image-gpt/")
@@ -1239,7 +1232,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ss]ocial[- ]engineering", "https://en.wikipedia.org/wiki/Social_engineering_(security)")
         , ("[Ss]tyle[- ]transfers?", "https://arxiv.org/abs/1508.06576") -- style transfer, Gatys et al 2015
         , ("t-SNE", "https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding")
-        , ("(t-distribution|_t_-distribution)", "https://en.wikipedia.org/wiki/Student%27s_t-distribution")
         , ("textgenrnn", "https://github.com/minimaxir/textgenrnn")
         , ("torch-rnn", "https://github.com/jcjohnson/torch-rnn")
         , ("uBlock [Oo]rigin", "https://github.com/gorhill/uBlock")
