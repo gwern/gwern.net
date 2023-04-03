@@ -147,7 +147,7 @@ Extracts = { ...Extracts,
         let target = popFrame.spawningTarget;
         let referenceData = Content.referenceDataForLink(target);
 
-		let popFrameTitleText, titleLinkHref;
+		let popFrameTitleText, popFrameTitleLinkHref;
 		if (referenceData == null) {
 			popFrameTitleText = "";
 			if (target.pathname != location.pathname)
@@ -155,12 +155,12 @@ Extracts = { ...Extracts,
 			if (popFrame.classList.contains("full-page") == false)
 				popFrameTitleText += target.hash;
 
-			titleLinkHref = target.href;
+			popFrameTitleLinkHref = target.href;
 		} else {
 			popFrameTitleText = popFrame.classList.contains("full-page")
 								? referenceData.popFrameTitleTextShort
 								: referenceData.popFrameTitleText;
-			titleLinkHref = referenceData.popFrameTitleLinkHref;
+			popFrameTitleLinkHref = referenceData.popFrameTitleLinkHref;
 		}
 
 		if (popFrame.classList.contains("backlinks")) {
@@ -168,8 +168,8 @@ Extracts = { ...Extracts,
 		}
 
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
-			titleLinkHref:      titleLinkHref,
-			popFrameTitleText:  popFrameTitleText
+			popFrameTitleLinkHref:  popFrameTitleLinkHref,
+			popFrameTitleText:      popFrameTitleText
 		}, {
 			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
 			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),

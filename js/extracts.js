@@ -385,8 +385,8 @@ Extracts = {
             tab-explosions.
          */
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
-			titleLinkHref:      target.href,
-			popFrameTitleText:  titleText
+			popFrameTitleLinkHref:  target.href,
+			popFrameTitleText:      titleText
 		}, {
 			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
 			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
