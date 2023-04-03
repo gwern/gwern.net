@@ -2080,15 +2080,6 @@ section.footnotes > hr:first-child.highlighted::before {
 /* TABLES */
 /**********/
 
-h1 + .table-wrapper,
-h2 + .table-wrapper,
-h3 + .table-wrapper,
-h4 + .table-wrapper,
-h5 + .table-wrapper,
-h6 + .table-wrapper {
-    margin: 0 0 2.125em 0;
-}
-
 table {
     margin: 0;
     padding: 0;
@@ -2099,6 +2090,27 @@ table {
     border-color: var(--GW-table-border-color);
     border-width: 2px 0;
 }
+
+/*=--------------=*/
+/*= Small tables =*/
+/*=--------------=*/
+
+.table-wrapper.table-small {
+	width: fit-content;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* Floating tables: float small by default because if they are 'small', they don't need the full body column */
+.table-small.float-left { float: left;
+                          max-width: calc(50% - 1.5em);
+                          margin: 1.5em 1.5em 1em 0;
+                        }
+/* We may wish to alternate side for many small tables in success: */
+.table-small.float-right { float: right;
+                           max-width: calc(50% - 1.5em);
+                           margin: 1.5em 0 1em 1em;
+                         }
 
 /*=-------------------=*/
 /*= Full-width tables =*/
@@ -2211,8 +2223,8 @@ th.tablesorter-headerDesc:hover {
        0 0 1px var(--GW-table-sorted-column-heading-text-shadow-color);
 }
 
-/*  zebra-stripe tables (CSS3); from Twitter's bootstrap package
-    NOTE: we tried 3-cycle zebra striping tables, but didn't pass muster.
+/*  Zebra-stripe tables (CSS3); from Twitter’s bootstrap package.
+    NOTE: we tried 3-cycle zebra striping tables, but didn’t pass muster.
     */
 :not(.table-small) > table tr:nth-child(odd) td {
     background-color: var(--GW-table-zebra-stripe-alternate-row-background-color);
@@ -2222,16 +2234,16 @@ th.tablesorter-headerDesc:hover {
     outline: 1px dotted var(--GW-table-row-hover-outline-color);
 }
 
-/* Floating tables: float small by default because if they are 'small', they don't need the full body column */
-.table-small.float-left { float: left;
-                          max-width: calc(50% - 1.5em);
-                          margin: 1.5em 1.5em 1em 0;
-                        }
-/* We may wish to alternate side for many small tables in success: */
-.table-small.float-right { float: right;
-                           max-width: calc(50% - 1.5em);
-                           margin: 1.5em 0 1em 1em;
-                         }
+/*  Tables after headings.
+    */
+h1 + .table-wrapper,
+h2 + .table-wrapper,
+h3 + .table-wrapper,
+h4 + .table-wrapper,
+h5 + .table-wrapper,
+h6 + .table-wrapper {
+    margin-top: 1em;
+}
 
 /*  Tables in blockquotes.
     */
@@ -2268,35 +2280,6 @@ blockquote table td + td {
 #suppliers-prices td:nth-child(4):before,
 #suppliers-prices td:nth-child(5):before {
     content: "$";
-}
-
-/*  Horizontal scroll bar styles (for WebKit/Blink).
-    */
-pre::-webkit-scrollbar {
-    height: 16px;
-    background-color: var(--GW-pre-element-scrollbar-track-color);
-}
-pre::-webkit-scrollbar-thumb {
-    background-color: var(--GW-pre-element-scrollbar-thumb-color);
-    box-shadow:
-        0 0 0 3px var(--GW-pre-element-scrollbar-track-color) inset;
-}
-pre::-webkit-scrollbar-thumb:hover {
-    background-color: var(--GW-pre-element-scrollbar-thumb-hover-color);
-}
-@media only screen and (max-width: 649px) {
-    pre::-webkit-scrollbar {
-        height: 10px;
-    }
-}
-
-/*  Horizontal scroll bar styles (for Firefox).
-    */
-pre {
-    scrollbar-color: var(--GW-pre-element-scrollbar-thumb-color) var(--GW-pre-element-scrollbar-track-color);
-}
-pre:hover {
-    scrollbar-color: var(--GW-pre-element-scrollbar-thumb-hover-color) var(--GW-pre-element-scrollbar-track-color);
 }
 
 /***************/
@@ -2346,6 +2329,35 @@ pre code {
     margin: 0;
     border: none;
     background-color: transparent;
+}
+
+/*  Horizontal scroll bar styles (for WebKit/Blink).
+    */
+pre::-webkit-scrollbar {
+    height: 16px;
+    background-color: var(--GW-pre-element-scrollbar-track-color);
+}
+pre::-webkit-scrollbar-thumb {
+    background-color: var(--GW-pre-element-scrollbar-thumb-color);
+    box-shadow:
+        0 0 0 3px var(--GW-pre-element-scrollbar-track-color) inset;
+}
+pre::-webkit-scrollbar-thumb:hover {
+    background-color: var(--GW-pre-element-scrollbar-thumb-hover-color);
+}
+@media only screen and (max-width: 649px) {
+    pre::-webkit-scrollbar {
+        height: 10px;
+    }
+}
+
+/*  Horizontal scroll bar styles (for Firefox).
+    */
+pre {
+    scrollbar-color: var(--GW-pre-element-scrollbar-thumb-color) var(--GW-pre-element-scrollbar-track-color);
+}
+pre:hover {
+    scrollbar-color: var(--GW-pre-element-scrollbar-thumb-hover-color) var(--GW-pre-element-scrollbar-track-color);
 }
 
 /*=------------------------------------------------------------------------------------------=*/
