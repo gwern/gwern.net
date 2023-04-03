@@ -1870,6 +1870,30 @@ addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (ev
 /* MISC. */
 /*********/
 
+/**********************************************/
+/*	Rectify styling/structure of list headings.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rectifyListHeadings = (eventInfo) => {
+    GWLog("rectifyListHeadings", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("p > strong:only-child").forEach(boldElement => {
+		if (   boldElement.parentElement.childNodes.length == 2
+			&& boldElement.parentElement.firstChild == boldElement
+			&& boldElement.parentElement.lastChild.nodeType == Node.TEXT_NODE
+			&& boldElement.parentElement.lastChild.nodeValue == ":") {
+			boldElement.parentElement.lastChild.remove();
+			boldElement.lastTextNode.nodeValue += ":";
+		}
+
+		if (boldElement.parentElement.childNodes.length == 1
+			&& boldElement.parentElement.tagName == "P"
+			&& boldElement.parentElement.nextElementSibling
+			&& (   [ "UL", "OL" ].includes(boldElement.parentElement.nextElementSibling.tagName)
+				|| boldElement.parentElement.nextElementSibling.classList.contains("columns")))
+			boldElement.parentElement.classList.add("list-heading");
+	});
+}, "rewrite");
+
 /***************************************************************/
 /*  Mark the link lists on the index page, for styling purposes.
  */
@@ -1963,7 +1987,7 @@ addContentInjectHandler(GW.contentInjectHandlers.preventDropCapsOverlap = (event
 
     eventInfo.container.querySelectorAll("[class*='drop-cap-']").forEach(dropCapBlock => {
         if (dropCapBlock.nextElementSibling) {
-            if (   dropCapBlock.nextElementSibling.classList.containsAnyOf([ "columns", "collapse" ])
+            if (   dropCapBlock.nextElementSibling.classList.containsAnyOf([ "columns", "collapse", "list-heading" ])
                 || [ "SECTION", "OL", "UL" ].includes(dropCapBlock.nextElementSibling.tagName)
                 || [ "0", "0px" ].includes(getComputedStyle(dropCapBlock.nextElementSibling).borderWidth) == false)
                 dropCapBlock.classList.add("overlap-not");

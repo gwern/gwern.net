@@ -1028,6 +1028,10 @@ a:hover {
     margin: 1.25em 0 1.5em 0;
     padding: 0 0 0 var(--GW-list-left-padding);
 }
+.markdownBody .list-heading {
+	margin-top: 1.25em;
+	text-indent: 0;
+}
 .markdownBody li > ul,
 .markdownBody li > ol {
     margin: 0.5em 0;
