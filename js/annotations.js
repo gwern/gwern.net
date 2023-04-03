@@ -583,7 +583,7 @@ Annotations.dataSources.wikipedia = {
 		}
 
 		let referenceEntry = newDocument(responseHTML);
-		Annotations.dataSources.wikipedia.postProcessReferenceEntry(referenceEntry, link);
+		Annotations.dataSources.wikipedia.postProcessReferenceEntry(referenceEntry, articleLink);
 		let abstractHTML = referenceEntry.innerHTML;
 
 		let titleText = newElement("SPAN", null, { innerHTML: titleHTML }).textContent;
