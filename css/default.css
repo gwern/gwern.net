@@ -2046,7 +2046,6 @@ section.footnotes > hr:first-child.highlighted::before {
     text-align: left;
     text-indent: 0;
     -webkit-hyphens: none;
-    -moz-hyphens: none;
     hyphens: none;
     opacity: 0.85;
     z-index: 1;
@@ -2137,7 +2136,6 @@ table th {
     border-bottom: 1px solid var(--GW-table-row-horizontal-border-color);
     text-align: left;
     -webkit-hyphens: none;
-    -moz-hyphens: none;
     hyphens: none;
 }
 table td {
@@ -2302,7 +2300,6 @@ code {
     font-size: 0.9em;
     word-break: break-all;
     -webkit-hyphens: none;
-    -moz-hyphens: none;
     hyphens: none;
 }
 
@@ -2595,7 +2592,6 @@ span.backlinks a,
 span.similars a,
 span.link-bibliography a {
     -webkit-hyphens: none;
-    -moz-hyphens: none;
     hyphens: none;
 }
 
