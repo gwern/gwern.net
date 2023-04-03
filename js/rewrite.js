@@ -1422,7 +1422,7 @@ function updatePageTOC(newContent, needsProcessing = false) {
             let entry = newElement("LI");
             let entryText = section.id == "footnotes"
                             ? "Footnotes"
-                            : section.firstElementChild.textContent;
+                            : section.firstElementChild.querySelector("a").innerHTML;
             entry.innerHTML = `<a id='toc-${section.id}' href='#${fixedEncodeURIComponent(section.id)}'>${entryText}</a>`;
 
             //  Get or construct the <ul> element.
