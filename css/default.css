@@ -59,14 +59,14 @@
  */
 
 .collapse {
-	--collapse-toggle-top-height: 3rem;
-	--collapse-toggle-bottom-height: 2rem;
-	--collapse-toggle-left-width: 0.5rem;
-	--collapse-left-offset: 1em;
+    --collapse-toggle-top-height: 3rem;
+    --collapse-toggle-bottom-height: 2rem;
+    --collapse-toggle-left-width: 0.5rem;
+    --collapse-left-offset: 1em;
 
     position: relative;
     min-height: calc(  var(--collapse-toggle-top-height)
-    				 + var(--collapse-toggle-bottom-height));
+                     + var(--collapse-toggle-bottom-height));
     box-sizing: border-box;
     margin: 1em 0;
 }
@@ -74,12 +74,12 @@
 .collapse.expanded {
     margin-left: calc(-1 * var(--collapse-left-offset));
     padding-left: var(--collapse-left-offset);
-	padding-top: var(--collapse-toggle-top-height);
-	padding-bottom: var(--collapse-toggle-bottom-height);
+    padding-top: var(--collapse-toggle-top-height);
+    padding-bottom: var(--collapse-toggle-bottom-height);
 }
 
 /***************************/
-/*	Collapse block contents.
+/*  Collapse block contents.
  */
 
 .collapse.expanded > :not(.disclosure-button) {
@@ -89,15 +89,15 @@
 
 .collapse.expanded-not > .collapse-content-wrapper {
     max-height: calc(  var(--collapse-toggle-top-height)
-    				 + var(--collapse-toggle-bottom-height));
+                     + var(--collapse-toggle-bottom-height));
     overflow: hidden;
 }
 .collapse.has-abstract.expanded-not > .collapse-content-wrapper {
-	max-height: 0;
+    max-height: 0;
 }
 
 /*****************************/
-/*	Collapse block background.
+/*  Collapse block background.
  */
 
 .collapse::before {
@@ -158,28 +158,28 @@
     position: absolute;
     right: 0;
     width: 100%;
-	box-sizing: border-box;
-	display: flex;
-	align-items: stretch;
+    box-sizing: border-box;
+    display: flex;
+    align-items: stretch;
     text-decoration: underline;
     text-underline-offset: 3px;
 }
 
 .disclosure-button .part::before {
-	content: "";
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	z-index: -1;
-	background-color: var(--collapse-button-background-color);
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-color: var(--collapse-button-background-color);
     transition:
         background-color 0.1s ease;
 }
 
 .disclosure-button .part > span {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: var(--collapse-button-background-color);
     transition:
         background-color 0.1s ease;
@@ -190,48 +190,48 @@
 .disclosure-button .part.top {
     top: 0;
     height: var(--collapse-toggle-top-height);
-	justify-content: flex-end;
+    justify-content: flex-end;
 }
 
 .disclosure-button .part.top .icon {
-	width: var(--collapse-toggle-top-height);
-	height: 100%;
-	box-sizing: border-box;
-	padding: calc(var(--collapse-toggle-top-height) / 4);
+    width: var(--collapse-toggle-top-height);
+    height: 100%;
+    box-sizing: border-box;
+    padding: calc(var(--collapse-toggle-top-height) / 4);
 }
 
 .disclosure-button .part.top .icon svg {
-	height: 100%;
+    height: 100%;
 }
 .collapse.expanded-not > .disclosure-button:hover .part.top .icon svg {
-	transform: rotate(-0.25turn);
-	transition:
-		transform 1.0s ease;
+    transform: rotate(-0.25turn);
+    transition:
+        transform 1.0s ease;
 }
 .collapse.expanded > .disclosure-button .part.top .icon svg {
-	transform: rotate(-0.25turn);
+    transform: rotate(-0.25turn);
 }
 .collapse.expanded-temp:not(:hover) > .disclosure-button .part.top .icon svg {
-	transform: none;
-	transition:
-		transform 2.0s ease-in;
+    transform: none;
+    transition:
+        transform 2.0s ease-in;
 }
 .collapse.expanded-not.just-clicked > .disclosure-button:hover .part.top .icon svg {
-	transform: none;
-	transition: none;
+    transform: none;
+    transition: none;
 }
 
 .disclosure-button .part.top .label {
-	padding: 0 0 0 1.25em;
+    padding: 0 0 0 1.25em;
 }
 .collapse.expanded-not > .disclosure-button .part.top .label,
 .collapse.just-auto-expanded > .disclosure-button .part.top .label {
-	visibility: hidden;
+    visibility: hidden;
 }
 .collapse.expanded-temp:not(.just-auto-expanded) > .disclosure-button .part.top .label.fading {
-	opacity: 0;
-	transition:
-		opacity 2.0s ease-in;
+    opacity: 0;
+    transition:
+        opacity 2.0s ease-in;
 }
 
 /*  Bottom part of disclosure button.
@@ -243,7 +243,7 @@
 }
 
 .disclosure-button .part.bottom .label {
-	padding: 0 1em;
+    padding: 0 1em;
 }
 
 
@@ -251,8 +251,8 @@
 /*  Collapse summary.
  */
 .collapse.has-abstract {
-	padding-top: var(--collapse-toggle-top-height);
-	padding-bottom: var(--collapse-toggle-bottom-height);
+    padding-top: var(--collapse-toggle-top-height);
+    padding-bottom: var(--collapse-toggle-bottom-height);
 }
 
 .collapse > .abstract-collapse {
@@ -263,8 +263,8 @@
     margin-left: calc(-1 * (var(--collapse-toggle-left-width) + 2px));
 }
 .collapse > .abstract-collapse:not(.abstract) {
-	margin-top: 0.25em;
-	margin-bottom: 0.25em;
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
 }
 
 .collapse.expanded-not > .abstract-collapse.abstract > blockquote {
@@ -280,7 +280,7 @@
 /*  Collapsible sections (the <section> element).
  */
 section.collapse {
-	margin-left: calc(-1 * var(--collapse-left-offset));
+    margin-left: calc(-1 * var(--collapse-left-offset));
     padding-left: var(--collapse-left-offset);
 
     margin-top: 2.5em;
@@ -289,23 +289,23 @@ section.collapse {
 
 section.collapse.has-abstract,
 section.collapse.expanded {
-	padding-top: 0;
+    padding-top: 0;
 }
 
 section.collapse.expanded > .disclosure-button .part.top .label {
     display: none;
 }
 
-/*	Heading.
+/*  Heading.
  */
 section.collapse > :first-child {
     position: relative;
     min-height: var(--collapse-toggle-top-height);
     margin:
-    	0
-    	var(--collapse-toggle-top-height)
-    	0
-    	calc(-1 * var(--collapse-toggle-left-width));
+        0
+        var(--collapse-toggle-top-height)
+        0
+        calc(-1 * var(--collapse-toggle-left-width));
     padding: 0;
     z-index: 12;
     pointer-events: none;
@@ -326,27 +326,27 @@ section.collapse > :first-child > a::after {
 }
 
 section.collapse > h1:first-child > a {
-	top: 0.1em;
+    top: 0.1em;
 }
 
 section.collapse > h2:first-child {
-	line-height: 1.1;
+    line-height: 1.1;
 }
 section.collapse > h2:first-child::after {
     content: none;
 }
 section.collapse > h2:first-child > a {
-	top: 0.15em;
+    top: 0.15em;
 }
 
-/*	“Bare” nested sections.
+/*  “Bare” nested sections.
  */
 section > :first-child + section.collapse {
-	margin-top: 0;
+    margin-top: 0;
 }
 
 section.collapse.expanded-not > .collapse-content-wrapper {
-	max-height: 0;
+    max-height: 0;
 }
 
 /**********************************/
@@ -368,19 +368,19 @@ div.collapse.has-abstract.expanded-not > .disclosure-button .part::before {
  */
 
 .sourceCode.collapse {
-	margin-top: 1.75em;
-	margin-bottom: 1.75em;
+    margin-top: 1.75em;
+    margin-bottom: 1.75em;
 }
 .sourceCode.collapse pre {
     margin: 0;
 }
 .sourceCode.collapse.expanded .sourceCode {
-	margin-top: 0.5em;
-	margin-bottom: 0.5em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
 }
 .sourceCode.collapse.expanded-not > .collapse-content-wrapper pre {
     max-height: calc(  var(--collapse-toggle-top-height)
-    				 + var(--collapse-toggle-bottom-height));
+                     + var(--collapse-toggle-bottom-height));
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -399,7 +399,7 @@ div.collapse.has-abstract.expanded-not > .disclosure-button .part::before {
     margin-top: 1px;
 }
 .sourceCode.collapse > .disclosure-button .part.top .icon {
-	margin-right: 1px;
+    margin-right: 1px;
 }
 .sourceCode.collapse > .disclosure-button .part.bottom .label {
     margin-bottom: 1px;
@@ -421,8 +421,8 @@ div.collapse.has-abstract.expanded-not > .disclosure-button .part::before {
 }
 
 .table-wrapper.collapse.expanded .table {
-	margin-top: 0.5em;
-	margin-bottom: 0.5em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 /****************************/
@@ -430,14 +430,14 @@ div.collapse.has-abstract.expanded-not > .disclosure-button .part::before {
  */
 
 blockquote .collapse {
-	--collapse-blockquote-side-padding: 1.25em;
-	--collapse-blockquote-bottom-padding: 1em;
+    --collapse-blockquote-side-padding: 1.25em;
+    --collapse-blockquote-bottom-padding: 1em;
 }
 @media all and (max-width: 649px) {
-	blockquote .collapse {
-		--collapse-blockquote-side-padding: 1em;
-		--collapse-blockquote-bottom-padding: 0.75em;
-	}
+    blockquote .collapse {
+        --collapse-blockquote-side-padding: 1em;
+        --collapse-blockquote-bottom-padding: 0.75em;
+    }
 }
 
 blockquote .collapse,
@@ -456,11 +456,11 @@ blockquote .collapse::before {
 }
 
 blockquote .collapse > .disclosure-button {
-	--collapse-button-text-color: var(--GW-collapse-in-blockquote-disclosure-button-text-color);
+    --collapse-button-text-color: var(--GW-collapse-in-blockquote-disclosure-button-text-color);
     --collapse-button-background-color: var(--GW-collapse-in-blockquote-disclosure-button-color);
 }
 blockquote .collapse > .disclosure-button:hover {
-	--collapse-button-text-color: var(--GW-collapse-in-blockquote-disclosure-button-text-hover-color);
+    --collapse-button-text-color: var(--GW-collapse-in-blockquote-disclosure-button-text-hover-color);
     --collapse-button-background-color: var(--GW-collapse-in-blockquote-disclosure-button-hover-color);
 }
 
@@ -473,14 +473,14 @@ blockquote .collapse.has-abstract.expanded-not > .disclosure-button .part::befor
 
 /*******************************************************************/
 /*  “Aux links” in link bibliographies, directory indexes, and other
-	transcluded (rather than pop-framed) annotations.
+    transcluded (rather than pop-framed) annotations.
  */
 
 .annotation .collapse.aux-links-container {
-	--collapse-toggle-top-height: 2.25rem;
+    --collapse-toggle-top-height: 2.25rem;
 
     border-top: 1px solid var(--GW-TOC-border-color);
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 .annotation p + .collapse.aux-links-container {
     margin-top: 1.25em;
@@ -493,60 +493,60 @@ blockquote .collapse.has-abstract.expanded-not > .disclosure-button .part::befor
 }
 
 /*************************/
-/*	Per-section backlinks.
+/*  Per-section backlinks.
  */
 .collapse.section-backlinks-container {
-	--collapse-toggle-top-height: 2.75rem;
+    --collapse-toggle-top-height: 2.75rem;
 
-	margin-top: 1.25em;
-	margin-bottom: 2em;
-	margin-left: calc(-1 * var(--collapse-left-offset));
+    margin-top: 1.25em;
+    margin-bottom: 2em;
+    margin-left: calc(-1 * var(--collapse-left-offset));
     padding-left: var(--collapse-left-offset);
 }
 
 .collapse.section-backlinks-container.expanded-not > .disclosure-button .part::before {
-	opacity: 0.70;
+    opacity: 0.70;
 }
 
 .collapse.section-backlinks-container .section-backlinks {
-	margin-top: 0.5em;
+    margin-top: 0.5em;
 }
 
 .collapse.section-backlinks-container .section-backlinks > .list-heading {
-	margin-top: 0;
+    margin-top: 0;
 }
 .collapse.section-backlinks-container .section-backlinks > ul {
-	margin-top: 0.75em;
-	margin-bottom: 0.5em;
+    margin-top: 0.75em;
+    margin-bottom: 0.5em;
 }
 .collapse.section-backlinks-container .section-backlinks > ul > li:last-child > blockquote {
-	margin-bottom: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 /**********************************************************************/
-/*	“Bare content” collapses (not a section, not code, not table, etc.)
+/*  “Bare content” collapses (not a section, not code, not table, etc.)
  */
 
 .collapse.bare-content.expanded-not > .collapse-content-wrapper > p {
-	margin-left: 0.375em;
-	margin-right: 0.375em;
+    margin-left: 0.375em;
+    margin-right: 0.375em;
 }
 .collapse.bare-content.expanded-not > .collapse-content-wrapper > p:first-child {
-	margin-top: 0.125em;
+    margin-top: 0.125em;
 }
 
 /****************************************************/
-/*	Miscellaneous/general content in collapse blocks.
+/*  Miscellaneous/general content in collapse blocks.
  */
 .collapse.expanded > .collapse-content-wrapper > :last-child {
-	margin-bottom: 0.5em;
+    margin-bottom: 0.5em;
 }
 .collapse.no-abstract.expanded > .collapse-content-wrapper > p:first-child {
-	margin-top: 0.5em;
+    margin-top: 0.5em;
 }
 
 .collapse section > :first-child {
-	margin-left: 0;
+    margin-left: 0;
 }
 
 /***********************/
@@ -554,10 +554,10 @@ blockquote .collapse.has-abstract.expanded-not > .disclosure-button .part::befor
  */
 
 li > .collapse > .collapse-content-wrapper > ul {
-	margin-top: 0.125em;
+    margin-top: 0.125em;
 }
 li > .collapse.expanded > .collapse-content-wrapper > ul {
-	margin-top: 0.5em;
+    margin-top: 0.5em;
 }
 
 .collapse [class^='horizontal-rule'] {
@@ -580,7 +580,7 @@ body.indented-not .abstract-collapse + .collapse-content-wrapper > p:not([class^
 }
 
 .footnote .collapse {
-	--collapse-left-offset: 0.75em;
+    --collapse-left-offset: 0.75em;
 }
 
 
@@ -839,18 +839,18 @@ section:target > :first-child a::after {
     cursor: pointer;
 }
 #TOC .toc-collapse-toggle-button span {
-	display: flex;
+    display: flex;
     width: calc(1.4em - 2px);
-	height: 100%;
-	justify-content: center;
-	align-items: center;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
 }
 #TOC .toc-collapse-toggle-button svg {
-	width: 100%;
-	height: 100%;
-	transform: rotate(-0.25turn);
-	transition:
-		transform 0.1s ease;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-0.25turn);
+    transition:
+        transform 0.1s ease;
 }
 
 #TOC.collapsed .toc-collapse-toggle-button {
@@ -858,12 +858,12 @@ section:target > :first-child a::after {
     height: 100%;
 }
 #TOC.collapsed .toc-collapse-toggle-button svg {
-	transform: rotate(0);
+    transform: rotate(0);
 }
 
 @media only screen and (hover: hover) {
     #TOC .toc-collapse-toggle-button:hover {
-	    color: var(--GW-TOC-collapse-button-text-hover-color);
+        color: var(--GW-TOC-collapse-button-text-hover-color);
         background-color: var(--GW-TOC-collapse-button-hover-color);
         outline: 1px dotted var(--GW-TOC-collapse-button-border-hover-color);
     }
@@ -1032,8 +1032,8 @@ a:hover {
     padding: 0 0 0 var(--GW-list-left-padding);
 }
 .markdownBody .list-heading {
-	margin-top: 1.25em;
-	text-indent: 0;
+    margin-top: 1.25em;
+    text-indent: 0;
 }
 .markdownBody li > ul,
 .markdownBody li > ol {
@@ -1128,10 +1128,10 @@ body.index .markdownBody .section-link-list ul > li::before {
     list-style-type: lower-alpha;
 }
 
-/*	Specific list type overrides. Disabled for now, until/unless all source
-	files are rewritten to appropriately use generic or specific list syntax.
-	(See https://pandoc.org/MANUAL.html#extension-startnum .)
-	—SA 2023-03-25
+/*  Specific list type overrides. Disabled for now, until/unless all source
+    files are rewritten to appropriately use generic or specific list syntax.
+    (See https://pandoc.org/MANUAL.html#extension-startnum .)
+    —SA 2023-03-25
 /*
 .markdownBody ol[type='1'] {
     list-style-type: decimal;
@@ -1160,7 +1160,7 @@ body.index .markdownBody .section-link-list ul > li::before {
 }
 
 .markdownBody .aux-links-list .list-heading {
-	margin-top: 0;
+    margin-top: 0;
 }
 
 /***********/
@@ -2097,29 +2097,31 @@ table {
 /*=--------------=*/
 
 .table-wrapper.table-small {
-	width: fit-content;
-	margin-left: auto;
-	margin-right: auto;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-/*	Floating tables.
+/*  Floating small tables.
+    NOTE: we do not float small tables by default, although this is an appealing idea because so many small tables could be floated usefully, especially in popups.
+    But when tried on heavy users like /clone#mackenzie-et-al-1986 or /ab-testing, floated small tables interact badly with code blocks/paragraphs/figures. One would need more intelligence than just making them all float left (or right), so they are left unfloated and must be manually floated (usually in a left/right zig-zag).
  */
 .table-small.float-left {
-	float: left;
-	max-width: calc(50% - 1.5em);
-	margin: 0.25em 1.5em 1em 0;
-	clear: right;
+    float: left;
+    max-width: calc(50% - 1.5em);
+    margin: 0.25em 1.5em 1em 0;
+    clear: right;
 }
 .table-small.float-right {
-	float: right;
-	max-width: calc(50% - 1.5em);
-	margin: 0.25em 0 1em 1.5em;
-	clear: left;
+    float: right;
+    max-width: calc(50% - 1.5em);
+    margin: 0.25em 0 1em 1.5em;
+    clear: left;
 }
 
 body.indented-not .table-small.float-left,
 body.indented-not .table-small.float-right {
-	margin-top: 1.25em;
+    margin-top: 1.25em;
 }
 
 /*=-------------------=*/
@@ -2140,8 +2142,8 @@ table caption {
     font-size: 1.25em;
     border-top: 2px solid var(--GW-table-caption-border-color);
     background-color: inherit;
-	-webkit-hyphens: none;
-	hyphens: none;
+    -webkit-hyphens: none;
+    hyphens: none;
 }
 
 table th,
@@ -3793,8 +3795,8 @@ body.index-directory #footer {
 .popframe-body.local-code-file pre.raw-code .line:hover {
     background-color: var(--GW-raw-code-popframe-line-highlight-background-color);
     box-shadow:
-	    0  1px 0 0 var(--GW-raw-code-popframe-line-highlight-border-color),
-	    0 -1px 0 0 var(--GW-raw-code-popframe-line-highlight-border-color);
+        0  1px 0 0 var(--GW-raw-code-popframe-line-highlight-border-color),
+        0 -1px 0 0 var(--GW-raw-code-popframe-line-highlight-border-color);
 }
 .popframe-body.local-code-file pre.raw-code .line::before {
     content: counter(code-line);
@@ -3901,26 +3903,26 @@ body.index-directory #footer {
 }
 
 .popframe-body .collapse.section-backlinks-container {
-	margin-top: 1em;
-	padding-right: 0.5em;
-	border-color: var(--GW-TOC-border-color);
-	border-style: solid;
-	border-width: 1px 1px 1px 0;
+    margin-top: 1em;
+    padding-right: 0.5em;
+    border-color: var(--GW-TOC-border-color);
+    border-style: solid;
+    border-width: 1px 1px 1px 0;
 }
 .popframe-body .collapse.section-backlinks-container:last-child {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .popframe-body section .section-metadata {
-	margin-top: -0.5em;
-	margin-bottom: 1em;
-	text-align: right;
+    margin-top: -0.5em;
+    margin-bottom: 1em;
+    text-align: right;
 }
 .popframe-body section.level1 .section-metadata {
-	text-align: left;
+    text-align: left;
 }
 .popframe-body section .section-metadata + p {
-	text-indent: 0;
+    text-indent: 0;
 }
 
 /*┌─────────────────┐*/
@@ -3967,7 +3969,7 @@ body.index-directory #footer {
 
 .popup.hidden,
 .popup-body.hidden {
-	visibility: hidden;
+    visibility: hidden;
 }
 
 /*  The three nested boxes that make up a popup:
@@ -3991,7 +3993,7 @@ body.index-directory #footer {
 
 .popup {
     /*  Layout. */
-	--popups-popup-content-padding: 0.7em 0.9em 0.8em 0.9em;
+    --popups-popup-content-padding: 0.7em 0.9em 0.8em 0.9em;
 
     position: absolute;
     overflow: visible;
@@ -4000,7 +4002,7 @@ body.index-directory #footer {
     z-index: 1;
 
     /*  Styling. */
-	--popups-popup-box-shadow: 1px 2px 8px 0 var(--GW-popups-box-shadow-color);
+    --popups-popup-box-shadow: 1px 2px 8px 0 var(--GW-popups-box-shadow-color);
 
     border: var(--GW-popups-popup-border-width) double var(--GW-popups-popup-border-color);
     box-shadow: var(--popups-popup-box-shadow);
@@ -4051,14 +4053,14 @@ body.index-directory #footer {
 /*  Popup title.
     */
 .popup .popframe-title {
-	display: flex;
-	justify-content: center;
+    display: flex;
+    justify-content: center;
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.8rem;
     font-weight: bold;
     flex: 1 1 100%;
     /*  Extra 3rem padding on right to maintain centeredness despite
-    	2 extra buttons on left.
+        2 extra buttons on left.
      */
     padding: 0 4rem 0 1rem;
     white-space: nowrap;
@@ -4181,7 +4183,7 @@ body.index-directory #footer {
 /*└─────────────────────────────┘*/
 
 .popup.has-footer {
-	border-bottom-width: 0;
+    border-bottom-width: 0;
 }
 
 /*┌──────────────────────────────┐*/
@@ -4189,32 +4191,32 @@ body.index-directory #footer {
 /*└──────────────────────────────┘*/
 
 .popup .partial-annotation-append-container {
-	background-color: var(--GW-popups-popup-background-color);
-	padding: var(--popups-popup-content-padding);
-	position: absolute;
-	top: 100%;
-	left: calc(-1 * var(--GW-popups-popup-border-width));
-	right: calc(-1 * var(--GW-popups-popup-border-width));
-	border-color: inherit;
-	border-style: inherit;
-	border-width:
-		0
-		var(--GW-popups-popup-border-width)
-		var(--GW-popups-popup-border-width)
-		var(--GW-popups-popup-border-width);
-	box-shadow:
-		0 -3px 0 -2px var(--GW-popups-popup-border-color),
-		0 -4px 0 -2px var(--GW-popups-popup-background-color),
-		0 -5px 0 -2px var(--GW-popups-popup-border-color),
-		var(--popups-popup-box-shadow);
+    background-color: var(--GW-popups-popup-background-color);
+    padding: var(--popups-popup-content-padding);
+    position: absolute;
+    top: 100%;
+    left: calc(-1 * var(--GW-popups-popup-border-width));
+    right: calc(-1 * var(--GW-popups-popup-border-width));
+    border-color: inherit;
+    border-style: inherit;
+    border-width:
+        0
+        var(--GW-popups-popup-border-width)
+        var(--GW-popups-popup-border-width)
+        var(--GW-popups-popup-border-width);
+    box-shadow:
+        0 -3px 0 -2px var(--GW-popups-popup-border-color),
+        0 -4px 0 -2px var(--GW-popups-popup-background-color),
+        0 -5px 0 -2px var(--GW-popups-popup-border-color),
+        var(--popups-popup-box-shadow);
 }
 
 .popup .partial-annotation-append-container .data-field {
-	display: inline;
+    display: inline;
 }
 
 .popup .partial-annotation-append-container .data-field.title {
-	margin-right: 0.25em;
+    margin-right: 0.25em;
 }
 
 /*┌────────────────────┐*/
@@ -4974,11 +4976,11 @@ body.index-directory #footer {
 /*└─────────────────────────────┘*/
 
 .popin.has-footer {
-	border-bottom-width: 0;
+    border-bottom-width: 0;
 }
 
 .popin.has-footer .popin-footer-bar {
-	display: none;
+    display: none;
 }
 
 /*┌──────────────────────────────┐*/
@@ -4986,31 +4988,31 @@ body.index-directory #footer {
 /*└──────────────────────────────┘*/
 
 .popin .partial-annotation-append-container {
-	background-color: var(--GW-popins-popin-background-color);
-	padding: var(--popins-popin-content-padding);
-	position: absolute;
-	top: 100%;
-	left: calc(-1 * var(--GW-popins-popin-border-width));
-	right: calc(-1 * var(--GW-popins-popin-border-width));
-	border-color: inherit;
-	border-style: inherit;
-	border-width:
-		0
-		var(--GW-popins-popin-border-width)
-		var(--GW-popins-popin-border-width)
-		var(--GW-popins-popin-border-width);
-	box-shadow:
-		0 -3px 0 -2px var(--GW-popins-popin-border-color),
-		0 -4px 0 -2px var(--GW-popins-popin-background-color),
-		0 -5px 0 -2px var(--GW-popins-popin-border-color);
+    background-color: var(--GW-popins-popin-background-color);
+    padding: var(--popins-popin-content-padding);
+    position: absolute;
+    top: 100%;
+    left: calc(-1 * var(--GW-popins-popin-border-width));
+    right: calc(-1 * var(--GW-popins-popin-border-width));
+    border-color: inherit;
+    border-style: inherit;
+    border-width:
+        0
+        var(--GW-popins-popin-border-width)
+        var(--GW-popins-popin-border-width)
+        var(--GW-popins-popin-border-width);
+    box-shadow:
+        0 -3px 0 -2px var(--GW-popins-popin-border-color),
+        0 -4px 0 -2px var(--GW-popins-popin-background-color),
+        0 -5px 0 -2px var(--GW-popins-popin-border-color);
 }
 
 .popin .partial-annotation-append-container .data-field {
-	display: inline;
+    display: inline;
 }
 
 .popin .partial-annotation-append-container .data-field.title {
-	margin-right: 0.25em;
+    margin-right: 0.25em;
 }
 
 /*┌────────────────────┐*/
@@ -5399,13 +5401,13 @@ section.highlight-fading::before {
     padding: 0 0 0 1.5em;
 }
 .annotation.wikipedia-entry .quotebox-title {
-	text-align: center;
-	font-weight: bold;
-	font-size: 1.25em;
-	margin: -0.125em 0 0.25em 0;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.25em;
+    margin: -0.125em 0 0.25em 0;
 }
 .annotation.wikipedia-entry .quotebox-cite {
-	margin-top: 0.5em;
+    margin-top: 0.5em;
 }
 .annotation.wikipedia-entry > figure.float-right {
     margin: 0.125em 0 0.75em 1.5em;
@@ -5485,7 +5487,7 @@ section.highlight-fading::before {
  */
 
 .annotation .aux-links-append {
-	margin-top: 0.5em;
+    margin-top: 0.5em;
     padding-left: 0;
     padding-left: 2px;
     padding-bottom: 0.125em;
@@ -5509,7 +5511,7 @@ section.highlight-fading::before {
 }
 
 .annotation .aux-links-append ul {
-	margin-bottom: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 /*  “Aux links” in link bibliographies, directory indexes, and other transcluded
@@ -6165,10 +6167,10 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 }
 @media all and (min-width: 650px) {
     .markdownBody a.targeted,
-	.markdownBody a:not(.footnote-ref).highlighted {
+    .markdownBody a:not(.footnote-ref).highlighted {
         height: 1.5em;
     }
-    /*	Correct off-by-one-pixel error in backlinks block context.
+    /*  Correct off-by-one-pixel error in backlinks block context.
      */
     .markdownBody blockquote a.targeted.has-content .indicator-hook::before {
         background-position:
