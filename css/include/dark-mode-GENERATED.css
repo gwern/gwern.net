@@ -378,11 +378,18 @@ figure img[src$=".svg"] {
 /*	Audio elements don’t change color in dark mode, so their hover styles need
 	adjusted.
  */
-figure audio:hover {
+.markdownBody figure audio:hover {
     border-color: var(--GW-figure-outline-color);
     box-shadow:
         0 0 4px 0 currentColor inset,
         0 0 4px 0 currentColor;
+}
+/*  Special styles for special browsers.
+	*/
+@supports (-moz-user-focus: normal) {
+	.markdownBody figure audio {
+	    border-color: var(--GW-figure-outline-color);
+	}
 }
 
 /*	Create a ‘footer’ at the bottom of pages which looks like ‘—————𝔊—————’,

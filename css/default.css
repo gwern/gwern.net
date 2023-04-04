@@ -1230,6 +1230,14 @@ figure audio {
     box-sizing: border-box;
     border: 1px solid transparent;
 }
+/*  Special styles for special browsers.
+	*/
+@supports (-moz-user-focus: normal) {
+	figure audio {
+		height: 42px;
+		border-radius: 21px;
+	}
+}
 figure audio:hover {
     border-color: var(--GW-figure-outline-color);
     box-shadow:
@@ -2851,6 +2859,14 @@ span.link-bibliography a {
 .markdownBody .columns.figures figure video,
 .markdownBody .columns.figures figure audio {
 	max-width: 100%;
+}
+
+/*  Special styles for special browsers.
+	*/
+@supports (-moz-user-focus: normal) {
+	.markdownBody .columns.figures figcaption {
+		line-height: initial;
+	}
 }
 
 
