@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-03-29 17:06:06 gwern"
+When: Time-stamp: "2023-04-03 20:56:01 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -267,7 +267,7 @@ thumbnailSmallTransform d = field d $ \item -> do
                     Just img -> return $ thumbnailSmall img
 
 thumbnailSmall :: String -> String
-thumbnailSmall = (++"-530px.jpg")
+thumbnailSmall i = if not (".jpg" `isSuffixOf` i || ".png" `isSuffixOf` i) then i else (i ++ "-530px.jpg")
 
 -- should backlinks be in the metadata? We skip backlinks for newsletters & indexes (excluded from the backlink generation process as well) due to lack of any value of looking for backlinks to hose.
 -- HACK: uses unsafePerformIO. Not sure how to check up front without IO... Read the backlinks DB and thread it all the way through `postCtx`, and `main`?

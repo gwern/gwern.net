@@ -4568,7 +4568,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.torproject.org/download/"
             , "https://www.torservers.net/donate.html"
             , "https://www.townandcountrymag.com/society/a12108750/personal-protection-dogs/"
-            , "https://www.treasurydirect.gov/govt/reports/pd/histdebt/histdebt_histo5.htm"
+            , "https://fiscaldata.treasury.gov/datasets/historical-debt-outstanding/"
             , "https://www.tryhaskell.org/"
             , "https://www.tuftandneedle.com/"
             , "https://www.tweaktown.com/news/32703/industry-analyst-still-unsure-of-the-significance-of-hynix-fire/index.html"

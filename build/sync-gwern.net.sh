@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-03 10:56:01 gwern"
+# When:  Time-stamp: "2023-04-03 22:14:38 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -85,7 +85,7 @@ else
           s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber';
 
           ## HTML/Markdown formatting:
-          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s '530px.jpg-530px.jpg' '530px.jpg'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' '';
+          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s '530px.jpg-530px.jpg' '530px.jpg'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' ''; s '.svg-530px.jpg' '.svg';
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
@@ -336,7 +336,7 @@ else
     ## eg. './2012-election.page \n...\n ./doc/cs/cryptography/1955-nash.page \n...\n ./newsletter/2022/09.page \n...\n ./review/mcnamara.page \n...\n ./wikipedia-and-knol.page \n...\n ./zeo/zma.page'
     PAGES="$(find . -type f -name "*.page" | grep -F --invert-match -e '_site/' -e 'index' | sort -u)"
     # essays+tags+annotations+similars+backlinks:
-    # eg "_site/2012-election _site/2014-spirulina _site/3-grenades ... _site/doc/ai/text-style-transfer/index ... _site/doc/anime/2010-sarrazin ... _site/fiction/erl-king ... _site/lorem-admonition ... _site/newsletter/2013/12 ... _site/note/attention ... _site/review/umineko ... _site/zeo/zma"
+    # eg. "_site/2012-election _site/2014-spirulina _site/3-grenades ... _site/doc/ai/text-style-transfer/index ... _site/doc/anime/2010-sarrazin ... _site/fiction/erl-king ... _site/lorem-admonition ... _site/newsletter/2013/12 ... _site/note/attention ... _site/review/umineko ... _site/zeo/zma"
     PAGES_ALL="$(find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotation/ -type f -name '*.html' | sort)"
     λ(){
          echo "$PAGES_ALL" | xargs grep -F -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
@@ -469,6 +469,9 @@ else
 
     λ(){ ge -e '<div class="admonition .*">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' -e 'class="epigraph>' $PAGES; }
     wrap λ "Broken admonition paragraph or epigraph in Markdown."
+
+    λ(){ ge -e '^   - ' $PAGES; }
+    wrap λ "Markdown formatting problem: use of 3-space indented sub-list items instead of 4-space?"
 
     λ(){ ge -e ' a [aei]' $PAGES | grep -F --invert-match -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/'; }
     wrap λ "Grammar: 'a' → 'an'?"
@@ -610,6 +613,9 @@ else
 
     λ(){ find ./ -type f -wholename '*[^-a-zA-Z0-9_./~%#]*' | grep -F -v -e 'cattleya幻想写景' -e '緑華野菜子'; }
     wrap λ "Malformed filenames: dangerous characters in them?"
+
+    λ(){ find ./ -type f | grep -F -v -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.page' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' -e '-530px.jpg' -e '-768px.jpg' -e '-768px.png' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | grep -E -v -e '^ \+1 ' | sort --numeric-sort; }
+    wrap λ "File base names are preferably globally-unique, to avoid issues with duplicate search results and clashing link IDs."
 
     λ(){
         set +e;

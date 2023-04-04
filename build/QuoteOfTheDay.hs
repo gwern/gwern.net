@@ -1,6 +1,6 @@
 module QuoteOfTheDay where
 
--- A simple 2-tuple database for storing text snippets which can be transcluded. The initial use of this was for 'quote of the day' snippet generation.
+-- A simple 3-tuple database for storing text snippets which can be transcluded (with usage variable). The initial use of this was for 'quote of the day' snippet generation.
 --
 -- 'Quote of the day' is an old website feature where, for visitors' edification or amusement, a random quote from a list of quotes would be display, often in the website footer or homepage.
 -- An example is <https://en.wikiquote.org/wiki/Wikiquote:Quote_of_the_day> which is transcluded in the middle of <https://en.wikiquote.org/wiki/Main_Page>, or <https://web.archive.org/web/20150410044208/http://bbs.stardestroyer.net/SiteBanner.php?display=history>.
