@@ -3655,6 +3655,10 @@ body.index-directory #footer {
     margin-bottom: calc(1em/9);
 }
 
+.popframe-body pre {
+    max-height: unset;
+}
+
 .popframe-body > hr:first-child {
     display: none;
 }
