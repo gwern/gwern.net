@@ -1082,6 +1082,7 @@ a:hover {
     display: block;
     left: -1.375em;
     width: 0.75em;
+    padding: 1px 0 0 0;
 }
 
 .markdownBody ul > li::before,
@@ -1122,7 +1123,7 @@ body.index .markdownBody .section-link-list ul > li::before {
     z-index: 1;
     display: block;
     left: -2.5em;
-    width: 2.25em;
+    width: 2.125em;
 	text-align: right;
 }
 
