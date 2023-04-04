@@ -1050,11 +1050,6 @@ a:hover {
     margin: 0.5em 0 0 0;
 }
 
-.markdownBody ul > li::before {
-    position: absolute;
-    z-index: 1;
-}
-
 .markdownBody :not(ul):not(ol) > li {
     list-style-type: none;
 }
@@ -1082,6 +1077,8 @@ a:hover {
 /*=-----------------------=*/
 /* NOTE: should be able to simplify list markers ~2026 using ::marker, see https://web.dev/css-marker-pseudo-element/ https://www.caniuse.com/css-marker-pseudo */
 .markdownBody ul > li::before {
+    position: absolute;
+    z-index: 1;
     display: block;
     left: -1.375em;
     width: 0.75em;
@@ -1112,20 +1109,34 @@ body.index .markdownBody .section-link-list ul > li::before {
 /*= Numbered list markers =*/
 /*=-----------------------=*/
 
-.markdownBody ol,
-.markdownBody ol ol ol ol {
-    list-style-type: decimal;
+.markdownBody ol {
+	counter-reset: list-item;
 }
-.markdownBody ol li::marker {
-    font-feature-settings: 'onum';
+
+.markdownBody ol > li {
+	counter-increment: list-item;
 }
-.markdownBody ol ol,
-.markdownBody ol ol ol ol ol {
-    list-style-type: upper-roman;
+
+.markdownBody ol > li::before {
+    position: absolute;
+    z-index: 1;
+    display: block;
+    left: -2.5em;
+    width: 2.25em;
+	text-align: right;
 }
-.markdownBody ol ol ol,
-.markdownBody ol ol ol ol ol ol {
-    list-style-type: lower-alpha;
+
+.markdownBody ol > li::before,
+.markdownBody ol ol ol ol > li::before {
+	content: counter(list-item, decimal) ".";
+}
+.markdownBody ol ol > li::before,
+.markdownBody ol ol ol ol ol > li::before {
+	content: counter(list-item, upper-roman) ".";
+}
+.markdownBody ol ol ol > li::before,
+.markdownBody ol ol ol ol ol ol > li::before {
+	content: counter(list-item, lower-alpha) ".";
 }
 
 /*  Specific list type overrides.
@@ -1136,20 +1147,20 @@ body.index .markdownBody .section-link-list ul > li::before {
     inside a list (the list of footnotes), an ordered list in a footnote would show up as Roman numerals or Latin letters
     instead of the expected Arabic numerals (because of the alternating auto-styles above). Which is weird & unexpected!
 */
-.markdownBody ol[type='1'] {
-    list-style-type: decimal;
+.markdownBody ol[type='1'] > li::before {
+    content: counter(list-item, decimal) ".";
 }
-.markdownBody ol[type='a'] {
-    list-style-type: lower-alpha;
+.markdownBody ol[type='a'] > li::before {
+    content: counter(list-item, lower-alpha) ".";
 }
-.markdownBody ol[type='A'] {
-    list-style-type: upper-alpha;
+.markdownBody ol[type='A'] > li::before {
+    content: counter(list-item, upper-alpha) ".";
 }
-.markdownBody ol[type='i'] {
-    list-style-type: lower-roman;
+.markdownBody ol[type='i'] > li::before {
+    content: counter(list-item, lower-roman) ".";
 }
-.markdownBody ol[type='I'] {
-    list-style-type: upper-roman;
+.markdownBody ol[type='I' > li::before] {
+    content: counter(list-item, upper-roman) ".";
 }
 
 /*=------------------=*/
