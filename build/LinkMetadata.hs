@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-04-01 21:11:00 gwern"
+When:  Time-stamp: "2023-04-03 22:21:59 gwern"
 License: CC-0
 -}
 
@@ -146,18 +146,18 @@ updateGwernEntry x@(path,(title,author,date,doi,tags,_)) = if False then return 
 -- read the annotation base (no checks, >8× faster)
 readLinkMetadata :: IO Metadata
 readLinkMetadata = do
-             custom  <- readYaml "metadata/full.yaml"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
+             full  <- readYaml "metadata/full.yaml"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
              half <- readYaml "metadata/half.yaml" -- tagged but not handwritten/cleaned-up
              auto    <- readYaml "metadata/auto.yaml"    -- auto-generated cached definitions; can be deleted if gone stale
              -- merge the hand-written & auto-generated link annotations, and return:
-             let final = M.union (M.fromList custom) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'custom' overrides 'half' overrides 'half' overrides 'auto'
+             let final = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'half' overrides 'auto'
              return final
 
 -- read the annotation database, and do extensive semantic & syntactic checks for errors/duplicates:
 readLinkMetadataAndCheck :: IO Metadata
 readLinkMetadataAndCheck = do
              -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
-             custom <- readYaml "metadata/full.yaml"
+             full <- readYaml "metadata/full.yaml"
 
              -- Quality checks:
              -- requirements:
@@ -168,44 +168,44 @@ readLinkMetadataAndCheck = do
              -- - DOIs are optional since they usually don't exist, and non-unique (there might be annotations for separate pages/anchors for the same PDF and thus same DOI; DOIs don't have any equivalent of `#page=n` I am aware of unless the DOI creator chose to mint such DOIs, which they never (?) do). DOIs sometimes use hyphens and so are subject to the usual problems of em/en-dashes sneaking in by 'smart' systems screwing up.
              -- - tags are optional, but all tags should exist on-disk as a directory of the form "doc/$TAG/"
              -- - annotations must exist and be unique inside full.yaml (overlap in auto.yaml can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
-             let urlsC = map fst custom
+             let urlsC = map fst full
              let normalizedUrlsC = map (replace "https://" "" . replace "http://" "") urlsC
              when (length (nub (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "full.yaml: Duplicate URLs! " ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
 
-             let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,ts,_)) -> ts) custom
+             let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,ts,_)) -> ts) full
 
-             let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> anyInfix doi ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'"] || "http" `isInfixOf` doi) custom in
+             let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> anyInfix doi ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'"] || "http" `isInfixOf` doi) full in
                  unless (null badDoisDash) $ error $ "full.yaml: Bad DOIs (invalid punctuation in DOI): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
              -- Thus far, I have not run into any real DOIs which omit numbers, so we'll include that as a check for accidental tags inserted into the DOI field.
-             let badDois = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else doi `elem` tagsAllC || head doi `elem` ['a'..'z'] || '/' `notElem` doi || null ("0123456789" `intersect` doi)) custom in
+             let badDois = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else doi `elem` tagsAllC || head doi `elem` ['a'..'z'] || '/' `notElem` doi || null ("0123456789" `intersect` doi)) full in
                unless (null badDois) $ error $ "full.yaml: Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
 
-             let emptyCheck = filter (\(u,(t,a,_,_,_,s)) ->  "" `elem` [u,t,a,s]) custom
+             let emptyCheck = filter (\(u,(t,a,_,_,_,s)) ->  "" `elem` [u,t,a,s]) full
              unless (null emptyCheck) $ error $ "full.yaml: Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
 
-             let annotations = map (\(_,(_,_,_,_,_,s)) -> s) custom in
+             let annotations = map (\(_,(_,_,_,_,_,s)) -> s) full in
                when (length (nub (sort annotations)) /= length annotations) $ error $
                "full.yaml:  Duplicate annotations: " ++ unlines (annotations \\ nubOrd annotations)
 
              -- intermediate link annotations: not finished, like 'full.yaml' entries, but also not fully auto-generated.
              -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such half annotations can't be put into 'full.yaml' without destroying all of the checks' validity.
              half <- readYaml "metadata/half.yaml"
-             let (customPaths,halfPaths) = (map fst custom, map fst half)
-             let redundantHalfs = customPaths `intersect` halfPaths
+             let (fullPaths,halfPaths) = (map fst full, map fst half)
+             let redundantHalfs = fullPaths `intersect` halfPaths
              unless (null redundantHalfs) (printRed "Redundant entries in half.yaml & full.yaml: " >> printGreen (show redundantHalfs))
 
-             let urlsCP = map fst (custom ++ half)
+             let urlsCP = map fst (full ++ half)
              let files = map (takeWhile (/='#') . tail) $ filter (\u -> head u == '/') urlsCP
              Par.mapM_ (\f -> let f' = if '.' `elem` f then f else f ++ ".page" in
                                     do exist <- doesFileExist f'
-                                       unless exist $ printRed ("Custom annotation error: file does not exist? " ++ f ++ " (checked file name: " ++ f' ++ ")")) files
+                                       unless exist $ printRed ("Full annotation error: file does not exist? " ++ f ++ " (checked file name: " ++ f' ++ ")")) files
 
              -- auto-generated cached definitions; can be deleted if gone stale
-             rewriteLinkMetadata half custom "metadata/auto.yaml" -- do auto-cleanup  first
+             rewriteLinkMetadata half full "metadata/auto.yaml" -- do auto-cleanup  first
              auto <- readYaml "metadata/auto.yaml"
              -- merge the hand-written & auto-generated link annotations, and return:
-             let final = M.union (M.fromList custom) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'custom' overrides 'half' overrides 'auto'
+             let final = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'auto'
              let finalL = M.toList final
 
              let urlsFinal = M.keys final
@@ -268,7 +268,7 @@ readLinkMetadataAndCheck = do
                                                          in any ((fileTag++"/") `isPrefixOf`) tags) final
              unless (null tagIsNarrowerThanFilename) $ printRed "Files whose tags are more specific than their path: " >> printGreen (unlines $ map (\(f',(t',tag')) -> t' ++ " : " ++ f' ++ " " ++ unwords tag') $ M.toList tagIsNarrowerThanFilename)
 
-             -- check tags (not just custom but all of them, including halfs)
+             -- check tags (not just full but all of them, including halfs)
              let tagsSet = sort $ nubOrd $ concat $ M.elems $ M.map (\(_,_,_,_,tags,_) -> tags) $ M.filter (\(t,_,_,_,_,_) -> t /= "") final
              tagsAll <- listTagsAll
              let tagsBad = tagsSet \\ tagsAll
@@ -288,16 +288,16 @@ readLinkMetadataAndCheck = do
              return final
 
 -- return the n most recent/newest annotations, in terms of created, not publication date.
--- HACK: Because we do not (yet) track annotation creation date, we guess at it. *Usually* a new annotation is appended to the end of custom.yaml/half.yaml, and so the newest n are the last n from custom+half. (Auto.yaml is automatically sorted to deduplicate, erasing the temporal order of additions; however, this is not a big loss, as most auto.yaml entries which have a generated annotation worth reading would've been created by `gwtag`ing a link, which would put them into half.yaml instead.)
+-- HACK: Because we do not (yet) track annotation creation date, we guess at it. *Usually* a new annotation is appended to the end of full.yaml/half.yaml, and so the newest n are the last n from full+half. (Auto.yaml is automatically sorted to deduplicate, erasing the temporal order of additions; however, this is not a big loss, as most auto.yaml entries which have a generated annotation worth reading would've been created by `gwtag`ing a link, which would put them into half.yaml instead.)
 readLinkMetadataNewest :: Int -> IO Metadata
-readLinkMetadataNewest n = do custom  <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readYaml "metadata/full.yaml"
+readLinkMetadataNewest n = do full  <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readYaml "metadata/full.yaml"
                               half    <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readYaml "metadata/half.yaml"
-                              let ratio = fromIntegral (length custom) / fromIntegral (length (custom++half)) :: Double
+                              let ratio = fromIntegral (length full) / fromIntegral (length (full++half)) :: Double
                               let n1 = round (fromIntegral n * ratio)
-                              let custom' = take n1 custom
+                              let full' = take n1 full
                               let n2 = round (fromIntegral n * (1-ratio))
                               let half' = take n2 half
-                              let final = M.fromList $ filter (\(path,(_,_,_,_,_,_)) -> not (anySuffix path ["#manual-annotation"])) $ interleave custom' half' -- TODO: we'd like to preserve the ordering, but the Map erases it, and generateDirectory insists on sorting by the publication-date. Hm...
+                              let final = M.fromList $ filter (\(path,(_,_,_,_,_,_)) -> not (anySuffix path ["#manual-annotation"])) $ interleave full' half' -- TODO: we'd like to preserve the ordering, but the Map erases it, and generateDirectory insists on sorting by the publication-date. Hm...
                               return final
   where
     interleave :: [a] -> [a] -> [a]
@@ -645,11 +645,11 @@ guessDateFromLocalSchema url date = if head url /= '/' || date /= "" then date
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: MetadataList -> MetadataList -> Path -> IO ()
-rewriteLinkMetadata half custom yaml
+rewriteLinkMetadata half full yaml
   = do old <- readYaml yaml
-       -- de-duplicate by removing anything in auto.yaml which has been promoted to custom/half:
-       let (halfURLs,customURLs) = (map fst half, map fst custom)
-       let betterURLs = nubOrd (halfURLs ++ customURLs) -- these *should* not have any duplicates, but...
+       -- de-duplicate by removing anything in auto.yaml which has been promoted to full/half:
+       let (halfURLs,fullURLs) = (map fst half, map fst full)
+       let betterURLs = nubOrd (halfURLs ++ fullURLs) -- these *should* not have any duplicates, but...
        let old' = filter (\(p,_) -> p `notElem` betterURLs) old
        let new = M.fromList old' :: Metadata -- NOTE: constructing a Map data structure automatically sorts/dedupes
        let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ -- flatten [(Path, (String, String, String, String, String))]

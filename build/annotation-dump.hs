@@ -17,11 +17,11 @@ import Utils (anyInfix, replace, sed)
 type Path = String
 
 main :: IO ()
-main = do custom  <- readYamlFast "/home/gwern/wiki/metadata/full.yaml"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
+main = do full  <- readYamlFast "/home/gwern/wiki/metadata/full.yaml"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
           half <- readYamlFast "/home/gwern/wiki/metadata/half.yaml" -- tagged but not handwritten/cleaned-up
           auto    <- readYamlFast "/home/gwern/wiki/metadata/auto.yaml"    -- auto-generated cached definitions; can be deleted if gone stale
-          let incompleteDB = M.union (M.fromList custom) $ M.union (M.fromList half) (M.fromList auto)
-          let finalDB = M.union (M.fromList $ blacklist "f" custom) $ M.union (M.fromList $ blacklist "h" half) (M.fromList $ blacklist "a" auto)
+          let incompleteDB = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto)
+          let finalDB = M.union (M.fromList $ blacklist "f" full) $ M.union (M.fromList $ blacklist "h" half) (M.fromList $ blacklist "a" auto)
           let final = sortItemPathDate $ M.toList finalDB
           let finalSingleLine = map toSingleLine final
 

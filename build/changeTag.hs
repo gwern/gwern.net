@@ -73,9 +73,9 @@ changeOneTag link tag = do
                         if existP then return $ "/" ++ link' else
                           error $ "File does not exist? : '" ++ link' ++ "'"
           when (head tag == '/' || take 4 tag == "http") $ error $ "Arguments not 'changeTag.hs *tag* link'? : '" ++ tag ++ "'"
-          [custom,half,auto] <- mapM readYaml ["metadata/full.yaml", "metadata/half.yaml", "metadata/auto.yaml"]
+          [full,half,auto] <- mapM readYaml ["metadata/full.yaml", "metadata/half.yaml", "metadata/auto.yaml"]
           printGreen ("Executing: " ++ tag ++ " tag on link: " ++ link'')
-          changeAndWriteTags tag link'' custom half auto
+          changeAndWriteTags tag link'' full half auto
 
 -- If an annotation is in full.yaml, we only want to write that. If it's in half.yaml,
 -- likewise. If it's in auto.yaml, now that we've added a tag to it, it is no longer disposable and
