@@ -1128,11 +1128,14 @@ body.index .markdownBody .section-link-list ul > li::before {
     list-style-type: lower-alpha;
 }
 
-/*  Specific list type overrides. Disabled for now, until/unless all source
-    files are rewritten to appropriately use generic or specific list syntax.
-    (See https://pandoc.org/MANUAL.html#extension-startnum .)
-    —SA 2023-03-25
-/*
+/*  Specific list type overrides.
+    This assumes writing plain `<ol>` HTML lists instead of Arabic numerals like `<ol type="1">`.
+    Pandoc Markdown defaults to the latter if you write '1./2.' etc, but an alternate syntax, '#.' is supported
+    which yields a plain `<ol>` which can be more easily styled. (See https://pandoc.org/MANUAL.html#extension-startnum .)
+    The specific motivating use-case is ordered lists inside footnotes: because footnotes are technically *already*
+    inside a list (the list of footnotes), an ordered list in a footnote would show up as Roman numerals or Latin letters
+    instead of the expected Arabic numerals (because of the alternating auto-styles above). Which is weird & unexpected!
+*/
 .markdownBody ol[type='1'] {
     list-style-type: decimal;
 }
@@ -1148,7 +1151,6 @@ body.index .markdownBody .section-link-list ul > li::before {
 .markdownBody ol[type='I'] {
     list-style-type: upper-roman;
 }
- */
 
 /*=------------------=*/
 /*= Weird edge cases =*/
