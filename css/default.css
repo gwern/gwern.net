@@ -1211,8 +1211,7 @@ figure img {
 }
 
 figure img,
-figure video,
-figure audio {
+figure video {
     outline: 1px solid var(--GW-figure-outline-color);
 }
 figure.outline-not img,
@@ -1220,10 +1219,22 @@ figure.outline-not video,
 figure.outline-not audio {
     outline: none;
 }
-/* WARNING: work around Chrome layout bug */
 figure audio {
     display: block;
     margin: 0 auto;
+    height: 54px;
+    border-radius: 27px;
+    position: relative;
+    z-index: 1;
+    top: 1px;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+}
+figure audio:hover {
+    border-color: var(--GW-figure-outline-color);
+    box-shadow:
+        0 0 4px 0 var(--GW-figure-outline-color) inset,
+        0 0 4px 0 var(--GW-figure-outline-color);
 }
 
 /*  Figure captions.
@@ -1258,12 +1269,6 @@ figure.outline-not .caption-wrapper {
 }
 video + .caption-wrapper {
     margin-top: 2px;
-}
-
-/*  Prevent lower border from being cut off.
-    */
-.columns li figure {
-    padding-bottom: 1px;
 }
 
 /*  Enable the various `![caption](/doc/foo/bar.jpg){.width-full}` uses;
@@ -2796,8 +2801,12 @@ span.link-bibliography a {
 /* This is particularly useful for extremely long ('skinny') lists where items tend to be short, such as in /dnm-archive#overall-coverage or /replication */
 /* Uses CSS3 columns: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Columns/Using_multi-column_layouts https://www.caniuse.com/#feat=multicolumn */
 /* Currently limited to lists due to issues with hidden:overflow in FF and sidenotes.js in Chrome. */
-.columns > ul,
-.columns > ol {
+.markdownBody .columns > ul,
+.markdownBody .columns > ol {
+    --GW-list-left-padding: 1.5em;
+}
+.markdownBody .columns > ul,
+.markdownBody .columns > ol {
     column-width: 12em;
     column-gap: 3em;
     margin-bottom: 2em;
@@ -2806,12 +2815,12 @@ span.link-bibliography a {
      */
     clear: both;
 }
-.columns:first-child > ul,
-.columns:first-child > ol {
+.markdownBody .columns:first-child > ul,
+.markdownBody .columns:first-child > ol {
     margin-top: 1em;
 }
-.columns:last-child > ul,
-.columns:last-child > ol {
+.markdownBody .columns:last-child > ul,
+.markdownBody .columns:last-child > ol {
     margin-bottom: 1em;
 }
 .markdownBody .columns li,
@@ -2820,12 +2829,28 @@ span.link-bibliography a {
     break-inside: avoid;
 }
 
-.columns > ul figure {
-    margin: 0 0 1.5em 0;
+/**********************/
+/*	Figures in columns.
+ */
+
+.markdownBody .columns.figures > ul {
+    --GW-list-left-padding: 0;
+
+    column-gap: 1.5em;
+}
+.markdownBody .columns.figures > ul > li::before {
+    display: none;
 }
 
-.columns ul {
-    padding-left: 1.5em;
+.markdownBody .columns.figures figure {
+	max-width: unset;
+    margin: 0 0 1em 0;
+}
+.markdownBody .columns.figures figure img,
+.markdownBody .columns.figures figure svg,
+.markdownBody .columns.figures figure video,
+.markdownBody .columns.figures figure audio {
+	max-width: 100%;
 }
 
 
