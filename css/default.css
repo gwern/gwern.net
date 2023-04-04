@@ -1182,6 +1182,7 @@ body.index .markdownBody .section-link-list ul > li::before {
 /***********/
 
 figure {
+    display: flow-root;
     margin: 2em auto 1.75em auto;
     max-width: calc(100% - 5em);
 }
@@ -1200,7 +1201,8 @@ figure + figure {
 }
 
 .figure-inner-wrapper {
-    display: block;
+    display: flex;
+    flex-flow: column;
     margin: auto;
     width: fit-content;
     max-width: 100%;
@@ -2820,8 +2822,11 @@ span.link-bibliography a {
     margin-bottom: 2em;
 
     /*  Without `clear`, columns don’t render properly if there’s a float.
+
+		NOTE: This might no longer be true? Commenting this out to see if
+		anything breaks. —SA 2023-04-04
      */
-    clear: both;
+/*     clear: both; */
 }
 .markdownBody .columns:first-child > ul,
 .markdownBody .columns:first-child > ol {
