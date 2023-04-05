@@ -512,9 +512,6 @@ blockquote .collapse.has-abstract.expanded-not > .disclosure-button .part::befor
     margin-top: 0.5em;
 }
 
-.collapse.section-backlinks-container .section-backlinks > .list-heading {
-    margin-top: 0;
-}
 .collapse.section-backlinks-container .section-backlinks > ul {
     margin-top: 0.75em;
     margin-bottom: 0.5em;
@@ -1173,7 +1170,7 @@ body.index .markdownBody .section-link-list ul > li::before {
     margin-top: 1em;
 }
 
-.markdownBody .aux-links-list .list-heading {
+.markdownBody .aux-links-append .list-heading {
     margin-top: 0;
 }
 
