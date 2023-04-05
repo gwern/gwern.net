@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-04-04 10:37:53 gwern"
+;;; When:  Time-stamp: "2023-04-05 11:01:53 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -147,6 +147,12 @@ START and END specify the region to search."
          (when (use-region-p)
            (region-end))))
   (query-replace-regexp-once (regexp-quote from-string) to-string delimited start end))
+(defun re-search-forward-word (regexp &optional bound noerror count)
+  "Search forward from point for a whole-word occurrence of REGEXP.
+This is a wrapper around `re-search-forward' that ensures word boundaries.
+BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
+  (let ((word-regexp (concat "\\b" regexp "\\b")))
+    (re-search-forward word-regexp bound noerror count)))
 
 ;; TODO Abbreviation ideas:
 ;; script outputs: https://pastebin.com/rU0TyG5B

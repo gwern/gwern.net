@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-04-04 13:03:57 gwern"
+When:  Time-stamp: "2023-04-05 09:19:07 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1331,5 +1331,6 @@ whiteList url
       , "https://hpc.stability.ai/" -- homepage
       , "https://fleg.de/paranoia" -- low-quality (video embeds) + interactive
       , "https://vole.wtf/scunthorpe-sans/" -- interactive
+      , "https://collections.library.yale.edu/catalog/2037169" -- interactive
       ] = True
     | otherwise = False

@@ -3214,7 +3214,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "/doc/ai/anime/danbooru/2021-li-dplase-ganlatentspaceeditingvideo.mp4"
             , "http://2chan.us/wordpress/2012/07/12/c82-genre-stats/"
             , "http://antiagingcentral.com/store/catalog/index.php?cPath=29"
-            , "http://archinte.ama-assn.org/cgi/content/abstract/172/6/494"
+            , "https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1108810"
             , "http://archive.foolz.us/a/thread/77196171/#77207238"
             , "http://ascii.textfiles.com/archives/1717"
             , "http://augmentingcognition.com/ltm.html"
