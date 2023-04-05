@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-03 22:14:38 gwern"
+# When:  Time-stamp: "2023-04-04 22:54:53 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -105,6 +105,8 @@ else
     ## they are too slow to run during a regular site build & don't need to be super-up-to-date
     ## anyway
     cd ../../
+    # cleanup:
+    rm --recursive --force -- ./_cache/ ./_site/
 
   if [ "$SLOW" ]; then
     bold "Checking embeddings database…"
@@ -157,10 +159,10 @@ else
   fi
 
     bold "Check/update VCS…"
-    cd ./static/ && (git status; git pull; git push --verbose &)
+    ping -q -c 5 google.com &> /dev/null && cd ./static/ && (git status; git pull; git push --verbose &) || true
     cd ./build/
     # Cleanup pre:
-    rm --recursive --force -- ~/wiki/_cache/ ~/wiki/_site/ ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-extractor ./static/build/link-suggester || true
+    rm --recursive --force -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-extractor ./static/build/link-suggester || true
 
     cd ../../ # go to site root
     bold "Building site…"
@@ -168,7 +170,7 @@ else
     if [ "$SLOW" ]; then
         bold "Updating X-of-the-day…" #  NOTE: we do this at the end, instead of inside hakyll.hs, to avoid spurious uses when a compile fails
         ghci -i/home/gwern/wiki/static/build/ ./static/build/QuoteOfTheDay.hs \
-             -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; qotd; lotd; }' | \
+             -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; qotd; sotd; }' | \
             grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]';
         λ(){ ghci -i/home/gwern/wiki/static/build/ ./static/build/QuoteOfTheDay.hs -e 'sitePrioritize' | \
               grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' || true; }
@@ -254,6 +256,7 @@ else
                -e 's/class=\"\(.*\)link-live-not \?/class="\1/g' \
     "$@"; }; export -f cleanClasses
     find ./ -path ./_site -prune -type f -o -name "*.page" | grep -F --invert-match -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 cleanClasses || true
+    # TODO: rewriting in place doesn't work because of the symbolic links. need to copy ./metadata/ instead of symlinking?
     find ./_site/metadata/ -type f -name "*.html" | sort | parallel --max-args=500 cleanClasses || true
 
     ## Pandoc/Skylighting by default adds empty self-links to line-numbered code blocks to make them clickable (as opposed to just setting a span ID, which it also does). These links *would* be hidden except that self links get marked up with up/down arrows, so arrows decorate the codeblocks. We have no use for them and Pandoc/skylighting has no option or way to disable them, so we strip them.
@@ -574,6 +577,18 @@ else
     λ(){ ge -v '^- - ' -- ./metadata/*.yaml | gf -e ' -- ' -e '---'; }
     wrap λ "Markdown hyphen problems in YAML metadata database"
 
+    λ(){ grep -E -e '^    - _' $PAGES | grep -F -v -e '_Additional Poems_' -e '_Aim for the Top!_' -e '_[Cognitive Surplus](!W)_' \
+                                              -e '_Fontemon_' -e '_Forbes_' -e '_[Four Major Plays of Chikamatsu](!W)_' \
+                                              -e '_[Neon Genesis Evangelion: Angelic Days](!W)_' -e '_Rebuild_' -e '_[Star Maker](!W)_' \
+                                              -e '_[The Battles of Coxinga](!W)_' -e '_[The End of Evangelion](!W)_' -e '_The Fountain_' \
+                                              -e '_[The Love Suicides at Sonezaki](!W)_' -e '_[The Pleasures of Japanese Literature](!W)_' \
+                                              -e '_The Simple Men_'  -e '_Renaming of the Birds_' -e '_[The Love Suicides at Amijima](!W)_' \
+                                              -e '_[The Uprooted Pine](!W)_' -e '_[Travelers of a Hundred Ages](!W)_' \
+                                              -e '_[Seeds in the Heart: Japanese Literature from Earliest Times to the Late Sixteenth Century](!W)_' \
+                                              -e '_[Neon Genesis Evangelion (manga)](!W)_' -e '_[Dendrocnide moroides](!W)_';
+          }
+    wrap λ "Markdown files: incorrect list nesting using italics for second-level list instead of smallcaps?"
+
     λ(){ ge -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/full.yaml; }
     wrap λ "Wikipedia annotations in YAML metadata database, but will be ignored by popups! Override with non-WP URL?"
 
@@ -614,8 +629,6 @@ else
     λ(){ find ./ -type f -wholename '*[^-a-zA-Z0-9_./~%#]*' | grep -F -v -e 'cattleya幻想写景' -e '緑華野菜子'; }
     wrap λ "Malformed filenames: dangerous characters in them?"
 
-    λ(){ find ./ -type f | grep -F -v -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.page' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' -e '-530px.jpg' -e '-768px.jpg' -e '-768px.png' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | grep -E -v -e '^ \+1 ' | sort --numeric-sort; }
-    wrap λ "File base names are preferably globally-unique, to avoid issues with duplicate search results and clashing link IDs."
 
     λ(){
         set +e;
@@ -660,8 +673,8 @@ else
 
     # Sync:
     ## make sure nginx user can list all directories (x) and read all files (r)
-    chmod a+x $(find ~/wiki/ -type d)
-    chmod --recursive a+r ~/wiki/*
+    chmod a+x $(find ./ -type d)
+    chmod --recursive a+r ./*
 
     set -e
     ## sync to Hetzner server: (`--size-only` because Hakyll rebuilds mean that timestamps will always be different, forcing a slower rsync)
@@ -854,13 +867,16 @@ else
   fi
 
     # Cleanup post:
-    rm --recursive --force -- ~/wiki/_cache/ ~/wiki/_site/ || true
+    rm --recursive --force -- ./_cache/ ./_site/ || true
 
   if [ "$SLOW" ]; then
     # Testing files, post-sync
     bold "Checking for file anomalies…"
-    λ(){ fdupes --quiet --sameline --size --nohidden $(find ~/wiki/ -type d | grep -E --invert-match -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotation/backlink' -e 'metadata/annotation/similar' -e 'metadata/annotation/link-bibliography') | grep -F --invert-match -e 'bytes each' -e 'trimfill.png'; }
+    λ(){ fdupes --quiet --sameline --size --nohidden $(find ./ -type d | grep -E --invert-match -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotation/backlink' -e 'metadata/annotation/similar' -e 'metadata/annotation/link-bibliography') | grep -F --invert-match -e 'bytes each' -e 'trimfill.png'; }
     wrap λ "Duplicate file check"
+
+    λ(){ find ./ -type f | grep -F -v -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.page' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' -e '-530px.jpg' -e '-768px.jpg' -e '-768px.png' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | grep -E -v -e '^ \+1 ' | sort --numeric-sort; }
+    wrap λ "File base names are preferably globally-unique, to avoid issues with duplicate search results and clashing link IDs."
 
     λ() { find . -perm u=r -path '.git' -prune; }
     wrap λ "Read-only file check" ## check for read-only outside ./.git/ (weird but happened):
@@ -938,7 +954,7 @@ else
     wrap λ "Partially transparent PNGs (may break in dark mode, convert with 'mogrify -background white -alpha remove -alpha off')"
 
     ## 'file' throws a lot of false negatives on HTML pages, often detecting XML and/or ASCII instead, so we whitelist some:
-    λ(){ find ~/wiki/ -type f -name "*.html" | grep -F --invert-match -e 4a4187fdcd0c848285640ce9842ebdf1bf179369 -e 5fda79427f76747234982154aad027034ddf5309 \
+    λ(){ find ./ -type f -name "*.html" | grep -F --invert-match -e 4a4187fdcd0c848285640ce9842ebdf1bf179369 -e 5fda79427f76747234982154aad027034ddf5309 \
                                                 -e f0cab2b23e1929d87f060beee71f339505da5cad -e a9abc8e6fcade0e4c49d531c7d9de11aaea37fe5 \
                                                 -e 2015-01-15-outlawmarket-index.html -e ac4f5ed5051405ddbb7deabae2bce48b7f43174c.html \
                                                 -e %3FDaicon-videos.html -e 86600697f8fd73d008d8383ff4878c25eda28473.html \

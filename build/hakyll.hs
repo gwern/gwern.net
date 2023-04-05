@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-04-03 20:56:01 gwern"
+When: Time-stamp: "2023-04-04 14:25:53 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -42,7 +42,7 @@ import qualified Data.Map.Strict as M (lookup)
 import Data.Maybe (fromMaybe)
 import System.Environment (lookupEnv)
 import Hakyll (compile, composeRoutes, constField,
-               symlinkFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, getMetadataField, lookupString,
+               symlinkFileCompiler, copyFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, getMetadataField, lookupString,
                defaultHakyllWriterOptions, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
                loadAndApplyTemplate, match, modificationTimeField, mapContext,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess, boolField, toFilePath,
@@ -123,9 +123,12 @@ main =
                                 >>= loadAndApplyTemplate "static/template/default.html" (postCtx meta)
                                 >>= imgUrls
 
+               let static        = route idRoute >> compile copyFileCompiler
+               version "static" $ mapM_ (`match` static) ["metadata/**"] -- we want to overwrite annotations in-place with various post-processing things
+
                -- handle the simple static non-.page files; we define this after the pages because the pages' compilation has side-effects which may create new static files (archives & downsized images)
-               let static = route idRoute >> compile symlinkFileCompiler -- WARNING: custom optimization requiring forked Hakyll installation; see https://github.com/jaspervdj/hakyll/issues/786
-               version "static" $ mapM_ (`match` static) [
+               let staticSymlink = route idRoute >> compile symlinkFileCompiler -- WARNING: custom optimization requiring forked Hakyll installation; see https://github.com/jaspervdj/hakyll/issues/786
+               version "static" $ mapM_ (`match` staticSymlink) [
                                        "doc/**",
                                        "**.hs",
                                        "**.sh",
@@ -139,6 +142,7 @@ main =
                                        "**.svg",
                                        "**.png",
                                        "**.jpg",
+                                       "**.yaml",
                                        -- skip "static/build/**" because of the temporary files
                                        "static/css/**",
                                        "static/font/**",
@@ -170,8 +174,6 @@ main =
                                        "static/**.py",
                                        "static/**.wasm",
                                        "static/**.el",
-                                       "**.yaml",
-                                       "metadata/**",
                                        "static/build/.htaccess",
                                        "static/build/upload",
                                        "static/build/png",
