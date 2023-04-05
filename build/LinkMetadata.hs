@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-04-03 22:21:59 gwern"
+When:  Time-stamp: "2023-04-05 14:24:08 gwern"
 License: CC-0
 -}
 
@@ -616,7 +616,7 @@ readYaml :: Path -> IO MetadataList
 readYaml yaml = do yaml' <- do filep <- doesFileExist yaml
                                if filep then return yaml
                                else do fileAbsoluteP <- doesFileExist ("/home/gwern/wiki/" ++ yaml)
-                                       if not fileAbsoluteP then printRed ("YAML path does not exist: " ++ yaml) >> return yaml
+                                       if not fileAbsoluteP then printRed ("YAML path does not exist: " ++ yaml ++ "; refusing to continue. Create an empty or otherwise initialize the file to retry.") >> return yaml
                                        else return ("/home/gwern/wiki/" ++ yaml)
                    file <- Y.decodeFileEither yaml' :: IO (Either ParseException [[String]])
                    allTags <- listTagsAll

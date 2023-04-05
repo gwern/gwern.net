@@ -30,7 +30,8 @@ pdf p = do let p' = takeWhile (/='#') $ if head p == '/' then tail p else p
            (_,_,mbDoi)    <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$DOI",     "-DOI", p']
            if BL.length (BL.concat [mbTitle,mbAuthor,mbDate,mbDoi]) > 0 then
              do printGreen (show [mbTitle,mbCreator,mbAuthor,mbDate,mbDoi])
-                let title = filterMeta (trimTitle $ cleanAbstractsHTML $ U.toString mbTitle) ++ (if null pageNumber' then "" else " § pg" ++ pageNumber')
+                let titleBase = filterMeta (trimTitle $ cleanAbstractsHTML $ U.toString mbTitle)
+                let title = titleBase ++ (if null pageNumber' || null titleBase then "" else " § pg" ++ pageNumber')
                 let edoi = trim $ U.toString mbDoi
                 let edoi' = if null edoi then "" else processDOI edoi
                 -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
