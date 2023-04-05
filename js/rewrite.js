@@ -1339,7 +1339,8 @@ addContentLoadHandler(GW.contentLoadHandlers.injectTOCMinimizeButton = (eventInf
 
 	let button = newElement("BUTTON", { 
 		"class": "toc-collapse-toggle-button", 
-		"title": "Collapse table of contents"
+		"title": "Collapse table of contents",
+		"tabindex": "-1"
 	}, {
 		"innerHTML": `<span>${GW.assets.collapseChevron}</span>`
 	});
