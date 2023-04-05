@@ -1047,10 +1047,6 @@ a:hover {
     margin: 0.5em 0 0 0;
 }
 
-.markdownBody :not(ul):not(ol) > li {
-    list-style-type: none;
-}
-
 @media all and (max-width: 649px) {
     .markdownBody ul,
     .markdownBody ol {
@@ -1145,19 +1141,19 @@ body.index .markdownBody .section-link-list ul > li::before {
     inside a list (the list of footnotes), an ordered list in a footnote would show up as Roman numerals or Latin letters
     instead of the expected Arabic numerals (because of the alternating auto-styles above). Which is weird & unexpected!
 */
-.markdownBody ol[type='1'] > li::before {
+.markdownBody ol.list-type-decimal > li::before {
     content: counter(list-item, decimal) ".";
 }
-.markdownBody ol[type='a'] > li::before {
+.markdownBody ol.list-type-lower-alpha > li::before {
     content: counter(list-item, lower-alpha) ".";
 }
-.markdownBody ol[type='A'] > li::before {
+.markdownBody ol.list-type-upper-alpha > li::before {
     content: counter(list-item, upper-alpha) ".";
 }
-.markdownBody ol[type='i'] > li::before {
+.markdownBody ol.list-type-lower-roman > li::before {
     content: counter(list-item, lower-roman) ".";
 }
-.markdownBody ol[type='I' > li::before] {
+.markdownBody ol.list-type-upper-roman > li::before] {
     content: counter(list-item, upper-roman) ".";
 }
 
@@ -1647,7 +1643,6 @@ section.footnotes {
     position: relative;
 }
 section.footnotes > ol {
-    list-style-type: none;
     padding-left: 2.625em;
     overflow: visible;
 }
@@ -5591,10 +5586,8 @@ section.highlight-fading::before {
 
 ol.link-bibliography-list-compact {
     --GW-list-left-padding: 2.25em;
-
-    list-style-type: lower-alpha;
 }
-ol.link-bibliography-list-compact > li::marker {
+ol.link-bibliography-list-compact > li::before {
     font-family: var(--GW-monospaced-font-stack);
     font-size: 0.9em;
 }

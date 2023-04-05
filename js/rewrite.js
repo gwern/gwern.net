@@ -1870,6 +1870,36 @@ addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (ev
 /* MISC. */
 /*********/
 
+/********************************************************/
+/*	Designate ordered list type via a class.
+	(Workaround for case-insensitivity of CSS selectors.)
+ */
+addContentLoadHandler(GW.contentLoadHandlers.designateOrderedListTypes = (eventInfo) => {
+    GWLog("designateOrderedListTypes", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("ol[type]").forEach(list => {
+		switch (list.type) {
+		case '1':
+			list.classList.add("list-type-decimal");
+			break;
+		case 'a':
+			list.classList.add("list-type-lower-alpha");
+			break;
+		case 'A':
+			list.classList.add("list-type-upper-alpha");
+			break;
+		case 'i':
+			list.classList.add("list-type-lower-roman");
+			break;
+		case 'I':
+			list.classList.add("list-type-upper-roman");
+			break;
+		default:
+			break;
+		}
+	});
+}, "rewrite");
+
 /**********************************************/
 /*	Rectify styling/structure of list headings.
  */
