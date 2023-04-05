@@ -1127,9 +1127,9 @@ addContentLoadHandler(GW.contentLoadHandlers.truncatePartialAnnotationIncludes =
 		let titleLink = eventInfo.container.querySelector("a.title-link");
 		titleLink.classList.add("link-annotated");
 
-		//	Substitute original URL, as that is how annotation is stored.
+		//	Set original URL, for annotation retrieval.
 		eventInfo.container.querySelectorAll(".title-link + .originalURL a").forEach(originalURLLink => {
-			titleLink.href = originalURLLink.href;
+			titleLink.dataset.urlOriginal = originalURLLink.href;
 		});
 	});
 }, "<rewrite", (info) => (info.contentType == "annotation"));
