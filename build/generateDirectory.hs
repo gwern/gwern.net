@@ -22,7 +22,7 @@ import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
                     Block(BulletList, Div, Header, Para, RawBlock, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle, UpperAlpha), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
 import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
-import qualified Data.Text as T (append, pack, unpack)
+import qualified Data.Text as T (append, pack, unpack, Text)
 import Control.Monad.Parallel as Par (mapM_)
 import Text.Pandoc.Walk (walk)
 
@@ -108,6 +108,9 @@ generateDirectory filterp md dirs dir'' = do
 
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> replaceManyT [("-768px.png", ""), ("-768px.jpg", ""), ("-530px.jpg",""), ("-530px.jpg","")] imagelink) (head imageFirst)) ++ "\n"
   let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if captionText /= "" then captionText else if altText /= "" then altText else "") (head imageFirst))) ++ "'\n"
+
+  -- remove the tag for *this* directory; it is redundant to display 'cat/catnip' on every doc/link inside '/doc/cat/catnip/index.page', after all.
+  let tagSelf = if dir'' == "doc/" then "" else init $ replace "doc/" "" dir'' -- "doc/cat/catnip/" ? 'cat/catnip'
 
   let header = generateYAMLHeader parentDirectory' previous next tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
   let sectionDirectoryChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
@@ -204,7 +207,7 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
 listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath,FilePath,FilePath)]
 listFiles m direntries' = do
                    files <- filterM (doesFileExist . tail) direntries'
-                   let files'          = (sort . filter (not . ("index"`isSuffixOf`)) . map (replace ".page" "") . filter ('#' `notElem`) . filter (not . isSuffixOf ".tar") ) files
+                   let files'          = (sort . filter (not . ("index"`isSuffixOf`)) . map (replace ".page" "") . filter ('#' `notElem`) . filter (not . isSuffixOf ".tar") . filter (not . isSuffixOf "768px.jpg") . filter (not . isSuffixOf "768px.png") . filter (not . isSuffixOf "530px.jpg")) files
                    let fileAnnotationsMi = map (lookupFallback m) files'
                    -- NOTE: files may be annotated only under a hash, eg. '/doc/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/doc/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/doc/ai/scaling/hardware/2021-norrie.pdf' → `('/doc/ai/scaling/hardware/2021-norrie.pdf#google',_)`
                    backlinks    <- mapM (fmap snd . getBackLinkCheck . fst)    fileAnnotationsMi
@@ -288,10 +291,13 @@ generateDirectoryItems parent current ds =
                                                ["link-tag", if downP then "directory-indexes-downwards" else "directory-indexes-sideways"],
                                                [("rel","tag")]
                                              )
-                                               [Emph [RawInline (Format "html") $ abbreviateTag $ T.pack $ replace "/doc/" "" $ takeDirectory d]] (T.pack d, "")]
+                                               [Emph [RawInline (Format "html") $ (if parent == (Just "/index") then abbreviateTagLongForm else abbreviateTag) $ T.pack $ replace "/doc/" "" $ takeDirectory d]] (T.pack d, "")]
                                  ]
        directoryPrefixDown :: FilePath -> FilePath -> Bool
        directoryPrefixDown currentd d' = ("/"++currentd) `isPrefixOf` d'
+
+       abbreviateTagLongForm :: T.Text -> T.Text
+       abbreviateTagLongForm dir = "<code>" `T.append` dir `T.append` "</code> (" `T.append` abbreviateTag dir `T.append` ")"
 
 
 generateListItems :: [(FilePath, MetadataItem,FilePath,FilePath,FilePath)] -> Block
