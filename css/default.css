@@ -1170,7 +1170,8 @@ body.index .markdownBody .section-link-list ul > li::before {
     margin-top: 1em;
 }
 
-.markdownBody .aux-links-append .list-heading {
+.markdownBody .aux-links-append .list-heading,
+.markdownBody .list-heading.aux-links-list-label {
     margin-top: 0;
 }
 
@@ -3058,6 +3059,15 @@ a .cite-author-plural::after {
 }
 
 
+/***********************/
+/* “SEE ALSO” SECTIONS */
+/***********************/
+
+section#see-also:first-child > h1 {
+    margin-top: 1em;
+}
+
+
 /*******************************/
 /* PAGE-SPECIFIC MODIFICATIONS */
 /*******************************/
@@ -3640,10 +3650,6 @@ body.index-directory #footer {
 .popframe-body ul,
 .popframe-body ol {
     overflow: unset;
-}
-
-.popframe-body > .list-heading:first-child {
-	margin-top: 0;
 }
 
 .popframe-body p + p,
