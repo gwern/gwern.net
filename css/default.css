@@ -3058,7 +3058,7 @@ a .cite-author-plural::after {
 /* “SEE ALSO” SECTIONS */
 /***********************/
 
-section#see-also:first-child > h1 {
+section#see-also:first-child > h1:first-child {
     margin-top: 1em;
 }
 
