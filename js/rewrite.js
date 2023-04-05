@@ -1992,7 +1992,8 @@ addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) 
         ".markdownBody .abstract:not(.scrape-abstract-not) + p"
     ].join(", ");
     let exclusionSelector = [
-    	"#footer"
+    	"#footer",
+    	"#aotd"
     ].join(", ");
     let dropCapClass = Array.from(eventInfo.container.classList).find(cssClass => cssClass.startsWith("drop-caps-"));
     if (dropCapClass)
