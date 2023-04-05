@@ -1648,6 +1648,7 @@ section.footnotes > ol > li {
 section.footnotes > ol > li::before {
     content: counter(footnotes);
     position: absolute;
+    left: unset;
     right: calc(100% + 0.75em);
     top: calc(-0.125em + 5px);
     width: 1.75em;
