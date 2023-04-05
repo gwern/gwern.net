@@ -1991,11 +1991,17 @@ addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) 
         ".markdownBody > section:first-of-type > .epigraph:nth-child(2) + p",
         ".markdownBody .abstract:not(.scrape-abstract-not) + p"
     ].join(", ");
+    let exclusionSelector = [
+    	"#footer"
+    ].join(", ");
     let dropCapClass = Array.from(eventInfo.container.classList).find(cssClass => cssClass.startsWith("drop-caps-"));
     if (dropCapClass)
         dropCapClass = dropCapClass.replace("-caps-", "-cap-");
 
     eventInfo.container.querySelectorAll(dropCapBlocksSelector).forEach(dropCapBlock => {
+		if (dropCapBlock.closest(exclusionSelector))
+			return;
+
         /*  Drop cap class could be set globally, or overridden by a .abstract;
             the latter could be `drop-cap-not` (which nullifies any page-global
             drop-cap class for the given block).

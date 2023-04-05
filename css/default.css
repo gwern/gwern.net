@@ -901,8 +901,7 @@ section:target > :first-child a::after {
 /**********/
 
 #footer {
-    text-align: center;
-    margin: 3em 0 0 0;
+    margin: 2.5em 0 0 0;
 }
 @media all and (max-width: 649px) {
     #footer {
@@ -910,8 +909,8 @@ section:target > :first-child a::after {
     }
 }
 
-#footer p {
-    margin: 1em 0;
+#footer > p:first-child {
+    text-align: center;
 }
 
 /*********************/
@@ -1474,11 +1473,6 @@ blockquote table table {
     content: "\201D";
     right: -0.975em;
     bottom: -1em;
-}
-
-/* Quote of the Day styling: too large a gap on desktop */
-@media all and (min-width: 650px) {
-    #footer .epigraph { margin-top: -1.2em; }
 }
 
 @media all and (max-width: 649px) {
@@ -5714,6 +5708,11 @@ ol.link-bibliography-list-compact > li::before {
         width: 200%;
     }
 }
+@media only screen and (min-width: 650px) {
+	#footer-logo {
+		display: none;
+	}
+}
 
 
 /*********************/
@@ -5729,7 +5728,7 @@ ol.link-bibliography-list-compact > li::before {
 }
 @media only screen and (min-width: 650px) {
     #navigation {
-        margin: 2em 0 0 0;
+        margin: 2.5em 0 0 0;
         display: flex;
         align-items: center;
         justify-content: space-between;
