@@ -550,6 +550,12 @@ blockquote .collapse.has-abstract.expanded-not > .disclosure-button .part::befor
 /*  Collapse edge cases.
  */
 
+li > .collapse {
+    margin: 0.25em 0 0.25em 0;
+}
+li:last-child > .collapse {
+	margin: 0.25em 0 0.75em 0;
+}
 li > .collapse > .collapse-content-wrapper > ul {
     margin-top: 0.125em;
 }
@@ -5584,7 +5590,6 @@ ol.link-bibliography-list-compact {
 }
 ol.link-bibliography-list-compact > li::before {
     font-family: var(--GW-monospaced-font-stack);
-    font-size: 0.9em;
 }
 @media all and (max-width: 649px) {
     ol.link-bibliography-list-compact {
@@ -5595,6 +5600,10 @@ ol.link-bibliography-list-compact > li::before {
 #link-bibliography > ol > li > p + p {
     text-indent: 0;
     margin-top: 0.5em;
+}
+
+.link-bibliography-list-compact li .annotation blockquote {
+    margin-bottom: 0.75em;
 }
 
 
