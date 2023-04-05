@@ -901,8 +901,7 @@ section:target > :first-child a::after {
 /**********/
 
 #footer {
-    text-align: center;
-    margin: 3em 0 0 0;
+    margin: 2.5em 0 0 0;
 }
 @media all and (max-width: 649px) {
     #footer {
@@ -910,8 +909,8 @@ section:target > :first-child a::after {
     }
 }
 
-#footer p {
-    margin: 1em 0;
+#footer > p:first-child {
+    text-align: center;
 }
 
 /*********************/
@@ -1047,10 +1046,6 @@ a:hover {
     margin: 0.5em 0 0 0;
 }
 
-.markdownBody :not(ul):not(ol) > li {
-    list-style-type: none;
-}
-
 @media all and (max-width: 649px) {
     .markdownBody ul,
     .markdownBody ol {
@@ -1145,19 +1140,19 @@ body.index .markdownBody .section-link-list ul > li::before {
     inside a list (the list of footnotes), an ordered list in a footnote would show up as Roman numerals or Latin letters
     instead of the expected Arabic numerals (because of the alternating auto-styles above). Which is weird & unexpected!
 */
-.markdownBody ol[type='1'] > li::before {
+.markdownBody ol.list-type-decimal > li::before {
     content: counter(list-item, decimal) ".";
 }
-.markdownBody ol[type='a'] > li::before {
+.markdownBody ol.list-type-lower-alpha > li::before {
     content: counter(list-item, lower-alpha) ".";
 }
-.markdownBody ol[type='A'] > li::before {
+.markdownBody ol.list-type-upper-alpha > li::before {
     content: counter(list-item, upper-alpha) ".";
 }
-.markdownBody ol[type='i'] > li::before {
+.markdownBody ol.list-type-lower-roman > li::before {
     content: counter(list-item, lower-roman) ".";
 }
-.markdownBody ol[type='I' > li::before] {
+.markdownBody ol.list-type-upper-roman > li::before] {
     content: counter(list-item, upper-roman) ".";
 }
 
@@ -1170,7 +1165,8 @@ body.index .markdownBody .section-link-list ul > li::before {
     margin-top: 1em;
 }
 
-.markdownBody .aux-links-append .list-heading {
+.markdownBody .aux-links-append .list-heading,
+.markdownBody .list-heading.aux-links-list-label {
     margin-top: 0;
 }
 
@@ -1479,11 +1475,6 @@ blockquote table table {
     bottom: -1em;
 }
 
-/* Quote of the Day styling: too large a gap on desktop */
-@media all and (min-width: 650px) {
-    #footer .epigraph { margin-top: -1.2em; }
-}
-
 @media all and (max-width: 649px) {
     .epigraph {
         margin: 2.125em 1em;
@@ -1646,7 +1637,6 @@ section.footnotes {
     position: relative;
 }
 section.footnotes > ol {
-    list-style-type: none;
     padding-left: 2.625em;
     overflow: visible;
 }
@@ -3058,6 +3048,15 @@ a .cite-author-plural::after {
 }
 
 
+/***********************/
+/* “SEE ALSO” SECTIONS */
+/***********************/
+
+section#see-also:first-child > h1:first-child {
+    margin-top: 1em;
+}
+
+
 /*******************************/
 /* PAGE-SPECIFIC MODIFICATIONS */
 /*******************************/
@@ -3640,10 +3639,6 @@ body.index-directory #footer {
 .popframe-body ul,
 .popframe-body ol {
     overflow: unset;
-}
-
-.popframe-body > .list-heading:first-child {
-	margin-top: 0;
 }
 
 .popframe-body p + p,
@@ -5585,10 +5580,8 @@ section.highlight-fading::before {
 
 ol.link-bibliography-list-compact {
     --GW-list-left-padding: 2.25em;
-
-    list-style-type: lower-alpha;
 }
-ol.link-bibliography-list-compact > li::marker {
+ol.link-bibliography-list-compact > li::before {
     font-family: var(--GW-monospaced-font-stack);
     font-size: 0.9em;
 }
@@ -5715,6 +5708,11 @@ ol.link-bibliography-list-compact > li::marker {
         width: 200%;
     }
 }
+@media only screen and (min-width: 650px) {
+	#footer-logo {
+		display: none;
+	}
+}
 
 
 /*********************/
@@ -5730,7 +5728,7 @@ ol.link-bibliography-list-compact > li::marker {
 }
 @media only screen and (min-width: 650px) {
     #navigation {
-        margin: 2em 0 0 0;
+        margin: 2.5em 0 0 0;
         display: flex;
         align-items: center;
         justify-content: space-between;

@@ -1870,6 +1870,36 @@ addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (ev
 /* MISC. */
 /*********/
 
+/********************************************************/
+/*	Designate ordered list type via a class.
+	(Workaround for case-insensitivity of CSS selectors.)
+ */
+addContentLoadHandler(GW.contentLoadHandlers.designateOrderedListTypes = (eventInfo) => {
+    GWLog("designateOrderedListTypes", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("ol[type]").forEach(list => {
+		switch (list.type) {
+		case '1':
+			list.classList.add("list-type-decimal");
+			break;
+		case 'a':
+			list.classList.add("list-type-lower-alpha");
+			break;
+		case 'A':
+			list.classList.add("list-type-upper-alpha");
+			break;
+		case 'i':
+			list.classList.add("list-type-lower-roman");
+			break;
+		case 'I':
+			list.classList.add("list-type-upper-roman");
+			break;
+		default:
+			break;
+		}
+	});
+}, "rewrite");
+
 /**********************************************/
 /*	Rectify styling/structure of list headings.
  */
@@ -1961,11 +1991,17 @@ addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) 
         ".markdownBody > section:first-of-type > .epigraph:nth-child(2) + p",
         ".markdownBody .abstract:not(.scrape-abstract-not) + p"
     ].join(", ");
+    let exclusionSelector = [
+    	"#footer"
+    ].join(", ");
     let dropCapClass = Array.from(eventInfo.container.classList).find(cssClass => cssClass.startsWith("drop-caps-"));
     if (dropCapClass)
         dropCapClass = dropCapClass.replace("-caps-", "-cap-");
 
     eventInfo.container.querySelectorAll(dropCapBlocksSelector).forEach(dropCapBlock => {
+		if (dropCapBlock.closest(exclusionSelector))
+			return;
+
         /*  Drop cap class could be set globally, or overridden by a .abstract;
             the latter could be `drop-cap-not` (which nullifies any page-global
             drop-cap class for the given block).
