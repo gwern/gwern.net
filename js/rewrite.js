@@ -1122,6 +1122,7 @@ addContentLoadHandler(GW.contentLoadHandlers.truncatePartialAnnotationIncludes =
     GWLog("truncatePartialAnnotationIncludes", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll(".annotation-partial .annotation-abstract").forEach(abstract => {
+		abstract.previousElementSibling.lastTextNode.nodeValue = ")";
 		abstract.remove();
 
 		//	Rewrite title-link.
