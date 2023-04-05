@@ -1268,8 +1268,10 @@ Popups = {
 		let target = popup.spawningTarget;
 		if (spawnPoint)
 			target.lastMouseEnterLocation = spawnPoint;
-		else
+		else if (target.lastMouseEnterLocation)
 			spawnPoint = target.lastMouseEnterLocation;
+		else
+			return;
 
 		/*	When the target’s bounding rect is composed of multiple client rects
 			(as when the target is a link that wraps across a line break), we

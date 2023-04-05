@@ -658,6 +658,9 @@ Extracts = {
 
 		//	Add handler to update popup position when content changes.
 		GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (info) => {
+			if (popFrame == null)
+				return;
+
 			if (Extracts.popFrameProvider == Popups)
 				Popups.positionPopup(popFrame);
 			else // if (Extracts.popFrameProvider == Popins)
