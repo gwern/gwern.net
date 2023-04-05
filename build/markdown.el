@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-04-02 17:50:57 gwern"
+;;; When:  Time-stamp: "2023-04-04 10:37:53 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1031,8 +1031,8 @@ START and END specify the region to search."
        (query-replace-regexp "\n..([A-Za-z])" "\n...\\1" nil begin end) ; replace malformed '...' ellipsis excerpts
        (query-replace-regexp "^\\.\\.\\. " "..." nil begin end)
        (query-replace " = ." " = 0." nil begin end)
-       (query-replace "Ss" "Subjects" nil begin end) ; Psycnet APA abbreviation
-       (query-replace-regexp " (PsycInfo Database Record (c) [12][0-9]+ APA, all rights reserved)" "" nil begin end) ; Psycnet copyright junk
+       (query-replace "Ss" "Subjects" nil begin end) ; PsycNET APA abbreviation
+       (query-replace-regexp " (PsycInfo Database Record (c) [12][0-9]+ APA, all rights reserved)" "" nil begin end) ; PsycNET copyright junk
        (query-replace " • " ", " nil begin end) ; some 'Keywords' sections are always MIDDLE DOT formatted
 
        (query-replace-regexp "\\([0-9]+\\)·\\([0-9]+\\)" "\\1.\\2" nil begin end) ; mostly for the Lancet
@@ -1086,6 +1086,7 @@ START and END specify the region to search."
        (query-replace-regexp "[Ss]tudies \\([0-9]+[a-fA-F]*\\), \\([0-9]+[a-fA-F]*\\), and \\([0-9]+[a-fA-F]*\\)" "**Studies \\1**, **\\2**, & **\\3**"  nil begin end)
        (query-replace-regexp "[Ss]tudies \\([0-9]+[a-fA-F]*\\), \\([0-9]+[a-fA-F]*\\), \\([0-9]+[a-fA-F]*\\)" "**Studies \\1**, **\\2**, **\\3**"  nil begin end)
 
+       (query-replace-regexp "^\\( *\\)\\([0-9]+\\)\\. " "\\1#. " nil begin end) ; Markdown ordered-list number formatting: see default.css for more discussion, but using '1./2./3.' list numbering in Markdown yields hardwired number formatting rather than plain `<ol>`, which causes styling problems when nested in lists.
        (query-replace-regexp "Supplementary Data \\([0-9]+[a-fA-F]*\\)" "**Supplementary Data \\1**"  nil begin end) ; '(Supplementary Data 7)'
        (query-replace " 0)" " (0)" nil begin end) ; we do the number+paren check after the '(study 1)' check
        (query-replace " 1)" " (1)" nil begin end)
