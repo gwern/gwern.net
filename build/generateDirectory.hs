@@ -94,21 +94,17 @@ generateDirectory filterp md dirs dir'' = do
                          _ -> return ()
         ) links
 
-  -- remove the tag for *this* directory; it is redundant to display 'cat/catnip' on every doc/link inside '/doc/cat/catnip/index.page', after all.
-  let tagSelf = if dir'' == "doc/" then "" else init $ replace "doc/" "" dir'' -- "doc/cat/catnip/" → 'cat/catnip'
-  let links' = map (\(y,(a,b,c,d,tags,f),z,zz,zzz) -> (y,(a,b,c,d, filter (/= tagSelf) tags,f),z,zz,zzz)) links
-
   -- a very long List can be hard to browse, and doesn't provide a useful ToC. If we have titles, we can use those as section headers.
   -- (Entries without even a title must be squashed into a list and chucked at the end.)
-  let titledLinks   = filter (\(_,(t,_,_,_,_,_),_,_,_) -> t /= "") links'
-  let untitledLinks = filter (\(_,(t,_,_,_,_,_),_,_,_) -> t == "") links'
+  let titledLinks   = filter (\(_,(t,_,_,_,_,_),_,_,_) -> t /= "") links
+  let untitledLinks = filter (\(_,(t,_,_,_,_,_),_,_,_) -> t == "") links
   let allUnannotatedUntitledP = (length untitledLinks >= 3) && (all (=="") $ map (\(_,(_,_,_,_,_,annotation),_,_,_) -> annotation) untitledLinks) -- whether to be compact columns
 
   let titledLinksSections   = generateSections titledLinks linksWP
   let untitledLinksSection  = generateListItems untitledLinks
 
   -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnailText'
-  let imageFirst = take 1 $ concatMap (\(_,(_,_,_,_,_,abstract),_,_,_) -> extractImages (toPandoc abstract)) links'
+  let imageFirst = take 1 $ concatMap (\(_,(_,_,_,_,_,abstract),_,_,_) -> extractImages (toPandoc abstract)) links
 
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> replaceManyT [("-768px.png", ""), ("-768px.jpg", ""), ("-530px.jpg",""), ("-530px.jpg","")] imagelink) (head imageFirst)) ++ "\n"
   let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if captionText /= "" then captionText else if altText /= "" then altText else "") (head imageFirst))) ++ "'\n"
@@ -124,7 +120,7 @@ generateDirectory filterp md dirs dir'' = do
                    Just (_,_,_,_,_,"") -> []
                    Just (_,_,_,_,_,dirAbstract) -> [parseRawBlock ("",["abstract", "abstract-tag-directory"],[]) $ RawBlock (Format "html") (T.pack $ "<blockquote>"++dirAbstract++"</blockquote>")]
 
-  let linkBibList = generateLinkBibliographyItems $ filter (\(_,(_,_,_,_,_,_),_,_,lb) -> not (null lb)) links'
+  let linkBibList = generateLinkBibliographyItems $ filter (\(_,(_,_,_,_,_,_),_,_,lb) -> not (null lb)) links
 
   let body = abstract ++
 
