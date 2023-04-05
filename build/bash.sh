@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-02 20:54:27 gwern"
+# When:  Time-stamp: "2023-04-04 10:28:24 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -170,11 +170,13 @@ gwmv () {
         # eg "gwMv 'doc/psychology/2021-foo.pdf' 'doc/psychology/writing'" as a shortcut for "gwmv 'doc/psychology/2021-foo.pdf' 'doc/psychology/writing/2021-foo.pdf'"
         if [ -d ~/wiki$NEW ]; then NEW=$(echo $NEW/$(basename $OLD) | sed -e 's/\/\//\//'); fi
 
-
         cd ~/wiki/
-        # to rename a gwern.net file:
-        # 1. git mv the old filename to new
-        if [[ -a ~/wiki$OLD ]]; then
+        if [[ -a ~/wiki$NEW ]]; then
+            echo "Moved-to target file $NEW exists! Will not move $OLD and overwrite it. If you deliberately want to overwrite $NEW, then explicitly delete it first."
+            return 4
+            # to rename a gwern.net file:
+            # 1. git mv the old filename to new
+        elif [[ -a ~/wiki$OLD ]]; then
             touch ~/wiki"$NEW" && rm ~/wiki"$NEW" && git mv ~/wiki"$OLD" ~/wiki"$NEW" || return 3
             rsync --mkpath --chmod='a+r' -q ~/wiki"$NEW" gwern@176.9.41.242:"/home/gwern/gwern.net$NEW" || true > /dev/null &
             # 2. gwsed old new
