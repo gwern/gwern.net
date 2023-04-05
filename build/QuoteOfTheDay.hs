@@ -105,7 +105,7 @@ type AotD = [String]
 -- it is important to run the archive pass on the annotation link for cases like Arxiv. Although this is quite ugly...
 annotated :: ArchiveMetadata -> IORef Integer -> String -> String
 annotated a n url = Unsafe.unsafePerformIO $ do
-  lnk <- localizeLink a n $ linkIcon $ Link ("", ["include-annotation-partial", "backlink-not", "include-spinner-not"], []) [Str "Annotation Of The Day"] (T.pack url,"")
+  lnk <- localizeLink a n $ linkIcon $ Link ("", ["include-annotation-partial", "link-annotated", "backlink-not", "include-spinner-not"], []) [Str "Annotation Of The Day"] (T.pack url,"")
   let htmlE = runPure $ writeHtml5String safeHtmlWriterOptions $ Pandoc nullMeta [Div ("", ["annotation-of-the-day"], []) [BlockQuote [Para [lnk]]]]
   case htmlE of
     Left err   -> error ("QuoteOfTheDay.hs: annotated: failed to properly Pandoc-parse today's annotation-of-the-day? error:" ++ show err ++ " : " ++ show url)
