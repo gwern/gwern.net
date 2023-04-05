@@ -86,7 +86,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 	//  Construct all collapse blocks (in correct final state).
 	eventInfo.container.querySelectorAll(".collapse").forEach(collapseBlock => {
 		let startExpanded = (collapseBlock.contains(getHashTargetedElement()) == true);
-		let disclosureButtonHTML = `<button type="button" class="disclosure-button" aria-label="Open/close collapsed section">`
+		let disclosureButtonHTML = `<button type="button" class="disclosure-button" tabindex="-1" aria-label="Open/close collapsed section">`
 									 + `<span class="part top">`
 										 + `<span class="label"></span>`
 										 + `<span class="icon">`

@@ -628,7 +628,8 @@ addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) =>
 
         image.style.aspectRatio = `${width} / ${height}`;
 
-        if (eventInfo.contentType == "annotation")
+        if (   eventInfo.contentType == "annotation"
+        	&& image.classList.containsAnyOf([ "float-left", "float-right" ]))
             image.style.width = `${width}px`;
     });
 }, "rewrite");
@@ -1121,6 +1122,7 @@ addContentLoadHandler(GW.contentLoadHandlers.truncatePartialAnnotationIncludes =
     GWLog("truncatePartialAnnotationIncludes", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll(".annotation-partial .annotation-abstract").forEach(abstract => {
+		abstract.previousElementSibling.lastTextNode.nodeValue = ")";
 		abstract.remove();
 
 		//	Rewrite title-link.
@@ -1337,7 +1339,8 @@ addContentLoadHandler(GW.contentLoadHandlers.injectTOCMinimizeButton = (eventInf
 
 	let button = newElement("BUTTON", { 
 		"class": "toc-collapse-toggle-button", 
-		"title": "Collapse table of contents"
+		"title": "Collapse table of contents",
+		"tabindex": "-1"
 	}, {
 		"innerHTML": `<span>${GW.assets.collapseChevron}</span>`
 	});

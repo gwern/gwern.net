@@ -1333,6 +1333,13 @@ figure svg {
     overflow: hidden;
 }
 
+/*	Reduce reflow.
+ */
+img.float-right,
+img.float-left {
+	max-width: calc(50% - 1.5em);
+}
+
 
 /********/
 /* MISC */
