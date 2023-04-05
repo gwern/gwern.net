@@ -3642,6 +3642,10 @@ body.index-directory #footer {
     overflow: unset;
 }
 
+.popframe-body > .list-heading:first-child {
+	margin-top: 0;
+}
+
 .popframe-body p + p,
 .popframe-body p + figure[class^='float-'] + p,
 .popframe-body div[class^='drop-cap-'] + p,
