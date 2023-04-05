@@ -1127,9 +1127,9 @@ addContentLoadHandler(GW.contentLoadHandlers.truncatePartialAnnotationIncludes =
 		let titleLink = eventInfo.container.querySelector("a.title-link");
 		titleLink.classList.add("link-annotated");
 
-		//	Substitute original URL, as that is how annotation is stored.
+		//	Set original URL, for annotation retrieval.
 		eventInfo.container.querySelectorAll(".title-link + .originalURL a").forEach(originalURLLink => {
-			titleLink.href = originalURLLink.href;
+			titleLink.dataset.urlOriginal = originalURLLink.href;
 		});
 	});
 }, "<rewrite", (info) => (info.contentType == "annotation"));
@@ -1992,7 +1992,8 @@ addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) 
         ".markdownBody .abstract:not(.scrape-abstract-not) + p"
     ].join(", ");
     let exclusionSelector = [
-    	"#footer"
+    	"#footer",
+    	"#aotd"
     ].join(", ");
     let dropCapClass = Array.from(eventInfo.container.classList).find(cssClass => cssClass.startsWith("drop-caps-"));
     if (dropCapClass)
