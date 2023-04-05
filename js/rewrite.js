@@ -628,7 +628,8 @@ addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) =>
 
         image.style.aspectRatio = `${width} / ${height}`;
 
-        if (eventInfo.contentType == "annotation")
+        if (   eventInfo.contentType == "annotation"
+        	&& image.classList.containsAnyOf([ "float-left", "float-right" ]))
             image.style.width = `${width}px`;
     });
 }, "rewrite");

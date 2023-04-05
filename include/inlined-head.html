@@ -1348,7 +1348,7 @@ h1 {
 /*= Other =*/
 /*=-------=*/
 
-.markdownBody li {
+#markdownBody li {
     display: flow-root;
 }
 
@@ -1657,6 +1657,13 @@ figure svg {
     /*  This is to prevent overflow of image alt-text in Chrome.
      */
     overflow: hidden;
+}
+
+/*	Reduce reflow.
+ */
+img.float-right,
+img.float-left {
+	max-width: calc(50% - 1.5em);
 }
 
 
