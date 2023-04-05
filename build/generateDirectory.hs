@@ -136,7 +136,7 @@ generateDirectory filterp md dirs dir'' = do
                  titledLinksSections) ++
 
              (if null untitledLinks then [] else
-                 Header 1 ("", ["link-annotated-not"], []) [Str "Miscellaneous"] :
+                 Header 1 ("", ["link-annotated-not"] ++ (if length untitledLinks > miscellaneousCollapseLimit then ["collapse"] else []), []) [Str "Miscellaneous"] :
                  if not allUnannotatedUntitledP then [untitledLinksSection] else
                    [RawBlock (Format "html") "<div id=\"miscellaneous-links-list\">\n\n",
                     untitledLinksSection,
@@ -155,6 +155,10 @@ generateDirectory filterp md dirs dir'' = do
     -- compare with the old version, and update if there are any differences:
     Right p' -> do let contentsNew = T.pack header `T.append` p'
                    writeUpdatedFile "directory" (dir'' ++ "index.page") contentsNew
+
+-- at what number of links should we auto-collapse the '# Miscellaneous' section because it adds so many entries to the page on load if left uncollapsed?
+miscellaneousCollapseLimit :: Int
+miscellaneousCollapseLimit = 50
 
 generateLinkBibliographyItems :: [(String,MetadataItem,FilePath,FilePath,FilePath)] -> [Block]
 generateLinkBibliographyItems [] = []
@@ -177,7 +181,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_),_,_,lb)  =
     let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation"],[]) else nullAttr
         link = if t=="" then Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author
                else Code nullAttr (T.pack f') : Str ":" : Space : Link linkAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author
-    in [Para link, Para [Link ("",["include", "include-replace-container"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` (T.pack f))]]
+    in [Para link, Para [Link ("",["include", "include-replace-container", "collapse"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` (T.pack f))]]
 
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String
 generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail

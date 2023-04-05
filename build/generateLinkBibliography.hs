@@ -87,10 +87,12 @@ generateLinkBibliographyItems items = let itemsWP = filter (\(u,_,_,_) -> "https
                                       (map generateLinkBibliographyItem itemsPrimary ++
                                           -- because WP links are so numerous, and so bulky, stick them into a collapsed sub-list at the end:
                                           if null itemsWP then [] else [
-                                                                        [Div ("",[if length itemsWP > 3 then "collapse" else ""],[]) [
+                                                                        [Div ("",["collapse"],[]) [
                                                                             Para [Strong [Str "Wikipedia link-bibliography"], Str ":"],
                                                                             OrderedList (1, UpperAlpha, DefaultDelim) (map generateLinkBibliographyItem itemsWP)]]]
                                       )
+
+
 generateLinkBibliographyItem  :: (String,MetadataItem,FilePath,FilePath) -> [Block]
 generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
   let f'
