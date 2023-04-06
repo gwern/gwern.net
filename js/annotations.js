@@ -475,7 +475,7 @@ Annotations = { ...Annotations,
 					//	Make aux-links-append include-links lazy.
 					auxLinksAppend.querySelectorAll(".include-strict").forEach(link => {
 						link.swapClasses([ "include", "include-strict" ], 0);
-						link.classList.add("include-when-collapsed");
+						link.classList.add("include-even-when-collapsed");
 					});
 
 					//	Rectify collapse block structure and classes.
