@@ -63,15 +63,20 @@ html {
 }
 
 body {
-    max-width: 935px;
-    padding: 0 15px;
+	--GW-body-max-width: 935px;
+	--GW-body-side-padding: 20px;
+
+    max-width: var(--GW-body-max-width);
+    padding: 0 var(--GW-body-side-padding);
     margin: 0 auto;
+}
+@media only screen and (max-width: 649px) {
+	--GW-body-side-padding: 15px;
 }
 
 main {
     position: relative;
 }
-
 @media only screen and (min-width: 650px) {
     main {
         min-height: 100vh;
@@ -131,7 +136,7 @@ main {
 }
 @media all and (max-width: 649px) {
     #sidebar {
-        margin: 0.75em 0 0.5em 0;
+        margin: 1em 0 0.5em 0;
     }
 }
 

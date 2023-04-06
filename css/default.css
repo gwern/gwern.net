@@ -598,7 +598,7 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: bold;
     position: relative;
 }
-@media all and (max-width: 649px) {
+@media all and (max-width: 1179px) {
     h1, h2, h3, h4, h5, h6 {
         margin: 1.25em 0 0.5em 0;
     }
@@ -641,7 +641,7 @@ section:not(.collapse) > h1:first-child {
     position: absolute;
     top: 0.15em;
 }
-@media all and (min-width: 650px) {
+@media all and (min-width: 1180px) {
     section:not(.collapse) > h1:first-child {
         margin: 1.75em 0 0.375em -0.75rem;
         font-size: 2em;
@@ -5812,9 +5812,9 @@ ol.link-bibliography-list-compact > li::before {
     height: 100%;
 }
 
-@media only screen and (min-width: 650px) {
+@media only screen and (min-width: 1080px) {
     #back-to-top {
-        right: calc(((100% - 965px) / 2) - 35px);
+        right: calc(((100% - (var(--GW-body-max-width) + 2 * var(--GW-body-side-padding))) / 2) - 35px);
     }
     #back-to-top a {
         border: 3px double transparent;
@@ -5823,7 +5823,7 @@ ol.link-bibliography-list-compact > li::before {
         border-color: currentColor;
     }
 }
-@media only screen and (max-width: 649px) {
+@media only screen and (max-width: 1079px) {
     #back-to-top {
         right: 1rem;
         bottom: 1rem;
