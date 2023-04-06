@@ -3,7 +3,7 @@ module Annotation.Arxiv (arxiv, processArxivAbstract) where
 import Data.List (intercalate, isInfixOf, isSuffixOf)
 import qualified Data.Text as T (pack, unpack)
 import Data.FileStore.Utils (runShellCommand)
-import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
+import qualified Data.ByteString.Lazy.UTF8 as U (toString, ByteString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import Text.Show.Pretty (ppShow)
 import System.Exit (ExitCode(ExitFailure))
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, HTMLMathMethod(MathJax),
@@ -17,11 +17,7 @@ import Paragraph (processParagraphizer)
 
 arxiv :: Path -> IO (Either Failure (Path, MetadataItem))
 arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak through or are deliberate section/page links
-               checkURL url
-               let arxivid = takeWhile (/='#') $ if "/pdf/" `isInfixOf` url && ".pdf" `isSuffixOf` url
-                                 then replaceMany [("https://arxiv.org/pdf/", ""), (".pdf", "")] url
-                                 else replace "https://arxiv.org/abs/" "" url
-               (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?search_query=id:"++arxivid++"&start=0&max_results=1", "--user-agent", "gwern+arxivscraping@gwern.net"]
+               (status,bs, arxivid) <- arxivDownload url
                case status of
                  ExitFailure _ -> printRed ("Error: curl API call failed on Arxiv ID: " ++ arxivid ++ "; Result: " ++ show bs) >> return (Left Temporary)
                  _ -> do let (tags,_) = element "entry" $ parseTags $ U.toString bs
@@ -39,6 +35,16 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                                              printGreen ("Error details: failure on Arxiv URL "++url ++"; Arxiv ID: " ++ arxivid ++ "; raw response: " ++ show bs ++ "; parsed data: " ++ show [show tags, title, authors, published, doiTmp, doi, abst, show ts])
                                              return (Left Temporary)
                                       else return $ Right (url, (title,authors,published,doi,ts,abst))
+
+arxivDownload :: String -> IO (ExitCode, U.ByteString, String)
+arxivDownload url = do
+               checkURL url
+               let arxivid = takeWhile (/='#') $ if "/pdf/" `isInfixOf` url && ".pdf" `isSuffixOf` url
+                                 then replaceMany [("https://arxiv.org/pdf/", ""), (".pdf", "")] url
+                                 else replace "https://arxiv.org/abs/" "" url
+               (a,_,c) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?search_query=id:"++arxivid++"&start=0&max_results=1", "--user-agent", "gwern+arxivscraping@gwern.net"]
+               return (a,c,arxivid)
+
 -- NOTE: we inline Tagsoup convenience code from Network.Api.Arxiv (https://hackage.haskell.org/package/arxiv-0.0.1/docs/src/Network-Api-Arxiv.html); because that library is unmaintained & silently corrupts data (https://github.com/toschoo/Haskell-Libs/issues/1), we keep the necessary code close at hand so at least we can easily patch it when errors come up
 -- Get the content of a 'TagText'
 findTxt :: [Tag String] -> String

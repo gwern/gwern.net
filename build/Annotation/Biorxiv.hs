@@ -1,6 +1,6 @@
 module Annotation.Biorxiv where
 
-import Data.List (intercalate)
+import Data.List (isInfixOf, intercalate)
 import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import Text.HTML.TagSoup (isTagOpenName, parseTags, Tag(TagOpen))
@@ -15,32 +15,33 @@ import Paragraph (processParagraphizer)
 -- handles medRxiv too (same codebase)
 biorxiv  :: Path -> IO (Either Failure (Path, MetadataItem))
 biorxiv p = do checkURL p
-               (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
-               case status of
-                 ExitFailure _ -> printRed ("BioRxiv download failed: " ++ p) >> return (Left Permanent)
-                 _ -> do
-                        let b = U.toString bs
-                        let f = parseTags b
-                        let metas = filter (isTagOpenName "meta") f
+               if ".pdf" `isInfixOf` p then return (Right (p, ("", "", "", "", [], ""))) else
+                do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
+                   case status of
+                     ExitFailure _ -> printRed ("BioRxiv download failed: " ++ p) >> return (Left Permanent)
+                     _ -> do
+                            let b = U.toString bs
+                            let f = parseTags b
+                            let metas = filter (isTagOpenName "meta") f
 
-                        let title = concat $ parseMetadataTagsoup "DC.Title" metas
-                        if title=="" then printRed ("BioRxiv parsing failed: " ++ p ++ " : parsed metadata: " ++ ppShow metas ++ "\nParsed tags: " ++ show f) >> return (Left Permanent)
-                          else do
-                                 let date    = concat $ parseMetadataTagsoup "DC.Date" metas
-                                 let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
-                                 let author  = initializeAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
-                                 let abstractRaw = concat $ parseMetadataTagsoupSecond "citation_abstract" metas
-                                 let abstractRaw' = if not (null abstractRaw) then abstractRaw else concat $ parseMetadataTagsoup "DC.Description" metas
-                                 abstrct <- fmap (replace "9s" "s". -- BUG: BioRxiv abstracts have broken quote encoding. I reported this to them 2 years ago and they still have not fixed it.
-                                                  linkAutoHtml5String . cleanAbstractsHTML) $ processParagraphizer p $ cleanAbstractsHTML abstractRaw'
-                                 let ts = [] -- TODO: replace with ML call to infer tags
-                                 if abstrct == "" then do printRed "BioRxiv parsing failed"
-                                                          print ("Metas: " ++ show metas)
-                                                          print abstractRaw
-                                                          print abstractRaw'
-                                                          return (Left Temporary)
-                                   else
-                                                   return $ Right (p, (title, author, date, doi, ts, abstrct))
+                            let title = concat $ parseMetadataTagsoup "DC.Title" metas
+                            if title=="" then printRed ("BioRxiv parsing failed: " ++ p ++ " : parsed metadata: " ++ ppShow metas ++ "\nParsed tags: " ++ show f) >> return (Left Permanent)
+                              else do
+                                     let date    = concat $ parseMetadataTagsoup "DC.Date" metas
+                                     let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
+                                     let author  = initializeAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
+                                     let abstractRaw = concat $ parseMetadataTagsoupSecond "citation_abstract" metas
+                                     let abstractRaw' = if not (null abstractRaw) then abstractRaw else concat $ parseMetadataTagsoup "DC.Description" metas
+                                     abstrct <- fmap (replace "9s" "s". -- BUG: BioRxiv abstracts have broken quote encoding. I reported this to them 2 years ago and they still have not fixed it.
+                                                      linkAutoHtml5String . cleanAbstractsHTML) $ processParagraphizer p $ cleanAbstractsHTML abstractRaw'
+                                     let ts = [] -- TODO: replace with ML call to infer tags
+                                     if abstrct == "" then do printRed "BioRxiv parsing failed"
+                                                              print ("Metas: " ++ show metas)
+                                                              print abstractRaw
+                                                              print abstractRaw'
+                                                              return (Left Temporary)
+                                       else
+                                                       return $ Right (p, (title, author, date, doi, ts, abstrct))
   where
     parseMetadataTagsoup, parseMetadataTagsoupSecond :: String -> [Tag String] -> [String]
     parseMetadataTagsoup key = map (\(TagOpen _ (a:b)) ->  if snd a == key then snd $ head b else "")
