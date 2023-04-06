@@ -1081,6 +1081,7 @@ a:hover {
     display: block;
     left: -1.375em;
     width: 0.75em;
+    height: 1.25em;
     padding: 1px 0 0 0;
 }
 
@@ -2806,10 +2807,11 @@ span.link-bibliography a {
 /* This is particularly useful for extremely long ('skinny') lists where items tend to be short, such as in /dnm-archive#overall-coverage or /replication */
 /* Uses CSS3 columns: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Columns/Using_multi-column_layouts https://www.caniuse.com/#feat=multicolumn */
 /* Currently limited to lists due to issues with hidden:overflow in FF and sidenotes.js in Chrome. */
-.markdownBody .columns > ul,
-.markdownBody .columns > ol {
+.markdownBody .columns ul,
+.markdownBody .columns ol {
     --GW-list-left-padding: 1.5em;
 }
+
 .markdownBody .columns > ul,
 .markdownBody .columns > ol {
     column-width: 12em;
