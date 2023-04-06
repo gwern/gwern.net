@@ -213,9 +213,16 @@ staticImg x@(TagOpen "img" xs) = do
                 Nothing       -> printRed "staticImg: Image width can't be read: " >> print x >> return x
                 Just width'' -> case height' of
                                  Nothing       -> printRed "staticImg: Image height can't be read: " >> print x >> return x
-                                 Just height'' -> return (TagOpen "img" (uniq (loading ++  -- lazy load & async render all images
-                                                                                [("decoding", "async"),
-                                                                                ("height", show height''), ("width", show (width'' `min` 1400))]++xs)))
+                                 Just height'' ->
+                                   let -- preserve aspect ratio when we have to shrink to the minimum width:
+                                       imageWidth = width'' `min` 1400
+                                       imageShrunk = width'' /= imageWidth
+                                       imageShrinkRatio = (1400::Float) / (fromIntegral width'' :: Float)
+                                       imageHeight = if not imageShrunk then height'' else round ((fromIntegral height'') * imageShrinkRatio)
+                                   in
+                                     return (TagOpen "img" (uniq (loading ++  -- lazy load & async render all images
+                                                                   [("decoding", "async"),
+                                                                     ("height", show imageHeight), ("width", show imageWidth)]++xs)))
       else return x
   where uniq = nubBy (\a b -> fst a == fst b) . sort
 staticImg x = return x
