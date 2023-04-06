@@ -91,6 +91,7 @@
     max-height: calc(  var(--collapse-toggle-top-height)
                      + var(--collapse-toggle-bottom-height));
     overflow: hidden;
+    contain: content;
 }
 .collapse.has-abstract.expanded-not > .collapse-content-wrapper {
     max-height: 0;
@@ -4331,6 +4332,7 @@ body.index-directory #footer {
     background-color: var(--GW-popups-popup-background-color);
     padding: var(--popups-popup-content-padding);
     display: flow-root;
+    contain: content;
 }
 
 /*┌─────────────┐*/
