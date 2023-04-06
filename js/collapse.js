@@ -148,6 +148,12 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 				collapseWrapper.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
 			}
 
+			//	Slight HTML structure rectification.
+			if (   collapseWrapper.parentElement
+				&& [ "P" ].includes(collapseWrapper.parentElement.tagName)
+				&& isOnlyChild(collapseWrapper))
+				unwrap(collapseWrapper.parentElement);
+
 			//	Construct collapse content wrapper.
 			let collapseContentWrapper = newElement("DIV", { "class": "collapse-content-wrapper" });
 			let childNodesArray = Array.from(collapseWrapper.childNodes);
@@ -158,9 +164,8 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			collapseWrapper.append(collapseContentWrapper);
 
 			//	Designate abstract-less collapse blocks.
-			if (collapseContentWrapper.previousElementSibling.classList.contains("abstract") == false) {
+			if (collapseContentWrapper.previousElementSibling.classList.contains("abstract") == false)
 				collapseWrapper.classList.add("no-abstract");
-			}
 		}
 	});
 

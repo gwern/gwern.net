@@ -67,24 +67,25 @@
         A strict include-link, on the other hand, triggers immediately at
         load time.
 
-        `include-strict` implies `include-when-collapsed`, because
+        `include-strict` implies `include-even-when-collapsed`, because
         otherwise odd behavior can result (eg. a 'strict' transclusion in the
         first line or two of a collapse will be visibly untranscluded; and
-        collapses blocking strict transclusion can lead to unpredictable breakage
-        when the contents of the transclusion are depended upon by the rest of the
-        page, and collapses are added/removed by editors).
+        collapses blocking strict transclusion can lead to unpredictable 
+        breakage when the contents of the transclusion are depended upon by the 
+        rest of the page, and collapses are added/removed by editors).
 
-    include-when-collapsed
+    include-even-when-collapsed
         Normally, an include-link that is inside a collapsed block will not
         trigger at load time; instead, it will trigger only when it is revealed
-        by expansion of its containing collapse block(s). The `include-when-collapsed`
-        class disables this delay, forcing the include-link to trigger at load time
-        (if it is marked as `include-strict`) or when revealed by scrolling
-        (if it is not marked as `include-strict`) even if, at such time, it is
-        within a collapsed block.
+        by expansion of its containing collapse block(s). The 
+        `include-even-when-collapsed` class disables this delay, forcing the 
+        include-link to trigger when revealed by scrolling (if it is not marked 
+        as `include-strict`; otherwise, `include-strict` will force the 
+        include-link to trigger at load time, regardless of anything to do with
+        collapses) even if, at such time, it is within a collapsed block.
 
-        Note that the `include-strict` and `include-when-collapsed` options are
-        not mutually exclusive, and do not do the same thing.
+        Note that the `include-strict` and `include-even-when-collapsed` options 
+        are not mutually exclusive, and do not do the same thing.
 
     include-unwrap
         Normally, when an include-link’s URL specifies an element ID to
@@ -997,7 +998,7 @@ Transclude = {
         "include-annotation-partial",
         "include-content",
         "include-strict",
-        "include-when-collapsed",
+        "include-even-when-collapsed",
         "include-unwrap",
         "include-block-context",
         "include-replace-container",
@@ -1393,7 +1394,7 @@ Transclude = {
         if (   now == false
             && isWithinCollapsedBlock(includeLink)
             && includeLink.classList.contains("include-strict") == false
-            && includeLink.classList.contains("include-when-collapsed") == false) {
+            && includeLink.classList.contains("include-even-when-collapsed") == false) {
             includeLink.delayed = true;
             GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (info) => {
                 Transclude.transclude(includeLink);

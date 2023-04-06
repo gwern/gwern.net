@@ -551,10 +551,10 @@ blockquote .collapse.has-abstract.expanded-not > .disclosure-button .part::befor
 /*  Collapse edge cases.
  */
 
-li > .collapse {
+li > .collapse:only-child {
     margin: 0.25em 0 0.25em 0;
 }
-li:last-child > .collapse {
+li:last-child > .collapse:only-child {
 	margin: 0.25em 0 0.75em 0;
 }
 li > .collapse > .collapse-content-wrapper > ul {
@@ -4005,7 +4005,7 @@ body.index-directory #footer {
 .popframe-body h1.display-pop-not {
     display: none;
 }
-.popframe-body section.display-pop-not {
+.popframe-body section.display-pop-not:not(:first-child) {
     margin-top: 2.75em;
 }
 

@@ -1303,8 +1303,8 @@ addContentInjectHandler(GW.contentInjectHandlers.bindSectionHighlightEventsToAnn
 addContentInjectHandler(GW.contentInjectHandlers.removeSubheadingFromLinkBibliography = (eventInfo) => {
     GWLog("removeSubheadingFromLinkBibliography", "rewrite.js", 1);
 
-    if (eventInfo.container.closest("section#link-bibliography")) {
-        let subheading = eventInfo.container.querySelector("div#link-bibliography-link-footer-transclusion > p:first-child");
+    if (eventInfo.container.closest("section#link-bibliography-section")) {
+        let subheading = eventInfo.container.querySelector("#link-bibliography > .aux-links-list-label");
         if (subheading)
             subheading.remove();
     }
