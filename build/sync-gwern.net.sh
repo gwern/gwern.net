@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-05 17:09:51 gwern"
+# When:  Time-stamp: "2023-04-06 14:32:22 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -71,7 +71,7 @@ else
           s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant'; s ' CIFAR10' 'CIFAR-10'; s 'TyDi QA' 'TyDiQA'; s 'Türkiye' 'Turkey'; s ' Poincare' ' Poincaré'; s 'Francois de La Rochefoucauld' 'François de La Rochefoucauld'; s 'Moliere' 'Molière'; s 'behavioural genetic' 'behavioral genetic'; s ' gwern.net' ' Gwern.net';
 
           ## abbreviation consistency:
-          s '(ie,' '(ie.'; s '(ie ' '(ie. '; s '(i.e.,' '(ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
+          s '(ie,' '(ie.'; s '(ie ' '(ie. '; s 'i.e.,' 'ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
           s '<sup>Th</sup>' '<sup>th</sup>'; s '<sup>St</sup>' '<sup>st</sup>'; s '<sup>Nd</sup>' '<sup>nd</sup>'; s '<sup>Rd</sup>' '<sup>rd</sup>';
           s ',”' '”,'; s ",’" "’,";
 
@@ -145,30 +145,28 @@ else
     # docs, so we'll blacklist those:
     DIRECTORY_TAGS="$(find doc/ fiction/ haskell/ newsletter/ nootropic/ note/ review/ zeo/ -type d \
                       | sort | grep -F --invert-match -e 'doc/www' -e 'doc/rotten.com' -e 'doc/genetics/selection/www.mountimprobable.com' \
-                                        -e 'doc/biology/2000-iapac-norvir' -e 'doc/gwern.net-gitstats' -e 'doc/rl/armstrong-controlproblem' \
+                                        -e 'doc/biology/2000-iapac-norvir' -e 'doc/gwern.net-gitstats' -e 'doc/reinforcement-learning/armstrong-controlproblem' \
                                         -e 'doc/statistics/order/beanmachine-multistage' -e 'doc/personal/2011-gwern-yourmorals.org/')"
-    PAGES_BIBLIOGRAPHIES="$(find . -type f -name "*.page" | sort | grep -F --invert-match -e 'index.page' -e '404.page' | sed -e 's/\.\///' | shuf; find . -type f -name "index.page"|grep -F --invert-match -e 'doc/') index.page"
 
-    # wait for generateLinkBibliography to finish to ensure the annotation link-bibs are all created:
-    bold "Updating link bibliographies…"
-    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS
+    # # wait for generateLinkBibliography to finish to ensure the annotation link-bibs are all created:
+    # bold "Updating link bibliographies…"
+    # ./static/build/generateLinkBibliography +RTS -N"$N" -RTS
 
-    # we want to generate all directories first before running Hakyll in case a new tag was created
-    bold "Building directory indexes…"
-    ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS
+    # # we want to generate all directories first before running Hakyll in case a new tag was created
+    # bold "Building directory indexes…"
+    # ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS
   fi
 
     bold "Check/update VCS…"
-    ping -q -c 5 google.com &> /dev/null && cd ./static/ && (git status; git pull; git push --verbose &) || true
-    cd ./build/
-    # Cleanup pre:
-    rm --recursive --force -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-extractor ./static/build/link-suggester || true
+    (ping -q -c 5 google.com &> /dev/null && cd ./static/ && git status; git pull; git push --verbose &) || true
 
-    cd ../../ # go to site root
+    # Cleanup pre:
+    rm --recursive --force ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks || true
+
+    cd ~/wiki/ # go to site root
     bold "Building site…"
-    time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
     if [ "$SLOW" ]; then
-        bold "Updating X-of-the-day…" #  NOTE: we do this at the end, instead of inside hakyll.hs, to avoid spurious uses when a compile fails
+        bold "Updating X-of-the-day…" #  NOTE: we have to do this before because it's no longer symlinked.
         ghci -i/home/gwern/wiki/static/build/ ./static/build/QuoteOfTheDay.hs \
              -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; qotd; sotd; }' | \
             grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]';
@@ -176,6 +174,7 @@ else
               grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' || true; }
         wrap λ "Site-of-the-day: check for recommendation?"
     fi
+    time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
 
     bold "Results size:"
     du -chs ./_cache/ ./_site/
@@ -420,7 +419,7 @@ else
                    -e '^book-review-meta$' -e '^book-review-review$' -e '^tip$' -e '^xml$' -e '^warning$' -e '^al$' -e '^an$' -e '^bn$' \
                    -e '^cn$' -e '^cv$' -e '^do$' -e '^dt$' -e '^er$' -e '^error$' -e '^ex$' -e '^fl$' -e '^im$' -e '^in$' -e '^ot$' -e '^pp$' \
                    -e '^re$' -e '^sc$' -e '^ss$' -e '^va$' -e '^citation$' -e '^directory-indexes$' -e '^directory-indexes-sideways$' \
-                   -e '^display-pop-not$' -e '^footnote-back$' -e '^footnotes$' -e '^image-focus-not$' -e '^include-annotation$' -e '^include-when-collapsed$' \
+                   -e '^display-pop-not$' -e '^footnote-back$' -e '^footnotes$' -e '^image-focus-not$' -e '^include-annotation$' -e '^include-even-when-collapsed$' \
                    -e '^include-spinner-not$' -e '^include-replace-container$' -e '^include-replace-container-not$' -e '^include-unwrap$' \
                    -e '^marginnote$' -e '^markdownBody$' -e '^mjpage$' -e '^mjpage__block$' -e '^mjx-base$' -e '^mjx-box$' -e '^MJXc-display$' \
                    -e '^mjx-cell$' -e '^mjx-char$' -e '^mjx-charbox$' -e '^mjx-chtml$' -e '^MJXc-space1$' -e '^MJXc-space2$' -e '^MJXc-space3$' \
