@@ -2900,6 +2900,7 @@ span.link-bibliography a {
     background-color: var(--admonition-background-color);
 }
 .admonition-title {
+	margin-bottom: 0.25em;
     font-weight: bold;
 }
 
