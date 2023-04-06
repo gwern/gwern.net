@@ -691,8 +691,8 @@ addContentInjectHandler(GW.contentInjectHandlers.deFloatSolitaryFigures = (event
 /********************************************************************/
 /*  Designate full-width figures as such (with a ‘width-full’ class).
  */
-addContentInjectHandler(GW.contentInjectHandlers.markFullWidthFigures = (eventInfo) => {
-    GWLog("markFullWidthFigures", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (eventInfo) => {
+    GWLog("prepareFullWidthFigures", "rewrite.js", 1);
 
     let fullWidthClass = "width-full";
 
@@ -700,6 +700,19 @@ addContentInjectHandler(GW.contentInjectHandlers.markFullWidthFigures = (eventIn
     allFullWidthMedia.forEach(fullWidthMedia => {
         fullWidthMedia.closest("figure").classList.toggle(fullWidthClass, true);
     });
+
+	//	Constrain caption width to width of media element.
+	let constrainCaptionWidth = (fullWidthMedia) => {
+		let caption = fullWidthMedia.closest("figure").querySelector(".caption-wrapper");
+		if (caption)
+			caption.style.maxWidth = fullWidthMedia.offsetWidth + "px";
+	};
+
+	allFullWidthMedia.forEach(fullWidthMedia => {
+		fullWidthMedia.addEventListener("load", (event) => {
+			constrainCaptionWidth(fullWidthMedia);
+		});
+	});
 
     /*  Add ‘load’ listener for lazy-loaded media (as it might cause re-layout
         of e.g. sidenotes). Do this only after page layout is complete, to avoid
@@ -713,6 +726,10 @@ addContentInjectHandler(GW.contentInjectHandlers.markFullWidthFigures = (eventIn
                 });
             });
         });
+		//  Add listener to update caption max-width when window resizes.
+		window.addEventListener("resize", (event) => {
+			allFullWidthMedia.forEach(constrainCaptionWidth);
+		});
     });
 }, "rewrite", (info) => info.fullWidthPossible);
 
