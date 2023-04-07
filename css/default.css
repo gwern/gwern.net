@@ -1251,7 +1251,7 @@ figure audio:hover {
 /*  Figure captions.
     */
 figcaption {
-    font-size: 0.9375em;
+    font-size: 0.9em;
     font-weight: bold;
     line-height: 1.50;
     margin: auto;
@@ -1288,6 +1288,7 @@ video + .caption-wrapper {
 figure.width-full {
     position: relative;
     max-width: unset;
+    clear: both;
 }
 
 /*  Floating figures. (Mostly for amusing asides/memes.)
