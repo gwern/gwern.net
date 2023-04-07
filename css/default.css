@@ -4000,6 +4000,10 @@ body.index-directory #footer {
     text-indent: 0;
 }
 
+.popframe-body section#see-also:first-child > h1:first-child {
+    margin-top: 0;
+}
+
 /*┌─────────────────┐*/
 /*│ Tag pop-frames. │*/
 /*└─────────────────┘*/
