@@ -1413,7 +1413,7 @@ Transclude = {
         if (   now == false
             && includeLink.classList.contains("include-strict") == false) {
             includeLink.delayed = true;
-            requestAnimationFrame(() => {
+            requestIdleCallback(() => {
                 lazyLoadObserver(() => {
                     Transclude.transclude(includeLink, true);
                 }, includeLink, {

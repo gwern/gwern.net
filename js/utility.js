@@ -758,3 +758,9 @@ function onEventAfterDelayDo(target, triggerEventName, delay, func, cancelEventN
     }
 }
 
+/************************************************/
+/*	Polyfill for requestIdleCallback() in Safari.
+ */
+if (window.requestIdleCallback == null) {
+	window.requestIdleCallback = (fn) => { setTimeout(fn, 0) };
+}
