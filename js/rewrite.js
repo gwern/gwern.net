@@ -1313,8 +1313,8 @@ addContentInjectHandler(GW.contentInjectHandlers.removeSubheadingFromLinkBibliog
 /*****************************************************************************/
 /*  Apply a class to those link-bibs that should use the more compact styling.
  */
-addContentInjectHandler(GW.contentInjectHandlers.applyLinkBibliographyStylingClass = (eventInfo) => {
-    GWLog("applyLinkBibliographyStylingClass", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.applyLinkBibliographyCompactStylingClass = (eventInfo) => {
+    GWLog("applyLinkBibliographyCompactStylingClass", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll(".link-bibliography-list").forEach(linkBibList => {
         if (linkBibList.closest("li, .link-bibliography-append, .popframe-body.link-bibliography"))
@@ -1533,8 +1533,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (eventIn
         TOC.classList.add("TOC-links-only");
     }
 }, "rewrite", (info) => (   info.container == document.body
-                         && info.loadLocation
-                         && /\/(index)?$/.test(info.loadLocation.pathname)));
+                         && /\/(index)?$/.test(location.pathname)));
 
 /**************************************************************************/
 /*  If the table of contents has but one entry (or none at all), remove it.

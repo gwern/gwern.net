@@ -136,6 +136,11 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 					collapseBlock.classList.add("bare-content");
 			} else {
 				collapseWrapper = wrapElement(collapseBlock, null, "DIV", true, [ "collapse", "expand-on-hover" ]);
+
+				if ([ "SPAN" ].includes(collapseBlock.tagName)) {
+					wrapElement(collapseBlock, null, "DIV", true, true);
+					unwrap(collapseBlock);
+				}
 			}
 
 			//	Mark as expanded, if need be.
