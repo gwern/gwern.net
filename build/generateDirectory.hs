@@ -47,7 +47,7 @@ main = do dirs <- getArgs
 
           -- Special-case directories:
           -- 'newest': the _n_ newest link annotations created (currently, 'newest' is not properly tracked, and is inferred from being at the bottom/end of full.yaml/partial.yaml TODO: actually track annotation creation dates...)
-          metaNewest <- readLinkMetadataNewest 200
+          metaNewest <- readLinkMetadataNewest 100
           generateDirectory False metaNewest ["doc/", "doc/newest/", "/"] "doc/newest/"
 
 generateDirectory :: Bool -> Metadata -> [FilePath] -> FilePath -> IO ()
@@ -175,7 +175,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_),_,_,lb)  =
                     else Str (T.pack authorShort)
       author = if aut=="" || aut=="N/A" then []
                else
-                 [Str ",", Space, authorSpan, Str ":"]
+                 [Str ",", Space, authorSpan] -- NOTE: no ':' as usual after the author in an annotation transclusion, because the link-bibliography will be its own section header with a ':' in it so would be redundant here.
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
     let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation"],[]) else nullAttr
