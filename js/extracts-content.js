@@ -871,7 +871,7 @@ Extracts = { ...Extracts,
 
     //  Used in: Extracts.localImageForTarget
     imageMaxWidth: 634.0,
-    imageMaxHeight: 474.0,
+    imageMaxHeight: 453.0,
 
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalImageLink: (target) => {
@@ -905,7 +905,7 @@ Extracts = { ...Extracts,
         let styles = ``;
         if (   width > 0
             && height > 0)
-            styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
+            styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px; aspect-ratio: ${width} / ${height}"`;
 
         //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invert’.
         return newDocument(`<img
