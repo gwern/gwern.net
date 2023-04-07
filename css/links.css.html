@@ -1,0 +1,1004 @@
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode CSS"><code class="sourceCode css"><span class="in">:root</span> {</span>
+    <span class="va">--GW-dotted-underline-background-image</span>: <span class="fu">url(</span><span class="st">&#39;data:image/gif;base64,R0lGODlhBAACAPAAMQAAAP///ywAAAAABAACAAACBAQShgUAOw==&#39;</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-dotted-underline-hover-background-image</span>: <span class="fu">url(</span><span class="st">&#39;data:image/gif;base64,R0lGODlhBAACAPAAMYiIiP///ywAAAAABAACAAACBAQShgUAOw==&#39;</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-dotted-underline-hover-dark-background-image</span>: <span class="fu">url(</span><span class="st">&#39;data:image/gif;base64,R0lGODlhBAACAPAAMQAAAJ6eniwAAAAABAACAAACBAQShgUAOw==&#39;</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/************************/</span></span>
+<span class="co">/* POP-FRAME INDICATORS */</span></span>
+<span class="co">/************************/</span></span>
+</span>
+<span class="co">/* If a link has an automatic or custom link annotation (eg. a paper abstract, or excerpts), subtly mark it with a dog-ear/tag-like icon, */</span></span>
+<span class="co">/* so users don&#39;t get frustrated hovering over links which have no useful annotation (which is an unfortunate number). */</span></span>
+<span class="co">/* At some point, if enough links get annotated &amp; annotation is the default, we might flip this to be a warning for non-annotated links. */</span></span>
+<span class="co">/* We exclude it on the homepage because every linked page has a description/abstract, and the triangles everywhere add a lot of visual clutter. */</span></span>
+<span class="fu">.has-content</span> {</span>
+    <span class="kw">margin</span>: <span class="dv">0</span> <span class="dv">0.08</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">padding-left</span>: <span class="dv">0.3</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">position</span>: <span class="dv">relative</span><span class="op">;</span></span>
+    <span class="kw">z-index</span>: <span class="dv">1</span><span class="op">;</span></span>
+    -webkit-box-decoration-break: clone<span class="op">;</span></span>
+    <span class="kw">box-decoration-break</span>: clone<span class="op">;</span></span>
+}</span>
+<span class="fu">.has-content</span> <span class="fu">.indicator-hook</span> {</span>
+    <span class="kw">position</span>: <span class="dv">relative</span><span class="op">;</span></span>
+    <span class="kw">padding-left</span>: <span class="dv">0.3</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">margin-left</span>: <span class="dv">-0.3</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">z-index</span>: <span class="dv">-1</span><span class="op">;</span></span>
+}</span>
+<span class="fu">.has-content</span> <span class="fu">.indicator-hook</span><span class="in">::before</span> {</span>
+    <span class="kw">content</span>: <span class="st">&quot; &quot;</span><span class="op">;</span></span>
+    <span class="kw">position</span>: <span class="dv">absolute</span><span class="op">;</span></span>
+    <span class="kw">left</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">bottom</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">top</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">width</span>: <span class="dv">1</span><span class="dt">px</span><span class="op">;</span></span>
+    <span class="kw">height</span>: <span class="dv">100</span><span class="dt">%</span><span class="op">;</span></span>
+    <span class="kw">background-image</span>:</span>
+        <span class="fu">linear-gradient(var(</span><span class="va">--GW-link-underline-background-color</span><span class="fu">)</span><span class="op">,</span></span>
+                        <span class="fu">var(</span><span class="va">--GW-link-underline-background-color</span><span class="fu">))</span><span class="op">,</span></span>
+        <span class="fu">linear-gradient(var(</span><span class="va">--GW-link-underline-gradient-line-color</span><span class="fu">)</span><span class="op">,</span></span>
+                        <span class="fu">var(</span><span class="va">--GW-link-underline-gradient-line-color</span><span class="fu">))</span><span class="op">;</span></span>
+    <span class="kw">background-size</span>:</span>
+        <span class="dv">1</span><span class="dt">px</span> <span class="dv">0.5</span><span class="dt">em</span><span class="op">,</span></span>
+        <span class="dv">1</span><span class="dt">px</span> <span class="dv">1</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">background-position</span>:</span>
+        <span class="dv">0</span> <span class="dv">0.1</span><span class="dt">em</span><span class="op">,</span></span>
+        <span class="dv">0</span> <span class="fu">calc(</span><span class="dv">100</span><span class="dt">%</span> <span class="op">-</span> <span class="dv">0.1</span><span class="dt">em</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">background-repeat</span>: <span class="dv">no-repeat</span><span class="op">;</span></span>
+}</span>
+<span class="fu">.has-content</span><span class="in">:hover</span> {</span>
+    <span class="va">--GW-link-underline-gradient-line-color</span>: <span class="fu">var(</span><span class="va">--GW-link-underline-gradient-line-color-hover</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+<span class="fu">.TOC</span> <span class="fu">.has-content</span><span class="op">,</span></span>
+body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="fu">.has-content</span> {</span>
+    <span class="kw">margin</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">padding-left</span>: <span class="dv">0</span><span class="op">;</span></span>
+}</span>
+<span class="fu">.TOC</span> <span class="fu">.has-content</span> <span class="fu">.indicator-hook</span><span class="op">,</span></span>
+<span class="pp">#sidebar</span> <span class="fu">.has-content</span> <span class="fu">.indicator-hook</span><span class="op">,</span></span>
+body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="fu">.has-content</span> <span class="fu">.indicator-hook</span> {</span>
+    <span class="kw">display</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="fu">.markdownBody</span> a<span class="fu">.has-annotation</span> {</span>
+    <span class="kw">background-image</span>: <span class="fu">var(</span><span class="va">--GW-dotted-underline-background-image</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">background-size</span>: <span class="dv">2</span><span class="dt">px</span> <span class="dv">1</span><span class="dt">px</span><span class="op">;</span></span>
+}</span>
+<span class="fu">.markdownBody</span> a<span class="fu">.has-annotation</span><span class="in">:hover</span> {</span>
+    <span class="kw">background-image</span>: <span class="fu">var(</span><span class="va">--GW-dotted-underline-hover-background-image</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  ToCs in pop-frames, and also in link bibliographies, directory indexes, etc.</span></span>
+<span class="co"> */</span></span>
+<span class="fu">.popframe-body</span> <span class="fu">.TOC</span> a<span class="in">:link</span><span class="op">,</span></span>
+<span class="fu">.popframe-body</span> <span class="fu">.TOC</span> a<span class="in">:link</span> <span class="op">*,</span></span>
+blockquote <span class="fu">.TOC</span> a<span class="in">:link</span><span class="op">,</span></span>
+blockquote <span class="fu">.TOC</span> a<span class="in">:link</span> <span class="op">*,</span></span>
+body<span class="ex">[class</span><span class="op">*=</span><span class="st">&#39;-index&#39;</span><span class="ex">]</span> <span class="pp">#TOC</span> a<span class="in">:link</span><span class="op">,</span></span>
+body<span class="ex">[class</span><span class="op">*=</span><span class="st">&#39;-index&#39;</span><span class="ex">]</span> <span class="pp">#TOC</span> a<span class="in">:link</span> <span class="op">*</span> {</span>
+    <span class="kw">background</span>: <span class="dv">none</span><span class="op">;</span></span>
+    <span class="kw">text-shadow</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+<span class="co">/*  Restore proper hover highlighting.</span></span>
+<span class="co"> */</span></span>
+<span class="fu">.popframe-body</span> <span class="fu">.TOC</span> a<span class="in">:hover</span> {</span>
+    <span class="kw">background-color</span>: <span class="fu">var(</span><span class="va">--GW-TOC-link-hover-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="fu">.popframe-body</span> <span class="fu">.TOC</span> a<span class="in">::after</span><span class="op">,</span></span>
+blockquote <span class="fu">.TOC</span> a<span class="in">::after</span><span class="op">,</span></span>
+body<span class="ex">[class</span><span class="op">*=</span><span class="st">&#39;-index&#39;</span><span class="ex">]</span> <span class="pp">#TOC</span> a<span class="in">::after</span> {</span>
+    <span class="kw">display</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="fu">.popframe-body</span> <span class="fu">.TOC</span> a<span class="in">:hover::after</span><span class="op">,</span></span>
+blockquote <span class="fu">.TOC</span> a<span class="in">:hover::after</span><span class="op">,</span></span>
+body<span class="ex">[class</span><span class="op">*=</span><span class="st">&#39;-index&#39;</span><span class="ex">]</span> <span class="pp">#TOC</span> a<span class="in">:hover::after</span> {</span>
+    <span class="kw">margin</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">bottom</span>: <span class="bu">unset</span><span class="op">;</span></span>
+    <span class="kw">font-size</span>: <span class="bu">inherit</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="bu">unset</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="fu">.popframe-body</span> <span class="fu">.TOC</span> a<span class="ex">[data-link-icon]</span><span class="in">:hover::after</span><span class="op">,</span></span>
+blockquote <span class="fu">.TOC</span> a<span class="ex">[data-link-icon]</span><span class="in">:hover::after</span><span class="op">,</span></span>
+body<span class="ex">[class</span><span class="op">*=</span><span class="st">&#39;-index&#39;</span><span class="ex">]</span> <span class="pp">#TOC</span> a<span class="ex">[data-link-icon]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">background-image</span>: <span class="dv">none</span><span class="op">;</span></span>
+    <span class="kw">padding</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="dv">1.0</span><span class="op">;</span></span>
+}</span>
+</span>
+</span>
+<span class="co">/**************/</span></span>
+<span class="co">/* LINK ICONS */</span></span>
+<span class="co">/**************/</span></span>
+</span>
+<span class="co">/*******************************************************************************/</span></span>
+<span class="co">/*  The philosophy of link icons is that the hyperlink text &amp; surrounding</span></span>
+<span class="co">    context often leaves much out, which would be impossible to express inline</span></span>
+<span class="co">    conveniently (such as filetypes like PDF: a link being PDF is no longer a</span></span>
+<span class="co">    big deal for desktop readers, whose browser will open them quickly,</span></span>
+<span class="co">    natively, and render accurately, but due to the unfortunate state of mobile</span></span>
+<span class="co">    PDF viewing, mobile readers still care and may prefer not to open a PDF).</span></span>
+</span>
+<span class="co">    Link icons provide some additional information in a compact iconic form</span></span>
+<span class="co">    which doesn&#39;t interrupt the text or require manual annotation, and are</span></span>
+<span class="co">    useful for denoting the logical source, the topic, the file format, or</span></span>
+<span class="co">    anything else one might be able to infer using regexes on a URL.</span></span>
+</span>
+<span class="co">    To visualize the current set of link icons, see /lorem#link-icons.</span></span>
+</span>
+<span class="co">    Link icons for domains can be auto-generated by extracting favicons from the</span></span>
+<span class="co">    domain (eg. https://www.pmwiki.org/wiki/Cookbook/ExternalLinksFavicons );</span></span>
+<span class="co">    this would be useful for many sites, particularly user-contributed ones, but</span></span>
+<span class="co">    I don&#39;t use this approach on Gwern.net for several reasons:</span></span>
+</span>
+<span class="co">    1. most favicons look bad on their own (often they&#39;re too low-resolution to</span></span>
+<span class="co">       use inline) and aren&#39;t even recognizable by a reader anyway;</span></span>
+<span class="co">    2. most favicons need tweaking to fit into Gwern.net to avoid shattering the</span></span>
+<span class="co">       monochrome theme, and to get proper margins/spacing/opacity in both light</span></span>
+<span class="co">       &amp; dark mode;</span></span>
+<span class="co">    3. domains and icons are long-tailed: most domains are linked only 1 or 2</span></span>
+<span class="co">       times, so even if they are high quality and usable as-is, readers would</span></span>
+<span class="co">       not recognize or benefit from them, and if they did, the benefit would be</span></span>
+<span class="co">       astronomically tiny (because they&#39;d see it once or twice, max).</span></span>
+</span>
+<span class="co">    Because Gwern.net is written just by myself, it is not hard to add new icons</span></span>
+<span class="co">    as the need arises and a domain or filetype becomes common enough that an</span></span>
+<span class="co">    icon might be useful, and the icons need to be manually-edited anyway.</span></span>
+<span class="co"> */</span></span>
+<span class="co">/*  Note: some file extension link types have are selected additionally by</span></span>
+<span class="co">    origin on Gwern.net, because they frequently appear at the ends of ordinary</span></span>
+<span class="co">    web page URLs.</span></span>
+<span class="co"> */</span></span>
+</span>
+<span class="pp">#sidebar</span> a<span class="in">::after</span> {</span>
+    <span class="kw">content</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*=================*/</span></span>
+<span class="co">/*= COMMON STYLES =*/</span></span>
+<span class="co">/*=================*/</span></span>
+</span>
+<span class="co">/*******************/</span></span>
+<span class="co">/*  Graphical icons.</span></span>
+<span class="co">    */</span></span>
+a<span class="ex">[data-link-icon-type</span><span class="op">=</span><span class="st">&#39;svg&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.5</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.20</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">content</span>: <span class="st">&quot;&quot;</span><span class="op">;</span></span>
+    <span class="kw">position</span>: <span class="dv">static</span><span class="op">;</span></span>
+    <span class="kw">padding</span>: <span class="dv">0</span> <span class="fu">var(</span><span class="va">--link-icon-size</span><span class="fu">)</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">margin</span>: <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span> <span class="fu">var(</span><span class="va">--link-icon-offset-x</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">background-image</span>: <span class="fu">var(</span><span class="va">--link-icon-url</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">background-size</span>: <span class="fu">var(</span><span class="va">--link-icon-size</span><span class="fu">)</span><span class="op">;</span></span>
+    background-position-x: <span class="dv">center</span><span class="op">;</span></span>
+    background-position-y: <span class="fu">var(</span><span class="va">--link-icon-offset-y</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">background-repeat</span>: <span class="dv">no-repeat</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.6</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon-type</span><span class="op">=</span><span class="st">&#39;svg&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.3</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*****************/</span></span>
+<span class="co">/*  Textual icons.</span></span>
+<span class="co">    */</span></span>
+a<span class="ex">[data-link-icon-type</span><span class="op">*=</span><span class="st">&#39;text&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.125</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-font-serif</span>: Noto Emoji<span class="op">,</span> Quivira<span class="op">,</span> <span class="fu">var(</span><span class="va">--GW-serif-font-stack</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--link-icon-font-sans</span>: Noto Emoji<span class="op">,</span> Quivira<span class="op">,</span> <span class="fu">var(</span><span class="va">--GW-sans-serif-font-stack</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--link-icon-font-mono</span>: Noto Emoji<span class="op">,</span> Quivira<span class="op">,</span> <span class="fu">var(</span><span class="va">--GW-monospaced-font-stack</span><span class="fu">)</span><span class="op">;</span></span>
+</span>
+    <span class="kw">content</span>: <span class="st">&quot;</span><span class="sc">\2060</span><span class="st">&quot;</span> <span class="fu">attr(</span>data-link-icon<span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">font-size</span>: <span class="fu">var(</span><span class="va">--link-icon-size</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">font-weight</span>: <span class="dv">600</span><span class="op">;</span></span>
+    <span class="kw">font-style</span>: <span class="dv">normal</span><span class="op">;</span></span>
+    <span class="kw">font-family</span>: <span class="fu">var(</span><span class="va">--link-icon-font-serif</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">margin</span>: <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span> <span class="fu">var(</span><span class="va">--link-icon-offset-x</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">vertical-align</span>: <span class="dv">baseline</span><span class="op">;</span></span>
+    <span class="kw">position</span>: <span class="dv">relative</span><span class="op">;</span></span>
+    <span class="kw">bottom</span>: <span class="fu">var(</span><span class="va">--link-icon-offset-y</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.83</span><span class="op">;</span></span>
+    <span class="kw">padding</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">background-image</span>: <span class="dv">none</span><span class="op">;</span></span>
+    <span class="kw">background-size</span>: <span class="bu">unset</span><span class="op">;</span></span>
+    <span class="kw">line-height</span>: <span class="dv">1</span><span class="op">;</span></span>
+    <span class="kw">overflow-wrap</span>: <span class="dv">normal</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon-type</span><span class="op">*=</span><span class="st">&#39;sans&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="kw">font-family</span>: <span class="fu">var(</span><span class="va">--link-icon-font-sans</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon-type</span><span class="op">*=</span><span class="st">&#39;mono&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="kw">font-family</span>: <span class="fu">var(</span><span class="va">--link-icon-font-mono</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.7</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon-type</span><span class="op">*=</span><span class="st">&#39;bold&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="kw">font-weight</span>: <span class="dv">bold</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.83</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon-type</span><span class="op">*=</span><span class="st">&#39;italic&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="kw">font-style</span>: <span class="dv">italic</span><span class="op">;</span></span>
+</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.85</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.08</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon-type</span><span class="op">*=</span><span class="st">&#39;overline&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="kw">text-decoration</span>: <span class="dv">overline</span><span class="op">;</span></span>
+</span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*===========================================*/</span></span>
+<span class="co">/*= ICONS FOR CERTAIN LINK TYPES: BY TARGET =*/</span></span>
+<span class="co">/*===========================================*/</span></span>
+</span>
+<span class="co">/*=----------------------------=*/</span></span>
+<span class="co">/*= Within-page (anchor) links =*/</span></span>
+<span class="co">/*=----------------------------=*/</span></span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;¶&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.45</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">font-weight</span>: <span class="dv">normal</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.7</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;arrow-up&#39;</span><span class="ex">]</span><span class="in">::after</span><span class="op">,</span></span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;arrow-down&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.65</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.8</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;arrow-up&#39;</span><span class="ex">]</span><span class="in">:hover::after</span><span class="op">,</span></span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;arrow-down&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.4</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;arrow-up&#39;</span><span class="ex">]</span> { <span class="va">--link-icon-url</span>: <span class="fu">url(</span><span class="st">&#39;/static/img/icon/arrow-up.svg&#39;</span><span class="fu">)</span><span class="op">;</span> }</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;arrow-down&#39;</span><span class="ex">]</span> { <span class="va">--link-icon-url</span>: <span class="fu">url(</span><span class="st">&#39;/static/img/icon/arrow-down.svg&#39;</span><span class="fu">)</span><span class="op">;</span> }</span>
+</span>
+<span class="co">/*=------------------------------=*/</span></span>
+<span class="co">/*= Internal (within-site) links =*/</span></span>
+<span class="co">/*=------------------------------=*/</span></span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;𝔊&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.9</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.12</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.75</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Index page, and embeds thereof, do not need the G icon.</span></span>
+<span class="co">    </span><span class="al">NOTE</span><span class="co">: we do not use the usual method of suppressing G icons (`.icon-not` class), because /index and /static/404 are *so* long and routinely modified/expanded, so doing it &#39;manually&#39; would risk occasional omissions or syntax errors.</span></span>
+<span class="co"> */</span></span>
+body<span class="fu">.index</span> a<span class="fu">.link-page</span><span class="in">::after</span><span class="op">,</span></span>
+body<span class="fu">.static-404</span> a<span class="fu">.link-page</span><span class="in">::after</span><span class="op">,</span></span>
+<span class="fu">.popframe-body.index</span> a<span class="fu">.link-page</span><span class="in">::after</span> {</span>
+    <span class="kw">content</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*=----------------------------------------------------=*/</span></span>
+<span class="co">/*= Cross-directory links on tag index pages =*/</span></span>
+<span class="co">/*=----------------------------------------------------=*/</span></span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;arrow-up-left&#39;</span><span class="ex">]</span><span class="in">::after</span><span class="op">,</span></span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;arrow-down-right&#39;</span><span class="ex">]</span><span class="in">::after</span><span class="op">,</span></span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;arrow-right&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.65</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.3</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.8</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;arrow-up-left&#39;</span><span class="ex">]</span><span class="in">:hover::after</span><span class="op">,</span></span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;arrow-down-right&#39;</span><span class="ex">]</span><span class="in">:hover::after</span><span class="op">,</span></span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;arrow-right&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.4</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;arrow-up-left&#39;</span><span class="ex">]</span> { <span class="va">--link-icon-url</span>: <span class="fu">url(</span><span class="st">&#39;/static/img/icon/arrow-up-left.svg&#39;</span><span class="fu">)</span><span class="op">;</span> }</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;arrow-down-right&#39;</span><span class="ex">]</span> { <span class="va">--link-icon-url</span>: <span class="fu">url(</span><span class="st">&#39;/static/img/icon/arrow-down-right.svg&#39;</span><span class="fu">)</span><span class="op">;</span> }</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;arrow-right&#39;</span><span class="ex">]</span> { <span class="va">--link-icon-url</span>: <span class="fu">url(</span><span class="st">&#39;/static/img/icon/arrow-right.svg&#39;</span><span class="fu">)</span><span class="op">;</span> }</span>
+</span>
+<span class="co">/*=-------------------------------=*/</span></span>
+<span class="co">/*= Textual per-domain link icons =*/</span></span>
+<span class="co">/*=-------------------------------=*/</span></span>
+</span>
+<span class="co">/******************/</span></span>
+<span class="co">/*  Logotype icons.</span></span>
+<span class="co">    */</span></span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;𝛘&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Arxiv */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.7</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.6</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.7</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;❐&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Booru */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;⧖&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Longecity */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.9</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.70</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;♡&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Fandom/Wikia */</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.05</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">1.0</span><span class="op">;</span></span>
+    <span class="kw">text-shadow</span>: <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span> currentcolor<span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;MS&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.65</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.35</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;n&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Nature */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.9</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.3</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.85</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;s&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">1</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;Ss&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;Vox&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span> <span class="co">/* shift left a bit */</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;ψ&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.4</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.75</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;ℵ&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Unsong ALEF */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">font-weight</span>: <span class="dv">normal</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;▅▇▃&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.5</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">margin-right</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.7</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;▲&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Melting Asphalt (Kevin Simler) */</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.75</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;𝔐&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">1</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.95</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;▽&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* The Verge */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.9</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;∇&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* The Gradient.pub */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.85</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.85</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;✉&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">1.1</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.05</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">font-weight</span>: <span class="dv">bold</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.80</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;M𝐑&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.75</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;𝐁&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.77</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;𝐌&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.7</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;𝛌&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">1</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.6</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;𝛘&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.4</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.75</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;෴&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Moustache / antilop.cc */</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.5</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;🤖&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* ROBOT FACE U+1F916 beepb00p.xyz */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.3</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.75</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;GPP&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Game Programming Patterns: shrink &amp; elevate */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.6</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.6</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;⛨&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Cambridge */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.9</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.10</span><span class="dt">em</span><span class="op">;</span> <span class="co">/* </span><span class="al">NOTE</span><span class="co">: this may be too much for Chrome, but the FF needs it */</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.10</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">font-weight</span>: <span class="dv">normal</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;𝒩𝒴&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* nymag.com New York Magazine */</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.7</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;𝕳&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* NZ Herald */</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.4</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.7</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;𝔐&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Daily Mail */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.5</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;𝛌&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Haskell */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;𝓝&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Nintil */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.85</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.9</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;𝓥&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Variety */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.85</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.9</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;ρ&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Project Rho */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.5</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.10</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.75</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;ℰ&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Esquire */</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.9</span><span class="op">;</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/****************************/</span></span>
+<span class="co">/* Triple-letter &#39;tri&#39; initials: too few for quad, but too big for</span></span>
+<span class="co">   regular font size/offset. Common with TLA orgs. */</span></span>
+a<span class="ex">[data-link-icon-type</span><span class="op">*=</span><span class="st">&#39;tri&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.6</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.6</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.90</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/****************************/</span></span>
+<span class="co">/*  Quad-letter &#39;quad&#39; square icons.</span></span>
+<span class="co">    */</span></span>
+a<span class="ex">[data-link-icon-type</span><span class="op">*=</span><span class="st">&#39;quad&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="kw">text-indent</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">overflow-wrap</span>: <span class="dv">break-word</span><span class="op">;</span></span>
+    <span class="kw">display</span>: <span class="dv">inline-block</span><span class="op">;</span></span>
+    <span class="kw">text-align</span>: <span class="dv">center</span><span class="op">;</span></span>
+    <span class="kw">left</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">bottom</span>: <span class="dv">0.3</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">font-size</span>: <span class="dv">0.52</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">font-weight</span>: <span class="dv">bold</span><span class="op">;</span></span>
+    <span class="kw">line-height</span>: <span class="dv">0.8</span><span class="op">;</span></span>
+    <span class="kw">width</span>: <span class="dv">1.5</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.83</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Quad-letter square icons in a sans face.</span></span>
+<span class="co">    */</span></span>
+a<span class="ex">[data-link-icon-type</span><span class="op">*=</span><span class="st">&#39;quad&#39;</span><span class="ex">][data-link-icon-type</span><span class="op">*=</span><span class="st">&#39;sans&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="kw">margin</span>: <span class="dv">0</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Quad-letter square icons in a monospace face.</span></span>
+<span class="co">    */</span></span>
+a<span class="ex">[data-link-icon-type</span><span class="op">*=</span><span class="st">&#39;quad&#39;</span><span class="ex">][data-link-icon-type</span><span class="op">*=</span><span class="st">&#39;mono&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="kw">letter-spacing</span>: <span class="dv">0.05</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">line-height</span>: <span class="dv">0.85</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;VICE&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span> <span class="co">/* shift left a bit */</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;PNAS&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="kw">width</span>: <span class="dv">1.4</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;MDPI&#39;</span><span class="ex">]</span><span class="in">::after</span><span class="op">,</span></span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;EPUB&#39;</span><span class="ex">]</span><span class="in">::after</span><span class="op">,</span></span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;TPDR&#39;</span><span class="ex">]</span><span class="in">::after</span><span class="op">,</span></span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;NBER&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="kw">width</span>: <span class="dv">1.6</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*=---------------------------------=*/</span></span>
+<span class="co">/*= Graphical per-domain link icons =*/</span></span>
+<span class="co">/*=---------------------------------=*/</span></span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;amazon&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.65</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;amazon&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.4</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;bitcoin&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.55</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.65</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;chi-dna&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.58</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.85</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;chi-dna&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.6</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;deepmind&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.7</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;deepmind&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.5</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;distillpub&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.45</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.6</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;dropbox&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.55</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;econlib&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* torch */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.75</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;erowid&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.95</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.9</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;erowid&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.7</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;facebook&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.5</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.6</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;facebook&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.35</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;github&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.65</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;alphabet&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.65</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.3</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.6</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;google-scholar&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.4</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.60</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;google-scholar&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.4</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;hn&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.7</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.65</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;hn&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.2</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;internetarchive&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.55</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.3</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.6</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;internetarchive&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.4</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;mega&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.50</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;miri&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">1.05</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.65</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;nasa&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.65</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;nautilus&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.7</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;newyorktimes&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.65</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.6</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;newyorktimes&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.4</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;nlm-ncbi&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.6</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.9</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;nlm-ncbi&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.5</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;openai&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.7</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.7</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;openai&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.4</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;patreon&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.7</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.10</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.65</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;plos&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.10</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.80</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;reddit&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.80</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.65</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;springerlink&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.9</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.8</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;springerlink&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.5</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;stackexchange&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.6</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.55</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;substack&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.60</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.55</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;theguardian&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.55</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;thenewyorker&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.65</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.6</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;thenewyorker&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.45</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;tumblr&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.47</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.52</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;twitter&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.5</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;uptontea&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.45</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.55</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;video&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.4</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.55</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;video&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.2</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;washingtonpost&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.85</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.85</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;washingtonpost&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.55</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;wired&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.55</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;youtube&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.88</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.5</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;youtube&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.2</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;yud&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;the-telegraph&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Darken &amp; shift left */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.6</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.75</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;open-philanthropy&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Darken &amp; shift left/up */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.95</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;atlas-obscura&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Darken &amp; shift left/up */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.05</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.85</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;eleutherai&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Darken, enlarge, &amp; shift left/up */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.98</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.05</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.0</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.95</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;apple&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Darken, enlarge, &amp; shift left/up */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.70</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.5</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;quanta&#39;</span><span class="ex">]</span><span class="in">::after</span> { <span class="co">/* Darken, enlarge, &amp; shift left/up */</span></span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.9</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.9</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;quanta&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.5</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;creative-commons&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.8</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;tensorflow&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.7</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.6</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;alcor&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.15</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.65</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;cochrane-collaboration&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.8</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-x</span>: <span class="dv">0.2</span><span class="dt">em</span><span class="op">;</span></span>
+</span>
+    <span class="kw">opacity</span>: <span class="dv">0.75</span><span class="op">;</span></span>
+}</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;cochrane-collaboration&#39;</span><span class="ex">]</span><span class="in">:hover::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.45</span><span class="op">;</span></span>
+}</span>
+</span>
+a<span class="ex">[data-link-icon</span><span class="op">=</span><span class="st">&#39;connected-papers&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="va">--link-icon-size</span>: <span class="dv">0.6</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="va">--link-icon-offset-y</span>: <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span></code></pre></div>
+<p>…[File truncated due to length; see
+<a class="link-page" href="/static/css/links.css">original
+file</a>]…</p>

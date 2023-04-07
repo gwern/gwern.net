@@ -2343,7 +2343,7 @@ code {
     font-feature-settings: 'ss02', 'ss03';
 
     font-size: 0.9em;
-    word-break: break-all;
+    word-break: break-word;
     -webkit-hyphens: none;
     hyphens: none;
 }
@@ -3841,25 +3841,16 @@ body.index-directory #footer {
     margin: 0;
     border: none;
     max-height: unset;
-}
-
-/*  “Loading failed” message.
-    */
-.popframe.local-code-file.loading-failed::after {
-    content: "File not found.";
-}
-
-/*  “Raw code” pop-frames.
-    */
-.popframe-body.local-code-file pre.raw-code {
     white-space: pre-wrap;
 }
-.popframe-body.local-code-file pre.raw-code code {
-    word-break: break-word;
+
+/*	Syntax highlighting.
+ */
+.popframe-body.local-code-file pre code {
     padding-left: 2px;
     padding-right: 2px;
 }
-.popframe-body.local-code-file pre.raw-code .line {
+.popframe-body.local-code-file pre .line {
     counter-increment: code-line;
     display: inline-block;
     width: 100%;
@@ -3867,13 +3858,13 @@ body.index-directory #footer {
     padding: 0 0 0.25em 4em;
     box-sizing: border-box;
 }
-.popframe-body.local-code-file pre.raw-code .line:hover {
-    background-color: var(--GW-raw-code-popframe-line-highlight-background-color);
+.popframe-body.local-code-file pre .line:hover {
+    background-color: var(--GW-code-popframe-line-highlight-background-color);
     box-shadow:
-        0  1px 0 0 var(--GW-raw-code-popframe-line-highlight-border-color),
-        0 -1px 0 0 var(--GW-raw-code-popframe-line-highlight-border-color);
+        0  1px 0 0 var(--GW-code-popframe-line-highlight-border-color),
+        0 -1px 0 0 var(--GW-code-popframe-line-highlight-border-color);
 }
-.popframe-body.local-code-file pre.raw-code .line::before {
+.popframe-body.local-code-file pre .line::before {
     content: counter(code-line);
     position: absolute;
     width: 3.5em;
@@ -3881,13 +3872,19 @@ body.index-directory #footer {
     left: 0;
     top: 0;
     text-align: right;
-    color: var(--GW-raw-code-popframe-line-number-color);
+    color: var(--GW-code-popframe-line-number-color);
     font-size: 0.8em;
     display: flex;
     justify-content: flex-end;
     align-items: flex-start;
     padding: 0.25em 0.5em 0 0;
-    border-right: 1px solid var(--GW-raw-code-popframe-line-number-divider-color);
+    border-right: 1px solid var(--GW-code-popframe-line-number-divider-color);
+}
+
+/*  “Loading failed” message.
+    */
+.popframe.local-code-file.loading-failed::after {
+    content: "File not found.";
 }
 
 /*┌────────────────────┐*/

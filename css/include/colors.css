@@ -216,10 +216,10 @@
 
 	/*	Pop-frames (popups or popins).
 	 */
-    --GW-raw-code-popframe-line-highlight-background-color: #ffd;
-    --GW-raw-code-popframe-line-highlight-border-color: #ddd;
-    --GW-raw-code-popframe-line-number-color: #aaa;
-    --GW-raw-code-popframe-line-number-divider-color: #ccc;
+    --GW-code-popframe-line-highlight-background-color: #ffd;
+    --GW-code-popframe-line-highlight-border-color: #ddd;
+    --GW-code-popframe-line-number-color: #aaa;
+    --GW-code-popframe-line-number-divider-color: #ccc;
 
     /*  Popups.
      */
