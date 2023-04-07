@@ -5610,6 +5610,14 @@ ol.link-bibliography-list-compact > li::before {
     margin-bottom: 0.75em;
 }
 
+.tag-index-link-bibliography-block.expanded-not {
+    padding-left: 0.75em;
+    margin-left: -1px;
+}
+.tag-index-link-bibliography-block.expanded-not .link-bibliography-list-label {
+    margin-top: 0.375em;
+}
+
 
 /****************/
 /* X OF THE DAY */
