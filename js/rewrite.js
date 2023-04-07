@@ -720,6 +720,7 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
      */
     doWhenPageLayoutComplete(() => {
         allFullWidthMedia.forEach(fullWidthMedia => {
+			constrainCaptionWidth(fullWidthMedia);
             fullWidthMedia.addEventListener("load", (event) => {
                 GW.notificationCenter.fireEvent("Rewrite.fullWidthMediaDidLoad", {
                     mediaElement: fullWidthMedia
