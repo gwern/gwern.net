@@ -3692,6 +3692,10 @@ body.index-directory #footer {
     margin: 1em 0;
 }
 
+.popframe-body .epigraph > blockquote {
+	margin: auto;
+}
+
 .popframe-body > figure:only-child {
     margin: 0;
     max-width: unset;
