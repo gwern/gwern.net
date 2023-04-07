@@ -250,23 +250,31 @@ Content = {
 			},
 
 			contentFromResponse: (response, link = null, loadURL) => {
-				let codeBlock;
+				let codeDocument;
+
+				//	Parse (encoding and wrapping first, if need be).
 				if (response.slice(0, 1) == "<") {
-					codeBlock = newDocument(response);
+					//	Syntax-highlighted code (already HTML-encoded).
+					codeDocument = newDocument(response);
 				} else {
+					//	“Raw” code.
 					let htmlEncodedResponse = response.replace(
 						/[<>]/g,
 						c => ('&#' + c.charCodeAt(0) + ';')
-					).split("\n").map(
-						line => (`<span class="line">${(line || "&nbsp;")}</span>`)
-					).join("\n");
-					codeBlock = newDocument(  `<pre class="raw-code"><code>`
-											+ htmlEncodedResponse
-											+ `</code></pre>`);
+					);
+					codeDocument = newDocument(  `<pre class="raw-code"><code>`
+											   + htmlEncodedResponse
+											   + `</code></pre>`);
 				}
 
+				//	Inject line spans.
+				let codeBlock = codeDocument.querySelector("code");
+				codeBlock.innerHTML = codeBlock.innerHTML.split("\n").map(
+					line => (`<span class="line">${(line || "&nbsp;")}</span>`)
+				).join("\n");
+
 				return {
-					document: codeBlock
+					document: codeDocument
 				};
 			},
 

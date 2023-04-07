@@ -1,0 +1,1004 @@
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode CSS"><code class="sourceCode css"><span class="co">/*********/</span></span>
+<span class="co">/* FONTS */</span></span>
+<span class="co">/*********/</span></span>
+<span class="co">/* fonts are now loaded from /static/css/fonts.css */</span></span>
+</span>
+</span>
+<span class="co">/**********/</span></span>
+<span class="co">/* COLORS */</span></span>
+<span class="co">/**********/</span></span>
+<span class="co">/* colors are now in /static/css/colors.css (light-mode) or /include/dark-mode-GENERATED.css + /include/components/dark-mode-adjustments.css +/include/components/colors-dark-GENERATED.css (dark-mode) */</span></span>
+</span>
+</span>
+<span class="co">/*************/</span></span>
+<span class="co">/* VARIABLES */</span></span>
+<span class="co">/*************/</span></span>
+</span>
+<span class="in">:root</span> {</span>
+    <span class="va">--GW-serif-font-stack</span>: <span class="st">&quot;Source Serif Pro&quot;</span><span class="op">,</span> <span class="st">&quot;Apple Garamond&quot;</span><span class="op">,</span> <span class="st">&quot;Baskerville&quot;</span><span class="op">,</span> <span class="st">&quot;Libre Baskerville&quot;</span><span class="op">,</span> <span class="st">&quot;Droid Serif&quot;</span><span class="op">,</span> <span class="st">&quot;Times New Roman&quot;</span><span class="op">,</span> <span class="st">&quot;Times&quot;</span><span class="op">,</span> <span class="dv">serif</span><span class="op">,</span> <span class="st">&quot;Noto Emoji&quot;</span><span class="op">,</span> <span class="st">&quot;Quivira&quot;</span><span class="op">;</span></span>
+    <span class="va">--GW-sans-serif-font-stack</span>: <span class="st">&quot;Source Sans Pro&quot;</span><span class="op">,</span> <span class="st">&quot;Lucida Sans Unicode&quot;</span><span class="op">,</span> <span class="st">&quot;Helvetica&quot;</span><span class="op">,</span> <span class="st">&quot;Trebuchet MS&quot;</span><span class="op">,</span> <span class="dv">sans-serif</span><span class="op">,</span> <span class="st">&quot;Noto Emoji&quot;</span><span class="op">,</span> <span class="st">&quot;Quivira&quot;</span><span class="op">;</span></span>
+    <span class="va">--GW-monospaced-font-stack</span>: <span class="st">&quot;IBM Plex Mono&quot;</span><span class="op">,</span> <span class="st">&quot;Liberation Mono&quot;</span><span class="op">,</span> <span class="st">&quot;Consolas&quot;</span><span class="op">,</span> <span class="st">&quot;Courier&quot;</span><span class="op">,</span> <span class="dv">monospace</span><span class="op">,</span> <span class="st">&quot;Noto Emoji&quot;</span><span class="op">,</span> <span class="st">&quot;Quivira&quot;</span><span class="op">;</span></span>
+</span>
+    <span class="va">--GW-body-text-font-size</span>: <span class="dv">1</span><span class="dt">rem</span><span class="op">;</span></span>
+</span>
+    <span class="va">--GW-base-font-size</span>: <span class="dv">20</span><span class="dt">px</span><span class="op">;</span></span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    <span class="in">:root</span> {</span>
+        <span class="va">--GW-base-font-size</span>: <span class="dv">18</span><span class="dt">px</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+</span>
+<span class="co">/***********/</span></span>
+<span class="co">/* GENERAL */</span></span>
+<span class="co">/***********/</span></span>
+</span>
+html<span class="op">,</span></span>
+<span class="fu">.shadow-body</span> {</span>
+    <span class="kw">background-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">color</span>: <span class="fu">var(</span><span class="va">--GW-body-text-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">font-size</span>: <span class="fu">var(</span><span class="va">--GW-base-font-size</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">font-weight</span>: <span class="dv">400</span><span class="op">;</span></span>
+    <span class="kw">font-family</span>: <span class="fu">var(</span><span class="va">--GW-serif-font-stack</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+body<span class="op">,</span></span>
+<span class="fu">.shadow-body</span> {</span>
+    <span class="kw">font-size</span>: <span class="fu">var(</span><span class="va">--GW-body-text-font-size</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+svg {</span>
+    <span class="kw">fill</span>: currentColor<span class="op">;</span></span>
+}</span>
+</span>
+</span>
+<span class="co">/**********/</span></span>
+<span class="co">/* LAYOUT */</span></span>
+<span class="co">/**********/</span></span>
+</span>
+html {</span>
+    <span class="kw">padding</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">margin</span>: <span class="dv">0</span><span class="op">;</span></span>
+}</span>
+</span>
+body {</span>
+    <span class="va">--GW-body-max-width</span>: <span class="dv">935</span><span class="dt">px</span><span class="op">;</span></span>
+    <span class="va">--GW-body-side-padding</span>: <span class="dv">20</span><span class="dt">px</span><span class="op">;</span></span>
+</span>
+    <span class="kw">max-width</span>: <span class="fu">var(</span><span class="va">--GW-body-max-width</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">padding</span>: <span class="dv">0</span> <span class="fu">var(</span><span class="va">--GW-body-side-padding</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">margin</span>: <span class="dv">0</span> <span class="bu">auto</span><span class="op">;</span></span>
+}</span>
+<span class="im">@media</span> <span class="kw">only</span> <span class="dv">screen</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    --GW-body-side-padding<span class="in">: 15px;</span></span>
+}</span>
+</span>
+main {</span>
+    <span class="kw">position</span>: <span class="dv">relative</span><span class="op">;</span></span>
+}</span>
+<span class="im">@media</span> <span class="kw">only</span> <span class="dv">screen</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">650</span><span class="dt">px</span>) {</span>
+    main {</span>
+        <span class="kw">min-height</span>: <span class="dv">100</span><span class="dt">vh</span><span class="op">;</span></span>
+        <span class="kw">display</span>: <span class="dv">flex</span><span class="op">;</span></span>
+        <span class="kw">flex-flow</span>: <span class="dv">column</span><span class="op">;</span></span>
+    }</span>
+    article {</span>
+        <span class="kw">flex</span>: <span class="dv">1</span> <span class="dv">1</span> <span class="bu">auto</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+</span>
+<span class="co">/*****************/</span></span>
+<span class="co">/* ACCESSIBILITY */</span></span>
+<span class="co">/*****************/</span></span>
+<span class="co">/* Provide a link which skips straight to the content bypassing the sidebar &amp;</span></span>
+<span class="co">   metadata block; this link is positioned off-screen until &lt;Tab&gt;-navigated to,</span></span>
+<span class="co">   which focuses it, highlighting it in a big red block in the upper-left corner.</span></span>
+<span class="co">   Implementation &amp; rationale from https://webaim.org/techniques/skipnav/</span></span>
+<span class="co">   Further background: https://www.w3.org/TR/WCAG20-TECHS/G1.html</span></span>
+<span class="co"> */</span></span>
+<span class="pp">#skip-to-content-link</span>  {</span>
+    <span class="kw">padding</span>: <span class="dv">0.3</span><span class="dt">em</span> <span class="dv">0.75</span><span class="dt">em</span> <span class="dv">0.4</span><span class="dt">em</span> <span class="dv">0.65</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">position</span>: <span class="dv">absolute</span><span class="op">;</span></span>
+    <span class="kw">top</span>: <span class="dv">-2.375</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">left</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">font-family</span>: <span class="fu">var(</span><span class="va">--GW-sans-serif-font-stack</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">color</span>: <span class="fu">var(</span><span class="va">--GW-skip-to-content-text-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">background-color</span>: <span class="fu">var(</span><span class="va">--GW-skip-to-content-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">border-color</span>: <span class="fu">var(</span><span class="va">--GW-skip-to-content-border-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">border-style</span>: <span class="dv">double</span><span class="op">;</span></span>
+    <span class="kw">border-width</span>: <span class="dv">0</span> <span class="dv">3</span><span class="dt">px</span> <span class="dv">3</span><span class="dt">px</span> <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">outline</span>: <span class="dv">none</span><span class="op">;</span></span>
+    <span class="kw">z-index</span>: <span class="dv">10001</span><span class="op">;</span></span>
+    <span class="kw">transition</span>:</span>
+        <span class="dv">top</span> <span class="dv">1</span><span class="dt">s</span> <span class="dv">ease-out</span><span class="op">;</span></span>
+}</span>
+<span class="pp">#skip-to-content-link</span><span class="in">:focus</span> {</span>
+    <span class="kw">top</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">transition</span>:</span>
+        <span class="dv">top</span> <span class="dv">0.1</span><span class="dt">s</span> <span class="dv">ease-in</span><span class="op">;</span></span>
+}</span>
+</span>
+</span>
+<span class="co">/***********/</span></span>
+<span class="co">/* SIDEBAR */</span></span>
+<span class="co">/***********/</span></span>
+</span>
+<span class="pp">#sidebar</span> {</span>
+    <span class="kw">display</span>: <span class="dv">flex</span><span class="op">;</span></span>
+    <span class="kw">justify-content</span>: <span class="dv">center</span><span class="op">;</span></span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">650</span><span class="dt">px</span>) {</span>
+    <span class="pp">#sidebar</span> {</span>
+        <span class="kw">margin</span>: <span class="dv">0.5</span><span class="dt">em</span> <span class="dv">0</span> <span class="dv">0.25</span><span class="dt">em</span> <span class="dv">0</span><span class="op">;</span></span>
+    }</span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    <span class="pp">#sidebar</span> {</span>
+        <span class="kw">margin</span>: <span class="dv">1</span><span class="dt">em</span> <span class="dv">0</span> <span class="dv">0.5</span><span class="dt">em</span> <span class="dv">0</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="pp">#sidebar</span> a {</span>
+    <span class="kw">display</span>: <span class="dv">block</span><span class="op">;</span></span>
+    <span class="kw">border</span>: <span class="dv">1</span><span class="dt">px</span> <span class="dv">dotted</span> currentColor<span class="op">;</span></span>
+    <span class="kw">text-align</span>: <span class="dv">center</span><span class="op">;</span></span>
+    <span class="kw">margin</span>: <span class="dv">1</span><span class="dt">px</span> <span class="dv">0</span> <span class="dv">1</span><span class="dt">px</span> <span class="dv">2</span><span class="dt">px</span><span class="op">;</span></span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">650</span><span class="dt">px</span>) {</span>
+    <span class="pp">#sidebar</span> a {</span>
+        <span class="kw">color</span>: <span class="fu">var(</span><span class="va">--GW-nav-header-link-color</span><span class="fu">)</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#sidebar</span> a<span class="in">:hover</span> {</span>
+        <span class="kw">color</span>: <span class="fu">var(</span><span class="va">--GW-nav-header-link-hover-color</span><span class="fu">)</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="pp">#sidebar</span> a<span class="pp">#logo</span> {</span>
+    <span class="kw">display</span>: <span class="dv">flex</span><span class="op">;</span></span>
+    <span class="kw">margin</span>: <span class="dv">1</span><span class="dt">px</span> <span class="dv">0</span><span class="op">;</span></span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    <span class="pp">#sidebar</span> a<span class="pp">#logo</span> {</span>
+        <span class="kw">padding</span>: <span class="dv">0.5</span><span class="dt">em</span> <span class="dv">0.375</span><span class="dt">em</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#sidebar</span> a<span class="pp">#logo</span> svg {</span>
+        <span class="kw">width</span>: <span class="dv">2.5</span><span class="dt">em</span><span class="op">;</span></span>
+    }</span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">650</span><span class="dt">px</span>) {</span>
+    <span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">1179</span><span class="dt">px</span>) {</span>
+        <span class="pp">#sidebar</span> a<span class="pp">#logo</span> {</span>
+            <span class="kw">padding</span>: <span class="dv">0.25</span><span class="dt">em</span> <span class="dv">0.375</span><span class="dt">em</span><span class="op">;</span></span>
+        }</span>
+        <span class="pp">#sidebar</span> a<span class="pp">#logo</span> svg {</span>
+            <span class="kw">width</span>: <span class="dv">1</span><span class="dt">em</span><span class="op">;</span></span>
+        }</span>
+    }</span>
+    <span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">1180</span><span class="dt">px</span>) {</span>
+        <span class="pp">#sidebar</span> a<span class="pp">#logo</span> {</span>
+            <span class="kw">position</span>: <span class="dv">absolute</span><span class="op">;</span></span>
+            <span class="kw">right</span>: <span class="dv">100</span><span class="dt">%</span><span class="op">;</span></span>
+            <span class="kw">margin</span>: <span class="dv">0</span> <span class="dv">0.75</span><span class="dt">em</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">;</span></span>
+            <span class="kw">padding</span>: <span class="dv">0.125</span><span class="dt">em</span><span class="op">;</span></span>
+            <span class="kw">border</span>: <span class="dv">none</span><span class="op">;</span></span>
+            <span class="kw">opacity</span>: <span class="dv">0.5</span><span class="op">;</span></span>
+        }</span>
+        <span class="pp">#sidebar</span> a<span class="pp">#logo</span><span class="in">:hover</span> {</span>
+            <span class="kw">opacity</span>: <span class="dv">1.0</span><span class="op">;</span></span>
+        }</span>
+        <span class="pp">#sidebar</span> a<span class="pp">#logo</span> svg {</span>
+            <span class="kw">width</span>: <span class="dv">4</span><span class="dt">em</span><span class="op">;</span></span>
+        }</span>
+    }</span>
+}</span>
+</span>
+<span class="pp">#sidebar-links</span> {</span>
+    <span class="kw">display</span>: <span class="dv">flex</span><span class="op">;</span></span>
+    <span class="kw">flex-flow</span>: row wrap<span class="op">;</span></span>
+    <span class="kw">flex</span>: <span class="dv">1</span> <span class="dv">1</span> <span class="dv">100</span><span class="dt">%</span><span class="op">;</span></span>
+    <span class="kw">margin</span>: <span class="dv">0</span><span class="op">;</span></span>
+}</span>
+<span class="pp">#sidebar-links</span> a {</span>
+    <span class="kw">flex</span>: <span class="dv">1</span> <span class="dv">1</span> <span class="bu">auto</span><span class="op">;</span></span>
+    <span class="kw">padding</span>: <span class="dv">0.25</span><span class="dt">em</span> <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    <span class="pp">#sidebar-links</span> a {</span>
+        <span class="kw">font-variant</span>: <span class="dv">small-caps</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#sidebar-links</span> a<span class="in">:nth-child(1)</span><span class="op">,</span></span>
+    <span class="pp">#sidebar-links</span> a<span class="in">:nth-child(2)</span><span class="op">,</span></span>
+    <span class="pp">#sidebar-links</span> a<span class="in">:nth-child(3)</span> {</span>
+        <span class="kw">min-width</span>: <span class="dv">25</span><span class="dt">%</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#sidebar-links</span> a<span class="fu">.patreon</span> {</span>
+        <span class="kw">display</span>: <span class="dv">none</span><span class="op">;</span></span>
+    }</span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">650</span><span class="dt">px</span>) {</span>
+    <span class="pp">#sidebar-links</span> a {</span>
+        <span class="kw">text-transform</span>: <span class="dv">uppercase</span><span class="op">;</span></span>
+        <span class="kw">font-weight</span>: <span class="dv">600</span><span class="op">;</span></span>
+    }</span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">1180</span><span class="dt">px</span>) {</span>
+    <span class="pp">#sidebar-links</span> a<span class="in">:first-child</span> {</span>
+        <span class="kw">margin-left</span>: <span class="dv">0</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+</span>
+<span class="co">/***************/</span></span>
+<span class="co">/* PAGE HEADER */</span></span>
+<span class="co">/***************/</span></span>
+</span>
+header {</span>
+    <span class="kw">overflow</span>: <span class="bu">auto</span><span class="op">;</span></span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    header {</span>
+        <span class="kw">padding</span>: <span class="dv">0</span> <span class="dv">1</span><span class="dt">em</span><span class="op">;</span></span>
+    }</span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">650</span><span class="dt">px</span>) {</span>
+    header {</span>
+        <span class="kw">padding</span>: <span class="dv">0</span> <span class="dv">2</span><span class="dt">em</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+header h1 {</span>
+    <span class="kw">margin</span>: <span class="dv">0.75</span><span class="dt">em</span> <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">text-align</span>: <span class="dv">center</span><span class="op">;</span></span>
+    <span class="kw">text-transform</span>: <span class="dv">none</span><span class="op">;</span></span>
+    <span class="kw">font-variant</span>: <span class="dv">small-caps</span><span class="op">;</span></span>
+    <span class="kw">font-size</span>: <span class="dv">2.5</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">line-height</span>: <span class="dv">1.15</span><span class="op">;</span></span>
+    <span class="kw">font-weight</span>: <span class="dv">600</span><span class="op">;</span></span>
+    <span class="kw">letter-spacing</span>: <span class="dv">-1</span><span class="dt">px</span><span class="op">;</span></span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    header h1 {</span>
+        <span class="kw">font-size</span>: <span class="dv">2</span><span class="dt">em</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="co">/*  Source Serif Pro has no italic small caps, sadly.</span></span>
+<span class="co"> */</span></span>
+header h1 em {</span>
+    <span class="kw">font-variant</span>: <span class="dv">normal</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/***********************/</span></span>
+<span class="co">/* PAGE METADATA BLOCK */</span></span>
+<span class="co">/***********************/</span></span>
+</span>
+<span class="pp">#page-metadata</span> {</span>
+    <span class="kw">margin</span>: <span class="dv">0</span> <span class="dv">0</span> <span class="dv">2</span><span class="dt">rem</span> <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">line-height</span>: <span class="dv">1.5</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/* Override normal handling of italics: before, we wrapped descriptions in `&lt;em&gt;`; however, they compile to HTML which can contain italics of their own (eg. book titles). This causes HTML Tidy to warn about nested italics (which is valid HTML but *usually* means you&#39;ve made an error - this often triggers when I mess up bolding, for example, like on /GPT-3 ). So we removed the wrapper in favor of the above `font-style: italic`. However, now the titles don&#39;t unitalicize automatically like they would for nested italics! So we force italicized titles back to normal Roman font to match the expected typographic convention. */</span></span>
+<span class="pp">#page-description</span> {</span>
+    <span class="kw">display</span>: <span class="dv">block</span><span class="op">;</span></span>
+    <span class="kw">font-style</span>: <span class="dv">italic</span><span class="op">;</span></span>
+    <span class="kw">text-align</span>: <span class="dv">justify</span><span class="op">;</span></span>
+}</span>
+<span class="co">/*  The following is needed only due to the .justified-not no-hyphens styles;</span></span>
+<span class="co">    when the A/B test of justification &amp; indentation is done, remove this also.</span></span>
+<span class="co">        —SA 2022-11-20</span></span>
+<span class="co"> */</span></span>
+<span class="pp">#page-description</span> p {</span>
+    <span class="kw">-webkit-hyphens</span>: <span class="bu">auto</span><span class="op">;</span></span>
+    <span class="kw">hyphens</span>: <span class="bu">auto</span><span class="op">;</span></span>
+}</span>
+<span class="pp">#page-description</span> em {</span>
+    <span class="kw">font-style</span>: <span class="dv">normal</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="pp">#page-metadata</span> <span class="op">&gt;</span> <span class="fu">.link-tags</span> {</span>
+    <span class="kw">margin</span>: <span class="dv">0</span> <span class="bu">auto</span> <span class="dv">0.25</span><span class="dt">em</span> <span class="bu">auto</span><span class="op">;</span></span>
+}</span>
+<span class="pp">#page-metadata</span> <span class="op">&gt;</span> <span class="fu">.link-tags</span> a {</span>
+    <span class="kw">white-space</span>: <span class="dv">nowrap</span><span class="op">;</span></span>
+}</span>
+<span class="pp">#page-metadata</span> <span class="op">&gt;</span> <span class="fu">.link-tags</span> a<span class="in">:nth-child(n+2)</span> {</span>
+    <span class="kw">margin</span>: <span class="dv">0</span> <span class="dv">0.05</span><span class="dt">em</span> <span class="dv">0</span> <span class="dv">0.1</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="pp">#page-metadata</span> <span class="op">&gt;</span> <span class="fu">.link-tags</span><span class="op">,</span></span>
+<span class="pp">#page-metadata-block</span> {</span>
+    <span class="kw">-webkit-hyphens</span>: <span class="dv">none</span><span class="op">;</span></span>
+    <span class="kw">hyphens</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="pp">#page-metadata-block</span> <span class="op">&gt;</span> span {</span>
+    <span class="kw">white-space</span>: <span class="dv">nowrap</span><span class="op">;</span></span>
+}</span>
+<span class="pp">#page-metadata-block</span> <span class="op">&gt;</span> span<span class="pp">#page-author</span> {</span>
+    <span class="kw">white-space</span>: <span class="dv">normal</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="pp">#page-source</span> a {</span>
+    <span class="kw">font-variant-numeric</span>: oldstyle-nums<span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Interpunct separators for the metadata fields; looks nicer than semicolons</span></span>
+<span class="co">    or slashes</span></span>
+<span class="co"> */</span></span>
+<span class="pp">#page-metadata-block</span> <span class="op">&gt;</span> span<span class="in">:not(</span>:last-child<span class="in">)::after</span> {</span>
+    <span class="kw">content</span>: <span class="st">&quot;</span><span class="sc">\00B7</span><span class="st">&quot;</span><span class="op">;</span> <span class="co">/* interpunct MIDDLE DOT (U+00B7) &#39;·&#39; */</span></span>
+    <span class="kw">margin</span>: <span class="dv">0</span> <span class="dv">0.35</span><span class="dt">em</span> <span class="dv">0</span> <span class="dv">0.65</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">650</span><span class="dt">px</span>) {</span>
+    <span class="pp">#page-metadata</span> {</span>
+        <span class="kw">overflow</span>: <span class="bu">auto</span><span class="op">;</span></span>
+        <span class="kw">font-size</span>: <span class="fu">calc(</span>(<span class="dv">19</span><span class="op">/</span><span class="dv">20</span>) <span class="op">*</span> <span class="fu">var(</span><span class="va">--GW-base-font-size</span><span class="fu">))</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#page-description</span> {</span>
+        <span class="kw">margin</span>: <span class="dv">0</span> <span class="bu">auto</span> <span class="dv">0.75</span><span class="dt">em</span> <span class="bu">auto</span><span class="op">;</span></span>
+        <span class="kw">-webkit-hyphens</span>: <span class="dv">none</span><span class="op">;</span></span>
+        <span class="kw">hyphens</span>: <span class="dv">none</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#page-metadata-block</span><span class="op">,</span></span>
+    <span class="pp">#page-metadata</span> <span class="op">&gt;</span> <span class="fu">.link-tags</span> {</span>
+        <span class="kw">font-size</span>: <span class="fu">calc(</span>(<span class="dv">18</span><span class="op">/</span><span class="dv">20</span>) <span class="op">*</span> <span class="fu">var(</span><span class="va">--GW-base-font-size</span><span class="fu">))</span><span class="op">;</span></span>
+    }</span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    <span class="pp">#page-metadata</span> {</span>
+        <span class="kw">overflow</span>: <span class="dv">visible</span><span class="op">;</span></span>
+        <span class="kw">font-size</span>: <span class="fu">calc(</span>(<span class="dv">17</span><span class="op">/</span><span class="dv">18</span>) <span class="op">*</span> <span class="fu">var(</span><span class="va">--GW-base-font-size</span><span class="fu">))</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#page-description</span> {</span>
+        <span class="kw">margin</span>: <span class="dv">0</span> <span class="bu">auto</span> <span class="dv">1</span><span class="dt">em</span> <span class="bu">auto</span><span class="op">;</span></span>
+        <span class="kw">line-height</span>: <span class="fu">calc(</span><span class="dv">25</span><span class="op">/</span><span class="dv">17</span><span class="fu">)</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#page-metadata</span> <span class="op">&gt;</span> <span class="fu">.link-tags</span><span class="op">,</span></span>
+    <span class="pp">#page-metadata-block</span> {</span>
+        <span class="kw">text-align</span>: <span class="dv">center</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#page-metadata</span> <span class="op">&gt;</span> <span class="fu">.link-tags</span> {</span>
+        <span class="kw">margin</span>: <span class="dv">0</span> <span class="bu">auto</span> <span class="dv">0.75</span><span class="dt">em</span> <span class="bu">auto</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#page-metadata-block</span> {</span>
+        <span class="kw">font-size</span>: <span class="fu">calc(</span>(<span class="dv">16</span><span class="op">/</span><span class="dv">18</span>) <span class="op">*</span> <span class="fu">var(</span><span class="va">--GW-base-font-size</span><span class="fu">))</span><span class="op">;</span></span>
+        <span class="kw">line-height</span>: <span class="fu">calc(</span><span class="dv">25</span><span class="op">/</span><span class="dv">16</span><span class="fu">)</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#page-metadata-block</span> <span class="op">&gt;</span> <span class="pp">#page-author</span><span class="in">::after</span><span class="op">,</span></span>
+    <span class="pp">#page-metadata-block</span> <span class="op">&gt;</span> <span class="pp">#page-status</span><span class="in">::after</span><span class="op">,</span></span>
+    <span class="pp">#page-metadata-block</span> <span class="op">&gt;</span> <span class="pp">#page-importance</span><span class="in">::after</span> {</span>
+        <span class="kw">content</span>: <span class="dv">none</span><span class="op">;</span></span>
+    }</span>
+</span>
+    <span class="pp">#page-metadata-block</span> {</span>
+        <span class="kw">display</span>: <span class="dv">flex</span><span class="op">;</span></span>
+        <span class="kw">flex-flow</span>: row wrap<span class="op">;</span></span>
+        <span class="kw">justify-content</span>: <span class="dv">center</span><span class="op">;</span></span>
+    }</span>
+    <span class="co">/* date, status */</span></span>
+    <span class="pp">#page-metadata-block</span> <span class="pp">#page-date-range</span><span class="op">,</span></span>
+    <span class="pp">#page-metadata-block</span> <span class="pp">#page-status</span> {</span>
+        <span class="kw">order</span>: <span class="dv">1</span><span class="op">;</span></span>
+    }</span>
+    <span class="co">/* certainty, importance */</span></span>
+    <span class="pp">#page-metadata-block</span> <span class="pp">#page-confidence</span><span class="op">,</span></span>
+    <span class="pp">#page-metadata-block</span> <span class="pp">#page-importance</span> {</span>
+        <span class="kw">order</span>: <span class="dv">3</span><span class="op">;</span></span>
+    }</span>
+    <span class="co">/* backlinks, similar, bibliography */</span></span>
+    <span class="pp">#page-metadata-block</span> <span class="fu">.backlinks</span><span class="op">,</span></span>
+    <span class="pp">#page-metadata-block</span> <span class="fu">.similars</span><span class="op">,</span></span>
+    <span class="pp">#page-metadata-block</span> <span class="fu">.link-bibliography</span> {</span>
+        <span class="kw">order</span>: <span class="dv">5</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#page-metadata-block</span><span class="in">::before</span><span class="op">,</span></span>
+    <span class="pp">#page-metadata-block</span><span class="in">::after</span> {</span>
+        <span class="kw">content</span>: <span class="st">&quot;&quot;</span><span class="op">;</span></span>
+        <span class="kw">width</span>: <span class="dv">100</span><span class="dt">%</span><span class="op">;</span></span>
+    }</span>
+    <span class="co">/* break between date/status and certainty/importance */</span></span>
+    <span class="pp">#page-metadata-block</span><span class="in">::before</span> {</span>
+        <span class="kw">order</span>: <span class="dv">2</span><span class="op">;</span></span>
+    }</span>
+    <span class="co">/* break between certainty/importance and backlinks/similar/bibliography */</span></span>
+    <span class="pp">#page-metadata-block</span><span class="in">::after</span> {</span>
+        <span class="kw">order</span>: <span class="dv">4</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="co">/*=--------=*/</span></span>
+<span class="co">/*= /index =*/</span></span>
+<span class="co">/*=--------=*/</span></span>
+</span>
+<span class="co">/*  Header self-links on home page need not be full-width. */</span></span>
+body<span class="fu">.index</span> article <span class="pp">#markdownBody</span> section<span class="in">:not(</span><span class="fu">.collapse</span><span class="in">)</span> <span class="op">&gt;</span> h1<span class="in">:first-child</span> a {</span>
+    <span class="kw">display</span>: <span class="dv">inline</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  On the index page, we hide article-related formatting, begging, to make it</span></span>
+<span class="co">    more compact &amp; classy.</span></span>
+<span class="co"> */</span></span>
+body<span class="fu">.index</span> <span class="pp">#sidebar</span> a<span class="fu">.patreon</span><span class="op">,</span></span>
+body<span class="fu">.index</span> <span class="pp">#sidebar</span> a<span class="fu">.annotations-newest</span><span class="in">::after</span><span class="op">,</span></span>
+body<span class="fu">.index</span> <span class="pp">#TOC</span><span class="op">,</span></span>
+body<span class="fu">.index</span> <span class="pp">#page-metadata</span><span class="op">,</span></span>
+body<span class="fu">.index</span> header {</span>
+    <span class="kw">display</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  No index self-link. */</span></span>
+body<span class="fu">.index</span> <span class="pp">#sidebar</span> a<span class="pp">#logo</span> {</span>
+    <span class="kw">pointer-events</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+<span class="co">/*  Special nav link styling on /index. */</span></span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">650</span><span class="dt">px</span>) {</span>
+    body<span class="fu">.index</span> <span class="pp">#sidebar</span> a {</span>
+        <span class="kw">color</span>: <span class="fu">var(</span><span class="va">--GW-nav-header-link-hover-color</span><span class="fu">)</span><span class="op">;</span></span>
+    }</span>
+    body<span class="fu">.index</span> <span class="pp">#sidebar</span> a<span class="in">:hover</span> {</span>
+        <span class="kw">color</span>: <span class="fu">var(</span><span class="va">--GW-nav-header-link-color</span><span class="fu">)</span><span class="op">;</span></span>
+    }</span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">1180</span><span class="dt">px</span>) {</span>
+    body<span class="fu">.index</span> <span class="pp">#sidebar</span> a<span class="pp">#logo</span> {</span>
+        <span class="kw">opacity</span>: <span class="dv">1.0</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+body<span class="fu">.index</span> <span class="pp">#markdownBody</span> section h1 {</span>
+    <span class="kw">border-bottom</span>: <span class="dv">1</span><span class="dt">px</span> <span class="dv">dotted</span> currentColor<span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Columns.</span></span>
+<span class="co"> */</span></span>
+</span>
+<span class="co">/* Suppress bonus section in single/double-column layout */</span></span>
+body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="pp">#notable</span> {</span>
+    <span class="kw">display</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="im">@media</span> <span class="kw">only</span> <span class="dv">screen</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">961</span><span class="dt">px</span>) {</span>
+    body<span class="fu">.index</span> <span class="pp">#markdownBody</span> {</span>
+        <span class="kw">display</span>: <span class="dv">grid</span><span class="op">;</span></span>
+        <span class="kw">grid-template-columns</span>: <span class="dv">1</span>fr <span class="dv">1</span>fr<span class="op">;</span></span>
+        <span class="kw">grid-column-gap</span>: <span class="dv">2</span><span class="dt">em</span><span class="op">;</span></span>
+        <span class="kw">grid-row-gap</span>: <span class="dv">0.5</span><span class="dt">em</span><span class="op">;</span></span>
+    }</span>
+    body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="fu">.abstract</span> {</span>
+        <span class="kw">grid-column-start</span>: <span class="dv">1</span><span class="op">;</span></span>
+        <span class="kw">grid-column-end</span>: <span class="dv">-1</span><span class="op">;</span></span>
+    }</span>
+    body<span class="fu">.index</span> <span class="pp">#markdownBody</span> section <span class="op">&gt;</span> ul {</span>
+        <span class="kw">margin</span>: <span class="dv">0.75</span><span class="dt">em</span> <span class="dv">3</span><span class="dt">em</span> <span class="dv">0</span> <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+    }</span>
+    <span class="im">@media</span> <span class="kw">only</span> <span class="dv">screen</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">1040</span><span class="dt">px</span>) {</span>
+        body<span class="fu">.index</span> <span class="pp">#markdownBody</span> {</span>
+            <span class="kw">grid-template-columns</span>: <span class="dv">1</span>fr<span class="op">;</span></span>
+        }</span>
+        body<span class="fu">.index</span> <span class="pp">#markdownBody</span> section <span class="op">&gt;</span> ul {</span>
+            <span class="kw">column-count</span>: <span class="dv">2</span><span class="op">;</span></span>
+            <span class="kw">column-gap</span>: <span class="dv">3</span><span class="dt">em</span><span class="op">;</span></span>
+        }</span>
+        body<span class="fu">.index</span> <span class="pp">#markdownBody</span> section <span class="op">&gt;</span> ul li {</span>
+            <span class="kw">break-inside</span>: <span class="dv">avoid</span><span class="op">;</span></span>
+        }</span>
+    }</span>
+}</span>
+</span>
+<span class="co">/*  On sufficiently-wide screens, we can get 3 columns in nicely; to preserve</span></span>
+<span class="co">    the initial row being ‘meta’ blocks, we leave #notable visible</span></span>
+<span class="co">    (for a newest/popular/notable triplet)</span></span>
+<span class="co"> */</span></span>
+<span class="im">@media</span> <span class="kw">only</span> <span class="dv">screen</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">1761</span><span class="dt">px</span>) {</span>
+    body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="pp">#notable</span> {</span>
+        <span class="kw">display</span>: <span class="dv">block</span><span class="op">;</span></span>
+    }</span>
+    body<span class="fu">.index</span> <span class="pp">#markdownBody</span> {</span>
+        <span class="kw">grid-template-columns</span>: <span class="dv">45</span><span class="dt">ch</span> <span class="dv">45</span><span class="dt">ch</span> <span class="dv">45</span><span class="dt">ch</span><span class="op">;</span></span>
+        <span class="kw">margin-left</span>: <span class="dv">-20</span><span class="dt">ch</span><span class="op">;</span></span>
+    }</span>
+    body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="fu">.abstract</span> {</span>
+        <span class="kw">max-width</span>: <span class="dv">935</span><span class="dt">px</span><span class="op">;</span></span>
+        <span class="kw">margin-left</span>: <span class="dv">20</span><span class="dt">ch</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="co">/*  Abstract is not a real abstract, just an introduction, no need for the</span></span>
+<span class="co">    abstract formatting.</span></span>
+<span class="co"> */</span></span>
+body<span class="fu">.index</span> <span class="fu">.abstract</span> {</span>
+    <span class="kw">padding</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">border</span>: <span class="dv">none</span><span class="op">;</span></span>
+    <span class="kw">margin</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">box-shadow</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Add some vertical padding for the introduction.</span></span>
+<span class="co"> */</span></span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    body<span class="fu">.index</span> <span class="pp">#markdownBody</span> {</span>
+        <span class="kw">padding-top</span>: <span class="dv">1</span><span class="dt">em</span><span class="op">;</span></span>
+    }</span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">650</span><span class="dt">px</span>) {</span>
+    body<span class="fu">.index</span> <span class="pp">#markdownBody</span> {</span>
+        <span class="kw">padding-top</span>: <span class="dv">1.5</span><span class="dt">em</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="co">/*  Headings on the home page.</span></span>
+<span class="co"> */</span></span>
+body<span class="fu">.index</span> <span class="pp">#markdownBody</span> h1 {</span>
+    <span class="kw">margin</span>: <span class="dv">1.125</span><span class="dt">em</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Lists on the home page.</span></span>
+<span class="co"> */</span></span>
+body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="fu">.section-link-list</span> li<span class="op">,</span></span>
+body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="fu">.section-link-list</span> li p {</span>
+    <span class="kw">text-align</span>: <span class="dv">left</span><span class="op">;</span></span>
+}</span>
+body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="fu">.section-link-list</span> {</span>
+    <span class="kw">margin</span>: <span class="dv">1</span><span class="dt">em</span> <span class="dv">3</span><span class="dt">em</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">padding</span>: <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">1.375</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="fu">.section-link-list</span> li <span class="op">&gt;</span> ul {</span>
+    <span class="kw">margin</span>: <span class="dv">0</span><span class="op">;</span></span>
+}</span>
+body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="fu">.section-link-list</span> li {</span>
+    <span class="kw">margin-top</span>: <span class="dv">0</span><span class="op">;</span></span>
+}</span>
+body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="fu">.section-link-list</span> <span class="op">&gt;</span> li<span class="in">:nth-of-type(n+2)</span><span class="op">,</span></span>
+body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="fu">.section-link-list</span> ul <span class="op">&gt;</span> li<span class="in">:nth-of-type(n+2)</span> {</span>
+    <span class="kw">margin</span>: <span class="dv">0</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="im">@media</span> <span class="kw">only</span> <span class="dv">screen</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    body<span class="fu">.index</span> <span class="pp">#markdownBody</span> section {</span>
+        <span class="kw">max-width</span>: <span class="dv">100</span><span class="dt">%</span><span class="op">;</span></span>
+    }</span>
+    body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="fu">.section-link-list</span> {</span>
+        <span class="kw">overflow-wrap</span>: <span class="dv">break-word</span><span class="op">;</span></span>
+        <span class="kw">margin-right</span>: <span class="dv">0</span><span class="op">;</span></span>
+    }</span>
+    body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="fu">.section-link-list</span> li {</span>
+        <span class="kw">line-height</span>: <span class="dv">1.65</span><span class="op">;</span></span>
+        <span class="kw">padding</span>: <span class="dv">1</span><span class="dt">px</span> <span class="dv">0</span><span class="op">;</span></span>
+        <span class="kw">margin</span>: <span class="dv">2</span><span class="dt">px</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">;</span></span>
+    }</span>
+    body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="fu">.section-link-list</span> <span class="op">&gt;</span> li<span class="in">::before</span><span class="op">,</span></span>
+    body<span class="fu">.index</span> <span class="pp">#markdownBody</span> <span class="fu">.section-link-list</span> ul <span class="op">&gt;</span> li<span class="in">::before</span> {</span>
+        <span class="kw">top</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+</span>
+<span class="co">/*********************/</span></span>
+<span class="co">/* TABLE OF CONTENTS */</span></span>
+<span class="co">/*********************/</span></span>
+</span>
+div<span class="fu">.TOC</span><span class="in">:empty</span> {</span>
+    <span class="kw">display</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="pp">#TOC</span> {</span>
+    <span class="kw">margin</span>: <span class="dv">0</span> <span class="dv">2.25</span><span class="dt">em</span> <span class="dv">1</span><span class="dt">em</span> <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">padding</span>: <span class="dv">0.625</span><span class="dt">em</span> <span class="dv">0.75</span><span class="dt">em</span> <span class="dv">0.75</span><span class="dt">em</span> <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">position</span>: <span class="dv">relative</span><span class="op">;</span></span>
+    <span class="kw">z-index</span>: <span class="dv">20</span><span class="op">;</span></span>
+}</span>
+div<span class="fu">.TOC</span> {</span>
+    <span class="kw">border</span>: <span class="dv">1</span><span class="dt">px</span> <span class="dv">solid</span> <span class="fu">var(</span><span class="va">--GW-TOC-border-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">background-color</span>: <span class="fu">var(</span><span class="va">--GW-TOC-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">font-family</span>: <span class="fu">var(</span><span class="va">--GW-sans-serif-font-stack</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">line-height</span>: <span class="dv">1.25</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">901</span><span class="dt">px</span>) {</span>
+    <span class="co">/*  On desktop, we want the TOC side by side with the content.</span></span>
+<span class="co">     */</span></span>
+    <span class="pp">#TOC</span> {</span>
+        <span class="kw">float</span>: <span class="dv">left</span><span class="op">;</span></span>
+        <span class="kw">max-width</span>: <span class="dv">285</span><span class="dt">px</span><span class="op">;</span></span>
+    }</span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">900</span><span class="dt">px</span>) {</span>
+    <span class="co">/*  On mobile, we want the TOC to be inline.</span></span>
+<span class="co">     */</span></span>
+    <span class="pp">#TOC</span> {</span>
+        <span class="kw">clear</span>: <span class="dv">both</span><span class="op">;</span></span>
+        <span class="kw">margin</span>: <span class="dv">2</span><span class="dt">em</span> <span class="bu">auto</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="co">/*=-----------------=*/</span></span>
+<span class="co">/*= TOC list layout =*/</span></span>
+<span class="co">/*=-----------------=*/</span></span>
+</span>
+div<span class="fu">.TOC</span> ul {</span>
+    <span class="kw">list-style-type</span>: <span class="dv">none</span><span class="op">;</span></span>
+    <span class="kw">margin</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">padding</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">text-indent</span>: <span class="dv">0</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">900</span><span class="dt">px</span>) {</span>
+    <span class="co">/*  Two-column layout.</span></span>
+<span class="co">     */</span></span>
+    <span class="pp">#TOC</span> <span class="op">&gt;</span> ul {</span>
+        <span class="kw">column-count</span>: <span class="dv">2</span><span class="op">;</span></span>
+        <span class="kw">column-gap</span>: <span class="dv">1.25</span><span class="dt">em</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#TOC</span> ul <span class="op">&gt;</span> li<span class="in">:first-child</span> {</span>
+        <span class="kw">break-before</span>: <span class="dv">avoid-column</span><span class="op">;</span></span>
+    }</span>
+    <span class="co">/*  Divider line between the columns.</span></span>
+<span class="co">     */</span></span>
+    <span class="pp">#TOC</span> {</span>
+        <span class="kw">background-image</span>:</span>
+            <span class="fu">linear-gradient(var(</span><span class="va">--GW-TOC-border-color</span><span class="fu">)</span><span class="op">,</span></span>
+                            <span class="fu">var(</span><span class="va">--GW-TOC-border-color</span><span class="fu">))</span><span class="op">;</span></span>
+        <span class="kw">background-repeat</span>: <span class="dv">no-repeat</span><span class="op">;</span></span>
+        <span class="kw">background-size</span>: <span class="dv">1</span><span class="dt">px</span> <span class="dv">100</span><span class="dt">%</span><span class="op">;</span></span>
+        <span class="kw">background-position</span>: <span class="dv">50</span><span class="dt">%</span> <span class="dv">0</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+div<span class="fu">.TOC</span> ul ul {</span>
+    <span class="kw">margin</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">padding-left</span>: <span class="dv">0.7</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">padding-top</span>: <span class="dv">0.35</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+div<span class="fu">.TOC</span> ul <span class="op">&gt;</span> li {</span>
+    <span class="kw">font-weight</span>: <span class="dv">bold</span><span class="op">;</span></span>
+    <span class="kw">margin</span>: <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0.5</span><span class="dt">em</span> <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">padding-left</span>: <span class="dv">1.125</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">position</span>: <span class="dv">relative</span><span class="op">;</span></span>
+    <span class="kw">overflow-wrap</span>: <span class="dv">break-word</span><span class="op">;</span></span>
+}</span>
+div<span class="fu">.TOC</span> ul <span class="op">&gt;</span> li<span class="in">:last-child</span> {</span>
+    <span class="kw">margin-bottom</span>: <span class="dv">0</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">900</span><span class="dt">px</span>) {</span>
+    <span class="co">/*  No numbers on mobile.</span></span>
+<span class="co">     */</span></span>
+    <span class="pp">#TOC</span> ul <span class="op">&gt;</span> li {</span>
+        <span class="kw">padding-left</span>: <span class="dv">0</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#TOC</span> ul <span class="op">&gt;</span> li<span class="in">::before</span> {</span>
+        <span class="kw">content</span>: <span class="dv">none</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+div<span class="fu">.TOC</span> ul <span class="op">&gt;</span> li li {</span>
+    <span class="kw">font-weight</span>: <span class="dv">normal</span><span class="op">;</span></span>
+    <span class="kw">font-size</span>: <span class="dv">0.9</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    <span class="pp">#TOC</span> ul <span class="op">&gt;</span> li li a {</span>
+        <span class="kw">padding</span>: <span class="dv">1</span><span class="dt">px</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#TOC</span> ul <span class="op">&gt;</span> li li li a {</span>
+        <span class="kw">padding</span>: <span class="dv">2</span><span class="dt">px</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#TOC</span> ul <span class="op">&gt;</span> li li li li a {</span>
+        <span class="kw">padding</span>: <span class="dv">3</span><span class="dt">px</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#TOC</span> ul <span class="op">&gt;</span> li li li li a {</span>
+        <span class="kw">padding</span>: <span class="dv">4</span><span class="dt">px</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="co">/*=------------------=*/</span></span>
+<span class="co">/*= TOC link styling =*/</span></span>
+<span class="co">/*=------------------=*/</span></span>
+</span>
+div<span class="fu">.TOC</span> a {</span>
+    <span class="kw">border</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">display</span>: <span class="dv">inline-block</span><span class="op">;</span></span>
+    <span class="kw">width</span>: <span class="dv">100</span><span class="dt">%</span><span class="op">;</span></span>
+    <span class="kw">box-sizing</span>: <span class="dv">border-box</span><span class="op">;</span></span>
+    <span class="kw">position</span>: <span class="dv">relative</span><span class="op">;</span></span>
+    <span class="kw">padding</span>: <span class="dv">0</span> <span class="dv">0.25</span><span class="dt">rem</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="im">@media</span> <span class="kw">only</span> <span class="dv">screen</span> <span class="kw">and</span> (<span class="kw">hover</span>: <span class="dv">none</span>) {</span>
+    div<span class="fu">.TOC</span> a {</span>
+        <span class="kw">position</span>: <span class="dv">relative</span><span class="op">;</span></span>
+    }</span>
+    div<span class="fu">.TOC</span> a<span class="in">::before</span> {</span>
+        <span class="kw">content</span>: <span class="st">&quot;&quot;</span><span class="op">;</span></span>
+        <span class="kw">position</span>: <span class="dv">absolute</span><span class="op">;</span></span>
+        <span class="kw">left</span>: <span class="dv">-0.50</span><span class="dt">em</span><span class="op">;</span></span>
+        <span class="kw">top</span>: <span class="dv">-0.25</span><span class="dt">em</span><span class="op">;</span></span>
+        <span class="kw">width</span>: <span class="fu">calc(</span><span class="dv">100</span><span class="dt">%</span> <span class="op">+</span> <span class="dv">0.75</span><span class="dt">em</span><span class="fu">)</span><span class="op">;</span></span>
+        <span class="kw">height</span>: <span class="fu">calc(</span><span class="dv">100</span><span class="dt">%</span> <span class="op">+</span> <span class="dv">0.50</span><span class="dt">em</span><span class="fu">)</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="co">/*=--------------------------=*/</span></span>
+<span class="co">/*= Inline code in TOC links =*/</span></span>
+<span class="co">/*=--------------------------=*/</span></span>
+</span>
+div<span class="fu">.TOC</span> code {</span>
+    <span class="kw">font-family</span>: <span class="bu">inherit</span><span class="op">;</span></span>
+    <span class="kw">font-size</span>: <span class="bu">inherit</span><span class="op">;</span></span>
+    <span class="kw">border</span>: <span class="dv">none</span><span class="op">;</span></span>
+    <span class="kw">padding</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">background-color</span>: <span class="bu">inherit</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*=-------------------------------=*/</span></span>
+<span class="co">/*= Wikipedia-style TOC numbering =*/</span></span>
+<span class="co">/*=-------------------------------=*/</span></span>
+</span>
+div<span class="fu">.TOC</span> <span class="op">&gt;</span> ul {</span>
+    <span class="kw">counter-reset</span>: htoc_1<span class="op">;</span></span>
+}</span>
+div<span class="fu">.TOC</span> <span class="op">&gt;</span> ul <span class="op">&gt;</span> li<span class="in">::before</span> {</span>
+    <span class="kw">counter-increment</span>: htoc_1<span class="op">;</span></span>
+    <span class="kw">content</span>: counter<span class="fu">(</span>htoc_1<span class="fu">)</span> <span class="st">&quot;</span><span class="sc">\2006</span><span class="st">  &quot;</span><span class="op">;</span></span>
+}</span>
+div<span class="fu">.TOC</span> <span class="op">&gt;</span> ul ul {</span>
+    <span class="kw">counter-reset</span>: htoc_2<span class="op">;</span></span>
+}</span>
+div<span class="fu">.TOC</span> <span class="op">&gt;</span> ul ul <span class="op">&gt;</span> li<span class="in">::before</span> {</span>
+    <span class="kw">counter-increment</span>: htoc_2<span class="op">;</span></span>
+    <span class="kw">content</span>: counter<span class="fu">(</span>htoc_1<span class="fu">)</span> <span class="st">&quot;.&quot;</span> counter<span class="fu">(</span>htoc_2<span class="fu">)</span> <span class="st">&quot;</span><span class="sc">\2006</span><span class="st">  &quot;</span><span class="op">;</span></span>
+}</span>
+div<span class="fu">.TOC</span> <span class="op">&gt;</span> ul ul ul {</span>
+    <span class="kw">counter-reset</span>: htoc_3<span class="op">;</span></span>
+}</span>
+div<span class="fu">.TOC</span> <span class="op">&gt;</span> ul ul ul <span class="op">&gt;</span> li<span class="in">::before</span> {</span>
+    <span class="kw">counter-increment</span>: htoc_3<span class="op">;</span></span>
+    <span class="kw">content</span>: counter<span class="fu">(</span>htoc_1<span class="fu">)</span> <span class="st">&quot;.&quot;</span> counter<span class="fu">(</span>htoc_2<span class="fu">)</span> <span class="st">&quot;.&quot;</span> counter<span class="fu">(</span>htoc_3<span class="fu">)</span> <span class="st">&quot;</span><span class="sc">\2006</span><span class="st">  &quot;</span><span class="op">;</span></span>
+}</span>
+div<span class="fu">.TOC</span> <span class="op">&gt;</span> ul ul ul ul {</span>
+    <span class="kw">counter-reset</span>: htoc_4<span class="op">;</span></span>
+}</span>
+div<span class="fu">.TOC</span> <span class="op">&gt;</span> ul ul ul ul li<span class="in">::before</span> {</span>
+    <span class="kw">counter-increment</span>: htoc_4<span class="op">;</span></span>
+    <span class="kw">content</span>: counter<span class="fu">(</span>htoc_1<span class="fu">)</span> <span class="st">&quot;.&quot;</span> counter<span class="fu">(</span>htoc_2<span class="fu">)</span> <span class="st">&quot;.&quot;</span> counter<span class="fu">(</span>htoc_3<span class="fu">)</span> <span class="st">&quot;.&quot;</span> counter<span class="fu">(</span>htoc_4<span class="fu">)</span> <span class="st">&quot;</span><span class="sc">\2006</span><span class="st">  &quot;</span><span class="op">;</span></span>
+}</span>
+div<span class="fu">.TOC</span> <span class="op">&gt;</span> ul ul ul ul ul {</span>
+    <span class="kw">counter-reset</span>: htoc_5<span class="op">;</span></span>
+}</span>
+div<span class="fu">.TOC</span> <span class="op">&gt;</span> ul ul ul ul ul <span class="op">&gt;</span> li<span class="in">::before</span> {</span>
+    <span class="kw">counter-increment</span>: htoc_5<span class="op">;</span></span>
+    <span class="kw">content</span>: counter<span class="fu">(</span>htoc_1<span class="fu">)</span> <span class="st">&quot;.&quot;</span> counter<span class="fu">(</span>htoc_2<span class="fu">)</span> <span class="st">&quot;.&quot;</span> counter<span class="fu">(</span>htoc_3<span class="fu">)</span> <span class="st">&quot;.&quot;</span> counter<span class="fu">(</span>htoc_4<span class="fu">)</span> <span class="st">&quot;.&quot;</span> counter<span class="fu">(</span>htoc_5<span class="fu">)</span> <span class="st">&quot;</span><span class="sc">\2006</span><span class="st">  &quot;</span><span class="op">;</span></span>
+}</span>
+div<span class="fu">.TOC</span> <span class="op">&gt;</span> ul ul ul ul ul ul {</span>
+    <span class="kw">counter-reset</span>: htoc_6<span class="op">;</span></span>
+}</span>
+div<span class="fu">.TOC</span> <span class="op">&gt;</span> ul ul ul ul ul ul <span class="op">&gt;</span> li<span class="in">::before</span> {</span>
+    <span class="kw">counter-increment</span>: htoc_6<span class="op">;</span></span>
+    <span class="kw">content</span>: counter<span class="fu">(</span>htoc_1<span class="fu">)</span> <span class="st">&quot;.&quot;</span> counter<span class="fu">(</span>htoc_2<span class="fu">)</span> <span class="st">&quot;.&quot;</span> counter<span class="fu">(</span>htoc_3<span class="fu">)</span> <span class="st">&quot;.&quot;</span> counter<span class="fu">(</span>htoc_4<span class="fu">)</span> <span class="st">&quot;.&quot;</span> counter<span class="fu">(</span>htoc_5<span class="fu">)</span> <span class="st">&quot;.&quot;</span> counter<span class="fu">(</span>htoc_6<span class="fu">)</span> <span class="st">&quot;</span><span class="sc">\2006</span><span class="st">  &quot;</span><span class="op">;</span></span>
+}</span>
+div<span class="fu">.TOC</span> ul <span class="op">&gt;</span> li<span class="in">::before</span> {</span>
+    <span class="kw">position</span>: <span class="dv">absolute</span><span class="op">;</span></span>
+    <span class="kw">right</span>: <span class="fu">calc(</span><span class="dv">100</span><span class="dt">%</span> <span class="op">-</span> <span class="dv">1</span><span class="dt">em</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">left</span>: <span class="bu">unset</span><span class="op">;</span></span>
+    <span class="kw">width</span>: <span class="dv">111</span><span class="dt">px</span><span class="op">;</span></span>
+    <span class="kw">padding</span>: <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">text-align</span>: <span class="dv">right</span><span class="op">;</span></span>
+    <span class="kw">font-weight</span>: <span class="dv">normal</span><span class="op">;</span></span>
+    <span class="kw">pointer-events</span>: <span class="dv">none</span><span class="op">;</span></span>
+    <span class="kw">color</span>: <span class="fu">var(</span><span class="va">--GW-TOC-number-color</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+div<span class="fu">.TOC</span> ul <span class="op">&gt;</span> li<span class="in">:hover::before</span> {</span>
+    <span class="kw">color</span>: <span class="fu">var(</span><span class="va">--GW-TOC-number-hover-color</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  The table of contents is a *table*, so align</span></span>
+<span class="co"> */</span></span>
+div<span class="fu">.TOC</span> {</span>
+    <span class="kw">font-variant-numeric</span>: tabular-nums<span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*=-------------------=*/</span></span>
+<span class="co">/*= Directory indexes =*/</span></span>
+<span class="co">/*=-------------------=*/</span></span>
+</span>
+section<span class="pp">#see-also</span><span class="in">:only-of-type</span> <span class="op">&gt;</span> h1<span class="in">:first-child</span> {</span>
+    <span class="kw">margin-top</span>: <span class="dv">0.25</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+section<span class="pp">#see-also</span><span class="in">:only-of-type</span> <span class="op">&gt;</span> h1<span class="in">:first-child</span> a {</span>
+    <span class="kw">display</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="fu">.abstract.abstract-tag-directory</span> blockquote {</span>
+    <span class="kw">margin-top</span>: <span class="dv">1</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="pp">#TOC</span><span class="fu">.TOC-links-only</span> {</span>
+    <span class="kw">padding-top</span>: <span class="dv">2.5</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+<span class="pp">#TOC</span><span class="fu">.TOC-links-only</span><span class="in">::before</span> {</span>
+    <span class="kw">content</span>: <span class="st">&quot;Contents&quot;</span><span class="op">;</span></span>
+    <span class="kw">position</span>: <span class="dv">absolute</span><span class="op">;</span></span>
+    <span class="kw">font-size</span>: <span class="dv">1.125</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">font-weight</span>: <span class="dv">bold</span><span class="op">;</span></span>
+    <span class="kw">top</span>: <span class="dv">0.5</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">left</span>: <span class="dv">0.75</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+<span class="pp">#TOC</span><span class="fu">.TOC-links-only</span> li {</span>
+    <span class="kw">font-weight</span>: <span class="dv">normal</span><span class="op">;</span></span>
+    <span class="kw">font-size</span>: <span class="dv">0.9</span><span class="dt">em</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">900</span><span class="dt">px</span>) {</span>
+    <span class="pp">#TOC</span><span class="fu">.TOC-links-only</span><span class="in">::before</span> {</span>
+        <span class="kw">left</span>: <span class="dv">0.5</span><span class="dt">em</span><span class="op">;</span></span>
+    }</span>
+    body<span class="ex">[class</span><span class="op">*=</span><span class="st">&#39;-index&#39;</span><span class="ex">]</span> <span class="pp">#TOC</span> {</span>
+        <span class="kw">background-image</span>: <span class="dv">none</span><span class="op">;</span></span>
+    }</span>
+    body<span class="ex">[class</span><span class="op">*=</span><span class="st">&#39;-index&#39;</span><span class="ex">]</span> <span class="pp">#TOC</span> <span class="op">&gt;</span> ul {</span>
+        <span class="kw">column-count</span>: <span class="dv">1</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">650</span><span class="dt">px</span>) {</span>
+    body<span class="ex">[class</span><span class="op">*=</span><span class="st">&#39;-index&#39;</span><span class="ex">]</span> <span class="pp">#TOC</span> {</span>
+        <span class="kw">float</span>: <span class="bu">unset</span><span class="op">;</span></span>
+        <span class="kw">max-width</span>: <span class="bu">unset</span><span class="op">;</span></span>
+        <span class="kw">margin-right</span>: <span class="bu">unset</span><span class="op">;</span></span>
+        <span class="kw">margin-top</span>: <span class="dv">3.5</span><span class="dt">em</span><span class="op">;</span></span>
+    }</span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    body<span class="ex">[class</span><span class="op">*=</span><span class="st">&#39;-index&#39;</span><span class="ex">]</span> <span class="pp">#TOC</span> {</span>
+        <span class="kw">margin-top</span>: <span class="dv">2.75</span><span class="dt">em</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+</span>
+<span class="co">/****************/</span></span>
+<span class="co">/* MAIN CONTENT */</span></span>
+<span class="co">/****************/</span></span>
+</span>
+<span class="fu">.markdownBody</span> {</span>
+    <span class="co">/*  Try to avoid scrollbars on paragraphs: prevents long unbroken</span></span>
+<span class="co">        un-hyphenatable lines from causing H-scrolling</span></span>
+<span class="co">     */</span></span>
+    <span class="kw">overflow-wrap</span>: <span class="dv">break-word</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Breakpoint for sidenotes.</span></span>
+<span class="co"> */</span></span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">1761</span><span class="dt">px</span>) {</span>
+    <span class="pp">#markdownBody</span> {</span>
+        <span class="kw">position</span>: <span class="dv">relative</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">650</span><span class="dt">px</span>) {</span>
+    <span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">1000</span><span class="dt">px</span>) {</span>
+        <span class="co">/*  Replaces A/B-test-set average value; the wider the screen, the more</span></span>
+<span class="co">            line-height is necessary, and no one size suits all, so set 3</span></span>
+<span class="co">            brackets of increasing height.</span></span>
+<span class="co">         */</span></span>
+        <span class="fu">.markdownBody</span> {</span>
+            <span class="kw">line-height</span>: <span class="dv">1.50</span><span class="op">;</span></span>
+        }</span>
+    }</span>
+    <span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">1001</span><span class="dt">px</span>) <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">1200</span><span class="dt">px</span>) {</span>
+        <span class="fu">.markdownBody</span> {</span>
+            <span class="kw">line-height</span>: <span class="dv">1.55</span><span class="op">;</span></span>
+        }</span>
+    }</span>
+    <span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">1201</span><span class="dt">px</span>) {</span>
+        <span class="fu">.markdownBody</span> {</span>
+            <span class="kw">line-height</span>: <span class="dv">1.60</span><span class="op">;</span></span>
+        }</span>
+    }</span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    <span class="fu">.markdownBody</span> {</span>
+        <span class="kw">line-height</span>: <span class="dv">1.45</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="co">/*  On wide screens (desktop), use fully-justified text (words get</span></span>
+<span class="co">    broken/hyphenated as necessary to avoid a ‘ragged margin’), overriding</span></span>
+<span class="co">    browser default of ‘flush left, ragged right’ (see</span></span>
+<span class="co">    https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left )</span></span>
+</span>
+<span class="co">    On mobile/narrow screens, that doesn’t work as well: because browsers do</span></span>
+<span class="co">    greedy layout, justification forces ‘s t r e t c h e d out’ words</span></span>
+<span class="co">    and large spaces, leading to blatant</span></span>
+<span class="co">    https://en.wikipedia.org/wiki/River_(typography) , getting worse the</span></span>
+<span class="co">    narrower the screen (eg. in lists). On wide screens, it isn’t too bad, and</span></span>
+<span class="co">    justification is still better than not, but on mobile it is extremely</span></span>
+<span class="co">    noticeable. Switching to flush left ragged right doesn’t look as nicely</span></span>
+<span class="co">    ‘even’, but it avoids that pathological behavior. (More advanced typesetting</span></span>
+<span class="co">    algorithms like Knuth-Plass</span></span>
+<span class="co">    https://en.wikipedia.org/wiki/Line_wrap_and_word_wrap#Minimum_raggedness</span></span>
+<span class="co">    can handle mobile widths nicely, but no contemporary browser implements them</span></span>
+<span class="co">    natively, and all JS implementations I’ve looked at are buggy.)</span></span>
+</span>
+<span class="co">    However, do hyphenate at all widths.</span></span>
+<span class="co">*/</span></span>
+<span class="fu">.markdownBody</span> p<span class="op">,</span></span>
+<span class="fu">.markdownBody</span> li {</span>
+    <span class="kw">-webkit-hyphens</span>: <span class="bu">auto</span><span class="op">;</span></span>
+    <span class="kw">hyphens</span>: <span class="bu">auto</span><span class="op">;</span></span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">900</span><span class="dt">px</span>) {</span>
+    <span class="fu">.markdownBody</span> p<span class="op">,</span></span>
+    <span class="fu">.markdownBody</span> li {</span>
+        <span class="kw">text-align</span>: <span class="dv">justify</span><span class="op">;</span></span>
+    }</span>
+    <span class="fu">.markdownBody</span> div<span class="fu">.TOC</span> li {</span>
+        <span class="kw">text-align</span>: <span class="dv">left</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+body<span class="fu">.justified-not</span> <span class="fu">.markdownBody</span> p<span class="op">,</span></span>
+body<span class="fu">.justified-not</span> <span class="fu">.markdownBody</span> li {</span>
+    <span class="kw">-webkit-hyphens</span>: <span class="dv">none</span><span class="op">;</span></span>
+    <span class="kw">hyphens</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">900</span><span class="dt">px</span>) {</span>
+    body<span class="fu">.justified-not</span> <span class="fu">.markdownBody</span> p<span class="op">,</span></span>
+    body<span class="fu">.justified-not</span> <span class="fu">.markdownBody</span> li {</span>
+        <span class="kw">text-align</span>: <span class="dv">left</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="co">/*  Cute ‘old-style’ numerals, look a little nicer inline in text, and available</span></span>
+<span class="co">    natively in the SS fonts:</span></span>
+<span class="co">    https://practicaltypography.com/alternate-figures.html#oldstyle-figures</span></span>
+<span class="co"> */</span></span>
+<span class="fu">.markdownBody</span> {</span>
+    <span class="kw">font-variant-numeric</span>: oldstyle-nums<span class="op">;</span></span>
+}</span>
+</span>
+<span class="fu">.abstract</span> blockquote {</span>
+    <span class="kw">margin</span>: <span class="dv">0</span> <span class="dv">0</span> <span class="dv">1.5</span><span class="dt">em</span> <span class="dv">0</span><span class="op">;</span></span>
+    <span class="kw">background-color</span>: <span class="fu">var(</span><span class="va">--GW-abstract-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">border-color</span>: <span class="fu">var(</span><span class="va">--GW-abstract-border-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">padding-top</span>: <span class="dv">0.9</span><span class="dt">em</span><span class="op">;</span></span>
+    <span class="kw">clear</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    <span class="fu">.abstract</span> blockquote {</span>
+        <span class="kw">padding-top</span>: <span class="dv">0.75</span><span class="dt">rem</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="co">/*  Auto-smallcaps the first line of the introduction (= the first `&lt;p&gt;` after</span></span>
+<span class="co">    an ‘abstract’ div); this avoids the need to manually specify what to</span></span>
+<span class="co">    smallcaps, and it auto-adjusts to screen/line-width, which is nicer.</span></span>
+<span class="co"> */</span></span>
+<span class="fu">.abstract</span> <span class="op">+</span> p<span class="in">::first-line</span><span class="op">,</span></span>
+<span class="pp">#markdownBody</span> <span class="op">&gt;</span> p<span class="in">:first-child::first-line</span><span class="op">,</span></span>
+<span class="fu">.markdownBody</span> <span class="pp">#page-metadata</span> <span class="op">+</span> p<span class="in">::first-line</span> {</span>
+    <span class="kw">font-feature-settings</span>: <span class="st">&#39;smcp&#39;</span><span class="op">;</span></span>
+}</span>
+</span>
+section<span class="fu">.collapse.expanded-not</span> {</span>
+    <span class="kw">display</span>: <span class="dv">flow-root</span><span class="op">;</span></span>
+}</span>
+</span>
+h1 {</span>
+    <span class="kw">margin</span>: <span class="dv">0.6</span><span class="dt">em</span> <span class="dv">0</span> <span class="dv">0.5</span><span class="dt">em</span> <span class="dv">-0.75</span><span class="dt">rem</span><span class="op">;</span></span>
+    <span class="kw">font-weight</span>: <span class="dv">bold</span><span class="op">;</span></span>
+    <span class="kw">position</span>: <span class="dv">relative</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="im">@media</span> <span class="dv">all</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    h1 {</span>
+        <span class="kw">margin</span>: <span class="dv">1.25</span><span class="dt">em</span> <span class="dv">0</span> <span class="dv">0.5</span><span class="dt">em</span> <span class="dv">0</span><span class="op">;</span></span>
+        <span class="kw">padding-bottom</span>: <span class="dv">2</span><span class="dt">px</span><span class="op">;</span></span></code></pre></div>
+<p>…[File truncated due to length; see
+<a class="link-page" href="/static/css/include/initial.css">original
+file</a>]…</p>

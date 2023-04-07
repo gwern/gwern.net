@@ -1,0 +1,367 @@
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode CSS"><code class="sourceCode css"><span class="in">:root</span> {</span>
+    <span class="co">/*  Adjust background color to prevent pixels from turning off (contrary to popular belief, pixels turning off saves trivial energy, like &lt;1% in measurements, and causes nasty scrolling/update jank due to delay in pixels turning back on), and improve contrast with the white.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-body-background-color</span>: <span class="cn">#161616</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Dial back from pure white to keep contrast from being *too* high &amp; &#39;stark&#39; (#fff bg / #000 text seems to work in light mode, but not in dark mode, perhaps because of differences in lighting environment?)</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-body-text-color</span>: <span class="cn">#f1f1f1</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Adjust this one color in the syntax highlighting color scheme to make it</span></span>
+<span class="co">        less saturated. (The automatic inversion algorithm doesn’t quite handle</span></span>
+<span class="co">        it in the way we want.)</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-syntax-highlight-color-control-flow</span>: <span class="cn">#cce1c8</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Variable for SVGs to use (like for the —𝔊— footers on the index page)</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-body-background-color-inverted</span>: <span class="cn">#ededed</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Reader mode.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color</span>: <span class="fu">rgba(</span><span class="dv">255</span><span class="op">,</span> <span class="dv">255</span><span class="op">,</span> <span class="dv">255</span><span class="op">,</span> <span class="dv">0.85</span><span class="fu">)</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Mode selectors.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-mode-selector-mobile-background-color</span>: <span class="fu">rgba(</span><span class="dv">18</span><span class="op">,</span> <span class="dv">18</span><span class="op">,</span> <span class="dv">18</span><span class="op">,</span> <span class="dv">0.75</span><span class="fu">)</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Wikipedia math images assume a white background; transparent images</span></span>
+<span class="co">        don’t look right if that assumption is violated.</span></span>
+</span>
+<span class="co">        </span><span class="al">NOTE</span><span class="co">: This color value is --GW-body-background-color with the CSS</span></span>
+<span class="co">        `invert(1)` filter applied. If you modify --GW-body-background-color,</span></span>
+<span class="co">        modify this also!</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-wikipedia-math-image-background-color</span>: <span class="cn">#e9e9e9</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Wikipedia images in figures likewise assume a white background, but</span></span>
+<span class="co">        might be transparent (and don’t get inverted).</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-wikipedia-image-background-color</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Similar to the above, but for all SVGs, which don’t get inverted.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-transparent-svg-background-color</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+}</span>
+</span>
+</span>
+<span class="co">/* some SVGs used in annotations/essays (eg. /doc/genetics/selection/artificial//2023-meyer-figure1-moralacceptabilityandpersonalwillingnesstouseembryoselectionorgeneticeditinginausapopulationsurvey.svg ) were authored as transparent SVGs, assuming a *white* background. In dark-mode, with a black background set, they are illegible.</span></span>
+<span class="co">So, in dark mode only, impose a white background on SVGs in &lt;figure&gt;s.</span></span>
+<span class="co">(This is scoped narrowly to only apply to SVGs which are displayed in &lt;figure&gt;, and not SVGs elsewhere—because SVGs elsewhere are probably part of the site design, and will have been designed to work with dark mode; forcing a white background on them may have unpredictable bad effects. If it turns out that this is still too broad, we may have to instead manually edit SVGs to force a white background, or selectively whitelist them for a white background.) */</span></span>
+figure img<span class="ex">[src</span><span class="op">$=</span><span class="st">&quot;.svg&quot;</span><span class="ex">]</span> {</span>
+    <span class="kw">background-color</span>: <span class="fu">var(</span><span class="va">--GW-transparent-svg-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Audio elements don’t change color in dark mode, so their hover styles need</span></span>
+<span class="co">    adjusted.</span></span>
+<span class="co"> */</span></span>
+<span class="fu">.markdownBody</span> figure audio<span class="in">:hover</span> {</span>
+    <span class="kw">border-color</span>: <span class="fu">var(</span><span class="va">--GW-figure-outline-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">box-shadow</span>:</span>
+        <span class="dv">0</span> <span class="dv">0</span> <span class="dv">4</span><span class="dt">px</span> <span class="dv">0</span> currentColor <span class="dv">inset</span><span class="op">,</span></span>
+        <span class="dv">0</span> <span class="dv">0</span> <span class="dv">4</span><span class="dt">px</span> <span class="dv">0</span> currentColor<span class="op">;</span></span>
+}</span>
+<span class="co">/*  Special styles for special browsers.</span></span>
+<span class="co">    */</span></span>
+<span class="im">@supports</span> (<span class="kw">-moz-user-focus</span>: <span class="dv">normal</span>) {</span>
+    <span class="fu">.markdownBody</span> figure audio {</span>
+        <span class="kw">border-color</span>: <span class="fu">var(</span><span class="va">--GW-figure-outline-color</span><span class="fu">)</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="co">/*  Create a ‘footer’ at the bottom of pages which looks like ‘—————𝔊—————’,</span></span>
+<span class="co">    similar to the arabesque navbar.</span></span>
+</span>
+<span class="co">    Footers help denote “this is the end”, and avoid the somewhat lame effect of</span></span>
+<span class="co">    just having the anonymous feedback link at the end of the page and ending</span></span>
+<span class="co">    there with nothing else.</span></span>
+</span>
+<span class="co">    </span><span class="al">NOTE</span><span class="co">: this is for mobile only, and takes the place of desktop’s full</span></span>
+<span class="co">    arabesque navbar (see default.css).</span></span>
+</span>
+<span class="co">    Implementation: Modifying the ‘fill’ does not work so well when we call an</span></span>
+<span class="co">    SVG as a ‘background-image’ (like for the  footers on the index page), so we</span></span>
+<span class="co">    do variable+invert tricks to get a white copy of the logo as a hack.</span></span>
+<span class="co"> */</span></span>
+<span class="im">@media</span> <span class="kw">only</span> <span class="dv">screen</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">649</span><span class="dt">px</span>) {</span>
+    a<span class="pp">#footer-logo</span><span class="in">::after</span> {</span>
+        <span class="kw">filter</span>: <span class="fu">invert(</span><span class="dv">1</span><span class="fu">)</span><span class="op">;</span></span>
+        <span class="kw">background-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color-inverted</span><span class="fu">)</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="co">/*  The ‘celestial symbol’ horizontal rules are SVGs and must be inverted.</span></span>
+<span class="co"> */</span></span>
+hr<span class="in">::after</span><span class="op">,</span></span>
+<span class="fu">.horizontal-rule-nth-0</span> hr<span class="in">::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">1</span><span class="op">;</span></span>
+    <span class="kw">filter</span>: <span class="fu">invert(</span><span class="dv">1</span><span class="fu">)</span> <span class="fu">drop-shadow(</span><span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span> currentColor<span class="fu">)</span><span class="op">;</span></span>
+}</span>
+<span class="fu">.horizontal-rule-nth-1</span> hr<span class="in">::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.75</span><span class="op">;</span></span>
+    <span class="kw">filter</span>: <span class="fu">invert(</span><span class="dv">1</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+<span class="fu">.horizontal-rule-nth-2</span> hr<span class="in">::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.85</span><span class="op">;</span></span>
+    <span class="kw">filter</span>: <span class="fu">invert(</span><span class="dv">1</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Drop cap opacity adjustment.</span></span>
+<span class="co"> */</span></span>
+<span class="fu">.drop-cap-goudy</span><span class="in">::first-letter</span><span class="op">,</span></span>
+<span class="fu">.drop-cap-goudy</span> <span class="op">&gt;</span> p<span class="in">::first-letter</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.95</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Admonition icons.</span></span>
+<span class="co"> */</span></span>
+div<span class="fu">.admonition</span><span class="in">::before</span> {</span>
+    <span class="kw">filter</span>: <span class="fu">invert(</span><span class="dv">1</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Dotted link underlines in admonitions.</span></span>
+<span class="co"> */</span></span>
+div<span class="fu">.admonition.warning</span><span class="op">,</span></span>
+div<span class="fu">.admonition.error</span> {</span>
+    <span class="va">--GW-dotted-underline-background-image</span>: <span class="fu">var(</span><span class="va">--GW-dotted-underline-hover-dark-background-image</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  SVG icons in the two darker styles of admonitions.</span></span>
+<span class="co"> */</span></span>
+div<span class="fu">.admonition.warning</span> a<span class="ex">[data-link-icon-type</span><span class="op">=</span><span class="st">&#39;svg&#39;</span><span class="ex">]</span><span class="in">::after</span><span class="op">,</span></span>
+div<span class="fu">.admonition.error</span> a<span class="ex">[data-link-icon-type</span><span class="op">=</span><span class="st">&#39;svg&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="kw">filter</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  List bullets are SVGs and have to be inverted.</span></span>
+<span class="co"> */</span></span>
+ul <span class="op">&gt;</span> li<span class="in">::before</span> {</span>
+    <span class="kw">filter</span>: <span class="fu">invert(</span><span class="dv">1</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Exclusion for TOC entries.</span></span>
+<span class="co"> */</span></span>
+<span class="fu">.TOC</span> ul <span class="op">&gt;</span> li<span class="in">::before</span> {</span>
+    <span class="kw">filter</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  For sortable table column headings, we use dark versions of the up/down/both</span></span>
+<span class="co">    arrow icons.</span></span>
+<span class="co"> */</span></span>
+table th<span class="fu">.tablesorter-header</span> {</span>
+    <span class="kw">background-image</span>: <span class="fu">url(</span><span class="st">&#39;/static/img/tablesorter/tablesorter-bg-dark.gif&#39;</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+table th<span class="fu">.tablesorter-headerAsc</span> {</span>
+    <span class="kw">background-image</span>: <span class="fu">url(</span><span class="st">&#39;/static/img/tablesorter/tablesorter-asc-dark.gif&#39;</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+table th<span class="fu">.tablesorter-headerDesc</span> {</span>
+    <span class="kw">background-image</span>: <span class="fu">url(</span><span class="st">&#39;/static/img/tablesorter/tablesorter-desc-dark.gif&#39;</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  The pixel-grid-checkerboard pattern of these scroll bars is created by GIF</span></span>
+<span class="co">    background-images; we use alternate versions of the images in dark mode.</span></span>
+<span class="co"> */</span></span>
+<span class="fu">.table-wrapper</span><span class="in">::-webkit-scrollbar-thumb</span> {</span>
+    <span class="kw">background-image</span>: <span class="fu">url(</span><span class="st">&#39;data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7&#39;</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+<span class="fu">.table-wrapper</span><span class="in">::-webkit-scrollbar-thumb:hover</span> {</span>
+    <span class="kw">background-image</span>: <span class="fu">url(</span><span class="st">&#39;data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7&#39;</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="fu">.sidenote.cut-off</span> <span class="fu">.sidenote-outer-wrapper</span><span class="in">::-webkit-scrollbar-thumb</span> {</span>
+    <span class="kw">background-image</span>: <span class="fu">url(</span><span class="st">&#39;data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7&#39;</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+<span class="fu">.sidenote.cut-off</span> <span class="fu">.sidenote-outer-wrapper</span><span class="in">::-webkit-scrollbar-thumb:hover</span> {</span>
+    <span class="kw">background-image</span>: <span class="fu">url(</span><span class="st">&#39;data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7&#39;</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Images that are marked as &#39;.invert&#39; by the server are inverted,</span></span>
+<span class="co">    hue-rotated, and desaturated. Other (non-invertible) images are merely</span></span>
+<span class="co">    desaturated. Hovering over an image restores it to its original state.</span></span>
+<span class="co">    Hierarchy: ‘.invert-not’: no inversion or grayscale;</span></span>
+<span class="co">    ‘.invert’/‘.invert-auto’: inverted (uninverted upon mouse hover);</span></span>
+<span class="co">    none: grayscaled (ungrayscaled on hover).</span></span>
+<span class="co"> */</span></span>
+img<span class="fu">.invert</span><span class="op">,</span></span>
+img<span class="fu">.invert-auto</span> {</span>
+    <span class="kw">filter</span>: <span class="fu">grayscale(</span><span class="dv">50</span><span class="dt">%</span><span class="fu">)</span> <span class="fu">invert(</span><span class="dv">100</span><span class="dt">%</span><span class="fu">)</span> <span class="fu">brightness(</span><span class="dv">95</span><span class="dt">%</span><span class="fu">)</span> <span class="fu">hue-rotate(</span><span class="dv">180</span><span class="dt">deg</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+img<span class="in">:not(</span><span class="fu">.invert</span><span class="in">):not(</span><span class="fu">.invert-auto</span><span class="in">)</span> {</span>
+    <span class="kw">filter</span>: <span class="fu">grayscale(</span><span class="dv">50</span><span class="dt">%</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+img<span class="op">,</span></span>
+img<span class="fu">.invert</span><span class="op">,</span></span>
+img<span class="fu">.invert-auto</span> {</span>
+    <span class="kw">transition</span>: filter <span class="dv">0.25</span><span class="dt">s</span> <span class="dv">ease</span><span class="op">;</span></span>
+}</span>
+img<span class="in">:hover</span><span class="op">,</span></span>
+img<span class="fu">.invert</span><span class="in">:hover</span><span class="op">,</span></span>
+img<span class="fu">.invert-auto</span><span class="in">:hover</span><span class="op">,</span></span>
+img<span class="in">:not(</span><span class="fu">.invert</span><span class="in">):not(</span><span class="fu">.invert-auto</span><span class="in">):hover</span> {</span>
+    <span class="kw">filter</span>: <span class="dv">none</span><span class="op">;</span></span>
+    <span class="kw">transition</span>: filter <span class="dv">0</span><span class="dt">s</span> <span class="dv">ease</span> <span class="dv">0.25</span><span class="dt">s</span><span class="op">;</span></span>
+}</span>
+<span class="co">/*  Image alt-text.</span></span>
+<span class="co"> */</span></span>
+img<span class="fu">.invert</span><span class="in">::before</span><span class="op">,</span></span>
+img<span class="fu">.invert-auto</span><span class="in">::before</span> {</span>
+    <span class="kw">filter</span>: <span class="fu">invert(</span><span class="dv">1</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+img<span class="fu">.invert</span><span class="in">:hover::before</span><span class="op">,</span></span>
+img<span class="fu">.invert-auto</span><span class="in">:hover::before</span> {</span>
+    <span class="kw">filter</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+<span class="co">/*  Styling the image alt-text interferes with the transitions in dark mode.</span></span>
+<span class="co">    (We include non-class’d `img` in this selector for consistency.)</span></span>
+</span>
+<span class="co">    TEMPORARY until we transition to a color-based instead of filter-based</span></span>
+<span class="co">    scheme for this. —SA 2022-07-29</span></span>
+<span class="co"> */</span></span>
+img<span class="op">,</span></span>
+img<span class="in">:hover</span><span class="op">,</span></span>
+img<span class="fu">.invert</span><span class="op">,</span></span>
+img<span class="fu">.invert</span><span class="in">:hover</span><span class="op">,</span></span>
+img<span class="fu">.invert-auto</span><span class="op">,</span></span>
+img<span class="fu">.invert-auto</span><span class="in">:hover</span> {</span>
+    <span class="kw">transition</span>: <span class="dv">none</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  For images which have been manually marked up with ‘.invert-not’, we</span></span>
+<span class="co">    avoid any filtering at all. If they are manually marked up (artwork,</span></span>
+<span class="co">    diagrams with multiple subtly-different colors matched to a legend/caption),</span></span>
+<span class="co">    the color is important and shouldn’t be faded out by default.</span></span>
+<span class="co"> */</span></span>
+<span class="pp">#markdownBody</span> img<span class="fu">.invert-not</span> { <span class="kw">filter</span>: <span class="dv">none</span><span class="op">;</span> }</span>
+</span>
+<span class="co">/*  The loading spinner for object popups (image, iframe, object) is inverted</span></span>
+<span class="co">    and made more visible in dark mode.</span></span>
+<span class="co"> */</span></span>
+<span class="fu">.popframe.loading</span><span class="in">::before</span> {</span>
+    <span class="kw">filter</span>: <span class="fu">invert(</span><span class="dv">1</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">opacity</span>: <span class="dv">0.4</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  “Loading failed” messages for object popups.</span></span>
+<span class="co"> */</span></span>
+<span class="fu">.popframe.loading-failed</span><span class="in">::after</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.4</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Include-link loading spinner.</span></span>
+<span class="co"> */</span></span>
+a<span class="fu">.include-loading.include-spinner</span><span class="in">::after</span> {</span>
+    <span class="kw">filter</span>: <span class="fu">invert(</span><span class="dv">1</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  All mode selectors.</span></span>
+<span class="co"> */</span></span>
+div<span class="fu">.mode-selector</span> button<span class="in">::before</span><span class="op">,</span></span>
+span<span class="fu">.mode-selector</span> button<span class="in">::before</span> {</span>
+    <span class="kw">filter</span>: <span class="fu">invert(</span><span class="dv">1</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Inline mode selectors.</span></span>
+<span class="co"> */</span></span>
+span<span class="fu">.mode-selector</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.45</span><span class="op">;</span></span>
+}</span>
+span<span class="fu">.mode-selector</span> button<span class="in">::before</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.55</span><span class="op">;</span></span>
+}</span>
+span<span class="fu">.dark-mode-selector</span> button<span class="fu">.select-mode-light</span><span class="in">::before</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.6</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Fixed mode selectors.</span></span>
+<span class="co"> */</span></span>
+<span class="im">@media</span> <span class="kw">only</span> <span class="dv">screen</span> <span class="kw">and</span> (<span class="kw">min-width</span>: <span class="dv">1280</span><span class="dt">px</span>) {</span>
+    div<span class="fu">.mode-selector</span> {</span>
+        <span class="kw">opacity</span>: <span class="dv">0.45</span><span class="op">;</span></span>
+    }</span>
+    div<span class="fu">.mode-selector</span> button<span class="in">::before</span> {</span>
+        <span class="kw">opacity</span>: <span class="dv">0.55</span><span class="op">;</span></span>
+    }</span>
+    div<span class="fu">.dark-mode-selector</span> button<span class="fu">.select-mode-light</span><span class="in">::before</span> {</span>
+        <span class="kw">opacity</span>: <span class="dv">0.6</span><span class="op">;</span></span>
+    }</span>
+}</span>
+<span class="im">@media</span> <span class="kw">only</span> <span class="dv">screen</span> <span class="kw">and</span> (<span class="kw">max-width</span>: <span class="dv">1279</span><span class="dt">px</span>) {</span>
+    <span class="pp">#ui-elements-container</span> div<span class="fu">.mode-selector</span> button {</span>
+        <span class="kw">opacity</span>: <span class="dv">0.3</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#ui-elements-container</span> div<span class="fu">.dark-mode-selector</span> button<span class="fu">.select-mode-light</span> {</span>
+        <span class="kw">opacity</span>: <span class="dv">0.35</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#ui-elements-container</span> div<span class="fu">.reader-mode-selector</span> button<span class="fu">.select-mode-off</span> {</span>
+        <span class="kw">opacity</span>: <span class="dv">0.35</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#ui-elements-container</span> div<span class="fu">.mode-selector</span> button<span class="in">:hover</span><span class="op">,</span></span>
+    <span class="pp">#ui-elements-container</span> div<span class="fu">.mode-selector</span> button<span class="fu">.selected</span> {</span>
+        <span class="kw">opacity</span>: <span class="dv">0.85</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#ui-elements-container</span> div<span class="fu">.reader-mode-selector</span> button<span class="fu">.select-mode-on</span><span class="in">:hover</span><span class="op">,</span></span>
+    <span class="pp">#ui-elements-container</span> div<span class="fu">.reader-mode-selector</span> button<span class="fu">.select-mode-on.selected</span> {</span>
+        <span class="kw">opacity</span>: <span class="dv">0.75</span><span class="op">;</span></span>
+    }</span>
+    <span class="pp">#ui-elements-container</span> div<span class="fu">.reader-mode-selector</span> button<span class="fu">.select-mode-off</span><span class="in">:hover</span><span class="op">,</span></span>
+    <span class="pp">#ui-elements-container</span> div<span class="fu">.reader-mode-selector</span> button<span class="fu">.select-mode-off.selected</span> {</span>
+        <span class="kw">opacity</span>: <span class="dv">0.9</span><span class="op">;</span></span>
+    }</span>
+}</span>
+</span>
+<span class="co">/*  Masked links key toggle info alert panel.</span></span>
+<span class="co"> */</span></span>
+div<span class="pp">#masked-links-key-toggle-info-alert</span> img {</span>
+    <span class="kw">filter</span>: <span class="fu">drop-shadow(</span><span class="dv">0</span> <span class="dv">0</span> <span class="dv">3</span><span class="dt">px</span> <span class="fu">var(</span><span class="va">--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color</span><span class="fu">))</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  The dotted underline for Wikipedia links is created by a</span></span>
+<span class="co">    pixel-grid-checkerboard background-image. We use an alternate version of</span></span>
+<span class="co">    this image in dark mode.</span></span>
+<span class="co"> */</span></span>
+<span class="fu">.markdownBody</span> a<span class="ex">[href]</span><span class="fu">.has-annotation</span><span class="in">:hover</span> {</span>
+    <span class="kw">background-image</span>: <span class="fu">var(</span><span class="va">--GW-dotted-underline-hover-dark-background-image</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  All SVG linkicons have to be inverted.</span></span>
+<span class="co"> */</span></span>
+a<span class="fu">.link-self.identifier-link-up</span><span class="in">::after</span><span class="op">,</span></span>
+a<span class="fu">.link-self.identifier-link-down</span><span class="in">::after</span><span class="op">,</span></span>
+a<span class="ex">[data-link-icon-type</span><span class="op">*=</span><span class="st">&#39;svg&#39;</span><span class="ex">]</span><span class="in">::after</span> {</span>
+    <span class="kw">filter</span>: <span class="fu">invert(</span><span class="dv">1</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Block buttons must be inverted.</span></span>
+<span class="co"> */</span></span>
+<span class="fu">.mjpage__block</span> <span class="fu">.block-button-bar</span> button img<span class="op">,</span></span>
+<span class="fu">.mjpage__block</span> <span class="fu">.block-button-bar</span> button img<span class="in">:hover</span> {</span>
+    <span class="kw">filter</span>: <span class="fu">invert(</span><span class="dv">1</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Footnote back-to-citation link icons.</span></span>
+<span class="co"> */</span></span>
+<span class="fu">.footnotes</span> <span class="fu">.footnote-back</span> img<span class="op">,</span></span>
+<span class="fu">.footnotes</span> <span class="fu">.footnote-back</span> img<span class="in">:hover</span> {</span>
+    <span class="kw">filter</span>: <span class="fu">invert(</span><span class="dv">1</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+</span>
+<span class="co">/*  Math in Wikipedia pop-frames.</span></span>
+<span class="co"> */</span></span>
+<span class="fu">.annotation.wikipedia-entry</span> <span class="fu">.mwe-math-element</span> img {</span>
+    <span class="kw">filter</span>: <span class="fu">invert(</span><span class="dv">1</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="kw">background-color</span>: <span class="fu">var(</span><span class="va">--GW-wikipedia-math-image-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Images in figures in Wikipedia pop-frames.</span></span>
+<span class="co"> */</span></span>
+<span class="fu">.annotation.wikipedia-entry</span> figure img {</span>
+    <span class="kw">background-color</span>: <span class="fu">var(</span><span class="va">--GW-wikipedia-image-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+}</span>
+</span>
+<span class="co">/*  Popups-disabled icon/button.</span></span>
+<span class="co"> */</span></span>
+div<span class="pp">#popups-disabled-show-popup-options-dialog-button</span> {</span>
+    <span class="kw">opacity</span>: <span class="dv">0.5</span><span class="op">;</span></span>
+}</span></code></pre></div>

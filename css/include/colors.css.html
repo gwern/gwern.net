@@ -1,0 +1,324 @@
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode CSS"><code class="sourceCode css"><span class="in">:root</span> {</span>
+    <span class="co">/*  General.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-body-background-color</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+    <span class="va">--GW-body-text-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-body-link-color</span>: <span class="cn">#333</span><span class="op">;</span></span>
+    <span class="va">--GW-body-link-hover-color</span>: <span class="cn">#888</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Selection.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-text-selection-background-color</span>: <span class="cn">#333</span><span class="op">;</span></span>
+    <span class="va">--GW-text-selection-color</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Visited.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-body-link-visited-color</span>: <span class="cn">#6a6a6a</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Link underlining.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-link-underline-background-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-link-underline-gradient-line-color</span>: <span class="cn">#333</span><span class="op">;</span></span>
+    <span class="va">--GW-link-underline-gradient-line-color-hover</span>: <span class="cn">#999</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Blockquotes.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-blockquote-border-color-level-one</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-blockquote-border-color-level-two</span>: <span class="cn">#c4c4c4</span><span class="op">;</span></span>
+    <span class="va">--GW-blockquote-border-color-level-three</span>: <span class="cn">#b3b3b3</span><span class="op">;</span></span>
+    <span class="va">--GW-blockquote-border-color-level-four</span>: <span class="cn">#a6a6a6</span><span class="op">;</span></span>
+    <span class="va">--GW-blockquote-background-color-level-one</span>: <span class="cn">#f8f8f8</span><span class="op">;</span></span>
+    <span class="va">--GW-blockquote-background-color-level-two</span>: <span class="cn">#e6e6e6</span><span class="op">;</span></span>
+    <span class="va">--GW-blockquote-background-color-level-three</span>: <span class="cn">#d8d8d8</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Abstracts.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-abstract-border-color</span>: <span class="cn">#bbb</span><span class="op">;</span></span>
+    <span class="va">--GW-abstract-background-color</span>: <span class="fu">var(</span><span class="va">--GW-blockquote-background-color-level-one</span><span class="fu">)</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Table of contents.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-TOC-border-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-TOC-background-color</span>: <span class="cn">#f8f8f8</span><span class="op">;</span></span>
+    <span class="va">--GW-TOC-collapse-button-text-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-TOC-collapse-button-text-hover-color</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+    <span class="va">--GW-TOC-collapse-button-color</span>: <span class="fu">rgba(</span><span class="dv">248</span><span class="op">,</span> <span class="dv">248</span><span class="op">,</span> <span class="dv">248</span><span class="op">,</span> <span class="dv">0.8</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-TOC-collapse-button-hover-color</span>: <span class="cn">#ddd</span><span class="op">;</span></span>
+    <span class="va">--GW-TOC-collapse-button-border-hover-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-TOC-link-hover-background-color</span>: <span class="cn">#ececec</span><span class="op">;</span></span>
+    <span class="va">--GW-TOC-link-hover-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-TOC-link-hover-indicator-bar-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-TOC-number-color</span>: <span class="cn">#909090</span><span class="op">;</span></span>
+    <span class="va">--GW-TOC-number-hover-color</span>: <span class="cn">#313131</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Collapse blocks.</span></span>
+<span class="co">        */</span></span>
+    <span class="va">--GW-abstract-collapse-blockquote-hover-color</span>: <span class="cn">#eee</span><span class="op">;</span></span>
+    <span class="va">--GW-collapse-disclosure-button-color</span>: <span class="cn">#eee</span><span class="op">;</span></span>
+    <span class="va">--GW-collapse-disclosure-button-hover-color</span>: <span class="cn">#ddd</span><span class="op">;</span></span>
+    <span class="va">--GW-collapse-in-blockquote-disclosure-button-color</span>: <span class="cn">#ddd</span><span class="op">;</span></span>
+    <span class="va">--GW-collapse-in-blockquote-disclosure-button-hover-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-collapse-disclosure-button-text-color</span>: <span class="cn">#bbb</span><span class="op">;</span></span>
+    <span class="va">--GW-collapse-disclosure-button-text-hover-color</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+    <span class="va">--GW-collapse-in-blockquote-disclosure-button-text-color</span>: <span class="cn">#999</span><span class="op">;</span></span>
+    <span class="va">--GW-collapse-in-blockquote-disclosure-button-text-hover-color</span>: <span class="cn">#888</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Headings.</span></span>
+<span class="co">     */</span></span>
+    --GW-H1-box-shadow-background-color: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    --GW-H1-box-shadow-line-color: <span class="cn">#888</span><span class="op">;</span></span>
+    --GW-H2-bottom-border-color: <span class="cn">#888</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Comments.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-comment-section-top-border-color</span>: <span class="cn">#999</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Lists.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-bulleted-list-marker-color</span>: <span class="cn">#808080</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Figures.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-figure-outline-color</span>: <span class="cn">#888</span><span class="op">;</span></span>
+    <span class="va">--GW-figure-caption-outline-color</span>: <span class="cn">#888</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Epigraphs.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-epigraph-quotation-mark-color</span>: <span class="cn">#808080</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Footnotes.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-footnote-border-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+    <span class="va">--GW-footnote-highlighted-border-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+    <span class="va">--GW-footnotes-section-top-rule-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-footnote-backlink-border-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-footnote-backlink-border-hover-color</span>: <span class="cn">#999</span><span class="op">;</span></span>
+    <span class="va">--GW-footnote-backlink-after-bordered-block-background-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Footnote references.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-footnote-ref-highlight-box-shadow-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+    <span class="va">--GW-footnote-ref-highlight-background-color</span>: <span class="fu">rgba(</span><span class="dv">255</span><span class="op">,</span><span class="dv">255</span><span class="op">,</span><span class="dv">255</span><span class="op">,</span><span class="dv">0.75</span><span class="fu">)</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Sidenotes.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-sidenote-highlight-background-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-sidenote-highlight-box-shadow-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+    <span class="va">--GW-sidenote-border-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+    <span class="va">--GW-sidenote-scrollbar-track-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-sidenote-scrollbar-thumb-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+    <span class="va">--GW-sidenote-scrollbar-thumb-hover-color</span>: <span class="cn">#999</span><span class="op">;</span></span>
+    <span class="va">--GW-sidenote-self-link-border-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Annotations.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-section-highlighted-border-color</span>: <span class="cn">#666</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Tables.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-table-border-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-table-full-width-background-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-table-caption-border-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-table-row-horizontal-border-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-table-cell-vertical-border-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-table-scrollbar-track-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-table-scrollbar-thumb-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+    <span class="va">--GW-table-scrollbar-thumb-hover-color</span>: <span class="cn">#999</span><span class="op">;</span></span>
+    <span class="va">--GW-table-scrollbar-border-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-table-column-heading-hover-background-color</span>: <span class="cn">#e2f0f2</span><span class="op">;</span></span>
+    <span class="va">--GW-table-sorted-column-heading-background-color</span>: <span class="cn">#8bd0ed</span><span class="op">;</span></span>
+    <span class="va">--GW-table-sorted-column-heading-text-color</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+    <span class="va">--GW-table-sorted-column-heading-text-shadow-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-table-zebra-stripe-alternate-row-background-color</span>: <span class="cn">#f6f6f6</span><span class="op">;</span></span>
+    <span class="va">--GW-table-row-hover-outline-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Code blocks.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-code-element-border-color</span>: <span class="cn">#c8c8c8</span><span class="op">;</span></span>
+    <span class="va">--GW-code-element-background-color</span>: <span class="cn">#fafafa</span><span class="op">;</span></span>
+    <span class="va">--GW-pre-element-border-color</span>: <span class="cn">#c8c8c8</span><span class="op">;</span></span>
+    <span class="va">--GW-pre-element-background-color</span>: <span class="cn">#fafafa</span><span class="op">;</span></span>
+    <span class="va">--GW-pre-element-scrollbar-track-color</span>: <span class="cn">#fafafa</span><span class="op">;</span></span>
+    <span class="va">--GW-pre-element-scrollbar-thumb-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-pre-element-scrollbar-thumb-hover-color</span>: <span class="cn">#999</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Syntax highlight theme.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-syntax-highlight-color-normal</span>: <span class="cn">#1f1c1b</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-attribute</span>: <span class="cn">#002561</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-data-type</span>: <span class="bu">inherit</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-variable</span>: <span class="cn">#666666</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-other</span>: <span class="bu">inherit</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-preprocessor</span>: <span class="bu">inherit</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-extension</span>: <span class="cn">#777</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-comment</span>: <span class="cn">#777</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-control-flow</span>: <span class="cn">#003900</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-keyword</span>: <span class="cn">#002561</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-operator</span>: <span class="cn">#002561</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-special-char</span>: <span class="cn">#607880</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-built-in</span>: <span class="cn">#002561</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-function</span>: <span class="cn">#002561</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-constant</span>: <span class="bu">inherit</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-base-n</span>: <span class="bu">inherit</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-dec-val</span>: <span class="bu">inherit</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-float</span>: <span class="bu">inherit</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-information</span>: <span class="bu">inherit</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-char</span>: <span class="bu">inherit</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-string</span>: <span class="bu">inherit</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-verbatim-string</span>: <span class="bu">inherit</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-alert</span>: <span class="cn">#bf0303</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-error</span>: <span class="cn">#ff0000</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-import</span>: <span class="cn">#777777</span><span class="op">;</span></span>
+    <span class="va">--GW-syntax-highlight-color-special-string</span>: <span class="cn">#666666</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Math.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-math-block-background-color</span>: <span class="cn">#f6f6f6</span><span class="op">;</span></span>
+    <span class="va">--GW-math-block-background-color-flash</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+    <span class="va">--GW-math-block-scrollbar-border-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-math-block-scrollbar-track-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-math-block-scrollbar-thumb-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-math-block-scrollbar-thumb-hover-color</span>: <span class="cn">#999</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Drop caps.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-drop-caps-yinit-color</span>: <span class="cn">#0d0d0d</span><span class="op">;</span></span>
+    <span class="va">--GW-drop-caps-yinit-text-shadow-color</span>: <span class="cn">#777</span><span class="op">;</span></span>
+    <span class="va">--GW-drop-caps-de-zs-color</span>: <span class="cn">#1b1b1b</span><span class="op">;</span></span>
+    <span class="va">--GW-drop-caps-cheshire-color</span>: <span class="cn">#191919</span><span class="op">;</span></span>
+    <span class="va">--GW-drop-caps-kanzlei-color</span>: <span class="cn">#191919</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Admonitions.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-admonition-note-left-border-color</span>: <span class="cn">#909090</span><span class="op">;</span></span>
+    <span class="va">--GW-admonition-note-background-color</span>: <span class="cn">#d8d8d8</span><span class="op">;</span></span>
+    <span class="va">--GW-admonition-tip-left-border-color</span>: <span class="cn">#d8d8d8</span><span class="op">;</span></span>
+    <span class="va">--GW-admonition-tip-background-color</span>: <span class="cn">#f0f0f0</span><span class="op">;</span></span>
+    <span class="va">--GW-admonition-warning-left-border-color</span>: <span class="cn">#5a5a5a</span><span class="op">;</span></span>
+    <span class="va">--GW-admonition-warning-background-color</span>: <span class="cn">#9a9a9a</span><span class="op">;</span></span>
+    <span class="va">--GW-admonition-warning-text-color</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+    <span class="va">--GW-admonition-error-left-border-color</span>: <span class="cn">#2d2d2d</span><span class="op">;</span></span>
+    <span class="va">--GW-admonition-error-background-color</span>: <span class="cn">#5a5a5a</span><span class="op">;</span></span>
+    <span class="va">--GW-admonition-error-text-color</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+    <span class="va">--GW-admonition-reversed-link-color</span>: <span class="cn">#ddd</span><span class="op">;</span></span>
+    <span class="va">--GW-admonition-reversed-link-color-hover</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-admonition-reversed-link-underline-gradient-line-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-admonition-reversed-link-underline-gradient-line-color-hover</span>: <span class="cn">#bbb</span><span class="op">;</span></span>
+    <span class="va">--GW-admonition-reversed-footnote-ref-highlight-background-color</span>: <span class="fu">rgba(</span><span class="dv">90</span><span class="op">,</span><span class="dv">90</span><span class="op">,</span><span class="dv">90</span><span class="op">,</span><span class="dv">0.75</span><span class="fu">)</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Sequential nav UI.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-sequential-nav-link-background-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Page-specific styles.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-index-page-bottom-ornament-line-color</span>: <span class="cn">#808080</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Pop-frames (popups or popins).</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-raw-code-popframe-line-highlight-background-color</span>: <span class="cn">#ffd</span><span class="op">;</span></span>
+    <span class="va">--GW-raw-code-popframe-line-highlight-border-color</span>: <span class="cn">#ddd</span><span class="op">;</span></span>
+    <span class="va">--GW-raw-code-popframe-line-number-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+    <span class="va">--GW-raw-code-popframe-line-number-divider-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Popups.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-popups-body-background-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-background-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+</span>
+    <span class="va">--GW-popups-object-popup-background-color</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+</span>
+    <span class="va">--GW-popups-popup-border-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-box-shadow-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-border-focused-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-box-shadow-focused-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+</span>
+    <span class="va">--GW-popups-popup-title-bar-background-color</span>: <span class="cn">#f6f6f6</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-title-bar-button-color</span>: <span class="cn">#bbb</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-title-bar-button-color-hover</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-title-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-title-link-hover-color</span>: <span class="fu">var(</span><span class="va">--GW-body-link-hover-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-title-bar-background-focused-color</span>: <span class="cn">#e6e6e6</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-title-bar-button-focused-color</span>: <span class="cn">#777</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-title-bar-button-focused-color-hover</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-title-bar-submenu-box-shadow-color</span>: <span class="cn">#ddd</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-title-focused-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-title-link-hover-focused-color</span>: <span class="fu">var(</span><span class="va">--GW-body-link-hover-color</span><span class="fu">)</span><span class="op">;</span></span>
+</span>
+    <span class="va">--GW-popups-popup-scrollbar-track-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+</span>
+    <span class="va">--GW-popups-popup-scrollbar-thumb-color</span>: <span class="cn">#ddd</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-scrollbar-thumb-hover-color</span>: <span class="cn">#bbb</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-scrollbar-thumb-focused-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-scrollbar-thumb-hover-focused-color</span>: <span class="cn">#999</span><span class="op">;</span></span>
+</span>
+    <span class="va">--GW-popups-popup-options-dialog-backdrop-background-color</span>: <span class="fu">rgba(</span><span class="dv">255</span><span class="op">,</span><span class="dv">255</span><span class="op">,</span><span class="dv">255</span><span class="op">,</span><span class="dv">0.95</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-options-dialog-background-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-options-dialog-border-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-options-dialog-box-shadow-color</span>: <span class="cn">#444</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-options-dialog-horizontal-rule-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-options-dialog-button-background-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-options-dialog-button-text-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-options-dialog-button-border-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-options-dialog-button-hover-box-shadow-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-options-dialog-option-button-explanation-text-color</span>: <span class="cn">#777</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-options-dialog-option-button-hover-text-color</span>: <span class="cn">#777</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-popup-options-dialog-radio-button-border-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-popups-show-popup-options-dialog-button-color</span>: <span class="cn">#999</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Popins.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-popins-body-background-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-popins-popin-background-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-popins-popin-border-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+    <span class="va">--GW-popins-box-shadow-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+    <span class="va">--GW-popins-popin-title-bar-background-color</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+    <span class="va">--GW-popins-popin-title-bar-button-color</span>: <span class="cn">#666</span><span class="op">;</span></span>
+    <span class="va">--GW-popins-popin-scrollbar-thumb-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-popins-popin-scrollbar-track-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-popins-popin-scrollbar-thumb-hover-color</span>: <span class="cn">#999</span><span class="op">;</span></span>
+    <span class="va">--GW-popins-popin-stack-counter-text-color</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Image focus.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-image-focus-image-hover-drop-shadow-color</span>: <span class="cn">#777</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Mode selector (light/dark mode).</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-mode-selector-background-color</span>: <span class="fu">var(</span><span class="va">--GW-body-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-mode-selector-mobile-background-color</span>: <span class="fu">rgba(</span><span class="dv">255</span><span class="op">,</span><span class="dv">255</span><span class="op">,</span><span class="dv">255</span><span class="op">,</span><span class="dv">0.75</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-mode-selector-border-hover-color</span>: <span class="cn">#aaa</span><span class="op">;</span></span>
+    <span class="va">--GW-mode-selector-button-text-color</span>: <span class="cn">#777</span><span class="op">;</span></span>
+    <span class="va">--GW-mode-selector-button-hover-text-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Reader mode.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-reader-mode-masked-link-bracket-background-color</span>: <span class="fu">rgba(</span><span class="dv">255</span><span class="op">,</span><span class="dv">255</span><span class="op">,</span><span class="dv">255</span><span class="op">,</span><span class="dv">0.5</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="co">/*  The following is a temporary hack until we can generate the above value</span></span>
+<span class="co">        dynamically from the local value of --GW-link-underline-background-color</span></span>
+<span class="co">        (by reducing the opacity of whatever that value is).</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-reader-mode-masked-link-bracket-background-color</span>: <span class="fu">var(</span><span class="va">--GW-link-underline-background-color</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color</span>: <span class="fu">rgba(</span><span class="dv">0</span><span class="op">,</span><span class="dv">0</span><span class="op">,</span><span class="dv">0</span><span class="op">,</span><span class="dv">0.6</span><span class="fu">)</span><span class="op">;</span></span>
+    <span class="va">--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+    <span class="va">--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+    <span class="va">--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-border-color</span>: <span class="cn">#bbb</span><span class="op">;</span></span>
+    <span class="va">--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-background-color</span>: <span class="cn">#444</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  “Back to top” link.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-back-to-top-link-color</span>: <span class="cn">#ccc</span><span class="op">;</span></span>
+    <span class="va">--GW-back-to-top-link-hover-color</span>: <span class="cn">#999</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  “Skip to content” accessibility link.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-skip-to-content-text-color</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+    <span class="va">--GW-skip-to-content-border-color</span>: <span class="cn">#fff</span><span class="op">;</span></span>
+    <span class="va">--GW-skip-to-content-background-color</span>: <span class="cn">#bf1722</span><span class="op">;</span></span>
+</span>
+    <span class="co">/*  Nav header.</span></span>
+<span class="co">     */</span></span>
+    <span class="va">--GW-nav-header-link-color</span>: <span class="cn">#999</span><span class="op">;</span></span>
+    <span class="va">--GW-nav-header-link-hover-color</span>: <span class="cn">#000</span><span class="op">;</span></span>
+}</span></code></pre></div>
