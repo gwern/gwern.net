@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-06 14:32:22 gwern"
+# When:  Time-stamp: "2023-04-06 19:50:23 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -148,13 +148,13 @@ else
                                         -e 'doc/biology/2000-iapac-norvir' -e 'doc/gwern.net-gitstats' -e 'doc/reinforcement-learning/armstrong-controlproblem' \
                                         -e 'doc/statistics/order/beanmachine-multistage' -e 'doc/personal/2011-gwern-yourmorals.org/')"
 
-    # # wait for generateLinkBibliography to finish to ensure the annotation link-bibs are all created:
-    # bold "Updating link bibliographies…"
-    # ./static/build/generateLinkBibliography +RTS -N"$N" -RTS
+    # wait for generateLinkBibliography to finish to ensure the annotation link-bibs are all created:
+    bold "Updating link bibliographies…"
+    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS
 
-    # # we want to generate all directories first before running Hakyll in case a new tag was created
-    # bold "Building directory indexes…"
-    # ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS
+    # we want to generate all directories first before running Hakyll in case a new tag was created
+    bold "Building directory indexes…"
+    ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS
   fi
 
     bold "Check/update VCS…"
@@ -847,9 +847,9 @@ else
     wrap λ "The live MIME types are incorrect"
 
     ## known-content check:
-    λ(){ curl --silent 'https://gwern.net/index'     | grep -F --quiet -e 'This Is The Website</span> of <strong>Gwern Branwen</strong>' || echo "/index content-check failed"; }
+    λ(){ sleep 5s; curl --silent 'https://gwern.net/index'     | grep -F --quiet -e 'This Is The Website</span> of <strong>Gwern Branwen</strong>' || echo "/index content-check failed"; }
     wrap λ "Known-content check of /index failed?"
-    λ(){ curl --silent 'https://gwern.net/zeo/zeo'   | grep -F --quiet -e 'lithium orotate' || echo "/zeo/zeo content-check failed"; }
+    λ(){ sleep 5s; curl --silent 'https://gwern.net/zeo/zeo'   | grep -F --quiet -e 'lithium orotate' || echo "/zeo/zeo content-check failed"; }
     wrap λ "Known-content check of /zeo/zeo failed?"
 
     ## check that tag-directories have the right thumbnails (ie. *not* the fallback thumbnail):
