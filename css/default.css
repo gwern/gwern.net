@@ -67,7 +67,6 @@
     position: relative;
     min-height: calc(  var(--collapse-toggle-top-height)
                      + var(--collapse-toggle-bottom-height));
-    box-sizing: border-box;
     margin: 1em 0;
 }
 
