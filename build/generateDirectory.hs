@@ -290,18 +290,24 @@ generateDirectoryItems parent current ds =
 
        generateDirectoryItem :: FilePath -> [Block]
        -- arrow symbolism: subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')
-       generateDirectoryItem d = let downP = directoryPrefixDown current d in
-                                   [Para [Link ("",
+       generateDirectoryItem d = let downP = directoryPrefixDown current d
+                                     nameShort = T.pack $ replace "/doc/" "" $ takeDirectory d
+                                     (nameDisplayed,parenthetical) = if parent == (Just "/index") then abbreviateTagLongForm nameShort else (abbreviateTag nameShort, [])
+                                 in
+                                   [Para ([Link ("",
                                                ["link-tag", if downP then "directory-indexes-downwards" else "directory-indexes-sideways"],
                                                [("rel","tag")]
                                              )
-                                               [Emph [RawInline (Format "html") $ (if parent == (Just "/index") then abbreviateTagLongForm else abbreviateTag) $ T.pack $ replace "/doc/" "" $ takeDirectory d]] (T.pack d, "")]
+                                               [Emph [RawInline (Format "html") nameDisplayed]] (T.pack d, "")]
+                                           ++ parenthetical)
                                  ]
        directoryPrefixDown :: FilePath -> FilePath -> Bool
        directoryPrefixDown currentd d' = ("/"++currentd) `isPrefixOf` d'
 
-       abbreviateTagLongForm :: T.Text -> T.Text
-       abbreviateTagLongForm dir = "<code>" `T.append` dir `T.append` "</code> (" `T.append` abbreviateTag dir `T.append` ")"
+       abbreviateTagLongForm :: T.Text -> (T.Text, [Inline])
+       abbreviateTagLongForm dir = ("<code>" `T.append`   dir `T.append` "</code>",
+                                    [Space, Str $ "(" `T.append` abbreviateTag dir `T.append` ")"])
+
 
 
 generateListItems :: [(FilePath, MetadataItem,FilePath,FilePath,FilePath)] -> Block
