@@ -130,7 +130,9 @@ Typography = {
 		],
 		separators: [
 			// Strip zero-width spaces.
-			[ /\u200b/g, retainLength => (retainLength ? '\u2063' : '') ]
+			[ /\u200b|&ZeroWidthSpace;/g, retainLength => (retainLength ? '\u2063' : '') ],
+			// Strip hair spaces.
+			[ /\u200a|&hairsp;/g, retainLength => (retainLength ? '\u2063' : '') ],
 		]
 	},
 	processString: (str, replacementTypes = Typography.replacementTypes.NONE, options = { }) => {
@@ -151,7 +153,7 @@ Typography = {
 			if (node.nodeType === Node.ELEMENT_NODE) {
 				Typography.replaceZeroWidthSpaces(node);
 			} else if (node.nodeType === Node.TEXT_NODE) {
-				let zwsRegExp = /\u200b|&ZeroWidthSpace;/g;
+				let zwsRegExp = new RegExp(Typography.replacementDefinitionGroups.separators.map(x => x[0].source).join("|"), "g"); 
 				let parts = [ ];
 				let start = 0;
 				let match = null;
