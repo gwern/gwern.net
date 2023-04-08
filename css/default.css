@@ -18,7 +18,7 @@
 
     --GW-popups-popup-max-width: 640px;
     --GW-popups-popup-max-height: 480px;
-    --GW-popups-popup-with-title-bar-min-width: 320px;
+    --GW-popups-popup-with-title-bar-min-width: 360px;
     --GW-popups-annotation-popup-min-width: 480px;
     --GW-popups-annotation-popup-min-height: 240px;
     --GW-popups-aux-links-popup-min-width: 480px;
@@ -3904,6 +3904,7 @@ body.index-directory #footer {
 .popframe-body.object iframe,
 .popframe-body.object object {
     display: block;
+    margin: auto;
 }
 
 /*┌───────────────────┐*/
@@ -4583,9 +4584,11 @@ body.index-directory #footer {
 
 .popup.image {
     width: unset;
-    min-width: var(--GW-popups-image-popup-min-size);
     height: unset;
     min-height: var(--GW-popups-image-popup-min-size);
+}
+.popup.image:not(.has-footer) {
+    min-width: var(--GW-popups-image-popup-min-size);
 }
 
 .popup-body.image img {
