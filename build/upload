@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-03-31 14:09:49 gwern"
+# When:  Time-stamp: "2023-04-06 15:21:59 gwern"
 # License: CC-0
 #
 # This will reformat, run PDFs through `ocrmypdf` (via the `compressPdf` wrapper), and `git commit` new files.
@@ -18,6 +18,23 @@ WWW_BROWSER="firefox"
 if [ ! -f "$1" ]; then echo "'$1' is not a file‽" && return 1; fi
 
 (locate "$1" &)
+
+function check_duplicate_file() {
+  local filename="$1"
+  local file_path
+
+  # Find all files in ~/wiki/ and its subdirectories with the same filename
+  file_path=$(find ~/wiki/ -type f -name "$filename" -print -quit)
+
+  # If a file with the same name exists, exit with an error
+  if [[ -n "$file_path" ]]; then
+    echo "Error: File '$filename' already exists at '$file_path'" >&2
+    return 1
+  fi
+
+  return 0
+}
+check_duplicate_file "$1";
 
 if [ $# -eq 1 ]; then
     TARGET=$(basename "$1")

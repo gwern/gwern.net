@@ -532,7 +532,7 @@ sitePrioritize = do sotdb <- readTTDB siteDBPath
           "perspectives.mvdirona.com", "personal.math.ubc.ca", "perfdynamics.blogspot.com", "perell.com", "people.cs.uchicago.edu",
           "people.com", "pellsson.github.io", "paulstamatiou.com", "paulbingley.com", "patentimages.storage.googleapis.com",
           "parametric.press", "pactwebserial.wordpress.com", "owainevans.github.io", "orwell.ru", "ordinary-gentlemen.com",
-          "orbis.stanford.edu", "openthemagazine.com", "opensource.adobe.com", "openscholarship.wustl.edu", "openborders.info",
+          "orbis.stanford.edu", "openthemagazine.com", "openscholarship.wustl.edu", "openborders.info",
           "openarchive.ki.se", "ondoc.logand.com", "oimo.io", "nvlabs-fi-cdn.nvidia.com", "nv-tlabs.github.io",
           "numericaltank.sjtu.edu.cn", "nostalgebraist.livejournal.com", "normaldeviate.wordpress.com", "nips2018creativity.github.io", "nickcraver.com",
           "nickchk.com", "news.yahoo.com", "news.byu.edu", "newlinesmag.com", "newatlas.com",

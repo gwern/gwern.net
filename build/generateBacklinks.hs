@@ -110,7 +110,7 @@ generateCaller md target (caller, callers) =
                                            callers' = zipWith (\a (b,c) -> (c,a,b)) callerClasses callerTitles
 
                                            content =  -- WARNING: critical to insert '.backlink-not' or we might get weird recursive blowup!
-                                             map (\(u,c,t) -> [Para ([Link (safeSelfIdent target selfIdent, "backlink-not":c, [])
+                                             map (\(u,c,t) -> [Para ([Link (safeSelfIdent target u selfIdent, "backlink-not":c, [])
                                                                      [parseRawInline nullAttr $ RawInline (Format "html") t]
                                                                      (u, "")] ++
                                                                      -- for top-level pages, we need a second link, like 'Foo (full context)', because 'Foo' will popup the scraped abstract/annotation, but it will not pop up the reverse citation context displayed right below; this leads to a UI trap: the reader might be interested in navigating to the context, but they can't! The transclusion has replaced itself, so it doesn't provide any way to navigate to the actual page, and the provided annotation link doesn't know anything about the reverse citation because it is about the entire page. So we provide a backup non-transcluding link to the actual context.
@@ -130,10 +130,13 @@ generateCaller md target (caller, callers) =
                                                 ) callers'
                                              in content
                           where
-                            safeSelfIdent :: T.Text -> T.Text -> T.Text
-                            safeSelfIdent "" si = error ("safeSelfIdent called on an empty path/URL? self-ident value: " ++ show si)
-                            safeSelfIdent path si = (if si=="" then T.filter (not . Char.isAlphaNum) path
-                                                     else si) `T.append` "-backlink-entry"
+                            safeSelfIdent :: T.Text -> T.Text -> T.Text -> T.Text
+                            safeSelfIdent "" _ si = error ("safeSelfIdent called on an empty path/URL? self-ident value: " ++ show si)
+                            safeSelfIdent _ "" si = error ("safeSelfIdent called on an empty path/URL? self-ident value: " ++ show si)
+                            safeSelfIdent path target' si = let idPrefix = (if si=="" then T.filter Char.isAlphaNum path else si)
+                                                                idSuffix = T.filter Char.isAlphaNum target'
+                                                            in
+                                                              idPrefix `T.append` (if idSuffix == "" then "" else "-backlink-entry-from-" `T.append` idSuffix)
 
 parseAnnotationForLinks :: T.Text -> MetadataItem -> [(T.Text,T.Text)]
 parseAnnotationForLinks caller (_,_,_,_,_,abstract) =
@@ -167,10 +170,12 @@ truncateAnchors :: T.Text -> T.Text
 truncateAnchors = T.takeWhile (/='#')
 
 blackList :: T.Text -> Bool
-blackList f
+blackList "" = error "generateBacklinks.hs: blackList: Called with an empty string! This should never happen."
+blackList e
   | anyInfixT f ["/backlink/", "/link-bibliography/", "/similar/", "wikipedia.org/wiki/"] = True
   | anyPrefixT f ["$", "#", "!", "mailto:", "irc://", "\8383", "/doc/www/", "/newsletter/", "/changelog", "/mistakes", "/traffic", "/me", "/lorem",
                    -- WARNING: do not filter out 'metadata/annotation' because that leads to empty databases & infinite loops
                    "/static/404", "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = True
   | anySuffixT f ["/index", "/index-long"] = True
   | otherwise = False
+  where f = if T.head e == '#' then e else T.takeWhile (/= '#') e -- drop anchors to avoid spurious mismatches eg. '/index#backlink-id-of-some-sort' would bypass a mere '"/index" `isSuffixOf`' check without this.

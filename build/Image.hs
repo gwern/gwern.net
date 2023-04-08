@@ -4,7 +4,7 @@ module Image where
 
 import Control.Concurrent (forkIO)
 import Control.Exception (onException)
-import Control.Monad (void, when)
+import Control.Monad (unless, void, when, (<=<))
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
 import Data.Char (toLower)
 import Data.List (isPrefixOf, nubBy, sort)
@@ -175,10 +175,56 @@ imageSrcset x = return x
 -- this optimizes HTML rendering since browsers know before downloading the image how to layout the page.
 
 -- Async decoding: when an image *does* load, can it be decoded to pixels in parallel with the text? For us, yes. Docs: <https://html.spec.whatwg.org/multipage/images.html#decoding-images> <https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/decoding>.
+-- For convenience, this will also run `addVideoPoster` on the HTML stream as well, to do the equivalent thing for `<video>` files (ie. generate a 'poster' image thumbnail, adding it to the video tags, and including the poster's image dimensions inasmuch as it is not inside a `<img>` & so is not covered by the `<img>`-processing code).
+--
 -- Pandoc feature request to push the lazy loading upstream: <https://github.com/jgm/pandoc/issues/6197>
 addImgDimensions :: String -> IO String
-addImgDimensions = fmap (renderTagsOptions renderOptions{optMinimize=whitelist, optRawTag = (`elem` ["script", "style"]) . map toLower}) . mapM staticImg . parseTags
+addImgDimensions = fmap (renderTagsOptions renderOptions{optMinimize=whitelist, optRawTag = (`elem` ["script", "style"]) . map toLower}) . mapM staticImg <=< addVideoPoster . parseTags
                  where whitelist s = s /= "div" && s /= "script" && s /= "style"
+
+-- VIDEO POSTER images
+-- use tagsoup to go through a list of HTML tags looking for a `<video>` tag set of the form
+-- "... <figure><video controls='controls' preload='none' loop><source src='/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4' type='video/mp4'></video><figcaption><a href='/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4'>Training montage</a> of the 256px Danbooru2018-1K^[Footnote 9.]</figcaption></figure> ..."
+-- where the `<source>` can be parsed for the `src` attribute specifying the absolute video filepath. Then ffmpeg is called on it to dump the second frame (to avoid initial black frames), to filepath+"-poster.jpg".
+-- This lets readers see what a video looks like beforehand, and also helps avoid layout shift when there is no poster & the video starts with much larger dimensions than the browser guessed.
+--
+-- | Process a list of HTML tags, looking for consecutive <video> and <source> tags.
+-- If found, extract the video file path from the <source> tag and generate a poster image
+-- from the second frame of the video. Then, add the poster image as an attribute to the <video> tag,
+-- along with the image dimensions.
+-- (GPT-4-rewritten.)
+addVideoPoster :: [Tag String] -> IO [Tag String]
+addVideoPoster [] = return []
+addVideoPoster (videoTag@(TagOpen "video" _):sourceTag@(TagOpen "source" sourceAttrs):xs) = do
+    updatedVideoTag <- updateVideoTag videoTag sourceAttrs
+    rest <- addVideoPoster xs
+    return (updatedVideoTag : sourceTag : rest)
+addVideoPoster (x:xs) = (x :) <$> addVideoPoster xs
+-- | Update the given 'videoTag' with a poster attribute and dimensions, if a valid 'sourceAttrs' is provided.
+-- Extract the video file path from 'sourceAttrs', generate a poster image, and add the poster image
+-- and dimensions as attributes to the 'videoTag'.
+updateVideoTag :: Tag String -> [(String, String)] -> IO (Tag String)
+updateVideoTag videoTag sourceAttrs =
+    case lookup "src" sourceAttrs of
+        Nothing -> error "Image.hs: addVideoPoster: updateVideoTag: video-path not found in source tag."
+        Just videoPath | head videoPath == '/' -> do
+            posterPath <- generatePoster (tail videoPath)
+            (height, width) <- imageMagickDimensions ("/" ++ posterPath)
+            let updatedAttrs = [("poster", "/" ++ posterPath), ("height", height), ("width", width)]
+            return $ updateTagAttributes videoTag updatedAttrs
+        Just videoPath -> error $ "Image.hs: addVideoPoster: updateVideoTag: video-path (" ++ videoPath ++ ") didn't start with a '/'. Videos must be localized."
+-- | Generate the poster image for the given video path.
+-- If the poster image file does not already exist, use ffmpeg to create it from the second frame of the video.
+generatePoster :: FilePath -> IO FilePath
+generatePoster videoPath = do
+    let posterPath = videoPath ++ "-poster.jpg"
+    existsp <- doesFileExist posterPath
+    unless existsp $ void $ runShellCommand "./" Nothing "ffmpeg" ["-i", videoPath, "-vf", "select=eq(n\\,1),scale=iw*sar:ih,setsar=1", "-vframes", "1", posterPath]
+    return posterPath
+-- | Update the attributes of a given tag by appending the provided new attributes.
+updateTagAttributes :: Tag String -> [(String, String)] -> Tag String
+updateTagAttributes (TagOpen tagType attrs) newAttrs = TagOpen tagType (attrs ++ newAttrs)
+updateTagAttributes tag _ = tag
 
 {- example illustration:
  TagOpen "img" [("src","/doc/traffic/201201-201207-gwern-traffic-history.png")
@@ -218,7 +264,7 @@ staticImg x@(TagOpen "img" xs) = do
                                        imageWidth = width'' `min` 1400
                                        imageShrunk = width'' /= imageWidth
                                        imageShrinkRatio = (1400::Float) / (fromIntegral width'' :: Float)
-                                       imageHeight = if not imageShrunk then height'' else round ((fromIntegral height'') * imageShrinkRatio)
+                                       imageHeight = if not imageShrunk then height'' else round (fromIntegral height'' * imageShrinkRatio)
                                    in
                                      return (TagOpen "img" (uniq (loading ++  -- lazy load & async render all images
                                                                    [("decoding", "async"),

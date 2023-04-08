@@ -47,7 +47,7 @@ main = do dirs <- getArgs
 
           -- Special-case directories:
           -- 'newest': the _n_ newest link annotations created (currently, 'newest' is not properly tracked, and is inferred from being at the bottom/end of full.yaml/partial.yaml TODO: actually track annotation creation dates...)
-          metaNewest <- readLinkMetadataNewest 200
+          metaNewest <- readLinkMetadataNewest 100
           generateDirectory False metaNewest ["doc/", "doc/newest/", "/"] "doc/newest/"
 
 generateDirectory :: Bool -> Metadata -> [FilePath] -> FilePath -> IO ()
@@ -175,13 +175,13 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_),_,_,lb)  =
                     else Str (T.pack authorShort)
       author = if aut=="" || aut=="N/A" then []
                else
-                 [Str ",", Space, authorSpan, Str ":"]
+                 [Str ",", Space, authorSpan] -- NOTE: no ':' as usual after the author in an annotation transclusion, because the link-bibliography will be its own section header with a ':' in it so would be redundant here.
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
     let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation"],[]) else nullAttr
         link = if t=="" then Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author
                else Code nullAttr (T.pack f') : Str ":" : Space : Link linkAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author
-    in [Para link, Para [Span ("", ["collapse"], []) [Link ("",["include-even-when-collapsed"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` (T.pack f))]]]
+    in [Para link, Para [Span ("", ["collapse", "tag-index-link-bibliography-block"], []) [Link ("",["include-even-when-collapsed"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` (T.pack f))]]]
 
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String
 generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail
@@ -192,7 +192,7 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
               (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not link-annotated-not' href='/doc/" ++ (if d=="" then "" else d++"/") ++ "index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
               (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='icon-not link-annotated-not' href='/doc/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++
               (if linkN == 0 then ""       else (if (directoryN+annotationN) > 0 then ", & " else "") ++ show linkN ++ " <a class='icon-not link-annotated-not' href='/doc/" ++ d ++ "/index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
-              " (<a href='" ++ parent ++ "' class='link-page link-tag directory-indexes-upwards link-annotated link-annotated-partial' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>)" ++
+              " (<a href='" ++ parent ++ "' class='link-page link-tag directory-indexes-upwards link-annotated' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>)" ++
                ".\"\n",
              thumbnail,
              "created: 'N/A'\n",
@@ -290,18 +290,24 @@ generateDirectoryItems parent current ds =
 
        generateDirectoryItem :: FilePath -> [Block]
        -- arrow symbolism: subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')
-       generateDirectoryItem d = let downP = directoryPrefixDown current d in
-                                   [Para [Link ("",
+       generateDirectoryItem d = let downP = directoryPrefixDown current d
+                                     nameShort = T.pack $ replace "/doc/" "" $ takeDirectory d
+                                     (nameDisplayed,parenthetical) = if parent == (Just "/index") then abbreviateTagLongForm nameShort else (abbreviateTag nameShort, [])
+                                 in
+                                   [Para ([Link ("",
                                                ["link-tag", if downP then "directory-indexes-downwards" else "directory-indexes-sideways"],
                                                [("rel","tag")]
                                              )
-                                               [Emph [RawInline (Format "html") $ (if parent == (Just "/index") then abbreviateTagLongForm else abbreviateTag) $ T.pack $ replace "/doc/" "" $ takeDirectory d]] (T.pack d, "")]
+                                               [Emph [RawInline (Format "html") nameDisplayed]] (T.pack d, "")]
+                                           ++ parenthetical)
                                  ]
        directoryPrefixDown :: FilePath -> FilePath -> Bool
        directoryPrefixDown currentd d' = ("/"++currentd) `isPrefixOf` d'
 
-       abbreviateTagLongForm :: T.Text -> T.Text
-       abbreviateTagLongForm dir = "<code>" `T.append` dir `T.append` "</code> (" `T.append` abbreviateTag dir `T.append` ")"
+       abbreviateTagLongForm :: T.Text -> (T.Text, [Inline])
+       abbreviateTagLongForm dir = ("<code>" `T.append`   dir `T.append` "</code>",
+                                    [Space, RawInline (Format "html") $ "(" `T.append` abbreviateTag dir `T.append` ")"])
+
 
 
 generateListItems :: [(FilePath, MetadataItem,FilePath,FilePath,FilePath)] -> Block
