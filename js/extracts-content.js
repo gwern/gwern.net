@@ -1119,7 +1119,33 @@ Extracts = { ...Extracts,
                 url.hostname = url.hostname.replace(/(.+?)(?:\.m)?\.wikipedia\.org/, "$1.m.wikipedia.org");
                 if (!url.hash)
                     url.hash = "#bodyContent";
-            } ]
+            } ],
+        //	Wikimedia commons
+        [	(url) => (   url.hostname == "commons.wikimedia.org" 
+        			  && url.pathname.startsWith("/wiki/File:")),
+        	(url) => {
+        		url.hostname = "api.wikimedia.org";
+        		url.pathname = "/core/v1/commons/file/" + url.pathname.match(/\/(File:.+)$/)[1];
+        	},
+        	(url, target) => {
+				doAjax({
+					location: url.href,
+					responseType: "json",
+					onSuccess: (event) => {
+						if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
+							return;
+
+						Extracts.popFrameProvider.setPopFrameContent(target.popFrame, 
+							newDocument(Extracts.objectHTMLForURL(event.target.response.original.url, "sandbox")));
+						Extracts.setLoadingSpinner(target.popFrame);
+					},
+					onFailure: (event) => {
+						Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
+					}
+				});
+
+				return newDocument();
+			} ]
     ],
 
     //  Used in: Extracts.foreignSiteEmbedURLTransforms
@@ -1195,9 +1221,16 @@ Extracts = { ...Extracts,
             such sites cannot be live-embedded.
          */
         url.protocol = "https:";
-        for ([ test, transform ] of Extracts.foreignSiteEmbedURLTransforms) {
+        for ([ test, transform, special ] of Extracts.foreignSiteEmbedURLTransforms) {
             if (test(url)) {
-                transform(url);
+            	if (transform) {
+            		transform(url);
+            	}
+            	if (special) {
+            		let retval = special(url, target);
+            		if (retval)
+            			return retval;
+            	}
                 break;
             }
         }
@@ -1221,6 +1254,9 @@ Extracts = { ...Extracts,
     //  Called by: Extracts.localDocumentForTarget
     //  Called by: Extracts.foreignSiteForTarget
     objectHTMLForURL: (url, additionalAttributes = null) => {
+		if (typeof url == "string")
+			url = new URL(url);
+
         if (url.href.match(/\.pdf(#|$)/) != null) {
             let data = url.href + (url.hash ? "&" : "#") + "view=FitH";
             return `<object

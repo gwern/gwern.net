@@ -472,8 +472,11 @@ Extracts = {
 
         popFrame.classList.toggle("loading", true);
 
-        //  When loading ends (in success or failure)...
         let objectOfSomeSort = popFrame.document.querySelector("iframe, object, img, video");
+		if (objectOfSomeSort == null)
+			return;
+
+        //  When loading ends (in success or failure)...
         if (objectOfSomeSort.tagName == "IFRAME") {
             //  Iframes do not fire ‘error’ on server error.
             objectOfSomeSort.onload = (event) => {

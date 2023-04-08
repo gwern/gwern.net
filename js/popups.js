@@ -295,7 +295,7 @@ Popups = {
 	//	Called by: extracts-content.js
 	setPopFrameContent: (popup, content) => {
 		if (content) {
-			popup.body.appendChild(content);
+			popup.body.replaceChildren(content);
 
 			return true;
 		} else {

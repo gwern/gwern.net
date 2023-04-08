@@ -339,7 +339,7 @@ Popins = {
 	//	Called by: extracts-content.js
 	setPopFrameContent: (popin, content) => {
 		if (content) {
-			popin.body.appendChild(content);
+			popin.body.replaceChildren(content);
 
 			return true;
 		} else {
