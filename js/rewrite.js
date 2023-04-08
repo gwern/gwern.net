@@ -2536,6 +2536,20 @@ doWhenBodyExists(() => {
 });
 
 
+/**********************************/
+/* BROKEN HTML STRUCTURE CHECKING */
+/**********************************/
+
+/*	Check for #footnotes outside of #markdownBody, which indicates a prematurely
+	closed div#markdownBody (probably due to some error in the page source).
+ */
+doWhenPageLoaded(() => {
+	let footnotesSection = document.querySelector("#footnotes");
+	if (footnotesSection.closest("#markdownBody") == null)
+		GWServerLogError(location.href + "--broken-html-structure");
+});
+
+
 /**************************/
 /* BROKEN ANCHOR CHECKING */
 /**************************/
