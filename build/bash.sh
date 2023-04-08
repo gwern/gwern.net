@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-04 10:28:24 gwern"
+# When:  Time-stamp: "2023-04-07 10:37:05 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -247,13 +247,20 @@ mvuri () {
 }
 
 # downscale images for mobile viewports; the smallest 530px.jpg version is always 530px, the larger one is either JPG or PNG depending on original file type/. This replicates `imageSrcset` in Image.hs
+# for convenience, this will accept absolute or already-resized arguments eg. `$ resize_image /doc/statistics/order/comparison/2019-nathanwpyle-strangeplanet-ihaveattemptedscience.jpg-530px.jpg`
 function resize_image() {
   if [[ $# -ne 1 ]]; then
-    echo "Usage: resize_image <image>"
+    echo "Wrong number of arguments. Usage: resize_image <image>"
     return 1
   fi
 
   IMAGE="$1"
+  # Remove the leading '/' if it is present
+  IMAGE="${IMAGE#/}"
+  # Remove the -530px.jpg, -768px.png, or -768px.jpg extension if present
+  IMAGE="${IMAGE%-530px.jpg}"
+  IMAGE="${IMAGE%-768px.png}"
+  IMAGE="${IMAGE%-768px.jpg}"
   EXT="${IMAGE##*.}"
   BASE="${IMAGE%.*}"
 
@@ -265,7 +272,7 @@ function resize_image() {
 
   if ! [[ -f "$IMAGE-768px.${EXT}" ]]; then
     echo "Creating $IMAGE-768px.${EXT} …"
-    convert "${IMAGE}" -resize 768x768 "$$IMAGE-768px.${EXT}"
-    png "$$IMAGE-768px.${EXT}"
+    convert "${IMAGE}" -resize 768x768 "$IMAGE-768px.${EXT}"
+    png "$IMAGE-768px.${EXT}"
   fi
 }

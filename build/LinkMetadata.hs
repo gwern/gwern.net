@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-04-05 14:24:08 gwern"
+When:  Time-stamp: "2023-04-07 11:58:16 gwern"
 License: CC-0
 -}
 
@@ -57,7 +57,7 @@ import LinkLive (linkLive)
 import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(..))
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
-import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan, tagPairsCount, tagCount, tagMax, tagPairMax)
+import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
 import Utils (writeUpdatedFile, printGreen, printRed, sed, trim, simplified, anyInfix, anyPrefix, anySuffix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
@@ -275,11 +275,12 @@ readLinkMetadataAndCheck = do
              let annotationsWithBadTags = M.filter (\(_,_,_,_,ts,_) -> hasAny ts tagsBad) final
              unless (null annotationsWithBadTags) $ error $ "Link Annotation Error: tag does not match a directory! Bad annotations: " ++ show annotationsWithBadTags
 
-             let tagsOverused = filter (\(c,_) -> c > tagMax) $ tagCount final
-             unless (null tagsOverused) $ printRed "Overused tags: " >> printGreen (show tagsOverused)
+             -- these are good ideas but will have to wait for embedding-based refactoring to be usable warnings.
+             -- let tagsOverused = filter (\(c,_) -> c > tagMax) $ tagCount final
+             -- unless (null tagsOverused) $ printRed "Overused tags: " >> printGreen (show tagsOverused)
 
-             let tagPairsOverused = filter (\(c,_) -> c > tagPairMax) $ tagPairsCount final
-             unless (null tagPairsOverused) $ printRed "Overused pairs of tags: " >> printGreen (show tagPairsOverused)
+             -- let tagPairsOverused = filter (\(c,_) -> c > tagPairMax) $ tagPairsCount final
+             -- unless (null tagPairsOverused) $ printRed "Overused pairs of tags: " >> printGreen (show tagPairsOverused)
 
              -- 'See Also' links in annotations get put in multi-columns due to their typical length, but if I cut them down to 1–2 items, the default columns will look bad. `preprocess-markdown.hs` can't do a length check because it has no idea how I will edit the list of similar-links down, so I can't remove the .columns class *there*; only way to do it is check finished annotations for having .columns set but also too few similar-links:
              let badSeeAlsoColumnsUse = M.keys $ M.filterWithKey (\_ (_,_,_,_,_,abst) -> let count = length (Data.List.HT.search "data-embeddingdistance" abst) in (count == 1 || count == 2) && "<div class=\"columns\">" `isInfixOf` abst ) final

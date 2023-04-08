@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-04-05 22:24:29 gwern"
+When:  Time-stamp: "2023-04-07 21:08:08 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -406,7 +406,6 @@ goodDomainsSimple =
     , "okmij.org"
     , "online.wsj.com"
     , "ooo.ghostbows.ooo"
-    , "opensource.adobe.com"
     , "opinionator.blogs.nytimes.com"
     , "originstamp.com"
     , "orionmagazine.org"
@@ -2792,7 +2791,6 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://okmij.org/ftp/Streams.html"
             , "https://online.wsj.com/article/SB10001424053111903480904576512250915629460.html"
             , "https://ooo.ghostbows.ooo/"
-            , "https://opensource.adobe.com/dc-acrobat-sdk-docs/#page=5"
             , "https://opinionator.blogs.nytimes.com/2009/11/24/the-end-of-music/"
             , "https://originstamp.com/s/7306a744a285474742f4f9ae8ddae8214fb7625348d578fb3077fb0bae92b8f1"
             , "https://orionmagazine.org/2011/11/interviews-with-an-octopus/"

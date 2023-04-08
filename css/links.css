@@ -818,7 +818,7 @@ a[data-link-icon='stackexchange']::after {
 }
 
 a[data-link-icon='substack']::after {
-    --link-icon-size: 0.60em;
+    --link-icon-size: 0.55em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.2em;
 
