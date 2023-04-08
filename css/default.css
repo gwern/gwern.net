@@ -19,12 +19,12 @@
     --GW-popups-popup-max-width: 640px;
     --GW-popups-popup-max-height: 480px;
     --GW-popups-popup-with-title-bar-min-width: 320px;
-    --GW-popups-annotation-popup-min-width: 360px;
-    --GW-popups-annotation-popup-min-height: 120px;
-    --GW-popups-aux-links-popup-min-width: 360px;
-    --GW-popups-aux-links-popup-min-height: 120px;
-    --GW-popups-local-page-popup-min-width: 360px;
-    --GW-popups-local-page-popup-min-height: 120px;
+    --GW-popups-annotation-popup-min-width: 480px;
+    --GW-popups-annotation-popup-min-height: 240px;
+    --GW-popups-aux-links-popup-min-width: 480px;
+    --GW-popups-aux-links-popup-min-height: 240px;
+    --GW-popups-local-page-popup-min-width: 480px;
+    --GW-popups-local-page-popup-min-height: 240px;
     --GW-popups-popup-border-width: 3px;
     --GW-popups-popup-title-bar-height: calc(1.5rem + 1px);
     --GW-popups-popup-mini-title-bar-height: calc(1rem + 1px);
@@ -4076,6 +4076,7 @@ body.index-directory #footer {
     overflow: visible;
     max-width: var(--GW-popups-popup-max-width);
     max-height: 100vh;
+    min-height: calc(3 * var(--popup-title-bar-height) + 2 * var(--GW-popups-popup-border-width));
     z-index: 1;
 
     /*  Styling. */
@@ -4180,13 +4181,16 @@ body.index-directory #footer {
     font-weight: inherit;
     font-style: inherit;
     line-height: 0;
-    margin: 0 1px 0 0;
+    margin: 0 1px;
     padding: 4px;
     height: 100%;
     flex: 0 0 1.5rem;
     width: var(--popup-title-bar-button-size);
     cursor: pointer;
     color: var(--GW-popups-popup-title-bar-button-color);
+}
+.popup .popframe-title-bar-button + .popframe-title-bar-button {
+    margin: 0 1px 0 0;
 }
 .popup.mini-title-bar .popframe-title-bar-button {
     padding: 2px;
@@ -4410,6 +4414,9 @@ body.index-directory #footer {
 /*│ Collapsed popups. │*/
 /*└───────────────────┘*/
 
+.popup.collapsed {
+    border-bottom-width: var(--popups-popup-border-width);
+}
 .popup.collapsed[class] {
     height: unset;
     min-height: unset;
@@ -4421,6 +4428,9 @@ body.index-directory #footer {
 .popup.collapsed .popframe-scroll-view {
     height: 0;
     margin-top: calc(var(--popup-title-bar-height) - 1px);
+}
+.popup.collapsed .popframe-scroll-view ~ * {
+	display: none;
 }
 
 /*┌───────────────────────────┐*/
