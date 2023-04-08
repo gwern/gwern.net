@@ -15,6 +15,7 @@ Popups = {
 
     popupBreathingRoomX: 12.0,
     popupBreathingRoomY: 8.0,
+    popupBreathingRoomYTight: -4.0,
 
     popupTriggerDelay: 650,
     popupFadeoutDelay: 50,
@@ -1262,7 +1263,7 @@ Popups = {
 	//	Called by: Popups.restorePopup
 	//	Called by: Popups.pinPopup
 	//	Called by: Popups.unpinPopup
-	positionPopup: (popup, spawnPoint) => {
+	positionPopup: (popup, spawnPoint, tight = false) => {
 		GWLog("Popups.positionPopup", "popups.js", 2);
 
 		let target = popup.spawningTarget;
@@ -1299,9 +1300,12 @@ Popups = {
 			let provisionalPopupYPosition = 0.0;
 
 			let offToTheSide = false;
-			let popupSpawnYOriginForSpawnAbove = targetViewportRect.top - Popups.popupBreathingRoomY;
-			let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom + Popups.popupBreathingRoomY;
-			if (Popups.containingPopFrame(target) || Popups.preferSidePositioning(target)) {
+			let popupSpawnYOriginForSpawnAbove = targetViewportRect.top 
+											   - (tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
+			let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom 
+											   + (tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
+			if (   Popups.containingPopFrame(target) 
+				|| Popups.preferSidePositioning(target)) {
 				/*  The popup is a nested popup, or the target specifies that it
 					prefers to have popups spawned to the side; we try to put
 					the popup off to the left or right.
@@ -1346,10 +1350,17 @@ Popups = {
 					//  Below.
 					provisionalPopupYPosition = popupSpawnYOriginForSpawnBelow;
 				} else {
-					/*  The popup does not fit above or below! We will have to
-						put it off to to the right after all...
-						*/
-					offToTheSide = true;
+					//  The popup does not fit above or below!
+					if (tight == false) {
+						//	Let’s try and pack it in more tightly...
+						Popups.positionPopup(popup, null, true);
+						return;
+					} else {
+						/*	... or, failing that, we will have to put it off to 
+							the right after all.
+						 */
+						offToTheSide = true;
+					}
 				}
 			}
 

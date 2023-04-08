@@ -162,7 +162,7 @@ Extracts = {
         GWLog("Extracts.setup", "extracts.js", 1);
 
 		//  Set pop-frame type (mode) - popups or popins.
-		let mobileMode = (    localStorage.getItem("extracts-force-popins") == "true"
+		let mobileMode = (   localStorage.getItem("extracts-force-popins") == "true"
 						  || GW.isMobile() 
 						  || matchMedia("(max-width: 1279px) and (max-height: 959px)").matches);
 		Extracts.popFrameProviderName = mobileMode ? "Popins" : "Popups";
