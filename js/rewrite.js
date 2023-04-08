@@ -705,7 +705,9 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
 	let constrainCaptionWidth = (fullWidthMedia) => {
 		let caption = fullWidthMedia.closest("figure").querySelector(".caption-wrapper");
 		if (caption)
-			caption.style.maxWidth = fullWidthMedia.offsetWidth + "px";
+			caption.style.maxWidth = fullWidthMedia.offsetWidth > 0 
+									 ? fullWidthMedia.offsetWidth + "px"
+									 : fullWidthMedia.closest(".markdownBody").offsetWidth + "px";
 	};
 
 	allFullWidthMedia.forEach(fullWidthMedia => {
