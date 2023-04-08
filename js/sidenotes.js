@@ -114,7 +114,8 @@ Sidenotes = { ...Sidenotes,
 		let target;
 		if (location.hash.match(/#sn[0-9]/)) {
 			target = document.querySelector("#sn" + Notes.noteNumberFromHash());
-		} else if (location.hash.match(/#fnref[0-9]/) && Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false) {
+		} else if (   location.hash.match(/#fnref[0-9]/) 
+				   && Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false) {
 			target = document.querySelector("#fnref" + Notes.noteNumberFromHash());
 		} else {
 			return;
@@ -127,6 +128,25 @@ Sidenotes = { ...Sidenotes,
 			target.classList.add("targeted");
 		if (counterpart)
 			counterpart.classList.add("targeted");
+	},
+
+	/*	Set margin notes to ‘inline’ or ‘sidenote’ style, depending on what mode
+		the page is in (based on viewport width), whether each margin note is
+		in a constrained block, and whether it’s on the main page or in 
+		something like a pop-frame.
+
+		(This function should be called from a load or inject event handler,
+		 and the event info passed to it as argument.)
+	 */
+	setMarginNoteStyle: (eventInfo) => {
+		GWLog("Sidenotes.setMarginNoteStyle", "sidenotes.js", 1);
+
+		eventInfo.container.querySelectorAll(".marginnote").forEach(marginNote => {
+			let inline = (   marginNote.closest(Sidenotes.constrainMarginNotesWithinSelectors.join(", "))
+						  || Sidenotes.mediaQueries.viewportWidthBreakpoint.matches
+						  || eventInfo.document != document);
+			marginNote.swapClasses([ "inline", "sidenote" ], (inline ? 0 : 1));
+		});
 	},
 
 	/*  Hide sidenotes within currently-collapsed collapse blocks. Show
@@ -671,11 +691,7 @@ Sidenotes = { ...Sidenotes,
 			*/
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
-				document.querySelectorAll(".marginnote").forEach(marginNote => {
-					let inline = (   marginNote.closest(Sidenotes.constrainMarginNotesWithinSelectors.join(", "))
-								  || Sidenotes.mediaQueries.viewportWidthBreakpoint.matches);
-					marginNote.swapClasses([ "inline", "sidenote" ], (inline ? 0 : 1));
-				});
+				Sidenotes.setMarginNoteStyle(info);
 			});
 		}, { 
 			phase: "rewrite",
@@ -683,12 +699,7 @@ Sidenotes = { ...Sidenotes,
 			once: true
 		});
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-			info.container.querySelectorAll(".marginnote").forEach(marginNote => {
-				let inline = (   marginNote.closest(Sidenotes.constrainMarginNotesWithinSelectors.join(", "))
-							  || Sidenotes.mediaQueries.viewportWidthBreakpoint.matches
-							  || info.document != document);
-				marginNote.swapClasses([ "inline", "sidenote" ], (inline ? 0 : 1));
-			});
+			Sidenotes.setMarginNoteStyle(info);
 		});
 
 		/*  In footnote mode (ie. on viewports too narrow to support sidenotes),
@@ -785,6 +796,10 @@ Sidenotes = { ...Sidenotes,
 				GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents);
 				removeScrollListener("Sidenotes.unSlideSidenotesOnScroll");
 			}, (mediaQuery) => {
+				/*	Update sidenote positions.
+				 */
+				requestAnimationFrame(Sidenotes.updateSidenotePositions);
+
 				/*  After the hash updates, properly highlight everything, if needed.
 					Also, if the hash points to a sidenote whose citation is in a
 					collapse block, expand it and all collapse blocks enclosing it.
