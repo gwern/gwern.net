@@ -518,8 +518,9 @@ a[data-link-icon='ℰ']::after { /* Esquire */
 /* Triple-letter 'tri' initials: too few for quad, but too big for
    regular font size/offset. Common with TLA orgs. */
 a[data-link-icon-type*='tri']::after {
-    --link-icon-size: 0.6em;
-    --link-icon-offset-y: 0.6em;
+    --link-icon-size: 0.65em;
+    --link-icon-offset-y: 0.4em;
+    --link-icon-offset-x: 0.2em;
 
     opacity: 0.90;
 }
