@@ -233,12 +233,11 @@
     --GW-popups-popup-border-focused-color: #aaa;
     --GW-popups-box-shadow-focused-color: #aaa;
 
-    --GW-popups-popup-title-bar-background-color: #f6f6f6;
+    --GW-popups-popup-title-bar-background-color: #fff;
     --GW-popups-popup-title-bar-button-color: #bbb;
     --GW-popups-popup-title-bar-button-color-hover: #000;
 	--GW-popups-popup-title-color: #aaa;
     --GW-popups-popup-title-link-hover-color: var(--GW-body-link-hover-color);
-    --GW-popups-popup-title-bar-background-focused-color: #e6e6e6;
     --GW-popups-popup-title-bar-button-focused-color: #777;
     --GW-popups-popup-title-bar-button-focused-color-hover: #000;
     --GW-popups-popup-title-bar-submenu-box-shadow-color: #ddd;

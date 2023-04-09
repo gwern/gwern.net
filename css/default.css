@@ -18,13 +18,13 @@
 
     --GW-popups-popup-max-width: 640px;
     --GW-popups-popup-max-height: 480px;
-    --GW-popups-popup-with-title-bar-min-width: 320px;
-    --GW-popups-annotation-popup-min-width: 360px;
-    --GW-popups-annotation-popup-min-height: 120px;
-    --GW-popups-aux-links-popup-min-width: 360px;
-    --GW-popups-aux-links-popup-min-height: 120px;
-    --GW-popups-local-page-popup-min-width: 360px;
-    --GW-popups-local-page-popup-min-height: 120px;
+    --GW-popups-popup-with-title-bar-min-width: 360px;
+    --GW-popups-annotation-popup-min-width: 480px;
+    --GW-popups-annotation-popup-min-height: 240px;
+    --GW-popups-aux-links-popup-min-width: 480px;
+    --GW-popups-aux-links-popup-min-height: 240px;
+    --GW-popups-local-page-popup-min-width: 480px;
+    --GW-popups-local-page-popup-min-height: 240px;
     --GW-popups-popup-border-width: 3px;
     --GW-popups-popup-title-bar-height: calc(1.5rem + 1px);
     --GW-popups-popup-mini-title-bar-height: calc(1rem + 1px);
@@ -3904,6 +3904,7 @@ body.index-directory #footer {
 .popframe-body.object iframe,
 .popframe-body.object object {
     display: block;
+    margin: auto;
 }
 
 /*┌───────────────────┐*/
@@ -4076,10 +4077,12 @@ body.index-directory #footer {
     overflow: visible;
     max-width: var(--GW-popups-popup-max-width);
     max-height: 100vh;
+    min-height: calc(3 * var(--popup-title-bar-height) + 2 * var(--GW-popups-popup-border-width));
     z-index: 1;
 
     /*  Styling. */
     --popups-popup-box-shadow: 1px 2px 8px 0 var(--GW-popups-box-shadow-color);
+	--popups-popup-title-bar-background-image: url('/static/img/popup-title-bar-pattern.gif');
 
     border: var(--GW-popups-popup-border-width) double var(--GW-popups-popup-border-color);
     box-shadow: var(--popups-popup-box-shadow);
@@ -4090,8 +4093,17 @@ body.index-directory #footer {
 /*│ Popup title bar. │*/
 /*└──────────────────┘*/
 
+.popup {
+    --popup-title-bar-height: 0px;
+}
 .popup.has-title-bar {
+    --popup-title-bar-height: var(--GW-popups-popup-title-bar-height);
+    --popup-title-bar-button-size: calc(var(--popup-title-bar-height) - 1px);
+
     min-width: var(--GW-popups-popup-with-title-bar-min-width);
+}
+.popup.has-title-bar.mini-title-bar {
+    --popup-title-bar-height: var(--GW-popups-popup-mini-title-bar-height);
 }
 
 .popup .popframe-title-bar {
@@ -4099,6 +4111,7 @@ body.index-directory #footer {
     height: var(--popup-title-bar-height);
     border-bottom: 1px solid var(--GW-popups-popup-border-color);
     background-color: var(--GW-popups-popup-title-bar-background-color);
+    background-image: var(--popups-popup-title-bar-background-image);
     display: flex;
     flex-flow: row;
     align-items: center;
@@ -4114,17 +4127,6 @@ body.index-directory #footer {
 .popup.dragging .popframe-title-bar,
 .popup.dragging .popframe-title-bar a {
     cursor: grabbing;
-}
-
-.popup {
-    --popup-title-bar-height: 0px;
-}
-.popup.has-title-bar {
-    --popup-title-bar-height: var(--GW-popups-popup-title-bar-height);
-    --popup-title-bar-button-size: var(--popup-title-bar-height) - 1px;
-}
-.popup.has-title-bar.mini-title-bar {
-    --popup-title-bar-height: var(--GW-popups-popup-mini-title-bar-height);
 }
 
 /*  Popup title.
@@ -4144,6 +4146,10 @@ body.index-directory #footer {
     overflow: hidden;
     text-decoration: none;
     text-align: center;
+    filter: 
+        drop-shadow(0 0 1px var(--GW-popups-popup-title-bar-background-color))
+        drop-shadow(0 0 2px var(--GW-popups-popup-title-bar-background-color)) 
+        drop-shadow(0 0 3px var(--GW-popups-popup-title-bar-background-color));
 }
 .popup.mini-title-bar .popframe-title {
     visibility: hidden;
@@ -4180,13 +4186,16 @@ body.index-directory #footer {
     font-weight: inherit;
     font-style: inherit;
     line-height: 0;
-    margin: 0 1px 0 0;
+    margin: 0 1px;
     padding: 4px;
     height: 100%;
     flex: 0 0 1.5rem;
     width: var(--popup-title-bar-button-size);
     cursor: pointer;
     color: var(--GW-popups-popup-title-bar-button-color);
+}
+.popup .popframe-title-bar-button + .popframe-title-bar-button {
+    margin: 0 1px 0 0;
 }
 .popup.mini-title-bar .popframe-title-bar-button {
     padding: 2px;
@@ -4201,6 +4210,10 @@ body.index-directory #footer {
 .popup .popframe-title-bar-button svg {
     max-width: 100%;
     max-height: 100%;
+    filter: 
+        drop-shadow(0 0 1px #fff) 
+        drop-shadow(0 0 2px #fff) 
+        drop-shadow(0 0 3px #fff);
 }
 
 .popup .popframe-title-bar-button:disabled {
@@ -4237,9 +4250,6 @@ body.index-directory #footer {
         visibility 0.1s ease 0.2s,
         opacity 0.1s ease 0.2s;
 }
-.popup .popframe-title-bar .zoom-button + .submenu {
-    left: -1px;
-}
 .popup .popframe-title-bar .submenu:hover,
 .popup .popframe-title-bar .has-submenu:hover + .submenu {
     visibility: visible;
@@ -4249,6 +4259,7 @@ body.index-directory #footer {
     background-color: var(--GW-popups-popup-title-bar-background-color);
     border: none;
     margin: 0;
+    height: var(--popup-title-bar-button-size);
 }
 .popup .popframe-title-bar .submenu button svg {
     height: calc(var(--popup-title-bar-button-size) - 8px);
@@ -4365,7 +4376,6 @@ body.index-directory #footer {
     --GW-popups-popup-border-color: var(--GW-popups-popup-border-focused-color);
     --GW-popups-box-shadow-color: var(--GW-popups-box-shadow-focused-color);
 
-    --GW-popups-popup-title-bar-background-color: var(--GW-popups-popup-title-bar-background-focused-color);
     --GW-popups-popup-title-bar-button-color: var(--GW-popups-popup-title-bar-button-focused-color);
     --GW-popups-popup-title-bar-button-color-hover: var(--GW-popups-popup-title-bar-button-focused-color-hover);
     --GW-popups-popup-title-color: var(--GW-popups-popup-title-focused-color);
@@ -4373,6 +4383,8 @@ body.index-directory #footer {
 
     --GW-popups-popup-scrollbar-thumb-color: var(--GW-popups-popup-scrollbar-thumb-focused-color);
     --GW-popups-popup-scrollbar-thumb-hover-color: var(--GW-popups-popup-scrollbar-thumb-hover-focused-color);
+
+	--popups-popup-title-bar-background-image: url('/static/img/popup-title-bar-pattern-focused.gif');
 }
 
 /*┌──────────────────────────┐*/
@@ -4410,6 +4422,9 @@ body.index-directory #footer {
 /*│ Collapsed popups. │*/
 /*└───────────────────┘*/
 
+.popup.collapsed {
+    border-bottom-width: var(--popups-popup-border-width);
+}
 .popup.collapsed[class] {
     height: unset;
     min-height: unset;
@@ -4421,6 +4436,9 @@ body.index-directory #footer {
 .popup.collapsed .popframe-scroll-view {
     height: 0;
     margin-top: calc(var(--popup-title-bar-height) - 1px);
+}
+.popup.collapsed .popframe-scroll-view ~ * {
+	display: none;
 }
 
 /*┌───────────────────────────┐*/
@@ -4566,9 +4584,11 @@ body.index-directory #footer {
 
 .popup.image {
     width: unset;
-    min-width: var(--GW-popups-image-popup-min-size);
     height: unset;
     min-height: var(--GW-popups-image-popup-min-size);
+}
+.popup.image:not(.has-footer) {
+    min-width: var(--GW-popups-image-popup-min-size);
 }
 
 .popup-body.image img {

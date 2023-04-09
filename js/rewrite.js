@@ -505,12 +505,16 @@ Notes = {
 
         //  #fnrefN
         let footnoteBackLink = footnote.querySelector("a.footnote-back");
-        footnoteBackLink.hash = footnoteBackLink.hash.slice(0, 6) + number;
+        if (footnoteBackLink) {
+	        footnoteBackLink.hash = footnoteBackLink.hash.slice(0, 6) + number;
+	    }
 
         //  #fnN
         let footnoteSelfLink = footnote.querySelector("a.footnote-self-link");
-        footnoteSelfLink.hash = footnoteSelfLink.hash.slice(0, 3) + number;
-        footnoteSelfLink.title = "Link to footnote " + number;
+        if (footnoteSelfLink) {
+			footnoteSelfLink.hash = footnoteSelfLink.hash.slice(0, 3) + number;
+			footnoteSelfLink.title = "Link to footnote " + number;
+		}
 
 		//	Footnote backlinks.
 		let backlinksListLabelLink = footnote.querySelector(".section-backlinks .backlinks-list-label a");

@@ -524,6 +524,9 @@ Popups = {
 		} else {
 			Popups.collapsePopup(popup);
 		}
+
+		//  Cache the viewport rect.
+		popup.viewportRect = popup.getBoundingClientRect();
 	},
 
 	//	Called by: Popups.collapseOrUncollapsePopup
@@ -1107,8 +1110,8 @@ Popups = {
 
 				button.swapClasses([ "pin", "unpin" ], (Popups.popupIsPinned(popup) ? 1 : 0));
 
-				button.disabled = !(Popups.popupIsEphemeral(popup))
-							   && !(Popups.popupIsPinned(popup));
+				button.disabled = (   Popups.popupIsCollapsed(popup) 
+								   || Popups.popupIsZoomed(popup))
 			};
 
 			return button;
