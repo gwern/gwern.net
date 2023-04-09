@@ -7,7 +7,7 @@ import Text.Pandoc (nullMeta,
                      runPure, writeHtml5String,
                      Pandoc(Pandoc), Block(BlockQuote, BulletList, Para), Inline(Link, RawInline, Strong, Str), Format(..), nullAttr)
 import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T (append, isInfixOf, filter, head, pack, replace, unpack, tail, takeWhile, Text)
+import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack, tail, takeWhile, Text)
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isSuffixOf, sort)
 import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter)
@@ -15,7 +15,6 @@ import System.Directory (createDirectoryIfMissing, doesFileExist, listDirectory)
 import Network.HTTP (urlEncode)
 import Data.Containers.ListUtils (nubOrd)
 import Control.Monad (forM_, unless)
-import qualified Data.Char as Char (isAlphaNum)
 
 import Control.Monad.Parallel as Par (mapM)
 
@@ -110,7 +109,7 @@ generateCaller md target (caller, callers) =
                                            callers' = zipWith (\a (b,c) -> (c,a,b)) callerClasses callerTitles
 
                                            content =  -- WARNING: critical to insert '.backlink-not' or we might get weird recursive blowup!
-                                             map (\(u,c,t) -> [Para ([Link (safeSelfIdent target u selfIdent, "backlink-not":c, [])
+                                             map (\(u,c,t) -> [Para ([Link ("", "backlink-not":"id-not":c, [])
                                                                      [parseRawInline nullAttr $ RawInline (Format "html") t]
                                                                      (u, "")] ++
                                                                      -- for top-level pages, we need a second link, like 'Foo (full context)', because 'Foo' will popup the scraped abstract/annotation, but it will not pop up the reverse citation context displayed right below; this leads to a UI trap: the reader might be interested in navigating to the context, but they can't! The transclusion has replaced itself, so it doesn't provide any way to navigate to the actual page, and the provided annotation link doesn't know anything about the reverse citation because it is about the entire page. So we provide a backup non-transcluding link to the actual context.
@@ -129,14 +128,6 @@ generateCaller md target (caller, callers) =
                                                              ]
                                                 ) callers'
                                              in content
-                          where
-                            safeSelfIdent :: T.Text -> T.Text -> T.Text -> T.Text
-                            safeSelfIdent "" _ si = error ("safeSelfIdent called on an empty path/URL? self-ident value: " ++ show si)
-                            safeSelfIdent _ "" si = error ("safeSelfIdent called on an empty path/URL? self-ident value: " ++ show si)
-                            safeSelfIdent path target' si = let idPrefix = (if si=="" then T.filter Char.isAlphaNum path else si)
-                                                                idSuffix = T.filter Char.isAlphaNum target'
-                                                            in
-                                                              idPrefix `T.append` (if idSuffix == "" then "" else "-backlink-entry-from-" `T.append` idSuffix)
 
 parseAnnotationForLinks :: T.Text -> MetadataItem -> [(T.Text,T.Text)]
 parseAnnotationForLinks caller (_,_,_,_,_,abstract) =
