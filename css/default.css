@@ -3064,7 +3064,7 @@ a .cite-author-plural::after {
 /* “SEE ALSO” SECTIONS */
 /***********************/
 
-section#see-also:first-child > h1:first-child {
+#markdownBody section#see-also:first-child > h1:first-child {
     margin-top: 1em;
 }
 
@@ -3999,7 +3999,7 @@ body.index-directory #footer {
     text-indent: 0;
 }
 
-.popframe-body section#see-also:first-child > h1:first-child {
+.popframe-body > section:first-child > h1:first-child {
     margin-top: 0;
 }
 
@@ -4082,7 +4082,6 @@ body.index-directory #footer {
 
     /*  Styling. */
     --popups-popup-box-shadow: 1px 2px 8px 0 var(--GW-popups-box-shadow-color);
-	--popups-popup-title-bar-background-image: url('/static/img/popup-title-bar-pattern.gif');
 
     border: var(--GW-popups-popup-border-width) double var(--GW-popups-popup-border-color);
     box-shadow: var(--popups-popup-box-shadow);
@@ -4111,7 +4110,7 @@ body.index-directory #footer {
     height: var(--popup-title-bar-height);
     border-bottom: 1px solid var(--GW-popups-popup-border-color);
     background-color: var(--GW-popups-popup-title-bar-background-color);
-    background-image: var(--popups-popup-title-bar-background-image);
+    background-image: var(--GW-popups-popup-title-bar-pattern);
     display: flex;
     flex-flow: row;
     align-items: center;
@@ -4211,9 +4210,9 @@ body.index-directory #footer {
     max-width: 100%;
     max-height: 100%;
     filter: 
-        drop-shadow(0 0 1px #fff) 
-        drop-shadow(0 0 2px #fff) 
-        drop-shadow(0 0 3px #fff);
+        drop-shadow(0 0 1px var(--GW-popups-popup-title-bar-background-color)) 
+        drop-shadow(0 0 2px var(--GW-popups-popup-title-bar-background-color)) 
+        drop-shadow(0 0 3px var(--GW-popups-popup-title-bar-background-color));
 }
 
 .popup .popframe-title-bar-button:disabled {
@@ -4383,8 +4382,10 @@ body.index-directory #footer {
 
     --GW-popups-popup-scrollbar-thumb-color: var(--GW-popups-popup-scrollbar-thumb-focused-color);
     --GW-popups-popup-scrollbar-thumb-hover-color: var(--GW-popups-popup-scrollbar-thumb-hover-focused-color);
+}
 
-	--popups-popup-title-bar-background-image: url('/static/img/popup-title-bar-pattern-focused.gif');
+.popup.focused .popframe-title-bar {
+	background-image: var(--GW-popups-popup-title-bar-pattern-focused);
 }
 
 /*┌──────────────────────────┐*/

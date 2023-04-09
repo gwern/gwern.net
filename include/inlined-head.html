@@ -235,6 +235,8 @@
     --GW-popups-box-shadow-focused-color: #aaa;
 
     --GW-popups-popup-title-bar-background-color: #fff;
+    --GW-popups-popup-title-bar-pattern: url('data:image/gif;base64,R0lGODlhCAAIAPAAMebm5v///ywAAAAACAAIAAACDIxhgcma2yKE8kVWAAA7');
+    --GW-popups-popup-title-bar-pattern-focused: url('data:image/gif;base64,R0lGODlhCAAIAPAAMebm5v///ywAAAAACAAIAAACDIRjgMma2yKE8kVWAAA7');
     --GW-popups-popup-title-bar-button-color: #bbb;
     --GW-popups-popup-title-bar-button-color-hover: #000;
 	--GW-popups-popup-title-color: #aaa;
@@ -2030,6 +2032,8 @@ body.special-halloween-dark h6 {
     --GW-popups-box-shadow-focused-color: #7c7c7c;
 
     --GW-popups-popup-title-bar-background-color: #000;
+    --GW-popups-popup-title-bar-pattern: url('data:image/gif;base64,R0lGODlhCAAIAPAAMebm5v///ywAAAAACAAIAAACDIxhgcma2yKE8kVWAAA7');
+    --GW-popups-popup-title-bar-pattern-focused: url('data:image/gif;base64,R0lGODlhCAAIAPAAMebm5v///ywAAAAACAAIAAACDIRjgMma2yKE8kVWAAA7');
     --GW-popups-popup-title-bar-button-color: #6c6c6c;
     --GW-popups-popup-title-bar-button-color-hover: #fff;
 	--GW-popups-popup-title-color: #7c7c7c;
@@ -2160,6 +2164,9 @@ body.special-halloween-dark h6 {
 	/*	Similar to the above, but for all SVGs, which don’t get inverted.
 	 */
 	--GW-transparent-svg-background-color: #fff;
+
+    --GW-popups-popup-title-bar-pattern: url('data:image/gif;base64,R0lGODlhCAAIAPAAMRYWFiUlJSwAAAAACAAIAAACDIxhgcma2yKE8kVWAAA7');
+    --GW-popups-popup-title-bar-pattern-focused: url('data:image/gif;base64,R0lGODlhCAAIAPAAMRYWFj4+PiwAAAAACAAIAAACDIxhgcma2yKE8kVWAAA7');
 }
 
 
@@ -2350,6 +2357,21 @@ img.invert-auto:hover {
     the color is important and shouldn’t be faded out by default.
  */
 #markdownBody img.invert-not { filter: none; }
+
+/*	Dark drop-shadow is more prominent than light one; adjust.
+ */
+.popup .popframe-title-bar .popframe-title-bar-button svg {
+    max-width: 100%;
+    max-height: 100%;
+    filter: 
+        drop-shadow(0 0 1px var(--GW-popups-popup-title-bar-background-color)) 
+        drop-shadow(0 0 2px var(--GW-popups-popup-title-bar-background-color));
+}
+.popup .popframe-title-bar .popframe-title {
+    filter: 
+        drop-shadow(0 0 1px var(--GW-popups-popup-title-bar-background-color))
+        drop-shadow(0 0 2px var(--GW-popups-popup-title-bar-background-color));
+}
 
 /*  The loading spinner for object popups (image, iframe, object) is inverted
     and made more visible in dark mode.
