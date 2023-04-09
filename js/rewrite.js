@@ -553,6 +553,22 @@ Notes = {
 /* TABLES */
 /**********/
 
+/**********************************************/
+/*	If there are tables, import tablesorter.js.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.importTablesorterScript = (eventInfo) => {
+    GWLog("importTablesorterScript", "rewrite.js", 1);
+
+	if (   eventInfo.container.querySelector("table")
+		&& eventInfo.document.querySelector("#tablesorter-script") == null) {
+		eventInfo.document.body.appendChild(newElement("SCRIPT", {
+			"type": "text/javascript",
+			"id": "tablesorter-script",
+			"src": "/static/js/tablesorter.js"
+		}));
+    }
+});
+
 /************************************************************************/
 /*  Wrap each table in a div.table-wrapper and a div.table-scroll-wrapper 
 	(for layout purposes).
