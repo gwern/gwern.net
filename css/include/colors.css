@@ -234,6 +234,8 @@
     --GW-popups-box-shadow-focused-color: #aaa;
 
     --GW-popups-popup-title-bar-background-color: #fff;
+    --GW-popups-popup-title-bar-pattern: url('data:image/gif;base64,R0lGODlhCAAIAPAAMebm5v///ywAAAAACAAIAAACDIxhgcma2yKE8kVWAAA7');
+    --GW-popups-popup-title-bar-pattern-focused: url('data:image/gif;base64,R0lGODlhCAAIAPAAMebm5v///ywAAAAACAAIAAACDIRjgMma2yKE8kVWAAA7');
     --GW-popups-popup-title-bar-button-color: #bbb;
     --GW-popups-popup-title-bar-button-color-hover: #000;
 	--GW-popups-popup-title-color: #aaa;

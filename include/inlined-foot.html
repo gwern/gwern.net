@@ -1,7 +1,7 @@
     <!-- Load the rest of the CSS. Note that we do not need any JS hacks here: HTML allows <link> stylesheets in the body: https://html.spec.whatwg.org/multipage/links.html#body-ok https://jakearchibald.com/2016/link-in-body/ -->
     <link rel="stylesheet" type="text/css" href="/static/css/fonts.css?v=1655420134">
-    <link rel="stylesheet" type="text/css" href="/static/css/default.css?v=1680995797">
-    <link rel="stylesheet" type="text/css" href="/static/css/links.css?v=1680928862">
+    <link rel="stylesheet" type="text/css" href="/static/css/default.css?v=1681070456">
+    <link rel="stylesheet" type="text/css" href="/static/css/links.css?v=1681070379">
 
     <!-- JS library with utility functions used in rest of code -->
     <script src="/static/js/utility.js?v=1680839070" defer></script>
@@ -21,8 +21,8 @@
     <!-- Misc JS -->
 	<script src="/static/js/Hyphenopoly_Loader.js?v=1650818540" defer></script>
     <script src="/static/js/typography.js?v=1680851954" defer></script>
-    <script src="/static/js/rewrite.js?v=1681005410" defer></script>
-    <script src="/static/js/transclude.js?v=1680838955" defer></script>
+    <script src="/static/js/rewrite.js?v=1681071444" defer></script>
+    <script src="/static/js/transclude.js?v=1681066144" defer></script>
     <script src="/static/js/collapse.js?v=1680838483" defer></script>
 
     <!-- Dark Mode theme switcher (lets users toggle between regular black-on-white CSS, and dark mode) -->
@@ -34,13 +34,3 @@
     <!-- the body: /static/js/image-focus.js -->
     <!-- not lazy-loaded due to various bugs -->
     <script src="/static/js/image-focus.js?v=1676590455" defer></script>
-
-    <!-- sort tables: https://mottie.github.io/tablesorter/docs/ ; requires JQuery, which has been prepended to avoid multiple JS page loads & race conditions -->
-    <script>
-    if (document.querySelector("table")) {
-        var js = document.createElement("script");
-        js.type = "text/javascript";
-        js.src = "/static/js/tablesorter.js?v=1656018097";
-        document.body.appendChild(js);
-    }
-    </script>
