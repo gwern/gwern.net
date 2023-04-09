@@ -553,21 +553,37 @@ Notes = {
 /* TABLES */
 /**********/
 
-/**********************************************/
-/*	If there are tables, import tablesorter.js.
+/**************************************************************************/
+/*	If there are tables, import tablesorter.js (if need be) and make tables
+	sortable.
  */
-addContentInjectHandler(GW.contentInjectHandlers.importTablesorterScript = (eventInfo) => {
-    GWLog("importTablesorterScript", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.makeTablesSortable = (eventInfo) => {
+    GWLog("makeTablesSortable", "rewrite.js", 1);
 
-	if (   eventInfo.container.querySelector("table")
-		&& eventInfo.document.body != null
-		&& eventInfo.document.querySelector("#tablesorter-script") == null) {
-		eventInfo.document.body.appendChild(newElement("SCRIPT", {
+	if (eventInfo.container.querySelector("table") == null)
+		return;
+
+	//	Import tablesorter.js, if need be.
+	let scriptTag = document.querySelector("script[src*='/static/js/tablesorter.js']");
+	if (scriptTag == null) {
+		scriptTag = newElement("SCRIPT", {
 			"type": "text/javascript",
-			"id": "tablesorter-script",
 			"src": "/static/js/tablesorter.js"
-		}));
-    }
+		});
+		document.body.appendChild(scriptTag);
+	}
+
+	let sortTables = (eventInfo) => {
+		jQuery("table", eventInfo.document).tablesorter();
+	};
+
+	if (window["jQuery"]) {
+		sortTables(eventInfo);
+	} else {
+		GW.notificationCenter.addHandlerForEvent("Tablesorter.didLoad", (info) => {
+			sortTables(eventInfo);
+		}, { once: true });
+	}
 });
 
 /************************************************************************/
