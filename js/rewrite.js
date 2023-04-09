@@ -2549,7 +2549,8 @@ doWhenBodyExists(() => {
  */
 doWhenPageLoaded(() => {
 	let footnotesSection = document.querySelector("#footnotes");
-	if (footnotesSection.closest("#markdownBody") == null)
+	if (   footnotesSection
+		&& footnotesSection.closest("#markdownBody") == null)
 		GWServerLogError(location.href + "--broken-html-structure");
 });
 
