@@ -37,13 +37,17 @@
     background-image:
         linear-gradient(var(--GW-link-underline-background-color),
                         var(--GW-link-underline-background-color)),
+        linear-gradient(var(--GW-link-underline-background-color),
+                        var(--GW-link-underline-background-color)),
         linear-gradient(var(--GW-link-underline-gradient-line-color),
                         var(--GW-link-underline-gradient-line-color));
     background-size:
         1px 0.5em,
+        1px 0.1em,
         1px 1em;
     background-position:
         0 0.1em,
+        0 100%,
         0 calc(100% - 0.1em);
     background-repeat: no-repeat;
 }
