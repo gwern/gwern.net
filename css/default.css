@@ -3662,8 +3662,8 @@ body.index-directory #footer {
 
 .popframe-body p + ul,
 .popframe-body p + ol {
-    margin-top: 0.2em;
-    margin-bottom: 0.2em;
+    margin-top: 0.25em;
+    margin-bottom: 0.75em;
 }
 
 .popframe-body li,
@@ -4147,8 +4147,7 @@ body.index-directory #footer {
     text-align: center;
     filter: 
         drop-shadow(0 0 1px var(--GW-popups-popup-title-bar-background-color))
-        drop-shadow(0 0 2px var(--GW-popups-popup-title-bar-background-color)) 
-        drop-shadow(0 0 3px var(--GW-popups-popup-title-bar-background-color));
+        drop-shadow(0 0 2px var(--GW-popups-popup-title-bar-background-color));
 }
 .popup.mini-title-bar .popframe-title {
     visibility: hidden;
@@ -4211,8 +4210,7 @@ body.index-directory #footer {
     max-height: 100%;
     filter: 
         drop-shadow(0 0 1px var(--GW-popups-popup-title-bar-background-color)) 
-        drop-shadow(0 0 2px var(--GW-popups-popup-title-bar-background-color)) 
-        drop-shadow(0 0 3px var(--GW-popups-popup-title-bar-background-color));
+        drop-shadow(0 0 2px var(--GW-popups-popup-title-bar-background-color));
 }
 
 .popup .popframe-title-bar-button:disabled {
