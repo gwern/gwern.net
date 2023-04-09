@@ -560,6 +560,7 @@ addContentInjectHandler(GW.contentInjectHandlers.importTablesorterScript = (even
     GWLog("importTablesorterScript", "rewrite.js", 1);
 
 	if (   eventInfo.container.querySelector("table")
+		&& eventInfo.document.body != null
 		&& eventInfo.document.querySelector("#tablesorter-script") == null) {
 		eventInfo.document.body.appendChild(newElement("SCRIPT", {
 			"type": "text/javascript",
