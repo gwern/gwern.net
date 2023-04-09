@@ -3999,7 +3999,7 @@ body.index-directory #footer {
     text-indent: 0;
 }
 
-.popframe-body > section:first-child > h1:first-child {
+.popframe-body > section:first-child > :first-child {
     margin-top: 0;
 }
 
