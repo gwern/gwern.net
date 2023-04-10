@@ -472,12 +472,12 @@ Extracts = {
 
         popFrame.classList.toggle("loading", true);
 
-        let objectOfSomeSort = popFrame.document.querySelector("iframe, object, img, video, audio");
+        let objectOfSomeSort = popFrame.document.querySelector("iframe, object, img");
 		if (objectOfSomeSort == null)
 			return;
 
         //  When loading ends (in success or failure)...
-        if (objectOfSomeSort.tagName == "IFRAME") {
+        if ([ "IFRAME" ].includes(objectOfSomeSort.tagName)) {
             //  Iframes do not fire ‘error’ on server error.
             objectOfSomeSort.onload = (event) => {
                 popFrame.classList.toggle("loading", false);
@@ -493,18 +493,21 @@ Extracts = {
                     popFrame.classList.toggle("loading-failed", true);
                 }
             };
-        } else {
+        } else if ([ "OBJECT", "IMAGE" ].includes(objectOfSomeSort.tagName)) {
             //  Objects & images fire ‘error’ on server error or load fail.
             objectOfSomeSort.onload = (event) => {
                 popFrame.classList.toggle("loading", false);
             };
         }
+
         /*  We set an ‘error’ handler for *all* types of entity, even
             iframes, just in case.
          */
-        objectOfSomeSort.onerror = (event) => {
-            popFrame.swapClasses([ "loading", "loading-failed" ], 1);
-        };
+        if ([ "IFRAME", "OBJECT", "IMG" ].includes(objectOfSomeSort.tagName)) {
+			objectOfSomeSort.onerror = (event) => {
+				popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+			};
+        }
     },
 
 	/*	If the reference data is not yet available, we either queue the 
