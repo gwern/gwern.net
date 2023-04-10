@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-04-07 21:08:08 gwern"
+When:  Time-stamp: "2023-04-10 17:03:18 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -78,6 +78,8 @@ urlLive u | u'      `elem`  goodDomainsSimple = Just True
           | u'     `elem`   badDomainsSimple  = Just False
           | anySuffixT u'   badDomainsSub     = Just False
           | ".wikipedia.org" `T.isInfixOf` u  = wikipedia u
+          | "https://www.youtube.com/watch?v=" `T.isPrefixOf` u || "https://www.youtube.com/embed/" `T.isPrefixOf` u = Just True
+          | "https://www.youtube.com/channel/" `T.isPrefixOf` u = Just False
           -- Markdeep is a self-contained JS in-page-Markdown library, so the main homepage (regular HTML) works as a live popup, but not any of the demos (which need to run JS, which live popup iframes don't allow)
           | "https://casual-effects.com" `T.isPrefixOf` u = Just $ not $ ".md.html" `T.isInfixOf` u
           | otherwise                         = Nothing
@@ -191,7 +193,6 @@ goodDomainsSimple =
     , "catonmat.net"
     , "cdn.discordapp.com"
     , "cdn.openai.com"
-    , "citeseerx.ist.psu.edu"
     , "cognitivemedium.com"
     , "commons.wikimedia.org"
     , "compdemocracy.org"
@@ -863,7 +864,6 @@ goodDomainsSimple =
     , "www.wsj.com"
     , "www.yalelawjournal.org"
     , "www.yf.io"
-    , "www.youtube.com"
     , "www.yudkowsky.net"
     , "www.zeit.de"
     , "www2.biology.ualberta.ca"
@@ -2421,6 +2421,8 @@ badDomainsSimple = [ "2chan.us"
    , "clinicaltrials.gov"
    , "www.4nrx-uk.md"
    , "openai.com"
+   , "citeseerx.ist.psu.edu"
+   , "www.youtube.com/channel/"
    ]
 
 url :: T.Text -> Inline
@@ -3202,6 +3204,8 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://www.cs.toronto.edu/~kriz/cifar.html"
             , "https://parti.research.google"
             , "https://philpapers.org/archive/SOTAOA.pdf#miri"
+            , "https://www.youtube.com/watch?v=hB6eY73sLV0"
+            , "https://www.youtube.com/embed/gaMuet_ibWE"
             ]
 
 badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
@@ -4670,4 +4674,6 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://iqtest.com/"
             , "https://clinicaltrials.gov/ct2/show/NCT03548935"
             , "https://www.4nrx-uk.md/general-health/modalert-modafinil.html"
+            , "https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.108.7127&rep=rep1&type=pdf"
+            , "https://www.youtube.com/channel/UCeNwyKuv5SMnN6ovlpbz1SQ"
             ]
