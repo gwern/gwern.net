@@ -4312,6 +4312,7 @@ body.index-directory #footer {
     max-height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
     height: 100%;
     margin-top: var(--popup-title-bar-height);
+    position: relative;
 }
 
 /*  Scroll bar styles (for WebKit/Blink).
@@ -4335,6 +4336,24 @@ body.index-directory #footer {
 }
 .popup .popframe-scroll-view:hover {
     scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-hover-color) var(--GW-popups-popup-scrollbar-track-color);
+}
+
+/*	Overlay (for dragging / click capturing).
+ */
+.popup .popframe-content-view::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+}
+.popup.focused .popframe-content-view::before {
+	visibility: hidden;
+}
+.popup.dragging .popframe-content-view::before {
+	visibility: visible;
 }
 
 /*┌─────────────────────┐*/
