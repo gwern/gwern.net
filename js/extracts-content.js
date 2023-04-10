@@ -848,8 +848,25 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_VIDEO: (popFrame) => {
-        //  Loading spinner.
-        Extracts.setLoadingSpinner(popFrame);
+    	let video = popFrame.document.querySelector("video");
+    	let source = video.querySelector("source");
+
+		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
+
+		doAjax({
+			location: source.src,
+			method: "HEAD",
+			onSuccess: (event) => {
+				Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
+
+				if (Extracts.popFrameProvider == Popups)
+					Popups.positionPopup(popFrame);
+			},
+			onFailure: (event) => {
+				Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
+				Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
+			}
+		});
     }
 };
 
@@ -897,13 +914,30 @@ Extracts = { ...Extracts,
         //  Mini title bar.
         popup.classList.add("mini-title-bar");
 
+		//	Audio elements can’t get taller.
+        popup.classList.add("no-resize-height");
+
         return popup;
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_AUDIO: (popFrame) => {
-        //  Loading spinner.
-        Extracts.setLoadingSpinner(popFrame);
+    	let audio = popFrame.document.querySelector("audio");
+    	let source = audio.querySelector("source");
+
+		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
+
+		doAjax({
+			location: source.src,
+			method: "HEAD",
+			onSuccess: (event) => {
+				Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
+			},
+			onFailure: (event) => {
+				Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
+				Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
+			}
+		});
     }
 };
 

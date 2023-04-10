@@ -18,8 +18,9 @@
 
     --GW-popups-popup-max-width: 640px;
     --GW-popups-popup-max-height: 480px;
-    --GW-popups-popup-with-title-bar-min-width: 360px;
-    --GW-popups-popup-with-title-bar-min-height: 60px;
+    --GW-popups-popup-with-footer-min-width: 480px;
+    --GW-popups-popup-with-full-title-bar-min-width: 360px;
+    --GW-popups-popup-with-full-title-bar-min-height: 120px;
     --GW-popups-annotation-popup-min-width: 480px;
     --GW-popups-annotation-popup-min-height: 240px;
     --GW-popups-aux-links-popup-min-width: 480px;
@@ -29,8 +30,11 @@
     --GW-popups-popup-border-width: 3px;
     --GW-popups-popup-title-bar-height: calc(1.5rem + 1px);
     --GW-popups-popup-mini-title-bar-height: calc(1rem + 1px);
+    --GW-popups-video-popup-min-width: 360px;
+    --GW-popups-video-popup-min-height: 204px;
     --GW-popups-video-iframe-width: 495px;
     --GW-popups-video-iframe-height: 310px;
+    --GW-popups-audio-popup-min-height: 87px;
     --GW-popups-image-popup-min-size: 64px;
 
     --GW-popins-popin-max-height: 75vh;
@@ -3921,6 +3925,17 @@ body.index-directory #footer {
 /*│ Video pop-frames. │*/
 /*└───────────────────┘*/
 
+.popframe-body.video video {
+	width: 100%;
+}
+
+/*	Don’t show while loading, or when loading failed.
+ */
+.popframe.video.loading .popframe-content-view,
+.popframe.video.loading-failed .popframe-content-view {
+	display: none;
+}
+
 /*  “Loading failed” message.
     */
 .popframe.video.loading-failed::after {
@@ -3931,10 +3946,21 @@ body.index-directory #footer {
 /*│ Audio pop-frames. │*/
 /*└───────────────────┘*/
 
+.popframe-body.audio audio {
+	width: 100%;
+}
+
+/*	Don’t show while loading, or when loading failed.
+ */
+.popframe.audio.loading .popframe-content-view,
+.popframe.audio.loading-failed .popframe-content-view {
+	display: none;
+}
+
 /*  “Loading failed” message.
     */
 .popframe.audio.loading-failed::after {
-    content: "Audio file not found.";
+    content: "Audio not found.";
 }
 
 /*┌────────────────────────────┐*/
@@ -4098,12 +4124,13 @@ body.index-directory #footer {
 .popup.has-title-bar {
     --popup-title-bar-height: var(--GW-popups-popup-title-bar-height);
     --popup-title-bar-button-size: calc(var(--popup-title-bar-height) - 1px);
-
-    min-width: var(--GW-popups-popup-with-title-bar-min-width);
-    min-height: var(--GW-popups-popup-with-title-bar-min-height);
 }
 .popup.has-title-bar.mini-title-bar {
     --popup-title-bar-height: var(--GW-popups-popup-mini-title-bar-height);
+}
+.popup.has-title-bar:not(.mini-title-bar) {
+	min-width: var(--GW-popups-popup-with-full-title-bar-min-width);
+	min-height: var(--GW-popups-popup-with-full-title-bar-min-height);
 }
 
 .popup .popframe-title-bar {
@@ -4270,6 +4297,7 @@ body.index-directory #footer {
 
 .popup.has-footer {
     border-bottom-width: 0;
+    min-width: var(--GW-popups-popup-with-footer-min-width);
 }
 
 /*┌──────────────────────────────┐*/
@@ -4529,13 +4557,9 @@ body.index-directory #footer {
 /*│ Annotation popups. │*/
 /*└────────────────────┘*/
 
-.popup.annotation {
+.popup.annotation:not(.annotation-partial) {
     min-width: var(--GW-popups-annotation-popup-min-width);
     min-height: var(--GW-popups-annotation-popup-min-height);
-}
-.popup.annotation.annotation-partial {
-    min-width: var(--GW-popups-popup-with-title-bar-min-width);
-    min-height: var(--GW-popups-popup-with-title-bar-min-height);
 }
 
 /*┌──────────────────┐*/
@@ -4654,6 +4678,8 @@ body.index-directory #footer {
 .popup.video {
     width: unset;
     height: unset;
+    min-width: var(--GW-popups-video-popup-min-width);
+    min-height: var(--GW-popups-video-popup-min-height);
 }
 .popup-body.video iframe {
     width: var(--GW-popups-video-iframe-width);
@@ -4669,6 +4695,7 @@ body.index-directory #footer {
 .popup.audio {
     width: unset;
     height: unset;
+    min-height: var(--GW-popups-audio-popup-min-height);
 }
 .popup.audio .popframe-content-view {
 	padding: 3px;
