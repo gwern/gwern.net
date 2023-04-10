@@ -1087,7 +1087,7 @@ a:hover {
 .markdownBody ul > li::before,
 .markdownBody ul ul ul ul > li::before {
     content: url('/static/img/icon/single-black-star.svg');
-    opacity: 0.72;
+    opacity: 0.65;
 
 }
 .markdownBody ul ul > li::before,
@@ -1095,14 +1095,14 @@ a:hover {
 /* special /index override because the link compilation is not bolded */
 body.index .section-link-list > li::before {
     content: url('/static/img/icon/single-white-star.svg');
-    opacity: initial;
+    opacity: 0.85;
 }
 .markdownBody ul ul ul > li::before,
 .markdownBody ul ul ul ul ul ul > li::before,
 body.index .markdownBody .section-link-list ul > li::before {
     /* this rotates into more of a 'lozenge' square for variety's sake */
     content: url('/static/img/icon/single-white-star-rotated.svg');
-    opacity: initial;
+    opacity: 0.85;
 }
 
 /*=-----------------------=*/
