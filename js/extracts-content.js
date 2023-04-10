@@ -853,6 +853,60 @@ Extracts = { ...Extracts,
     }
 };
 
+/*=----------------------------=*/
+/*= LOCALLY HOSTED AUDIO FILES =*/
+/*=----------------------------=*/
+
+Extracts.targetTypeDefinitions.insertBefore([
+    "LOCAL_AUDIO",              // Type name
+    "isLocalAudioLink",         // Type predicate function
+    "has-content",              // Target classes to add
+    "localAudioForTarget",      // Pop-frame fill function
+    "audio object"              // Pop-frame class
+], (def => def[0] == "LOCAL_PAGE"));
+
+Extracts = { ...Extracts,
+    //  Used in: Extracts.isLocalVideoLink
+    audioFileExtensions: [ "mp3" ],
+
+    //  Called by: extracts.js (as `predicateFunctionName`)
+    isLocalAudioLink: (target) => {
+        if (target.hostname != location.hostname)
+            return false;
+
+        let audioFileURLRegExp = new RegExp(
+              '('
+            + Extracts.audioFileExtensions.map(ext => `\\.${ext}`).join("|")
+            + ')$'
+        , 'i');
+        return (target.pathname.match(audioFileURLRegExp) != null);
+    },
+
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
+    localAudioForTarget: (target) => {
+        GWLog("Extracts.localAudioForTarget", "extracts-content.js", 2);
+
+        return newDocument(
+              `<audio controls="controls" preload="none">`
+            + `<source src="${target.href}">`
+            + `</audio>`);
+    },
+
+    //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
+    preparePopup_LOCAL_AUDIO: (popup) => {
+        //  Mini title bar.
+        popup.classList.add("mini-title-bar");
+
+        return popup;
+    },
+
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    rewritePopFrameContent_LOCAL_AUDIO: (popFrame) => {
+        //  Loading spinner.
+        Extracts.setLoadingSpinner(popFrame);
+    }
+};
+
 /*=-----------------------=*/
 /*= LOCALLY HOSTED IMAGES =*/
 /*=-----------------------=*/

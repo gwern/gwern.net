@@ -19,6 +19,7 @@
     --GW-popups-popup-max-width: 640px;
     --GW-popups-popup-max-height: 480px;
     --GW-popups-popup-with-title-bar-min-width: 360px;
+    --GW-popups-popup-with-title-bar-min-height: 60px;
     --GW-popups-annotation-popup-min-width: 480px;
     --GW-popups-annotation-popup-min-height: 240px;
     --GW-popups-aux-links-popup-min-width: 480px;
@@ -3899,6 +3900,7 @@ body.index-directory #footer {
 
 .popframe-body.object img,
 .popframe-body.object video,
+.popframe-body.object audio,
 .popframe-body.object iframe,
 .popframe-body.object object {
     display: block;
@@ -3931,7 +3933,7 @@ body.index-directory #footer {
 
 /*  “Loading failed” message.
     */
-.popframe.video.loading-failed::after {
+.popframe.audio.loading-failed::after {
     content: "Audio file not found.";
 }
 
@@ -4098,6 +4100,7 @@ body.index-directory #footer {
     --popup-title-bar-button-size: calc(var(--popup-title-bar-height) - 1px);
 
     min-width: var(--GW-popups-popup-with-title-bar-min-width);
+    min-height: var(--GW-popups-popup-with-title-bar-min-height);
 }
 .popup.has-title-bar.mini-title-bar {
     --popup-title-bar-height: var(--GW-popups-popup-mini-title-bar-height);
@@ -4530,6 +4533,10 @@ body.index-directory #footer {
     min-width: var(--GW-popups-annotation-popup-min-width);
     min-height: var(--GW-popups-annotation-popup-min-height);
 }
+.popup.annotation.annotation-partial {
+    min-width: var(--GW-popups-popup-with-title-bar-min-width);
+    min-height: var(--GW-popups-popup-with-title-bar-min-height);
+}
 
 /*┌──────────────────┐*/
 /*│ Footnote popups. │*/
@@ -4656,6 +4663,19 @@ body.index-directory #footer {
 /*┌───────────────┐*/
 /*│ Audio popups. │*/
 /*└───────────────┘*/
+
+/*  Popups for audio files.
+    */
+.popup.audio {
+    width: unset;
+    height: unset;
+}
+.popup.audio .popframe-content-view {
+	padding: 3px;
+}
+.popup.audio.has-footer .popframe-content-view {
+	padding-bottom: 6px;
+}
 
 /*┌────────────────────────┐*/
 /*│ Local document popups. │*/
@@ -5355,6 +5375,10 @@ body.index-directory #footer {
 /*┌───────────────┐*/
 /*│ Audio popins. │*/
 /*└───────────────┘*/
+
+.popin.audio {
+    padding: 2px;
+}
 
 /*┌────────────────────────┐*/
 /*│ Local document popins. │*/
