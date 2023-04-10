@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-04-06 15:21:59 gwern"
+# When:  Time-stamp: "2023-04-09 11:40:33 gwern"
 # License: CC-0
 #
 # This will reformat, run PDFs through `ocrmypdf` (via the `compressPdf` wrapper), and `git commit` new files.
@@ -11,11 +11,13 @@
 # It will also try to guess the full document directory from a short tag, so `$ upload benter1994.pdf decision` works just as well.
 # If no tag is provided, it is assumed this is a temporary or scratch file, and it's uploaded to an unindexed dump directory that is periodically deleted.
 
+. ~/wiki/static/build/bash.sh
+
 set -e
 
 WWW_BROWSER="firefox"
 
-if [ ! -f "$1" ]; then echo "'$1' is not a file‽" && return 1; fi
+if [ ! -f "$1" ]; then echo "l18: '$1' is not a file‽" && return 1; fi
 
 (locate "$1" &)
 
@@ -84,6 +86,7 @@ else
             if [ ! -e ~/wiki/"$TARGET" ]; then
                 mv "$FILE" ~/wiki/"$TARGET"
                 cd ~/wiki/ || return
+                if [[ "$FILE" =~ .*\.jpg ]] || [[ "$FILE" =~ .*\.png ]]; then resize_image /"$TARGET"; fi # get it built immediately so the smaller versions are available on next sync rather than sync after next sync.
                 chmod a+r "$TARGET"
                 if [[ "$TARGET" =~ .*\.pdf ]]; then
                     crossref "$TARGET"
