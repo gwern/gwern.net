@@ -3809,7 +3809,7 @@ body.index-directory #footer {
     border-right: 1px solid var(--GW-TOC-border-color);
 }
 .popframe-body > div.annotation > div.annotation-abstract > .collapse:last-child {
-    margin-bottom: 0.25em;
+    margin-bottom: 0;
     border-bottom: 1px solid var(--GW-TOC-border-color);
 }
 
