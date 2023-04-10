@@ -34,7 +34,7 @@ import Tags (tagsToLinksSpan, listTagDirectories, abbreviateTag)
 import LinkBacklink (getBackLinkCheck, getSimilarLinkCheck, getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy)
-import Utils (replace, replaceManyT, writeUpdatedFile, printRed, toPandoc)
+import Utils (replace, replaceManyT, writeUpdatedFile, printRed, toPandoc, anySuffix)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -211,7 +211,7 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
 listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath,FilePath,FilePath)]
 listFiles m direntries' = do
                    files <- filterM (doesFileExist . tail) direntries'
-                   let files'          = (sort . filter (not . ("index"`isSuffixOf`)) . map (replace ".page" "") . filter ('#' `notElem`) . filter (not . isSuffixOf ".tar") . filter (not . isSuffixOf "768px.jpg") . filter (not . isSuffixOf "768px.png") . filter (not . isSuffixOf "530px.jpg")) files
+                   let files'          = (sort . filter (\f -> not $ anySuffix f ["index", ".tar", "-768px.jpg", "-768px.png", "-530px.jpg", ".webm-poster.jpg", ".mp4-poster.jpg"]) . map (replace ".page" "") . filter ('#' `notElem`)) files
                    let fileAnnotationsMi = map (lookupFallback m) files'
                    -- NOTE: files may be annotated only under a hash, eg. '/doc/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/doc/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/doc/ai/scaling/hardware/2021-norrie.pdf' → `('/doc/ai/scaling/hardware/2021-norrie.pdf#google',_)`
                    backlinks    <- mapM (fmap snd . getBackLinkCheck . fst)    fileAnnotationsMi

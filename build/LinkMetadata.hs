@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-04-07 11:58:16 gwern"
+When:  Time-stamp: "2023-04-08 09:11:45 gwern"
 License: CC-0
 -}
 
@@ -19,7 +19,7 @@ module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMeta
 import Control.Monad (unless, void, when, foldM_)
 
 import qualified Data.ByteString as B (appendFile, readFile)
-import Data.Char (isPunctuation, toLower)
+import Data.Char (isPunctuation, toLower, isSpace)
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union) -- traverseWithKey, union, Map
 import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
@@ -626,9 +626,11 @@ readYaml yaml = do yaml' <- do filep <- doesFileExist yaml
                      Right y -> (return $ concatMap (convertListToMetadata allTags) y) :: IO MetadataList
                 where
                  convertListToMetadata :: [String] -> [String] -> MetadataList
-                 convertListToMetadata allTags' [u, t, a, d, di,     s] = [(u, (t,a,guessDateFromLocalSchema u d,di,map (guessTagFromShort allTags') $ uniqTags $ pages2Tags u $ tag2TagsWithDefault u "", s))]
-                 convertListToMetadata allTags' [u, t, a, d, di, ts, s] = [(u, (t,a,guessDateFromLocalSchema u d,di,map (guessTagFromShort allTags') $ uniqTags $ pages2Tags u $ tag2TagsWithDefault u ts, s))]
+                 convertListToMetadata allTags' [u, t, a, d, di,     s] = [(stripUnicodeWhitespace u, (t,a,guessDateFromLocalSchema u d,di,map (guessTagFromShort allTags') $ uniqTags $ pages2Tags u $ tag2TagsWithDefault u "", s))]
+                 convertListToMetadata allTags' [u, t, a, d, di, ts, s] = [(stripUnicodeWhitespace u, (t,a,guessDateFromLocalSchema u d,di,map (guessTagFromShort allTags') $ uniqTags $ pages2Tags u $ tag2TagsWithDefault u ts, s))]
                  convertListToMetadata _                     e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
+                 stripUnicodeWhitespace :: String -> String
+                 stripUnicodeWhitespace = replace "⁄" "/" . filter (not . isSpace)
 
 -- If no accurate date is available, attempt to guess date from the local file schema of 'YYYY-surname-[title, disambiguation, etc].ext' or 'YYYY-MM-DD-...'
 -- This is useful for PDFs with bad metadata, or data files with no easy way to extract metadata (like HTML files with hopelessly inconsistent dirty metadata fields like `<meta>` tags) or where it's not yet supported (image files usually have a reliable creation date).
