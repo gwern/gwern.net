@@ -4338,24 +4338,6 @@ body.index-directory #footer {
     scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-hover-color) var(--GW-popups-popup-scrollbar-track-color);
 }
 
-/*	Overlay (for dragging / click capturing).
- */
-.popup .popframe-content-view::before {
-	content: "";
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 1;
-}
-.popup.focused .popframe-content-view::before {
-	visibility: hidden;
-}
-.popup.dragging .popframe-content-view::before {
-	visibility: visible;
-}
-
 /*┌─────────────────────┐*/
 /*│ Popup content view. │*/
 /*└─────────────────────┘*/
@@ -4592,6 +4574,24 @@ body.index-directory #footer {
 .popup-body.object object {
     width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
     height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
+}
+
+/*	Overlay (for dragging / click capturing).
+ */
+.popup.object .popframe-content-view::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+}
+.popup.object.focused .popframe-content-view::before {
+	visibility: hidden;
+}
+.popup.object.dragging .popframe-content-view::before {
+	visibility: visible;
 }
 
 /*┌───────────────┐*/
