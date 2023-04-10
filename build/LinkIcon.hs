@@ -318,6 +318,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "paperswithcode.com" = aI "PwC" "text,tri,sans" -- 'Papers With Code' does have a weird '[|⏐|⏐|]' icon (supposed to be a bar graph of different performances, I guess) which would work monochrome, but I don't recognize it and I doubt anyone else would either, especially as a link icon, but 'PwC' *might* be recognizable, so we'll go with that for now.
  | u'' "www.pewresearch.org" = aI "Pew" "text,tri" -- Pew Research Center: logo <https://en.wikipedia.org/wiki/File:Pew_Research_Center.svg>. While very cool, and worthy of a Scandinavian black death metal band, it is unrecognizable and would 'shimmer' intensely if scaled down to a link icon & would have to be recreated. So, another text icon it is. Everyone knows what "Pew" means.
  | u'' "thelastpsychiatrist.com" = aI "TLP" "text,tri,sans"
+ | u'' "www.lrb.co.uk" = aI "LRB" "text,tri" -- London Review of Books <https://en.wikipedia.org/wiki/London_Review_of_Books>
 
  -- Quad-letter-square icons.
  | aU'' ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
@@ -1129,4 +1130,5 @@ linkIconTestUnitsText =
          , ("https://www.bitsaboutmoney.com/archive/the-infrastructure-behind-atms/", "pt11", "text,quad,monospace")
          , ("https://training.kalzumeus.com/newsletters/archive/saas_pricing", "pt11", "text,quad,monospace")
          , ("https://www.kalzumeus.com/2018/10/19/japanese-hometown-tax/", "pt11", "text,quad,monospace")
+         , ("https://www.lrb.co.uk/the-paper/v42/n18/james-lasdun/bats-on-the-ceiling", "LRB", "text,tri")
         ]

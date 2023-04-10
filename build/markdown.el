@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-04-05 11:01:53 gwern"
+;;; When:  Time-stamp: "2023-04-09 11:50:01 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -16,7 +16,7 @@
 (setq default-directory "~/wiki/")
 
 ;;we rely on the Github dev version because the 2017 v2.3 stable release packaged everywhere is missing a bugfix (stable breaks on any Markdown file with HTML comments in it); NOTE: still seems to be true on Ubuntu `elpa-markdown-mode` 2.3+210-1 as of 2023-02-11!
-(add-to-list 'load-path "/home/gwern/src/markdown-mode/")
+(add-to-list 'load-path "~/src/markdown-mode/")
 (require 'markdown-mode)
 
 ; YAML-mode is most useful for editing my `/metadata/full.yaml` file
@@ -26,7 +26,7 @@
 
 ; (setq major-mode 'markdown-mode) ; needs to be done via 'Customize'?
 (setq markdown-command
-   "pandoc --mathjax --metadata title='Markdown preview' --to=html5 --standalone --number-sections --toc --reference-links --css=/home/gwern/wiki/static/css/initial.css --css=/home/gwern/wiki/static/css/links.css --css=/home/gwern/wiki/static/css/default.css --css=/home/gwern/wiki/static/css/dark-mode-adjustments.css --css=/home/gwern/wiki/static/css/fonts.css --css=/home/gwern/wiki/static/css/FontAwesome.css --css=/home/gwern/wiki/static/css/dark-mode.css --css=/home/gwern/wiki/static/css/colors.css --css=/home/gwern/wiki/static/css/colors-dark.css -f markdown+smart --template=/home/gwern/bin/bin/pandoc-template-html5-articleedit.html5 -V lang=en-us")
+   "pandoc --mathjax --metadata title='Markdown preview' --to=html5 --standalone --number-sections --toc --reference-links --css=~/wiki/static/css/initial.css --css=~/wiki/static/css/links.css --css=~/wiki/static/css/default.css --css=~/wiki/static/css/dark-mode-adjustments.css --css=~/wiki/static/css/fonts.css --css=~/wiki/static/css/FontAwesome.css --css=~/wiki/static/css/dark-mode.css --css=~/wiki/static/css/colors.css --css=~/wiki/static/css/colors-dark.css -f markdown+smart --template=~/bin/bin/pandoc-template-html5-articleedit.html5 -V lang=en-us")
 (setq markdown-enable-math t)
 (setq markdown-italic-underscore t)
 
@@ -131,7 +131,8 @@ START and END specify the region to search."
                 ((eq response ?n)
                  (forward-char))
                 ((eq response ?q)
-                 (keyboard-quit)))))
+                 (setq replace-done t) ; treat as succesfully finished and exit politely
+                 ))))
       (lazy-highlight-cleanup t))))
 ; currently primarily used by `getLinkSuggestions` (the regexp version was included for completeness):
 (defun query-replace-once (from-string to-string &optional delimited start end)
@@ -519,6 +520,7 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
        (query-replace "50/50" "50:50" nil begin end)
        (query-replace "C3O2" "C~3~O~2~" nil begin end)
        (query-replace "CO2" "CO~2~" nil begin end)
+       (query-replace " CO2" " CO~2~" nil begin end)
        (query-replace "CO2." "CO~2~" nil begin end)
        (query-replace "O2" "O~2~" nil begin end)
        (query-replace "β42" "β~42~" nil begin end)
@@ -1032,6 +1034,7 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
        (query-replace-regexp "\\([0-9]+\\) of the \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
        (query-replace-regexp " \\([0-9][0-9]?[0-9]?\\) of \\([0-9][0-9]?[0-9]?\\) " " \\1⁄\\2 " nil begin end)
        (query-replace-regexp "\\([0-9]+\\) out of \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
+       (query-replace-regexp "\\([0-9]+\\) in every \\([0-9]+\\)" "\\1⁄\\2" nil begin end) ; eg. "approximately one in every 10 citations across leading psychology journals is inaccurate"
        (query-replace "...." "..." nil begin end)
        (query-replace "....." "..." nil begin end)
        (query-replace-regexp "\n..([A-Za-z])" "\n...\\1" nil begin end) ; replace malformed '...' ellipsis excerpts
@@ -1061,7 +1064,7 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
 
        (query-replace-regexp "[aA]ppendix.? ?\\([a-zA-Z]?\\)\\([0-9\\.]+[a-fA-F]*\\)"  "**Appendix \\1\\2**" nil begin end) ; 'Appendix A2'
 
-       ; '§ SECTION SIGN' is better than writing out '<strong>Section N</strong>' everywhere. It's much shorter, we already use SECTION SIGN heavily, it reduces overuse of bold, is easier to grep for, and it saves a bit of time formatting annotations (because of the lack of lookahead/lookbehind in these regexp rewrites, 'Section N' will match every time, even if it's already wrapped in <strong></strong>/**bolding**, and I have to waste time skipping them). It would be nice to symbolize Figure/Table/Experiment/Data as well, but there's no widely-understood symbol which could be used, and usually no abbreviation either. (Perhaps 'Supplement.*' could be replaced by just 'S' and 'Figure' by 'Fig.' at some point...)
+       ; '§ SECTION SIGN' is better than writing out '<strong>Section N</strong>' everywhere. It's much shorter, we already use SECTION SIGN heavily, it reduces overuse of bold, is easier to grep for, and it saves a bit of time formatting annotations (because of the lack of lookahead/lookbehind in these regexp rewrites, 'Section N' will match every time, even if it's already wrapped in <strong></strong>/**bolding**, and I have to waste time skipping them). It would be nice to symbolize Figure/Table/Experiment/Data as well, but there's no widely-understood symbol which could be used, and usually no abbreviation either. (Perhaps 'Supplement.*' could be replaced by just 'S' and 'Figure' by 'Fig.' at some point…)
        (query-replace-regexp "[Ss]ection ?\\([0-9.]+[a-fA-F]*\\)"  "§\\1" nil begin end) ; 'Section 9' → '§9'
        (query-replace-regexp "[Ss]ections ?\\([0-9.]+[a-fA-F]*\\) and \\([0-9.]+[a-fA-F]*\\)"  "§\\1 & §\\2" nil begin end) ; 'Sections 1 and 2' → '§1 & §2'
 
@@ -1116,7 +1119,7 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
        (query-replace-regexp "\\([[:digit:]]+\\)[x×]10-\\([[:digit:]]+\\)" "\\1 × 10<sup>−\\2</sup>" nil begin end)
        (query-replace-regexp "\\([[:digit:]\\.]+\\)[Ee]-\\([[:digit:]]+\\)" "\\1 × 10<sup>−\\2</sup>" nil begin end) ; 2.0E-26, 2.0e-26
        ; (query-replace-regexp "[x×] ?10--\\([0-9]+\\)" "× 10<sup>−\\1</sup>" nil begin end)
-       (query-replace-regexp "\\([a-zA-Z0-9]\\.\\)\\([[:digit:]]+\\) \\([A-Z]\\)" "\\1<sup>\\2</sup> \\3" nil begin end) ; look for copy-pasted footnotes, like "X works great.13 Therefore..."
+       (query-replace-regexp "\\([a-zA-Z0-9]\\.\\)\\([[:digit:]]+\\) \\([A-Z]\\)" "\\1<sup>\\2</sup> \\3" nil begin end) ; look for copy-pasted footnotes, like "X works great.13 Therefore"
        (query-replace-regexp "\\([a-zA-Z0-9.]\\”\\)\\([[:digit:]]+\\) \\([A-Z]\\)" "\\1<sup>\\2</sup> \\3" nil begin end)
        (query-replace-regexp "\\([[:punct:]]\\)\\[\\([0-9, -]+\\)\\] " "\\1<sup>\\2</sup> " nil begin end) ; Wikipedia-style referencs: "Foo.[33]" or "is around 75%,[83 but varies"
        ; (query-replace-regexp "\\([[:punct:]]\\)\\([0-9]+\\) " "\\1<sup>\\2</sup> " nil begin end) ; looser
@@ -1187,8 +1190,8 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
        (query-replace-regexp "(\\([[:digit:]]+%\\)-\\([[:digit:]]+\\)"   "(\\1--\\2"      nil begin end) ; en dash for percentage ranges: eg '10%-50%'
        (query-replace-regexp " \\([[:digit:]]+\\) [-–—]+ \\([[:digit:]]+\\)"   " \\1--\\2"      nil begin end) ; en dash for numerical space-separated ranges: eg '1990 - 1995' (whether separated by en/em/hyphen)
        (query-replace-regexp "\\([a-zA-Z]\\)–\\([[a-zA-Z]]\\)"       "\\1-\\2"       nil begin end) ; remove mistakenly used en dashes
-       (query-replace-regexp "\\([a-zA-Z]\\)–\\([a-zA-Z]\\)"               "\\1-\\2"       nil begin end) ; check for misplaced en-dashes...
-       (query-replace-regexp "\\([a-zA-Z]\\)--\\([a-zA-Z]\\)"               "\\1-\\2"       nil begin end) ; ...and the Markdown-escaped version as well [we don't check for em-dash because that's more likely to be correct when between letters, it's just en-dash-between-letters that's usually wrong)
+       (query-replace-regexp "\\([a-zA-Z]\\)–\\([a-zA-Z]\\)"               "\\1-\\2"       nil begin end) ; check for misplaced en-dashes…
+       (query-replace-regexp "\\([a-zA-Z]\\)--\\([a-zA-Z]\\)"               "\\1-\\2"       nil begin end) ; …and the Markdown-escaped version as well [we don't check for em-dash because that's more likely to be correct when between letters, it's just en-dash-between-letters that's usually wrong)
        (query-replace-regexp "\\([ ,(\[]\\)-\\([[:digit:]]\\)"                   "\\1−\\2" nil begin end) ; minus sign instead of hyphen
        (query-replace-regexp " --\\([[:digit:]]\\)"   " −\\1"      nil begin end) ; replace mistaken en-dashes with minus signs
        (query-replace-regexp " -\\[\\$" " −[$" nil begin end) ; minus sign: replace "It saves -[$1]($2021)" → "It saves −[$1]($2021)"
@@ -1204,6 +1207,8 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
        ; (query-replace-regexp "\\([A-TV-Z]\.\\)\\([A-RT-Z]\.\\) \\([[:upper:]]\\)" "\\1 \\2 \\3" nil begin end) ; 'J.K. Rowling' → 'J. K. Rowling'; but try to skip U.S. initialisms like 'U.S. Army' or 'U.S. Congress'
        (query-replace-regexp "\\([a-zA-Z]\\)- " "\\1" nil begin end)
        (query-replace-regexp "::+" ":" nil begin end)
+       (query-replace-regexp "\\*\\*\\*\\*\\(.*\\)" "**_\\1_" nil begin end) ; 4 '****s' may be an error on either side of an intended '**foo**'
+       (query-replace-regexp "\\(.*\\)\\*\\*\\*\\*" "**_\\1_" nil begin end) ; 4 '****s' may be an error on either side of an intended '**foo**'
        (query-replace-regexp "\\*\\*\\*\\(.*\\)\\*\\*\\*" "**_\\1_**" nil begin end) ; '***' is a bad way to write bold-italics in Markdown because it's unreliable to read/parse
        (replace-all "<Strong>" "**")
        (replace-all "</Strong>" "**")
@@ -1237,7 +1242,7 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
      (flyspell-buffer)
      (ispell) ; spellcheck
      (message "Getting suggested links…")
-     (getLinkSuggestions "/home/gwern/wiki/metadata/linkSuggestions.el")
+     (getLinkSuggestions "~/wiki/metadata/linkSuggestions.el")
      (message "Checking grammar/language…")
      (langtool-check)
      (call-interactively #'langtool-correct-buffer) ; grammar
@@ -1286,7 +1291,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
     (message "Preprocessing and compiling into HTML…")
     ; Pandoc converts the Markdown to HTML. Then the HTML goes through `preprocess-markdown` which runs additional typographic/formatting rewrites, runs LinkAuto to automatically linkify text, and then runs through GenerateSimilar to provide a list of relevant annotations to curate as the 'see-also' section at the bottom of annotations (if they are approved).
     ; NOTE: because `preprocess-markdown` is calling the OA API via the embedder, $OPENAI_API_KEY must be defined in the Emacs environment, either via `(setenv "OPENAI_API_KEY" "sk-xyz123456789")` or by putting it in `~/.bash_profile`. (Putting it in `.env` or `.bashrc` is not enough, because they won't apply to GUI/X Emacs)
-    (let ((markdown-command "cd ~/wiki/ && timeout 2m /home/gwern/wiki/static/build/preprocess-markdown | \\
+    (let ((markdown-command "cd ~/wiki/ && timeout 2m ~/wiki/static/build/preprocess-markdown | \\
                              pandoc --mathjax --metadata title='Annotation preview' --to=html5 --from=html | \\
                              tidy -indent -wrap 130 --clean yes --break-before-br yes --logical-emphasis yes --quote-nbsp no -quiet --show-warnings no --show-body-only auto | \\
                              sed 's/^/    /' || true") (visible-bell nil))
@@ -1347,11 +1352,12 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
       (save-excursion
         (goto-char (point-min))
         (unless (search-forward-regexp "\n\n" nil t)
+          (message "Paragraphizing abstract…")
           (shell-command-on-region (point-min) (point-max) "~/wiki/static/build/paragraphizer.py" nil t)
           (setq double-newline-found t))))
     (when double-newline-found
       (goto-char (point-max))
-      (message "Paragraphizing abstract..."))))
+      (message "Paragraphizing abstract done."))))
 (add-hook 'post-command-hook #'annotation-abstract-paragraphize)
 
 ; add new-line / paragraph snippet
@@ -1533,10 +1539,10 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
 
 ; 'langtool': a Java tool for grammar checking: <https://github.com/mhayashi1120/Emacs-langtool> <https://languagetool.org/dev>
 (require 'langtool)
-(setq langtool-language-tool-jar "/home/gwern/bin/bin/LanguageTool-4.7/languagetool-commandline.jar")
+(setq langtool-language-tool-jar "~/bin/bin/LanguageTool-4.7/languagetool-commandline.jar")
 (setq langtool-default-language "en-US")
 ; <http://wiki.languagetool.org/command-line-options> <https://community.languagetool.org/rule/list> ; can look up in there or run a command like
-; $ java -jar languagetool-commandline.jar -b --line-by-line --language en-US  --disable "EN_QUOTES,MULTIPLICATION_SIGN,WORD_CONTAINS_UNDERSCORE,ET_AL,SENTENCE_WHITESPACE,DASH_RULE,MORFOLOGIK_RULE_EN_US,EN_UNPAIRED_BRACKETS,WHITESPACE_RULE" /home/gwern/wiki/research-criticism.page
+; $ java -jar languagetool-commandline.jar -b --line-by-line --language en-US  --disable "EN_QUOTES,MULTIPLICATION_SIGN,WORD_CONTAINS_UNDERSCORE,ET_AL,SENTENCE_WHITESPACE,DASH_RULE,MORFOLOGIK_RULE_EN_US,EN_UNPAIRED_BRACKETS,WHITESPACE_RULE" ~/wiki/research-criticism.page
 ; to disable specific rules
 (setq langtool-user-arguments '("-b" "--line-by-line" "--disable" "EN_QUOTES,MULTIPLICATION_SIGN,WORD_CONTAINS_UNDERSCORE,ET_AL,SENTENCE_WHITESPACE,DASH_RULE,MORFOLOGIK_RULE_EN_US,EN_UNPAIRED_BRACKETS,WHITESPACE_RULE,UNIT_SPACE,TR"))
 

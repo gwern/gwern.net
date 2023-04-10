@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using GPT-3 neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2023-04-06 15:29:13 gwern"
+# When:  Time-stamp: "2023-04-09 12:59:36 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python paragraphizer.py
@@ -101,7 +101,7 @@ else:
 
 messages = [
     {"role": "system", "content": "You are a helpful assistant that adds hyperlinks to text, and adds double-newlines to split abstracts into paragraphs (one topic per paragraph.)"},
-    {"role": "user", "content": f"Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) Please also add useful hyperlinks (such as Wikipedia articles) in HTML format to technical terminology or names. Do not duplicate links. Please include ONLY the resulting text with hyperlinks in your output, include ALL the original text, and include NO other conversation or comments.\n\n<abstract>\n{target}\n</abstract>"}
+    {"role": "user", "content": f"Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) Please also add useful hyperlinks (such as Wikipedia articles) in HTML format to technical terminology or names. Do not duplicate links: include each link ONLY once. Please include ONLY the resulting text with hyperlinks in your output, include ALL the original text, and include NO other conversation or comments.\n\n<abstract>\n{target}\n</abstract>"}
 ]
 
 result = run_with_timeout(

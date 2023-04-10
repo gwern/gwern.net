@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-07 20:29:54 gwern"
+# When:  Time-stamp: "2023-04-09 09:53:57 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -85,7 +85,7 @@ else
           s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber';
 
           ## HTML/Markdown formatting:
-          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s '530px.jpg-530px.jpg' '530px.jpg'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' ''; s '.svg-530px.jpg' '.svg';
+          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s '530px.jpg-530px.jpg' '530px.jpg'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' ''; s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
@@ -165,8 +165,10 @@ else
 
     cd ~/wiki/ # go to site root
     bold "Building site…"
+    time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
+
     if [ "$SLOW" ]; then
-        bold "Updating X-of-the-day…" #  NOTE: we have to do this before because it's no longer symlinked.
+        bold "Updating X-of-the-day…"
         ghci -i/home/gwern/wiki/static/build/ ./static/build/QuoteOfTheDay.hs \
              -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; qotd; sotd; }' | \
             grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]';
@@ -174,7 +176,6 @@ else
               grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' || true; }
         wrap λ "Site-of-the-day: check for recommendation?"
     fi
-    time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
 
     bold "Results size:"
     du -chs ./_cache/ ./_site/
@@ -670,11 +671,10 @@ else
   fi
 
     # Sync:
+    set -e
     ## make sure nginx user can list all directories (x) and read all files (r)
     chmod a+x $(find ./ -type d)
     chmod --recursive a+r ./*
-
-    set -e
     ## sync to Hetzner server: (`--size-only` because Hakyll rebuilds mean that timestamps will always be different, forcing a slower rsync)
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. doc/*), just force a hash-based sync every time:
@@ -849,9 +849,9 @@ else
     wrap λ "The live MIME types are incorrect"
 
     ## known-content check:
-    λ(){ sleep 5s; curl --silent 'https://gwern.net/index'     | grep -F --quiet -e 'This Is The Website</span> of <strong>Gwern Branwen</strong>' || echo "/index content-check failed"; }
+    λ(){ curl --silent 'https://gwern.net/index'   | grep -F --quiet -e 'This Is The Website</span> of <strong>Gwern Branwen</strong>' || echo "/index content-check failed" && echo $(curl --silent 'https://gwern.net/index'   | grep -F -e 'This Is The Website</span> of <strong>Gwern Branwen</strong>'); }
     wrap λ "Known-content check of /index failed?"
-    λ(){ sleep 5s; curl --silent 'https://gwern.net/zeo/zeo'   | grep -F --quiet -e 'lithium orotate' || echo "/zeo/zeo content-check failed"; }
+    λ(){ curl --silent 'https://gwern.net/zeo/zeo' | grep -F --quiet -e 'lithium orotate' || echo "/zeo/zeo content-check failed" && echo $(curl --silent 'https://gwern.net/zeo/zeo'   | grep -F -e 'lithium orotate'); }
     wrap λ "Known-content check of /zeo/zeo failed?"
 
     ## check that tag-directories have the right thumbnails (ie. *not* the fallback thumbnail):
@@ -978,7 +978,7 @@ else
     wrap λ "DjVu detected (convert to PDF)"
 
     ## having noindex tags causes conflicts with the robots.txt and throws SEO errors; except in the ./doc/www/ mirrors, where we don't want them to be crawled:
-    λ(){ find ./ -type f -name "*.html" | grep -F --invert-match -e './doc/www/' -e './static/404' -e './static/template/default.html' | xargs grep -F --files-with-matches 'noindex'; }
+    λ(){ find ./ -type f -name "*.html" | grep -F --invert-match -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | xargs grep -F --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages"
 
     λ(){ find ./ -type f -name "*.gif" | grep -F --invert-match -e 'static/img/' -e 'doc/gwern.net-gitstats/' -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' | parallel --max-args=500 identify | grep -E '\.gif\[[0-9]\] '; }
