@@ -910,7 +910,7 @@ Popups = {
 		//  Create and inject the title bar element.
 		popup.titleBar = document.createElement("DIV");
 		popup.titleBar.classList.add("popframe-title-bar");
-		popup.titleBar.title = "Drag popup by title bar to reposition; double-click title bar to collapse";
+		popup.titleBar.title = "Drag popup by title bar to reposition; double-click title bar to collapse (hold Option/Alt to collapse all)";
 		popup.insertBefore(popup.titleBar, popup.firstElementChild);
 
 		//  Add the provided title bar contents (buttons, title, etc.).
@@ -974,7 +974,7 @@ Popups = {
 
 		//  Tooltip text for various popup title bar icons.
 		buttonTitles: {
-			"close": "Close this popup",
+			"close": "Close this popup (hold Option/Alt to close all)",
 			"zoom": "Maximize this popup",
 			"restore": "Restore this popup to normal size and position",
 			"pin": "Pin this popup to the screen",
@@ -1012,7 +1012,13 @@ Popups = {
 			button.buttonAction = (event) => {
 				event.stopPropagation();
 
-				Popups.despawnPopup(Popups.containingPopFrame(event.target));
+				if (event.altKey == true) {
+					Popups.allSpawnedPopups().forEach(popup => {
+						Popups.despawnPopup(popup);
+					});
+				} else {
+					Popups.despawnPopup(Popups.containingPopFrame(event.target));
+				}
 			};
 
 			return button;
@@ -1105,7 +1111,7 @@ Popups = {
 			button.updateState = () => {
 				let popup = Popups.containingPopFrame(button);
 
-				button.innerHTML = Popups.popupIsEphemeral(popup) ? button.defaultHTML : button.alternateHTML;
+				button.innerHTML = Popups.popupIsPinned(popup) ? button.alternateHTML : button.defaultHTML;
 				button.title = Popups.popupIsPinned(popup) ? button.alternateTitle : button.defaultTitle;
 
 				button.swapClasses([ "pin", "unpin" ], (Popups.popupIsPinned(popup) ? 1 : 0));
@@ -1451,16 +1457,16 @@ Popups = {
 
 		popup.style.position = Popups.popupIsEphemeral(popup) ? "" : "fixed";
 
-		popup.style.left = `${rect.x}px`;
-		popup.style.top = `${rect.y}px`;
+		popup.style.left = `${(Math.round(rect.x))}px`;
+		popup.style.top = `${(Math.round(rect.y))}px`;
 
 		if (   rect.width > 0
 			&& rect.height > 0) {
 			popup.style.maxWidth = "unset";
 			popup.style.maxHeight = "unset";
 
-			popup.style.width = `${rect.width}px`;
-			popup.style.height = `${rect.height}px`;
+			popup.style.width = `${(Math.round(rect.width))}px`;
+			popup.style.height = `${(Math.round(rect.height))}px`;
 
 			popup.scrollView.style.maxHeight = "calc(100% - var(--popup-title-bar-height))";
 		}
@@ -1589,15 +1595,12 @@ Popups = {
 
 		let popup = Popups.containingPopFrame(event.target);
 
-		if (!(Popups.popupIsFrontmost(popup))) {
+		if (   Popups.popupIsFrontmost(popup) == false
+			&& event.metaKey == false)
 			Popups.bringPopupToFront(popup);
-			return;
-		}
-
-		if (!(Popups.popupIsEphemeral(popup)))
-			return;
 
 		event.stopPropagation();
+
 		Popups.clearPopupTimers(popup.spawningTarget);
     },
 
@@ -1623,7 +1626,8 @@ Popups = {
 			return;
 
 		//  Bring the popup to the front.
-		Popups.bringPopupToFront(popup);
+		if (event.metaKey == false)
+			Popups.bringPopupToFront(popup);
 
 		//  Prevent clicks from doing anything other than what we want.
 		event.preventDefault();
@@ -1775,7 +1779,8 @@ Popups = {
 		let popup = Popups.containingPopFrame(event.target);
 
 		//  Bring the popup to the front.
-		Popups.bringPopupToFront(popup);
+		if (event.metaKey == false)
+			Popups.bringPopupToFront(popup);
 
 		//  We only want to do anything on left-clicks.
 		if (event.button != 0)
@@ -1918,8 +1923,17 @@ Popups = {
 	popupTitleBarDoubleClicked: (event) => {
 		GWLog("Popups.popupTitleBarDoubleClicked", "popups.js", 2);
 
-		let popup = Popups.containingPopFrame(event.target);
-		Popups.collapseOrUncollapsePopup(popup);
+		if (event.altKey == true) {
+			let expand = Popups.popupIsCollapsed(Popups.containingPopFrame(event.target));
+			Popups.allSpawnedPopups().forEach(popup => {
+				if (expand)
+					Popups.uncollapsePopup(popup);
+				else
+					Popups.collapsePopup(popup);
+			});
+		} else {
+			Popups.collapseOrUncollapsePopup(Popups.containingPopFrame(event.target));
+		}
 	},
 
 	/*	The target mouseenter event.

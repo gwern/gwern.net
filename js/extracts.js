@@ -472,7 +472,7 @@ Extracts = {
 
         popFrame.classList.toggle("loading", true);
 
-        let objectOfSomeSort = popFrame.document.querySelector("iframe, object, img, video");
+        let objectOfSomeSort = popFrame.document.querySelector("iframe, object, img, video, audio");
 		if (objectOfSomeSort == null)
 			return;
 

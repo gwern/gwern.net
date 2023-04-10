@@ -195,14 +195,14 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 		return;
 
 	//	Construct container and synthesized include-link.
-	let partialAnnotationAppendDocument = newDocument();
-	partialAnnotationAppendDocument.appendChild(newElement("DIV", {
+	let partialAnnotationAppendContainer = newElement("DIV", {
 		"class": [ "partial-annotation-append-container",
 				   "markdownBody",
 				   "popframe-body",
 				   (Extracts.popFrameProvider == Popups ? "popup-body" : "popin-body")
 				   ].join(" ")
-	})).appendChild(synthesizeIncludeLink((target.dataset.urlOriginal ?? target.href), {
+	});
+	partialAnnotationAppendContainer.appendChild(synthesizeIncludeLink((target.dataset.urlOriginal ?? target.href), {
 		"class": "link-annotated-partial include-annotation-partial include-strict",
 		"data-template": "annotation-blockquote-not",
 		"data-template-fields": "linkTarget:$,whichTab:$,tabOrWindow:$",
@@ -211,16 +211,16 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 		"data-tab-or-window": (GW.isMobile() ? "tab" : "window")
 	}));
 
-	//	Trigger transclude of the partial annotation.
-	Transclude.triggerTranscludesInContainer(partialAnnotationAppendDocument.firstElementChild, {
-		source: "Extracts.injectPartialAnnotationMetadata",
-		container: partialAnnotationAppendDocument.firstElementChild,
-		document: partialAnnotationAppendDocument
-	});
-
 	//	Add the whole thing to the pop-frame.
-	Extracts.popFrameProvider.addPartToPopFrame(popFrame, partialAnnotationAppendDocument);
+	Extracts.popFrameProvider.addPartToPopFrame(popFrame, partialAnnotationAppendContainer);
 	Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "has-footer");
+
+	//	Trigger transclude of the partial annotation.
+	Transclude.triggerTranscludesInContainer(partialAnnotationAppendContainer, {
+		source: "Extracts.injectPartialAnnotationMetadata",
+		container: partialAnnotationAppendContainer,
+		document: partialAnnotationAppendContainer
+	});
 });
 
 /*=----------------------=*/
