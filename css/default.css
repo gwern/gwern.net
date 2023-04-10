@@ -43,7 +43,11 @@
     --GW-popins-popin-title-bar-height: 1.75rem;
     --GW-popins-popin-footer-bar-height: 1.75rem;
 }
-
+@supports (-moz-user-focus: normal) {
+	:root {
+	    --GW-popups-audio-popup-min-height: 75px;
+	}
+}
 
 /*********************/
 /* ARTICLE CONTAINER */
