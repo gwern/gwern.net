@@ -1457,16 +1457,16 @@ Popups = {
 
 		popup.style.position = Popups.popupIsEphemeral(popup) ? "" : "fixed";
 
-		popup.style.left = `${rect.x}px`;
-		popup.style.top = `${rect.y}px`;
+		popup.style.left = `${(Math.round(rect.x))}px`;
+		popup.style.top = `${(Math.round(rect.y))}px`;
 
 		if (   rect.width > 0
 			&& rect.height > 0) {
 			popup.style.maxWidth = "unset";
 			popup.style.maxHeight = "unset";
 
-			popup.style.width = `${rect.width}px`;
-			popup.style.height = `${rect.height}px`;
+			popup.style.width = `${(Math.round(rect.width))}px`;
+			popup.style.height = `${(Math.round(rect.height))}px`;
 
 			popup.scrollView.style.maxHeight = "calc(100% - var(--popup-title-bar-height))";
 		}
