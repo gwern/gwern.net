@@ -1021,8 +1021,8 @@ Extracts = { ...Extracts,
         popFrame.document.querySelector("img").classList.remove("link-page", "link-self",
             "has-annotation", "has-annotation-partial", "has-content");
 
-        //  Loading spinner.
-        Extracts.setLoadingSpinner(popFrame);
+		//	Loading spinner.
+		Extracts.setLoadingSpinner(popFrame);
     },
 
     //  Called by: extracts.js (as `rewritePopupContent_${targetTypeName}`)

@@ -493,7 +493,7 @@ Extracts = {
                     popFrame.classList.toggle("loading-failed", true);
                 }
             };
-        } else if ([ "OBJECT", "IMAGE" ].includes(objectOfSomeSort.tagName)) {
+        } else if ([ "OBJECT", "IMG" ].includes(objectOfSomeSort.tagName)) {
             //  Objects & images fire ‘error’ on server error or load fail.
             objectOfSomeSort.onload = (event) => {
                 popFrame.classList.toggle("loading", false);
