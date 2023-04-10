@@ -1111,7 +1111,7 @@ Popups = {
 			button.updateState = () => {
 				let popup = Popups.containingPopFrame(button);
 
-				button.innerHTML = Popups.popupIsEphemeral(popup) ? button.defaultHTML : button.alternateHTML;
+				button.innerHTML = Popups.popupIsPinned(popup) ? button.alternateHTML : button.defaultHTML;
 				button.title = Popups.popupIsPinned(popup) ? button.alternateTitle : button.defaultTitle;
 
 				button.swapClasses([ "pin", "unpin" ], (Popups.popupIsPinned(popup) ? 1 : 0));
