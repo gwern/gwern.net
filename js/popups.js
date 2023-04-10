@@ -616,7 +616,18 @@ Popups = {
 	//	Called by: Popups.popupMouseDown (event handler)
 	//	Called by: Popups.injectPopup
 	popupIsResizeable: (popup) => {
-		return (Popups.popupIsPinned(popup) || Popups.popupIsZoomed(popup));
+		return (   (   Popups.popupIsPinned(popup) 
+					|| Popups.popupIsZoomed(popup))
+				&& (   Popups.popupAllowsHorizontalResize(popup)
+					|| Popups.popupAllowsVerticalResize(popup)));
+	},
+
+	popupAllowsHorizontalResize: (popup) => {
+		return (popup.classList.contains("no-resize-width") == false);
+	},
+
+	popupAllowsVerticalResize: (popup) => {
+		return (popup.classList.contains("no-resize-height") == false);
 	},
 
 	//	Called by: Popups.zoomPopup
@@ -848,49 +859,73 @@ Popups = {
 	//	Called by: Popups.injectPopup
 	//	Called by: Popups.popupMouseDown (event handler)
 	edgeOrCorner: (popup, relativeMousePos) => {
-		//  Make corner drag areas big enough to make a decent mouse target.
-		let cornerHandleSize = Math.min(20.0, (Math.min(popup.viewportRect.width, popup.viewportRect.height) / 3.0));
+		if (Popups.popupAllowsHorizontalResize(popup) == false) {
+			let cornerHandleSize = popup.borderWidth;
 
-			   if (   relativeMousePos.x < cornerHandleSize
-				   && relativeMousePos.y < cornerHandleSize) {
-			return "corner-top-left";
-		} else if (   relativeMousePos.x > popup.viewportRect.width - cornerHandleSize
-				   && relativeMousePos.y > popup.viewportRect.height - cornerHandleSize) {
-			return "corner-bottom-right";
-		} else if (   relativeMousePos.x < cornerHandleSize
-				   && relativeMousePos.y > popup.viewportRect.height - cornerHandleSize) {
-			return "corner-bottom-left";
-		} else if (   relativeMousePos.x > popup.viewportRect.width - cornerHandleSize
-				   && relativeMousePos.y < cornerHandleSize) {
-			return "corner-top-right";
-		} else if (relativeMousePos.x < cornerHandleSize) {
-			return "edge-left";
-		} else if (relativeMousePos.x > popup.viewportRect.width - cornerHandleSize) {
-			return "edge-right";
-		} else if (relativeMousePos.y < cornerHandleSize) {
-			return "edge-top";
-		} else if (relativeMousePos.y > popup.viewportRect.height - cornerHandleSize) {
-			return "edge-bottom";
+			       if (relativeMousePos.y < cornerHandleSize) {
+				return "edge-top";
+			} else if (relativeMousePos.y > popup.viewportRect.height - cornerHandleSize) {
+				return "edge-bottom";
+			} else {
+				return "";
+			}
+		} else if (Popups.popupAllowsVerticalResize(popup) == false) {
+			let cornerHandleSize = popup.borderWidth;
+
+			       if (relativeMousePos.x < cornerHandleSize) {
+				return "edge-left";
+			} else if (relativeMousePos.x > popup.viewportRect.width - cornerHandleSize) {
+				return "edge-right";
+			} else {
+				return "";
+			}
 		} else {
-			return "";
+			//  Make corner drag areas big enough to make a decent mouse target.
+			let cornerHandleSize = Math.min(20.0, (Math.min(popup.viewportRect.width, popup.viewportRect.height) / 3.0));
+
+				   if (   relativeMousePos.x < cornerHandleSize
+					   && relativeMousePos.y < cornerHandleSize) {
+				return "corner-top-left";
+			} else if (   relativeMousePos.x > popup.viewportRect.width - cornerHandleSize
+					   && relativeMousePos.y > popup.viewportRect.height - cornerHandleSize) {
+				return "corner-bottom-right";
+			} else if (   relativeMousePos.x < cornerHandleSize
+					   && relativeMousePos.y > popup.viewportRect.height - cornerHandleSize) {
+				return "corner-bottom-left";
+			} else if (   relativeMousePos.x > popup.viewportRect.width - cornerHandleSize
+					   && relativeMousePos.y < cornerHandleSize) {
+				return "corner-top-right";
+			} else if (relativeMousePos.x < cornerHandleSize) {
+				return "edge-left";
+			} else if (relativeMousePos.x > popup.viewportRect.width - cornerHandleSize) {
+				return "edge-right";
+			} else if (relativeMousePos.y < cornerHandleSize) {
+				return "edge-top";
+			} else if (relativeMousePos.y > popup.viewportRect.height - cornerHandleSize) {
+				return "edge-bottom";
+			} else {
+				return "";
+			}
 		}
 	},
 
 	//	Called by: Popups.injectPopup
 	cursorForPopupBorder: (edgeOrCorner) => {
 		switch (edgeOrCorner) {
-			case "edge-top":
-			case "edge-bottom":
-				return "row-resize";
-			case "edge-left":
-			case "edge-right":
-				return "col-resize";
-			case "corner-top-left":
-			case "corner-bottom-right":
-				return "nwse-resize";
-			case "corner-top-right":
-			case "corner-bottom-left":
-				return "nesw-resize";
+		case "edge-top":
+		case "edge-bottom":
+			return "row-resize";
+		case "edge-left":
+		case "edge-right":
+			return "col-resize";
+		case "corner-top-left":
+		case "corner-bottom-right":
+			return "nwse-resize";
+		case "corner-top-right":
+		case "corner-bottom-left":
+			return "nesw-resize";
+		default:
+			return "";
 		}
 	},
 
@@ -1632,20 +1667,25 @@ Popups = {
 		//  Prevent clicks from doing anything other than what we want.
 		event.preventDefault();
 
-		//  Mark popup as currently being resized.
-		Popups.addClassesToPopFrame(popup, "resizing");
-
-		//  Save position, if need be.
-		if (!("previousXPosition" in popup.dataset) && !("previousYPosition" in popup.dataset)) {
-			popup.dataset.previousXPosition = popup.viewportRect.left;
-			popup.dataset.previousYPosition = popup.viewportRect.top;
-		}
-
 		//  Determine direction of resizing.
 		let edgeOrCorner = Popups.edgeOrCorner(popup, {
 			x: event.clientX - popup.viewportRect.left,
 			y: event.clientY - popup.viewportRect.top
 		});
+
+		//	Perhaps we cannot resize in this direction?
+		if (edgeOrCorner == "")
+			return;
+
+		//  Mark popup as currently being resized.
+		Popups.addClassesToPopFrame(popup, "resizing");
+
+		//  Save position, if need be.
+		if (   !("previousXPosition" in popup.dataset) 
+			&& !("previousYPosition" in popup.dataset)) {
+			popup.dataset.previousXPosition = popup.viewportRect.left;
+			popup.dataset.previousYPosition = popup.viewportRect.top;
+		}
 
 		//  Point where the drag began.
 		let dragStartMouseCoordX = event.clientX;
