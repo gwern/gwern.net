@@ -943,7 +943,7 @@ hr::after,
 .horizontal-rule-nth-0 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg */
     content: url('/static/img/icon/sun-verginasun-black.svg');
-    opacity: 0.87;
+    opacity: 0.80;
     width: 40px;
     height: 40px;
 }
@@ -951,17 +951,15 @@ hr::after,
     /* https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg */
     /* NOTE: alternative moon icon is /static/img/icon/japanesecrest-oookashippouofoookatadasuke-sun.svg modified from https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg - while nice, it lacks the intense moire effect of the Vergina Sun */
     content: url('/static/img/icon/japanesecrest-tsukinihoshi-dottedmoon.svg');
-    opacity: 0.90;
-    width: 25px;
-    height: 25px;
+    opacity: 0.85;
+    width: 26px;
+    height: 26px;
 }
 .horizontal-rule-nth-2 hr::after {
     content: url('/static/img/icon/asterism-triplewhitestar.svg');
-    width: 36px;
-    height: 30px;
-}
-.horizontal-rule-nth-2 {
-    filter: drop-shadow(0 0 0 currentColor);
+    opacity: 0.90;
+    width: 38px;
+    height: 32px;
 }
 
 
