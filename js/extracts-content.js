@@ -848,7 +848,7 @@ Extracts.targetTypeDefinitions.insertBefore([
 
 Extracts = { ...Extracts,
     //  Used in: Extracts.isLocalVideoLink
-    videoFileExtensions: [ "mp4" ],
+    videoFileExtensions: [ "mp4", "webm" ],
 
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalVideoLink: (target) => {
@@ -1118,8 +1118,14 @@ Extracts = { ...Extracts,
      */
     //  Called by: extracts.js (as `testTarget_${targetTypeInfo.typeName}`)
     testTarget_LOCAL_DOCUMENT: (target) => {
-        return (!(   Extracts.popFrameProvider == Popins
-                  && target.href.match(/\.pdf(#|$)/) != null));
+    	/*	Mobile browsers have no in-browser PDF viewer, so a popin would be
+    		pointless, since the file will download anyway.
+    	 */
+    	if (   Extracts.popFrameProvider == Popins
+            && target.href.match(/\.pdf(#|$)/) != null)
+            return false;
+
+        return true;
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)

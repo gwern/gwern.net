@@ -469,27 +469,6 @@ Annotations = { ...Annotations,
 				let pageDescription = referenceEntry.querySelector(`div.${pageDescriptionClass}`);
 				if (pageDescription)
 					unwrap(pageDescription, [ pageDescriptionClass ]);
-
-				//	Rewrite aux-links append blocks, if present.
-				referenceEntry.querySelectorAll(".aux-links-append").forEach(auxLinksAppend => {
-					//	Make aux-links-append include-links lazy.
-					auxLinksAppend.querySelectorAll(".include-strict").forEach(link => {
-						link.swapClasses([ "include", "include-strict" ], 0);
-						link.classList.add("include-even-when-collapsed");
-					});
-
-					//	Rectify collapse block structure and classes.
-					let collapseBlock = auxLinksAppend.closest(".collapse");
-					if (collapseBlock == auxLinksAppend) {
-						let newCollapseBlock = newElement("DIV", { "class": "collapse" });
-						collapseBlock.parentNode.insertBefore(newCollapseBlock, collapseBlock);
-						newCollapseBlock.appendChild(collapseBlock);
-						collapseBlock.classList.remove("collapse");
-						collapseBlock = newCollapseBlock;
-					}
-					if (collapseBlock)
-						collapseBlock.classList.add("aux-links-container");
-				});
 			},
 
 			basePathname: "/metadata/annotation/",
