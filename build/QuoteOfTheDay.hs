@@ -603,4 +603,4 @@ sitePrioritize = do sotdb <- readTTDB siteDBPath
           "2015phage.org", "0fps.net", "www.theinformation.com", "assets.aeaweb.org", "www.greaterwrong.com", "git.sr.ht",
           "casetext.com", "archive.is", "phabricator.wikimedia.org", "www.cs.ox.ac.uk", "www.aboutamazon.com", "yosefk.com", "www.informit.com",
           "inews.co.uk", "en.wikibooks.org", "yougov.co.uk", "nunosempere.com", "www.inverse.com","www.icpsr.umich.edu","reallifemag.com",
-          "doi.org","www.nlsinfo.org","science.sciencemag.org"]
+          "doi.org","www.nlsinfo.org","science.sciencemag.org", "supp.apa.org"]

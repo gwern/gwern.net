@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-10 18:19:37 gwern"
+# When:  Time-stamp: "2023-04-10 21:25:20 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -18,12 +18,12 @@ bold () { echo -e "\033[1m$@\033[0m"; }
 red  () { echo -e "\e[41m$@\e[0m"; }
 ## function to wrap checks and print red-highlighted warning if non-zero output (self-documenting):
 wrap () { OUTPUT=$($1 2>&1)
-         WARN="$2"
-         if [ -n "$OUTPUT" ]; then
-             echo -n "Begin: "; red "$WARN";
-             echo -e "$OUTPUT";
-             echo -n "End: "; red "$WARN";
-         fi; }
+          WARN="$2"
+          if [ -n "$OUTPUT" ]; then
+              echo -n "Begin: "; red "$WARN";
+              echo -e "$OUTPUT";
+              echo -n "End: "; red "$WARN";
+          fi; }
 ge () { grep -E --color=always "$@"; }
 gf () { grep -F --color=always "$@"; }
 
@@ -56,7 +56,8 @@ else
 
     if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true; fi &
     bold "Pulling infrastructure updates…"
-    (cd ./static/ && git status && timeout 10m git pull --ff-only --verbose 'https://gwern.obormot.net/static/.git/' master) || true
+    # pull from Obormot's repo, with his edits overriding mine in any conflict (`-Xtheirs`) & auto-merging with the default patch text (`--no-edit`), to make sure we have the latest JS/CSS. (This is a bit tricky because the use of versioning in the includes means we get a lot of merge conflicts, for some reason.)
+    (cd ./static/ && git status && timeout 10m git pull -Xtheirs --no-edit --verbose 'https://gwern.obormot.net/static/.git/' master) || true
 
     if [ "$SLOW" ]; then
         bold "Executing string rewrite cleanups…" # automatically clean up some Gwern.net bad URL patterns, typos, inconsistencies, house-styles:
@@ -590,10 +591,10 @@ else
           }
     wrap λ "Markdown files: incorrect list nesting using italics for second-level list instead of smallcaps?"
 
-    λ(){ grep -P -e "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" "$PAGES"; }
+    λ(){ grep --with-filename --perl-regexp -e "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" $PAGES; }
     wrap λ "Markdown files: garbage or control characters detected?"
 
-    λ(){  find metadata/ -type f -name "*.html" -exec grep -l -P "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" {} \;; }
+    λ(){  find metadata/ -type f -name "*.html" -exec grep --with-filename --perl-regexp "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" {} \;; }
     wrap λ "Metadata HTML files: garbage or control characters detected?"
 
     λ(){ ge -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/full.yaml; }
@@ -668,7 +669,7 @@ else
     λ(){ find . -not -name "*#*" -xtype l -printf 'Broken symbolic link: %p\n'; }
     wrap λ "Broken symbolic links"
 
-    λ(){ gwa | grep -F -- '[]' | grep -F --invert-match -e '/newsletter/' -e '/index#manual-annotation' | sort; } # we exclude future newsletter issues as deliberately untagged to avoid appearing at the top of the newsletter tag # | grep -E --invert-match -P '\e\[36ma\e\[0m: '
+    λ(){ gwa | grep -F -- '[]' | grep -F --invert-match -e '/newsletter/' -e '/index#manual-annotation' | sort; } # we exclude future newsletter issues as deliberately untagged to avoid appearing at the top of the newsletter tag # | grep -E --invert-match --perl-regexp '\e\[36ma\e\[0m: '
     wrap λ "Untagged annotations."
 
     ## Is the Internet up?
@@ -856,10 +857,8 @@ else
     wrap λ "The live MIME types are incorrect"
 
     ## known-content check:
-    λ(){ curl --silent 'https://gwern.net/index'   | grep -F --quiet -e 'This Is The Website</span> of <strong>Gwern Branwen</strong>' || (echo "/index content-check failed" && echo "$(curl --silent 'https://gwern.net/index'   | grep -F -e 'This Is The Website</span> of <strong>Gwern Branwen</strong>')"); }
-    wrap λ "Known-content check of /index failed?"
-    λ(){ curl --silent 'https://gwern.net/zeo/zeo' | grep -F --quiet -e 'lithium orotate' || (echo "/zeo/zeo content-check failed" && echo "$(curl --silent 'https://gwern.net/zeo/zeo'   | grep -F -e 'lithium orotate')"); }
-    wrap λ "Known-content check of /zeo/zeo failed?"
+    curl --silent 'https://gwern.net/index'   | grep -F --quiet -e 'This Is The Website</span> of <strong>Gwern Branwen</strong>' || red "/index content-check failed"
+    curl --silent 'https://gwern.net/zeo/zeo' | grep -F --quiet -e 'lithium orotate' || red "/zeo/zeo content-check failed"
 
     ## check that tag-directories have the right thumbnails (ie. *not* the fallback thumbnail):
     λ(){ curl --silent 'https://gwern.net/doc/sociology/index' 'https://gwern.net/doc/psychology/index' 'https://gwern.net/doc/economics/index' | \
