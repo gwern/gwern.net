@@ -331,6 +331,10 @@ function registerCopyProcessorsForDocument(doc) {
     GWLog("registerCopyProcessorsForDocument", "rewrite.js", 1);
 
     doc.addEventListener("copy", (event) => {
+		if (   GW.copyProcessors == null
+			|| GW.copyProcessors.length == 0)
+			return;
+
         event.preventDefault();
         event.stopPropagation();
 
@@ -2111,7 +2115,7 @@ addCopyProcessor((event, selection) => {
     }
 
     selection.querySelectorAll(".mjx-chtml").forEach(mathBlock => {
-        mathBlock.innerHTML = mathBlock.querySelector(".mjx-math").getAttribute("aria-label");
+        mathBlock.innerHTML = " " + mathBlock.querySelector(".mjx-math").getAttribute("aria-label") + " ";
     });
 
     return true;
