@@ -18,7 +18,7 @@ main = do errors <- fmap lines getContents
           let redirectsCleaned = map (\(a,b) -> (filter (`notElem` ("~^.*?+[]\""::String)) a, b)) redirects
           let errorDistances = zip errors $ map (filter (\(d,_,_) -> d <= minDistance) . diffAndRank redirectsCleaned) errors -- :: [(String, [(Int,String,String)])]
           let redirectPairs = (sortBySecondField $ map (\(err,candidates) -> (err, if null candidates then "" else (\(_,_,target) -> target) (head candidates))) errorDistances) :: [(String,String)]
-          let redirectsGenerated = map (\(er, candidate) -> if null candidate then "\"~^" ++ escape er ++ "$\" \"\";"
+          let redirectsGenerated = map (\(er, candidate) -> if null candidate then replaceMany [(".pdf$", "\\.pdf.*$")] $ "\"~^" ++ escape er ++ "$\" \"\";"
                                                              else "\"~^" ++ escape er ++ "$\" \"" ++ candidate) redirectPairs
           mapM_ putStrLn redirectsGenerated
 
@@ -26,7 +26,7 @@ escape :: String -> String
 escape = replaceMany [("?","\\?"), ("[", "\\["), ("]", "\\]"), ("(", "\\("), (")", "\\)")]
 
 sortBySecondField :: [(String, String)] -> [(String, String)]
-sortBySecondField = sortBy (comparing snd)
+sortBySecondField = sortOn snd
 
 minDistance :: Int
 minDistance = 4
