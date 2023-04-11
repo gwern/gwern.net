@@ -32,8 +32,10 @@
     --GW-popups-popup-mini-title-bar-height: calc(1rem + 1px);
     --GW-popups-video-popup-min-width: 360px;
     --GW-popups-video-popup-min-height: 204px;
-    --GW-popups-video-iframe-width: 495px;
-    --GW-popups-video-iframe-height: 310px;
+    --GW-popups-video-youtube-iframe-width: 495px;
+    --GW-popups-video-youtube-iframe-height: 310px;
+    --GW-popups-video-vimeo-iframe-width: 495px;
+    --GW-popups-video-vimeo-iframe-height: 278px;
     --GW-popups-audio-popup-min-height: 87px;
     --GW-popups-image-popup-min-size: 64px;
 
@@ -3809,7 +3811,7 @@ body.index-directory #footer {
     border-right: 1px solid var(--GW-TOC-border-color);
 }
 .popframe-body > div.annotation > div.annotation-abstract > .collapse:last-child {
-    margin-bottom: 0.25em;
+    margin-bottom: 0;
     border-bottom: 1px solid var(--GW-TOC-border-color);
 }
 
@@ -4685,9 +4687,14 @@ body.index-directory #footer {
     min-width: var(--GW-popups-video-popup-min-width);
     min-height: var(--GW-popups-video-popup-min-height);
 }
-.popup-body.video iframe {
-    width: var(--GW-popups-video-iframe-width);
-    height: var(--GW-popups-video-iframe-height);
+
+.popup-body.video.youtube iframe {
+    width: var(--GW-popups-video-youtube-iframe-width);
+    height: var(--GW-popups-video-youtube-iframe-height);
+}
+.popup-body.video.vimeo iframe {
+    width: var(--GW-popups-video-vimeo-iframe-width);
+    height: var(--GW-popups-video-vimeo-iframe-height);
 }
 
 /*┌───────────────┐*/
