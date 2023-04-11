@@ -6392,6 +6392,12 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     top: -3px;
 }
 
+/*	Edge cases.
+ */
+.markdownBody sup a.targeted {
+    display: inline;
+}
+
 
 /****************/
 /* PRINT STYLES */
