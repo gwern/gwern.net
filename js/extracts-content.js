@@ -848,7 +848,7 @@ Extracts.targetTypeDefinitions.insertBefore([
 
 Extracts = { ...Extracts,
     //  Used in: Extracts.isLocalVideoLink
-    videoFileExtensions: [ "mp4" ],
+    videoFileExtensions: [ "mp4", "webm" ],
 
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalVideoLink: (target) => {
