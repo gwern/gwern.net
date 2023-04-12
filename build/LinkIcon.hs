@@ -437,7 +437,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | iE ["xls", "xlsx", "ods"] = aI "spreadsheet" "svg"
  | iE ["csv"] = aI "csv" "svg"
  | iE ["gif", "bmp", "ico", "jpg", "jpeg", "png", "svg", "xcf", "psd"] = aI "image" "svg"
- | iE ["mp3", "wav", "flac", "ogg", "rm"] = aI "audio" "svg"
+ | iE ["mp3", "flac", "ogg"] = aI "audio" "svg"
  | iE ["swf", "mp4", "mkv", "webm"] = aI "file-video" "svg"
  | iE ["ebt", "mdb", "mht", "ttf"] = aI "misc" "svg"
  | iE ["epub"] = aI "EPUB" "text,quad,sans"
@@ -866,8 +866,6 @@ linkIconTestUnitsText =
          , ("http://iqtest.dk/main.swf",  "file-video","svg")
          , ("/doc/tea/gwern-tea-mineralwaters-bestarm-sequential.webm",  "file-video","svg")
          , ("/doc/ai/music/2020-03-06-fifteenai-fluttershy-sithcode.mp3",  "audio","svg")
-         , ("/doc/rotten.com/library/culture/batman/theme-song/batmantv.rm",  "audio","svg")
-         , ("/doc/rotten.com/library/bio/entertainers/comic/david-letterman/letterman_any_sense.wav",  "audio","svg")
          , ("http://silkroadvb5piz3r.onion/index.php/silkroad/user/69a6bec290", "SR1", "text,sans")
          , ("http://silkroad5v7dywlc.onion/index.php?topic=2889.0", "SR1", "text,sans")
          , ("https://beepb00p.xyz/pkm-search.html", "\129302", "text")

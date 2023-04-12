@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-10 21:25:20 gwern"
+# When:  Time-stamp: "2023-04-11 11:26:54 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -66,7 +66,7 @@ else
           s 'https://mobile.twitter.com' 'https://twitter.com'; s 'https://twitter.com/' 'https://nitter.moomoo.me/'; s 'https://mobile.twitter.com/' 'https://nitter.moomoo.me/'; s 'https://www.twitter.com/' 'https://nitter.moomoo.me/'; s 'https://www.reddit.com/r/' 'https://old.reddit.com/r/'; s 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'http://en.wikipedia.org' 'https://en.wikipedia.org'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com'; s 'www.super-memory.com' 'super-memory.com'; s 'https://www.bldgblog.com' 'https://bldgblog.com'; s 'https://www.clinicaltrials.gov' 'https://clinicaltrials.gov'
 
           ## link cruft rewrites:
-          s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ref=thebrowser.com' ''; s '?ignored=irrelevant' ''; s '](/docs/' '](/doc/'; s 'href="/docs/' 'href="/doc/'; s '.pdf#pdf' '.pdf'; s '#fromrss' '';
+          s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?s=61' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ref=thebrowser.com' ''; s '?ignored=irrelevant' ''; s '](/docs/' '](/doc/'; s 'href="/docs/' 'href="/doc/'; s '.pdf#pdf' '.pdf'; s '#fromrss' '';
 
           ## name/entity consistency:
           s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant'; s ' CIFAR10' 'CIFAR-10'; s 'TyDi QA' 'TyDiQA'; s 'Türkiye' 'Turkey'; s ' Poincare' ' Poincaré'; s 'Francois de La Rochefoucauld' 'François de La Rochefoucauld'; s 'Moliere' 'Molière'; s 'behavioural genetic' 'behavioral genetic'; s ' gwern.net' ' Gwern.net';
@@ -562,7 +562,8 @@ else
             -e '&lt;figcaption' -e '{.}' -e ' ?' -e " ’’" -e 'lt;/td&gt;' -e "‘’" -e "’‘" -e "’’" -e '<li></li>' -e '</em<em>' -e '𝑂' \
             -e '</a.>' -e ' . ' -e ' , ' -e ' ; ' -e 'class=”collapse”' -e "‘’" -e " ’" -e '<bold>' -e '</bold>' -e '<jats:bold>' \
             -e  '</jats:bold>' -e 'Ã©' -e '</a>s' -e '/&gt;'  -e '&lt;figcaption'  -e 'aria-hidden=">' -e '&gt;</a>' -e '<A Href' \
-            -e '</strong>:,' -e ' et al.' -e '<span class="latex">LaTeX</span>' -e '<div>' -e '>LaTeX</a>' -e '>TeX</a>' -- ./metadata/*.yaml | \
+            -e '</strong>:,' -e ' et al.' -e '<span class="latex">LaTeX</span>' -e '<div>' -e '>LaTeX</a>' -e '>TeX</a>' -e '<em><em>' \
+            -e '</em></em>' -e '<strong><strong>' -e '</strong></strong>' -- ./metadata/*.yaml | \
              grep -F -v 'popular_shelves';
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
@@ -786,14 +787,13 @@ else
           cm "application/vnd.oasis.opendocument.spreadsheet" 'https://gwern.net/doc/genetics/heritable/1980-osborne-twinsblackandwhite-appendix.ods'
           cm "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 'https://gwern.net/doc/cs/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx'
           cm "application/vnd.openxmlformats-officedocument.wordprocessingml.document" 'https://gwern.net/doc/genetics/heritable/2015-mosing-supplement.docx'
-          cm "application/vnd.rn-realmedia" 'https://gwern.net/doc/rotten.com/library/bio/crime/serial-killers/elmer-wayne-henley/areyouguilty.rm'
           cm "application/x-maff" 'https://gwern.net/doc/anime/eva/2001-pulpmag-hernandez-2.html.maff'
           cm "application/x-shockwave-flash" 'https://gwern.net/doc/rotten.com/library/bio/entertainers/comic/patton-oswalt/patton.swf'
           cm "application/x-tar" 'https://gwern.net/doc/dual-n-back/2011-zhong.tar'
           cm "application/x-xz" 'https://gwern.net/doc/personal/2013-09-25-gwern-googlealertsemails.tar.xz'
           cm "application/zip" 'https://gwern.net/doc/statistics/bayes/2014-tenan-supplement.zip'
           cm "audio/mpeg" 'https://gwern.net/doc/history/1969-schirra-apollo11flighttothemoon.mp3'
-          cm "audio/wav" 'https://gwern.net/doc/rotten.com/library/bio/entertainers/comic/david-letterman/letterman_any_sense.wav'
+          cm "audio/mpeg" 'https://gwern.net/doc/rotten.com/library/bio/crime/serial-killers/elmer-wayne-henley/areyouguilty.mp3'
           cm "image/gif" 'https://gwern.net/doc/gwern.net-gitstats/arrow-none.gif'
           cm "image/gif" 'https://gwern.net/doc/rotten.com/library/religion/creationism/creationism6.GIF'
           cm "image/jpeg" 'https://gwern.net/doc/personal/2011-gwern-yourmorals.org/schwartz_process.php_files/schwartz_graph.jpg'
@@ -857,8 +857,8 @@ else
     wrap λ "The live MIME types are incorrect"
 
     ## known-content check:
-    curl --silent 'https://gwern.net/index'   | grep -F --quiet -e 'This Is The Website</span> of <strong>Gwern Branwen</strong>' || red "/index content-check failed"
-    curl --silent 'https://gwern.net/zeo/zeo' | grep -F --quiet -e 'lithium orotate' || red "/zeo/zeo content-check failed"
+    elinks -dump 'https://gwern.net/index'   | grep -F --quiet -e 'This Is The Website' || red "/index content-check failed"
+    elinks -dump 'https://gwern.net/zeo/zeo' | grep -F --quiet -e 'lithium orotate'     || red "/zeo/zeo content-check failed"
 
     ## check that tag-directories have the right thumbnails (ie. *not* the fallback thumbnail):
     λ(){ curl --silent 'https://gwern.net/doc/sociology/index' 'https://gwern.net/doc/psychology/index' 'https://gwern.net/doc/economics/index' | \
