@@ -928,6 +928,14 @@ section:target > :first-child a::after {
 
 #footer > p:first-child {
     text-align: center;
+    font-variant-caps: small-caps;
+}
+#footer > p:first-child::after {
+    content: url('/static/img/icon/single-black-star.svg');
+    display: block;
+    width: 1em;
+    margin: 2.25em auto -0.25em auto;
+    opacity: 0.3;
 }
 
 /*********************/
@@ -5745,13 +5753,15 @@ ol.link-bibliography-list-compact > li::before {
 
     --box-horizontal-offset: calc(var(--box-padding-top) * 2.0);
 
-    padding-right: calc(var(--box-horizontal-offset) * 0.5);
+    padding-right: calc(var(--box-horizontal-offset) * 0.25);
 }
 
 .site-of-the-day blockquote {
     --GW-link-underline-background-color: var(--GW-body-background-color);
 
-    margin: 2.5em auto 3em auto;
+	font-size: calc((17/18) * var(--GW-body-text-font-size));
+
+    margin: 3em auto 2.75em auto;
     position: relative;
     height: var(--box-size);
     width: fit-content;
@@ -5768,6 +5778,11 @@ ol.link-bibliography-list-compact > li::before {
     border: none;
     display: flex;
     align-items: center;
+}
+@media only screen and (max-width: 649px) {
+    .site-of-the-day blockquote {
+        margin: 3.5em auto 2.75em auto;
+    }
 }
 
 .site-of-the-day blockquote::before,
@@ -5803,41 +5818,44 @@ ol.link-bibliography-list-compact > li::before {
 /*********************/
 /* BOTTOM DECORATION */
 /*********************/
-/* Mobile only.      */
 
-@media only screen and (max-width: 649px) {
-    #footer-logo {
-        position: relative;
-    }
-    #footer-logo::after {
-        content: "";
-        background-color: var(--GW-body-background-color);
-        background-image: url('/static/img/logo/logo-smooth.svg');
-        display: block;
-        position: relative;
-        width: 22px;
-        height: 30px;
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
-        margin: auto;
-        padding: 0 10px 0 10px;
-        z-index: 1;
-    }
-    #footer-logo::before {
-        content: "";
-        display: block;
-        position: absolute;
-        bottom: 15px;
-        height: 1px;
-        border-bottom: 1px dotted var(--GW-index-page-bottom-ornament-line-color);
-        width: 200%;
-    }
+#footer-logo-container {
+	margin: 0 0 1em 0;
+	line-height: 0;
 }
-@media only screen and (min-width: 650px) {
-	#footer-logo {
-		display: none;
-	}
+
+#footer-logo {
+	position: relative;
+    opacity: 0.3;
+	pointer-events: none;
+}
+#footer-logo:hover {
+    opacity: 1.0;
+}
+#footer-logo::before {
+	content: "";
+	display: block;
+	position: absolute;
+	bottom: 15px;
+	height: 1px;
+	border-bottom: 1px dotted var(--GW-bottom-ornament-line-color);
+	width: 100%;
+}
+#footer-logo::after {
+	content: "";
+	background-color: var(--GW-body-background-color);
+	background-image: url('/static/img/logo/logo-smooth.svg');
+	display: block;
+	position: relative;
+	width: 22px;
+	height: 30px;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	margin: auto;
+	padding: 0 10px 0 10px;
+	z-index: 1;
+	pointer-events: auto;
 }
 
 

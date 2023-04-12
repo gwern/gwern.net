@@ -2264,6 +2264,22 @@ addContentLoadHandler(GW.contentLoadHandlers.injectBackToTopLink = (eventInfo) =
 }, "rewrite", (info) => info.container == document.body);
 
 
+/**********/
+/* FOOTER */
+/**********/
+
+/*******************************************/
+/*	Move the footer logo link to the bottom.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rewriteFooterLogo = (eventInfo) => {
+    GWLog("rewriteFooterLogo", "rewrite.js", 1);
+
+	document.querySelector("article").appendChild(
+		newElement("DIV", { "id": "footer-logo-container" })).appendChild(
+		document.querySelector("#footer-logo"));
+}, "rewrite", (info) => info.container == document.body);
+
+
 /*****************/
 /* END OF LAYOUT */
 /*****************/
