@@ -1328,7 +1328,7 @@ figure img,
 figure video,
 figure svg {
     display: block;
-    max-height: calc(100vh - 8em);
+    max-height: calc(100vh - 8rem);
     max-width: 100%;
     height: auto;
     width: auto;
@@ -1339,11 +1339,29 @@ figure svg {
     overflow: hidden;
 }
 
-/*	Reduce reflow.
+/*  Floating figures. (Mostly for amusing asides/memes.)
  */
-img.float-right,
-img.float-left {
-	max-width: calc(50% - 1.5em);
+@media all and (min-width: 650px) {
+    figure.float-right {
+        float: right;
+        max-width: calc(50% - 1.5em);
+        margin: 0.5em 0 1em 1.5em;
+    }
+    figure.float-left {
+        float: left;
+        max-width: calc(50% - 1.5em);
+        margin: 0.5em 1.5em 1em 0;
+    }
+    figure.outline-not {
+        margin-bottom: 0.5em;
+    }
+
+	/*	Reduce reflow.
+	 */
+	img.float-right,
+	img.float-left {
+		max-width: calc(50% - 1.5em);
+	}
 }
 
 

@@ -218,11 +218,9 @@ Extracts = {
 
 			//	Fire targets-processed event.
 			GW.notificationCenter.fireEvent("Extracts.targetsDidProcessOnContentInject", {
-				source: "extractsProcessTargetsOnContentLoad",
-				loadLocation: info.loadLocation,
+				source: "Extracts.processTargetsOnContentInject",
 				container: info.container,
-				document: info.document,
-				flags: info.flags
+				document: info.document
 			});
         }, { phase: "eventListeners" });
 

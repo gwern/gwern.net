@@ -1307,24 +1307,6 @@ figure.width-full {
     clear: both;
 }
 
-/*  Floating figures. (Mostly for amusing asides/memes.)
- */
-@media all and (min-width: 650px) {
-    figure.float-right {
-        float: right;
-        max-width: calc(50% - 1.5em);
-        margin: 0.5em 0 1em 1.5em;
-    }
-    figure.float-left {
-        float: left;
-        max-width: calc(50% - 1.5em);
-        margin: 0.5em 1.5em 1em 0;
-    }
-    figure.outline-not {
-        margin-bottom: 0.5em;
-    }
-}
-
 /* try to get edge-to-edge images on mobile to maximize horizontal space usage */
 @media all and (max-width: 649px) {
     #markdownBody figure {
@@ -2388,7 +2370,7 @@ pre {
     border: 1px solid var(--GW-pre-element-border-color);
     background-color: var(--GW-pre-element-background-color);
     cursor: text;
-    max-height: calc(100vh - 8em);
+    max-height: calc(100vh - 8rem);
 }
 pre code {
     display: block;
@@ -3453,10 +3435,9 @@ body.index-directory #footer {
 }
 
 #image-focus-overlay .help-overlay::after {
-    content: "?";
-    font-weight: bold;
-    font-size: 2rem;
+    content: url('/static/img/icon/question.svg');
     position: absolute;
+    width: 1em;
     right: 0;
     bottom: 0;
     padding: 10px;

@@ -669,9 +669,13 @@ addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) =>
 
         image.style.aspectRatio = `${width} / ${height}`;
 
+		let maxHeight = parseInt(getComputedStyle(image).maxHeight);
+		if (maxHeight)
+			width = Math.round(Math.min(width, maxHeight * (width/height)));
+
         if (   eventInfo.contentType == "annotation"
         	&& image.classList.containsAnyOf([ "float-left", "float-right" ]))
-            image.style.width = `${width}px`;
+			image.style.width = `${width}px`;
     });
 }, "rewrite");
 
@@ -812,6 +816,19 @@ addContentLoadHandler(GW.contentLoadHandlers.relocateThumbnailInAnnotation = (ev
     if (initialFigure)
         container.insertBefore(initialFigure, container.firstElementChild);
 }, "rewrite");
+
+/****************************************************************/
+/*	Account for interaction between image-focus.js and popups.js.
+ */
+GW.notificationCenter.addHandlerForEvent("ImageFocus.imageOverlayDidAppear", (info) => {
+	if (Extracts.popFrameProvider == Popups)
+		Popups.hidePopupContainer();
+});
+GW.notificationCenter.addHandlerForEvent("ImageFocus.imageOverlayDidDisappear", (info) => {
+	if (Extracts.popFrameProvider == Popups)
+		Popups.unhidePopupContainer();
+});
+
 
 
 /***************/
