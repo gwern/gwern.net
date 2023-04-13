@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-04-09 11:50:01 gwern"
+;;; When:  Time-stamp: "2023-04-13 17:25:53 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -101,40 +101,7 @@
 
 ; do *one* replacement and then quit. This is particularly useful in doing rewrites of hyperlinks: typically, we only want to hyperlink one instance (usually the first) of a word or phrase, and then skip the rest. The default `query-replace` requires us to either manually `n` them all, or `q` to quit. It can be toilsome to go through a lot of this. So we write our own to auto-exit on the first replacement.
 ; GPT-4-written. (Tried GPT-3.5 for most of it, but kept screwing up on parenthesis-matching. Neither version could remove the highlighting on substitutions.)
-(defun query-replace-regexp-once (regexp to-string &optional delimited start end)
-  "Replace the first occurrence of REGEXP with TO-STRING.
-If DELIMITED is non-nil, only match whole words.
-START and END specify the region to search."
-  (interactive
-   (list (read-from-minibuffer "Query replace regexp once (regexp): ")
-         (read-from-minibuffer "Query replace regexp once with: ")
-         nil
-         (when (use-region-p)
-           (region-beginning))
-         (when (use-region-p)
-           (region-end))))
-  (let ((inhibit-read-only t)
-        (case-fold-search nil)
-        (search-function (if delimited 're-search-forward-word 're-search-forward))
-        (replace-done nil))
-    (save-excursion
-      (goto-char (or start (point-min)))
-      (while (and (not replace-done) (funcall search-function regexp end t))
-        (isearch-highlight (match-beginning 0) (match-end 0))
-        (let ((response (read-char-choice
-                         (concat "Replace this occurrence? (y/n/q): "
-                                 (substring-no-properties (match-string 0)))
-                         '(?y ?n ?q))))
-          (cond ((eq response ?y)
-                 (replace-match to-string nil nil)
-                 (setq replace-done t))
-                ((eq response ?n)
-                 (forward-char))
-                ((eq response ?q)
-                 (setq replace-done t) ; treat as succesfully finished and exit politely
-                 ))))
-      (lazy-highlight-cleanup t))))
-; currently primarily used by `getLinkSuggestions` (the regexp version was included for completeness):
+; currently primarily used by `getLinkSuggestions
 (defun query-replace-once (from-string to-string &optional delimited start end)
   "Replace the first occurrence of FROM-STRING with TO-STRING.
 If DELIMITED is non-nil, only match whole words.
@@ -706,6 +673,7 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
          (query-replace "-\n" "" nil begin end)
          (query-replace "- \n" "" nil begin end)
          (query-replace "-\n" "-" nil begin end)
+         (markdown-remove-newlines-in-paragraphs) ; once all the hyphenation is dealt with, remove the hard-newlines which are common in PDF copy-pastes. These hard newlines are a problem because they break many string matches, and they make `langcheck` highlight every line beginning/ending in red as an error.
          (query-replace " -- " "---" nil begin end)
          (query-replace " --- " "---" nil begin end)
          (query-replace "--- " "---" nil begin end)
@@ -1251,6 +1219,38 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
      nil
      )))
 
+; GPT-4
+(require 'rx)
+(defgroup markdown-newline-removal nil
+  "Options for removing newlines within paragraphs in Markdown text."
+  :group 'markdown)
+(defcustom markdown-excluded-chars (rx (any ?- ?\n ?\d ?# ?*))
+  "Characters to exclude when removing newlines within paragraphs in Markdown text."
+  :type 'regexp
+  :group 'markdown-newline-removal)
+(defun markdown-remove-newlines-in-paragraphs (&optional buffer use-region)
+  "Remove newlines within paragraphs of Markdown text in BUFFER.
+If BUFFER is nil, use the current buffer. If USE-REGION is non-nil,
+operate on the current region instead of the entire buffer."
+  (interactive "P")
+  (with-current-buffer (or buffer (current-buffer))
+    ;; Save the current point position and restore it after the operation
+    (save-excursion
+      ;; Determine the search range based on the use-region argument
+      (let ((start (if use-region (region-beginning) (point-min)))
+            (end (if use-region (region-end) (point-max))))
+        ;; Move the point to the start of the search range
+        (goto-char start)
+        ;; Define the regex pattern using the excluded characters custom variable
+        (let* ((excluded-chars (replace-regexp-in-string "^\\[\\|\\]$" "" markdown-excluded-chars))
+               (pattern (concat "\\([^" excluded-chars "]\\)\\(\n\\)\\([^" excluded-chars "]\\)")))
+          ;; Search and replace newlines within paragraphs
+          (save-match-data
+            (while (re-search-forward pattern end t)
+              (replace-match "\\1\\3" nil nil))))))
+    ;; Inform the user when the operation is complete
+    (message "Newlines removed within paragraphs.")))
+
 (defvar markdown-rewrites '())
 (defun buffer-contains-substring (string)
   (save-excursion
@@ -1348,7 +1348,8 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
   "Automatically paragraphize single-paragraph abstracts."
   (let ((double-newline-found nil))
     (when (and (equal (buffer-name) "foo")
-               (eq last-command 'yank))
+               (eq last-command 'yank)
+               (>= (buffer-size) 600)) ; ensure that there is enough in the buffer to plausibly be a full copy-pasted abstract, as opposed to a random snippet or line.
       (save-excursion
         (goto-char (point-min))
         (unless (search-forward-regexp "\n\n" nil t)
