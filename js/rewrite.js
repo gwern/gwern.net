@@ -751,24 +751,30 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
 									 : fullWidthMedia.closest(".markdownBody").offsetWidth + "px";
 	};
 
+    //  Add ‘load’ listener for lazy-loaded media.
 	allFullWidthMedia.forEach(fullWidthMedia => {
-		fullWidthMedia.addEventListener("load", (event) => {
+		fullWidthMedia.addEventListener("load", fullWidthMedia.loadListener = (event) => {
 			constrainCaptionWidth(fullWidthMedia);
-		});
+			fullWidthMedia.loadListener = null;
+		}, { once: true });
 	});
 
-    /*  Add ‘load’ listener for lazy-loaded media (as it might cause re-layout
-        of e.g. sidenotes). Do this only after page layout is complete, to avoid
-        spurious re-layout at initial page load.
+    /*  Re-add ‘load’ listener for lazy-loaded media (as it might cause 
+    	re-layout of e.g. sidenotes). Do this only after page layout is 
+    	complete, to avoid spurious re-layout at initial page load.
      */
     doWhenPageLayoutComplete(() => {
         allFullWidthMedia.forEach(fullWidthMedia => {
 			constrainCaptionWidth(fullWidthMedia);
-            fullWidthMedia.addEventListener("load", (event) => {
-                GW.notificationCenter.fireEvent("Rewrite.fullWidthMediaDidLoad", {
-                    mediaElement: fullWidthMedia
-                });
-            });
+			if (fullWidthMedia.loadListener) {
+				fullWidthMedia.removeEventListener("load", fullWidthMedia.loadListener);
+				fullWidthMedia.addEventListener("load", (event) => {
+					constrainCaptionWidth(fullWidthMedia);
+					GW.notificationCenter.fireEvent("Rewrite.fullWidthMediaDidLoad", {
+						mediaElement: fullWidthMedia
+					});
+				}, { once: true });
+            }
         });
 		//  Add listener to update caption max-width when window resizes.
 		window.addEventListener("resize", (event) => {

@@ -559,6 +559,13 @@ Sidenotes = { ...Sidenotes,
 				"textContent": noteNumber 
 			}));
 
+			//	Add listener to update sidenote positions when media loads.
+			sidenote.querySelectorAll("img, video").forEach(mediaElement => {
+				mediaElement.addEventListener("load", (event) => {
+					requestAnimationFrame(Sidenotes.updateSidenotePositions);
+				}, { once: true });
+			});
+
 			//  Add the sidenote to the sidenotes array...
 			Sidenotes.sidenotes.push(sidenote);
 
