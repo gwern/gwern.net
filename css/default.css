@@ -1918,6 +1918,9 @@ section.footnotes > hr:first-child.highlighted::before {
     line-height: 0.5;
     pointer-events: none;
 }
+#markdownBody .sidenote.cut-off:hover::before {
+    visibility: hidden;
+}
 #markdownBody .sidenote.cut-off.hide-more-indicator::before {
     visibility: hidden;
 }
@@ -1937,8 +1940,11 @@ section.footnotes > hr:first-child.highlighted::before {
     border-color: var(--GW-sidenote-border-color);
     border-width: 1px 0;
 }
+#markdownBody .sidenote:hover .sidenote-outer-wrapper {
+    max-height: 100vh;
+}
 #markdownBody .sidenote.cut-off .sidenote-outer-wrapper {
-    overflow-y: auto;
+    overflow-y: scroll;
     overscroll-behavior: none;
     width: 100%;
     padding: 0 0.5em 0 0;
