@@ -364,6 +364,7 @@ function scrollElementIntoView(element, offset = 0) {
 		element.scrollIntoView();
 		if (offset != 0)
 			window.scrollBy(0, offset);
+		updateScrollState();
 	});
 }
 

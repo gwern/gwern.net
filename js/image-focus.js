@@ -125,8 +125,10 @@ ImageFocus = {
 			});
         }, { phase: "eventListeners" });
 
-		//	If the URL specifies an image, focus it after the page has loaded.
-		doWhenPageLoaded(ImageFocus.focusImageSpecifiedByURL);
+		//	Add handler to focus image on hashchange event.
+		GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", (info) => {
+			ImageFocus.focusImageSpecifiedByURL();
+		});
 
         //  Fire setup-complete event.
 		GW.notificationCenter.fireEvent("ImageFocus.setupDidComplete");
@@ -166,7 +168,10 @@ ImageFocus = {
 	focusImage: (imageToFocus) => {
 		GWLog("ImageFocus.focusImage", "image-focus.js", 1);
 
-		//	If this image is part of the main image gallery, update state.
+		//	Unfocus currently focused image, if any.
+		ImageFocus.unfocusImage();
+
+		//	If the new image is part of the main image gallery, update state.
 		if (imageToFocus.classList.contains("gallery-image")) {
 			let lastFocusedImage = document.querySelector("img.last-focused");
 			if (lastFocusedImage) {
@@ -295,23 +300,39 @@ ImageFocus = {
 											   : "";
 	},
 
-	unfocusImageOverlay: () => {
-		GWLog("ImageFocus.unfocusImageOverlay", "image-focus.js", 1);
+	unfocusImage: () => {
+		GWLog("ImageFocus.unfocusImage", "image-focus.js", 1);
 
-		//  Remove event listeners.
-		window.removeEventListener("wheel", ImageFocus.scrollEvent);
-		//  NOTE: The double-click listener does not need to be removed manually,
-		//  because the focused (cloned) image will be removed anyway.
-		document.removeEventListener("keyup", ImageFocus.keyUp);
-		window.removeEventListener("mousemove", ImageFocus.mouseMoved);
-		window.removeEventListener("mousedown", ImageFocus.mouseDown);
-		window.removeEventListener("mouseup", ImageFocus.mouseUp);
+		//  Remove image from overlay.
+		if (ImageFocus.imageInFocus) {
+			ImageFocus.imageInFocus.remove();
+			ImageFocus.imageInFocus = null;
+		}
 
+		//	Update currently focused image in page.
 		if (ImageFocus.currentlyFocusedImage) {
+			//	Save reference to image-to-be-unfocused.
+			let unfocusedImage = ImageFocus.currentlyFocusedImage;
+
+			ImageFocus.currentlyFocusedImage.classList.remove("focused");
+			ImageFocus.currentlyFocusedImage = null;
+
+			//	Fire event.
+			GW.notificationCenter.fireEvent("ImageFocus.imageDidUnfocus", { image: unfocusedImage });
+		}
+	},
+
+	exitImageFocus: () => {
+		GWLog("ImageFocus.exitImageFocus", "image-focus.js", 1);
+
+		/*	If currently focused image is part of the main image gallery, 
+			preserve state.
+		 */
+		if (   ImageFocus.currentlyFocusedImage
+			&& ImageFocus.currentlyFocusedImage.classList.contains("gallery-image")) {
 			//	Update classes.
 			ImageFocus.currentlyFocusedImage.classList.remove("focused");
 
-			//	If this image is part of the main image gallery, preserve state.
 			if (ImageFocus.currentlyFocusedImage.classList.contains("gallery-image")) {
 				ImageFocus.currentlyFocusedImage.classList.add("last-focused");
 
@@ -320,10 +341,20 @@ ImageFocus = {
 			}
 		}
 
-		//  Remove focused image and hide overlay.
+		//	Unfocus currently focused image.
+		ImageFocus.unfocusImage();
+
+		//  Remove event listeners.
+		window.removeEventListener("wheel", ImageFocus.scrollEvent);
+		//  NOTE: The double-click listener does not need to be removed manually,
+		//  because the focused (cloned) image has been removed anyway.
+		document.removeEventListener("keyup", ImageFocus.keyUp);
+		window.removeEventListener("mousemove", ImageFocus.mouseMoved);
+		window.removeEventListener("mousedown", ImageFocus.mouseDown);
+		window.removeEventListener("mouseup", ImageFocus.mouseUp);
+
+		//  Hide overlay.
 		ImageFocus.overlay.classList.remove("engaged");
-		ImageFocus.imageInFocus.remove();
-		ImageFocus.imageInFocus = null;
 
 		requestAnimationFrame(() => {
 			//  Re-enable page scrolling.
@@ -336,12 +367,7 @@ ImageFocus = {
 			ImageFocus.savedHash = null;
 		}
 
-		//	Delete reference to focused image.
-		let unfocusedImage = ImageFocus.currentlyFocusedImage;
-		ImageFocus.currentlyFocusedImage = null;
-
-		//	Fire events.
-		GW.notificationCenter.fireEvent("ImageFocus.imageDidUnfocus", { image: unfocusedImage });
+		//	Fire event.
 		GW.notificationCenter.fireEvent("ImageFocus.imageOverlayDidDisappear");
 	},
 
@@ -368,44 +394,8 @@ ImageFocus = {
 		if (next ? (++indexOfFocusedImage == images.length) : (--indexOfFocusedImage == -1))
 			return;
 
-		//  Remove existing image.
-		ImageFocus.imageInFocus.remove();
-
-		//  Unset ‘focused’ class of just-removed image.
-		ImageFocus.currentlyFocusedImage.classList.remove("focused");
-
-		//	Fire event.
-		GW.notificationCenter.fireEvent("ImageFocus.imageDidUnfocus", { image: ImageFocus.currentlyFocusedImage });
-
-		//	Update reference.
-		ImageFocus.currentlyFocusedImage = images[indexOfFocusedImage];
-
-		//  Create the focused version of the image.
-		images[indexOfFocusedImage].classList.toggle("focused", true);
-		let clonedImage = images[indexOfFocusedImage].cloneNode(true);
-		clonedImage.style = "";
-		clonedImage.removeAttribute("width");
-		clonedImage.removeAttribute("height");
-		clonedImage.style.filter = images[indexOfFocusedImage].style.filter + ImageFocus.dropShadowFilterForImages;
-		ImageFocus.overlay.appendChild(clonedImage);
-		ImageFocus.imageInFocus = clonedImage;
-		ImageFocus.overlay.classList.toggle("engaged", true);
-		//  Set image to default size and position.
-		ImageFocus.resetFocusedImagePosition();
-		//  Double-click on the image unfocuses.
-		clonedImage.addEventListener("dblclick", ImageFocus.doubleClick);
-		//  Set state of next/previous buttons.
-		ImageFocus.overlay.querySelector(".slideshow-button.previous").disabled = (indexOfFocusedImage == 0);
-		ImageFocus.overlay.querySelector(".slideshow-button.next").disabled = (indexOfFocusedImage == images.length - 1);
-		//  Set the image number display.
-		ImageFocus.overlay.querySelector(".image-number").textContent = (indexOfFocusedImage + 1);
-		//  Set the caption.
-		ImageFocus.setImageFocusCaption();
-		//  Replace the hash.
-		relocate("#if_slide_" + (indexOfFocusedImage + 1));
-
-		//	Fire event.
-		GW.notificationCenter.fireEvent("ImageFocus.imageDidFocus", { image: ImageFocus.currentlyFocusedImage });
+		//	Focus new image.
+		ImageFocus.focusImage(images[indexOfFocusedImage]);
 	},
 
 	setImageFocusCaption: () => {
@@ -446,6 +436,9 @@ ImageFocus = {
 					//  Set timer to hide the image focus UI.
 					if (GW.isMobile() == false)
 						ImageFocus.unhideImageFocusUI();
+
+					//	Scroll to focused image.
+					revealElement(ImageFocus.currentlyFocusedImage, true);
 				}
 			});
 		}
@@ -622,7 +615,7 @@ ImageFocus = {
 			//  put the filter back; do not unfocus.
 			ImageFocus.imageInFocus.style.filter = ImageFocus.imageInFocus.savedFilter;
 		} else if (event.target.tagName != "HTML") {
-			ImageFocus.unfocusImageOverlay();
+			ImageFocus.exitImageFocus();
 			return;
 		}
 	},
@@ -668,7 +661,7 @@ ImageFocus = {
 		if (event.target.closest(".help-overlay"))
 			return;
 
-		ImageFocus.unfocusImageOverlay();
+		ImageFocus.exitImageFocus();
 	},
 
 	keyUp: (event) => {
@@ -684,7 +677,7 @@ ImageFocus = {
 		switch (event.key) {
 		case "Escape":
 		case "Esc":
-			ImageFocus.unfocusImageOverlay();
+			ImageFocus.exitImageFocus();
 			break;
 		case " ":
 		case "Spacebar":
@@ -728,3 +721,6 @@ ImageFocus = {
 GW.notificationCenter.fireEvent("ImageFocus.didLoad");
 
 ImageFocus.setup();
+
+//	If the URL specifies an image, focus it after the page has loaded.
+ImageFocus.focusImageSpecifiedByURL();
