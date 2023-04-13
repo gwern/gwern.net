@@ -210,9 +210,9 @@
      */
     --GW-sequential-nav-link-background-color: var(--GW-body-background-color);
 
-    /*  Page-specific styles.
-     */
-    --GW-index-page-bottom-ornament-line-color: #9f9f9f;
+	/*	Footer.
+	 */
+    --GW-bottom-ornament-line-color: #fff;
 
 	/*	Pop-frames (popups or popins).
 	 */

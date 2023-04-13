@@ -751,24 +751,30 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
 									 : fullWidthMedia.closest(".markdownBody").offsetWidth + "px";
 	};
 
+    //  Add ‘load’ listener for lazy-loaded media.
 	allFullWidthMedia.forEach(fullWidthMedia => {
-		fullWidthMedia.addEventListener("load", (event) => {
+		fullWidthMedia.addEventListener("load", fullWidthMedia.loadListener = (event) => {
 			constrainCaptionWidth(fullWidthMedia);
-		});
+			fullWidthMedia.loadListener = null;
+		}, { once: true });
 	});
 
-    /*  Add ‘load’ listener for lazy-loaded media (as it might cause re-layout
-        of e.g. sidenotes). Do this only after page layout is complete, to avoid
-        spurious re-layout at initial page load.
+    /*  Re-add ‘load’ listener for lazy-loaded media (as it might cause 
+    	re-layout of e.g. sidenotes). Do this only after page layout is 
+    	complete, to avoid spurious re-layout at initial page load.
      */
     doWhenPageLayoutComplete(() => {
         allFullWidthMedia.forEach(fullWidthMedia => {
 			constrainCaptionWidth(fullWidthMedia);
-            fullWidthMedia.addEventListener("load", (event) => {
-                GW.notificationCenter.fireEvent("Rewrite.fullWidthMediaDidLoad", {
-                    mediaElement: fullWidthMedia
-                });
-            });
+			if (fullWidthMedia.loadListener) {
+				fullWidthMedia.removeEventListener("load", fullWidthMedia.loadListener);
+				fullWidthMedia.addEventListener("load", (event) => {
+					constrainCaptionWidth(fullWidthMedia);
+					GW.notificationCenter.fireEvent("Rewrite.fullWidthMediaDidLoad", {
+						mediaElement: fullWidthMedia
+					});
+				}, { once: true });
+            }
         });
 		//  Add listener to update caption max-width when window resizes.
 		window.addEventListener("resize", (event) => {
@@ -2262,6 +2268,54 @@ addContentLoadHandler(GW.contentLoadHandlers.injectBackToTopLink = (eventInfo) =
         GW.backToTop.style.transition = "";
     });
 }, "rewrite", (info) => info.container == document.body);
+
+
+/**********/
+/* FOOTER */
+/**********/
+
+/*******************************************/
+/*	Move the footer logo link to the bottom.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rewriteFooterLogo = (eventInfo) => {
+    GWLog("rewriteFooterLogo", "rewrite.js", 1);
+
+	document.querySelector("article").appendChild(
+		newElement("DIV", { "id": "footer-logo-container" })).appendChild(
+		document.querySelector("#footer-logo"));
+}, "rewrite", (info) => info.container == document.body);
+
+
+/******************************/
+/* GENERAL ACTIVITY INDICATOR */
+/******************************/
+
+GW.activities = [ ];
+
+function beginActivity() {
+	GW.activities.push({ });
+
+	if (GW.activityIndicator)
+		GW.activityIndicator.classList.add("on");
+}
+
+function endActivity() {
+	GW.activities.shift();
+
+	if (   GW.activityIndicator
+		&& GW.activities.length == 0)
+		GW.activityIndicator.classList.remove("on");
+}
+
+doWhenBodyExists(() => {
+	GW.activityIndicator = addUIElement(`<div id="general-activity-indicator" class="on">`
+		+ `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 32c0 17.673-14.327 32-32 32s-32-14.327-32-32 14.327-32 32-32 32 14.327 32 32zm-32 416c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm256-192c0-17.673-14.327-32-32-32s-32 14.327-32 32 14.327 32 32 32 32-14.327 32-32zm-448 0c0-17.673-14.327-32-32-32S0 238.327 0 256s14.327 32 32 32 32-14.327 32-32zm33.608 126.392c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm316.784 0c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zM97.608 65.608c-17.673 0-32 14.327-32 32 0 17.673 14.327 32 32 32s32-14.327 32-32c0-17.673-14.327-32-32-32z"/></svg>`
+		+ `</div>`);
+});
+
+doWhenPageLayoutComplete(() => {
+	endActivity();
+});
 
 
 /*****************/

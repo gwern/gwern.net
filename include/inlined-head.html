@@ -211,9 +211,9 @@
      */
     --GW-sequential-nav-link-background-color: var(--GW-body-background-color);
 
-    /*  Page-specific styles.
-     */
-    --GW-index-page-bottom-ornament-line-color: #808080;
+	/*	Footer.
+	 */
+    --GW-bottom-ornament-line-color: #000;
 
 	/*	Pop-frames (popups or popins).
 	 */
@@ -1113,6 +1113,7 @@ div.TOC ul > li::before {
     right: calc(100% - 1em);
     left: unset;
     width: 111px;
+    height: initial;
     padding: 0;
     text-align: right;
     font-weight: normal;
@@ -2008,9 +2009,9 @@ body.special-halloween-dark h6 {
      */
     --GW-sequential-nav-link-background-color: var(--GW-body-background-color);
 
-    /*  Page-specific styles.
-     */
-    --GW-index-page-bottom-ornament-line-color: #9f9f9f;
+	/*	Footer.
+	 */
+    --GW-bottom-ornament-line-color: #fff;
 
 	/*	Pop-frames (popups or popins).
 	 */
@@ -3859,7 +3860,7 @@ ReaderMode = {
                 position: absolute;
                 width: 100%;
                 height: 0;
-                border-bottom: 1px dotted var(--GW-index-page-bottom-ornament-line-color);
+                border-bottom: 1px dotted var(--GW-bottom-ornament-line-color);
                 left: 0;
                 top: 50%;
                 z-index: -1;

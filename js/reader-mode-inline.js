@@ -127,7 +127,7 @@ ReaderMode = {
                 position: absolute;
                 width: 100%;
                 height: 0;
-                border-bottom: 1px dotted var(--GW-index-page-bottom-ornament-line-color);
+                border-bottom: 1px dotted var(--GW-bottom-ornament-line-color);
                 left: 0;
                 top: 50%;
                 z-index: -1;

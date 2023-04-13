@@ -928,6 +928,14 @@ section:target > :first-child a::after {
 
 #footer > p:first-child {
     text-align: center;
+    font-variant-caps: small-caps;
+}
+#footer > p:first-child::after {
+    content: url('/static/img/icon/single-black-star.svg');
+    display: block;
+    width: 1em;
+    margin: 2.25em auto -0.25em auto;
+    opacity: 0.3;
 }
 
 /*********************/
@@ -1837,6 +1845,9 @@ section.footnotes > hr:first-child.highlighted::before {
 /*=-----------------=*/
 
 #markdownBody .sidenote {
+	--sidenote-padding: 10px;
+	--sidenote-border-width: 3px;
+
     position: absolute;
     left: 0;
     width: 100%;
@@ -1855,11 +1866,11 @@ section.footnotes > hr:first-child.highlighted::before {
 #markdownBody .sidenote.hidden {
     display: none;
 }
-#markdownBody .sidenote.displaced,
-#markdownBody .sidenote.highlighted,
 #markdownBody .sidenote:hover,
 #markdownBody .sidenote:target,
-#markdownBody .sidenote.targeted {
+#markdownBody .sidenote.targeted,
+#markdownBody .sidenote.displaced,
+#markdownBody .sidenote.highlighted {
     background-color: var(--GW-sidenote-highlight-background-color);
     opacity: 1.0;
     box-shadow: 0 0 0 16px var(--GW-sidenote-highlight-background-color);
@@ -1880,16 +1891,16 @@ section.footnotes > hr:first-child.highlighted::before {
 #markdownBody .sidenote::after {
     content: "";
     position: absolute;
-    width: calc(100% + 20px);
-    height: calc(100% + 20px);
-    top: -13px;
-    left: -13px;
+    width: calc(100% + 2 * var(--sidenote-padding));
+    height: calc(100% + 2 * var(--sidenote-padding));
+    top: calc(-1 * (var(--sidenote-padding) + var(--sidenote-border-width)));
+    left: calc(-1 * (var(--sidenote-padding) + var(--sidenote-border-width)));
 }
-#markdownBody .sidenote.displaced::after,
-#markdownBody .sidenote.highlighted::after,
 #markdownBody .sidenote:hover::after,
 #markdownBody .sidenote:target::after,
-#markdownBody .sidenote.targeted::after {
+#markdownBody .sidenote.targeted::after,
+#markdownBody .sidenote.displaced::after,
+#markdownBody .sidenote.highlighted::after {
     border: 3px double var(--GW-sidenote-highlight-box-shadow-color);
 }
 
@@ -1910,6 +1921,9 @@ section.footnotes > hr:first-child.highlighted::before {
     line-height: 0.5;
     pointer-events: none;
 }
+#markdownBody .sidenote.cut-off:hover::before {
+    visibility: hidden;
+}
 #markdownBody .sidenote.cut-off.hide-more-indicator::before {
     visibility: hidden;
 }
@@ -1929,8 +1943,14 @@ section.footnotes > hr:first-child.highlighted::before {
     border-color: var(--GW-sidenote-border-color);
     border-width: 1px 0;
 }
+#markdownBody .sidenote:hover .sidenote-outer-wrapper,
+#markdownBody .sidenote.displaced .sidenote-outer-wrapper,
+#markdownBody .sidenote.highlighted .sidenote-outer-wrapper {
+	/*	1px for inner border; 1px for minimum distance from edge. */
+    max-height: calc(100vh - (2em + 2 * (var(--sidenote-padding) + var(--sidenote-border-width) + 1px + 1px)));
+}
 #markdownBody .sidenote.cut-off .sidenote-outer-wrapper {
-    overflow-y: auto;
+    overflow-y: scroll;
     overscroll-behavior: none;
     width: 100%;
     padding: 0 0.5em 0 0;
@@ -5745,13 +5765,15 @@ ol.link-bibliography-list-compact > li::before {
 
     --box-horizontal-offset: calc(var(--box-padding-top) * 2.0);
 
-    padding-right: calc(var(--box-horizontal-offset) * 0.5);
+    padding-right: calc(var(--box-horizontal-offset) * 0.25);
 }
 
 .site-of-the-day blockquote {
     --GW-link-underline-background-color: var(--GW-body-background-color);
 
-    margin: 2.5em auto 3em auto;
+	font-size: calc((17/18) * var(--GW-body-text-font-size));
+
+    margin: 3em auto 2.75em auto;
     position: relative;
     height: var(--box-size);
     width: fit-content;
@@ -5768,6 +5790,11 @@ ol.link-bibliography-list-compact > li::before {
     border: none;
     display: flex;
     align-items: center;
+}
+@media only screen and (max-width: 649px) {
+    .site-of-the-day blockquote {
+        margin: 3.5em auto 2.75em auto;
+    }
 }
 
 .site-of-the-day blockquote::before,
@@ -5803,41 +5830,44 @@ ol.link-bibliography-list-compact > li::before {
 /*********************/
 /* BOTTOM DECORATION */
 /*********************/
-/* Mobile only.      */
 
-@media only screen and (max-width: 649px) {
-    #footer-logo {
-        position: relative;
-    }
-    #footer-logo::after {
-        content: "";
-        background-color: var(--GW-body-background-color);
-        background-image: url('/static/img/logo/logo-smooth.svg');
-        display: block;
-        position: relative;
-        width: 22px;
-        height: 30px;
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
-        margin: auto;
-        padding: 0 10px 0 10px;
-        z-index: 1;
-    }
-    #footer-logo::before {
-        content: "";
-        display: block;
-        position: absolute;
-        bottom: 15px;
-        height: 1px;
-        border-bottom: 1px dotted var(--GW-index-page-bottom-ornament-line-color);
-        width: 200%;
-    }
+#footer-logo-container {
+	margin: 0 0 1em 0;
+	line-height: 0;
 }
-@media only screen and (min-width: 650px) {
-	#footer-logo {
-		display: none;
-	}
+
+#footer-logo {
+	position: relative;
+    opacity: 0.3;
+	pointer-events: none;
+}
+#footer-logo:hover {
+    opacity: 1.0;
+}
+#footer-logo::before {
+	content: "";
+	display: block;
+	position: absolute;
+	bottom: 15px;
+	height: 1px;
+	border-bottom: 1px dotted var(--GW-bottom-ornament-line-color);
+	width: 100%;
+}
+#footer-logo::after {
+	content: "";
+	background-color: var(--GW-body-background-color);
+	background-image: url('/static/img/logo/logo-smooth.svg');
+	display: block;
+	position: relative;
+	width: 22px;
+	height: 30px;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	margin: auto;
+	padding: 0 10px 0 10px;
+	z-index: 1;
+	pointer-events: auto;
 }
 
 
@@ -6287,6 +6317,41 @@ ol.link-bibliography-list-compact > li::before {
         margin-top: 0;
     }
 }
+
+
+/******************************/
+/* GENERAL ACTIVITY INDICATOR */
+/******************************/
+
+#general-activity-indicator {
+    position: fixed;
+    width: 1em;
+    bottom: 0.25em;
+    left: 0.25em;
+    visibility: hidden;
+}
+
+#general-activity-indicator svg {
+    display: block;
+    width: 100%;
+}
+
+#general-activity-indicator.on {
+	visibility: visible;
+}
+#general-activity-indicator.on svg {
+    animation: fa-spin 0.75s infinite steps(8);
+}
+
+@keyframes fa-spin {
+	  0% { transform: rotate(0deg);   }
+	100% { transform: rotate(360deg); }
+}
+
+@media only screen and (max-width: 649px) {
+	display: none;
+}
+
 
 /****************/
 /* TRANSCLUSION */
