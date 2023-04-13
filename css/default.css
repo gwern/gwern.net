@@ -1845,6 +1845,9 @@ section.footnotes > hr:first-child.highlighted::before {
 /*=-----------------=*/
 
 #markdownBody .sidenote {
+	--sidenote-padding: 10px;
+	--sidenote-border-width: 3px;
+
     position: absolute;
     left: 0;
     width: 100%;
@@ -1863,11 +1866,11 @@ section.footnotes > hr:first-child.highlighted::before {
 #markdownBody .sidenote.hidden {
     display: none;
 }
-#markdownBody .sidenote.displaced,
-#markdownBody .sidenote.highlighted,
 #markdownBody .sidenote:hover,
 #markdownBody .sidenote:target,
-#markdownBody .sidenote.targeted {
+#markdownBody .sidenote.targeted,
+#markdownBody .sidenote.displaced,
+#markdownBody .sidenote.highlighted {
     background-color: var(--GW-sidenote-highlight-background-color);
     opacity: 1.0;
     box-shadow: 0 0 0 16px var(--GW-sidenote-highlight-background-color);
@@ -1888,16 +1891,16 @@ section.footnotes > hr:first-child.highlighted::before {
 #markdownBody .sidenote::after {
     content: "";
     position: absolute;
-    width: calc(100% + 20px);
-    height: calc(100% + 20px);
-    top: -13px;
-    left: -13px;
+    width: calc(100% + 2 * var(--sidenote-padding));
+    height: calc(100% + 2 * var(--sidenote-padding));
+    top: calc(-1 * (var(--sidenote-padding) + var(--sidenote-border-width)));
+    left: calc(-1 * (var(--sidenote-padding) + var(--sidenote-border-width)));
 }
-#markdownBody .sidenote.displaced::after,
-#markdownBody .sidenote.highlighted::after,
 #markdownBody .sidenote:hover::after,
 #markdownBody .sidenote:target::after,
-#markdownBody .sidenote.targeted::after {
+#markdownBody .sidenote.targeted::after,
+#markdownBody .sidenote.displaced::after,
+#markdownBody .sidenote.highlighted::after {
     border: 3px double var(--GW-sidenote-highlight-box-shadow-color);
 }
 
@@ -1940,8 +1943,11 @@ section.footnotes > hr:first-child.highlighted::before {
     border-color: var(--GW-sidenote-border-color);
     border-width: 1px 0;
 }
-#markdownBody .sidenote:hover .sidenote-outer-wrapper {
-    max-height: 100vh;
+#markdownBody .sidenote:hover .sidenote-outer-wrapper,
+#markdownBody .sidenote.displaced .sidenote-outer-wrapper,
+#markdownBody .sidenote.highlighted .sidenote-outer-wrapper {
+	/*	1px for inner border; 1px for minimum distance from edge. */
+    max-height: calc(100vh - (2em + 2 * (var(--sidenote-padding) + var(--sidenote-border-width) + 1px + 1px)));
 }
 #markdownBody .sidenote.cut-off .sidenote-outer-wrapper {
     overflow-y: scroll;

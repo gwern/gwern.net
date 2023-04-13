@@ -560,7 +560,7 @@ Sidenotes = { ...Sidenotes,
 			}));
 
 			//	Add listener to update sidenote positions when media loads.
-			sidenote.querySelectorAll("img, video").forEach(mediaElement => {
+			sidenote.querySelectorAll("figure img, figure video").forEach(mediaElement => {
 				mediaElement.addEventListener("load", (event) => {
 					requestAnimationFrame(Sidenotes.updateSidenotePositions);
 				}, { once: true });
@@ -604,11 +604,15 @@ Sidenotes = { ...Sidenotes,
 
 			citation.addEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote = (event) => {
 				Sidenotes.putAllSidenotesBack(sidenote);
-				Sidenotes.slideSidenoteIntoView(sidenote, true);
+				requestAnimationFrame(() => {
+					Sidenotes.slideSidenoteIntoView(sidenote, true);
+				});
 			});
 			sidenote.addEventListener("mouseenter", sidenote.onSidenoteMouseEnterSlideSidenote = (event) => {
 				Sidenotes.putAllSidenotesBack(sidenote);
-				Sidenotes.slideSidenoteIntoView(sidenote, false);
+				requestAnimationFrame(() => {
+					Sidenotes.slideSidenoteIntoView(sidenote, false);
+				});
 			});
 			sidenote.addEventListener("mouseleave", sidenote.onSidenoteMouseLeaveUnslideSidenote = (event) => {
 				Sidenotes.putSidenoteBack(sidenote);
@@ -751,6 +755,9 @@ Sidenotes = { ...Sidenotes,
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotePositionsDidUpdate", Sidenotes.updateStateAfterHashChange = (info) => {
 			if (location.hash.match(/#sn[0-9]/)) {
 				let citation = document.querySelector("#fnref" + Notes.noteNumberFromHash());
+				if (citation == null)
+					return;
+
 				let sidenote = Sidenotes.counterpart(citation);
 
 				revealElement(citation, false);
@@ -857,7 +864,9 @@ Sidenotes = { ...Sidenotes,
 						let sidenote = Sidenotes.counterpart(citation);
 						citation.addEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote = (event) => {
 							Sidenotes.putAllSidenotesBack(sidenote);
-							Sidenotes.slideSidenoteIntoView(sidenote, false);
+							requestAnimationFrame(() => {
+								Sidenotes.slideSidenoteIntoView(sidenote, true);
+							});
 						});
 					});
 				}, { condition: (info) => (info.document != document) });
@@ -929,29 +938,39 @@ Sidenotes = { ...Sidenotes,
 		if (sidenote.style.transform == "none")
 			return;
 
+		let minDistanceFromScreenEdge = Sidenotes.sidenotePadding + 1.0;
+
 		let sidenoteRect = sidenote.getBoundingClientRect();
-		if (   sidenoteRect.top >= Sidenotes.sidenotePadding
-			&& sidenoteRect.bottom <= window.innerHeight - Sidenotes.sidenotePadding)
+		if (   sidenoteRect.top >= minDistanceFromScreenEdge
+			&& sidenoteRect.bottom <= window.innerHeight - minDistanceFromScreenEdge)
 			return;
 
 		let newSidenoteTop = sidenoteRect.top;
 		if (toCitation) {
 			let citationRect = Sidenotes.counterpart(sidenote).getBoundingClientRect()
-			newSidenoteTop = Math.max(sidenoteRect.top, Sidenotes.sidenotePadding);
-			if (newSidenoteTop + sidenoteRect.height < citationRect.bottom)
-				newSidenoteTop = citationRect.top;
-			newSidenoteTop = Math.min(citationRect.top + sidenoteRect.height, 
-									  Math.min(newSidenoteTop + sidenoteRect.height, 
-									  		   window.innerHeight - Sidenotes.sidenotePadding)) 
+
+			//	Down to citation.
+			newSidenoteTop = Math.max(sidenoteRect.top, minDistanceFromScreenEdge, citationRect.top);
+
+			//	Up to citation.
+			newSidenoteTop = Math.min(newSidenoteTop + sidenoteRect.height,
+									  window.innerHeight - minDistanceFromScreenEdge,
+									  citationRect.top + sidenoteRect.height)
 						   - sidenoteRect.height;
+
+			//	Down to viewport top.
+			newSidenoteTop = Math.max(newSidenoteTop, minDistanceFromScreenEdge);
 		} else {
-			newSidenoteTop = Math.max(Sidenotes.sidenotePadding, sidenoteRect.top);
+			//	Down to viewport top.
+			newSidenoteTop = Math.max(sidenoteRect.top, minDistanceFromScreenEdge);
+
+			//	Up to viewport bottom.
 			newSidenoteTop = Math.min(newSidenoteTop + sidenoteRect.height, 
-									  window.innerHeight - Sidenotes.sidenotePadding) 
+									  window.innerHeight - minDistanceFromScreenEdge) 
 						   - sidenoteRect.height;		
 		}
 
-		let delta = newSidenoteTop - sidenoteRect.top;
+		let delta = Math.round(newSidenoteTop - sidenoteRect.top);
 		if (delta) {
 			sidenote.style.transform = `translateY(${delta}px)`;
 			sidenote.classList.toggle("displaced", true);
