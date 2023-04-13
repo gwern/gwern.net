@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-11 11:26:54 gwern"
+# When:  Time-stamp: "2023-04-12 10:04:28 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -928,9 +928,9 @@ else
 
     λ(){
         LL="$(curl --silent ifconfig.me)"
-        export LL
+        export LL # some academic publishers inject spam, but not in an easy-to-grep way; I've noticed they sometimes insert the download IP, however, so we add that dynamically as a search string.
         checkSpamHeader () {
-            # extract text from first page:
+            # extract text from first page, where the junk usually is (some insert at the end, but those are less of an issue & harder to check):
             HEADER=$(pdftotext -f 1 -l 1 "$@" - 2> /dev/null | \
                          grep -F -e 'INFORMATION TO USERS' -e 'Your use of the JSTOR archive indicates your acceptance of JSTOR' \
                                -e 'This PDF document was made available from www.rand.org as a public' -e 'A journal for the publication of original scientific research' \
@@ -948,7 +948,7 @@ else
         export -f checkSpamHeader
         find ./doc/ -type f -name "*.pdf" | grep -F --invert-match -e 'doc/www/' | sort | parallel checkSpamHeader
     }
-    wrap λ "Remove junk from PDF & add metadata"
+    wrap λ "Remove academic-publisher wrapper junk from PDFs."
 
     λ(){ find ./doc/ -type f -name "*.jpg" | parallel --max-args=500 file | grep -F --invert-match 'JPEG image data'; }
     wrap λ "Corrupted JPGs"

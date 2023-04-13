@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-04-10 17:03:18 gwern"
+When:  Time-stamp: "2023-04-12 09:23:05 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -2423,6 +2423,7 @@ badDomainsSimple = [ "2chan.us"
    , "openai.com"
    , "citeseerx.ist.psu.edu"
    , "www.youtube.com/channel/"
+   , "www.eoht.info"
    ]
 
 url :: T.Text -> Inline
@@ -4676,4 +4677,5 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.4nrx-uk.md/general-health/modalert-modafinil.html"
             , "https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.108.7127&rep=rep1&type=pdf"
             , "https://www.youtube.com/channel/UCeNwyKuv5SMnN6ovlpbz1SQ"
+            , "http://www.eoht.info/page/Feynman%27s%20IQ"
             ]

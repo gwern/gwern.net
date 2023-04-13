@@ -557,7 +557,7 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                      "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com",
                      "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "www.silcom.com", "esolangs.org",
                      "www.aiweirdness.com", "etherscan.io", "www.theringer.com", "cs.stanford.edu", "mmlab.ie.cuhk.edu.hk", "www.cs.toronto.edu",
-                     "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org", "takimag.com", "oll.libertyfund.org", "every.to"]
+                     "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org", "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info"]
         linkIconMin = 4 :: Int
 
 -- Test suite:
