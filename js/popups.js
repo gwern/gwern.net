@@ -169,20 +169,32 @@ Popups = {
 	hidePopupContainer: () => {
 		GWLog("Popups.hidePopupContainer", "popups.js", 3);
 
-		Popups.popupContainer.style.visibility = "hidden";
-		Popups.allSpawnedPopups().forEach(popup => {
-			Popups.addClassesToPopFrame(popup, "hidden");
-		});
+		if (Popups.popupContainer) {
+			Popups.popupContainer.style.visibility = "hidden";
+			Popups.allSpawnedPopups().forEach(popup => {
+				Popups.addClassesToPopFrame(popup, "hidden");
+			});
+		} else {
+			GW.notificationCenter.addHandlerForEvent("Popups.setDidComplete", (info) => {
+				Popups.hidePopupContainer();
+			});
+		}
 	},
 
 	//	Called by: extracts-options.js
 	unhidePopupContainer: () => {
 		GWLog("Popups.unhidePopupContainer", "popups.js", 3);
 
-		Popups.popupContainer.style.visibility = "";
-		Popups.allSpawnedPopups().forEach(popup => {
-			Popups.removeClassesFromPopFrame(popup, "hidden");
-		});
+		if (Popups.popupContainer) {
+			Popups.popupContainer.style.visibility = "";
+			Popups.allSpawnedPopups().forEach(popup => {
+				Popups.removeClassesFromPopFrame(popup, "hidden");
+			});
+		} else {
+			GW.notificationCenter.addHandlerForEvent("Popups.setDidComplete", (info) => {
+				Popups.unhidePopupContainer();
+			});
+		}
 	},
 
 	//	Called by: Popups.despawnPopup
