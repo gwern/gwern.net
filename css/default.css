@@ -3412,7 +3412,6 @@ body.index-directory #footer {
     bottom: 1em;
     right: 1em;
     overflow: hidden;
-    white-space: nowrap;
     color: transparent;
     cursor: help;
     visibility: hidden;
@@ -3423,8 +3422,8 @@ body.index-directory #footer {
         bottom 0.3s ease;
 }
 #image-focus-overlay .help-overlay:hover {
-    max-width: 24em;
-    max-height: 14em;
+    width: fit-content;
+    max-width: calc(100vw - 4em);
     background-color: var(--SA-image-focus-overlay-help-box-background-color);
     color: var(--SA-image-focus-overlay-help-box-text-color);
     visibility: visible;

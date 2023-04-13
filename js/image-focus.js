@@ -168,6 +168,9 @@ ImageFocus = {
 	focusImage: (imageToFocus) => {
 		GWLog("ImageFocus.focusImage", "image-focus.js", 1);
 
+		//	Show UI.
+		ImageFocus.unhideImageFocusUI();
+
 		//	Unfocus currently focused image, if any.
 		ImageFocus.unfocusImage();
 
@@ -433,10 +436,6 @@ ImageFocus = {
 					&& imageToFocus <= images.length) {
 					ImageFocus.focusImage(images[imageToFocus - 1]);
 
-					//  Set timer to hide the image focus UI.
-					if (GW.isMobile() == false)
-						ImageFocus.unhideImageFocusUI();
-
 					//	Scroll to focused image.
 					revealElement(ImageFocus.currentlyFocusedImage, true);
 				}
@@ -475,7 +474,8 @@ ImageFocus = {
 			element.classList.toggle("hidden", false);
 		});
 
-		ImageFocus.hideUITimer = setTimeout(ImageFocus.hideUITimerExpired, ImageFocus.hideUITimerDuration);
+		if (GW.isMobile() == false)
+			ImageFocus.hideUITimer = setTimeout(ImageFocus.hideUITimerExpired, ImageFocus.hideUITimerDuration);
 	},
 
 	cancelImageFocusHideUITimer: () => {
@@ -494,10 +494,6 @@ ImageFocus = {
 		GWLog("ImageFocus.imageClickedToFocus", "image-focus.js", 2);
 
 		ImageFocus.focusImage(event.target);
-
-		//  Set timer to hide the image focus UI.
-		if (GW.isMobile() == false)
-			ImageFocus.unhideImageFocusUI();
 	},
 
 	scrollEvent: (event) => {
