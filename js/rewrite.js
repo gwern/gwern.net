@@ -2286,6 +2286,38 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFooterLogo = (eventInfo) => 
 }, "rewrite", (info) => info.container == document.body);
 
 
+/******************************/
+/* GENERAL ACTIVITY INDICATOR */
+/******************************/
+
+GW.activities = [ ];
+
+function beginActivity() {
+	GW.activities.push({ });
+
+	if (GW.activityIndicator)
+		GW.activityIndicator.classList.add("on");
+}
+
+function endActivity() {
+	GW.activities.shift();
+
+	if (   GW.activityIndicator
+		&& GW.activities.length == 0)
+		GW.activityIndicator.classList.remove("on");
+}
+
+doWhenBodyExists(() => {
+	GW.activityIndicator = addUIElement(`<div id="general-activity-indicator" class="on">`
+		+ `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 32c0 17.673-14.327 32-32 32s-32-14.327-32-32 14.327-32 32-32 32 14.327 32 32zm-32 416c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm256-192c0-17.673-14.327-32-32-32s-32 14.327-32 32 14.327 32 32 32 32-14.327 32-32zm-448 0c0-17.673-14.327-32-32-32S0 238.327 0 256s14.327 32 32 32 32-14.327 32-32zm33.608 126.392c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm316.784 0c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zM97.608 65.608c-17.673 0-32 14.327-32 32 0 17.673 14.327 32 32 32s32-14.327 32-32c0-17.673-14.327-32-32-32z"/></svg>`
+		+ `</div>`);
+});
+
+doWhenPageLayoutComplete(() => {
+	endActivity();
+});
+
+
 /*****************/
 /* END OF LAYOUT */
 /*****************/

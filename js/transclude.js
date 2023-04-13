@@ -711,6 +711,9 @@ function includeContent(includeLink, content) {
             document: containingDocument
         });
     }
+
+	//	Activity ends.
+	endActivity();
 }
 
 /*****************************************************************************/
@@ -1438,6 +1441,9 @@ Transclude = {
 			return;
         }
 
+		//	Activity begins.
+		beginActivity();
+
 		//	Request data load, if need be.
 		if (dataProvider.cachedDataExists(includeLink) == false) {
 			dataProvider.load(includeLink);
@@ -1519,6 +1525,7 @@ Transclude = {
 			}
 		}, (link) => {
 		   	//	Load fail handler.
+		   	endActivity();
 
 			/*  If we’ve already tried and failed to load the content, we
 				will not try loading again, and just show a “loading failed”

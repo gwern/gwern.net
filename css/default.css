@@ -6318,6 +6318,41 @@ ol.link-bibliography-list-compact > li::before {
     }
 }
 
+
+/******************************/
+/* GENERAL ACTIVITY INDICATOR */
+/******************************/
+
+#general-activity-indicator {
+    position: fixed;
+    width: 1em;
+    bottom: 0.25em;
+    left: 0.25em;
+    visibility: hidden;
+}
+
+#general-activity-indicator svg {
+    display: block;
+    width: 100%;
+}
+
+#general-activity-indicator.on {
+	visibility: visible;
+}
+#general-activity-indicator.on svg {
+    animation: fa-spin 0.75s infinite steps(8);
+}
+
+@keyframes fa-spin {
+	  0% { transform: rotate(0deg);   }
+	100% { transform: rotate(360deg); }
+}
+
+@media only screen and (max-width: 649px) {
+	display: none;
+}
+
+
 /****************/
 /* TRANSCLUSION */
 /****************/
