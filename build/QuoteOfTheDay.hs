@@ -150,7 +150,7 @@ sitePrioritize = do sotdb <- readTTDB siteDBPath
                                                                                 ("." `T.isInfixOf` url)) b'
                     let b''' =  M.fromListWith (+) b''
                     return $ map snd $ reverse $ sort $ filter (\(e,f) -> e >= linkMin && f /="") $ map (\(c,d) -> (d,c)) $ M.toList b'''
-  where linkMin = 2 :: Int
+  where linkMin = 3 :: Int
         blackList :: [T.Text] -- definitely excluded from recs
         blackList = [
           "07th-expansion.fandom.com", "17th-angel.tumblr.com", "2chan.us", "abandonedfootnotes.blogspot.com", "abcnews.go.com",
@@ -603,4 +603,5 @@ sitePrioritize = do sotdb <- readTTDB siteDBPath
           "2015phage.org", "0fps.net", "www.theinformation.com", "assets.aeaweb.org", "www.greaterwrong.com", "git.sr.ht",
           "casetext.com", "archive.is", "phabricator.wikimedia.org", "www.cs.ox.ac.uk", "www.aboutamazon.com", "yosefk.com", "www.informit.com",
           "inews.co.uk", "en.wikibooks.org", "yougov.co.uk", "nunosempere.com", "www.inverse.com","www.icpsr.umich.edu","reallifemag.com",
-          "doi.org","www.nlsinfo.org","science.sciencemag.org", "supp.apa.org", "www.eoht.info"]
+          "doi.org","www.nlsinfo.org","science.sciencemag.org", "supp.apa.org", "www.eoht.info", "www.j-archive.com","www.engadget.com",
+          "www.armyupress.army.mil","rajpurkar.github.io"]
