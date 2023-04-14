@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-04-10 17:59:46 gwern"
+When:  Time-stamp: "2023-04-13 19:56:28 gwern"
 License: CC-0
 -}
 
@@ -49,7 +49,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
-import Image (invertImageInline, imageSrcset, addImgDimensions)
+import Image (invertImageInline, addImgDimensions)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
 import LinkID (authorsToCite, generateID)
@@ -350,8 +350,7 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                                                   walk addPageLinkWalk $
                                                   walk (parseRawBlock nullAttr) pandoc
                                           p' <- walkM (localizeLink am archived) p
-                                          p'' <- walkM invertImageInline p'
-                                          walkM imageSrcset p'' -- add 'srcset' HTML <img> property - helps toggle between the small/large image versions for mobile vs desktop
+                                          walkM invertImageInline p'
                       let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
                       when (length (urlEncode u') > 273) (printRed "Warning, annotation fragment path → URL truncated!" >>
                                                           putStrLn ("Was: " ++ urlEncode u' ++ " but truncated to: " ++ take 247 u' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"))

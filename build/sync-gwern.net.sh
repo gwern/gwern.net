@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-13 16:31:51 gwern"
+# When:  Time-stamp: "2023-04-13 20:03:33 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -86,7 +86,7 @@ else
           s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber';
 
           ## HTML/Markdown formatting:
-          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s '530px.jpg-530px.jpg' '530px.jpg'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' ''; s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>';
+          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' ''; s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' '';
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
@@ -197,11 +197,11 @@ else
     ## possible alternative implementation in hakyll: https://www.rohanjain.in/hakyll-sitemap/
     (echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
      ## very static files which rarely change: PDFs, images, site infrastructure:
-     find -L _site/doc/ _site/ _site/static/ -not -name "*.page" -type f | grep -F --invert-match -e 'doc/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/template/default.html' -e '-530px.jpg' -e '-768px.png' -e 'lorem' | grep -E --invert-match -e '/doc/.*/index' -e 'static/.*\..*\.html$' -e 'doc/.*\..*\.html$' | \
+     find -L _site/doc/ _site/ _site/static/ -not -name "*.page" -type f | grep -F --invert-match -e 'doc/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/template/default.html' -e 'lorem' | grep -E --invert-match -e '/doc/.*/index' -e 'static/.*\..*\.html$' -e 'doc/.*\..*\.html$' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>never<\/changefreq><\/url>/'
      ## Everything else changes once in a while:
-     find -L _site/ -not -name "*.page" -type f | grep -F --invert-match -e 'static/' -e 'doc/' -e 'fulltext' -e 'lorem' -e 'metadata/' -e '-768px.'  -e '.page.html'| \
+     find -L _site/ -not -name "*.page" -type f | grep -F --invert-match -e 'static/' -e 'doc/' -e 'fulltext' -e 'lorem' -e 'metadata/' -e '.page.html'| \
          grep -E --invert-match -e '/.*/index' -e '.page$' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/'
@@ -849,7 +849,6 @@ else
           cm "video/mp4"  'https://gwern.net/doc/genetics/selection/artificial/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
           cm "video/webm" 'https://gwern.net/doc/statistics/2003-gwern-murray-humanaccomplishment-region-proportions-bootstrap.webm'
           cm "image/jpeg" 'https://gwern.net/doc/cs/security/lobel-frogandtoadtogether-thebox-crop.jpg'
-          cm "image/jpeg" 'https://gwern.net/doc/technology/google/gwern-15-predicted-survivorship-curves.png-530px.jpg'
           cm "image/png"  'https://gwern.net/doc/technology/google/gwern-googlesearch-tools-daterange.png'
           cm "image/png"  'https://gwern.net/doc/technology/google/gwern-15-predicted-survivorship-curves.png'
           cm "application/wasm"  'https://gwern.net/static/js/patterns/en-us.wasm'
@@ -862,7 +861,7 @@ else
 
     ## check that tag-directories have the right thumbnails (ie. *not* the fallback thumbnail):
     λ(){ curl --silent 'https://gwern.net/doc/sociology/index' 'https://gwern.net/doc/psychology/index' 'https://gwern.net/doc/economics/index' | \
-             grep -F 'https://gwern.net/static/img/logo/logo-whitebg-large-border.png-530px.jpg'; }
+             grep -F 'https://gwern.net/static/img/logo/logo-whitebg-large-border.png'; }
     wrap λ "Tag-directories missing their automatically-extracted-from-annotation thumbnails & instead having the site-wide default thumbnail?"
 
     ## did any of the key pages mysteriously vanish from the live version?
@@ -881,7 +880,7 @@ else
     λ(){ fdupes --quiet --sameline --size --nohidden $(find ./ -type d | grep -E --invert-match -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotation/backlink' -e 'metadata/annotation/similar' -e 'metadata/annotation/link-bibliography') | grep -F --invert-match -e 'bytes each' -e 'trimfill.png'; }
     wrap λ "Duplicate file check"
 
-    λ(){ find ./ -type f | grep -F -v -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.page' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' -e '-530px.jpg' -e '-768px.jpg' -e '-768px.png' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | grep -E -v -e '^ +1 ' | sort --numeric-sort; }
+    λ(){ find ./ -type f | grep -F -v -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.page' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | grep -E -v -e '^ +1 ' | sort --numeric-sort; }
     wrap λ "File base names are preferably globally-unique, to avoid issues with duplicate search results and clashing link IDs."
 
     λ() { find . -perm u=r -path '.git' -prune; }

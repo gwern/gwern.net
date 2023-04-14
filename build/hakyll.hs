@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-04-04 14:25:53 gwern"
+When: Time-stamp: "2023-04-13 20:04:17 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -60,7 +60,7 @@ import qualified Data.Text as T (append, isInfixOf, pack, unpack, length)
 
 -- local custom modules:
 import Annotation (tooltipToMetadataTest)
-import Image (invertImageInline, imageMagickDimensions, addImgDimensions, imageSrcset)
+import Image (invertImageInline, imageMagickDimensions, addImgDimensions)
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToText, interwikiTestSuite)
 import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata)
@@ -162,9 +162,6 @@ main =
                                        "static/**.js",
                                        "static/**.net",
                                        "static/**.png",
-                                       "static/**768px.png",
-                                       "static/**768px.jpg",
-                                       "static/**530px.jpg",
                                        "static/**.R",
                                        "static/**.sh",
                                        "static/**.svg",
@@ -237,7 +234,6 @@ postCtx md =
     constField "confidence" "log" <>
     constField "importance" "0" <>
     constField "cssExtension" "drop-caps-de-zs" <>
-    thumbnailSmallTransform "thumbnailSmall" <>
     imageDimensionWidth "thumbnailHeight" <>
     imageDimensionWidth "thumbnailWidth" <>
     -- for use in templating, `<body class="$safeURL$">`, allowing page-specific CSS:
@@ -260,17 +256,6 @@ fieldsTagPlain m = field "tagsPlain" $ \item -> do
     Nothing               -> return "" -- noResult "no description field"
     Just (_,_,_,_,tags,_) -> return $ intercalate ", " tags
 
-thumbnailSmallTransform :: String -> Context String
-thumbnailSmallTransform d = field d $ \item -> do
-                  metadata <- getMetadata (itemIdentifier item)
-                  let thumbMaybe = lookupString "thumbnail" metadata
-                  case thumbMaybe of
-                    Nothing -> noResult "no thumbnail field"
-                    Just img -> return $ thumbnailSmall img
-
-thumbnailSmall :: String -> String
-thumbnailSmall i = if not (".jpg" `isSuffixOf` i || ".png" `isSuffixOf` i) then i else (i ++ "-530px.jpg")
-
 -- should backlinks be in the metadata? We skip backlinks for newsletters & indexes (excluded from the backlink generation process as well) due to lack of any value of looking for backlinks to hose.
 -- HACK: uses unsafePerformIO. Not sure how to check up front without IO... Read the backlinks DB and thread it all the way through `postCtx`, and `main`?
 check :: (String -> Bool) -> (String -> IO (String, String)) -> Item a -> Bool
@@ -288,7 +273,7 @@ imageDimensionWidth d = field d $ \item -> do
                   metadataMaybe <- getMetadataField (itemIdentifier item) "thumbnail"
                   let (h,w) = case metadataMaybe of
                         Nothing -> ("530","441") -- /static/img/logo/logo-whitebg-large-border.png-530px.jpg dimensions
-                        Just thumbnailPath -> unsafePerformIO $ imageMagickDimensions $ tail $ thumbnailSmall thumbnailPath
+                        Just thumbnailPath -> unsafePerformIO $ imageMagickDimensions $ tail thumbnailPath
                   if d == "thumbnailWidth" then return w else return h
 
 escapedTitleField :: String -> Context String
@@ -336,8 +321,7 @@ pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `con
                 walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) pb
      let pbth = addPageLinkWalk $ walk headerSelflink pbt
      if indexp then return pbth else
-       do pbth' <- walkM invertImageInline pbth
-          walkM imageSrcset pbth'
+       walkM invertImageInline pbth
 
 -- For Amazon links, there are two scenarios: there are parameters (denoted by a
 -- '?' in the URL), or there are not. In the former, we need to append the tag as
