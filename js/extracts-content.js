@@ -1058,6 +1058,9 @@ Extracts = { ...Extracts,
 
 		//	Loading spinner.
 		Extracts.setLoadingSpinner(popFrame);
+
+		//	We don’t need the full content inject handling, just ImageFocus.
+		ImageFocus.processImagesWithin(popFrame.body);
     },
 
     //  Called by: extracts.js (as `rewritePopupContent_${targetTypeName}`)

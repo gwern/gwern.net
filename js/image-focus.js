@@ -8,9 +8,16 @@ ImageFocus = {
 	/* Configuration.
 	 ****************/
 
-	contentImagesSelector: ".markdownBody figure img",
+	contentImagesSelector: [
+		".markdownBody figure img",
+		".popframe-body.image img"
+	].join(", "),
 
-	excludedContainerElementsSelector: "a, button, figure.image-focus-not",
+	excludedContainerElementsSelector: [
+		"a",
+		"button",
+		"figure.image-focus-not"
+	].join(", "),
 
 	imageGalleryInclusionTest: (image) => {
 		return (   image.closest("#markdownBody") != null
@@ -157,11 +164,8 @@ ImageFocus = {
 			image.addEventListener("click", ImageFocus.imageClickedToFocus);
 		});
 
-		//  Wrap all images in figures in a span.
+		//  Wrap all focusable images in a span.
 		container.querySelectorAll(ImageFocus.focusableImagesSelector).forEach(image => {
-			if (image.closest("figure") == null)
-				return;
-
 			wrapElement(image, "image-wrapper focusable", "SPAN");
 		});
 	},
