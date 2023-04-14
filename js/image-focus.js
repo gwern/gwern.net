@@ -8,9 +8,16 @@ ImageFocus = {
 	/* Configuration.
 	 ****************/
 
-	contentImagesSelector: ".markdownBody figure img",
+	contentImagesSelector: [
+		".markdownBody figure img",
+		".popframe-body.image img"
+	].join(", "),
 
-	excludedContainerElementsSelector: "a, button, figure.image-focus-not",
+	excludedContainerElementsSelector: [
+		"a",
+		"button",
+		"figure.image-focus-not"
+	].join(", "),
 
 	imageGalleryInclusionTest: (image) => {
 		return (   image.closest("#markdownBody") != null
@@ -157,11 +164,8 @@ ImageFocus = {
 			image.addEventListener("click", ImageFocus.imageClickedToFocus);
 		});
 
-		//  Wrap all images in figures in a span.
+		//  Wrap all focusable images in a span.
 		container.querySelectorAll(ImageFocus.focusableImagesSelector).forEach(image => {
-			if (image.closest("figure") == null)
-				return;
-
 			wrapElement(image, "image-wrapper focusable", "SPAN");
 		});
 	},
@@ -224,10 +228,11 @@ ImageFocus = {
 		//	Save reference to newly focused image.
 		ImageFocus.currentlyFocusedImage = imageToFocus;
 
+		//	Scroll to focused image.
+		revealElement(ImageFocus.currentlyFocusedImage, true);
+
 		//  Create the focused version of the image.
 		ImageFocus.imageInFocus = imageToFocus.cloneNode(true);
-		ImageFocus.imageInFocus.removeAttribute("width");
-		ImageFocus.imageInFocus.removeAttribute("height");
 		ImageFocus.imageInFocus.style = "";
 		ImageFocus.imageInFocus.style.filter = imageToFocus.style.filter + ImageFocus.dropShadowFilterForImages;
 
@@ -253,24 +258,15 @@ ImageFocus = {
 		GW.notificationCenter.fireEvent("ImageFocus.imageDidFocus", { image: imageToFocus });
 	},
 
-	resetFocusedImagePosition: (useSelf = false) => {
+	resetFocusedImagePosition: () => {
 		GWLog("ImageFocus.resetFocusedImagePosition", "image-focus.js", 2);
 
 		if (ImageFocus.imageInFocus == null)
 			return;
 
-		let imageToUse = useSelf || ImageFocus.currentlyFocusedImage == null
-						 ? ImageFocus.imageInFocus
-						 : ImageFocus.currentlyFocusedImage;
-
 		//  Make sure that initially, the image fits into the viewport.
-		let imageWidth = imageToUse.naturalWidth;
-		let imageHeight = imageToUse.naturalHeight;
-		if (imageWidth == 0 || imageHeight == 0) {
-			ImageFocus.imageInFocus.addEventListener("load", (event) => {
-				ImageFocus.resetFocusedImagePosition(true);
-			}, { once: true });
-		}
+		let imageWidth = ImageFocus.imageInFocus.naturalWidth || ImageFocus.imageInFocus.getAttribute("width");
+		let imageHeight = ImageFocus.imageInFocus.naturalHeight || ImageFocus.imageInFocus.getAttribute("height");
 
 		//	Constrain dimensions proportionally.
 		let constrainedWidth = Math.min(imageWidth, window.innerWidth * ImageFocus.shrinkRatio);
@@ -465,9 +461,6 @@ ImageFocus = {
 				if (   imageToFocus > 0
 					&& imageToFocus <= images.length) {
 					ImageFocus.focusImage(images[imageToFocus - 1]);
-
-					//	Scroll to focused image.
-					revealElement(ImageFocus.currentlyFocusedImage, true);
 				}
 			});
 		}

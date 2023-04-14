@@ -3331,6 +3331,7 @@ body.index-directory #footer {
     bottom: 0;
     left: 0;
     right: 0;
+    overflow: hidden;
 }
 
 /*=-------------------=*/
@@ -3954,6 +3955,7 @@ body.index-directory #footer {
 
 .popframe-body.audio audio {
 	width: 100%;
+	top: 0;
 }
 
 /*	Don’t show while loading, or when loading failed.
@@ -4544,11 +4546,12 @@ body.index-directory #footer {
     left: 0;
     top: var(--popup-title-bar-height);
     width: 100%;
-    height: calc(100% - var(--popup-title-bar-height) - 1px);
+    height: calc(100% - var(--popup-title-bar-height) - 0.1em - 1px);
+    padding-bottom: 0.1em;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2em;
+    font-size: 1.75em;
     font-family: var(--GW-sans-serif-font-stack);
     font-weight: bold;
     text-transform: uppercase;
@@ -5300,7 +5303,7 @@ body.index-directory #footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2em;
+    font-size: 1.5em;
     font-family: var(--GW-sans-serif-font-stack);
     font-weight: bold;
     text-transform: uppercase;

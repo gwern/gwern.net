@@ -939,9 +939,10 @@ Extracts = { ...Extracts,
         GWLog("Extracts.localAudioForTarget", "extracts-content.js", 2);
 
         return newDocument(
-              `<audio controls="controls" preload="none">`
+        	  `<figure>`
+            + `<audio controls="controls" preload="none">`
             + `<source src="${target.href}">`
-            + `</audio>`);
+            + `</audio></figure>`);
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -1058,6 +1059,9 @@ Extracts = { ...Extracts,
 
 		//	Loading spinner.
 		Extracts.setLoadingSpinner(popFrame);
+
+		//	We don’t need the full content inject handling, just ImageFocus.
+		ImageFocus.processImagesWithin(popFrame.body);
     },
 
     //  Called by: extracts.js (as `rewritePopupContent_${targetTypeName}`)
