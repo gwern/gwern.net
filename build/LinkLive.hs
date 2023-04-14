@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-04-12 09:23:05 gwern"
+When:  Time-stamp: "2023-04-13 18:23:13 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -1594,7 +1594,7 @@ badDomainsSimple = [ "2chan.us"
    , "www.cabinetmagazine.org"
    , "www.calnewport.com"
    , "www.cambridge.org"
-   , "www.cambridgebrainsciences.com"
+   , "creyos.com"
    , "www.campbellrivermirror.com"
    , "www.cancer.gov"
    , "www.cancerresearchuk.org"
@@ -3238,7 +3238,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://book.realworldhaskell.org/read/data-structures.html#id637702"
             , "http://book.webtypography.net/"
             , "http://boston.conman.org/2013/01/22.2"
-            , "http://brainworkshop.sourceforge.net/tutorial.html"
+            , "https://brainworkshop.sourceforge.net/tutorial.html"
             , "http://bugs.darcs.net/issue346"
             , "http://buttercupfestival.com/green/index.htm"
             , "http://catb.org/~esr/writings/taoup/html/ch05s01.html"
@@ -3319,7 +3319,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "http://rstb.royalsocietypublishing.org/content/365/1537/73.full"
             , "http://secretlaboratory.org/?p=9543"
             , "http://serendipityrecs.com/"
-            , "http://sethroberts.net/2011/01/29/the-buttermind-experiment/"
+            , "https://sethroberts.net/2011/01/29/the-buttermind-experiment/"
             , "http://sigbovik.org/2019/"
             , "http://ssgac.org/documents/CHIC_Summary_Benyamin2014.txt.gz"
             , "http://stroke.ahajournals.org/content/39/10/2824.full"
@@ -3739,7 +3739,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://joshdean.com/sites/default/files/articles/feat_clones44.pdf"
             , "https://jotengine.com/transcriptions/Q0I0i33TaqCa9w4In0ZQCg"
             , "https://journals.ametsoc.org/view/journals/clim/18/23/jcli3593.1.xml"
-            , "https://journals.lww.com/greenjournal/Abstract/2003/03000/A_Randomized_Trial_of_Docosahexaenoic_Acid.11.aspx"
+            , "https://journals.lww.com/greenjournal/Fulltext/2003/03000/A_Randomized_Trial_of_Docosahexaenoic_Acid.11.aspx"
             , "https://journals.physiology.org/doi/full/10.1152/ajpregu.2000.278.4.r905"
             , "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0201246"
             , "https://journals.sagepub.com/doi/full/10.1177/2515245920919667"
@@ -4150,7 +4150,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.cabinetmagazine.org/issues/42/wiles.php"
             , "https://www.calnewport.com/books/deep-work/"
             , "https://www.cambridge.org/core/journals/journal-of-economic-history/article/two-centuries-of-productivity-growth-in-computing/856EC5947A5857296D3328FA154BA3A3"
-            , "https://www.cambridgebrainsciences.com/"
+            , "https://creyos.com/"
             , "https://www.campbellrivermirror.com/news/257558681.html"
             , "https://www.cancer.gov/about-cancer/causes-prevention/risk/tobacco/smokeless-fact-sheet#q2"
             , "https://www.cancerresearchuk.org/about-us"

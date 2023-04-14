@@ -2,7 +2,6 @@
 -- Optimize or stylize images
 module Image where
 
-import Control.Concurrent (forkIO)
 import Control.Exception (onException)
 import Control.Monad (unless, void, when, (<=<))
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
@@ -18,13 +17,13 @@ import System.IO.Temp (emptySystemTempFile)
 import System.Posix.Temp (mkstemp)
 import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
 import Text.Read (readMaybe)
-import qualified Data.Text as T (isSuffixOf, pack, unpack, Text, isPrefixOf, takeWhile)
+import qualified Data.Text as T (isSuffixOf, unpack, Text)
 
 import Data.FileStore.Utils (runShellCommand)
 
 import Text.Pandoc (Inline(Image, Link))
 
-import Utils (addClass, printRed, replace, replaceMany, anySuffix)
+import Utils (addClass, printRed, replace, anySuffix)
 
 -------------------------------------------
 
@@ -77,7 +76,7 @@ invertImage f | "https://gwern.net/" `isPrefixOf` f = invertImageLocal $ Utils.r
 
 invertImageLocal :: FilePath -> IO (Bool, String, String)
 invertImageLocal "" = return (False, "0", "0")
-invertImageLocal f = do let f' = replaceMany [("-530px.jpg", ""), ("-768px.jpg", ""), ("-530px.png", ""), ("-768px.png", "")] $ takeWhile (/='#') f
+invertImageLocal f = do let f' = takeWhile (/='#') f
                         if not (anySuffix f' [".png", ".jpg", ".webp"]) then return (False, "0", "0")  else
                          do does <- doesFileExist f'
                             if not does then printRed ("invertImageLocal: " ++ f ++ " " ++ f' ++ " does not exist") >> return (False, "0", "0") else
@@ -128,48 +127,6 @@ imageMagickDimensions f =
              _             -> do let [height, width] = words $ head $ lines $ B8.unpack bs
                                  return (height, width)
 
--- Example: Image ("",["width-full"],[]) [Str "..."] ("/doc/ai/nn/gan/stylegan/thiswaifudoesnotexist.png","fig:")
--- type Text.Pandoc.Definition.Attr = (T.Text, [T.Text], [(T.Text, T.Text)])
--- WARNING: image hotlinking is a bad practice: hotlinks will often break, sometimes just because of hotlinking. We assume that all images are locally hosted! Woe betide the cheapskate parasite who fails to heed this.
-imageSrcset :: Inline -> IO Inline
-imageSrcset x@(Image (c, t, pairs) inlines (targt, title)) =
-  let target = T.takeWhile (/='#') targt in -- it is possible to have links which have '.png' or '.jpg' infix, but are not actually images, such as, in tag-directories, section headers for images: '/doc/statistics/survival-analysis/index#filenewbie-survival-by-semester-rows.png' or in articles like /red ('doc/design/typography/rubrication/index#filenachf%C3%BClleisengallustinte-pelikan-0.5-liter-g%C3%BCnther-wagner.jpg'); special-case that
-  if not (".png" `T.isSuffixOf` target || ".jpg" `T.isSuffixOf` target) || "page-thumbnail" `elem` t then return x else -- in particular, we skip SVG files
-  do let ext = takeExtension $ T.unpack target
-     let target' = replace "%2F" "/" $ T.unpack target
-     exists <- doesFileExist $ tail $ T.unpack target
-     if not exists then printRed ("imageSrcset (Image): " ++ show x ++ " does not exist?") >> return x else
-      do (_,w) <- imageMagickDimensions $ tail target'
-         if w=="" || (read w :: Int) <= 768 then return x else do
-             let smallerPath = tail target' ++ "-768px" ++ ext
-             notExist <- fmap not $ doesFileExist smallerPath
-             when notExist $ do
-               (status,_,bs) <-  runShellCommand "./" Nothing "convert" [tail target', "-resize", "768x768", smallerPath]
-               -- ultra-small low-quality version for thumbnails:
-               _ <-  runShellCommand "./" Nothing "convert" [tail target', "-resize", "530", "-quality", "20%", tail target' ++ "-530px.jpg"]
-               case status of
-                 ExitFailure _ -> error $ show status ++ show bs
-                 _ -> void $ forkIO $ if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
-                                        void $ runShellCommand "./" Nothing "static/build/png" [smallerPath]
-                                      else
-                                        void $ runShellCommand "./" Nothing "static/build/compressJPG2" [smallerPath]
-             let srcset = T.pack ("/"++smallerPath++" 768w, " ++ target'++" "++w++"w")
-             return $ Image (c, t, pairs++[("srcset", srcset), ("sizes", T.pack ("(max-width: 768px) 100vw, "++w++"px"))])
-                            inlines (target, title)
--- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
-imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = let p' = T.takeWhile (/='#') p in
-                                                         if (".png" `T.isSuffixOf` p' || ".jpg" `T.isSuffixOf` p') &&
-                                                          ("https://gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
-                                                         do exists <- doesFileExist $ tail $ replace "https://gwern.net" "" $ T.unpack  p'
-                                                            if not exists then printRed "imageSrcset (Link): " >> putStr (show x) >> printRed " does not exist?" >> return x else
-                                                              do (h,w) <- imageMagickDimensions $ T.unpack p'
-                                                                 return (Link (htmlid, classes,
-                                                                               kvs++[("image-height",T.pack h),
-                                                                                      ("image-width",T.pack w)])
-                                                                         xs (p,t))
-                                                       else return x
-imageSrcset x = return x
-
 -- FASTER HTML RENDERING BY STATICLY SPECIFYING ALL IMAGE DIMENSIONS
 -- read HTML string with TagSoup, process `<img>` tags to read the file's dimensions, and hardwire them;
 -- this optimizes HTML rendering since browsers know before downloading the image how to layout the page.
@@ -181,6 +138,8 @@ imageSrcset x = return x
 addImgDimensions :: String -> IO String
 addImgDimensions = fmap (renderTagsOptions renderOptions{optMinimize=whitelist, optRawTag = (`elem` ["script", "style"]) . map toLower}) . mapM staticImg <=< addVideoPoster . parseTags
                  where whitelist s = s /= "div" && s /= "script" && s /= "style"
+
+-- x = "          <section id=\"video\" class=\"level2\">\n            <h2><a href=\"#video\" title=\"Link to section: § 'Video'\">Video</a></h2>\n            <figure>\n              <video controls=\"controls\" preload=\"none\" loop=\"\"><source src=\"/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4\" type=\"video/mp4\"></video>\n              <figcaption>\n                <a href=\"/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4\">Training montage</a> of the 256px Danbooru2018-1K<a href=\"#fn4\" class=\"footnote-ref\" id=\"fnref4\" role=\"doc-noteref\"><sup>4</sup></a>\n              </figcaption>\n            </figure>\n          </section>"
 
 -- VIDEO POSTER images
 -- use tagsoup to go through a list of HTML tags looking for a `<video>` tag set of the form
@@ -196,6 +155,7 @@ addImgDimensions = fmap (renderTagsOptions renderOptions{optMinimize=whitelist, 
 addVideoPoster :: [Tag String] -> IO [Tag String]
 addVideoPoster [] = return []
 addVideoPoster (videoTag@(TagOpen "video" _):sourceTag@(TagOpen "source" sourceAttrs):xs) = do
+    print $ "Image.hs: addVideoPoster: sourceTag: " ++ show sourceTag
     updatedVideoTag <- updateVideoTag videoTag sourceAttrs
     rest <- addVideoPoster xs
     return (updatedVideoTag : sourceTag : rest)

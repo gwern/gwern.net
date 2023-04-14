@@ -522,7 +522,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Book of Job", "https://en.wikipedia.org/wiki/Book_of_Job")
         , ("Brad Leithauser", "https://en.wikipedia.org/wiki/Brad_Leithauser")
         , ("Bradley.Terry model", "https://en.wikipedia.org/wiki/Bradley-Terry_model")
-        , ("Brain Workshop", "http://brainworkshop.sourceforge.net/")
+        , ("Brain Workshop", "https://brainworkshop.sourceforge.net/")
         , ("Bruce Schneier", "https://en.wikipedia.org/wiki/Bruce_Schneier")
         , ("ByT5", "https://arxiv.org/abs/2105.13626#google")
         , ("C4\\.5", "https://en.wikipedia.org/wiki/C4.5_algorithm")
