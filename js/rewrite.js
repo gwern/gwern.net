@@ -658,24 +658,46 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
 
 /*****************************************************************************/
 /*  Sets, in CSS, the image dimensions that are specified in HTML.
-    (This is to ensure no reflow.)
+ */
+function setImageDimensions(image, fixWidth = false, fixHeight = false) {
+	let width = image.getAttribute("width");
+	let height = image.getAttribute("height");
+
+	image.style.aspectRatio = `${width} / ${height}`;
+
+	let maxHeight = parseInt(getComputedStyle(image).maxHeight);
+	if (maxHeight)
+		width = Math.round(Math.min(width, maxHeight * (width/height)));
+
+	if (fixWidth) {
+		image.style.width = `${width}px`;
+	}
+	if (fixHeight) {
+		//	Nothing, for now.
+	}
+}
+
+/**********************************************************/
+/*  Prevent reflow in annotations, reduce reflow elsewhere.
  */
 addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) => {
     GWLog("setImageDimensions", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll("figure img[width][height]").forEach(image => {
-        let width = image.getAttribute("width");
-        let height = image.getAttribute("height");
+    	let fixWidth = (   eventInfo.contentType == "annotation"
+    					&& image.classList.containsAnyOf([ "float-left", "float-right" ]));
+    	setImageDimensions(image, fixWidth);
+    });
+}, "rewrite");
 
-        image.style.aspectRatio = `${width} / ${height}`;
+/********************************************/
+/*	Prevent reflow due to lazy-loaded images.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.updateImageDimensions = (eventInfo) => {
+    GWLog("updateImageDimensions", "rewrite.js", 1);
 
-		let maxHeight = parseInt(getComputedStyle(image).maxHeight);
-		if (maxHeight)
-			width = Math.round(Math.min(width, maxHeight * (width/height)));
-
-        if (   eventInfo.contentType == "annotation"
-        	&& image.classList.containsAnyOf([ "float-left", "float-right" ]))
-			image.style.width = `${width}px`;
+    eventInfo.container.querySelectorAll("figure img[width][height][loading='lazy']").forEach(image => {
+        setImageDimensions(image, true);
     });
 }, "rewrite");
 
