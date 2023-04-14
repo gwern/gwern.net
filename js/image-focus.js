@@ -224,6 +224,9 @@ ImageFocus = {
 		//	Save reference to newly focused image.
 		ImageFocus.currentlyFocusedImage = imageToFocus;
 
+		//	Scroll to focused image.
+		revealElement(ImageFocus.currentlyFocusedImage, true);
+
 		//  Create the focused version of the image.
 		ImageFocus.imageInFocus = imageToFocus.cloneNode(true);
 		ImageFocus.imageInFocus.removeAttribute("width");
@@ -465,9 +468,6 @@ ImageFocus = {
 				if (   imageToFocus > 0
 					&& imageToFocus <= images.length) {
 					ImageFocus.focusImage(images[imageToFocus - 1]);
-
-					//	Scroll to focused image.
-					revealElement(ImageFocus.currentlyFocusedImage, true);
 				}
 			});
 		}
