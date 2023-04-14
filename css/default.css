@@ -1176,7 +1176,7 @@ body.index .markdownBody .section-link-list ul > li::before {
 .markdownBody ol.list-type-lower-roman > li::before {
     content: counter(list-item, lower-roman) ".";
 }
-.markdownBody ol.list-type-upper-roman > li::before] {
+.markdownBody ol.list-type-upper-roman > li::before {
     content: counter(list-item, upper-roman) ".";
 }
 
