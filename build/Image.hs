@@ -17,7 +17,7 @@ import System.IO.Temp (emptySystemTempFile)
 import System.Posix.Temp (mkstemp)
 import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
 import Text.Read (readMaybe)
-import qualified Data.Text as T (isSuffixOf, unpack, Text)
+import qualified Data.Text as T (isPrefixOf, isSuffixOf, pack, takeWhile, unpack, Text)
 
 import Data.FileStore.Utils (runShellCommand)
 
@@ -232,6 +232,22 @@ staticImg x@(TagOpen "img" xs) = do
       else return x
   where uniq = nubBy (\a b -> fst a == fst b) . sort
 staticImg x = return x
+
+-- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
+imageLinkHeightWidthSet :: Inline -> IO Inline
+imageLinkHeightWidthSet x@(Link (htmlid, classes, kvs) xs (p,t)) =
+                                                        let p' = T.takeWhile (/='#') p in
+                                                         if (".png" `T.isSuffixOf` p' || ".jpg" `T.isSuffixOf` p') &&
+                                                          ("https://gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
+                                                         do exists <- doesFileExist $ tail $ replace "https://gwern.net" "" $ T.unpack  p'
+                                                            if not exists then printRed "imageLinkHeightWidthSet: " >> putStr (show x) >> printRed " does not exist?" >> return x else
+                                                              do (h,w) <- imageMagickDimensions $ T.unpack p'
+                                                                 return (Link (htmlid, classes,
+                                                                               kvs++[("image-height",T.pack h),
+                                                                                      ("image-width",T.pack w)])
+                                                                         xs (p,t))
+                                                       else return x
+imageLinkHeightWidthSet x = return x
 
 -- Further, specify 'async' decoding & 'lazy-loading' for all images: the lazy attribute was introduced by Chrome 76 ~August 2019, and adopted by Firefox 75 ~February 2020 (<https://bugzilla.mozilla.org/show_bug.cgi?id=1542784>), standardized as <https://html.spec.whatwg.org/multipage/urls-and-fetching.html#lazy-loading-attributes> with >63% global availability + backwards compatibility (<https://caniuse.com/#feat=loading-lazy-attr> <https://github.com/whatwg/html/pull/3752> <https://web.dev/native-lazy-loading/>).
 -- Negation: `loading="eager"`

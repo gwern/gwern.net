@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-04-13 20:04:17 gwern"
+When: Time-stamp: "2023-04-14 16:53:33 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -34,7 +34,7 @@ Explanations:
 - the 'echo' calls are there to ring the terminal bell and notify the user that he needs to edit the Modafinil file or that the whole thing is done
 -}
 
-import Control.Monad (when, unless)
+import Control.Monad (when, unless, (<=<))
 import Data.Char (toLower)
 import Data.IORef (newIORef, IORef)
 import Data.List (intercalate, isInfixOf, isSuffixOf)
@@ -60,7 +60,7 @@ import qualified Data.Text as T (append, isInfixOf, pack, unpack, length)
 
 -- local custom modules:
 import Annotation (tooltipToMetadataTest)
-import Image (invertImageInline, imageMagickDimensions, addImgDimensions)
+import Image (invertImageInline, imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet)
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToText, interwikiTestSuite)
 import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata)
@@ -321,7 +321,7 @@ pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `con
                 walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) pb
      let pbth = addPageLinkWalk $ walk headerSelflink pbt
      if indexp then return pbth else
-       walkM invertImageInline pbth
+       walkM (imageLinkHeightWidthSet <=< invertImageInline) pbth
 
 -- For Amazon links, there are two scenarios: there are parameters (denoted by a
 -- '?' in the URL), or there are not. In the former, we need to append the tag as
