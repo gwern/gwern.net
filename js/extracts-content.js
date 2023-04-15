@@ -868,9 +868,10 @@ Extracts = { ...Extracts,
         GWLog("Extracts.localVideoForTarget", "extracts-content.js", 2);
 
         return newDocument(
-              `<video controls="controls" preload="none">`
+              `<figure>`
+            + `<video controls="controls" preload="none">`
             + `<source src="${target.href}">`
-            + `</video>`);
+            + `</video></figure>`);
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
