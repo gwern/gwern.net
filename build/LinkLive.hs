@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-04-13 18:23:13 gwern"
+When:  Time-stamp: "2023-04-14 11:31:10 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -2783,7 +2783,6 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://ncase.me/"
             , "https://neurosciencenews.com/brain-connectome-artificial-neural-networks/"
             , "https://newcriterion.com/issues/2006/10/a-good-list"
-            , "https://news.nationalgeographic.com/news/2014/10/141015-better-beef-genetics-science-agriculture-environment-ngfood/"
             , "https://nickbostrom.com/astronomical/waste.html"
             , "https://nintil.com/science-ending-frontier"
             , "https://nootropicsdepot.com/bacopa/"

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-04-13 19:56:28 gwern"
+When:  Time-stamp: "2023-04-14 16:52:55 gwern"
 License: CC-0
 -}
 
@@ -16,7 +16,7 @@ License: CC-0
 {-# LANGUAGE OverloadedStrings #-}
 module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, simplifiedHTMLString, dateTruncateBad, typesetHtmlField) where
 
-import Control.Monad (unless, void, when, foldM_)
+import Control.Monad (unless, void, when, foldM_, (<=<))
 
 import qualified Data.ByteString as B (appendFile, readFile)
 import Data.Char (isPunctuation, toLower, isSpace)
@@ -49,7 +49,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
-import Image (invertImageInline, addImgDimensions)
+import Image (invertImageInline, addImgDimensions, imageLinkHeightWidthSet)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
 import LinkID (authorsToCite, generateID)
@@ -349,8 +349,7 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                                                   walk (hasAnnotation md) $
                                                   walk addPageLinkWalk $
                                                   walk (parseRawBlock nullAttr) pandoc
-                                          p' <- walkM (localizeLink am archived) p
-                                          walkM invertImageInline p'
+                                          walkM (invertImageInline <=< imageLinkHeightWidthSet <=< localizeLink am archived) p
                       let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
                       when (length (urlEncode u') > 273) (printRed "Warning, annotation fragment path → URL truncated!" >>
                                                           putStrLn ("Was: " ++ urlEncode u' ++ " but truncated to: " ++ take 247 u' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"))

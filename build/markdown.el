@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-04-13 17:25:53 gwern"
+;;; When:  Time-stamp: "2023-04-14 21:51:11 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -26,7 +26,7 @@
 
 ; (setq major-mode 'markdown-mode) ; needs to be done via 'Customize'?
 (setq markdown-command
-   "pandoc --mathjax --metadata title='Markdown preview' --to=html5 --standalone --number-sections --toc --reference-links --css=~/wiki/static/css/initial.css --css=~/wiki/static/css/links.css --css=~/wiki/static/css/default.css --css=~/wiki/static/css/dark-mode-adjustments.css --css=~/wiki/static/css/fonts.css --css=~/wiki/static/css/FontAwesome.css --css=~/wiki/static/css/dark-mode.css --css=~/wiki/static/css/colors.css --css=~/wiki/static/css/colors-dark.css -f markdown+smart --template=~/bin/bin/pandoc-template-html5-articleedit.html5 -V lang=en-us")
+   "pandoc --mathjax --metadata title='Markdown preview' --to=html5 --standalone --number-sections --toc --reference-links --css=~/wiki/static/css/initial.css --css=~/wiki/static/css/links.css --css=~/wiki/static/css/default.css --css=~/wiki/static/css/dark-mode-adjustments.css --css=~/wiki/static/css/fonts.css --css=~/wiki/static/css/FontAwesome.css --css=~/wiki/static/css/dark-mode.css --css=~/wiki/static/css/colors.css --css=~/wiki/static/css/colors-dark.css -f markdown+smart --template=/home/gwern/bin/bin/pandoc-template-html5-articleedit.html5 -V lang=en-us")
 (setq markdown-enable-math t)
 (setq markdown-italic-underscore t)
 
@@ -115,6 +115,39 @@ START and END specify the region to search."
          (when (use-region-p)
            (region-end))))
   (query-replace-regexp-once (regexp-quote from-string) to-string delimited start end))
+(defun query-replace-regexp-once (regexp to-string &optional delimited start end)
+  "Replace the first occurrence of REGEXP with TO-STRING.
+If DELIMITED is non-nil, only match whole words.
+START and END specify the region to search."
+  (interactive
+   (list (read-from-minibuffer "Query replace regexp once (regexp): ")
+         (read-from-minibuffer "Query replace regexp once with: ")
+         nil
+         (when (use-region-p)
+           (region-beginning))
+         (when (use-region-p)
+           (region-end))))
+  (let ((inhibit-read-only t)
+        (case-fold-search nil)
+        (search-function (if delimited 're-search-forward-word 're-search-forward))
+        (replace-done nil))
+    (save-excursion
+      (goto-char (or start (point-min)))
+      (while (and (not replace-done) (funcall search-function regexp end t))
+        (isearch-highlight (match-beginning 0) (match-end 0))
+        (let ((response (read-char-choice
+                         (concat "Replace this occurrence? (y/n/q): "
+                                 (substring-no-properties (match-string 0)))
+                         '(?y ?n ?q))))
+          (cond ((eq response ?y)
+                 (replace-match to-string t nil) ; NOTE: fixed-string replacement, not matched-case. We do not want to mangle URLs and create rewrites like 'Twitter' → '[Twitter](Https://En.Wikipedia.Org/Wiki/Twitter)'!
+                 (setq replace-done t))
+                ((eq response ?n)
+                 (forward-char))
+                ((eq response ?q)
+                 (setq replace-done t) ; treat as successfully finished and exit politely
+                 ))))
+      (lazy-highlight-cleanup t))))
 (defun re-search-forward-word (regexp &optional bound noerror count)
   "Search forward from point for a whole-word occurrence of REGEXP.
 This is a wrapper around `re-search-forward' that ensures word boundaries.
@@ -673,11 +706,13 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
          (query-replace "-\n" "" nil begin end)
          (query-replace "- \n" "" nil begin end)
          (query-replace "-\n" "-" nil begin end)
-         (markdown-remove-newlines-in-paragraphs) ; once all the hyphenation is dealt with, remove the hard-newlines which are common in PDF copy-pastes. These hard newlines are a problem because they break many string matches, and they make `langcheck` highlight every line beginning/ending in red as an error.
+         (when (equal (buffer-name) "foo")
+           (markdown-remove-newlines-in-paragraphs)) ; once all the hyphenation is dealt with, remove the hard-newlines which are common in PDF copy-pastes. These hard newlines are a problem because they break many string matches, and they make `langcheck` highlight every line beginning/ending in red as an error.
          (query-replace " -- " "---" nil begin end)
          (query-replace " --- " "---" nil begin end)
          (query-replace "--- " "---" nil begin end)
          (query-replace " ---" "---" nil begin end)
+         (query-replace "----" "---" nil begin end)
          (query-replace " -\"" "---\"" nil begin end)
          (query-replace "\"- " "\"---" nil begin end)
          (replace-all "► " "- ")
