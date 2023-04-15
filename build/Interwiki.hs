@@ -831,7 +831,6 @@ redirectDB = [
           , ("https://en.wikipedia.org/wiki/Dollo's_Law", "https://en.wikipedia.org/wiki/Dollo%27s_law_of_irreversibility")
           , ("https://en.wikipedia.org/wiki/Domain-specific_languages", "https://en.wikipedia.org/wiki/Domain-specific_language")
           , ("https://en.wikipedia.org/wiki/Domesticated_red_fox", "https://en.wikipedia.org/wiki/Domesticated_silver_fox")
-          , ("https://en.wikipedia.org/wiki/Dominique_Strauss-Khan", "https://en.wikipedia.org/wiki/Dominique_Strauss-Kahn")
           , ("https://en.wikipedia.org/wiki/Don't_Repeat_Yourself", "https://en.wikipedia.org/wiki/Don%27t_repeat_yourself")
           , ("https://en.wikipedia.org/wiki/Doogie_mice", "https://en.wikipedia.org/wiki/Long-term_potentiation#Spatial_memory")
           , ("https://en.wikipedia.org/wiki/Doomsday_Argument", "https://en.wikipedia.org/wiki/Doomsday_argument")

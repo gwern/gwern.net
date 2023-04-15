@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-04-12 22:27:22 gwern"
+# When:  Time-stamp: "2023-04-14 19:54:01 gwern"
 # License: CC-0
 #
 # This will reformat, run PDFs through `ocrmypdf` (via the `compressPdf` wrapper), and `git commit` new files.
@@ -86,7 +86,6 @@ else
             if [ ! -e ~/wiki/"$TARGET" ]; then
                 mv "$FILE" ~/wiki/"$TARGET"
                 cd ~/wiki/ || return
-                if [[ "$FILE" =~ .*\.jpg ]] || [[ "$FILE" =~ .*\.png ]]; then resize_image /"$TARGET"; fi # get it built immediately so the smaller versions are available on next sync rather than sync after next sync.
                 chmod a+r "$TARGET"
                 if [[ "$TARGET" =~ .*\.pdf ]]; then
                     METADATA=$(crossref "$TARGET") && echo "$METADATA" & # background for speed, but print it out mostly-atomically to avoid being mangled & impeding copy-paste of the annotation metadata

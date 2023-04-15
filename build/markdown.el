@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-04-14 11:12:27 gwern"
+;;; When:  Time-stamp: "2023-04-14 21:51:11 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -26,7 +26,7 @@
 
 ; (setq major-mode 'markdown-mode) ; needs to be done via 'Customize'?
 (setq markdown-command
-   "pandoc --mathjax --metadata title='Markdown preview' --to=html5 --standalone --number-sections --toc --reference-links --css=~/wiki/static/css/initial.css --css=~/wiki/static/css/links.css --css=~/wiki/static/css/default.css --css=~/wiki/static/css/dark-mode-adjustments.css --css=~/wiki/static/css/fonts.css --css=~/wiki/static/css/FontAwesome.css --css=~/wiki/static/css/dark-mode.css --css=~/wiki/static/css/colors.css --css=~/wiki/static/css/colors-dark.css -f markdown+smart --template=~/bin/bin/pandoc-template-html5-articleedit.html5 -V lang=en-us")
+   "pandoc --mathjax --metadata title='Markdown preview' --to=html5 --standalone --number-sections --toc --reference-links --css=~/wiki/static/css/initial.css --css=~/wiki/static/css/links.css --css=~/wiki/static/css/default.css --css=~/wiki/static/css/dark-mode-adjustments.css --css=~/wiki/static/css/fonts.css --css=~/wiki/static/css/FontAwesome.css --css=~/wiki/static/css/dark-mode.css --css=~/wiki/static/css/colors.css --css=~/wiki/static/css/colors-dark.css -f markdown+smart --template=/home/gwern/bin/bin/pandoc-template-html5-articleedit.html5 -V lang=en-us")
 (setq markdown-enable-math t)
 (setq markdown-italic-underscore t)
 
@@ -706,7 +706,8 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
          (query-replace "-\n" "" nil begin end)
          (query-replace "- \n" "" nil begin end)
          (query-replace "-\n" "-" nil begin end)
-         (markdown-remove-newlines-in-paragraphs) ; once all the hyphenation is dealt with, remove the hard-newlines which are common in PDF copy-pastes. These hard newlines are a problem because they break many string matches, and they make `langcheck` highlight every line beginning/ending in red as an error.
+         (when (equal (buffer-name) "foo")
+           (markdown-remove-newlines-in-paragraphs)) ; once all the hyphenation is dealt with, remove the hard-newlines which are common in PDF copy-pastes. These hard newlines are a problem because they break many string matches, and they make `langcheck` highlight every line beginning/ending in red as an error.
          (query-replace " -- " "---" nil begin end)
          (query-replace " --- " "---" nil begin end)
          (query-replace "--- " "---" nil begin end)

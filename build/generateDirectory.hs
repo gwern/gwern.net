@@ -34,7 +34,7 @@ import Tags (tagsToLinksSpan, listTagDirectories, abbreviateTag)
 import LinkBacklink (getBackLinkCheck, getSimilarLinkCheck, getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy)
-import Utils (replace, replaceManyT, writeUpdatedFile, printRed, toPandoc, anySuffix)
+import Utils (replace, writeUpdatedFile, printRed, toPandoc, anySuffix)
 
 main :: IO ()
 main = do dirs <- getArgs
