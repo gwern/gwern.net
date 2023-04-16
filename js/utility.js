@@ -515,8 +515,12 @@ function selectElementContents(element) {
 /*  Returns a DocumentFragment containing the current selection.
  */
 function getSelectionAsDocument(doc = document) {
+	let selection = doc.getSelection();
+	if (selection.rangeCount == 0)
+		return newDocument();
+
     let docFrag = new DocumentFragment();
-    docFrag.append(doc.getSelection().getRangeAt(0).cloneContents());
+    docFrag.append(selection.getRangeAt(0).cloneContents());
 
 	//	Strip whitespace (remove top-level empty nodes).
 	let nodesToRemove = [ ];
