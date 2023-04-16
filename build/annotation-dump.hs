@@ -12,7 +12,7 @@ import LinkID (authorsToCite, generateURL)
 import LinkMetadata (authorsTruncate, sortItemPathDate, readYamlFast)
 import LinkMetadataTypes (MetadataItem)
 import Tags (uniqTags)
-import Utils (anyInfix, replace, sed)
+import Utils (anyInfix, replace, sed, split)
 
 type Path = String
 
@@ -46,7 +46,7 @@ toSingleLine (f,(mi@(b,c,d,_,tags,abst),label)) = intercalate "; "
   ([ label,
      authorsToCite f c d,
     "\x1b[32m "++f++" \x1b[0m",
-    show (uniqTags tags),
+    show (uniqTags $ split " " tags),
     "\x1b[35m\""++b++"\"\x1b[0m",
     " (" ++ authorsTruncate c ++ ")",
     d,

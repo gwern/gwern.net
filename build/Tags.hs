@@ -27,7 +27,7 @@ tagPairsCount md = reverse $ frequency $ concatMap pairs $ M.elems $ M.map (\(_,
 -- Compile tags down into a Span containing a list of links to the respective /doc/ directory indexes which will contain a copy of all annotations corresponding to that tag/directory.
 --
 -- Simple version:
--- > tagsToLinksSpan "economics, genetics/heritable, psychology/writing"
+-- > tagsToLinksSpan "economics genetics/heritable psychology/writing"
 -- →
 -- Span ("",["link-tags"],[])
 --   [Link ("",["link-tag"],[]) [Str "economics"] ("/doc/economics/index",""),Str ", ",
@@ -47,21 +47,24 @@ tagPairsCount md = reverse $ frequency $ concatMap pairs $ M.elems $ M.map (\(_,
 tagsToLinksSpan :: [T.Text] -> Inline
 tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
-tagsToLinksSpan ts = let tags = sort ts in
-                       Span ("", ["link-tags"], []) $
-                       intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-page", "link-annotated", "icon-not"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/doc/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
-
+tagsToLinksSpan ts =
+                       Span ("", ["link-tags"], []) (tagsToLinks ts)
 -- Ditto; but since a Div is a Block element, we copy-paste a separate function:
 tagsToLinksDiv :: [T.Text] -> Block
 tagsToLinksDiv [] = Div nullAttr []
 tagsToLinksDiv [""] = Div nullAttr []
-tagsToLinksDiv ts = let tags = sort ts in
-                       Div ("", ["link-tags"], []) $
-                       [Para $ intersperse (Str ", ") $ map (\tag -> Link ("", ["link-tag", "link-page", "link-annotated", "icon-not"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/doc/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags]
+tagsToLinksDiv ts = Div ("", ["link-tags"], []) [Para $ tagsToLinks ts]
+tagsToLinks :: [T.Text] -> [Inline]
+tagsToLinks [] = []
+tagsToLinks ts = let tags = sort ts in
+                   intersperse (Str ", ") $
+                   map (\tag ->
+                          Link ("", ["link-tag", "link-page", "link-annotated", "icon-not"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/doc/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index")
+                       ) tags
 
--- if a local '/doc/*' file and no tags available, try extracting a tag from the path; eg. '/doc/ai/2021-santospata.pdf' → 'ai', '/doc/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
+-- if a local '/doc/*' file and no tags available, try extracting a tag from the path; eg. '/doc/ai/2021-santospata.pdf' → 'ai', '/doc/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics sociology Japanese' than 'economics sociology japanese')
 tag2TagsWithDefault :: String -> String -> [String]
-tag2TagsWithDefault path tags = let tags' = map trim $ (\t -> if ", " `isInfixOf` t then split ", " t else split " " t) $ map toLower tags
+tag2TagsWithDefault path tags = let tags' = map (trim . map toLower) $ split " " tags
                                     defTag = if ("/doc/" `isPrefixOf` path) && (not ("/doc/biology/2000-iapac-norvir"`isPrefixOf`path || "/doc/rotten.com/"`isPrefixOf`path || "/doc/statistics/order/beanmachine-multistage"`isPrefixOf`path||"/doc/www/"`isPrefixOf`path)) then tag2Default path else ""
                                 in
                                   if defTag `elem` tags' || defTag == "" || defTag == "/doc" then tags' else defTag:tags'
