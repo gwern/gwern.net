@@ -2205,6 +2205,26 @@ addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (even
     });
 }, "rewrite");
 
+/*******************************************/
+/*	Copy the provided text to the clipboard.
+ */
+function copyTextToClipboard(text) {
+	let scratchpad = document.querySelector("#scratchpad");
+
+	//  Perform copy operation.
+	scratchpad.innerText = text;
+	selectElementContents(scratchpad);
+	document.execCommand("copy");
+	scratchpad.innerText = "";
+}
+
+/***************************************************/
+/*	Create scratchpad for synthetic copy operations.
+ */
+doWhenDOMContentLoaded(() => {
+	document.body.append(newElement("SPAN", { "id": "scratchpad" }));
+});
+
 /************************************************/
 /*  Activate copy buttons of math block elements.
  */
@@ -2212,17 +2232,14 @@ addContentInjectHandler(GW.contentInjectHandlers.activateMathBlockButtons = (eve
     GWLog("activateMathBlockButtons", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll(".mjpage__block").forEach(mathBlock => {
-        //  Copy button (copies LaTeX source).
+		//	LaTeX source.
         let latexSource = mathBlock.querySelector(".mjx-math").getAttribute("aria-label");
-        let scratchpad = mathBlock.querySelector(".scratchpad");
+
+        //  Copy button (copies LaTeX source).
         mathBlock.querySelector("button.copy").addActivateEvent((event) => {
             GWLog("mathBlockCopyButtonClicked", "rewrite.js", 3);
 
-            //  Perform copy operation.
-            scratchpad.innerText = latexSource;
-            selectElementContents(scratchpad);
-            document.execCommand("copy");
-            scratchpad.innerText = "";
+			copyTextToClipboard(latexSource);
 
             //  Flash math block, for visual feedback of copy operation.
             mathBlock.classList.add("flash");

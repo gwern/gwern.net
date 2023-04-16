@@ -1033,13 +1033,13 @@ Extracts = { ...Extracts,
             styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px; aspect-ratio: ${width} / ${height}"`;
 
         //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invert’.
-        return newDocument(`<img
+        return newDocument(`<figure><img
                                 ${styles}
                                 class="${target.classList}"
                                 src="${target.href}"
                                 loading="eager"
                                 decoding="sync"
-                                    >`);
+                                    ></figure>`);
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)

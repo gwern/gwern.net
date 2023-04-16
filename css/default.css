@@ -2557,17 +2557,6 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     transform: scale(0.95);
 }
 
-/*  Scratchpad for copy operations.
- */
-.mjpage__block .block-button-bar .scratchpad {
-    position: absolute;
-    width: 0;
-    height: 0;
-    opacity: 0;
-    z-index: -1;
-    pointer-events: none;
-}
-
 /********/
 /* MISC */
 /********/
@@ -2608,9 +2597,9 @@ p {
 }
 
 /*  Prevent text-shadow of italics in links from creating visual glitches
-    (also fixes occasional link icon overlaps, eg. a WP link to 'MGS:V' where
-    the right-tilted 'V' would touch the WP 'W' link icon).
-    */
+    (also fixes occasional link icon overlaps, eg. a WP link to ‘MGS:V’ where
+    the right-tilted ‘V’ would touch the WP ‘W’ link icon).
+ */
 .markdownBody em {
     margin-right: 0.1em;
 }
@@ -2634,8 +2623,10 @@ p {
     font-size: 0.7em;
     line-height: 1;
 }
-/*  Make sure that adjusted prices move as a block: no breaking in the middle between the price & sup/sub; this works better than trying to use no-break Unicode entities
-    */
+/*  Make sure that adjusted prices move as a block: no breaking in the middle 
+	between the price & sup/sub; this works better than trying to use no-break 
+	Unicode entities.
+ */
 span.inflation-adjusted {
     white-space: nowrap;
 }
@@ -2650,6 +2641,19 @@ span.similars a,
 span.link-bibliography a {
     -webkit-hyphens: none;
     hyphens: none;
+}
+
+/*  Scratchpad for copy operations.
+ */
+#scratchpad {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    z-index: -1;
+    pointer-events: none;
 }
 
 /*************/
@@ -3260,11 +3264,15 @@ body.index-directory #footer {
     --SA-image-focus-sans-serif-font-stack: var(--GW-sans-serif-font-stack);
 
     --SA-image-focus-image-hover-drop-shadow-color: var(--GW-image-focus-image-hover-drop-shadow-color);
+    --SA-image-focus-image-hover-tooltip-background-color: rgba(0, 0, 0, 0.75);
+    --SA-image-focus-image-hover-tooltip-text-color: #fff;
+
     --SA-image-focus-overlay-background-color: #000;
     --SA-image-focus-overlay-image-caption-background-color: rgba(0, 0, 0, 0.7);
     --SA-image-focus-overlay-image-caption-text-color: #fff;
     --SA-image-focus-overlay-image-caption-link-color: #ccc;
     --SA-image-focus-overlay-image-caption-link-hover-color: #aaa;
+    --SA-image-focus-overlay-image-caption-separator-color: #888;
     --SA-image-focus-overlay-help-box-background-color: rgba(0, 0, 0, 0.85);
     --SA-image-focus-overlay-help-box-text-color: #fff;
     --SA-image-focus-overlay-info-icon-color: #000;
@@ -3277,8 +3285,6 @@ body.index-directory #footer {
     --SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color: #fff;
     --SA-image-focus-overlay-slideshow-button-active-color: #888;
     --SA-image-focus-overlay-slideshow-button-disabled-color: #ddd;
-    --SA-image-focus-image-hover-tooltip-background-color: rgba(0, 0, 0, 0.75);
-    --SA-image-focus-image-hover-tooltip-text-color: #fff;
 }
 
 /*=--------------=*/
@@ -3351,7 +3357,6 @@ body.index-directory #footer {
 #image-focus-overlay .caption {
     position: absolute;
     bottom: 0.75em;
-    background-color: var(--SA-image-focus-overlay-image-caption-background-color);
     left: 4.5em;
     right: 4.5em;
     margin: auto;
@@ -3359,7 +3364,7 @@ body.index-directory #footer {
     width: fit-content;
     text-align: center;
     font-family: var(--SA-image-focus-sans-serif-font-stack);
-    border-radius: 8px;
+    cursor: auto;
     z-index: 1;
     transition:
         bottom 0.15s ease;
@@ -3370,22 +3375,10 @@ body.index-directory #footer {
         bottom 0.5s ease-in;
 }
 
-#image-focus-overlay .caption p {
-    margin: 1em 1.25em;
-    color: var(--SA-image-focus-overlay-image-caption-text-color);
-}
-#image-focus-overlay .caption code {
-    background-color: inherit;
-    border: none;
-    font-size: 1em;
-}
-#image-focus-overlay .caption a {
-    color: var(--SA-image-focus-overlay-image-caption-link-color);
-}
-#image-focus-overlay .caption a:hover {
-    color: var(--SA-image-focus-overlay-image-caption-link-hover-color);
-}
-
+/*	Necessary so that mouse hover at bottom of screen to the left or right of
+	a narrow caption still counts as “hovering over the caption” for the purpose
+	of preventing the caption from hiding.
+ */
 #image-focus-overlay .caption:not(:empty)::before {
     content: "";
     display: block;
@@ -3395,6 +3388,125 @@ body.index-directory #footer {
     z-index: -1;
     top: -0.75em;
     left: calc(-50vw + 50%);
+}
+
+#image-focus-overlay .caption .caption-text-wrapper {
+    background-color: var(--SA-image-focus-overlay-image-caption-background-color);
+    padding: 0.25em 1.25em;
+    border-radius: 8px;
+}
+
+/*	Caption contents.
+ */
+
+#image-focus-overlay .caption p {
+    margin: 0.75em 0;
+    color: var(--SA-image-focus-overlay-image-caption-text-color);
+}
+#image-focus-overlay .caption p + p {
+    text-indent: 0;
+    padding-top: 0.75em;
+    border-top: 1px dotted var(--SA-image-focus-overlay-image-caption-separator-color);
+    font-size: 0.9em;
+}
+
+#image-focus-overlay .caption code {
+    background-color: inherit;
+    border: none;
+    font-size: 1em;
+}
+
+#image-focus-overlay .caption a {
+    color: var(--SA-image-focus-overlay-image-caption-link-color);
+    margin: 0;
+    padding: 0;
+}
+#image-focus-overlay .caption a:hover {
+    color: var(--SA-image-focus-overlay-image-caption-link-hover-color);
+}
+#image-focus-overlay .caption a .indicator-hook,
+#image-focus-overlay .caption a::after {
+    display: none;
+}
+
+/*	Image URL in caption.
+ */
+
+#image-focus-overlay .caption .image-url {
+    position: relative;
+    margin: 0.5em 0 0 0;
+    padding: 0.5em 1.25em 0.75em 1.25em;
+    border-radius: 8px;
+	background-color: var(--SA-image-focus-overlay-background-color);
+	cursor: copy;
+    user-select: none;
+    transition:
+        background-color 0.15s ease-out;
+}
+#image-focus-overlay .caption .image-url.flash {
+    background-color: var(--SA-image-focus-overlay-image-caption-link-color);
+    transition:
+        background-color 0.1s ease-out;
+}
+
+
+#image-focus-overlay .caption .image-url .url {
+    font-size: 0.8em;
+    color: var(--SA-image-focus-overlay-image-caption-link-color);
+}
+#image-focus-overlay .caption .image-url:hover .url {
+    color: var(--SA-image-focus-overlay-image-caption-text-color);
+}
+
+#image-focus-overlay .caption .image-url .icon-container {
+    display: block;
+    position: absolute;
+    width: 0.95em;
+    height: 0.95em;
+    right: 0.2em;
+    top: 0.25em;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+#image-focus-overlay .caption .image-url .icon {
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+    height: 100%;
+    color: var(--SA-image-focus-overlay-image-caption-separator-color);
+    transition:
+        opacity 2s ease-in;
+}
+#image-focus-overlay .caption .image-url:hover .icon {
+    color: currentColor;
+}
+#image-focus-overlay .caption .image-url.copied .icon {
+    transition:
+        left 0.15s ease,
+        opacity 0.15s ease;
+}
+#image-focus-overlay .caption .image-url .icon.normal {
+    left: 0;
+    opacity: 1;
+}
+#image-focus-overlay .caption .image-url.copied .icon.normal {
+    left: -100%;
+    opacity: 0;
+}
+#image-focus-overlay .caption .image-url .icon.copied {
+	left: 100%;
+    opacity: 0;
+}
+#image-focus-overlay .caption .image-url.copied .icon.copied {
+    left: 0;
+    opacity: 1;
+}
+
+#image-focus-overlay .caption .image-url .icon svg {
+    display: block;
+    height: 100%;
 }
 
 /*=--------------=*/
@@ -3489,6 +3601,7 @@ body.index-directory #footer {
     width: 1.5em;
     text-align: right;
     white-space: nowrap;
+    cursor: default;
     transition: top 0.3s ease;
 }
 #image-focus-overlay .image-number::before {
