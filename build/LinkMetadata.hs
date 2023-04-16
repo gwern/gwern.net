@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-04-14 16:52:55 gwern"
+When:  Time-stamp: "2023-04-16 16:05:55 gwern"
 License: CC-0
 -}
 
@@ -595,7 +595,7 @@ third (_,_,rd,_,_,_) = rd
 
 writeYaml :: Path -> MetadataList -> IO ()
 writeYaml path yaml = lock $ do
-  let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ yaml
+  let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate " " (filter (/=defTag) ts),f)) $ yaml
   writeUpdatedFile "hakyll-yaml" path newYaml
 
 -- skip all of the checks, validations, tag creation etc
@@ -653,18 +653,15 @@ rewriteLinkMetadata half full yaml
        let betterURLs = nubOrd (halfURLs ++ fullURLs) -- these *should* not have any duplicates, but...
        let old' = filter (\(p,_) -> p `notElem` betterURLs) old
        let new = M.fromList old' :: Metadata -- NOTE: constructing a Map data structure automatically sorts/dedupes
-       let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ -- flatten [(Path, (String, String, String, String, String))]
+       let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate " " (filter (/=defTag) ts),f)) $ -- flatten [(Path, (String, String, String, String, String))]
                      M.toList new
        writeUpdatedFile "yaml" yaml newYaml
 
 -- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
 appendLinkMetadata :: Path -> MetadataItem -> IO ()
 appendLinkMetadata l i@(t,a,d,di,ts,abst) = lock $ do printGreen (l ++ " : " ++ ppShow i)
-                                                      let newYaml = Y.encode [(l,t,a,d,di, intercalate ", " ts,abst)]
+                                                      let newYaml = Y.encode [(l,t,a,d,di, intercalate " " ts,abst)]
                                                       B.appendFile "metadata/auto.yaml" newYaml
-
-
-
 
 --------------------------------------------
 -- String munging and processing
