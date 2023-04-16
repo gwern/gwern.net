@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-04-14 21:51:11 gwern"
+;;; When:  Time-stamp: "2023-04-16 14:53:29 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1264,9 +1264,10 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
   :type 'regexp
   :group 'markdown-newline-removal)
 (defun markdown-remove-newlines-in-paragraphs (&optional buffer use-region)
-  "Remove newlines within paragraphs of Markdown text in BUFFER.
+  "Replace newlines with spaces within paragraphs of Markdown text in BUFFER.
 If BUFFER is nil, use the current buffer. If USE-REGION is non-nil,
-operate on the current region instead of the entire buffer."
+operate on the current region instead of the entire buffer.
+This assumes you have already removed hyphenation (either by removing the hyphen+newline for linebreaking-only hyphens, or just the newline when the hyphen is in the original word regardless of linebreaking)."
   (interactive "P")
   (with-current-buffer (or buffer (current-buffer))
     ;; Save the current point position and restore it after the operation
@@ -1282,7 +1283,7 @@ operate on the current region instead of the entire buffer."
           ;; Search and replace newlines within paragraphs
           (save-match-data
             (while (re-search-forward pattern end t)
-              (replace-match "\\1\\3" nil nil))))))
+              (replace-match "\\1 \\3" nil nil))))))
     ;; Inform the user when the operation is complete
     (message "Newlines removed within paragraphs.")))
 
@@ -1328,7 +1329,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
     ; NOTE: because `preprocess-markdown` is calling the OA API via the embedder, $OPENAI_API_KEY must be defined in the Emacs environment, either via `(setenv "OPENAI_API_KEY" "sk-xyz123456789")` or by putting it in `~/.bash_profile`. (Putting it in `.env` or `.bashrc` is not enough, because they won't apply to GUI/X Emacs)
     (let ((markdown-command "cd ~/wiki/ && timeout 2m ~/wiki/static/build/preprocess-markdown | \\
                              pandoc --mathjax --metadata title='Annotation preview' --to=html5 --from=html | \\
-                             tidy -indent -wrap 130 --clean yes --break-before-br yes --logical-emphasis yes --quote-nbsp no -quiet --show-warnings no --show-body-only auto | \\
+                             tidy -indent -wrap 130 --clean yes --merge-divs no --break-before-br yes --logical-emphasis yes --quote-nbsp no -quiet --show-warnings no --show-body-only auto | \\
                              sed 's/^/    /' || true") (visible-bell nil))
       (markdown-kill-ring-save)
 
@@ -1379,22 +1380,27 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
 
 ; for the `foo` buffer I do most of my annotation work in, on the first copy-paste of a block of text, detect if it has any paragraph breaks (ie. double newlines), and if it does not, then automatically run paragraphizer.py on it to try to break it up into logical paragraphs.
 ; (Note/warning: written by GPT-3.5. Curiously, GPT-4 failed when I tried to repeat this exercise in it using the same starting prompt & kind of feedback: because it tries to implement solutions using advice, buffer-local variables, and :properties—which are subtly buggy in their handling of state, and so wind up running paragraphizer.py on every paste.)
-(defun annotation-abstract-paragraphize ()
-  "Automatically paragraphize single-paragraph abstracts."
+(defun markdown-annotation-abstract-paragraphize ()
+  "Automatically paragraphize single-paragraph abstracts. Intended for Markdown mode with double-newlines for newlines; may malfunction if run on other formats like HTML (where `</p><p>` pairs can come in many forms, not to mention other block elements like blockquotes)."
+  (interactive)
   (let ((double-newline-found nil))
-    (when (and (equal (buffer-name) "foo")
-               (eq last-command 'yank)
-               (>= (buffer-size) 600)) ; ensure that there is enough in the buffer to plausibly be a full copy-pasted abstract, as opposed to a random snippet or line.
-      (save-excursion
+          (save-excursion
         (goto-char (point-min))
         (unless (search-forward-regexp "\n\n" nil t)
           (message "Paragraphizing abstract…")
           (shell-command-on-region (point-min) (point-max) "~/wiki/static/build/paragraphizer.py" nil t)
-          (setq double-newline-found t))))
+          (setq double-newline-found t)))
     (when double-newline-found
       (goto-char (point-max))
       (message "Paragraphizing abstract done."))))
-(add-hook 'post-command-hook #'annotation-abstract-paragraphize)
+(defun markdown-annotation-abstract-paragraphize-hook ()
+  "Hook function for `markdown-annotation-abstract-paragraphize`."
+  (when (and (equal (buffer-name) "foo")
+             (derived-mode-p 'markdown-mode)
+             (eq this-command 'yank)
+             (>= (buffer-size) 600)) ; ensure that there is enough in the buffer to plausibly be a full copy-pasted abstract, as opposed to a random snippet or line.
+    (markdown-annotation-abstract-paragraphize)))
+(add-hook 'post-command-hook #'markdown-annotation-abstract-paragraphize-hook)
 
 ; add new-line / paragraph snippet
 (add-hook 'yaml-mode-hook
