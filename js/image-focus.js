@@ -101,6 +101,21 @@ ImageFocus = {
 			});
 		});
 
+		//	Add listeners to help overlay.
+		let helpOverlay = ImageFocus.overlay.querySelector(".help-overlay");
+		if (GW.isMobile()) {
+			helpOverlay.addEventListener("click", (event) => {
+				helpOverlay.classList.toggle("open");
+			});
+		} else {
+			helpOverlay.addEventListener("mouseenter", (event) => {
+				helpOverlay.classList.add("open");
+			});
+			helpOverlay.addEventListener("mouseleave", (event) => {
+				helpOverlay.classList.remove("open");
+			});
+		}
+
 		//  UI starts out hidden.
 		ImageFocus.hideImageFocusUI();
 

@@ -3369,6 +3369,20 @@ body.index-directory #footer {
     transition:
         bottom 0.15s ease;
 }
+@media only screen and (max-width: 1179px) {
+    #image-focus-overlay .caption {
+        max-width: calc(100% - 2em);
+        left: 1em;
+        right: 1em;
+        z-index: 2;
+    }
+}
+@media only screen and (min-width: 650px) {
+    #image-focus-overlay .caption {
+        font-size: 2vmin;
+    }
+}
+
 #image-focus-overlay .caption.hidden {
     bottom: -50%;
     transition:
@@ -3394,6 +3408,12 @@ body.index-directory #footer {
     background-color: var(--SA-image-focus-overlay-image-caption-background-color);
     padding: 0.25em 1.25em;
     border-radius: 8px;
+}
+@media only screen and (max-width: 649px) {
+    #image-focus-overlay .caption .caption-text-wrapper {
+        font-size: 0.9em;
+        padding: 0.125em 0.75em 0.25em 0.75em;
+    }
 }
 
 /*	Caption contents.
@@ -3453,6 +3473,11 @@ body.index-directory #footer {
 #image-focus-overlay .caption .image-url .url {
     font-size: 0.8em;
     color: var(--SA-image-focus-overlay-image-caption-link-color);
+}
+@media only screen and (max-width: 649px) {
+    #image-focus-overlay .caption .image-url .url {
+        font-size: 0.75em;
+    }
 }
 #image-focus-overlay .caption .image-url:hover .url {
     color: var(--SA-image-focus-overlay-image-caption-text-color);
@@ -3524,6 +3549,7 @@ body.index-directory #footer {
     border-radius: 10px;
     bottom: 1em;
     right: 1em;
+    max-width: calc(100vw - 4em);
     overflow: hidden;
     color: transparent;
     cursor: help;
@@ -3534,9 +3560,8 @@ body.index-directory #footer {
         background-color 1s ease,
         bottom 0.3s ease;
 }
-#image-focus-overlay .help-overlay:hover {
+#image-focus-overlay .help-overlay.open {
     width: fit-content;
-    max-width: calc(100vw - 4em);
     background-color: var(--SA-image-focus-overlay-help-box-background-color);
     color: var(--SA-image-focus-overlay-help-box-text-color);
     visibility: visible;
@@ -3560,7 +3585,7 @@ body.index-directory #footer {
     transition:
         visibility 1s ease;
 }
-#image-focus-overlay .help-overlay:hover::after {
+#image-focus-overlay .help-overlay.open::after {
     visibility: hidden;
     transition:
         visibility 0.2s ease 0.3s;
@@ -3578,6 +3603,21 @@ body.index-directory #footer {
 }
 #image-focus-overlay .help-overlay.hidden {
     bottom: -2em;
+}
+
+@media only screen and (max-width: 1179px) {
+    #image-focus-overlay .help-overlay {
+        bottom: unset;
+        top: 1em;
+    }
+    #image-focus-overlay .help-overlay::after {
+        bottom: unset;
+        top: 0;
+    }
+    #image-focus-overlay .help-overlay.hidden {
+    	bottom: unset;
+    	top: -2em;
+    }
 }
 
 /*=--------------=*/
@@ -3635,6 +3675,12 @@ body.index-directory #footer {
     justify-content: space-between;
     pointer-events: none;
 }
+@media only screen and (max-width: 1179px) {
+	#image-focus-overlay .slideshow-buttons {
+		z-index: 1;
+	}
+}
+
 #image-focus-overlay .slideshow-buttons button {
     font-size: 3rem;
     color: var(--SA-image-focus-overlay-slideshow-button-color);
@@ -3657,19 +3703,33 @@ body.index-directory #footer {
 #image-focus-overlay .slideshow-buttons button.previous {
     padding: 0.25em 0.375em 0.25em 0.25em;
 }
+
 #image-focus-overlay .slideshow-buttons button svg {
     pointer-events: none;
     fill: currentColor;
 }
+
 #image-focus-overlay .slideshow-buttons button::selection {
     background-color: transparent;
 }
+
 @media only screen and (hover: hover) {
     #image-focus-overlay .slideshow-buttons button:hover {
         background-color: var(--SA-image-focus-overlay-slideshow-button-hover-background-color);
         color: var(--SA-image-focus-overlay-slideshow-button-hover-color);
     }
     #image-focus-overlay .slideshow-buttons button:not(:disabled):hover svg {
+        filter:
+            drop-shadow(0 0 1px var(--SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color))
+            drop-shadow(0 0 3px var(--SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color));
+    }
+}
+@media only screen and (hover: none) {
+    #image-focus-overlay .slideshow-buttons button:not(:disabled) {
+        background-color: var(--SA-image-focus-overlay-slideshow-button-hover-background-color);
+        color: var(--SA-image-focus-overlay-slideshow-button-hover-color);
+    }
+    #image-focus-overlay .slideshow-buttons button:not(:disabled) svg {
         filter:
             drop-shadow(0 0 1px var(--SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color))
             drop-shadow(0 0 3px var(--SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color));
@@ -3686,6 +3746,7 @@ body.index-directory #footer {
     cursor: default;
     opacity: 0.4;
 }
+
 #image-focus-overlay .slideshow-button.previous.hidden {
     left: -1.75em;
 }
