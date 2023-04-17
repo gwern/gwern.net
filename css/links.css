@@ -305,9 +305,6 @@ a[data-link-icon='arrow-down-right']:hover::after,
 a[data-link-icon='arrow-right']:hover::after {
     opacity: 0.4;
 }
-a[data-link-icon='arrow-up-left'] { --link-icon-url: url('/static/img/icon/arrow-up-left.svg'); }
-a[data-link-icon='arrow-down-right'] { --link-icon-url: url('/static/img/icon/arrow-down-right.svg'); }
-a[data-link-icon='arrow-right'] { --link-icon-url: url('/static/img/icon/arrow-right.svg'); }
 
 /*=-------------------------------=*/
 /*= Textual per-domain link icons =*/
