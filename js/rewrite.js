@@ -2194,6 +2194,9 @@ addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (even
     GWLog("addBlockButtonsToMathBlocks", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll(".mjpage__block").forEach(mathBlock => {
+		mathBlock = mathBlock.closest(".math");
+		mathBlock.classList.add("block");
+
         //  Inject button bar.
         mathBlock.insertAdjacentHTML("beforeend",
               `<span class="block-button-bar">`
@@ -2231,7 +2234,7 @@ doWhenDOMContentLoaded(() => {
 addContentInjectHandler(GW.contentInjectHandlers.activateMathBlockButtons = (eventInfo) => {
     GWLog("activateMathBlockButtons", "rewrite.js", 1);
 
-    eventInfo.container.querySelectorAll(".mjpage__block").forEach(mathBlock => {
+    eventInfo.container.querySelectorAll(".math.block").forEach(mathBlock => {
 		//	LaTeX source.
         let latexSource = mathBlock.querySelector(".mjx-math").getAttribute("aria-label");
 
@@ -2242,8 +2245,9 @@ addContentInjectHandler(GW.contentInjectHandlers.activateMathBlockButtons = (eve
 			copyTextToClipboard(latexSource);
 
             //  Flash math block, for visual feedback of copy operation.
-            mathBlock.classList.add("flash");
-            setTimeout(() => { mathBlock.classList.remove("flash"); }, 150);
+            let innerMathBlock = mathBlock.querySelector(".MJXc-display");
+            innerMathBlock.classList.add("flash");
+            setTimeout(() => { innerMathBlock.classList.remove("flash"); }, 150);
         });
     });
 }, "eventListeners");
