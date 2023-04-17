@@ -3415,6 +3415,9 @@ body.index-directory #footer {
         padding: 0.125em 0.75em 0.25em 0.75em;
     }
 }
+#image-focus-overlay .caption .caption-text-wrapper:empty {
+	display: none;
+}
 
 /*	Caption contents.
  */

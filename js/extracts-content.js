@@ -1030,7 +1030,9 @@ Extracts = { ...Extracts,
         let styles = ``;
         if (   width > 0
             && height > 0)
-            styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px; aspect-ratio: ${width} / ${height}"`;
+            styles = `width="${(target.dataset.imageWidth)}" `
+            	   + `height="${(target.dataset.imageHeight)}" `
+            	   + `style="width: ${width}px; height: ${height}px; aspect-ratio: ${width} / ${height}"`;
 
         //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invert’.
         return newDocument(`<figure><img
