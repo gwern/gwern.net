@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-16 20:02:06 gwern"
+# When:  Time-stamp: "2023-04-16 21:25:35 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -1014,6 +1014,9 @@ else
 
     λ() { find ./metadata/annotation/similar/ -type f -name "*.html" | xargs --max-procs=0 --max-args=5000 grep -F --no-filename -e '<a href="' -- | sort | uniq --count | sort --numeric-sort | grep -E '^ \+[4-9][0-9]\+ \+'; }
     wrap λ "Similar-links: overused links indicate pathological lookups; blacklist links as necessary."
+
+    λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc -fno-code {} \; ) 2>&1 >/dev/null; }
+    wrap λ "Test-compilation of all Haskell files in static/build: failure."
 
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.
     if [ "$(date +"%d")" == "1" ]; then
