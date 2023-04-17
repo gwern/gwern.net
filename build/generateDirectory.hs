@@ -35,6 +35,7 @@ import LinkBacklink (getBackLinkCheck, getSimilarLinkCheck, getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy)
 import Utils (replace, writeUpdatedFile, printRed, toPandoc, anySuffix)
+import Config.Misc as C (miscellaneousLinksCollapseLimit)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -136,7 +137,7 @@ generateDirectory filterp md dirs dir'' = do
                  titledLinksSections) ++
 
              (if null untitledLinks then [] else
-                 Header 1 ("", ["link-annotated-not"] ++ (if length untitledLinks > miscellaneousCollapseLimit then ["collapse"] else []), []) [Str "Miscellaneous"] :
+                 Header 1 ("", ["link-annotated-not"] ++ (if length untitledLinks > C.miscellaneousLinksCollapseLimit then ["collapse"] else []), []) [Str "Miscellaneous"] :
                  if not allUnannotatedUntitledP then [untitledLinksSection] else
                    [RawBlock (Format "html") "<div id=\"miscellaneous-links-list\">\n\n",
                     untitledLinksSection,
@@ -155,10 +156,6 @@ generateDirectory filterp md dirs dir'' = do
     -- compare with the old version, and update if there are any differences:
     Right p' -> do let contentsNew = T.pack header `T.append` p'
                    writeUpdatedFile "directory" (dir'' ++ "index.page") contentsNew
-
--- at what number of links should we auto-collapse the '# Miscellaneous' section because it adds so many entries to the page on load if left uncollapsed?
-miscellaneousCollapseLimit :: Int
-miscellaneousCollapseLimit = 50
 
 generateLinkBibliographyItems :: [(String,MetadataItem,FilePath,FilePath,FilePath)] -> [Block]
 generateLinkBibliographyItems [] = []
@@ -278,7 +275,7 @@ generateDirectoryItems parent current ds =
   -- all directories have a parent directory with an index (eg. /doc/index has the parent /index), so we always link it.
   -- (We pass in the parent path to write an absolute link instead of the easier '../' relative link, because relative links break inside popups.)
       -- for directories like ./doc/statistics/ where there are 9+ subdirectories, we'd like to multi-column the directory section to make it more compact (we can't for annotated files/links because there are so many annotations & they are too long to work all that nicely):
-     parent'' ++ (filter (not . null) (map generateDirectoryItem ds))
+     parent'' ++ filter (not . null) (map generateDirectoryItem ds)
  where
        parent'' = case parent of
                      Nothing -> []
@@ -307,8 +304,6 @@ generateDirectoryItems parent current ds =
        abbreviateTagLongForm :: T.Text -> (T.Text, [Inline])
        abbreviateTagLongForm dir = ("<code>" `T.append`   dir `T.append` "</code>",
                                     [Space, RawInline (Format "html") $ "(" `T.append` abbreviateTag dir `T.append` ")"])
-
-
 
 generateListItems :: [(FilePath, MetadataItem,FilePath,FilePath,FilePath)] -> Block
 generateListItems p = BulletList (map generateItem p)

@@ -46,7 +46,7 @@ toSingleLine (f,(mi@(b,c,d,_,tags,abst),label)) = intercalate "; "
   ([ label,
      authorsToCite f c d,
     "\x1b[32m "++f++" \x1b[0m",
-    show (uniqTags $ split " " tags),
+    show (uniqTags tags),
     "\x1b[35m\""++b++"\"\x1b[0m",
     " (" ++ authorsTruncate c ++ ")",
     d,

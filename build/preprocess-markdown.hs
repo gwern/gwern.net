@@ -32,4 +32,4 @@ main = do originalMarkdown <- TIO.getContents
           setCurrentDirectory "/home/gwern/wiki/"
 
           matchList <- GS.singleShotRecommendations html
-          unless (matchList == "") $ putStrLn $ "<div class=\"collapse aux-links-append see-also-append\">\n\n<p><strong>See Also</strong>:</p>\n\n" ++ T.unpack matchList ++ "\n</div>"
+          unless (matchList == "") $ putStrLn $ "<div class=\"collapse aux-links-container\">\n<div class=\"aux-links-append see-also-append\">\n\n<p><strong>See Also</strong>:</p>\n\n" ++ T.unpack matchList ++ "\n</div>\n</div>"

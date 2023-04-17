@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-14 12:06:52 gwern"
+# When:  Time-stamp: "2023-04-16 21:25:35 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -170,10 +170,10 @@ else
 
     if [ "$SLOW" ]; then
         bold "Updating X-of-the-day…"
-        ghci -i/home/gwern/wiki/static/build/ ./static/build/QuoteOfTheDay.hs \
+        ghci -i/home/gwern/wiki/static/build/ ./static/build/XOfTheDay.hs \
              -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; qotd; sotd; }' | \
             grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]';
-        λ(){ ghci -i/home/gwern/wiki/static/build/ ./static/build/QuoteOfTheDay.hs -e 'sitePrioritize' | \
+        λ(){ ghci -i/home/gwern/wiki/static/build/ ./static/build/XOfTheDay.hs -e 'sitePrioritize' | \
               grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' || true; }
         wrap λ "Site-of-the-day: check for recommendation?"
     fi
@@ -978,21 +978,20 @@ else
          find ./ -type f -name "*.pdf" -not -size 0 | parallel checkEncryption; }
     wrap λ "'Encrypted' PDFs (fix with pdftk: 'pdftk \$PDF input_pw output foo.pdf')"
 
-    ## DjVu is deprecated (due to SEO: no search engines will crawl DjVu, turns out!):
     λ(){ find ./ -type f -name "*.djvu"; }
-    wrap λ "DjVu detected (convert to PDF)"
+    wrap λ "Legacy DjVu detected (convert to JBIG2 PDF; see <https://gwern.net/design-graveyard#djvu-files>)."
 
     ## having noindex tags causes conflicts with the robots.txt and throws SEO errors; except in the ./doc/www/ mirrors, where we don't want them to be crawled:
     λ(){ find ./ -type f -name "*.html" | grep -F --invert-match -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | xargs grep -F --files-with-matches 'noindex'; }
-    wrap λ "Noindex tags detected in HTML pages"
+    wrap λ "Noindex tags detected in HTML pages."
 
     λ(){ find ./ -type f -name "*.gif" | grep -F --invert-match -e 'static/img/' -e 'doc/gwern.net-gitstats/' -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' | parallel --max-args=500 identify | grep -E '\.gif\[[0-9]\] '; }
-    wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4"
+    wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4s."
 
-    bold "Compressing high-quality JPGs to ≤65% quality…"
-    JPGS_BIG="$(find ./doc/ -type f -name "*.jpg" | parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | grep -E -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
+    λ(){ JPGS_BIG="$(find ./doc/ -type f -name "*.jpg" | parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | grep -E -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
     echo "$JPGS_BIG"
-    compressJPG2 $(echo "$JPGS_BIG" | cut --delimiter=' ' --field=2)
+    compressJPG2 $(echo "$JPGS_BIG" | cut --delimiter=' ' --field=2); }
+    wrap λ "Compressing high-quality JPGs to ≤65% quality…"
 
     # bold "Compressing new PNGs…"
     # png $(find ./doc/ -type f -name "*.png" -mtime -3)
@@ -1015,6 +1014,9 @@ else
 
     λ() { find ./metadata/annotation/similar/ -type f -name "*.html" | xargs --max-procs=0 --max-args=5000 grep -F --no-filename -e '<a href="' -- | sort | uniq --count | sort --numeric-sort | grep -E '^ \+[4-9][0-9]\+ \+'; }
     wrap λ "Similar-links: overused links indicate pathological lookups; blacklist links as necessary."
+
+    λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc -fno-code {} \; ) 2>&1 >/dev/null; }
+    wrap λ "Test-compilation of all Haskell files in static/build: failure."
 
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.
     if [ "$(date +"%d")" == "1" ]; then

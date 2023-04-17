@@ -677,7 +677,7 @@ a[data-link-icon='github']::after {
 }
 
 a[data-link-icon='alphabet']::after {
-    --link-icon-size: 0.65em;
+    --link-icon-size: 0.60em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.3em;
 

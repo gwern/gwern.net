@@ -1,6 +1,9 @@
 #!/usr/bin/env runghc
 {-# LANGUAGE OverloadedStrings #-}
 
+-- Create bidirectional links ie. backlinks for reverse-citation use.
+-- See <https://gwern.net/design#backlink> for background, benefits, use, and implementation discussion.
+
 module Main where
 
 import Text.Pandoc (nullMeta,
@@ -26,7 +29,8 @@ import LinkMetadataTypes (Metadata, MetadataItem)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB)
 import Query (extractLinkIDsWith)
 import Typography (typographyTransform)
-import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix, printRed, safeHtmlWriterOptions)
+import Utils (writeUpdatedFile, sed, anyPrefixT, anyInfix, anyPrefix, printRed, safeHtmlWriterOptions)
+import qualified Config.Misc as C (backlinkBlackList)
 
 main :: IO ()
 main = do
@@ -132,7 +136,7 @@ generateCaller md target (caller, callers) =
 parseAnnotationForLinks :: T.Text -> MetadataItem -> [(T.Text,T.Text)]
 parseAnnotationForLinks caller (_,_,_,_,_,abstract) =
                             let linkPairs = map (\(a,b) -> (localize a, localize b)) $ extractLinkIDsWith backLinksNot path False (T.pack abstract)
-                                linkPairs' = filter (\(a,b) -> not (blackList a || blackList b  || truncateAnchors a == truncateAnchors b)) linkPairs
+                                linkPairs' = filter (\(a,b) -> not (C.backlinkBlackList a || C.backlinkBlackList b  || truncateAnchors a == truncateAnchors b)) linkPairs
                             in
                             linkPairs'
                                where m' = localize caller
@@ -142,7 +146,7 @@ parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
 parseFileForLinks mdp m = do text <- TIO.readFile m
 
                              let linkPairs = map (\(a,b) -> (localize a, localize b)) $ extractLinkIDsWith backLinksNot path mdp text
-                             let linkPairs' = filter (\(a,b) -> not (blackList a || blackList b || truncateAnchors a == truncateAnchors b)) linkPairs
+                             let linkPairs' = filter (\(a,b) -> not (C.backlinkBlackList a || C.backlinkBlackList b || truncateAnchors a == truncateAnchors b)) linkPairs
                              return linkPairs'
 
                                where m' = localize $ T.pack m
@@ -159,14 +163,3 @@ backLinksNot _ = True
 -- -- for URLs like 'arxiv.org/123#google' or 'doc/reinforcement-learning/2021-foo.pdf#deepmind', we want to preserve anchors; for on-site pages like '/gpt-3#prompt-programming' we want to merge all such anchor links into just callers of '/gpt-3'
 truncateAnchors :: T.Text -> T.Text
 truncateAnchors = T.takeWhile (/='#')
-
-blackList :: T.Text -> Bool
-blackList "" = error "generateBacklinks.hs: blackList: Called with an empty string! This should never happen."
-blackList e
-  | anyInfixT f ["/backlink/", "/link-bibliography/", "/similar/", "wikipedia.org/wiki/"] = True
-  | anyPrefixT f ["$", "#", "!", "mailto:", "irc://", "\8383", "/doc/www/", "/newsletter/", "/changelog", "/mistakes", "/traffic", "/me", "/lorem",
-                   -- WARNING: do not filter out 'metadata/annotation' because that leads to empty databases & infinite loops
-                   "/static/404", "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = True
-  | anySuffixT f ["/index", "/index-long"] = True
-  | otherwise = False
-  where f = if T.head e == '#' then e else T.takeWhile (/= '#') e -- drop anchors to avoid spurious mismatches eg. '/index#backlink-id-of-some-sort' would bypass a mere '"/index" `isSuffixOf`' check without this.

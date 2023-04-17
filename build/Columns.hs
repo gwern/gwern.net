@@ -14,7 +14,7 @@
 -- manually checked & all skinny lists correctly annotated, and skipped to avoid unnecessary
 -- reporting of false-positives.
 
-module Columns where -- (listsTooLong, listLengthMaxN, sublistsLengthMinN, listLength, main) where
+module Columns where -- (listsTooLong, listLength, main) where
 
 import Text.Pandoc (def, queryWith, readerExtensions, readHtml, readMarkdown, runPure,
                     pandocExtensions, Block(BulletList, OrderedList), Pandoc(Pandoc))
@@ -24,6 +24,7 @@ import qualified Data.Text.IO as TIO (readFile, putStrLn)
 import System.Environment (getArgs)
 import Control.Monad (when, unless)
 
+import qualified Config.Misc as C (listLengthMaxN)
 import Utils (simplified)
 
 -- | Map over the filenames
@@ -39,14 +40,10 @@ printLists printfilenamep file = do
   input <- TIO.readFile file
   let preexisting = T.isInfixOf "<div class=\"columns" input
   unless preexisting $
-    do let long = getLongLists listLengthMaxN (".html"`isSuffixOf`file) input
+    do let long = getLongLists C.listLengthMaxN (".html"`isSuffixOf`file) input
        unless (null long) $ do
          when printfilenamep $ putStrLn $ file ++ ":"
          TIO.putStrLn $ T.unlines $ map simplified long
-
-listLengthMaxN, sublistsLengthMinN :: Int
-listLengthMaxN = 75
-sublistsLengthMinN = 8
 
 getLongLists :: Int -> Bool -> T.Text -> [Block]
 getLongLists conf htmlp txt = let parsedEither = if htmlp then runPure $ readHtml def{readerExtensions = pandocExtensions } txt else runPure $ readMarkdown def{readerExtensions = pandocExtensions } txt
