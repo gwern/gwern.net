@@ -4,23 +4,17 @@
      */
     --GW-body-background-color: #fff;
     --GW-body-text-color: #000;
-    --GW-body-link-color: #333;
-    --GW-body-link-hover-color: #888;
 
     /*  Selection.
      */
     --GW-text-selection-background-color: #333;
     --GW-text-selection-color: #fff;
 
-    /*  Visited.
-     */
-    --GW-body-link-visited-color: #6a6a6a;
-
-    /*  Link underlining.
-     */
-    --GW-link-underline-background-color: var(--GW-body-background-color);
-    --GW-link-underline-gradient-line-color: #333;
-    --GW-link-underline-gradient-line-color-hover: #999;
+	/*	Links.
+	 */
+    --GW-body-link-color: #333;
+    --GW-body-link-hover-color: #888;
+    --GW-body-link-visited-color: #666;
 
     /*  Blockquotes.
      */
@@ -35,7 +29,6 @@
     /*  Abstracts.
      */
     --GW-abstract-border-color: #bbb;
-    --GW-abstract-background-color: var(--GW-blockquote-background-color-level-one);
 
     /*  Table of contents.
      */
@@ -66,9 +59,8 @@
 
     /*  Headings.
      */
-    --GW-H1-box-shadow-background-color: var(--GW-body-background-color);
-    --GW-H1-box-shadow-line-color: #888;
-    --GW-H2-bottom-border-color: #888;
+    --GW-H1-border-color: #888;
+    --GW-H2-border-color: #888;
 
     /*  Comments.
      */
@@ -94,19 +86,15 @@
     --GW-footnotes-section-top-rule-color: #ccc;
     --GW-footnote-backlink-border-color: #000;
     --GW-footnote-backlink-border-hover-color: #999;
-    --GW-footnote-backlink-after-bordered-block-background-color: var(--GW-body-background-color);
 
     /*  Footnote references.
      */
     --GW-footnote-ref-highlight-box-shadow-color: #aaa;
-    --GW-footnote-ref-highlight-background-color: rgba(255,255,255,0.75);
 
     /*  Sidenotes.
      */
-    --GW-sidenote-highlight-background-color: var(--GW-body-background-color);
     --GW-sidenote-highlight-box-shadow-color: #aaa;
     --GW-sidenote-border-color: #aaa;
-    --GW-sidenote-scrollbar-track-color: var(--GW-body-background-color);
     --GW-sidenote-scrollbar-thumb-color: #aaa;
     --GW-sidenote-scrollbar-thumb-hover-color: #999;
     --GW-sidenote-self-link-border-color: #aaa;
@@ -118,11 +106,8 @@
     /*  Tables.
      */
     --GW-table-border-color: #000;
-    --GW-table-full-width-background-color: var(--GW-body-background-color);
     --GW-table-caption-border-color: #000;
     --GW-table-row-horizontal-border-color: #000;
-    --GW-table-cell-vertical-border-color: var(--GW-body-background-color);
-    --GW-table-scrollbar-track-color: var(--GW-body-background-color);
     --GW-table-scrollbar-thumb-color: #aaa;
     --GW-table-scrollbar-thumb-hover-color: #999;
     --GW-table-scrollbar-border-color: #000;
@@ -177,7 +162,6 @@
     --GW-math-block-background-color: #f6f6f6;
     --GW-math-block-background-color-flash: #fff;
     --GW-math-block-scrollbar-border-color: #ccc;
-    --GW-math-block-scrollbar-track-color: var(--GW-body-background-color);
     --GW-math-block-scrollbar-thumb-color: #ccc;
     --GW-math-block-scrollbar-thumb-hover-color: #999;
 
@@ -205,11 +189,6 @@
     --GW-admonition-reversed-link-color-hover: #ccc;
     --GW-admonition-reversed-link-underline-gradient-line-color: #ccc;
     --GW-admonition-reversed-link-underline-gradient-line-color-hover: #bbb;
-    --GW-admonition-reversed-footnote-ref-highlight-background-color: rgba(90,90,90,0.75);
-
-    /*  Sequential nav UI.
-     */
-    --GW-sequential-nav-link-background-color: var(--GW-body-background-color);
 
 	/*	Footer.
 	 */
@@ -224,7 +203,6 @@
 
     /*  Popups.
      */
-    --GW-popups-body-background-color: var(--GW-body-background-color);
     --GW-popups-popup-background-color: var(--GW-body-background-color);
 
     --GW-popups-object-popup-background-color: #fff;
@@ -247,8 +225,6 @@
 	--GW-popups-popup-title-focused-color: #000;
     --GW-popups-popup-title-link-hover-focused-color: var(--GW-body-link-hover-color);
 
-    --GW-popups-popup-scrollbar-track-color: var(--GW-body-background-color);
-
     --GW-popups-popup-scrollbar-thumb-color: #ddd;
     --GW-popups-popup-scrollbar-thumb-hover-color: #bbb;
     --GW-popups-popup-scrollbar-thumb-focused-color: #ccc;
@@ -270,14 +246,12 @@
 
     /*  Popins.
      */
-    --GW-popins-body-background-color: var(--GW-body-background-color);
     --GW-popins-popin-background-color: var(--GW-body-background-color);
     --GW-popins-popin-border-color: #aaa;
     --GW-popins-box-shadow-color: #aaa;
     --GW-popins-popin-title-bar-background-color: #fff;
     --GW-popins-popin-title-bar-button-color: #666;
     --GW-popins-popin-scrollbar-thumb-color: #ccc;
-    --GW-popins-popin-scrollbar-track-color: var(--GW-body-background-color);
     --GW-popins-popin-scrollbar-thumb-hover-color: #999;
     --GW-popins-popin-stack-counter-text-color: #fff;
 
@@ -297,10 +271,10 @@
 	 */
 	--GW-reader-mode-masked-link-bracket-background-color: rgba(255,255,255,0.5);
 	/*	The following is a temporary hack until we can generate the above value
-		dynamically from the local value of --GW-link-underline-background-color
+		dynamically from the local value of --link-underline-background-color
 		(by reducing the opacity of whatever that value is).
 	 */
-	--GW-reader-mode-masked-link-bracket-background-color: var(--GW-link-underline-background-color);
+	--GW-reader-mode-masked-link-bracket-background-color: var(--link-underline-background-color);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(0,0,0,0.6);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color: #fff;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color: #000;
@@ -363,7 +337,9 @@
 
 html,
 .shadow-body {
-    background-color: var(--GW-body-background-color);
+	--background-color: var(--GW-body-background-color);
+
+    background-color: var(--background-color);
     color: var(--GW-body-text-color);
     font-size: var(--GW-base-font-size);
     font-weight: 400;
@@ -1290,8 +1266,9 @@ body.justified-not .markdownBody li {
 }
 
 .abstract blockquote {
+	--background-color: var(--GW-blockquote-background-color-level-one);
+
     margin: 0 0 1.5em 0;
-    background-color: var(--GW-abstract-background-color);
     border-color: var(--GW-abstract-border-color);
     padding-top: 0.9em;
     clear: none;
@@ -1392,16 +1369,21 @@ h1 {
 /*********/
 
 a {
-    color: var(--GW-body-link-color); /* off-black */
     text-decoration: none;
+    color: var(--GW-body-link-color); /* off-black */
 }
-
 /*  Slightly gray out links the reader has already visited, so they know if
     they’ve seen that content before. (A critical affordance in densely
     hyperlinked longform.)
  */
+.markdownBody a:hover {
+    color: var(--GW-body-link-hover-color);
+}
 .markdownBody a:visited {
-    color: var(--GW-body-link-visited-color);
+	color: var(--GW-body-link-visited-color);
+}
+.markdownBody a:visited:hover {
+    color: var(--GW-body-link-hover-color);
 }
 
 /*=------------------------=*/
@@ -1419,10 +1401,12 @@ a {
 May be able at some point to simplify this using regular link underlining, since CSS4's `text-decoration-skip-ink` by default avoids overlapping with text descenders (but as of Oct 2019, no Edge/IE or Safari support, and only the latest Firefox 70 supports it; maybe in a few years...): https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration-skip-ink#Browser_Compatibility https://www.caniuse.com/#feat=mdn-css_properties_text-decoration-skip-ink (Right now, Firefox skip-ink looks quite bad: it doesn't skip enough ink, defeating the point, and also positions the underline badly!)
 */
 
-.markdownBody a:link,
-#footer a:link {
-    text-decoration: none;
-    background-image: linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
+.markdownBody a {
+	--link-underline-background-color: var(--background-color);
+	--link-underline-gradient-line-color: currentColor;
+
+    background-image: linear-gradient(var(--link-underline-gradient-line-color), 
+    								  var(--link-underline-gradient-line-color));
     background-size: 1px 1px;
     background-repeat: repeat-x;
     background-position: 0% calc(100% - 0.1em);
@@ -1431,20 +1415,17 @@ May be able at some point to simplify this using regular link underlining, since
     font-variant-numeric: lining-nums;
 }
 .markdownBody a:link,
-.markdownBody a:link *,
-#footer a:link {
+.markdownBody a:link * {
     text-shadow:
-         0      0.05em  var(--GW-link-underline-background-color),
-         0.05em 0.05em  var(--GW-link-underline-background-color),
-        -0.05em 0.05em  var(--GW-link-underline-background-color),
-         0.17em 0.05em  var(--GW-link-underline-background-color),
-        -0.17em 0.05em  var(--GW-link-underline-background-color),
-         0.17em 0       var(--GW-link-underline-background-color),
-        -0.17em 0       var(--GW-link-underline-background-color);
+         0      0.05em  var(--link-underline-background-color),
+         0.05em 0.05em  var(--link-underline-background-color),
+        -0.05em 0.05em  var(--link-underline-background-color),
+         0.17em 0.05em  var(--link-underline-background-color),
+        -0.17em 0.05em  var(--link-underline-background-color),
+         0.17em 0       var(--link-underline-background-color),
+        -0.17em 0       var(--link-underline-background-color);
 }
-.markdownBody a:hover {
-    background-image: linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
-}
+
 
 /* eliminate the blurring of headers and links when selecting by overriding the text-shadow: */
 ::selection {
@@ -1528,14 +1509,11 @@ body.indented-not div[class^='drop-cap-'] + p {
  */
 
 blockquote {
-    --GW-link-underline-background-color: var(--GW-blockquote-background-color);
-    --GW-table-full-width-background-color: var(--GW-blockquote-background-color);
-
     display: flow-root;
     overflow: visible;
     margin: 1.625em 0 1.75em 0;
-    border: 1px solid var(--GW-blockquote-border-color);
-    background-color: var(--GW-blockquote-background-color);
+    border: 1px solid var(--border-color);
+    background-color: var(--background-color);
     font-size: 0.95em;
     padding: 1em 1.25em;
 }
@@ -1544,25 +1522,25 @@ blockquote {
  */
 blockquote,
 blockquote blockquote blockquote blockquote {
-    --GW-blockquote-background-color: var(--GW-blockquote-background-color-level-one);
+    --background-color: var(--GW-blockquote-background-color-level-one);
 }
 blockquote {
-    --GW-blockquote-border-color: var(--GW-blockquote-border-color-level-one);
+    --border-color: var(--GW-blockquote-border-color-level-one);
 }
 blockquote blockquote blockquote blockquote {
-    --GW-blockquote-border-color: var(--GW-blockquote-border-color-level-four);
+    --border-color: var(--GW-blockquote-border-color-level-four);
 }
 
 blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote {
-    --GW-blockquote-border-color: var(--GW-blockquote-border-color-level-two);
-    --GW-blockquote-background-color: var(--GW-blockquote-background-color-level-two);
+    --border-color: var(--GW-blockquote-border-color-level-two);
+    --background-color: var(--GW-blockquote-background-color-level-two);
 }
 
 blockquote blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote blockquote {
-    --GW-blockquote-border-color: var(--GW-blockquote-border-color-level-three);
-    --GW-blockquote-background-color: var(--GW-blockquote-background-color-level-three);
+    --border-color: var(--GW-blockquote-border-color-level-three);
+    --background-color: var(--GW-blockquote-background-color-level-three);
 }
 
 /*=--------------------=*/
@@ -1604,11 +1582,6 @@ pre {
 /********/
 /* MATH */
 /********/
-
-.mjpage__block {
-    display: block;
-    overflow: auto;
-}
 
 .math.inline,
 .math.inline .mjpage,
@@ -1745,8 +1718,8 @@ body.special-halloween-dark {
 
     --GW-epigraph-quotation-mark-color: var(--GW-blood-red-dried);
 
-    --GW-H1-box-shadow-line-color: var(--GW-blood-red);
-    --GW-H2-bottom-border-color: var(--GW-blood-red);
+    --GW-H1-border-color: var(--GW-blood-red);
+    --GW-H2-border-color: var(--GW-blood-red);
 
     --GW-drop-caps-yinit-color: var(--GW-blood-red);
     --GW-drop-caps-yinit-text-shadow-color: var(--GW-blood-red);
@@ -1820,23 +1793,17 @@ body.special-halloween-dark h6 {
      */
     --GW-body-background-color: #000;
     --GW-body-text-color: #fff;
-    --GW-body-link-color: #dcdcdc;
-    --GW-body-link-hover-color: #999;
 
     /*  Selection.
      */
     --GW-text-selection-background-color: #dcdcdc;
     --GW-text-selection-color: #000;
 
-    /*  Visited.
-     */
-    --GW-body-link-visited-color: #b1b1b1;
-
-    /*  Link underlining.
-     */
-    --GW-link-underline-background-color: var(--GW-body-background-color);
-    --GW-link-underline-gradient-line-color: #dcdcdc;
-    --GW-link-underline-gradient-line-color-hover: #8b8b8b;
+	/*	Links.
+	 */
+    --GW-body-link-color: #dcdcdc;
+    --GW-body-link-hover-color: #999;
+    --GW-body-link-visited-color: #b4b4b4;
 
     /*  Blockquotes.
      */
@@ -1851,7 +1818,6 @@ body.special-halloween-dark h6 {
     /*  Abstracts.
      */
     --GW-abstract-border-color: #6c6c6c;
-    --GW-abstract-background-color: var(--GW-blockquote-background-color-level-one);
 
     /*  Table of contents.
      */
@@ -1882,9 +1848,8 @@ body.special-halloween-dark h6 {
 
     /*  Headings.
      */
-    --GW-H1-box-shadow-background-color: var(--GW-body-background-color);
-    --GW-H1-box-shadow-line-color: #999;
-    --GW-H2-bottom-border-color: #999;
+    --GW-H1-border-color: #999;
+    --GW-H2-border-color: #999;
 
     /*  Comments.
      */
@@ -1910,19 +1875,15 @@ body.special-halloween-dark h6 {
     --GW-footnotes-section-top-rule-color: #5c5c5c;
     --GW-footnote-backlink-border-color: #fff;
     --GW-footnote-backlink-border-hover-color: #8b8b8b;
-    --GW-footnote-backlink-after-bordered-block-background-color: var(--GW-body-background-color);
 
     /*  Footnote references.
      */
     --GW-footnote-ref-highlight-box-shadow-color: #7c7c7c;
-    --GW-footnote-ref-highlight-background-color: rgba(0, 0, 0, 0.75);
 
     /*  Sidenotes.
      */
-    --GW-sidenote-highlight-background-color: var(--GW-body-background-color);
     --GW-sidenote-highlight-box-shadow-color: #7c7c7c;
     --GW-sidenote-border-color: #7c7c7c;
-    --GW-sidenote-scrollbar-track-color: var(--GW-body-background-color);
     --GW-sidenote-scrollbar-thumb-color: #7c7c7c;
     --GW-sidenote-scrollbar-thumb-hover-color: #8b8b8b;
     --GW-sidenote-self-link-border-color: #7c7c7c;
@@ -1934,11 +1895,8 @@ body.special-halloween-dark h6 {
     /*  Tables.
      */
     --GW-table-border-color: #fff;
-    --GW-table-full-width-background-color: var(--GW-body-background-color);
     --GW-table-caption-border-color: #fff;
     --GW-table-row-horizontal-border-color: #fff;
-    --GW-table-cell-vertical-border-color: var(--GW-body-background-color);
-    --GW-table-scrollbar-track-color: var(--GW-body-background-color);
     --GW-table-scrollbar-thumb-color: #7c7c7c;
     --GW-table-scrollbar-thumb-hover-color: #8b8b8b;
     --GW-table-scrollbar-border-color: #fff;
@@ -1993,7 +1951,6 @@ body.special-halloween-dark h6 {
     --GW-math-block-background-color: #252525;
     --GW-math-block-background-color-flash: #000;
     --GW-math-block-scrollbar-border-color: #5c5c5c;
-    --GW-math-block-scrollbar-track-color: var(--GW-body-background-color);
     --GW-math-block-scrollbar-thumb-color: #5c5c5c;
     --GW-math-block-scrollbar-thumb-hover-color: #8b8b8b;
 
@@ -2021,11 +1978,6 @@ body.special-halloween-dark h6 {
     --GW-admonition-reversed-link-color-hover: #5c5c5c;
     --GW-admonition-reversed-link-underline-gradient-line-color: #5c5c5c;
     --GW-admonition-reversed-link-underline-gradient-line-color-hover: #6c6c6c;
-    --GW-admonition-reversed-footnote-ref-highlight-background-color: rgba(189, 189, 189, 0.75);
-
-    /*  Sequential nav UI.
-     */
-    --GW-sequential-nav-link-background-color: var(--GW-body-background-color);
 
 	/*	Footer.
 	 */
@@ -2040,7 +1992,6 @@ body.special-halloween-dark h6 {
 
     /*  Popups.
      */
-    --GW-popups-body-background-color: var(--GW-body-background-color);
     --GW-popups-popup-background-color: var(--GW-body-background-color);
 
     --GW-popups-object-popup-background-color: #000;
@@ -2063,8 +2014,6 @@ body.special-halloween-dark h6 {
 	--GW-popups-popup-title-focused-color: #fff;
     --GW-popups-popup-title-link-hover-focused-color: var(--GW-body-link-hover-color);
 
-    --GW-popups-popup-scrollbar-track-color: var(--GW-body-background-color);
-
     --GW-popups-popup-scrollbar-thumb-color: #494949;
     --GW-popups-popup-scrollbar-thumb-hover-color: #6c6c6c;
     --GW-popups-popup-scrollbar-thumb-focused-color: #5c5c5c;
@@ -2086,14 +2035,12 @@ body.special-halloween-dark h6 {
 
     /*  Popins.
      */
-    --GW-popins-body-background-color: var(--GW-body-background-color);
     --GW-popins-popin-background-color: var(--GW-body-background-color);
     --GW-popins-popin-border-color: #7c7c7c;
     --GW-popins-box-shadow-color: #7c7c7c;
     --GW-popins-popin-title-bar-background-color: #000;
     --GW-popins-popin-title-bar-button-color: #b4b4b4;
     --GW-popins-popin-scrollbar-thumb-color: #5c5c5c;
-    --GW-popins-popin-scrollbar-track-color: var(--GW-body-background-color);
     --GW-popins-popin-scrollbar-thumb-hover-color: #8b8b8b;
     --GW-popins-popin-stack-counter-text-color: #000;
 
@@ -2113,10 +2060,10 @@ body.special-halloween-dark h6 {
 	 */
 	--GW-reader-mode-masked-link-bracket-background-color: rgba(0, 0, 0, 0.5);
 	/*	The following is a temporary hack until we can generate the above value
-		dynamically from the local value of --GW-link-underline-background-color
+		dynamically from the local value of --link-underline-background-color
 		(by reducing the opacity of whatever that value is).
 	 */
-	--GW-reader-mode-masked-link-bracket-background-color: var(--GW-link-underline-background-color);
+	--GW-reader-mode-masked-link-bracket-background-color: var(--link-underline-background-color);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.6);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color: #000;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color: #fff;

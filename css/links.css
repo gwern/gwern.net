@@ -34,13 +34,14 @@
     top: 0;
     width: 1px;
     height: 100%;
+    color: inherit;
     background-image:
-        linear-gradient(var(--GW-link-underline-background-color),
-                        var(--GW-link-underline-background-color)),
-        linear-gradient(var(--GW-link-underline-background-color),
-                        var(--GW-link-underline-background-color)),
-        linear-gradient(var(--GW-link-underline-gradient-line-color),
-                        var(--GW-link-underline-gradient-line-color));
+        linear-gradient(var(--link-underline-background-color),
+                        var(--link-underline-background-color)),
+        linear-gradient(var(--link-underline-background-color),
+                        var(--link-underline-background-color)),
+        linear-gradient(var(--link-underline-gradient-line-color),
+                        var(--link-underline-gradient-line-color));
     background-size:
         1px 0.6em,
         1px 0.1em,
@@ -50,9 +51,6 @@
         0 100%,
         0 calc(100% - 0.1em);
     background-repeat: no-repeat;
-}
-.has-content:hover {
-    --GW-link-underline-gradient-line-color: var(--GW-link-underline-gradient-line-color-hover);
 }
 .TOC .has-content,
 body.index #markdownBody .has-content {
@@ -267,16 +265,14 @@ a[data-link-icon='arrow-up']:hover::after,
 a[data-link-icon='arrow-down']:hover::after {
     opacity: 0.4;
 }
-a[data-link-icon='arrow-up'] { --link-icon-url: url('/static/img/icon/arrow-up.svg'); }
-a[data-link-icon='arrow-down'] { --link-icon-url: url('/static/img/icon/arrow-down.svg'); }
 
 /*=------------------------------=*/
 /*= Internal (within-site) links =*/
 /*=------------------------------=*/
 
 a[data-link-icon='gwern']::after {
-    --link-icon-size: 0.65em;
-    --link-icon-offset-y: -0.1em;
+    --link-icon-size: 0.6em;
+    --link-icon-offset-y: 0.3em;
     --link-icon-offset-x: 0.2em;
 
 	opacity: 0.6;

@@ -36,7 +36,9 @@
 
 html,
 .shadow-body {
-    background-color: var(--GW-body-background-color);
+	--background-color: var(--GW-body-background-color);
+
+    background-color: var(--background-color);
     color: var(--GW-body-text-color);
     font-size: var(--GW-base-font-size);
     font-weight: 400;
@@ -963,8 +965,9 @@ body.justified-not .markdownBody li {
 }
 
 .abstract blockquote {
+	--background-color: var(--GW-blockquote-background-color-level-one);
+
     margin: 0 0 1.5em 0;
-    background-color: var(--GW-abstract-background-color);
     border-color: var(--GW-abstract-border-color);
     padding-top: 0.9em;
     clear: none;
@@ -1065,16 +1068,21 @@ h1 {
 /*********/
 
 a {
-    color: var(--GW-body-link-color); /* off-black */
     text-decoration: none;
+    color: var(--GW-body-link-color); /* off-black */
 }
-
 /*  Slightly gray out links the reader has already visited, so they know if
     they’ve seen that content before. (A critical affordance in densely
     hyperlinked longform.)
  */
+.markdownBody a:hover {
+    color: var(--GW-body-link-hover-color);
+}
 .markdownBody a:visited {
-    color: var(--GW-body-link-visited-color);
+	color: var(--GW-body-link-visited-color);
+}
+.markdownBody a:visited:hover {
+    color: var(--GW-body-link-hover-color);
 }
 
 /*=------------------------=*/
@@ -1092,10 +1100,12 @@ a {
 May be able at some point to simplify this using regular link underlining, since CSS4's `text-decoration-skip-ink` by default avoids overlapping with text descenders (but as of Oct 2019, no Edge/IE or Safari support, and only the latest Firefox 70 supports it; maybe in a few years...): https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration-skip-ink#Browser_Compatibility https://www.caniuse.com/#feat=mdn-css_properties_text-decoration-skip-ink (Right now, Firefox skip-ink looks quite bad: it doesn't skip enough ink, defeating the point, and also positions the underline badly!)
 */
 
-.markdownBody a:link,
-#footer a:link {
-    text-decoration: none;
-    background-image: linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
+.markdownBody a {
+	--link-underline-background-color: var(--background-color);
+	--link-underline-gradient-line-color: currentColor;
+
+    background-image: linear-gradient(var(--link-underline-gradient-line-color), 
+    								  var(--link-underline-gradient-line-color));
     background-size: 1px 1px;
     background-repeat: repeat-x;
     background-position: 0% calc(100% - 0.1em);
@@ -1104,20 +1114,17 @@ May be able at some point to simplify this using regular link underlining, since
     font-variant-numeric: lining-nums;
 }
 .markdownBody a:link,
-.markdownBody a:link *,
-#footer a:link {
+.markdownBody a:link * {
     text-shadow:
-         0      0.05em  var(--GW-link-underline-background-color),
-         0.05em 0.05em  var(--GW-link-underline-background-color),
-        -0.05em 0.05em  var(--GW-link-underline-background-color),
-         0.17em 0.05em  var(--GW-link-underline-background-color),
-        -0.17em 0.05em  var(--GW-link-underline-background-color),
-         0.17em 0       var(--GW-link-underline-background-color),
-        -0.17em 0       var(--GW-link-underline-background-color);
+         0      0.05em  var(--link-underline-background-color),
+         0.05em 0.05em  var(--link-underline-background-color),
+        -0.05em 0.05em  var(--link-underline-background-color),
+         0.17em 0.05em  var(--link-underline-background-color),
+        -0.17em 0.05em  var(--link-underline-background-color),
+         0.17em 0       var(--link-underline-background-color),
+        -0.17em 0       var(--link-underline-background-color);
 }
-.markdownBody a:hover {
-    background-image: linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
-}
+
 
 /* eliminate the blurring of headers and links when selecting by overriding the text-shadow: */
 ::selection {
@@ -1201,14 +1208,11 @@ body.indented-not div[class^='drop-cap-'] + p {
  */
 
 blockquote {
-    --GW-link-underline-background-color: var(--GW-blockquote-background-color);
-    --GW-table-full-width-background-color: var(--GW-blockquote-background-color);
-
     display: flow-root;
     overflow: visible;
     margin: 1.625em 0 1.75em 0;
-    border: 1px solid var(--GW-blockquote-border-color);
-    background-color: var(--GW-blockquote-background-color);
+    border: 1px solid var(--border-color);
+    background-color: var(--background-color);
     font-size: 0.95em;
     padding: 1em 1.25em;
 }
@@ -1217,25 +1221,25 @@ blockquote {
  */
 blockquote,
 blockquote blockquote blockquote blockquote {
-    --GW-blockquote-background-color: var(--GW-blockquote-background-color-level-one);
+    --background-color: var(--GW-blockquote-background-color-level-one);
 }
 blockquote {
-    --GW-blockquote-border-color: var(--GW-blockquote-border-color-level-one);
+    --border-color: var(--GW-blockquote-border-color-level-one);
 }
 blockquote blockquote blockquote blockquote {
-    --GW-blockquote-border-color: var(--GW-blockquote-border-color-level-four);
+    --border-color: var(--GW-blockquote-border-color-level-four);
 }
 
 blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote {
-    --GW-blockquote-border-color: var(--GW-blockquote-border-color-level-two);
-    --GW-blockquote-background-color: var(--GW-blockquote-background-color-level-two);
+    --border-color: var(--GW-blockquote-border-color-level-two);
+    --background-color: var(--GW-blockquote-background-color-level-two);
 }
 
 blockquote blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote blockquote {
-    --GW-blockquote-border-color: var(--GW-blockquote-border-color-level-three);
-    --GW-blockquote-background-color: var(--GW-blockquote-background-color-level-three);
+    --border-color: var(--GW-blockquote-border-color-level-three);
+    --background-color: var(--GW-blockquote-background-color-level-three);
 }
 
 /*=--------------------=*/
@@ -1277,11 +1281,6 @@ pre {
 /********/
 /* MATH */
 /********/
-
-.mjpage__block {
-    display: block;
-    overflow: auto;
-}
 
 .math.inline,
 .math.inline .mjpage,
@@ -1418,8 +1417,8 @@ body.special-halloween-dark {
 
     --GW-epigraph-quotation-mark-color: var(--GW-blood-red-dried);
 
-    --GW-H1-box-shadow-line-color: var(--GW-blood-red);
-    --GW-H2-bottom-border-color: var(--GW-blood-red);
+    --GW-H1-border-color: var(--GW-blood-red);
+    --GW-H2-border-color: var(--GW-blood-red);
 
     --GW-drop-caps-yinit-color: var(--GW-blood-red);
     --GW-drop-caps-yinit-text-shadow-color: var(--GW-blood-red);

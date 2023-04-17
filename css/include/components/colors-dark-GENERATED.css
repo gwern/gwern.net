@@ -3,23 +3,17 @@
      */
     --GW-body-background-color: #000;
     --GW-body-text-color: #fff;
-    --GW-body-link-color: #dcdcdc;
-    --GW-body-link-hover-color: #999;
 
     /*  Selection.
      */
     --GW-text-selection-background-color: #dcdcdc;
     --GW-text-selection-color: #000;
 
-    /*  Visited.
-     */
-    --GW-body-link-visited-color: #b1b1b1;
-
-    /*  Link underlining.
-     */
-    --GW-link-underline-background-color: var(--GW-body-background-color);
-    --GW-link-underline-gradient-line-color: #dcdcdc;
-    --GW-link-underline-gradient-line-color-hover: #8b8b8b;
+	/*	Links.
+	 */
+    --GW-body-link-color: #dcdcdc;
+    --GW-body-link-hover-color: #999;
+    --GW-body-link-visited-color: #b4b4b4;
 
     /*  Blockquotes.
      */
@@ -34,7 +28,6 @@
     /*  Abstracts.
      */
     --GW-abstract-border-color: #6c6c6c;
-    --GW-abstract-background-color: var(--GW-blockquote-background-color-level-one);
 
     /*  Table of contents.
      */
@@ -65,9 +58,8 @@
 
     /*  Headings.
      */
-    --GW-H1-box-shadow-background-color: var(--GW-body-background-color);
-    --GW-H1-box-shadow-line-color: #999;
-    --GW-H2-bottom-border-color: #999;
+    --GW-H1-border-color: #999;
+    --GW-H2-border-color: #999;
 
     /*  Comments.
      */
@@ -93,19 +85,15 @@
     --GW-footnotes-section-top-rule-color: #5c5c5c;
     --GW-footnote-backlink-border-color: #fff;
     --GW-footnote-backlink-border-hover-color: #8b8b8b;
-    --GW-footnote-backlink-after-bordered-block-background-color: var(--GW-body-background-color);
 
     /*  Footnote references.
      */
     --GW-footnote-ref-highlight-box-shadow-color: #7c7c7c;
-    --GW-footnote-ref-highlight-background-color: rgba(0, 0, 0, 0.75);
 
     /*  Sidenotes.
      */
-    --GW-sidenote-highlight-background-color: var(--GW-body-background-color);
     --GW-sidenote-highlight-box-shadow-color: #7c7c7c;
     --GW-sidenote-border-color: #7c7c7c;
-    --GW-sidenote-scrollbar-track-color: var(--GW-body-background-color);
     --GW-sidenote-scrollbar-thumb-color: #7c7c7c;
     --GW-sidenote-scrollbar-thumb-hover-color: #8b8b8b;
     --GW-sidenote-self-link-border-color: #7c7c7c;
@@ -117,11 +105,8 @@
     /*  Tables.
      */
     --GW-table-border-color: #fff;
-    --GW-table-full-width-background-color: var(--GW-body-background-color);
     --GW-table-caption-border-color: #fff;
     --GW-table-row-horizontal-border-color: #fff;
-    --GW-table-cell-vertical-border-color: var(--GW-body-background-color);
-    --GW-table-scrollbar-track-color: var(--GW-body-background-color);
     --GW-table-scrollbar-thumb-color: #7c7c7c;
     --GW-table-scrollbar-thumb-hover-color: #8b8b8b;
     --GW-table-scrollbar-border-color: #fff;
@@ -176,7 +161,6 @@
     --GW-math-block-background-color: #252525;
     --GW-math-block-background-color-flash: #000;
     --GW-math-block-scrollbar-border-color: #5c5c5c;
-    --GW-math-block-scrollbar-track-color: var(--GW-body-background-color);
     --GW-math-block-scrollbar-thumb-color: #5c5c5c;
     --GW-math-block-scrollbar-thumb-hover-color: #8b8b8b;
 
@@ -204,11 +188,6 @@
     --GW-admonition-reversed-link-color-hover: #5c5c5c;
     --GW-admonition-reversed-link-underline-gradient-line-color: #5c5c5c;
     --GW-admonition-reversed-link-underline-gradient-line-color-hover: #6c6c6c;
-    --GW-admonition-reversed-footnote-ref-highlight-background-color: rgba(189, 189, 189, 0.75);
-
-    /*  Sequential nav UI.
-     */
-    --GW-sequential-nav-link-background-color: var(--GW-body-background-color);
 
 	/*	Footer.
 	 */
@@ -223,7 +202,6 @@
 
     /*  Popups.
      */
-    --GW-popups-body-background-color: var(--GW-body-background-color);
     --GW-popups-popup-background-color: var(--GW-body-background-color);
 
     --GW-popups-object-popup-background-color: #000;
@@ -246,8 +224,6 @@
 	--GW-popups-popup-title-focused-color: #fff;
     --GW-popups-popup-title-link-hover-focused-color: var(--GW-body-link-hover-color);
 
-    --GW-popups-popup-scrollbar-track-color: var(--GW-body-background-color);
-
     --GW-popups-popup-scrollbar-thumb-color: #494949;
     --GW-popups-popup-scrollbar-thumb-hover-color: #6c6c6c;
     --GW-popups-popup-scrollbar-thumb-focused-color: #5c5c5c;
@@ -269,14 +245,12 @@
 
     /*  Popins.
      */
-    --GW-popins-body-background-color: var(--GW-body-background-color);
     --GW-popins-popin-background-color: var(--GW-body-background-color);
     --GW-popins-popin-border-color: #7c7c7c;
     --GW-popins-box-shadow-color: #7c7c7c;
     --GW-popins-popin-title-bar-background-color: #000;
     --GW-popins-popin-title-bar-button-color: #b4b4b4;
     --GW-popins-popin-scrollbar-thumb-color: #5c5c5c;
-    --GW-popins-popin-scrollbar-track-color: var(--GW-body-background-color);
     --GW-popins-popin-scrollbar-thumb-hover-color: #8b8b8b;
     --GW-popins-popin-stack-counter-text-color: #000;
 
@@ -296,10 +270,10 @@
 	 */
 	--GW-reader-mode-masked-link-bracket-background-color: rgba(0, 0, 0, 0.5);
 	/*	The following is a temporary hack until we can generate the above value
-		dynamically from the local value of --GW-link-underline-background-color
+		dynamically from the local value of --link-underline-background-color
 		(by reducing the opacity of whatever that value is).
 	 */
-	--GW-reader-mode-masked-link-bracket-background-color: var(--GW-link-underline-background-color);
+	--GW-reader-mode-masked-link-bracket-background-color: var(--link-underline-background-color);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.6);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color: #000;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color: #fff;

@@ -118,7 +118,7 @@
     top: var(--collapse-toggle-top-height);
     bottom: var(--collapse-toggle-bottom-height);
     right: 0;
-    background-color: var(--GW-body-background-color);
+    background-color: var(--background-color);
 }
 .collapse.expanded::before {
     z-index: 12;
@@ -280,7 +280,7 @@
 
 .collapse.expanded-not > .abstract-collapse.abstract > blockquote {
     margin: 0;
-    border-color: var(--GW-abstract-background-color);
+    border-color: var(--background-color);
 }
 .collapse.expanded-not > .disclosure-button:hover + .abstract-collapse.abstract > blockquote {
     background-color: var(--GW-abstract-collapse-blockquote-hover-color);
@@ -462,10 +462,6 @@ blockquote .collapse.expanded {
     margin-bottom: calc(-1 * var(--collapse-blockquote-bottom-padding));
 }
 
-blockquote .collapse::before {
-    background-color: var(--GW-blockquote-background-color);
-}
-
 blockquote .collapse > .disclosure-button {
     --collapse-button-text-color: var(--GW-collapse-in-blockquote-disclosure-button-text-color);
     --collapse-button-background-color: var(--GW-collapse-in-blockquote-disclosure-button-color);
@@ -641,8 +637,8 @@ section:not(.collapse) > h1:first-child {
     text-align: right;
     font-weight: 600;
     box-shadow:
-        0 -2px 0 0 var(--GW-H1-box-shadow-background-color) inset,
-        0 -3px 0 0 var(--GW-H1-box-shadow-line-color) inset;
+        0 -2px 0 0 var(--background-color) inset,
+        0 -3px 0 0 var(--GW-H1-border-color) inset;
 }
 .markdownBody section:not(.collapse) > h1:first-child a {
     position: relative;
@@ -658,8 +654,8 @@ section:not(.collapse) > h1:first-child {
         overflow: hidden;
         padding: 0 0.05em 7px 1.25rem;
         box-shadow:
-            0 -5px 0 0 var(--GW-H1-box-shadow-background-color) inset,
-            0 -6px 0 0 var(--GW-H1-box-shadow-line-color) inset;
+            0 -5px 0 0 var(--background-color) inset,
+            0 -6px 0 0 var(--GW-H1-border-color) inset;
     }
     .markdownBody section:not(.collapse) > h1:first-child a::after {
         left: -0.75em;
@@ -683,7 +679,7 @@ h2::after {
     display: block;
     position: absolute;
     width: 100%;
-    border-bottom: 1px dotted var(--GW-H2-bottom-border-color);
+    border-bottom: 1px dotted var(--GW-H2-border-color);
     left: 0;
     bottom: 0.05em;
     pointer-events: none;
@@ -1028,10 +1024,6 @@ table, code, pre, a, h1, h2, h3, h4, h5, h6 {
 /* LINKS */
 /*********/
 
-a:hover {
-    color: var(--GW-body-link-hover-color);
-}
-
 /*=-----------------------------------------=*/
 /*= Icons for certain link types: by target =*/
 /*=-----------------------------------------=*/
@@ -1226,7 +1218,7 @@ figure + figure {
 }
 
 figure img {
-  background-color: var(--GW-body-background-color);
+	background-color: var(--background-color);
 }
 
 figure img,
@@ -1328,7 +1320,7 @@ img::before {
     font-family: var(--GW-sans-serif-font-stack);
     display: block;
     padding: 0.5em 0.75em;
-    background-color: var(--GW-body-background-color);
+    background-color: var(--background-color);
     text-align: left;
     box-sizing: border-box;
     height: 100%;
@@ -1425,11 +1417,10 @@ blockquote table table {
     overflow: hidden;
 }
 .epigraph blockquote {
-    --GW-blockquote-background-color: var(--GW-body-background-color);
+    --background-color: inherit;
 
     padding: 0;
     border: none;
-    background-color: inherit;
     font-size: inherit;
     position: relative;
     z-index: 1;
@@ -1563,7 +1554,7 @@ a.footnote-ref.highlighted::before,
 a.footnote-ref:hover::before,
 a.footnote-ref:target::before,
 a.footnote-ref.targeted::before {
-    background-color: var(--GW-footnote-ref-highlight-background-color);
+    background-color: var(--background-color);
     border-color: var(--GW-footnote-ref-highlight-box-shadow-color);
     outline: none;
 }
@@ -1615,7 +1606,7 @@ h1 sub, h1 sup, h2 sub, h2 sup {
     border-color: var(--GW-footnote-backlink-border-hover-color);
     border-style: solid;
     box-shadow:
-        0 0 0 1px var(--GW-body-background-color) inset,
+        0 0 0 1px var(--background-color) inset,
         0 0 0 2px var(--GW-footnote-backlink-border-hover-color) inset;
 
 }
@@ -1633,7 +1624,7 @@ h1 sub, h1 sup, h2 sub, h2 sup {
     position: absolute;
     right: 0;
     top: calc(100% - 1px);
-    background-color: var(--GW-footnote-backlink-after-bordered-block-background-color);
+    background-color: var(--background-color);
 }
 
 /*=-----------=*/
@@ -1706,7 +1697,7 @@ section.footnotes > ol > li.highlighted::after {
     border-style: solid;
     border-color: var(--GW-footnote-highlighted-border-color);
     box-shadow:
-        0 0 0 1px var(--GW-body-background-color) inset,
+        0 0 0 1px var(--background-color) inset,
         0 0 0 2px var(--GW-footnote-highlighted-border-color) inset;
 }
 section.footnotes > ol > li:target::after,
@@ -1745,10 +1736,10 @@ section.footnotes > hr:first-child::after {
     border: 1px solid var(--GW-footnotes-section-top-rule-color);
     width: 2em;
     height: 2em;
-    background-color: var(--GW-body-background-color);
+    background-color: var(--background-color);
     z-index: 1;
     box-shadow:
-        0 0 0 calc(0.5em - 1px) var(--GW-body-background-color) inset,
+        0 0 0 calc(0.5em - 1px) var(--background-color) inset,
         0 0 0 0.5em var(--GW-footnotes-section-top-rule-color) inset;
     filter: none;
     opacity: 1.0;
@@ -1766,16 +1757,16 @@ section.footnotes:target > hr:first-child::after,
 section.footnotes > hr:first-child.highlighted::after {
     border-color: var(--GW-footnote-highlighted-border-color);
     box-shadow:
-        0 0 0 1px var(--GW-body-background-color) inset,
+        0 0 0 1px var(--background-color) inset,
         0 0 0 2px var(--GW-footnote-highlighted-border-color) inset,
-        0 0 0 calc(0.5em - 1px) var(--GW-body-background-color) inset,
+        0 0 0 calc(0.5em - 1px) var(--background-color) inset,
         0 0 0 0.5em var(--GW-footnote-highlighted-border-color) inset,
-        0 0 0 calc(0.5em + 1px) var(--GW-body-background-color) inset,
+        0 0 0 calc(0.5em + 1px) var(--background-color) inset,
         0 0 0 calc(0.5em + 2px) var(--GW-footnote-highlighted-border-color) inset;
 }
 section.footnotes:target > hr:first-child::before,
 section.footnotes > hr:first-child.highlighted::before {
-    background-color: var(--GW-body-background-color);
+    background-color: var(--background-color);
     box-shadow:
         0 1px 0 0 var(--GW-footnote-highlighted-border-color) inset,
         0 -1px 0 0 var(--GW-footnote-highlighted-border-color) inset;
@@ -1853,9 +1844,9 @@ section.footnotes > hr:first-child.highlighted::before {
 #markdownBody .sidenote.targeted,
 #markdownBody .sidenote.displaced,
 #markdownBody .sidenote.highlighted {
-    background-color: var(--GW-sidenote-highlight-background-color);
+    background-color: var(--background-color);
     opacity: 1.0;
-    box-shadow: 0 0 0 16px var(--GW-sidenote-highlight-background-color);
+    box-shadow: 0 0 0 16px var(--background-color);
 }
 #markdownBody .sidenote:target {
     z-index: 1;
@@ -1896,7 +1887,7 @@ section.footnotes > hr:first-child.highlighted::before {
     margin: auto;
     width: fit-content;
     z-index: 2;
-    background-color: var(--GW-body-background-color);
+    background-color: var(--background-color);
     padding: 0.125em 0.5em 0.5em 0.5em;
     font-size: 1.25em;
     font-weight: 600;
@@ -1946,7 +1937,7 @@ section.footnotes > hr:first-child.highlighted::before {
 #markdownBody .sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMXd3d////ywAAAAABAAEAAACBgQShqgJBQA7');
     box-shadow:
-        0 0 0 2px var(--GW-sidenote-scrollbar-track-color) inset;
+        0 0 0 2px var(--background-color) inset;
     background-size: 2px;
 }
 #markdownBody .sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb:hover {
@@ -1956,10 +1947,10 @@ section.footnotes > hr:first-child.highlighted::before {
 /*  Scroll bar styles (for Firefox).
     */
 #markdownBody .sidenote.cut-off .sidenote-outer-wrapper {
-    scrollbar-color: var(--GW-sidenote-scrollbar-thumb-color) var(--GW-sidenote-scrollbar-track-color);
+    scrollbar-color: var(--GW-sidenote-scrollbar-thumb-color) var(--background-color);
 }
 #markdownBody .sidenote.cut-off .sidenote-outer-wrapper:hover {
-    scrollbar-color: var(--GW-sidenote-scrollbar-thumb-hover-color) var(--GW-sidenote-scrollbar-track-color);
+    scrollbar-color: var(--GW-sidenote-scrollbar-thumb-hover-color) var(--background-color);
 }
 
 /*  Inner wrapper (does not scroll; stretches to height of content).
@@ -2166,7 +2157,7 @@ body.indented-not .table-small.float-right {
 /*=-------------------=*/
 
 .table.width-full table {
-    background-color: var(--GW-table-full-width-background-color);
+    background-color: var(--background-color);
 }
 
 /*=-------------=*/
@@ -2200,7 +2191,7 @@ table td {
 }
 table th + th,
 table td + td {
-    border-left: 1px solid var(--GW-table-cell-vertical-border-color);
+    border-left: 1px solid var(--background-color);
 }
 
 table td > code {
@@ -2216,7 +2207,7 @@ table td > code {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMXd3d////ywAAAAABAAEAAACBgQShqgJBQA7');
     background-size: 2px;
     box-shadow:
-        0 2px 0 0   var(--GW-table-scrollbar-track-color) inset,
+        0 2px 0 0   var(--background-color) inset,
         0 0   0 1px var(--GW-table-scrollbar-border-color) inset,
         0 2px 0 1px var(--GW-table-scrollbar-border-color) inset;
 }
@@ -2232,10 +2223,10 @@ table td > code {
 /*  Horizontal scroll bar styles (for Firefox).
     */
 .table-scroll-wrapper {
-    scrollbar-color: var(--GW-table-scrollbar-thumb-color) var(--GW-table-scrollbar-track-color);
+    scrollbar-color: var(--GW-table-scrollbar-thumb-color) var(--background-color);
 }
 .table-scroll-wrapper:hover {
-    scrollbar-color: var(--GW-table-scrollbar-thumb-hover-color) var(--GW-table-scrollbar-track-color);
+    scrollbar-color: var(--GW-table-scrollbar-thumb-hover-color) var(--background-color);
 }
 
 /*  Add little icons to tables handled by tablesorter.js
@@ -2277,8 +2268,9 @@ th.tablesorter-headerDesc:hover {
     NOTE: we tried 3-cycle zebra striping tables, but didn’t pass muster.
     */
 :not(.table-small) > table tr:nth-child(odd) td {
-    background-color: var(--GW-table-zebra-stripe-alternate-row-background-color);
-    --GW-link-underline-background-color: var(--GW-table-zebra-stripe-alternate-row-background-color);
+	--background-color: var(--GW-table-zebra-stripe-alternate-row-background-color);
+
+    background-color: var(--background-color);
 }
 .markdownBody table tbody tr:hover {
     outline: 1px dotted var(--GW-table-row-hover-outline-color);
@@ -2302,7 +2294,7 @@ blockquote :not(.small-table) > table {
 }
 blockquote table th + th,
 blockquote table td + td {
-    border-left: 1px solid var(--GW-blockquote-background-color);
+    border-left: 1px solid var(--background-color);
 }
 
 /*  Corrected version of suppliers tables CSS on /modafinil; original by cwillu
@@ -2337,10 +2329,10 @@ blockquote table td + td {
 /***************/
 
 code {
-    --GW-link-underline-background-color: var(--GW-code-element-background-color);
+    --background-color: var(--GW-code-element-background-color);
 
     border: 1px solid var(--GW-code-element-border-color);
-    background-color: var(--GW-code-element-background-color);
+    background-color: var(--background-color);
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
 
@@ -2366,9 +2358,11 @@ a code {
 }
 
 pre {
+	--background-color: var(--GW-pre-element-background-color);
+
     margin: 1.75em auto;
     border: 1px solid var(--GW-pre-element-border-color);
-    background-color: var(--GW-pre-element-background-color);
+    background-color: var(--background-color);
     cursor: text;
     max-height: calc(100vh - 8rem);
 }
@@ -2446,84 +2440,92 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 /* MATH */
 /********/
 
-.mjpage__block {
-    overflow-y: hidden;
+.math.block {
+    position: relative;
+    display: block;
+    overflow: hidden;
     margin: 1.25em auto;
-    background-color: var(--GW-math-block-background-color);
-    padding: 0.5em 0.5em 0.375em 0.5em;
-    box-shadow:
-        0 0 0 1px var(--GW-math-block-scrollbar-border-color) inset;
+    border: 1px solid var(--GW-math-block-scrollbar-border-color);
+}
+
+.math.block .mjpage {
+    display: block;
+    overflow: auto;
+}
+
+.math.block .MJXc-display {
+	--background-color: var(--GW-math-block-background-color);
+
+    display: inline-block;
+    margin: 0;
+    padding: 0.875em 0.75em 0.75em 0.75em;
+    min-width: calc(100% - 1.5em);
+    background-color: var(--background-color);
     transition:
         background-color 0.15s ease-out;
 }
-.mjpage__block.flash {
-    background-color: var(--GW-math-block-background-color-flash);
+.math.block .MJXc-display.flash {
+    --background-color: var(--GW-math-block-background-color-flash);
+
     transition:
         background-color 0.1s ease-out;
-}
-.mjpage__block .MJXc-display {
-    margin: 0;
-    padding: 0.25em 0;
 }
 
 /*  Horizontal scroll bar styles (for WebKit/Chromium).
     */
-.mjpage__block::-webkit-scrollbar {
+.math.block .mjpage::-webkit-scrollbar {
     height: 14px;
-    border: 1px solid var(--GW-math-block-scrollbar-border-color);
-    background-color: var(--GW-math-block-scrollbar-track-color);
+    border-top: 1px solid var(--GW-math-block-scrollbar-border-color);
+    background-color: var(--background-color);
 }
-.mjpage__block::-webkit-scrollbar-thumb {
+.math.block .mjpage::-webkit-scrollbar-thumb {
     box-shadow:
-        0 0 0 2px var(--GW-math-block-scrollbar-track-color) inset,
+        0 0 0 2px var(--background-color) inset,
         0 0 0 8px var(--GW-math-block-scrollbar-thumb-color) inset;
-    border-color: var(--GW-math-block-scrollbar-border-color) transparent;
+    border-color: var(--GW-math-block-scrollbar-border-color);
     border-style: solid;
-    border-width: 1px;
+    border-width: 1px 0 0 0;
 }
-.mjpage__block:hover::-webkit-scrollbar-thumb:hover {
+.math.block .mjpage:hover::-webkit-scrollbar-thumb:hover {
     box-shadow:
-        0 0 0 2px var(--GW-math-block-scrollbar-track-color) inset,
+        0 0 0 2px var(--background-color) inset,
         0 0 0 8px var(--GW-math-block-scrollbar-thumb-hover-color) inset;
 }
 @media only screen and (max-width: 649px) {
-    .mjpage__block::-webkit-scrollbar {
+    .math.block .mjpage::-webkit-scrollbar {
         height: 10px;
     }
 }
 
 /*  Horizontal scroll bar styles (for Firefox).
     */
-.mjpage__block {
-    scrollbar-color: var(--GW-math-block-scrollbar-thumb-color) var(--GW-math-block-scrollbar-track-color);
+.math.block {
+    scrollbar-color: var(--GW-math-block-scrollbar-thumb-color) var(--background-color);
 }
-.mjpage__block:hover {
-    scrollbar-color: var(--GW-math-block-scrollbar-thumb-hover-color) var(--GW-math-block-scrollbar-track-color);
+.math.block:hover {
+    scrollbar-color: var(--GW-math-block-scrollbar-thumb-hover-color) var(--background-color);
 }
 
 /*  Block buttons.
  */
-.mjpage__block {
-    position: relative;
-}
-.mjpage__block .block-button-bar {
+.math.block .block-button-bar {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: -1px;
+    right: -1px;
     border-color: var(--GW-math-block-scrollbar-border-color);
     border-style: solid;
     border-width: 1px;
     text-indent: 0;
 }
 @media only screen and (min-width: 650px) {
-    .mjpage__block .block-button-bar {
+    .math.block .block-button-bar {
         opacity: 0;
         visibility: hidden;
         transition:
             opacity 0.15s ease,
             visibility 0.15s ease;
     }
-    .mjpage__block:hover .block-button-bar {
+    .math.block:hover .block-button-bar {
         opacity: 1.0;
         visibility: visible;
         transition:
@@ -2531,7 +2533,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
             visibility 0s ease 0.05s;
     }
 }
-.mjpage__block .block-button-bar button {
+.math.block .block-button-bar button {
     appearance: none;
     display: block;
     font-size: inherit;
@@ -2541,21 +2543,22 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     background-color: var(--GW-body-background-color);
     cursor: pointer;
 }
-.mjpage__block .block-button-bar button img {
+.math.block .block-button-bar button img {
     display: block;
     opacity: 0.65;
 }
 @media only screen and (min-width: 650px) {
-    .mjpage__block .block-button-bar button img {
+    .math.block .block-button-bar button img {
         opacity: 0.45;
     }
-    .mjpage__block .block-button-bar button:hover img {
+    .math.block .block-button-bar button:hover img {
         opacity: 0.65;
     }
 }
-.mjpage__block .block-button-bar button:active img {
+.math.block .block-button-bar button:active img {
     transform: scale(0.95);
 }
+
 
 /********/
 /* MISC */
@@ -2902,18 +2905,13 @@ span.link-bibliography a {
 /* - <div class="admonition warning"><div class="admonition-title">Warning title (*)</div> text</div> */
 /* - <div class="admonition error"><div class="admonition-title">Error title (*)</div> text</div> */
 .admonition {
-    --admonition-text-color: currentColor;
-
-    --GW-link-underline-background-color: var(--admonition-background-color);
-
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.875em;
-    color: var(--admonition-text-color);
     position: relative;
     margin: 2em 0 1.5em 0;
     padding: 0.75em 1.25em 0.875em 1.125em;
     border-left: 2.875em solid var(--admonition-left-border-color);
-    background-color: var(--admonition-background-color);
+    background-color: var(--background-color);
 }
 .admonition-title {
 	margin-bottom: 0.25em;
@@ -2921,22 +2919,24 @@ span.link-bibliography a {
 }
 
 .admonition.note {
-    --admonition-background-color: var(--GW-admonition-note-background-color);
+    --background-color: var(--GW-admonition-note-background-color);
     --admonition-left-border-color: var(--GW-admonition-note-left-border-color);
 }
 .admonition.tip {
-    --admonition-background-color: var(--GW-admonition-tip-background-color);
+    --background-color: var(--GW-admonition-tip-background-color);
     --admonition-left-border-color: var(--GW-admonition-tip-left-border-color);
 }
 .admonition.warning {
-    --admonition-background-color: var(--GW-admonition-warning-background-color);
+    --background-color: var(--GW-admonition-warning-background-color);
     --admonition-left-border-color: var(--GW-admonition-warning-left-border-color);
-    --admonition-text-color: var(--GW-admonition-warning-text-color);
+
+    color: var(--GW-admonition-warning-text-color);
 }
 .admonition.error {
-    --admonition-background-color: var(--GW-admonition-error-background-color);
+    --background-color: var(--GW-admonition-error-background-color);
     --admonition-left-border-color: var(--GW-admonition-error-left-border-color);
-    --admonition-text-color: var(--GW-admonition-error-text-color);
+
+    color: var(--GW-admonition-error-text-color);
 }
 
 .admonition::before {
@@ -2981,12 +2981,6 @@ span.link-bibliography a {
     text-shadow: none;
 }
 
-.admonition.warning,
-.admonition.error {
-    --GW-link-underline-gradient-line-color: var(--GW-admonition-reversed-link-underline-gradient-line-color);
-    --GW-link-underline-gradient-line-color-hover: var(--GW-admonition-reversed-link-underline-gradient-line-color-hover);
-    --GW-footnote-ref-highlight-background-color: var(--GW-admonition-reversed-footnote-ref-highlight-background-color);
-}
 .admonition.warning {
     --GW-dotted-underline-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMZqamv///ywAAAAABAACAAACBEwAhgUAOw==');
 }
@@ -4082,8 +4076,9 @@ body.index-directory #footer {
     */
 
 .popframe.object .popframe-content-view {
+    --background-color: var(--GW-popups-object-popup-background-color);
+
     padding: 0;
-    background-color: var(--GW-popups-object-popup-background-color);
 }
 
 .popframe-body.object img,
@@ -4281,6 +4276,8 @@ body.index-directory #footer {
 /*└────────────────────┘*/
 
 .popup {
+    --background-color: var(--GW-popups-popup-background-color);
+
     /*  Layout. */
     --popups-popup-content-padding: 0.7em 0.9em 0.8em 0.9em;
 
@@ -4296,7 +4293,7 @@ body.index-directory #footer {
 
     border: var(--GW-popups-popup-border-width) double var(--GW-popups-popup-border-color);
     box-shadow: var(--popups-popup-box-shadow);
-    background-color: var(--GW-popups-popup-background-color);
+	background-color: var(--background-color);
 }
 
 /*┌──────────────────┐*/
@@ -4319,10 +4316,12 @@ body.index-directory #footer {
 }
 
 .popup .popframe-title-bar {
+	--background-color: var(--GW-popups-popup-title-bar-background-color);
+
     position: absolute;
     height: var(--popup-title-bar-height);
     border-bottom: 1px solid var(--GW-popups-popup-border-color);
-    background-color: var(--GW-popups-popup-title-bar-background-color);
+    background-color: var(--background-color);
     background-image: var(--GW-popups-popup-title-bar-pattern);
     display: flex;
     flex-flow: row;
@@ -4359,8 +4358,8 @@ body.index-directory #footer {
     text-decoration: none;
     text-align: center;
     filter: 
-        drop-shadow(0 0 1px var(--GW-popups-popup-title-bar-background-color))
-        drop-shadow(0 0 2px var(--GW-popups-popup-title-bar-background-color));
+        drop-shadow(0 0 1px var(--background-color))
+        drop-shadow(0 0 2px var(--background-color));
 }
 .popup.mini-title-bar .popframe-title {
     visibility: hidden;
@@ -4422,8 +4421,8 @@ body.index-directory #footer {
     max-width: 100%;
     max-height: 100%;
     filter: 
-        drop-shadow(0 0 1px var(--GW-popups-popup-title-bar-background-color)) 
-        drop-shadow(0 0 2px var(--GW-popups-popup-title-bar-background-color));
+        drop-shadow(0 0 1px var(--background-color)) 
+        drop-shadow(0 0 2px var(--background-color));
 }
 
 .popup .popframe-title-bar-button:disabled {
@@ -4446,7 +4445,7 @@ body.index-directory #footer {
 .popup .popframe-title-bar .submenu {
     position: absolute;
     top: var(--popup-title-bar-height);
-    background-color: var(--GW-popups-popup-title-bar-background-color);
+    background-color: var(--background-color);
     display: grid;
     grid-template-columns: auto auto auto;
     grid-gap: 1px;
@@ -4466,7 +4465,7 @@ body.index-directory #footer {
     opacity: 1.0;
 }
 .popup .popframe-title-bar .submenu button {
-    background-color: var(--GW-popups-popup-title-bar-background-color);
+    background-color: var(--background-color);
     border: none;
     margin: 0;
     height: var(--popup-title-bar-button-size);
@@ -4490,7 +4489,7 @@ body.index-directory #footer {
 /*└──────────────────────────────┘*/
 
 .popup .partial-annotation-append-container {
-    background-color: var(--GW-popups-popup-background-color);
+    background-color: var(--background-color);
     padding: var(--popups-popup-content-padding);
     position: absolute;
     top: 100%;
@@ -4505,7 +4504,7 @@ body.index-directory #footer {
         var(--GW-popups-popup-border-width);
     box-shadow:
         0 -3px 0 -2px var(--GW-popups-popup-border-color),
-        0 -4px 0 -2px var(--GW-popups-popup-background-color),
+        0 -4px 0 -2px var(--background-color),
         0 -5px 0 -2px var(--GW-popups-popup-border-color),
         var(--popups-popup-box-shadow);
 }
@@ -4539,7 +4538,7 @@ body.index-directory #footer {
 .popup .popframe-scroll-view::-webkit-scrollbar-thumb {
     background-color: var(--GW-popups-popup-scrollbar-thumb-color);
     box-shadow:
-        0 0 0 3px var(--GW-popups-popup-scrollbar-track-color) inset;
+        0 0 0 3px var(--background-color) inset;
 }
 .popup .popframe-scroll-view::-webkit-scrollbar-thumb:hover {
     background-color: var(--GW-popups-popup-scrollbar-thumb-hover-color);
@@ -4548,10 +4547,10 @@ body.index-directory #footer {
 /*  Scroll bar styles (for Firefox).
     */
 .popup .popframe-scroll-view {
-    scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-color) var(--GW-popups-popup-scrollbar-track-color);
+    scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-color) var(--background-color);
 }
 .popup .popframe-scroll-view:hover {
-    scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-hover-color) var(--GW-popups-popup-scrollbar-track-color);
+    scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-hover-color) var(--background-color);
 }
 
 /*┌─────────────────────┐*/
@@ -4561,7 +4560,7 @@ body.index-directory #footer {
 .popup .popframe-content-view {
     --GW-base-font-size: 0.9rem;
 
-    background-color: var(--GW-popups-popup-background-color);
+    background-color: var(--background-color);
     padding: var(--popups-popup-content-padding);
     display: flow-root;
     contain: content;
@@ -4833,7 +4832,7 @@ body.index-directory #footer {
 }
 .popup-body.image img.invert,
 .popup-body.image img.invert-auto {
-    background-color: var(--GW-body-background-color);
+    background-color: var(--background-color);
 }
 
 /*  Loading spinner.
@@ -4940,6 +4939,8 @@ body.index-directory #footer {
 /*=-----------------------=*/
 
 #popup-options-dialog {
+    --background-color: var(--GW-popups-popup-options-dialog-backdrop-background-color);
+
     position: fixed;
     left: 0;
     top: 0;
@@ -4948,7 +4949,7 @@ body.index-directory #footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--GW-popups-popup-options-dialog-backdrop-background-color);
+    background-color: var(--background-color);
     z-index: 2;
     opacity: 1;
     transition:
@@ -4959,9 +4960,11 @@ body.index-directory #footer {
 }
 
 #popup-options-dialog > div {
+	--background-color: var(--GW-popups-popup-options-dialog-background-color);
+
     position: absolute;
     width: 500px;
-    background-color: var(--GW-popups-popup-options-dialog-background-color);
+    background-color: var(--background-color);
     border: 1px solid var(--GW-popups-popup-options-dialog-border-color);
     box-shadow: 0 2px 2px 0 var(--GW-popups-popup-options-dialog-box-shadow-color);
     font-family: var(--GW-sans-serif-font-stack);
@@ -4992,7 +4995,9 @@ body.index-directory #footer {
 }
 
 #popup-options-dialog button.save-button {
-    background-color: var(--GW-popups-popup-options-dialog-button-background-color);
+    --background-color: var(--GW-popups-popup-options-dialog-button-background-color);
+	
+	background-color: var(--background-color);
     padding: 0 0.75em;
     height: 2em;
     line-height: 1;
@@ -5003,12 +5008,12 @@ body.index-directory #footer {
 #popup-options-dialog button.save-button:hover {
     cursor: pointer;
     box-shadow:
-        0 0 0 2px var(--GW-popups-popup-options-dialog-button-background-color) inset,
+        0 0 0 2px var(--background-color) inset,
         0 0 0 3px var(--GW-popups-popup-options-dialog-button-hover-box-shadow-color) inset;
 }
 #popup-options-dialog button.save-button:active {
     box-shadow:
-        0 0 0 4px var(--GW-popups-popup-options-dialog-button-background-color) inset,
+        0 0 0 4px var(--background-color) inset,
         0 0 0 5px var(--GW-popups-popup-options-dialog-button-hover-box-shadow-color) inset;
 }
 
@@ -5086,7 +5091,7 @@ body.index-directory #footer {
 
 #popup-options-dialog .option-buttons input:checked {
     box-shadow:
-        0 0 0 3px var(--GW-popups-popup-options-dialog-button-background-color) inset,
+        0 0 0 3px var(--background-color) inset,
         0 0 0 1em var(--GW-popups-popup-options-dialog-button-hover-box-shadow-color) inset;
 }
 
@@ -5159,6 +5164,8 @@ body.index-directory #footer {
 /*└────────────────────┘*/
 
 .popin {
+    --background-color: var(--GW-popins-popin-background-color);
+
     /*  Layout. */
     --popins-popin-content-padding: 0.7em 0.9em 0.8em 0.9em;
 
@@ -5176,7 +5183,7 @@ body.index-directory #footer {
     /*  Styling. */
     border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
     filter: drop-shadow(1px 2px 4px var(--GW-popins-box-shadow-color));
-    background-color: var(--GW-popins-popin-background-color);
+    background-color: var(--background-color);
 }
 
 .popin + .popin {
@@ -5188,6 +5195,8 @@ body.index-directory #footer {
 /*└──────────────────┘*/
 
 .popin .popframe-title-bar {
+	--background-color: var(--GW-popins-popin-title-bar-background-color);
+
     position: absolute;
     right: calc(-1 * var(--GW-popins-popin-border-width));
     bottom: calc(100%);
@@ -5196,8 +5205,7 @@ body.index-directory #footer {
     border-style: double;
     border-color: var(--GW-popins-popin-border-color);
     border-width: var(--GW-popins-popin-border-width) var(--GW-popins-popin-border-width) 0 var(--GW-popins-popin-border-width);
-    background-color: var(--GW-popins-popin-title-bar-background-color);
-    --GW-link-underline-background-color: var(--GW-popins-popin-title-bar-background-color);
+    background-color: var(--background-color);
     display: flex;
     flex-flow: row;
     align-items: center;
@@ -5299,6 +5307,8 @@ body.index-directory #footer {
 /*└───────────────────┘*/
 
 .popin .popin-footer-bar {
+	--background-color: var(--GW-popins-popin-title-bar-background-color);
+
     position: absolute;
     left: calc(-1 * var(--GW-popins-popin-border-width));
     right: calc(-1 * var(--GW-popins-popin-border-width));
@@ -5308,8 +5318,7 @@ body.index-directory #footer {
     border-style: double;
     border-color: var(--GW-popins-popin-border-color);
     border-width: 1px var(--GW-popins-popin-border-width) var(--GW-popins-popin-border-width) var(--GW-popins-popin-border-width);
-    background-color: var(--GW-popins-popin-title-bar-background-color);
-    --GW-link-underline-background-color: var(--GW-popins-popin-title-bar-background-color);
+    background-color: var(--background-color);
     display: flex;
     flex-flow: row;
     align-items: center;
@@ -5340,7 +5349,7 @@ body.index-directory #footer {
 /*└──────────────────────────────┘*/
 
 .popin .partial-annotation-append-container {
-    background-color: var(--GW-popins-popin-background-color);
+    background-color: var(--background-color);
     padding: var(--popins-popin-content-padding);
     position: absolute;
     top: 100%;
@@ -5355,7 +5364,7 @@ body.index-directory #footer {
         var(--GW-popins-popin-border-width);
     box-shadow:
         0 -3px 0 -2px var(--GW-popins-popin-border-color),
-        0 -4px 0 -2px var(--GW-popins-popin-background-color),
+        0 -4px 0 -2px var(--background-color),
         0 -5px 0 -2px var(--GW-popins-popin-border-color);
 }
 
@@ -5386,7 +5395,7 @@ body.index-directory #footer {
 .popin .popframe-scroll-view::-webkit-scrollbar-thumb {
     background-color: var(--GW-popins-popin-scrollbar-thumb-color);
     box-shadow:
-        0 0 0 3px var(--GW-popins-popin-scrollbar-track-color) inset;
+        0 0 0 3px var(--background-color) inset;
 }
 .popin .popframe-scroll-view::-webkit-scrollbar-thumb:hover {
     background-color: var(--GW-popins-popin-scrollbar-thumb-hover-color);
@@ -5395,10 +5404,10 @@ body.index-directory #footer {
 /*  Scroll bar styles (for Firefox).
     */
 .popin .popframe-scroll-view {
-    scrollbar-color: var(--GW-popins-popin-scrollbar-thumb-color) var(--GW-popins-popin-scrollbar-track-color);
+    scrollbar-color: var(--GW-popins-popin-scrollbar-thumb-color) var(--background-color);
 }
 .popin .popframe-scroll-view:hover {
-    scrollbar-color: var(--GW-popins-popin-scrollbar-thumb-hover-color) var(--GW-popins-popin-scrollbar-track-color);
+    scrollbar-color: var(--GW-popins-popin-scrollbar-thumb-hover-color) var(--background-color);
 }
 
 /*┌─────────────────────┐*/
@@ -5406,8 +5415,9 @@ body.index-directory #footer {
 /*└─────────────────────┘*/
 
 .popin .popframe-content-view {
-    background-color: var(--GW-popins-popin-background-color);
-    --GW-link-underline-background-color: var(--GW-popins-popin-title-bar-background-color);
+	--background-color: var(--GW-popins-popin-title-bar-background-color);
+
+    background-color: var(--background-color);
     padding: var(--popins-popin-content-padding);
     display: flow-root;
 }
@@ -5493,11 +5503,12 @@ body.index-directory #footer {
 
 .popin-open:not(.footnote-ref),
 .popin-open:not(.footnote-ref):hover {
-    background-color: var(--GW-popins-popin-background-color);
-    --GW-link-underline-background-color: var(--GW-popins-popin-background-color);
+    --background-color: var(--GW-popins-popin-background-color);
     --popin-open-highlight-box-shadow-x-offset: 2px;
+
+    background-color: var(--background-color);
     box-shadow:
-        var(--popin-open-highlight-box-shadow-x-offset) 0 0 5px var(--GW-popins-popin-background-color);
+        var(--popin-open-highlight-box-shadow-x-offset) 0 0 5px var(--background-color);
     background-image: none !important;
     display: inline-block;
     position: relative;
@@ -5555,7 +5566,7 @@ body.index-directory #footer {
 /*└──────────────┘*/
 
 .popin.local-code-file .popframe-title-bar {
-    background-color: var(--GW-pre-element-background-color);
+    --background-color: var(--GW-pre-element-background-color);
 }
 
 /*┌────────────────┐*/
@@ -5929,7 +5940,7 @@ ol.link-bibliography-list-compact > li::before {
 }
 
 .site-of-the-day blockquote {
-    --GW-link-underline-background-color: var(--GW-body-background-color);
+    --background-color: var(--GW-body-background-color);
 
 	font-size: calc((17/18) * var(--GW-body-text-font-size));
 
@@ -5946,7 +5957,6 @@ ol.link-bibliography-list-compact > li::before {
     background-size: 1000% 100%;
     background-position: center;
     background-repeat: no-repeat;
-    background-color: var(--GW-body-background-color);
     border: none;
     display: flex;
     align-items: center;
@@ -6068,13 +6078,6 @@ ol.link-bibliography-list-compact > li::before {
     #navigation #navigation-next {
         transform: scale(-1, 1);
     }
-    /* override underlining: */
-    #navigation #navigation-previous,
-    #navigation #navigation-next,
-    #navigation #navigation-center {
-        text-shadow: none;
-        background: var(--GW-sequential-nav-link-background-color);
-    }
 }
 
 /********************/
@@ -6093,6 +6096,8 @@ ol.link-bibliography-list-compact > li::before {
     opacity: 0;
 }
 #back-to-top a {
+	--background-color: var(--GW-body-background-color);
+
     display: block;
     width: 2.25em;
     height: 2.25em;
@@ -6100,9 +6105,9 @@ ol.link-bibliography-list-compact > li::before {
     box-sizing: border-box;
     color: var(--GW-back-to-top-link-color);
     filter:
-        drop-shadow(0 0 1px var(--GW-body-background-color))
-        drop-shadow(0 0 1px var(--GW-body-background-color))
-        drop-shadow(0 0 1px var(--GW-body-background-color));
+        drop-shadow(0 0 1px var(--background-color))
+        drop-shadow(0 0 1px var(--background-color))
+        drop-shadow(0 0 1px var(--background-color));
 }
 #back-to-top a:hover {
     color: var(--GW-back-to-top-link-hover-color);
@@ -6133,7 +6138,7 @@ ol.link-bibliography-list-compact > li::before {
         border: 1px solid currentColor;
     }
     #back-to-top {
-        background-color: var(--GW-body-background-color);
+        background-color: var(--background-color);
         background-image: linear-gradient(var(--GW-back-to-top-link-color),
                                           var(--GW-back-to-top-link-color));
         background-position: 0 0;
@@ -6372,7 +6377,7 @@ ol.link-bibliography-list-compact > li::before {
  */
 
 .mode-selector-inline {
-    --GW-mode-selector-background-color: var(--GW-link-underline-background-color);
+    --GW-mode-selector-background-color: var(--background-color);
 
     display: inline;
     position: relative;
