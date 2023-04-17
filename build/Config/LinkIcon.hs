@@ -43,12 +43,15 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "digital.library.unt.edu"
 ------------------------------------------------------------------------------------------
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
-linkIconTestUnitsLink = [(Link ("", ["directory-indexes-upwards"],     []) [Str "Test"] ("/doc/index", "Link to parent directory (ascending)"),
+linkIconTestUnitsLink = [(Link ("", ["directory-indexes-upwards"],      []) [Str "Test"] ("/doc/index", "Link to parent directory (ascending)"),
                            "arrow-up-left", "svg")
-                        , (Link ("", ["directory-indexes-downwards"],  []) [Str "Test"] ("/doc/zeo/index", "Link to child directory zeo (descending)"),
+                        , (Link ("", ["directory-indexes-downwards"],   []) [Str "Test"] ("/doc/zeo/index", "Link to child directory zeo (descending)"),
                            "arrow-down-right", "svg")
-                          , (Link ("", ["directory-indexes-sideways"], []) [Str "Test"] ("/doc/ai/nn/transformer/alphafold/index", "Link to other directory ai/nn/transformer/alphafold (descending)"),
+                          , (Link ("", ["directory-indexes-sideways"],  []) [Str "Test"] ("/doc/ai/nn/transformer/alphafold/index", "Link to other directory ai/nn/transformer/alphafold (descending)"),
                            "arrow-right", "svg")
+                          , (Link ("", ["directory-indexes-upwards"],   []) [Str "Test"] ("/doc/index", ""), "arrow-up-left", "svg")
+                          , (Link ("", ["directory-indexes-downwards"], []) [Str "Test"] ("/doc/index", ""), "arrow-down-right", "svg")
+                          , (Link ("", ["directory-indexes-sideways"],  []) [Str "Test"] ("/doc/index", ""), "arrow-right", "svg")
                           ]
 
 -- in /lorem order:
