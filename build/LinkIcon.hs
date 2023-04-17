@@ -43,11 +43,13 @@ rebuildSVGIconCSS = do unless (null linkIconTest) $ error ("Error! Link icons fa
                        let svgs1 = nubOrd $ map (\(_,icon,_) -> T.unpack icon) $ filter (\(_, _, icontype) -> icontype == "svg") C.linkIconTestUnitsText
                        let svgs2 = nubOrd $ map (\(_,icon,_) -> T.unpack icon) $ filter (\(_, _, icontype) -> icontype == "svg") C.linkIconTestUnitsLink
                        let svg = svgs1++svgs2
+                       -- check that all active SVG link icons have a corresponding on-disk SVG; note that this is not necessarily true the other way around - there can be SVGs we use for other things, or keep around for archival, or whatever.
                        mapM_ (\s -> do existsP <- doesFileExist $ "static/img/icon/" ++ s ++ ".svg"
                                        unless existsP (error ("ERROR: SVG icon " ++ s ++ " does not exist!")))
                          svg
                        let html = unlines $ ["<style id=\"graphical-link-icons\">"] ++
-                             map (\s -> "a[data-link-icon='" ++ s ++ "'] { --link-icon-url: url('/static/img/icon/" ++ s ++ ".svg'); }") svg ++
+                             -- special-case: we do not have a rule for local pages, see later comment, so we hardwire its existence here.
+                             map (\s -> "a[data-link-icon='" ++ s ++ "'] { --link-icon-url: url('/static/img/icon/" ++ s ++ ".svg'); }") (svg++["gwern"]) ++
                              ["</style>"]
                        writeUpdatedFile "svgicons" "static/include/inlined-graphical-linkicon-styles.html" (T.pack html)
 
@@ -98,7 +100,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  -- .link-icon-type="svg"}` by specifying the attributes directly), or define a global URL/(link
  -- icon, link icon type) rewrite:
  | "icon-not" `elem` cl = x
- -- NOTE: 'gwern': the Fraktur '𝔊' for local essay links (where 'local' is defined as '/' but with no '.' in it) is set dynamically clients-ide by rewrite.js:l1075 (`designateSpecialLinkIcons`) and so we do not handle it here. (It is also overridden by 'icon-not'; WARNING: 'icon-not' is used at runtime and should not be erased!)
+ -- NOTE: 'gwern': the Fraktur '𝔊' SVG logo (used to be the Unicode icon but looks a bit fuzzy & squashed as a link-icon so has been replaced by an edit of the Gwern.net logo) for local essay links (where 'local' is defined as '/' but with no '.' in it) is set dynamically client-side by rewrite.js:l1075 (`designateSpecialLinkIcons`) and so we do not handle it here. (It is also overridden by 'icon-not'; WARNING: 'icon-not' is used at runtime and should not be erased!)
  | hasIcon x           = x
  | hasKeyAL u C.overrideLinkIcons = let (i,it) = fromJust $ lookup u C.overrideLinkIcons in addIcon x i it
  | anyPrefixT u ["/metadata/annotation/"] = x
