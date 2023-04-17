@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-04-14 11:31:10 gwern"
+When:  Time-stamp: "2023-04-16 19:23:01 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -51,6 +51,8 @@ import System.Exit (ExitCode(ExitFailure))
 import Interwiki (wpPopupClasses)
 import LinkBacklink (readBacklinksDB, Backlinks)
 import Utils (addClass, host, anySuffixT, printRed)
+import qualified Config.LinkLive as C ()
+import qualified Config.Misc as CM (userAgent)
 
 linkLive :: Inline -> Inline
 linkLive x@(Link (_,cl,_) _ (u, _))
@@ -2439,7 +2441,7 @@ linkLiveTest = filter (\(u, bool) -> bool /=
 -- check the live test-cases with curl for X-Frame HTTP headers; the presence of these guarantees liveness no longer works and they need to be updated.
 linkLiveTestHeaders :: IO ()
 linkLiveTestHeaders = forM_ (map fst goodLinks)
-  (\u -> do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--insecure", "--user-agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:110.0) Gecko/20100101 Firefox/110.0", "--location","--silent","--head", T.unpack u]
+  (\u -> do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--insecure", "--user-agent", CM.userAgent, "--location","--silent","--head", T.unpack u]
             case status of
                 ExitFailure _ -> printRed ("Error: curl download failed on URL ") >> print (T.unpack u ++ " : " ++ show status ++ " : " ++ show bs)
                 _ -> do let s = map toLower $ U.toString bs
@@ -2532,7 +2534,7 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://academic.oup.com/ije/article/50/5/1615/6274255"
             , "https://academictorrents.com/details/0d366035664fdf51cfbe9f733953ba325776e667/tech"
             , "https://aclanthology.org/D15-1002/"
-            , "https://ageing.oxfordjournals.org/content/37/1/25.long"
+            , "https://academic.oup.com/ageing/article/37/1/25/24810"
             , "https://ageofem.com/"
             , "https://agtb.wordpress.com/2012/02/17/john-nashs-letter-to-the-nsa/#comment-5458"
             , "https://ai.google/research/pubs/pub46180"
@@ -3715,7 +3717,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://ideas.4brad.com/has-uber-already-beaten-private-ownership-cost"
             , "https://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=602492"
             , "https://if50.substack.com/p/1999-king-of-dragon-pass"
-            , "https://ije.oxfordjournals.org/content/30/6/1251.full"
+            , "https://academic.oup.com/ije/article/30/6/1251/651759"
             , "https://imagelibrary.bgu.ac.il/pf.tlx/O6ORSOx-nut"
             , "https://imgur.com/a/LE80ogv"
             , "https://inews.co.uk/opinion/why-i-donate-my-sperm-over-facebook-and-have-fathered-23-children-194142"

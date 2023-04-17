@@ -37,15 +37,12 @@ import Query (extractURLs, extractLinks)
 import Typography (typographyTransform)
 import Utils (writeUpdatedFile, replace, printRed)
 import Interwiki (convertInterwikiLinks)
+import qualified Config.Misc as C (mininumLinkBibliographyFragment)
 
 main :: IO ()
 main = do md <- readLinkMetadata
           -- build HTML fragments for each page or annotation link, containing just the list and no header/full-page wrapper, so they are nice to transclude *into* popups:
           Par.mapM_ (writeLinkBibliographyFragment md) $ sort $ M.keys md
-
--- don't waste the user's time if the annotation is not heavily linked, as most are not, or if all the links are WP links:
-mininumLinkBibliographyFragment :: Int
-mininumLinkBibliographyFragment = 3
 
 writeLinkBibliographyFragment :: Metadata -> FilePath -> IO ()
 writeLinkBibliographyFragment md path =
@@ -63,7 +60,7 @@ writeLinkBibliographyFragment md path =
                     else return $ map T.unpack $ nub $ extractLinks False (T.pack abstract)
             -- delete self-links, such as in the ToC of scraped abstracts, or newsletters linking themselves as the first link (eg. '/newsletter/2022/05' will link to 'https://gwern.net/newsletter/2022/05' at the beginning)
         let links = filter (\l -> not (self `isPrefixOf` l || selfAbsolute `isPrefixOf` l)) linksRaw
-        when (length (filter (\l -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` l))  links) >= mininumLinkBibliographyFragment) $
+        when (length (filter (\l -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` l))  links) >= C.mininumLinkBibliographyFragment) $
           do backlinks    <- mapM (fmap snd . getBackLinkCheck) links
              similarlinks <- mapM (fmap snd . getSimilarLinkCheck) links
              let pairs = linksToAnnotations md links

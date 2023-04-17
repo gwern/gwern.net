@@ -8,7 +8,7 @@ module GenerateSimilar where
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str, Strong), Format(..), runPure, Pandoc(..), nullAttr)
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T  (append, intercalate, isPrefixOf, length, pack, strip, take, unlines, unpack, Text)
-import Data.List ((\\), intercalate,  nub, isPrefixOf, isSuffixOf)
+import Data.List ((\\), intercalate,  nub)
 import Data.Maybe (fromJust, fromMaybe)
 import qualified Data.Map.Strict as M (filter, keys, lookup, fromList, toList, difference, withoutKeys)
 import System.Directory (doesFileExist, renameFile)
@@ -38,6 +38,8 @@ import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
 import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, safeHtmlWriterOptions, anyPrefixT)
 
+import Config.GenerateSimilar as C
+
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
 singleShotRecommendations html =
@@ -47,30 +49,10 @@ singleShotRecommendations html =
 
      newEmbedding <- embed [] md bdb ("",("","","","",[],html))
      ddb <- embeddings2Forest (newEmbedding:edb)
-     let (_,n) = findN ddb (2*bestNEmbeddings) iterationLimit newEmbedding :: (String,[String])
+     let (_,n) = findN ddb (2*C.bestNEmbeddings) C.iterationLimit newEmbedding :: (String,[String])
 
      let matchListHtml = generateMatches md bdb True True "" html n :: T.Text
      return matchListHtml
-
--- how many results do we want?
-bestNEmbeddings :: Int
-bestNEmbeddings = 20
-
--- how many characters long should a formatted annotation be before it is worth trying to embed?
-minimumLength :: Int
-minimumLength = 700
-
--- how long is too long? OA guesstimates 1 BPE = 4 characters on average (https://beta.openai.com/tokenizer), so text-embedding-ada-002's 8191 BPEs ~ 32764 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
-maximumLength :: Int
-maximumLength = 32700
-
--- how few suggestions is too few to bother the reader with the existence of a 'Similar Links' link? 1 is way too few, but 5 might be demanding too much?
-minimumSuggestions :: Int
-minimumSuggestions = 3
-
--- prevent pathological loops by requesting no more than i times:
-iterationLimit :: Int
-iterationLimit = 4
 
 type Embedding  = (String, -- URL/path
                     Integer, -- Age: date created -- ModifiedJulianDay, eg. 2019-11-22 = 58810. Enables expiring
@@ -79,10 +61,8 @@ type Embedding  = (String, -- URL/path
                     [Double]) -- the actual embedding vector; NOTE: 'Float' in Haskell is 32-bit single-precision float (FP32); OA API apparently returns 64-bit double-precision (FP64), so we use 'Double' instead. (Given the very small magnitude of the Doubles, it is probably a bad idea to try to save space/compute by casting to Float.)
 type Embeddings = [Embedding]
 
-embeddingsPath :: String
-embeddingsPath = "metadata/embeddings.bin"
 readEmbeddings :: IO Embeddings
-readEmbeddings = readEmbeddingsPath embeddingsPath
+readEmbeddings = readEmbeddingsPath C.embeddingsPath
 readEmbeddingsPath :: FilePath -> IO Embeddings
 readEmbeddingsPath p = do exists <- doesFileExist p
                           if not exists then return [] else
@@ -106,7 +86,7 @@ pruneEmbeddings md edb = let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d
                              in map (\(a,(b,c,d,e)) -> (a,b,c,d,e)) $ M.toList validEdbDB
 
 missingEmbeddings :: Metadata -> Embeddings -> [(String, MetadataItem)]
-missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, tags, abst) -> length (t++aut++show tags++abst) > minimumLength) md
+missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, tags, abst) -> length (t++aut++show tags++abst) > C.minimumLength) md
                                urlsEmbedded = map (\(u,_,_,_,_) -> u) edb :: [String]
                                missing      = urlsToCheck \\ urlsEmbedded
                                in map (\u -> (u, fromJust $ M.lookup u md)) missing
@@ -174,7 +154,7 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
             zip (map show [(1::Int)..]) documentURLs)
         -- simple plaintext ASCII-ish version, which hopefully is more comprehensible to NN models than full-blown HTML
         plainText = simplifiedDoc parsedEither `T.append` documentURLsText
-        gptPlainText = T.take maximumLength $ T.strip plainText
+        gptPlainText = T.take C.maximumLength $ T.strip plainText
     in
       gptPlainText
 
@@ -263,12 +243,12 @@ findNearest f k e = map (\(_,Embed _ p) -> p) $ knnEmbedding f k e
 findN :: Forest -> Int -> Int -> Embedding -> (String,[String])
 findN _ 0 _ e = error ("findN called for k=0; embedding target: " ++ show e)
 findN _ _ 0 e = error ("findN failed to return enough candidates within iteration loop limit. Something went wrong! Embedding target: " ++ show e)
-findN f k iter e@(p1,_,_,_,_) = let results = take bestNEmbeddings $ nub $ filter (\p2 -> not $ blackList p2 && p1/=p2) $ findNearest f k e in
+findN f k iter e@(p1,_,_,_,_) = let results = take C.bestNEmbeddings $ nub $ filter (\p2 -> not $ C.blackList p2 && p1/=p2) $ findNearest f k e in
                  -- NOTE: 'knn' is the fastest (and most accurate?), but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
                  -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed…)
                  -- If that happens, back off and request more k up to a max of 50.
                  if k>50 then (p1, [])
-                 else if length results < bestNEmbeddings then findN f (k*2) (iter - 1) e else (p1,results)
+                 else if length results < C.bestNEmbeddings then findN f (k*2) (iter - 1) e else (p1,results)
 
 -- hyperparameterSweep :: Embeddings -> [(Double, (Int,Int,Int))]
 -- hyperparameterSweep edb =
@@ -293,7 +273,7 @@ Data.RPTree.recallWith metricL2 f1 20 $ (\(_,_,embd) -> ((fromListDv embd)::DVec
 Data.RPTree.recallWith metricL2 f2 20 $ (\(_,_,embd) -> ((fromListDv embd)::DVector Double)) $ head edb
 
 findNearest f 20 $ head edb
-findN f 20 iterationLimit $ head edb
+findN f 20 C.iterationLimit $ head edb
 -}
 
 similaritemExistsP :: String -> IO Bool
@@ -301,7 +281,7 @@ similaritemExistsP p = doesFileExist $ take 274 $ "metadata/annotation/similar/"
 
 writeOutMatch :: Metadata -> Backlinks -> (String, [String]) -> IO ()
 writeOutMatch md bdb (p,matches) =
-  if length matches < minimumSuggestions then return () else
+  if length matches < C.minimumSuggestions then return () else
   do case M.lookup p md of
        Nothing             -> return ()
        Just (_,_,_,_,_,"") -> return ()
@@ -385,8 +365,3 @@ generateItem md linkTagsP p2 = case M.lookup p2 md of
                                               if null tags || not linkTagsP then [] else [("link-tags", T.pack $ unwords tags) ]
                                             ) [parseRawInline nullAttr $ RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
                                     ]
-
--- some weird cases: for example, “Estimating the effect-size of gene dosage on cognitive ability across the coding genome” is somehow close to *every* embedding...?
-blackList :: String -> Bool
-blackList p = p `elem` ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554.full", "/doc/genetics/heritable/correlation/2019-kandler.pdf", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4210287/", "https://www.wired.com/1996/12/ffglass/", "https://andrewmayneblog.wordpress.com/2021/05/18/a-simple-method-to-keep-gpt-3-focused-in-a-conversation/", "https://www.dutchnews.nl/news/2022/07/german-fighter-pilot-identified-after-79-years-from-dna-on-envelope/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1065034/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2653069/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2925254/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2998793/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4763788/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4921196/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6022844/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8931369/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9232116/", "https://www.statnews.com/2022/07/28/abandoned-technique-revived-in-effort-to-make-artificial-human-eggs/", "https://www.thenationalnews.com/health/2022/09/07/woman-who-can-smell-parkinsons-helps-scientists-develop-new-test-for-condition/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4898064/"]
-  || "/doc/" `isPrefixOf` p && "/index" `isSuffixOf` p

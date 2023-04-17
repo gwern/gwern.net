@@ -10,7 +10,8 @@ import qualified Control.Monad.Parallel as Par (mapM_)
 import System.Environment (getArgs)
 import Data.Map.Strict as M (fromList, lookup, keys, filter)
 
-import GenerateSimilar (bestNEmbeddings, iterationLimit, embed, embeddings2Forest, findN, missingEmbeddings, readEmbeddings, similaritemExistsP, writeEmbeddings, writeOutMatch, pruneEmbeddings)
+import GenerateSimilar (embed, embeddings2Forest, findN, missingEmbeddings, readEmbeddings, similaritemExistsP, writeEmbeddings, writeOutMatch, pruneEmbeddings)
+import qualified Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit)
 import LinkBacklink (readBacklinksDB)
 import LinkMetadata (readLinkMetadata)
 import Utils (printGreen)
@@ -64,17 +65,17 @@ main = do md  <- readLinkMetadata
                                   unless exists $
                                                case M.lookup f edbDB of
                                                  Nothing        -> return ()
-                                                 Just (b,c,d,e) -> do let nmatches = findN ddb bestNEmbeddings iterationLimit (f,b,c,d,e)
+                                                 Just (b,c,d,e) -> do let nmatches = findN ddb C.bestNEmbeddings C.iterationLimit (f,b,c,d,e)
                                                                       writeOutMatch md bdb nmatches
                         )
                 mdl
               printGreen "Wrote out missing."
               unless (args == ["--update-only-missing-embeddings"]) $ do
                 printGreen "Rewriting all embeddings…"
-                Par.mapM_ (writeOutMatch md bdb . findN ddb bestNEmbeddings iterationLimit) edb''
+                Par.mapM_ (writeOutMatch md bdb . findN ddb C.bestNEmbeddings C.iterationLimit) edb''
                 Par.mapM_ (\f -> case M.lookup f edbDB of
                                        Nothing        -> return ()
-                                       Just (b,c,d,e) -> writeOutMatch md bdb (findN ddb bestNEmbeddings iterationLimit (f,b,c,d,e))
+                                       Just (b,c,d,e) -> writeOutMatch md bdb (findN ddb C.bestNEmbeddings C.iterationLimit (f,b,c,d,e))
                                       )
                   mdl
                 printGreen "Done."
