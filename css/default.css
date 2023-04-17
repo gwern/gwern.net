@@ -1890,7 +1890,7 @@ section.footnotes > hr:first-child.highlighted::before {
     content: "…";
     position: absolute;
     border: 1px dotted var(--GW-sidenote-border-color);
-    bottom: 0;
+	top: calc(100% - 1px);
     left: 0;
     right: 0;
     margin: auto;
