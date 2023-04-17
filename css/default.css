@@ -1618,13 +1618,26 @@ h1 sub, h1 sup, h2 sub, h2 sup {
 .footnotes li {
     position: relative;
 }
+
 .footnotes blockquote + a.footnote-back,
 .footnotes pre + a.footnote-back,
 .footnotes .sourceCode + a.footnote-back {
     position: absolute;
     right: 0;
-    top: calc(100% - 1px);
     background-color: var(--background-color);
+}
+
+.footnotes pre + a.footnote-back,
+.footnotes .sourceCode + a.footnote-back {
+    top: calc(100% - 1px);
+}
+
+.footnotes blockquote:nth-last-child(1),
+.footnotes blockquote:nth-last-child(2) {
+    margin-bottom: 0.5em;
+}
+.footnotes blockquote + a.footnote-back {
+    top: calc(100% - 0.5em);
 }
 
 /*=-----------=*/
