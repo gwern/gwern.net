@@ -270,15 +270,12 @@ a[data-link-icon='arrow-down']:hover::after {
 /*= Internal (within-site) links =*/
 /*=------------------------------=*/
 
-a[data-link-icon='gwern']::after {
-    --link-icon-size: 0.6em;
-    --link-icon-offset-y: 0.3em;
-    --link-icon-offset-x: 0.2em;
+a[data-link-icon='𝔊']::after {
+    --link-icon-size: 0.9em;
+    --link-icon-offset-y: 0.15em;
+    --link-icon-offset-x: 0.12em;
 
-	opacity: 0.6;
-}
-a[data-link-icon='gwern']:hover::after {
-    opacity: 0.4;
+    opacity: 0.75;
 }
 
 /*  Index page, and embeds thereof, do not need the G icon.

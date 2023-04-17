@@ -1968,8 +1968,8 @@ addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (ev
         if (link.dataset.linkIcon)
             return;
 
-        link.dataset.linkIconType = "svg";
-        link.dataset.linkIcon = "gwern";
+        link.dataset.linkIconType = "text";
+        link.dataset.linkIcon = "\u{1D50A}"; // 𝔊
     });
 }, "rewrite");
 
