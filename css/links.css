@@ -42,11 +42,11 @@
         linear-gradient(var(--GW-link-underline-gradient-line-color),
                         var(--GW-link-underline-gradient-line-color));
     background-size:
-        1px 0.5em,
+        1px 0.6em,
         1px 0.1em,
         1px 1em;
     background-position:
-        0 0.1em,
+        0 0,
         0 100%,
         0 calc(100% - 0.1em);
     background-repeat: no-repeat;
@@ -274,12 +274,15 @@ a[data-link-icon='arrow-down'] { --link-icon-url: url('/static/img/icon/arrow-do
 /*= Internal (within-site) links =*/
 /*=------------------------------=*/
 
-a[data-link-icon='𝔊']::after {
-    --link-icon-size: 0.9em;
-    --link-icon-offset-y: 0.15em;
-    --link-icon-offset-x: 0.12em;
+a[data-link-icon='gwern']::after {
+    --link-icon-size: 0.65em;
+    --link-icon-offset-y: -0.1em;
+    --link-icon-offset-x: 0.2em;
 
-    opacity: 0.75;
+	opacity: 0.6;
+}
+a[data-link-icon='gwern']:hover::after {
+    opacity: 0.4;
 }
 
 /*  Index page, and embeds thereof, do not need the G icon.
