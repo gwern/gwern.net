@@ -13,7 +13,20 @@
 Extracts = {
     /*  Target containers.
      */
-    contentContainersSelector: ".markdownBody, #TOC, #page-metadata, #sidebar",
+    contentContainersSelector: [
+    	".markdownBody",
+    	"#TOC",
+    	"#page-metadata",
+    	"#sidebar"
+    ].join(", "),
+
+	/*	Don’t display indicator hooks on links in these containers.
+	 */
+	hooklessLinksContainersSelector: [
+		"body.index #markdownBody",
+		"#sidebar",
+		".TOC"
+	].join(", "),
 
     /*  Targets.
      */
@@ -112,6 +125,7 @@ Extracts = {
 		//	Remove pop-frame indicator hooks.
 		document.querySelectorAll(".has-content").forEach(link => {
 			link.querySelector(".indicator-hook").remove();
+			link.classList.remove("has-indicator-hook");
 		});
 
         //  Unbind event listeners and restore targets.
@@ -254,6 +268,9 @@ Extracts = {
 			(See links.css for how these are used.)
 		 */
 		container.querySelectorAll(".has-content").forEach(link => {
+			link.classList.toggle("has-indicator-hook", 
+								  (link.closest(Extracts.hooklessLinksContainersSelector) == null));
+				
 			if (link.querySelector(".indicator-hook") != null)
 				return;
 

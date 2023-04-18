@@ -325,6 +325,9 @@ div#masked-links-key-toggle-info-alert img {
 .markdownBody a[href].has-annotation:hover {
     background-image: var(--GW-dotted-underline-hover-dark-background-image);
 }
+.markdownBody a[href].has-annotation.decorate-not {
+	background-image: none;
+}
 
 /*  All SVG linkicons have to be inverted.
  */
