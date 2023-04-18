@@ -1321,7 +1321,7 @@ Transclude = {
 						//	Mark targeted element, for styling purposes.
 						targetElement = targetElementInDocument(includeLink, content);
 						if (targetElement)
-							targetElement.classList.add("targeted");
+							targetElement.classList.add("block-context-highlighted");
 					} else {
 						content = newDocument(targetElement);
 					}

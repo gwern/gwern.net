@@ -1446,7 +1446,7 @@ body.special-halloween-dark {
 
     --GW-body-link-hover-color: var(--GW-blood-red-arterial);
 
-    --GW-footnote-ref-highlight-box-shadow-color: var(--GW-blood-red);
+    --GW-highlighted-link-outline-color: var(--GW-blood-red);
 }
 
 body.special-halloween-dark blockquote {

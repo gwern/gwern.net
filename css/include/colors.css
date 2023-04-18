@@ -88,7 +88,7 @@
 
     /*  Footnote references.
      */
-    --GW-footnote-ref-highlight-box-shadow-color: #aaa;
+    --GW-highlighted-link-outline-color: #999;
 
     /*  Sidenotes.
      */

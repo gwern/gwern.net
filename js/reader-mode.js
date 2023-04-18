@@ -271,12 +271,18 @@ ReaderMode = { ...ReaderMode,
 	showModeSelector: () => {
 		GWLog("ReaderMode.showModeSelector", "reader-mode.js", 3);
 
+		if (ReaderMode.modeSelector == null)
+			return;
+
 		ReaderMode.modeSelector.classList.remove("hidden");
 	},
 
 	//	Called by: ReaderMode.updateModeSelectorVisibility
 	hideModeSelector: () => {
 		GWLog("ReaderMode.showModeSelector", "reader-mode.js", 3);
+
+		if (ReaderMode.modeSelector == null)
+			return;
 
 		ReaderMode.modeSelector.classList.add("hidden");
 	},
