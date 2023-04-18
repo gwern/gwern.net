@@ -1684,6 +1684,49 @@ addContentLoadHandler(GW.contentLoadHandlers.addFootnoteClassToFootnotes = (even
     });
 }, "rewrite");
 
+/*****************************************************************************/
+/*	Mark hash-targeted footnote with ‘targeted’ class.
+ */
+function updateFootnoteTargeting() {
+	GWLog("updateFootnoteTargeting", "rewrite.js", 1);
+
+	if (   Sidenotes 
+		&& Sidenotes.mediaQueries.viewportWidthBreakpoint.matches)
+		return;
+
+	//	Clear any existing targeting.
+	let targetedElementSelector = [
+		".footnote-ref",
+		".footnote"
+	].map(x => x + ".targeted").join(", ");
+	document.querySelectorAll(targetedElementSelector).forEach(element => {
+		element.classList.remove("targeted");
+	});
+
+	//  Identify and mark target footnote.
+	let target = location.hash.match(/^#(fn|fnref)[0-9]+$/)
+				 ? getHashTargetedElement()
+				 : null;
+	if (target)
+		target.classList.add("targeted");
+}
+
+/*****************************************************************************/
+/*	Mark hash-targeted footnote with ‘targeted’ class on page load, and update 
+	when hash changes.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.markTargetedFootnote = (eventInfo) => {
+    GWLog("markTargetedFootnote", "rewrite.js", 1);
+
+	//	Mark target footnote, if any.
+	updateFootnoteTargeting();
+
+	//	Add event handler to update targeting again on hash change.
+	GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", (info) => {
+		updateFootnoteTargeting();
+	});
+}, "rewrite", (info) => info.container == document.body);
+
 /******************************/
 /*  Inject footnote self-links.
  */
