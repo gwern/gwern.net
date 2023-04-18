@@ -1317,6 +1317,20 @@ Transclude = {
 											 && (   targetElement.classList.contains("include-block-context")
 												 || (   targetElement.id > ""
 													 && targetElement.classList.contains("include-identify-not") == false)));
+
+				/*	We do not want to transclude annotations within backlink
+					context. So, we will transform an annotation include link 
+					in such a case into a normal link, and include its block
+					context normally.
+				 */
+				if (   isBlockTranscludeLink
+					&& Transclude.isAnnotationTransclude(targetElement)
+					&& includeLink.closest(".backlink-context") != null) {
+					Transclude.clearLinkState(targetElement);
+					targetElement.classList.remove(...Transclude.permittedClassNames, "include-spinner", "include-spinner-not");
+					isBlockTranscludeLink = false;
+				}
+
 				if (   includeLink.classList.contains("include-block-context")
 					&& isBlockTranscludeLink == false) {
 					let blockContext = Transclude.blockContext(targetElement);
