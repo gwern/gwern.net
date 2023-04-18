@@ -40,10 +40,10 @@ Sidenotes = {
 		".backlink-context"
 	],
 
-	/*	The greatest width (in CSS dimensions) at which sidenotes will _not_ be
-		shown. If the viewport is wider than this, then sidenotes are enabled.
+	/*	The smallest width (in CSS dimensions) at which sidenotes will be shown.
+		If the viewport is narrower than this, then sidenotes are disabled.
 	 */
-	sidenotesIfViewportWiderThan: "1760px",
+	minimumViewportWidthForSidenotes: "1761px",
 
 	useLeftColumn: () => false,
 	useRightColumn: () => true
@@ -56,7 +56,7 @@ Sidenotes = { ...Sidenotes,
 	/*  Media query objects (for checking and attaching listeners).
 		*/
 	mediaQueries: {
-		viewportWidthBreakpoint: matchMedia(`(max-width: ${Sidenotes.sidenotesIfViewportWiderThan})`)
+		viewportWidthBreakpoint: matchMedia(`(min-width: ${Sidenotes.minimumViewportWidthForSidenotes})`)
 	},
 
 	/*****************/
@@ -100,11 +100,10 @@ Sidenotes = { ...Sidenotes,
 	updateTargetCounterpart: () => {
 		GWLog("Sidenotes.updateTargetCounterpart", "sidenotes.js", 1);
 
-		if (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches)
+		if (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false)
 			return;
 
-		/*  Clear existing targeting.
-			*/
+		//  Clear existing targeting.
 		let targetedElementSelector = [
 			".footnote-ref", 
 			".footnote",
@@ -144,7 +143,7 @@ Sidenotes = { ...Sidenotes,
 
 		eventInfo.container.querySelectorAll(".marginnote").forEach(marginNote => {
 			let inline = (   marginNote.closest(Sidenotes.constrainMarginNotesWithinSelectors.join(", "))
-						  || Sidenotes.mediaQueries.viewportWidthBreakpoint.matches
+						  || Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false
 						  || eventInfo.document != document);
 			marginNote.swapClasses([ "inline", "sidenote" ], (inline ? 0 : 1));
 		});
@@ -184,7 +183,7 @@ Sidenotes = { ...Sidenotes,
 		/*  If we’re in footnotes mode (ie. the viewport is too narrow), then
 			don’t do anything.
 			*/
-		if (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches)
+		if (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false)
 			return;
 
 		//  Update the disposition of sidenotes within collapse blocks.
@@ -714,17 +713,17 @@ Sidenotes = { ...Sidenotes,
 			width media query changes.
 			*/
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteHashForCurrentMode", (mediaQuery) => {
-			let regex = new RegExp(mediaQuery.matches ? "^#sn[0-9]+$" : "^#fn[0-9]+$");
-			let prefix = (mediaQuery.matches ? "#fn" : "#sn");
+			let regex = new RegExp(mediaQuery.matches ? "^#fn[0-9]+$" : "^#sn[0-9]+$");
+			let prefix = (mediaQuery.matches ? "#sn" : "#fn");
 
 			if (location.hash.match(regex)) {
 				relocate(prefix + Notes.noteNumberFromHash());
 
 				//	Update targeting.
 				if (mediaQuery.matches)
-					updateFootnoteTargeting();
-				else
 					Sidenotes.updateTargetCounterpart();
+				else
+					updateFootnoteTargeting();
 			}
 		}, null, (mediaQuery) => {
 			if (location.hash.match(/^#sn[0-9]/)) {
@@ -796,7 +795,7 @@ Sidenotes = { ...Sidenotes,
 			*/
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteCitationTargetsForCurrentMode", (mediaQuery) => {
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
-				citation.href = (mediaQuery.matches ? "#fn" : "#sn") + Notes.noteNumberFromHash(citation.hash);
+				citation.href = (mediaQuery.matches ? "#sn" : "#fn") + Notes.noteNumberFromHash(citation.hash);
 			});
 		}, null, (mediaQuery) => {
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
@@ -807,7 +806,7 @@ Sidenotes = { ...Sidenotes,
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Sidenotes.rewriteCitationTargetsInLoadedContent = (info) => {
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
 				if (citation.pathname == location.pathname)
-					citation.href = (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches ? "#fn" : "#sn") 
+					citation.href = (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches ? "#sn" : "#fn") 
 									+ Notes.noteNumberFromHash(citation.hash);
 			});
 		}, { 

@@ -1688,13 +1688,23 @@ addContentLoadHandler(GW.contentLoadHandlers.addFootnoteClassToFootnotes = (even
 /*	Mark hash-targeted footnote with ‘targeted’ class.
  */
 function updateFootnoteTargeting() {
+	GWLog("updateFootnoteTargeting", "rewrite.js", 1);
+
+	if (   Sidenotes 
+		&& Sidenotes.mediaQueries.viewportWidthBreakpoint.matches)
+		return;
+
 	//	Clear any existing targeting.
-	document.querySelectorAll(".footnote.targeted").forEach(element => {
+	let targetedElementSelector = [
+		".footnote-ref",
+		".footnote"
+	].map(x => x + ".targeted").join(", ");
+	document.querySelectorAll(targetedElementSelector).forEach(element => {
 		element.classList.remove("targeted");
 	});
 
 	//  Identify and mark target footnote.
-	let target = location.hash.match(/^#fn[0-9]+$/)
+	let target = location.hash.match(/^#(fn|fnref)[0-9]+$/)
 				 ? getHashTargetedElement()
 				 : null;
 	if (target)
