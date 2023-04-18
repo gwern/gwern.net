@@ -654,8 +654,13 @@ function includeContent(includeLink, content) {
         let allowedParentTags = [ "SECTION", "DIV" ];
 
         //  Special handling for annotation transcludes in link bibliographies.
-        if (   wrapper.parentElement != null
-        	&& wrapper.parentElement.closest(".link-bibliography-list") != null)
+		/*	NOTE: Provisionally disabling this conditional to determine whether
+			it can be removed, and "LI" added to the allowedParentTags array
+			unconditionally.
+			—SA 2023-04-18
+		 */
+//         if (   wrapper.parentElement != null
+//         	&& wrapper.parentElement.closest(".link-bibliography-list") != null)
             allowedParentTags.push("LI");
 
         while (   wrapper.parentElement != null
@@ -1312,6 +1317,20 @@ Transclude = {
 											 && (   targetElement.classList.contains("include-block-context")
 												 || (   targetElement.id > ""
 													 && targetElement.classList.contains("include-identify-not") == false)));
+
+				/*	We do not want to transclude annotations within backlink
+					context. So, we will transform an annotation include link 
+					in such a case into a normal link, and include its block
+					context normally.
+				 */
+				if (   isBlockTranscludeLink
+					&& Transclude.isAnnotationTransclude(targetElement)
+					&& includeLink.closest(".backlink-context") != null) {
+					Transclude.clearLinkState(targetElement);
+					targetElement.classList.remove(...Transclude.permittedClassNames, "include-spinner", "include-spinner-not");
+					isBlockTranscludeLink = false;
+				}
+
 				if (   includeLink.classList.contains("include-block-context")
 					&& isBlockTranscludeLink == false) {
 					let blockContext = Transclude.blockContext(targetElement);
