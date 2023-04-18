@@ -2083,8 +2083,9 @@ function disableLinkIcon(link) {
 	//	Remove hook.
 	link.querySelector(".link-icon-hook").remove();
 
-	//	Clear CSS variable.
+	//	Clear CSS variables.
 	link.style.removeProperty("--link-icon");
+	link.style.removeProperty("--link-icon-url");
 
 	//	Unset class.
 	link.classList.remove("has-icon");

@@ -71,6 +71,12 @@ body.index #markdownBody .has-content .indicator-hook {
     background-image: var(--GW-dotted-underline-hover-background-image);
 }
 
+a.decorate-not:link,
+a.decorate-not:link * {
+    background-image: none;
+    text-shadow: none;
+}
+
 
 /**************/
 /* LINK ICONS */
