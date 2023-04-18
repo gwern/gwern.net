@@ -1,8 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module LinkIcon (linkIcon, rebuildSVGIconCSS, linkIconPrioritize) where
+module LinkIcon (linkIcon, linkIconTest, linkIconPrioritize) where
 
-import Control.Monad (unless)
 import Data.List (sort)
 import qualified Data.Map.Strict as M (toList, fromListWith, map)
 import Data.Maybe (fromJust)
@@ -10,12 +9,10 @@ import qualified Data.Text as T (append, drop, head, isInfixOf, isPrefixOf, pack
 import Text.Pandoc (Inline(Link), nullAttr)
 import Network.URI (parseURIReference, uriPath)
 import System.FilePath (takeExtension)
-import Data.Containers.ListUtils (nubOrd)
-import System.Directory (doesFileExist)
 
 import LinkBacklink (readBacklinksDB)
-import Utils (host, writeUpdatedFile, hasKeyAL, anyPrefixT)
-import qualified Config.LinkIcon as C (prioritizeLinkIconMin, prioritizeLinkIconBlackList, overrideLinkIcons, linkIconTestUnitsText, linkIconTestUnitsLink)
+import Utils (host, hasKeyAL, anyPrefixT)
+import qualified Config.LinkIcon as C (prioritizeLinkIconMin, prioritizeLinkIconBlackList, overrideLinkIcons, linkIconTestUnitsText)
 
 -- Statically, at site 'compile-time', define the link-icons for links. Doing this at runtime with CSS is
 -- entirely possible and originally done by links.css, but the logic becomes increasingly convoluted
@@ -24,34 +21,6 @@ import qualified Config.LinkIcon as C (prioritizeLinkIconMin, prioritizeLinkIcon
 -- Doing this at compile-time in Haskell is easier and also reduces performance burden on the client
 -- browser. For a more detailed discussion of the problems & solution, and history of prior link-icon
 -- implementations, see <https://gwern.net/design-graveyard#link-icon-css-regexps>.
-
--- Generate a HTML <style>-delimited CSS block written to
--- `static/include/inlined-graphical-linkicon-styles.html` for transclusion into `default.html`.
--- The SVG icons need to be specified like `("wikipedia","svg")` → `a[data-link-icon='wikipedia'] {
--- --link-icon-url: url('/static/img/icon/wikipedia.svg'); }`.
--- These could be written by hand every time a SVG-related icon is added/deleted/renamed, but that
--- risks getting out of sync and triggering the bugs that moving our CSS link icons to compile-time
--- server generation was supposed to end. We want more of a single source of truth.
--- So, we generate them using the test-suite: every SVG icon must have a corresponding test. (You
--- don't have a test? You come back later! One test one icon!) The test necessarily is redundant
--- with the original definition, otherwise it doesn't test anything. But since it's there, we can
--- reuse it. This lets us have our cake—writing a big `linkIcon` function mixing the SVG rules with
--- the text rules freely, in whatever order is most convenient for expressing
--- precedence/overriding—while still generating CSS code from normal data (the test suite entries).
-rebuildSVGIconCSS :: IO ()
-rebuildSVGIconCSS = do unless (null linkIconTest) $ error ("Error! Link icons failed match! : " ++ show linkIconTest)
-                       let svgs1 = nubOrd $ map (\(_,icon,_) -> T.unpack icon) $ filter (\(_, _, icontype) -> icontype == "svg") C.linkIconTestUnitsText
-                       let svgs2 = nubOrd $ map (\(_,icon,_) -> T.unpack icon) $ filter (\(_, _, icontype) -> icontype == "svg") C.linkIconTestUnitsLink
-                       let svg = svgs1++svgs2
-                       -- check that all active SVG link icons have a corresponding on-disk SVG; note that this is not necessarily true the other way around - there can be SVGs we use for other things, or keep around for archival, or whatever.
-                       mapM_ (\s -> do existsP <- doesFileExist $ "static/img/icon/" ++ s ++ ".svg"
-                                       unless existsP (error ("ERROR: SVG icon " ++ s ++ " does not exist!")))
-                         svg
-                       let html = unlines $ ["<style id=\"graphical-link-icons\">"] ++
-                             -- special-case: we do not have a rule for local pages, see later comment (because it's dynamic), so we hardwire its existence here. 'arrow-up'/'arrow-down' are also dynamically set (for now), based on seeing if a link's '#link' URL points to a target 'above' or 'below' the link.
-                             map (\s -> "a[data-link-icon='" ++ s ++ "'] { --link-icon-url: url('/static/img/icon/" ++ s ++ ".svg'); }") (svg++["gwern", "arrow-up", "arrow-down"]) ++
-                             ["</style>"]
-                       writeUpdatedFile "svgicons" "static/include/inlined-graphical-linkicon-styles.html" (T.pack html)
 
 -- Rules for URL→icon. All supported examples: <https://gwern.net/lorem-link>
 -- Supported icon types:

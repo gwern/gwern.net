@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-04-14 16:53:33 gwern"
+When: Time-stamp: "2023-04-18 18:11:03 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -66,7 +66,7 @@ import Interwiki (convertInterwikiLinks, inlinesToText, interwikiTestSuite)
 import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink (getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck)
-import LinkIcon (rebuildSVGIconCSS)
+import LinkIcon (linkIconTest)
 import LinkLive (linkLiveTest, linkLivePrioritize)
 import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, createAnnotations, hasAnnotation, simplifiedHTMLString)
 import LinkMetadataTypes (Metadata)
@@ -79,8 +79,9 @@ main =
  do arg <- lookupEnv "SLOW" -- whether to do the more expensive stuff; Hakyll eats the CLI arguments, so we pass it in as an exported environment variable instead
     let slow = "--slow" == fromMaybe "" arg
     hakyll $ do
-               when slow $ do preprocess $ printGreen ("Testing link icon matches & updating inlined CSS…" :: String)
-                              preprocess rebuildSVGIconCSS
+               when slow $ do preprocess $ printGreen ("Testing link icon matches…" :: String)
+                              let linkIcons = linkIconTest
+                              unless (null linkIcons) $ preprocess $ printRed ("Link icon rules have errors in: " ++ show linkIcons)
 
                               preprocess $ printGreen ("Testing tag rewrites…" :: String)
                               preprocess testTags
