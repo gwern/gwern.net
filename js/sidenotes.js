@@ -70,6 +70,8 @@ Sidenotes = { ...Sidenotes,
 
 	hiddenSidenoteStorage: null,
 
+	positionUpdateQueued: false,
+
 	sidenoteOfNumber: (number) => {
 		return (Sidenotes.sidenotes.find(sidenote => Notes.noteNumberFromHash(sidenote.id) == number) ?? null);
 	},
@@ -157,6 +159,20 @@ Sidenotes = { ...Sidenotes,
 		Sidenotes.sidenotes.forEach(sidenote => {
 			let citation = Sidenotes.counterpart(sidenote);
 			sidenote.classList.toggle("hidden", isWithinCollapsedBlock(citation));
+		});
+	},
+
+	/*	Queues a sidenote position update on the next available animation frame,
+		if an update is not already queued.
+	 */
+	updateSidenotePositionsIfNeeded: () => {
+		if (Sidenotes.positionUpdateQueued)
+			return;
+
+		Sidenotes.positionUpdateQueued = true;
+		requestAnimationFrame(() => {
+			Sidenotes.positionUpdateQueued = false;
+			Sidenotes.updateSidenotePositions();
 		});
 	},
 
@@ -580,7 +596,7 @@ Sidenotes = { ...Sidenotes,
 			//	Add listener to update sidenote positions when media loads.
 			sidenote.querySelectorAll("figure img, figure video").forEach(mediaElement => {
 				mediaElement.addEventListener("load", (event) => {
-					requestAnimationFrame(Sidenotes.updateSidenotePositions);
+					Sidenotes.updateSidenotePositionsIfNeeded();
 				}, { once: true });
 			});
 
@@ -843,27 +859,21 @@ Sidenotes = { ...Sidenotes,
 				if (isWithinCollapsedBlock(info.mediaElement))
 					return;
 
-				doWhenPageLayoutComplete(() => {
-					requestAnimationFrame(Sidenotes.updateSidenotePositions);
-				});
+				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
 			});
 
 			/*	Add event handler to (asynchronously) recompute sidenote positioning
 				when collapse blocks are expanded/collapsed.
 				*/
 			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange = (info) => {
-				doWhenPageLayoutComplete(() => {
-					requestAnimationFrame(Sidenotes.updateSidenotePositions);
-				});
+				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
 			});
 
 			/*	Add event handler to (asynchronously) recompute sidenote positioning
 				when new content is loaded (e.g. via transclusion).
 				*/
 			GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange = (info) => {
-				doWhenPageLayoutComplete(() => {
-					requestAnimationFrame(Sidenotes.updateSidenotePositions);
-				});
+				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
 			}, { condition: (info) => (info.document == document) });
 
 			/*  Add a resize listener so that sidenote positions are recalculated when
@@ -872,7 +882,7 @@ Sidenotes = { ...Sidenotes,
 			window.addEventListener("resize", Sidenotes.windowResized = (event) => {
 				GWLog("Sidenotes.windowResized", "sidenotes.js", 2);
 
-				requestAnimationFrame(Sidenotes.updateSidenotePositions);
+				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
 			});
 
 			/*	Add handler to bind more sidenote-slide events if more 
@@ -914,7 +924,7 @@ Sidenotes = { ...Sidenotes,
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
 			//	Lay out sidenotes once page layout is complete.
 			doWhenPageLayoutComplete(() => {
-				Sidenotes.updateSidenotePositions();
+				Sidenotes.updateSidenotePositionsIfNeeded();
 
 				//	Add listener to lay out sidenotes when they are re-constructed.
 				GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
@@ -922,7 +932,7 @@ Sidenotes = { ...Sidenotes,
 					Sidenotes.updateTargetCounterpart();
 
 					//	Update sidenote positions.
-					requestAnimationFrame(Sidenotes.updateSidenotePositions);
+					Sidenotes.updateSidenotePositionsIfNeeded();
 				});
 			});
 		}, { once: true });
