@@ -880,6 +880,7 @@ Sidenotes = { ...Sidenotes,
 			GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents);
 			removeScrollListener("Sidenotes.unSlideSidenotesOnScroll");
 		}, (mediaQuery) => {
+			doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
 
 			/*  After the hash updates, properly highlight everything, if needed.
 				Also, if the hash points to a sidenote whose citation is in a
