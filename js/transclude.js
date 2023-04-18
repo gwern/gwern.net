@@ -654,8 +654,13 @@ function includeContent(includeLink, content) {
         let allowedParentTags = [ "SECTION", "DIV" ];
 
         //  Special handling for annotation transcludes in link bibliographies.
-        if (   wrapper.parentElement != null
-        	&& wrapper.parentElement.closest(".link-bibliography-list") != null)
+		/*	NOTE: Provisionally disabling this conditional to determine whether
+			it can be removed, and "LI" added to the allowedParentTags array
+			unconditionally.
+			—SA 2023-04-18
+		 */
+//         if (   wrapper.parentElement != null
+//         	&& wrapper.parentElement.closest(".link-bibliography-list") != null)
             allowedParentTags.push("LI");
 
         while (   wrapper.parentElement != null
