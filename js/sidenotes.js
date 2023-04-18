@@ -714,14 +714,25 @@ Sidenotes = { ...Sidenotes,
 			width media query changes.
 			*/
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteHashForCurrentMode", (mediaQuery) => {
-			let regex = new RegExp(mediaQuery.matches ? "^#sn[0-9]" : "^#fn[0-9]");
+			let regex = new RegExp(mediaQuery.matches ? "^#sn[0-9]+$" : "^#fn[0-9]+$");
 			let prefix = (mediaQuery.matches ? "#fn" : "#sn");
 
-			if (location.hash.match(regex))
+			if (location.hash.match(regex)) {
 				relocate(prefix + Notes.noteNumberFromHash());
+
+				//	Update targeting.
+				if (mediaQuery.matches)
+					updateFootnoteTargeting();
+				else
+					Sidenotes.updateTargetCounterpart();
+			}
 		}, null, (mediaQuery) => {
-			if (location.hash.match(/^#sn[0-9]/))
+			if (location.hash.match(/^#sn[0-9]/)) {
 				relocate("#fn" + Notes.noteNumberFromHash());
+
+				//	Update targeting.
+				updateFootnoteTargeting();
+			}
 		});
 
 		/*	We do not bother to construct sidenotes on mobile clients, and so
@@ -745,6 +756,30 @@ Sidenotes = { ...Sidenotes,
 		});
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 			Sidenotes.setMarginNoteStyle(info);
+		});
+
+		/*	When an anchor link is clicked that sets the hash to its existing
+			value, weird things happen. In particular, weird things happen with
+			citations and sidenotes. We must prevent that, by updating state
+			properly when that happens. (No ‘hashchange’ event is fired in this
+			case, so we cannot depend on the ‘GW.hashDidChange’ event handler.)
+		 */
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+			let selector = [
+				"a.footnote-ref",
+				"a.sidenote-self-link",
+				".sidenote a.footnote-back"
+			].join(", ");
+
+			info.container.querySelectorAll(selector).forEach(link => {
+				link.addActivateEvent((event) => {
+					if (link.hash == location.hash)
+						Sidenotes.updateStateAfterHashChange();
+				});
+			});
+		}, {
+			phase: "eventListeners",
+			condition: (info) => (info.document == document)
 		});
 
 		/*  In footnote mode (ie. on viewports too narrow to support sidenotes),
