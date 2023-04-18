@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-04-16 14:53:29 gwern"
+;;; When:  Time-stamp: "2023-04-18 12:58:55 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1414,134 +1414,74 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
 
 (add-hook 'markdown-mode-hook   'visual-fill-column-mode)
 
-(defun markdown-emphasis-annotation-html ()
-  "Surround selected region FOO with `<em>FOO</em>`, for italicization."
-  (interactive
-   (save-window-excursion
-     (let ((begin (if (region-active-p) (region-beginning) (point-min)))
-           (end (if (region-active-p) (region-end) (point-max)))
-           )
-       (progn
-         (goto-char end)
-         (insert "</em>")
-         (goto-char begin)
-         (insert "<em>")
-         (goto-char (+ 9 end))
-         (insert "")
-       )
-       )
-     )))
-(add-hook 'markdown-mode-hook
-          (lambda ()
-            (define-key markdown-mode-map "\C-c\ \C-e" 'markdown-emphasis-annotation-html)))
-(add-hook 'yaml-mode-hook
-          (lambda ()
-            (define-key yaml-mode-map "\C-c\ \C-e" 'markdown-emphasis-annotation-html)))
-(add-hook 'html-mode-hook
-          (lambda ()
-            (define-key yaml-mode-map "\C-c\ \C-e" 'markdown-emphasis-annotation-html)))
-
-(defun markdown-smallcaps-annotation ()
-  "Surround selected region FOO with `[FOO]{.smallcaps}`, for lists etc."
-  (interactive
-   (save-window-excursion
-     (let ((begin (if (region-active-p) (region-beginning) (point-min)))
-           (end (if (region-active-p) (region-end) (point-max)))
-           )
-       (goto-char begin)
-       (insert "[")
-       (goto-char (+ 1 end))
-       (insert "]{.smallcaps}")
-       )
-     )))
-(add-hook 'markdown-mode-hook
-          (lambda ()
-            (define-key markdown-mode-map "\C-c\ \C-s" 'markdown-smallcaps-annotation)))
-
-(defun markdown-strong-annotation-html ()
-  "Surround selected region FOO with `<strong>FOO</strong>`, for emphasis in abstracts etc."
-  (interactive
-   (save-window-excursion
-     (let ((begin (if (region-active-p) (region-beginning) (point-min)))
-           (end (if (region-active-p) (region-end) (point-max)))
-           )
-       (goto-char begin)
-       (insert "<strong>")
-       (goto-char (+ 8 end))
-       (insert "</strong>")
-       )
-     )))
-(add-hook 'markdown-mode-hook
-          (lambda ()
-            (define-key markdown-mode-map "\C-c\ \C-S" 'markdown-strong-annotation-html)))
-(add-hook 'yaml-mode-hook
-          (lambda ()
-            (define-key yaml-mode-map "\C-c\ \C-S" 'markdown-strong-annotation-html)))
-(add-hook 'html-mode-hook
-          (lambda ()
-            (define-key html-mode-map "\C-c\ \C-S" 'markdown-strong-annotation-html)))
-
-(defun markdown-wp-annotation-html ()
-  "Surround selected region FOO with `<a href=\"!W\">FOO</a>`, for Wikipedia links."
-  (interactive
-   (save-window-excursion
-     (let ((begin (if (region-active-p) (region-beginning) (point-min)))
-           (end (if (region-active-p) (region-end) (point-max)))
-           )
-       (progn
-         (goto-char end)
-         (insert "</a>")
-         (goto-char begin)
-         (insert "<a href=\"!W\">")
-         (goto-char (+ 17 end))
-         (insert "")
-       )
-       )
-     )))
-(defun markdown-wp-annotation-markdown ()
-  "Surround selected region FOO with `<a href=\"!W\">FOO</a>`, for Wikipedia links."
-  (interactive
-   (save-window-excursion
-     (let ((begin (if (region-active-p) (region-beginning) (point-min)))
-           (end (if (region-active-p) (region-end) (point-max)))
-           )
-       (progn
-         (goto-char end)
-         (insert "](!W)")
-         (goto-char begin)
-         (insert "[")
-         (goto-char (+ 6 end))
-         (insert "")
-       )
-       )
-     )))
-(add-hook 'markdown-mode-hook
-          (lambda ()
-            (define-key markdown-mode-map "\C-c\ \C-w" 'markdown-wp-annotation-markdown)))
-(add-hook 'yaml-mode-hook
-          (lambda ()
-            (define-key yaml-mode-map "\C-c\ \C-w" 'markdown-wp-annotation-html)))
-(add-hook 'html-mode-hook
-          (lambda ()
-            (define-key yaml-mode-map "\C-c\ \C-w" 'markdown-wp-annotation-html)))
-
-(defun markdown-marginnotes-annotation ()
-  "Surround selected region FOO with `^[!Margin: FOO]`, for adding marginal glosses using my custom overloaded footnote syntax."
-  (interactive
-   (save-window-excursion
-     (let ((begin (if (region-active-p) (region-beginning) (point-min)))
-           (end (if (region-active-p) (region-end) (point-max)))
-           )
-       (goto-char begin)
-       (insert "^[!Margin: ")
-       (goto-char (+ 11 end))
-       (insert "]")
-       )
-     )))
-(add-hook 'markdown-mode-hook
-          (lambda ()
-            (define-key markdown-mode-map "\C-c\ \C-m" 'markdown-marginnotes-annotation)))
-; NOTE: no HTML version: margin notes are not supported in annotations becuase no footnote support. (Maybe they could be, just always inline?)
+;; Markup editing shortcuts for HTML/Markdown/YAML annotation editing.
+;; Functions to easily add italics, bold, Wikipedia links, smallcaps, & margin-note syntax.
+(defun surround-region-or-word (start-tag end-tag)
+  "Surround selected region (or next word if no region) with START-TAG and END-TAG."
+  (interactive)
+  (let ((begin (if (region-active-p)
+                   (region-beginning)
+                 (point)))
+        (end (if (region-active-p)
+                 (region-end)
+               (progn
+                 (forward-word)
+                 (point)))))
+    (goto-char end)
+    (insert end-tag)
+    (goto-char begin)
+    (insert start-tag)
+    (goto-char (+ end (length start-tag) (length end-tag)))))
+;; the wrappers:
+(defun html-insert-emphasis ()
+  "Surround selected region (or word) with HTML <em> tags for italics/emphasis (also valid in Markdown)."
+  (interactive)
+  (surround-region-or-word "<em>" "</em>"))
+(defun html-insert-strong ()
+  "Surround selected region (or word) with <strong> bold tags (HTML/Markdown).
+Used in abstracts for topics, first-level list emphasis, etc."
+  (interactive)
+  (surround-region-or-word "<strong>" "</strong>"))
+(defun html-insert-smallcaps ()
+  "Surround selected region (or word) with smallcaps syntax.
+Built-in CSS class in HTML & Pandoc Markdown, span syntax is equivalent to `[FOO]{.smallcaps}`.
+Smallcaps are used on Gwern.net for second-level emphasis after bold has been used."
+  (interactive)
+  (surround-region-or-word "<span class=\"smallcaps\">" "</span>"))
+(defun html-insert-wp-link ()
+  "Surround selected region (or word) with custom Wikipedia link syntax in HTML."
+  (interactive)
+  (surround-region-or-word "<a href=\"!W\">" "</a>"))
+(defun markdown-insert-wp-link ()
+  "Surround selected region (or word) with custom Wikipedia link syntax in Markdown."
+  (interactive)
+  (surround-region-or-word "[" "](!W)"))
+(defun markdown-insert-margin-note ()
+  "Surround selected region FOO BAR (or word FOO) with a 'margin note': `^[!Margin: FOO BAR]`.
+This creates marginal glosses (in the left-margin) using custom overloaded footnote syntax.
+These margin-notes are used as very abbreviated italicized summaries of the following paragraph
+(like very small inlined section headers).
+NOTE: no HTML version: margin notes are not supported in annotations because no footnote support.
+(Maybe they could be, just always inline?)"
+  (interactive)
+  (surround-region-or-word "^[!Margin: " "]"))
+;; keybindings:
+;;; Markdown:
+(add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-e" 'html-insert-emphasis)))
+(add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-s" 'html-insert-strong)))
+(add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-S" 'html-insert-smallcaps)))
+(add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-w" 'markdown-insert-wp-link)))
+(add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-m" 'markdown-insert-margin-note)))
+;;; HTML:
+(add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-e" 'html-insert-emphasis)))
+(add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-s" 'html-insert-strong)))
+(add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-S" 'html-insert-smallcaps)))
+(add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-w" 'html-insert-wp-link)))
+;;; YAML:
+(add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-e" 'html-insert-emphasis)))
+(add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-s" 'html-insert-strong)))
+(add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-S" 'html-insert-smallcaps)))
+(add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-w" 'html-insert-wp-link)))
 
 ;sp
 (add-hook 'markdown-mode-hook 'flyspell)
