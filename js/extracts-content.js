@@ -300,7 +300,7 @@ Extracts = { ...Extracts,
 		 */
 		if (   isAnchorLink(target)
 			&& popFrame.classList.containsAnyOf([ "full-page", "full-backlink-context" ]))
-			targetElementInDocument(target, popFrame.document).classList.add("targeted");
+			targetElementInDocument(target, popFrame.document).classList.add("block-context-highlighted");
 
 		//  Scroll to the target.
 		Extracts.scrollToTargetedElementInPopFrame(popFrame);
@@ -513,13 +513,13 @@ Extracts = { ...Extracts,
 				if (fullContextLink.pathname == location.pathname) {
 					let targetElement = targetElementInDocument(fullContextLink, Extracts.rootDocument);
 					fullContextLink.addEventListener("mouseenter", (event) => {
-						targetElement.classList.toggle("highlighted", true);
+						targetElement.classList.toggle("block-context-highlighted", true);
 					});
 					fullContextLink.addEventListener("mouseleave", (event) => {
-						targetElement.classList.toggle("highlighted", false);
+						targetElement.classList.toggle("block-context-highlighted", false);
 					});
 					GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", (info) => {
-						targetElement.classList.toggle("highlighted", false);
+						targetElement.classList.toggle("block-context-highlighted", false);
 					}, {
 						once: true,
 						condition: (info) => (info.popup == popFrame)
@@ -735,6 +735,8 @@ Extracts = { ...Extracts,
         let citationInPopup = targetElementInDocument(target, popup.document);
         //  Highlight the citation.
         citationInPopup.classList.add("targeted");
+        //	Remove class that would interfere with styling.
+        citationInPopup.classList.remove("block-context-highlighted");
 
         //  Scroll to the citation.
         Extracts.scrollToTargetedElementInPopFrame(popup);

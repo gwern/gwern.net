@@ -1533,30 +1533,29 @@ a.footnote-ref {
     font-feature-settings: 'lnum';
     font-weight: 600;
     z-index: 1;
-}
-a.footnote-ref::before {
-    content: "";
-    display: block;
-    position: absolute;
-    width: calc(100% + 0.5em);
-    height: 125%;
-    left: calc(-0.25em - 3px);
-    top: -3px;
-    z-index: -1;
-    border-color: transparent;
-    border-style: double;
-    border-width: 3px;
     transition:
-        background-color 0.15s ease 0.05s,
-        border-color 0.15s ease 0.05s;
+        box-shadow 0.15s ease 0.05s;
 }
-a.footnote-ref.highlighted::before,
-a.footnote-ref:hover::before,
-a.footnote-ref:target::before,
-a.footnote-ref.targeted::before {
-    background-color: var(--background-color);
-    border-color: var(--GW-footnote-ref-highlight-box-shadow-color);
-    outline: none;
+a.footnote-ref.highlighted,
+a.footnote-ref:hover,
+a.footnote-ref.targeted {
+	/*	o-v-o:  outline vertical offset
+		o-p:    outline padding
+		o-h-s:  outline horizontal spread
+	 */
+    --o-v-o: 4px;
+    --o-p:   4px;
+    --o-h-s: 2px;
+
+    box-shadow:
+                  var(--o-h-s)  var(--o-v-o) 0      var(--o-p)        var(--background-color),
+        calc(-1 * var(--o-h-s)) var(--o-v-o) 0      var(--o-p)        var(--background-color),
+                  var(--o-h-s)  var(--o-v-o) 0 calc(var(--o-p) + 1px) var(--GW-highlighted-link-outline-color),
+        calc(-1 * var(--o-h-s)) var(--o-v-o) 0 calc(var(--o-p) + 1px) var(--GW-highlighted-link-outline-color),
+                  var(--o-h-s)  var(--o-v-o) 0 calc(var(--o-p) + 2px) var(--background-color),
+        calc(-1 * var(--o-h-s)) var(--o-v-o) 0 calc(var(--o-p) + 2px) var(--background-color),
+                  var(--o-h-s)  var(--o-v-o) 0 calc(var(--o-p) + 3px) var(--GW-highlighted-link-outline-color),
+        calc(-1 * var(--o-h-s)) var(--o-v-o) 0 calc(var(--o-p) + 3px) var(--GW-highlighted-link-outline-color)
 }
 
 /* Deal with multiple footnote superscripts one after another; per Charuru */
@@ -1703,8 +1702,8 @@ section.footnotes .section-self-link {
 /*= Footnote highlighting =*/
 /*=-----------------------=*/
 
-section.footnotes > ol > li:target::before,
-section.footnotes > ol > li:target::after,
+section.footnotes > ol > li.targeted::before,
+section.footnotes > ol > li.targeted::after,
 section.footnotes > ol > li.highlighted::before,
 section.footnotes > ol > li.highlighted::after {
     border-style: solid;
@@ -1713,7 +1712,7 @@ section.footnotes > ol > li.highlighted::after {
         0 0 0 1px var(--background-color) inset,
         0 0 0 2px var(--GW-footnote-highlighted-border-color) inset;
 }
-section.footnotes > ol > li:target::after,
+section.footnotes > ol > li.targeted::after,
 section.footnotes > ol > li.highlighted::after {
     border-width: 0 3px 0 0;
     border-style: double;
@@ -1803,7 +1802,7 @@ section.footnotes > hr:first-child.highlighted::before {
 #sidenote-column-right,
 #hidden-sidenote-storage {
     font-size: 0.85em;
-    width: calc(50vw - (50% + 96px));
+    width: calc(50vw - (var(--GW-body-max-width) / 2 + 96px));
     max-width: var(--GW-sidenotes-max-width);
 }
 
@@ -1853,7 +1852,6 @@ section.footnotes > hr:first-child.highlighted::before {
     display: none;
 }
 #markdownBody .sidenote:hover,
-#markdownBody .sidenote:target,
 #markdownBody .sidenote.targeted,
 #markdownBody .sidenote.displaced,
 #markdownBody .sidenote.highlighted {
@@ -1861,7 +1859,7 @@ section.footnotes > hr:first-child.highlighted::before {
     opacity: 1.0;
     box-shadow: 0 0 0 16px var(--background-color);
 }
-#markdownBody .sidenote:target {
+#markdownBody .sidenote.targeted {
     z-index: 1;
 }
 #markdownBody .sidenote.displaced {
@@ -1883,7 +1881,6 @@ section.footnotes > hr:first-child.highlighted::before {
     left: calc(-1 * (var(--sidenote-padding) + var(--sidenote-border-width)));
 }
 #markdownBody .sidenote:hover::after,
-#markdownBody .sidenote:target::after,
 #markdownBody .sidenote.targeted::after,
 #markdownBody .sidenote.displaced::after,
 #markdownBody .sidenote.highlighted::after {
@@ -2015,7 +2012,8 @@ section.footnotes > hr:first-child.highlighted::before {
 #markdownBody .sidenote > .sidenote-self-link {
     font-weight: 600;
     position: absolute;
-    top: 0;
+    top: -1px;
+    background-image: none;
     border-style: dotted;
     border-color: var(--GW-sidenote-self-link-border-color);
     border-width: 1px 1px 0px 1px;
@@ -2026,16 +2024,45 @@ section.footnotes > hr:first-child.highlighted::before {
     justify-content: center;
     z-index: 1;
 }
-/*  Disable link underlining.
-    */
-.markdownBody .sidenote > .sidenote-self-link {
-    background-image: none;
-}
 #markdownBody #sidenote-column-left .sidenote > .sidenote-self-link {
     right: 0;
 }
 #markdownBody #sidenote-column-right .sidenote > .sidenote-self-link {
     left: 0;
+}
+
+#markdownBody .sidenote.targeted > .sidenote-self-link,
+#markdownBody .sidenote > .sidenote-self-link:hover {
+    border-width: 3px;
+    border-style: double;
+    top: -3px;
+}
+#markdownBody #sidenote-column-left .sidenote.targeted > .sidenote-self-link,
+#markdownBody #sidenote-column-left .sidenote > .sidenote-self-link:hover {
+    right: -2px;
+}
+#markdownBody #sidenote-column-right .sidenote.targeted > .sidenote-self-link,
+#markdownBody #sidenote-column-right .sidenote > .sidenote-self-link:hover {
+    left: -2px;
+}
+
+#markdownBody .sidenote.targeted > .sidenote-self-link::before,
+#markdownBody .sidenote > .sidenote-self-link:hover::before {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: -3px;
+    width: calc(50vw - (var(--GW-body-max-width) / 2 + 96px));
+    max-width: var(--GW-sidenotes-max-width);
+    border-bottom: 3px double var(--GW-sidenote-self-link-border-color); 
+}
+#markdownBody #sidenote-column-left .sidenote.targeted > .sidenote-self-link::before,
+#markdownBody #sidenote-column-left .sidenote > .sidenote-self-link:hover::before {
+    right: -1px;
+}
+#markdownBody #sidenote-column-right .sidenote.targeted > .sidenote-self-link::before,
+#markdownBody #sidenote-column-right .sidenote > .sidenote-self-link:hover::before {
+    left: -1px;
 }
 
 /*=------------=*/
@@ -2074,13 +2101,7 @@ section.footnotes > hr:first-child.highlighted::before {
 #markdownBody .marginnote.sidenote {
     display: flex;
     justify-content: right;
-    /*  925px because that’s the width of #markdownBody at the widths where we
-        get margin notes. Someday, find a way to auto-compute this (but note
-        that `50%` doesn’t work in place of `(925px / 2)`; it breaks when the
-        margin note is within a narrower block, like a <p> within an <ol>).
-        —SA 2022-03-28
-     */
-    width: calc(50vw - ((925px / 2) + 96px));
+    width: calc(50vw - (var(--GW-body-max-width) / 2 + 96px));
     max-width: var(--GW-sidenotes-max-width);
     right: calc(100% + 64px);
     left: unset;
@@ -2114,8 +2135,8 @@ section.footnotes > hr:first-child.highlighted::before {
     This is based on the width of the admonition icon area.
     */
 #markdownBody .admonition .marginnote.sidenote {
-    width: calc(50vw - ((100% + (2.875em / (0.85/0.875)))/2 + 96px));
-    right: calc(100% + (2.875em / (0.85/0.875)) + 64px);
+    width: calc(50vw - ((var(--GW-body-max-width) + (2.875em / (0.85/0.875)))/2 + 96px));
+    right: calc(var(--GW-body-max-width) + (2.875em / (0.85/0.875)) + 64px);
 }
 
 /**********/
@@ -6590,55 +6611,19 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 /*****************/
 /*  Block context.
  */
-.markdownBody a.targeted,
-.markdownBody a:not(.footnote-ref).highlighted {
+.markdownBody a.block-context-highlighted {
     position: relative;
-    display: inline-block;
-    z-index: 1;
-    text-indent: 0;
-}
-@media all and (min-width: 650px) {
-    .markdownBody a.targeted,
-    .markdownBody a:not(.footnote-ref).highlighted {
-        height: 1.5em;
-    }
-    /*  Correct off-by-one-pixel error in backlinks block context.
-     */
-    .markdownBody blockquote a.targeted.has-content .indicator-hook::before {
-        background-position:
-            0 0.15em,
-            0 calc(100% - 0.05em);
-    }
-}
-.markdownBody a.targeted::before,
-.markdownBody a:not(.footnote-ref).highlighted::before {
-    content: "";
-    position: absolute;
-    width: calc(100% + 0.5em);
-    height: 115%;
-    left: calc(-0.4em);
-    top: -15%;
-    z-index: -1;
-    border-color: transparent;
-    border-style: double;
-    border-width: 3px;
-    border-color: var(--GW-footnote-ref-highlight-box-shadow-color);
-    outline: none;
-}
-
-.markdownBody a.footnote-ref.targeted {
-    display: initial;
-}
-.markdownBody a.footnote-ref.targeted::before {
-    height: 125%;
-    left: calc(-0.25em - 3px);
-    top: -3px;
-}
-
-/*	Edge cases.
- */
-.markdownBody sup a.targeted {
-    display: inline;
+    z-index: 2;
+    margin: 0 8px;
+    box-shadow:
+         3px 1px 0 2px var(--background-color),
+        -3px 1px 0 2px var(--background-color),
+         3px 1px 0 3px var(--GW-highlighted-link-outline-color),
+        -3px 1px 0 3px var(--GW-highlighted-link-outline-color),
+         3px 1px 0 4px var(--background-color),
+        -3px 1px 0 4px var(--background-color),
+         3px 1px 0 5px var(--GW-highlighted-link-outline-color),
+        -3px 1px 0 5px var(--GW-highlighted-link-outline-color);
 }
 
 

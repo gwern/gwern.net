@@ -259,12 +259,18 @@ DarkMode = { ...DarkMode,
 	showModeSelector: () => {
 		GWLog("DarkMode.showModeSelector", "dark-mode.js", 3);
 
+		if (DarkMode.modeSelector == null)
+			return;
+
 		DarkMode.modeSelector.classList.remove("hidden");
 	},
 
 	//	Called by: DarkMode.updateModeSelectorVisibility
 	hideModeSelector: () => {
 		GWLog("DarkMode.hideModeSelector", "dark-mode.js", 3);
+
+		if (DarkMode.modeSelector == null)
+			return;
 
 		DarkMode.modeSelector.classList.add("hidden");
 	}
