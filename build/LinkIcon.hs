@@ -48,8 +48,8 @@ rebuildSVGIconCSS = do unless (null linkIconTest) $ error ("Error! Link icons fa
                                        unless existsP (error ("ERROR: SVG icon " ++ s ++ " does not exist!")))
                          svg
                        let html = unlines $ ["<style id=\"graphical-link-icons\">"] ++
-                             -- special-case: we do not have a rule for local pages, see later comment, so we hardwire its existence here.
-                             map (\s -> "a[data-link-icon='" ++ s ++ "'] { --link-icon-url: url('/static/img/icon/" ++ s ++ ".svg'); }") (svg++["gwern"]) ++
+                             -- special-case: we do not have a rule for local pages, see later comment (because it's dynamic), so we hardwire its existence here. 'arrow-up'/'arrow-down' are also dynamically set (for now), based on seeing if a link's '#link' URL points to a target 'above' or 'below' the link.
+                             map (\s -> "a[data-link-icon='" ++ s ++ "'] { --link-icon-url: url('/static/img/icon/" ++ s ++ ".svg'); }") (svg++["gwern", "arrow-up", "arrow-down"]) ++
                              ["</style>"]
                        writeUpdatedFile "svgicons" "static/include/inlined-graphical-linkicon-styles.html" (T.pack html)
 
