@@ -769,6 +769,8 @@ Sidenotes = { ...Sidenotes,
 			and do other adjustments, just as we do when the hash updates.
 		 */
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotePositionsDidUpdate", Sidenotes.updateStateAfterHashChange = (info) => {
+			GWLog("Sidenotes.updateStateAfterHashChange", "sidenotes.js", 1);
+
 			//	Update highlighted state of sidenote and citation, if need be.
 			Sidenotes.updateTargetCounterpart();
 
@@ -787,7 +789,7 @@ Sidenotes = { ...Sidenotes,
 				Sidenotes.slideLockSidenote(sidenote);
 
 				requestAnimationFrame(() => {
-					scrollElementIntoView(sidenote, (-1 * Sidenotes.sidenotePadding));
+					scrollElementIntoView(sidenote, ((-1 * Sidenotes.sidenotePadding) - 1));
 
 					Sidenotes.unSlideLockSidenote(sidenote);
 				});
@@ -800,9 +802,9 @@ Sidenotes = { ...Sidenotes,
 				requestAnimationFrame(() => {
 					let sidenoteRect = sidenote.getBoundingClientRect();
 					let citationRect = citation.getBoundingClientRect();
-					if (   sidenoteRect.top < Sidenotes.sidenotePadding
+					if (   sidenoteRect.top < Sidenotes.sidenotePadding + 1
 						&& citationRect.bottom + (-1 * (sidenoteRect.top - Sidenotes.sidenotePadding)) < window.innerHeight)
-						scrollElementIntoView(sidenote, (-1 * Sidenotes.sidenotePadding));
+						scrollElementIntoView(sidenote, ((-1 * Sidenotes.sidenotePadding) - 1));
 
 					Sidenotes.unSlideLockSidenote(sidenote);
 				});
