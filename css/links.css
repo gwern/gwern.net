@@ -71,46 +71,6 @@ body.index #markdownBody .has-content .indicator-hook {
     background-image: var(--GW-dotted-underline-hover-background-image);
 }
 
-/*  ToCs in pop-frames, and also in link bibliographies, directory indexes, etc.
- */
-.popframe-body .TOC a:link,
-.popframe-body .TOC a:link *,
-blockquote .TOC a:link,
-blockquote .TOC a:link *,
-body[class*='-index'] #TOC a:link,
-body[class*='-index'] #TOC a:link * {
-    background: none;
-    text-shadow: none;
-}
-/*  Restore proper hover highlighting.
- */
-.popframe-body .TOC a:hover {
-    background-color: var(--GW-TOC-link-hover-background-color);
-}
-
-.popframe-body .TOC a::after,
-blockquote .TOC a::after,
-body[class*='-index'] #TOC a::after {
-    display: none;
-}
-
-.popframe-body .TOC a:hover::after,
-blockquote .TOC a:hover::after,
-body[class*='-index'] #TOC a:hover::after {
-    margin: 0;
-    bottom: unset;
-    font-size: inherit;
-    opacity: unset;
-}
-
-.popframe-body .TOC a[data-link-icon]:hover::after,
-blockquote .TOC a[data-link-icon]:hover::after,
-body[class*='-index'] #TOC a[data-link-icon]:hover::after {
-    background-image: none;
-    padding: 0;
-    opacity: 1.0;
-}
-
 
 /**************/
 /* LINK ICONS */
@@ -155,10 +115,6 @@ body[class*='-index'] #TOC a[data-link-icon]:hover::after {
     web page URLs.
  */
 
-#sidebar a::after {
-    content: none;
-}
-
 /*=================*/
 /*= COMMON STYLES =*/
 /*=================*/
@@ -166,7 +122,7 @@ body[class*='-index'] #TOC a[data-link-icon]:hover::after {
 /*******************/
 /*  Graphical icons.
     */
-a[data-link-icon-type='svg']::after {
+a[data-link-icon-type='svg'] .link-icon-hook::after {
     --link-icon-size: 0.5em;
     --link-icon-offset-x: 0.20em;
     --link-icon-offset-y: 0.25em;
@@ -182,14 +138,14 @@ a[data-link-icon-type='svg']::after {
     background-repeat: no-repeat;
     opacity: 0.6;
 }
-a[data-link-icon-type='svg']:hover::after {
+a[data-link-icon-type='svg']:hover .link-icon-hook::after {
     opacity: 0.3;
 }
 
 /*****************/
 /*  Textual icons.
     */
-a[data-link-icon-type*='text']::after {
+a[data-link-icon-type*='text'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.125em;
     --link-icon-offset-y: 0.25em;
@@ -197,7 +153,7 @@ a[data-link-icon-type*='text']::after {
     --link-icon-font-sans: Noto Emoji, Quivira, var(--GW-sans-serif-font-stack);
     --link-icon-font-mono: Noto Emoji, Quivira, var(--GW-monospaced-font-stack);
 
-    content: "\2060" attr(data-link-icon);
+    content: var(--link-icon);
     font-size: var(--link-icon-size);
     font-weight: 600;
     font-style: normal;
@@ -213,24 +169,24 @@ a[data-link-icon-type*='text']::after {
     line-height: 1;
     overflow-wrap: normal;
 }
-a[data-link-icon-type*='sans']::after {
+a[data-link-icon-type*='sans'] .link-icon-hook::after {
     font-family: var(--link-icon-font-sans);
 }
-a[data-link-icon-type*='mono']::after {
+a[data-link-icon-type*='mono'] .link-icon-hook::after {
     font-family: var(--link-icon-font-mono);
     opacity: 0.7;
 }
-a[data-link-icon-type*='bold']::after {
+a[data-link-icon-type*='bold'] .link-icon-hook::after {
     font-weight: bold;
     opacity: 0.83;
 }
-a[data-link-icon-type*='italic']::after {
+a[data-link-icon-type*='italic'] .link-icon-hook::after {
     font-style: italic;
 
     --link-icon-size: 0.85em;
     --link-icon-offset-x: 0.08em;
 }
-a[data-link-icon-type*='overline']::after {
+a[data-link-icon-type*='overline'] .link-icon-hook::after {
     text-decoration: overline;
 
     --link-icon-offset-y: 0.2em;
@@ -244,7 +200,7 @@ a[data-link-icon-type*='overline']::after {
 /*= Within-page (anchor) links =*/
 /*=----------------------------=*/
 
-a[data-link-icon='¶']::after {
+a[data-link-icon='¶'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-y: 0.45em;
     --link-icon-offset-x: 0.2em;
@@ -253,16 +209,16 @@ a[data-link-icon='¶']::after {
     opacity: 0.7;
 }
 
-a[data-link-icon='arrow-up']::after,
-a[data-link-icon='arrow-down']::after {
+a[data-link-icon='arrow-up'] .link-icon-hook::after,
+a[data-link-icon='arrow-down'] .link-icon-hook::after {
     --link-icon-size: 0.65em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.2em;
 
     opacity: 0.8;
 }
-a[data-link-icon='arrow-up']:hover::after,
-a[data-link-icon='arrow-down']:hover::after {
+a[data-link-icon='arrow-up']:hover .link-icon-hook::after,
+a[data-link-icon='arrow-down']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
@@ -270,7 +226,7 @@ a[data-link-icon='arrow-down']:hover::after {
 /*= Internal (within-site) links =*/
 /*=------------------------------=*/
 
-a[data-link-icon='𝔊']::after {
+a[data-link-icon='𝔊'] .link-icon-hook::after {
     --link-icon-size: 0.9em;
     --link-icon-offset-y: 0.15em;
     --link-icon-offset-x: 0.12em;
@@ -278,31 +234,22 @@ a[data-link-icon='𝔊']::after {
     opacity: 0.75;
 }
 
-/*  Index page, and embeds thereof, do not need the G icon.
-    NOTE: we do not use the usual method of suppressing G icons (`.icon-not` class), because /index and /static/404 are *so* long and routinely modified/expanded, so doing it 'manually' would risk occasional omissions or syntax errors.
- */
-body.index a.link-page::after,
-body.static-404 a.link-page::after,
-.popframe-body.index a.link-page::after {
-    content: none;
-}
-
 /*=----------------------------------------------------=*/
 /*= Cross-directory links on tag index pages =*/
 /*=----------------------------------------------------=*/
 
-a[data-link-icon='arrow-up-left']::after,
-a[data-link-icon='arrow-down-right']::after,
-a[data-link-icon='arrow-right']::after {
+a[data-link-icon='arrow-up-left'] .link-icon-hook::after,
+a[data-link-icon='arrow-down-right'] .link-icon-hook::after,
+a[data-link-icon='arrow-right'] .link-icon-hook::after {
     --link-icon-size: 0.65em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.3em;
 
     opacity: 0.8;
 }
-a[data-link-icon='arrow-up-left']:hover::after,
-a[data-link-icon='arrow-down-right']:hover::after,
-a[data-link-icon='arrow-right']:hover::after {
+a[data-link-icon='arrow-up-left']:hover .link-icon-hook::after,
+a[data-link-icon='arrow-down-right']:hover .link-icon-hook::after,
+a[data-link-icon='arrow-right']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
@@ -314,7 +261,7 @@ a[data-link-icon='arrow-right']:hover::after {
 /*  Logotype icons.
     */
 
-a[data-link-icon='𝛘']::after { /* Arxiv */
+a[data-link-icon='𝛘'] .link-icon-hook::after { /* Arxiv */
     --link-icon-size: 0.7em;
     --link-icon-offset-x: 0.1em;
     --link-icon-offset-y: 0.6em;
@@ -322,13 +269,13 @@ a[data-link-icon='𝛘']::after { /* Arxiv */
     opacity: 0.7;
 }
 
-a[data-link-icon='❐']::after { /* Booru */
+a[data-link-icon='❐'] .link-icon-hook::after { /* Booru */
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.15em;
 }
 
-a[data-link-icon='⧖']::after { /* Longecity */
+a[data-link-icon='⧖'] .link-icon-hook::after { /* Longecity */
     --link-icon-size: 0.9em;
     --link-icon-offset-y: 0.1em;
     --link-icon-offset-x: 0.1em;
@@ -336,19 +283,19 @@ a[data-link-icon='⧖']::after { /* Longecity */
     opacity: 0.70;
 }
 
-a[data-link-icon='♡']::after { /* Fandom/Wikia */
+a[data-link-icon='♡'] .link-icon-hook::after { /* Fandom/Wikia */
     --link-icon-offset-x: 0.05em;
 
     opacity: 1.0;
     text-shadow: 0 0 0 currentcolor;
 }
 
-a[data-link-icon='MS']::after {
+a[data-link-icon='MS'] .link-icon-hook::after {
     --link-icon-size: 0.65em;
     --link-icon-offset-y: 0.35em;
 }
 
-a[data-link-icon='n']::after { /* Nature */
+a[data-link-icon='n'] .link-icon-hook::after { /* Nature */
     --link-icon-size: 0.9em;
     --link-icon-offset-y: 0.3em;
     --link-icon-offset-x: 0.1em;
@@ -356,32 +303,32 @@ a[data-link-icon='n']::after { /* Nature */
     opacity: 0.85;
 }
 
-a[data-link-icon='s']::after {
+a[data-link-icon='s'] .link-icon-hook::after {
     --link-icon-size: 1em;
 }
 
-a[data-link-icon='Ss']::after {
+a[data-link-icon='Ss'] .link-icon-hook::after {
     --link-icon-offset-x: 0.15em;
 }
 
-a[data-link-icon='Vox']::after {
+a[data-link-icon='Vox'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.1em; /* shift left a bit */
 }
 
-a[data-link-icon='ψ']::after {
+a[data-link-icon='ψ'] .link-icon-hook::after {
     --link-icon-offset-y: 0.4em;
 
     opacity: 0.75;
 }
 
-a[data-link-icon='ℵ']::after { /* Unsong ALEF */
+a[data-link-icon='ℵ'] .link-icon-hook::after { /* Unsong ALEF */
     --link-icon-size: 0.8em;
 
     font-weight: normal;
 }
 
-a[data-link-icon='▅▇▃']::after {
+a[data-link-icon='▅▇▃'] .link-icon-hook::after {
     --link-icon-size: 0.5em;
     --link-icon-offset-x: 0.25em;
 
@@ -389,29 +336,29 @@ a[data-link-icon='▅▇▃']::after {
     opacity: 0.7;
 }
 
-a[data-link-icon='▲']::after { /* Melting Asphalt (Kevin Simler) */
+a[data-link-icon='▲'] .link-icon-hook::after { /* Melting Asphalt (Kevin Simler) */
     --link-icon-offset-x: 0;
     --link-icon-offset-y: 0.25em;
 
     opacity: 0.75;
 }
 
-a[data-link-icon='𝔐']::after {
+a[data-link-icon='𝔐'] .link-icon-hook::after {
     --link-icon-size: 1em;
     opacity: 0.95;
 }
 
-a[data-link-icon='▽']::after { /* The Verge */
+a[data-link-icon='▽'] .link-icon-hook::after { /* The Verge */
     --link-icon-size: 0.9em;
 }
 
-a[data-link-icon='∇']::after { /* The Gradient.pub */
+a[data-link-icon='∇'] .link-icon-hook::after { /* The Gradient.pub */
     --link-icon-size: 0.85em;
 
     opacity: 0.85;
 }
 
-a[data-link-icon='✉']::after {
+a[data-link-icon='✉'] .link-icon-hook::after {
     --link-icon-size: 1.1em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.05em;
@@ -420,35 +367,35 @@ a[data-link-icon='✉']::after {
     opacity: 0.80;
 }
 
-a[data-link-icon='M𝐑']::after {
+a[data-link-icon='M𝐑'] .link-icon-hook::after {
     opacity: 0.75;
 }
 
-a[data-link-icon='𝐁']::after {
+a[data-link-icon='𝐁'] .link-icon-hook::after {
     opacity: 0.77;
 }
 
-a[data-link-icon='𝐌']::after {
+a[data-link-icon='𝐌'] .link-icon-hook::after {
     opacity: 0.7;
 }
 
-a[data-link-icon='𝛌']::after {
+a[data-link-icon='𝛌'] .link-icon-hook::after {
     --link-icon-size: 1em;
 
     opacity: 0.6;
 }
 
-a[data-link-icon='𝛘']::after {
+a[data-link-icon='𝛘'] .link-icon-hook::after {
     --link-icon-offset-y: 0.4em;
 
     opacity: 0.75;
 }
 
-a[data-link-icon='෴']::after { /* Moustache / antilop.cc */
+a[data-link-icon='෴'] .link-icon-hook::after { /* Moustache / antilop.cc */
     --link-icon-offset-y: 0.5em;
 }
 
-a[data-link-icon='🤖']::after { /* ROBOT FACE U+1F916 beepb00p.xyz */
+a[data-link-icon='🤖'] .link-icon-hook::after { /* ROBOT FACE U+1F916 beepb00p.xyz */
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.3em;
@@ -456,12 +403,12 @@ a[data-link-icon='🤖']::after { /* ROBOT FACE U+1F916 beepb00p.xyz */
     opacity: 0.75;
 }
 
-a[data-link-icon='GPP']::after { /* Game Programming Patterns: shrink & elevate */
+a[data-link-icon='GPP'] .link-icon-hook::after { /* Game Programming Patterns: shrink & elevate */
     --link-icon-size: 0.6em;
     --link-icon-offset-y: 0.6em;
 }
 
-a[data-link-icon='⛨']::after { /* Cambridge */
+a[data-link-icon='⛨'] .link-icon-hook::after { /* Cambridge */
     --link-icon-size: 0.9em;
     --link-icon-offset-x: 0.10em; /* NOTE: this may be too much for Chrome, but the FF needs it */
     --link-icon-offset-y: 0.10em;
@@ -469,36 +416,36 @@ a[data-link-icon='⛨']::after { /* Cambridge */
     font-weight: normal;
 }
 
-a[data-link-icon='𝒩𝒴']::after { /* nymag.com New York Magazine */
+a[data-link-icon='𝒩𝒴'] .link-icon-hook::after { /* nymag.com New York Magazine */
     opacity: 0.7;
 }
 
-a[data-link-icon='𝕳']::after { /* NZ Herald */
+a[data-link-icon='𝕳'] .link-icon-hook::after { /* NZ Herald */
     --link-icon-offset-y: 0.4em;
 
     opacity: 0.7;
 }
 
-a[data-link-icon='𝔐']::after { /* Daily Mail */
+a[data-link-icon='𝔐'] .link-icon-hook::after { /* Daily Mail */
     --link-icon-size: 0.75em;
     --link-icon-offset-y: 0.5em;
 }
 
-a[data-link-icon='𝛌']::after { /* Haskell */
+a[data-link-icon='𝛌'] .link-icon-hook::after { /* Haskell */
     --link-icon-size: 0.8em;
 }
 
-a[data-link-icon='𝓝']::after { /* Nintil */
+a[data-link-icon='𝓝'] .link-icon-hook::after { /* Nintil */
     --link-icon-size: 0.85em;
     opacity: 0.9;
 }
 
-a[data-link-icon='𝓥']::after { /* Variety */
+a[data-link-icon='𝓥'] .link-icon-hook::after { /* Variety */
     --link-icon-size: 0.85em;
     opacity: 0.9;
 }
 
-a[data-link-icon='ρ']::after { /* Project Rho */
+a[data-link-icon='ρ'] .link-icon-hook::after { /* Project Rho */
     --link-icon-size: 0.8em;
     --link-icon-offset-y: 0.5em;
     --link-icon-offset-x: 0.10em;
@@ -506,7 +453,7 @@ a[data-link-icon='ρ']::after { /* Project Rho */
     opacity: 0.75;
 }
 
-a[data-link-icon='ℰ']::after { /* Esquire */
+a[data-link-icon='ℰ'] .link-icon-hook::after { /* Esquire */
     opacity: 0.9;
     --link-icon-size: 0.8em;
 }
@@ -514,7 +461,7 @@ a[data-link-icon='ℰ']::after { /* Esquire */
 /****************************/
 /* Triple-letter 'tri' initials: too few for quad, but too big for
    regular font size/offset. Common with TLA orgs. */
-a[data-link-icon-type*='tri']::after {
+a[data-link-icon-type*='tri'] .link-icon-hook::after {
     --link-icon-size: 0.65em;
     --link-icon-offset-y: 0.4em;
     --link-icon-offset-x: 0.2em;
@@ -525,7 +472,7 @@ a[data-link-icon-type*='tri']::after {
 /****************************/
 /*  Quad-letter 'quad' square icons.
     */
-a[data-link-icon-type*='quad']::after {
+a[data-link-icon-type*='quad'] .link-icon-hook::after {
     text-indent: 0;
     overflow-wrap: break-word;
     display: inline-block;
@@ -541,29 +488,29 @@ a[data-link-icon-type*='quad']::after {
 
 /*  Quad-letter square icons in a sans face.
     */
-a[data-link-icon-type*='quad'][data-link-icon-type*='sans']::after {
+a[data-link-icon-type*='quad'][data-link-icon-type*='sans'] .link-icon-hook::after {
     margin: 0;
 }
 
 /*  Quad-letter square icons in a monospace face.
     */
-a[data-link-icon-type*='quad'][data-link-icon-type*='mono']::after {
+a[data-link-icon-type*='quad'][data-link-icon-type*='mono'] .link-icon-hook::after {
     letter-spacing: 0.05em;
     line-height: 0.85;
 }
 
-a[data-link-icon='VICE']::after {
+a[data-link-icon='VICE'] .link-icon-hook::after {
     --link-icon-offset-x: 0.1em; /* shift left a bit */
 }
 
-a[data-link-icon='PNAS']::after {
+a[data-link-icon='PNAS'] .link-icon-hook::after {
     width: 1.4em;
 }
 
-a[data-link-icon='MDPI']::after,
-a[data-link-icon='EPUB']::after,
-a[data-link-icon='TPDR']::after,
-a[data-link-icon='NBER']::after {
+a[data-link-icon='MDPI'] .link-icon-hook::after,
+a[data-link-icon='EPUB'] .link-icon-hook::after,
+a[data-link-icon='TPDR'] .link-icon-hook::after,
+a[data-link-icon='NBER'] .link-icon-hook::after {
     width: 1.6em;
 }
 
@@ -571,18 +518,18 @@ a[data-link-icon='NBER']::after {
 /*= Graphical per-domain link icons =*/
 /*=---------------------------------=*/
 
-a[data-link-icon='amazon']::after {
+a[data-link-icon='amazon'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
 
     opacity: 0.65;
 }
-a[data-link-icon='amazon']:hover::after {
+a[data-link-icon='amazon']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
-a[data-link-icon='bitcoin']::after {
+a[data-link-icon='bitcoin'] .link-icon-hook::after {
     --link-icon-size: 0.55em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.2em;
@@ -590,29 +537,29 @@ a[data-link-icon='bitcoin']::after {
     opacity: 0.65;
 }
 
-a[data-link-icon='chi-dna']::after {
+a[data-link-icon='chi-dna'] .link-icon-hook::after {
     --link-icon-size: 0.58em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.25em;
 
     opacity: 0.85;
 }
-a[data-link-icon='chi-dna']:hover::after {
+a[data-link-icon='chi-dna']:hover .link-icon-hook::after {
     opacity: 0.6;
 }
 
-a[data-link-icon='deepmind']::after {
+a[data-link-icon='deepmind'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
 
     opacity: 0.7;
 }
-a[data-link-icon='deepmind']:hover::after {
+a[data-link-icon='deepmind']:hover .link-icon-hook::after {
     opacity: 0.5;
 }
 
-a[data-link-icon='distillpub']::after {
+a[data-link-icon='distillpub'] .link-icon-hook::after {
     --link-icon-size: 0.45em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.15em;
@@ -620,7 +567,7 @@ a[data-link-icon='distillpub']::after {
     opacity: 0.6;
 }
 
-a[data-link-icon='dropbox']::after {
+a[data-link-icon='dropbox'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
@@ -628,7 +575,7 @@ a[data-link-icon='dropbox']::after {
     opacity: 0.55;
 }
 
-a[data-link-icon='econlib']::after { /* torch */
+a[data-link-icon='econlib'] .link-icon-hook::after { /* torch */
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.1em;
@@ -636,29 +583,29 @@ a[data-link-icon='econlib']::after { /* torch */
     opacity: 0.75;
 }
 
-a[data-link-icon='erowid']::after {
+a[data-link-icon='erowid'] .link-icon-hook::after {
     --link-icon-size: 0.95em;
     --link-icon-offset-x: 0.1em;
     --link-icon-offset-y: 0.1em;
 
     opacity: 0.9;
 }
-a[data-link-icon='erowid']:hover::after {
+a[data-link-icon='erowid']:hover .link-icon-hook::after {
     opacity: 0.7;
 }
 
-a[data-link-icon='facebook']::after {
+a[data-link-icon='facebook'] .link-icon-hook::after {
     --link-icon-size: 0.5em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.1em;
 
     opacity: 0.6;
 }
-a[data-link-icon='facebook']:hover::after {
+a[data-link-icon='facebook']:hover .link-icon-hook::after {
     opacity: 0.35;
 }
 
-a[data-link-icon='github']::after {
+a[data-link-icon='github'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
@@ -666,7 +613,7 @@ a[data-link-icon='github']::after {
     opacity: 0.65;
 }
 
-a[data-link-icon='alphabet']::after {
+a[data-link-icon='alphabet'] .link-icon-hook::after {
     --link-icon-size: 0.60em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.3em;
@@ -674,40 +621,40 @@ a[data-link-icon='alphabet']::after {
     opacity: 0.6;
 }
 
-a[data-link-icon='google-scholar']::after {
+a[data-link-icon='google-scholar'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.4em;
 
     opacity: 0.60;
 }
-a[data-link-icon='google-scholar']:hover::after {
+a[data-link-icon='google-scholar']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
-a[data-link-icon='hn']::after {
+a[data-link-icon='hn'] .link-icon-hook::after {
     --link-icon-size: 0.7em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
 
     opacity: 0.65;
 }
-a[data-link-icon='hn']:hover::after {
+a[data-link-icon='hn']:hover .link-icon-hook::after {
     opacity: 0.2;
 }
 
-a[data-link-icon='internetarchive']::after {
+a[data-link-icon='internetarchive'] .link-icon-hook::after {
     --link-icon-size: 0.55em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.3em;
 
     opacity: 0.6;
 }
-a[data-link-icon='internetarchive']:hover::after {
+a[data-link-icon='internetarchive']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
-a[data-link-icon='mega']::after {
+a[data-link-icon='mega'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
@@ -715,7 +662,7 @@ a[data-link-icon='mega']::after {
     opacity: 0.50;
 }
 
-a[data-link-icon='miri']::after {
+a[data-link-icon='miri'] .link-icon-hook::after {
     --link-icon-size: 1.05em;
     --link-icon-offset-x: 0.1em;
     --link-icon-offset-y: 0.15em;
@@ -723,7 +670,7 @@ a[data-link-icon='miri']::after {
     opacity: 0.65;
 }
 
-a[data-link-icon='nasa']::after {
+a[data-link-icon='nasa'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-y: 0.2em;
     --link-icon-offset-x: 0.15em;
@@ -731,7 +678,7 @@ a[data-link-icon='nasa']::after {
     opacity: 0.65;
 }
 
-a[data-link-icon='nautilus']::after {
+a[data-link-icon='nautilus'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-y: 0.25em;
     --link-icon-offset-x: 0.15em;
@@ -739,47 +686,47 @@ a[data-link-icon='nautilus']::after {
     opacity: 0.7;
 }
 
-a[data-link-icon='newyorktimes']::after {
+a[data-link-icon='newyorktimes'] .link-icon-hook::after {
     --link-icon-size: 0.65em;
     --link-icon-offset-x: 0.1em;
     --link-icon-offset-y: 0.15em;
 
     opacity: 0.6;
 }
-a[data-link-icon='newyorktimes']:hover::after {
+a[data-link-icon='newyorktimes']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
-a[data-link-icon='nlm-ncbi']::after {
+a[data-link-icon='nlm-ncbi'] .link-icon-hook::after {
     --link-icon-size: 0.6em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
 
     opacity: 0.9;
 }
-a[data-link-icon='nlm-ncbi']:hover::after {
+a[data-link-icon='nlm-ncbi']:hover .link-icon-hook::after {
     opacity: 0.5;
 }
 
-a[data-link-icon='openai']::after {
+a[data-link-icon='openai'] .link-icon-hook::after {
     --link-icon-size: 0.7em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.25em;
 
     opacity: 0.7;
 }
-a[data-link-icon='openai']:hover::after {
+a[data-link-icon='openai']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
-a[data-link-icon='patreon']::after {
+a[data-link-icon='patreon'] .link-icon-hook::after {
     --link-icon-size: 0.7em;
     --link-icon-offset-x: 0.10em;
     --link-icon-offset-y: 0.15em;
 
     opacity: 0.65;
 }
-a[data-link-icon='plos']::after {
+a[data-link-icon='plos'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.10em;
@@ -787,7 +734,7 @@ a[data-link-icon='plos']::after {
     opacity: 0.80;
 }
 
-a[data-link-icon='reddit']::after {
+a[data-link-icon='reddit'] .link-icon-hook::after {
     --link-icon-size: 0.80em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
@@ -795,18 +742,18 @@ a[data-link-icon='reddit']::after {
     opacity: 0.65;
 }
 
-a[data-link-icon='springerlink']::after {
+a[data-link-icon='springerlink'] .link-icon-hook::after {
     --link-icon-size: 0.9em;
     --link-icon-offset-x: 0.1em;
     --link-icon-offset-y: 0.1em;
 
     opacity: 0.8;
 }
-a[data-link-icon='springerlink']:hover::after {
+a[data-link-icon='springerlink']:hover .link-icon-hook::after {
     opacity: 0.5;
 }
 
-a[data-link-icon='stackexchange']::after {
+a[data-link-icon='stackexchange'] .link-icon-hook::after {
     --link-icon-size: 0.6em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.25em;
@@ -814,14 +761,14 @@ a[data-link-icon='stackexchange']::after {
     opacity: 0.55;
 }
 
-a[data-link-icon='substack']::after {
+a[data-link-icon='substack'] .link-icon-hook::after {
     --link-icon-size: 0.55em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.2em;
 
     opacity: 0.55;
 }
-a[data-link-icon='theguardian']::after {
+a[data-link-icon='theguardian'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.25em;
@@ -829,18 +776,18 @@ a[data-link-icon='theguardian']::after {
     opacity: 0.55;
 }
 
-a[data-link-icon='thenewyorker']::after {
+a[data-link-icon='thenewyorker'] .link-icon-hook::after {
     --link-icon-size: 0.65em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.15em;
 
     opacity: 0.6
 }
-a[data-link-icon='thenewyorker']:hover::after {
+a[data-link-icon='thenewyorker']:hover .link-icon-hook::after {
     opacity: 0.45;
 }
 
-a[data-link-icon='tumblr']::after {
+a[data-link-icon='tumblr'] .link-icon-hook::after {
     --link-icon-size: 0.47em;
     --link-icon-offset-x: 0.25em;
     --link-icon-offset-y: 0.2em;
@@ -848,7 +795,7 @@ a[data-link-icon='tumblr']::after {
     opacity: 0.52;
 }
 
-a[data-link-icon='twitter']::after {
+a[data-link-icon='twitter'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.2em;
@@ -856,7 +803,7 @@ a[data-link-icon='twitter']::after {
     opacity: 0.5;
 }
 
-a[data-link-icon='uptontea']::after {
+a[data-link-icon='uptontea'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.25em;
     --link-icon-offset-y: 0.45em;
@@ -864,29 +811,29 @@ a[data-link-icon='uptontea']::after {
     opacity: 0.55;
 }
 
-a[data-link-icon='video']::after {
+a[data-link-icon='video'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.4em;
 
     opacity: 0.55;
 }
-a[data-link-icon='video']:hover::after {
+a[data-link-icon='video']:hover .link-icon-hook::after {
     opacity: 0.2;
 }
 
-a[data-link-icon='washingtonpost']::after {
+a[data-link-icon='washingtonpost'] .link-icon-hook::after {
     --link-icon-size: 0.85em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.25em;
 
     opacity: 0.85;
 }
-a[data-link-icon='washingtonpost']:hover::after {
+a[data-link-icon='washingtonpost']:hover .link-icon-hook::after {
     opacity: 0.55;
 }
 
-a[data-link-icon='wired']::after {
+a[data-link-icon='wired'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
@@ -894,22 +841,22 @@ a[data-link-icon='wired']::after {
     opacity: 0.55;
 }
 
-a[data-link-icon='youtube']::after {
+a[data-link-icon='youtube'] .link-icon-hook::after {
     --link-icon-size: 0.88em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.25em;
 
     opacity: 0.5;
 }
-a[data-link-icon='youtube']:hover::after {
+a[data-link-icon='youtube']:hover .link-icon-hook::after {
     opacity: 0.2;
 }
 
-a[data-link-icon='yud']::after {
+a[data-link-icon='yud'] .link-icon-hook::after {
     --link-icon-offset-y: 0.15em;
 }
 
-a[data-link-icon='the-telegraph']::after { /* Darken & shift left */
+a[data-link-icon='the-telegraph'] .link-icon-hook::after { /* Darken & shift left */
     --link-icon-size: 0.6em;
     --link-icon-offset-x: 0.1em;
     --link-icon-offset-y: 0.2em;
@@ -917,7 +864,7 @@ a[data-link-icon='the-telegraph']::after { /* Darken & shift left */
     opacity: 0.75;
 }
 
-a[data-link-icon='open-philanthropy']::after { /* Darken & shift left/up */
+a[data-link-icon='open-philanthropy'] .link-icon-hook::after { /* Darken & shift left/up */
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.1em;
     --link-icon-offset-y: 0.1em;
@@ -925,14 +872,14 @@ a[data-link-icon='open-philanthropy']::after { /* Darken & shift left/up */
     opacity: 0.95;
 }
 
-a[data-link-icon='atlas-obscura']::after { /* Darken & shift left/up */
+a[data-link-icon='atlas-obscura'] .link-icon-hook::after { /* Darken & shift left/up */
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.05em;
     --link-icon-offset-y: 0.1em;
     opacity: 0.85;
 }
 
-a[data-link-icon='eleutherai']::after { /* Darken, enlarge, & shift left/up */
+a[data-link-icon='eleutherai'] .link-icon-hook::after { /* Darken, enlarge, & shift left/up */
     --link-icon-size: 0.98em;
     --link-icon-offset-x: 0.05em;
     --link-icon-offset-y: 0.0em;
@@ -940,25 +887,25 @@ a[data-link-icon='eleutherai']::after { /* Darken, enlarge, & shift left/up */
     opacity: 0.95;
 }
 
-a[data-link-icon='apple']::after { /* Darken, enlarge, & shift left/up */
+a[data-link-icon='apple'] .link-icon-hook::after { /* Darken, enlarge, & shift left/up */
     --link-icon-size: 0.70em;
     --link-icon-offset-y: 0em;
     --link-icon-offset-x: 0.1em;
     opacity: 0.5;
 }
 
-a[data-link-icon='quanta']::after { /* Darken, enlarge, & shift left/up */
+a[data-link-icon='quanta'] .link-icon-hook::after { /* Darken, enlarge, & shift left/up */
     --link-icon-size: 0.9em;
     --link-icon-offset-y: 0.1em;
     --link-icon-offset-x: 0.1em;
 
     opacity: 0.9;
 }
-a[data-link-icon='quanta']:hover::after {
+a[data-link-icon='quanta']:hover .link-icon-hook::after {
     opacity: 0.5;
 }
 
-a[data-link-icon='creative-commons']::after {
+a[data-link-icon='creative-commons'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-y: 0.1em;
     --link-icon-offset-x: 0.15em;
@@ -966,7 +913,7 @@ a[data-link-icon='creative-commons']::after {
     opacity: 0.8;
 }
 
-a[data-link-icon='tensorflow']::after {
+a[data-link-icon='tensorflow'] .link-icon-hook::after {
     --link-icon-size: 0.7em;
     --link-icon-offset-y: 0.2em;
     --link-icon-offset-x: 0.1em;
@@ -974,7 +921,7 @@ a[data-link-icon='tensorflow']::after {
     opacity: 0.6;
 }
 
-a[data-link-icon='alcor']::after {
+a[data-link-icon='alcor'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-y: 0.25em;
     --link-icon-offset-x: 0.15em;
@@ -982,18 +929,18 @@ a[data-link-icon='alcor']::after {
     opacity: 0.65;
 }
 
-a[data-link-icon='cochrane-collaboration']::after {
+a[data-link-icon='cochrane-collaboration'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-y: 0.2em;
     --link-icon-offset-x: 0.2em;
 
     opacity: 0.75;
 }
-a[data-link-icon='cochrane-collaboration']:hover::after {
+a[data-link-icon='cochrane-collaboration']:hover .link-icon-hook::after {
     opacity: 0.45;
 }
 
-a[data-link-icon='connected-papers']::after {
+a[data-link-icon='connected-papers'] .link-icon-hook::after {
     --link-icon-size: 0.6em;
     --link-icon-offset-y: 0.1em;
     --link-icon-offset-x: 0.2em;
@@ -1002,7 +949,7 @@ a[data-link-icon='connected-papers']::after {
 }
 
 /* LibGen/Sci-Hub */
-a[data-link-icon='raven']::after {
+a[data-link-icon='raven'] .link-icon-hook::after {
     --link-icon-size: 0.65em;
     --link-icon-offset-y: 0.2em;
     --link-icon-offset-x: 0.1em;
@@ -1010,7 +957,7 @@ a[data-link-icon='raven']::after {
     opacity: 0.60;
 }
 
-a[data-link-icon='hoover-institution']::after {
+a[data-link-icon='hoover-institution'] .link-icon-hook::after {
     --link-icon-size: 0.5em;
     --link-icon-offset-y: 0.0em;
     --link-icon-offset-x: 0.15em;
@@ -1018,7 +965,7 @@ a[data-link-icon='hoover-institution']::after {
     opacity: 0.65;
 }
 
-a[data-link-icon='wandb']::after {
+a[data-link-icon='wandb'] .link-icon-hook::after {
     --link-icon-size: 0.7em;
     --link-icon-offset-y: 0.1em;
     --link-icon-offset-x: 0.15em;
@@ -1026,7 +973,7 @@ a[data-link-icon='wandb']::after {
     opacity: 0.65;
 }
 
-a[data-link-icon='the-pirate-bay']::after {
+a[data-link-icon='the-pirate-bay'] .link-icon-hook::after {
     --link-icon-size: 0.9em;
     --link-icon-offset-y: 0.3em;
     --link-icon-offset-x: 0.2em;
@@ -1034,18 +981,18 @@ a[data-link-icon='the-pirate-bay']::after {
     opacity: 0.75;
 }
 
-a[data-link-icon='metaculus']::after {
+a[data-link-icon='metaculus'] .link-icon-hook::after {
     --link-icon-size: 0.55em;
     --link-icon-offset-y: 0.2em;
     --link-icon-offset-x: 0.2em;
 
     opacity: 0.70;
 }
-a[data-link-icon='metaculus']:hover::after {
+a[data-link-icon='metaculus']:hover .link-icon-hook::after {
     opacity: 0.45;
 }
 
-a[data-link-icon='stat-news']::after {
+a[data-link-icon='stat-news'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-y: 0em;
     --link-icon-offset-x: 0.15em;
@@ -1053,7 +1000,7 @@ a[data-link-icon='stat-news']::after {
     opacity: 1;
 }
 
-a[data-link-icon='magnifying-glass']::after {
+a[data-link-icon='magnifying-glass'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-y: 0em;
     --link-icon-offset-x: -0.1em;
@@ -1061,7 +1008,7 @@ a[data-link-icon='magnifying-glass']::after {
     opacity: 0.75;
 }
 
-a[data-link-icon='anthropic']::after {
+a[data-link-icon='anthropic'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-y: 0.1em;
     --link-icon-offset-x: -0em;
@@ -1069,14 +1016,14 @@ a[data-link-icon='anthropic']::after {
     opacity: 0.6
 }
 
-a[data-link-icon='laion']::after {
+a[data-link-icon='laion'] .link-icon-hook::after {
     --link-icon-size: 0.7em;
     --link-icon-offset-y: 0.1em;
 
     opacity: 0.7;
 }
 
-a[data-link-icon='tex']::after { /* TeX logotype (actually uses Source Serif) */
+a[data-link-icon='tex'] .link-icon-hook::after { /* TeX logotype (actually uses Source Serif) */
     --link-icon-size: 1em;
     --link-icon-offset-x: 0.05em;
 
@@ -1087,14 +1034,14 @@ a[data-link-icon='tex']::after { /* TeX logotype (actually uses Source Serif) */
 /*= Wikipedia links. =*/
 /*=------------------=*/
 
-a[data-link-icon='wikipedia']::after {
+a[data-link-icon='wikipedia'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.05em;
     --link-icon-offset-y: 0.25em;
 
     opacity: 0.9;
 }
-a[data-link-icon='wikipedia']:hover::after {
+a[data-link-icon='wikipedia']:hover .link-icon-hook::after {
     opacity: 0.5;
 }
 
@@ -1103,12 +1050,6 @@ a[data-link-icon='wikipedia']:hover::after {
     has-annotation classes, see LinkMetadata.hs’s `wikipediaArticleNamespace`
     function); the dotted-underlining is enough.
  */
-a[data-link-icon='wikipedia'].has-annotation::after {
-    content: none;
-}
-
-/*  TOC-links in Wikipedia annotations.
- */
-.wikipedia-entry .TOC a.has-annotation:hover {
-    background-image: none;
+a[data-link-icon='wikipedia'].has-annotation .link-icon-hook {
+    display: none;
 }

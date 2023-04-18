@@ -1579,8 +1579,21 @@ addContentLoadHandler(GW.contentLoadHandlers.updateMainPageTOC = (eventInfo) => 
 /*	Apply typography rectification to TOC entries.
  */
 addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInTOC = (eventInfo) => {
+    GWLog("rectifyTypographyInTOC", "rewrite.js", 1);
+
 	eventInfo.container.querySelectorAll(".TOC").forEach(TOC => {
 		Typography.processElement(TOC, Typography.replacementTypes.WORDBREAKS, true);
+	});
+}, "rewrite");
+
+/**********************************************************/
+/*	Disable link decoration (underlining) on all TOC links.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.disableTOCLinkDecoration = (eventInfo) => {
+    GWLog("disableTOCLinkDecoration", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".TOC a").forEach(link => {
+		link.classList.add("decorate-not");
 	});
 }, "rewrite");
 
@@ -1978,11 +1991,6 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
 addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (eventInfo) => {
     GWLog("designateSpecialLinkIcons", "rewrite.js", 1);
 
-    //  Internal links on the home page need no decoration.
-    if (   eventInfo.container == document.body
-        && eventInfo.container.classList.contains("index"))
-        return;
-
     //  Self-links (anchorlinks to the current page).
     eventInfo.container.querySelectorAll(".link-self:not(.icon-not)").forEach(link => {
         link.dataset.linkIconType = "text";
@@ -2014,6 +2022,98 @@ addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (ev
         link.dataset.linkIconType = "text";
         link.dataset.linkIcon = "\u{1D50A}"; // 𝔊
     });
+}, "rewrite");
+
+/*****************************************/
+/*	Removes link icons that should not be.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.cleanSpuriousLinkIcons = (eventInfo) => {
+    GWLog("cleanSpuriousLinkIcons", "rewrite.js", 1);
+
+	let excludedLinkSelector = [
+		/*  Index page, and embeds thereof, do not need the G icon.
+			NOTE: we do not use the usual method of suppressing G icons 
+			(`.icon-not` class), because /index and /static/404 are *so* long 
+			and routinely modified/expanded, so doing it ‘manually’ would risk 
+			occasional omissions or syntax errors.
+		 */
+		"body.index",
+		"body.static-404",
+		".popframe-body.index",
+
+		/*	TOC links should never have link icons under any circumstances.
+		 */
+		".TOC"
+	].map(x => x + " a[data-link-icon]").join(", ");
+
+	eventInfo.container.querySelectorAll(excludedLinkSelector).forEach(link => {
+		link.removeAttribute("data-link-icon-type");
+		link.removeAttribute("data-link-icon");
+	});
+}, "rewrite");
+
+/****************************************************************************/
+/*	Adds HTML and CSS to a link, enabling display of its specified link icon.
+ */
+function enableLinkIcon(link) {
+	if (link.classList.contains("has-icon"))
+		return;
+
+	//	Add hook.
+	link.insertAdjacentHTML("beforeend", `<span class="link-icon-hook">\u{2060}</span>`);
+
+	//	Set CSS variable.
+	if (link.dataset.linkIconType.includes("text")) {
+		link.style.setProperty("--link-icon", `"${(link.dataset.linkIcon)}"`);
+	} else if (link.dataset.linkIconType.includes("svg")) {
+		link.style.setProperty("--link-icon-url", `url("/static/img/icon/${(link.dataset.linkIcon)}.svg")`);
+	}
+
+	//	Set class.
+	link.classList.add("has-icon");
+}
+
+/****************************************************************************/
+/*	Disable display of a link’s link icon by removing requisite HTML and CSS.
+ */
+function disableLinkIcon(link) {
+	if (link.classList.contains("has-icon") == false)
+		return;
+
+	//	Remove hook.
+	link.querySelector(".link-icon-hook").remove();
+
+	//	Clear CSS variable.
+	link.style.removeProperty("--link-icon");
+
+	//	Unset class.
+	link.classList.remove("has-icon");
+}
+
+/*************************************************************************/
+/*	Enable or disable display of link icons, as appropriate for each link.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.setLinkIconStates = (eventInfo) => {
+    GWLog("setLinkIconStates", "rewrite.js", 1);
+
+	/*	Enable display of link icons for all links that have specified icons.
+	 */
+	eventInfo.container.querySelectorAll("a[data-link-icon]").forEach(link => {
+		enableLinkIcon(link);
+	});
+
+	/*	Disable display of link icons for links that have had it enabled, but
+		actually should not display icons (which may happen if, e.g., 
+		a .link-page becomes a .link-self due to transclusion / pop-frame 
+		embedding, and has no anchor).
+	 */
+	let iconlessLinkSelector = [
+		"a:not([data-link-icon])",
+		"a[data-link-icon='']"
+	].map(x => x + ".has-icon").join(", ");
+	eventInfo.container.querySelectorAll(iconlessLinkSelector).forEach(link => {
+		disableLinkIcon(link);
+	});
 }, "rewrite");
 
 

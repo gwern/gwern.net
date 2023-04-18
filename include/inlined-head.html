@@ -1426,6 +1426,13 @@ May be able at some point to simplify this using regular link underlining, since
         -0.17em 0       var(--link-underline-background-color);
 }
 
+/*	Links with decoration disabled.
+ */
+.markdownBody a.decorate-not:link,
+.markdownBody a.decorate-not:link * {
+    background-image: none;
+    text-shadow: none;
+}
 
 /* eliminate the blurring of headers and links when selecting by overriding the text-shadow: */
 ::selection {
@@ -2219,8 +2226,8 @@ div.admonition.error {
 
 /*	SVG icons in the two darker styles of admonitions.
  */
-div.admonition.warning a[data-link-icon-type='svg']::after,
-div.admonition.error a[data-link-icon-type='svg']::after {
+div.admonition.warning a[data-link-icon-type='svg'] .link-icon-hook::after,
+div.admonition.error a[data-link-icon-type='svg'] .link-icon-hook::after {
     filter: none;
 }
 
@@ -2416,9 +2423,7 @@ div#masked-links-key-toggle-info-alert img {
 
 /*  All SVG linkicons have to be inverted.
  */
-a.link-self.identifier-link-up::after,
-a.link-self.identifier-link-down::after,
-a[data-link-icon-type*='svg']::after {
+a[data-link-icon-type*='svg'] .link-icon-hook::after {
     filter: invert(1);
 }
 

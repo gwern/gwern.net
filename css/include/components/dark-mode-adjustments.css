@@ -131,8 +131,8 @@ div.admonition.error {
 
 /*	SVG icons in the two darker styles of admonitions.
  */
-div.admonition.warning a[data-link-icon-type='svg']::after,
-div.admonition.error a[data-link-icon-type='svg']::after {
+div.admonition.warning a[data-link-icon-type='svg'] .link-icon-hook::after,
+div.admonition.error a[data-link-icon-type='svg'] .link-icon-hook::after {
     filter: none;
 }
 
@@ -328,9 +328,7 @@ div#masked-links-key-toggle-info-alert img {
 
 /*  All SVG linkicons have to be inverted.
  */
-a.link-self.identifier-link-up::after,
-a.link-self.identifier-link-down::after,
-a[data-link-icon-type*='svg']::after {
+a[data-link-icon-type*='svg'] .link-icon-hook::after {
     filter: invert(1);
 }
 
