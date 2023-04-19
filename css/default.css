@@ -5988,8 +5988,6 @@ ol.link-bibliography-list-compact > li::before {
 .site-of-the-day blockquote {
     --background-color: var(--GW-body-background-color);
 
-	font-size: calc((17/18) * var(--GW-body-text-font-size));
-
     margin: 3em auto 2.75em auto;
     position: relative;
     height: var(--box-size);
@@ -6009,6 +6007,7 @@ ol.link-bibliography-list-compact > li::before {
 }
 @media only screen and (max-width: 649px) {
     .site-of-the-day blockquote {
+		font-size: calc((17/18) * var(--GW-body-text-font-size));
         margin: 3.5em auto 2.75em auto;
     }
 }
