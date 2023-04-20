@@ -1,5 +1,7 @@
 <?php
 
+echo "Building versioned font CSS...\n";
+
 ## Paths
 
 $static_root = __DIR__ . "/..";

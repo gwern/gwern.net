@@ -1,5 +1,7 @@
 <?php
 
+echo "Building font CSS...\n";
+
 ## DEFINITIONS
 
 /*	Font info:
@@ -85,8 +87,6 @@ foreach ($spec_blocks as $spec_block) {
 }
 
 file_put_contents("{$css_dir}/fonts.css", $outfile);
-
-die;
 
 ## FUNCTIONS
 

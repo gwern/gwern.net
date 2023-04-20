@@ -1,5 +1,7 @@
 <?php
 
+echo "Building color CSS...\n";
+
 $css_include_dir = __DIR__ . "/../css/include";
 $build_dir = __DIR__;
 

@@ -1,5 +1,7 @@
 <?php
 
+echo "Versioning templates...\n";
+
 $static_root = __DIR__ . "/..";
 $include_dir = "{$static_root}/include";
 $include_templates_dir = "{$static_root}/template/include";

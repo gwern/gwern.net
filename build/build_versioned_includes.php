@@ -1,5 +1,7 @@
 <?php
 
+echo "Building versioned includes...\n";
+
 /*
  Instructions:
 

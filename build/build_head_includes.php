@@ -1,5 +1,7 @@
 <?php
 
+echo "Building <head> includes...\n";
+
 /*
  Instructions:
 
