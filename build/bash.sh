@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-13 19:53:47 gwern"
+# When:  Time-stamp: "2023-04-19 14:27:38 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -211,7 +211,7 @@ gwmvdir () {
 
 ## 'Move' or tag an annotation:
 ## gwtag URL [tag]
-## eg 'gwtag https://foo iq psychology sociology'
+## eg. `gwtag https://foo iq psychology sociology`
 alias gwt="gwtag"
 gwtag () { (
              cd ~/wiki/ &&
@@ -220,9 +220,15 @@ gwtag () { (
                          # echo "---" && grep -F -- "$1" ./metadata/*.yaml
          ); }
 
-GWERNNET_DIRS_FULL="$(cd ~/ && find wiki/doc/ -type d | grep -F -v -e 'doc/rotten.com' -e 'doc/www/' -e 2000-iapac-norvir -e mountimprobable.com -e personal/2011-gwern-yourmorals.org -e psychology/european-journal-of-parapsychology -e reinforcement-learning/armstrong-controlproblem -e statistics/order/beanmachine-multistage -e gwern.net-gitstats -e link-bibliography | cut -d '/' -f 3- | sort)"
-GWERNNET_DIRS_SHORT="$(echo $GWERNNET_DIRS_FULL | tr '/' '\n' | sort -u)"
-GWERNNET_DIRS_SUFFIXES="$(echo $GWERNNET_DIRS_FULL | tr ' ' '\n' | egrep -e '[a-z0-9-]\+/[a-z0-9-]\+/[a-z0-9-]\+' | rev | cut --delimiter='/' --fields=1-2 | rev)" # for completing tags which may need to be disambiguated, like 'gpt/nonfiction'
+GWERNNET_DIRS_FULL="$(cd ~/ && find wiki/doc/ -type d | grep -F -v -e 'doc/rotten.com' -e 'doc/www/' \
+                         -e 2000-iapac-norvir -e mountimprobable.com -e personal/2011-gwern-yourmorals.org \
+                         -e psychology/european-journal-of-parapsychology -e reinforcement-learning/armstrong-controlproblem \
+                         -e statistics/order/beanmachine-multistage -e gwern.net-gitstats -e metadata/annotation | \
+                         cut --delimiter='/' --fields=3- | sort)"
+GWERNNET_DIRS_SHORT="$(echo $GWERNNET_DIRS_FULL | tr '/' '\n' | sort --unique)"
+# for completing tags which may need to be disambiguated, like 'gpt/nonfiction':
+GWERNNET_DIRS_SUFFIXES="$(echo $GWERNNET_DIRS_FULL | tr ' ' '\n' | grep -E -e '[a-z0-9-]\+/[a-z0-9-]\+/[a-z0-9-]\+' | \
+                               rev | cut --delimiter='/' --fields=1-2 | rev)"
 complete -W "$GWERNNET_DIRS_FULL $GWERNNET_DIRS_SHORT $GWERNNET_DIRS_SUFFIXES" -f upload
 complete -W "$GWERNNET_DIRS_FULL $GWERNNET_DIRS_SHORT $GWERNNET_DIRS_SUFFIXES" u
 complete -W "$GWERNNET_DIRS_FULL $GWERNNET_DIRS_SHORT $GWERNNET_DIRS_SUFFIXES" gwtag
@@ -232,8 +238,12 @@ alias u="upload"
 
 # GPT-3-written:
 # shortcut for handling link-archiving review:
-# Bash shell function named `mvuri` which will take a filename with a URI encoding like `file:///home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html` and transform that argument into `/home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html` and then `mv` the URL snapshot to that like normal.
-# eg  `$ mvuri file:///home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
+# Bash shell function named `mvuri` which will take a filename with a URI encoding
+# like `file:///home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
+# and transform that argument into `/home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
+# and then `mv` the URL snapshot to that like normal.
+#
+# eg. `$ mvuri file:///home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
 mvuri () {
   local ENCODED_PATH="$1"
   local DECODED_PATH="${ENCODED_PATH//\%/\\x}"

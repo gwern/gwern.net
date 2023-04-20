@@ -107,7 +107,8 @@ breakSlashes (Header a b c) = Header a b $ topDown breakSlashesInline c
 breakSlashes x@Table{}      = x -- should we do slashing here too or is that unnecessary / actually a bad idea? Generally, table contents shouldn't be linebreaking... right?
 breakSlashes x = topDown breakSlashesInline x
 breakSlashesInline, breakSlashesPlusHairSpaces :: Inline -> Inline
-breakSlashesInline x@Code{}        = x
+breakSlashesInline x@Code{}  = x
+breakSlashesInline (Link e ((Code a x):f) g)               = Link e ((Code a $ T.replace "/" "/\8203" x):f) g -- we normally would not break inside Code at all because the risk of breaking copy-paste is too great, even with the copy-paste listener sanitizing things. However, for a very simple case of Code-inside-Link (eg. directory paths), this *should* be safe...?
 breakSlashesInline (Link a [Str ss] (t,"")) = if ss == t then
                                                 -- if an autolink like '<https://example.com>' which
                                                 -- converts to 'Link () [Str "https://example.com"]
