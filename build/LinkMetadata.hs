@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-04-16 16:05:55 gwern"
+When:  Time-stamp: "2023-04-19 21:26:41 gwern"
 License: CC-0
 -}
 
@@ -14,12 +14,12 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, parseRawInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, simplifiedHTMLString, dateTruncateBad, typesetHtmlField) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, hasAnnotationInline, parseRawBlock, parseRawInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, simplifiedHTMLString, dateTruncateBad, typesetHtmlField) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
 import qualified Data.ByteString as B (appendFile, readFile)
-import Data.Char (isPunctuation, toLower, isSpace)
+import Data.Char (isPunctuation, toLower, isSpace, isNumber)
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union) -- traverseWithKey, union, Map
 import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
@@ -252,7 +252,7 @@ readLinkMetadataAndCheck = do
              unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in YAMLs!: " >> printGreen (show (titles \\ nubOrd titles))
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) finalL
-             Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex) (printRed "Mixed up author & date?: " >> printGreen a) ) authors
+             Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex || isNumber (head a)) (printRed "Mixed up author & date?: " >> printGreen a) ) authors
              let authorsBadChars = filter (\a -> anyInfix a [";", "&", "?", "!"] || isPunctuation (last a)) $ filter (not . null) authors
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
