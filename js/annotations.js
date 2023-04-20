@@ -356,6 +356,16 @@ Annotations = { ...Annotations,
 						titleLinkClass += ` ${targetClass}`;
 				});
 
+				//	Link icon for the title link.
+				let titleLinkIconMetadata;
+				if (referenceElement.dataset.linkIcon) {
+					titleLinkIconMetadata = `data-link-icon-type="${(referenceElement.dataset.linkIconType)}"`
+										  + `data-link-icon="${(referenceElement.dataset.linkIcon)}"`;
+				} else if (link && link.dataset.linkIcon) {
+					titleLinkIconMetadata = `data-link-icon-type="${(link.dataset.linkIconType)}"`
+										  + `data-link-icon="${(link.dataset.linkIcon)}"`;
+				}
+
 				//	Original URL.
 				let originalURL = referenceElement.dataset.urlOriginal ?? null;
 				let originalURLText = originalURL
@@ -437,15 +447,16 @@ Annotations = { ...Annotations,
 
 				return {
 					content: {
-						originalURL:        originalURL,
-						originalURLText:    originalURLText,
-						titleHTML:          titleHTML,
-						fullTitleHTML:      titleHTML,
-						titleText:          titleText,
-						titleLinkHref:      titleLinkHref,
-						titleLinkClass:     titleLinkClass,
-						authorDateAux:      authorDateAux,
-						abstract:           abstractHTML,
+						originalURL:            originalURL,
+						originalURLText:        originalURLText,
+						titleHTML:              titleHTML,
+						fullTitleHTML:          titleHTML,
+						titleText:              titleText,
+						titleLinkHref:          titleLinkHref,
+						titleLinkClass:         titleLinkClass,
+						titleLinkIconMetadata:  titleLinkIconMetadata,
+						authorDateAux:          authorDateAux,
+						abstract:               abstractHTML,
 					},
 					template:                       "annotation-blockquote-inside",
 					linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
