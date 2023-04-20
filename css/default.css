@@ -46,9 +46,9 @@
     --GW-popins-popin-footer-bar-height: 1.75rem;
 }
 @supports (-moz-user-focus: normal) {
-	:root {
-	    --GW-popups-audio-popup-min-height: 75px;
-	}
+    :root {
+        --GW-popups-audio-popup-min-height: 75px;
+    }
 }
 
 /*********************/
@@ -58,7 +58,6 @@
 /*  (ie. article) */
 /*  Nothing!
     */
-
 
 /*******************/
 /* COLLAPSE BLOCKS */
@@ -256,7 +255,6 @@
 .disclosure-button .part.bottom .label {
     padding: 0 1em;
 }
-
 
 /********************/
 /*  Collapse summary.
@@ -561,7 +559,7 @@ li > .collapse:only-child {
     margin: 0.25em 0 0.25em 0;
 }
 li:last-child > .collapse:only-child {
-	margin: 0.25em 0 0.75em 0;
+    margin: 0.25em 0 0.75em 0;
 }
 li > .collapse > .collapse-content-wrapper > ul {
     margin-top: 0.125em;
@@ -592,7 +590,6 @@ body.indented-not .abstract-collapse + .collapse-content-wrapper > p:not([class^
 .footnote .collapse {
     --collapse-left-offset: 0.75em;
 }
-
 
 /************/
 /* HEADINGS */
@@ -908,7 +905,6 @@ section:target > :first-child a::after {
     }
 }
 
-
 /**********/
 /* FOOTER */
 /**********/
@@ -977,7 +973,6 @@ hr::after,
     height: 32px;
 }
 
-
 /*******************************************/
 /* DIRECTORY INDEXES & LINK BIBLIOGRAPHIES */
 /*******************************************/
@@ -1002,7 +997,6 @@ blockquote .TOC {
     display: inline-block;
     width: calc(100% - 1.25em);    /* Subtract side padding. */
 }
-
 
 /***********/
 /* NUMBERS */
@@ -1119,11 +1113,11 @@ body.index .markdownBody .section-link-list ul > li::before {
 /*=-----------------------=*/
 
 .markdownBody ol {
-	counter-reset: list-item;
+    counter-reset: list-item;
 }
 
 .markdownBody ol > li {
-	counter-increment: list-item;
+    counter-increment: list-item;
 }
 
 .markdownBody ol > li::before {
@@ -1132,20 +1126,20 @@ body.index .markdownBody .section-link-list ul > li::before {
     display: block;
     left: -2.5em;
     width: 2.125em;
-	text-align: right;
+    text-align: right;
 }
 
 .markdownBody ol > li::before,
 .markdownBody ol ol ol ol > li::before {
-	content: counter(list-item, decimal) ".";
+    content: counter(list-item, decimal) ".";
 }
 .markdownBody ol ol > li::before,
 .markdownBody ol ol ol ol ol > li::before {
-	content: counter(list-item, upper-roman) ".";
+    content: counter(list-item, upper-roman) ".";
 }
 .markdownBody ol ol ol > li::before,
 .markdownBody ol ol ol ol ol ol > li::before {
-	content: counter(list-item, lower-alpha) ".";
+    content: counter(list-item, lower-alpha) ".";
 }
 
 /*  Specific list type overrides.
@@ -1218,7 +1212,7 @@ figure + figure {
 }
 
 figure img {
-	background-color: var(--background-color);
+    background-color: var(--background-color);
 }
 
 figure img,
@@ -1242,12 +1236,12 @@ figure audio {
     border: 1px solid transparent;
 }
 /*  Special styles for special browsers.
-	*/
+    */
 @supports (-moz-user-focus: normal) {
-	figure audio {
-		height: 42px;
-		border-radius: 21px;
-	}
+    figure audio {
+        height: 42px;
+        border-radius: 21px;
+    }
 }
 figure audio:hover {
     border-color: var(--GW-figure-outline-color);
@@ -1540,10 +1534,10 @@ a.footnote-ref {
 a.footnote-ref.highlighted,
 a.footnote-ref:hover,
 a.footnote-ref.targeted {
-	/*	o-v-o:  outline vertical offset
-		o-p:    outline padding
-		o-h-s:  outline horizontal spread
-	 */
+    /*  o-v-o:  outline vertical offset
+        o-p:    outline padding
+        o-h-s:  outline horizontal spread
+     */
     --o-v-o: 4px;
     --o-p:   4px;
     --o-h-s: 2px;
@@ -1582,7 +1576,7 @@ h1 sub, h1 sup, h2 sub, h2 sup {
     padding-left: 0em;
 }
 
-/*	‘Foreign’ footnotes.
+/*  ‘Foreign’ footnotes.
  */
 sup a,
 sub a {
@@ -1842,8 +1836,8 @@ section.footnotes > hr:first-child.highlighted::before {
 /*=-----------------=*/
 
 #markdownBody .sidenote {
-	--sidenote-padding: 10px;
-	--sidenote-border-width: 3px;
+    --sidenote-padding: 10px;
+    --sidenote-border-width: 3px;
 
     position: absolute;
     left: 0;
@@ -1903,7 +1897,7 @@ section.footnotes > hr:first-child.highlighted::before {
     content: "…";
     position: absolute;
     border: 1px dotted var(--GW-sidenote-border-color);
-	top: calc(100% - 1px);
+    top: calc(100% - 1px);
     left: 0;
     right: 0;
     margin: auto;
@@ -1941,7 +1935,7 @@ section.footnotes > hr:first-child.highlighted::before {
 #markdownBody .sidenote:hover .sidenote-outer-wrapper,
 #markdownBody .sidenote.displaced .sidenote-outer-wrapper,
 #markdownBody .sidenote.highlighted .sidenote-outer-wrapper {
-	/*	1px for inner border; 1px for minimum distance from edge. */
+    /*  1px for inner border; 1px for minimum distance from edge. */
     max-height: calc(100vh - (2em + 2 * (var(--sidenote-padding) + var(--sidenote-border-width) + 1px + 1px)));
 }
 #markdownBody .sidenote.cut-off .sidenote-outer-wrapper {
@@ -2066,7 +2060,7 @@ section.footnotes > hr:first-child.highlighted::before {
     bottom: -3px;
     width: calc(50vw - (var(--GW-body-max-width) / 2 + 96px));
     max-width: var(--GW-sidenotes-max-width);
-    border-bottom: 3px double var(--GW-sidenote-self-link-border-color); 
+    border-bottom: 3px double var(--GW-sidenote-self-link-border-color);
 }
 #markdownBody #sidenote-column-left .sidenote.targeted > .sidenote-self-link::before,
 #markdownBody #sidenote-column-left .sidenote > .sidenote-self-link:hover::before {
@@ -2314,7 +2308,7 @@ th.tablesorter-headerDesc:hover {
     NOTE: we tried 3-cycle zebra striping tables, but didn’t pass muster.
     */
 :not(.table-small) > table tr:nth-child(odd) td {
-	--background-color: var(--GW-table-zebra-stripe-alternate-row-background-color);
+    --background-color: var(--GW-table-zebra-stripe-alternate-row-background-color);
 
     background-color: var(--background-color);
 }
@@ -2404,7 +2398,7 @@ a code {
 }
 
 pre {
-	--background-color: var(--GW-pre-element-background-color);
+    --background-color: var(--GW-pre-element-background-color);
 
     margin: 1.75em auto;
     border: 1px solid var(--GW-pre-element-border-color);
@@ -2500,7 +2494,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 }
 
 .math.block .MJXc-display {
-	--background-color: var(--GW-math-block-background-color);
+    --background-color: var(--GW-math-block-background-color);
 
     display: inline-block;
     margin: 0;
@@ -2605,7 +2599,6 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     transform: scale(0.95);
 }
 
-
 /********/
 /* MISC */
 /********/
@@ -2614,7 +2607,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
    Microtypography: paragraphs starting/ending in quote marks outdent the quote slightly, so the paragraph continues to line up.
    This is most noticeable in epigraphs and blockquotes. Minor, but nice.
    CSS standard: https://www.w3.org/TR/css-text-3/#propdef-hanging-punctuation
-   Supported only in Safari https://caniuse.com/css-hanging-punctuation https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation#browser_compatibility but that has 18% market share, which is not nothing. */
+   Supported only in Safari https://caniuse.com/css-hanging-punctuation https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation#browser_compatibility as of 2023-04-20, but that has 19% market share, which is not nothing. */
 p {
     hanging-punctuation: first last;
 }
@@ -2672,9 +2665,9 @@ p {
     font-size: 0.7em;
     line-height: 1;
 }
-/*  Make sure that adjusted prices move as a block: no breaking in the middle 
-	between the price & sup/sub; this works better than trying to use no-break 
-	Unicode entities.
+/*  Make sure that adjusted prices move as a block: no breaking in the middle
+    between the price & sup/sub; this works better than trying to use no-break
+    Unicode entities.
  */
 span.inflation-adjusted {
     white-space: nowrap;
@@ -2864,7 +2857,6 @@ span.link-bibliography a {
     }
 }
 
-
 /*****************/
 /* MULTI-COLUMNS */
 /*****************/
@@ -2885,8 +2877,8 @@ span.link-bibliography a {
 
     /*  Without `clear`, columns don’t render properly if there’s a float.
 
-		NOTE: This might no longer be true? Commenting this out to see if
-		anything breaks. —SA 2023-04-04
+        NOTE: This might no longer be true? Commenting this out to see if
+        anything breaks. —SA 2023-04-04
      */
 /*     clear: both; */
 }
@@ -2905,7 +2897,7 @@ span.link-bibliography a {
 }
 
 /**********************/
-/*	Figures in columns.
+/*  Figures in columns.
  */
 
 .markdownBody .columns.figures > ul {
@@ -2918,24 +2910,23 @@ span.link-bibliography a {
 }
 
 .markdownBody .columns.figures figure {
-	max-width: unset;
+    max-width: unset;
     margin: 0 0 1em 0;
 }
 .markdownBody .columns.figures figure img,
 .markdownBody .columns.figures figure svg,
 .markdownBody .columns.figures figure video,
 .markdownBody .columns.figures figure audio {
-	max-width: 100%;
+    max-width: 100%;
 }
 
 /*  Special styles for special browsers.
-	*/
+    */
 @supports (-moz-user-focus: normal) {
-	.markdownBody .columns.figures figcaption {
-		line-height: initial;
-	}
+    .markdownBody .columns.figures figcaption {
+        line-height: initial;
+    }
 }
-
 
 /***************/
 /* ADMONITIONS */
@@ -2960,7 +2951,7 @@ span.link-bibliography a {
     background-color: var(--background-color);
 }
 .admonition-title {
-	margin-bottom: 0.25em;
+    margin-bottom: 0.25em;
     font-weight: bold;
 }
 
@@ -3114,7 +3105,6 @@ a .cite-author-plural::after {
     margin-top: 1.5em;
 }
 
-
 /***********************/
 /* “SEE ALSO” SECTIONS */
 /***********************/
@@ -3122,7 +3112,6 @@ a .cite-author-plural::after {
 #markdownBody section#see-also:first-child > h1:first-child {
     margin-top: 1em;
 }
-
 
 /*******************************/
 /* PAGE-SPECIFIC MODIFICATIONS */
@@ -3429,9 +3418,9 @@ body.index-directory #footer {
         bottom 0.5s ease-in;
 }
 
-/*	Necessary so that mouse hover at bottom of screen to the left or right of
-	a narrow caption still counts as “hovering over the caption” for the purpose
-	of preventing the caption from hiding.
+/*  Necessary so that mouse hover at bottom of screen to the left or right of
+    a narrow caption still counts as “hovering over the caption” for the purpose
+    of preventing the caption from hiding.
  */
 #image-focus-overlay .caption:not(:empty)::before {
     content: "";
@@ -3456,10 +3445,10 @@ body.index-directory #footer {
     }
 }
 #image-focus-overlay .caption .caption-text-wrapper:empty {
-	display: none;
+    display: none;
 }
 
-/*	Caption contents.
+/*  Caption contents.
  */
 
 #image-focus-overlay .caption p {
@@ -3492,7 +3481,7 @@ body.index-directory #footer {
     display: none;
 }
 
-/*	Image URL in caption.
+/*  Image URL in caption.
  */
 
 #image-focus-overlay .caption .image-url {
@@ -3500,8 +3489,8 @@ body.index-directory #footer {
     margin: 0.5em 0 0 0;
     padding: 0.5em 1.25em 0.75em 1.25em;
     border-radius: 8px;
-	background-color: var(--SA-image-focus-overlay-background-color);
-	cursor: copy;
+    background-color: var(--SA-image-focus-overlay-background-color);
+    cursor: copy;
     user-select: none;
     transition:
         background-color 0.15s ease-out;
@@ -3511,7 +3500,6 @@ body.index-directory #footer {
     transition:
         background-color 0.1s ease-out;
 }
-
 
 #image-focus-overlay .caption .image-url .url {
     font-size: 0.8em;
@@ -3538,10 +3526,10 @@ body.index-directory #footer {
 }
 
 #image-focus-overlay .caption .image-url .icon {
-	display: block;
-	position: absolute;
-	top: 0;
-	left: 0;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
     height: 100%;
     color: var(--SA-image-focus-overlay-image-caption-separator-color);
     transition:
@@ -3564,7 +3552,7 @@ body.index-directory #footer {
     opacity: 0;
 }
 #image-focus-overlay .caption .image-url .icon.copied {
-	left: 100%;
+    left: 100%;
     opacity: 0;
 }
 #image-focus-overlay .caption .image-url.copied .icon.copied {
@@ -3658,8 +3646,8 @@ body.index-directory #footer {
         top: 0;
     }
     #image-focus-overlay .help-overlay.hidden {
-    	bottom: unset;
-    	top: -2em;
+        bottom: unset;
+        top: -2em;
     }
 }
 
@@ -3719,9 +3707,9 @@ body.index-directory #footer {
     pointer-events: none;
 }
 @media only screen and (max-width: 1179px) {
-	#image-focus-overlay .slideshow-buttons {
-		z-index: 1;
-	}
+    #image-focus-overlay .slideshow-buttons {
+        z-index: 1;
+    }
 }
 
 #image-focus-overlay .slideshow-buttons button {
@@ -3921,7 +3909,7 @@ body.index-directory #footer {
 }
 
 .popframe-body .epigraph > blockquote {
-	margin: auto;
+    margin: auto;
 }
 
 .popframe-body > figure:only-child {
@@ -4072,7 +4060,7 @@ body.index-directory #footer {
     white-space: pre-wrap;
 }
 
-/*	Syntax highlighting.
+/*  Syntax highlighting.
  */
 .popframe-body.local-code-file pre code {
     padding-left: 2px;
@@ -4151,14 +4139,14 @@ body.index-directory #footer {
 /*└───────────────────┘*/
 
 .popframe-body.video video {
-	width: 100%;
+    width: 100%;
 }
 
-/*	Don’t show while loading, or when loading failed.
+/*  Don’t show while loading, or when loading failed.
  */
 .popframe.video.loading .popframe-content-view,
 .popframe.video.loading-failed .popframe-content-view {
-	display: none;
+    display: none;
 }
 
 /*  “Loading failed” message.
@@ -4172,15 +4160,15 @@ body.index-directory #footer {
 /*└───────────────────┘*/
 
 .popframe-body.audio audio {
-	width: 100%;
-	top: 0;
+    width: 100%;
+    top: 0;
 }
 
-/*	Don’t show while loading, or when loading failed.
+/*  Don’t show while loading, or when loading failed.
  */
 .popframe.audio.loading .popframe-content-view,
 .popframe.audio.loading-failed .popframe-content-view {
-	display: none;
+    display: none;
 }
 
 /*  “Loading failed” message.
@@ -4339,7 +4327,7 @@ body.index-directory #footer {
 
     border: var(--GW-popups-popup-border-width) double var(--GW-popups-popup-border-color);
     box-shadow: var(--popups-popup-box-shadow);
-	background-color: var(--background-color);
+    background-color: var(--background-color);
 }
 
 /*┌──────────────────┐*/
@@ -4357,12 +4345,12 @@ body.index-directory #footer {
     --popup-title-bar-height: var(--GW-popups-popup-mini-title-bar-height);
 }
 .popup.has-title-bar:not(.mini-title-bar) {
-	min-width: var(--GW-popups-popup-with-full-title-bar-min-width);
-	min-height: var(--GW-popups-popup-with-full-title-bar-min-height);
+    min-width: var(--GW-popups-popup-with-full-title-bar-min-width);
+    min-height: var(--GW-popups-popup-with-full-title-bar-min-height);
 }
 
 .popup .popframe-title-bar {
-	--background-color: var(--GW-popups-popup-title-bar-background-color);
+    --background-color: var(--GW-popups-popup-title-bar-background-color);
 
     position: absolute;
     height: var(--popup-title-bar-height);
@@ -4403,7 +4391,7 @@ body.index-directory #footer {
     overflow: hidden;
     text-decoration: none;
     text-align: center;
-    filter: 
+    filter:
         drop-shadow(0 0 1px var(--background-color))
         drop-shadow(0 0 2px var(--background-color));
 }
@@ -4466,8 +4454,8 @@ body.index-directory #footer {
 .popup .popframe-title-bar-button svg {
     max-width: 100%;
     max-height: 100%;
-    filter: 
-        drop-shadow(0 0 1px var(--background-color)) 
+    filter:
+        drop-shadow(0 0 1px var(--background-color))
         drop-shadow(0 0 2px var(--background-color));
 }
 
@@ -4643,7 +4631,7 @@ body.index-directory #footer {
 }
 
 .popup.focused .popframe-title-bar {
-	background-image: var(--GW-popups-popup-title-bar-pattern-focused);
+    background-image: var(--GW-popups-popup-title-bar-pattern-focused);
 }
 
 /*┌──────────────────────────┐*/
@@ -4697,7 +4685,7 @@ body.index-directory #footer {
     margin-top: calc(var(--popup-title-bar-height) - 1px);
 }
 .popup.collapsed .popframe-scroll-view ~ * {
-	display: none;
+    display: none;
 }
 
 /*┌───────────────────────────┐*/
@@ -4838,22 +4826,22 @@ body.index-directory #footer {
     height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
 }
 
-/*	Overlay (for dragging / click capturing).
+/*  Overlay (for dragging / click capturing).
  */
 .popup.object .popframe-content-view::before {
-	content: "";
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 1;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
 }
 .popup.object.focused .popframe-content-view::before {
-	visibility: hidden;
+    visibility: hidden;
 }
 .popup.object.dragging .popframe-content-view::before {
-	visibility: visible;
+    visibility: visible;
 }
 
 /*┌───────────────┐*/
@@ -4934,10 +4922,10 @@ body.index-directory #footer {
     min-height: var(--GW-popups-audio-popup-min-height);
 }
 .popup.audio .popframe-content-view {
-	padding: 3px;
+    padding: 3px;
 }
 .popup.audio.has-footer .popframe-content-view {
-	padding-bottom: 6px;
+    padding-bottom: 6px;
 }
 
 /*┌────────────────────────┐*/
@@ -5006,7 +4994,7 @@ body.index-directory #footer {
 }
 
 #popup-options-dialog > div {
-	--background-color: var(--GW-popups-popup-options-dialog-background-color);
+    --background-color: var(--GW-popups-popup-options-dialog-background-color);
 
     position: absolute;
     width: 500px;
@@ -5042,8 +5030,8 @@ body.index-directory #footer {
 
 #popup-options-dialog button.save-button {
     --background-color: var(--GW-popups-popup-options-dialog-button-background-color);
-	
-	background-color: var(--background-color);
+
+    background-color: var(--background-color);
     padding: 0 0.75em;
     height: 2em;
     line-height: 1;
@@ -5241,7 +5229,7 @@ body.index-directory #footer {
 /*└──────────────────┘*/
 
 .popin .popframe-title-bar {
-	--background-color: var(--GW-popins-popin-title-bar-background-color);
+    --background-color: var(--GW-popins-popin-title-bar-background-color);
 
     position: absolute;
     right: calc(-1 * var(--GW-popins-popin-border-width));
@@ -5353,7 +5341,7 @@ body.index-directory #footer {
 /*└───────────────────┘*/
 
 .popin .popin-footer-bar {
-	--background-color: var(--GW-popins-popin-title-bar-background-color);
+    --background-color: var(--GW-popins-popin-title-bar-background-color);
 
     position: absolute;
     left: calc(-1 * var(--GW-popins-popin-border-width));
@@ -5461,7 +5449,7 @@ body.index-directory #footer {
 /*└─────────────────────┘*/
 
 .popin .popframe-content-view {
-	--background-color: var(--GW-popins-popin-title-bar-background-color);
+    --background-color: var(--GW-popins-popin-title-bar-background-color);
 
     background-color: var(--background-color);
     padding: var(--popins-popin-content-padding);
@@ -5685,7 +5673,6 @@ body.index-directory #footer {
     font-size: var(--GW-body-text-font-size);
     text-align: unset;
 }
-
 
 /***************/
 /* ANNOTATIONS */
@@ -5959,7 +5946,6 @@ ol.link-bibliography-list-compact > li::before {
     margin-top: 0.375em;
 }
 
-
 /****************/
 /* X OF THE DAY */
 /****************/
@@ -6007,7 +5993,7 @@ ol.link-bibliography-list-compact > li::before {
 }
 @media only screen and (max-width: 649px) {
     .site-of-the-day blockquote {
-		font-size: calc((17/18) * var(--GW-body-text-font-size));
+        font-size: calc((17/18) * var(--GW-body-text-font-size));
         margin: 3.5em auto 2.75em auto;
     }
 }
@@ -6041,50 +6027,48 @@ ol.link-bibliography-list-compact > li::before {
     line-height: 1;
 }
 
-
 /*********************/
 /* BOTTOM DECORATION */
 /*********************/
 
 #footer-logo-container {
-	margin: 0 0 1em 0;
-	line-height: 0;
+    margin: 0 0 1em 0;
+    line-height: 0;
 }
 
 #footer-logo {
-	position: relative;
+    position: relative;
     opacity: 0.3;
-	pointer-events: none;
+    pointer-events: none;
 }
 #footer-logo:hover {
     opacity: 1.0;
 }
 #footer-logo::before {
-	content: "";
-	display: block;
-	position: absolute;
-	bottom: 15px;
-	height: 1px;
-	border-bottom: 1px dotted var(--GW-bottom-ornament-line-color);
-	width: 100%;
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 15px;
+    height: 1px;
+    border-bottom: 1px dotted var(--GW-bottom-ornament-line-color);
+    width: 100%;
 }
 #footer-logo::after {
-	content: "";
-	background-color: var(--GW-body-background-color);
-	background-image: url('/static/img/logo/logo-smooth.svg');
-	display: block;
-	position: relative;
-	width: 22px;
-	height: 30px;
-	background-size: contain;
-	background-position: center;
-	background-repeat: no-repeat;
-	margin: auto;
-	padding: 0 10px 0 10px;
-	z-index: 1;
-	pointer-events: auto;
+    content: "";
+    background-color: var(--GW-body-background-color);
+    background-image: url('/static/img/logo/logo-smooth.svg');
+    display: block;
+    position: relative;
+    width: 22px;
+    height: 30px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: auto;
+    padding: 0 10px 0 10px;
+    z-index: 1;
+    pointer-events: auto;
 }
-
 
 /*********************/
 /* SEQUENTIAL NAV UI */
@@ -6141,7 +6125,7 @@ ol.link-bibliography-list-compact > li::before {
     opacity: 0;
 }
 #back-to-top a {
-	--background-color: var(--GW-body-background-color);
+    --background-color: var(--GW-body-background-color);
 
     display: block;
     width: 2.25em;
@@ -6528,7 +6512,6 @@ ol.link-bibliography-list-compact > li::before {
     }
 }
 
-
 /******************************/
 /* GENERAL ACTIVITY INDICATOR */
 /******************************/
@@ -6547,21 +6530,20 @@ ol.link-bibliography-list-compact > li::before {
 }
 
 #general-activity-indicator.on {
-	visibility: visible;
+    visibility: visible;
 }
 #general-activity-indicator.on svg {
     animation: fa-spin 0.75s infinite steps(8);
 }
 
 @keyframes fa-spin {
-	  0% { transform: rotate(0deg);   }
-	100% { transform: rotate(360deg); }
+      0% { transform: rotate(0deg);   }
+    100% { transform: rotate(360deg); }
 }
 
 @media only screen and (max-width: 649px) {
-	display: none;
+    display: none;
 }
-
 
 /****************/
 /* TRANSCLUSION */
@@ -6637,7 +6619,6 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
         -3px 1px 0 5px var(--GW-highlighted-link-outline-color);
 }
 
-
 /****************/
 /* PRINT STYLES */
 /****************/
@@ -6681,7 +6662,6 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
         text-align: justify;
     }
 }
-
 
 /***********/
 /* CONSOLE */
