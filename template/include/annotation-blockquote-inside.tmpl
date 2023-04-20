@@ -7,6 +7,7 @@
 		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
 		   <{titleLinkIconMetadata}>
 			   ><{fullTitleHTML}></a>\
+		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links">(<{secondaryTitleLinksHTML}>)</span><[IFEND]>\
 		<[IF abstract & ![ originalURL | authorDateAux ] ]>:<[IFEND]>\
 
 		<[IF originalURL]>

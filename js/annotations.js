@@ -525,7 +525,7 @@ Annotations.dataSources.wikipedia = {
 	referenceDataFromParsedAPIResponse: (response, articleLink) => {
 		let titleLinkHref = articleLink.href;
 
-		let responseHTML, titleHTML, fullTitleHTML;
+		let responseHTML, titleHTML, fullTitleHTML, secondaryTitleLinksHTML;
 		if (articleLink.hash > "") {
 			let targetSection = response["remaining"]["sections"].find(section =>
 				//	This MUST be decodeURIComponent, and NOT selectorFromHash!!!
@@ -539,8 +539,31 @@ Annotations.dataSources.wikipedia = {
 				return null;
 
 			responseHTML = targetSection["text"];
-			titleHTML = targetSection["line"];
-			fullTitleHTML = `${targetSection["line"]} (${response["lead"]["displaytitle"]})`;
+
+			/*	Get heading, parse as HTML, and unwrap or delete links, but
+				save them for inclusion in the template.
+			 */
+			let targetHeading = newDocument(targetSection["line"]);
+			secondaryTitleLinksHTML = "";
+			//	First link is the section title itself.
+			targetHeading.querySelectorAll("a:first-of-type").forEach(link => {
+				//  Process link, save HTML, unwrap.
+				Annotations.dataSources.wikipedia.qualifyWikipediaLink(link, articleLink);
+				Annotations.dataSources.wikipedia.designateWikiLink(link);
+				secondaryTitleLinksHTML += link.outerHTML;
+				unwrap(link);
+			});
+			//	Additional links are other things, who knows what.
+			targetHeading.querySelectorAll("a").forEach(link => {
+				//  Process link, save HTML, delete.
+				Annotations.dataSources.wikipedia.qualifyWikipediaLink(link, articleLink);
+				Annotations.dataSources.wikipedia.designateWikiLink(link);
+				secondaryTitleLinksHTML += link.outerHTML;
+				link.remove();
+			});
+			titleHTML = targetHeading.innerHTML;
+
+			fullTitleHTML = `${titleHTML} (${response["lead"]["displaytitle"]})`;
 		} else {
 			responseHTML = response["lead"]["sections"][0]["text"];
 			titleHTML = response["lead"]["displaytitle"];
@@ -567,7 +590,13 @@ Annotations.dataSources.wikipedia = {
 
 					//	We must encode, because the anchor might contain quotes.
 					let urlEncodedAnchor = fixedEncodeURIComponent(section["anchor"]);
-					responseHTML += `<li><a href='${articleLink}#${urlEncodedAnchor}'>${section["line"]}</a>`;
+
+					//	Get heading, parse as HTML, and unwrap links.
+					let heading = newDocument(section["line"]);
+					heading.querySelectorAll("a").forEach(link => { unwrap(link); });
+
+					//	Construct TOC entry.
+					responseHTML += `<li><a href='${articleLink}#${urlEncodedAnchor}'>${(heading.innerHTML)}</a>`;
 
 					headingLevel = newHeadingLevel;
 				}
@@ -589,14 +618,15 @@ Annotations.dataSources.wikipedia = {
 
 		return {
 			content: {
-				titleHTML:              titleHTML,
-				fullTitleHTML:          fullTitleHTML,
-				titleText:              titleText,
-				titleLinkHref:          titleLinkHref,
-				titleLinkClass:         `title-link link-live`,
-				titleLinkIconMetadata:  `data-link-icon-type="svg" data-link-icon="wikipedia"`,
-				abstract: 		        abstractHTML,
-				dataSourceClass:        "wikipedia-entry",
+				titleHTML:                titleHTML,
+				fullTitleHTML:            fullTitleHTML,
+				secondaryTitleLinksHTML:  (secondaryTitleLinksHTML ?? null),
+				titleText:                titleText,
+				titleLinkHref:            titleLinkHref,
+				titleLinkClass:           `title-link link-live`,
+				titleLinkIconMetadata:    `data-link-icon-type="svg" data-link-icon="wikipedia"`,
+				abstract: 		          abstractHTML,
+				dataSourceClass:          "wikipedia-entry",
 			},
 			template:               "annotation-blockquote-inside",
 			dataSource:		        "wikipedia",
@@ -606,6 +636,30 @@ Annotations.dataSources.wikipedia = {
 			popFrameTitleText:      popFrameTitleText,
 			popFrameTitleLinkHref:  titleLinkHref
 		};
+	},
+
+	/*	Qualify a link in a Wikipedia article.
+	 */
+	qualifyWikipediaLink: (link, hostArticleLink) => {
+		//  Qualify link.
+		if (link.getAttribute("href").startsWith("#"))
+			link.pathname = hostArticleLink.pathname;
+		if (link.hostname == location.hostname)
+			link.hostname = hostArticleLink.hostname;
+	},
+
+	/*	Mark a wiki-link appropriately, as annotated, or live, or neither.
+	 */
+	designateWikiLink: (link) => {
+		if (/(.+?)\.wikipedia\.org/.test(link.hostname)) {
+			if (Annotations.dataSources.wikipedia.matches(link)) {
+				link.classList.add(Annotations.annotatedLinkFullClass);
+			} else {
+				if (!(   link.pathname.startsWithAnyOf(_π("/wiki/", [ "Special:" ]))
+					  || link.pathname == "/w/index.php"))
+					link.classList.add("link-live");
+			}
+		}
 	},
 
 	/*  Elements to excise from a Wikipedia entry.
@@ -685,21 +739,10 @@ Annotations.dataSources.wikipedia = {
 			}
 
 			//  Qualify links.
-			if (link.getAttribute("href").startsWith("#"))
-				link.pathname = articleLink.pathname;
-			if (link.hostname == location.hostname)
-				link.hostname = articleLink.hostname;
+			Annotations.dataSources.wikipedia.qualifyWikipediaLink(link, articleLink);
 
 			//  Mark other Wikipedia links as also being annotated.
-			if (/(.+?)\.wikipedia\.org/.test(link.hostname)) {
-				if (Annotations.dataSources.wikipedia.matches(link)) {
-					link.classList.add(Annotations.annotatedLinkFullClass);
-				} else {
-					if (!(   link.pathname.startsWithAnyOf(_π("/wiki/", [ "Special:" ]))
-						  || link.pathname == "/w/index.php"))
-						link.classList.add("link-live");
-				}
-			}
+			Annotations.dataSources.wikipedia.designateWikiLink(link);
 
 			//  Mark self-links (anchorlinks within the same article).
 			if (link.pathname == articleLink.pathname)
