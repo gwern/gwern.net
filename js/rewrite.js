@@ -410,7 +410,7 @@ addContentInjectHandler(GW.contentInjectHandlers.injectBacklinksLinkIntoLocalSec
 		if (section == null)
 			return;
 
-		let backlinksBlock = eventInfo.container.querySelector(`#${(section.id)}-backlinks`);
+		let backlinksBlock = eventInfo.container.querySelector(`#${(CSS.escape(section.id))}-backlinks`);
 		if (backlinksBlock == null)
 			return;
 
@@ -1504,7 +1504,7 @@ function updatePageTOC(newContent, needsProcessing = false) {
     let parentSection = newContent.closest("section") ?? document.querySelector("#markdownBody");
     let parentTOCElement = parentSection.id == "markdownBody"
                            ? TOC
-                           : TOC.querySelector(`#toc-${CSS.escape(parentSection.id)}`).parentElement;
+                           : TOC.querySelector(`#toc-${(CSS.escape(parentSection.id))}`).parentElement;
 
     let currentSection = newContent;
     let nextSection = null;
@@ -1515,7 +1515,7 @@ function updatePageTOC(newContent, needsProcessing = false) {
 			&& child.compareDocumentPosition(currentSection) == Node.DOCUMENT_POSITION_PRECEDING
 		).first;
 		currentSection = nextSection;
-		nextSectionTOCLink = nextSection ? parentTOCElement.querySelector(`#toc-${CSS.escape(nextSection.id)}`) : null;
+		nextSectionTOCLink = nextSection ? parentTOCElement.querySelector(`#toc-${(CSS.escape(nextSection.id))}`) : null;
 	} while (nextSection && nextSectionTOCLink == null);
     let followingTOCElement = nextSectionTOCLink
                               ? nextSectionTOCLink.parentElement
@@ -1529,7 +1529,7 @@ function updatePageTOC(newContent, needsProcessing = false) {
             /*  We may have already added this section in a recursive call from
                 a previous section.
              */
-            if (parentTOCElement.querySelector(`a[href$='#${fixedEncodeURIComponent(section.id)}']`) != null)
+            if (parentTOCElement.querySelector(`a[href$='#${(CSS.escape(fixedEncodeURIComponent(section.id)))}']`) != null)
                 return;
 
             /*  If this section is too deeply nested, do not add it.

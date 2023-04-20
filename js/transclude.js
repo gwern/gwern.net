@@ -575,7 +575,7 @@ function includeContent(includeLink, content) {
     //  ID transplantation.
     if (   includeLink.id > ""
         && includeLink.classList.contains("include-identify-not") == false
-        && wrapper.querySelector("#" + includeLink.id) == null) {
+        && wrapper.querySelector(`#${(CSS.escape(includeLink.id))}`) == null) {
         let idBearerBlock = newElement("DIV", { "id": includeLink.id, "class": "include-wrapper-block" });
         idBearerBlock.append(...wrapper.childNodes);
         wrapper.append(idBearerBlock);
