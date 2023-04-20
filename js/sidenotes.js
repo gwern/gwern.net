@@ -869,16 +869,6 @@ Sidenotes = { ...Sidenotes,
 
 		//	Add event listeners, and the switch between modes.
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.addOrRemoveEventHandlersForCurrentMode", (mediaQuery) => {
-			/*	Deactivate event handlers.
-				*/
-			GW.notificationCenter.removeHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
-			GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
-			GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
-			GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
-			window.removeEventListener("resize", Sidenotes.windowResized);
-			GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents);
-			removeScrollListener("Sidenotes.unSlideSidenotesOnScroll");
-		}, (mediaQuery) => {
 			doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
 
 			/*  After the hash updates, properly highlight everything, if needed.
@@ -943,6 +933,16 @@ Sidenotes = { ...Sidenotes,
 			addScrollListener((event) => {
 				Sidenotes.putAllSidenotesBack();
 			}, "Sidenotes.unSlideSidenotesOnScroll", { defer: true });
+		}, (mediaQuery) => {
+			/*	Deactivate event handlers.
+				*/
+			GW.notificationCenter.removeHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
+			GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
+			GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
+			GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
+			window.removeEventListener("resize", Sidenotes.windowResized);
+			GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents);
+			removeScrollListener("Sidenotes.unSlideSidenotesOnScroll");
 		}, (mediaQuery) => {
 			/*	Deactivate event handlers.
 				*/

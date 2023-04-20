@@ -638,6 +638,15 @@ Extracts = { ...Extracts,
 		}
 
 		//	REAL REWRITES BEGIN HERE
+
+		/*	Unwrap sidenote. (Corrects for edge case where a popup for a section
+			of the current page which is currently within a collapsed section, 
+			contains a footnote reference. Hovering over the citation will spawn
+			a popup instead of sliding up the sidenote, as the latter is hidden.
+			The sidenote, once transcluded, must then be unwrapped specially.)
+		 */
+		if (injectEventInfo.container.firstElementChild.classList.contains("sidenote"))
+			injectEventInfo.container.replaceChildren(...(injectEventInfo.container.querySelector(".sidenote-inner-wrapper").children));
     },
 };
 
