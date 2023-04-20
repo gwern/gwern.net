@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-04-18 12:58:55 gwern"
+;;; When:  Time-stamp: "2023-04-21 10:16:02 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -252,6 +252,8 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
     (replace-all "]]/" "](/")
        (replace-all "" "=")
        (replace-all "  " ", ")
+       (replace-all "T h i s" "This")
+       (replace-all "T h e" "The")
        (replace-all "Author links open overlay panel" "")
        (replace-all "et al.," "et al")
        (replace-all "\n---\n" "\n<hr />\n")
@@ -1287,6 +1289,7 @@ This assumes you have already removed hyphenation (either by removing the hyphen
     ;; Inform the user when the operation is complete
     (message "Newlines removed within paragraphs.")))
 
+
 (defvar markdown-rewrites '())
 (defun buffer-contains-substring (string)
   (save-excursion
@@ -1434,22 +1437,42 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
     (goto-char (+ end (length start-tag) (length end-tag)))))
 ;; the wrappers:
 (defun html-insert-emphasis ()
-  "Surround selected region (or word) with HTML <em> tags for italics/emphasis (also valid in Markdown)."
+  "Surround selected region (or word) with HTML <em> tags for italics/emphasis (also valid in Markdown, which supports `*FOO*`)."
   (interactive)
   (surround-region-or-word "<em>" "</em>"))
+(defun markdown-insert-emphasis ()
+  "Surround selected region (or word) with Markdown asterisks for italics/emphasis.
+Equivalent to `<em>FOO</em>` in HTML.
+Gwern.net uses `*` for emphasis, and generally reserves `_` for italics such as book titles (in keeping with Internet conventions
+predating Gruber's Markdown mistake of conflating `*`/`_`)."
+  (interactive)
+  (surround-region-or-word "*" "*"))
 (defun html-insert-strong ()
-  "Surround selected region (or word) with <strong> bold tags (HTML/Markdown).
+  "Surround selected region (or word) with <strong> bold tags (HTML, equivalent to `**` in Markdown).
 Used in abstracts for topics, first-level list emphasis, etc."
   (interactive)
   (surround-region-or-word "<strong>" "</strong>"))
+(defun markdown-insert-strong ()
+  "Surround selected region (or word) with `**` bold tags (Markdown).
+Equivalent to `<strong>FOO</strong>` in HTML.
+Used in abstracts for topics, first-level list emphasis, etc."
+  (interactive)
+  (surround-region-or-word "**" "**"))
 (defun html-insert-smallcaps ()
   "Surround selected region (or word) with smallcaps syntax.
 Built-in CSS class in HTML & Pandoc Markdown, span syntax is equivalent to `[FOO]{.smallcaps}`.
 Smallcaps are used on Gwern.net for second-level emphasis after bold has been used."
   (interactive)
   (surround-region-or-word "<span class=\"smallcaps\">" "</span>"))
+(defun markdown-insert-smallcaps ()
+  "Surround selected region (or word) with smallcaps syntax (Pandoc Markdown syntax).
+Built-in CSS class in HTML & Pandoc Markdown, equivalent to `<span class=\"smallcaps\">FOO</span>`.
+Smallcaps are used on Gwern.net for second-level emphasis after bold has been used."
+  (interactive)
+  (surround-region-or-word "[" "]{.smallcaps}"))
 (defun html-insert-wp-link ()
-  "Surround selected region (or word) with custom Wikipedia link syntax in HTML."
+  "Surround selected region (or word) with custom Wikipedia link syntax in HTML.
+Compiled by Interwiki.hs to the equivalent (usually) of `<a href=\"https://en.wikipedia.org/wiki/FOO\">FOO</a>`."
   (interactive)
   (surround-region-or-word "<a href=\"!W\">" "</a>"))
 (defun markdown-insert-wp-link ()
@@ -1462,32 +1485,32 @@ This creates marginal glosses (in the left-margin) using custom overloaded footn
 These margin-notes are used as very abbreviated italicized summaries of the following paragraph
 (like very small inlined section headers).
 NOTE: no HTML version: margin notes are not supported in annotations because no footnote support.
-(Maybe they could be, just always inline?)"
+(Maybe they could be, just always inline+italicized, similar to narrow windows?)"
   (interactive)
   (surround-region-or-word "^[!Margin: " "]"))
 ;; keybindings:
 ;;; Markdown:
-(add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-e" 'html-insert-emphasis)))
-(add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-s" 'html-insert-strong)))
-(add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-S" 'html-insert-smallcaps)))
+(add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-e" 'markdown-insert-emphasis)))
+(add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-s" 'markdown-insert-strong)))
+(add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ s"    'markdown-insert-smallcaps)))
 (add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-w" 'markdown-insert-wp-link)))
 (add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-m" 'markdown-insert-margin-note)))
 ;;; HTML:
 (add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-e" 'html-insert-emphasis)))
 (add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-s" 'html-insert-strong)))
-(add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-S" 'html-insert-smallcaps)))
+(add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ s"    'html-insert-smallcaps)))
 (add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-w" 'html-insert-wp-link)))
-;;; YAML:
+;;; YAML: (the YAML files store raw HTML snippets, so insert HTML rather than Markdown markup)
 (add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-e" 'html-insert-emphasis)))
 (add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-s" 'html-insert-strong)))
-(add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-S" 'html-insert-smallcaps)))
+(add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ s"    'html-insert-smallcaps)))
 (add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-w" 'html-insert-wp-link)))
 
 ;sp
 (add-hook 'markdown-mode-hook 'flyspell)
 ;for toggling visibility of sections - makes big pages easier to work with
 (add-hook 'markdown-mode-hook 'outline-minor-mode)
-;In Markdown files, there are few excuses for unbalanced delimiters, and unbalancedness almost always indicates a link syntax error; in cases where quoted text must contain unbalanced delimiters (eg diffs, or neural-net-generated text or redirects fixing typos), a matching delimiter can be added in a comment like '<!-- () [] -->' to make it add up.
+;In Markdown files, there are few excuses for unbalanced delimiters, and unbalance almost always indicates a link syntax error; in cases where quoted text must contain unbalanced delimiters (eg diffs, or neural-net-generated text or redirects fixing typos), a matching delimiter can be added in a comment like '<!-- () [] -->' to make it add up.
 (defun balance-parens () (when buffer-file-name
                            (add-hook 'after-save-hook
                                      'check-parens
