@@ -65,7 +65,7 @@ tagsToLinks ts = let tags = sort ts in
 -- if a local '/doc/*' file and no tags available, try extracting a tag from the path; eg. '/doc/ai/2021-santospata.pdf' → 'ai', '/doc/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics sociology Japanese' than 'economics sociology japanese')
 tag2TagsWithDefault :: String -> String -> [String]
 tag2TagsWithDefault path tags = let tags' = map (trim . map toLower) $ split " " tags
-                                    defTag = if ("/doc/" `isPrefixOf` path) && (not ("/doc/biology/2000-iapac-norvir"`isPrefixOf`path || "/doc/rotten.com/"`isPrefixOf`path || "/doc/statistics/order/beanmachine-multistage"`isPrefixOf`path||"/doc/www/"`isPrefixOf`path)) then tag2Default path else ""
+                                    defTag = if ("/doc/" `isPrefixOf` path) && (not ("/doc/biology/2000-iapac-norvir"`isPrefixOf`path || "/doc/rotten.com/"`isPrefixOf`path || "/doc/statistics/order/beanmachine-multistage"`isPrefixOf`path || "/doc/www/"`isPrefixOf`path)) then tag2Default path else ""
                                 in
                                   if defTag `elem` tags' || defTag == "" || defTag == "/doc" then tags' else defTag:tags'
 
@@ -92,8 +92,7 @@ url2Tags p = concatMap (\(match,tag) -> if match p then [tag] else []) urlTagDB
           , (("https://dresdencodak.com"`isPrefixOf`), "humor")
           , (("https://www.theonion.com"`isPrefixOf`), "humor")
           , (("https://tvtropes.org"`isPrefixOf`), "fiction")
-          , ((\u -> anyInfix u ["evageeks.org","eva.onegeek.org"]),  "anime/eva")
-          , (("evamonkey.com"`isInfixOf`), "anime/eva")
+          , ((\u -> anyInfix u ["evageeks.org","eva.onegeek.org", "evamonkey.com"]),  "anime/eva")
           , (("r-project.org"`isInfixOf`), "cs/r")
           , (("haskell.org"`isInfixOf`), "cs/haskell")
           ]
@@ -116,7 +115,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagsLong2Short
                              , ("^gan$", "GAN")
                              , ("^psychology/", "psych/")
                              , ("^technology/", "tech/")
-                             , ("^doc$", "Tags Index") -- NOTE: nothing is tagged this, so this just sets the <title> on /doc/index to something more useful than 'docs tag'.
+                             , ("^doc$", "Tags Index") -- NOTE: nothing is tagged this, so this just sets the <title> on /doc/index to something more useful than '<code>docs</code> tag'.
                              , ("^genetics/selection$", "evolution")
                              , ("^genetics/selection/natural$", "natural selection")
                              ]

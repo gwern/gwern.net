@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-04-16 19:23:01 gwern"
+When:  Time-stamp: "2023-04-19 16:07:22 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -80,8 +80,8 @@ urlLive u | u'      `elem`  goodDomainsSimple = Just True
           | u'     `elem`   badDomainsSimple  = Just False
           | anySuffixT u'   badDomainsSub     = Just False
           | ".wikipedia.org" `T.isInfixOf` u  = wikipedia u
-          | "https://www.youtube.com/watch?v=" `T.isPrefixOf` u || "https://www.youtube.com/embed/" `T.isPrefixOf` u = Just True
-          | "https://www.youtube.com/channel/" `T.isPrefixOf` u = Just False
+          |  "https://www.youtube.com/embed/" `T.isPrefixOf` u = Just True -- embeds do not set X-FRAME options, which is why they work & all regular YT links do not.
+          | "https://www.youtube.com/channel/" `T.isPrefixOf` u || "https://www.youtube.com/watch?v=" `T.isPrefixOf` u = Just False
           -- Markdeep is a self-contained JS in-page-Markdown library, so the main homepage (regular HTML) works as a live popup, but not any of the demos (which need to run JS, which live popup iframes don't allow)
           | "https://casual-effects.com" `T.isPrefixOf` u = Just $ not $ ".md.html" `T.isInfixOf` u
           | otherwise                         = Nothing
@@ -707,7 +707,6 @@ goodDomainsSimple =
     , "www.justinpinkney.com"
     , "www.kalzumeus.com"
     , "www.karger.com"
-    , "www.khara.co.jp"
     , "www.kooslooijesteijn.net"
     , "www.koreatimes.co.kr"
     , "www.ledger-cli.org"
@@ -2426,6 +2425,7 @@ badDomainsSimple = [ "2chan.us"
    , "citeseerx.ist.psu.edu"
    , "www.youtube.com/channel/"
    , "www.eoht.info"
+   , "www.khara.co.jp"
    ]
 
 url :: T.Text -> Inline
@@ -2511,7 +2511,6 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "http://www.righto.com/2015/11/macbook-charger-teardown-surprising.html#ref8"
             , "http://www.rwagner.net/libretti/parsifal/e-pars-a3.html"
             , "http://www.rxshop.md/products/antinarcoleptic/buy-modafinil-online-order-modvigil"
-            , "http://www.scienceagogo.com/news/20040819224859data_trunc_sys.shtml"
             , "http://www.sciencemadness.org/talk/viewthread.php?tid=6401"
             , "http://www.slate.com/articles/health_and_science/the_mouse_trap/2011/11/lab_mice_are_they_limiting_our_understanding_of_human_disease_.html"
             , "http://www.tarsnap.com/scrypt.html"
@@ -3069,7 +3068,6 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://www.justinpinkney.com/stylegan-network-blending/"
             , "https://www.kalzumeus.com/2012/08/13/doubling-saas-revenue/"
             , "https://www.karger.com/Article/Abstract/119229"
-            , "https://www.khara.co.jp/hideakianno/personal-biography/"
             , "https://www.kooslooijesteijn.net/blog/semantic-sidenotes"
             , "https://www.ledger-cli.org/"
             , "https://www.lehighvalleylive.com/bethlehem/2015/02/west_bethlehem_drugraid_prompt.html"
@@ -3206,7 +3204,6 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://www.cs.toronto.edu/~kriz/cifar.html"
             , "https://parti.research.google"
             , "https://philpapers.org/archive/SOTAOA.pdf#miri"
-            , "https://www.youtube.com/watch?v=hB6eY73sLV0"
             , "https://www.youtube.com/embed/gaMuet_ibWE"
             ]
 
@@ -3223,7 +3220,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "http://ascii.textfiles.com/archives/1717"
             , "http://augmentingcognition.com/ltm.html"
             , "http://aurellem.org/vba-clojure/html/total-control.html"
-            , "http://authenticorganizations.com/harquail/2009/08/03/wal-mart-knocks-off-the-girl-scouts/#comment-1214"
+            , "https://authenticorganizations.com/harquail/2009/08/03/wal-mart-knocks-off-the-girl-scouts/#comment-1214"
             , "http://bactra.org/weblog/algae-2012-09.html"
             , "http://bakabt.me/159362-umineko-no-naku-koro-ni-music-collection-flac.html"
             , "http://bastiat.org/en/twisatwins.html"
@@ -3717,7 +3714,6 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://ideas.4brad.com/has-uber-already-beaten-private-ownership-cost"
             , "https://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=602492"
             , "https://if50.substack.com/p/1999-king-of-dragon-pass"
-            , "https://academic.oup.com/ije/article/30/6/1251/651759"
             , "https://imagelibrary.bgu.ac.il/pf.tlx/O6ORSOx-nut"
             , "https://imgur.com/a/LE80ogv"
             , "https://inews.co.uk/opinion/why-i-donate-my-sperm-over-facebook-and-have-fathered-23-children-194142"
@@ -4679,4 +4675,6 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.108.7127&rep=rep1&type=pdf"
             , "https://www.youtube.com/channel/UCeNwyKuv5SMnN6ovlpbz1SQ"
             , "http://www.eoht.info/page/Feynman%27s%20IQ"
+            , "https://www.khara.co.jp/hideakianno/personal-biography/"
+            , "https://www.youtube.com/watch?v=hB6eY73sLV0"
             ]

@@ -291,6 +291,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.pewresearch.org" = aI "Pew" "text,tri" -- Pew Research Center: logo <https://en.wikipedia.org/wiki/File:Pew_Research_Center.svg>. While very cool, and worthy of a Scandinavian black death metal band, it is unrecognizable and would 'shimmer' intensely if scaled down to a link icon & would have to be recreated. So, another text icon it is. Everyone knows what "Pew" means.
  | u'' "thelastpsychiatrist.com" = aI "TLP" "text,tri,sans"
  | u'' "www.lrb.co.uk" = aI "LRB" "text,tri" -- London Review of Books <https://en.wikipedia.org/wiki/London_Review_of_Books>
+ | u'' "archiveofourown.org" = aI "Ao3" "text,tri" -- Archive of Our Own <https://archiveofourown.org/> <https://en.wikipedia.org/wiki/Archive_of_Our_Own>
 
  -- Quad-letter-square icons.
  | aU'' ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
