@@ -894,14 +894,10 @@ Extracts = { ...Extracts,
 			location: source.src,
 			method: "HEAD",
 			onSuccess: (event) => {
-				Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
-
-				if (Extracts.popFrameProvider == Popups)
-					Popups.positionPopup(popFrame);
+				Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, true);
 			},
 			onFailure: (event) => {
-				Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
-				Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
+                Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, false);
 			}
 		});
     }
@@ -969,11 +965,10 @@ Extracts = { ...Extracts,
 			location: source.src,
 			method: "HEAD",
 			onSuccess: (event) => {
-				Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
+				Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, true);
 			},
 			onFailure: (event) => {
-				Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
-				Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
+				Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, false);
 			}
 		});
     }
@@ -1277,7 +1272,7 @@ Extracts = { ...Extracts,
 						Extracts.setLoadingSpinner(target.popFrame);
 					},
 					onFailure: (event) => {
-						Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
+						Extracts.postRefreshUpdatePopFrameForTarget(target, false);
 					}
 				});
 
@@ -1334,13 +1329,13 @@ Extracts = { ...Extracts,
 
                     target.popFrame.document.querySelector("iframe").srcdoc = doc.innerHTML;
 
-                    target.popFrame.classList.toggle("loading", false);
+                    Extracts.postRefreshUpdatePopFrameForTarget(target, true);
                 },
                 onFailure: (event) => {
                     if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
                         return;
 
-                    target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+                    Extracts.postRefreshUpdatePopFrameForTarget(target, false);
                 }
             });
 

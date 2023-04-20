@@ -495,7 +495,7 @@ Extracts = {
         if ([ "IFRAME" ].includes(objectOfSomeSort.tagName)) {
             //  Iframes do not fire ‘error’ on server error.
             objectOfSomeSort.onload = (event) => {
-                popFrame.classList.toggle("loading", false);
+                Extracts.postRefreshUpdatePopFrameForTarget(target, true);
 
                 /*  We do this for local documents only. Cross-origin
                     protections prevent us from accessing the content of
@@ -505,13 +505,13 @@ Extracts = {
                  */
                 if (   target.hostname == location.hostname
                     && Extracts.server404PageTitles.includes(objectOfSomeSort.contentDocument.title)) {
-                    popFrame.classList.toggle("loading-failed", true);
+					Extracts.postRefreshUpdatePopFrameForTarget(target, false);
                 }
             };
         } else if ([ "OBJECT", "IMG" ].includes(objectOfSomeSort.tagName)) {
             //  Objects & images fire ‘error’ on server error or load fail.
             objectOfSomeSort.onload = (event) => {
-                popFrame.classList.toggle("loading", false);
+                Extracts.postRefreshUpdatePopFrameForTarget(target, true);
             };
         }
 
@@ -555,40 +555,25 @@ Extracts = {
         }
 	},
 
-	//	Called by: Extracts.refreshPopFrameAfterLocalPageLoads
-	//	Called by: Extracts.refreshPopFrameAfterCodeFileLoads
-	//	Called by: Extracts.refreshPopFrameAfterAuxLinksLoad
-	postRefreshSuccessUpdatePopFrameForTarget: (target) => {
-        GWLog("Extracts.postRefreshSuccessUpdatePopFrameForTarget", "extracts.js", 2);
+	//	Called by: Extracts.setLoadingSpinner
+	postRefreshUpdatePopFrameForTarget: (target, success) => {
+        GWLog("Extracts.postRefreshUpdatePopFrameForTarget", "extracts.js", 2);
 
-		if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
+		let popFrame = target.popFrame;
+
+		if (Extracts.popFrameProvider.isSpawned(popFrame) == false)
 			return;
+
+		Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
+
+		if (!success)
+			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
 
 		//  Re-spawn, or fill and rewrite, the pop-frame.
-		if (Extracts.popFrameProvider == Popups) {
-			Popups.spawnPopup(target);
-		} else if (Extracts.popFrameProvider == Popins) {
-			Extracts.fillPopFrame(target.popin);
-			target.popin.classList.toggle("loading", false);
-
-			Extracts.rewritePopinContent(target.popin);
-
-			requestAnimationFrame(() => {
-				Popins.scrollPopinIntoView(target.popin);
-			});
-		}
-	},
-
-	//	Called by: Extracts.refreshPopFrameAfterLocalPageLoads
-	//	Called by: Extracts.refreshPopFrameAfterCodeFileLoads
-	//	Called by: Extracts.refreshPopFrameAfterAuxLinksLoad
-	postRefreshFailureUpdatePopFrameForTarget: (target) => {
-        GWLog("Extracts.postRefreshFailureUpdatePopFrameForTarget", "extracts.js", 2);
-
-		if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
-			return;
-
-		target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+		if (Extracts.popFrameProvider == Popups)
+			Popups.positionPopup(popFrame);
+		else if (Extracts.popFrameProvider == Popins)
+			Popins.scrollPopinIntoView(popFrame);
 	},
 
 	//	Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
