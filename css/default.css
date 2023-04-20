@@ -3488,7 +3488,7 @@ body.index-directory #footer {
     color: var(--SA-image-focus-overlay-image-caption-link-hover-color);
 }
 #image-focus-overlay .caption a .indicator-hook,
-#image-focus-overlay .caption a::after {
+#image-focus-overlay .caption a .link-icon-hook {
     display: none;
 }
 

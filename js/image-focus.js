@@ -458,11 +458,15 @@ ImageFocus = {
 		 */
 		ImageFocus.overlay.querySelector(".caption").replaceChildren(newDocument(`<div class="caption-text-wrapper">` 
 		  + [ ...[
-				(ImageFocus.currentlyFocusedImage.closest("figure").querySelector("figcaption") || newElement("FIGCAPTION")),
+				ImageFocus.currentlyFocusedImage.closest("figure").querySelector("figcaption").cloneNode(true),
 				newElement("SPAN", null, { "innerHTML": ImageFocus.currentlyFocusedImage.getAttribute("title") }),
 				newElement("SPAN", null, { "innerHTML": ImageFocus.currentlyFocusedImage.getAttribute("alt") }),
-			].map((element) => { Typography.processElement(element, Typography.replacementTypes.CLEAN|Typography.replacementTypes.QUOTES); return element; }
-			).filter((element, index, array) => (   element != null
+			].map(element => {
+				if (element)
+					Typography.processElement(element, Typography.replacementTypes.CLEAN|Typography.replacementTypes.QUOTES);
+
+				return element;
+			}).filter((element, index, array) => (   element != null
 												 && isNodeEmpty(element) == false
 												 && array.findIndex(otherElement => 
 														otherElement.textContent.trim() == element.textContent.trim()
