@@ -42,7 +42,7 @@ Extracts = { ...Extracts,
 			"data-template-fields": "linkTarget:$,whichTab:$,tabOrWindow:$",
 			"data-link-target": ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
 			"data-which-tab": ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
-			"data-tab-or-window": (GW.isMobile() ? "tab" : "window")
+			"data-tab-or-window": ((Extracts.popFrameProvider == Popins) ? "tab" : "window")
 		}));
     },
 
@@ -65,7 +65,7 @@ Extracts = { ...Extracts,
 		return Transclude.fillTemplateNamed("pop-frame-title-annotation", referenceData, {
 			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
 			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
-			tabOrWindow:  (GW.isMobile() ? "tab" : "window")
+			tabOrWindow:  ((Extracts.popFrameProvider == Popins) ? "tab" : "window")
 		});
     },
 
@@ -156,7 +156,7 @@ Extracts = { ...Extracts,
 			"data-template-fields": "linkTarget:$,whichTab:$,tabOrWindow:$",
 			"data-link-target": ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
 			"data-which-tab": ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
-			"data-tab-or-window": (GW.isMobile() ? "tab" : "window")
+			"data-tab-or-window": ((Extracts.popFrameProvider == Popins) ? "tab" : "window")
 		}));
     },
 
@@ -206,9 +206,9 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 		"class": "link-annotated-partial include-annotation-partial include-strict",
 		"data-template": "annotation-blockquote-not",
 		"data-template-fields": "linkTarget:$,whichTab:$,tabOrWindow:$",
-		"data-link-target": "_blank",
-		"data-which-tab": "new",
-		"data-tab-or-window": (GW.isMobile() ? "tab" : "window")
+		"data-link-target": ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
+		"data-which-tab": ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
+		"data-tab-or-window": ((Extracts.popFrameProvider == Popins) ? "tab" : "window")
 	}));
 
 	//	Add the whole thing to the pop-frame.

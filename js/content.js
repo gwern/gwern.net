@@ -370,11 +370,13 @@ Content = {
 				if (Annotations.isAnnotatedLinkFull(link))
 					return false;
 
-				/*  If it has a period in it, it’s not a page, but is something
-					else, like a file of some sort, or a locally archived
-					document.
+				/*  If it has a period in it, it’s probably not a page, but is 
+					something else, like a file of some sort, or a locally 
+					archived document. Still, we allow for explicit overrides.
 				 */
-				return (link.pathname.match(/\./) == null);
+				return (   link.pathname.match(/\./) == null
+						|| link.pathname.endsWith("/index")
+						|| link.classList.contains("link-page"));
 			},
 
 			sourceURLsForLink: (link) => {

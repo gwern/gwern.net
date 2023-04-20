@@ -1249,11 +1249,18 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventI
     GWLog("rewritePartialAnnotations", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll(".annotation-partial").forEach(partialAnnotation => {
+		//	If already done, do not redo.
         if (partialAnnotation.firstElementChild.classList.contains("data-field"))
             return;
 
-        //  Designate reference link, for annotations.js to identify it.
+		//	Identify reference link.
         let referenceLink = partialAnnotation.querySelector("a");
+
+		//	If already in progress, do not interfere.
+		if (Transclude.isIncludeLink(referenceLink))
+			return;
+
+        //  Designate reference link, for annotations.js to identify it.
         referenceLink.classList.add("link-annotated-partial");
 
         //  Load data into Annotations.
@@ -1263,8 +1270,11 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventI
         //  Replace reference block contents with synthetic include-link.
         partialAnnotation.replaceChildren(synthesizeIncludeLink(referenceLink, {
             "class": "include-annotation include-replace-container link-annotated-partial",
-            "data-template-fields": "annotationClassSuffix:$",
-            "data-annotation-class-suffix": "-partial"
+            "data-template-fields": "annotationClassSuffix:$,linkTarget:$,whichTab:$,tabOrWindow:$",
+            "data-annotation-class-suffix": "-partial",
+			"data-link-target": (GW.isMobile() ? "_self" : "_blank"),
+			"data-which-tab": (GW.isMobile() ? "current" : "new"),
+			"data-tab-or-window": (GW.isMobile() ? "tab" : "window")
         }));
 
         //  Fire GW.contentDidLoadEvent (to trigger transclude).

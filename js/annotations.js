@@ -111,7 +111,7 @@ Annotations = { ...Annotations,
 			&& Annotations.cachedDataExists(link)) {
 			/*	Perhaps we’ve got an API response cached, but we haven’t 
 				actually constructed reference data from it yet. (Maybe because 
-				the API response was acquired other than by the usual load 
+				the API response was acquired otherwise than by the usual load 
 				process. Or because the API response is the same as that for a 
 				different link, so we don’t need to load it again.)
 			 */
@@ -447,10 +447,13 @@ Annotations = { ...Annotations,
 						authorDateAux:      authorDateAux,
 						abstract:           abstractHTML,
 					},
+					template:                       "annotation-blockquote-inside",
+					linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
+					whichTab:                       (GW.isMobile() ? "current" : "new"),
+					tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
 					popFrameTitleText:              popFrameTitleText,
 					popFrameTitleLinkHref:          titleLinkHref,
-					popFrameTitleOriginalLinkHref:  originalURL,
-					template:                       "annotation-blockquote-inside"
+					popFrameTitleOriginalLinkHref:  originalURL
 				};
 			},
 
@@ -584,10 +587,13 @@ Annotations.dataSources.wikipedia = {
 				abstract: 		        abstractHTML,
 				dataSourceClass:        "wikipedia-entry",
 			},
-			popFrameTitleText:      popFrameTitleText,
-			popFrameTitleLinkHref:  titleLinkHref,
+			template:               "annotation-blockquote-inside",
 			dataSource:		        "wikipedia",
-			template:               "annotation-blockquote-inside"
+			linkTarget:             (GW.isMobile() ? "_self" : "_blank"),
+			whichTab:               (GW.isMobile() ? "current" : "new"),
+			tabOrWindow:            (GW.isMobile() ? "tab" : "window"),
+			popFrameTitleText:      popFrameTitleText,
+			popFrameTitleLinkHref:  titleLinkHref
 		};
 	},
 
