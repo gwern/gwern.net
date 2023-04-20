@@ -761,8 +761,12 @@ Annotations.dataSources.wikipedia = {
 		});
 		//	Special handling for table elements.
 		referenceEntry.querySelectorAll(tableElementsSelector).forEach(tableElement => {
-			if (tableElement.style.display != "none")
-				stripStyles(tableElement, null, [ "text-align" ]);
+			if (tableElement.style.display != "none") {
+				if (tableElement.style.position == "relative")
+					stripStyles(tableElement, null, [ "text-align", "position", "width", "height" ]);
+				else
+					stripStyles(tableElement, null, [ "text-align" ]);
+			}
 
 			[ "width", "height", "align" ].forEach(attribute => {
 				tableElement.removeAttribute(attribute);
