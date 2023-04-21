@@ -1418,35 +1418,30 @@ blockquote table table {
     font-size: inherit;
     position: relative;
     z-index: 1;
-}
-.epigraph blockquote,
-#markdownBody .epigraph blockquote {
     overflow: visible;
-}
-.epigraph > blockquote {
     width: fit-content;
     margin: auto;
 }
-.epigraph p  {
+.epigraph blockquote p  {
     font-style: italic;
     background-color: inherit;
 }
 /*  Reverse back to normal when italics are used inside an epigraph, or final block.
     */
-.epigraph p:first-child em,
-.epigraph p:last-child {
+.epigraph blockquote p:first-child em,
+.epigraph blockquote p:last-child {
     font-style: normal;
 }
-.epigraph p:last-child {
+.epigraph blockquote p:last-child {
     margin: 0.5em 0 0 0;
     text-align: right;
     font-size: 0.875em;
     text-indent: 0;
 }
 
-.epigraph > blockquote blockquote p,
-.epigraph > blockquote blockquote p:last-child {
-    text-align: justify;
+.epigraph blockquote blockquote p,
+.epigraph blockquote blockquote p:last-child {
+    text-align: var(--GW-body-text-alignment);
 }
 
 .epigraph > blockquote::before,

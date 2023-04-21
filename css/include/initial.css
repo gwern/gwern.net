@@ -22,6 +22,8 @@
     --GW-body-text-font-size: 1rem;
 
     --GW-base-font-size: 20px;
+
+	--GW-body-text-alignment: left;
 }
 @media all and (max-width: 649px) {
     :root {
@@ -937,7 +939,7 @@ section#see-also:only-of-type > h1:first-child a {
 @media all and (min-width: 900px) {
     .markdownBody p,
     .markdownBody li {
-        text-align: justify;
+        text-align: var(--GW-body-text-alignment);
     }
     .markdownBody div.TOC li {
         text-align: left;
@@ -952,7 +954,7 @@ body.justified-not .markdownBody li {
 @media all and (min-width: 900px) {
     body.justified-not .markdownBody p,
     body.justified-not .markdownBody li {
-        text-align: left;
+        --GW-body-text-alignment: left;
     }
 }
 
