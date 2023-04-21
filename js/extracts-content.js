@@ -1254,6 +1254,10 @@ Extracts = { ...Extracts,
         [   (url) => [ "arbital.com", "arbital.greaterwrong.com" ].includes(url.hostname),
             (url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "arbital"); }
             ],
+		//	Twitter
+		[	(url) => [ "twitter.com", "mobile.twitter.com" ].includes(url.hostname),
+			(url) => { url.hostname = "nitter.moomoo.me"; }
+			],
         //  Wikipedia
         [   (url) => /(.+?)\.wikipedia\.org/.test(url.hostname) == true,
             (url) => {

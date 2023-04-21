@@ -333,8 +333,8 @@ Annotations = { ...Annotations,
 			},
 
 			//	Called by: Annotations.referenceDataFromParsedAPIResponse
-			referenceDataFromParsedAPIResponse: (referenceEntry, link = null) => {
-				let referenceElement = referenceEntry.querySelector(Annotations.dataSources.local.referenceElementSelector);
+			referenceDataFromParsedAPIResponse: (response, link = null) => {
+				let referenceElement = response.querySelector(Annotations.dataSources.local.referenceElementSelector);
 
 				let titleHTML = referenceElement.innerHTML;
 				let titleText = referenceElement.textContent;
@@ -375,7 +375,7 @@ Annotations = { ...Annotations,
 									  : null;
 
 				//  Author list.
-				let authorElement = referenceEntry.querySelector(".author");
+				let authorElement = response.querySelector(".author");
 				//	Generate comma-separated author list; truncate with “…” abbreviation for 'et al' @ > 3.
 				let authorList;
 				if (authorElement) {
@@ -388,7 +388,7 @@ Annotations = { ...Annotations,
 							 : null;
 
 				//  Date.
-				let dateElement = referenceEntry.querySelector(".date");
+				let dateElement = response.querySelector(".date");
 				let date = dateElement 
 						   ? (  `<span class="data-field cite-date" title="${dateElement.textContent}">` 
 						      + dateElement.textContent.replace(/-[0-9][0-9]-[0-9][0-9]$/, "") 
@@ -396,13 +396,13 @@ Annotations = { ...Annotations,
 						   : null;
 
 				// Link Tags
-				let tagsElement = referenceEntry.querySelector(".link-tags");
+				let tagsElement = response.querySelector(".link-tags");
 				let tags = tagsElement
 						   ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>`
 						   : null;
 
 				//	The backlinks link (if exists).
-				let backlinksElement = referenceEntry.querySelector(".backlinks");
+				let backlinksElement = response.querySelector(".backlinks");
 				let backlinks = backlinksElement
 								? `<span 
 									class="data-field aux-links backlinks" 
@@ -410,7 +410,7 @@ Annotations = { ...Annotations,
 								: null;
 
 				//	The similar-links link (if exists).
-				let similarsElement = referenceEntry.querySelector(".similars");
+				let similarsElement = response.querySelector(".similars");
 				let similars = similarsElement
 							   ? `<span 
 							       class="data-field aux-links similars"
@@ -418,7 +418,7 @@ Annotations = { ...Annotations,
 							   : null;
 
                 //	The link-link-bibliography link (if exists).
-				let linkbibElement = referenceEntry.querySelector(".link-bibliography");
+				let linkbibElement = response.querySelector(".link-bibliography");
 				let linkbib = linkbibElement
 							  ? `<span 
 							  	  class="data-field aux-links link-bibliography"
@@ -434,12 +434,12 @@ Annotations = { ...Annotations,
 				let authorDateAux = ([ author, date, auxLinks ].filter(x => x).join("") || null);
 
 				//	Abstract (if exists).
-				let abstractElement = referenceEntry.querySelector("blockquote");
+				let abstractElement = response.querySelector("blockquote");
 				let abstractHTML = null;
 				if (abstractElement) {
-					let referenceEntry = newDocument(abstractElement.childNodes);
-					Annotations.dataSources.local.postProcessReferenceEntry(referenceEntry, link);
-					abstractHTML = referenceEntry.innerHTML;
+					let abstractDocument = newDocument(abstractElement.childNodes);
+					Annotations.dataSources.local.postProcessReferenceEntry(abstractDocument, link);
+					abstractHTML = abstractDocument.innerHTML;
 				}
 
 				//	Pop-frame title text.
@@ -544,6 +544,7 @@ Annotations.dataSources.wikipedia = {
 				save them for inclusion in the template.
 			 */
 			let targetHeading = newDocument(targetSection["line"]);
+
 			secondaryTitleLinksHTML = "";
 			//	First link is the section title itself.
 			targetHeading.querySelectorAll("a:first-of-type").forEach(link => {
@@ -561,8 +562,10 @@ Annotations.dataSources.wikipedia = {
 				secondaryTitleLinksHTML += link.outerHTML;
 				link.remove();
 			});
-			titleHTML = targetHeading.innerHTML;
+			if (secondaryTitleLinksHTML > "")
+				secondaryTitleLinksHTML = ` (${secondaryTitleLinksHTML})`;
 
+			titleHTML = targetHeading.innerHTML;
 			fullTitleHTML = `${titleHTML} (${response["lead"]["displaytitle"]})`;
 		} else {
 			responseHTML = response["lead"]["sections"][0]["text"];
@@ -900,6 +903,131 @@ Annotations.dataSources.wikipedia = {
 		referenceEntry.querySelectorAll(noFigureImagesSelector).forEach(image => {
 			image.classList.add("figure-not");
 		});
+	}
+};
+
+/**********/
+/*  Tweets.
+	*/
+Annotations.dataSources.twitter = {
+	matches: (link) => {
+		return [
+			"twitter.com", 
+			"mobile.twitter.com", 
+			...(Annotations.dataSources.twitter.nitterHosts)
+		].includes(link.hostname);
+	},
+
+	//	Called by: Annotations.processedAPIResponseForLink
+	//	Called by: Annotations.sourceURLForLink
+	sourceURLForLink: (link) => {
+		return new URL(  location.origin 
+					   + Annotations.dataSources.twitter.basePathname
+					   + fixedEncodeURIComponent(fixedEncodeURIComponent(Annotations.targetIdentifier(link)))
+					   + ".html");
+	},
+
+	//	Called by: Annotations.processedAPIResponseForLink
+	processAPIResponse: (response) => {
+		return newDocument(response);
+	},
+
+	//	Called by: Annotations.referenceDataFromParsedAPIResponse
+	referenceDataFromParsedAPIResponse: (response, tweetLink) => {
+		//	Link metadata for title-links.
+		let titleLinkClass = "title-link link-live";
+		let titleLinkIconMetadata = `data-link-icon-type="svg" data-link-icon="twitter"`;
+
+		//	URL for link to user’s page.
+		let titleLinkURL = new URL(response.querySelector("a.username").href);
+		if (titleLinkURL.hostname == location.hostname)
+			titleLinkURL.hostname = "twitter.com";
+		let titleLinkHref = titleLinkURL.href;
+
+		//	Text of link to user’s page.
+		let titleText = response.querySelector("title").textContent.match(/^(.+?):/)[1];
+		let titleHTML = titleText;
+
+		//	Link to tweet.
+		let tweetDate = response.querySelector(".tweet-published").textContent.match(/^(.+?) · /)[1];
+		let tweetLinkURL = new URL(tweetLink);
+		tweetLinkURL.hostname = "twitter.com";
+		let secondaryTitleLinksHTML = ` on <a href="${tweetLinkURL.href}" class="${titleLinkClass}" ${titleLinkIconMetadata}>${tweetDate}</a>:`;
+
+		//	Tweet content itself.
+		let tweetContent = response.querySelector("title").textContent.match(/^(.+?): "(.*)" \| nitter$/)[2];
+
+		//	Attached media (video or images).
+		tweetContent += Annotations.dataSources.twitter.mediaEmbedHTML(response);
+
+		//	Pop-frame title text.
+		let popFrameTitleText = newElement("SPAN", null, { innerHTML: (titleHTML + secondaryTitleLinksHTML) }).textContent;
+
+		return {
+			content: {
+				titleHTML:                titleHTML,
+				fullTitleHTML:            titleHTML,
+				titleText:                titleText,
+				titleLinkHref:            titleLinkHref,
+				titleLinkClass:           titleLinkClass,
+				titleLinkIconMetadata:    titleLinkIconMetadata,
+				secondaryTitleLinksHTML:  secondaryTitleLinksHTML,
+				abstract: 		          tweetContent,
+				dataSourceClass:          "tweet",
+			},
+			template:               "annotation-blockquote-inside",
+			dataSource:		        "twitter",
+			linkTarget:             (GW.isMobile() ? "_self" : "_blank"),
+			whichTab:               (GW.isMobile() ? "current" : "new"),
+			tabOrWindow:            (GW.isMobile() ? "tab" : "window"),
+			popFrameTitleText:      popFrameTitleText,
+			popFrameTitleLinkHref:  tweetLinkURL.href
+		};
+	},
+
+	mediaURLFromMetaTag: (mediaMetaTag, nitterHost) => {
+		let mediaURL = mediaMetaTag.content.startsWith("/")
+					   ? new URL(location.origin + mediaMetaTag.content)
+					   : new URL(mediaMetaTag.content);
+		mediaURL.hostname = nitterHost;
+		return mediaURL;
+	},
+
+	mediaEmbedHTML: (response) => {
+		let nitterHost = Annotations.dataSources.twitter.getNitterHost();
+
+		let imageMetaTagSelector = "meta[property='og:image']";
+		let videoMetaTagSelector = "meta[property='og:video:url']";
+
+		let videoMetaTag = response.querySelector(videoMetaTagSelector);
+		if (videoMetaTag) {
+			let videoURL = Annotations.dataSources.twitter.mediaURLFromMetaTag(videoMetaTag, nitterHost);
+			let imageMetaTag = response.querySelector(imageMetaTagSelector);
+			let imageURL = Annotations.dataSources.twitter.mediaURLFromMetaTag(imageMetaTag, nitterHost);
+			return (  `<figure>`
+            		+ `<video controls="controls" preload="none" poster="${imageURL.href}">`
+            		+ `<source src="${videoURL.href}">`
+            		+ `</video></figure>`);
+		}
+
+		let imageMetaTags = response.querySelectorAll(imageMetaTagSelector);
+		if (imageMetaTags.length > 0) {
+			return Array.from(imageMetaTags).map(tag => 
+					`<img src="${(Annotations.dataSources.twitter.mediaURLFromMetaTag(tag, nitterHost).href)}" loading="lazy">`
+				  ).join("");
+		}
+
+		return ``;
+	},
+
+	basePathname: "/doc/www/twitter.com/",
+
+	nitterHosts: [
+		"nitter.moomoo.me"
+	],
+
+	getNitterHost: () => {
+		return Annotations.dataSources.twitter.nitterHosts[rollDie(Annotations.dataSources.twitter.nitterHosts.length) - 1];
 	}
 };
 

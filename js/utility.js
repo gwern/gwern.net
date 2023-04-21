@@ -2,6 +2,13 @@
 /* author: Said Achmiz */
 /* license: MIT */
 
+/****************************************************************/
+/*	Generates integer from a uniform distribution over [1, size].
+ */
+function rollDie(size) {
+	return Math.floor(Math.random() * (size - 1) + 1);
+}
+
 /********************************************************/
 /*  Returns the string trimmed of opening/closing quotes.
  */

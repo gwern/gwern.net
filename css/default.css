@@ -23,6 +23,7 @@
     --GW-popups-popup-with-full-title-bar-min-height: 120px;
     --GW-popups-annotation-popup-min-width: 480px;
     --GW-popups-annotation-popup-min-height: 240px;
+    --GW-popups-annotation-tweet-popup-min-height: 120px;
     --GW-popups-aux-links-popup-min-width: 480px;
     --GW-popups-aux-links-popup-min-height: 240px;
     --GW-popups-local-page-popup-min-width: 480px;
@@ -4004,6 +4005,10 @@ body.index-directory #footer {
     margin-bottom: 0.375em;
 }
 
+.popframe-body > .annotation.tweet:only-child > p.data-field.title:only-of-type {
+    font-size: 1em;
+}
+
 .popframe-body > div.annotation > div.annotation-abstract > .collapse {
     margin-left: calc(-1 * var(--collapse-left-offset));
     padding-left: var(--collapse-left-offset);
@@ -4774,6 +4779,10 @@ body.index-directory #footer {
 .popup.annotation:not(.annotation-partial) {
     min-width: var(--GW-popups-annotation-popup-min-width);
     min-height: var(--GW-popups-annotation-popup-min-height);
+}
+
+.popup.annotation:not(.annotation-partial).link-tweet {
+	min-height: var(--GW-popups-annotation-tweet-popup-min-height);
 }
 
 /*┌──────────────────┐*/
@@ -5876,6 +5885,14 @@ section.highlight-fading::before {
 .annotation.wikipedia-entry cite,
 .annotation.wikipedia-entry dfn {
     font-style: inherit;
+}
+
+/*	Tweets.
+ */
+
+.annotation.tweet figure {
+    margin: 2em auto 0.1em auto;
+    max-width: unset;
 }
 
 /*  “Aux links” (backlinks, similars, “see also”, etc.) section of annotations.
