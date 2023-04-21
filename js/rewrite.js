@@ -431,14 +431,13 @@ addContentInjectHandler(GW.contentInjectHandlers.injectBacklinksLinkIntoLocalSec
 		backlinksLink.addActivateEvent((event) => {
 			if (backlinksBlock.closest(".collapse").classList.contains("expanded-not")) {
 				GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (info) => {
-					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(backlinksBlock);
+					revealElement(backlinksBlock);
 				}, { once: true });
 			} else {
 				requestAnimationFrame(() => {
-					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(backlinksBlock);
+					revealElement(backlinksBlock);
 				});
 			}
-			revealElement(backlinksBlock, false);
 		});
 	}
 }, "rewrite", (info) => (info.context == "popFrame"));
@@ -1306,25 +1305,14 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteAuxLinksLinksInTransclud
         if (includedAuxLinksBlock) {
             auxLinksLink.onclick = () => { return false; };
             auxLinksLink.addActivateEvent((event) => {
-                if (inPopFrame) {
-                	if (includedAuxLinksBlock.querySelector("ul, ol") == null) {
-						GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-							Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(includedAuxLinksBlock);
-						}, { once: true });
-                	}
-                	if (includedAuxLinksBlock.closest(".collapse").classList.contains("expanded") == false) {
-						GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (info) => {
-							Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(includedAuxLinksBlock);
-						}, { once: true });
-					} else {
-						requestAnimationFrame(() => {
-							Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(includedAuxLinksBlock);
-						});
-					}
-                	revealElement(includedAuxLinksBlock, false);
-                } else {
-                    revealElement(includedAuxLinksBlock, true);
-                }
+				if (includedAuxLinksBlock.querySelector("ul, ol") == null) {
+					GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+						revealElement(includedAuxLinksBlock);
+					}, { once: true });
+				}
+
+				revealElement(includedAuxLinksBlock);
+
                 return false;
             });
         }

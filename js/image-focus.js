@@ -250,7 +250,7 @@ ImageFocus = {
 		ImageFocus.currentlyFocusedImage = imageToFocus;
 
 		//	Scroll to focused image.
-		revealElement(ImageFocus.currentlyFocusedImage, true);
+		revealElement(ImageFocus.currentlyFocusedImage);
 
 		//  Create the focused version of the image.
 		ImageFocus.imageInFocus = imageToFocus.cloneNode(true);
@@ -361,6 +361,7 @@ ImageFocus = {
 		if (ImageFocus.overlay.classList.contains("engaged"))
 			return;
 
+		//	Show overlay.
 		ImageFocus.overlay.classList.add("engaged");
 
 		//  Add listener to zoom image with scroll wheel.
@@ -476,11 +477,13 @@ ImageFocus = {
 					Typography.processElement(element, Typography.replacementTypes.CLEAN|Typography.replacementTypes.QUOTES);
 
 				return element;
-			}).filter((element, index, array) => (   element != null
-												 && isNodeEmpty(element) == false
-												 && array.findIndex(otherElement => 
-														otherElement.textContent.trim() == element.textContent.trim()
-												 ) == index)
+			}).filter((element, index, array) => (
+					element != null
+				 && isNodeEmpty(element) == false
+				 && array.findIndex(otherElement => (
+				 		otherElement != null
+					 && otherElement.textContent.trim() == element.textContent.trim())
+					) == index)
 			).map(element => `<p>${(element.innerHTML.trim())}</p>`)
 			].join("") 
 		  + `</div>`

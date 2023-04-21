@@ -222,26 +222,18 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 			//	Update label text and other HTML-based UI state.
 			updateDisclosureButtonState(collapseBlock);
 
-			//	“Scroll into view” in main document vs. pop-frames.
-			let scrollCollapseBlockIntoView = (collapseBlock) => {
-				if (Extracts.popFrameProvider.containingPopFrame(collapseBlock))
-					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(collapseBlock);
-				else
-					scrollElementIntoView(collapseBlock);
-			};
-
 			/*	If a collapse block was collapsed from the bottom, it might now
 				be up off the screen. Scroll it into view.
 			 */
 			if (   isCollapsed(collapseBlock)
 				&& isOnScreen(collapseBlock) == false)
-				scrollCollapseBlockIntoView(collapseBlock);
+				scrollElementIntoView(collapseBlock);
 			/*	If a collapse block was expanded from the bottom, the top of the
 				collapse block might be up off the screen. Scroll it into view.
 			 */
 			else if (   isCollapsed(collapseBlock) == false
 					 && collapseBlock.getBoundingClientRect().top < 0)
-				scrollCollapseBlockIntoView(collapseBlock);
+				scrollElementIntoView(collapseBlock);
 
 			//	Update temporary state.
 			if (   collapseBlock.classList.contains("expand-on-hover")
@@ -356,16 +348,24 @@ addContentInjectHandler(GW.contentInjectHandlers.expandLockCollapseBlocks = (eve
 
 /*******************************************************************************/
 /*	Ensure that the given element is scrolled into view when layout is complete.
+
+	NOTE: Offset is ignored if element is inside a pop-frame.
  */
 function scrollElementIntoView(element, offset = 0) {
     GWLog("scrollElementIntoView", "collapse.js", 2);
 
-	doWhenPageLayoutComplete(() => {
-		element.scrollIntoView();
-		if (offset != 0)
-			window.scrollBy(0, offset);
-		updateScrollState();
-	});
+	if (   Extracts 
+		&& Extracts.popFrameProvider
+		&& Extracts.popFrameProvider.containingPopFrame(element)) {
+		Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
+	} else {	
+		doWhenPageLayoutComplete(() => {
+			element.scrollIntoView();
+			if (offset != 0)
+				window.scrollBy(0, offset);
+			updateScrollState();
+		});
+	}
 }
 
 /*******************************************************************************/
@@ -376,8 +376,15 @@ function revealElement(element, scrollIntoView = true) {
 
 	let didExpandCollapseBlocks = expandCollapseBlocksToReveal(element);
 
-	if (scrollIntoView)
-		scrollElementIntoView(element);
+	if (scrollIntoView) {
+		if (didExpandCollapseBlocks) {
+			requestAnimationFrame(() => {
+				scrollElementIntoView(element);		
+			});
+		} else {
+			scrollElementIntoView(element);
+		}
+	}
 
 	return didExpandCollapseBlocks;
 }

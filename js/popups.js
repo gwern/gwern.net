@@ -165,6 +165,10 @@ Popups = {
 	/*  General helpers.
 		*/
 
+	popupContainerIsVisible: () => {
+		return (Popups.popupContainer.style.visibility != "hidden");
+	},
+
 	//	Called by: extracts-options.js
 	hidePopupContainer: () => {
 		GWLog("Popups.hidePopupContainer", "popups.js", 3);
@@ -331,6 +335,20 @@ Popups = {
 		//  Despawn existing popup, if any.
 		if (target.popup)
 			Popups.despawnPopup(target.popup);
+
+		/*	Once this popup is spawned, despawn all ephemeral popups not in this
+			popup’s stack.
+		 */
+		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+			Popups.allSpawnedPopups().forEach(spawnedPopup => {
+				if (   Popups.popupIsEphemeral(spawnedPopup)
+					&& target.popup.popupStack.indexOf(spawnedPopup) == -1)
+					Popups.despawnPopup(spawnedPopup);
+			});
+		}, {
+			once: true,
+			condition: (info) => (info.popup == target.popup)
+		});
 
 		//  Create the new popup.
 		target.popFrame = target.popup = Popups.newPopup(target);
@@ -1617,6 +1635,9 @@ Popups = {
 		if (window.popupBeingDragged)
 			return;
 
+		if (Popups.popupContainerIsVisible() == false)
+			return;
+
 		Popups.getPopupAncestorStack(event.target).reverse().forEach(popupInStack => {
 			Popups.clearPopupTimers(popupInStack.spawningTarget);
 			Popups.setPopupFadeTimer(popupInStack.spawningTarget);
@@ -2068,7 +2089,8 @@ Popups = {
 		switch(event.key) {
 			case "Escape":
 			case "Esc":
-				if (Popups.allSpawnedPopups().length > 0)
+				if (   Popups.popupContainerIsVisible()
+					&& Popups.allSpawnedPopups().length > 0)
 					Popups.despawnPopup(Popups.focusedPopup());
 				break;
 			case Popups.popupTilingControlKeys.substr(0,1):
