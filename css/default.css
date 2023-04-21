@@ -269,6 +269,7 @@
 .collapse.has-abstract {
     padding-top: var(--collapse-toggle-top-height);
     padding-bottom: var(--collapse-toggle-bottom-height);
+    min-height: unset;
 }
 
 .collapse > .abstract-collapse {
@@ -535,6 +536,10 @@ blockquote .collapse.has-abstract.expanded-not > .disclosure-button .part::befor
 /**********************************************************************/
 /*  “Bare content” collapses (not a section, not code, not table, etc.)
  */
+
+.collapse.bare-content.has-abstract {
+    padding-left: var(--collapse-left-offset);
+}
 
 .collapse.bare-content.expanded-not > .collapse-content-wrapper > p {
     margin-left: 0.375em;

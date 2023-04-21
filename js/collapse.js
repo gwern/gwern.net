@@ -169,7 +169,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			collapseWrapper.append(collapseContentWrapper);
 
 			//	Designate abstract-less collapse blocks.
-			if (collapseContentWrapper.previousElementSibling.classList.contains("abstract") == false)
+			if (collapseContentWrapper.previousElementSibling.classList.contains("abstract-collapse") == false)
 				collapseWrapper.classList.add("no-abstract");
 		}
 	});
