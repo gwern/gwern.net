@@ -538,6 +538,8 @@ blockquote .collapse.has-abstract.expanded-not > .disclosure-button .part::befor
  */
 
 .collapse.bare-content.has-abstract {
+    --collapse-toggle-top-height: 2.25rem;
+    
     padding-left: var(--collapse-left-offset);
 }
 
