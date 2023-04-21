@@ -124,6 +124,12 @@
     z-index: 12;
 }
 
+/*	Fix for NoScript users.
+ */
+.collapse:not(.expanded):not(.expanded-not)::before {
+    display: none;
+}
+
 /*********************/
 /*  Disclosure button.
  */
