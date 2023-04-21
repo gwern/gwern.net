@@ -6426,7 +6426,7 @@ ol.link-bibliography-list-compact > li::before {
 .mode-selector-inline {
     --GW-mode-selector-background-color: var(--background-color);
 
-    display: inline;
+    display: inline-block;
     position: relative;
     bottom: 0.125em;
 }
