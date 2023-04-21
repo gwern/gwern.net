@@ -293,6 +293,15 @@ ImageFocus = {
 		let imageWidth = ImageFocus.imageInFocus.naturalWidth || ImageFocus.imageInFocus.getAttribute("width");
 		let imageHeight = ImageFocus.imageInFocus.naturalHeight || ImageFocus.imageInFocus.getAttribute("height");
 
+		//	Reset on load.
+		if (imageWidth * imageHeight == 0) {
+			ImageFocus.imageInFocus.addEventListener("load", (event) => {
+				ImageFocus.resetFocusedImagePosition();			
+			}, { once: true });
+
+			return;
+		}
+
 		//	Constrain dimensions proportionally.
 		let constrainedWidth = Math.min(imageWidth, window.innerWidth * ImageFocus.shrinkRatio);
 		let widthShrinkRatio = constrainedWidth / imageWidth;
