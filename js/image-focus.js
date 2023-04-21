@@ -456,9 +456,10 @@ ImageFocus = {
 			and educate quotes. Discard duplicate strings. Wrap all remaining 
 			(unique) strings in <p> tags, and inject into caption container.
 		 */
+		let figcaption = ImageFocus.currentlyFocusedImage.closest("figure").querySelector("figcaption");
 		ImageFocus.overlay.querySelector(".caption").replaceChildren(newDocument(`<div class="caption-text-wrapper">` 
 		  + [ ...[
-				ImageFocus.currentlyFocusedImage.closest("figure").querySelector("figcaption").cloneNode(true),
+				(figcaption ? figcaption.cloneNode(true) : null),
 				newElement("SPAN", null, { "innerHTML": ImageFocus.currentlyFocusedImage.getAttribute("title") }),
 				newElement("SPAN", null, { "innerHTML": ImageFocus.currentlyFocusedImage.getAttribute("alt") }),
 			].map(element => {
