@@ -34,6 +34,29 @@
  */
 ?>
 
+!inline
+Source Serif Pro
+italic	-
+`400	*
+`600	*
+`700	*
+
+!inline
+Source Serif Pro
+italic	+
+`400	*
+
+!inline
+Source Sans Pro
+italic	-
+`400	*
+`700	*
+
+!inline
+Source Sans Pro
+italic	+
+`400	*
+
 Source Serif Pro
 /static/font/ssfp/SourceSerifPro-BASIC-
 ttf

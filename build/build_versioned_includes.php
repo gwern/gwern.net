@@ -23,19 +23,24 @@ echo "Building versioned includes...\n";
  (Configuration for non-Apache servers left as exercise for reader.)
  */
 
-$static_root = __DIR__ . "/..";
+$static_root = __DIR__ . '/..';
 
 $files = [
-	"inlined-foot",
-	"inlined-fonts"
+	'inlined-foot',
+	'inlined-fonts'
 ];
 
 foreach ($files as $file) {
-	$infile = file_get_contents("{$static_root}/template/{$file}-template.html");
+	$template_file_path = "{$static_root}/template/{$file}-template.html";
+	$versioned_file_path = "{$static_root}/include/{$file}.html";
 
-	$outfile = preg_replace_callback('/"\/static\/(.+?)"/i', 'VersionAssetHref', $infile);
+	$infile = file_exists($template_file_path)
+			  ? file_get_contents($template_file_path)
+			  : file_get_contents($versioned_file_path);
 
-	file_put_contents("{$static_root}/include/{$file}.html", $outfile);
+	$outfile = preg_replace_callback('/([\'"])\/static\/(.+?)(\.[^\.\/]+?)(\?=[0-9]+)?\1/i', 'VersionAssetHref', $infile);
+
+	file_put_contents($versioned_file_path, $outfile);
 }
 
 ## FUNCTIONS
@@ -43,10 +48,20 @@ foreach ($files as $file) {
 function VersionAssetHref($m) {
 	global $static_root;
 
-	$file_path = "{$static_root}/{$m[1]}";
-	$file_mod_time = filemtime($file_path);
+	$file_name = $m[2];
+	$file_extension = $m[3];
 
-	return "\"/static/{$m[1]}?v={$file_mod_time}\"";
+	$possible_file_paths = array_map(function ($suffix) use ($static_root, $file_name, $file_extension) {
+		return "{$static_root}/{$file_name}{$suffix}{$file_extension}";
+	}, [ 'VERSIONED', '-GENERATED', '' ]);
+	foreach ($possible_file_paths as $file_path) {
+		if (file_exists($file_path)) {
+			$file_mod_time = filemtime($file_path);
+			return "\"/static/{$file_name}{$file_extension}?v={$file_mod_time}\"";
+		}
+	}
+
+	die('FILE NOT FOUND: ' . "{$static_root}/{$file_name}{$file_extension}");
 }
 
 ?>

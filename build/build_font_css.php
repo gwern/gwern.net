@@ -31,6 +31,7 @@ $static_root = __DIR__ . "/..";
 
 $css_dir = "{$static_root}/css";
 $font_dir = "{$static_root}/font";
+$include_dir = "{$static_root}/include";
 
 ## ACTION
 
@@ -40,15 +41,101 @@ require("{$font_dir}/font_spec.php");
 $spec_file = ob_get_contents();
 ob_end_clean();
 
-$outfile = '@charset "UTF-8";' . "\n";
+$out = [ '@charset "UTF-8";' ];
+$inlined = [ 
+	'<!-- Full font CSS is loaded in footer. Here, inline only the minimal set of font CSS needed for initial screen, for speed: -->',
+	'<style id="inlined-fonts">'
+];
+
+$entries_to_inline = [ ];
 
 $spec_blocks = explode("\n\n", trim($spec_file));
 
 foreach ($spec_blocks as $spec_block) {
-	$spec_lines = explode("\n", trim($spec_block));
+	if ($spec_block[0] == '!') {
+		process_command_block($spec_block);
+		continue;
+	}
+
+	$entries = generate_entries($spec_block);
+
+	$name = $entries[0]['name'];
+	$pad = str_pad('', strlen($name), '*');
+	$out[] = "\n" . "/**" . $pad              . "**/";
+	$out[] =        "/* " . strtoupper($name) . " */";
+	$out[] =        "/**" . $pad              . "**/" . "\n";
+
+	foreach ($entries as $entry) {
+		if (($entry['italic'] ?? null) !== '') {
+			$constructed_rule = construct_rule($entry);
+			if (should_inline($entry))
+				$inlined[] = $constructed_rule;
+			$out[] = $constructed_rule;
+		}
+		if (($entry['italic'] ?? null) !== null) {
+			$constructed_rule = construct_rule($entry, true);
+			if (should_inline($entry, true))
+				$inlined[] = $constructed_rule;
+			$out[] = $constructed_rule;
+		}
+	}
+}
+
+$inlined[] = '</style>';
+
+file_put_contents("{$css_dir}/fonts-GENERATED.css", implode("\n", $out));
+file_put_contents("{$include_dir}/inlined-fonts.html", implode("\n", $inlined));
+
+## FUNCTIONS
+
+function should_inline($candidate_entry, $italic = false) {
+	global $entries_to_inline;
+
+	foreach ($entries_to_inline as $entry) {
+		$entry_matches = true;
+		foreach ($entry as $key => $value) {
+			if ($key == 'italic') {
+				if ($italic) {
+					if (   $value[0] == '+'
+						&& ($candidate_entry['italic'] ?? null) === null) {
+						$entry_matches = false;
+					} else if ($value[0] == '-') {
+						$entry_matches = false;
+					}
+				} else {
+					if (   $value[0] == '-'
+						&& ($candidate_entry['italic'] ?? null) === '') {
+						$entry_matches = false;
+					}
+				}
+			} else if (   $value != '*'
+					   && @$candidate_entry[$key] != $value) {
+				$entry_matches = false;
+			}
+		}
+		if ($entry_matches) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function process_command_block($command_block) {
+	global $entries_to_inline;
+
+	$command_block = explode("\n", $command_block);
+	if ($command_block[0] == "!inline")
+		array_push($entries_to_inline, ...(generate_entries(implode("\n", array_slice($command_block, 1)))));
+}
+
+function generate_entries($spec_block) {
+	global $bare_fields;
+
+	$entries = [ ];
 
 	$spec = [ ];
-	$entries = [ ];
+	$spec_lines = explode("\n", trim($spec_block));
 	foreach ($spec_lines as $line) {
 		if ($line[0] == '`') {
 			list($weight, $filename) = kv_tokenize($line);
@@ -69,52 +156,38 @@ foreach ($spec_blocks as $spec_block) {
 			$spec[$key] = $value;
 		}
 	}
-
-	$out = [ ];
-	$pad = str_pad('', strlen($spec['name']), '*');
-	$out[] = "\n" . "/**" . $pad                      . "**/";
-	$out[] =        "/* " . strtoupper($spec['name']) . " */";
-	$out[] =        "/**" . $pad                      . "**/" . "\n";
-	foreach ($entries as $entry_spec) {
-		$entry_spec = array_merge($spec, $entry_spec);
-		if (($entry_spec['italic'] ?? null) !== '')
-			$out[] = construct_entry($entry_spec);
-		if (($entry_spec['italic'] ?? null) !== null)
-			$out[] = construct_entry($entry_spec, true);
+	foreach ($entries as &$entry) {
+		$entry = array_merge($spec, $entry);
 	}
 
-	$outfile .= implode("\n", $out) . "\n";
+	return $entries;
 }
 
-file_put_contents("{$css_dir}/fonts.css", $outfile);
-
-## FUNCTIONS
-
-function construct_entry($entry_spec, $italic = false) {
+function construct_rule($entry, $italic = false) {
 	global $formats;
 	
-	$entry   = [ ];
-	$entry[] = "@font-face {";
-	$entry[] = "	font-family: '" . $entry_spec['name'] . "';";
-	if ($entry_spec['weight'] > '')
-		$entry[] = "	font-weight: " . $entry_spec['weight'] . ";";
-	if (isset($entry_spec['italic']))
-		$entry[] = "	font-style: " . ($italic ? 'italic' : 'normal') . ";";
-	$path = $entry_spec['base_path'] . $entry_spec['filename'];
-	if ($italic && $entry_spec['italic'] != '') {
-		$pattern = $entry_spec['italic'][0];
-		$replacement = $entry_spec['italic'][1];
+	$rule   = [ ];
+	$rule[] = "@font-face {";
+	$rule[] = "	font-family: '" . $entry['name'] . "';";
+	if ($entry['weight'] > '')
+		$rule[] = "	font-weight: " . $entry['weight'] . ";";
+	if (isset($entry['italic']))
+		$rule[] = "	font-style: " . ($italic ? 'italic' : 'normal') . ";";
+	$path = $entry['base_path'] . $entry['filename'];
+	if ($italic && $entry['italic'] != '') {
+		$pattern = $entry['italic'][0];
+		$replacement = $entry['italic'][1];
 		$path = preg_replace($pattern, $replacement, $path);
 	}
-	$format = $formats[$entry_spec['format']];
-	$entry[] = "	src: url('{$path}.{$entry_spec['format']}') format('{$format}');";
+	$format = $formats[$entry['format']];
+	$rule[] = "	src: url('{$path}.{$entry['format']}') format('{$format}');";
 	$additional_keys = [ 'font-display', 'unicode-range' ];
 	foreach ($additional_keys as $key)
-		if (isset($entry_spec[$key]))
-			$entry[] = "	{$key}: {$entry_spec[$key]};";
-	$entry[] = "}";
+		if (isset($entry[$key]))
+			$rule[] = "	{$key}: {$entry[$key]};";
+	$rule[] = "}";
 
-	return implode("\n", $entry);
+	return implode("\n", $rule);
 }
 
 function kv_tokenize($line) {
