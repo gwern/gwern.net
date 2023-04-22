@@ -91,7 +91,19 @@ if ($force || (`git diff-index --cached HEAD -- {$versioned_files}`)) {
 	`git add {$static_dir}/include/.`;
 }
 
-## Templates and other assets.
+## Preloaded assets.
+$preloaded_assets = [
+	"{$static_dir}/css/default.css",
+	"{$static_dir}/css/fonts-GENERATED.css",
+	"{$static_dir}/css/links.css",
+];
+$preloaded_assets = implode(" ", $preloaded_assets);
+if ($force || (`git diff-index --cached HEAD -- {$preloaded_assets}`)) {
+	require_once("{$build_dir}/build_asset_preload_links.php");
+	`git add {$static_dir}/include/.`;
+}
+
+## Templates.
 $versioned_templates = [ ];
 $versioned_template_patterns = [
 	"{$static_dir}/template/include/*.tmpl",
