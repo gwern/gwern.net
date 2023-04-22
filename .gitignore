@@ -21,3 +21,4 @@ build/guessTag
 build/**/*.html
 css/**/*.html
 js/**/*.html
+.htaccess
