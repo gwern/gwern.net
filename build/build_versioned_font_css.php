@@ -10,7 +10,7 @@ $css_dir = "{$static_root}/css";
 
 ## Action
 
-$font_css = file_get_contents("{$css_dir}/fonts.css");
+$font_css = file_get_contents("{$css_dir}/fonts-GENERATED.css");
 
 $versioned_font_css = preg_replace_callback('/\'\/static\/(.+?)\'/i', 'VersionAssetURL', $font_css);
 

@@ -41,7 +41,7 @@ if ($force || (`git diff-index --cached HEAD -- {$font_spec}`)) {
 
 ## Fonts and font CSS.
 $fonts_and_font_css = [
-	"{$static_dir}/css/fonts.css"
+	"{$static_dir}/css/fonts-GENERATED.css"
 ];
 $font_path_patterns = [
 	"{$static_dir}/font/*/*.otf",
@@ -55,14 +55,14 @@ foreach ($font_path_patterns as $pattern) {
 $fonts_and_font_css = implode(" ", $fonts_and_font_css);
 if ($force || (`git diff-index --cached HEAD -- {$fonts_and_font_css}`)) {
 	require_once("{$build_dir}/build_versioned_font_css.php");
-	`touch {$static_dir}/css/fonts.css`;
+## 	`touch {$static_dir}/css/fonts-GENERATED.css`;
 	`git add {$static_dir}/css/.`;
 }
 
 ## External styles and scripts.
 $versioned_files = [
 	"{$static_dir}/css/default.css",
-	"{$static_dir}/css/fonts.css",
+	"{$static_dir}/css/fonts-GENERATED.css",
 	"{$static_dir}/css/links.css",
 	"{$static_dir}/js/annotations.js",
 	"{$static_dir}/js/collapse.js",
@@ -92,16 +92,16 @@ if ($force || (`git diff-index --cached HEAD -- {$versioned_files}`)) {
 }
 
 ## Templates and other assets.
-$versioned_assets = [ ];
-$versioned_asset_patterns = [
+$versioned_templates = [ ];
+$versioned_template_patterns = [
 	"{$static_dir}/template/include/*.tmpl",
 	"{$static_dir}/template/include/templates.json",
 ];
-foreach ($versioned_asset_patterns as $pattern)
-	$versioned_assets = array_merge($versioned_assets, glob($pattern));
-$versioned_assets = implode(" ", $versioned_assets);
-if ($force || (`git diff-index --cached HEAD -- {$versioned_assets}`)) {
-	require_once("{$build_dir}/build_asset_versions.php");
+foreach ($versioned_template_patterns as $pattern)
+	$versioned_templates = array_merge($versioned_templates, glob($pattern));
+$versioned_templates = implode(" ", $versioned_templates);
+if ($force || (`git diff-index --cached HEAD -- {$versioned_templates}`)) {
+	require_once("{$build_dir}/build_template_versions.php");
 	`git add {$static_dir}/include/.`;
 }
 
