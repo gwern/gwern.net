@@ -1784,7 +1784,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
             width: defaultSize,
             height: defaultSize,
             alt: "↩ Right arrow curving left [footnote return link] arrow",
-            src: "/static/img/icon/arrow-hook-left.svg"
+            src: "/static/img/icon/icons.svg#arrow-hook-left"
         }));
     });
 }, "rewrite");
@@ -2067,7 +2067,8 @@ function enableLinkIcon(link) {
 	if (link.dataset.linkIconType.includes("text")) {
 		link.style.setProperty("--link-icon", `"${(link.dataset.linkIcon)}"`);
 	} else if (link.dataset.linkIconType.includes("svg")) {
-		link.style.setProperty("--link-icon-url", `url("/static/img/icon/${(link.dataset.linkIcon)}.svg")`);
+		link.style.setProperty("--link-icon-url", 
+			`url("/static/img/icon/icons.svg#${(link.dataset.linkIcon)}")`);
 	}
 
 	//	Set class.

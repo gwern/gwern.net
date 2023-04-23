@@ -6221,13 +6221,13 @@ ol.link-bibliography-list-compact > li::before {
 }
 
 .dark-mode-selector button.select-mode-auto::before {
-    content: url('/static/img/icon/adjust-solid.svg');
+    background-image: url('/static/img/icon/icons.svg#adjust-solid');
 }
 .dark-mode-selector button.select-mode-light::before {
-    content: url('/static/img/icon/sun-solid.svg');
+    background-image: url('/static/img/icon/icons.svg#sun-solid');
 }
 .dark-mode-selector button.select-mode-dark::before {
-    content: url('/static/img/icon/moon-solid.svg');
+    background-image: url('/static/img/icon/icons.svg#moon-solid');
 }
 
 .dark-mode-selector button.select-mode-dark {
@@ -6323,13 +6323,13 @@ ol.link-bibliography-list-compact > li::before {
 }
 
 .reader-mode-selector button.select-mode-auto::before {
-    content: url('/static/img/icon/book-with-gear.svg');
+    background-image: url('/static/img/icon/icons.svg#book-with-gear');
 }
 .reader-mode-selector button.select-mode-on::before {
-    content: url('/static/img/icon/book-open-solid.svg');
+    background-image: url('/static/img/icon/icons.svg#book-open-solid');
 }
 .reader-mode-selector button.select-mode-off::before {
-    content: url('/static/img/icon/book-open.svg');
+    background-image: url('/static/img/icon/icons.svg#book-open');
     bottom: 0.15em;
 }
 
@@ -6398,6 +6398,7 @@ ol.link-bibliography-list-compact > li::before {
                        + var(--mode-selector-button-left-adjust));
 }
 .mode-selector button::before {
+	content: "";
     position: absolute;
     width: 1.4em;
     height: 1.4em;
