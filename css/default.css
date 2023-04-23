@@ -967,7 +967,7 @@ hr::after {
 hr::after,
 .horizontal-rule-nth-0 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg */
-    content: url('/static/img/icon/sun-verginasun-black.svg');
+    content: url('/static/img/ornament/sun-verginasun-black.svg');
     opacity: 0.80;
     width: 40px;
     height: 40px;
@@ -975,13 +975,13 @@ hr::after,
 .horizontal-rule-nth-1 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg */
     /* NOTE: alternative moon icon is /static/img/icon/japanesecrest-oookashippouofoookatadasuke-sun.svg modified from https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg - while nice, it lacks the intense moire effect of the Vergina Sun */
-    content: url('/static/img/icon/japanesecrest-tsukinihoshi-dottedmoon.svg');
+    content: url('/static/img/ornament/japanesecrest-tsukinihoshi-dottedmoon.svg');
     opacity: 0.85;
     width: 26px;
     height: 26px;
 }
 .horizontal-rule-nth-2 hr::after {
-    content: url('/static/img/icon/asterism-triplewhitestar.svg');
+    content: url('/static/img/ornament/asterism-triplewhitestar.svg');
     opacity: 0.90;
     width: 38px;
     height: 32px;
@@ -6008,7 +6008,7 @@ ol.link-bibliography-list-compact > li::before {
         calc(var(--box-size) + 2.0 * var(--box-padding-top))
         var(--box-padding-bottom)
         calc(var(--box-size) + 2.0 * var(--box-padding-top) + var(--box-horizontal-offset));
-    background-image: url('/static/img/icon/swissspiralroll.svg#svgView(preserveAspectRatio(none))');
+    background-image: url('/static/img/ornament/swissspiralroll.svg#svgView(preserveAspectRatio(none))');
     background-size: 1000% 100%;
     background-position: center;
     background-repeat: no-repeat;
@@ -6029,7 +6029,7 @@ ol.link-bibliography-list-compact > li::before {
     position: absolute;
     width: var(--box-total-size);
     height: var(--box-total-size);
-    background-image: url('/static/img/icon/swissspiralroll.svg');
+    background-image: url('/static/img/ornament/swissspiralroll.svg');
     background-repeat: no-repeat;
     background-color: inherit;
     background-size: cover;
