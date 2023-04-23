@@ -5,6 +5,16 @@
 /* default.css: contains everything else, like drop caps, link icons, tables, etc */
 
 /**********/
+/* IMAGES */
+/**********/
+
+:root {
+	--GW-image-single-black-star-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 5,0 C 4,4 4,4 0,5 4,6 4,6 5,10 6,6 6,6 10,5 6,4 6,4 5,0 Z" /></svg>');
+	--GW-image-single-white-star-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 5,0 C 4,4 4,4 0,5 4,6 4,6 5,10 6,6 6,6 10,5 6,4 6,4 5,0 Z" /><path d="M 5,2.5 C 4.5,4.5 4.5,4.5 2.5,5 4.5,5.5 4.5,5.5 5,7.5 5.5,5.5 5.5,5.5 7.5,5 5.5,4.5 5.5,4.5 5,2.5 Z" style="fill:%23ffffff" /></svg>');
+	--GW-image-single-white-star-rotated-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 8.75,1.25 C 5,3.5 5,3.5 1.25,1.25 3.5,5 3.5,5 1.25,8.75 5,6.5 5,6.5 8.75,8.75 6.5,5 6.5,5 8.75,1.25 Z" /><path d="M 7,3 C 5,4.2 5,4.2 3,3 4.2,5 4.2,5 3,7 5,5.8 5,5.8 7,7 5.8,5 5.8,5 7,3 Z" style="fill:%23ffffff" /></svg>');
+}
+
+/**********/
 /* COLORS */
 /**********/
 /* colors are now in /static/css/colors.css (light-mode) or /include/dark-mode-GENERATED.css + /include/components/dark-mode-adjustments.css +/include/components/colors-dark-GENERATED.css (dark-mode) */
@@ -937,7 +947,7 @@ section:target > :first-child a::after {
     font-variant-caps: small-caps;
 }
 #footer > p:first-child::after {
-    content: url('/static/img/icon/single-black-star.svg');
+    content: var(--GW-image-single-black-star-svg);
     display: block;
     width: 1em;
     margin: 2.25em auto -0.25em auto;
@@ -1103,7 +1113,7 @@ table, code, pre, a, h1, h2, h3, h4, h5, h6 {
 
 .markdownBody ul > li::before,
 .markdownBody ul ul ul ul > li::before {
-    content: url('/static/img/icon/single-black-star.svg');
+    content: var(--GW-image-single-black-star-svg);
     opacity: 0.65;
 
 }
@@ -1111,14 +1121,14 @@ table, code, pre, a, h1, h2, h3, h4, h5, h6 {
 .markdownBody ul ul ul ul ul > li::before,
 /* special /index override because the link compilation is not bolded */
 body.index .section-link-list > li::before {
-    content: url('/static/img/icon/single-white-star.svg');
+    content: var(--GW-image-single-white-star-svg);
     opacity: 0.85;
 }
 .markdownBody ul ul ul > li::before,
 .markdownBody ul ul ul ul ul ul > li::before,
 body.index .markdownBody .section-link-list ul > li::before {
     /* this rotates into more of a 'lozenge' square for variety's sake */
-    content: url('/static/img/icon/single-white-star-rotated.svg');
+    content: var(--GW-image-single-white-star-rotated-svg);
     opacity: 0.85;
 }
 

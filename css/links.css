@@ -685,6 +685,9 @@ a[data-link-icon='nautilus'] .link-icon-hook::after {
 
     opacity: 0.7;
 }
+a[data-link-icon='nautilus']:hover .link-icon-hook::after {
+    opacity: 0.5;
+}
 
 a[data-link-icon='newyorktimes'] .link-icon-hook::after {
     --link-icon-size: 0.65em;
