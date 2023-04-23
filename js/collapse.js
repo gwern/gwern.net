@@ -35,10 +35,48 @@ function expandCollapseBlocksToReveal(node) {
         expansion (otherwise we’ll do redundant layout).
      */
     if (!expandCollapseBlocksToReveal(collapseBlock.parentElement) && expansionOccurred)
-    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", { source: "expandCollapseBlocksToReveal" });
+    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
+    		source: "expandCollapseBlocksToReveal",
+    		collapseBlock: collapseBlock
+    	});
 
     //  Report whether we had to expand a collapse block.
     return expansionOccurred;
+}
+
+/*******************************************************************************/
+/*	This function collapses the specified collapse block and all collapse blocks
+	nested within it, if any. Fires Collapse.collapseStateDidChange event after
+	all (possibly recursive) collapsing is completed. (Only one event fired per
+	non-recursive call to collapseCollapseBlock(), even if recursive collapsing 
+	occurred.)
+ */
+function collapseCollapseBlock(collapseBlock, fireEvent = true) {
+    GWLog("collapseCollapseBlock", "collapse.js", 2);
+
+	if (isCollapsed(collapseBlock))
+		return;
+
+	/*	Collapse any nested collapse blocks. Fire no state change events when
+		doing so; we will fire a single event, once we’ve collapsed the 
+		specified collapse block, after all of its nested collapse blocks are 
+		collapsed.
+	 */
+	collapseBlock.querySelectorAll(".collapse").forEach(nestedCollapseBlock => {
+		collapseCollapseBlock(nestedCollapseBlock, false);
+	});
+
+	//	Collapse block.
+    collapseBlock.swapClasses([ "expanded", "expanded-not" ], 1);
+	updateDisclosureButtonState(collapseBlock);
+
+	//	Fire event, if need be.
+	if (fireEvent) {
+    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
+    		source: "collapseCollapseBlock",
+    		collapseBlock: collapseBlock
+    	});
+	}
 }
 
 /*******************************************************************/
@@ -81,8 +119,6 @@ function isWithinCollapsedBlock(element) {
 addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo) => {
 	GWLog("prepareCollapseBlocks", "collapse.js", 1);
 
-	let aBlockDidStartExpanded = false;
-
 	//  Construct all collapse blocks (in correct final state).
 	eventInfo.container.querySelectorAll(".collapse").forEach(collapseBlock => {
 		let startExpanded = (collapseBlock.contains(getHashTargetedElement()) == true);
@@ -98,9 +134,6 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 										 + `<span class="icon"></span>`
 									 + `</span>`
 								 + `</button>`;
-
-		if (startExpanded)
-			aBlockDidStartExpanded = true;
 
 		if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].includes(collapseBlock.tagName)) {
 			collapseBlock.classList.remove("collapse");
@@ -172,11 +205,27 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			if (collapseContentWrapper.previousElementSibling.classList.contains("abstract-collapse") == false)
 				collapseWrapper.classList.add("no-abstract");
 		}
-	});
 
-	if (aBlockDidStartExpanded)
-		GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", { source: "prepareCollapseBlocks" });
+		if (startExpanded) {
+			GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
+				source: "prepareCollapseBlocks",
+				collapseBlock: collapseBlock
+			});
+		}
+	});
 }, "rewrite");
+
+/******************************************************************************/
+/*  Collapse all expanded collapse blocks. (Mostly relevant when popping up
+	sections of an already-displayed full page, which may have collapses in it,
+	which have already been expanded, but which we do not want to be expanded
+	when the sections containing them appear in a new context.)
+ */
+addContentInjectHandler(GW.contentInjectHandlers.collapseExpandedCollapseBlocks = (eventInfo) => {
+	GWLog("collapseExpandedCollapseBlocks", "collapse.js", 1);
+
+	eventInfo.container.querySelectorAll(".collapse.expanded").forEach(collapseCollapseBlock);
+}, "<eventListeners");
 
 /********************************************************/
 /*	Updates disclosure button label for current UI state.
@@ -253,7 +302,10 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 				}
 			}
 
-			GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", { source: "Collapse.collapseBlockDisclosureButtonStateChanged" });
+			GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
+				source: "Collapse.collapseBlockDisclosureButtonStateChanged",
+				collapseBlock: collapseBlock
+			});
 		});
 
 		/*	Collapse block expand-on-hover. Clicking within the block while it
@@ -332,8 +384,12 @@ function expandLockCollapseBlock(collapseBlock) {
 	}
 
 	//	Fire event.
-	if (wasCollapsed)
-		GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", { source: "Collapse.expandLockCollapseBlocks" });
+	if (wasCollapsed) {
+		GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
+			source: "Collapse.expandLockCollapseBlocks",
+			collapseBlock: collapseBlock
+		});
+	}
 }
 
 /**********************************************************/

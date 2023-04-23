@@ -429,10 +429,13 @@ addContentInjectHandler(GW.contentInjectHandlers.injectBacklinksLinkIntoLocalSec
 
 		//	Make a click on the link uncollapse the backlinks block.
 		backlinksLink.addActivateEvent((event) => {
-			if (backlinksBlock.closest(".collapse").classList.contains("expanded-not")) {
+			if (isWithinCollapsedBlock(backlinksBlock)) {
 				GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (info) => {
 					revealElement(backlinksBlock);
-				}, { once: true });
+				}, {
+					once: true,
+					condition: (isWithinCollapsedBlock(backlinksBlock) == false)
+				});
 			} else {
 				requestAnimationFrame(() => {
 					revealElement(backlinksBlock);

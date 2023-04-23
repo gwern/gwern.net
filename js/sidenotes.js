@@ -892,7 +892,7 @@ Sidenotes = { ...Sidenotes,
 				*/
 			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange = (info) => {
 				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
-			});
+			}, { condition: (info.collapseBlock.closest("#markdownBody") != null) });
 
 			/*	Add event handler to (asynchronously) recompute sidenote positioning
 				when new content is loaded (e.g. via transclusion).
