@@ -38,7 +38,7 @@ foreach ($files as $file) {
 			  ? file_get_contents($template_file_path)
 			  : file_get_contents($versioned_file_path);
 
-	$outfile = preg_replace_callback('/([\'"])\/static\/(.+?)(\.[^\.\/]+?)(\?=[0-9]+)?\1/i', 'VersionAssetHref', $infile);
+	$outfile = preg_replace_callback('/([\'"])\/static\/(.+?)(\.[^\.\/]+?)(\?v=[0-9]+)?\1/i', 'VersionAssetHref', $infile);
 
 	file_put_contents($versioned_file_path, $outfile);
 }
@@ -61,7 +61,7 @@ function VersionAssetHref($m) {
 		}
 	}
 
-	die('FILE NOT FOUND: ' . "{$static_root}/{$file_name}{$file_extension}");
+	die('FILE NOT FOUND: ' . "{$static_root}/{$file_name}{$file_extension}\n");
 }
 
 ?>
