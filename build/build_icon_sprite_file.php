@@ -1,5 +1,7 @@
 <?php
 
+echo "Building icon sprite file...\n";
+
 $static_root = __DIR__ . '/..';
 $icon_dir = "{$static_root}/img/icon";
 $icon_file_path = "{$icon_dir}/icons.svg";
