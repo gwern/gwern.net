@@ -39,7 +39,7 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "digital.library.unt.edu"
                      "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "www.silcom.com", "esolangs.org",
                      "www.aiweirdness.com", "etherscan.io", "www.theringer.com", "cs.stanford.edu", "mmlab.ie.cuhk.edu.hk", "www.cs.toronto.edu",
                      "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org",
-                     "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info"]
+                     "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com"]
 ------------------------------------------------------------------------------------------
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
@@ -172,7 +172,7 @@ linkIconTestUnitsText =
          , ("https://17th-angel.tumblr.com/post/11409371268/anno-a-transfer-student-opens-the-door-with-a",  "NGE","text,tri")
          , ("https://forum.evageeks.org/index.php",  "EG","text")
          , ("https://www.evamonkey.com/ask-john/has-evangelion-influenced-contemporary-gundam-anime.php",  "EG","text")
-         , ("https://nitter.moomoo.me/EvaMonkey/", "EG", "text")
+         , ("https://twitter.com/EvaMonkey/", "EG", "text")
          , ("https://web.archive.org/web/20151106005148/http://www.evacommentary.org/appendix/character-names.html", "EG", "text")
          , ("http://evaotaku.com/html/programbooks.html",  "NGE","text,tri")
          , ("http://gainax.co.jp/",  "NGE","text,tri")
@@ -251,7 +251,7 @@ linkIconTestUnitsText =
          , ("https://econlolcats.tumblr.com/",  "tumblr","svg")
          , ("https://tvtropes.org/pmwiki/pmwiki.php/Anime/MobileSuitGundamCharscounterattack",  "TV","text")
          , ("https://developer.twitter.com/en/doc/twitter-api/v1/rules-and-filtering/search-operators",  "twitter","svg")
-         , ("https://nitter.moomoo.me/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg")
+         , ("https://twitter.com/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg")
          , ("https://www.uptontea.com/formosa-oolong-tea/taiwan-loose-leaf-oolong-tea/p/V00252/",  "uptontea","svg")
          , ("http://lists.urth.net/pipermail/urth-urth.net/2010-December/019108.html",  "U","text")
          , ("https://www.wolfewiki.com/pmwiki/pmwiki.php?n=Stories.SuzanneDelage", "U","text")
@@ -581,7 +581,7 @@ linkIconTestUnitsText =
          , ("https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html#anthropic", "anthropic", "svg")
          , ("https://arxiv.org/abs/2207.05221#anthropic", "anthropic", "svg")
          , ("https://jack-clark.net/2022/10/31/import-ai-308-recursively-self-improving-lms-3-1tb-of-code-data-dall-e2-makes-alien-errors/", "anthropic", "svg")
-         , ("https://nitter.moomoo.me/jackclarkSF/status/1571125410108407808", "anthropic", "svg")
+         , ("https://twitter.com/jackclarkSF/status/1571125410108407808", "anthropic", "svg")
          , ("https://www.teds.ac.uk/about-teds", "TEDS", "text,quad,sans")
          , ("https://www.tandfonline.com/doi/abs/10.1080/02783190209554137", "T&F", "text,tri,sans")
          , ("https://omega0.xyz/omega8008/JaynesBookPdf.html", "ETJ", "text,tri,sans")
@@ -595,7 +595,7 @@ linkIconTestUnitsText =
          , ("https://www.unz.com/gnxp/through-the-wormhole-are-we-here-for-a-reason-premier-may-13th/", "RK", "text,sans")
          , ("https://razib.substack.com/p/get-lucky", "RK", "text,sans")
          , ("https://www.gnxp.com/WordPress/2017/12/12/most-people-say-they-think-nurture-is-more-important-than-nature-especially-white-americans/", "RK", "text,sans")
-         , ("https://nitter.moomoo.me/razibkhan/status/1463204399954776073", "RK", "text,sans")
+         , ("https://twitter.com/razibkhan/status/1463204399954776073", "RK", "text,sans")
          , ("https://www.outsideonline.com/culture/books-media/how-athletes-get-great/", "𝕆", "text,sans")
          , ("https://thelastpsychiatrist.com/2011/01/why_chinese_mothers_are_not_su.html", "TLP", "text,tri,sans")
          , ("https://jaymans.wordpress.com/2015/07/04/demography-is-destiny/", "J👨🏾", "text,sans")
@@ -606,7 +606,7 @@ linkIconTestUnitsText =
          , ("https://laion.ai/blog/coca/", "laion", "svg")
          , ("https://carryiton.net/chain-letter/bibliography.htm", "✉", "text")
          , ("https://bldgblog.com/2015/12/four-floor-war/", "BLDG", "text,quad,monospace")
-         , ("https://nitter.moomoo.me/patio11/status/1635413289449721856", "pt11", "text,quad,monospace")
+         , ("https://twitter.com/patio11/status/1635413289449721856", "pt11", "text,quad,monospace")
          , ("https://www.bitsaboutmoney.com/archive/the-infrastructure-behind-atms/", "pt11", "text,quad,monospace")
          , ("https://training.kalzumeus.com/newsletters/archive/saas_pricing", "pt11", "text,quad,monospace")
          , ("https://www.kalzumeus.com/2018/10/19/japanese-hometown-tax/", "pt11", "text,quad,monospace")

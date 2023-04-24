@@ -89,7 +89,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "nvidia"  || aU'' ["nvlabs.github.io", "nv-adlr.github.io", "nv-tlabs.github.io"] = aI "n" "text,sans,italic" -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
  | u' "openai" || u'' "gptprompts.wikidot.com" = aI "openai" "svg" -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
  | u' "microsoft" = aI "MS" "text,sans,italic" -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
- | u' "#anthropic" || u' "nitter.moomoo.me/jackclarkSF/" || aU'' ["transformer-circuits.pub", "www.anthropic.com", "jack-clark.net"] = aI "anthropic" "svg" -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media
+ | u' "#anthropic" || u' "twitter.com/jackclarkSF/" || aU'' ["transformer-circuits.pub", "www.anthropic.com", "jack-clark.net"] = aI "anthropic" "svg" -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media
  | u' "#laion"  || u' "LAION-AI" || u'' "laion.ai" = aI "laion" "svg" -- <https://laion.ai/favicon.svg>; need to override Arxiv & Github & Hugging Face
 
  -- Domains:
@@ -125,7 +125,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "examine.com" = aI "Eχ" "text,sans"
  | u'' "www.sciencedirect.com" = aI "E" "text" -- Elsevier/Sciencedirect.com: also an ‘E’
  | u'' "www.esquire.com" = aI "ℰ" "text"
- | aU'' ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' "www.evacommentary.org" || u' "nitter.moomoo.me/EvaMonkey/" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
+ | aU'' ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' "www.evacommentary.org" || u' "twitter.com/EvaMonkey/" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
  | aU'' ["www.fda.gov","fis.fda.gov","clinicaltrials.gov"] = aI "FDA" "text,tri,sans" -- U.S. Food & Drug Administration
  | u'' "www.hpmor.com" || u' "www.fanfiction.net/r/5782108/" || u' "old.reddit.com/r/HPMOR/" = aI "MoR" "text,tri,italic"
  | u' "mozilla.org" = aI "FF" "text,sans" -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized, and confusable with DeepMind.
@@ -236,7 +236,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.pragmatic.ml" = aI "𝕄" "text" -- Madison May, machine learning blog
  | u'' "www.research.va.gov" = aI "VA" "text,sans" -- US Department of Veterans Affair (mostly linked for Million Veteran Project)
  | u'' "apnews.com" = aI "AP" "text,sans"
- | aU' ["www.unz.com/gnxp/", "razib.substack.com", "www.razib.com", "www.gnxp.com", "nitter.moomoo.me/razibkhan"] = aI "RK" "text,sans" -- Razib Khan
+ | aU' ["www.unz.com/gnxp/", "razib.substack.com", "www.razib.com", "www.gnxp.com", "twitter.com/razibkhan"] = aI "RK" "text,sans" -- Razib Khan
  | u'' "www.outsideonline.com" = aI "𝕆" "text,sans" -- imitate the shadowing on Outside Online's 'O' <https://www.outsideonline.com/wp-content/uploads/2021/07/favicon-194x194-1.png>
  | u'' "jaymans.wordpress.com" = aI "J👨🏾" "text,sans" -- JayMan
 
@@ -340,7 +340,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "patrickcollison.com" = aI "PC" "text,sans"
  | u'' "oeis.org" = aI "OEIS" "text,quad,sans" -- On-Line Encyclopedia of Integer Sequences
  | u'' "bldgblog.com" = aI "BLDG" "text,quad,monospace" -- BLDGBLOG (“building blog”, 2004), by Geoff Manaugh <https://en.wikipedia.org/wiki/BLDGBLOG>
- | u' "nitter.moomoo.me/patio11" || aU'' ["www.bitsaboutmoney.com", "training.kalzumeus.com", "www.kalzumeus.com"] = aI "pt11" "text,quad,monospace" -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...
+ | u' "twitter.com/patio11" || aU'' ["www.bitsaboutmoney.com", "training.kalzumeus.com", "www.kalzumeus.com"] = aI "pt11" "text,quad,monospace" -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -366,7 +366,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.theguardian.com" || u'' "www.guardian.co.uk" = aI "theguardian" "svg" -- El Grauniad.
  | u'' "www.newyorker.com" = aI "thenewyorker" "svg" -- The New Yorker: the Dandy SVG, simplified & rotated more vertically.
  | u' "tumblr.com" = aI "tumblr" "svg"
- | aU'' ["twitter.com", "blog.twitter.com", "developer.twitter.com", "nitter.moomoo.me"] = aI "twitter" "svg"
+ | aU'' ["twitter.com", "blog.twitter.com", "developer.twitter.com"] = aI "twitter" "svg"
  | u'' "www.uptontea.com" = aI "uptontea" "svg"
  | u'' "soundcloud.com" = aI "audio" "svg"
  | u' ".bandcamp.com" = aI "audio" "svg"

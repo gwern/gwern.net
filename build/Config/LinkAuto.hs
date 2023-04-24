@@ -565,7 +565,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Scott Sumner", "https://en.wikipedia.org/wiki/Scott_Sumner")
         , ("Seymour Cray", "https://en.wikipedia.org/wiki/Seymour_Cray")
         , ("Shawn Bradley", "https://en.wikipedia.org/wiki/Shawn_Bradley")
-        , ("Shawn Presser", "https://nitter.moomoo.me/theshawwn")
+        , ("Shawn Presser", "https://twitter.com/theshawwn")
         , ("Shinji Ikari", "https://en.wikipedia.org/wiki/Shinji_Ikari")
         , ("Shortformer", "https://arxiv.org/abs/2012.15832")
         , ("SimC[Ll][Rr]", "https://arxiv.org/abs/2002.05709#google")

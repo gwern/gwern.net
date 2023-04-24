@@ -1116,7 +1116,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
                                                                             )
     , ( "https://michaelnielsen.org/" , [ "Michael Nielsen" ] )
     , ( "https://mlp.fandom.com/wiki/Maud_Pie" , [ "Maud Pie" ] )
-    , ( "https://nitter.moomoo.me/theshawwn" , [ "Shawn Presser" ] )
+    , ( "https://twitter.com/theshawwn" , [ "Shawn Presser" ] )
     , ( "https://www.amazon.com/Turings-Cathedral-Origins-Digital-Universe/dp/1400075998/"
       , [ "Turing\8217s Cathedral" ]
       )
