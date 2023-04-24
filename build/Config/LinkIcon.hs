@@ -284,7 +284,7 @@ linkIconTestUnitsText =
          , ("https://www.vanityfair.com/news/2012/10/michael-lewis-profile-barack-obama",  "VF","text")
          , ("https://www.vox.com/2015/5/27/8660249/bill-gates-spanish-flu-pandemic",  "Vox","text,tri,italic")
          , ("https://www.wsj.com/articles/SB10001424052702303380004579521482247869874",  "WSJ","text,tri")
-         , ("http://www.paulgraham.com/hundred.html",  "hn","svg")
+         , ("http://www.paulgraham.com/hundred.html",  "pg","text,monospace")
          , ("https://news.ycombinator.com/item?id=10012625",  "hn","svg")
          , ("https://aino.bandcamp.com/track/--2",  "audio","svg")
          , ("https://poniesatdawn.bandcamp.com/",  "P@D","text,tri")
@@ -611,4 +611,5 @@ linkIconTestUnitsText =
          , ("https://training.kalzumeus.com/newsletters/archive/saas_pricing", "pt11", "text,quad,monospace")
          , ("https://www.kalzumeus.com/2018/10/19/japanese-hometown-tax/", "pt11", "text,quad,monospace")
          , ("https://www.lrb.co.uk/the-paper/v42/n18/james-lasdun/bats-on-the-ceiling", "LRB", "text,tri")
+         , ("https://archiveofourown.org/works/17356235", "Ao3", "text,tri")
         ]

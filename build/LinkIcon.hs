@@ -351,7 +351,8 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.erowid.org" || u'' "www.drugsdata.org" = aI "erowid" "svg"
  | aU' [".tensorflow.org", "github.com/tensorflow/", "medium.com/tensorflow/"] = aI "tensorflow" "svg" -- <https://simpleicons.org/?q=tensorflow>; NOTE: hosted on Github, so override Github
  | aU'' ["github.com", "copilot.github.com", "archiveprogram.github.com", "gist.github.com", "github.blog", "compvis.github.io"] = aI "github" "svg" -- Github; I exclude *.github.io & raw.githubusercontent.com because that’s blogs/papers.
- | u'' "www.paulgraham.com" || u' "ycombinator.com" = aI "hn" "svg" -- PG/HN/YC (shared logo). primary user: news.ycombinator.com
+ | u'' "www.paulgraham.com" = aI "pg" "text,monospace" -- Paul Graham, known by username 'pg' on HN
+ | u' "ycombinator.com" = aI "hn" "svg" -- HN/YC (shared logo). primary user: news.ycombinator.com
  | aU' ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today", "babel.hathitrust.org"] = aI "internetarchive" "svg" -- HathiTrust <https://en.wikipedia.org/wiki/HathiTrust> is confusingly nebulous but its cute elephant logo is unrecognizable and I regard it as basically a wrapper around Google Books+Internet Archive, so I think it's less confusing to put it under the IA logo.
  | u'' "mega.nz" = aI "mega" "svg" -- MegaUpload/Mega: filesharing (used for big files).
  | u'' "intelligence.org" = aI "miri" "svg" -- MIRI/intelligence.org.
