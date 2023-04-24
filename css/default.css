@@ -48,7 +48,7 @@
     --GW-popups-video-vimeo-iframe-width: 495px;
     --GW-popups-video-vimeo-iframe-height: 278px;
     --GW-popups-audio-popup-min-height: 87px;
-    --GW-popups-image-popup-min-size: 64px;
+    --GW-popups-image-popup-min-size: 70px;
 
     --GW-popins-popin-max-height: 75vh;
     --GW-popins-popin-min-height: 120px;
@@ -3386,6 +3386,8 @@ body.index-directory #footer {
     left: 0;
     right: 0;
     overflow: hidden;
+    width: auto;
+    height: auto;
 }
 
 /*=-------------------=*/
@@ -4878,10 +4880,14 @@ body.index-directory #footer {
 .popup.image {
     width: unset;
     height: unset;
-    min-height: var(--GW-popups-image-popup-min-size);
+    min-height: calc(var(--GW-popups-image-popup-min-size) + var(--GW-popups-popup-mini-title-bar-height));
 }
 .popup.image:not(.has-footer) {
     min-width: var(--GW-popups-image-popup-min-size);
+}
+
+.popup-body.image figure {
+    background-color: var(--background-color);
 }
 
 .popup-body.image img {
@@ -4889,7 +4895,7 @@ body.index-directory #footer {
     max-width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
     max-height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
     object-fit: contain;
-    background-color: var(--GW-popups-popup-border-color);
+    outline: none;
 }
 .popup-body.image img.invert,
 .popup-body.image img.invert-auto {
@@ -5238,8 +5244,6 @@ body.index-directory #footer {
     min-height: var(--GW-popins-popin-min-height);
     overflow: visible;
     z-index: 100;
-
-    margin: 1em 0;
 
     /*  Styling. */
     border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
@@ -5602,10 +5606,10 @@ body.index-directory #footer {
 /*└────────────────────┘*/
 
 @media only screen and (max-width: 649px) {
-    .popin-body figure:first-child {
+    .popin-body.annotation figure:first-child {
         margin-top: 1.75em;
     }
-    .popin-body.wikipedia-entry figure:first-child {
+    .popin-body.annotation.wikipedia-entry figure:first-child {
         margin-top: 1.5em;
     }
 }
@@ -5647,6 +5651,7 @@ body.index-directory #footer {
 .popin-body.image img {
     margin: auto;
     max-height: calc(var(--GW-popins-popin-max-height) - 2 * var(--GW-popins-popin-border-width) - var(--popin-title-bar-height));
+    outline: none;
 }
 
 /*┌───────────────┐*/

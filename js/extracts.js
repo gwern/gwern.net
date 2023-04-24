@@ -631,8 +631,8 @@ Extracts = {
         popFrame.classList.add(...target.classList);
         //  We then remove some of the imported classes.
         popFrame.classList.remove("has-annotation", "has-annotation-partial", 
-        	"has-content", "link-self", "link-page", 
-        	"spawns-popup", "spawns-popin", "uri");
+        	"has-content", "link-self", "link-page", "has-icon",
+        	"has-indicator-hook", "spawns-popup", "spawns-popin", "uri");
 
         //  Attempt to fill the popup.
         if (Extracts.fillPopFrame(popFrame) == false)

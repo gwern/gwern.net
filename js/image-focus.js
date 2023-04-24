@@ -262,7 +262,7 @@ ImageFocus = {
 		ImageFocus.overlay.appendChild(ImageFocus.imageInFocus);
 
 		//  Set image to default size and position.
-		ImageFocus.resetFocusedImagePosition();
+		ImageFocus.resetFocusedImagePosition(true);
 
 		//  If image is bigger than viewport, it’s draggable.
 		ImageFocus.imageInFocus.addEventListener("mousedown", ImageFocus.imageMouseDown);
@@ -283,23 +283,35 @@ ImageFocus = {
 		GW.notificationCenter.fireEvent("ImageFocus.imageDidFocus", { image: imageToFocus });
 	},
 
-	resetFocusedImagePosition: () => {
+	resetFocusedImagePosition: (updateOnLoad = false) => {
 		GWLog("ImageFocus.resetFocusedImagePosition", "image-focus.js", 2);
 
 		if (ImageFocus.imageInFocus == null)
 			return;
 
 		//  Make sure that initially, the image fits into the viewport.
-		let imageWidth = ImageFocus.imageInFocus.naturalWidth || ImageFocus.imageInFocus.getAttribute("width");
-		let imageHeight = ImageFocus.imageInFocus.naturalHeight || ImageFocus.imageInFocus.getAttribute("height");
+		let imageWidth, imageHeight;
+		if ((new URL(ImageFocus.imageInFocus.src)).pathname.endsWith(".svg")) {
+			//	Special handling for SVGs, which have no intrinsic size.
+			imageWidth = imageHeight = Math.min(window.innerWidth, window.innerHeight);
+		} else {
+			//	Non-SVGs have intrinsic size.
+			imageWidth = ImageFocus.imageInFocus.naturalWidth || ImageFocus.imageInFocus.getAttribute("width");
+			imageHeight = ImageFocus.imageInFocus.naturalHeight || ImageFocus.imageInFocus.getAttribute("height");
 
-		//	Reset on load.
-		if (imageWidth * imageHeight == 0) {
-			ImageFocus.imageInFocus.addEventListener("load", (event) => {
-				ImageFocus.resetFocusedImagePosition();			
-			}, { once: true });
+			if (imageWidth * imageHeight == 0) {
+				if (updateOnLoad == true) {
+					//	Reset on load.
+					ImageFocus.imageInFocus.addEventListener("load", (event) => {
+						ImageFocus.resetFocusedImagePosition(false);
+					}, { once: true });
 
-			return;
+					return;
+				} else {
+					//	This shouldn’t happen. Display an error?
+					return;
+				}
+			}
 		}
 
 		//	Constrain dimensions proportionally.
@@ -674,6 +686,9 @@ ImageFocus = {
 	mouseUp: (event) => {
 		GWLog("ImageFocus.mouseUp", "image-focus.js", 2);
 
+		//	Different handling for drag-end events than clicks.
+		let imageWasBeingDragged = (window.onmousemove != null);
+
 		//	Do this regardless of where the mouse-up is.
 		if (   ImageFocus.imageInFocus.height >= window.innerHeight
 			|| ImageFocus.imageInFocus.width >= window.innerWidth) {
@@ -693,7 +708,8 @@ ImageFocus = {
 
 		if (   (   ImageFocus.imageInFocus.height < window.innerHeight
 				&& ImageFocus.imageInFocus.width < window.innerWidth)
-			|| event.target != ImageFocus.imageInFocus)
+			|| (   imageWasBeingDragged == false
+				&& event.target != ImageFocus.imageInFocus))
 			ImageFocus.exitImageFocus();
 	},
 
