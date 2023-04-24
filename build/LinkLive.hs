@@ -4128,7 +4128,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.bfi.org/about-bucky/resources/books/grunch-giants/foreword"
             , "https://www.bfmtv.com/police-justice/info-bfmtv-loire-un-cyberdealer-interpelle-premiere-en-france_AN-201312260067.html"
             , "https://www.biorxiv.org/content/10.1101/274654.full"
-            , "https://www.bioworld.com/content/another-miss-targacept-tc-5619-fails-adhd-trial-0"
+            , "https://web.archive.org/web/20140802145156/https://www.bioworld.com/content/another-miss-targacept-tc-5619-fails-adhd-trial-0"
             , "https://www.birminghammail.co.uk/news/midlands-news/man-who-bought-glock-pistol-11538095"
             , "https://www.bizjournals.com/albany/stories/2010/01/11/focus2.html?page=all"
             , "https://www.blender.org/user-stories/japanese-anime-studio-khara-moving-to-blender/"

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-19 14:27:38 gwern"
+# When:  Time-stamp: "2023-04-21 15:22:14 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -51,7 +51,7 @@ pdfcut () { if [ $# -ne 1 ]; then echo "Too many arguments" && return 1; fi
           }
 
 # crossref: defined in ~/wiki/static/build/crossref
-alias cr="crossref"
+cr () { crossref "$@" & }
 
 # PDF cleanup: strip encryption, run through `pdftk` to render them standard & strip out weirdness, reformat titles.
 e () { FILE=""
