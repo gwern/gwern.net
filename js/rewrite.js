@@ -632,6 +632,38 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthTables = (eventInf
 /* FIGURES */
 /***********/
 
+/***************************************************************************/
+/*  Make sure that the figcaption, alt-text, and title are, collectively, as
+	useful as possible (i.e., ensure that neither the alt-text nor the title
+	duplicate the contents of the figcaption).
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rectifyImageAuxText = (eventInfo) => {
+    GWLog("rectifyImageAuxText", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("figure img").forEach(image => {
+		let figcaption = image.closest("figure").querySelector("figcaption");
+		if (figcaption == null)
+			return;
+
+		let [ captionText, titleText, altText ] = [
+			figcaption.cloneNode(true),
+			newElement("SPAN", null, { "innerHTML": image.getAttribute("title") }),
+			newElement("SPAN", null, { "innerHTML": image.getAttribute("alt") }),
+		].map(element => {
+			if (element)
+				Typography.processElement(element, Typography.replacementTypes.CLEAN|Typography.replacementTypes.QUOTES);
+
+			return element.textContent.trim();
+		});
+
+		if (titleText == captionText)
+			image.title = altText;
+
+		if (altText == captionText)
+			image.alt = titleText;
+	});
+}, "rewrite");
+
 /*******************************/
 /*  Wrap bare images in figures.
  */
