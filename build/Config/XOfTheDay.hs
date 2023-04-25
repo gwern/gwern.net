@@ -462,4 +462,4 @@ siteBlackList = [
           "casetext.com", "archive.is", "phabricator.wikimedia.org", "www.cs.ox.ac.uk", "www.aboutamazon.com", "yosefk.com", "www.informit.com",
           "inews.co.uk", "en.wikibooks.org", "yougov.co.uk", "nunosempere.com", "www.inverse.com","www.icpsr.umich.edu","reallifemag.com",
           "doi.org","www.nlsinfo.org","science.sciencemag.org", "supp.apa.org", "www.eoht.info", "www.j-archive.com","www.engadget.com",
-          "www.armyupress.army.mil","rajpurkar.github.io"]
+          "www.armyupress.army.mil","rajpurkar.github.io", "mssprovenance.blogspot.com", "psychclassics.yorku.ca"]

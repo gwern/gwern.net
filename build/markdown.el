@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-04-21 10:16:02 gwern"
+;;; When:  Time-stamp: "2023-04-22 22:48:57 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -708,8 +708,12 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
          (query-replace "-\n" "" nil begin end)
          (query-replace "- \n" "" nil begin end)
          (query-replace "-\n" "-" nil begin end)
-         (when (equal (buffer-name) "foo")
-           (markdown-remove-newlines-in-paragraphs)) ; once all the hyphenation is dealt with, remove the hard-newlines which are common in PDF copy-pastes. These hard newlines are a problem because they break many string matches, and they make `langcheck` highlight every line beginning/ending in red as an error.
+
+         (when (and (equal (buffer-name) "foo")
+           (not (save-excursion
+                  (goto-char (point-min))
+                  (re-search-forward "^[0-9#]" nil t))))
+  (markdown-remove-newlines-in-paragraphs)) ; once all the hyphenation is dealt with, remove the hard-newlines which are common in PDF copy-pastes. These hard newlines are a problem because they break many string matches, and they make `langcheck` highlight every line beginning/ending in red as an error.
          (query-replace " -- " "---" nil begin end)
          (query-replace " --- " "---" nil begin end)
          (query-replace "--- " "---" nil begin end)
@@ -1261,7 +1265,7 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
 (defgroup markdown-newline-removal nil
   "Options for removing newlines within paragraphs in Markdown text."
   :group 'markdown)
-(defcustom markdown-excluded-chars (rx (any ?- ?\n ?\d ?# ?*))
+(defcustom markdown-excluded-chars (rx (any ?- ?\n ?\d ?# ?* ?>))
   "Characters to exclude when removing newlines within paragraphs in Markdown text."
   :type 'regexp
   :group 'markdown-newline-removal)

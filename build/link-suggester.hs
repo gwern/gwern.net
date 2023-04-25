@@ -450,7 +450,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
   , ( "https://www.lightspeedmagazine.com/fiction/exhalation/"
     , [ "Exhalation" ]
     )
-  , ( "http://www.psy.cmu.edu/~unsio/Sio_Ormerod_meta_analysis_incubation_PB.pdf"
+  , ( "/doc/psychology/writing/2009-sio.pdf"
     , [ "Does incubation enhance problem-solving? A meta-analytic review"
       , "Sio & Ormerod 2009"
       ]
@@ -1082,11 +1082,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
     , [ "A Novel BHLHE41 Variant is Associated with Short Sleep and Resistance to Sleep Deprivation in Humans"
       , "Pellegrino et al 2014"
       ]
-    ), ( "https://pdfs.semanticscholar.org/76c6/ce0abf6f67f2c089df372261203989b43903.pdf"
-    , [ "Does incubation enhance problem-solving? A meta-analytic review"
-      , "Sio & Ormerod 2009"
-      ]
-    ), ( "https://predictionbook.com/"
+    ),  ( "https://predictionbook.com/"
     , [ "PredictionBook" , "PredictionBook.com" ]
     ), ( "https://web.archive.org/web/20140527121332/http://www.infinityplus.co.uk/stories/under.htm"
     , [ "\"Understand\"" ]
@@ -1116,7 +1112,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
                                                                             )
     , ( "https://michaelnielsen.org/" , [ "Michael Nielsen" ] )
     , ( "https://mlp.fandom.com/wiki/Maud_Pie" , [ "Maud Pie" ] )
-    , ( "https://nitter.moomoo.me/theshawwn" , [ "Shawn Presser" ] )
+    , ( "https://twitter.com/theshawwn" , [ "Shawn Presser" ] )
     , ( "https://www.amazon.com/Turings-Cathedral-Origins-Digital-Universe/dp/1400075998/"
       , [ "Turing\8217s Cathedral" ]
       )

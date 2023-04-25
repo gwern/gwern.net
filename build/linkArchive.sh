@@ -3,13 +3,13 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2023-03-24 10:51:51 gwern"
+# When:  Time-stamp: "2023-04-23 20:31:41 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
 # extract the location of the static serialized HTML, and move it to the wiki's `./doc/www/$DOMAIN/$SHA1($URL).html`;
 # if the MIME type indicates a PDF, we download & host locally.
-# For detailed background on how this is used & the overall design, see LinkArchive.hs & <https://gwern.net/archiving#preemptive-local-archiving>.
+# For detailed background on how this is used & the overall design, see </static/build/LinkArchive.hs> & <https://gwern.net/archiving#preemptive-local-archiving>.
 #
 # Example:
 # "https://www.framerated.co.uk/the-haunting-1963/" → /home/gwern/wiki/doc/www/www.framerated.co.uk/31900688e194a1ffa443c2895aaab8f8513370f3.html
@@ -21,14 +21,11 @@
 #
 # Requires: sha1sum, SingleFile+chromium, timeout, curl, wget, ocrmypdf; pdftk recommended for 'decrypting' PDFs
 
-# set -e
-# set -x
-
 USER_AGENT="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:110.0) Gecko/20100101 Firefox/110.0"
 
 TARGET=""
 ## NOTE: anchor-handling is tricky. We need to drop everything after '#' because it's technically not part of the
-## filepath/URL - it's only relevant to the web browser.
+## filepath/URL—it's only relevant to the web browser.
 ## A web browser visiting a URL like "https://foo.com/bar.html#1" is visiting the file "bar.html", *not* "bar.html#1".
 ## But we still need to return it as part of the final rewritten path/URL.
 HASH="$(echo -n "$1" | sed -e 's/^\///' | cut -d '#' -f 1 | sha1sum - | cut -d ' ' -f 1)"
@@ -43,15 +40,15 @@ if [[ -n "$FILE" || "$2" == "--check" ]]; then # use of `--check` means that we 
 else
 
     URL=$(echo "$@" | sed -e 's/https:\/\/arxiv\.org/https:\/\/export.arxiv.org/') # NOTE: http://export.arxiv.org/help/robots (we do the rewrite here to keep the directories & URLs as expected like `/doc/www/arxiv.org/`).
-    ## 404?
+    ## 404? NOTE: Infuriatingly, Nitter domains will lie to curl when we use `--head` GET requests to be bandwidth-efficient, and will return 404 hits for *everything*. Jerks. So we can't use `--head` to be efficient, we have to do a full request just to be sure we aren't being lied to about the status. (Jerks.)
     HTTP_STATUS=$(timeout 20s curl --user-agent "$USER_AGENT" \
-                          --head --write-out '%{http_code}' --silent -L -o /dev/null "$URL" || echo "Unsuccessful: $1 $HASH" 1>&2 && exit 1)
+                          -H "Accept: */*" --write-out '%{http_code}' --silent -L -o /dev/null "$URL" || echo "Unsuccessful: $1 $HASH" 1>&2 && exit 1)
     if [[ "$HTTP_STATUS" == "404" ]]; then
         echo "Unsuccessful: $1 $HASH" 1>&2
         exit 1
     else
         # Remote HTML, which might actually be a PDF:
-        MIME_REMOTE=$(timeout 20s curl --user-agent "$USER_AGENT" \
+        MIME_REMOTE=$(timeout 20s curl -H "Accept: */*" --user-agent "$USER_AGENT" \
                           --head --write-out '%{content_type}' --silent -L -o /dev/null "$URL" || echo "Unsuccessful: $1 $HASH" 1>&2 && exit 1)
 
         if [[ "$MIME_REMOTE" =~ "application/pdf".* || "$URL" =~ .*'.pdf'.* || "$URL" =~ .*'_pdf'.* || "$URL" =~ '#pdf'.* || "$URL" =~ .*'/pdf/'.* ]];
@@ -82,7 +79,7 @@ else
         else
             TARGET="/tmp/$HASH.html"
             # https://github.com/gildas-lormeau/SingleFile/blob/master/cli/README.MD (ArchiveBox didn't work out)
-            # WARNING: for me single-file emits misleading errors about needing to 'npm install' the browser, but
+            # WARNING: for me single-file emits misleading errors about needing to `npm install` the browser, but
             # apparently you're supposed to `--browser-executable-path` workaround that, which is documented only in a bug report
             # CURRENT CLI from chrome://version: /home/gwern/snap/chromium/common/chromium/Default
             # REGULAR:                           /home/gwern/snap/chromium/common/chromium/Default

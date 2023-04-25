@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-04-14 19:54:01 gwern"
+# When:  Time-stamp: "2023-04-23 11:38:45 gwern"
 # License: CC-0
 #
 # This will reformat, run PDFs through `ocrmypdf` (via the `compressPdf` wrapper), and `git commit` new files.
@@ -97,6 +97,7 @@ else
                     rsync --chmod='a+r' -v "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/"
                 URL="https://gwern.net/$TARGET_DIR/$(basename "$FILE")"
                 cloudflare-expire "$TARGET_DIR/$(basename "$FILE")"
+                echo ""
                 echo "/$TARGET $URL"
 
                 $WWW_BROWSER "$URL") &

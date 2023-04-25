@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-04-19 21:26:41 gwern"
+When:  Time-stamp: "2023-04-20 09:14:54 gwern"
 License: CC-0
 -}
 
@@ -420,7 +420,7 @@ hasAnnotation md = walk (hasAnnotationInline md)
 
 hasAnnotationInline :: Metadata -> Inline -> Inline
 hasAnnotationInline mdb y@(Link (a,classes,c) d (f,g)) =
-  if hasAny ["link-annotated-not", "id-not", "link-annotated", "link-annotated-partial"] classes then y
+  if hasAny ["link-annotated-not", "link-annotated", "link-annotated-partial"] classes then y
   else
     let f' = linkCanonicalize $ T.unpack f in
       case M.lookup f' mdb of
