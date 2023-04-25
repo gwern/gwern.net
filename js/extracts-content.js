@@ -1020,9 +1020,10 @@ Extracts = { ...Extracts,
     localImageForTarget: (target) => {
         GWLog("Extracts.localImageForTarget", "extracts-content.js", 2);
 
-        let width = target.dataset.imageWidth || 0;
-        let height = target.dataset.imageHeight || 0;
+        let width = target.dataset.imageWidth ?? 0;
+        let height = target.dataset.imageHeight ?? 0;
 
+		//	Constrain dimensions, shrinking proportionally.
         if (width > Extracts.imageMaxWidth) {
             height *= Extracts.imageMaxWidth / width;
             width = Extracts.imageMaxWidth;
@@ -1032,6 +1033,7 @@ Extracts = { ...Extracts,
             height = Extracts.imageMaxHeight;
         }
 
+		//	Specify dimensions in HTML and CSS.
         let styles = ``;
         if (   width > 0
             && height > 0)
@@ -1039,7 +1041,13 @@ Extracts = { ...Extracts,
             	   + `height="${(target.dataset.imageHeight)}" `
             	   + `style="width: ${width}px; height: ${height}px; aspect-ratio: ${width} / ${height}"`;
 
-        //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invert’.
+		//	Special handling for SVGs.
+		if (target.pathname.endsWith(".svg"))
+			styles = `style="width: 100%; height: 100%"`;
+
+        /*  Note that we pass in the original image-link’s classes; this is 
+        	good for classes like ‘invert’.
+         */
         return newDocument(`<figure><img
                                 ${styles}
                                 class="${target.classList}"
