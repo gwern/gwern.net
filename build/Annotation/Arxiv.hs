@@ -12,7 +12,7 @@ import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, Tag(TagText)
 
 import LinkAuto (linkAutoHtml5String)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path)
-import Utils (checkURL, printRed, initializeAuthors, replace, cleanAbstractsHTML, processDOI, safeHtmlWriterOptions, replaceMany, sedMany, printGreen, trimTitle, processDOIArxiv)
+import Utils (checkURL, printRed, cleanAuthors, replace, cleanAbstractsHTML, processDOI, safeHtmlWriterOptions, replaceMany, sedMany, printGreen, trimTitle, processDOIArxiv)
 import Paragraph (processParagraphizer)
 
 arxiv :: Path -> IO (Either Failure (Path, MetadataItem))
@@ -23,7 +23,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                  _ -> do let (tags,_) = element "entry" $ parseTags $ U.toString bs
                          -- compile the title string because it may include math (usually a superscript, like "S$^2$-MLP: Spatial-Shift MLP Architecture for Vision" or "RL$^2$" etc)
                          let title = replace "<p>" "" $ replace "</p>" "" $ cleanAbstractsHTML $ processArxivAbstract $ trimTitle $ findTxt $ fst $ element "title" tags
-                         let authors = initializeAuthors $ intercalate ", " $ getAuthorNames tags
+                         let authors = cleanAuthors $ intercalate ", " $ getAuthorNames tags
                          let published = take 10 $ findTxt $ fst $ element "published" tags -- "2017-12-01T17:13:14Z" → "2017-12-01"
                          -- NOTE: Arxiv used to not provide its own DOIs; that changed in 2022: <https://blog.arxiv.org/2022/02/17/new-arxiv-articles-are-now-automatically-assigned-dois/>; so look for DOI and if not set, try to construct it automatically using their schema `10.48550/arXiv.2202.01037`
                          let doiTmp = processDOI $ findTxt $ fst $ element "arxiv:doi" tags

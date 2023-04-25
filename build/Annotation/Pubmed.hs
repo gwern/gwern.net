@@ -10,7 +10,7 @@ import Data.FileStore.Utils (runShellCommand)
 import LinkAuto (linkAutoHtml5String)
 
 import LinkMetadataTypes (MetadataItem, Failure(..), Path)
-import Utils (cleanAbstractsHTML, replace, trim, safeHtmlWriterOptions, sed, processDOI, trimTitle, checkURL, printGreen, initializeAuthors)
+import Utils (cleanAbstractsHTML, replace, trim, safeHtmlWriterOptions, sed, processDOI, trimTitle, checkURL, printGreen, cleanAuthors)
 import Paragraph (processParagraphizer)
 
 -- handles both PM & PLOS right now:
@@ -25,7 +25,7 @@ pubmed l = do checkURL l
                           do let (title:author:date:doi:abstrct) = parsed
                              let ts = [] -- TODO: replace with ML call to infer tags
                              abstract' <- fmap linkAutoHtml5String $ processParagraphizer l $ processPubMedAbstract $ unlines abstrct
-                             return $ Right (l, (cleanAbstractsHTML $ trimTitle title, initializeAuthors $ trim author, trim date, trim $ processDOI doi, ts, abstract'))
+                             return $ Right (l, (cleanAbstractsHTML $ trimTitle title, cleanAuthors $ trim author, trim date, trim $ processDOI doi, ts, abstract'))
 
 processPubMedAbstract :: String -> String
 processPubMedAbstract abst = let clean = runPure $ do

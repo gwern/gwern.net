@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-04-20 09:14:54 gwern"
+When:  Time-stamp: "2023-04-25 17:04:11 gwern"
 License: CC-0
 -}
 
@@ -25,7 +25,7 @@ import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, Te
 import Data.Containers.ListUtils (nubOrd)
 import Data.IORef (IORef)
 import Data.Function (on)
-import Data.List (intercalate, intersect, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, sortBy, (\\))
+import Data.List (intersperse, intercalate, intersect, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, sortBy, (\\))
 import Data.List.HT (search)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
 import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) -- NOTE: from 'yaml' package, *not* 'HsYaml'
@@ -58,7 +58,7 @@ import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(..
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
-import Utils (writeUpdatedFile, printGreen, printRed, sed, trim, simplified, anyInfix, anyPrefix, anySuffix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, sedMany, trim, simplified, anyInfix, anyPrefix, anySuffix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 
@@ -487,8 +487,9 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
                                     lidSimilarLinkFragment = if lid=="" then "" else "similarlink-transclusion-" `T.append` lid
                                     lidLinkBibLinkFragment = if lid=="" then "" else "link-bibliography-transclusion-" `T.append` lid
                                     authorShort = authorsTruncate aut
-                                    authorSpan = if aut/=authorShort then Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
-                                                 else Span ("", ["author", "cite-author"], []) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
+                                    authorsInitialized = if truncAuthorsp then [Str (T.pack authorShort)] else authorsInitialize aut
+                                    authorSpan = if aut/=authorShort then Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) authorsInitialized
+                                                 else Span ("", ["author", "cite-author"], []) authorsInitialized
                                     author = if aut=="" || aut=="N/A" || aut=="N/\8203A" then [Space] else [Space, authorSpan]
                                     date = if dt=="" then [] else [Span ("", ["date", "cite-date"],
                                                                           if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
@@ -529,6 +530,23 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
                              where
                                nonAnnotatedLink :: [Block]
                                nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]]
+
+-- Compact lists of authors to abbreviate personal names, but preserve the full name in a span tooltip for on-hover like usual.
+-- eg. > authorsInitialize "J. Smith, Foo Bar"
+-- → [Str "J. Smith",Str ", ",Span ("",[],[("title","Foo Bar")]) [Str "F. Bar"]]
+-- > authorsInitialize "John Jacob Jingleheimer Schmidt"
+-- → [Span ("",[],[("title","John Jacob Jingleheimer Schmidt")]) [Str "J. Schmidt"]]
+authorsInitialize :: String -> [Inline]
+authorsInitialize aut = let authors = split ", " aut in
+                          intersperse (Str ", ") $
+                          map (\a -> let short = sedMany (reverse [
+                                           -- two middle-names:
+                                           ("^([A-za-z.-])[A-za-z.-]+ [A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
+                                           -- one middle-name:
+                                           , ("^([A-za-z.-])[A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
+                                           -- no middle-name:
+                                           , ("^([A-za-z.-])[A-za-z.-]+ (.*)", "\\1. \\2")]) a in
+                                       if a==short then Str (T.pack a) else Span ("", [], [("title", T.pack a)]) [Str (T.pack short)]) authors
 
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime; but for backwards compatibility with non-JS readers (such as NoScript users, bots, tools etc), we still provide the title/author/date/backlinks/similar-links along with the transcluded-URL. For JS users, that all will be replaced by the proper popups annotation, and is mostly irrelevant to them. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]

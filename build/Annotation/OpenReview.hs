@@ -8,7 +8,7 @@ import Data.FileStore.Utils (runShellCommand)
 import LinkAuto (linkAutoHtml5String)
 
 import LinkMetadataTypes (MetadataItem, Failure(..), Path)
-import Utils (cleanAbstractsHTML, replace, trim, trimTitle, checkURL, initializeAuthors, printRed)
+import Utils (cleanAbstractsHTML, replace, trim, trimTitle, checkURL, cleanAuthors, printRed)
 
 import Annotation.Arxiv (processArxivAbstract)
 
@@ -28,6 +28,6 @@ openreview p = do checkURL p
                              let tldr' = cleanAbstractsHTML $ processArxivAbstract tldr
                              let desc' = cleanAbstractsHTML $ processArxivAbstract desc
                              let abstractCombined = trim $ intercalate "\n" [tldr', desc', linkAutoHtml5String $ cleanAbstractsHTML $ processArxivAbstract keywords']
-                             return $ Right (p, (trimTitle title, initializeAuthors $ trim author, date, "", [],
+                             return $ Right (p, (trimTitle title, cleanAuthors $ trim author, date, "", [],
                                                  -- due to pseudo-LaTeX
                                                    abstractCombined))
