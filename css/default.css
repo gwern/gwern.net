@@ -1551,6 +1551,16 @@ a.footnote-ref {
     transition:
         box-shadow 0.15s ease 0.05s;
 }
+/*	Expanded hover/tap area.
+ */
+a.footnote-ref::after {
+    content: "";
+    position: absolute;
+    left: -40%;
+    top: 5%;
+    width: 180%;
+    height: 120%;
+}
 a.footnote-ref.highlighted,
 a.footnote-ref:hover,
 a.footnote-ref.targeted {
