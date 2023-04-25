@@ -3403,7 +3403,7 @@ body.index-directory #footer {
 }
 
 #image-focus-overlay img.loading {
-	outline: 1px solid var(--SA-image-focus-overlay-image-caption-separator-color);
+	box-shadow: 0 0 0 1px var(--SA-image-focus-overlay-image-caption-separator-color) inset;
 }
 #image-focus-overlay .loading-spinner {
 	visibility: hidden;
@@ -3418,6 +3418,7 @@ body.index-directory #footer {
     justify-content: center;
     opacity: 0.4;
     pointer-events: none;
+    z-index: -1;
 }
 #image-focus-overlay .loading-spinner svg {
     display: block;
