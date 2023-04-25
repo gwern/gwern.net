@@ -117,6 +117,6 @@ if ($force || (`git diff-index --cached HEAD -- {$versioned_templates}`)) {
 
 ## Icons.
 require_once("{$build_dir}/build_icon_sprite_file.php");
-`git add {$static_dir}/img/icon/.`;
+`git add {$static_dir}/img/icon/. {$static_dir}/include/.`;
 
 ?>
