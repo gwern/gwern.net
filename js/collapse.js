@@ -165,7 +165,11 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 				});
 
 				//	Designate “bare content” collapses.
-				if (collapseBlock.firstElementChild.tagName == "P")
+				let bareContentTags = [ "P", "UL", "OL" ];
+				if (   bareContentTags.includes(collapseBlock.firstElementChild.tagName)
+					|| (   collapseBlock.classList.contains("has-abstract")
+						&& bareContentTags.includes(collapseBlock.firstElementChild.firstElementChild.tagName)
+						&& bareContentTags.includes(collapseBlock.firstElementChild.nextElementSibling.tagName)))
 					collapseBlock.classList.add("bare-content");
 			} else {
 				collapseWrapper = wrapElement(collapseBlock, null, "DIV", true, [ "collapse", "expand-on-hover" ]);
