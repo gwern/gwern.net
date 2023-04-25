@@ -690,6 +690,12 @@ addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) =>
     					&& image.classList.containsAnyOf([ "float-left", "float-right" ]));
     	setImageDimensions(image, fixWidth);
     });
+
+	//	Also ensure that SVGs get rendered as big as possible.
+    eventInfo.container.querySelectorAll("figure img[src$='.svg']").forEach(svg => {
+    	svg.style.width = "100vw";
+    	svg.style.aspectRatio = svg.dataset.aspectRatio;
+    });
 }, "rewrite");
 
 /********************************************/
@@ -1207,15 +1213,13 @@ addContentInjectHandler(GW.contentInjectHandlers.setMarginsOnFullWidthBlocks = (
 /* ANNOTATIONS */
 /***************/
 
-/******************************************************************************/
-/*  Make the page thumbnail (or just the first figure, if no thumbnail present)
-    in an annotation load eagerly instead of lazily.
+/***************************************************************************/
+/*  Make the page thumbnail in an annotation load eagerly instead of lazily.
  */
 addContentLoadHandler(GW.contentLoadHandlers.setEagerLoadingForAnnotationImages = (eventInfo) => {
     GWLog("setEagerLoadingForAnnotationImages", "rewrite.js", 1);
 
-    let firstImage = (   eventInfo.container.querySelector(".page-thumbnail")
-                      || eventInfo.container.querySelector("figure img"))
+    let firstImage = (eventInfo.container.querySelector(".page-thumbnail"))
     if (firstImage) {
         firstImage.loading = "eager";
         firstImage.decoding = "sync";

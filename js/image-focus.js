@@ -254,6 +254,8 @@ ImageFocus = {
 
 		//  Create the focused version of the image.
 		ImageFocus.imageInFocus = imageToFocus.cloneNode(true);
+		ImageFocus.imageInFocus.loading = "eager";
+		ImageFocus.imageInFocus.decoding = "sync";
 		ImageFocus.imageInFocus.style = "";
 		ImageFocus.imageInFocus.style.filter = imageToFocus.style.filter + ImageFocus.dropShadowFilterForImages;
 		ImageFocus.imageInFocus.removeAttribute("title");
