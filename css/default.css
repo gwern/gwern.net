@@ -3414,6 +3414,7 @@ body.index-directory #footer {
 
 #image-focus-overlay img.loading {
 	box-shadow: 0 0 0 1px var(--SA-image-focus-overlay-image-caption-separator-color) inset;
+	background-color: transparent;
 }
 #image-focus-overlay .loading-spinner {
 	visibility: hidden;
