@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-04-22 22:48:57 gwern"
+;;; When:  Time-stamp: "2023-04-25 10:52:32 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1293,7 +1293,6 @@ This assumes you have already removed hyphenation (either by removing the hyphen
     ;; Inform the user when the operation is complete
     (message "Newlines removed within paragraphs.")))
 
-
 (defvar markdown-rewrites '())
 (defun buffer-contains-substring (string)
   (save-excursion
@@ -1387,7 +1386,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
 
 ; for the `foo` buffer I do most of my annotation work in, on the first copy-paste of a block of text, detect if it has any paragraph breaks (ie. double newlines), and if it does not, then automatically run paragraphizer.py on it to try to break it up into logical paragraphs.
 ; (Note/warning: written by GPT-3.5. Curiously, GPT-4 failed when I tried to repeat this exercise in it using the same starting prompt & kind of feedback: because it tries to implement solutions using advice, buffer-local variables, and :properties—which are subtly buggy in their handling of state, and so wind up running paragraphizer.py on every paste.)
-(defun markdown-annotation-abstract-paragraphize ()
+(defun markdown-paragraphize ()
   "Automatically paragraphize single-paragraph abstracts. Intended for Markdown mode with double-newlines for newlines; may malfunction if run on other formats like HTML (where `</p><p>` pairs can come in many forms, not to mention other block elements like blockquotes)."
   (interactive)
   (let ((double-newline-found nil))
@@ -1400,14 +1399,14 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
     (when double-newline-found
       (goto-char (point-max))
       (message "Paragraphizing abstract done."))))
-(defun markdown-annotation-abstract-paragraphize-hook ()
-  "Hook function for `markdown-annotation-abstract-paragraphize`."
+(defun markdown-paragraphize-hook ()
+  "Hook function for `markdown-paragraphize`."
   (when (and (equal (buffer-name) "foo")
              (derived-mode-p 'markdown-mode)
              (eq this-command 'yank)
              (>= (buffer-size) 600)) ; ensure that there is enough in the buffer to plausibly be a full copy-pasted abstract, as opposed to a random snippet or line.
-    (markdown-annotation-abstract-paragraphize)))
-(add-hook 'post-command-hook #'markdown-annotation-abstract-paragraphize-hook)
+    (markdown-paragraphize)))
+(add-hook 'post-command-hook #'markdown-paragraphize-hook)
 
 ; add new-line / paragraph snippet
 (add-hook 'yaml-mode-hook

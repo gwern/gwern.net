@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-04-19 16:07:22 gwern"
+When:  Time-stamp: "2023-04-25 15:57:17 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -1575,7 +1575,6 @@ badDomainsSimple = [ "2chan.us"
    , "www.betterworldbooks.com"
    , "www.bfi.org"
    , "www.bfmtv.com"
-   , "www.bioworld.com"
    , "www.birminghammail.co.uk"
    , "www.bizjournals.com"
    , "www.blender.org"
@@ -2426,6 +2425,7 @@ badDomainsSimple = [ "2chan.us"
    , "www.youtube.com/channel/"
    , "www.eoht.info"
    , "www.khara.co.jp"
+   , "twitter.com"
    ]
 
 url :: T.Text -> Inline
@@ -4128,7 +4128,6 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.bfi.org/about-bucky/resources/books/grunch-giants/foreword"
             , "https://www.bfmtv.com/police-justice/info-bfmtv-loire-un-cyberdealer-interpelle-premiere-en-france_AN-201312260067.html"
             , "https://www.biorxiv.org/content/10.1101/274654.full"
-            , "https://web.archive.org/web/20140802145156/https://www.bioworld.com/content/another-miss-targacept-tc-5619-fails-adhd-trial-0"
             , "https://www.birminghammail.co.uk/news/midlands-news/man-who-bought-glock-pistol-11538095"
             , "https://www.bizjournals.com/albany/stories/2010/01/11/focus2.html?page=all"
             , "https://www.blender.org/user-stories/japanese-anime-studio-khara-moving-to-blender/"

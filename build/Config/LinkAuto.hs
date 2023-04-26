@@ -151,7 +151,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("([Ss]tructural [Ee]quation [Mm]odel(s|ing)?|SEM)s?", "https://en.wikipedia.org/wiki/Structural_equation_modeling") -- SEM can also refer to 'scanning electron microscope' or 'standard error of the mean' in Gwern.net content, but in practice, those uses seem far rarer
         , ("([Tt]abletop [Rr]ole-[Pp]laying [Gg]ame|TTRPG)", "https://en.wikipedia.org/wiki/Tabletop_role-playing_game")
         , ("([Tt]runcated normal distribution|[Tt]runcated normal)", "https://en.wikipedia.org/wiki/Truncated_normal_distribution")
-        , ("([Vv]ision [Tt]ransformers?|ViT)", "https://openreview.net/forum?id=YicbFdNTTy#google")
+        , ("([Vv]ision [Tt]ransformers?|ViT)", "https://arxiv.org/abs/2010.11929#google")
         , ("([Vv]isual[ -]novel|VN)", "https://en.wikipedia.org/wiki/Visual_novel")
         , ("([Ww]eight [Dd]ecay|L0|L~0~|[Rr]idge regression|𝓁<sub>1</sub>|𝓁<sub>2</sub>)", "https://en.wikipedia.org/wiki/Tikhonov_regularization")
         , ("([Ll]asso|[Ll]east absolute shrinkage and selection operator|LASSO|[Ll]asso regression)", "https://en.wikipedia.org/wiki/Lasso_(statistics)")

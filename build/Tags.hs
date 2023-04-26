@@ -351,6 +351,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("psychology/european-journal-of-parapsychology", "<em>EJP</em>")
           , ("psychology/animal/bird/neuroscience", "bird brains")
           , ("psychology/animal/bird", "bird")
+          , ("psychology/animal/maze", "maze-running")
           , ("psychology/animal", "animal psych")
           , ("psychology/neuroscience", "neuroscience")
           , ("psychology/illusion-of-depth", "illusion of depth")

@@ -24,7 +24,7 @@ import Control.Monad.Parallel as Par (mapM)
 -- import Columns as C (listLength)
 import LinkAuto (linkAutoFiltered)
 import LinkID (generateID)
-import LinkMetadata (hasAnnotation, hasAnnotationInline, isPagePath, readLinkMetadata, parseRawInline)
+import LinkMetadata (hasAnnotation, hasAnnotationOrIDInline, isPagePath, readLinkMetadata, parseRawInline)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB)
 import Query (extractLinkIDsWith)
@@ -113,7 +113,7 @@ generateCaller md target (caller, callers) =
                                            callers' = zipWith (\a (b,c) -> (c,a,b)) callerClasses callerTitles
 
                                            content =  -- WARNING: critical to insert '.backlink-not' or we might get weird recursive blowup!
-                                             map (\(u,c,t) -> [Para ([hasAnnotationInline md $ Link ("", "backlink-not":"id-not":c, [])
+                                             map (\(u,c,t) -> [Para ([hasAnnotationOrIDInline md $ Link ("", "backlink-not":"id-not":c, [])
                                                                      [parseRawInline nullAttr $ RawInline (Format "html") t]
                                                                      (u, "")] ++
                                                                      -- for top-level pages, we need a second link, like 'Foo (full context)', because 'Foo' will popup the scraped abstract/annotation, but it will not pop up the reverse citation context displayed right below; this leads to a UI trap: the reader might be interested in navigating to the context, but they can't! The transclusion has replaced itself, so it doesn't provide any way to navigate to the actual page, and the provided annotation link doesn't know anything about the reverse citation because it is about the entire page. So we provide a backup non-transcluding link to the actual context.
