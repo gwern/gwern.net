@@ -33,7 +33,7 @@ file_put_contents($inlined_foot_file_path,
 
 ## Append preload links to <head> includes file.
 file_put_contents($inlined_head_file_path,
-				  trim(preg_replace('/<link rel="preload" .+? as="style" .+?>/', '', file_get_contents($inlined_head_file_path)))
+				  trim(preg_replace('/<link rel="preload" .+? as="style" .+?>\n/', '', file_get_contents($inlined_head_file_path)))
 				  . "\n"
 				  . implode("\n", array_map(function ($pathname) {
 				  		return "<link rel=\"preload\" href=\"{$pathname}\" as=\"style\" onload=\"this.onload = null; this.rel = 'stylesheet'\">";
