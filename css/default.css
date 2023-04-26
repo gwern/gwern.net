@@ -543,6 +543,13 @@ blockquote .collapse.has-abstract.expanded-not > .disclosure-button .part::befor
     margin-bottom: 0.5em;
 }
 
+/*	Edge cases.
+ */
+
+section.collapse > .collapse.section-backlinks-container:last-child {
+    margin-bottom: 0;
+}
+
 /**********************************************************************/
 /*  “Bare content” collapses (not a section, not code, not table, etc.)
  */
