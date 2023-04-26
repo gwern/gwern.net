@@ -18,10 +18,10 @@ transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
                             . replace "https://openreview.net/forum" "https://openreview.net/pdf"
                             -- Mobile Reddit snapshots for live popups much better than Old Reddit (although Old Reddit is a much better browsing/user experience)
                             . replace "https://old.reddit.com" "https://i.reddit.com"
-                            . replace "https://twitter.com/" "https://nitter.moomoo.me/"
+                            . replace "https://twitter.com" "https://nitter.moomoo.me"
 transformURLsForLinking   = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
   sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" -- handle oddities like hep-ph
-  . replace "https://twitter.com/" "https://nitter.moomoo.me/"
+  . replace "https://twitter.com" "https://nitter.moomoo.me"
 
 {- re URL transforms: Why?
 
@@ -576,7 +576,6 @@ whiteList url
       , "danwang.co" -- stable
       , "cognitivefun.net" -- interactive
       , "groups.google.com" -- low quality
-      , "twitter.com" -- low quality: breaks ArchiveBox by straight up lying & claiming all tweets not found; with SingleFile, prompts to click & then 403 error
       , "www.impactcybertrust.org" -- stable/service
       , "old.reddit.com/r/DarkNetMarkets/" -- deleted by Reddit
       , "old.reddit.com/r/afinil/" -- over-18 so logged out SingleFile doesn't work
@@ -970,7 +969,6 @@ whiteList url
       , "https://huggingface.co/spaces/" -- interactive
       , "https://www.arknights.global/" -- homepage
       , "http://arborjs.org/" -- homepage
-      , "https://twitter.com/OpenAI" -- PR account
       , "https://songweige.github.io/projects/tats/index.html" -- video
       , "https://self-distilled-stylegan.github.io/" -- low quality (video embeds)
       , "https://www.flavorwire.com/415737/5-of-the-most-scandalous-affairs-in-literary-history" -- fails to archive, as does https://story.californiasunday.com/cosmic-crisp-apple-launch/ https://www.outsideonline.com/health/training-performance/inside-look-surprisingly-violent-quidditch-world-cup/ https://www.technologyreview.com/2020/02/17/844721/ai-openai-moonshot-elon-musk-sam-altman-greg-brockman-messy-secretive-reality/
@@ -1000,7 +998,6 @@ whiteList url
       , "https://unconventionality.github.io/" -- low-quality (interactive app breaks)
       , "https://elicit.org/" -- homepage
       , "https://yzqin.github.io/dexmv/" -- low-quality (video, GIF embeds break)
-      , "https://twitter.com/hausman_k/status/1511152160695730181" -- low quality (video embeds)
       , "https://say-can.github.io/" -- low quality (video embeds)
       , "https://wenlong.page/language-planner/" -- low quality (video embeds)
       , "https://patents.google.com/?inventor" -- interactive
@@ -1008,7 +1005,6 @@ whiteList url
       , "https://agility.csail.mit.edu/" -- low quality (video embeds)
       , "https://plai.cs.ubc.ca/2022/05/20/flexible-diffusion-modeling-of-long-videos/" -- low quality (video embeds)
       , "https://models.aminer.cn/cogvideo/" -- interactive service
-      , "https://twitter.com/JeanRemiKing/status/1533720262344073218" -- low quality (video embeds)
       , "https://danijar.com/project/director/" -- low quality (video embeds)
       , "https://bigvgan-demo.github.io/" -- low quality (audio embeds)
       , "https://gist.github.com/brockmanmatt/7265297f21634693868c2aad9d2c5919" -- Github iPython notebook - always fail to render for me
