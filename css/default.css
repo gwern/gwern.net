@@ -3330,6 +3330,8 @@ body.index-directory #footer {
 :root {
     --SA-image-focus-sans-serif-font-stack: var(--GW-sans-serif-font-stack);
 
+    --SA-image-focus-image-background-color: #fff;
+
     --SA-image-focus-image-hover-drop-shadow-color: var(--GW-image-focus-image-hover-drop-shadow-color);
     --SA-image-focus-image-hover-tooltip-background-color: rgba(0, 0, 0, 0.75);
     --SA-image-focus-image-hover-tooltip-text-color: #fff;
@@ -3407,6 +3409,7 @@ body.index-directory #footer {
     overflow: hidden;
     width: auto;
     height: auto;
+    background-color: var(--SA-image-focus-image-background-color);
 }
 
 #image-focus-overlay img.loading {
