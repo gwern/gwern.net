@@ -3,7 +3,7 @@
 module Image where
 
 import Control.Exception (onException)
-import Control.Monad (unless, void, when, (<=<))
+import Control.Monad (unless, void, when) -- (<=<)
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
 import Data.Char (toLower)
 import Data.List (isPrefixOf, nubBy, sort)
@@ -139,7 +139,14 @@ imageMagickDimensions f =
 --
 -- Pandoc feature request to push the lazy loading upstream: <https://github.com/jgm/pandoc/issues/6197>
 addImgDimensions :: String -> IO String
-addImgDimensions = fmap (renderTagsOptions renderOptions{optMinimize=whitelist, optRawTag = (`elem` ["script", "style"]) . map toLower}) . mapM staticImg <=< addVideoPoster . parseTags
+addImgDimensions html = do let stream  = parseTags html
+                           dimensionized <- mapM staticImg stream
+                           posterized    <- addVideoPoster dimensionized
+                           let stream' = renderTagsOptions renderOptions{optMinimize=whitelist,
+                                                                         optRawTag = (`elem` ["script", "style"]) . map toLower}
+                                         posterized
+                           return stream'
+                           -- fmap (renderTagsOptions renderOptions{optMinimize=whitelist, optRawTag = (`elem` ["script", "style"]) . map toLower}) . mapM staticImg <=< addVideoPoster . parseTags
                  where whitelist s = s /= "div" && s /= "script" && s /= "style"
 
 -- x = "          <section id=\"video\" class=\"level2\">\n            <h2><a href=\"#video\" title=\"Link to section: § 'Video'\">Video</a></h2>\n            <figure>\n              <video controls=\"controls\" preload=\"none\" loop=\"\"><source src=\"/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4\" type=\"video/mp4\"></video>\n              <figcaption>\n                <a href=\"/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4\">Training montage</a> of the 256px Danbooru2018-1K<a href=\"#fn4\" class=\"footnote-ref\" id=\"fnref4\" role=\"doc-noteref\"><sup>4</sup></a>\n              </figcaption>\n            </figure>\n          </section>"
