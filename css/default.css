@@ -1108,7 +1108,7 @@ table, code, pre, a, h1, h2, h3, h4, h5, h6 {
 /*= Bulleted list markers =*/
 /*=-----------------------=*/
 /* NOTE: should be able to simplify list markers ~2026 using ::marker, see https://web.dev/css-marker-pseudo-element/ https://www.caniuse.com/css-marker-pseudo */
-.markdownBody ul > li::before {
+ul > li::before {
     position: absolute;
     z-index: 1;
     display: block;
@@ -1118,22 +1118,22 @@ table, code, pre, a, h1, h2, h3, h4, h5, h6 {
     padding: 1px 0 0 0;
 }
 
-.markdownBody ul > li::before,
-.markdownBody ul ul ul ul > li::before {
+ul > li::before,
+ul ul ul ul > li::before {
     content: var(--GW-image-single-black-star-svg);
     opacity: 0.65;
 
 }
-.markdownBody ul ul > li::before,
-.markdownBody ul ul ul ul ul > li::before,
+ul ul > li::before,
+ul ul ul ul ul > li::before,
 /* special /index override because the link compilation is not bolded */
 body.index .section-link-list > li::before {
     content: var(--GW-image-single-white-star-svg);
     opacity: 0.85;
 }
-.markdownBody ul ul ul > li::before,
-.markdownBody ul ul ul ul ul ul > li::before,
-body.index .markdownBody .section-link-list ul > li::before {
+ul ul ul > li::before,
+ul ul ul ul ul ul > li::before,
+body.index .section-link-list ul > li::before {
     /* this rotates into more of a 'lozenge' square for variety's sake */
     content: var(--GW-image-single-white-star-rotated-svg);
     opacity: 0.85;
@@ -1143,15 +1143,15 @@ body.index .markdownBody .section-link-list ul > li::before {
 /*= Numbered list markers =*/
 /*=-----------------------=*/
 
-.markdownBody ol {
+ol {
     counter-reset: list-item;
 }
 
-.markdownBody ol > li {
+ol > li {
     counter-increment: list-item;
 }
 
-.markdownBody ol > li::before {
+ol > li::before {
     position: absolute;
     z-index: 1;
     display: block;
@@ -1160,16 +1160,16 @@ body.index .markdownBody .section-link-list ul > li::before {
     text-align: right;
 }
 
-.markdownBody ol > li::before,
-.markdownBody ol ol ol ol > li::before {
+ol > li::before,
+ol ol ol ol > li::before {
     content: counter(list-item, decimal) ".";
 }
-.markdownBody ol ol > li::before,
-.markdownBody ol ol ol ol ol > li::before {
+ol ol > li::before,
+ol ol ol ol ol > li::before {
     content: counter(list-item, upper-roman) ".";
 }
-.markdownBody ol ol ol > li::before,
-.markdownBody ol ol ol ol ol ol > li::before {
+ol ol ol > li::before,
+ol ol ol ol ol ol > li::before {
     content: counter(list-item, lower-alpha) ".";
 }
 
@@ -1181,19 +1181,19 @@ body.index .markdownBody .section-link-list ul > li::before {
     inside a list (the list of footnotes), an ordered list in a footnote would show up as Roman numerals or Latin letters
     instead of the expected Arabic numerals (because of the alternating auto-styles above). Which is weird & unexpected!
 */
-.markdownBody ol.list-type-decimal > li::before {
+ol.list-type-decimal > li::before {
     content: counter(list-item, decimal) ".";
 }
-.markdownBody ol.list-type-lower-alpha > li::before {
+ol.list-type-lower-alpha > li::before {
     content: counter(list-item, lower-alpha) ".";
 }
-.markdownBody ol.list-type-upper-alpha > li::before {
+ol.list-type-upper-alpha > li::before {
     content: counter(list-item, upper-alpha) ".";
 }
-.markdownBody ol.list-type-lower-roman > li::before {
+ol.list-type-lower-roman > li::before {
     content: counter(list-item, lower-roman) ".";
 }
-.markdownBody ol.list-type-upper-roman > li::before {
+ol.list-type-upper-roman > li::before {
     content: counter(list-item, upper-roman) ".";
 }
 
