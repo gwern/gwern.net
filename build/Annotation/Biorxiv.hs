@@ -9,7 +9,7 @@ import System.Exit (ExitCode(ExitFailure))
 
 import LinkAuto (linkAutoHtml5String)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path)
-import Utils (checkURL, printRed, initializeAuthors, replace, cleanAbstractsHTML, processDOI)
+import Utils (checkURL, printRed, cleanAuthors, replace, cleanAbstractsHTML, processDOI)
 import Paragraph (processParagraphizer)
 
 -- handles medRxiv too (same codebase)
@@ -29,7 +29,7 @@ biorxiv p = do checkURL p
                               else do
                                      let date    = concat $ parseMetadataTagsoup "DC.Date" metas
                                      let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
-                                     let author  = initializeAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
+                                     let author  = cleanAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
                                      let abstractRaw = concat $ parseMetadataTagsoupSecond "citation_abstract" metas
                                      let abstractRaw' = if not (null abstractRaw) then abstractRaw else concat $ parseMetadataTagsoup "DC.Description" metas
                                      abstrct <- fmap (replace "9s" "s". -- BUG: BioRxiv abstracts have broken quote encoding. I reported this to them 2 years ago and they still have not fixed it.

@@ -112,6 +112,9 @@ imageMagickColor f f' = do (status,_,bs) <- runShellCommand "./" Nothing "conver
 -- | Use FileStore utility to run imageMagick's 'identify', & extract the height/width dimensions
 -- Note that for animated GIFs, 'identify' returns width/height for each frame of the GIF, which in
 -- most cases will all be the same, so we take the first line of whatever dimensions 'identify' returns.
+--
+-- For an SVG, there is in fact a 'width' and 'height', set in the 'viewbox', like `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 830">`.
+-- This doesn't mean the same thing as in a raster image because that's the point of vector graphics, but this does still tell us useful things like the aspect ratio (in this case, 1200 / 830 = 1.44578).
 imageMagickDimensions :: FilePath -> IO (String,String)
 imageMagickDimensions f =
   let f'
@@ -201,10 +204,6 @@ staticImg x@(TagOpen "img" xs) = do
   if (isNothing h || isNothing w || isNothing lazy) &&
      not ("//" `isPrefixOf` p || "http" `isPrefixOf` p) &&
      ("/" `isPrefixOf` p && not ("data:image/" `isPrefixOf` p)) then
-    if (takeExtension p == ".svg") then
-      -- for SVGs, only set the lazy-loading attribute, since height/width is not necessarily meaningful for vector graphics
-            return (TagOpen "img" (uniq (("loading", "lazy"):xs)))
-    else
        do
          let p' = urlDecode $ if head p == '/' then tail p else p
          exists <- doesFileExist p'
@@ -226,10 +225,15 @@ staticImg x@(TagOpen "img" xs) = do
                                        imageShrinkRatio = (1400::Float) / (fromIntegral width'' :: Float)
                                        imageHeight = if not imageShrunk then height'' else round (fromIntegral height'' * imageShrinkRatio)
                                    in
-                                     return (TagOpen "img" (uniq (loading ++  -- lazy load & async render all images
+                                     if (takeExtension p == ".svg") then
+                                       -- for SVGs, only set the lazy-loading attribute, since height/width is not necessarily meaningful for vector graphics
+                                       return (TagOpen "img" (uniq (("loading", "lazy"):
+                                                                    ("data-aspect-ratio", show width'' ++ " / " ++ show height''):xs)))
+                                     else
+                                       return (TagOpen "img" (uniq (loading ++  -- lazy load & async render all images
                                                                    [("decoding", "async"),
                                                                      ("height", show imageHeight), ("width", show imageWidth)]++xs)))
-      else return x
+    else return x
   where uniq = nubBy (\a b -> fst a == fst b) . sort
 staticImg x = return x
 

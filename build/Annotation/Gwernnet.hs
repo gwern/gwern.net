@@ -14,7 +14,7 @@ import Text.Regex.TDFA ((=~)) -- WARNING: avoid the native Posix 'Text.Regex' du
 import Annotation.PDF (pdf)
 import Image (invertImage)
 import LinkMetadataTypes (MetadataItem, Failure(..), Path)
-import Utils (anyInfix, anySuffix, anyPrefix, checkURL, cleanAbstractsHTML, dateRegex, sectionAnonymousRegex, footnoteRegex, initializeAuthors, printGreen, printRed, replace, replaceMany, safeHtmlWriterOptions, sed, sedMany, split, trim)
+import Utils (anyInfix, anySuffix, anyPrefix, checkURL, cleanAbstractsHTML, dateRegex, sectionAnonymousRegex, footnoteRegex, cleanAuthors, printGreen, printRed, replace, replaceMany, safeHtmlWriterOptions, sed, sedMany, split, trim)
 import Tags (listTagDirectories, abbreviateTag)
 import LinkAuto (linkAutoHtml5String)
 import Query (truncateTOCHTML)
@@ -50,7 +50,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
                         let keywordTags = if "#" `isInfixOf` p then [] else
                                             concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then Utils.split ", " $ snd $ head y else []) metas
-                        let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
+                        let author = cleanAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas
                         let thumbnail' = if "https://gwern.net/static/img/logo/logo-whitebg-large-border.png" `isPrefixOf` thumbnail then "" else replace "https://gwern.net/" "" thumbnail
