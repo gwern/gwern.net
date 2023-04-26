@@ -376,11 +376,11 @@ Annotations = { ...Annotations,
 
 				//  Author list.
 				let authorElement = response.querySelector(".author");
-				//	Generate comma-separated author list; truncate with “…” abbreviation for 'et al' @ > 3.
+				//	Generate comma-separated author list; truncate with “…” abbreviation for ‘et al’ @ > 3.
 				let authorList;
 				if (authorElement) {
-					authorList = authorElement.textContent.split(", ").slice(0, 3).join(", ");
-					if (authorList.length < authorElement.textContent.length)
+					authorList = authorElement.innerHTML.split(", ").slice(0, 3).join(", ");
+					if (authorList.length < authorElement.innerHTML.length)
 						authorList += "…";
 				}
 				let author = authorElement 
