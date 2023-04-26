@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-04-25 17:04:11 gwern"
+When:  Time-stamp: "2023-04-26 17:28:49 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, hasAnnotationInline, parseRawBlock, parseRawInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, simplifiedHTMLString, dateTruncateBad, typesetHtmlField) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, parseRawBlock, parseRawInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, simplifiedHTMLString, dateTruncateBad, typesetHtmlField) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
@@ -416,42 +416,63 @@ annotateLink _ x = error ("annotateLink was passed an Inline which was not a Lin
 
 -- walk the page, and modify each URL to specify if it has an annotation available or not:
 hasAnnotation :: Metadata -> Block -> Block
-hasAnnotation md = walk (hasAnnotationInline md)
+hasAnnotation md = walk (hasAnnotationOrIDInline md)
 
-hasAnnotationInline :: Metadata -> Inline -> Inline
-hasAnnotationInline mdb y@(Link (a,classes,c) d (f,g)) =
-  if hasAny ["link-annotated-not", "link-annotated", "link-annotated-partial"] classes then y
-  else
-    let f' = linkCanonicalize $ T.unpack f in
-      case M.lookup f' mdb of
-        Nothing                  -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y
-        Just ("","","","",[],"") -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y -- zilch
-        Just                 mi  -> addHasAnnotation mi y -- possible partial
-hasAnnotationInline _ y = y
+hasAnnotationOrIDInline :: Metadata -> Inline -> Inline
+hasAnnotationOrIDInline metadata inline = case inline of
+    link@(Link (_, classes, _) _ (url, _)) ->
+        if hasAnyAnnotatedClass classes
+            then link
+            else processLink metadata url link
+    _ -> inline
+ where
+        hasAnyAnnotatedClass :: [T.Text] -> Bool
+        hasAnyAnnotatedClass = hasAny ["link-annotated-not", "link-annotated", "link-annotated-partial"]
+
+        processLink :: Metadata -> T.Text -> Inline -> Inline
+        processLink metadatadb url link =
+            let canonicalUrl = linkCanonicalize $ T.unpack url
+            in case M.lookup canonicalUrl metadatadb of
+                Nothing                  -> addID Nothing link
+                Just ("","","","",[],"") -> addID Nothing link
+                Just metadataItem        -> addID (Just metadataItem) (addHasAnnotation metadataItem link)
+
+addID :: Maybe MetadataItem -> Inline -> Inline
+addID maybeMetadataItem inline = case inline of
+    (Link (anchor, classes, _) e (url, title)) ->
+        if anchor == "" && "id-not" `notElem` classes
+            then Link (generateLinkID maybeMetadataItem url) e (url, title)
+            else inline
+    _ -> handleInvalidAddIDCall maybeMetadataItem inline
+ where
+        generateLinkID :: Maybe MetadataItem -> T.Text -> (T.Text, [T.Text], [(T.Text, T.Text)])
+        generateLinkID maybeMetadataItem' url = case maybeMetadataItem' of
+            Nothing -> (generateID (T.unpack url) "" "", [], [])
+            Just (_, author, date, _, _, _) -> (generateID (T.unpack url) author date, [], [])
+
+        handleInvalidAddIDCall :: Maybe MetadataItem -> Inline -> a
+        handleInvalidAddIDCall maybeMetadataItemBad inlineBad = error $
+            "LinkMetadata.hs: addID: called with " ++
+            show maybeMetadataItemBad ++
+            " annotation and a non-Link Inline element:" ++
+            show inlineBad ++
+            "; This should never happen."
 
 addHasAnnotation :: MetadataItem -> Inline -> Inline
-addHasAnnotation (title,aut,dt,_,_,abstrct) (Link (a,b,c) e (f,g))  =
- let a'
-       | a == ""    = generateID (T.unpack f) aut dt
-       | otherwise  = a
-     -- f' = linkCanonicalize $ T.unpack f
-     -- we would like to set the tooltip title too if omitted, for the non-JS users and non-human users who may not read the data-* attributes:
-     g'
-       | g/="" = g
-       |       title=="" && aut=="" = g
-       |       title/="" && aut=="" = T.pack title
-       |       title=="" && aut/="" = T.pack $ authorsToCite (T.unpack f) aut dt
-       |                  otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
-     x' = Link (a',b,c) e (f,g') -- remember to set the ID!
- in -- erase link ID?
-   if "https://en.wikipedia.org" `T.isPrefixOf` f then x' else
-    if length abstrct > minimumAnnotationLength then -- full annotation, no problem:
-      addClass "link-annotated" x'
-      else -- may be a partial...
-           -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
-           if not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f then x'
-           else -- so it's not a local link, doesn't have a full annotation, doesn't have an on-demand annotation like a Wikipedia article, but does have *some* partial annotation since it exists on disk, so it gets `.link-annotated-partial`
-             addClass "link-annotated-partial" x'
+addHasAnnotation (title,aut,dt,_,_,abstrct) (Link (a,b,c) e (f,g))
+  | "https://en.wikipedia.org" `T.isPrefixOf` f = x'
+  | length abstrct > minimumAnnotationLength = addClass "link-annotated" x' -- full annotation, no problem.
+   -- may be a partial...
+  | not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f = x' -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
+  | otherwise = addClass "link-annotated-partial" x'
+  where
+    g'
+      | g/="" = g
+      | title=="" && aut=="" = g
+      | title/="" && aut=="" = T.pack title
+      | title=="" && aut/="" = T.pack $ authorsToCite (T.unpack f) aut dt
+      | otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
+    x' = Link (a,b,c) e (f,g')
 addHasAnnotation _ z = z
 
 parseRawBlock :: Attr -> Block -> Block
@@ -535,18 +556,20 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
 -- eg. > authorsInitialize "J. Smith, Foo Bar"
 -- → [Str "J. Smith",Str ", ",Span ("",[],[("title","Foo Bar")]) [Str "F. Bar"]]
 -- > authorsInitialize "John Jacob Jingleheimer Schmidt"
--- → [Span ("",[],[("title","John Jacob Jingleheimer Schmidt")]) [Str "J. Schmidt"]]
+-- → [Str "John Jacob Jingleheimer Schmidt"]
 authorsInitialize :: String -> [Inline]
 authorsInitialize aut = let authors = split ", " aut in
-                          intersperse (Str ", ") $
-                          map (\a -> let short = sedMany (reverse [
-                                           -- two middle-names:
-                                           ("^([A-za-z.-])[A-za-z.-]+ [A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
-                                           -- one middle-name:
-                                           , ("^([A-za-z.-])[A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
-                                           -- no middle-name:
-                                           , ("^([A-za-z.-])[A-za-z.-]+ (.*)", "\\1. \\2")]) a in
-                                       if a==short then Str (T.pack a) else Span ("", [], [("title", T.pack a)]) [Str (T.pack short)]) authors
+                          if length authors == 1 then [Str $ T.pack aut]
+                          else
+                              intersperse (Str ", ") $
+                              map (\a -> let short = sedMany (reverse [
+                                               -- two middle-names:
+                                               ("^([A-za-z.-])[A-za-z.-]+ [A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
+                                               -- one middle-name:
+                                               , ("^([A-za-z.-])[A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
+                                               -- no middle-name:
+                                               , ("^([A-za-z.-])[A-za-z.-]+ (.*)", "\\1. \\2")]) a in
+                                           if a==short then Str (T.pack a) else Span ("", [], [("title", T.pack a)]) [Str (T.pack short)]) authors
 
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime; but for backwards compatibility with non-JS readers (such as NoScript users, bots, tools etc), we still provide the title/author/date/backlinks/similar-links along with the transcluded-URL. For JS users, that all will be replaced by the proper popups annotation, and is mostly irrelevant to them. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
