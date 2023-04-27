@@ -2548,6 +2548,8 @@ function updateFloatingHeaderState(event) {
 	} else if (   GW.floatingHeader.markdownBody.contains(element) == false
 			   && GW.floatingHeader.pageMainElement.contains(element) == true) {
 		GW.floatingHeader.classList.remove("show-section");
+	} else if (element.compareDocumentPosition(GW.floatingHeader.firstSection) == Node.DOCUMENT_POSITION_FOLLOWING) {
+		GW.floatingHeader.classList.remove("show-section");
 	}
 }
 
@@ -2587,6 +2589,7 @@ if (GW.isMobile()) doWhenPageLoaded(() => {
 	GW.floatingHeader.pageHeader = document.querySelector("header");
 	GW.floatingHeader.pageMainElement = document.querySelector("main");
 	GW.floatingHeader.markdownBody = document.querySelector("#markdownBody");
+	GW.floatingHeader.firstSection = document.querySelector("section");
 	GW.floatingHeader.currentSection = null;
 
     //  Show/hide the back-to-top link on scroll up/down.

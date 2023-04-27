@@ -285,6 +285,12 @@
 	--GW-back-to-top-link-color: #ccc;
 	--GW-back-to-top-link-hover-color: #999;
 
+	/*	Mobile floating header.
+	 */
+	--GW-floating-header-box-shadow-color: #ccc;
+	--GW-floating-header-separator-color: #aaa;
+	--GW-floating-header-scroll-indicator-color: #999;
+
 	/*	“Skip to content” accessibility link.
 	 */
 	--GW-skip-to-content-text-color: #fff;
