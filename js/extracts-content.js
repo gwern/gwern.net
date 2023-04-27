@@ -257,7 +257,7 @@ Extracts = { ...Extracts,
 
 		//	Add page body classes.
 		let referenceData = Content.referenceDataForLink(target);
-		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...referenceData.pageBodyClasses);
+		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses.map(x => `page-${x}`)));
 
 		//	Update pop-frame title.
 		Extracts.updatePopFrameTitle(popFrame, Extracts.titleForPopFrame(popFrame));
