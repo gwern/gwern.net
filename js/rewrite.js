@@ -2480,14 +2480,14 @@ function updateBackToTopLinkVisibility(event) {
         GW.backToTop.classList.toggle("hidden", true);
 }
 
-/***********************************************************************/
-/*  Injects the “back to top” link. (Called only for the main document.)
+/**********************************/
+/*  Injects the “back to top” link.
  */
-addContentLoadHandler(GW.contentLoadHandlers.injectBackToTopLink = (eventInfo) => {
+doWhenPageLoaded(() => {
     GWLog("injectBackToTopLink", "rewrite.js", 1);
 
-    GW.backToTop = addUIElement(`<div id="back-to-top"><a href="#top" tabindex="-1" title="Back to top">` +
-        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M6.1 422.3l209.4-209.4c4.7-4.7 12.3-4.7 17 0l209.4 209.4c4.7 4.7 4.7 12.3 0 17l-19.8 19.8c-4.7 4.7-12.3 4.7-17 0L224 278.4 42.9 459.1c-4.7 4.7-12.3 4.7-17 0L6.1 439.3c-4.7-4.7-4.7-12.3 0-17zm0-143l19.8 19.8c4.7 4.7 12.3 4.7 17 0L224 118.4l181.1 180.7c4.7 4.7 12.3 4.7 17 0l19.8-19.8c4.7-4.7 4.7-12.3 0-17L232.5 52.9c-4.7-4.7-12.3-4.7-17 0L6.1 262.3c-4.7 4.7-4.7 12.3 0 17z"/></svg>`
+    GW.backToTop = addUIElement(`<div id="back-to-top"><a href="#top" tabindex="-1" title="Back to top">` 
+    	+ `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M6.1 422.3l209.4-209.4c4.7-4.7 12.3-4.7 17 0l209.4 209.4c4.7 4.7 4.7 12.3 0 17l-19.8 19.8c-4.7 4.7-12.3 4.7-17 0L224 278.4 42.9 459.1c-4.7 4.7-12.3 4.7-17 0L6.1 439.3c-4.7-4.7-4.7-12.3 0-17zm0-143l19.8 19.8c4.7 4.7 12.3 4.7 17 0L224 118.4l181.1 180.7c4.7 4.7 12.3 4.7 17 0l19.8-19.8c4.7-4.7 4.7-12.3 0-17L232.5 52.9c-4.7-4.7-12.3-4.7-17 0L6.1 262.3c-4.7 4.7-4.7 12.3 0 17z"/></svg>`
         + `</a></div>`);
 
     //  Show/hide the back-to-top link on scroll up/down.
@@ -2509,7 +2509,99 @@ addContentLoadHandler(GW.contentLoadHandlers.injectBackToTopLink = (eventInfo) =
     GW.backToTop.addEventListener("click", (event) => {
         GW.backToTop.style.transition = "";
     });
-}, "rewrite", (info) => info.container == document.body);
+});
+
+
+/**************************/
+/* MOBILE FLOATING HEADER */
+/**************************/
+
+/*****************************************************************************/
+/*  Show/hide the floating header, and update state, in response to scrolling.
+
+    Called by the ‘updateFloatingHeaderScrollListener’ scroll listener.
+ */
+function updateFloatingHeaderState(event) {
+    GWLog("updateFloatingHeaderState", "rewrite.js", 3);
+
+	//	Show/hide the entire header.
+	GW.floatingHeader.classList.toggle("hidden",
+		window.pageYOffset < GW.floatingHeader.pageHeader.offsetTop + GW.floatingHeader.pageHeader.offsetHeight);
+
+	//	Update scroll indicator bar.
+    GW.floatingHeader.scrollIndicator.dataset.scrollPosition = Math.round(100 * (window.pageYOffset / (document.documentElement.offsetHeight - window.innerHeight)));
+    GW.floatingHeader.scrollIndicator.style.backgroundSize = `${GW.backToTop.dataset.scrollPosition}% 100%`;
+
+	//	Update section display.
+	let element = document.elementFromPoint(window.innerWidth / 2, 
+											GW.floatingHeader.offsetHeight);
+	let section = element.closest("section");
+	if (section) {
+		GW.floatingHeader.classList.add("show-section");
+		if (section != GW.floatingHeader.currentSection) {
+			GW.floatingHeader.sectionTitleLink.href = `#${section.id}`;
+			GW.floatingHeader.sectionTitleLink.innerHTML = section.id == "footnotes"
+														   ? "Footnotes"
+														   : section.firstElementChild.textContent;
+		}
+		GW.floatingHeader.currentSection = section;
+	} else if (   GW.floatingHeader.markdownBody.contains(element) == false
+			   && GW.floatingHeader.pageMainElement.contains(element) == true) {
+		GW.floatingHeader.classList.remove("show-section");
+	}
+}
+
+/******************************************************************/
+/*	Scroll down enough to make whatever’s under the header visible.
+ */
+function adjustScrollTopForFloatingHeader() {
+	requestAnimationFrame(() => {
+		if (location.hash > "") {
+			if (GW.floatingHeader.classList.contains("show-section"))
+				window.scrollBy(0, -1 * GW.floatingHeader.offsetHeight);
+			else
+				adjustScrollTopForFloatingHeader();
+		}
+	});
+}
+
+/******************************/
+/*	Inject the floating header.
+ */
+if (GW.isMobile()) doWhenPageLoaded(() => {
+    GWLog("injectFloatingHeader", "rewrite.js", 1);
+
+	GW.floatingHeader = addUIElement(`<div id="floating-header" class="hidden">`
+		+ `<p class="page-title"><a href="#top">` 
+		+ document.querySelector("header").textContent
+		+ `</a></p>`
+		+ `<p class="section-title"><a href="#">`
+		+ `Implementation Details`
+		+ `</a></p>`
+		+ `<div class="scroll-indicator"></div>`
+		+ `</div>`);
+
+	//	Pre-query elements, so as not to waste cycles on each scroll event.
+	GW.floatingHeader.sectionTitleLink = GW.floatingHeader.querySelector(".section-title a");
+	GW.floatingHeader.scrollIndicator = GW.floatingHeader.querySelector(".scroll-indicator");
+	GW.floatingHeader.pageHeader = document.querySelector("header");
+	GW.floatingHeader.pageMainElement = document.querySelector("main");
+	GW.floatingHeader.markdownBody = document.querySelector("#markdownBody");
+	GW.floatingHeader.currentSection = null;
+
+    //  Show/hide the back-to-top link on scroll up/down.
+    addScrollListener(updateFloatingHeaderState, "updateFloatingHeaderScrollListener", 
+    	{ defer: true, ifDeferCallWhenAdd: true });
+
+	//	Adjust initial scroll offset.
+	doWhenPageLayoutComplete(adjustScrollTopForFloatingHeader);
+
+	//	Adjust scroll offset when section title is clicked.
+	GW.floatingHeader.sectionTitleLink.addActivateEvent(event => {
+		if (GW.floatingHeader.sectionTitleLink.hash == location.hash)
+			adjustScrollTopForFloatingHeader();
+	});
+});
 
 
 /**********/
@@ -2977,6 +3069,10 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
 
         //  Clean location hash.
         cleanLocationHash();
+
+		//	Compensate for floating header.
+		if (GW.floatingHeader)
+			adjustScrollTopForFloatingHeader();
 
         //  If hash really changed, update saved hash and fire event.
         if (GW.locationHash != location.hash) {
