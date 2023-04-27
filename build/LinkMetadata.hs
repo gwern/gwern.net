@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-04-26 17:28:49 gwern"
+When:  Time-stamp: "2023-04-27 16:49:42 gwern"
 License: CC-0
 -}
 
@@ -439,16 +439,18 @@ hasAnnotationOrIDInline metadata inline = case inline of
 
 addID :: Maybe MetadataItem -> Inline -> Inline
 addID maybeMetadataItem inline = case inline of
-    (Link (anchor, classes, _) e (url, title)) ->
+    (Link x@(anchor, classes, _) e (url, title)) ->
         if anchor == "" && "id-not" `notElem` classes
-            then Link (generateLinkID maybeMetadataItem url) e (url, title)
+            then Link (generateLinkID x maybeMetadataItem url) e (url, title)
             else inline
     _ -> handleInvalidAddIDCall maybeMetadataItem inline
  where
-        generateLinkID :: Maybe MetadataItem -> T.Text -> (T.Text, [T.Text], [(T.Text, T.Text)])
-        generateLinkID maybeMetadataItem' url = case maybeMetadataItem' of
-            Nothing -> (generateID (T.unpack url) "" "", [], [])
-            Just (_, author, date, _, _, _) -> (generateID (T.unpack url) author date, [], [])
+        generateLinkID :: (T.Text, [T.Text], [(T.Text, T.Text)]) -> Maybe MetadataItem -> T.Text -> (T.Text, [T.Text], [(T.Text, T.Text)])
+        generateLinkID ("", classs, kvs) maybeMetadataItem' url = case maybeMetadataItem' of
+            Nothing                         -> (generateID (T.unpack url) "" "",       classs, kvs)
+            Just (_, author, date, _, _, _) -> (generateID (T.unpack url) author date, classs, kvs)
+        -- if it has an ID already, avoid overriding?
+        generateLinkID a _ _ = a
 
         handleInvalidAddIDCall :: Maybe MetadataItem -> Inline -> a
         handleInvalidAddIDCall maybeMetadataItemBad inlineBad = error $
