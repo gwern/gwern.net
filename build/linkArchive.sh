@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2023-04-23 20:31:41 gwern"
+# When:  Time-stamp: "2023-04-27 11:27:27 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -39,7 +39,7 @@ if [[ -n "$FILE" || "$2" == "--check" ]]; then # use of `--check` means that we 
     echo -n "$FILE$ANCHOR"
 else
 
-    URL=$(echo "$@" | sed -e 's/https:\/\/arxiv\.org/https:\/\/export.arxiv.org/') # NOTE: http://export.arxiv.org/help/robots (we do the rewrite here to keep the directories & URLs as expected like `/doc/www/arxiv.org/`).
+    URL=$(echo "$1" | sed -e 's/https:\/\/arxiv\.org/https:\/\/export.arxiv.org/') # NOTE: http://export.arxiv.org/help/robots (we do the rewrite here to keep the directories & URLs as expected like `/doc/www/arxiv.org/`).
     ## 404? NOTE: Infuriatingly, Nitter domains will lie to curl when we use `--head` GET requests to be bandwidth-efficient, and will return 404 hits for *everything*. Jerks. So we can't use `--head` to be efficient, we have to do a full request just to be sure we aren't being lied to about the status. (Jerks.)
     HTTP_STATUS=$(timeout 20s curl --user-agent "$USER_AGENT" \
                           -H "Accept: */*" --write-out '%{http_code}' --silent -L -o /dev/null "$URL" || echo "Unsuccessful: $1 $HASH" 1>&2 && exit 1)
@@ -106,8 +106,13 @@ else
                     mv "$TARGET" "./doc/www/$DOMAIN/$HASH.html"
                     ## everything successful, so return the filepath of the final result to our caller:
                     echo -n "doc/www/$DOMAIN/$HASH.html$ANCHOR"
-                    ## open original vs archived in web browser so the user can check that it preserved OK, or if it needs to be handled manually or domain blacklisted:
-                    $WWW_BROWSER "./doc/www/$DOMAIN/$HASH.html$ANCHOR" "$1" &
+                    if [[ "$2" == "--no-preview" ]];
+                    then # do nothing
+                        true
+                    else
+                        ## open original vs archived preview in web browser so the user can check that it preserved OK, or if it needs to be handled manually or domain blacklisted:
+                        "$WWW_BROWSER" "./doc/www/$DOMAIN/$HASH.html$ANCHOR" "$1" &
+                    fi
                 else
                     rm "$TARGET"
                     echo "Unsuccessful: $1 $HASH" 1>&2

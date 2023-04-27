@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-04-16 17:48:16 gwern"
+When:  Time-stamp: "2023-04-27 09:54:50 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -116,7 +116,7 @@ import System.FilePath (takeFileName)
 import System.Directory (doesFileExist)
 
 import Utils (writeUpdatedFile, printGreen, printRed, addClass, currentDay)
-import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, archivePerRunN, archiveDelay)
+import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, archivePerRunN, archiveDelay, skipPreview)
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg. 2019-11-22 = 58810
@@ -227,7 +227,8 @@ archiveURLCheck l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "li
 
 -- take a URL, archive it, and if successful return the hashed path
 archiveURL :: String -> IO (Maybe Path)
-archiveURL l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArchive.sh" [l]
+archiveURL l = do let args = if C.skipPreview l then [l] else [l, "--no-preview"]
+                  (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArchive.sh" args
                   case exit of
                      ExitSuccess -> do let result = U.toString stdout
                                        printGreen ( "Archiving (LinkArchive.hs): " ++ l ++ " returned: " ++ result)

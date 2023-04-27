@@ -73,6 +73,10 @@ While the logic is a little opaque to readers, I think this handles Arxiv much m
 
 ------------------------------------------------------------------------------------------------------------------------
 
+-- some URLs are too high-quantity + high-quality to bother preview-checking manually, so we skip those:
+skipPreview :: String -> Bool
+skipPreview l = not (anyPrefix l ["https://nitter.moomoo.me"] || anyInfix l [".pdf"])
+
 -- whitelist of strings/domains which are safe to link to directly, either because they have a long history of stability
 -- & reader-friendly design, or attempting to archive them is pointless (eg. interactive services); and blacklist of
 -- URLs we always archive even if otherwise on a safe domain:
