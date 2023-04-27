@@ -915,10 +915,11 @@ section:target > :first-child a::after {
         top: -1.75em;
         right: unset;
         left: -1px;
+        justify-content: center;
         border: inherit;
         background-color: inherit;
         margin: auto;
-        width: 2.125em;
+        width: 2em;
         height: 1.75em;
         padding: 3px;
         box-sizing: border-box;
