@@ -735,11 +735,11 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 		if (id == "")
 			return;
 
-		let targetElement = containingDocument.querySelector("#" + id);
+		let targetElement = containingDocument.querySelector(`#${(CSS.escape(id))}`);
 		if (targetElement == null)
 			return;
 
-		let targetBlock = containingDocument.querySelector("#" + id).closest("section, li.footnote");
+		let targetBlock = targetElement.closest("section, li.footnote");
 		let backlinksBlock = targetBlock.querySelector(".section-backlinks");
 		if (backlinksBlock == null) {
 			//	Backlinks block.
