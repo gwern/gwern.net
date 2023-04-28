@@ -2535,7 +2535,7 @@ GW.floatingHeader = {
 		scroll event.
 		(Called by the ‘updateFloatingHeaderScrollListener’ scroll listener.)
 	 */
-	updateState: (event) => {
+	updateState: (event, maxChainLength = GW.floatingHeader.maxChainLength) => {
 		GWLog("updateFloatingHeaderState", "rewrite.js", 3);
 
 		//	Show/hide the entire header.
@@ -2547,18 +2547,23 @@ GW.floatingHeader = {
 		GW.floatingHeader.scrollIndicator.style.backgroundSize = `${GW.backToTop.dataset.scrollPosition}% 100%`;
 
 		//	Update breadcrumb display.
-		let trail = GW.floatingHeader.getTrail();
+		let trail = GW.floatingHeader.getTrail(maxChainLength);
 		if (trail.join("/") != GW.floatingHeader.currentTrail.join("/")) {
 			let chainLinks = GW.floatingHeader.constructLinkChain(trail);
 			GW.floatingHeader.linkChain.replaceChildren(...chainLinks);
 			chainLinks.forEach(link => { link.addActivateEvent(GW.floatingHeader.linkInChainClicked); });
+
+			//	Constrain header height.
+			if (   GW.floatingHeader.header.offsetHeight > GW.floatingHeader.maxHeaderHeight
+				&& maxChainLength > 1)
+				GW.floatingHeader.updateState(event, maxChainLength - 1);
 		}
 		GW.floatingHeader.currentTrail = trail;
 	},
 
 	currentTrail: [ ],
 
-	getTrail: () => {
+	getTrail: (maxChainLength) => {
 		let element = document.elementFromPoint(window.innerWidth / 2, 
 												GW.floatingHeader.header.offsetHeight);
 		if (element.compareDocumentPosition(GW.floatingHeader.firstSection) == Node.DOCUMENT_POSITION_FOLLOWING)
@@ -2580,30 +2585,37 @@ GW.floatingHeader = {
 		trail.push("header");
 		trail.reverse();
 
-		let deleteCount = Math.max(0, trail.length - GW.floatingHeader.maxChainLength);
+		let deleteCount = Math.max(0, trail.length - maxChainLength);
 		if (deleteCount > 0)
-			trail.splice(0, deleteCount, "…");
+			trail.splice(0, deleteCount - 1, "…");
 
 		return trail;
 	},
 
 	maxChainLength: 3,
 
+	maxHeaderHeight: 60,
+
 	constructLinkChain: (trail) => {
-		return trail.map(x => {
-			return newElement("A", {
-				href: (x.startsWith("#") ? x : "#top"),
-				class: (x == "…" ? "ellipsis" : "")
-			}, {
-				innerHTML: (x.startsWith("#") 
-							? (x == "#footnotes"
-							   ? "Footnotes"
-							   : document.querySelector(`#${(CSS.escape(x.slice(1)))}`).firstElementChild.textContent) 
-							: (x == "…" 
-							   ? "…"
-							   : GW.floatingHeader.pageHeader.textContent)).trim()
-			});
-		});
+		trail = trail.map(x => newElement("A", {
+			href: (x.startsWith("#") ? x : "#top"),
+			class: (x == "…" ? "ellipsis" : "")
+		}, {
+			innerHTML: (x.startsWith("#") 
+						? (x == "#footnotes"
+						   ? "Footnotes"
+						   : document.querySelector(`#${(CSS.escape(x.slice(1)))}`).firstElementChild.textContent) 
+						: (x == "…" 
+						   ? "…"
+						   : GW.floatingHeader.pageHeader.textContent)).trim()
+		}));
+
+		if (trail[0].innerHTML == "…") {
+			trail[0].href = trail[1].href;
+			trail.splice(1, 1);
+		}
+
+		return trail;
 	},
 
 	linkInChainClicked: (event) => {

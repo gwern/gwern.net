@@ -6294,7 +6294,7 @@ ol.link-bibliography-list-compact > li::before {
 }
 
 #floating-header .link-chain {
-    padding: 3px 4px 4px 4px;
+    padding: 3px 6px 4px 6px;
     font-size: calc(1rem * 8/9);
     text-align: center;
 }
@@ -6312,8 +6312,7 @@ ol.link-bibliography-list-compact > li::before {
 #floating-header .link-chain a.ellipsis {
     pointer-events: none;
 }
-#floating-header .link-chain a.ellipsis::before,
-#floating-header .link-chain a.ellipsis + a::before {
+#floating-header .link-chain a.ellipsis::before {
     content: "\200B\2002";
 }
 
