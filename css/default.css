@@ -6289,7 +6289,7 @@ ol.link-bibliography-list-compact > li::before {
 #floating-header.hidden {
     top: -2.5em;
 }
-#floating-header.hidden .link-chain a:nth-child(n+2) {
+#floating-header.hidden .link-chain a.page-title {
 	display: none;
 }
 
@@ -6301,19 +6301,25 @@ ol.link-bibliography-list-compact > li::before {
 #floating-header .link-chain a {
     font-weight: 600;
 }
-#floating-header .link-chain a:first-child {
+#floating-header .link-chain a + a::before {
+    content: "\200B\2002·\2002"
+}
+#floating-header .link-chain a.ellipsis::before {
+    content: "\200B\2002";
+}
+#floating-header .link-chain a.page-title {
     font-variant-caps: small-caps;
     font-weight: normal;
     letter-spacing: -0.25px;
 }
-#floating-header .link-chain a + a::before {
-    content: "\200B\2002·\2002"
-}
-#floating-header .link-chain a.ellipsis {
-    pointer-events: none;
-}
-#floating-header .link-chain a.ellipsis::before {
-    content: "\200B\2002";
+#floating-header .link-chain.truncate-page-title a.page-title,
+#floating-header.hidden .link-chain a.page-title {
+    display: inline-block;
+    white-space: nowrap;
+    max-width: calc(100% - 12px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
 }
 
 #floating-header .scroll-indicator {
