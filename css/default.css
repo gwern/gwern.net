@@ -6290,42 +6290,34 @@ ol.link-bibliography-list-compact > li::before {
     top: -2.5em;
 }
 
-#floating-header p {
-	text-indent: 0;
-	text-align: center;
+#floating-header .link-chain {
+    padding: 3px 0 4px 0;
+    font-size: calc(1rem * 8/9);
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
 }
-
-#floating-header .page-title {
-	font-variant-caps: small-caps;
+#floating-header .link-chain a {
     font-weight: 600;
-    width: fit-content;
-    margin: 3px auto 4px auto;
-    transition:
-        padding 0.2s ease-out,
-        border 0.2s ease-out;
 }
-#floating-header .section-title {
-    font-size: calc(1em * 8/9);
-	font-weight: bold;
-    max-height: 0;
-    margin: 0;
-    overflow: hidden;
-    transition:
-        margin 0.2s ease-out,
-        max-height 0.2s ease-out;
+#floating-header .link-chain a:first-child {
+    font-variant-caps: small-caps;
+    font-weight: normal;
+    letter-spacing: -0.25px;
 }
-
-#floating-header.show-section .page-title {
-    padding-bottom: 3px;
-    border-bottom: 1px dotted var(--GW-floating-header-separator-color);
+#floating-header .link-chain a + a::before {
+    content: "\2002·\2002"
 }
-#floating-header.show-section .section-title {
-	margin-bottom: 7px;
-    max-height: 4em;
+#floating-header .link-chain a.ellipsis {
+    pointer-events: none;
+}
+#floating-header .link-chain a.ellipsis::before,
+#floating-header .link-chain a.ellipsis + a::before {
+    content: "\2002";
 }
 
 #floating-header .scroll-indicator {
-    height: 2px;
+    height: 3px;
     margin: 0 -8px;
 	background-image: linear-gradient(var(--GW-floating-header-scroll-indicator-color),
 									  var(--GW-floating-header-scroll-indicator-color));
