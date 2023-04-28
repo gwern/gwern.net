@@ -2547,9 +2547,11 @@ GW.floatingHeader = {
 		GW.floatingHeader.scrollIndicator.style.backgroundSize = `${GW.backToTop.dataset.scrollPosition}% 100%`;
 
 		//	Update breadcrumb display.
-		let trail = GW.floatingHeader.getTrail(maxChainLength);
-		if (trail.join("/") != GW.floatingHeader.currentTrail.join("/")) {
-			let chainLinks = GW.floatingHeader.constructLinkChain(trail);
+		let trail = GW.floatingHeader.getTrail();
+		if (   trail.join("/") != GW.floatingHeader.currentTrail.join("/")
+			|| maxChainLength < GW.floatingHeader.maxChainLength) {
+			GW.floatingHeader.linkChain.classList.toggle("truncate-page-title", trail.length > maxChainLength);
+			let chainLinks = GW.floatingHeader.constructLinkChain(trail, maxChainLength);
 			GW.floatingHeader.linkChain.replaceChildren(...chainLinks);
 			chainLinks.forEach(link => { link.addActivateEvent(GW.floatingHeader.linkInChainClicked); });
 
@@ -2557,21 +2559,27 @@ GW.floatingHeader = {
 			if (   GW.floatingHeader.header.offsetHeight > GW.floatingHeader.maxHeaderHeight
 				&& maxChainLength > 1)
 				GW.floatingHeader.updateState(event, maxChainLength - 1);
+			else
+				GW.floatingHeader.currentTrail = trail;
 		}
-		GW.floatingHeader.currentTrail = trail;
 	},
 
 	currentTrail: [ ],
 
-	getTrail: (maxChainLength) => {
+	getTrail: (offset = 0) => {
 		let element = document.elementFromPoint(window.innerWidth / 2, 
-												GW.floatingHeader.header.offsetHeight);
+												GW.floatingHeader.header.offsetHeight + offset);
 		if (element.compareDocumentPosition(GW.floatingHeader.firstSection) == Node.DOCUMENT_POSITION_FOLLOWING)
 			return [ "header" ];
 
 		if (   GW.floatingHeader.markdownBody.contains(element) == false
 			&& GW.floatingHeader.pageMainElement.contains(element) == true)
 			return GW.floatingHeader.currentTrail;
+
+		if (element.tagName == "SECTION")
+			return (GW.floatingHeader.currentTrail.length == 0
+					? GW.floatingHeader.getTrail(offset - 10)
+					: GW.floatingHeader.currentTrail);
 
 		let trail = [ ];		
 		while (element = element.closest("section")) {
@@ -2585,10 +2593,6 @@ GW.floatingHeader = {
 		trail.push("header");
 		trail.reverse();
 
-		let deleteCount = Math.max(0, trail.length - maxChainLength);
-		if (deleteCount > 0)
-			trail.splice(0, deleteCount - 1, "…");
-
 		return trail;
 	},
 
@@ -2596,10 +2600,21 @@ GW.floatingHeader = {
 
 	maxHeaderHeight: 60,
 
-	constructLinkChain: (trail) => {
-		trail = trail.map(x => newElement("A", {
+	chainLinkClasses: {
+		"…": "ellipsis",
+		"header": "page-title"
+	},
+
+	constructLinkChain: (trail, maxChainLength) => {
+		let deleteCount = Math.max(0, trail.length - maxChainLength);
+		if (deleteCount > 0) {
+			trail = trail.slice();
+			trail.splice(0, deleteCount - 1, "…");
+		}
+
+		let chain = trail.map(x => newElement("A", {
 			href: (x.startsWith("#") ? x : "#top"),
-			class: (x == "…" ? "ellipsis" : "")
+			class: (GW.floatingHeader.chainLinkClasses[x] ?? "")
 		}, {
 			innerHTML: (x.startsWith("#") 
 						? (x == "#footnotes"
@@ -2610,12 +2625,12 @@ GW.floatingHeader = {
 						   : GW.floatingHeader.pageHeader.textContent)).trim()
 		}));
 
-		if (trail[0].innerHTML == "…") {
-			trail[0].href = trail[1].href;
-			trail.splice(1, 1);
+		if (chain[0].innerHTML == "…") {
+			chain[0].href = chain[1].href;
+			chain.splice(1, 1);
 		}
 
-		return trail;
+		return chain;
 	},
 
 	linkInChainClicked: (event) => {
@@ -2631,9 +2646,7 @@ if (GW.isMobile()) doWhenPageLoaded(() => {
     GWLog("injectFloatingHeader", "rewrite.js", 1);
 
 	GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden">`
-											+ `<div class="link-chain"><a href="#top">`
-											+ document.querySelector("header").textContent
-											+ `</a></div>`
+											+ `<div class="link-chain"></div>`
 											+ `<div class="scroll-indicator"></div>`
 											+ `</div>`);
 
