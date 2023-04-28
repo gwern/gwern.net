@@ -140,7 +140,8 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			if (collapseBlock.className == "")
 				collapseBlock.removeAttribute("class");
 		} else {
-			collapseBlock.classList.add("expand-on-hover");
+			if (GW.isMobile() == false)
+				collapseBlock.classList.add("expand-on-hover");
 
 			let collapseWrapper;
 			if ([ "DIV", "SECTION" ].includes(collapseBlock.tagName)) {

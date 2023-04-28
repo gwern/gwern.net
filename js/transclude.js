@@ -763,7 +763,10 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 			//	Include wrapper.
 			let includeWrapper = newElement("DIV", { "class": "include-wrapper section-backlinks-include-wrapper" });
 			includeWrapper.append(collapseWrapper);
-			targetBlock.append(includeWrapper);
+			let container = targetBlock.classList.contains("collapse")
+							? (targetBlock.querySelector(".collapse-content-wrapper") ?? targetBlock)
+							: targetBlock;
+			container.append(includeWrapper);
 		}
 
 		backlinksBlock.querySelector(".backlinks-list").append(backlinkContextLink.closest("li").cloneNode(true));

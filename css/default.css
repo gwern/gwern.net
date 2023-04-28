@@ -546,7 +546,7 @@ blockquote .collapse.has-abstract.expanded-not > .disclosure-button .part::befor
 /*	Edge cases.
  */
 
-section.collapse > .collapse.section-backlinks-container:last-child {
+section.collapse > .collapse-content-wrapper > .collapse.section-backlinks-container:last-child {
     margin-bottom: 0;
 }
 
