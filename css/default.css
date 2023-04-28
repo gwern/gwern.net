@@ -6286,16 +6286,18 @@ ol.link-bibliography-list-compact > li::before {
     transition:
         top 0.2s ease-out;
 }
+
 #floating-header.hidden {
     top: -2.5em;
+}
+#floating-header.hidden .link-chain a:nth-child(n+2) {
+	display: none;
 }
 
 #floating-header .link-chain {
     padding: 3px 0 4px 0;
     font-size: calc(1rem * 8/9);
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
+    text-align: center;
 }
 #floating-header .link-chain a {
     font-weight: 600;

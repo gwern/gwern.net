@@ -2520,9 +2520,14 @@ GW.floatingHeader = {
 	/*	Scroll down enough to make whatever’s under the header visible.
 	 */
 	adjustScrollTop: () => {
+		let previousHash = GW.locationHash;
 		requestAnimationFrame(() => {
-			if (location.hash > "")
-				window.scrollBy(0, -1 * GW.floatingHeader.header.offsetHeight);
+			if (location.hash > "") {
+				if (previousHash == GW.locationHash)
+					window.scrollBy(0, -1 * GW.floatingHeader.header.offsetHeight);
+				else
+					GW.floatingHeader.adjustScrollTop();
+			}
 		});
 	},
 
@@ -2575,11 +2580,9 @@ GW.floatingHeader = {
 		trail.push("header");
 		trail.reverse();
 
-		console.log(trail);
 		let deleteCount = Math.max(0, trail.length - (GW.floatingHeader.maxChainLength + 1));
 		if (deleteCount > 0)
 			trail.splice(1, deleteCount, "…");
-		console.log(trail);
 
 		return trail;
 	},
