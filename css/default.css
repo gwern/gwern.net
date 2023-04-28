@@ -6282,7 +6282,6 @@ ol.link-bibliography-list-compact > li::before {
 	background-color: var(--GW-body-background-color);
 	box-sizing: border-box;
     box-shadow: 0 2px 6px var(--GW-floating-header-box-shadow-color);
-	padding: 0 8px;
     transition:
         top 0.2s ease-out;
 }
@@ -6295,7 +6294,7 @@ ol.link-bibliography-list-compact > li::before {
 }
 
 #floating-header .link-chain {
-    padding: 3px 0 4px 0;
+    padding: 3px 4px 4px 4px;
     font-size: calc(1rem * 8/9);
     text-align: center;
 }
@@ -6308,14 +6307,14 @@ ol.link-bibliography-list-compact > li::before {
     letter-spacing: -0.25px;
 }
 #floating-header .link-chain a + a::before {
-    content: "\2002·\2002"
+    content: "\200B\2002·\2002"
 }
 #floating-header .link-chain a.ellipsis {
     pointer-events: none;
 }
 #floating-header .link-chain a.ellipsis::before,
 #floating-header .link-chain a.ellipsis + a::before {
-    content: "\2002";
+    content: "\200B\2002";
 }
 
 #floating-header .scroll-indicator {

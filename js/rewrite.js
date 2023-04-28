@@ -2580,9 +2580,9 @@ GW.floatingHeader = {
 		trail.push("header");
 		trail.reverse();
 
-		let deleteCount = Math.max(0, trail.length - (GW.floatingHeader.maxChainLength + 1));
+		let deleteCount = Math.max(0, trail.length - GW.floatingHeader.maxChainLength);
 		if (deleteCount > 0)
-			trail.splice(1, deleteCount, "…");
+			trail.splice(0, deleteCount, "…");
 
 		return trail;
 	},
