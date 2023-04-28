@@ -21,7 +21,6 @@ transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
                             . replace "https://twitter.com" "https://nitter.moomoo.me"
 transformURLsForLinking   = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
   sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" -- handle oddities like hep-ph
-  . replace "https://twitter.com" "https://nitter.moomoo.me"
 
 {- re URL transforms: Why?
 
