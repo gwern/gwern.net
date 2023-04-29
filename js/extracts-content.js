@@ -504,9 +504,10 @@ Extracts = { ...Extracts,
 		//	REAL REWRITES BEGIN HERE
 
 		if (Extracts.popFrameProvider == Popups) {
-			popFrame.document.querySelectorAll(".backlink-source .link-annotated-not").forEach(fullContextLink => {
-				if (fullContextLink.pathname == location.pathname) {
-					let targetElement = targetElementInDocument(fullContextLink, Extracts.rootDocument);
+			popFrame.document.querySelectorAll(".backlink-source a:nth-of-type(2)").forEach(fullContextLink => {
+				let targetDocument = Extracts.targetDocument(fullContextLink);
+				if (targetDocument) {
+					let targetElement = targetElementInDocument(fullContextLink, targetDocument);
 					fullContextLink.addEventListener("mouseenter", (event) => {
 						targetElement.classList.toggle("block-context-highlighted", true);
 					});
