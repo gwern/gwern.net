@@ -1238,6 +1238,12 @@ figure + figure {
     }
 }
 
+figure.float-left,
+figure.float-right {
+	position: relative;
+	z-index: 1;
+}
+
 .figure-inner-wrapper {
     display: flex;
     flex-flow: column;
