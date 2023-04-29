@@ -169,11 +169,7 @@ Extracts = { ...Extracts,
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  popFrameTitleLinkHref,
 			popFrameTitleText:      popFrameTitleText
-		}, {
-			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
-			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
-			tabOrWindow:  (GW.isMobile() ? "tab" : "window")
-		});
+		}, Extracts.getStandardPopFrameTitleTemplateFillContext());
     },
 
 	preparePopFrame_LOCAL_PAGE: (popFrame) => {
@@ -1205,11 +1201,7 @@ Extracts = { ...Extracts,
 			};
 		}
 
-		return Transclude.fillTemplateNamed("pop-frame-title-annotation", referenceData, {
-			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
-			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
-			tabOrWindow:  ((Extracts.popFrameProvider == Popins) ? "tab" : "window")
-		});
+		return Transclude.fillTemplateNamed("pop-frame-title-annotation", referenceData, Extracts.getStandardPopFrameTitleTemplateFillContext());
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)

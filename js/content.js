@@ -253,7 +253,7 @@ Content = {
 				tweetContent += Content.contentTypes.localTweetArchive.mediaEmbedHTML(tweetPage.document);
 
 				//	Pop-frame title text.
-				let popFrameTitleText = newElement("SPAN", null, { innerHTML: (titleHTML + secondaryTitleLinksHTML) }).textContent.slice(0, -1);
+				let popFrameTitleText = `${titleText} on ${tweetDate}`;
 
 				return {
 					content: {

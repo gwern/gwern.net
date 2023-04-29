@@ -38,11 +38,7 @@ Extracts = { ...Extracts,
 
 		return newDocument(synthesizeIncludeLink(target, {
 			"class": "link-annotated include-annotation",
-			"data-template": "annotation-blockquote-not",
-			"data-template-fields": "linkTarget:$,whichTab:$,tabOrWindow:$",
-			"data-link-target": ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
-			"data-which-tab": ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
-			"data-tab-or-window": ((Extracts.popFrameProvider == Popins) ? "tab" : "window")
+			"data-template": "annotation-blockquote-not"
 		}));
     },
 
@@ -62,11 +58,7 @@ Extracts = { ...Extracts,
 			};
 		}
 
-		return Transclude.fillTemplateNamed("pop-frame-title-annotation", referenceData, {
-			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
-			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
-			tabOrWindow:  ((Extracts.popFrameProvider == Popins) ? "tab" : "window")
-		});
+		return Transclude.fillTemplateNamed("pop-frame-title-annotation", referenceData, Extracts.getStandardPopFrameTitleTemplateFillContext());
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -152,11 +144,7 @@ Extracts = { ...Extracts,
 
 		return newDocument(synthesizeIncludeLink(target, {
 			"class": "link-annotated-partial include-annotation-partial",
-			"data-template": "annotation-blockquote-not",
-			"data-template-fields": "linkTarget:$,whichTab:$,tabOrWindow:$",
-			"data-link-target": ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
-			"data-which-tab": ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
-			"data-tab-or-window": ((Extracts.popFrameProvider == Popins) ? "tab" : "window")
+			"data-template": "annotation-blockquote-not"
 		}));
     },
 
@@ -204,11 +192,7 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 	});
 	partialAnnotationAppendContainer.appendChild(synthesizeIncludeLink((target.dataset.urlOriginal ?? target.href), {
 		"class": "link-annotated-partial include-annotation-partial include-strict",
-		"data-template": "annotation-blockquote-not",
-		"data-template-fields": "linkTarget:$,whichTab:$,tabOrWindow:$",
-		"data-link-target": ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
-		"data-which-tab": ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
-		"data-tab-or-window": ((Extracts.popFrameProvider == Popins) ? "tab" : "window")
+		"data-template": "annotation-blockquote-not"
 	}));
 
 	//	Add the whole thing to the pop-frame.

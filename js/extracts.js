@@ -403,12 +403,16 @@ Extracts = {
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  target.href,
 			popFrameTitleText:      titleText
-		}, {
+		}, Extracts.getStandardPopFrameTitleTemplateFillContext());
+    },
+
+	getStandardPopFrameTitleTemplateFillContext: () => {
+		return {
 			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
 			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
-			tabOrWindow:  (GW.isMobile() ? "tab" : "window")
-		});
-    },
+			tabOrWindow:  ((Extracts.popFrameProvider == Popins) ? "tab" : "window")
+		};
+	},
 
     /*  Returns the contents of the title element for a pop-frame.
      */

@@ -1308,11 +1308,8 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventI
         //  Replace reference block contents with synthetic include-link.
         partialAnnotation.replaceChildren(synthesizeIncludeLink(referenceLink, {
             "class": "include-annotation include-replace-container link-annotated-partial",
-            "data-template-fields": "annotationClassSuffix:$,linkTarget:$,whichTab:$,tabOrWindow:$",
-            "data-annotation-class-suffix": "-partial",
-			"data-link-target": (GW.isMobile() ? "_self" : "_blank"),
-			"data-which-tab": (GW.isMobile() ? "current" : "new"),
-			"data-tab-or-window": (GW.isMobile() ? "tab" : "window")
+            "data-template-fields": "annotationClassSuffix:$",
+            "data-annotation-class-suffix": "-partial"
         }));
 
         //  Fire GW.contentDidLoadEvent (to trigger transclude).
