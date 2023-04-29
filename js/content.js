@@ -237,7 +237,7 @@ Content = {
 
 				//	Text of link to user’s page.
 				let titleText = tweetPage.document.querySelector("title").textContent.match(/^(.+?):/)[1];
-				let titleHTML = titleText;
+				let titleHTML = titleText.replace(/\((@.+?)\)/, "(<code>$1</code>)");
 
 				//	Link to tweet.
 				let tweetDate = tweetPage.document.querySelector(".main-tweet .tweet-date").textContent;
@@ -253,7 +253,7 @@ Content = {
 				tweetContent += Content.contentTypes.localTweetArchive.mediaEmbedHTML(tweetPage.document);
 
 				//	Pop-frame title text.
-				let popFrameTitleText = `${titleText} on ${tweetDate}`;
+				let popFrameTitleText = `${titleHTML} on ${tweetDate}`;
 
 				return {
 					content: {

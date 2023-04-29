@@ -3914,6 +3914,13 @@ body.index-directory #footer {
     margin: 0 0.5em;
 }
 
+.popframe .popframe-title code {
+    margin: 0 0.05em;
+    padding: 0;
+    border: none;
+    background-color: none;
+}
+
 /*=-------------------=*/
 /*= POP-FRAME CONTENT =*/
 /*=-------------------=*/
