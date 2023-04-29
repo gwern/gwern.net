@@ -214,6 +214,9 @@ Content = {
 
 			sourceURLsForLink: (link) => {
 				let url = new URL(link.href);
+				url.hash = "";
+				url.search = "";
+
 				return [ url ];
 			},
 
@@ -358,7 +361,6 @@ Content = {
 			 */
 			sourceURLsForLink: (link) => {
 				let codeFileURL = new URL(link.href);
-
 				codeFileURL.hash = "";
 				codeFileURL.search = "";
 
@@ -429,6 +431,8 @@ Content = {
 
 			sourceURLsForLink: (link) => {
 				let url = new URL(link.href);
+				url.hash = "";
+				url.search = "";
 
 				return [ url ];
 			},
@@ -500,6 +504,8 @@ Content = {
 
 			sourceURLsForLink: (link) => {
 				let url = new URL(link.href);
+				url.hash = "";
+				url.search = "";
 
 				return [ url ];
 			},
