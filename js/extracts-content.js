@@ -509,13 +509,13 @@ Extracts = { ...Extracts,
 				if (targetDocument) {
 					let targetElement = targetElementInDocument(fullContextLink, targetDocument);
 					fullContextLink.addEventListener("mouseenter", (event) => {
-						targetElement.classList.toggle("block-context-highlighted", true);
+						targetElement.classList.toggle("block-context-highlighted-temp", true);
 					});
 					fullContextLink.addEventListener("mouseleave", (event) => {
-						targetElement.classList.toggle("block-context-highlighted", false);
+						targetElement.classList.toggle("block-context-highlighted-temp", false);
 					});
 					GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", (info) => {
-						targetElement.classList.toggle("block-context-highlighted", false);
+						targetElement.classList.toggle("block-context-highlighted-temp", false);
 					}, {
 						once: true,
 						condition: (info) => (info.popup == popFrame)

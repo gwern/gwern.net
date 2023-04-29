@@ -6793,10 +6793,10 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 /*****************/
 /*  Block context.
  */
-.markdownBody a.block-context-highlighted {
+.markdownBody a.block-context-highlighted,
+.markdownBody a.block-context-highlighted-temp {
     position: relative;
     z-index: 2;
-    margin: 0 8px;
     box-shadow:
          3px 1px 0 2px var(--background-color),
         -3px 1px 0 2px var(--background-color),
@@ -6806,6 +6806,9 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
         -3px 1px 0 4px var(--background-color),
          3px 1px 0 5px var(--GW-highlighted-link-outline-color),
         -3px 1px 0 5px var(--GW-highlighted-link-outline-color);
+}
+.markdownBody a.block-context-highlighted {
+    margin: 0 8px;
 }
 
 /****************/
