@@ -4,7 +4,7 @@
 #
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-04-11 14:53:10 gwern"
+# When:  Time-stamp: "2023-04-28 11:01:00 gwern"
 # License: CC-0
 #
 # Dependencies: curl, exiftool, jq, gwa/annotation-dump
@@ -38,7 +38,7 @@ if [ "${@##*.}" = "pdf" ]; then
     if [[ "$CREATOR" =~ $AUTHOR.* ]]; then echo "$CREATOR"; else echo "$AUTHOR"; fi
 
     echo "  - \"$(exiftool -q -q -dateFormat '%F' -printFormat '$Date' $TARGET |  sed -e "s/^\([1-2][0-9][0-9][0-9]\)$/'\1'/" -e "s/-01$//")\""
-    DOI=$(exiftool -q -q -printFormat '$DOI' -DOI "$TARGET" | tr -d '\n' | tr '–—­' '-')
+    DOI=$(exiftool -q -q -printFormat '$DOI' -DOI "$TARGET" | tr -d '\n' | tr '–—­' '-' | sed -e 's/^doi://')
     if [ -z "$DOI" ]; then echo "  - ''"; else echo "  - $DOI"; fi
 
     echo "  - ''" # empty string for tags (files will inherit a tag, but we still need the empty string explicitly, and may want to add some anyway)
