@@ -3578,6 +3578,13 @@ body.index-directory #footer {
     transition:
         background-color 0.15s ease-out;
 }
+@media only screen and (max-width: 649px) {
+    #image-focus-overlay .caption .image-url {
+        position: fixed;
+        top: 4.5em;
+    }
+}
+
 #image-focus-overlay .caption .image-url.flash {
     background-color: var(--SA-image-focus-overlay-image-caption-link-color);
     transition:
