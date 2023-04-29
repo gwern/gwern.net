@@ -175,8 +175,10 @@ function targetElementInDocument(link, doc) {
 			".aux-links-list a"
 		].join(", ");
         element = doc.querySelector(exactBacklinkSelector) ?? (Array.from(doc.querySelectorAll(backlinkSelector)).filter(backlink => {
-            return (   (   backlink.pathname == link.dataset.backlinkTargetUrl
-            			|| backlink.dataset.urlOriginal == link.dataset.backlinkTargetUrl)
+            return (   (link.dataset.backlinkTargetUrl.startsWith("/")
+            			? backlink.pathname == link.dataset.backlinkTargetUrl
+            			: (   backlink.href == link.dataset.backlinkTargetUrl
+            			   || backlink.dataset.urlOriginal == link.dataset.backlinkTargetUrl))
                     && backlink.closest(exclusionSelector) == null);
         }).first);
     }
