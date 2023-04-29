@@ -237,14 +237,15 @@ Content = {
 
 				//	Text of link to user’s page.
 				let titleText = tweetPage.document.querySelector("title").textContent.match(/^(.+?):/)[1];
-				let titleHTML = titleText;
+				let titleHTML = titleText.replace(/\((@.+?)\)/, "(<code>$1</code>)");
 
 				//	Link to tweet.
-				let tweetDate = tweetPage.document.querySelector(".main-tweet .tweet-date").textContent;
+				let tweetDate = new Date(Date.parse(tweetPage.document.querySelector(".main-tweet .tweet-date").textContent));
+				let tweetDateString = `${tweetDate.getFullYear()}-${tweetDate.getMonth()}-${tweetDate.getDate()}`;
 				let tweetLinkURL = originalURLForLink(link);
 				tweetLinkURL.hostname = nitterHost;
 				tweetLinkURL.hash = "m";
-				let secondaryTitleLinksHTML = ` on <a href="${tweetLinkURL.href}" class="${titleLinkClass}" ${titleLinkIconMetadata}>${tweetDate}</a>:`;
+				let secondaryTitleLinksHTML = ` on <a href="${tweetLinkURL.href}" class="${titleLinkClass}" ${titleLinkIconMetadata}>${tweetDateString}</a>:`;
 
 				//	Tweet content itself.
 				let tweetContent = tweetPage.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
@@ -253,7 +254,7 @@ Content = {
 				tweetContent += Content.contentTypes.localTweetArchive.mediaEmbedHTML(tweetPage.document);
 
 				//	Pop-frame title text.
-				let popFrameTitleText = newElement("SPAN", null, { innerHTML: (titleHTML + secondaryTitleLinksHTML) }).textContent.slice(0, -1);
+				let popFrameTitleText = `${titleHTML} on ${tweetDateString}`;
 
 				return {
 					content: {

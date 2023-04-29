@@ -1475,15 +1475,16 @@ Transclude = {
 		//	When data loads (or if it is already loaded), transclude.
 		let processData = (template) => {
 			//	Reference data.
-			let referenceData = dataProvider.referenceDataForLink(includeLink).content;
+			let referenceData = dataProvider.referenceDataForLink(includeLink);
+			let templateData = referenceData.content;
 
 			//	If no template specified, use reference data as template.
 			if (   template == null
-				&& referenceData instanceof DocumentFragment)
-				template = referenceData;
+				&& templateData instanceof DocumentFragment)
+				template = templateData;
 
 			//	Template fill context.
-			let context = templateDataFromHTML(includeLink);
+			let context = Object.assign({ }, referenceData, templateDataFromHTML(includeLink));
 
 			//	Designate partial annotation transcludes.
 			if (   Transclude.isAnnotationTransclude(includeLink)
@@ -1501,7 +1502,7 @@ Transclude = {
 			};
 
 			//	Fill template.
-			let content = fillTemplate(template, referenceData, context, options);
+			let content = fillTemplate(template, templateData, context, options);
 
 			//	Slice and include, or else handle failure.
 			if (content) {
