@@ -632,7 +632,6 @@ Annotations.dataSources.wikipedia = {
 				dataSourceClass:          "wikipedia-entry",
 			},
 			template:               "annotation-blockquote-inside",
-			dataSource:		        "wikipedia",
 			linkTarget:             (GW.isMobile() ? "_self" : "_blank"),
 			whichTab:               (GW.isMobile() ? "current" : "new"),
 			tabOrWindow:            (GW.isMobile() ? "tab" : "window"),
@@ -903,131 +902,6 @@ Annotations.dataSources.wikipedia = {
 		referenceEntry.querySelectorAll(noFigureImagesSelector).forEach(image => {
 			image.classList.add("figure-not");
 		});
-	}
-};
-
-/**********/
-/*  Tweets.
-	*/
-Annotations.dataSources.twitter = {
-	matches: (link) => {
-		return [
-			"twitter.com", 
-			"mobile.twitter.com", 
-			...(Annotations.dataSources.twitter.nitterHosts)
-		].includes(link.hostname);
-	},
-
-	//	Called by: Annotations.processedAPIResponseForLink
-	//	Called by: Annotations.sourceURLForLink
-	sourceURLForLink: (link) => {
-		return new URL(  location.origin 
-					   + Annotations.dataSources.twitter.basePathname
-					   + fixedEncodeURIComponent(fixedEncodeURIComponent(Annotations.targetIdentifier(link)))
-					   + ".html");
-	},
-
-	//	Called by: Annotations.processedAPIResponseForLink
-	processAPIResponse: (response) => {
-		return newDocument(response);
-	},
-
-	//	Called by: Annotations.referenceDataFromParsedAPIResponse
-	referenceDataFromParsedAPIResponse: (response, tweetLink) => {
-		//	Link metadata for title-links.
-		let titleLinkClass = "title-link link-live";
-		let titleLinkIconMetadata = `data-link-icon-type="svg" data-link-icon="twitter"`;
-
-		//	URL for link to user’s page.
-		let titleLinkURL = new URL(response.querySelector("a.username").href);
-		if (titleLinkURL.hostname == location.hostname)
-			titleLinkURL.hostname = "twitter.com";
-		let titleLinkHref = titleLinkURL.href;
-
-		//	Text of link to user’s page.
-		let titleText = response.querySelector("title").textContent.match(/^(.+?):/)[1];
-		let titleHTML = titleText;
-
-		//	Link to tweet.
-		let tweetDate = response.querySelector(".tweet-published").textContent.match(/^(.+?) · /)[1];
-		let tweetLinkURL = new URL(tweetLink);
-		tweetLinkURL.hostname = "twitter.com";
-		let secondaryTitleLinksHTML = ` on <a href="${tweetLinkURL.href}" class="${titleLinkClass}" ${titleLinkIconMetadata}>${tweetDate}</a>:`;
-
-		//	Tweet content itself.
-		let tweetContent = response.querySelector("title").textContent.match(/^(.+?): "(.*)" \| nitter$/)[2];
-
-		//	Attached media (video or images).
-		tweetContent += Annotations.dataSources.twitter.mediaEmbedHTML(response);
-
-		//	Pop-frame title text.
-		let popFrameTitleText = newElement("SPAN", null, { innerHTML: (titleHTML + secondaryTitleLinksHTML) }).textContent;
-
-		return {
-			content: {
-				titleHTML:                titleHTML,
-				fullTitleHTML:            titleHTML,
-				titleText:                titleText,
-				titleLinkHref:            titleLinkHref,
-				titleLinkClass:           titleLinkClass,
-				titleLinkIconMetadata:    titleLinkIconMetadata,
-				secondaryTitleLinksHTML:  secondaryTitleLinksHTML,
-				abstract: 		          tweetContent,
-				dataSourceClass:          "tweet",
-			},
-			template:               "annotation-blockquote-inside",
-			dataSource:		        "twitter",
-			linkTarget:             (GW.isMobile() ? "_self" : "_blank"),
-			whichTab:               (GW.isMobile() ? "current" : "new"),
-			tabOrWindow:            (GW.isMobile() ? "tab" : "window"),
-			popFrameTitleText:      popFrameTitleText,
-			popFrameTitleLinkHref:  tweetLinkURL.href
-		};
-	},
-
-	mediaURLFromMetaTag: (mediaMetaTag, nitterHost) => {
-		let mediaURL = mediaMetaTag.content.startsWith("/")
-					   ? new URL(location.origin + mediaMetaTag.content)
-					   : new URL(mediaMetaTag.content);
-		mediaURL.hostname = nitterHost;
-		return mediaURL;
-	},
-
-	mediaEmbedHTML: (response) => {
-		let nitterHost = Annotations.dataSources.twitter.getNitterHost();
-
-		let imageMetaTagSelector = "meta[property='og:image']";
-		let videoMetaTagSelector = "meta[property='og:video:url']";
-
-		let videoMetaTag = response.querySelector(videoMetaTagSelector);
-		if (videoMetaTag) {
-			let videoURL = Annotations.dataSources.twitter.mediaURLFromMetaTag(videoMetaTag, nitterHost);
-			let imageMetaTag = response.querySelector(imageMetaTagSelector);
-			let imageURL = Annotations.dataSources.twitter.mediaURLFromMetaTag(imageMetaTag, nitterHost);
-			return (  `<figure>`
-            		+ `<video controls="controls" preload="none" poster="${imageURL.href}">`
-            		+ `<source src="${videoURL.href}">`
-            		+ `</video></figure>`);
-		}
-
-		let imageMetaTags = response.querySelectorAll(imageMetaTagSelector);
-		if (imageMetaTags.length > 0) {
-			return Array.from(imageMetaTags).map(tag => 
-					`<img src="${(Annotations.dataSources.twitter.mediaURLFromMetaTag(tag, nitterHost).href)}" loading="lazy">`
-				  ).join("");
-		}
-
-		return ``;
-	},
-
-	basePathname: "/doc/www/twitter.com/",
-
-	nitterHosts: [
-		"nitter.moomoo.me"
-	],
-
-	getNitterHost: () => {
-		return Annotations.dataSources.twitter.nitterHosts[rollDie(Annotations.dataSources.twitter.nitterHosts.length) - 1];
 	}
 };
 

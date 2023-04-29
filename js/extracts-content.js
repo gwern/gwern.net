@@ -1154,13 +1154,101 @@ Extracts = { ...Extracts,
         let iframe = popFrame.document.querySelector("iframe");
         if (iframe) {
             iframe.addEventListener("load", (event) => {
-                popFrame.titleBar.querySelector(".popframe-title-link").innerHTML = iframe.contentDocument.title;
+                Extracts.updatePopFrameTitle(popFrame, iframe.contentDocument.title);
             });
         }
 
         //  Loading spinner.
         Extracts.setLoadingSpinner(popFrame);
     }
+};
+
+/*=-----------------------------=*/
+/*= TRANSFORMED LOCAL DOCUMENTS =*/
+/*=-----------------------------=*/
+
+Extracts.targetTypeDefinitions.insertBefore([
+    "LOCAL_DOCUMENT_TRANSFORM",          // Type name
+    "isTransformableLocalDocumentLink",  // Type predicate function
+    "has-content",                       // Target classes to add
+    "localDocumentTransformForTarget",   // Pop-frame fill function
+    "local-document-transform"           // Pop-frame classes
+], (def => def[0] == "LOCAL_DOCUMENT"));
+
+Extracts = { ...Extracts,
+    //  Called by: extracts.js (as `predicateFunctionName`)
+    isTransformableLocalDocumentLink: (target) => {
+		if (target.classList.contains("content-transform-not"))
+			return false;
+
+		return Content.contentTypes.localTweetArchive.matches(target);
+    },
+
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
+    localDocumentTransformForTarget: (target) => {
+        GWLog("Extracts.localDocumentTransformForTarget", "extracts-content.js", 2);
+
+        return newDocument(synthesizeIncludeLink(target));
+    },
+
+    //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
+    titleForPopFrame_LOCAL_DOCUMENT_TRANSFORM: (popFrame) => {
+        GWLog("Extracts.titleForPopFrame_LOCAL_DOCUMENT_TRANSFORM", "extracts-annotations.js", 2);
+
+        let target = popFrame.spawningTarget;
+		let referenceData = Content.referenceDataForLink(target);
+		if (referenceData == null) {
+        	let originalURL = originalURLForLink(target);
+			referenceData = {
+				popFrameTitleLinkHref:  originalURL.href,
+				popFrameTitleText:      originalURL.href
+			};
+		}
+
+		return Transclude.fillTemplateNamed("pop-frame-title-annotation", referenceData, {
+			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
+			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
+			tabOrWindow:  ((Extracts.popFrameProvider == Popins) ? "tab" : "window")
+		});
+    },
+
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    rewritePopFrameContent_LOCAL_DOCUMENT_TRANSFORM: (popFrame, injectEventInfo = null) => {
+        let target = popFrame.spawningTarget;
+
+		if (injectEventInfo == null) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_LOCAL_DOCUMENT_TRANSFORM(popFrame, info);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
+				source: "Extracts.rewritePopFrameContent_LOCAL_DOCUMENT_TRANSFORM",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
+		let referenceData = Content.referenceDataForLink(target);
+
+        //  Add data source class.
+        if (   referenceData
+        	&& referenceData.content.dataSourceClass)
+            Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.content.dataSourceClass.split(" ")));
+
+		//	Update pop-frame title.
+		Extracts.updatePopFrameTitle(popFrame, Extracts.titleForPopFrame(popFrame));
+	}
 };
 
 /*=---------------------------=*/

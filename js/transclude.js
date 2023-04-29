@@ -1521,14 +1521,7 @@ Transclude = {
 			/*	If a template is specified by name, then we’ll need to make sure
 				that it’s loaded before we can fill it with data.
 			 */
-			let templateName;
-			if (includeLink.dataset.template > "") {
-				templateName = includeLink.dataset.template;
-			} else if (Transclude.isAnnotationTransclude(includeLink)) {
-				let referenceData = Annotations.referenceDataForLink(includeLink);
-				if (referenceData.template > "")
-					templateName = referenceData.template;
-			}
+			let templateName = includeLink.dataset.template || dataProvider.referenceDataForLink(includeLink).template;
 			if (templateName) {
 				Transclude.doWhenTemplateLoaded(templateName, (template, delayed) => {
 					if (delayed)

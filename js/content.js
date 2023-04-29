@@ -203,6 +203,124 @@ Content = {
 	},
 
 	contentTypes: {
+		localTweetArchive: {
+			matches: (link) => {
+				let originalURL = originalURLForLink(link);
+				return (   link.hostname == location.hostname
+						&& link.pathname.startsWith("/doc/www/")
+						&& originalURL.hostname == "twitter.com"
+						&& originalURL.pathname.match(/\/.+?\/status\/[0-9]+$/));
+			},
+
+			sourceURLsForLink: (link) => {
+				let url = new URL(link.href);
+				return [ url ];
+			},
+
+			contentFromResponse: (response, link = null, loadURL) => {
+				return {
+					document: newDocument(response)
+				};
+			},
+
+			referenceDataFromContent: (tweetPage, link) => {
+				//	Link metadata for title-links.
+				let titleLinkClass = "title-link link-live content-transform-not";
+				let titleLinkIconMetadata = `data-link-icon-type="svg" data-link-icon="twitter"`;
+
+				let nitterHost = Content.contentTypes.localTweetArchive.getNitterHost();
+
+				//	URL for link to user’s page.
+				let titleLinkURL = new URL(tweetPage.document.querySelector("a.username").href);
+				titleLinkURL.hostname = nitterHost;
+				let titleLinkHref = titleLinkURL.href;
+
+				//	Text of link to user’s page.
+				let titleText = tweetPage.document.querySelector("title").textContent.match(/^(.+?):/)[1];
+				let titleHTML = titleText;
+
+				//	Link to tweet.
+				let tweetDate = tweetPage.document.querySelector(".tweet-published").textContent.match(/^(.+?) · /)[1];
+				let tweetLinkURL = originalURLForLink(link);
+				tweetLinkURL.hostname = nitterHost;
+				tweetLinkURL.hash = "m";
+				let secondaryTitleLinksHTML = ` on <a href="${tweetLinkURL.href}" class="${titleLinkClass}" ${titleLinkIconMetadata}>${tweetDate}</a>:`;
+
+				//	Tweet content itself.
+				let tweetContent = tweetPage.document.querySelector("title").textContent.match(/^(.+?): "(.*)" \| nitter$/s)[2];
+
+				//	Attached media (video or images).
+				tweetContent += Content.contentTypes.localTweetArchive.mediaEmbedHTML(tweetPage.document);
+
+				//	Pop-frame title text.
+				let popFrameTitleText = newElement("SPAN", null, { innerHTML: (titleHTML + secondaryTitleLinksHTML) }).textContent.slice(0, -1);
+
+				return {
+					content: {
+						titleHTML:                titleHTML,
+						fullTitleHTML:            titleHTML,
+						titleText:                titleText,
+						titleLinkHref:            titleLinkHref,
+						titleLinkClass:           titleLinkClass,
+						titleLinkIconMetadata:    titleLinkIconMetadata,
+						secondaryTitleLinksHTML:  secondaryTitleLinksHTML,
+						abstract: 		          tweetContent,
+						dataSourceClass:          "tweet",
+					},
+					template:                       "annotation-blockquote-not",
+					linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
+					whichTab:                       (GW.isMobile() ? "current" : "new"),
+					tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
+					popFrameTitleText:              popFrameTitleText,
+					popFrameTitleLinkHref:          tweetLinkURL.href
+				};
+			},
+
+			mediaURLFromMetaTag: (mediaMetaTag, nitterHost) => {
+				let mediaURL = mediaMetaTag.content.startsWith("/")
+							   ? new URL(location.origin + mediaMetaTag.content)
+							   : new URL(mediaMetaTag.content);
+				mediaURL.hostname = nitterHost;
+				return mediaURL;
+			},
+
+			mediaEmbedHTML: (response) => {
+				let nitterHost = Content.contentTypes.localTweetArchive.getNitterHost();
+
+				let imageMetaTagSelector = "meta[property='og:image']";
+				let videoMetaTagSelector = "meta[property='og:video:url']";
+
+				let videoMetaTag = response.querySelector(videoMetaTagSelector);
+				if (videoMetaTag) {
+					let videoURL = Content.contentTypes.localTweetArchive.mediaURLFromMetaTag(videoMetaTag, nitterHost);
+					let imageMetaTag = response.querySelector(imageMetaTagSelector);
+					let imageURL = Content.contentTypes.localTweetArchive.mediaURLFromMetaTag(imageMetaTag, nitterHost);
+					return (  `<figure>`
+							+ `<video controls="controls" preload="none" poster="${imageURL.href}">`
+							+ `<source src="${videoURL.href}">`
+							+ `</video></figure>`);
+				}
+
+				let imageMetaTags = response.querySelectorAll(imageMetaTagSelector);
+				if (imageMetaTags.length > 0) {
+					return Array.from(imageMetaTags).map(tag => 
+							`<img src="${(Content.contentTypes.localTweetArchive.mediaURLFromMetaTag(tag, nitterHost).href)}" loading="lazy">`
+						  ).join("");
+				}
+
+				return ``;
+			},
+
+			liveNitterHosts: [
+				"nitter.moomoo.me"
+			],
+
+			getNitterHost: () => {
+				let hosts = Content.contentTypes.localTweetArchive.liveNitterHosts;
+				return hosts[rollDie(hosts.length) - 1];
+			}
+		},
+
 		localCodeFile: {
 			matches: (link) => {
 				//	Maybe it’s a foreign link?
@@ -309,7 +427,7 @@ Content = {
 			},
 
 			sourceURLsForLink: (link) => {
-				let url = new URL(link);
+				let url = new URL(link.href);
 
 				return [ url ];
 			},
@@ -380,7 +498,7 @@ Content = {
 			},
 
 			sourceURLsForLink: (link) => {
-				let url = new URL(link);
+				let url = new URL(link.href);
 
 				return [ url ];
 			},

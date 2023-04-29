@@ -33,7 +33,7 @@
     --GW-popups-popup-with-full-title-bar-min-height: 120px;
     --GW-popups-annotation-popup-min-width: 480px;
     --GW-popups-annotation-popup-min-height: 240px;
-    --GW-popups-annotation-tweet-popup-min-height: 120px;
+    --GW-popups-tweet-popup-min-height: 120px;
     --GW-popups-aux-links-popup-min-width: 480px;
     --GW-popups-aux-links-popup-min-height: 240px;
     --GW-popups-local-page-popup-min-width: 480px;
@@ -546,6 +546,9 @@ blockquote .collapse.has-abstract.expanded-not > .disclosure-button .part::befor
 /*	Edge cases.
  */
 
+.footnote > .collapse.section-backlinks-container:last-child {
+    margin-bottom: 0.5em;
+}
 section.collapse > .collapse-content-wrapper > .collapse.section-backlinks-container:last-child {
     margin-bottom: 0;
 }
@@ -4083,10 +4086,6 @@ body.index-directory #footer {
     margin-bottom: 0.375em;
 }
 
-.popframe-body > .annotation.tweet:only-child > p.data-field.title:only-of-type {
-    font-size: 1em;
-}
-
 .popframe-body > div.annotation > div.annotation-abstract > .collapse {
     margin-left: calc(-1 * var(--collapse-left-offset));
     padding-left: var(--collapse-left-offset);
@@ -4263,6 +4262,14 @@ body.index-directory #footer {
     */
 .popframe.local-document.loading-failed::after {
     content: "File not found.";
+}
+
+/*┌──────────────────────────────────────┐*/
+/*│ Local document transform pop-frames. │*/
+/*└──────────────────────────────────────┘*/
+
+.popframe-body.local-document-transform > .tweet:only-child > p.data-field.title:only-of-type {
+    font-size: 1em;
 }
 
 /*┌──────────────────────────────┐*/
@@ -4859,10 +4866,6 @@ body.index-directory #footer {
     min-height: var(--GW-popups-annotation-popup-min-height);
 }
 
-.popup.annotation:not(.annotation-partial).link-tweet {
-	min-height: var(--GW-popups-annotation-tweet-popup-min-height);
-}
-
 /*┌──────────────────┐*/
 /*│ Footnote popups. │*/
 /*└──────────────────┘*/
@@ -5017,6 +5020,14 @@ body.index-directory #footer {
 /*┌────────────────────────┐*/
 /*│ Local document popups. │*/
 /*└────────────────────────┘*/
+
+/*┌──────────────────────────────────┐*/
+/*│ Local document transform popups. │*/
+/*└──────────────────────────────────┘*/
+
+.popup.local-document-transform.tweet {
+	min-height: var(--GW-popups-tweet-popup-min-height);
+}
 
 /*┌──────────────────────────┐*/
 /*│ Local transclude popups. │*/
@@ -5971,7 +5982,7 @@ section.highlight-fading::before {
 /*	Tweets.
  */
 
-.annotation.tweet figure {
+.local-document-transform.tweet figure {
     margin: 2em auto 0.1em auto;
     max-width: unset;
 }

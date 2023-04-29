@@ -97,12 +97,12 @@ Extracts = { ...Extracts,
         GWLog("Extracts.rewritePopFrameContent_ANNOTATION", "extracts-annotations.js", 2);
 
         let target = popFrame.spawningTarget;
-		let referenceData = Annotations.referenceDataForLink(target)
+		let referenceData = Annotations.referenceDataForLink(target);
 
         //  Mark annotations from non-local data sources.
         if (   referenceData
-        	&& referenceData.dataSourceClass)
-            Extracts.popFrameProvider.addClassesToPopFrame(popFrame, referenceData.dataSourceClass.split(" "));
+        	&& referenceData.content.dataSourceClass)
+            Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.content.dataSourceClass.split(" ")));
 
         //  Trigger transclude.
         Transclude.triggerTranscludesInContainer(popFrame.body, {
