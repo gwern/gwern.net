@@ -184,7 +184,7 @@ a[data-link-icon-type*='italic'] .link-icon-hook::after {
     font-style: italic;
 
     --link-icon-size: 0.85em;
-    --link-icon-offset-x: 0.08em;
+    --link-icon-offset-x: 0.10em;
 }
 a[data-link-icon-type*='overline'] .link-icon-hook::after {
     text-decoration: overline;
