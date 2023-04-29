@@ -231,7 +231,7 @@ Content = {
 				let nitterHost = Content.contentTypes.localTweetArchive.getNitterHost();
 
 				//	URL for link to user’s page.
-				let titleLinkURL = new URL(tweetPage.document.querySelector("a.username").href);
+				let titleLinkURL = new URL(tweetPage.document.querySelector(".main-tweet a.username").href);
 				titleLinkURL.hostname = nitterHost;
 				let titleLinkHref = titleLinkURL.href;
 
@@ -240,14 +240,14 @@ Content = {
 				let titleHTML = titleText;
 
 				//	Link to tweet.
-				let tweetDate = tweetPage.document.querySelector(".tweet-published").textContent.match(/^(.+?) · /)[1];
+				let tweetDate = tweetPage.document.querySelector(".main-tweet .tweet-date").textContent;
 				let tweetLinkURL = originalURLForLink(link);
 				tweetLinkURL.hostname = nitterHost;
 				tweetLinkURL.hash = "m";
 				let secondaryTitleLinksHTML = ` on <a href="${tweetLinkURL.href}" class="${titleLinkClass}" ${titleLinkIconMetadata}>${tweetDate}</a>:`;
 
 				//	Tweet content itself.
-				let tweetContent = tweetPage.document.querySelector("title").textContent.match(/^(.+?): "(.*)" \| nitter$/s)[2];
+				let tweetContent = tweetPage.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
 
 				//	Attached media (video or images).
 				tweetContent += Content.contentTypes.localTweetArchive.mediaEmbedHTML(tweetPage.document);

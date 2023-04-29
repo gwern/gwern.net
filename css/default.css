@@ -5982,6 +5982,13 @@ section.highlight-fading::before {
 /*	Tweets.
  */
 
+.local-document-transform.tweet .data-field.annotation-abstract {
+    margin-top: 0.75em;
+}
+.local-document-transform.tweet .data-field.annotation-abstract p {
+    text-indent: 0;
+    margin-top: 0.5em;
+}
 .local-document-transform.tweet figure {
     margin: 2em auto 0.1em auto;
     max-width: unset;
