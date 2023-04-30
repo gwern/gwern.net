@@ -1002,4 +1002,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("MMLU", "https://arxiv.org/abs/2009.03300")
         , ("MATH", "https://arxiv.org/abs/2103.03874")
         , ("[Ss]ystematic [Rr]eviews?", "https://en.wikipedia.org/wiki/Systematic_review")
+        , ("MS MARCO", "https://arxiv.org/abs/1611.09268#microsoft")
         ]
