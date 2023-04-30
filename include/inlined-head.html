@@ -2483,13 +2483,6 @@ if (typeof window.GW == "undefined")
     window.GW = { };
 
 
-/********/
-/* MISC */
-/********/
-
-GW.assets = { };
-
-
 /*****************/
 /* MEDIA QUERIES */
 /*****************/
@@ -2578,6 +2571,18 @@ GW.console = {
 		GW.consoleTempBuffer += "\n";
 	},
 };
+
+function $ (f) {
+    try {
+        let result = typeof f == "function"
+                     ? f()
+                     : eval(f);
+        if (result != undefined)
+            GW.console.print(result);
+    } catch (e) {
+        GW.console.print(e);
+    }
+}
 
 
 /*******************/
@@ -3920,19 +3925,4 @@ ReaderMode.injectStyleBlock(ReaderMode.styles, "reader-mode-styles");
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-<link rel="preload" href="/static/css/fonts.css?v=1682197422" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
-<link rel="preload" href="/static/css/default.css?v=1682869262" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
-<link rel="preload" href="/static/css/links.css?v=1682784367" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/img/icon/icons.svg" as="image">

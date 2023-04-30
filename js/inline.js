@@ -4,13 +4,6 @@ if (typeof window.GW == "undefined")
     window.GW = { };
 
 
-/********/
-/* MISC */
-/********/
-
-GW.assets = { };
-
-
 /*****************/
 /* MEDIA QUERIES */
 /*****************/
@@ -99,6 +92,18 @@ GW.console = {
 		GW.consoleTempBuffer += "\n";
 	},
 };
+
+function $ (f) {
+    try {
+        let result = typeof f == "function"
+                     ? f()
+                     : eval(f);
+        if (result != undefined)
+            GW.console.print(result);
+    } catch (e) {
+        GW.console.print(e);
+    }
+}
 
 
 /*******************/

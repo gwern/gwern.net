@@ -23,7 +23,7 @@ $head_includes = [
 	"{$static_dir}/css/include/dark-mode-GENERATED.css",
 	"{$static_dir}/css/include/initial.css",
 	"{$static_dir}/js/dark-mode-inline.js",
-	"{$static_dir}/js/gw-inline.js",
+	"{$static_dir}/js/inline.js",
 	"{$static_dir}/js/reader-mode-inline.js",
 ];
 $head_includes = implode(" ", $head_includes);
@@ -65,6 +65,7 @@ $versioned_files = [
 	"{$static_dir}/css/links.css",
 	"{$static_dir}/js/annotations.js",
 	"{$static_dir}/js/collapse.js",
+	"{$static_dir}/js/console.js",
 	"{$static_dir}/js/content.js",
 	"{$static_dir}/js/dark-mode.js",
 	"{$static_dir}/js/extracts.js",
@@ -72,6 +73,7 @@ $versioned_files = [
 	"{$static_dir}/js/extracts-content.js",
 	"{$static_dir}/js/extracts-options.js",
 	"{$static_dir}/js/image-focus.js",
+	"{$static_dir}/js/misc.js",
 	"{$static_dir}/js/popins.js",
 	"{$static_dir}/js/popups.js",
 	"{$static_dir}/js/reader-mode.js",
