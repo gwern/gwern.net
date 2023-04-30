@@ -378,9 +378,7 @@ function expandLockCollapseBlock(collapseBlock) {
 	if (collapseBlock.className == "")
 		collapseBlock.removeAttribute("class");
 
-	if (collapseBlock.firstElementChild.classList.contains("collapse-content-wrapper")) {
-		unwrap(collapseBlock.firstElementChild);
-	}
+	Array.from(collapseBlock.children).filter(x => x.matches(".collapse-content-wrapper, .abstract-collapse:not(.abstract)")).forEach(unwrap);
 	
 	if (   collapseBlock.tagName == "DIV"
 		&& collapseBlock.className == ""

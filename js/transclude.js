@@ -350,7 +350,7 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 		fireContentLoadEvent (false)
 			If true, a GW.contentDidLoad event is fired on the filled template.
  */
-//	(string, string|object, object) => DocumentFragment
+//	(string, string|object, object, object) => DocumentFragment
 function fillTemplate(template, data = null, context = null, options = { }) {
 	if (   template == null
 		|| template == "LOADING_FAILED")
@@ -367,18 +367,6 @@ function fillTemplate(template, data = null, context = null, options = { }) {
 	if (   typeof data == "string"
 		|| data instanceof DocumentFragment)
 		data = templateDataFromHTML(data);
-
-	//	For non-string templates…
-	if (typeof template != "string") {
-		//	If there’s no data to fill, then just return the template as-is.
-		if ((  Object.entries(data).length
-			 + Object.entries(context).length) == 0) {
-			return template;
-		} else {
-		//	Otherwise, stringify the template.
-			template = template.innerHTML;
-		}
-	}
 
 	/*	Data variables specified in the provided context argument (if any)
 		take precedence over the reference data.
@@ -1478,31 +1466,31 @@ Transclude = {
 			let referenceData = dataProvider.referenceDataForLink(includeLink);
 			let templateData = referenceData.content;
 
-			//	If no template specified, use reference data as template.
-			if (   template == null
-				&& templateData instanceof DocumentFragment)
-				template = templateData;
+			let content = null;
+			if (template) {
+				//	Template fill context.
+				let context = Object.assign({ }, referenceData, templateDataFromHTML(includeLink));
 
-			//	Template fill context.
-			let context = Object.assign({ }, referenceData, templateDataFromHTML(includeLink));
+				//	Designate partial annotation transcludes.
+				if (   Transclude.isAnnotationTransclude(includeLink)
+					&& includeLink.classList.contains("include-annotation-partial"))
+					context.annotationClassSuffix = "-partial";
 
-			//	Designate partial annotation transcludes.
-			if (   Transclude.isAnnotationTransclude(includeLink)
-				&& includeLink.classList.contains("include-annotation-partial"))
-				context.annotationClassSuffix = "-partial";
+				//	Template fill options.
+				let options = {
+					fireContentLoadEvent: true,
+					loadEventInfo: {
+						source: "transclude",
+						contentType: (Transclude.isAnnotationTransclude(includeLink) ? "annotation" : null),
+						includeLink: includeLink
+					}
+				};
 
-			//	Template fill options.
-			let options = {
-				fireContentLoadEvent: true,
-				loadEventInfo: {
-					source: "transclude",
-					contentType: (Transclude.isAnnotationTransclude(includeLink) ? "annotation" : null),
-					includeLink: includeLink
-				}
-			};
-
-			//	Fill template.
-			let content = fillTemplate(template, templateData, context, options);
+				//	Fill template.
+				content = fillTemplate(template, templateData, context, options);
+			} else if (referenceData.content instanceof DocumentFragment) {
+				content = referenceData.content;
+			}
 
 			//	Slice and include, or else handle failure.
 			if (content) {
