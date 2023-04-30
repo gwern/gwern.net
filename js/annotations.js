@@ -755,7 +755,7 @@ Annotations.dataSources.wikipedia = {
 		let tableElementsSelector = "table, thead, tfoot, tbody, tr, th, td";
 		referenceEntry.querySelectorAll("[style]").forEach(styledElement => {
 			//	Skip table elements; we handle those specially.
-			if (styledElement.closest(tableElementsSelector) == styledElement)
+			if (styledElement.matches(tableElementsSelector))
 				return;
 
 			if (styledElement.style.display != "none")

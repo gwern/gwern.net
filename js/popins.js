@@ -43,7 +43,7 @@ Popins = {
 
 		//	Get all targets.
 		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
-			if (   target.closest(targets.excludedElementsSelector) == target
+			if (   target.matches(targets.excludedElementsSelector)
 				|| target.closest(targets.excludedContainerElementsSelector) != null) {
 				target.classList.toggle("no-popin", true);
 				return;
@@ -82,7 +82,7 @@ Popins = {
 			return;
 
 		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
-			if (   target.closest(targets.excludedElementsSelector) == target
+			if (   target.matches(targets.excludedElementsSelector)
 				|| target.closest(targets.excludedContainerElementsSelector) != null) {
 				target.classList.toggle("no-popin", false);
 				return;

@@ -1970,7 +1970,7 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
                 || eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
                 // if the link refers to the loaded content container itself
                 || (   eventInfo.container instanceof Element
-                    && eventInfo.container == eventInfo.container.closest(selectorFromHash(link.hash)))
+                    && eventInfo.container.matches(selectorFromHash(link.hash)))
                 || (   eventInfo.document.querySelector("#page-metadata") != null
                             // if we’re transcluding a citation (because we merge footnotes)
                     && (   (   eventInfo.source == "transclude"
@@ -2018,7 +2018,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
                 || eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
                // if the link refers to the loaded content container itself
                 || (   eventInfo.container instanceof Element
-                    && eventInfo.container == eventInfo.container.closest(selectorFromHash(link.hash))))) {
+                    && eventInfo.container.matches(selectorFromHash(link.hash))))) {
             link.swapClasses([ "link-self", "link-page" ], 0);
         } else if (link.pathname.slice(1).match(/[\.]/) == null) {
             link.swapClasses([ "link-self", "link-page" ], 1);
