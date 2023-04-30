@@ -2444,18 +2444,6 @@ addContentInjectHandler(GW.contentInjectHandlers.activateMathBlockButtons = (eve
 /* BACK TO TOP LINK */
 /********************/
 
-/***************************************************************************/
-/*  On mobile, update the scroll position indicator in the back-to-top link.
-
-    Called by the ‘updateBackToTopLinkScrollListener’ scroll listener.
- */
-function updateBackToTopLinkScrollPositionIndicator(event) {
-    GWLog("updateBackToTopLinkScrollPositionIndicator", "rewrite.js", 3);
-
-    GW.backToTop.dataset.scrollPosition = Math.round(100 * (window.pageYOffset / (document.documentElement.offsetHeight - window.innerHeight)));
-    GW.backToTop.style.backgroundSize = `100% ${GW.backToTop.dataset.scrollPosition}%`;
-}
-
 /*********************************************************************/
 /*  Show/hide the back-to-top link in response to scrolling.
 
@@ -2467,28 +2455,21 @@ function updateBackToTopLinkVisibility(event) {
     //  One PgDn’s worth of scroll distance, approximately.
     let onePageScrollDistance = (0.8 * window.innerHeight);
 
-    if (GW.isMobile()) {
-        //  Show back-to-top link on ANY scroll down.
-        if (GW.scrollState.unbrokenDownScrollDistance > 0)
-            GW.backToTop.classList.toggle("hidden", false);
-    } else {
-        //  Show back-to-top link when scrolling a full page down from the top.
-        if (GW.scrollState.unbrokenDownScrollDistance > onePageScrollDistance * 2.0)
-            GW.backToTop.classList.toggle("hidden", false);
-        //	Hide back-to-top link on half a page’s worth of scroll up.
-        else if (GW.scrollState.unbrokenUpScrollDistance > onePageScrollDistance * 0.5)
-        	GW.backToTop.classList.toggle("hidden", true);
-    }
-
-    //  Hide back-to-top link when scrolling to top.
+	//  Hide back-to-top link when scrolling to top.
     if (GW.scrollState.lastScrollTop <= 0)
         GW.backToTop.classList.toggle("hidden", true);
+	//  Show back-to-top link when scrolling a full page down from the top.
+	else if (GW.scrollState.unbrokenDownScrollDistance > onePageScrollDistance * 2.0)
+		GW.backToTop.classList.toggle("hidden", false);
+	//	Hide back-to-top link on half a page’s worth of scroll up.
+	else if (GW.scrollState.unbrokenUpScrollDistance > onePageScrollDistance * 0.5)
+		GW.backToTop.classList.toggle("hidden", true);
 }
 
 /**********************************/
 /*  Injects the “back to top” link.
  */
-doWhenPageLoaded(() => {
+if (GW.isMobile() == false) doWhenPageLoaded(() => {
     GWLog("injectBackToTopLink", "rewrite.js", 1);
 
     GW.backToTop = addUIElement(`<div id="back-to-top"><a href="#top" tabindex="-1" title="Back to top">` 
@@ -2496,12 +2477,7 @@ doWhenPageLoaded(() => {
         + `</a></div>`);
 
     //  Show/hide the back-to-top link on scroll up/down.
-    addScrollListener((event) => {
-        updateBackToTopLinkVisibility(event);
-
-        if (GW.isMobile())
-            updateBackToTopLinkScrollPositionIndicator(event);
-    }, "updateBackToTopLinkScrollListener", { defer: true, ifDeferCallWhenAdd: true });
+    addScrollListener(updateBackToTopLinkVisibility, "updateBackToTopLinkScrollListener", { defer: true, ifDeferCallWhenAdd: true });
 
     //  Show the back-to-top link on mouseover.
     GW.backToTop.addEventListener("mouseenter", (event) => {
@@ -2549,7 +2525,7 @@ GW.floatingHeader = {
 
 		//	Update scroll indicator bar.
 		GW.floatingHeader.scrollIndicator.dataset.scrollPosition = Math.round(100 * (window.pageYOffset / (document.documentElement.offsetHeight - window.innerHeight)));
-		GW.floatingHeader.scrollIndicator.style.backgroundSize = `${GW.backToTop.dataset.scrollPosition}% 100%`;
+		GW.floatingHeader.scrollIndicator.style.backgroundSize = `${GW.floatingHeader.scrollIndicator.dataset.scrollPosition}% 100%`;
 
 		//	Update breadcrumb display.
 		let trail = GW.floatingHeader.getTrail();

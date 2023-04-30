@@ -6412,7 +6412,7 @@ ol.link-bibliography-list-compact > li::before {
 }
 @media only screen and (max-width: 649px) {
     #ui-elements-container .dark-mode-selector {
-        bottom: 4em;
+        bottom: 1em;
     }
     #ui-elements-container .dark-mode-selector button {
         border-width: 3px;
@@ -6521,7 +6521,7 @@ ol.link-bibliography-list-compact > li::before {
 }
 @media only screen and (max-width: 649px) {
     #ui-elements-container .reader-mode-selector {
-        bottom: 12em;
+        bottom: 9em;
     }
     #ui-elements-container .reader-mode-selector button {
         border-width: 5px 3px 1px 3px;
