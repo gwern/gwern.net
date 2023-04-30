@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-04-25 10:52:32 gwern"
+;;; When:  Time-stamp: "2023-04-29 21:37:53 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1185,10 +1185,8 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
        (query-replace-regexp "\\([[:digit:]]+\\)-times" "\\1×" nil begin end)
        (query-replace-regexp "\\([[:digit:]]+\\) times" "\\1×" nil begin end)
        (query-replace-regexp "\\([[:digit:]]+\\) x \\([[:digit:]]+\\)" "\\1×\\2" nil begin end)
-       ; comma formatting:
-       (query-replace-regexp "\\([[:digit:]]+\\)\\([[:digit:]][[:digit:]][[:digit:]]\\)\\([[:digit:]][[:digit:]][[:digit:]]\\)\\([[:digit:]][[:digit:]][[:digit:]]\\)" "\\1,\\2,\\3,\\4" nil begin end)
-       (query-replace-regexp "\\([[:digit:]]+\\)\\([[:digit:]][[:digit:]][[:digit:]]\\)\\([[:digit:]][[:digit:]][[:digit:]]\\)" "\\1,\\2,\\3" nil begin end)
-       (query-replace-regexp "\\([[:digit:]]+\\)\\([[:digit:]][[:digit:]][[:digit:]]\\)" "\\1,\\2" nil begin end)
+       ; comma formatting: eg. '100000000000' -> '100,000,000,000' - but we need to skip URLs where such numbers are ubiquitous & time-wasting.
+       (my-markdown-or-html-query-replace-regexp "\\([[:digit:]][[:digit:]]+\\)" #'comma-format-number nil begin end)
        ; special currencies:
        (query-replace-regexp "\\([.0-9]*[[:space:]]\\)?btc" "₿\\1" nil begin end)
        ; fancy punctuation:
@@ -1259,6 +1257,79 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
      (message "Remember to collapse appendices, annotate links, add inflation-adjustments to all '$'/'₿'s, add margin notes, 'invert' images, and run `markdown-lint`")
      nil
      )))
+
+(defun number-with-commas (num)
+  "Format a number `NUM` with commas."
+  (let ((num-str (number-to-string num))
+        (pos 0)
+        (result ""))
+    (dotimes (i (length num-str))
+      (when (and (> pos 0) (= 0 (mod pos 3)))
+        (setq result (concat "," result)))
+      (setq pos (1+ pos)
+            result (concat (substring num-str (- (length num-str) pos) (- (length num-str) (1- pos))) result)))
+    result))
+(defun comma-format-number (num-str)
+  "Insert commas into a number string `NUM-STR`."
+  (let ((num (string-to-number num-str)))
+    (number-with-commas num)))
+
+; implement a URL-skipping `query-replace-regexp`, named `my-markdown-or-html-query-replace-regexp`. Many rewrites need to skip URLs but there's no good way to do it hitherto. This function also takes arbitrary functions to do the rewrite, which can be useful too for more complex rewrites.
+; GPT-4:
+(require 'pulse)
+(defcustom my-markdown-or-html-query-replace-skip-urls t
+  "Non-nil means `my-markdown-or-html-query-replace-regexp` should skip link URLs."
+  :type 'boolean
+  :group 'my-markdown-or-html)
+(defun my-markdown-or-html-inside-link-p ()
+  "Return non-nil if point is inside a Markdown or HTML link."
+  (let ((face-at-point (get-text-property (point) 'face)))
+    (or (eq face-at-point 'markdown-url-face)
+        (eq face-at-point 'html-attr-value-face))))
+(defun my-markdown-or-html-query-replace-args ()
+  "Read the arguments for `my-markdown-or-html-query-replace-regexp`."
+  (query-replace-read-args (concat "Query replace"
+                                   (if current-prefix-arg " word" "")
+                                   " regexp"
+                                   (if (and transient-mark-mode mark-active) " in region" ""))
+                           t))
+(defun my-markdown-or-html-query-replace-confirm (from to)
+  "Prompt the user to confirm replacing `FROM` with `TO`.
+Highlight the matched text during the query."
+  (pulse-momentary-highlight-region (match-beginning 0) (match-end 0))
+  (y-or-n-p (format "Replace `%s' with `%s'? " from to)))
+(defun my-markdown-or-html-query-replace-regexp (regexp replace-fn &optional delimited start end case-fold)
+  "Interactively query replace `REGEXP` with the result of `REPLACE-FN`.
+This optionally skips link URLs where replacement may be undesirable.
+
+This function skips over Markdown or HTML link URLs when performing the
+replacements if
+`my-markdown-or-html-query-replace-skip-urls` is non-nil. It operates in the
+region between `START` and `END` if both are provided; otherwise, it operates on
+the entire buffer.
+
+`REPLACE-FN` should be a function that accepts a string (the matched text) and
+returns the replacement string.
+
+Optional argument `DELIMITED`, if non-nil, means replace only matches surrounded
+by word boundaries.
+Optional argument `CASE-FOLD`, if non-nil, means the search should be
+case-insensitive.
+
+\(fn REGEXP REPLACE-FN &optional DELIMITED START END CASE-FOLD)"
+  (interactive (append (my-markdown-or-html-query-replace-args) (list case-fold-search)))
+  (let ((replacements 0))
+    (save-excursion
+      (goto-char (or start (point-min)))
+      (save-match-data
+        (while (re-search-forward regexp end t case-fold)
+          (unless (my-markdown-or-html-inside-link-p)
+            (let* ((from (match-string 0))
+                   (to (funcall replace-fn from)))
+              (when (my-markdown-or-html-query-replace-confirm from to)
+                (replace-match to t t)
+                (setq replacements (1+ replacements))))))))
+    (message "Query replace finished, %d replacements made" replacements)))
 
 ; GPT-4
 (require 'rx)
