@@ -1003,4 +1003,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("MATH", "https://arxiv.org/abs/2103.03874")
         , ("[Ss]ystematic [Rr]eviews?", "https://en.wikipedia.org/wiki/Systematic_review")
         , ("MS MARCO", "https://arxiv.org/abs/1611.09268#microsoft")
+        , ("Procgen", "https://openai.com/blog/procgen-benchmark/")
+        , ("chain-of-thought", "https://arxiv.org/abs/2201.11903#google")
         ]

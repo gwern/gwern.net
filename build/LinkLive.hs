@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-04-25 15:57:17 gwern"
+When:  Time-stamp: "2023-04-30 14:42:58 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -1876,7 +1876,6 @@ badDomainsSimple = [ "2chan.us"
    , "www.neuroscience.cam.ac.uk"
    , "www.newadvent.org"
    , "www.newegg.com"
-   , "www.newsandstar.co.uk"
    , "www.newscientist.com"
    , "www.newsweek.com"
    , "www.newyorkfed.org"
@@ -4399,7 +4398,6 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.nejm.org/doi/full/10.1056/NEJMoa1511939"
             , "https://www.newadvent.org/fathers/03061.htm"
             , "https://www.newegg.com/acer-aspire-v15-nitro-black-edition-vn7-591g-70rt-gaming-entertainment/p/N82E16834314849"
-            , "https://www.newsandstar.co.uk/news/carlisle-man-who-had-ecstasy-tablets-sent-to-friend-s-house-jailed-1.1061538/"
             , "https://www.newscientist.com/article/2133095-boom-in-human-gene-editing-as-20-crispr-trials-gear-up/"
             , "https://www.newsweek.com/i-cloned-my-dog-puppies-have-different-personalities-1674290"
             , "https://www.newyorker.com/magazine/2017/10/16/russias-house-of-shadows"

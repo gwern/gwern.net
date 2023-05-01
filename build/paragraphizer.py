@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using GPT-3 neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2023-04-26 12:19:51 gwern"
+# When:  Time-stamp: "2023-04-30 10:24:24 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python paragraphizer.py
@@ -107,8 +107,8 @@ messages = [
 result = run_with_timeout(
     "create",
     kwargs={
-        # "model": "gpt-4", # temporarily disable GPT-4: that endpoint is overloaded/error-prone, and at least twice as slow, which means it can take >1min to paragraphize a single abstract - a serious barrier to pleasant interactive use, and the additional quality isn't quite worth it yet.
-        "model": "gpt-3.5-turbo",
+        "model": "gpt-4",
+        # "model": "gpt-3.5-turbo",
         "messages": messages,
         # "max_tokens": 4090,
         "temperature": 0

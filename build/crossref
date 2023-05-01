@@ -4,7 +4,7 @@
 #
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-04-29 19:16:39 gwern"
+# When:  Time-stamp: "2023-04-30 10:55:22 gwern"
 # License: CC-0
 #
 # Dependencies: curl, exiftool, jq, gwa/annotation-dump
@@ -28,6 +28,7 @@ if [ "${@##*.}" = "pdf" ]; then
         else gwa "$(basename $@)";
         fi
 
+    echo ""
     echo "- - /$TARGET_ORIGINAL"
     echo "  - \"$TITLE\"";
 

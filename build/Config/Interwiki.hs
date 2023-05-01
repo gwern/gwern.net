@@ -2344,4 +2344,5 @@ redirectDB = [
           , ("https://en.wikipedia.org/wiki/Zero-sum", "https://en.wikipedia.org/wiki/Zero-sum_game")
           , ("https://en.wikipedia.org/wiki/Zero_To_One", "https://en.wikipedia.org/wiki/Zero_to_One")
           , ("https://en.wikipedia.org/wiki/Zettel_(Wittgenstein)", "https://en.wikipedia.org/wiki/Zettel_(Wittgenstein_book)")
+          , ("https://en.wikipedia.org/wiki/Studio_4%E2%84%83", "https://en.wikipedia.org/wiki/Studio_4%C2%B0C")
   ]
