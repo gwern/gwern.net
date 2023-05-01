@@ -12,6 +12,7 @@
 	--GW-image-single-black-star-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 5,0 C 4,4 4,4 0,5 4,6 4,6 5,10 6,6 6,6 10,5 6,4 6,4 5,0 Z" /></svg>');
 	--GW-image-single-white-star-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 5,0 C 4,4 4,4 0,5 4,6 4,6 5,10 6,6 6,6 10,5 6,4 6,4 5,0 Z" /><path d="M 5,2.5 C 4.5,4.5 4.5,4.5 2.5,5 4.5,5.5 4.5,5.5 5,7.5 5.5,5.5 5.5,5.5 7.5,5 5.5,4.5 5.5,4.5 5,2.5 Z" style="fill:%23ffffff" /></svg>');
 	--GW-image-single-white-star-rotated-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 8.75,1.25 C 5,3.5 5,3.5 1.25,1.25 3.5,5 3.5,5 1.25,8.75 5,6.5 5,6.5 8.75,8.75 6.5,5 6.5,5 8.75,1.25 Z" /><path d="M 7,3 C 5,4.2 5,4.2 3,3 4.2,5 4.2,5 3,7 5,5.8 5,5.8 7,7 5.8,5 5.8,5 7,3 Z" style="fill:%23ffffff" /></svg>');
+	--GW-image-checkerboard-999-fff-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMZmZmf///ywAAAAABAAEAAACBgQShqgJBQA7');
 }
 
 /**********/
@@ -5539,10 +5540,12 @@ body.index-directory #footer {
 /*  Scroll bar styles (for WebKit/Blink).
     */
 .popin .popframe-scroll-view::-webkit-scrollbar {
-    width: 10px;
+    width: 12px;
 }
 .popin .popframe-scroll-view::-webkit-scrollbar-thumb {
     background-color: var(--GW-popins-popin-scrollbar-thumb-color);
+    background-image: var(--GW-image-checkerboard-999-fff-2x-gif);
+    background-size: 2px;
     box-shadow:
         0 0 0 3px var(--background-color) inset;
 }
