@@ -1430,6 +1430,7 @@ Transclude = {
                 lazyLoadObserver(() => {
                     Transclude.transclude(includeLink, true);
                 }, includeLink, {
+                	root: scrollContainerOf(includeLink),
                 	rootMargin: Transclude.lazyLoadViewportMargin
                 });
             });

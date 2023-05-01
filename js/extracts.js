@@ -913,6 +913,24 @@ Extracts = {
     }
 };
 
+/*	Browser native image lazy loading does not seem to work in pop-frames (due 
+	to the shadow root or the nested scroll container or some combination 
+	thereof), so we have to implement it ourselves.
+ */
+Extracts.additionalRewrites.push(Extracts.lazyLoadImages = (popFrame) => {
+    GWLog("Extracts.lazyLoadImages", "extracts.js", 2);
+
+	popFrame.body.querySelectorAll("img[loading='lazy']").forEach(image => {
+		lazyLoadObserver(() => {
+			image.loading = "eager";
+			image.decoding = "sync";
+		}, image, {
+			root: scrollContainerOf(image),
+			rootMargin: window.innerHeight + "px"
+		});
+	});
+});
+
 GW.notificationCenter.fireEvent("Extracts.didLoad");
 
 Extracts.setup();

@@ -431,7 +431,7 @@ function stripStyles(element, propertiesToRemove = null, propertiesToSave = null
 		element.removeAttribute("style");
 }
 
-/*****************************************************************************/
+/******************************************************************************/
 /*  Call the given function when the given element (if `target` is an element),
     or the element specified by the given selector (if `target` is a string),
     intersects the viewport.
@@ -439,16 +439,15 @@ function stripStyles(element, propertiesToRemove = null, propertiesToSave = null
  */
 function lazyLoadObserver(f, target, options = { }) {
     if (typeof target == "string")
-        target = document.querySelector(target);
+        target = (options.root ?? document).querySelector(target);
 
     if (target == null)
         return;
 
 	requestAnimationFrame(() => {
-		if (   options.root == null
-			&& (options.threshold ?? 0) == 0
+		if (   (options.threshold ?? 0) == 0
 			&& (options.rootMargin ?? "0px").includes("-") == false
-			&& isOnScreen(target)) {
+			&& isWithinRectOf(target, options.root)) {
 			f();
 			return;
 		}
@@ -561,27 +560,46 @@ function pointWithinRect(point, rect) {
 
 /**************************************************************/
 /*  Returns true if the given rects intersect, false otherwise.
+	(If `margin` is nonzero, then the two rects are considered to be 
+	 intersecting if the distance between them is less than the margin.
+	 Must be given in pixel values only, either as number or as string.)
  */
-function doRectsIntersect(rectA, rectB) {
-    return (   rectA.top < rectB.bottom
-            && rectA.bottom > rectB.top
-            && rectA.left < rectB.right
-            && rectA.right > rectB.left);
+function doRectsIntersect(rectA, rectB, margin = 0) {
+	if (typeof margin == "string")
+		margin = parseInt(margin);
+
+    return (   rectA.top    - margin < rectB.bottom
+            && rectA.bottom + margin > rectB.top
+            && rectA.left   - margin < rectB.right
+            && rectA.right  + margin > rectB.left);
 }
 
-/***************************************************************/
+/******************************************************************************/
 /*  Returns true if the given element intersects the given rect,
-    false otherwise.
+    false otherwise. (See doRectsIntersect() for meaning of `margin` argument.)
  */
-function isWithinRect(element, rect) {
-    return doRectsIntersect(element.getBoundingClientRect(), rect);
+function isWithinRect(element, rect, margin) {
+    return doRectsIntersect(element.getBoundingClientRect(), rect, margin);
+}
+
+/*******************************************************************************/
+/*  Returns true if the first element intersects the bounding rect of the second
+	element (or the viewport, if second element is null), false otherwise.
+	(See doRectsIntersect() for meaning of `margin` argument.)
+ */
+function isWithinRectOf(firstElement, secondElement, margin) {
+	let secondElementRect = secondElement 
+							? secondElement.getBoundingClientRect()
+							: new DOMRect(0, 0, window.innerWidth, window.innerHeight);
+	return isWithinRect(firstElement, secondElementRect, margin);
 }
 
 /******************************************************************************/
 /*  Returns true if the given element intersects the viewport, false otherwise.
+	(See doRectsIntersect() for meaning of `margin` argument.)
  */
-function isOnScreen(element) {
-    return isWithinRect(element, new DOMRect(0, 0, window.innerWidth, window.innerHeight));
+function isOnScreen(element, margin) {
+    return isWithinRectOf(element, null, margin);
 }
 
 /******************************/

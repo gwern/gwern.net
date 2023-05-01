@@ -583,3 +583,22 @@ function endActivity() {
 }
 
 
+/********/
+/* MISC */
+/********/
+
+/****************************************************************************/
+/*	Returns relevant scroll container for the given element. Null is returned
+	for elements whose scroll container is just the viewport.
+ */
+function scrollContainerOf(element) {
+	if (   Extracts 
+		&& Extracts.popFrameProvider) {
+		let containingPopFrame = Extracts.popFrameProvider.containingPopFrame(element);
+		if (containingPopFrame)
+			return containingPopFrame.scrollView;
+	}
+	
+	return null;
+}
+
