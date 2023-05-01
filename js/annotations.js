@@ -711,7 +711,7 @@ Annotations.dataSources.wikipedia = {
 
 		//  Remove location maps (they don’t work right).
 		referenceEntry.querySelectorAll(".locmap").forEach(locmap => {
-			locmap.closest("tr").remove();
+			(locmap.closest("tr") ?? locmap).remove();
 		});
 
 		//	Remove other maps.
