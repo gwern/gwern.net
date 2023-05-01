@@ -559,7 +559,7 @@ section.collapse > .collapse-content-wrapper > .collapse.section-backlinks-conta
 
 .collapse.bare-content.has-abstract {
     --collapse-toggle-top-height: 2.25rem;
-    
+
     padding-left: var(--collapse-left-offset);
 }
 
@@ -2520,7 +2520,7 @@ code span.ch { color: var(--GW-syntax-highlight-color-char); font-style: italic;
 code span.st { color: var(--GW-syntax-highlight-color-string); font-style: italic; } /* String */
 code span.ss { color: var(--GW-syntax-highlight-color-special-string); font-weight: bold; font-style: italic } /* SpecialString: "dsSpecialString, SQL, regexes, HERE docs, LaTeX math mode, ..."x1 */
 code span.vs { color: var(--GW-syntax-highlight-color-verbatim-string); font-style: italic; } /* VerbatimString: "dsVerbatimString, verbatim or raw strings like 'raw \backlash' in Perl, CoffeeScript, and shells, as well as r'\raw' in Python." */
-code span.al { color: var(--GW-syntax-highlight-color-alert); text-decoration: double underline; font-weight: bold; } /* Alert */
+code span.al { color: var(--GW-syntax-highlight-color-alert); text-decoration: underline; font-weight: bold; } /* Alert */
 code span.er { color: var(--GW-syntax-highlight-color-error); } /* Error */
 code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold; font-style: italic } /* Import */
 
