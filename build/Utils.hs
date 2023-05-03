@@ -207,7 +207,7 @@ checkURL u = do let doubleURL = u =~ badUrlRegex -- I keep accidentally concaten
 
 
 processDOI, processDOIArxiv :: String -> String
-processDOI = replace "–" "-" . replace "—" "-"
+processDOI = replace "–" "-" . replace "—" "-" . replace "https://doi.org/" "" . sed "^doi:" ""
  -- Arxiv has some weird URLs and edge-cases like <https://arxiv.org/abs/hep-ph/0204295> (note double-subdirectory & lack of period-separation).
 processDOIArxiv url = "10.48550/arXiv." ++
                                sed "https://arxiv.org/[a-z-]+/([0-9]+\\.[0-9]+).*" "\\1" -- regular current Arxiv URL pattern
