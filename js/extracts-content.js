@@ -1507,7 +1507,7 @@ Extracts = { ...Extracts,
             return `<iframe
                         src="${url.href}"
                         frameborder="0"
-                      + ${(additionalAttributes ? (" " + additionalAttributes) : "")}
+                        ${(additionalAttributes ? (" " + additionalAttributes) : "")}
                             ></iframe>`;
         }
     },
