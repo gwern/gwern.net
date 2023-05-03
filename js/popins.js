@@ -21,6 +21,9 @@ Popins = {
 		Popins.allSpawnedPopins().forEach(popin => {
 			Popins.removePopin(popin);
 		});
+
+		//  Remove Escape key event listener.
+		document.removeEventListener("keyup", Popins.keyUp);
 	},
 
 	//	Called by: popins.js (doWhenPageLoaded)
@@ -29,6 +32,9 @@ Popins = {
 
         //  Run cleanup.
         Popins.cleanup();
+
+		//  Add Escape key event listener.
+		document.addEventListener("keyup", Popins.keyUp);
 
 		GW.notificationCenter.fireEvent("Popins.setupDidComplete");
 	},
@@ -137,6 +143,11 @@ Popins = {
 	containingDocumentForTarget: (target) => {
 		let containingPopin = Popins.containingPopFrame(target);
 		return (containingPopin ? containingPopin.body : Popins.rootDocument);
+	},
+
+	//	Called by: Popins.keyUp
+	getTopPopin: () => {
+		return document.querySelector(".popin");
 	},
 
 	//	Called by: Popins.targetClicked (event handler)
@@ -431,15 +442,7 @@ Popins = {
 		GWLog("Popins.removeAllPopinsInContainer", "popins.js", 2);
 
 		container.querySelectorAll(".popin").forEach(popin => {
-			popin.remove();
-			if (popin.spawningTarget)
-				Popins.detachPopinFromTarget(popin);
-		});
-
-		container.querySelectorAll(".popin-open").forEach(spawningTarget => {
-			spawningTarget.popin = null;
-			spawningTarget.popFrame = null;
-			spawningTarget.classList.remove("popin-open", "highlighted");
+			Popins.removePopin(popin);
 		});
 	},
 
@@ -477,6 +480,9 @@ Popins = {
 	detachPopinFromTarget: (popin) => {
 		GWLog("Popins.detachPopinFromTarget", "popins.js", 2);
 
+		if (popin.spawningTarget == null)
+			return;
+
 		popin.spawningTarget.popin = null;
 		popin.spawningTarget.popFrame = null;
 		popin.spawningTarget.classList.remove("popin-open", "highlighted");
@@ -495,6 +501,10 @@ Popins = {
 	targetClicked: (event) => {
 		GWLog("Popins.targetClicked", "popins.js", 2);
 
+		//	Only unmodified click events should trigger popin spawn.
+		if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey)
+			return;
+
 		event.preventDefault();
 
 		let target = event.target.closest(".spawns-popin");
@@ -511,6 +521,29 @@ Popins = {
 
 		document.activeElement.blur();
 	},
+
+	/*  The keyup event.
+		*/
+	//	Added by: Popins.setup
+	keyUp: (event) => {
+		GWLog("Popins.keyUp", "popins.js", 3);
+		let allowedKeys = [ "Escape", "Esc" ];
+		if (!allowedKeys.includes(event.key))
+			return;
+
+		event.preventDefault();
+
+		switch(event.key) {
+			case "Escape":
+			case "Esc":
+				let popin = Popins.getTopPopin();
+				if (popin)
+					Popins.removePopin(popin);
+				break;
+			default:
+				break;
+		}
+	}
 };
 
 GW.notificationCenter.fireEvent("Popins.didLoad");

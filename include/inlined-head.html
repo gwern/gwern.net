@@ -1561,12 +1561,6 @@ blockquote blockquote blockquote blockquote blockquote blockquote {
 /*= Various edge cases =*/
 /*=--------------------=*/
 
-@media all and (min-width: 650px) {
-    .abstract blockquote,
-    #markdownBody .abstract blockquote {
-        overflow: hidden;
-    }
-}
 @media all and (max-width: 649px) {
     /* even less horizontal is available on mobile! */
     blockquote {
@@ -3925,10 +3919,7 @@ ReaderMode.injectStyleBlock(ReaderMode.styles, "reader-mode-styles");
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
 </script>
-
-
-
 <link rel="preload" href="/static/css/fonts.css?v=1682881267" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
-<link rel="preload" href="/static/css/default.css?v=1683098608" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/default.css?v=1683143769" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/css/links.css?v=1682784367" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/img/icon/icons.svg" as="image">

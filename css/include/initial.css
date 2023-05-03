@@ -1255,12 +1255,6 @@ blockquote blockquote blockquote blockquote blockquote blockquote {
 /*= Various edge cases =*/
 /*=--------------------=*/
 
-@media all and (min-width: 650px) {
-    .abstract blockquote,
-    #markdownBody .abstract blockquote {
-        overflow: hidden;
-    }
-}
 @media all and (max-width: 649px) {
     /* even less horizontal is available on mobile! */
     blockquote {
