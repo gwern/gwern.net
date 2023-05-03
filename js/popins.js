@@ -385,6 +385,9 @@ Popins = {
 		} else {
 			target.parentElement.insertBefore(target.popin, target.nextSibling);
 		}
+		let container = target.popin;
+		while (container = container.parentElement)
+			container.classList.add("popin-ancestor");
 
 		//  Mark target as having an open popin associated with it.
 		target.classList.add("popin-open", "highlighted");
@@ -458,8 +461,13 @@ Popins = {
 		popin.remove();
 
 		//  … restore its scroll state.
-		if (popinBelow)
+		if (popinBelow) {
 			popinBelow.scrollView.scrollTop = popinBelow.lastScrollTop;
+		} else {
+			let container = popin;
+			while (container = container.parentElement)
+				container.classList.remove("popin-ancestor");
+		}
 
 		//  Detach popin from its spawning target.
 		Popins.detachPopinFromTarget(popin);

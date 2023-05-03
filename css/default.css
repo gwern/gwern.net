@@ -5336,6 +5336,11 @@ body.index-directory #footer {
     background-color: var(--background-color);
 }
 
+.popin-ancestor {
+	position: relative !important;
+	z-index: 100 !important;
+}
+
 .popin + .popin {
     display: none;
 }
