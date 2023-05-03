@@ -10,6 +10,7 @@
 
 
     I. BASICS
+    =========
 
     Put an include-link into the page, and at load time, the link will be
     replaced by the content it specifies.
@@ -39,11 +40,11 @@
 
 
     II. OPTIONS
+    ===========
 
     Several optional classes modify the behavior of include-links:
 
     include-annotation
-    include-annotation-partial
     include-content
         If the include-link is an annotated link, then instead of transcluding 
         the linked content, the annotation for the linked content may be 
@@ -139,6 +140,10 @@
 
 
     III. ADVANCED
+    =============
+
+	1. Transclude range syntax
+	--------------------------
 
     The transclusion feature supports PmWiki-style transclude range syntax,
     very similar to the one described here:
@@ -180,6 +185,34 @@
     If both elements are present, but the end element does not follow the start
     element in the page order (i.e., if the start element comes after the end
     element, or if they are the same), then the transcluded content is empty.
+
+	2. Include template
+	-------------------
+
+	The `data-include-template` attribute allows selection of include template
+	to use. (Note that some include data sources specify a template by default;
+	the `data-include-template` attribute overrides the default in such cases.)
+	If a template is specified, the included content is treated as a template
+	data source, rather than being included directly. (See comment for the
+	templateDataFromHTML() function for information about how template data
+	is specified in HTML. Note that some data sources provide template data in
+	pre-constructed object form, which bypasses the need to extract it from
+	HTML source.)
+
+	3. Selector-based inclusion/exclusion
+	-------------------------------------
+
+	The `data-include-selector` and `data-include-selector-not` attributes allow
+	the use of CSS selectors to specify parts of the included DOM subtree to 
+	include or omit. (If both attributes are present, `data-include-selector`
+	is applied first.)
+
+	(NOTE: `data-include-selector` may be seen as a generalization of the 
+	 `include-block-context` option, described above. Note, however, that both
+	 `include-block-context` and either or both of `data-include-selector` / 
+	 `data-include-selector-not` may be used simultaneously. The effects of the 
+	 data attributes are applied last, after all `include-*` options have been
+	 applied.)
  */
 
 /******************************************************************************/
@@ -994,7 +1027,6 @@ Transclude = {
     permittedClassNames: [
         "include",
         "include-annotation",
-        "include-annotation-partial",
         "include-content",
         "include-strict",
         "include-even-when-collapsed",
@@ -1022,14 +1054,14 @@ Transclude = {
 
     isAnnotationTransclude: (includeLink) => {
         if ((   Transclude.hasAnnotation(includeLink) 
-        	 || includeLink.classList.containsAnyOf([ "include-annotation", "include-annotation-partial" ])
+        	 || includeLink.classList.containsAnyOf([ "include-annotation" ])
         	 ) == false)
             return false;
 
         return ((   Transclude.transcludeAnnotationsByDefault
         		 && Transclude.hasAnnotation(includeLink))
                 ? includeLink.classList.contains("include-content") == false
-                : includeLink.classList.containsAnyOf([ "include-annotation", "include-annotation-partial" ]));
+                : includeLink.classList.contains("include-annotation") == true);
     },
 
 	hasAnnotation: (includeLink) => {
@@ -1345,6 +1377,23 @@ Transclude = {
             }
         }
 
+		//	Apply `data-include-selector` attribute.
+		if (includeLink.dataset.includeSelector) {
+			let nodesToInclude = [ ];
+			content.querySelectorAll(includeLink.dataset.includeSelector).forEach(element => {
+				if (nodesToInclude.find(x => x.contains(element)) === -1)
+					nodesToInclude.push(element);
+			});
+			content.replaceChildren(...nodesToInclude);
+		}
+
+		//	Apply `data-include-selector-not` attribute.
+		if (includeLink.dataset.includeSelectorNot) {
+			content.querySelectorAll(includeLink.dataset.includeSelectorNot).forEach(element => {
+				element.remove();
+			});
+		}
+
         return content;
     },
 
@@ -1471,11 +1520,6 @@ Transclude = {
 			if (template) {
 				//	Template fill context.
 				let context = Object.assign({ }, referenceData, templateDataFromHTML(includeLink));
-
-				//	Designate partial annotation transcludes.
-				if (   Transclude.isAnnotationTransclude(includeLink)
-					&& includeLink.classList.contains("include-annotation-partial"))
-					context.annotationClassSuffix = "-partial";
 
 				//	Template fill options.
 				let options = {

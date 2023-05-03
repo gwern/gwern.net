@@ -897,39 +897,62 @@ addContentInjectHandler(GW.contentInjectHandlers.setMarginsOnFullWidthBlocks = (
 /***************/
 
 /***************************************************************************/
-/*  Make the page thumbnail in an annotation load eagerly instead of lazily.
+/*	Implement alias classes for various forms of annotation includes.
+	Entries below list the class(es) on the first line, followed by the full
+	list of what classes/attributes/etc. the aliases correspond to.
+
+	.include-annotation-partial
+		`class="include-annotation"`
+		`data-include-selector-not=".annotation-abstract"`
+		`data-template-fields="annotationClassSuffix:$"`
+		`data-annotation-class-suffix="-partial"`
+
+	.include-annotation.include-omit-metadata
+		`data-include-selector=".annotation-abstract"`
  */
-addContentLoadHandler(GW.contentLoadHandlers.setEagerLoadingForAnnotationImages = (eventInfo) => {
-    GWLog("setEagerLoadingForAnnotationImages", "rewrite.js", 1);
+addContentLoadHandler(GW.contentLoadHandlers.addAnnotationIncludeLinkAliasClasses = (eventInfo) => {
+    GWLog("addAnnotationIncludeLinkAliasClasses", "rewrite.js", 1);
 
-    let firstImage = (eventInfo.container.querySelector(".page-thumbnail"))
-    if (firstImage) {
-        firstImage.loading = "eager";
-        firstImage.decoding = "sync";
-    }
-}, "rewrite", (info) => (info.contentType == "annotation"));
+	//	.include-annotation-partial
+	eventInfo.container.querySelectorAll("a.include-annotation-partial").forEach(includeLink => {
+		includeLink.swapClasses([ "include-annotation-partial", "include-annotation" ], 1);
+		includeLink.dataset.includeSelectorNot = ".annotation-abstract";
+		includeLink.dataset.templateFields = [ 
+			...((includeLink.dataset.templateFields ?? "").split(",").filter(x => x)), 
+			"annotationClassSuffix:$" 
+		].join(",");
+		includeLink.dataset.annotationClassSuffix = "-partial";
+	});
 
-/***********************************************************************/
-/*	Exclude body of annotations being transcluded as partials; transform 
-	title-link to allow access to the full annotation.
+	//	.include-annotation.include-omit-metadata
+	eventInfo.container.querySelectorAll("a.include-annotation.include-omit-metadata").forEach(includeLink => {
+		includeLink.dataset.includeSelector = ".annotation-abstract";
+	});
+}, "<transclude");
+
+/******************************************************************************/
+/*	Transform title-link of truncated annotations (i.e., full annotations
+	transcluded as partial annotations) to allow access to the full annotation.
  */
-addContentLoadHandler(GW.contentLoadHandlers.truncatePartialAnnotationIncludes = (eventInfo) => {
-    GWLog("truncatePartialAnnotationIncludes", "rewrite.js", 1);
+addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (eventInfo) => {
+    GWLog("rewriteTruncatedAnnotations", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".annotation-partial .annotation-abstract").forEach(abstract => {
-		abstract.previousElementSibling.lastTextNode.nodeValue = ")";
-		abstract.remove();
+	eventInfo.container.querySelectorAll(".annotation-partial").forEach(partialAnnotation => {
+		//	Check to see whether the abstract exists.
+		if (Annotations.referenceDataForLink(eventInfo.includeLink).content.abstract == null)
+			return;
 
 		//	Rewrite title-link.
-		let titleLink = eventInfo.container.querySelector("a.title-link");
+		let titleLink = partialAnnotation.querySelector("a.title-link");
 		titleLink.classList.add(Annotations.annotatedLinkFullClass);
 
 		//	Set original URL, for annotation retrieval.
-		eventInfo.container.querySelectorAll(".title-link + .originalURL a").forEach(originalURLLink => {
+		partialAnnotation.querySelectorAll(".title-link + .originalURL a").forEach(originalURLLink => {
 			titleLink.dataset.urlOriginal = originalURLLink.href;
 		});
 	});
-}, "<rewrite", (info) => (info.contentType == "annotation"));
+}, "<rewrite", (info) => (   info.source == "transclude"
+						  && info.contentType == "annotation"));
 
 /*****************************************************************/
 /*  Partial annotations, defined inline (in directories and such).
@@ -971,6 +994,19 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventI
         });
     });
 }, "rewrite");
+
+/***************************************************************************/
+/*  Make the page thumbnail in an annotation load eagerly instead of lazily.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.setEagerLoadingForAnnotationImages = (eventInfo) => {
+    GWLog("setEagerLoadingForAnnotationImages", "rewrite.js", 1);
+
+    let firstImage = (eventInfo.container.querySelector(".page-thumbnail"))
+    if (firstImage) {
+        firstImage.loading = "eager";
+        firstImage.decoding = "sync";
+    }
+}, "rewrite", (info) => (info.contentType == "annotation"));
 
 /***************************************************************************/
 /*  Because annotations transclude aux-links, we make the aux-links links in
