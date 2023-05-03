@@ -20,7 +20,9 @@ transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
                             . replace "https://old.reddit.com" "https://i.reddit.com"
                             . replace "https://twitter.com" "https://nitter.moomoo.me"
 transformURLsForLinking   = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
-  sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" -- handle oddities like hep-ph
+  sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" . -- handle oddities like hep-ph
+  -- make IA book/item pages pop up nicer in live-links, by making them jump to the metadata section (which is all that works in the JS-less live-link iframe), and skipping the warnings about JS not being available. `#flag-button-container` is, weirdly enough, the first available ID to jump to, there's no better ID set inside the metadata section, it's all classes.
+  (\u -> if "https://archive.org/details/" `isPrefixOf`u  && '#' `notElem` u && not ("flag-button-container" `isInfixOf` u) then u ++ "#flag-button-container" else u)
 
 {- re URL transforms: Why?
 
