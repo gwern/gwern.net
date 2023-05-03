@@ -6572,6 +6572,7 @@ ol.link-bibliography-list-compact > li::before {
     height: 1.4em;
     left: calc(-1 * (  var(--mode-selector-button-base-left-spacing)
                      + var(--mode-selector-button-left-adjust)));
+    background-repeat: no-repeat;
     opacity: 0.4;
 }
 .mode-selector button:not(.selected):hover::before {
