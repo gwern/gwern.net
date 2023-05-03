@@ -1385,6 +1385,13 @@ Extracts = { ...Extracts,
     //  Used in: Extracts.foreignSiteEmbedURLTransforms
     foreignSiteEmbedURLTransform_GreaterWrong: (url, subdomain = "www", searchString = null) => {
         url.hostname = `${subdomain}.greaterwrong.com`;
+
+		//	Ensure that comment permalinks display properly.
+        if (url.searchParams.has("commentId")) {
+        	url.pathname += `/comment/${(url.searchParams.get("commentId"))}`;
+        	url.searchParams.delete("commentId");
+        }
+
         url.search = (searchString
                       ? `${searchString}&`
                       : ``) +
