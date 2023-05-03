@@ -2032,6 +2032,8 @@ if (GW.isMobile()) GW.floatingHeader = {
 		});
 	},
 
+	minimumYOffset: 0,
+
 	/*  Show/hide the floating header, and update state, in response to 
 		scroll event.
 		(Called by the ‘updateFloatingHeaderScrollListener’ scroll listener.)
@@ -2041,7 +2043,7 @@ if (GW.isMobile()) GW.floatingHeader = {
 
 		//	Show/hide the entire header.
 		GW.floatingHeader.header.classList.toggle("hidden",
-			window.pageYOffset < GW.floatingHeader.pageHeader.offsetTop + GW.floatingHeader.pageHeader.offsetHeight);
+			window.pageYOffset < GW.floatingHeader.minimumYOffset);
 
 		//	Update scroll indicator bar.
 		GW.floatingHeader.scrollIndicator.dataset.scrollPosition = Math.round(100 * (window.pageYOffset / (document.documentElement.offsetHeight - window.innerHeight)));
@@ -2158,6 +2160,12 @@ if (GW.isMobile()) doWhenPageLoaded(() => {
 	GW.floatingHeader.pageMainElement = document.querySelector("main");
 	GW.floatingHeader.markdownBody = document.querySelector("#markdownBody");
 	GW.floatingHeader.firstSection = document.querySelector("section");
+
+	//	Calculate minimum Y offset.
+	let thresholdElement = getComputedStyle(GW.floatingHeader.pageHeader).display != "none"
+						   ? GW.floatingHeader.pageHeader
+						   : document.querySelector("#sidebar");
+	GW.floatingHeader.minimumYOffset = thresholdElement.offsetTop + thresholdElement.offsetHeight;
 
     //  Show/hide the back-to-top link on scroll up/down.
     addScrollListener(GW.floatingHeader.updateState, "updateFloatingHeaderScrollListener", 
