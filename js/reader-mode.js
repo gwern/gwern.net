@@ -308,9 +308,6 @@ ReaderMode = { ...ReaderMode,
 
 		//	Mask links.
 		ReaderMode.maskedLinks.forEach(link => {
-			//	Insert hooks for linkicons.
-// 			link.insertAdjacentHTML("beforeend", `<span class="icon-hook"><span></span></span>`);
-
 			if (GW.isMobile() == false) {
 				/*	Add `mouseenter` / `mouseleave` listeners to show/hide masked
 					links on hover.

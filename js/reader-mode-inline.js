@@ -34,22 +34,19 @@ ReaderMode = {
             margin: 0;
             padding: 0;
         }
-        ${(_π("body.reader-mode-active #markdownBody .spawns-",
-              [ "popup", "popin" ],
-              " .indicator-hook::before"
-              ).join(",\n"))} {
+        body.reader-mode-active #markdownBody a .indicator-hook::before {
             padding-left: 0.3em;
             box-shadow:
-                -0.17em 0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
-                -0.17em -0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
-                -0.17em 0 0 0 var(--GW-reader-mode-masked-link-bracket-background-color);
+                -0.17em  0.05em 0 0 var(--link-underline-background-color),
+                -0.17em -0.05em 0 0 var(--link-underline-background-color),
+                -0.17em  0      0 0 var(--link-underline-background-color);
 			background-image:
-				linear-gradient(var(--GW-link-underline-background-color),
-								var(--GW-link-underline-background-color)),
-				linear-gradient(var(--GW-link-underline-gradient-line-color),
-								var(--GW-link-underline-gradient-line-color)),
-				linear-gradient(var(--GW-link-underline-gradient-line-color),
-								var(--GW-link-underline-gradient-line-color));
+				linear-gradient(var(--link-underline-background-color),
+								var(--link-underline-background-color)),
+				linear-gradient(var(--link-underline-gradient-line-color),
+								var(--link-underline-gradient-line-color)),
+				linear-gradient(var(--link-underline-gradient-line-color),
+								var(--link-underline-gradient-line-color));
 			background-size:
        			1px  0.5em,
 				100% 1px,
@@ -59,14 +56,41 @@ ReaderMode = {
 				0 calc(100% - 0.1em),
 				0 calc(100% - 0.1em);
         }
-        ${(_π("body.reader-mode-active.masked-links-hidden #markdownBody .spawns-",
-              [ "popup", "popin" ],
-              " .indicator-hook"
-              ).join(",\n"))},
-        ${(_π("body.reader-mode-active #markdownBody ",
-              [ "p", "li", "figcaption" ],
-              " a::after"
-              ).join(",\n"))} {
+        body.reader-mode-active #markdownBody a .link-icon-hook {
+			position: absolute;
+			box-shadow:
+				 0.17em  0.05em 0 0 var(--link-underline-background-color),
+				 0.17em -0.05em 0 0 var(--link-underline-background-color),
+				 0.17em  0      0 0 var(--link-underline-background-color);
+			background-color: var(--link-underline-background-color);
+			background-image:
+				linear-gradient(var(--link-underline-gradient-line-color),
+								var(--link-underline-gradient-line-color));
+			background-size:
+				100% 1px;
+			background-position:
+				0 calc(100% - 0.2em);
+			background-repeat: no-repeat;
+		}
+		body.reader-mode-active #markdownBody a.has-annotation .link-icon-hook {			
+			background-image: var(--GW-dotted-underline-background-image);
+			background-size: 2px 1px;
+			background-repeat: repeat-x;
+		}
+        body.reader-mode-active #markdownBody a .indicator-hook,
+        body.reader-mode-active #markdownBody a .link-icon-hook {
+        	visibility: hidden;
+        }
+        body.reader-mode-active #markdownBody a:hover {
+        	position: relative;
+        	z-index: 111;
+        }
+        body.reader-mode-active #markdownBody a:hover .indicator-hook,
+        body.reader-mode-active #markdownBody a:hover .link-icon-hook {
+        	visibility: visible;
+        }
+        body.reader-mode-active.masked-links-hidden #markdownBody a .indicator-hook,
+        body.reader-mode-active.masked-links-hidden #markdownBody a .link-icon-hook {
             display: none;
         }
         ${(_π("body.reader-mode-active.masked-links-hidden #markdownBody ",

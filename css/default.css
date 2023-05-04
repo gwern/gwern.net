@@ -978,9 +978,14 @@ hr {
     display: flex;
 }
 
+/*	Is this necessary? It looks bad on /clippy. We’ll find out!
+	—SA 2022-05-04
+ */
+/* 
 [class^='horizontal-rule'] {
     clear: both;
 }
+ */
 
 /* These classes are created at compile-time by the 'rulersCycle' Pandoc rewrite pass in Typography.hs; they assign each use of <hr> in the body a class 0-2 (n modulo 3). This lets us create an astronomical theme cycle: the first, fourth, seventh etc rulers are the triple-white star; the second, fifth, eighth etc are a dotted moon; the third, sixth, ninth etc are a sun. */
 hr::after {

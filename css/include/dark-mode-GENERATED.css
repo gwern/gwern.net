@@ -268,12 +268,6 @@
 
 	/*	Reader mode.
 	 */
-	--GW-reader-mode-masked-link-bracket-background-color: rgba(0, 0, 0, 0.5);
-	/*	The following is a temporary hack until we can generate the above value
-		dynamically from the local value of --link-underline-background-color
-		(by reducing the opacity of whatever that value is).
-	 */
-	--GW-reader-mode-masked-link-bracket-background-color: var(--link-underline-background-color);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.6);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color: #000;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color: #fff;

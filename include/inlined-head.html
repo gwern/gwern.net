@@ -269,12 +269,6 @@
 
 	/*	Reader mode.
 	 */
-	--GW-reader-mode-masked-link-bracket-background-color: rgba(255,255,255,0.5);
-	/*	The following is a temporary hack until we can generate the above value
-		dynamically from the local value of --link-underline-background-color
-		(by reducing the opacity of whatever that value is).
-	 */
-	--GW-reader-mode-masked-link-bracket-background-color: var(--link-underline-background-color);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(0,0,0,0.6);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color: #fff;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color: #000;
@@ -2066,12 +2060,6 @@ body.special-halloween-dark h6 {
 
 	/*	Reader mode.
 	 */
-	--GW-reader-mode-masked-link-bracket-background-color: rgba(0, 0, 0, 0.5);
-	/*	The following is a temporary hack until we can generate the above value
-		dynamically from the local value of --link-underline-background-color
-		(by reducing the opacity of whatever that value is).
-	 */
-	--GW-reader-mode-masked-link-bracket-background-color: var(--link-underline-background-color);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.6);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color: #000;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color: #fff;
@@ -3731,22 +3719,19 @@ ReaderMode = {
             margin: 0;
             padding: 0;
         }
-        ${(_π("body.reader-mode-active #markdownBody .spawns-",
-              [ "popup", "popin" ],
-              " .indicator-hook::before"
-              ).join(",\n"))} {
+        body.reader-mode-active #markdownBody a .indicator-hook::before {
             padding-left: 0.3em;
             box-shadow:
-                -0.17em 0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
-                -0.17em -0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
-                -0.17em 0 0 0 var(--GW-reader-mode-masked-link-bracket-background-color);
+                -0.17em  0.05em 0 0 var(--link-underline-background-color),
+                -0.17em -0.05em 0 0 var(--link-underline-background-color),
+                -0.17em  0      0 0 var(--link-underline-background-color);
 			background-image:
-				linear-gradient(var(--GW-link-underline-background-color),
-								var(--GW-link-underline-background-color)),
-				linear-gradient(var(--GW-link-underline-gradient-line-color),
-								var(--GW-link-underline-gradient-line-color)),
-				linear-gradient(var(--GW-link-underline-gradient-line-color),
-								var(--GW-link-underline-gradient-line-color));
+				linear-gradient(var(--link-underline-background-color),
+								var(--link-underline-background-color)),
+				linear-gradient(var(--link-underline-gradient-line-color),
+								var(--link-underline-gradient-line-color)),
+				linear-gradient(var(--link-underline-gradient-line-color),
+								var(--link-underline-gradient-line-color));
 			background-size:
        			1px  0.5em,
 				100% 1px,
@@ -3756,14 +3741,41 @@ ReaderMode = {
 				0 calc(100% - 0.1em),
 				0 calc(100% - 0.1em);
         }
-        ${(_π("body.reader-mode-active.masked-links-hidden #markdownBody .spawns-",
-              [ "popup", "popin" ],
-              " .indicator-hook"
-              ).join(",\n"))},
-        ${(_π("body.reader-mode-active #markdownBody ",
-              [ "p", "li", "figcaption" ],
-              " a::after"
-              ).join(",\n"))} {
+        body.reader-mode-active #markdownBody a .link-icon-hook {
+			position: absolute;
+			box-shadow:
+				 0.17em  0.05em 0 0 var(--link-underline-background-color),
+				 0.17em -0.05em 0 0 var(--link-underline-background-color),
+				 0.17em  0      0 0 var(--link-underline-background-color);
+			background-color: var(--link-underline-background-color);
+			background-image:
+				linear-gradient(var(--link-underline-gradient-line-color),
+								var(--link-underline-gradient-line-color));
+			background-size:
+				100% 1px;
+			background-position:
+				0 calc(100% - 0.2em);
+			background-repeat: no-repeat;
+		}
+		body.reader-mode-active #markdownBody a.has-annotation .link-icon-hook {			
+			background-image: var(--GW-dotted-underline-background-image);
+			background-size: 2px 1px;
+			background-repeat: repeat-x;
+		}
+        body.reader-mode-active #markdownBody a .indicator-hook,
+        body.reader-mode-active #markdownBody a .link-icon-hook {
+        	visibility: hidden;
+        }
+        body.reader-mode-active #markdownBody a:hover {
+        	position: relative;
+        	z-index: 111;
+        }
+        body.reader-mode-active #markdownBody a:hover .indicator-hook,
+        body.reader-mode-active #markdownBody a:hover .link-icon-hook {
+        	visibility: visible;
+        }
+        body.reader-mode-active.masked-links-hidden #markdownBody a .indicator-hook,
+        body.reader-mode-active.masked-links-hidden #markdownBody a .link-icon-hook {
             display: none;
         }
         ${(_π("body.reader-mode-active.masked-links-hidden #markdownBody ",
@@ -3899,4 +3911,7 @@ ReaderMode.injectStyleBlock(ReaderMode.styles, "reader-mode-styles");
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
 </script>
+<link rel="preload" href="/static/css/fonts.css?v=1682881267" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/default.css?v=1683218693" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/links.css?v=1682784367" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/img/icon/icons.svg" as="image">
