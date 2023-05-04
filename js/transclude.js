@@ -761,6 +761,9 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 			return;
 
 		let targetBlock = targetElement.closest("section, li.footnote");
+		if (targetBlock == null)
+			return;
+
 		let backlinksBlock = targetBlock.querySelector(".section-backlinks");
 		if (backlinksBlock == null) {
 			//	Backlinks block.
