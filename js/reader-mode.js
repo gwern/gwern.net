@@ -102,35 +102,36 @@ ReaderMode = { ...ReaderMode,
 	},
 
 	//	Called by: ReaderMode.injectModeSelector
-	modeSelectorHTML: (inline = false) => {
-		let selectorTagName = (inline ? "span" : "div");
-		let selectorId = (inline ? "" : " id='reader-mode-selector'");
-		let selectorClass = (" class='reader-mode-selector mode-selector" + (inline ? " mode-selector-inline" : "") + "'");
-
+	modeSelectorHTMLComponents: (inline = false) => {
 		//	Get saved mode setting (or default).
 		let currentMode = ReaderMode.currentMode();
 
-		return `<${selectorTagName}${selectorId}${selectorClass}>`
-			+ ReaderMode.modeOptions.map(modeOption => {
-				let [ name, label, desc ] = modeOption;
-				let selected = (name == currentMode ? " selected" : "");
-				let disabled = (name == currentMode ? " disabled" : "");
-				let active = ((   currentMode == "auto"
-							   && name == (ReaderMode.active ? "on" : "off"))
-							  ? " active"
-							  : "");
-				if (name == currentMode)
-					desc += ReaderMode.selectedModeOptionNote;
-				return `<button
-							type="button"
-							class="select-mode-${name}${selected}${active}"
-							${disabled}
-							tabindex="-1"
-							data-name="${name}"
-							title="${desc}"
-								>${label}</button>`;
-			  }).join("")
-			+ `</${selectorTagName}>`;
+		let modeSelectorInnerHTML = ReaderMode.modeOptions.map(modeOption => {
+			let [ name, label, desc ] = modeOption;
+			let selected = (name == currentMode ? " selected" : "");
+			let disabled = (name == currentMode ? " disabled" : "");
+			let active = ((   currentMode == "auto"
+						   && name == (ReaderMode.active ? "on" : "off"))
+						  ? " active"
+						  : "");
+			if (name == currentMode)
+				desc += ReaderMode.selectedModeOptionNote;
+			return `<button
+						type="button"
+						class="select-mode-${name}${selected}${active}"
+						${disabled}
+						tabindex="-1"
+						data-name="${name}"
+						title="${desc}"
+							>${label}</button>`;
+		  }).join("");
+
+		let selectorId = (inline ? "" : "reader-mode-selector");
+		let selectorClass = ("reader-mode-selector mode-selector" + (inline ? " mode-selector-inline" : ""));
+
+		return (inline
+				? `<span id="${selectorId}" class="${selectorClass}">${modeSelectorInnerHTML}</span>`
+				: [ modeSelectorInnerHTML, { id: selectorId, class: selectorClass } ]);
 	},
 
 	modeSelectButtonClicked: (event) => {
@@ -160,11 +161,10 @@ ReaderMode = { ...ReaderMode,
 		//	Inject the mode selector widget.
 		let modeSelector;
 		if (replacedElement) {
-			replacedElement.innerHTML = ReaderMode.modeSelectorHTML(true);
-			modeSelector = replacedElement.firstElementChild;
-			unwrap(replacedElement);
+			modeSelector = elementFromHTML(ReaderMode.modeSelectorHTMLComponents(true));
+			replacedElement.replaceWith(modeSelector);
 		} else {
-			modeSelector = ReaderMode.modeSelector = addUIElement(ReaderMode.modeSelectorHTML());
+			modeSelector = ReaderMode.modeSelector = addToolbarButtonGroup(...(ReaderMode.modeSelectorHTMLComponents()));
 		}
 
 		//  Add event listeners and update state.

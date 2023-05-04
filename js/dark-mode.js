@@ -82,35 +82,36 @@ DarkMode = { ...DarkMode,
 	},
 
 	//	Called by: DarkMode.injectModeSelector
-	modeSelectorHTML: (inline = false) => {
-		let selectorTagName = (inline ? "span" : "div");
-		let selectorId = (inline ? "" : " id='dark-mode-selector'");
-		let selectorClass = (" class='dark-mode-selector mode-selector" + (inline ? " mode-selector-inline" : "") + "'");
-
+	modeSelectorHTMLComponents: (inline = false) => {
 		//	Get saved mode setting (or default).
 		let currentMode = DarkMode.currentMode();
 
-		return `<${selectorTagName}${selectorId}${selectorClass}>`
-			+ DarkMode.modeOptions.map(modeOption => {
-				let [ name, label, desc ] = modeOption;
-				let selected = (name == currentMode ? " selected" : "");
-				let disabled = (name == currentMode ? " disabled" : "");
-				let active = ((   currentMode == "auto"
-							   && name == (GW.mediaQueries.systemDarkModeActive.matches ? "dark" : "light"))
-							  ? " active"
-							  : "");
-				if (name == currentMode)
-					desc += DarkMode.selectedModeOptionNote;
-				return `<button
-							type="button"
-							class="select-mode-${name}${selected}${active}"
-							${disabled}
-							tabindex="-1"
-							data-name="${name}"
-							title="${desc}"
-								>${label}</button>`;
-			  }).join("")
-			+ `</${selectorTagName}>`;
+		let modeSelectorInnerHTML = DarkMode.modeOptions.map(modeOption => {
+			let [ name, label, desc ] = modeOption;
+			let selected = (name == currentMode ? " selected" : "");
+			let disabled = (name == currentMode ? " disabled" : "");
+			let active = ((   currentMode == "auto"
+						   && name == (GW.mediaQueries.systemDarkModeActive.matches ? "dark" : "light"))
+						  ? " active"
+						  : "");
+			if (name == currentMode)
+				desc += DarkMode.selectedModeOptionNote;
+			return `<button
+						type="button"
+						class="select-mode-${name}${selected}${active}"
+						${disabled}
+						tabindex="-1"
+						data-name="${name}"
+						title="${desc}"
+							>${label}</button>`;
+		  }).join("");
+
+		let selectorId = (inline ? "" : "dark-mode-selector");
+		let selectorClass = ("dark-mode-selector mode-selector" + (inline ? " mode-selector-inline" : ""));
+
+		return (inline
+				? `<span id="${selectorId}" class="${selectorClass}">${modeSelectorInnerHTML}</span>`
+				: [ modeSelectorInnerHTML, { id: selectorId, class: selectorClass } ]);
 	},
 
 	modeSelectButtonClicked: (event) => {
@@ -140,11 +141,10 @@ DarkMode = { ...DarkMode,
 		//	Inject the mode selector widget.
 		let modeSelector;
 		if (replacedElement) {
-			replacedElement.innerHTML = DarkMode.modeSelectorHTML(true);
-			modeSelector = replacedElement.firstElementChild;
-			unwrap(replacedElement);
+			modeSelector = elementFromHTML(DarkMode.modeSelectorHTMLComponents(true));
+			replacedElement.replaceWith(modeSelector);
 		} else {
-			modeSelector = DarkMode.modeSelector = addUIElement(DarkMode.modeSelectorHTML());
+			modeSelector = DarkMode.modeSelector = addToolbarButtonGroup(...(DarkMode.modeSelectorHTMLComponents()));
 		}
 
 		//  Add event listeners.

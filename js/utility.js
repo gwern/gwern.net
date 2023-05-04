@@ -262,6 +262,17 @@ function newDocument(content) {
     return docFrag;
 }
 
+/************************************************************************/
+/*	Creates element from HTML string. Returns null if given HTML does not
+	define one, and only one, element.
+ */
+function elementFromHTML(elementHTML) {
+	let doc = newDocument(elementHTML);
+	if (doc.children.length != 1)
+		return null;
+	return doc.firstElementChild;
+}
+
 /***************************************************************************/
 /*	Transfer any of the given CSS classes that the source has to the target.
  */

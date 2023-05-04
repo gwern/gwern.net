@@ -602,3 +602,55 @@ function scrollContainerOf(element) {
 	return null;
 }
 
+
+/***********/
+/* PAGE UI */
+/***********/
+
+/*************************************************************************/
+/*  Adds given element (first creating it from HTML, if necessary) to
+    #ui-elements-container (creating the latter if it does not exist), and
+    returns the added element.
+ */
+function addUIElement(element) {
+    let uiElementsContainer = (   document.querySelector("#ui-elements-container")
+    						   ?? document.querySelector("body").appendChild(newElement("DIV", { id: "ui-elements-container" })));
+
+	if (typeof element == "string")
+		element = elementFromHTML(element);
+
+    return uiElementsContainer.appendChild(element);
+}
+
+/**************************************************************************/
+/*	Adds provided button (first creating it from HTML, if necessary) to the
+	page toolbar, and returns the added button.
+ */
+function addToolbarButton(button) {
+	let toolbar = (   document.querySelector("#page-toolbar")
+				   ?? addUIElement(`<div id="page-toolbar"><div class="buttons"></div></div>`));
+
+	if (typeof button == "string")
+		button = elementFromHTML(button);
+
+	return toolbar.querySelector(".buttons").appendChild(button);
+}
+
+/*****************************************************************************/
+/*	Adds a button group containing the provided buttons (first creating them 
+	from HTML, if necessary) to the page toolbar, and returns the added button
+	group.
+ */
+function addToolbarButtonGroup(buttons, buttonGroupProperties) {
+	let toolbar = (   document.querySelector("#page-toolbar")
+				   ?? addUIElement(`<div id="page-toolbar"><div class="buttons"></div></div>`));
+
+	if (typeof buttons == "string")
+		buttons = Array.from(newDocument(buttons).children);
+
+	let buttonGroup = newElement("DIV", buttonGroupProperties);
+	buttonGroup.classList.add("button-group");
+	buttonGroup.append(...buttons);
+
+	return toolbar.querySelector(".buttons").appendChild(buttonGroup);
+}

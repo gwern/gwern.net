@@ -2665,26 +2665,6 @@ if (Array.prototype.findLastIndex === undefined) {
 	}
 }
 
-/***********/
-/* PAGE UI */
-/***********/
-
-/*  Given an HTML string, creates an element from that HTML, adds it to
-    #ui-elements-container (creating the latter if it does not exist), and
-    returns the created element.
- */
-function addUIElement(element_html) {
-    let ui_elements_container = document.querySelector("#ui-elements-container");
-    if (!ui_elements_container) {
-        ui_elements_container = document.createElement("DIV");
-        ui_elements_container.id = "ui-elements-container";
-        document.querySelector("body").appendChild(ui_elements_container);
-    }
-
-    ui_elements_container.insertAdjacentHTML("beforeend", element_html);
-    return ui_elements_container.lastElementChild;
-}
-
 
 /************************/
 /* ACTIVE MEDIA QUERIES */
@@ -3919,9 +3899,4 @@ ReaderMode.injectStyleBlock(ReaderMode.styles, "reader-mode-styles");
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
 </script>
-
-
-<link rel="preload" href="/static/css/fonts.css?v=1682881267" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
-<link rel="preload" href="/static/css/default.css?v=1683212850" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
-<link rel="preload" href="/static/css/links.css?v=1682784367" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/img/icon/icons.svg" as="image">

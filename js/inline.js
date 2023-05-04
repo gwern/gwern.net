@@ -192,26 +192,6 @@ if (Array.prototype.findLastIndex === undefined) {
 	}
 }
 
-/***********/
-/* PAGE UI */
-/***********/
-
-/*  Given an HTML string, creates an element from that HTML, adds it to
-    #ui-elements-container (creating the latter if it does not exist), and
-    returns the created element.
- */
-function addUIElement(element_html) {
-    let ui_elements_container = document.querySelector("#ui-elements-container");
-    if (!ui_elements_container) {
-        ui_elements_container = document.createElement("DIV");
-        ui_elements_container.id = "ui-elements-container";
-        document.querySelector("body").appendChild(ui_elements_container);
-    }
-
-    ui_elements_container.insertAdjacentHTML("beforeend", element_html);
-    return ui_elements_container.lastElementChild;
-}
-
 
 /************************/
 /* ACTIVE MEDIA QUERIES */
