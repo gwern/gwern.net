@@ -5322,6 +5322,7 @@ body.index-directory #footer {
     position: absolute;
     left: 0;
     width: 100%;
+    margin-top: 2.2em;
     max-height: var(--GW-popins-popin-max-height);
     min-height: var(--GW-popins-popin-min-height);
     overflow: visible;
@@ -5350,19 +5351,27 @@ body.index-directory #footer {
     --background-color: var(--GW-popins-popin-title-bar-background-color);
 
     position: absolute;
-    right: calc(-1 * var(--GW-popins-popin-border-width));
-    bottom: calc(100%);
-    height: calc(var(--GW-popins-popin-border-width) + var(--GW-popins-popin-title-bar-height));
-    max-width: calc(100% + (2 * var(--GW-popins-popin-border-width)) - 2em);
-    border-style: double;
-    border-color: var(--GW-popins-popin-border-color);
-    border-width: var(--GW-popins-popin-border-width) var(--GW-popins-popin-border-width) 0 var(--GW-popins-popin-border-width);
+    right: 0;
+    bottom: calc(100% + 1px);
+    height: var(--GW-popins-popin-title-bar-height);
+    max-width: calc(100% - 2em);
+    border-width: 0;
     background-color: var(--background-color);
     display: flex;
     flex-flow: row;
     align-items: center;
     width: fit-content;
-    z-index: 1;
+    z-index: -1;
+    outline: 1px solid var(--GW-popins-popin-border-color);
+    box-shadow:
+          -2px  0   0 0 var(--background-color),
+           2px  0   0 0 var(--background-color),
+           2px -2px 0 0 var(--background-color),
+          -2px -2px 0 0 var(--background-color),
+          -3px -1px 0 0 var(--GW-popins-popin-border-color),
+          -3px -3px 0 0 var(--GW-popins-popin-border-color),
+           3px  0   0 0 var(--GW-popins-popin-border-color),
+           3px -3px 0 0 var(--GW-popins-popin-border-color);
 }
 
 .popin {
@@ -5655,35 +5664,18 @@ body.index-directory #footer {
 /*│ Links with an open popin. │*/
 /*└───────────────────────────┘*/
 
-.popin-open:not(.footnote-ref),
-.popin-open:not(.footnote-ref):hover {
-    --background-color: var(--GW-popins-popin-background-color);
-    --popin-open-highlight-box-shadow-x-offset: 2px;
-
-    background-color: var(--background-color);
-    box-shadow:
-        var(--popin-open-highlight-box-shadow-x-offset) 0 0 5px var(--background-color);
-    background-image: none !important;
-    display: inline-block;
+.popin-open:not(.footnote-ref) {
     position: relative;
-    text-align: left;
-    text-indent: 0;
-}
-.popin-open:not(.footnote-ref)::before,
-.popin-open:not(.footnote-ref):hover::before {
-    content: "";
-    display: block;
-    position: absolute;
-    background-image: none;
-    width: calc(100% + 2 * var(--GW-popins-popin-border-width));
-    height: calc(100% + 2 * var(--GW-popins-popin-border-width));
-    border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
-    left: calc(var(--popin-open-highlight-box-shadow-x-offset) - (2 * var(--GW-popins-popin-border-width)));
-    bottom: calc(0px - (2 * var(--GW-popins-popin-border-width)));
-    top: unset;
-}
-.popin-open:not(.footnote-ref) .indicator-hook {
-    display: none;
+    z-index: 2;
+    box-shadow:
+         3px 1px 0 2px var(--background-color),
+        -3px 1px 0 2px var(--background-color),
+         3px 1px 0 3px var(--GW-highlighted-link-outline-color),
+        -3px 1px 0 3px var(--GW-highlighted-link-outline-color),
+         3px 1px 0 4px var(--background-color),
+        -3px 1px 0 4px var(--background-color),
+         3px 1px 0 5px var(--GW-highlighted-link-outline-color),
+        -3px 1px 0 5px var(--GW-highlighted-link-outline-color);
 }
 
 /*=-------------=*/

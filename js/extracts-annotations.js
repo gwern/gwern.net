@@ -85,24 +85,41 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_ANNOTATION: (popFrame) => {
+    rewritePopFrameContent_ANNOTATION: (popFrame, injectEventInfo = null) => {
         GWLog("Extracts.rewritePopFrameContent_ANNOTATION", "extracts-annotations.js", 2);
 
+		if (injectEventInfo == null) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_ANNOTATION(popFrame, info);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
+				source: "Extracts.rewritePopFrameContent_ANNOTATION",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
         let target = popFrame.spawningTarget;
-		let referenceData = Annotations.referenceDataForLink(target);
 
         //  Mark annotations from non-local data sources.
-        if (   referenceData
-        	&& referenceData.content.dataSourceClass)
+		let referenceData = Annotations.referenceDataForLink(target);
+        if (referenceData.content.dataSourceClass)
             Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.content.dataSourceClass.split(" ")));
 
-        //  Trigger transclude.
-        Transclude.triggerTranscludesInContainer(popFrame.body, {
-            source: "Extracts.rewritePopFrameContent_ANNOTATION",
-            container: popFrame.body,
-            document: popFrame.document,
-            context: "popFrame"
-        });
+        //  Update the title.
+        Extracts.updatePopFrameTitle(popFrame, Extracts.titleForPopFrame(popFrame));
     }
 };
 
