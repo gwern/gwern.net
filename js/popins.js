@@ -13,6 +13,8 @@ Popins = {
 	//	Used in: Popins.containingDocumentForTarget
 	rootDocument: document,
 
+	spawnedPopins: [ ],
+
 	//	Called by: Popins.setup
 	cleanup: () => {
 		GWLog("Popins.cleanup", "popins.js", 1);
@@ -154,8 +156,7 @@ Popins = {
 	//	Called by: Popins.cleanup
 	//	Called by: extracts.js
 	allSpawnedPopins: () => {
-		//  TODO: make this more efficient! (keep a running array or somesuch)
-		return Array.from(document.querySelectorAll(".popin"));
+		return Popins.spawnedPopins;
 	},
 
 	//	Called by: Popins.addTitleBarToPopin
@@ -396,6 +397,11 @@ Popins = {
 		} else {
 			target.parentElement.insertBefore(target.popin, target.nextSibling);
 		}
+
+		//	Push popin onto spawned popins stack.
+		Popins.spawnedPopins.unshift(target.popin);
+
+		//	Designate ancestors.
 		let ancestor = target.popin.parentElement;
 		do { ancestor.classList.add("popin-ancestor"); }
 		while (ancestor = ancestor.parentElement);
