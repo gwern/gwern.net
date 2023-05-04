@@ -1455,6 +1455,7 @@ blockquote table table {
 /* loosely inspired by https://edwardtufte.github.io/tufte-css/#epigraphs */
 
 .epigraph {
+	display: flow-root;
     margin: 2em auto;
     padding: 0.5em 2.5em 0.375em 2.5em;
 }
