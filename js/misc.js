@@ -623,12 +623,22 @@ function addUIElement(element) {
 }
 
 /**************************************************************************/
+/*	Adds and returns page toolbar. (If page toolbar already exists, returns
+	existing page toolbar.)
+ */
+function pageToolbar() {
+	return (   document.querySelector("#page-toolbar")
+			?? addUIElement(  `<div id="page-toolbar"`
+							+ (GW.isMobile() ? ` class="mobile"` : ``)
+							+ `><div class="buttons"></div></div>`));
+}
+
+/**************************************************************************/
 /*	Adds provided button (first creating it from HTML, if necessary) to the
 	page toolbar, and returns the added button.
  */
 function addToolbarButton(button) {
-	let toolbar = (   document.querySelector("#page-toolbar")
-				   ?? addUIElement(`<div id="page-toolbar"><div class="buttons"></div></div>`));
+	let toolbar = pageToolbar();
 
 	if (typeof button == "string")
 		button = elementFromHTML(button);
@@ -642,8 +652,7 @@ function addToolbarButton(button) {
 	group.
  */
 function addToolbarButtonGroup(buttons, buttonGroupProperties) {
-	let toolbar = (   document.querySelector("#page-toolbar")
-				   ?? addUIElement(`<div id="page-toolbar"><div class="buttons"></div></div>`));
+	let toolbar = pageToolbar();
 
 	if (typeof buttons == "string")
 		buttons = Array.from(newDocument(buttons).children);
