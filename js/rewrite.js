@@ -157,52 +157,52 @@ doWhenDOMContentLoaded(() => {
 /*************/
 
 /*************************************************************************/
-/*	Add “backlinks” link to start of section popups, when that section has
-	a backlinks block.
+/*  Add “backlinks” link to start of section popups, when that section has
+    a backlinks block.
  */
 addContentInjectHandler(GW.contentInjectHandlers.injectBacklinksLinkIntoLocalSectionPopFrame = (eventInfo) => {
     GWLog("injectBacklinksLinkIntoLocalSectionPopFrame", "rewrite.js", 1);
 
-	let containingPopFrame = Extracts.popFrameProvider.containingPopFrame(eventInfo.container);
-	if (   containingPopFrame.classList.contains("local-page") == true
-		&& containingPopFrame.classList.contains("full-page") == false) {
-		let section = eventInfo.container.querySelector("section");
-		if (section == null)
-			return;
+    let containingPopFrame = Extracts.popFrameProvider.containingPopFrame(eventInfo.container);
+    if (   containingPopFrame.classList.contains("local-page") == true
+        && containingPopFrame.classList.contains("full-page") == false) {
+        let section = eventInfo.container.querySelector("section");
+        if (section == null)
+            return;
 
-		let backlinksBlock = eventInfo.container.querySelector(`#${(CSS.escape(section.id))}-backlinks`);
-		if (backlinksBlock == null)
-			return;
+        let backlinksBlock = eventInfo.container.querySelector(`#${(CSS.escape(section.id))}-backlinks`);
+        if (backlinksBlock == null)
+            return;
 
-		//	Construct link and enclosing block.
-		let backlinksLink = newElement("A", {
-			"class": "aux-links backlinks",
-			"href": "#" + backlinksBlock.id
-		}, {
-			"innerHTML": "backlinks"
-		});
-		let sectionMetadataBlock = newElement("P", {
-			"class": "section-metadata"
-		});
-		sectionMetadataBlock.append(backlinksLink);
-		section.insertBefore(sectionMetadataBlock, section.children[1]);
+        //  Construct link and enclosing block.
+        let backlinksLink = newElement("A", {
+            "class": "aux-links backlinks",
+            "href": "#" + backlinksBlock.id
+        }, {
+            "innerHTML": "backlinks"
+        });
+        let sectionMetadataBlock = newElement("P", {
+            "class": "section-metadata"
+        });
+        sectionMetadataBlock.append(backlinksLink);
+        section.insertBefore(sectionMetadataBlock, section.children[1]);
 
-		//	Make a click on the link uncollapse the backlinks block.
-		backlinksLink.addActivateEvent((event) => {
-			if (isWithinCollapsedBlock(backlinksBlock)) {
-				GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (info) => {
-					revealElement(backlinksBlock);
-				}, {
-					once: true,
-					condition: (isWithinCollapsedBlock(backlinksBlock) == false)
-				});
-			} else {
-				requestAnimationFrame(() => {
-					revealElement(backlinksBlock);
-				});
-			}
-		});
-	}
+        //  Make a click on the link uncollapse the backlinks block.
+        backlinksLink.addActivateEvent((event) => {
+            if (isWithinCollapsedBlock(backlinksBlock)) {
+                GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (info) => {
+                    revealElement(backlinksBlock);
+                }, {
+                    once: true,
+                    condition: (isWithinCollapsedBlock(backlinksBlock) == false)
+                });
+            } else {
+                requestAnimationFrame(() => {
+                    revealElement(backlinksBlock);
+                });
+            }
+        });
+    }
 }, "rewrite", (info) => (info.context == "popFrame"));
 
 
@@ -211,41 +211,41 @@ addContentInjectHandler(GW.contentInjectHandlers.injectBacklinksLinkIntoLocalSec
 /**********/
 
 /**************************************************************************/
-/*	If there are tables, import tablesorter.js (if need be) and make tables
-	sortable.
+/*  If there are tables, import tablesorter.js (if need be) and make tables
+    sortable.
  */
 addContentInjectHandler(GW.contentInjectHandlers.makeTablesSortable = (eventInfo) => {
     GWLog("makeTablesSortable", "rewrite.js", 1);
 
-	if (eventInfo.container.querySelector("table") == null)
-		return;
+    if (eventInfo.container.querySelector("table") == null)
+        return;
 
-	//	Import tablesorter.js, if need be.
-	let scriptTag = document.querySelector("script[src*='/static/js/tablesorter.js']");
-	if (scriptTag == null) {
-		scriptTag = newElement("SCRIPT", {
-			"type": "text/javascript",
-			"src": "/static/js/tablesorter.js"
-		});
-		document.body.appendChild(scriptTag);
-	}
+    //  Import tablesorter.js, if need be.
+    let scriptTag = document.querySelector("script[src*='/static/js/tablesorter.js']");
+    if (scriptTag == null) {
+        scriptTag = newElement("SCRIPT", {
+            "type": "text/javascript",
+            "src": "/static/js/tablesorter.js"
+        });
+        document.body.appendChild(scriptTag);
+    }
 
-	let sortTables = (eventInfo) => {
-		jQuery("table", eventInfo.document).tablesorter();
-	};
+    let sortTables = (eventInfo) => {
+        jQuery("table", eventInfo.document).tablesorter();
+    };
 
-	if (window["jQuery"]) {
-		sortTables(eventInfo);
-	} else {
-		GW.notificationCenter.addHandlerForEvent("Tablesorter.didLoad", (info) => {
-			sortTables(eventInfo);
-		}, { once: true });
-	}
+    if (window["jQuery"]) {
+        sortTables(eventInfo);
+    } else {
+        GW.notificationCenter.addHandlerForEvent("Tablesorter.didLoad", (info) => {
+            sortTables(eventInfo);
+        }, { once: true });
+    }
 });
 
 /************************************************************************/
-/*  Wrap each table in a div.table-wrapper and a div.table-scroll-wrapper 
-	(for layout purposes).
+/*  Wrap each table in a div.table-wrapper and a div.table-scroll-wrapper
+    (for layout purposes).
  */
 addContentLoadHandler(GW.contentLoadHandlers.wrapTables = (eventInfo) => {
     GWLog("wrapTables", "rewrite.js", 1);
@@ -254,28 +254,28 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapTables = (eventInfo) => {
     wrapAll("table", "table-scroll-wrapper", "DIV", eventInfo.container, false);
 
     eventInfo.container.querySelectorAll(".table-scroll-wrapper").forEach(tableScrollWrapper => {
-    	transferClasses(tableScrollWrapper.closest(".table-wrapper"), tableScrollWrapper, [ "width-full" ]);
+        transferClasses(tableScrollWrapper.closest(".table-wrapper"), tableScrollWrapper, [ "width-full" ]);
     });
 }, "rewrite");
 
 /********************************************************************/
 /*  Rectify wrapper structure of full-width tables:
 
-	div.table-wrapper.table.width-full
-		div.table-scroll-wrapper
-			table
+    div.table-wrapper.table.width-full
+        div.table-scroll-wrapper
+            table
 
-	or
+    or
 
-	div.table-wrapper.collapse
-		div.collapse-content-wrapper.table.width-full
-			div.table-scroll-wrapper
-				table
+    div.table-wrapper.collapse
+        div.collapse-content-wrapper.table.width-full
+            div.table-scroll-wrapper
+                table
  */
 addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthTables = (eventInfo) => {
     GWLog("wrapFullWidthTables", "rewrite.js", 1);
 
-	wrapAll(".table-wrapper .width-full", "table width-full", "DIV", eventInfo.container, true, [ "width-full" ]);
+    wrapAll(".table-wrapper .width-full", "table width-full", "DIV", eventInfo.container, true, [ "width-full" ]);
 }, "rewrite", (info) => info.fullWidthPossible);
 
 
@@ -285,34 +285,34 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthTables = (eventInf
 
 /***************************************************************************/
 /*  Make sure that the figcaption, alt-text, and title are, collectively, as
-	useful as possible (i.e., ensure that neither the alt-text nor the title
-	duplicate the contents of the figcaption).
+    useful as possible (i.e., ensure that neither the alt-text nor the title
+    duplicate the contents of the figcaption).
  */
 addContentLoadHandler(GW.contentLoadHandlers.rectifyImageAuxText = (eventInfo) => {
     GWLog("rectifyImageAuxText", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("figure img").forEach(image => {
-		let figcaption = image.closest("figure").querySelector("figcaption");
-		if (figcaption == null)
-			return;
+    eventInfo.container.querySelectorAll("figure img").forEach(image => {
+        let figcaption = image.closest("figure").querySelector("figcaption");
+        if (figcaption == null)
+            return;
 
-		let [ captionText, titleText, altText ] = [
-			figcaption.cloneNode(true),
-			newElement("SPAN", null, { "innerHTML": image.getAttribute("title") }),
-			newElement("SPAN", null, { "innerHTML": image.getAttribute("alt") }),
-		].map(element => {
-			if (element)
-				Typography.processElement(element, Typography.replacementTypes.CLEAN|Typography.replacementTypes.QUOTES);
+        let [ captionText, titleText, altText ] = [
+            figcaption.cloneNode(true),
+            newElement("SPAN", null, { "innerHTML": image.getAttribute("title") }),
+            newElement("SPAN", null, { "innerHTML": image.getAttribute("alt") }),
+        ].map(element => {
+            if (element)
+                Typography.processElement(element, Typography.replacementTypes.CLEAN|Typography.replacementTypes.QUOTES);
 
-			return element.textContent.trim();
-		});
+            return element.textContent.trim();
+        });
 
-		if (titleText == captionText)
-			image.title = altText;
+        if (titleText == captionText)
+            image.title = altText;
 
-		if (altText == captionText)
-			image.alt = titleText;
-	});
+        if (altText == captionText)
+            image.alt = titleText;
+    });
 }, "rewrite");
 
 /*******************************/
@@ -345,21 +345,21 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
 /*  Sets, in CSS, the image dimensions that are specified in HTML.
  */
 function setImageDimensions(image, fixWidth = false, fixHeight = false) {
-	let width = image.getAttribute("width");
-	let height = image.getAttribute("height");
+    let width = image.getAttribute("width");
+    let height = image.getAttribute("height");
 
-	image.style.aspectRatio = `${width} / ${height}`;
+    image.style.aspectRatio = `${width} / ${height}`;
 
-	let maxHeight = parseInt(getComputedStyle(image).maxHeight);
-	if (maxHeight)
-		width = Math.round(Math.min(width, maxHeight * (width/height)));
+    let maxHeight = parseInt(getComputedStyle(image).maxHeight);
+    if (maxHeight)
+        width = Math.round(Math.min(width, maxHeight * (width/height)));
 
-	if (fixWidth) {
-		image.style.width = `${width}px`;
-	}
-	if (fixHeight) {
-		//	Nothing, for now.
-	}
+    if (fixWidth) {
+        image.style.width = `${width}px`;
+    }
+    if (fixHeight) {
+        //  Nothing, for now.
+    }
 }
 
 /**********************************************************/
@@ -369,20 +369,20 @@ addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) =>
     GWLog("setImageDimensions", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll("figure img[width][height]").forEach(image => {
-    	let fixWidth = (   eventInfo.contentType == "annotation"
-    					&& image.classList.containsAnyOf([ "float-left", "float-right" ]));
-    	setImageDimensions(image, fixWidth);
+        let fixWidth = (   eventInfo.contentType == "annotation"
+                        && image.classList.containsAnyOf([ "float-left", "float-right" ]));
+        setImageDimensions(image, fixWidth);
     });
 
-	//	Also ensure that SVGs get rendered as big as possible.
+    //  Also ensure that SVGs get rendered as big as possible.
     eventInfo.container.querySelectorAll("figure img[src$='.svg']").forEach(svg => {
-    	svg.style.width = "100vw";
-    	svg.style.aspectRatio = svg.dataset.aspectRatio;
+        svg.style.width = "100vw";
+        svg.style.aspectRatio = svg.dataset.aspectRatio;
     });
 }, "rewrite");
 
 /********************************************/
-/*	Prevent reflow due to lazy-loaded images.
+/*  Prevent reflow due to lazy-loaded images.
  */
 addContentInjectHandler(GW.contentInjectHandlers.updateImageDimensions = (eventInfo) => {
     GWLog("updateImageDimensions", "rewrite.js", 1);
@@ -425,25 +425,25 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
         innerWrapper.appendChild(captionWrapper);
 
         //  Tag the figure with the first (or only) media element’s float class.
-	 	[ "float-left", "float-right" ].forEach(floatClass => {
-			if (media.classList.contains(floatClass))
-				figure.classList.add(floatClass);
-				media.classList.remove(floatClass);
-	 	});
+        [ "float-left", "float-right" ].forEach(floatClass => {
+            if (media.classList.contains(floatClass))
+                figure.classList.add(floatClass);
+                media.classList.remove(floatClass);
+        });
     });
 }, "rewrite");
 
 /********************************/
-/*	Don’t float solitary figures.
+/*  Don’t float solitary figures.
  */
 addContentInjectHandler(GW.contentInjectHandlers.deFloatSolitaryFigures = (eventInfo) => {
     GWLog("deFloatSolitaryFigures", "rewrite.js", 1);
 
-	let floatClasses = [ "float-left", "float-right" ];
-	eventInfo.container.querySelectorAll(floatClasses.map(x => `figure.${x}:only-child`).join(", ")).forEach(figure => {
-		if (isOnlyChild(figure))
-			figure.classList.remove(...floatClasses);
-	});
+    let floatClasses = [ "float-left", "float-right" ];
+    eventInfo.container.querySelectorAll(floatClasses.map(x => `figure.${x}:only-child`).join(", ")).forEach(figure => {
+        if (isOnlyChild(figure))
+            figure.classList.remove(...floatClasses);
+    });
 }, "rewrite");
 
 /********************************************************************/
@@ -459,44 +459,44 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
         fullWidthMedia.closest("figure").classList.toggle(fullWidthClass, true);
     });
 
-	//	Constrain caption width to width of media element.
-	let constrainCaptionWidth = (fullWidthMedia) => {
-		let caption = fullWidthMedia.closest("figure").querySelector(".caption-wrapper");
-		if (caption)
-			caption.style.maxWidth = fullWidthMedia.offsetWidth > 0 
-									 ? fullWidthMedia.offsetWidth + "px"
-									 : fullWidthMedia.closest(".markdownBody").offsetWidth + "px";
-	};
+    //  Constrain caption width to width of media element.
+    let constrainCaptionWidth = (fullWidthMedia) => {
+        let caption = fullWidthMedia.closest("figure").querySelector(".caption-wrapper");
+        if (caption)
+            caption.style.maxWidth = fullWidthMedia.offsetWidth > 0
+                                     ? fullWidthMedia.offsetWidth + "px"
+                                     : fullWidthMedia.closest(".markdownBody").offsetWidth + "px";
+    };
 
     //  Add ‘load’ listener for lazy-loaded media.
-	allFullWidthMedia.forEach(fullWidthMedia => {
-		fullWidthMedia.addEventListener("load", fullWidthMedia.loadListener = (event) => {
-			constrainCaptionWidth(fullWidthMedia);
-			fullWidthMedia.loadListener = null;
-		}, { once: true });
-	});
+    allFullWidthMedia.forEach(fullWidthMedia => {
+        fullWidthMedia.addEventListener("load", fullWidthMedia.loadListener = (event) => {
+            constrainCaptionWidth(fullWidthMedia);
+            fullWidthMedia.loadListener = null;
+        }, { once: true });
+    });
 
-    /*  Re-add ‘load’ listener for lazy-loaded media (as it might cause 
-    	re-layout of e.g. sidenotes). Do this only after page layout is 
-    	complete, to avoid spurious re-layout at initial page load.
+    /*  Re-add ‘load’ listener for lazy-loaded media (as it might cause
+        re-layout of e.g. sidenotes). Do this only after page layout is
+        complete, to avoid spurious re-layout at initial page load.
      */
     doWhenPageLayoutComplete(() => {
         allFullWidthMedia.forEach(fullWidthMedia => {
-			constrainCaptionWidth(fullWidthMedia);
-			if (fullWidthMedia.loadListener) {
-				fullWidthMedia.removeEventListener("load", fullWidthMedia.loadListener);
-				fullWidthMedia.addEventListener("load", (event) => {
-					constrainCaptionWidth(fullWidthMedia);
-					GW.notificationCenter.fireEvent("Rewrite.fullWidthMediaDidLoad", {
-						mediaElement: fullWidthMedia
-					});
-				}, { once: true });
+            constrainCaptionWidth(fullWidthMedia);
+            if (fullWidthMedia.loadListener) {
+                fullWidthMedia.removeEventListener("load", fullWidthMedia.loadListener);
+                fullWidthMedia.addEventListener("load", (event) => {
+                    constrainCaptionWidth(fullWidthMedia);
+                    GW.notificationCenter.fireEvent("Rewrite.fullWidthMediaDidLoad", {
+                        mediaElement: fullWidthMedia
+                    });
+                }, { once: true });
             }
         });
-		//  Add listener to update caption max-width when window resizes.
-		window.addEventListener("resize", (event) => {
-			allFullWidthMedia.forEach(constrainCaptionWidth);
-		});
+        //  Add listener to update caption max-width when window resizes.
+        window.addEventListener("resize", (event) => {
+            allFullWidthMedia.forEach(constrainCaptionWidth);
+        });
     });
 }, "rewrite", (info) => info.fullWidthPossible);
 
@@ -531,15 +531,15 @@ addContentLoadHandler(GW.contentLoadHandlers.relocateThumbnailInAnnotation = (ev
 }, "rewrite");
 
 /****************************************************************/
-/*	Account for interaction between image-focus.js and popups.js.
+/*  Account for interaction between image-focus.js and popups.js.
  */
 GW.notificationCenter.addHandlerForEvent("ImageFocus.imageOverlayDidAppear", (info) => {
-	if (Extracts.popFrameProvider == Popups)
-		Popups.hidePopupContainer();
+    if (Extracts.popFrameProvider == Popups)
+        Popups.hidePopupContainer();
 });
 GW.notificationCenter.addHandlerForEvent("ImageFocus.imageOverlayDidDisappear", (info) => {
-	if (Extracts.popFrameProvider == Popups)
-		Popups.unhidePopupContainer();
+    if (Extracts.popFrameProvider == Popups)
+        Popups.unhidePopupContainer();
 });
 
 
@@ -555,7 +555,7 @@ GW.notificationCenter.addHandlerForEvent("ImageFocus.imageOverlayDidDisappear", 
 addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (eventInfo) => {
     GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
-	wrapAll("pre.width-full", "width-full", "DIV", eventInfo.container, true, [ "sourceCode" ]);
+    wrapAll("pre.width-full", "width-full", "DIV", eventInfo.container, true, [ "sourceCode" ]);
 }, "rewrite", (info) => info.fullWidthPossible);
 
 /*************************************************************************/
@@ -657,18 +657,18 @@ function hyphenate(eventInfo) {
     if (GW.isX11())
         return;
 
-	let selector = (GW.isMobile()
-					? ".markdownBody p"
-					: (eventInfo.document == document
-					   ? ".sidenote p, .abstract blockquote p"
-					   : "p"));
-	let blocks = eventInfo.container.querySelectorAll(selector);
-	Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
-		blocks.forEach(block => {
-			hyphenate(block);
-			Typography.processElement(block, Typography.replacementTypes.NONE, true);
-		});
-	});
+    let selector = (GW.isMobile()
+                    ? ".markdownBody p"
+                    : (eventInfo.document == document
+                       ? ".sidenote p, .abstract blockquote p"
+                       : "p"));
+    let blocks = eventInfo.container.querySelectorAll(selector);
+    Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
+        blocks.forEach(block => {
+            hyphenate(block);
+            Typography.processElement(block, Typography.replacementTypes.NONE, true);
+        });
+    });
 }
 
 /*******************************************************************************/
@@ -897,62 +897,62 @@ addContentInjectHandler(GW.contentInjectHandlers.setMarginsOnFullWidthBlocks = (
 /***************/
 
 /***************************************************************************/
-/*	Implement alias classes for various forms of annotation includes.
-	Entries below list the class(es) on the first line, followed by the full
-	list of what classes/attributes/etc. the aliases correspond to.
+/*  Implement alias classes for various forms of annotation includes.
+    Entries below list the class(es) on the first line, followed by the full
+    list of what classes/attributes/etc. the aliases correspond to.
 
-	.include-annotation-partial
-		`class="include-annotation"`
-		`data-include-selector-not=".annotation-abstract"`
-		`data-template-fields="annotationClassSuffix:$"`
-		`data-annotation-class-suffix="-partial"`
+    .include-annotation-partial
+        `class="include-annotation"`
+        `data-include-selector-not=".annotation-abstract"`
+        `data-template-fields="annotationClassSuffix:$"`
+        `data-annotation-class-suffix="-partial"`
 
-	.include-annotation.include-omit-metadata
-		`data-include-selector=".annotation-abstract"`
+    .include-annotation.include-omit-metadata
+        `data-include-selector=".annotation-abstract"`
  */
 addContentLoadHandler(GW.contentLoadHandlers.addAnnotationIncludeLinkAliasClasses = (eventInfo) => {
     GWLog("addAnnotationIncludeLinkAliasClasses", "rewrite.js", 1);
 
-	//	.include-annotation-partial
-	eventInfo.container.querySelectorAll("a.include-annotation-partial").forEach(includeLink => {
-		includeLink.swapClasses([ "include-annotation-partial", "include-annotation" ], 1);
-		includeLink.dataset.includeSelectorNot = ".annotation-abstract";
-		includeLink.dataset.templateFields = [ 
-			...((includeLink.dataset.templateFields ?? "").split(",").filter(x => x)), 
-			"annotationClassSuffix:$" 
-		].join(",");
-		includeLink.dataset.annotationClassSuffix = "-partial";
-	});
+    //  .include-annotation-partial
+    eventInfo.container.querySelectorAll("a.include-annotation-partial").forEach(includeLink => {
+        includeLink.swapClasses([ "include-annotation-partial", "include-annotation" ], 1);
+        includeLink.dataset.includeSelectorNot = ".annotation-abstract";
+        includeLink.dataset.templateFields = [
+            ...((includeLink.dataset.templateFields ?? "").split(",").filter(x => x)),
+            "annotationClassSuffix:$"
+        ].join(",");
+        includeLink.dataset.annotationClassSuffix = "-partial";
+    });
 
-	//	.include-annotation.include-omit-metadata
-	eventInfo.container.querySelectorAll("a.include-annotation.include-omit-metadata").forEach(includeLink => {
-		includeLink.dataset.includeSelector = ".annotation-abstract";
-	});
+    //  .include-annotation.include-omit-metadata
+    eventInfo.container.querySelectorAll("a.include-annotation.include-omit-metadata").forEach(includeLink => {
+        includeLink.dataset.includeSelector = ".annotation-abstract";
+    });
 }, "<transclude");
 
 /******************************************************************************/
-/*	Transform title-link of truncated annotations (i.e., full annotations
-	transcluded as partial annotations) to allow access to the full annotation.
+/*  Transform title-link of truncated annotations (i.e., full annotations
+    transcluded as partial annotations) to allow access to the full annotation.
  */
 addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (eventInfo) => {
     GWLog("rewriteTruncatedAnnotations", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".annotation-partial").forEach(partialAnnotation => {
-		//	Check to see whether the abstract exists.
-		if (Annotations.referenceDataForLink(eventInfo.includeLink).content.abstract == null)
-			return;
+    eventInfo.container.querySelectorAll(".annotation-partial").forEach(partialAnnotation => {
+        //  Check to see whether the abstract exists.
+        if (Annotations.referenceDataForLink(eventInfo.includeLink).content.abstract == null)
+            return;
 
-		//	Rewrite title-link.
-		let titleLink = partialAnnotation.querySelector("a.title-link");
-		titleLink.classList.add(Annotations.annotatedLinkFullClass);
+        //  Rewrite title-link.
+        let titleLink = partialAnnotation.querySelector("a.title-link");
+        titleLink.classList.add(Annotations.annotatedLinkFullClass);
 
-		//	Set original URL, for annotation retrieval.
-		partialAnnotation.querySelectorAll(".title-link + .originalURL a").forEach(originalURLLink => {
-			titleLink.dataset.urlOriginal = originalURLLink.href;
-		});
-	});
+        //  Set original URL, for annotation retrieval.
+        partialAnnotation.querySelectorAll(".title-link + .originalURL a").forEach(originalURLLink => {
+            titleLink.dataset.urlOriginal = originalURLLink.href;
+        });
+    });
 }, "<rewrite", (info) => (   info.source == "transclude"
-						  && info.contentType == "annotation"));
+                          && info.contentType == "annotation"));
 
 /*****************************************************************/
 /*  Partial annotations, defined inline (in directories and such).
@@ -961,16 +961,16 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventI
     GWLog("rewritePartialAnnotations", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll(".annotation-partial").forEach(partialAnnotation => {
-		//	If already done, do not redo.
+        //  If already done, do not redo.
         if (partialAnnotation.firstElementChild.classList.contains("data-field"))
             return;
 
-		//	Identify reference link.
+        //  Identify reference link.
         let referenceLink = partialAnnotation.querySelector("a");
 
-		//	If already in progress, do not interfere.
-		if (Transclude.isIncludeLink(referenceLink))
-			return;
+        //  If already in progress, do not interfere.
+        if (Transclude.isIncludeLink(referenceLink))
+            return;
 
         //  Designate reference link, for annotations.js to identify it.
         referenceLink.classList.add("link-annotated-partial");
@@ -1028,13 +1028,13 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteAuxLinksLinksInTransclud
         if (includedAuxLinksBlock) {
             auxLinksLink.onclick = () => { return false; };
             auxLinksLink.addActivateEvent((event) => {
-				if (includedAuxLinksBlock.querySelector("ul, ol") == null) {
-					GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-						revealElement(includedAuxLinksBlock);
-					}, { once: true });
-				}
+                if (includedAuxLinksBlock.querySelector("ul, ol") == null) {
+                    GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+                        revealElement(includedAuxLinksBlock);
+                    }, { once: true });
+                }
 
-				revealElement(includedAuxLinksBlock);
+                revealElement(includedAuxLinksBlock);
 
                 return false;
             });
@@ -1138,24 +1138,24 @@ addContentInjectHandler(GW.contentInjectHandlers.applyLinkBibliographyCompactSty
 /*********************/
 
 /******************************************************************/
-/*	Sets TOC collapse state and updates the collapse toggle button.
+/*  Sets TOC collapse state and updates the collapse toggle button.
  */
 function setTOCCollapseState(collapsed = false) {
-	let TOC = document.querySelector("#TOC");
-	if (!TOC)
-		return;
+    let TOC = document.querySelector("#TOC");
+    if (!TOC)
+        return;
 
-	TOC.classList.toggle("collapsed", collapsed);
+    TOC.classList.toggle("collapsed", collapsed);
 
-	let button = TOC.querySelector(".toc-collapse-toggle-button");
-	if (!button)
-		return;
+    let button = TOC.querySelector(".toc-collapse-toggle-button");
+    if (!button)
+        return;
 
-	button.title = collapsed ? "Expand table of contents" : "Collapse table of contents";
+    button.title = collapsed ? "Expand table of contents" : "Collapse table of contents";
 }
 
 /*******************************************************/
-/*	Add the collapse toggle button to the main page TOC.
+/*  Add the collapse toggle button to the main page TOC.
  */
 addContentLoadHandler(GW.contentLoadHandlers.injectTOCMinimizeButton = (eventInfo) => {
     GWLog("injectTOCMinimizeButton", "rewrite.js", 1);
@@ -1164,22 +1164,22 @@ addContentLoadHandler(GW.contentLoadHandlers.injectTOCMinimizeButton = (eventInf
     if (!TOC)
         return;
 
-	let button = newElement("BUTTON", { 
-		"class": "toc-collapse-toggle-button", 
-		"title": "Collapse table of contents",
-		"tabindex": "-1"
-	}, {
-		"innerHTML": `<span>${GW.assets.collapseChevron}</span>`
-	});
-	TOC.appendChild(button);
+    let button = newElement("BUTTON", {
+        "class": "toc-collapse-toggle-button",
+        "title": "Collapse table of contents",
+        "tabindex": "-1"
+    }, {
+        "innerHTML": `<span>${GW.assets.collapseChevron}</span>`
+    });
+    TOC.appendChild(button);
 
-	let defaultTOCCollapseState = "false";
-	setTOCCollapseState((localStorage.getItem("toc-collapsed") ?? defaultTOCCollapseState) == "true");
+    let defaultTOCCollapseState = "false";
+    setTOCCollapseState((localStorage.getItem("toc-collapsed") ?? defaultTOCCollapseState) == "true");
 
-	button.addActivateEvent((event) => {
-		setTOCCollapseState(TOC.classList.contains("collapsed") == false);
-		localStorage.setItem("toc-collapsed", TOC.classList.contains("collapsed"));
-	});
+    button.addActivateEvent((event) => {
+        setTOCCollapseState(TOC.classList.contains("collapsed") == false);
+        localStorage.setItem("toc-collapsed", TOC.classList.contains("collapsed"));
+    });
 }, "rewrite", (info) => (info.container == document.body));
 
 /***************************************************************************/
@@ -1202,25 +1202,25 @@ addContentLoadHandler(GW.contentLoadHandlers.updateMainPageTOC = (eventInfo) => 
 }, "rewrite", (info) => (info.container == document.body));
 
 /*************************************************/
-/*	Apply typography rectification to TOC entries.
+/*  Apply typography rectification to TOC entries.
  */
 addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInTOC = (eventInfo) => {
     GWLog("rectifyTypographyInTOC", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".TOC").forEach(TOC => {
-		Typography.processElement(TOC, Typography.replacementTypes.WORDBREAKS, true);
-	});
+    eventInfo.container.querySelectorAll(".TOC").forEach(TOC => {
+        Typography.processElement(TOC, Typography.replacementTypes.WORDBREAKS, true);
+    });
 }, "rewrite");
 
 /**********************************************************/
-/*	Disable link decoration (underlining) on all TOC links.
+/*  Disable link decoration (underlining) on all TOC links.
  */
 addContentLoadHandler(GW.contentLoadHandlers.disableTOCLinkDecoration = (eventInfo) => {
     GWLog("disableTOCLinkDecoration", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".TOC a").forEach(link => {
-		link.classList.add("decorate-not");
-	});
+    eventInfo.container.querySelectorAll(".TOC a").forEach(link => {
+        link.classList.add("decorate-not");
+    });
 }, "rewrite");
 
 /**********************************************************/
@@ -1250,7 +1250,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (eventIn
      */
     let linksTOCEntry = TOC.querySelector("#toc-links");
     if (   linksTOCEntry
-    	&& isOnlyChild(linksTOCEntry.closest("li"))) {
+        && isOnlyChild(linksTOCEntry.closest("li"))) {
         let outerTOCList = TOC.querySelector("ul");
         let innerTOCList = TOC.querySelector("#toc-links + ul");
 
@@ -1324,19 +1324,19 @@ addContentLoadHandler(GW.contentLoadHandlers.addFootnoteClassToFootnotes = (even
 }, "rewrite");
 
 /*****************************************************************************/
-/*	Mark hash-targeted footnote with ‘targeted’ class on page load, and update 
-	when hash changes.
+/*  Mark hash-targeted footnote with ‘targeted’ class on page load, and update
+    when hash changes.
  */
 addContentInjectHandler(GW.contentInjectHandlers.markTargetedFootnote = (eventInfo) => {
     GWLog("markTargetedFootnote", "rewrite.js", 1);
 
-	//	Mark target footnote, if any.
-	updateFootnoteTargeting();
+    //  Mark target footnote, if any.
+    updateFootnoteTargeting();
 
-	//	Add event handler to update targeting again on hash change.
-	GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", (info) => {
-		updateFootnoteTargeting();
-	});
+    //  Add event handler to update targeting again on hash change.
+    GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", (info) => {
+        updateFootnoteTargeting();
+    });
 }, "rewrite", (info) => info.container == document.body);
 
 /******************************/
@@ -1381,6 +1381,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
         backlink.appendChild(newElement("IMG", {
             width: defaultSize,
             height: defaultSize,
+            loading: "lazy",
             alt: "↩ Right arrow curving left [footnote return link] arrow",
             src: "/static/img/icon/icons.svg#arrow-hook-left"
         }));
@@ -1491,13 +1492,13 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
 
     let loadLocation = (eventInfo.loadLocation ?? baseLocation);
 
-	let exclusionSelector = [
-		".backlink-source"
-	].join(", ");
+    let exclusionSelector = [
+        ".backlink-source"
+    ].join(", ");
 
     eventInfo.container.querySelectorAll("a[href]").forEach(link => {
-		if (link.closest(exclusionSelector) != null)
-			return;
+        if (link.closest(exclusionSelector) != null)
+            return;
 
         if (   (   link.getAttribute("href").startsWith("#")
                 || link.pathname == loadLocation.pathname)
@@ -1533,15 +1534,15 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
     if (baseLocation == null)
         return;
 
-	let exclusionSelector = [
-		"h1, h2, h3, h4, h5, h6",
-		".section-self-link",
-		".footnote-ref",
-		".footnote-back",
-		".footnote-self-link",
-		".sidenote-self-link",
-		".backlink-context"
-	].join(", ");
+    let exclusionSelector = [
+        "h1, h2, h3, h4, h5, h6",
+        ".section-self-link",
+        ".footnote-ref",
+        ".footnote-back",
+        ".footnote-self-link",
+        ".sidenote-self-link",
+        ".backlink-context"
+    ].join(", ");
 
     eventInfo.container.querySelectorAll(".markdownBody a[href]").forEach(link => {
         if (   link.hostname != location.hostname
@@ -1604,97 +1605,97 @@ addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (ev
 }, "rewrite");
 
 /*****************************************/
-/*	Removes link icons that should not be.
+/*  Removes link icons that should not be.
  */
 addContentInjectHandler(GW.contentInjectHandlers.cleanSpuriousLinkIcons = (eventInfo) => {
     GWLog("cleanSpuriousLinkIcons", "rewrite.js", 1);
 
-	let excludedLinkSelector = [
-		/*  Index page, and embeds thereof, do not need the G icon.
-			NOTE: we do not use the usual method of suppressing G icons 
-			(`.icon-not` class), because /index and /static/404 are *so* long 
-			and routinely modified/expanded, so doing it ‘manually’ would risk 
-			occasional omissions or syntax errors.
-		 */
-		"body.index",
-		"body.static-404",
-		".popframe-body.page-index",
+    let excludedLinkSelector = [
+        /*  Index page, and embeds thereof, do not need the G icon.
+            NOTE: we do not use the usual method of suppressing G icons
+            (`.icon-not` class), because /index and /static/404 are *so* long
+            and routinely modified/expanded, so doing it ‘manually’ would risk
+            occasional omissions or syntax errors.
+         */
+        "body.index",
+        "body.static-404",
+        ".popframe-body.page-index",
 
-		/*	TOC links should never have link icons under any circumstances.
-		 */
-		".TOC"
-	].map(x => x + " a[data-link-icon]").join(", ");
+        /*  TOC links should never have link icons under any circumstances.
+         */
+        ".TOC"
+    ].map(x => x + " a[data-link-icon]").join(", ");
 
-	eventInfo.container.querySelectorAll(excludedLinkSelector).forEach(link => {
-		link.removeAttribute("data-link-icon-type");
-		link.removeAttribute("data-link-icon");
-	});
+    eventInfo.container.querySelectorAll(excludedLinkSelector).forEach(link => {
+        link.removeAttribute("data-link-icon-type");
+        link.removeAttribute("data-link-icon");
+    });
 }, "rewrite");
 
 /****************************************************************************/
-/*	Adds HTML and CSS to a link, enabling display of its specified link icon.
+/*  Adds HTML and CSS to a link, enabling display of its specified link icon.
  */
 function enableLinkIcon(link) {
-	if (link.classList.contains("has-icon"))
-		return;
+    if (link.classList.contains("has-icon"))
+        return;
 
-	//	Add hook.
-	link.insertAdjacentHTML("beforeend", `<span class="link-icon-hook">\u{2060}</span>`);
+    //  Add hook.
+    link.insertAdjacentHTML("beforeend", `<span class="link-icon-hook">\u{2060}</span>`);
 
-	//	Set CSS variable.
-	if (link.dataset.linkIconType.includes("text")) {
-		link.style.setProperty("--link-icon", `"${(link.dataset.linkIcon)}"`);
-	} else if (link.dataset.linkIconType.includes("svg")) {
-		link.style.setProperty("--link-icon-url", 
-			`url("/static/img/icon/icons.svg#${(link.dataset.linkIcon)}")`);
-	}
+    //  Set CSS variable.
+    if (link.dataset.linkIconType.includes("text")) {
+        link.style.setProperty("--link-icon", `"${(link.dataset.linkIcon)}"`);
+    } else if (link.dataset.linkIconType.includes("svg")) {
+        link.style.setProperty("--link-icon-url",
+            `url("/static/img/icon/icons.svg#${(link.dataset.linkIcon)}")`);
+    }
 
-	//	Set class.
-	link.classList.add("has-icon");
+    //  Set class.
+    link.classList.add("has-icon");
 }
 
 /****************************************************************************/
-/*	Disable display of a link’s link icon by removing requisite HTML and CSS.
+/*  Disable display of a link’s link icon by removing requisite HTML and CSS.
  */
 function disableLinkIcon(link) {
-	if (link.classList.contains("has-icon") == false)
-		return;
+    if (link.classList.contains("has-icon") == false)
+        return;
 
-	//	Remove hook.
-	link.querySelector(".link-icon-hook").remove();
+    //  Remove hook.
+    link.querySelector(".link-icon-hook").remove();
 
-	//	Clear CSS variables.
-	link.style.removeProperty("--link-icon");
-	link.style.removeProperty("--link-icon-url");
+    //  Clear CSS variables.
+    link.style.removeProperty("--link-icon");
+    link.style.removeProperty("--link-icon-url");
 
-	//	Unset class.
-	link.classList.remove("has-icon");
+    //  Unset class.
+    link.classList.remove("has-icon");
 }
 
 /*************************************************************************/
-/*	Enable or disable display of link icons, as appropriate for each link.
+/*  Enable or disable display of link icons, as appropriate for each link.
  */
 addContentInjectHandler(GW.contentInjectHandlers.setLinkIconStates = (eventInfo) => {
     GWLog("setLinkIconStates", "rewrite.js", 1);
 
-	/*	Enable display of link icons for all links that have specified icons.
-	 */
-	eventInfo.container.querySelectorAll("a[data-link-icon]").forEach(link => {
-		enableLinkIcon(link);
-	});
+    /*  Enable display of link icons for all links that have specified icons.
+     */
+    eventInfo.container.querySelectorAll("a[data-link-icon]").forEach(link => {
+        enableLinkIcon(link);
+    });
 
-	/*	Disable display of link icons for links that have had it enabled, but
-		actually should not display icons (which may happen if, e.g., 
-		a .link-page becomes a .link-self due to transclusion / pop-frame 
-		embedding, and has no anchor).
-	 */
-	let iconlessLinkSelector = [
-		"a:not([data-link-icon])",
-		"a[data-link-icon='']"
-	].map(x => x + ".has-icon").join(", ");
-	eventInfo.container.querySelectorAll(iconlessLinkSelector).forEach(link => {
-		disableLinkIcon(link);
-	});
+    /*  Disable display of link icons for links that have had it enabled, but
+        actually should not display icons (which may happen if, e.g.,
+        a .link-page becomes a .link-self due to transclusion / pop-frame
+        embedding, and has no anchor).
+     */
+    let iconlessLinkSelector = [
+        "a:not([data-link-icon])",
+        "a[data-link-icon='']"
+    ].map(x => x + ".has-icon").join(", ");
+    eventInfo.container.querySelectorAll(iconlessLinkSelector).forEach(link => {
+        disableLinkIcon(link);
+    });
 }, "rewrite");
 
 
@@ -1703,58 +1704,58 @@ addContentInjectHandler(GW.contentInjectHandlers.setLinkIconStates = (eventInfo)
 /*********/
 
 /********************************************************/
-/*	Designate ordered list type via a class.
-	(Workaround for case-insensitivity of CSS selectors.)
+/*  Designate ordered list type via a class.
+    (Workaround for case-insensitivity of CSS selectors.)
  */
 addContentLoadHandler(GW.contentLoadHandlers.designateOrderedListTypes = (eventInfo) => {
     GWLog("designateOrderedListTypes", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("ol[type]").forEach(list => {
-		switch (list.type) {
-		case '1':
-			list.classList.add("list-type-decimal");
-			break;
-		case 'a':
-			list.classList.add("list-type-lower-alpha");
-			break;
-		case 'A':
-			list.classList.add("list-type-upper-alpha");
-			break;
-		case 'i':
-			list.classList.add("list-type-lower-roman");
-			break;
-		case 'I':
-			list.classList.add("list-type-upper-roman");
-			break;
-		default:
-			break;
-		}
-	});
+    eventInfo.container.querySelectorAll("ol[type]").forEach(list => {
+        switch (list.type) {
+        case '1':
+            list.classList.add("list-type-decimal");
+            break;
+        case 'a':
+            list.classList.add("list-type-lower-alpha");
+            break;
+        case 'A':
+            list.classList.add("list-type-upper-alpha");
+            break;
+        case 'i':
+            list.classList.add("list-type-lower-roman");
+            break;
+        case 'I':
+            list.classList.add("list-type-upper-roman");
+            break;
+        default:
+            break;
+        }
+    });
 }, "rewrite");
 
 /**********************************************/
-/*	Rectify styling/structure of list headings.
+/*  Rectify styling/structure of list headings.
  */
 addContentLoadHandler(GW.contentLoadHandlers.rectifyListHeadings = (eventInfo) => {
     GWLog("rectifyListHeadings", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("p > strong:only-child").forEach(boldElement => {
-		if (   boldElement.parentElement.childNodes.length == 2
-			&& boldElement.parentElement.firstChild == boldElement
-			&& boldElement.parentElement.lastChild.nodeType == Node.TEXT_NODE
-			&& boldElement.parentElement.lastChild.nodeValue == ":") {
-			boldElement.parentElement.lastChild.remove();
-			boldElement.lastTextNode.nodeValue += ":";
-		}
+    eventInfo.container.querySelectorAll("p > strong:only-child").forEach(boldElement => {
+        if (   boldElement.parentElement.childNodes.length == 2
+            && boldElement.parentElement.firstChild == boldElement
+            && boldElement.parentElement.lastChild.nodeType == Node.TEXT_NODE
+            && boldElement.parentElement.lastChild.nodeValue == ":") {
+            boldElement.parentElement.lastChild.remove();
+            boldElement.lastTextNode.nodeValue += ":";
+        }
 
-		if (   boldElement.parentElement.childNodes.length == 1
-			&& boldElement.parentElement.tagName == "P"
-			&& boldElement.parentElement.nextElementSibling
-			&& boldElement.closest("LI") == null
-			&& (   [ "UL", "OL" ].includes(boldElement.parentElement.nextElementSibling.tagName)
-				|| boldElement.parentElement.nextElementSibling.classList.contains("columns")))
-			boldElement.parentElement.classList.add("list-heading");
-	});
+        if (   boldElement.parentElement.childNodes.length == 1
+            && boldElement.parentElement.tagName == "P"
+            && boldElement.parentElement.nextElementSibling
+            && boldElement.closest("LI") == null
+            && (   [ "UL", "OL" ].includes(boldElement.parentElement.nextElementSibling.tagName)
+                || boldElement.parentElement.nextElementSibling.classList.contains("columns")))
+            boldElement.parentElement.classList.add("list-heading");
+    });
 }, "rewrite");
 
 /***************************************************************/
@@ -1824,16 +1825,16 @@ addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) 
         ".markdownBody .abstract:not(.scrape-abstract-not) + p"
     ].join(", ");
     let exclusionSelector = [
-    	"#footer",
-    	"#aotd"
+        "#footer",
+        "#aotd"
     ].join(", ");
     let dropCapClass = Array.from(eventInfo.container.classList).find(cssClass => cssClass.startsWith("drop-caps-"));
     if (dropCapClass)
         dropCapClass = dropCapClass.replace("-caps-", "-cap-");
 
     eventInfo.container.querySelectorAll(dropCapBlocksSelector).forEach(dropCapBlock => {
-		if (dropCapBlock.closest(exclusionSelector))
-			return;
+        if (dropCapBlock.closest(exclusionSelector))
+            return;
 
         /*  Drop cap class could be set globally, or overridden by a .abstract;
             the latter could be `drop-cap-not` (which nullifies any page-global
@@ -1862,7 +1863,7 @@ addContentInjectHandler(GW.contentInjectHandlers.preventDropCapsOverlap = (event
                 || [ "0", "0px" ].includes(getComputedStyle(dropCapBlock.nextElementSibling).borderWidth) == false)
                 dropCapBlock.classList.add("overlap-not");
         } else {
-        	dropCapBlock.classList.add("overlap-not");
+            dropCapBlock.classList.add("overlap-not");
         }
     });
 }, "rewrite", (info) => (info.document == document))
@@ -1919,8 +1920,8 @@ addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (even
     GWLog("addBlockButtonsToMathBlocks", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll(".mjpage__block").forEach(mathBlock => {
-		mathBlock = mathBlock.closest(".math");
-		mathBlock.classList.add("block");
+        mathBlock = mathBlock.closest(".math");
+        mathBlock.classList.add("block");
 
         //  Inject button bar.
         mathBlock.insertAdjacentHTML("beforeend",
@@ -1940,14 +1941,14 @@ addContentInjectHandler(GW.contentInjectHandlers.activateMathBlockButtons = (eve
     GWLog("activateMathBlockButtons", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll(".math.block").forEach(mathBlock => {
-		//	LaTeX source.
+        //  LaTeX source.
         let latexSource = mathBlock.querySelector(".mjx-math").getAttribute("aria-label");
 
         //  Copy button (copies LaTeX source).
         mathBlock.querySelector("button.copy").addActivateEvent((event) => {
             GWLog("mathBlockCopyButtonClicked", "rewrite.js", 3);
 
-			copyTextToClipboard(latexSource);
+            copyTextToClipboard(latexSource);
 
             //  Flash math block, for visual feedback of copy operation.
             let innerMathBlock = mathBlock.querySelector(".MJXc-display");
@@ -1973,15 +1974,15 @@ function updateBackToTopLinkVisibility(event) {
     //  One PgDn’s worth of scroll distance, approximately.
     let onePageScrollDistance = (0.8 * window.innerHeight);
 
-	//  Hide back-to-top link when scrolling to top.
+    //  Hide back-to-top link when scrolling to top.
     if (GW.scrollState.lastScrollTop <= 0)
         GW.backToTop.classList.toggle("hidden", true);
-	//  Show back-to-top link when scrolling a full page down from the top.
-	else if (GW.scrollState.unbrokenDownScrollDistance > onePageScrollDistance * 2.0)
-		GW.backToTop.classList.toggle("hidden", false);
-	//	Hide back-to-top link on half a page’s worth of scroll up.
-	else if (GW.scrollState.unbrokenUpScrollDistance > onePageScrollDistance * 0.5)
-		GW.backToTop.classList.toggle("hidden", true);
+    //  Show back-to-top link when scrolling a full page down from the top.
+    else if (GW.scrollState.unbrokenDownScrollDistance > onePageScrollDistance * 2.0)
+        GW.backToTop.classList.toggle("hidden", false);
+    //  Hide back-to-top link on half a page’s worth of scroll up.
+    else if (GW.scrollState.unbrokenUpScrollDistance > onePageScrollDistance * 0.5)
+        GW.backToTop.classList.toggle("hidden", true);
 }
 
 /**********************************/
@@ -1990,8 +1991,8 @@ function updateBackToTopLinkVisibility(event) {
 if (GW.isMobile() == false) doWhenPageLoaded(() => {
     GWLog("injectBackToTopLink", "rewrite.js", 1);
 
-    GW.backToTop = addUIElement(`<div id="back-to-top"><a href="#top" tabindex="-1" title="Back to top">` 
-    	+ `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M6.1 422.3l209.4-209.4c4.7-4.7 12.3-4.7 17 0l209.4 209.4c4.7 4.7 4.7 12.3 0 17l-19.8 19.8c-4.7 4.7-12.3 4.7-17 0L224 278.4 42.9 459.1c-4.7 4.7-12.3 4.7-17 0L6.1 439.3c-4.7-4.7-4.7-12.3 0-17zm0-143l19.8 19.8c4.7 4.7 12.3 4.7 17 0L224 118.4l181.1 180.7c4.7 4.7 12.3 4.7 17 0l19.8-19.8c4.7-4.7 4.7-12.3 0-17L232.5 52.9c-4.7-4.7-12.3-4.7-17 0L6.1 262.3c-4.7 4.7-4.7 12.3 0 17z"/></svg>`
+    GW.backToTop = addUIElement(`<div id="back-to-top"><a href="#top" tabindex="-1" title="Back to top">`
+        + `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M6.1 422.3l209.4-209.4c4.7-4.7 12.3-4.7 17 0l209.4 209.4c4.7 4.7 4.7 12.3 0 17l-19.8 19.8c-4.7 4.7-12.3 4.7-17 0L224 278.4 42.9 459.1c-4.7 4.7-12.3 4.7-17 0L6.1 439.3c-4.7-4.7-4.7-12.3 0-17zm0-143l19.8 19.8c4.7 4.7 12.3 4.7 17 0L224 118.4l181.1 180.7c4.7 4.7 12.3 4.7 17 0l19.8-19.8c4.7-4.7 4.7-12.3 0-17L232.5 52.9c-4.7-4.7-12.3-4.7-17 0L6.1 262.3c-4.7 4.7-4.7 12.3 0 17z"/></svg>`
         + `</a></div>`);
 
     //  Show/hide the back-to-top link on scroll up/down.
@@ -2016,163 +2017,163 @@ if (GW.isMobile() == false) doWhenPageLoaded(() => {
 /**************************/
 
 if (GW.isMobile()) GW.floatingHeader = {
-	/*	Scroll down enough to make whatever’s under the header visible.
-	 */
-	adjustScrollTop: () => {
-		if (GW.floatingHeader.header == null)
-			return;
-		let previousHash = GW.locationHash;
-		requestAnimationFrame(() => {
-			if (location.hash > "") {
-				if (previousHash == GW.locationHash)
-					window.scrollBy(0, -1 * GW.floatingHeader.header.offsetHeight);
-				else
-					GW.floatingHeader.adjustScrollTop();
-			}
-		});
-	},
+    /*  Scroll down enough to make whatever’s under the header visible.
+     */
+    adjustScrollTop: () => {
+        if (GW.floatingHeader.header == null)
+            return;
+        let previousHash = GW.locationHash;
+        requestAnimationFrame(() => {
+            if (location.hash > "") {
+                if (previousHash == GW.locationHash)
+                    window.scrollBy(0, -1 * GW.floatingHeader.header.offsetHeight);
+                else
+                    GW.floatingHeader.adjustScrollTop();
+            }
+        });
+    },
 
-	minimumYOffset: 0,
+    minimumYOffset: 0,
 
-	/*  Show/hide the floating header, and update state, in response to 
-		scroll event.
-		(Called by the ‘updateFloatingHeaderScrollListener’ scroll listener.)
-	 */
-	updateState: (event, maxChainLength = GW.floatingHeader.maxChainLength) => {
-		GWLog("updateFloatingHeaderState", "rewrite.js", 3);
+    /*  Show/hide the floating header, and update state, in response to
+        scroll event.
+        (Called by the ‘updateFloatingHeaderScrollListener’ scroll listener.)
+     */
+    updateState: (event, maxChainLength = GW.floatingHeader.maxChainLength) => {
+        GWLog("updateFloatingHeaderState", "rewrite.js", 3);
 
-		//	Show/hide the entire header.
-		GW.floatingHeader.header.classList.toggle("hidden",
-			window.pageYOffset < GW.floatingHeader.minimumYOffset);
+        //  Show/hide the entire header.
+        GW.floatingHeader.header.classList.toggle("hidden",
+            window.pageYOffset < GW.floatingHeader.minimumYOffset);
 
-		//	Update scroll indicator bar.
-		GW.floatingHeader.scrollIndicator.dataset.scrollPosition = Math.round(100 * (window.pageYOffset / (document.documentElement.offsetHeight - window.innerHeight)));
-		GW.floatingHeader.scrollIndicator.style.backgroundSize = `${GW.floatingHeader.scrollIndicator.dataset.scrollPosition}% 100%`;
+        //  Update scroll indicator bar.
+        GW.floatingHeader.scrollIndicator.dataset.scrollPosition = Math.round(100 * (window.pageYOffset / (document.documentElement.offsetHeight - window.innerHeight)));
+        GW.floatingHeader.scrollIndicator.style.backgroundSize = `${GW.floatingHeader.scrollIndicator.dataset.scrollPosition}% 100%`;
 
-		//	Update breadcrumb display.
-		let trail = GW.floatingHeader.getTrail();
-		if (   trail.join("/") != GW.floatingHeader.currentTrail.join("/")
-			|| maxChainLength < GW.floatingHeader.maxChainLength) {
-			GW.floatingHeader.linkChain.classList.toggle("truncate-page-title", trail.length > maxChainLength);
-			let chainLinks = GW.floatingHeader.constructLinkChain(trail, maxChainLength);
-			GW.floatingHeader.linkChain.replaceChildren(...chainLinks);
-			chainLinks.forEach(link => { link.addActivateEvent(GW.floatingHeader.linkInChainClicked); });
+        //  Update breadcrumb display.
+        let trail = GW.floatingHeader.getTrail();
+        if (   trail.join("/") != GW.floatingHeader.currentTrail.join("/")
+            || maxChainLength < GW.floatingHeader.maxChainLength) {
+            GW.floatingHeader.linkChain.classList.toggle("truncate-page-title", trail.length > maxChainLength);
+            let chainLinks = GW.floatingHeader.constructLinkChain(trail, maxChainLength);
+            GW.floatingHeader.linkChain.replaceChildren(...chainLinks);
+            chainLinks.forEach(link => { link.addActivateEvent(GW.floatingHeader.linkInChainClicked); });
 
-			//	Constrain header height.
-			if (   GW.floatingHeader.header.offsetHeight > GW.floatingHeader.maxHeaderHeight
-				&& maxChainLength > 1)
-				GW.floatingHeader.updateState(event, maxChainLength - 1);
-			else
-				GW.floatingHeader.currentTrail = trail;
-		}
-	},
+            //  Constrain header height.
+            if (   GW.floatingHeader.header.offsetHeight > GW.floatingHeader.maxHeaderHeight
+                && maxChainLength > 1)
+                GW.floatingHeader.updateState(event, maxChainLength - 1);
+            else
+                GW.floatingHeader.currentTrail = trail;
+        }
+    },
 
-	currentTrail: [ ],
+    currentTrail: [ ],
 
-	getTrail: (offset = 0) => {
-		let element = document.elementFromPoint(window.innerWidth / 2, 
-												GW.floatingHeader.header.offsetHeight + offset);
-		if (element.compareDocumentPosition(GW.floatingHeader.firstSection) == Node.DOCUMENT_POSITION_FOLLOWING)
-			return [ "header" ];
+    getTrail: (offset = 0) => {
+        let element = document.elementFromPoint(window.innerWidth / 2,
+                                                GW.floatingHeader.header.offsetHeight + offset);
+        if (element.compareDocumentPosition(GW.floatingHeader.firstSection) == Node.DOCUMENT_POSITION_FOLLOWING)
+            return [ "header" ];
 
-		if (   GW.floatingHeader.markdownBody.contains(element) == false
-			&& GW.floatingHeader.pageMainElement.contains(element) == true)
-			return GW.floatingHeader.currentTrail;
+        if (   GW.floatingHeader.markdownBody.contains(element) == false
+            && GW.floatingHeader.pageMainElement.contains(element) == true)
+            return GW.floatingHeader.currentTrail;
 
-		if (element.tagName == "SECTION")
-			return (GW.floatingHeader.currentTrail.length == 0
-					? GW.floatingHeader.getTrail(offset - 10)
-					: GW.floatingHeader.currentTrail);
+        if (element.tagName == "SECTION")
+            return (GW.floatingHeader.currentTrail.length == 0
+                    ? GW.floatingHeader.getTrail(offset - 10)
+                    : GW.floatingHeader.currentTrail);
 
-		let trail = [ ];		
-		while (element = element.closest("section")) {
-			trail.push(`#${element.id}`);
-			element = element.parentElement;
-		}
+        let trail = [ ];
+        while (element = element.closest("section")) {
+            trail.push(`#${element.id}`);
+            element = element.parentElement;
+        }
 
-		if (trail.length == 0)
-			return GW.floatingHeader.currentTrail;
+        if (trail.length == 0)
+            return GW.floatingHeader.currentTrail;
 
-		trail.push("header");
-		trail.reverse();
+        trail.push("header");
+        trail.reverse();
 
-		return trail;
-	},
+        return trail;
+    },
 
-	maxChainLength: 3,
+    maxChainLength: 3,
 
-	maxHeaderHeight: 60,
+    maxHeaderHeight: 60,
 
-	chainLinkClasses: {
-		"…": "ellipsis",
-		"header": "page-title"
-	},
+    chainLinkClasses: {
+        "…": "ellipsis",
+        "header": "page-title"
+    },
 
-	constructLinkChain: (trail, maxChainLength) => {
-		let deleteCount = Math.max(0, trail.length - maxChainLength);
-		if (deleteCount > 0) {
-			trail = trail.slice();
-			trail.splice(0, deleteCount - 1, "…");
-		}
+    constructLinkChain: (trail, maxChainLength) => {
+        let deleteCount = Math.max(0, trail.length - maxChainLength);
+        if (deleteCount > 0) {
+            trail = trail.slice();
+            trail.splice(0, deleteCount - 1, "…");
+        }
 
-		let chain = trail.map(x => newElement("A", {
-			href: (x.startsWith("#") ? x : "#top"),
-			class: (GW.floatingHeader.chainLinkClasses[x] ?? "")
-		}, {
-			innerHTML: (x.startsWith("#") 
-						? (x == "#footnotes"
-						   ? "Footnotes"
-						   : document.querySelector(`#${(CSS.escape(x.slice(1)))}`).firstElementChild.textContent) 
-						: (x == "…" 
-						   ? "…"
-						   : GW.floatingHeader.pageHeader.textContent)).trim()
-		}));
+        let chain = trail.map(x => newElement("A", {
+            href: (x.startsWith("#") ? x : "#top"),
+            class: (GW.floatingHeader.chainLinkClasses[x] ?? "")
+        }, {
+            innerHTML: (x.startsWith("#")
+                        ? (x == "#footnotes"
+                           ? "Footnotes"
+                           : document.querySelector(`#${(CSS.escape(x.slice(1)))}`).firstElementChild.textContent)
+                        : (x == "…"
+                           ? "…"
+                           : GW.floatingHeader.pageHeader.textContent)).trim()
+        }));
 
-		if (chain[0].innerHTML == "…") {
-			chain[0].href = chain[1].href;
-			chain.splice(1, 1);
-		}
+        if (chain[0].innerHTML == "…") {
+            chain[0].href = chain[1].href;
+            chain.splice(1, 1);
+        }
 
-		return chain;
-	},
+        return chain;
+    },
 
-	linkInChainClicked: (event) => {
-		if (event.target.hash == location.hash)
-			GW.floatingHeader.adjustScrollTop();
-	}
+    linkInChainClicked: (event) => {
+        if (event.target.hash == location.hash)
+            GW.floatingHeader.adjustScrollTop();
+    }
 };
 
 /******************************/
-/*	Inject the floating header.
+/*  Inject the floating header.
  */
 if (GW.isMobile()) doWhenPageLoaded(() => {
     GWLog("injectFloatingHeader", "rewrite.js", 1);
 
-	GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden">`
-											+ `<div class="link-chain"></div>`
-											+ `<div class="scroll-indicator"></div>`
-											+ `</div>`);
+    GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden">`
+                                            + `<div class="link-chain"></div>`
+                                            + `<div class="scroll-indicator"></div>`
+                                            + `</div>`);
 
-	//	Pre-query elements, so as not to waste cycles on each scroll event.
-	GW.floatingHeader.linkChain = GW.floatingHeader.header.querySelector(".link-chain");
-	GW.floatingHeader.scrollIndicator = GW.floatingHeader.header.querySelector(".scroll-indicator");
-	GW.floatingHeader.pageHeader = document.querySelector("header");
-	GW.floatingHeader.pageMainElement = document.querySelector("main");
-	GW.floatingHeader.markdownBody = document.querySelector("#markdownBody");
-	GW.floatingHeader.firstSection = document.querySelector("section");
+    //  Pre-query elements, so as not to waste cycles on each scroll event.
+    GW.floatingHeader.linkChain = GW.floatingHeader.header.querySelector(".link-chain");
+    GW.floatingHeader.scrollIndicator = GW.floatingHeader.header.querySelector(".scroll-indicator");
+    GW.floatingHeader.pageHeader = document.querySelector("header");
+    GW.floatingHeader.pageMainElement = document.querySelector("main");
+    GW.floatingHeader.markdownBody = document.querySelector("#markdownBody");
+    GW.floatingHeader.firstSection = document.querySelector("section");
 
-	//	Calculate minimum Y offset.
-	let thresholdElement = getComputedStyle(GW.floatingHeader.pageHeader).display != "none"
-						   ? GW.floatingHeader.pageHeader
-						   : document.querySelector("#sidebar");
-	GW.floatingHeader.minimumYOffset = thresholdElement.offsetTop + thresholdElement.offsetHeight;
+    //  Calculate minimum Y offset.
+    let thresholdElement = getComputedStyle(GW.floatingHeader.pageHeader).display != "none"
+                           ? GW.floatingHeader.pageHeader
+                           : document.querySelector("#sidebar");
+    GW.floatingHeader.minimumYOffset = thresholdElement.offsetTop + thresholdElement.offsetHeight;
 
     //  Show/hide the back-to-top link on scroll up/down.
-    addScrollListener(GW.floatingHeader.updateState, "updateFloatingHeaderScrollListener", 
-    	{ defer: true, ifDeferCallWhenAdd: true });
+    addScrollListener(GW.floatingHeader.updateState, "updateFloatingHeaderScrollListener",
+        { defer: true, ifDeferCallWhenAdd: true });
 
-	//	Adjust initial scroll offset.
-	doWhenPageLayoutComplete(GW.floatingHeader.adjustScrollTop);
+    //  Adjust initial scroll offset.
+    doWhenPageLayoutComplete(GW.floatingHeader.adjustScrollTop);
 });
 
 
@@ -2181,14 +2182,14 @@ if (GW.isMobile()) doWhenPageLoaded(() => {
 /**********/
 
 /*******************************************/
-/*	Move the footer logo link to the bottom.
+/*  Move the footer logo link to the bottom.
  */
 addContentLoadHandler(GW.contentLoadHandlers.rewriteFooterLogo = (eventInfo) => {
     GWLog("rewriteFooterLogo", "rewrite.js", 1);
 
-	document.querySelector("article").appendChild(
-		newElement("DIV", { "id": "footer-logo-container" })).appendChild(
-		document.querySelector("#footer-logo"));
+    document.querySelector("article").appendChild(
+        newElement("DIV", { "id": "footer-logo-container" })).appendChild(
+        document.querySelector("#footer-logo"));
 }, "rewrite", (info) => info.container == document.body);
 
 
@@ -2222,13 +2223,13 @@ doWhenPageLoaded(() => {
 /******************************/
 
 doWhenBodyExists(() => {
-	GW.activityIndicator = addUIElement(`<div id="general-activity-indicator" class="on">`
-		+ `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 32c0 17.673-14.327 32-32 32s-32-14.327-32-32 14.327-32 32-32 32 14.327 32 32zm-32 416c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm256-192c0-17.673-14.327-32-32-32s-32 14.327-32 32 14.327 32 32 32 32-14.327 32-32zm-448 0c0-17.673-14.327-32-32-32S0 238.327 0 256s14.327 32 32 32 32-14.327 32-32zm33.608 126.392c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm316.784 0c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zM97.608 65.608c-17.673 0-32 14.327-32 32 0 17.673 14.327 32 32 32s32-14.327 32-32c0-17.673-14.327-32-32-32z"/></svg>`
-		+ `</div>`);
+    GW.activityIndicator = addUIElement(`<div id="general-activity-indicator" class="on">`
+        + `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 32c0 17.673-14.327 32-32 32s-32-14.327-32-32 14.327-32 32-32 32 14.327 32 32zm-32 416c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm256-192c0-17.673-14.327-32-32-32s-32 14.327-32 32 14.327 32 32 32 32-14.327 32-32zm-448 0c0-17.673-14.327-32-32-32S0 238.327 0 256s14.327 32 32 32 32-14.327 32-32zm33.608 126.392c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm316.784 0c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zM97.608 65.608c-17.673 0-32 14.327-32 32 0 17.673 14.327 32 32 32s32-14.327 32-32c0-17.673-14.327-32-32-32z"/></svg>`
+        + `</div>`);
 });
 
 doWhenPageLayoutComplete(() => {
-	endActivity();
+    endActivity();
 });
 
 
@@ -2236,14 +2237,14 @@ doWhenPageLayoutComplete(() => {
 /* BROKEN HTML STRUCTURE CHECKING */
 /**********************************/
 
-/*	Check for #footnotes outside of #markdownBody, which indicates a prematurely
-	closed div#markdownBody (probably due to some error in the page source).
+/*  Check for #footnotes outside of #markdownBody, which indicates a prematurely
+    closed div#markdownBody (probably due to some error in the page source).
  */
 doWhenPageLoaded(() => {
-	let footnotesSection = document.querySelector("#footnotes");
-	if (   footnotesSection
-		&& footnotesSection.closest("#markdownBody") == null)
-		GWServerLogError(location.href + "--broken-html-structure");
+    let footnotesSection = document.querySelector("#footnotes");
+    if (   footnotesSection
+        && footnotesSection.closest("#markdownBody") == null)
+        GWServerLogError(location.href + "--broken-html-structure");
 });
 
 
@@ -2301,9 +2302,9 @@ function cleanLocationHash() {
 }
 
 function realignHash() {
-	requestIdleCallback(() => {
-		location.hash = GW.locationHash;
-	});
+    requestIdleCallback(() => {
+        location.hash = GW.locationHash;
+    });
 }
 
 GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayoutCompleteHashHandlingSetup = (info) => {
@@ -2324,9 +2325,9 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
     //  Save hash, for change tracking.
     GW.locationHash = location.hash;
 
-	//	Correct for Firefox hash / scroll position bug.
-	if (GW.isFirefox())
-		realignHash();
+    //  Correct for Firefox hash / scroll position bug.
+    if (GW.isFirefox())
+        realignHash();
 
     /*  Remove “#top” or “#” from the URL hash (e.g. after user clicks on the
         back-to-top link).
@@ -2337,9 +2338,9 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
         //  Clean location hash.
         cleanLocationHash();
 
-		//	Compensate for floating header.
-		if (GW.floatingHeader)
-			GW.floatingHeader.adjustScrollTop();
+        //  Compensate for floating header.
+        if (GW.floatingHeader)
+            GW.floatingHeader.adjustScrollTop();
 
         //  If hash really changed, update saved hash and fire event.
         if (GW.locationHash != location.hash) {
