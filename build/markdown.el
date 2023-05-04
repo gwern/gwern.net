@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-04-30 17:14:39 gwern"
+;;; When:  Time-stamp: "2023-05-03 16:10:46 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -497,7 +497,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("QM(" . "_Q_~M~(")
                         ("= ." . "= 0.")
                         ("< ." . "< 0.")
-                        ("> ." . "> 0.")
+                        (" > ." . "> 0.")
                         ("ρ =" . "_ρ_ =")
                         ("SE=" . "SE = ")
                         ("</em>=" . "</em> = ")
@@ -882,7 +882,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                       )
              )
          (dolist (pair queries)
-           (query-replace-regexp (car pair) (cdr pair) nil begin end))
+           (query-replace (car pair) (cdr pair) nil begin end))
          )
 
        (let ((regexps '(

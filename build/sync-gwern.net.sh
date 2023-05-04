@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-05-03 16:30:46 gwern"
+# When:  Time-stamp: "2023-05-03 16:55:53 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -475,7 +475,7 @@ else
     λ(){ ge -e '<div class="admonition .*">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' -e 'class="epigraph>' $PAGES; }
     wrap λ "Broken admonition paragraph or epigraph in Markdown."
 
-    λ(){ ge -e '^   - ' $PAGES; }
+    λ(){ ge -e '^   - '  -e '~~~[[:alnum:]]' $PAGES; }
     wrap λ "Markdown formatting problem: use of 3-space indented sub-list items instead of 4-space?"
 
     λ(){ ge -e ' a [aei]' $PAGES | grep -F --invert-match -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/'; }
