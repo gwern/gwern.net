@@ -396,9 +396,9 @@ Popins = {
 		} else {
 			target.parentElement.insertBefore(target.popin, target.nextSibling);
 		}
-		let container = target.popin;
-		while (container = container.parentElement)
-			container.classList.add("popin-ancestor");
+		let ancestor = target.popin.parentElement;
+		do { ancestor.classList.add("popin-ancestor"); }
+		while (ancestor = ancestor.parentElement);
 
 		//  Mark target as having an open popin associated with it.
 		target.classList.add("popin-open", "highlighted");
@@ -431,7 +431,7 @@ Popins = {
 		let popinViewportRect = Popins.getPopinViewportRect(popin);
 
 		if (popinViewportRect.bottom > window.innerHeight) {
-			window.scrollBy(0, (window.innerHeight * 0.1) + popinViewportRect.bottom - window.innerHeight);
+			window.scrollBy(0, (window.innerHeight * 0.05) + popinViewportRect.bottom - window.innerHeight);
 		} else if (popinViewportRect.top < 0) {
 			window.scrollBy(0, (window.innerHeight * -0.1) + popinViewportRect.top);
 		}
@@ -460,6 +460,9 @@ Popins = {
 						 ? popin.nextElementSibling
 						 : null;
 
+		//	Save place.
+		let ancestor = popin.parentElement;
+
 		//  Remove popin from page.
 		popin.remove();
 
@@ -467,9 +470,8 @@ Popins = {
 		if (popinBelow) {
 			popinBelow.scrollView.scrollTop = popinBelow.lastScrollTop;
 		} else {
-			let container = popin;
-			while (container = container.parentElement)
-				container.classList.remove("popin-ancestor");
+			do { ancestor.classList.remove("popin-ancestor"); }
+			while (ancestor = ancestor.parentElement);
 		}
 
 		//  Detach popin from its spawning target.
