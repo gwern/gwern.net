@@ -962,7 +962,7 @@ section:target > :first-child a::after {
     content: var(--GW-image-single-black-star-svg);
     display: block;
     width: 1em;
-    margin: 2.25em auto -0.25em auto;
+    margin: 2.25em auto 0 auto;
     opacity: 0.3;
 }
 
@@ -1477,10 +1477,13 @@ blockquote table table {
 /*  Reverse back to normal when italics are used inside an epigraph, or final block.
     */
 .epigraph blockquote p:first-child em,
-.epigraph blockquote p:last-child {
+.epigraph blockquote p:last-child:not(:only-child) {
     font-style: normal;
 }
-.epigraph blockquote p:last-child {
+.epigraph blockquote p:first-child em {
+    margin: 0 0 0 0.125em;
+}
+.epigraph blockquote p:last-child:not(:only-child) {
     margin: 0.5em 0 0 0;
     text-align: right;
     font-size: 0.875em;
@@ -6088,6 +6091,12 @@ ol.link-bibliography-list-compact > li::before {
 /* X OF THE DAY */
 /****************/
 
+/*  Quote of the day.
+ */
+#footer .epigraph {
+
+}
+
 /*  Annotation of the day.
  */
 #aotd {
@@ -6112,7 +6121,7 @@ ol.link-bibliography-list-compact > li::before {
 .site-of-the-day blockquote {
     --background-color: var(--GW-body-background-color);
 
-    margin: 3em auto 2.75em auto;
+    margin: 3.5em auto 2.75em auto;
     position: relative;
     height: var(--box-size);
     width: fit-content;
