@@ -5446,14 +5446,14 @@ body.index-directory #footer {
     position: absolute;
     right: calc(100% + var(--GW-popins-popin-border-width));
     bottom: var(--GW-popins-popin-border-width);
-    height: calc(var(--GW-popins-popin-title-bar-height) - var(--GW-popins-popin-border-width) - 3px);
-    padding: 0 0.5em;
+    height: calc(var(--GW-popins-popin-title-bar-height) - var(--GW-popins-popin-border-width) - 1px);
+    padding: 0 0.5rem;
     background-color: var(--GW-popins-popin-border-color);
     border-style: solid;
     border-color: var(--GW-popins-popin-border-color);
     border-width: 1px 0 0 1px;
     font-family: var(--GW-sans-serif-font-stack);
-    font-size: 0.8rem;
+    font-size: calc(1rem * 8/9);
     font-weight: normal;
     display: flex;
     justify-content: center;
@@ -5664,7 +5664,11 @@ body.index-directory #footer {
 /*│ Links with an open popin. │*/
 /*└───────────────────────────┘*/
 
-.popin-open:not(.footnote-ref) {
+a.spawns-popin:not(.footnote-ref) {
+    transition:
+        box-shadow 0.15s ease 0.05s;
+}
+a.spawns-popin.popin-open:not(.footnote-ref) {
     position: relative;
     z-index: 2;
     box-shadow:
