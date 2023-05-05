@@ -6231,6 +6231,11 @@ ol.link-bibliography-list-compact > li::before {
     .site-of-the-day blockquote {
         font-size: calc((17/18) * var(--GW-body-text-font-size));
         margin: 3.5em auto 2.75em auto;
+        padding: 
+            var(--box-padding-top) 
+            calc(var(--box-size) - var(--box-padding-top))
+            var(--box-padding-bottom) 
+            calc(var(--box-size) + var(--box-padding-top) + var(--box-horizontal-offset));
     }
 }
 
