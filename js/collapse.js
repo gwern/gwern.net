@@ -159,10 +159,14 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 					//	Mark those collapse blocks that have abstracts.
 					collapseAbstract.closest(".collapse").classList.add("has-abstract");
 
-					//	Make sure “real” abstracts are marked as such.
-					if (collapseAbstract.firstElementChild.tagName == "BLOCKQUOTE")
+					if (   collapseAbstract.children.length == 0
+						&& collapseAbstract.childNodes.length > 0) {
+						collapseAbstract.innerHTML = `<p>${(collapseAbstract.innerHTML.trim())}</p>`;
+					} else if (   collapseAbstract.firstElementChild
+							   && collapseAbstract.firstElementChild.tagName == "BLOCKQUOTE") {
+						//	Make sure “real” abstracts are marked as such.
 						collapseAbstract.classList.add("abstract");
-						
+					}
 				});
 
 				//	Designate “bare content” collapses.

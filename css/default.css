@@ -962,8 +962,13 @@ section:target > :first-child a::after {
     content: var(--GW-image-single-black-star-svg);
     display: block;
     width: 1em;
-    margin: 2.25em auto 0 auto;
+    margin: 3em auto 0 auto;
     opacity: 0.3;
+}
+@media all and (max-width: 649px) {
+    #footer > p:first-child::after {
+        margin: 2.5em auto 0 auto;
+    }
 }
 
 /*********************/
