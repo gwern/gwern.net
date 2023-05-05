@@ -191,8 +191,9 @@ ReaderMode = { ...ReaderMode,
 			ReaderMode.updateModeSelectorState(modeSelector);
 		});
 
-		if (modeSelector == ReaderMode.modeSelector) {
-			//	Show/hide the button on scroll up/down.
+		if (   modeSelector == ReaderMode.modeSelector
+			&& GW.isMobile() == false) {
+			//	On desktop, show/hide the button on scroll up/down.
 			addScrollListener(ReaderMode.updateModeSelectorVisibility,
 				"ReaderMode.updateModeSelectorVisibilityScrollListener", { defer: true });
 		}
@@ -254,16 +255,10 @@ ReaderMode = { ...ReaderMode,
 
 		/*	On desktop, show mode selector when scrolling to top of page, or a
 			full page up.
-			On mobile, show mode selector on ANY scroll up.
 		 */
-		if (GW.isMobile()) {
-			if (   GW.scrollState.unbrokenUpScrollDistance > 0
-				|| GW.scrollState.lastScrollTop <= 0)
-				ReaderMode.showModeSelector();
-		} else if (   GW.scrollState.unbrokenUpScrollDistance > onePageScrollDistance
-				   || GW.scrollState.lastScrollTop <= 0) {
+		if (   GW.scrollState.unbrokenUpScrollDistance > onePageScrollDistance
+			|| GW.scrollState.lastScrollTop <= 0)
 			ReaderMode.showModeSelector();
-		}
 	},
 
 	//	Called by: ReaderMode.updateModeSelectorVisibility
