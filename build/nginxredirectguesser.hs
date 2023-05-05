@@ -17,7 +17,7 @@ import Utils (replace, replaceMany)
 listFilesRecursivelyWithBasename :: FilePath -> IO [(FilePath, FilePath)]
 listFilesRecursivelyWithBasename dir = do
   contents <- getDirectoryContents dir
-  let files = filter (`notElem` [".", "..", ".git"]) contents
+  let files = filter (`notElem` [".", "..", ".git", "_cache", "_site"]) contents
   paths <- forM files $ \file -> do
     let path = dir </> file
     isDirectory <- doesDirectoryExist path

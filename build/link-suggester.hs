@@ -409,7 +409,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
   , ( "http://garote.bdmonkeys.net/commandline/"
     , [ "In the Beginning was the Command Line" ]
     )
-  , ( "https://www.hpmor.com/"
+  , ( "https://hpmor.com/"
     , [ "Harry Potter and the Methods of Rationality" ]
     )
   , ( "http://leipper.org/manuals/zip-fill/safelocks_for_compscientist.pdf"
@@ -500,13 +500,13 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
       , "Agent57: Outperforming the Atari Human Benchmark', Badia et al 2020"
       ]
     )
-  , ( "https://www.deepmind.com/blog/article/learning-through-human-feedback"
+  , ( "https://www.deepmind.com/blog/learning-through-human-feedback"
     , ["Learning through human feedback" ]
     )
   , ( "https://www.deepmind.com/blog/learning-through-human-feedback"
     , [ "Learning through human feedback" ]
     )
-  , ( "https://www.deepmind.com/blog/prefrontal-cortex-meta-reinforcement-learning-system/"
+  , ( "https://www.deepmind.com/blog/prefrontal-cortex-meta-reinforcement-learning-system"
     , [
       "Prefrontal cortex as a meta-reinforcement learning system"
       ]

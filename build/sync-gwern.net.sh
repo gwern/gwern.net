@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-05-03 16:55:53 gwern"
+# When:  Time-stamp: "2023-05-04 14:27:19 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -63,7 +63,7 @@ else
         bold "Executing string rewrite cleanups…" # automatically clean up some Gwern.net bad URL patterns, typos, inconsistencies, house-styles:
         ( s() { gwsed "$@"; }
           ## domain rewrites:
-          s 'https://mobile.twitter.com' 'https://twitter.com'; s 'https://www.twitter.com' 'https://twitter.com'; s 'https://www.reddit.com/r/' 'https://old.reddit.com/r/'; s 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'http://en.wikipedia.org' 'https://en.wikipedia.org'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com'; s 'www.super-memory.com' 'super-memory.com'; s 'https://www.bldgblog.com' 'https://bldgblog.com'; s 'https://www.clinicaltrials.gov' 'https://clinicaltrials.gov'; s 'https://nitter.net/' 'https://twitter.com/';
+          s 'https://mobile.twitter.com' 'https://twitter.com'; s 'https://www.twitter.com' 'https://twitter.com'; s 'https://en.reddit.com/' 'https://www.reddit.com/'; s 'https://www.reddit.com/r/' 'https://old.reddit.com/r/'; s 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'http://en.wikipedia.org' 'https://en.wikipedia.org'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com'; s 'www.super-memory.com' 'super-memory.com'; s 'https://www.bldgblog.com' 'https://bldgblog.com'; s 'https://www.clinicaltrials.gov' 'https://clinicaltrials.gov'; s 'https://nitter.net/' 'https://twitter.com/';
 
           ## link cruft rewrites:
           s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?s=61' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ref=thebrowser.com' ''; s '?ignored=irrelevant' ''; s '](/docs/' '](/doc/'; s 'href="/docs/' 'href="/doc/'; s '.pdf#pdf' '.pdf'; s '#fromrss' ''; s '&amp;hl=en' '';
@@ -434,7 +434,7 @@ else
                    -e '^mjx-vsize$' -e '^new$' -e '^outline-not$' -e '^warning$' -e '^markdown-body$' -e '^similars$' -e '^similars-append$' \
                    -e '^text-center$' -e '^abstract-tag-directory$' -e '^page-description-annotation$' -e '^link-bibliography$' \
                    -e '^link-bibliography-append$' -e '^expand-on-hover$' -e '^include-block-context$' -e 'tag-index-link-bibliography-block' \
-                   -e '^aux-links-container$' -e '^decorate-not$'; }
+                   -e '^aux-links-container$' -e '^decorate-not$' -e '^include-omit-metadata$'; }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
     λ(){ echo "$PAGES_ALL" | grep -F -v 'Hafu' | xargs --max-args=500 grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
@@ -563,7 +563,7 @@ else
             -e '</a.>' -e ' . ' -e ' , ' -e ' ; ' -e 'class=”collapse”' -e "‘’" -e " ’" -e '<bold>' -e '</bold>' -e '<jats:bold>' \
             -e  '</jats:bold>' -e 'Ã©' -e '</a>s' -e '/&gt;'  -e '&lt;figcaption'  -e 'aria-hidden=">' -e '&gt;</a>' -e '<A Href' \
             -e '</strong>:,' -e ' et al.' -e '<em>et al</em>' -e '<span class="latex">LaTeX</span>' -e '<div>' -e '>LaTeX</a>' -e '>TeX</a>' -e '<em><em>' \
-            -e '</em></em>' -e '<strong><strong>' -e '</strong></strong>' -e 'doi:' -- ./metadata/*.yaml | \
+            -e '</em></em>' -e '<strong><strong>' -e '</strong></strong>' -e 'doi:' -e '\\\' -- ./metadata/*.yaml | \
              grep -F -v 'popular_shelves';
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
@@ -688,7 +688,7 @@ else
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. doc/*), just force a hash-based sync every time:
     bold "Syncing static/…"
-    rsync --perms --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude "*.elc" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='generateSimilar' --exclude='hakyll' --exclude='guessTag' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
+    rsync --perms --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude "*.elc" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='generateSimilar' --exclude='hakyll' --exclude='guessTag' --exclude='link-extractor' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie. non-generated files):
     bold "Syncing pages…"
     rsync --perms --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"

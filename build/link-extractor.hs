@@ -10,12 +10,15 @@
 --
 -- Hyperlinks are not necessarily to the WWW but can be internal or interwiki hyperlinks (eg.
 -- '/local/file.pdf' or '!W').
+-- This reads multiple files and processes them one by one, so is not parallelized, but you can parallelize it at the process level with eg. `parallel --max-args=500 --jobs 30` to use 30 cores, more or less.
 
 module Main where
 
+import Control.Monad (unless)
 import Data.List (isSuffixOf)
 import qualified Data.Text as T (append,  head, pack, unlines)
 import qualified Data.Text.IO as TIO (getContents, readFile, putStr, putStrLn)
+import System.Directory (doesFileExist)
 import System.Environment (getArgs)
 import System.FilePath (takeBaseName)
 
@@ -34,12 +37,14 @@ main = do
 -- | Read 1 file and print out its URLs
 printURLs :: Bool -> FilePath -> IO ()
 printURLs printfilename file = do
+  exists <- doesFileExist file
+  unless exists $ error ("A specified file argument is invalid/does not exist? Arguments: " ++ show printfilename ++ " : " ++ file)
   input <- TIO.readFile file
   let converted = extractLinks (".page"`isSuffixOf`file) input
-  -- rewrite self-links like "#discriminator-ranking" → "/face#discriminator-ranking" by prefixing the original Markdown filename's absolute-ized basename;
+  -- rewrite self-links like "#discriminator-ranking" → "/face#discriminator-ranking" by prefixing the original Markdown filename's absolute-ized base-name;
   -- this makes frequency counts more informative, eg. for deciding what sections to refactor out into standalone pages (because heavy cross-referencing
   -- *inside* a page is an important indicator of a section being 'too big', just like cross-page references are).
-  let converted' = map (\u -> if T.head u /= '#' then u else "/" `T.append` (T.pack $ takeBaseName file) `T.append` u) converted
+  let converted' = map (\u -> if T.head u /= '#' then u else "/" `T.append` T.pack (takeBaseName file) `T.append` u) converted
 
-  if printfilename then TIO.putStr $ T.unlines $ Prelude.map (\url -> (T.pack file) `T.append` ":" `T.append` url) converted' else
+  if printfilename then TIO.putStr $ T.unlines $ Prelude.map (\url -> T.pack file `T.append` ":" `T.append` url) converted' else
      TIO.putStr $ T.unlines converted'

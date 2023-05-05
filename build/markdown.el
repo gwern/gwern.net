@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-05-03 16:10:46 gwern"
+;;; When:  Time-stamp: "2023-05-04 17:58:06 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -585,6 +585,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("$N_e$" . "_N_~_e_~")
                         ("$\frac{n}{2}$" . "_n_⁄2")
                         ("$\frac{N}{2}$" . "_n_⁄2")
+                        ("<em>b</em> = " . "β = ")
                         (" a2" . " _a_^2^")
                         (" c2" . " _c_^2^")
                         (" e2" . " _e_^2^")
@@ -613,6 +614,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("≤p≤" . " ≤ _p_ ≤ ")
                         ("BF10" . "<a href=\"https://en.wikipedia.org/wiki/Bayes_factor\">BF</a><sub>10</sub>")
                         ("BF10" . "BF<sub>10</sub>")
+                        ("BF01" . "BF<sub>10</sub>")
                         (":   " . ": ")
                         ("(i)" . "(1)")
                         ("(ii)" . "(2)")
@@ -1364,6 +1366,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace ":.0" ": 0.0" nil begin end)
        (query-replace "−." "−0." nil begin end)
        (query-replace " -." " −0." nil begin end)
+       (query-replace "[-." "[−0." nil begin end)
        (query-replace "\\([[:digit:]]\\) %" "\\1%" nil begin end)
        (query-replace-regexp "\\([a-zA-Z,]\\) \\.\\([[:digit:]]\\)" "\\1 0.\\2" nil begin end)
        (query-replace-regexp "^\\.\\([[:digit:]]\\)" "0.\\1" nil begin end)

@@ -46,7 +46,7 @@ $ find ~/wiki/ -name "*.page" -type f -print0 | parallel --null ~/wiki/haskell/l
 1 https://17th-angel.tumblr.com/post/11409371268/anno-a-transfer-student-opens-the-door-with-a
 1 http://1000enpark.com/park/tokyo/oota/photo_heiwajima/p_main.jpg
 1 http://10000yearclock.net/
-1 http://0xeb.net/wp-content/uploads/2018/02/StarCraft_EUD_Emulator.pdf
+1 https://0xeb.net/wp-content/uploads/2018/02/StarCraft_EUD_Emulator.pdf
 1 http://0b4af6cdc2f0c5998459-c0245c5c937c5dedcca3f1764ecc9b2f.r43.cf2.rackcdn.com/12061-woot13-bangert.pdf
 -}
 

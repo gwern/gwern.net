@@ -986,7 +986,7 @@ whiteList url
       , "https://danlark.org/2022/04/20/changing-stdsort-at-googles-scale-and-beyond/" -- low quality: video embeds
       , "http://relative-attention-music-nips-2018.s3-website-us-west-1.amazonaws.com/" -- low quality: sound embeds
       , "https://sites.google.com/view/nips2017-one-shot-imitation/home" -- low quality (video embeds)
-      , "https://www.flickchart.com/" -- interactive service/homepage
+      , "https://www.flickchart.com/Splash.aspx?return=%2f" -- interactive service/homepage
       , "https://sites.google.com/view/hybridmrca" -- low quality (video embeds)
       , "https://roboturk.stanford.edu/realrobotdataset" -- low quality (video embeds)
       , "https://wenlong.page/modular-rl/" -- low quality (video embeds)
@@ -1068,7 +1068,7 @@ whiteList url
       , "https://www.chronophoto.app/game.html" -- interactive (game)
       , "https://people.csail.mit.edu/tzumao/diffvg/" -- low quality (video embeds)
       , "https://discuss.huggingface.co/" -- low quality (layout is very screwed up)
-      , "https://metaphysic.ai/the-road-to-realistic-full-body-deepfakes/" -- low quality (video embeds)
+      , "https://blog.metaphysic.ai/the-road-to-realistic-full-body-deepfakes/" -- low quality (video embeds)
       , "https://neeva.com/" -- homepage
       , "https://vectara.com/" -- homepage
       , "https://replicate.com/methexis-inc/img2prompt" -- interactive
@@ -1108,5 +1108,6 @@ whiteList url
       , "https://dreamix-video-editing.github.io/" -- low quality (video embeds)
       , "https://bost.ocks.org/mike/algorithms/" -- low quality (video embeds) + interactive?
       , "https://pudding.cool/2018/08/wiki-death/" -- low quality (interactive? JS?)
+      , "https://mimic-play.github.io/" -- low quality (video embeds)
       ] = True
     | otherwise = False

@@ -1392,6 +1392,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("P-value", "<em>p</em>-value")
          , ("p-value", "<em>p</em>-value")
          , (" p-level ", " <em>p</em>-level ")
+         , ("<em>b</em> = ", "β = ")
          , ("ﬁ", "fi")
          , (" ", " ")
          , (" LaTeX", " <span class=\"logotype-latex\">L<span class=\"logotype-latex-a\">a</span>T<span class=\"logotype-latex-e\">e</span>X</span>")
