@@ -206,7 +206,7 @@ main {
 }
 #sidebar-links a {
     flex: 1 1 auto;
-    padding: 0.25em 0.75em;
+    padding: 0.25em 0.5em;
 }
 
 @media all and (max-width: 649px) {

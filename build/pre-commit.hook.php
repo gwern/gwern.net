@@ -6,6 +6,11 @@ $force = @$argv[1] == "--force";
 $build_dir = __DIR__;
 $static_dir = "{$build_dir}/..";
 
+## SSI includes.
+$ssi_includes = [
+	"{$static_dir}/include/inlined-head.html"
+];
+
 ## Components of generated/assembled inlined style sheets.
 $css_components = [
 	"{$static_dir}/css/include/colors.css",
@@ -95,8 +100,9 @@ if ($force || (`git diff-index --cached HEAD -- {$versioned_files}`)) {
 $preloaded_assets = [
 	"{$static_dir}/css/default.css",
 	"{$static_dir}/css/fonts-GENERATED.css",
-	"{$static_dir}/css/links.css",
+	"{$static_dir}/css/links.css"
 ];
+$preloaded_assets = array_merge($preloaded_assets, $ssi_includes);
 $preloaded_assets = implode(" ", $preloaded_assets);
 if ($force || (`git diff-index --cached HEAD -- {$preloaded_assets}`)) {
 	require_once("{$build_dir}/build_asset_preload_links.php");
