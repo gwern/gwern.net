@@ -1384,7 +1384,7 @@ Transclude = {
 		if (includeLink.dataset.includeSelector) {
 			let nodesToInclude = [ ];
 			content.querySelectorAll(includeLink.dataset.includeSelector).forEach(element => {
-				if (nodesToInclude.find(x => x.contains(element)) === -1)
+				if (nodesToInclude.findIndex(x => x.contains(element)) === -1)
 					nodesToInclude.push(element);
 			});
 			content.replaceChildren(...nodesToInclude);

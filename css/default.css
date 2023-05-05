@@ -962,8 +962,13 @@ section:target > :first-child a::after {
     content: var(--GW-image-single-black-star-svg);
     display: block;
     width: 1em;
-    margin: 2.25em auto 0 auto;
+    margin: 3em auto 0 auto;
     opacity: 0.3;
+}
+@media all and (max-width: 649px) {
+    #footer > p:first-child::after {
+        margin: 2.5em auto 0 auto;
+    }
 }
 
 /*********************/
@@ -4195,9 +4200,11 @@ body.lorem div[class^='drop-cap'] {
     padding-left: var(--collapse-left-offset);
     margin-right: -2px;
     padding-right: 0.5em;
+}
+.popframe-body > div.annotation > div.annotation-abstract > .collapse.aux-links-container {
     border-right: 1px solid var(--GW-TOC-border-color);
 }
-.popframe-body > div.annotation > div.annotation-abstract > .collapse:last-child {
+.popframe-body > div.annotation > div.annotation-abstract > .collapse.aux-links-container:last-child {
     margin-bottom: 0;
     border-bottom: 1px solid var(--GW-TOC-border-color);
 }
@@ -6171,7 +6178,12 @@ ol.link-bibliography-list-compact > li::before {
 /*  Quote of the day.
  */
 #footer .epigraph {
-
+    margin: 2.25em auto 3.25em auto;
+}
+@media only screen and (max-width: 649px) {
+    #footer .epigraph {
+        margin: 2.5em 1em 3.75em 1em;
+    }
 }
 
 /*  Annotation of the day.
@@ -6219,6 +6231,11 @@ ol.link-bibliography-list-compact > li::before {
     .site-of-the-day blockquote {
         font-size: calc((17/18) * var(--GW-body-text-font-size));
         margin: 3.5em auto 2.75em auto;
+        padding: 
+            var(--box-padding-top) 
+            calc(var(--box-size) - var(--box-padding-top))
+            var(--box-padding-bottom) 
+            calc(var(--box-size) + var(--box-padding-top) + var(--box-horizontal-offset));
     }
 }
 
@@ -6315,6 +6332,9 @@ ol.link-bibliography-list-compact > li::before {
     #navigation a {
         line-height: 1;
         display: flex;
+    }
+    #navigation a:hover {
+        color: var(--GW-nav-header-link-color);
     }
     #navigation a svg {
         margin: 0;
