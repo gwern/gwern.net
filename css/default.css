@@ -3357,10 +3357,14 @@ body.lorem div[class^='drop-cap'] {
 	}
 }
 
+/*	Show no toolbar if no items in it.
+ */
 #page-toolbar.mobile .buttons:empty ~ * {
 	display: none;
 }
 
+/*	Collapse button (chevron down).
+ */
 #page-toolbar.mobile > button.collapse-button {
     order: -1;
     padding: 0 12px;
@@ -3372,16 +3376,21 @@ body.lorem div[class^='drop-cap'] {
 #page-toolbar.mobile > button.collapse-button:active {
     color: var(--GW-page-toolbar-button-active-color);
 }
+
+/*	Main toggle button (gear).
+ */
 #page-toolbar.mobile > button.main-toggle-button {
     order: 1;
     transition: 
         opacity 0.25s ease-out,
-        transform 0.25s ease-out;
+        transform 0.25s linear;
 }
 #page-toolbar.mobile > button.main-toggle-button:active {
 	transform: scale(0.95);
 }
 
+/*	Toolbar layout.
+ */
 #page-toolbar.mobile {
     position: fixed;
     display: flex;
@@ -3390,6 +3399,7 @@ body.lorem div[class^='drop-cap'] {
     align-items: stretch;
     bottom: 0.5em;
     right: 0.5em;
+    opacity: 1;
 }
 #page-toolbar.mobile .buttons {
     margin: 0.5em 0 0.75em 0;
@@ -3408,6 +3418,18 @@ body.lorem div[class^='drop-cap'] {
     margin-top: 0.5em;
 }
 
+/*	Fade on scroll.
+ */
+#page-toolbar.mobile.collapsed {
+    transition: 
+        opacity 2s ease-out;
+}
+#page-toolbar.mobile.collapsed.faded {
+	opacity: 0;
+}
+
+/*	Toolbar collapsing.
+ */
 #page-toolbar.mobile.collapsed > .collapse-button {
     opacity: 0;
     transition: 
@@ -3415,15 +3437,27 @@ body.lorem div[class^='drop-cap'] {
 }
 #page-toolbar.mobile.collapsed > button.main-toggle-button {
     opacity: 0.65;
-    transform: rotateZ(-0.25turn);
+    transform: rotateZ(-0.5turn);
 }
 #page-toolbar.mobile.collapsed > button.main-toggle-button:active {
-    transform: rotateZ(-0.25turn) scale(0.95);
+    transform: rotateZ(-0.5turn) scale(0.95);
 }
-
 #page-toolbar.mobile.collapsed .buttons {
     transform: translateY(calc(100% + 5em));
     transform: rotateX(0.25turn);
+}
+
+/*	Slow collapsing.
+ */
+#page-toolbar.mobile.collapsed.collapsed-slowly > button.main-toggle-button {
+    order: 1;
+    transition: 
+        opacity 0.75s ease-out,
+        transform 0.75s linear;
+}
+#page-toolbar.mobile.collapsed.collapsed-slowly .buttons {
+    transition:
+    	transform 0.75s ease-out;
 }
 
 

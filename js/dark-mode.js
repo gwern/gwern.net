@@ -175,7 +175,8 @@ DarkMode = { ...DarkMode,
 			&& GW.isMobile() == false) {
 			//	On desktop, show/hide the main selector on scroll up/down.
 			addScrollListener(DarkMode.updateModeSelectorVisibility,
-				"DarkMode.updateModeSelectorVisibilityScrollListener", { defer: true });
+				"DarkMode.updateModeSelectorVisibilityScrollListener", 
+				{ defer: true, ifDeferCallWhenAdd: true });
 		}
 
 		/*	Add active media query to update mode selector state when system dark
