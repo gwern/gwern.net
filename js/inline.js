@@ -950,18 +950,22 @@ GW.scrollState = {
 };
 
 function updateScrollState(event) {
-    GWLog("updateScrollState", "gw.js", 3);
+    GWLog("updateScrollState", "inline.js", 3);
 
-    GW.newScrollTop = (window.pageYOffset || document.documentElement.scrollTop);
-    GW.scrollState.unbrokenDownScrollDistance = (GW.newScrollTop > GW.scrollState.lastScrollTop)
-        ? (GW.scrollState.unbrokenDownScrollDistance + GW.newScrollTop - GW.scrollState.lastScrollTop)
-        : 0;
-    GW.scrollState.unbrokenUpScrollDistance = (GW.newScrollTop < GW.scrollState.lastScrollTop)
-        ? (GW.scrollState.unbrokenUpScrollDistance + GW.scrollState.lastScrollTop - GW.newScrollTop)
-        : 0;
-    GW.scrollState.lastScrollTop = GW.newScrollTop;
+    GW.scrollState.newScrollTop = window.pageYOffset;
+    GW.scrollState.unbrokenDownScrollDistance = GW.scrollState.newScrollTop > GW.scrollState.lastScrollTop
+        										? (  GW.scrollState.unbrokenDownScrollDistance 
+        										   + GW.scrollState.newScrollTop 
+        										   - GW.scrollState.lastScrollTop)
+        										: 0;
+    GW.scrollState.unbrokenUpScrollDistance = GW.scrollState.newScrollTop < GW.scrollState.lastScrollTop
+        									  ? (  GW.scrollState.unbrokenUpScrollDistance 
+        									     + GW.scrollState.lastScrollTop 
+        									     - GW.scrollState.newScrollTop)
+        									  : 0;
+    GW.scrollState.lastScrollTop = GW.scrollState.newScrollTop;
 }
-addScrollListener(updateScrollState, "updateScrollStateScrollListener", { defer: true });
+addScrollListener(updateScrollState, "updateScrollStateScrollListener", { defer: true, ifDeferCallWhenAdd: true });
 
 /*  Toggles whether the page is scrollable.
  */

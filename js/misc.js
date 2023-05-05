@@ -602,6 +602,13 @@ function scrollContainerOf(element) {
 	return null;
 }
 
+/*********************************************************/
+/*	Returns page scroll position, as integer (percentage).
+ */
+function getPageScrollPosition() {
+	return Math.round(100 * (window.pageYOffset / (document.documentElement.offsetHeight - window.innerHeight)));
+}
+
 
 /***********/
 /* PAGE UI */

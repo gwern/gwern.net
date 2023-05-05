@@ -195,7 +195,8 @@ ReaderMode = { ...ReaderMode,
 			&& GW.isMobile() == false) {
 			//	On desktop, show/hide the button on scroll up/down.
 			addScrollListener(ReaderMode.updateModeSelectorVisibility,
-				"ReaderMode.updateModeSelectorVisibilityScrollListener", { defer: true });
+				"ReaderMode.updateModeSelectorVisibilityScrollListener", 
+				{ defer: true, ifDeferCallWhenAdd: true });
 		}
 	},
 
