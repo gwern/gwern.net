@@ -3348,6 +3348,15 @@ body.lorem div[class^='drop-cap'] {
     display: block;
 }
 
+/*	NOTE: Temporary.
+	—SA 2023-05-05
+ */
+@media only screen and (max-width: 649px) {
+	#page-toolbar:not(.mobile) {
+		display: none;
+	}
+}
+
 #page-toolbar.mobile .buttons:empty ~ * {
 	display: none;
 }
