@@ -6171,7 +6171,12 @@ ol.link-bibliography-list-compact > li::before {
 /*  Quote of the day.
  */
 #footer .epigraph {
-
+    margin: 2.25em auto 3.25em auto;
+}
+@media only screen and (max-width: 649px) {
+    #footer .epigraph {
+        margin: 2.5em 1em 3.75em 1em;
+    }
 }
 
 /*  Annotation of the day.
