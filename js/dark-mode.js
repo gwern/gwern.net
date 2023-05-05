@@ -171,8 +171,9 @@ DarkMode = { ...DarkMode,
 			DarkMode.updateModeSelectorState(modeSelector);
 		});
 
-		if (modeSelector == DarkMode.modeSelector) {
-			//	Show/hide the main selector on scroll up/down.
+		if (   modeSelector == DarkMode.modeSelector
+			&& GW.isMobile() == false) {
+			//	On desktop, show/hide the main selector on scroll up/down.
 			addScrollListener(DarkMode.updateModeSelectorVisibility,
 				"DarkMode.updateModeSelectorVisibilityScrollListener", { defer: true });
 		}
@@ -242,14 +243,9 @@ DarkMode = { ...DarkMode,
 
 		/*	On desktop, show mode selector when scrolling to top of page, or a full
 			page up.
-			On mobile, show mode selector on ANY scroll up.
 		 */
-		if (GW.isMobile()) {
-			if (   GW.scrollState.unbrokenUpScrollDistance > 0 
-				|| GW.scrollState.lastScrollTop <= 0)
-				DarkMode.showModeSelector();
-		} else if (   GW.scrollState.unbrokenUpScrollDistance > onePageScrollDistance
-				   || GW.scrollState.lastScrollTop <= 0) {
+		if (   GW.scrollState.unbrokenUpScrollDistance > onePageScrollDistance
+			|| GW.scrollState.lastScrollTop <= 0) {
 			DarkMode.showModeSelector();
 		}
 	},

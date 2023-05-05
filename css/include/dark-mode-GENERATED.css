@@ -258,6 +258,12 @@
      */
     --GW-image-focus-image-hover-drop-shadow-color: #a6a6a6;
 
+	/*	Page toolbar.
+	 */
+	--GW-page-toolbar-button-color: #7c7c7c;
+	--GW-page-toolbar-button-active-color: #fff;
+	--GW-page-toolbar-border-color: #7c7c7c;
+
     /*  Mode selector (light/dark mode).
      */
     --GW-mode-selector-background-color: var(--GW-body-background-color);
