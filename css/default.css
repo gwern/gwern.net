@@ -3383,7 +3383,7 @@ body.lorem div[class^='drop-cap'] {
     order: 1;
     transition: 
         opacity 0.25s ease-out,
-        transform 0.25s linear;
+        transform 0.25s ease-out;
 }
 #page-toolbar.mobile > button.main-toggle-button:active {
 	transform: scale(0.95);

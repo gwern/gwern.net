@@ -1977,9 +1977,14 @@ function updateBackToTopLinkVisibility(event) {
     //  One PgDn’s worth of scroll distance, approximately.
     let onePageScrollDistance = (0.8 * window.innerHeight);
 
+	let pageScrollPosition = getPageScrollPosition();
+
     //  Hide back-to-top link when scrolling to top.
-    if (GW.scrollState.lastScrollTop <= 0)
+    if (pageScrollPosition == 0)
         GW.backToTop.classList.toggle("hidden", true);
+    //	Show back-to-top link when scrolling to bottom.
+    else if (pageScrollPosition == 100)
+    	GW.backToTop.classList.toggle("hidden", false);
     //  Show back-to-top link when scrolling a full page down from the top.
     else if (GW.scrollState.unbrokenDownScrollDistance > onePageScrollDistance * 2.0)
         GW.backToTop.classList.toggle("hidden", false);
