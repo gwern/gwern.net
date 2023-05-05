@@ -4200,9 +4200,11 @@ body.lorem div[class^='drop-cap'] {
     padding-left: var(--collapse-left-offset);
     margin-right: -2px;
     padding-right: 0.5em;
+}
+.popframe-body > div.annotation > div.annotation-abstract > .collapse.aux-links-container {
     border-right: 1px solid var(--GW-TOC-border-color);
 }
-.popframe-body > div.annotation > div.annotation-abstract > .collapse:last-child {
+.popframe-body > div.annotation > div.annotation-abstract > .collapse.aux-links-container:last-child {
     margin-bottom: 0;
     border-bottom: 1px solid var(--GW-TOC-border-color);
 }
