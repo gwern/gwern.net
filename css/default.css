@@ -6732,8 +6732,6 @@ ol.link-bibliography-list-compact > li::before {
 
 	@media only screen and (hover: hover) {
 		#ui-elements-container .mode-selector {
-			transition: none;
-			opacity: 1.0;
 			outline: 3px solid transparent;
 		}
 		#ui-elements-container .mode-selector:hover {
