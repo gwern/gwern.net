@@ -164,7 +164,7 @@ ReaderMode = { ...ReaderMode,
 			modeSelector = elementFromHTML(ReaderMode.modeSelectorHTMLComponents(true));
 			replacedElement.replaceWith(modeSelector);
 		} else {
-			modeSelector = ReaderMode.modeSelector = addToolbarButtonGroup(...(ReaderMode.modeSelectorHTMLComponents()));
+			modeSelector = ReaderMode.modeSelector = GW.pageToolbar.addButtonGroup(...(ReaderMode.modeSelectorHTMLComponents()));
 		}
 
 		//  Add event listeners and update state.

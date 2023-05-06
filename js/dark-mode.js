@@ -144,7 +144,7 @@ DarkMode = { ...DarkMode,
 			modeSelector = elementFromHTML(DarkMode.modeSelectorHTMLComponents(true));
 			replacedElement.replaceWith(modeSelector);
 		} else {
-			modeSelector = DarkMode.modeSelector = addToolbarButtonGroup(...(DarkMode.modeSelectorHTMLComponents()));
+			modeSelector = DarkMode.modeSelector = GW.pageToolbar.addButtonGroup(...(DarkMode.modeSelectorHTMLComponents()));
 		}
 
 		//  Add event listeners.
