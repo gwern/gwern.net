@@ -2249,7 +2249,7 @@ function updatePageToolbarState(event) {
 if (GW.isMobile()) doWhenBodyExists(() => {
 	let toolbar = pageToolbar();
 
-	let maxDemos = 3;
+	let maxDemos = 1;
 	let demosAlready = parseInt(localStorage.getItem("page-toolbar-demos-count") || "0");
 	let startCollapsed = demosAlready >= maxDemos;
 	if (startCollapsed) {
@@ -2274,10 +2274,10 @@ if (GW.isMobile()) doWhenBodyExists(() => {
 			button.addEventListener("mousedown", (event) => {
 				unfadePageToolbar();
 			});
-	});	
+	});
 
 	doWhenPageLoaded(() => {
-		/*	Slowly collapse toolbar shortly after page load (if it’s not 
+		/*	Slowly collapse toolbar shortly after page load (if it’s not
 			already collapsed).
 		 */
 		if (startCollapsed == false)
