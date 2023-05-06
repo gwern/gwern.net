@@ -3402,7 +3402,7 @@ body.lorem div[class^='drop-cap'] {
     opacity: 1;
 }
 #page-toolbar.mobile .buttons {
-    margin: 0.5em 0 0.75em 0;
+    margin: 0 0 0.75em 0;
     display: flex;
     flex-flow: column;
     align-items: stretch;
@@ -3414,8 +3414,8 @@ body.lorem div[class^='drop-cap'] {
     padding: 2px 0;
 	outline: 1px dotted var(--GW-page-toolbar-border-color);
 }
-#page-toolbar.mobile .buttons > * + * {
-    margin-top: 0.5em;
+#page-toolbar.mobile .buttons > * {
+    margin: 0.5em 0 0 0;
 }
 
 /*	Fade on scroll.
@@ -3458,6 +3458,15 @@ body.lorem div[class^='drop-cap'] {
 #page-toolbar.mobile.collapsed.collapsed-slowly .buttons {
     transition:
     	transform 0.75s ease-out;
+}
+
+/* Page toolbar contents.
+ */
+#page-toolbar .dark-mode-selector {
+	order: 1;
+}
+#page-toolbar .reader-mode-selector {
+	order: 2;
 }
 
 
