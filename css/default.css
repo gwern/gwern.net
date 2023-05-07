@@ -210,27 +210,37 @@
     justify-content: center;
     background-color: var(--collapse-button-background-color);
     transition:
-        background-color 0.1s ease;
+        background-color 0.1s ease,
+        opacity 0.1s ease;
+}
+
+.disclosure-button .part .icon {
+    width: var(--icon-size);
+    height: 100%;
+    padding: calc(var(--icon-size) / 4);
+    box-sizing: border-box;
+}
+.disclosure-button .part .icon svg {
+    height: 100%;
+}
+
+.disclosure-button .part .label {
+	opacity: 0;
+}
+.disclosure-button.labels-visible .part .label {
+	opacity: 1;
 }
 
 /*  Top part of disclosure button.
  */
 .disclosure-button .part.top {
+	--icon-size: var(--collapse-toggle-top-height);
+
     top: 0;
     height: var(--collapse-toggle-top-height);
     justify-content: flex-end;
 }
 
-.disclosure-button .part.top .icon {
-    width: var(--collapse-toggle-top-height);
-    height: 100%;
-    box-sizing: border-box;
-    padding: calc(var(--collapse-toggle-top-height) / 4);
-}
-
-.disclosure-button .part.top .icon svg {
-    height: 100%;
-}
 .collapse.expanded-not > .disclosure-button:hover .part.top .icon svg {
     transform: rotate(-0.25turn);
     transition:
@@ -238,11 +248,6 @@
 }
 .collapse.expanded > .disclosure-button .part.top .icon svg {
     transform: rotate(-0.25turn);
-}
-.collapse.expanded-temp:not(:hover) > .disclosure-button .part.top .icon svg {
-    transform: none;
-    transition:
-        transform 2.0s ease-in;
 }
 .collapse.expanded-not.just-clicked > .disclosure-button:hover .part.top .icon svg {
     transform: none;
@@ -252,34 +257,12 @@
 .disclosure-button .part.top .label {
     padding: 0 0 0 1.25em;
 }
-.collapse.expanded-not > .disclosure-button .part.top .label,
-.collapse.just-auto-expanded > .disclosure-button .part.top .label {
-    visibility: hidden;
-    opacity: 0;
-    transition:
-        background-color 0.1s ease,
-        opacity 0.1s ease,
-        visibility 0.1s ease;
-}
-@media only screen and (hover: hover) {
-	.collapse.expanded-not:hover > .disclosure-button:not(.hints-visible) .part.top .label {
-		visibility: visible;
-        opacity: 1.0;
-	}
-}
-.collapse.expanded-temp:not(.just-auto-expanded) > .disclosure-button .part.top .label {
-    visibility: visible;
-    opacity: 1.0;
-}
-.collapse.expanded-temp:not(.just-auto-expanded) > .disclosure-button .part.top .label.fading {
-    opacity: 0;
-    transition:
-        opacity 0.5s ease-in 1.45s;
-}
 
 /*  Bottom part of disclosure button.
  */
 .disclosure-button .part.bottom {
+	--icon-size: var(--collapse-toggle-bottom-height);
+
     bottom: 0;
     height: var(--collapse-toggle-bottom-height);
     justify-content: center;
@@ -289,31 +272,27 @@
     padding: 0 1em;
 }
 
-.collapse.expanded-temp.just-auto-expanded > .disclosure-button .part.bottom .label {
-    visibility: hidden;
-    opaicty: 0;
-    transition:
-        background-color 0.1s ease,
-        opacity 0.1s ease,
-        visibility 0.1s ease;
+.disclosure-button .part.bottom .icon {
+    position: absolute;
 }
-.collapse.expanded-temp:not(.just-auto-expanded) > .disclosure-button .part.bottom .label {
-    visibility: visible;
-    opacity: 1.0;
-}
-.collapse.expanded-temp:not(.just-auto-expanded) > .disclosure-button .part.bottom .label.fading {
+.disclosure-button.labels-visible .part.bottom .icon {
     opacity: 0;
-    transition:
-        opacity 0.5s ease-in 1.45s;
+}
+.disclosure-button .part.bottom .icon svg {
+    transform: rotate(-0.25turn);
+}
+.collapse.expanded > .disclosure-button .part.bottom .icon svg {
+    transform: rotate(0.25turn);
 }
 
-/*	To mitigate potential blocking of content...
+/*	Disclosure button edge cases.
  */
-.collapse.no-abstract.expanded-not > .disclosure-button .part.bottom .label {
-    visibility: hidden;
+.collapse.just-auto-expanded > .disclosure-button.labels-visible .part .label {
+	opacity: 0;
+	transition: none;
 }
-.collapse.no-abstract.expanded-not > .disclosure-button.hints-visible .part.bottom .label {
-    visibility: visible;
+.collapse.no-abstract.expanded-not > .disclosure-button .part.bottom > span {
+	display: none;
 }
 
 /********************/

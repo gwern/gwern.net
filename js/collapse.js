@@ -1,7 +1,8 @@
 GW.assets.collapseChevron = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23CCC"/></svg>`;
 
 GW.collapse = {
-	alwaysShowCollapseInteractionHints: (getSavedCount("clicked-to-expand-collapse-block-count") < 3)
+	alwaysShowCollapseInteractionHints: (getSavedCount("clicked-to-expand-collapse-block-count") < 3),
+	showCollapseInteractionHintsOnHover: (getSavedCount("clicked-to-expand-collapse-block-count") < 6)
 };
 
 /*******************************************************************************/
@@ -126,11 +127,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 	//  Construct all collapse blocks (in correct final state).
 	eventInfo.container.querySelectorAll(".collapse").forEach(collapseBlock => {
 		let startExpanded = (collapseBlock.contains(getHashTargetedElement()) == true);
-		let className = "disclosure-button"
-					  + (GW.collapse.alwaysShowCollapseInteractionHints
-					  	 ? " hints-visible"
-					  	 : "");
-		let disclosureButtonHTML = `<button type="button" class="${className}" tabindex="-1" aria-label="Open/close collapsed section">`
+		let disclosureButtonHTML = `<button type="button" class="disclosure-button" tabindex="-1" aria-label="Open/close collapsed section">`
 									 + `<span class="part top">`
 										 + `<span class="label"></span>`
 										 + `<span class="icon">`
@@ -139,7 +136,9 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 									 + `</span>`
 									 + `<span class="part bottom">`
 										 + `<span class="label"></span>`
-										 + `<span class="icon"></span>`
+										 + `<span class="icon">`
+										 	+ GW.assets.collapseChevron
+										 + `</span>`
 									 + `</span>`
 								 + `</button>`;
 
@@ -247,7 +246,7 @@ addContentInjectHandler(GW.contentInjectHandlers.collapseExpandedCollapseBlocks 
 /********************************************************/
 /*	Updates disclosure button label for current UI state.
  */
-function updateDisclosureButtonState(collapseBlock) {
+function updateDisclosureButtonState(collapseBlock, showLabels) {
 	GWLog("updateDisclosureButtonState", "collapse.js", 2);
 
 	let disclosureButton = collapseBlock.querySelector(".disclosure-button");
@@ -258,6 +257,8 @@ function updateDisclosureButtonState(collapseBlock) {
 
 	disclosureButton.querySelector(".part.top .label").innerHTML = labelHTML;
 	disclosureButton.querySelector(".part.bottom .label").innerHTML = labelHTML;
+
+	disclosureButton.classList.toggle("labels-visible", showLabels || GW.collapse.alwaysShowCollapseInteractionHints);
 }
 
 /*************************************************/
@@ -278,19 +279,20 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 		disclosureButton.addActivateEvent(disclosureButton.actionHandler = (event) => {
 			GWLog("Collapse.collapseBlockDisclosureButtonActivated", "collapse.js", 2);
 
+			//	Nullify accidental late clicks.
 			if (collapseBlock.classList.contains("just-auto-expanded"))
 				return;
 
 			//	Keep count of clicks to uncollapse.
-			if (isCollapsed(collapseBlock))
+			if (   isCollapsed(collapseBlock)
+				&& event.type == "click")
 				incrementSavedCount("clicked-to-expand-collapse-block-count");
 
 			//	Set proper classes.
 			collapseBlock.swapClasses([ "expanded", "expanded-not" ], isCollapsed(collapseBlock) ? 0 : 1);
-			collapseBlock.classList.remove("just-clicked", "just-auto-expanded");
 
 			//	Update label text and other HTML-based UI state.
-			updateDisclosureButtonState(collapseBlock);
+			updateDisclosureButtonState(collapseBlock, GW.collapse.showCollapseInteractionHintsOnHover);
 
 			/*	If a collapse block was collapsed from the bottom, it might now
 				be up off the screen. Scroll it into view.
@@ -310,10 +312,10 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 				&& GW.isMobile() == false) {
 				let tempClass = null;
 				switch (event.type) {
-					case "click":
-						tempClass = "just-clicked"; break;
-					case "mouseenter":
-						tempClass = "just-auto-expanded"; break;
+				case "click":
+					tempClass = "just-clicked"; break;
+				case "mouseenter":
+					tempClass = "just-auto-expanded"; break;
 				}
 				if (tempClass) {
 					collapseBlock.classList.add(tempClass);
@@ -329,15 +331,10 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 			});
 		});
 
-		/*	Collapse block expand-on-hover. Clicking within the block while it
-			is temporarily expanded causes it to stay expanded permanently.
-		 */
+		//	Collapse block expand-on-hover.
 		if (   collapseBlock.classList.contains("expand-on-hover")
 			&& GW.isMobile() == false) {
-			let expandOnHoverDelay = 1000;
-			let collapseOnUnhoverDelay = 2000;
-
-			onEventAfterDelayDo(collapseBlock, "mouseenter", expandOnHoverDelay, (event) => {
+			onEventAfterDelayDo(collapseBlock, "mouseenter", 1000, (event) => {
 				if (isCollapsed(collapseBlock) == false)
 					return;
 
@@ -345,43 +342,18 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 					return;
 
 				disclosureButton.actionHandler(event);
-
-				collapseBlock.classList.add("expanded-temp");
-
-				collapseBlock.addEventListener("mouseleave", (event) => {
-					setTimeout(() => {
-						disclosureButton.querySelectorAll(".part .label").forEach(label => {
-							label.classList.add("fading");
-						});
-					}, 50);
-				}, { once: true });
-
-				let removeUnhoverHandler;
-				let collapseBlockMouseleaveHandler = (event) => {
-					if (collapseBlock.classList.contains("expanded-temp") == false)
-						return;
-
-					disclosureButton.actionHandler(event);
-
-					collapseBlock.classList.remove("expanded-temp");
-					disclosureButton.querySelectorAll(".part .label").forEach(label => {
-						label.classList.remove("fading");
-					});
-
-					removeUnhoverHandler();
-				};
-				removeUnhoverHandler = onEventAfterDelayDo(collapseBlock, "mouseleave", collapseOnUnhoverDelay, (event) => {
-					collapseBlockMouseleaveHandler(event);
-				}, "mouseenter");
-
-				let collapseBlockClickHandler = (event) => {
-					collapseBlock.classList.remove("expanded-temp");
-
-					removeUnhoverHandler();
-					collapseBlock.removeEventListener("click", collapseBlockClickHandler);
-				};
-				collapseBlock.addEventListener("click", collapseBlockClickHandler);
 			}, [ "mouseleave", "mousedown" ]);
+		}
+
+		//	Add listener to show labels on hover, if need be.
+		if (   GW.collapse.showCollapseInteractionHintsOnHover == true
+			&& GW.collapse.alwaysShowCollapseInteractionHints == false) {
+			disclosureButton.addEventListener("mouseenter", (event) => {
+				updateDisclosureButtonState(collapseBlock, true);
+			});
+			disclosureButton.addEventListener("mouseleave", (event) => {
+				updateDisclosureButtonState(collapseBlock);
+			});
 		}
 	});
 }, "eventListeners");
