@@ -255,11 +255,26 @@
 .collapse.expanded-not > .disclosure-button .part.top .label,
 .collapse.just-auto-expanded > .disclosure-button .part.top .label {
     visibility: hidden;
+    opacity: 0;
+    transition:
+        background-color 0.1s ease,
+        opacity 0.1s ease,
+        visibility 0.1s ease;
+}
+@media only screen and (hover: hover) {
+	.collapse.expanded-not:hover > .disclosure-button:not(.hints-visible) .part.top .label {
+		visibility: visible;
+        opacity: 1.0;
+	}
+}
+.collapse.expanded-temp:not(.just-auto-expanded) > .disclosure-button .part.top .label {
+    visibility: visible;
+    opacity: 1.0;
 }
 .collapse.expanded-temp:not(.just-auto-expanded) > .disclosure-button .part.top .label.fading {
     opacity: 0;
     transition:
-        opacity 2.0s ease-in;
+        opacity 0.5s ease-in 1.45s;
 }
 
 /*  Bottom part of disclosure button.
@@ -274,21 +289,31 @@
     padding: 0 1em;
 }
 
-/*	To mitigate potential blocking of content...
- */
-.collapse.no-abstract.expanded-not .disclosure-button .part.bottom .label {
-    opacity: 0;
+.collapse.expanded-temp.just-auto-expanded > .disclosure-button .part.bottom .label {
+    visibility: hidden;
+    opaicty: 0;
     transition:
         background-color 0.1s ease,
-        opacity 0.1s ease;
+        opacity 0.1s ease,
+        visibility 0.1s ease;
 }
-@media only screen and (hover: hover) {
-	.collapse.no-abstract.expanded-not .disclosure-button:hover .part.bottom .label {
-		opacity: 1;
-	}
+.collapse.expanded-temp:not(.just-auto-expanded) > .disclosure-button .part.bottom .label {
+    visibility: visible;
+    opacity: 1.0;
 }
-.collapse.no-abstract.expanded-not .disclosure-button.hints-visible .part.bottom .label {
-    opacity: 1;
+.collapse.expanded-temp:not(.just-auto-expanded) > .disclosure-button .part.bottom .label.fading {
+    opacity: 0;
+    transition:
+        opacity 0.5s ease-in 1.45s;
+}
+
+/*	To mitigate potential blocking of content...
+ */
+.collapse.no-abstract.expanded-not > .disclosure-button .part.bottom .label {
+    visibility: hidden;
+}
+.collapse.no-abstract.expanded-not > .disclosure-button.hints-visible .part.bottom .label {
+    visibility: visible;
 }
 
 /********************/

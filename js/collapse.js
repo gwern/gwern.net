@@ -349,7 +349,11 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 				collapseBlock.classList.add("expanded-temp");
 
 				collapseBlock.addEventListener("mouseleave", (event) => {
-					disclosureButton.querySelector(".part.top .label").classList.add("fading");
+					setTimeout(() => {
+						disclosureButton.querySelectorAll(".part .label").forEach(label => {
+							label.classList.add("fading");
+						});
+					}, 50);
 				}, { once: true });
 
 				let removeUnhoverHandler;
@@ -360,7 +364,9 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 					disclosureButton.actionHandler(event);
 
 					collapseBlock.classList.remove("expanded-temp");
-					disclosureButton.querySelector(".part.top .label").classList.remove("fading");
+					disclosureButton.querySelectorAll(".part .label").forEach(label => {
+						label.classList.remove("fading");
+					});
 
 					removeUnhoverHandler();
 				};
