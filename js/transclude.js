@@ -204,8 +204,8 @@
 
 	The `data-include-selector` and `data-include-selector-not` attributes allow
 	the use of CSS selectors to specify parts of the included DOM subtree to 
-	include or omit. (If both attributes are present, `data-include-selector`
-	is applied first.)
+	include or omit. (If both attributes are present, 
+	`data-include-selector-not` is applied first.)
 
 	(NOTE: `data-include-selector` may be seen as a generalization of the 
 	 `include-block-context` option, described above. Note, however, that both
@@ -1380,6 +1380,13 @@ Transclude = {
             }
         }
 
+		//	Apply `data-include-selector-not` attribute.
+		if (includeLink.dataset.includeSelectorNot) {
+			content.querySelectorAll(includeLink.dataset.includeSelectorNot).forEach(element => {
+				element.remove();
+			});
+		}
+
 		//	Apply `data-include-selector` attribute.
 		if (includeLink.dataset.includeSelector) {
 			let nodesToInclude = [ ];
@@ -1388,13 +1395,6 @@ Transclude = {
 					nodesToInclude.push(element);
 			});
 			content.replaceChildren(...nodesToInclude);
-		}
-
-		//	Apply `data-include-selector-not` attribute.
-		if (includeLink.dataset.includeSelectorNot) {
-			content.querySelectorAll(includeLink.dataset.includeSelectorNot).forEach(element => {
-				element.remove();
-			});
 		}
 
         return content;
