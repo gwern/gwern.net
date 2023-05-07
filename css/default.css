@@ -274,6 +274,23 @@
     padding: 0 1em;
 }
 
+/*	To mitigate potential blocking of content...
+ */
+.collapse.no-abstract.expanded-not .disclosure-button .part.bottom .label {
+    opacity: 0;
+    transition:
+        background-color 0.1s ease,
+        opacity 0.1s ease;
+}
+@media only screen and (hover: hover) {
+	.collapse.no-abstract.expanded-not .disclosure-button:hover .part.bottom .label {
+		opacity: 1;
+	}
+}
+.collapse.no-abstract.expanded-not .disclosure-button.hints-visible .part.bottom .label {
+    opacity: 1;
+}
+
 /********************/
 /*  Collapse summary.
  */

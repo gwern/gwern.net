@@ -1,5 +1,9 @@
 GW.assets.collapseChevron = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23CCC"/></svg>`;
 
+GW.collapse = {
+	alwaysShowCollapseInteractionHints: (getSavedCount("clicked-to-expand-collapse-block-count") < 3)
+};
+
 /*******************************************************************************/
 /*  This function expands all collapse blocks containing the given node, if
     any (including the node itself, if it is a collapse block). Returns true
@@ -122,7 +126,11 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 	//  Construct all collapse blocks (in correct final state).
 	eventInfo.container.querySelectorAll(".collapse").forEach(collapseBlock => {
 		let startExpanded = (collapseBlock.contains(getHashTargetedElement()) == true);
-		let disclosureButtonHTML = `<button type="button" class="disclosure-button" tabindex="-1" aria-label="Open/close collapsed section">`
+		let className = "disclosure-button"
+					  + (GW.collapse.alwaysShowCollapseInteractionHints
+					  	 ? " hints-visible"
+					  	 : "");
+		let disclosureButtonHTML = `<button type="button" class="${className}" tabindex="-1" aria-label="Open/close collapsed section">`
 									 + `<span class="part top">`
 										 + `<span class="label"></span>`
 										 + `<span class="icon">`
@@ -272,6 +280,10 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 
 			if (collapseBlock.classList.contains("just-auto-expanded"))
 				return;
+
+			//	Keep count of clicks to uncollapse.
+			if (isCollapsed(collapseBlock))
+				incrementSavedCount("clicked-to-expand-collapse-block-count");
 
 			//	Set proper classes.
 			collapseBlock.swapClasses([ "expanded", "expanded-not" ], isCollapsed(collapseBlock) ? 0 : 1);
