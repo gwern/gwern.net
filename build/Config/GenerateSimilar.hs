@@ -10,7 +10,7 @@ bestNEmbeddings = 20
 minimumLength :: Int
 minimumLength = 700
 
--- how long is too long? OA guesstimates 1 BPE = 4 characters on average (https://beta.openai.com/tokenizer), so text-embedding-ada-002's 8191 BPEs ~ 32764 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
+-- how long is too long? OA guesstimates 1 BPE = 4 characters on average (https://platform.openai.com/tokenizer), so text-embedding-ada-002's 8191 BPEs ~ 32764 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
 maximumLength :: Int
 maximumLength = 32700
 

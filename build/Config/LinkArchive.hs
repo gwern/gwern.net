@@ -913,7 +913,7 @@ whiteList url
       , "https://ashish-kmr.github.io/rma-legged-robots/" -- video embed
       , "https://www.clinicaltrialsregister.eu/ctr-search/search" -- interactive
       , "https://imagelibrary.bgu.ac.il/pf.tlx/O6ORSOx-nut" -- already mirrored locally
-      , "https://wudao.aminer.cn/CogView/index.html" -- interactive
+      , "https://models.aminer.cn/CogView/index.html" -- interactive
       , "https://tfhub.dev/google/collections/gtr/1" -- source code/doc/updated
       , "https://universome.github.io/stylegan-v" -- video embed
       , "https://openaipublic.blob.core.windows.net/webgpt-answer-viewer/index.html" -- interactive
@@ -1034,7 +1034,7 @@ whiteList url
       , "https://everynoise.com/engenremap.html" -- interactive
       , "https://jamiepinheiro.com/cyclic_tv_reference_paradox_finder/" -- interactive
       , "https://practiceoftheory.weebly.com/a-causal-models-probability-of-being-true.html" -- interactive
-      , "https://wenxin.baidu.com/moduleApi/ernieVilg" -- interactive
+      , "https://wenxin.baidu.com/ernie-vilg" -- interactive
       , "https://ai-muzic.github.io/meloform/" -- low quality (audio embeds)
       , "https://www.webdesignmuseum.org/" -- homepage
       , "https://minerva-demo.github.io/#category=Algebra&index=1" -- interactive

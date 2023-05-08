@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-04-21 15:22:14 gwern"
+# When:  Time-stamp: "2023-05-07 11:35:47 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -241,13 +241,14 @@ alias u="upload"
 # Bash shell function named `mvuri` which will take a filename with a URI encoding
 # like `file:///home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
 # and transform that argument into `/home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
-# and then `mv` the URL snapshot to that like normal.
+# (ignoring any anchor/hash on the original .html file) and then `mv` the URL snapshot to that like normal.
 #
 # eg. `$ mvuri file:///home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
 mvuri () {
   local ENCODED_PATH="$1"
   local DECODED_PATH="${ENCODED_PATH//\%/\\x}"
   DECODED_PATH="${DECODED_PATH#file://}"
+  DECODED_PATH="${DECODED_PATH%%#*}" # ignore anchors like `foo.html#id` by stripping them
   local DESTINATION="$DECODED_PATH"
 
   local SOURCE

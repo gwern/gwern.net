@@ -86,7 +86,7 @@ url2Tags p = concatMap (\(match,tag) -> if match p then [tag] else []) urlTagDB
  where -- we allow arbitrary string predicates (so one might use regexps as well)
         urlTagDB :: [((String -> Bool), String)]
         urlTagDB = [
-            (("https://publicdomainreview.org"`isPrefixOf`),          "history/public-domain-review")
+            (("https://publicdomainreview.org/"`isPrefixOf`),          "history/public-domain-review")
           , (("https://www.filfre.net/"`isPrefixOf`),                 "technology/digital-antiquarian")
           , (("https://abandonedfootnotes.blogspot.com"`isPrefixOf`), "sociology/abandoned-footnotes")
           , (("https://dresdencodak.com"`isPrefixOf`), "humor")
@@ -487,7 +487,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("iq/animal", "animal cognition")
           , ("ai/nn/retrieval", "retrieval AI")
           , ("ai/nn/tokenization", "LM tokenization")
-          , ("ai/scaling/emergence", "emergence (AI)")
+          , ("ai/scaling/emergence", "AI emergence AI")
           , ("ai/scaling/mixture-of-experts", "MoE NN")
           , ("ai/scaling", "AI scaling")
           , ("ai/nn/vae/mae", "masked auto-encoder")

@@ -4,7 +4,7 @@ module Config.LinkIcon where
 import qualified Data.Text as T (Text)
 import Text.Pandoc (Inline(Link, Str))
 
--- hardwire globally icons for exact-matches of specific URLs (`[(URL, (Link icon, Link icon type))]`), in cases where we can't or won't edit the link directly to set link-icons (eg. in /fiction/clippy, I do a manual override of link-icons to rickroll the reader: `[HQU Colab notebook](https://tinyurl.com/hquv34 "Colab notebook: HQU-v3.4-light (Jax TPU)"){link-icon="alphabet" link-icon-type="svg" .link-live-not .archive-not}`)
+-- hardwire globally icons for exact-matches of specific URLs (`[(URL, (Link icon, Link icon type))]`), in cases where we can't or won't edit the link directly to set link-icons (eg. in /fiction/clippy, I do a manual override of link-icons to rickroll the reader: `[HQU Colab notebook](https://​tinyurl.com/hquv34 "Colab notebook: HQU-v3.4-light (Jax TPU)"){link-icon="alphabet" link-icon-type="svg" .link-live-not .archive-not}`)
 overrideLinkIcons :: [(T.Text, (T.Text,T.Text))]
 overrideLinkIcons = []
 
@@ -39,7 +39,8 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "digital.library.unt.edu"
                      "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "www.silcom.com", "esolangs.org",
                      "www.aiweirdness.com", "etherscan.io", "www.theringer.com", "cs.stanford.edu", "mmlab.ie.cuhk.edu.hk", "www.cs.toronto.edu",
                      "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org",
-                     "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com"]
+                     "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com",
+                     "www.acpjournals.org", "www.inverse.com", "hal.science", "www.findarticles.com"]
 ------------------------------------------------------------------------------------------
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
@@ -76,12 +77,12 @@ linkIconTestUnitsText =
          , ("https://www.medrxiv.org/content/10.1101/2020.05.18.20100685.full",  "chi-dna","svg")
          , ("https://en.bitcoin.it/wiki/Witcoin",  "bitcoin","svg")
          , ("https://bitcointalk.org/index.php?topic=82952.0;all",  "bitcoin","svg")
-         , ("https://www.blockchain.com/btc/address/15bD6fYs6p9D9wmniDtTBcQSyWXDYNDCwv", "bitcoin","svg")
+         , ("https://www.blockchain.com/explorer/addresses/btc/15bD6fYs6p9D9wmniDtTBcQSyWXDYNDCwv", "bitcoin","svg")
          , ("https://www.bloomberg.com/news/articles/2011-03-31/why-unemployment-rose-so-much-dropped-so-fast-commentary-by-alan-krueger",  "\119809","text")
-         , ("http://www.businessweek.com/ap/financialnews/D9KQL7CG0.htm", "\119809","text")
+         , ("https://www.bloomberg.com/businessweek/ap/financialnews/D9KQL7CG0.htm", "\119809","text")
          , ("https://bjo.bmj.com/content/93/8/997",  "bmj","text,tri,sans")
          , ("https://danbooru.donmai.us/posts?tags=death_flag", "❐", "text")
-         , ("https://derpibooru.org/tags/artist-colon-thisponydoesnotexist", "❐", "text")
+         , ("https://derpibooru.org/tags/generator-colon-thisponydoesnotexist", "❐", "text")
          , ("https://safebooru.org/index.php?page=post&s=list&tags=heterochromia", "❐", "text")
          , ("https://www.deepmind.com/blog/alphastar-mastering-the-real-time-strategy-game-starcraft-ii",  "deepmind","svg")
          , ("/doc/reinforcement-learning/model/alphago/2016-silver.pdf#deepmind",  "deepmind","svg")
@@ -109,7 +110,7 @@ linkIconTestUnitsText =
          , ("https://arxiv.org/pdf/2009.06732.pdf#org=google&page=6",  "alphabet","svg")
          , ("https://gwern.net/doc/cs/hardware/2015-kanev.pdf#google",  "alphabet","svg")
          , ("https://www.lesswrong.com/posts/37sHjeisS9uJufi4u/scholarship-how-to-do-it-efficiently",  "LW","text")
-         , ("https://www.lesswrong.com",  "LW","text")
+         , ("https://www.lesswrong.com/",  "LW","text")
          , ("http://sl4.org/archive/0812/index.html#19570",  "LW","text")
          , ("https://www.harney.com/",  "H","text")
          , ("https://www.haskell.org/",  "\120524","text")
@@ -125,13 +126,13 @@ linkIconTestUnitsText =
          , ("https://www.justice.gov/archive/usao/cac/Pressroom/2012/045.html",  "DoJ","text,tri")
          , ("https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/414283", "JAMA", "text,sans,quad")
          , ("https://jamanetwork.com/journals/jama/fullarticle/201218", "JAMA", "text,sans,quad")
-         , ("https://jama.jamanetwork.com/article.aspx?articleid=183162", "JAMA", "text,sans,quad")
+         , ("https://jamanetwork.com/journals/jama/fullarticle/183162", "JAMA", "text,sans,quad")
          , ("https://kk.org/books/out-of-control",  "KK","text,sans")
          , ("https://link.springer.com/article/10.1007/BF02253535",  "springerlink", "svg")
          , ("https://rd.springer.com/article/10.1007/s10071-021-01530-3",  "springerlink", "svg")
          , ("https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/1471-2288-4-13",  "springerlink", "svg")
          , ("https://longbets.org/",  "X","text,overline")
-         , ("https://longnow.org/ideas/02014/08/21/lenski-long-term-evolution-experiment/",  "X","text,overline")
+         , ("https://longnow.org/ideas/lenski-long-term-evolution-experiment/",  "X","text,overline")
          , ("https://www.longecity.org/forum/topic/10464-modalert-is-this-what-modafinil-is-like/?&p=108566#entry108566", "⧖", "text")
          , ("https://groups.google.com/group/ankisrs/",  "\9993","text")
          , ("https://groups.yahoo.com/group/tiffanygrantfanclub/message/5697",  "\9993","text")
@@ -202,7 +203,7 @@ linkIconTestUnitsText =
          , ("https://openreview.net/forum?id=xTJEN-ggl1b", "OR", "text,sans")
          , ("https://arxiv.org/abs/1611.02779#openai",  "openai","svg")
          , ("http://gptprompts.wikidot.com/context-stuffing", "openai","svg")
-         , ("https://www.overcomingbias.com/2009/07/stupider-than-you-realize.html",  "OB","text")
+         , ("https://www.overcomingbias.com/p/stupider-than-you-realizehtml",  "OB","text")
          , ("https://mason.gmu.edu/~rhanson/ideafutures.html",  "OB","text")
          , ("https://www.poetryfoundation.org/poems/44399/pied-beauty", "POET", "text,quad,sans")
          , ("https://www.patreon.com/gwern",  "patreon","svg")
@@ -287,7 +288,7 @@ linkIconTestUnitsText =
          , ("http://www.paulgraham.com/hundred.html",  "pg","text,monospace")
          , ("https://news.ycombinator.com/item?id=10012625",  "hn","svg")
          , ("https://aino.bandcamp.com/track/--2",  "audio","svg")
-         , ("https://poniesatdawn.bandcamp.com/",  "P@D","text,tri")
+         , ("https://poniesatdawn.bandcamp.com/album/dreamwalkers",  "P@D","text,tri")
          , ("https://soundcloud.com/leggysalad/girls-afternoon-appointments",  "audio","svg")
          , ("https://www.youtube.com/watch?v=cG7v9eCq2u4&t=33m49s",  "youtube","svg")
          , ("https://www.youtube.com/channel/UCeNwyKuv5SMnN6ovlpbz1SQ",  "youtube","svg")
@@ -388,7 +389,7 @@ linkIconTestUnitsText =
          , ("http://thehub7dnl5nmcz5.onion/index.php?topic=2261.msg17459", "Hub", "text,tri,sans")
          , ("https://www.telegraph.co.uk/culture/books/3601644/Adultery-was-his-thing.html", "the-telegraph", "svg")
          , ("https://www.smithsonianmag.com/history/native-intelligence-109314481/", "SM", "text")
-         , ("https://www.openphilanthropy.org/brain-computation-report", "open-philanthropy", "svg")
+         , ("https://www.openphilanthropy.org/research/how-much-computational-power-does-it-take-to-match-the-human-brain/", "open-philanthropy", "svg")
          , ("https://scienceblogs.com/clock/2006/10/16/what-is-a-natural-sleep-patter", "Sᵇ", "text,sans,italic")
          , ("http://chronopause.com/chronopause.com/index.php/2011/08/05/science-fiction-double-feature-2-part-2/index.html", "M.D.", "text,sans")
          , ("https://www.theage.com.au/national/victoria/bitcoin-drug-millions-seized-in-victoria-20141015-116bby.html", "A", "text")
@@ -416,7 +417,7 @@ linkIconTestUnitsText =
          , ("https://www.fastcompany.com/40438376/after-a-comeback-23andme-faces-its-next-test", "FC", "text")
          , ("https://rjlipton.wordpress.com/2015/07/28/playing-chess-with-the-devil/", "P = NP", "text,quad")
          , ("https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SI CP", "text,quad,sans")
-         , ("https://mitpress.mit.edu/books/book-ground", "MIT", "text,tri,mono")
+         , ("https://mitpress.mit.edu/9780262536226/", "MIT", "text,tri,mono")
          , ("https://blog.eleuther.ai/announcing-20b/", "eleutherai", "svg")
          , ("https://blog.eleuther.ai/year-one/", "eleutherai", "svg")
          , ("https://6b.eleuther.ai/", "eleutherai", "svg")
@@ -445,8 +446,8 @@ linkIconTestUnitsText =
          , ("https://ask.metafilter.com/16136/Fog-Gun-Shower", "MF", "text,sans,italic")
          , ("https://www.metafilter.com/183095/On-having-sufficient-complexity-to-allow-for-arbitrary-computation", "MF", "text,sans,italic")
          , ("https://www.quantamagazine.org/the-busy-beaver-game-illuminates-the-fundamental-limits-of-math-20201210/", "quanta", "svg")
-         , ("https://qz.com/1028528/custos-startup-uses-bitcoin-bounties-to-make-pirates-rat-on-one-another/", "QZ", "text,sans")
-         , ("https://blog.23andme.com/23andme-research/you-scream-i-scream-our-genes-scream-for-ice-cream/", "23", "text")
+         , ("https://qz.com/1028528/custos-startup-uses-bitcoin-bounties-to-make-pirates-rat-on-one-another", "QZ", "text,sans")
+         , ("https://blog.23andme.com/articles/genes-scream-for-ice-cream", "23", "text")
          , ("https://www.ft.com/content/009050e4-75ea-11e2-9891-00144feabdc0", "FT", "text")
          , ("https://techcrunch.com/2013/02/23/the-chinese-are-coming-the-chinese-are-coming/", "TC", "text,mono")
          , ("https://www.nzherald.co.nz/nz/drug-mail-or-mule-risks-the-same/QHX3IGRINL7AN5QZR3JRSOQ3NA/", "𝕳", "text")
@@ -517,7 +518,7 @@ linkIconTestUnitsText =
          , ("https://old.reddit.com/r/QuantifiedSelf/comments/1mfn0a/trying_to_detect_modafinils_stimulant_effect/", "QS", "text,sans")
          , ("https://www.alcor.org/library/alcor-membership-statistics/", "alcor", "svg")
          , ("https://arankomatsuzaki.wordpress.com/2021/03/04/state-of-the-art-image-generative-models/", "ak", "text,sans")
-         , ("https://www.nap.edu/catalog/25762/reflecting-sunlight-recommendations-for-solar-geoengineering-research-and-research-governance", "NAP", "text,tri")
+         , ("https://nap.nationalacademies.org/catalog/25762/reflecting-sunlight-recommendations-for-solar-geoengineering-research-and-research-governance", "NAP", "text,tri")
          , ("https://pastebin.com/GrV3uYh5", "txt", "svg")
          , ("http://archives.cnn.com/2000/HEALTH/aging/04/19/hearing.loss.wmd/index.html", "CNN", "text,tri,sans")
          , ("https://lwn.net/Articles/286233/", "LWN", "text,tri,sans")
@@ -531,7 +532,7 @@ linkIconTestUnitsText =
          , ("https://nypost.com/2019/06/27/north-carolina-couple-paid-25k-to-clone-their-beloved-pet-cat/", "NYP", "text,tri,sans,italic")
          , ("https://longreads.com/2015/01/28/friendship-is-complicated/", "Long", "text,quad")
          , ("https://crookedtimber.org/2012/05/30/in-soviet-union-optimization-problem-solves-you/", "CT", "text")
-         , ("http://articles.latimes.com/print/1988-07-17/magazine/tm-9636_1_x-ray-laser", "𝔏A", "text")
+         , ("https://www.latimes.com/archives/la-xpm-1988-07-17-tm-9636-story.html", "𝔏A", "text")
          , ("/batman/2022-04-15-manasuka-artdecobatmantriptych-batman.psd",  "image","svg")
          , ("https://warontherocks.com/2021/08/foreign-fighters-and-cheese-bells/", "WOTR", "text,quad,sans")
          , ("https://www.connectedpapers.com/main/1ffe143b40a9f8c01940c7397280de4cf666d635/Lessons-from-AlphaZero-for-Optimal%2C-Model-Predictive%2C-and-Adaptive-Control/graph", "connected-papers","svg")
@@ -555,7 +556,7 @@ linkIconTestUnitsText =
          , ("https://iopscience.iop.org/article/10.1088/1748-9326/aabf9b", "IOP", "text,tri,sans")
          , ("https://tasvideos.org/3653M", "TASV", "text,quad")
          , ("https://www.metaculus.com/questions/notebooks/8702/the-promise-and-impact-of-the-next-generation-of-weight-loss-drugs/", "metaculus", "svg")
-         , ("https://habr.com/ru/post/516190/", "Habr", "text,quad,sans")
+         , ("https://habr.com/ru/articles/516190/", "Habr", "text,quad,sans")
          , ("https://sites.google.com/berkeley.edu/decision-transformer", "BAIR", "text,quad,mono")
          , ("https://ml.berkeley.edu/blog/posts/clip-art/", "BAIR", "text,quad,mono")
          , ("https://people.eecs.berkeley.edu/~janner/trajectory-transformer/files/trajectory-transformer.pdf", "BAIR", "text,quad,mono")

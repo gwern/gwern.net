@@ -256,7 +256,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "aiimpacts.org" = aI "AII" "text,tri"
  | u'' "scp-wiki.wikidot.com" = aI "SCP" "text,tri,sans"
  | aU'' ["latitude.io", "play.aidungeon.io", "aidungeon.medium.com"] || u' "old.reddit.com/r/AIDungeon"  || u' "www.patreon.com/AIDungeon" = aI "AID" "text,tri,sans"
- | u'' "www.nap.edu" = aI "NAP" "text,tri"
+ | u'' "nap.nationalacademies.org" = aI "NAP" "text,tri"
  | u' ".cnn.com" = aI "CNN" "text,tri,sans"
  | u'' "www.npr.org" || u'' "text.npr.org" = aI "npr" "text,tri,sans" -- NPR styles it in lowercase in their |n|p|r| logo
  | u'' "www.filfre.net" = aI "TDA" "text,tri,sans" -- Filfre.net/The Digital Antiquarian has no logo or usable substitute…
@@ -309,7 +309,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "spectrum.ieee.org" || u'' "ieeexplore.ieee.org" = aI "IEEE" "text,mono,quad"
  | u'' "rjlipton.wordpress.com" = aI "P = NP" "text,quad" -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULLWIDTH EQUALs SIGN' turns out to be *too* big and stack up three high. using 2 HAIR SPACE will separate the '=' slightly from the 'P' while not causing the 3-layer layout.
  | u' "mitpress.mit.edu/sites/default/files/sicp/" = aI "SI CP" "text,quad,sans"
- | u' "mitpress.mit.edu/books/" = aI "MIT" "text,tri,mono" -- if it's not _SICP_, fall back.x
+ | u' "mitpress.mit.edu/" = aI "MIT" "text,tri,mono" -- if it's not _SICP_, fall back.
  | u'' "jaspervdj.be" = aI "JVDJ" "text,quad,mono"
  | u'' "gizmodo.com" = aI "GIZM" "text,quad,mono"
  | u'' "www.mdpi.com" = aI "MDPI" "text,quad,sans" -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG NOTE: doesn't wrap right with serif, so has to be ans
@@ -344,7 +344,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
- | u'' "en.bitcoin.it" || u'' "bitcointalk.org" || u' "www.blockchain.com/btc/" = aI "bitcoin" "svg"
+ | u'' "en.bitcoin.it" || u'' "bitcointalk.org" || u'' "www.blockchain.com" = aI "bitcoin" "svg"
  | u'' "www.biorxiv.org" || u'' "www.medrxiv.org" = aI "chi-dna" "svg" -- BioRxiv (custom icon: italic Chi with DNA cross-strands).
  | u'' "distill.pub" = aI "distillpub" "svg" -- Distill ML journal.
  | u'' "www.dropbox.com" || u'' "dl.dropboxusercontent.com" = aI "dropbox" "svg" -- Dropbox: old file-host, deprecated since they’ve started killing inactive accounts & their UI become awful. primary user: dl.dropboxusercontent.com

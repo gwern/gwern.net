@@ -1062,7 +1062,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
       , ( "https://hackage.haskell.org/package/gitit"
     , [ "Gitit" , "gitit" ]
     )
-  , ( "https://hal.archives-ouvertes.fr/hal-00904097/document#pdf"
+  , ( "https://hal.science/hal-00904097/document#pdf"
     , [ "Why do humans reason? Arguments for an argumentative theory" ]
     )
   , ( "https://github.com/oduwsdl/archivenow" , [ "archivenow" ] )
@@ -1075,7 +1075,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
         , "PRISMA" ])
   , ( "https://old.reddit.com/r/MachineLearning/comments/akbc11/p_tag_estimation_for_animestyle_girl_image/"
     , [ "DeepDanbooru" ]
-    ), ( "https://openai.com/five/" , [ "OA5"  ] ), ( "https://pactwebserial.wordpress.com/" , [ "Pact" ] ), ( "https://pdfs.semanticscholar.org/2576/fd36efa9be01a26269e94925283de306cd83.pdf"
+    ), ( "https://openai.com/research/openai-five-defeats-dota-2-world-champions" , [ "OA5"  ] ), ( "https://pactwebserial.wordpress.com/" , [ "Pact" ] ), ( "https://pdfs.semanticscholar.org/2576/fd36efa9be01a26269e94925283de306cd83.pdf"
     , [ "Consumer Heterogeneity and Paid Search Effectiveness: A Large Scale Field Experiment"
       ]
     ), ( "https://pdfs.semanticscholar.org/5e20/ba33230aa7d6d3a4c3e835fcd5c28fbde529.pdf"
@@ -1100,7 +1100,7 @@ whiteList = M.fromList $ filter (\(k,_) -> not (k == "") && (T.head k == '/' || 
        , "Our agents are only given infrequent observations of the real environment. As a side effect for optimizing performance in this setting, a 'world model' emerges. We show the true dynamics in color, with full saturation denoting frames the policy can see. The black and white outline shows the state of the emergent world model. These world model exhibits similar, but not identical dynamics to forward predictive models but only model 'important' aspects of the environment"
        ]
      )
-    , ( "https://www.lesswrong.com" , [ "LessWrong" , "LessWrong.com" ] )
+    , ( "https://www.lesswrong.com/" , [ "LessWrong" , "LessWrong.com" ] )
     , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4417674/"
       , [ "CRISPR/Cas9-mediated gene editing in human tripronuclear zygotes"
         ]
