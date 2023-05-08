@@ -125,30 +125,6 @@
     overflow: hidden;
 }
 
-/*	Hover highlighting.
- */
-@media only screen and (hover: hover) {
-	.collapse-inline.expanded > .collapse-content-wrapper {
-		--box-shadow-color-one: transparent;
-		--box-shadow-color-two: transparent;
-		
-		box-shadow: 
-			-0.2em calc(0.1em - 2px) 0 0 var(--box-shadow-color-one),
-			 0.2em calc(0.1em - 2px) 0 0 var(--box-shadow-color-one),
-			-0.2em calc(0.1em - 1px) 0 0 var(--box-shadow-color-two),
-			 0.2em calc(0.1em - 1px) 0 0 var(--box-shadow-color-two);
-		transition:
-			background-color 0.1s ease;
-	}
-	.collapse-inline.expanded:hover > .collapse-content-wrapper:not(:hover) {
-		--background-color: var(--GW-collapse-inline-hover-highlight-color);
-		--box-shadow-color-one: var(--background-color);
-		--box-shadow-color-two: var(--GW-collapse-inline-disclosure-button-hover-color);
-
-		background-color: var(--background-color);
-	}
-}
-
 /*****************************/
 /*  Collapse block background.
  */
@@ -340,76 +316,59 @@
     justify-content: center;
 }
 .collapse-inline > .disclosure-button {
-    --collapse-button-background-color: var(--GW-collapse-inline-disclosure-button-color);
     --collapse-button-text-color: var(--GW-collapse-inline-disclosure-button-text-color);
     
-    height: calc(1.2em + 4px);
+    height: 1em;
     vertical-align: text-bottom;
     position: relative;
-    bottom: -1px;
+    bottom: 0.15em;
+}
+.collapse-inline.expanded > .disclosure-button {
+	--collapse-button-text-color: var(--GW-collapse-inline-expanded-disclosure-button-text-color);
+
+    height: calc(1em * 4/3);
+    bottom: 0;
+}
+.collapse-inline.expanded > .disclosure-button {
+	--collapse-button-text-color: var(--GW-collapse-inline-expanded-disclosure-button-text-color);
 }
 .collapse-inline > .disclosure-button:hover,
 .collapse-inline > .disclosure-button.hover {
-    --collapse-button-background-color: var(--GW-collapse-inline-disclosure-button-hover-color);
     --collapse-button-text-color: var(--GW-collapse-inline-disclosure-button-text-hover-color);
-}
-.collapse-inline.expanded > .disclosure-button.start {
-    margin: 0 0.25em 0 0;
-}
-.collapse-inline.expanded > .disclosure-button {
-    margin: 0 0 0 0.25em;
 }
 
 .collapse-inline > .disclosure-button .icon {
-    --button-border-radius: 8px;
-    
     height: 100%;
-    background-color: var(--collapse-button-background-color);
     color: var(--collapse-button-text-color);
-    padding: 0 0.6em;
-    border-radius: var(--button-border-radius);
-    overflow: hidden;
     transition:
-    	background-color 0.1s ease,
     	color 0.1s ease;
 }
 .collapse-inline.expanded > .disclosure-button.start .icon {
-    border-radius: var(--button-border-radius) 0 0 var(--button-border-radius);
-    padding: 0;
+    margin-right: -0.4em;
 }
 .collapse-inline.expanded > .disclosure-button.end .icon {
-    border-radius: 0 var(--button-border-radius) var(--button-border-radius) 0;
-    padding: 0;
+    margin-left: -0.4em;
 }
 
 .collapse-inline > .disclosure-button .icon svg {
     display: block;
-    width: 1.2em;
+    width: 1em;
     height: 100%;
 }
-.collapse-inline > .disclosure-button.end .icon svg {
-    transform: rotate(0.5turn);
-}
-.collapse-inline.expanded > .disclosure-button .icon svg {
-    position: relative;
-}
-.collapse-inline.expanded > .disclosure-button.start .icon svg {
-    left: 0.6em;
-}
-.collapse-inline.expanded > .disclosure-button.end .icon svg {
-    right: 0.6em;
+.collapse-inline.expanded-not > .disclosure-button.start .icon svg:nth-of-type(2) {
+    margin: 0 -0.5em;
 }
 
 .collapse-inline.expanded-not > .disclosure-button.end {
     display: none;
 }
 
-.collapse-inline.expanded-not > .disclosure-button:hover .icon svg {
-    transform: rotateY(0.5turn);
+.collapse-inline.expanded-not > .disclosure-button:hover .icon svg:nth-of-type(2) {
+    transform: rotateZ(0.25turn);
     transition:
-        transform 1.25s ease;
+        transform 1s ease;
 }
-.collapse-inline.expanded-not.just-clicked > .disclosure-button:hover .icon svg {
+.collapse-inline.expanded-not.just-clicked > .disclosure-button:hover .icon svg:nth-of-type(2) {
     transform: none;
     transition: none;
 }
