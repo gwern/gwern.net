@@ -129,19 +129,23 @@
  */
 @media only screen and (hover: hover) {
 	.collapse-inline.expanded > .collapse-content-wrapper {
+		--box-shadow-color-one: transparent;
+		--box-shadow-color-two: transparent;
+		
+		box-shadow: 
+			-0.2em calc(0.1em - 2px) 0 0 var(--box-shadow-color-one),
+			 0.2em calc(0.1em - 2px) 0 0 var(--box-shadow-color-one),
+			-0.2em calc(0.1em - 1px) 0 0 var(--box-shadow-color-two),
+			 0.2em calc(0.1em - 1px) 0 0 var(--box-shadow-color-two);
 		transition:
-			background-color 0.1s ease,
-			box-shadow 0.1s ease;
+			background-color 0.1s ease;
 	}
 	.collapse-inline.expanded:hover > .collapse-content-wrapper:not(:hover) {
-		--background-color: #eee;
+		--background-color: var(--GW-collapse-inline-hover-highlight-color);
+		--box-shadow-color-one: var(--background-color);
+		--box-shadow-color-two: var(--GW-collapse-inline-disclosure-button-hover-color);
 
 		background-color: var(--background-color);
-		box-shadow: 
-			-0.2em calc(0.1em - 2px) 0 0 var(--background-color),
-			0.2em calc(0.1em - 2px) 0 0 var(--background-color),
-			-0.2em calc(0.1em - 1px) 0 0 var(--GW-collapse-inline-disclosure-button-hover-color),
-			0.2em calc(0.1em - 1px) 0 0 var(--GW-collapse-inline-disclosure-button-hover-color);
 	}
 }
 
