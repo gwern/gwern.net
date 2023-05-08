@@ -80,7 +80,7 @@
     (Pandoc Markdown does support a native div syntax, but it's long and ugly.)
  */
 
-.collapse {
+.collapse-block {
     --collapse-toggle-top-height: 3rem;
     --collapse-toggle-bottom-height: 2rem;
     --collapse-toggle-left-width: 0.5rem;
@@ -92,7 +92,7 @@
     margin: 1em 0;
 }
 
-.collapse.expanded {
+.collapse-block.expanded {
     margin-left: calc(-1 * var(--collapse-left-offset));
     padding-left: var(--collapse-left-offset);
     padding-top: var(--collapse-toggle-top-height);
@@ -103,26 +103,53 @@
 /*  Collapse block contents.
  */
 
-.collapse.expanded > :not(.disclosure-button) {
+.collapse-block.expanded > :not(.disclosure-button) {
     position: relative;
     z-index: 13;
 }
 
-.collapse.expanded-not > .collapse-content-wrapper {
+.collapse-block.expanded-not > .collapse-content-wrapper {
     max-height: calc(  var(--collapse-toggle-top-height)
                      + var(--collapse-toggle-bottom-height));
     overflow: hidden;
     contain: content;
 }
-.collapse.has-abstract.expanded-not > .collapse-content-wrapper {
+.collapse-block.has-abstract.expanded-not > .collapse-content-wrapper {
     max-height: 0;
+}
+
+.collapse-inline.expanded-not > .collapse-content-wrapper {
+    display: inline-block;
+    max-width: 0;
+    max-height: 0;
+    overflow: hidden;
+}
+
+/*	Hover highlighting.
+ */
+@media only screen and (hover: hover) {
+	.collapse-inline.expanded > .collapse-content-wrapper {
+		transition:
+			background-color 0.1s ease,
+			box-shadow 0.1s ease;
+	}
+	.collapse-inline.expanded:hover > .collapse-content-wrapper:not(:hover) {
+		--background-color: #eee;
+
+		background-color: var(--background-color);
+		box-shadow: 
+			-0.2em calc(0.1em - 2px) 0 0 var(--background-color),
+			0.2em calc(0.1em - 2px) 0 0 var(--background-color),
+			-0.2em calc(0.1em - 1px) 0 0 var(--GW-collapse-inline-disclosure-button-hover-color),
+			0.2em calc(0.1em - 1px) 0 0 var(--GW-collapse-inline-disclosure-button-hover-color);
+	}
 }
 
 /*****************************/
 /*  Collapse block background.
  */
 
-.collapse::before {
+.collapse-block::before {
     content: "";
     position: absolute;
     left: var(--collapse-toggle-left-width);
@@ -131,20 +158,20 @@
     right: 0;
     background-color: var(--background-color);
 }
-.collapse.expanded::before {
+.collapse-block.expanded::before {
     z-index: 12;
 }
 
 /*	Fix for NoScript users.
  */
-.collapse:not(.expanded):not(.expanded-not)::before {
+.collapse-block:not(.expanded):not(.expanded-not)::before {
     display: none;
 }
 
 /*********************/
 /*  Disclosure button.
  */
-.disclosure-button {
+.collapse > .disclosure-button {
     --collapse-button-background-color: var(--GW-collapse-disclosure-button-color);
     --collapse-button-text-color: var(--GW-collapse-disclosure-button-text-color);
 
@@ -153,36 +180,41 @@
     background-color: transparent;
     margin: 0;
     padding: 0;
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: inherit;
+    color: var(--collapse-button-text-color);
+    transition:
+        color 0.1s ease;
+    cursor: pointer;
+}
+.collapse > .disclosure-button:hover {
+    --collapse-button-background-color: var(--GW-collapse-disclosure-button-hover-color);
+    --collapse-button-text-color: var(--GW-collapse-disclosure-button-text-hover-color);
+}
+.collapse > .disclosure-button:focus {
+    outline: none;
+}
+ 
+.collapse-block > .disclosure-button {
     position: absolute;
     top: 0;
     right: 0;
     width: 100%;
     height: 100%;
     z-index: 10;
-    font-weight: inherit;
-    font-style: inherit;
     font-size: 0.875rem;
     font-family: var(--GW-sans-serif-font-stack);
-    color: var(--collapse-button-text-color);
     box-shadow:
         0.5em 0 0 0 var(--collapse-button-background-color) inset;
-    transition:
-        color 0.1s ease;
-    cursor: pointer;
 }
-.disclosure-button:hover {
-    --collapse-button-background-color: var(--GW-collapse-disclosure-button-hover-color);
-    --collapse-button-text-color: var(--GW-collapse-disclosure-button-text-hover-color);
-
+.collapse-block > .disclosure-button:hover {
     z-index: 11;
-}
-.disclosure-button:focus {
-    outline: none;
 }
 
 /*  Top and bottom parts of disclosure button.
  */
-.disclosure-button .part {
+.collapse-block > .disclosure-button .part {
     position: absolute;
     right: 0;
     width: 100%;
@@ -193,7 +225,7 @@
     text-underline-offset: 3px;
 }
 
-.disclosure-button .part::before {
+.collapse-block > .disclosure-button .part::before {
     content: "";
     position: absolute;
     width: 100%;
@@ -204,7 +236,7 @@
         background-color 0.1s ease;
 }
 
-.disclosure-button .part > span {
+.collapse-block > .disclosure-button .part > span {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -214,26 +246,26 @@
         opacity 0.1s ease;
 }
 
-.disclosure-button .part .icon {
+.collapse-block > .disclosure-button .part .icon {
     width: var(--icon-size);
     height: 100%;
     padding: calc(var(--icon-size) / 4);
     box-sizing: border-box;
 }
-.disclosure-button .part .icon svg {
+.collapse-block > .disclosure-button .part .icon svg {
     height: 100%;
 }
 
-.disclosure-button .part .label {
+.collapse-block > .disclosure-button .part .label {
 	opacity: 0;
 }
-.disclosure-button.labels-visible .part .label {
+.collapse-block > .disclosure-button.labels-visible .part .label {
 	opacity: 1;
 }
 
 /*  Top part of disclosure button.
  */
-.disclosure-button .part.top {
+.collapse-block > .disclosure-button .part.top {
 	--icon-size: var(--collapse-toggle-top-height);
 
     top: 0;
@@ -241,26 +273,26 @@
     justify-content: flex-end;
 }
 
-.collapse.expanded-not > .disclosure-button:hover .part.top .icon svg {
+.collapse-block.expanded-not > .disclosure-button:hover .part.top .icon svg {
     transform: rotate(-0.25turn);
     transition:
         transform 1.0s ease;
 }
-.collapse.expanded > .disclosure-button .part.top .icon svg {
+.collapse-block.expanded > .disclosure-button .part.top .icon svg {
     transform: rotate(-0.25turn);
 }
-.collapse.expanded-not.just-clicked > .disclosure-button:hover .part.top .icon svg {
+.collapse-block.expanded-not.just-clicked > .disclosure-button:hover .part.top .icon svg {
     transform: none;
     transition: none;
 }
 
-.disclosure-button .part.top .label {
+.collapse-block > .disclosure-button .part.top .label {
     padding: 0 0 0 1.25em;
 }
 
 /*  Bottom part of disclosure button.
  */
-.disclosure-button .part.bottom {
+.collapse-block > .disclosure-button .part.bottom {
 	--icon-size: var(--collapse-toggle-bottom-height);
 
     bottom: 0;
@@ -268,59 +300,142 @@
     justify-content: center;
 }
 
-.disclosure-button .part.bottom .label {
+.collapse-block > .disclosure-button .part.bottom .label {
     padding: 0 1em;
 }
 
-.disclosure-button .part.bottom .icon {
+.collapse-block > .disclosure-button .part.bottom .icon {
     position: absolute;
 }
-.disclosure-button.labels-visible .part.bottom .icon {
+.collapse-block > .disclosure-button.labels-visible .part.bottom .icon {
     opacity: 0;
 }
-.disclosure-button .part.bottom .icon svg {
+.collapse-block > .disclosure-button .part.bottom .icon svg {
     transform: rotate(-0.25turn);
 }
-.collapse.expanded > .disclosure-button .part.bottom .icon svg {
+.collapse-block.expanded > .disclosure-button .part.bottom .icon svg {
     transform: rotate(0.25turn);
 }
 
 /*	Disclosure button edge cases.
  */
-.collapse.just-auto-expanded > .disclosure-button.labels-visible .part .label {
+.collapse-block.just-auto-expanded > .disclosure-button.labels-visible .part .label {
 	opacity: 0;
 	transition: none;
 }
-.collapse.no-abstract.expanded-not > .disclosure-button .part.bottom > span {
+.collapse-block.no-abstract.expanded-not > .disclosure-button .part.bottom > span {
 	display: none;
+}
+
+/*	Inline disclosure button.
+ */
+.collapse-inline > .disclosure-button,
+.collapse-inline > .disclosure-button .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.collapse-inline > .disclosure-button {
+    --collapse-button-background-color: var(--GW-collapse-inline-disclosure-button-color);
+    --collapse-button-text-color: var(--GW-collapse-inline-disclosure-button-text-color);
+    
+    height: calc(1.2em + 4px);
+    vertical-align: text-bottom;
+    position: relative;
+    bottom: -1px;
+}
+.collapse-inline > .disclosure-button:hover,
+.collapse-inline > .disclosure-button.hover {
+    --collapse-button-background-color: var(--GW-collapse-inline-disclosure-button-hover-color);
+    --collapse-button-text-color: var(--GW-collapse-inline-disclosure-button-text-hover-color);
+}
+.collapse-inline.expanded > .disclosure-button.start {
+    margin: 0 0.25em 0 0;
+}
+.collapse-inline.expanded > .disclosure-button {
+    margin: 0 0 0 0.25em;
+}
+
+.collapse-inline > .disclosure-button .icon {
+    --button-border-radius: 8px;
+    
+    height: 100%;
+    background-color: var(--collapse-button-background-color);
+    color: var(--collapse-button-text-color);
+    padding: 0 0.6em;
+    border-radius: var(--button-border-radius);
+    overflow: hidden;
+    transition:
+    	background-color 0.1s ease,
+    	color 0.1s ease;
+}
+.collapse-inline.expanded > .disclosure-button.start .icon {
+    border-radius: var(--button-border-radius) 0 0 var(--button-border-radius);
+    padding: 0;
+}
+.collapse-inline.expanded > .disclosure-button.end .icon {
+    border-radius: 0 var(--button-border-radius) var(--button-border-radius) 0;
+    padding: 0;
+}
+
+.collapse-inline > .disclosure-button .icon svg {
+    display: block;
+    width: 1.2em;
+    height: 100%;
+}
+.collapse-inline > .disclosure-button.end .icon svg {
+    transform: rotate(0.5turn);
+}
+.collapse-inline.expanded > .disclosure-button .icon svg {
+    position: relative;
+}
+.collapse-inline.expanded > .disclosure-button.start .icon svg {
+    left: 0.6em;
+}
+.collapse-inline.expanded > .disclosure-button.end .icon svg {
+    right: 0.6em;
+}
+
+.collapse-inline.expanded-not > .disclosure-button.end {
+    display: none;
+}
+
+.collapse-inline.expanded-not > .disclosure-button:hover .icon svg {
+    transform: rotateY(0.5turn);
+    transition:
+        transform 1.25s ease;
+}
+.collapse-inline.expanded-not.just-clicked > .disclosure-button:hover .icon svg {
+    transform: none;
+    transition: none;
 }
 
 /********************/
 /*  Collapse summary.
  */
-.collapse.has-abstract {
+.collapse-block.has-abstract {
     padding-top: var(--collapse-toggle-top-height);
     padding-bottom: var(--collapse-toggle-bottom-height);
     min-height: unset;
 }
 
-.collapse > .abstract-collapse {
+.collapse-block > .abstract-collapse {
     position: relative;
     z-index: 1;
 }
-.collapse > .abstract-collapse.abstract {
+.collapse-block > .abstract-collapse.abstract {
     margin-left: calc(-1 * (var(--collapse-toggle-left-width) + 2px));
 }
-.collapse > .abstract-collapse:not(.abstract) {
+.collapse-block > .abstract-collapse:not(.abstract) {
     margin-top: 0.25em;
     margin-bottom: 0.25em;
 }
 
-.collapse.expanded-not > .abstract-collapse.abstract > blockquote {
+.collapse-block.expanded-not > .abstract-collapse.abstract > blockquote {
     margin: 0;
     border-color: var(--background-color);
 }
-.collapse.expanded-not > .disclosure-button:hover + .abstract-collapse.abstract > blockquote {
+.collapse-block.expanded-not > .disclosure-button:hover + .abstract-collapse.abstract > blockquote {
     background-color: var(--GW-abstract-collapse-blockquote-hover-color);
     border-color: var(--GW-abstract-collapse-blockquote-hover-color);
 }
@@ -478,41 +593,41 @@ div.collapse.has-abstract.expanded-not > .disclosure-button .part::before {
 /*  Collapses in blockquotes.
  */
 
-blockquote .collapse {
+blockquote .collapse-block {
     --collapse-blockquote-side-padding: 1.25em;
     --collapse-blockquote-bottom-padding: 1em;
 }
 @media all and (max-width: 649px) {
-    blockquote .collapse {
+    blockquote .collapse-block {
         --collapse-blockquote-side-padding: 1em;
         --collapse-blockquote-bottom-padding: 0.75em;
     }
 }
 
-blockquote .collapse,
-blockquote .collapse.expanded {
+blockquote .collapse-block,
+blockquote .collapse-block.expanded {
     padding-left: var(--collapse-blockquote-side-padding);
     padding-right: var(--collapse-blockquote-side-padding);
     margin-left: calc(-1 * var(--collapse-blockquote-side-padding));
     margin-right: calc(-1 * var(--collapse-blockquote-side-padding));
 }
-.markdownBody blockquote > .collapse:last-child {
+.markdownBody blockquote > .collapse-block:last-child {
     margin-bottom: calc(-1 * var(--collapse-blockquote-bottom-padding));
 }
 
-blockquote .collapse > .disclosure-button {
+blockquote .collapse-block > .disclosure-button {
     --collapse-button-text-color: var(--GW-collapse-in-blockquote-disclosure-button-text-color);
     --collapse-button-background-color: var(--GW-collapse-in-blockquote-disclosure-button-color);
 }
-blockquote .collapse > .disclosure-button:hover {
+blockquote .collapse-block > .disclosure-button:hover {
     --collapse-button-text-color: var(--GW-collapse-in-blockquote-disclosure-button-text-hover-color);
     --collapse-button-background-color: var(--GW-collapse-in-blockquote-disclosure-button-hover-color);
 }
 
-blockquote .collapse.expanded-not > .disclosure-button .part::before {
+blockquote .collapse-block.expanded-not > .disclosure-button .part::before {
     opacity: 0.70;
 }
-blockquote .collapse.has-abstract.expanded-not > .disclosure-button .part::before {
+blockquote .collapse-block.has-abstract.expanded-not > .disclosure-button .part::before {
     opacity: 1.0;
 }
 
@@ -611,22 +726,26 @@ section.collapse > .collapse-content-wrapper > .collapse.section-backlinks-conta
 /*  Collapse edge cases.
  */
 
-li > .collapse:only-child {
+li > .collapse-block:only-child {
     margin: 0.25em 0 0.25em 0;
 }
-li:last-child > .collapse:only-child {
+li:last-child > .collapse-block:only-child {
     margin: 0.25em 0 0.75em 0;
 }
-li > .collapse > .collapse-content-wrapper > ul {
+li > .collapse-block > .collapse-content-wrapper > ul {
     margin-top: 0.125em;
 }
-li > .collapse.expanded > .collapse-content-wrapper > ul {
+li > .collapse-block.expanded > .collapse-content-wrapper > ul {
     margin-top: 0.5em;
 }
 
+/*	Is this necessary? Not if the other one is removed...
+	—SA 2022-05-07
+/* 
 .collapse [class^='horizontal-rule'] {
     clear: none;
 }
+ */
 
 body.indented .abstract-collapse + .collapse-content-wrapper > p:not([class^='drop-cap']):first-child {
     text-indent: 2.5em;
@@ -643,7 +762,7 @@ body.indented-not .abstract-collapse + .collapse-content-wrapper > p:not([class^
     }
 }
 
-.footnote .collapse {
+.footnote .collapse-block {
     --collapse-left-offset: 0.75em;
 }
 
@@ -4268,7 +4387,7 @@ body.lorem div[class^='drop-cap'] {
     margin-bottom: 0.375em;
 }
 
-.popframe-body > div.annotation > div.annotation-abstract > .collapse {
+.popframe-body > div.annotation > div.annotation-abstract > collapse-block {
     margin-left: calc(-1 * var(--collapse-left-offset));
     padding-left: var(--collapse-left-offset);
     margin-right: -2px;

@@ -1,4 +1,5 @@
 GW.assets.collapseChevron = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23CCC"/></svg>`;
+GW.assets.ellipsis = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"/></svg>`;
 
 GW.collapse = {
 	alwaysShowCollapseInteractionHints: (getSavedCount("clicked-to-expand-collapse-block-count") < (GW.isMobile() ? 6 : 3)),
@@ -119,6 +120,52 @@ function isWithinCollapsedBlock(element) {
     return isWithinCollapsedBlock(collapseParent.parentElement);
 }
 
+/************************************************************************/
+/*	Returns true iff element’s immediate children include any block-level 
+	elements.
+ */
+function containsBlockChildren(element) {
+	for (child of element.children) {
+		if ([ "DIV", "P", "UL", "LI", "SECTION", "BLOCKQUOTE", "FIGURE" ].includes(child.tagName))
+			return true;
+		if (   child.tagName == "A"
+			&& Transclude.isIncludeLink(child))
+			return true;
+	}
+
+	return false
+}
+
+/***************************************************************************/
+/*	Constructs and returns a disclosure button (for block-level collapses by
+	default; to get an inline button, pass `false`).
+ */
+function newDisclosureButton(block = true, start = true) {
+	let className = "disclosure-button" + (block ? "" : (" " + (start ? "start" : "end")));
+	let disclosureButtonHTML = `<button type="button" class="${className}" tabindex="-1" aria-label="Open/close collapsed section">`;
+	if (block) {
+		disclosureButtonHTML += `<span class="part top">`
+									 + `<span class="label"></span>`
+									 + `<span class="icon">`
+										+ GW.assets.collapseChevron
+									 + `</span>`
+								 + `</span>`
+								 + `<span class="part bottom">`
+									 + `<span class="label"></span>`
+									 + `<span class="icon">`
+										+ GW.assets.collapseChevron
+									 + `</span>`
+								 + `</span>`;
+	} else {
+		disclosureButtonHTML += `<span class="icon">`
+									+ GW.assets.ellipsis
+								 + `</span>`;
+	}
+	disclosureButtonHTML += `</button>`;
+
+	return elementFromHTML(disclosureButtonHTML);
+}
+
 /***********************************************************************/
 /*  Inject disclosure buttons and otherwise prepare the collapse blocks.
  */
@@ -128,20 +175,6 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 	//  Construct all collapse blocks (in correct final state).
 	eventInfo.container.querySelectorAll(".collapse").forEach(collapseBlock => {
 		let startExpanded = (collapseBlock.contains(getHashTargetedElement()) == true);
-		let disclosureButtonHTML = `<button type="button" class="disclosure-button" tabindex="-1" aria-label="Open/close collapsed section">`
-									 + `<span class="part top">`
-										 + `<span class="label"></span>`
-										 + `<span class="icon">`
-										 	+ GW.assets.collapseChevron
-										 + `</span>`
-									 + `</span>`
-									 + `<span class="part bottom">`
-										 + `<span class="label"></span>`
-										 + `<span class="icon">`
-										 	+ GW.assets.collapseChevron
-										 + `</span>`
-									 + `</span>`
-								 + `</button>`;
 
 		if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].includes(collapseBlock.tagName)) {
 			collapseBlock.classList.remove("collapse");
@@ -152,7 +185,21 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 				collapseBlock.classList.add("expand-on-hover");
 
 			let collapseWrapper;
-			if ([ "DIV", "SECTION" ].includes(collapseBlock.tagName)) {
+			if ([ "DIV", "SECTION", "SPAN" ].includes(collapseBlock.tagName)) {
+				/*	Rewrap spans that are NOT inline collapses (i.e., those that
+					are, for some reason, wrapping block-level content).
+				 */
+				if (   collapseBlock.tagName == "SPAN"
+					&& containsBlockChildren(collapseBlock))
+					collapseBlock = rewrapContents(collapseBlock, null, "DIV", true, true);
+
+				//	Designate collapse type (block or inline).
+				if ([ "SPAN" ].includes(collapseBlock.tagName))
+					collapseBlock.classList.add("collapse-inline");
+				else
+					collapseBlock.classList.add("collapse-block");
+
+				//	No additional wrapper needed for these tag types.
 				collapseWrapper = collapseBlock;
 
 				//	Ensure correct structure and classes of abstracts.
@@ -185,38 +232,50 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 						&& bareContentTags.includes(collapseBlock.firstElementChild.nextElementSibling.tagName)))
 					collapseBlock.classList.add("bare-content");
 			} else {
+				//	Additional wrapper is required for most tag types.
 				collapseWrapper = wrapElement(collapseBlock, null, "DIV", true, [ "collapse", "expand-on-hover" ]);
-
-				if ([ "SPAN" ].includes(collapseBlock.tagName)) {
-					wrapElement(collapseBlock, null, "DIV", true, true);
-					unwrap(collapseBlock);
-				}
 			}
 
 			//	Mark as expanded, if need be.
 			collapseWrapper.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1)
 
 			//  Inject the disclosure button.
-			if ([ "SECTION" ].includes(collapseBlock.tagName)) {
-				collapseWrapper.firstElementChild.insertAdjacentHTML("afterend", disclosureButtonHTML);
+			if (collapseBlock.classList.contains("collapse-inline")) {
+				//	Button at start.
+				if (collapseBlock.firstElementChild.classList.contains("abstract-collapse"))
+					collapseWrapper.insertBefore(newDisclosureButton(false), collapseBlock.firstElementChild.nextSibling);
+				else
+					collapseWrapper.insertBefore(newDisclosureButton(false), collapseWrapper.firstChild);
+
+				//	Button at end.
+				collapseWrapper.insertBefore(newDisclosureButton(false, false), null);
+			} else if ([ "SECTION" ].includes(collapseBlock.tagName)) {
+				collapseWrapper.insertBefore(newDisclosureButton(), collapseWrapper.firstElementChild.nextElementSibling);
 			} else {
-				collapseWrapper.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
+				collapseWrapper.insertBefore(newDisclosureButton(), collapseWrapper.firstChild);
 			}
 
 			//	Slight HTML structure rectification.
 			if (   collapseWrapper.parentElement
-				&& [ "P" ].includes(collapseWrapper.parentElement.tagName)
+				&& [ "P" ].includes(collapseWrapper.parentElement.tagName) == true
+				&& [ "SPAN" ].includes(collapseWrapper.tagName) == false
 				&& isOnlyChild(collapseWrapper))
 				unwrap(collapseWrapper.parentElement);
 
 			//	Construct collapse content wrapper.
-			let collapseContentWrapper = newElement("DIV", { "class": "collapse-content-wrapper" });
+			let collapseContentWrapperTagName = collapseWrapper.tagName == "SPAN" ? "SPAN" : "DIV";
+			let collapseContentWrapper = newElement(collapseContentWrapperTagName, { "class": "collapse-content-wrapper" });
 			let childNodesArray = Array.from(collapseWrapper.childNodes);
 			collapseContentWrapper.append(...childNodesArray.slice(childNodesArray.findLastIndex(node => {
 				return (   node instanceof Element 
-						&& node.classList.containsAnyOf([ "disclosure-button", "abstract-collapse" ]));
+						&& node.matches(".disclosure-button:not(.end), abstract-collapse"));
 			}) + 1));
 			collapseWrapper.append(collapseContentWrapper);
+			/*	Move the auxiliary (closing) disclosure button of an inline 
+				collapse back to its proper place.
+			 */
+			if ([ "SPAN" ].includes(collapseWrapper.tagName))
+				collapseWrapper.append(collapseContentWrapper.lastElementChild);
 
 			//	Designate abstract-less collapse blocks.
 			if (collapseContentWrapper.previousElementSibling.classList.contains("abstract-collapse") == false)
@@ -256,10 +315,12 @@ function updateDisclosureButtonState(collapseBlock, showLabels) {
 					? `Click to expand`
 					: `Click to collapse`;
 
-	disclosureButton.querySelector(".part.top .label").innerHTML = labelHTML;
-	disclosureButton.querySelector(".part.bottom .label").innerHTML = labelHTML;
+	disclosureButton.querySelectorAll(".part .label").forEach(label => {
+		label.innerHTML = labelHTML;
+	});
 
-	disclosureButton.classList.toggle("labels-visible", showLabels || GW.collapse.alwaysShowCollapseInteractionHints);
+	if (collapseBlock.classList.contains("collapse-block"))
+		disclosureButton.classList.toggle("labels-visible", showLabels || GW.collapse.alwaysShowCollapseInteractionHints);
 }
 
 /*************************************************/
@@ -280,12 +341,14 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 		disclosureButton.addActivateEvent(disclosureButton.actionHandler = (event) => {
 			GWLog("Collapse.collapseBlockDisclosureButtonActivated", "collapse.js", 2);
 
-			//	Nullify accidental late clicks.
-			if (collapseBlock.classList.contains("just-auto-expanded"))
+			//	Nullify accidental late clicks in block collapses.
+			if (   collapseBlock.classList.contains("collapse-block")
+				&& collapseBlock.classList.contains("just-auto-expanded"))
 				return;
 
 			//	Keep count of clicks to uncollapse.
-			if (   isCollapsed(collapseBlock)
+			if (   collapseBlock.classList.contains("collapse-block")
+				&& isCollapsed(collapseBlock)
 				&& event.type == "click")
 				incrementSavedCount("clicked-to-expand-collapse-block-count");
 
@@ -346,15 +409,33 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 			}, [ "mouseleave", "mousedown" ]);
 		}
 
-		//	Add listener to show labels on hover, if need be.
-		if (   GW.collapse.showCollapseInteractionHintsOnHover == true
-			&& GW.collapse.alwaysShowCollapseInteractionHints == false) {
-			disclosureButton.addEventListener("mouseenter", (event) => {
-				updateDisclosureButtonState(collapseBlock, true);
-			});
-			disclosureButton.addEventListener("mouseleave", (event) => {
-				updateDisclosureButtonState(collapseBlock);
-			});
+		//	On-hover state changes.
+		if (GW.isMobile() == false) {
+			//	Add listener to show labels on hover, if need be.
+			if (   collapseBlock.classList.contains("collapse-block")
+				&& GW.collapse.showCollapseInteractionHintsOnHover == true
+				&& GW.collapse.alwaysShowCollapseInteractionHints == false) {
+				disclosureButton.addEventListener("mouseenter", (event) => {
+					updateDisclosureButtonState(collapseBlock, true);
+				});
+				disclosureButton.addEventListener("mouseleave", (event) => {
+					updateDisclosureButtonState(collapseBlock);
+				});
+			}
+
+			//	Add listeners to highlight counterpart at other end.
+			if (   collapseBlock.classList.contains("collapse-inline")
+				&& disclosureButton.classList.containsAnyOf([ "start", "end" ])) {
+				let counterpart = disclosureButton.classList.contains("end")
+								  ? collapseBlock.querySelector(".disclosure-button")
+								  : collapseBlock.querySelector(".collapse-content-wrapper").nextElementSibling;
+				disclosureButton.addEventListener("mouseenter", (event) => {
+					counterpart.classList.add("hover");
+				});
+				disclosureButton.addEventListener("mouseleave", (event) => {
+					counterpart.classList.remove("hover");
+				});
+			}
 		}
 	});
 }, "eventListeners");

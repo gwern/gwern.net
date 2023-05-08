@@ -375,6 +375,15 @@ function unwrap(wrapper, moveClasses = false) {
     wrapper.remove();
 }
 
+/******************************************************************************/
+/*  Wrap element’s contents, then unwrap the element itself and return wrapper.
+ */
+function rewrapContents(...args) {
+	let wrapper = wrapElement(...args);
+	unwrap(args[0]);
+	return wrapper;
+}
+
 /*******************************************************/
 /*  Unwrap all elements specified by the given selector.
  */
