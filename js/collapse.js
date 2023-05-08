@@ -214,23 +214,28 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 					//	Mark those collapse blocks that have abstracts.
 					collapseAbstract.closest(".collapse").classList.add("has-abstract");
 
-					if (   collapseAbstract.children.length == 0
-						&& collapseAbstract.childNodes.length > 0) {
-						collapseAbstract.innerHTML = `<p>${(collapseAbstract.innerHTML.trim())}</p>`;
-					} else if (   collapseAbstract.firstElementChild
-							   && collapseAbstract.firstElementChild.tagName == "BLOCKQUOTE") {
-						//	Make sure “real” abstracts are marked as such.
-						collapseAbstract.classList.add("abstract");
+					if (collapseBlock.classList.contains("collapse-block")) {
+						if (   collapseAbstract.children.length == 0
+							&& collapseAbstract.childNodes.length > 0) {
+							//	Wrap bare text nodes.
+							collapseAbstract.innerHTML = `<p>${(collapseAbstract.innerHTML.trim())}</p>`;
+						} else if (   collapseAbstract.firstElementChild
+								   && collapseAbstract.firstElementChild.tagName == "BLOCKQUOTE") {
+							//	Make sure “real” abstracts are marked as such.
+							collapseAbstract.classList.add("abstract");
+						}
 					}
 				});
 
-				//	Designate “bare content” collapses.
-				let bareContentTags = [ "P", "UL", "OL" ];
-				if (   bareContentTags.includes(collapseBlock.firstElementChild.tagName)
-					|| (   collapseBlock.classList.contains("has-abstract")
-						&& bareContentTags.includes(collapseBlock.firstElementChild.firstElementChild.tagName)
-						&& bareContentTags.includes(collapseBlock.firstElementChild.nextElementSibling.tagName)))
-					collapseBlock.classList.add("bare-content");
+				//	Designate “bare content” collapse blocks.
+				if (collapseBlock.classList.contains("collapse-block")) {
+					let bareContentTags = [ "P", "UL", "OL" ];
+					if (   bareContentTags.includes(collapseBlock.firstElementChild.tagName)
+						|| (   collapseBlock.classList.contains("has-abstract")
+							&& bareContentTags.includes(collapseBlock.firstElementChild.firstElementChild.tagName)
+							&& bareContentTags.includes(collapseBlock.firstElementChild.nextElementSibling.tagName)))
+						collapseBlock.classList.add("bare-content");
+				}
 			} else {
 				//	Additional wrapper is required for most tag types.
 				collapseWrapper = wrapElement(collapseBlock, null, "DIV", true, [ "collapse", "expand-on-hover" ]);
