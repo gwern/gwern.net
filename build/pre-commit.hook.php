@@ -8,7 +8,8 @@ $static_dir = "{$build_dir}/..";
 
 ## SSI includes.
 $ssi_includes = [
-	"{$static_dir}/include/inlined-head.html"
+	"{$static_dir}/include/inlined-head.html",
+	"{$static_dir}/include/inlined-foot.html"
 ];
 
 ## Components of generated/assembled inlined style sheets.
