@@ -15,7 +15,7 @@ import Control.Monad.State.Lazy (evalState, get, put, State)
 import Data.Char (toUpper)
 import qualified Data.Text as T (any, append, concat, pack, unpack, replace, splitOn, strip, Text)
 import Data.Text.Read (decimal)
-import Text.Regex.TDFA ((=~), Regex, makeRegex, match) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
+import Text.Regex.TDFA ((=~), Regex, makeRegex, match)
 import qualified Data.Map.Strict as M
 
 import Data.Text.Titlecase (titlecase)

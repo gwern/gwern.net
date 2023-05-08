@@ -9,7 +9,7 @@ import System.Exit (ExitCode(ExitFailure))
 import Text.Pandoc (runPure, nullMeta, writeHtml5String, Pandoc(..))
 import Data.FileStore.Utils (runShellCommand)
 import System.FilePath (takeDirectory)
-import Text.Regex.TDFA ((=~)) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
+import Text.Regex.TDFA ((=~))
 
 import Annotation.PDF (pdf)
 import Image (invertImage)

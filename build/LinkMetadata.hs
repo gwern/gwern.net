@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-05-08 11:11:25 gwern"
+When:  Time-stamp: "2023-05-08 11:49:32 gwern"
 License: CC-0
 -}
 
@@ -39,7 +39,7 @@ import Text.Pandoc (readerExtensions, Inline(Link, Span),
                     readHtml, nullAttr, nullMeta,
                     Inline(Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div, Plain), Attr)
 import Text.Pandoc.Walk (walk, walkM)
-import Text.Regex.TDFA ((=~)) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
+import Text.Regex.TDFA ((=~))
 import Text.Show.Pretty (ppShow)
 
 import qualified Control.Monad.Parallel as Par (mapM_)
