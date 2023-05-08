@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-05-05 17:44:58 gwern"
+When:  Time-stamp: "2023-05-08 11:11:25 gwern"
 License: CC-0
 -}
 
@@ -573,38 +573,15 @@ authorsInitialize aut = let authors = split ", " aut in
                                                , ("^([A-za-z.-])[A-za-z.-]+ (.*)", "\\1. \\2")]) a in
                                            if a==short then Str (T.pack a) else Span ("", [], [("title", T.pack a)]) [Str (T.pack short)]) authors
 
--- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime; but for backwards compatibility with non-JS readers (such as NoScript users, bots, tools etc), we still provide the title/author/date/backlinks/similar-links along with the transcluded-URL. For JS users, that all will be replaced by the proper popups annotation, and is mostly irrelevant to them. As such, this is a simplified version of `generateAnnotationBlock`.
-generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
-generateAnnotationTransclusionBlock (f, (tle,aut,dt,doi,ts,_)) blp slp lb =
+-- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
+generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
+generateAnnotationTransclusionBlock (f, (tle,aut,dt,_,_,_)) =
                                 let tle' = if null tle then "<code>"++f++"</code>" else tle
                                     lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "link-bibliography-") `T.append` tmpID
-                                    authorShort = authorsTruncate aut
-                                    authorSpan = if aut/=authorShort then Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) [Str (T.pack authorShort)]
-                                                 else Span ("", ["author", "cite-author"], []) [Str (T.pack authorShort)]
-                                    author = if aut=="" || aut=="N/A" || aut=="N/\8203A" then [Space] else [Space, authorSpan]
-                                    date = if dt=="" then [] else [Span ("", ["date", "cite-date"],
-                                                                          if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
-                                                                    [Str (T.pack $ dateTruncateBad dt)]]
-                                    tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
-                                    backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks", "icon-not"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
-                                    similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars", "icon-not"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
-                                    linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], []) [Link ("",["aux-links", "link-page", "icon-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of links it cites).")]]
-                                    values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
-                                    link = linkLive $ Link (lid, ["link-annotated", "include-annotation", "include-replace-container"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
+                                    link = linkLive $ Link (lid, ["link-annotated", "include-annotation", "include-replace-container"], [])
+                                      [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
                                 in
-                                  [Para
-                                       ([link,Str ","] ++
-                                         author ++
-                                         date ++
-                                         (if (tags++backlink++similarlink)==[] then []
-                                           else [Str " ("] ++
-                                                tags ++
-                                                backlink ++
-                                                similarlink ++
-                                                linkBibliography ++
-                                                [Str ")"]
-                                         ))
-                                  ]
+                                  [Para [link]]
 
 -- annotations, like /face, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/face#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
 -- WARNING: because of the usual RawHtml issues, reading with Pandoc doesn't help - it just results in RawInlines which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...

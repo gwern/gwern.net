@@ -13,7 +13,6 @@ module Main where
 
 import Control.Monad (filterM, void)
 import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, nub, sort, sortBy, zipWith4, (\\))
-import Data.List.Utils (countElem)
 import Data.Maybe (fromJust)
 import Data.Text.Titlecase (titlecase)
 import System.Directory (listDirectory, doesFileExist)
@@ -28,9 +27,9 @@ import Text.Pandoc.Walk (walk)
 
 import Interwiki (inlinesToText)
 import LinkID (generateID, authorsToCite)
-import LinkMetadata (readLinkMetadata, readLinkMetadataNewest, generateAnnotationTransclusionBlock, authorsTruncate, parseRawBlock, hasAnnotation, dateTruncateBad, parseRawInline, annotateLink)
+import LinkMetadata (readLinkMetadata, readLinkMetadataNewest, generateAnnotationTransclusionBlock, authorsTruncate, parseRawBlock, hasAnnotation, parseRawInline, annotateLink)
 import LinkMetadataTypes (Metadata, MetadataItem)
-import Tags (tagsToLinksSpan, listTagDirectories, abbreviateTag)
+import Tags (listTagDirectories, abbreviateTag)
 import LinkBacklink (getBackLinkCheck, getSimilarLinkCheck, getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy)
@@ -60,7 +59,7 @@ generateDirectory filterp md dirs dir'' = do
   let (before,after) = splitAt i dirs
   let (previous,next) = if length dirs < 2 || before==after then ("","") else
                             (if null before || last before == dir'' then "" else "previous: /"++last before++"index",
-                              if length after < 2 || head (drop 1 after) == dir'' then "" else "next: /"++head (drop 1 after)++"index")
+                              if length after < 2 || (after !! 1) == dir'' then "" else "next: /"++(after !! 1)++"index")
 
   tagged <- listTagged filterp md (init dir'')
 
@@ -99,7 +98,7 @@ generateDirectory filterp md dirs dir'' = do
   -- (Entries without even a title must be squashed into a list and chucked at the end.)
   let titledLinks   = filter (\(_,(t,_,_,_,_,_),_,_,_) -> t /= "") links
   let untitledLinks = filter (\(_,(t,_,_,_,_,_),_,_,_) -> t == "") links
-  let allUnannotatedUntitledP = (length untitledLinks >= 3) && (all (=="") $ map (\(_,(_,_,_,_,_,annotation),_,_,_) -> annotation) untitledLinks) -- whether to be compact columns
+  let allUnannotatedUntitledP = (length untitledLinks >= 3) && all (=="") (map (\(_,(_,_,_,_,_,annotation),_,_,_) -> annotation) untitledLinks) -- whether to be compact columns
 
   let titledLinksSections   = generateSections titledLinks linksWP
   let untitledLinksSection  = generateListItems untitledLinks
@@ -144,7 +143,7 @@ generateDirectory filterp md dirs dir'' = do
                     RawBlock (Format "html") "</div>"]) ++
 
                (if null linkBibList then [] else
-                 Header 1 ("link-bibliography-section", ["link-annotated-not"], []) [Str "Link Bibliography"] :
+                 Para [] : Header 1 ("link-bibliography-section", ["link-annotated-not"], []) [Str "Link Bibliography"] :
                  linkBibList)
 
   let document = Pandoc nullMeta body
@@ -289,7 +288,7 @@ generateDirectoryItems parent current ds =
        -- arrow symbolism: subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')
        generateDirectoryItem d = let downP = directoryPrefixDown current d
                                      nameShort = T.pack $ replace "/doc/" "" $ takeDirectory d
-                                     (nameDisplayed,parenthetical) = if parent == (Just "/index") then abbreviateTagLongForm nameShort else (abbreviateTag nameShort, [])
+                                     (nameDisplayed,parenthetical) = if parent == Just "/index" then abbreviateTagLongForm nameShort else (abbreviateTag nameShort, [])
                                  in
                                    [Para ([Link ("",
                                                ["link-tag", if downP then "directory-indexes-downwards" else "directory-indexes-sideways"],
@@ -315,7 +314,7 @@ generateSections links linkswp = generateSections' links ++ [Header 2 ("titled-l
 
 generateSections' :: [(FilePath, MetadataItem,FilePath,FilePath,FilePath)] -> [Block]
 generateSections' = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_,_) ->
-                                let sectionID = if aut=="" then "" else let linkId = (generateID f aut dt) in
+                                let sectionID = if aut=="" then "" else let linkId = generateID f aut dt in
                                                                           if linkId=="" then "" else linkId `T.append` "-section"
                                     authorShort = authorsToCite f aut dt
                                     sectionTitle = T.pack $ "“"++titlecase t++"”" ++
@@ -325,29 +324,4 @@ generateSections' = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_,_) ->
                                  ++ generateItem p)
 
 generateItem :: (FilePath,MetadataItem,FilePath,FilePath,FilePath) -> [Block]
-generateItem (f,(t,aut,dt,_,tgs,""),bl,sl,lb) = -- no abstracts:
- if ("https://en.wikipedia.org/wiki/"`isPrefixOf`f) then [Para [Link ("",["include-annotation"],[]) [Str (T.pack t)] (T.pack f, if t=="" then "" else T.pack $ "Wikipedia link about " ++ t)]]
- else
-  let
-       f'       = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
-       title    = if t=="" then [Code nullAttr (T.pack f')] else [RawInline (Format "html") (T.pack $ "“"++t++"”")]
-       -- prefix   = if t=="" then [] else [Code nullAttr (T.pack f'), Str ": "]
-       -- we display short authors by default, but we keep a tooltip of the full author list for on-hover should the reader need it.
-       authorShort = authorsTruncate aut
-       authorSpan  = if authorShort/=aut || ", et al" `isSuffixOf` aut then Span ("",["full-authors-list", "cite-author-plural"],[("title", T.pack aut)]) [Str (T.pack $ replace ", et al" "" authorShort)]
-                     else Span ("", ["author", "cite-author"], []) [Str (T.pack $ if countElem ',' aut == 1 then replace ", " " & " authorShort else  authorShort)]
-       author   = if aut=="" || aut=="N/A" then [] else [Str ",", Space, authorSpan]
-       date     = if dt=="" then [] else [Span ("", ["cite-date"], []) [Str (T.pack (dateTruncateBad dt))]]
-       tags     = if tgs==[] then [] else [tagsToLinksSpan $ map T.pack tgs]
-       backlink = if bl=="" then [] else (if null tgs then [] else [Str ";", Space]) ++ [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks", "icon-not"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]
-       similar  = if sl=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similar", "icon-not"],[]) [Str "similar"] (T.pack sl,"Similar links (by text embedding).")]]
-       linkBibliography = if lb=="" then [] else (if bl=="" && sl=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], []) [Link ("",["aux-links", "link-page", "icon-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of links it cites).")]]
-  in
-  if (tgs==[] && bl=="" && dt=="") then [Para (Link nullAttr title (T.pack f, "") : author)]
-  else [Div ("", ["annotation-partial"], [])
-         [Para (Link nullAttr title (T.pack f, "") : (author ++ date ++ (if null (tags ++ backlink ++ similar)
-                                                                        then []
-                                                                        else [Space, Str "("] ++ tags ++ backlink ++ similar ++ linkBibliography ++ [Str ")"]))
-                                                   )]]
--- long abstracts:
-generateItem (f,a,bl,sl,lb) = generateAnnotationTransclusionBlock (f,a) bl sl lb
+generateItem (f,a,_,_,_) = LinkMetadata.generateAnnotationTransclusionBlock (f,a)
