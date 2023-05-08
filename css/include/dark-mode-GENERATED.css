@@ -55,11 +55,9 @@
 	--GW-collapse-disclosure-button-text-hover-color: #000;
 	--GW-collapse-in-blockquote-disclosure-button-text-color: #8b8b8b;
 	--GW-collapse-in-blockquote-disclosure-button-text-hover-color: #999;
-	--GW-collapse-inline-disclosure-button-color: #5c5c5c;
-	--GW-collapse-inline-disclosure-button-hover-color: #8b8b8b;
-	--GW-collapse-inline-disclosure-button-text-color: #000;
-	--GW-collapse-inline-disclosure-button-text-hover-color: #000;
-	--GW-collapse-inline-hover-highlight-color: #333;
+	--GW-collapse-inline-disclosure-button-text-color: #c1c1c1;
+	--GW-collapse-inline-expanded-disclosure-button-text-color: #6c6c6c;
+	--GW-collapse-inline-disclosure-button-text-hover-color: #8b8b8b;
 
     /*  Headings.
      */
