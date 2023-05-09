@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-04-18 18:11:03 gwern"
+When: Time-stamp: "2023-05-09 09:09:12 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -68,7 +68,7 @@ import LinkAuto (linkAuto)
 import LinkBacklink (getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck)
 import LinkIcon (linkIconTest)
 import LinkLive (linkLiveTest, linkLivePrioritize)
-import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, createAnnotations, hasAnnotation, simplifiedHTMLString)
+import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadata, writeAnnotationFragments, createAnnotations, hasAnnotation, simplifiedHTMLString)
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv, testTags)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
@@ -102,11 +102,11 @@ main =
                hasArchivedN <- preprocess $ if slow then newIORef archivePerRunN else newIORef 0
 
                preprocess $ printGreen ("Popup annotations parsing…" :: String)
-               meta <- preprocess $ if slow then readLinkMetadataAndCheck else readLinkMetadata
+               meta <- preprocess $ readLinkMetadata
                preprocess $ if slow then do printGreen ("Writing all annotations…" :: String)
                                             writeAnnotationFragments am meta hasArchivedN False
-                                       else do printGreen ("Writing only missing annotations…" :: String)
-                                               writeAnnotationFragments am meta hasArchivedN True
+                                    else do printGreen ("Writing only missing annotations…" :: String)
+                                            writeAnnotationFragments am meta hasArchivedN True
 
                preprocess $ printGreen ("Begin site compilation…" :: String)
                match "**.page" $ do

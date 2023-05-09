@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-05-08 12:01:37 gwern"
+# When:  Time-stamp: "2023-05-09 09:10:40 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -173,9 +173,6 @@ else
         ghci -i/home/gwern/wiki/static/build/ ./static/build/XOfTheDay.hs \
              -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; qotd; sotd; }' | \
             grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]';
-        λ(){ ghci -i/home/gwern/wiki/static/build/ ./static/build/XOfTheDay.hs -e 'sitePrioritize' | \
-              grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' || true; }
-        wrap λ "Site-of-the-day: check for recommendation?"
     fi
 
     bold "Results size:"
@@ -335,6 +332,9 @@ else
   if [ "$SLOW" ]; then
     # Testing compilation results:
     set +e
+
+    bold "Checking metadata…"
+    ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'readLinkMetadataAndCheck' &> /dev/null
 
     # essays only:
     ## eg. './2012-election.page \n...\n ./doc/cs/cryptography/1955-nash.page \n...\n ./newsletter/2022/09.page \n...\n ./review/mcnamara.page \n...\n ./wikipedia-and-knol.page \n...\n ./zeo/zma.page'
@@ -1014,6 +1014,10 @@ else
 
     λ() { find ./metadata/annotation/similar/ -type f -name "*.html" | xargs --max-procs=0 --max-args=5000 grep -F --no-filename -e '<a href="' -- | sort | uniq --count | sort --numeric-sort | grep -E '^ \+[4-9][0-9]\+ \+'; }
     wrap λ "Similar-links: overused links indicate pathological lookups; blacklist links as necessary."
+
+    λ(){ ghci -i/home/gwern/wiki/static/build/ ./static/build/XOfTheDay.hs -e 'sitePrioritize' | \
+             grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' || true; }
+    wrap λ "Site-of-the-day: check for recommendations?"
 
     λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc -fno-code {} \; ) 2>&1 >/dev/null; }
     wrap λ "Test-compilation of all Haskell files in static/build: failure."
