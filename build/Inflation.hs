@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2023-05-09 16:03:43 gwern"
+-- When:  Time-stamp: "2023-05-09 17:13:36 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -64,9 +64,7 @@ $  echo 'Span ("",["inflation-adjusted"],[("year-original","2017-01-01"),("amoun
 -}
 
 import Text.Pandoc (Inline(Code, Link, Span, Str, Subscript, Superscript))
-import Text.Printf (printf, PrintfArg)
 import Text.Read (readMaybe)
-import Data.List (intercalate, unfoldr)
 import qualified Data.Map.Strict as M (findMax, findMin, lookup, lookupGE, lookupLE, mapWithKey, Map)
 import qualified Data.Text as T (head, length, pack, unpack, tail)
 
@@ -102,15 +100,9 @@ dollarAdjuster l@(Link _ text (oldYears, _)) =
           oldDollar = case (readMaybe (filter (/=',') oldDollarString) :: Maybe Float) of
                         Just d -> d
                         Nothing -> error (show l)
-          -- control potentially spurious precision:
-          -- round to 2 digits when converting to String if a decimal was present and the inflation factor is <10x and <$100, otherwise, round to whole numbers.
-          -- So, '$1.05' becomes '$20.55', but '$1' becomes '$20' instead of '$20.2359002', and '$0.05' can still become '$0.97'
-          precision = if adjustedDollar > 100 then "0" else
-                        if ('.' `elem` oldDollarString) && ((adjustedDollar < 10*oldDollar) || (adjustedDollar < 1)) then "2"
-                        else "1"
-          oldDollarString' = formatDecimal oldDollar precision
+          oldDollarString' = show oldDollar
           adjustedDollar = dollarAdjust oldDollar (T.unpack oldYear)
-          adjustedDollarString = formatDecimal adjustedDollar precision
+          adjustedDollarString = show adjustedDollar
           multiplyByUnits :: String -> String
           multiplyByUnits "" = error $ "Inflation.hs (dollarAdjuster): an empty amount was processed from 'text' variable. Original input: " ++ show l
           multiplyByUnits amount = let (unit, rest) = (last amount, read (init amount) :: Float) in -- eg. '100m' → ('m',"100")
@@ -145,19 +137,6 @@ inflationAdjustUSD d yOld yCurrent = if yOld>=1913 && yCurrent>=1913 then d * to
         rates = map (\r -> 1 + (r/100)) percents
         totalFactor = product rates
 
--- prettyprint decimals with commas for generating larger amounts like "$50,000"
--- https://stackoverflow.com/a/4408556
-formatDecimal :: (Ord a, Fractional a, Text.Printf.PrintfArg a) => a -> String -> String
-formatDecimal d prec
-    | d < 0.0   = "-" ++ formatPositiveDecimal (-d)
-    | otherwise = formatPositiveDecimal d
-    where formatPositiveDecimal = uncurry (++) . mapFst addCommas . span (/= '.') . printf ("%0."++ prec ++ "f")
-          addCommas = reverse . intercalate "," . unfoldr splitIntoBlocksOfThree . reverse
-          splitIntoBlocksOfThree l = case splitAt 3 l of ([], _) -> Nothing; p-> Just p
-          -- https://hackage.haskell.org/package/fgl-5.7.0.1/docs/src/Data.Graph.Inductive.Query.Monad.html#mapFst
-          mapFst :: (a -> b) -> (a, c) -> (b, c)
-          mapFst f (x,y) = (f x,y)
-
 bitcoinAdjuster :: Inline -> Inline
 bitcoinAdjuster l@(Link _ _ ("", _)) = error $ "Inflation adjustment (bitcoinAdjuster) failed on malformed link: " ++ show l
 bitcoinAdjuster l@(Link _ text (oldDates, _)) =
@@ -175,9 +154,8 @@ bitcoinAdjuster l@(Link _ text (oldDates, _)) =
                        Just ob -> ob
                        Nothing -> error (show l)
         oldYear = take 4 $ T.unpack oldDate -- it takes up too much space to display full dates like '2017-01-01'; readers only really need the year; the exact date is provided in the tooltip
-        precision = if ('.' `elem` oldBitcoinString) && ((adjustedBitcoin < 10*oldBitcoin) || (adjustedBitcoin < 1)) then "2" else "1"
         adjustedBitcoin = bitcoinAdjust oldBitcoin (T.unpack oldDate)
-        adjustedBitcoinString = formatDecimal adjustedBitcoin precision
+        adjustedBitcoinString = show adjustedBitcoin
 bitcoinAdjuster x = x
 
 -- convert to historical USD, and then inflation-adjust the then-exchange rate to the present day for a real value
@@ -200,7 +178,7 @@ bitcoinQuery date = case M.lookup date bitcoinUSDExchangeRate of
 
 -- the exchange rates are, of course, historical: a 2013 USD/Bitcoin exchange rate is for a *2013* dollar, not a current dollar. So we update to a current dollar.
 bitcoinUSDExchangeRate :: M.Map String Float
-bitcoinUSDExchangeRate = M.mapWithKey (\dt amt -> inflationAdjustUSD amt (read (take 4 dt)::Int) currentYear) $ bitcoinUSDExchangeRateHistory
+bitcoinUSDExchangeRate = M.mapWithKey (\dt amt -> inflationAdjustUSD amt (read (take 4 dt)::Int) currentYear) bitcoinUSDExchangeRateHistory
 
 {- This general approach could be applied to many other financial assets.
 Stock prices would benefit from being reported in meaningful terms like net real return compared to
