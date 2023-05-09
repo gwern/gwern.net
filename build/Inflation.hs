@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2023-04-16 17:38:01 gwern"
+-- When:  Time-stamp: "2023-05-09 16:03:43 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -103,9 +103,11 @@ dollarAdjuster l@(Link _ text (oldYears, _)) =
                         Just d -> d
                         Nothing -> error (show l)
           -- control potentially spurious precision:
-          -- round to 2 digits when converting to String if a decimal was present and the inflation factor is <10x, otherwise, round to whole numbers.
+          -- round to 2 digits when converting to String if a decimal was present and the inflation factor is <10x and <$100, otherwise, round to whole numbers.
           -- So, '$1.05' becomes '$20.55', but '$1' becomes '$20' instead of '$20.2359002', and '$0.05' can still become '$0.97'
-          precision = if ('.' `elem` oldDollarString) && ((adjustedDollar < 10*oldDollar) || (adjustedDollar < 1)) then "2" else "1"
+          precision = if adjustedDollar > 100 then "0" else
+                        if ('.' `elem` oldDollarString) && ((adjustedDollar < 10*oldDollar) || (adjustedDollar < 1)) then "2"
+                        else "1"
           oldDollarString' = formatDecimal oldDollar precision
           adjustedDollar = dollarAdjust oldDollar (T.unpack oldYear)
           adjustedDollarString = formatDecimal adjustedDollar precision
