@@ -448,14 +448,14 @@ Content = {
 						auxLinksList.previousElementSibling.classList.add("aux-links-list-label", auxLinksLinkType + "-list-label");
 
 						if (auxLinksLinkType == "backlinks") {
-							auxLinksList.querySelectorAll("a:not(.link-annotated):not(.link-annotated-partial)").forEach(auxLink => {
-								auxLink.dataset.backlinkTargetUrl = AuxLinks.targetOfAuxLinksLink(loadURL);
-							});
 							auxLinksList.querySelectorAll("blockquote").forEach(blockquote => {
 								blockquote.classList.add("backlink-context");
 							});
 							auxLinksList.querySelectorAll("li > p").forEach(p => {
 								p.classList.add("backlink-source");
+							});
+							auxLinksList.querySelectorAll(".backlink-source a:nth-of-type(2), .backlink-context a").forEach(auxLink => {
+								auxLink.dataset.backlinkTargetUrl = AuxLinks.targetOfAuxLinksLink(loadURL);
 							});
 						}
 					}
