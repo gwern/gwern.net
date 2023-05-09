@@ -2838,6 +2838,13 @@ span.inflation-adjusted {
 span.inflation-adjusted .subsup {
     align-items: flex-end;
 }
+span.inflation-adjusted .subsup sup,
+span.inflation-adjusted .subsup sub {
+    font-size: 0.6em;
+}
+span.inflation-adjusted .subsup {
+    bottom: 0;
+}
 
 span.link-tags a,
 span.aux-links a,
