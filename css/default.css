@@ -4175,7 +4175,11 @@ body.lorem div[class^='drop-cap'] {
     margin: 0 0.05em;
     padding: 0;
     border: none;
-    background-color: none;
+    background-color: inherit;
+    font-size: 0.95em;
+}
+.popframe .popframe-title code + span {
+    margin-left: 0.25em;
 }
 
 /*=-------------------=*/

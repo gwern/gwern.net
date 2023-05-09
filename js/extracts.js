@@ -390,10 +390,12 @@ Extracts = {
     //  Called by: extracts-annotations.js
     //  Called by: extracts-content.js
     standardPopFrameTitleElementForTarget: (target, titleText) => {
-        if (typeof titleText == "undefined")
+        if (typeof titleText == "undefined") {
             titleText = (target.hostname == location.hostname)
                         ? target.pathname + target.hash
                         : target.href;
+            titleText = `<code>${titleText}</code>`;
+    	}
 
         /*  Because tab-handling is bad on mobile, readers expect the original
             remote URL to open up in-tab, as readers will be single-threaded;
