@@ -321,7 +321,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("FRACTRAN", "https://en.wikipedia.org/wiki/FRACTRAN")
         , ("Fermi (estimate|method|problem|heuristic)", "https://en.wikipedia.org/wiki/Fermi_estimate")
         , ("Fermi [Pp]aradox", "https://en.wikipedia.org/wiki/Fermi_paradox")
-        , ("Feynman", "https://en.wikipedia.org/wiki/Richard_Feynman")
+        , ("(Richard Feynman|Feynman)", "https://en.wikipedia.org/wiki/Richard_Feynman")
         , ("Flash", "https://en.wikipedia.org/wiki/Adobe_Flash")
         , ("Flickr", "https://en.wikipedia.org/wiki/Flickr")
         , ("Flowers for Algernon", "https://en.wikipedia.org/wiki/Flowers_for_Algernon")

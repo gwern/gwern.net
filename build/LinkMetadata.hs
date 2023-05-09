@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-05-08 11:49:32 gwern"
+When:  Time-stamp: "2023-05-08 22:13:48 gwern"
 License: CC-0
 -}
 
@@ -519,7 +519,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
                                                                     [Str (T.pack $ dateTruncateBad dt)]]
                                     tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
                                     backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks", "icon-not", "link-annotated-not"],[]) [Str "backlinks"] (T.pack blp, "Reverse citations for this page.")]]
-                                    similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars", "icon-not", "link-annotated-not"],[]) [Str "similar"] (T.pack slp, "Similar links for this link (by text embedding).")]]
+                                    similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars", "icon-not", "link-annotated-not"],[]) [Str "similars"] (T.pack slp, "Similar links for this link (by text embedding).")]]
                                     linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], []) [Link ("",["aux-links", "link-page", "link-bibliography", "icon-not", "link-annotated-not"],[]) [Str "sources"] (T.pack lb, "Link-bibliography for this annotation (list of sources it cites).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
@@ -528,7 +528,8 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
                                     abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure"] then abst else "<p>" ++ abst ++ "</p>"
                                 in
                                   [Para
-                                       ([link,Str ","] ++
+                                       ([link] ++
+                                         (if null aut && null date then [] else [Str ","]) ++
                                          author ++
                                          date ++
                                          (if (tags++backlink++similarlink++linkBibliography)==[] then []
@@ -559,6 +560,10 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
 -- → [Str "J. Smith",Str ", ",Span ("",[],[("title","Foo Bar")]) [Str "F. Bar"]]
 -- > authorsInitialize "John Jacob Jingleheimer Schmidt"
 -- → [Str "John Jacob Jingleheimer Schmidt"]
+--
+-- BUG: does not initialize names with Unicode. This is because the regex library with search-and-replace does not support Unicode, and the regex libraries which support Unicode do not provide search-and-replace. Presumably I can hack up a search-and-replace on the latter.
+-- Example: > authorsInitialize "Robert Geirhos, Jörn-Henrik Jacobsen, Claudio Michaelis, ..."
+-- → [Span ("",[],[("title","Robert Geirhos")]) [Str "R. Geirhos"],Str ", ",Str "J\246rn-Henrik Jacobsen", ...]
 authorsInitialize :: String -> [Inline]
 authorsInitialize aut = let authors = split ", " aut in
                           if length authors == 1 then [Str $ T.pack aut]
@@ -566,20 +571,20 @@ authorsInitialize aut = let authors = split ", " aut in
                               intersperse (Str ", ") $
                               map (\a -> let short = sedMany (reverse [
                                                -- two middle-names:
-                                               ("^([A-za-z.-])[A-za-z.-]+ [A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
+                                               ("^([A-Z.-])[A-za-z.-]+ [A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
                                                -- one middle-name:
-                                               , ("^([A-za-z.-])[A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
+                                               , ("^([A-Z.-])[A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
                                                -- no middle-name:
-                                               , ("^([A-za-z.-])[A-za-z.-]+ (.*)", "\\1. \\2")]) a in
+                                               , ("^([A-Z.-])[A-za-z.-]+ (.*)", "\\1. \\2")]) a in
                                            if a==short then Str (T.pack a) else Span ("", [], [("title", T.pack a)]) [Str (T.pack short)]) authors
 
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
 generateAnnotationTransclusionBlock (f, (tle,aut,dt,_,_,_)) =
-                                let tle' = if null tle then "<code>"++f++"</code>" else tle
+                                let tle' = if null tle then "<code>"++f++"</code>" else "“" ++ tle ++ "”"
                                     lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "link-bibliography-") `T.append` tmpID
                                     link = linkLive $ Link (lid, ["link-annotated", "include-annotation", "include-replace-container"], [])
-                                      [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
+                                      [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
                                 in
                                   [Para [link]]
 
@@ -694,5 +699,5 @@ authorsTruncate a = let (before,after) = splitAt 100 a in before ++ (if null aft
 
 dateTruncateBad :: String -> String
  -- we assume that dates are guaranteed to be 'YYYY[-MM[-DD]]' format because of the validation in readLinkMetadataAndCheck enforcing this
--- dates of the form 'YYYY-01-01' are invariably lies, and mean just 'YYYY'.
-dateTruncateBad d = if "-01-01" `isSuffixOf` d then take 4 d else d
+-- dates of the form 'YYYY-01-01' (or 'YYYY-01') are invariably lies, and mean just 'YYYY'.
+dateTruncateBad d = if "-01-01" `isSuffixOf` d || (length d == 7 && "-01" `isSuffixOf` d) then take 4 d else d

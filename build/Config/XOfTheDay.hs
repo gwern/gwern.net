@@ -463,4 +463,6 @@ siteBlackList = [
           "inews.co.uk", "en.wikibooks.org", "yougov.co.uk", "nunosempere.com", "www.inverse.com","www.icpsr.umich.edu","reallifemag.com",
           "doi.org","www.nlsinfo.org","science.sciencemag.org", "supp.apa.org", "www.eoht.info", "www.j-archive.com","www.engadget.com",
           "www.armyupress.army.mil","rajpurkar.github.io", "mssprovenance.blogspot.com", "psychclassics.yorku.ca", "twitter.com",
-          "hpmor.com","xtools.wmcloud.org","tech.msu.edu", "nap.nationalacademies.org"]
+          "hpmor.com","xtools.wmcloud.org","tech.msu.edu", "nap.nationalacademies.org", "docs.iza.org","www.findarticles.com","hal.science",
+          "platform.openai.com","www8.austlii.edu.au","www.noahpinion.blog","www.mattridley.co.uk","www.cryonicsarchive.org","shs.hal.science",
+          "psychology.wvu.edu","blogs.lanecc.edu","bayesianinvestor.com"]

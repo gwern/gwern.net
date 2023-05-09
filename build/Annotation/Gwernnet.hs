@@ -51,6 +51,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let keywordTags = if "#" `isInfixOf` p then [] else
                                             concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then Utils.split ", " $ snd $ head y else []) metas
                         let author = cleanAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
+                        let author' = if author /= "Gwern Branwen" then author else "gwern"
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas
                         let thumbnail' = if "https://gwern.net/static/img/logo/logo-whitebg-large-border.png" `isPrefixOf` thumbnail then "" else replace "https://gwern.net/" "" thumbnail
@@ -77,7 +78,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
 
                         if gabstract == "404 Not Found Error: no page by this name!" || title' == "404 Not Found" || (null keywordTags && null gabstract) then
                           return (Left Permanent) -- NOTE: special-case: if a new essay or a tag hasn't been uploaded yet, make a stub entry; the stub entry will eventually be updated via a `updateGwernEntries` scrape. (A Temporary error has the drawback that it throws changeTag.hs into an infinite loop as it keeps trying to fix the temporary error.)
-                          else return $ Right (p, (title', author, date, doi, keywordTags, combinedAnnotation))
+                          else return $ Right (p, (title', author', date, doi, keywordTags, combinedAnnotation))
         where
           filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
           filterThumbnail _ = False
