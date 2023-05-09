@@ -1706,6 +1706,58 @@ addContentInjectHandler(GW.contentInjectHandlers.setLinkIconStates = (eventInfo)
 /* MISC. */
 /*********/
 
+GW.currencyFormatter = new Intl.NumberFormat('en-US', {
+	style: 'currency',
+	currency: 'USD',
+	minimumFractionDigits: 2
+});
+
+/*************************************************************************/
+/*	Return prettified version of a string representing an amount of money.
+ */
+function prettifyCurrencyString(amount, compact = false, forceRound = false) {
+	let currency = amount[0];
+
+	let number = Number(amount.replace(/[^0-9.−-]+/g, ""));
+	if (   number >= 100
+		|| forceRound)
+		number = Math.round(number);
+
+	amount = GW.currencyFormatter.format(number);
+
+	//	Remove trailing zeroes.
+	amount = amount.replace(/\.00?$/, '');
+
+	//	Reset currency unit.
+	amount = currency + amount.slice(1);
+
+	if (compact) {
+		amount = amount.replace(/,000,000,000$/, 'b');
+		amount = amount.replace(/,000,000$/, 'm');
+		amount = amount.replace(/,000$/, 'k');
+	}
+
+	return amount;
+}
+
+/**************************************************************************/
+/*	Rewrite inflation-adjustment elements to make the currency amounts more
+	useful and readable.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rewriteInflationAdjusters = (eventInfo) => {
+    GWLog("rewriteInflationAdjusters", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".inflation-adjusted").forEach(infAdj => {
+		let unadjusted = infAdj.querySelector("sup");
+		let adjusted = infAdj.firstChild;
+
+		unadjusted.textContent = prettifyCurrencyString(unadjusted.textContent, true);
+
+		let forceRound = (unadjusted.textContent.includes(".") == false);
+		adjusted.textContent = prettifyCurrencyString(adjusted.textContent, false, forceRound);
+	});
+}, "rewrite");
+
 /********************************************************/
 /*  Designate ordered list type via a class.
     (Workaround for case-insensitivity of CSS selectors.)
