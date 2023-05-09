@@ -153,6 +153,7 @@ Extracts = { ...Extracts,
 				popFrameTitleText += target.pathname;
 			if (popFrame.classList.contains("full-page") == false)
 				popFrameTitleText += target.hash;
+			popFrameTitleText = `<code>${popFrameTitleText}</code>`;
 
 			popFrameTitleLinkHref = target.href;
 		} else {
@@ -531,14 +532,14 @@ Extracts = { ...Extracts,
         let targetPage = AuxLinks.targetOfAuxLinksLink(target);
         let auxLinksLinkType = AuxLinks.auxLinksLinkType(target);
         switch (auxLinksLinkType) {
-            case "backlinks":
-                return newDocument(`<span>${targetPage} (Backlinks)</span>`);
-            case "similars":
-                return newDocument(`<span>${targetPage} (Similar links)</span>`);
-            case "link-bibliography":
-                return newDocument(`<span>${targetPage} (Link bibliography)</span>`);
-            default:
-                return newDocument(`<span>${targetPage}</span>`);
+		case "backlinks":
+			return newDocument(`<code>${targetPage}</code><span> (Backlinks)</span>`);
+		case "similars":
+			return newDocument(`<code>${targetPage}</code><span> (Similar links)</span>`);
+		case "link-bibliography":
+			return newDocument(`<code>${targetPage}</code><span> (Link bibliography)</span>`);
+		default:
+			return newDocument(`<code>${targetPage}</code>`);
         }
     },
 };
@@ -1198,7 +1199,7 @@ Extracts = { ...Extracts,
         	let originalURL = originalURLForLink(target);
 			referenceData = {
 				popFrameTitleLinkHref:  originalURL.href,
-				popFrameTitleText:      originalURL.href
+				popFrameTitleText:      `<code>${originalURL.href}</code>`
 			};
 		}
 

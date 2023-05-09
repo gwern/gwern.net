@@ -56,6 +56,7 @@ Extracts = { ...Extracts,
 												 ? target.pathname + target.hash
 												 : target.href)
 			};
+			referenceData.popFrameTitleText = `<code>${referenceData.popFrameTitleText}</code>`;
 		}
 
 		return Transclude.fillTemplateNamed("pop-frame-title-annotation", referenceData, Extracts.getStandardPopFrameTitleTemplateFillContext());
