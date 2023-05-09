@@ -3,7 +3,7 @@ module Utils where
 
 import Control.Monad (when)
 import Data.Char (isSpace)
-import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails)
+import Data.List (group, intercalate, intersperse, sort, isInfixOf, isPrefixOf, isSuffixOf, tails)
 import Data.Text.IO as TIO (readFile, writeFile)
 import Data.Time.Calendar (toGregorian, toModifiedJulianDay)
 import Data.Time.Clock (getCurrentTime, utctDay)
@@ -1775,3 +1775,35 @@ trimTitle t = let t' = reverse $ sedMany [("†.*", ""), -- eg "Relation of Seru
 pageNumberParse :: String -> String
 pageNumberParse u = let pg = sed ".*\\.pdf#page=([0-9]+).*" "\\1" u
                     in if u == pg then "" else pg
+
+-- Compact lists of authors to abbreviate personal names, but preserve the full name in a span tooltip for on-hover like usual.
+--
+-- eg. > authorsInitialize "J. Smith, Foo Bar"
+-- → [Str "J. Smith",Str ", ",Span ("",[],[("title","Foo Bar")]) [Str "F. Bar"]]
+--
+-- > authorsInitialize "John Jacob Jingleheimer Schmidt"
+-- → [Str "John Jacob Jingleheimer Schmidt"]
+-- vs:
+-- > authorsInitialize "John Jacob Jingleheimer Schmidt, John Jacob Jingleheimer Schmidt, John Jacob Jingleheimer Schmidt"
+-- → [Span ("",[],[("title","John Jacob Jingleheimer Schmidt")]) [Str "J. Schmidt"],Str ", ",
+--    Span ("",[],[("title","John Jacob Jingleheimer Schmidt")]) [Str "J. Schmidt"],Str ", ",
+--    Span ("",[],[("title","John Jacob Jingleheimer Schmidt")]) [Str "J. Schmidt"]]
+--
+-- BUG: does not initialize names with Unicode. This is because the regex library with search-and-replace does not support Unicode, and the regex libraries which support Unicode do not provide search-and-replace. Presumably I can hack up a search-and-replace on the latter.
+-- Example: > authorsInitialize "Robert Geirhos, Jörn-Henrik Jacobsen, Claudio Michaelis, ..."
+-- → [Span ("",[],[("title","Robert Geirhos")]) [Str "R. Geirhos"],Str ", ",Str "J\246rn-Henrik Jacobsen", ...]
+authorsInitialize :: String -> [Inline]
+authorsInitialize aut = let authors = split ", " aut in
+                          if length authors == 1 then [Str $ T.pack aut]
+                          else
+                              intersperse (Str ", ") $
+                              map (\a -> let short = sedMany (reverse [
+                                               -- three middle-names:
+                                                 ("^([A-Z.-])[A-za-z.-]+ [A-za-z.-]+ [A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
+                                               -- two middle-names:
+                                               , ("^([A-Z.-])[A-za-z.-]+ [A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
+                                               -- one middle-name:
+                                               , ("^([A-Z.-])[A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
+                                               -- no middle-name:
+                                               , ("^([A-Z.-])[A-za-z.-]+ (.*)", "\\1. \\2")]) a in
+                                           if a==short then Str (T.pack a) else Span ("", [], [("title", T.pack a)]) [Str (T.pack short)]) authors

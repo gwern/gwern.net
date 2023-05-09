@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-05-08 22:13:48 gwern"
+When:  Time-stamp: "2023-05-09 09:12:08 gwern"
 License: CC-0
 -}
 
@@ -25,7 +25,7 @@ import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, Te
 import Data.Containers.ListUtils (nubOrd)
 import Data.IORef (IORef)
 import Data.Function (on)
-import Data.List (intersperse, intercalate, intersect, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, sortBy, (\\))
+import Data.List (intercalate, intersect, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, sortBy, (\\))
 import Data.List.HT (search)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
 import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) -- NOTE: from 'yaml' package, *not* 'HsYaml'
@@ -58,7 +58,7 @@ import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(..
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
-import Utils (writeUpdatedFile, printGreen, printRed, sed, sedMany, trim, simplified, anyInfix, anyPrefix, anySuffix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, trim, simplified, anyInfix, anyPrefix, anySuffix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 
@@ -252,7 +252,7 @@ readLinkMetadataAndCheck = do
              unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in YAMLs!: " >> printGreen (show (titles \\ nubOrd titles))
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) finalL
-             Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex || isNumber (head a)) (printRed "Mixed up author & date?: " >> printGreen a) ) authors
+             Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex || isNumber (head a) || isPunctuation (head a)) (printRed "Mixed up author & date?: " >> printGreen a) ) authors
              let authorsBadChars = filter (\a -> anyInfix a [";", "&", "?", "!"] || isPunctuation (last a)) $ filter (not . null) authors
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
@@ -554,29 +554,6 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
                              where
                                nonAnnotatedLink :: [Block]
                                nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]]
-
--- Compact lists of authors to abbreviate personal names, but preserve the full name in a span tooltip for on-hover like usual.
--- eg. > authorsInitialize "J. Smith, Foo Bar"
--- → [Str "J. Smith",Str ", ",Span ("",[],[("title","Foo Bar")]) [Str "F. Bar"]]
--- > authorsInitialize "John Jacob Jingleheimer Schmidt"
--- → [Str "John Jacob Jingleheimer Schmidt"]
---
--- BUG: does not initialize names with Unicode. This is because the regex library with search-and-replace does not support Unicode, and the regex libraries which support Unicode do not provide search-and-replace. Presumably I can hack up a search-and-replace on the latter.
--- Example: > authorsInitialize "Robert Geirhos, Jörn-Henrik Jacobsen, Claudio Michaelis, ..."
--- → [Span ("",[],[("title","Robert Geirhos")]) [Str "R. Geirhos"],Str ", ",Str "J\246rn-Henrik Jacobsen", ...]
-authorsInitialize :: String -> [Inline]
-authorsInitialize aut = let authors = split ", " aut in
-                          if length authors == 1 then [Str $ T.pack aut]
-                          else
-                              intersperse (Str ", ") $
-                              map (\a -> let short = sedMany (reverse [
-                                               -- two middle-names:
-                                               ("^([A-Z.-])[A-za-z.-]+ [A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
-                                               -- one middle-name:
-                                               , ("^([A-Z.-])[A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
-                                               -- no middle-name:
-                                               , ("^([A-Z.-])[A-za-z.-]+ (.*)", "\\1. \\2")]) a in
-                                           if a==short then Str (T.pack a) else Span ("", [], [("title", T.pack a)]) [Str (T.pack short)]) authors
 
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
