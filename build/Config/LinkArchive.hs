@@ -19,10 +19,12 @@ transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
                             -- Mobile Reddit snapshots for live popups much better than Old Reddit (although Old Reddit is a much better browsing/user experience)
                             . replace "https://old.reddit.com" "https://i.reddit.com"
                             . replace "https://twitter.com" "https://nitter.moomoo.me"
+                            . replace "https://medium.com" "https://scribe.rip" -- clean Medium frontend; can also handle custom domains with a bit more work: <https://scribe.rip/faq#custom-domains>
 transformURLsForLinking   = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
   sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" . -- handle oddities like hep-ph
   -- make IA book/item pages pop up nicer in live-links, by making them jump to the metadata section (which is all that works in the JS-less live-link iframe), and skipping the warnings about JS not being available. `#flag-button-container` is, weirdly enough, the first available ID to jump to, there's no better ID set inside the metadata section, it's all classes.
   (\u -> if u `anyPrefix` ["https://archive.org/details/"]    && '#' `notElem` u && not (u `anyInfix` ["flag-button-container"]) then u ++ "#flag-button-container" else u)
+  . replace "https://medium.com" "https://scribe.rip"
 
 {- re URL transforms: Why?
 
@@ -1109,5 +1111,7 @@ whiteList url
       , "https://bost.ocks.org/mike/algorithms/" -- low quality (video embeds) + interactive?
       , "https://pudding.cool/2018/08/wiki-death/" -- low quality (interactive? JS?)
       , "https://mimic-play.github.io/" -- low quality (video embeds)
+      , "https://www.alzchem.com/de/" -- homepage
+      , "https://heypi.com/talk" -- interactive
       ] = True
     | otherwise = False
