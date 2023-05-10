@@ -1776,6 +1776,11 @@ addCopyProcessor((event, selection) => {
 		let unadjustedText = infAdj.querySelector("sup").textContent;
 		let yearText = infAdj.querySelector("sub").textContent;
 
+		//	Un-abbreviate powers of 1,000 in unadjusted amount.
+		unadjustedText = unadjustedText.replace("k", ",000");
+		unadjustedText = unadjustedText.replace("m", ",000,000");
+		unadjustedText = unadjustedText.replace("b", ",000,000,000");
+
         infAdj.innerHTML = `${unadjustedText} [${yearText}; ${adjustedText} in ${GW.currentYear}]`;
     });
 
