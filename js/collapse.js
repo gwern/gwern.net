@@ -277,7 +277,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			let childNodesArray = Array.from(collapseWrapper.childNodes);
 			collapseContentWrapper.append(...childNodesArray.slice(childNodesArray.findLastIndex(node => {
 				return (   node instanceof Element 
-						&& node.matches(".disclosure-button:not(.end), abstract-collapse"));
+						&& node.matches(".disclosure-button:not(.end), .abstract-collapse"));
 			}) + 1));
 			collapseWrapper.append(collapseContentWrapper);
 			/*	Move the auxiliary (closing) disclosure button of an inline 
