@@ -1711,6 +1711,7 @@ GW.currencyFormatter = new Intl.NumberFormat('en-US', {
 	currency: 'USD',
 	minimumFractionDigits: 2
 });
+GW.currentYear = new Date().getFullYear();
 
 /*************************************************************************/
 /*	Return prettified version of a string representing an amount of money.
@@ -1761,6 +1762,39 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteInflationAdjusters = (eventI
 		adjusted.textContent = prettifyCurrencyString(adjusted.textContent, false, forceRound);
 	});
 }, "rewrite");
+
+/***************************************************************************/
+/*  Makes it so that copying an inflation-adjusted currency amount interacts 
+	properly with copy-paste.
+ */
+addCopyProcessor((event, selection) => {
+    /*  Rewrite inflation-adjuster elements into a simple inline typographical 
+    	format, e.g. “$0.10 (1990; $1.30 in 2023)”.
+     */
+    selection.querySelectorAll(".inflation-adjusted").forEach(infAdj => {
+		let adjustedText = infAdj.firstChild.textContent;
+		let unadjustedText = infAdj.querySelector("sup").textContent;
+		let yearText = infAdj.querySelector("sub").textContent;
+
+        infAdj.innerHTML = `${unadjustedText} [${yearText}; ${adjustedText} in ${GW.currentYear}]`;
+    });
+
+    return true;
+});
+
+/******************************************************************************/
+/*  Makes double-clicking on an inflation adjuster select the entire element.
+	(This is so that the copy processor, above, can reliably work as intended.)
+ */
+addContentInjectHandler(GW.contentInjectHandlers.addDoubleClickListenersToInflationAdjusters = (eventInfo) => {
+    GWLog("addDoubleClickListenersToInflationAdjusters", "rewrite.js", 1);
+
+    eventInfo.container.querySelectorAll(".inflation-adjusted").forEach(infAdj => {
+        infAdj.addEventListener("dblclick", (event) => {
+            document.getSelection().selectNode(infAdj);
+        });
+    });
+}, "eventListeners");
 
 /********************************************************/
 /*  Designate ordered list type via a class.

@@ -202,6 +202,16 @@ Object.defineProperty(DocumentFragment.prototype, "innerHTML", {
     }
 });
 
+/**************************/
+/*  Selects the given node.
+ */
+Selection.prototype.selectNode = function (node) {
+	let range = new Range();
+	range.selectNode(node);
+	this.removeAllRanges();
+	this.addRange(range);
+}
+
 /*******************************************************************************/
 /*  Create and return a new element with the specified tag name, attributes, and
     object properties.
