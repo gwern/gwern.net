@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-05-10 11:17:49 gwern"
+;;; When:  Time-stamp: "2023-05-11 12:30:10 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -890,17 +890,23 @@ Mostly string search-and-replace to enforce house style in terms of format."
 
        (let ((regexps '(
                         ("!!+" . "!")
-                                        ; remove subtle whitespace problems: double space
-                        ("\\([[:alnum:]]\\)  \\([[:graph:]]\\)" . "\\1 \\2")
-                        ("\\([a-z]+\\),\\([a-z]+\\)" . "\\1, \\2") ; run-together comma phrases often appear in PDF OCR like 'foo,bar'; outside chemical names, this is highly unusual
+                        ("\\([[:alnum:]]\\)  \\([[:graph:]]\\)" . "\\1 \\2") ; remove subtle whitespace problems: double space
+                        ("\\([a-z]+\\),\\([a-z]+\\)" . "\\1, \\2") ; run-together comma phrases often appear in PDF OCR like 'foo,bar'; outside chemical names, this is highly unusual.
                         ("\\([[:punct:]]\\)p<" . "\\1_p_ <")
                         (" Ne\\\([[:punct:]]\\)" . " <em>N<sub>e</sub></em>\\1")
                         ("\\\([[:punct:]]\\)Ne " . "\\1<em>N<sub>e</sub></em> ")
                         ("<em>\\([a-zA-Z]+\\)</em><sup>2</sup><sub>\\([a-zA-Z]+\\)</sub>" . "<em>\\1</em><sup>2</sup><sub>\\2</sub>")
-                                        ; numbers:
+                        ; numbers, superscripts:
                         ("\\([023456789]\\)th" . "\\1^th^")
                         ("\\([1]\\)st"        . "\\1^st^")
                         ("\\([3]\\)rd"        . "\\1^rd^")
+                        ("(four|fif|six|seven|eigh|nin|ten)th"        . "\\1^th^")
+                        ("(four|fif|six|seven|eigh|nin|ten)th"        . "\\1^th^")
+                        ; numbers, ranges or changes:
+                        ; NOTE: we deliberately omit EN DASH-ification of ranges involving negative numbers. For example, '−0.3 to −3.7'
+                        ; would look confusing if written '−0.3–−3.7'. It's correct & unambiguous because it uses MINUS SIGN & EN DASH
+                        ; appropriately, but the glyphs are way too similar-looking. (Sorry, I didn't design English punctuation.)
+                        ; And this is also true if any of the numbers have minus signs (eg. '−0.3–3.7' or '0.3–−3.7' would be no better).
                         (" one to \\([0-9\\.]+\\)" . " \\1–\\2")
                         ("from \\([0-9\\.]+\\) to \\([0-9\\.]+\\)" . "\\1–\\2")
                         ("\\([0-9\\.]+\\) to \\([0-9\\.]+\\)" . "\\1–\\2")
@@ -909,8 +915,6 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("\\([0-9\\.]+\\) to \\([0-9\\.]+\\)" . "\\1 → \\2")
                         ("between \\([0-9\\.]+\\) and \\([0-9\\.]+\\)" . "\\1–\\2")
                         (" \\([0-9\\.]+\\) or \\([0-9\\.]+\\) " . " \\1–\\2 ")
-                        ("(four|fif|six|seven|eigh|nin|ten)th"        . "\\1^th^")
-                        ("(four|fif|six|seven|eigh|nin|ten)th"        . "\\1^th^")
                         )
                       ))
          (dolist (pair regexps)
@@ -1404,7 +1408,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([[:digit:]]+\\) times" "\\1×" nil begin end)
        (query-replace-regexp "\\([[:digit:]]+\\) x \\([[:digit:]]+\\)" "\\1×\\2" nil begin end)
        ; comma formatting: eg. '100000000000' -> '100,000,000,000' - but we need to skip URLs where such numbers are ubiquitous & time-wasting. Avoid possible years which start with 1/2.
-       (my-markdown-or-html-query-replace-regexp "\\([3-9][[:digit:]][[:digit:]][[:digit:]]+\\)" #'comma-format-number nil begin end)
+       (my-markdown-or-html-query-replace-regexp "\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]]+\\)" #'comma-format-number nil begin end) ; 5+ digit numbers
+       (my-markdown-or-html-query-replace-regexp "\\([3-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number nil begin end) ; 4-digit numbers, which might be years/dates
        ; special currencies:
        (query-replace-regexp "\\([.0-9]*[[:space:]]\\)?btc" "₿\\1" nil begin end)
        ; fancy punctuation:
@@ -1501,9 +1506,15 @@ Mostly string search-and-replace to enforce house style in terms of format."
   :group 'my-markdown-or-html)
 (defun my-markdown-or-html-inside-link-p ()
   "Return non-nil if point is inside a Markdown or HTML link."
-  (let ((face-at-point (get-text-property (point) 'face)))
-    (or (eq face-at-point 'markdown-url-face)
-        (eq face-at-point 'html-attr-value-face))))
+  (let ((faces (list (get-text-property (point) 'face)
+                     ; The point might be at the beginning or end of the URL, which might not have the expected face property.
+                     ; To fix this issue, we check for the face property not only at the point but also at the previous and next characters.
+                     ; This way, we ensure the function returns non-nil if the point is at the beginning or end of a URL.
+                     (get-text-property (1- (point)) 'face)
+                     (get-text-property (1+ (point)) 'face))))
+    (cl-some (lambda (face) (or (eq face 'markdown-url-face)
+                                (eq face 'html-attr-value-face)))
+             faces)))
 (defun my-markdown-or-html-query-replace-args ()
   "Read the arguments for `my-markdown-or-html-query-replace-regexp`."
   (query-replace-read-args (concat "Query replace"
@@ -1516,7 +1527,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
 Highlight the matched text during the query."
   (pulse-momentary-highlight-region (match-beginning 0) (match-end 0))
   (y-or-n-p (format "Replace `%s' with `%s'? " from to)))
-(defun my-markdown-or-html-query-replace-regexp (regexp replace-fn &optional delimited start end case-fold)
+(defun my-markdown-or-html-query-replace-regexp (regexp replace-fn &optional delimited start end)
   "Interactively query replace `REGEXP` with the result of `REPLACE-FN`.
 This optionally skips link URLs where replacement may be undesirable.
 
@@ -1531,16 +1542,14 @@ returns the replacement string.
 
 Optional argument `DELIMITED`, if non-nil, means replace only matches surrounded
 by word boundaries.
-Optional argument `CASE-FOLD`, if non-nil, means the search should be
-case-insensitive.
 
-\(fn REGEXP REPLACE-FN &optional DELIMITED START END CASE-FOLD)"
-  (interactive (append (my-markdown-or-html-query-replace-args) (list case-fold-search)))
+\(fn REGEXP REPLACE-FN &optional DELIMITED START END)"
+  (interactive)
   (let ((replacements 0))
     (save-excursion
       (goto-char (or start (point-min)))
       (save-match-data
-        (while (re-search-forward regexp end t case-fold)
+        (while (re-search-forward regexp end t)
           (unless (my-markdown-or-html-inside-link-p)
             (let* ((from (match-string 0))
                    (to (funcall replace-fn from)))
