@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-05-04 17:58:06 gwern"
+;;; When:  Time-stamp: "2023-05-10 11:17:49 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -415,6 +415,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" d=" . " _d_ = ") ; italicize p-values & sample sizes:
                         (" d = " . " _d_ = ")
                         ("(d = " . "(_d_ = ")
+                        ("(d < " . "(_d_ < ")
                         ("Cohen’s d" . "Cohen’s _d_")
                         ("<em>P</em>=" . "_p_ = ")
                         ("pone-tailed" . "<em>p</em><sub><em>one-tailed</em></sub>")

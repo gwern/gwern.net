@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-05-07 11:35:47 gwern"
+# When:  Time-stamp: "2023-05-10 16:06:02 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -95,7 +95,7 @@ alias ea="exiftool -All"
 alias exiftool="exiftool -overwrite_original"
 
 # Gwern.net searches:
-## grep gwern.net specifically:
+## fixed-grep gwern.net specifically:
 gw () {
     if [ $# == 0 ]; then echo "Missing search query."; return 2; fi
 
@@ -115,7 +115,7 @@ gw () {
 }
 
 ## file names only
-gwf () { (cd ~/wiki/ && find . -type f | grep -F -v -e '.#' | grep --ignore-case "$@" | sed -e 's/^\.\//\//g') | sort; }
+gwf () { (cd ~/wiki/ && find . -type f | grep -F -v -e '.#' -e '_cache/' -e '_site/' -e '.git/' | grep --ignore-case "$@" | sed -e 's/^\.\//\//g') | sort; }
 ## Newsletter only:
 gwn () { if [ $# != 1 ]; then QUERY="$*"; else QUERY="$@"; fi
         find ~/wiki/newsletter/ -type f -name "*.page" | \

@@ -102,7 +102,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""))  = -- short:
                  [Str ",", Space, authorSpan]
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
-    let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation"],[]) else nullAttr
+    let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation"],[]) else ("",["id-not"],[])
     in
     if t=="" then
       [Para (Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author)]

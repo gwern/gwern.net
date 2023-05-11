@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-04-23 11:38:45 gwern"
+# When:  Time-stamp: "2023-05-10 11:21:58 gwern"
 # License: CC-0
 #
 # This will reformat, run PDFs through `ocrmypdf` (via the `compressPdf` wrapper), and `git commit` new files.
@@ -17,7 +17,7 @@ set -e
 
 WWW_BROWSER="firefox"
 
-if [ ! -f "$1" ]; then echo "l18: '$1' is not a file‽" && return 1; fi
+if [ ! -f "$1" ]; then echo "l18: '$1' is not a file‽" && exit 1; fi
 
 (locate "$1" &)
 
