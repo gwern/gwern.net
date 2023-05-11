@@ -422,6 +422,12 @@ function fillTemplate(template, data = null, context = null, options = { }) {
 		(match) => ""
 	);
 
+	//	Escapes.
+	template = template.replace(
+		/\\(.)/gs,
+		(match, escaped) => "<[:" + escaped.codePointAt(0) + ":]>"
+	);
+
 	/*	Conditionals. JavaScript’s regexps do not support recursion, so we
 		keep running the replacement until no conditionals remain.
 	 */
@@ -445,6 +451,12 @@ function fillTemplate(template, data = null, context = null, options = { }) {
 	template = template.replace(
 		/<\{(.+?)\}>/g,
 		(match, fieldName) => (valueFunction(fieldName) ?? "")
+	);
+
+	//	Escapes, redux.
+	template = template.replace(
+		/<\[:(.+?):\]>/gs,
+		(match, codePointSequence) => String.fromCodePoint(...(codePointSequence.split("/").map(x => parseInt(x))))
 	);
 
 	//	Construct DOM tree from filled template.
