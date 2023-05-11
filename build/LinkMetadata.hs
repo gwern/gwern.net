@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-05-09 09:12:08 gwern"
+When:  Time-stamp: "2023-05-11 12:44:46 gwern"
 License: CC-0
 -}
 
@@ -503,8 +503,9 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
                               -- Just ("",   _,_,_,_,_)  -> nonAnnotatedLink
                               -- Just (_,    _,_,_,_,"") -> nonAnnotatedLink
                               Just (tle,aut,dt,doi,ts,abst) ->
-                                let tle' = if null tle then "<code>"++f++"</code>" else tle
-                                    lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "link-bibliography-") `T.append` tmpID
+                                let tle' = if null tle then "<code>"++f++"</code>" else "“"++tle++"”"
+                                    lid = let tmpID = generateID f aut dt in
+                                            if tmpID=="" then "" else T.pack "link-bibliography-" `T.append` tmpID
                                     -- NOTE: we cannot link to an anchor fragment in ourselves, like just link in the annotation header to `#backlink-transclusion`, because it would severely complicate all the anchor-rewriting logic (how would it know if `#backlink-transclusion` refers to something *in* the annotation, or is a section or anchor inside the annotated URL?). But fortunately, by the logic of caching, it doesn't much matter if we link the same URL twice and pop it up the first time vs transclude it inside the popup/popin the second time.
                                     lidBacklinkFragment    = if lid=="" then "" else "backlink-transclusion-"    `T.append` lid
                                     lidSimilarLinkFragment = if lid=="" then "" else "similarlink-transclusion-" `T.append` lid
@@ -523,7 +524,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
                                     linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], []) [Link ("",["aux-links", "link-page", "link-bibliography", "icon-not", "link-annotated-not"],[]) [Str "sources"] (T.pack lb, "Link-bibliography for this annotation (list of sources it cites).")]]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
-                                    link = linkLive $ Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle'++"”")] (T.pack f,"")
+                                    link = linkLive $ Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ tle')] (T.pack f,"")
                                     -- make sure every abstract is wrapped in paragraph tags for proper rendering:
                                     abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure"] then abst else "<p>" ++ abst ++ "</p>"
                                 in
@@ -557,10 +558,11 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb = case ann
 
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
-generateAnnotationTransclusionBlock (f, (tle,aut,dt,_,_,_)) =
+generateAnnotationTransclusionBlock (f, x@(tle,aut,dt,_,_,_)) =
                                 let tle' = if null tle then "<code>"++f++"</code>" else "“" ++ tle ++ "”"
-                                    lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "link-bibliography-") `T.append` tmpID
-                                    link = linkLive $ Link (lid, ["link-annotated", "include-annotation", "include-replace-container"], [])
+                                    lid = let tmpID = generateID f aut dt in
+                                            if tmpID=="" then "" else T.pack "link-bibliography-" `T.append` tmpID
+                                    link = addHasAnnotation x $ linkLive $ Link (lid, ["include-annotation", "include-replace-container"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
                                 in
                                   [Para [link]]
