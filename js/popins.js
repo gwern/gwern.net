@@ -207,12 +207,12 @@ Popins = {
 		popin.classList.add("has-title-bar");
 
 		//  Create and inject the title bar element.
-		popin.titleBar = document.createElement("DIV");
+		popin.titleBar = newElement("DIV");
 		popin.titleBar.classList.add("popframe-title-bar");
 		popin.insertBefore(popin.titleBar, popin.firstElementChild);
 
 		//  Add popin stack counter.
-		popin.titleBar.stackCounter = document.createElement("SPAN");
+		popin.titleBar.stackCounter = newElement("SPAN");
 		popin.titleBar.stackCounter.classList.add("popin-stack-counter");
 		requestAnimationFrame(() => {
 			let popinStackNumber = Popins.popinStackNumber(popin);
@@ -248,12 +248,12 @@ Popins = {
 		popin.classList.add("has-footer-bar");
 
 		//	Inject popin footer bar.
-		popin.footerBar = document.createElement("DIV");
+		popin.footerBar = newElement("DIV");
 		popin.footerBar.classList.add("popin-footer-bar");
 		popin.insertBefore(popin.footerBar, null);
 
 		//	Inject footer title-link.
-		let footerTitleLink = document.createElement("A");
+		let footerTitleLink = newElement("A");
 		footerTitleLink.classList.add("popframe-title-link");
 		footerTitleLink.href = popinTitleLink.href;
 		footerTitleLink.title = `Open ${footerTitleLink.href} in a new tab.`;
@@ -265,34 +265,53 @@ Popins = {
 	/*  Elements and methods related to popin title bars.
 		*/
 	titleBarComponents: {
+		//  Icons for various popup title bar buttons.
+		buttonIcons: {
+			"close": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M193.94 256L296.5 153.44l21.15-21.15c3.12-3.12 3.12-8.19 0-11.31l-22.63-22.63c-3.12-3.12-8.19-3.12-11.31 0L160 222.06 36.29 98.34c-3.12-3.12-8.19-3.12-11.31 0L2.34 120.97c-3.12 3.12-3.12 8.19 0 11.31L126.06 256 2.34 379.71c-3.12 3.12-3.12 8.19 0 11.31l22.63 22.63c3.12 3.12 8.19 3.12 11.31 0L160 289.94 262.56 392.5l21.15 21.15c3.12 3.12 8.19 3.12 11.31 0l22.63-22.63c3.12-3.12 3.12-8.19 0-11.31L193.94 256z"/></svg>`,
+			"options": `<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M20.722,24.964c0.096,0.096,0.057,0.264-0.073,0.306c-7.7,2.466-16.032-1.503-18.594-8.942  c-0.072-0.21-0.072-0.444,0-0.655c0.743-2.157,1.99-4.047,3.588-5.573c0.061-0.058,0.158-0.056,0.217,0.003l4.302,4.302  c0.03,0.03,0.041,0.072,0.031,0.113c-1.116,4.345,2.948,8.395,7.276,7.294c0.049-0.013,0.095-0.004,0.131,0.032  C17.958,22.201,20.045,24.287,20.722,24.964z"/><path d="M24.68,23.266c2.406-1.692,4.281-4.079,5.266-6.941c0.072-0.21,0.072-0.44,0-0.65  C27.954,9.888,22.35,6,16,6c-2.479,0-4.841,0.597-6.921,1.665L3.707,2.293c-0.391-0.391-1.023-0.391-1.414,0s-0.391,1.023,0,1.414  l26,26c0.391,0.391,1.023,0.391,1.414,0c0.391-0.391,0.391-1.023,0-1.414L24.68,23.266z M16,10c3.309,0,6,2.691,6,6  c0,1.294-0.416,2.49-1.115,3.471l-8.356-8.356C13.51,10.416,14.706,10,16,10z"/></svg>`
+		},
+
+		//  Tooltip text for various popup title bar icons.
+		buttonTitles: {
+			"close": "Close this popin",
+			"options": "Show options"
+		},
+
+		//  A generic button, with no icon or tooltip text.
 		genericButton: () => {
-			let button = document.createElement("BUTTON");
+			let button = newElement("BUTTON");
 			button.classList.add("popframe-title-bar-button");
-			button.buttonAction = (event) => {
-				event.stopPropagation();
-			};
+
+			button.buttonAction = (event) => { event.stopPropagation(); };
+
 			return button;
 		},
 
+		//  Close button.
 		closeButton: () => {
 			let button = Popins.titleBarComponents.genericButton();
-			button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M193.94 256L296.5 153.44l21.15-21.15c3.12-3.12 3.12-8.19 0-11.31l-22.63-22.63c-3.12-3.12-8.19-3.12-11.31 0L160 222.06 36.29 98.34c-3.12-3.12-8.19-3.12-11.31 0L2.34 120.97c-3.12 3.12-3.12 8.19 0 11.31L126.06 256 2.34 379.71c-3.12 3.12-3.12 8.19 0 11.31l22.63 22.63c3.12 3.12 8.19 3.12 11.31 0L160 289.94 262.56 392.5l21.15 21.15c3.12 3.12 8.19 3.12 11.31 0l22.63-22.63c3.12-3.12 3.12-8.19 0-11.31L193.94 256z"/></svg>`;
-			button.title = "Close this popin";
 			button.classList.add("close-button");
+
+			button.innerHTML = Popins.titleBarComponents.buttonIcons["close"];
+			button.title = Popins.titleBarComponents.buttonTitles["close"];
+
 			button.buttonAction = (event) => {
 				event.stopPropagation();
 
-				let popin = Popins.containingPopFrame(event.target);
-				if (popin) {
-					Popins.removePopin(popin);
-				}
+				Popins.removePopin(Popins.containingPopFrame(event.target));
 			};
+
 			return button;
 		},
 
+		//  Options button (does nothing by default).
 		optionsButton: () => {
 			let button = Popins.titleBarComponents.genericButton();
-			button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 20 20"><g transform="translate(10 10)"><path id="a" d="M1.5-10h-3l-1 6.5h5m0 7h-5l1 6.5h3"/><use transform="rotate(45)" xlink:href="#a"/><use transform="rotate(90)" xlink:href="#a"/><use transform="rotate(135)" xlink:href="#a"/></g><path d="M10 2.5a7.5 7.5 0 000 15 7.5 7.5 0 000-15v4a3.5 3.5 0 010 7 3.5 3.5 0 010-7"/></svg>`;
+			button.classList.add("options-button");
+
+			button.innerHTML = Popins.titleBarComponents.buttonIcons["options"];
+			button.title = Popins.titleBarComponents.buttonTitles["options"];
+
 			return button;
 		}
 	},
@@ -321,7 +340,7 @@ Popins = {
 	newPopin: (target) => {
 		GWLog("Popins.newPopin", "popins.js", 2);
 
-		let popin = document.createElement("DIV");
+		let popin = newElement("DIV");
 		popin.classList.add("popin", "popframe");
 		popin.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
 		popin.scrollView = popin.querySelector(".popframe-scroll-view");
@@ -329,11 +348,11 @@ Popins = {
 
 		popin.contentView.attachShadow({ mode: "open" });
 		popin.document = popin.contentView.shadowRoot;
-		popin.document.appendChild(document.createElement("DIV"));
+		popin.document.appendChild(newElement("DIV"));
 		popin.document.body = popin.body = popin.shadowBody = popin.document.firstElementChild;
 		popin.body.classList.add("popframe-body", "popin-body", "shadow-body");
 
-		let styleReset = document.createElement("STYLE");
+		let styleReset = newElement("STYLE");
 		styleReset.innerHTML = `.shadow-body { all: initial; }`;
 		popin.document.insertBefore(styleReset, popin.body);
 
@@ -404,7 +423,8 @@ Popins = {
 		//	Designate ancestors.
 		let ancestor = target.popin.parentElement;
 		do { ancestor.classList.add("popin-ancestor"); }
-		while (ancestor = ancestor.parentElement);
+		while (   (ancestor = ancestor.parentElement) 
+			   && [ "MAIN", "ARTICLE" ].includes(ancestor.tagName) == false);
 
 		//  Mark target as having an open popin associated with it.
 		target.classList.add("popin-open", "highlighted");
