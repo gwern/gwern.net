@@ -4370,6 +4370,10 @@ body.lorem div[class^='drop-cap'] {
 .popframe-body > div.annotation > div.annotation-abstract > .collapse.aux-links-container {
     border-right: 1px solid var(--GW-TOC-border-color);
 }
+.popframe-body > div.annotation > div.annotation-abstract > .collapse.aux-links-container.expanded-not {
+    border-left: 1px solid var(--GW-TOC-border-color);
+    padding-left: 0.5em;
+}
 .popframe-body > div.annotation > div.annotation-abstract > .collapse.aux-links-container:last-child {
     margin-bottom: 0;
     border-bottom: 1px solid var(--GW-TOC-border-color);
