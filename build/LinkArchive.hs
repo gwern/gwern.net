@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-04-27 09:54:50 gwern"
+When:  Time-stamp: "2023-05-11 19:08:39 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -116,7 +116,7 @@ import System.FilePath (takeFileName)
 import System.Directory (doesFileExist)
 
 import Utils (writeUpdatedFile, printGreen, printRed, addClass, currentDay)
-import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, archivePerRunN, archiveDelay, skipPreview)
+import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, archivePerRunN, archiveDelay, skipPreview, isCheapArchive)
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg. 2019-11-22 = 58810
@@ -152,7 +152,7 @@ readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/ar
                            Just pdl -> do
                             -- check for failed archives:
                             pdl' <- filterM (\(p,ami) -> case ami of
-                                     Right (Just "") -> printRed ("Error! Invalid empty archive link: ") >> print (show p ++ show ami) >> return False
+                                     Right (Just "") -> printRed "Error! Invalid empty archive link: " >> print (show p ++ show ami) >> return False
                                      Right u@(Just ('/':'/':_)) -> printRed "Error! Invalid double-slash archive link: " >> print (show p ++ show ami ++ show u) >> return False
                                      Right (Just u)  -> if not ("http" `isPrefixOf` p || "\n" `isInfixOf` p) then
                                                           printRed "Warning: Did a local link slip in somehow? (this will be removed automatically) " >> print (show p ++ show u ++ show ami) >> return False
@@ -194,7 +194,7 @@ rewriteLink adb archivedN url = do
   fromMaybe url <$> if C.whiteList url then return Nothing else
     case M.lookup url adb of
       Nothing               -> Nothing <$ insertLinkIntoDB (Left today) url
-      Just (Left firstSeen) -> let cheapArchive = "pdf" `isInfixOf` url || "twitter" `isInfixOf` url -- some URLs are so cheap & easy to archive that we don't need to count them against our manual-review limit, because we won't meaningfully manually review them
+      Just (Left firstSeen) -> let cheapArchive = C.isCheapArchive url
 
        in if ((today - firstSeen) < C.archiveDelay) && not cheapArchive
           then return Nothing

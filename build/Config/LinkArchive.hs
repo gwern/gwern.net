@@ -6,6 +6,11 @@ archiveDelay, archivePerRunN :: Integer
 archiveDelay = 60
 archivePerRunN = 13
 
+-- some URLs are so cheap & easy & reliable to archive that we don't need to count them
+-- against our manual-review limit, because we won't meaningfully manually review them.
+isCheapArchive :: String -> Bool
+isCheapArchive url = anyInfix url [".pdf", "#pdf", "twitter.com", "https://scribe.rip/"]
+
 -- sometimes we may want to do automated transformations of a URL *before* we check any whitelists. In the case of
 -- Arxiv, we want to generate the PDF equivalent of the HTML abstract landing page, so the PDF gets archived, but then
 -- we also want to rewrite it to use the Ar5iv (HTML5 version) service, and provide *both*.
@@ -1113,5 +1118,6 @@ whiteList url
       , "https://mimic-play.github.io/" -- low quality (video embeds)
       , "https://www.alzchem.com/de/" -- homepage
       , "https://heypi.com/talk" -- interactive
+      , "https://vecta.io/nano" -- service
       ] = True
     | otherwise = False

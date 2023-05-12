@@ -368,5 +368,5 @@ linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start wi
        , ("https://arxiv.org/abs/2207.10397#microsoft", "chen-et-al-2022-codet")
        , ("https://arxiv.org/abs/2209.06794#google", "chen-et-al-2022-pali")
        , ("https://www.medrxiv.org/content/10.1101/2022.06.24.22276728.full", "chen-et-al-2022-rare-cognition")
-       , ("/gpt-2-music", "branwen-presser-2019-music")
+       , ("/doc/psychiatry/depression/2018-gordon-supplement.pdf", "gordon-et-al-2018-supplement")
       ]

@@ -1006,4 +1006,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Procgen", "https://openai.com/research/procgen-benchmark")
         , ("chain-of-thought", "https://arxiv.org/abs/2201.11903#google")
         , ("BIG-[Bb]ench", "https://arxiv.org/abs/2206.04615") -- BIG-bench / BIG-Bench
+        , ("NLSY79", "https://en.wikipedia.org/wiki/National_Longitudinal_Surveys#NLSY79")
+        , ("NLSY97", "https://en.wikipedia.org/wiki/National_Longitudinal_Surveys#NLSY97")
+        , ("LibriSpeech", "https://danielpovey.com/files/2015_icassp_librispeech.pdf")
         ]

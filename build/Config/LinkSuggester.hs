@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Config.LinkSuggester where
 
 import Data.List (intercalate)

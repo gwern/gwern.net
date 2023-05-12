@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-04-27 09:29:01 gwern"
+When:  Time-stamp: "2023-05-11 13:18:48 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -55,7 +55,7 @@ writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[(T.Text, [T.Text
 getXLink :: String -> FilePath -> (FilePath,FilePath)
 getXLink linkType p = let linkType' = "/metadata/annotation/" ++ linkType
                           linkBase = if linkType=="" then linkType' else linkType'++"/"
-                          linkRaw = linkBase ++ take 247 (urlEncode p) ++ ".html"
+                          linkRaw = linkBase ++ take 246 (urlEncode p) ++ ".html"
                           -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg. `/metadata/annotation/$LINKTYPE/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotation/$LINKTYPE/%2Fdocs%2Frl%2Findex.html`)
                           -- NOTE: we append '.html' to remove the ambiguity over whether `/metadata/annotation/%2Ffoo.pdf` is a PDF file, or a HTML snippet about a PDF file. This ensures that the MIME type is set to HTML etc. We could probably get away without it and ignore MIME types but meh.
                           link' = linkBase ++ urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' || t=='+' then urlEncode [t] else [t]) (p++".html"))

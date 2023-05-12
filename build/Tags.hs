@@ -385,7 +385,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("technology/carbon-capture", "carbon capture")
           , ("technology/stevensinstituteoftechnology-satmnewsletter", "<em>SATM</em> archive")
           , ("technology", "tech")
-          , ("history/public-domain-review", "<em>Public Domain Review</em>")
+          , ("history/public-domain-review", "<em>PD Review</em>")
           , ("history/uighur", "Uighur genocide")
           , ("reinforcement-learning/nethack", "<em>Nethack</em> AI")
           , ("reinforcement-learning/model-free/oa5", "OA5")
