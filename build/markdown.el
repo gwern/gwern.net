@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-05-11 12:30:10 gwern"
+;;; When:  Time-stamp: "2023-05-12 22:16:23 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -364,6 +364,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      (" eg " . " eg. ")
                      ("eg\\., " . "eg. ")
                      ("e\\.g\\., " . "eg. ")
+                     ("Na\\+" . "Na⁺")
+                     ("K\\+" . "K⁺")
                      ("<sup>+</sup>" . "⁺")
                      ("et al.\n" . "et al")
                      (" ω 2" . " ω<sup>2</sup>")
@@ -1267,10 +1269,11 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([0-9]+\\) in every \\([0-9]+\\)" "\\1⁄\\2" nil begin end) ; eg. "approximately one in every 10 citations across leading psychology journals is inaccurate"
        (query-replace "...." "..." nil begin end)
        (query-replace "....." "..." nil begin end)
-       (query-replace-regexp "\n..([A-Za-z])" "\n...\\1" nil begin end) ; replace malformed '...' ellipsis excerpts
+       (query-replace-regexp "\n\\.\\.\\([A-Za-z]\\)" "\n...\\1" nil begin end) ; replace malformed '...' ellipsis excerpts
        (query-replace-regexp "^\\.\\.\\. " "..." nil begin end)
        (query-replace " = ." " = 0." nil begin end)
-       (query-replace "Ss" "Subjects" nil begin end) ; PsycNET APA abbreviation
+       (query-replace "Ss" "Subjects" nil begin end) ; PsycNET APA abbreviations
+       (query-replace-regexp "\\([Ee]\\)xp\\(s?\\) " "\\1xperiment\\2 " nil begin end)
        (query-replace-regexp " (PsycInfo Database Record (c) [12][0-9]+ APA, all rights reserved)" "" nil begin end) ; PsycNET copyright junk
        (query-replace " • " ", " nil begin end) ; some 'Keywords' sections are always MIDDLE DOT formatted
 
@@ -1295,7 +1298,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "[aA]ppendix.? ?\\([a-zA-Z]?\\)\\([0-9\\.]+[a-fA-F]*\\)"  "**Appendix \\1\\2**" nil begin end) ; 'Appendix A2'
 
        ; '§ SECTION SIGN' is better than writing out '<strong>Section N</strong>' everywhere. It's much shorter, we already use SECTION SIGN heavily, it reduces overuse of bold, is easier to grep for, and it saves a bit of time formatting annotations (because of the lack of lookahead/lookbehind in these regexp rewrites, 'Section N' will match every time, even if it's already wrapped in <strong></strong>/**bolding**, and I have to waste time skipping them). It would be nice to symbolize Figure/Table/Experiment/Data as well, but there's no widely-understood symbol which could be used, and usually no abbreviation either. (Perhaps 'Supplement.*' could be replaced by just 'S' and 'Figure' by 'Fig.' at some point…)
-       (query-replace-regexp "[Ss]ection ?\\([0-9.]+[a-fA-F]*\\)"  "§\\1" nil begin end) ; 'Section 9' → '§9'
+       (query-replace-regexp "[Ss]ection ?\\([0-9.]+[a-fA-F]*\\)"  "§\\1" nil begin end) ; 'Section 9' → '§9', 'section 9' → '§9'
+       (query-replace-regexp "Part ?\\([0-9.]+[a-fA-F]*\\)"  "§\\1" nil begin end) ; 'Part 9' → '§9'
        (query-replace-regexp "[Ss]ections ?\\([0-9.]+[a-fA-F]*\\) and \\([0-9.]+[a-fA-F]*\\)"  "§\\1 & §\\2" nil begin end) ; 'Sections 1 and 2' → '§1 & §2'
 
        (query-replace-regexp "Chapter \\([0-9]+[a-fA-F]*\\)" "**Ch\\1**"  nil begin end) ; 'Chapter 1', 'Chapter 7a' etc

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-05-12 18:17:57 gwern"
+When:  Time-stamp: "2023-05-12 22:29:22 gwern"
 License: CC-0
 -}
 
@@ -559,7 +559,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
 
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
-generateAnnotationTransclusionBlock (f, x@(tle,aut,dt,_,_,_)) =
+generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
                                 let tle' = if null tle then "<code>"++f++"</code>" else "“" ++ tle ++ "”"
                                     link = addHasAnnotation x $ linkLive $ Link ("", ["id-not", "include-annotation", "include-replace-container"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")

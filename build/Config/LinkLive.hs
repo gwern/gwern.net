@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Config.LinkLive where
 
 import qualified Data.Text as T (isPrefixOf, isInfixOf, Text)

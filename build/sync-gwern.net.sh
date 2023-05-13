@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-05-11 19:52:03 gwern"
+# When:  Time-stamp: "2023-05-12 20:15:22 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -481,7 +481,7 @@ else
     λ(){ ge -e ' a [aei]' $PAGES | grep -F --invert-match -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/'; }
     wrap λ "Grammar: 'a' → 'an'?"
 
-     λ(){ ge -e '<div class="text-center">$' -- $PAGES; }
+     λ(){ ge -e '<div class="text-center">$' -e '[A-Za-z]\.\. ' -e '– ' -e  ' –' -- $PAGES; }
      wrap λ "Markdown: miscellaneous regexp errors."
 
     λ(){ find -L . -type f -size 0  -printf 'Empty file: %p %s\n' | grep -F --invert-match '.git/FETCH_HEAD' -e './.git/modules/static/logs/refs/remotes/'; }
@@ -567,7 +567,7 @@ else
             -e  '</jats:bold>' -e 'Ã©' -e '</a>s' -e '/&gt;'  -e '&lt;figcaption'  -e 'aria-hidden=">' -e '&gt;</a>' -e '<A Href' \
             -e '</strong>:,' -e ' et al.' -e '<em>et al</em>' -e '<span class="latex">LaTeX</span>' -e '<div>' -e '>LaTeX</a>' -e '>TeX</a>' -e '<em><em>' \
             -e '</em></em>' -e '<strong><strong>' -e '</strong></strong>' -e 'doi:' -e '\\\' -e 'href"http' \
-            -e '… .' -e '... .' -- ./metadata/*.yaml | \
+            -e '… .' -e '... .'  -e '– ' -e  ' –' -- ./metadata/*.yaml | \
              grep -F -v 'popular_shelves';
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
