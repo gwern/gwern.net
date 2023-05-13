@@ -175,7 +175,7 @@
 .collapse > .disclosure-button:focus {
     outline: none;
 }
- 
+
 .collapse-block > .disclosure-button {
     position: absolute;
     top: 0;
@@ -317,7 +317,7 @@
 }
 .collapse-inline > .disclosure-button {
     --collapse-button-text-color: var(--GW-collapse-inline-disclosure-button-text-color);
-    
+
     height: 1em;
     vertical-align: text-bottom;
     position: relative;
@@ -704,7 +704,7 @@ li > .collapse-block.expanded > .collapse-content-wrapper > ul {
 
 /*	Is this necessary? Not if the other one is removed...
 	—SA 2022-05-07
-/* 
+/*
 .collapse [class^='horizontal-rule'] {
     clear: none;
 }
@@ -1089,7 +1089,7 @@ hr {
 /*	Is this necessary? It looks bad on /clippy. We’ll find out!
 	—SA 2022-05-04
  */
-/* 
+/*
 [class^='horizontal-rule'] {
     clear: both;
 }
@@ -1744,10 +1744,12 @@ h1 sub, h1 sup, h2 sub, h2 sup {
 sup a,
 sub a {
     margin-left: 0.1em;
+    margin-right: 0.1.5em;
 }
 sup a + a,
 sub a + a {
     margin-left: 0.2em;
+    margin-right: 0.1.5em;
 }
 
 /*=------------------------=*/
@@ -3480,7 +3482,7 @@ body.lorem div[class^='drop-cap'] {
     padding: 0 12px;
     outline: 1px dotted currentColor;
     background-color: var(--GW-body-background-color);
-    transition: 
+    transition:
         opacity 0.25s ease-out 0.25s;
 }
 #page-toolbar.mobile > button.collapse-button:active {
@@ -3491,7 +3493,7 @@ body.lorem div[class^='drop-cap'] {
  */
 #page-toolbar.mobile > button.main-toggle-button {
     order: 1;
-    transition: 
+    transition:
         opacity 0.25s ease-out,
         transform 0.25s ease-out;
 }
@@ -3531,7 +3533,7 @@ body.lorem div[class^='drop-cap'] {
 /*	Fade on scroll.
  */
 #page-toolbar.mobile.collapsed {
-    transition: 
+    transition:
         opacity 2s ease-out;
 }
 #page-toolbar.mobile.collapsed.faded {
@@ -3542,7 +3544,7 @@ body.lorem div[class^='drop-cap'] {
  */
 #page-toolbar.mobile.collapsed > .collapse-button {
     opacity: 0;
-    transition: 
+    transition:
         opacity 0.25s ease-out;
 }
 #page-toolbar.mobile.collapsed > button.main-toggle-button {
@@ -3561,7 +3563,7 @@ body.lorem div[class^='drop-cap'] {
  */
 #page-toolbar.mobile.collapsed.collapsed-slowly > button.main-toggle-button {
     order: 1;
-    transition: 
+    transition:
         opacity 0.75s ease-out,
         transform 0.75s linear;
 }
@@ -6397,10 +6399,10 @@ ol.link-bibliography-list-compact > li::before {
     .site-of-the-day blockquote {
         font-size: calc((17/18) * var(--GW-body-text-font-size));
         margin: 3.5em auto 2.75em auto;
-        padding: 
-            var(--box-padding-top) 
+        padding:
+            var(--box-padding-top)
             calc(var(--box-size) - var(--box-padding-top))
-            var(--box-padding-bottom) 
+            var(--box-padding-bottom)
             calc(var(--box-size) + var(--box-padding-top) + var(--box-horizontal-offset));
     }
 }
