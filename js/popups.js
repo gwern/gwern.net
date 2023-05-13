@@ -280,7 +280,7 @@ Popups = {
 	newPopup: (target) => {
 		GWLog("Popups.newPopup", "popups.js", 2);
 
-		let popup = document.createElement("DIV");
+		let popup = newElement("DIV");
 		popup.classList.add("popup", "popframe");
 		popup.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
 		popup.scrollView = popup.querySelector(".popframe-scroll-view");
@@ -288,11 +288,11 @@ Popups = {
 
 		popup.contentView.attachShadow({ mode: "open" });
 		popup.document = popup.contentView.shadowRoot;
-		popup.document.appendChild(document.createElement("DIV"));
+		popup.document.appendChild(newElement("DIV"));
 		popup.document.body = popup.body = popup.shadowBody = popup.document.firstElementChild;
 		popup.body.classList.add("popframe-body", "popup-body", "shadow-body");
 
-		let styleReset = document.createElement("STYLE");
+		let styleReset = newElement("STYLE");
 		styleReset.innerHTML = `.shadow-body { all: initial; }`;
 		popup.document.insertBefore(styleReset, popup.body);
 
@@ -973,7 +973,7 @@ Popups = {
 		popup.classList.add("has-title-bar");
 
 		//  Create and inject the title bar element.
-		popup.titleBar = document.createElement("DIV");
+		popup.titleBar = newElement("DIV");
 		popup.titleBar.classList.add("popframe-title-bar");
 		popup.titleBar.title = "Drag popup by title bar to reposition; double-click title bar to collapse (hold Option/Alt to collapse all)";
 		popup.insertBefore(popup.titleBar, popup.firstElementChild);
@@ -1025,7 +1025,7 @@ Popups = {
 			"restore": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M436 192H312c-13.3 0-24-10.7-24-24V44c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v84h84c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm-276-24V44c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v84H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24zm0 300V344c0-13.3-10.7-24-24-24H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-84h84c6.6 0 12-5.4 12-12v-40c0-6.6-5.4-12-12-12H312c-13.3 0-24 10.7-24 24v124c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12z"></path></svg>`,
 			"pin": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M306.5 186.6l-5.7-42.6H328c13.2 0 24-10.8 24-24V24c0-13.2-10.8-24-24-24H56C42.8 0 32 10.8 32 24v96c0 13.2 10.8 24 24 24h27.2l-5.7 42.6C29.6 219.4 0 270.7 0 328c0 13.2 10.8 24 24 24h144v104c0 .9.1 1.7.4 2.5l16 48c2.4 7.3 12.8 7.3 15.2 0l16-48c.3-.8.4-1.7.4-2.5V352h144c13.2 0 24-10.8 24-24 0-57.3-29.6-108.6-77.5-141.4zM50.5 304c8.3-38.5 35.6-70 71.5-87.8L138 96H80V48h224v48h-58l16 120.2c35.8 17.8 63.2 49.4 71.5 87.8z"/></svg>`,
 			"unpin": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M298.028 214.267L285.793 96H328c13.255 0 24-10.745 24-24V24c0-13.255-10.745-24-24-24H56C42.745 0 32 10.745 32 24v48c0 13.255 10.745 24 24 24h42.207L85.972 214.267C37.465 236.82 0 277.261 0 328c0 13.255 10.745 24 24 24h136v104.007c0 1.242.289 2.467.845 3.578l24 48c2.941 5.882 11.364 5.893 14.311 0l24-48a8.008 8.008 0 0 0 .845-3.578V352h136c13.255 0 24-10.745 24-24-.001-51.183-37.983-91.42-85.973-113.733z"/></svg>`,
-			"options": `<svg enable-background="new 0 0 32 32" id="Glyph" version="1.1" viewBox="0 0 32 32" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M20.722,24.964c0.096,0.096,0.057,0.264-0.073,0.306c-7.7,2.466-16.032-1.503-18.594-8.942  c-0.072-0.21-0.072-0.444,0-0.655c0.743-2.157,1.99-4.047,3.588-5.573c0.061-0.058,0.158-0.056,0.217,0.003l4.302,4.302  c0.03,0.03,0.041,0.072,0.031,0.113c-1.116,4.345,2.948,8.395,7.276,7.294c0.049-0.013,0.095-0.004,0.131,0.032  C17.958,22.201,20.045,24.287,20.722,24.964z" id="XMLID_323_"/><path d="M24.68,23.266c2.406-1.692,4.281-4.079,5.266-6.941c0.072-0.21,0.072-0.44,0-0.65  C27.954,9.888,22.35,6,16,6c-2.479,0-4.841,0.597-6.921,1.665L3.707,2.293c-0.391-0.391-1.023-0.391-1.414,0s-0.391,1.023,0,1.414  l26,26c0.391,0.391,1.023,0.391,1.414,0c0.391-0.391,0.391-1.023,0-1.414L24.68,23.266z M16,10c3.309,0,6,2.691,6,6  c0,1.294-0.416,2.49-1.115,3.471l-8.356-8.356C13.51,10.416,14.706,10,16,10z" id="XMLID_325_"/></svg>`,
+			"options": `<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M20.722,24.964c0.096,0.096,0.057,0.264-0.073,0.306c-7.7,2.466-16.032-1.503-18.594-8.942  c-0.072-0.21-0.072-0.444,0-0.655c0.743-2.157,1.99-4.047,3.588-5.573c0.061-0.058,0.158-0.056,0.217,0.003l4.302,4.302  c0.03,0.03,0.041,0.072,0.031,0.113c-1.116,4.345,2.948,8.395,7.276,7.294c0.049-0.013,0.095-0.004,0.131,0.032  C17.958,22.201,20.045,24.287,20.722,24.964z"/><path d="M24.68,23.266c2.406-1.692,4.281-4.079,5.266-6.941c0.072-0.21,0.072-0.44,0-0.65  C27.954,9.888,22.35,6,16,6c-2.479,0-4.841,0.597-6.921,1.665L3.707,2.293c-0.391-0.391-1.023-0.391-1.414,0s-0.391,1.023,0,1.414  l26,26c0.391,0.391,1.023,0.391,1.414,0c0.391-0.391,0.391-1.023,0-1.414L24.68,23.266z M16,10c3.309,0,6,2.691,6,6  c0,1.294-0.416,2.49-1.115,3.471l-8.356-8.356C13.51,10.416,14.706,10,16,10z"/></svg>`,
 			"zoom-top-left": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 184.4,256.17 -123,-123 1.9,66.3 c 0.4,13.5 -10.5,24.7 -24,24.7 H 24 c -13.3,0 -24,-10.7 -24,-24 V 64.17 c 0,-17.7 14.3,-32 32,-32 h 136 c 13.3,0 24,10.7 24,24 v 15.3 c 0,13.5 -11.2,24.4 -24.7,24 l -66.3,-1.9 123,123 c 28.25,28.25 -12.5,66.7 -39.6,39.6 z" /></svg>`,
 			"zoom-top": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 184.4,255.6 -123,-123 1.9,66.3 c 0.4,13.5 -10.5,24.7 -24,24.7 H 24 c -13.3,0 -24,-10.7 -24,-24 V 63.6 c 0,-17.7 14.3,-32 32,-32 h 136 c 13.3,0 24,10.7 24,24 v 15.3 c 0,13.5 -11.2,24.4 -24.7,24 l -66.3,-1.9 123,123 123,-123 -66.3,1.9 c -13.5,0.4 -24.7,-10.5 -24.7,-24 v -15.3 c 0,-13.3 10.7,-24 24,-24 h 136 c 17.7,0 32,14.3 32,32 V 199.6 c 0,13.3 -10.7,24 -24,24 h -15.3 c -13.5,0 -24.4,-11.2 -24,-24.7 l 1.9,-66.3 -123,123 c -32.43,32.43 -45.53,32.6 -79.2,0 z" /></svg>`,
 			"zoom-top-right": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 224.4,216.4 123,-123 -66.3,1.9 c -13.5,0.4 -24.7,-10.5 -24.7,-24 V 56 c 0,-13.3 10.7,-24 24,-24 h 136 c 17.7,0 32,14.3 32,32 v 136 c 0,13.3 -10.7,24 -24,24 h -15.3 c -13.5,0 -24.4,-11.2 -24,-24.7 l 1.9,-66.3 -123,123 c -28.25,28.25 -66.7,-12.5 -39.6,-39.6 z" /></svg>`,
@@ -1058,7 +1058,7 @@ Popups = {
 
 		//  A generic button, with no icon or tooltip text.
 		genericButton: () => {
-			let button = document.createElement("BUTTON");
+			let button = newElement("BUTTON");
 			button.classList.add("popframe-title-bar-button");
 
 			button.buttonAction = (event) => { event.stopPropagation(); };
@@ -1207,7 +1207,7 @@ Popups = {
 
 			button.classList.add("has-submenu");
 
-			button.submenu = document.createElement("DIV");
+			button.submenu = newElement("DIV");
 			button.submenu.classList.add("submenu", submenuClass);
 
 			popup.titleBar.insertBefore(button.submenu, button.nextElementSibling);

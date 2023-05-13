@@ -3,7 +3,7 @@ Extracts = { ...Extracts,
 	/*	Popins.
 	 */
 
-// 	popinOptionsEnabled = true,
+// 	popinOptionsEnabled: true,
 
 	//	Called by: extracts.js
 	showPopinOptionsDialogPopinTitleBarButton: () => {

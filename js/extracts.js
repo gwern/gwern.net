@@ -201,7 +201,7 @@ Extracts = {
         if (Extracts.popFrameProvider == Popups) {
             GWLog("Setting up for popups.", "extracts.js", 1);
 
-            if (!Extracts.popupsEnabled()) {
+            if (Extracts.popupsEnabled() == false) {
                 if (Extracts.popupOptionsEnabled) {
                     //  Inject “popups disabled” icon/button.
                     Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
@@ -213,7 +213,7 @@ Extracts = {
         } else {
             GWLog("Setting up for popins.", "extracts.js", 1);
 
-			if (!Extracts.popinsEnabled()) {
+			if (Extracts.popinsEnabled() == false) {
 				return;
 			}
 
@@ -746,7 +746,7 @@ Extracts = {
 
             //  Add the options button.
             if (Extracts.popinOptionsEnabled)
-                popup.titleBarContents.push(Extracts.showPopinOptionsDialogPopinTitleBarButton());
+                popin.titleBarContents.unshift(Extracts.showPopinOptionsDialogPopinTitleBarButton());
         }
 
         //  Special handling for certain popin types.

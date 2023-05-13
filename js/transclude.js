@@ -1253,7 +1253,7 @@ Transclude = {
             if (   startElement
                 && endElement
                 && (   startElement == endElement
-                    || startElement.compareDocumentPosition(endElement) == Node.DOCUMENT_POSITION_PRECEDING))
+                    || startElement.compareDocumentPosition(endElement) & Node.DOCUMENT_POSITION_PRECEDING))
                 return newDocument();
 
             //  Slice.
