@@ -100,14 +100,14 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""))  = -- short:
       author = if aut=="" || aut=="N/A" then []
                else
                  [Str ",", Space, authorSpan]
-      -- Imagine we link to a target on another gwern.net page like </question#feynman>. It has no full annotation and never will, not even a title.
+      -- Imagine we link to a target on another Gwern.net page like </question#feynman>. It has no full annotation and never will, not even a title.
       -- So it would show up in the link-bib as merely eg. '55. `/question#feynman`'. Not very useful! Why can't it simply transclude that snippet instead?
       -- So, we do that here: if it is a local page path, has an anchor `#` in it, and does not have an annotation ("" pattern-match guarantees that),'
       -- we try to append a blockquote with the `.include-block-context` class, to make it look like the backlinks approach to transcluding the context
       -- at a glance:
-      transcludeTarget = if not (isPagePath $ T.pack f) && ('#' `elem` f) then [] else
+      transcludeTarget = if not (isPagePath (T.pack f) && '#' `elem` f) then [] else
                            [BlockQuote [Para [Link ("", ["backlink-not", "include-replace-container", "include-block-context", "link-annotated-not"], [])
-                                               [Str "[Transclude the link target]"] (T.pack f,"")]]]
+                                               [Str "[Transclude the forward-link's context]"] (T.pack f,"")]]]
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
     let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation"],[]) else ("",["id-not"],[])
