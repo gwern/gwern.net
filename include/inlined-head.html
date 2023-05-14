@@ -270,9 +270,7 @@
 
     /*  Mode selector (light/dark mode).
      */
-    --GW-mode-selector-background-color: var(--GW-body-background-color);
-    --GW-mode-selector-mobile-background-color: rgba(255,255,255,0.75);
-    --GW-mode-selector-border-hover-color: #aaa;
+    --GW-mode-selector-border-color: #aaa;
     --GW-mode-selector-button-text-color: #777;
     --GW-mode-selector-button-hover-text-color: #000;
 
@@ -1751,8 +1749,7 @@ body.special-halloween-dark {
 
     --GW-math-block-scrollbar-border-color: var(--GW-blood-red);
 
-    --GW-mode-selector-border-color: var(--GW-blood-red-arterial);
-    --GW-mode-selector-border-hover-color: var(--GW-blood-red-dried);
+    --GW-mode-selector-border-color: var(--GW-blood-red-dried);
 
     --GW-back-to-top-link-color: var(--GW-blood-red-dried);
 
@@ -1794,7 +1791,7 @@ body.special-halloween-dark h6 {
     body.special-halloween-dark #ui-elements-container .mode-selector:hover {
         outline-style: double;
         outline-width: 3px;
-        outline-color: var(--GW-mode-selector-border-hover-color);
+        outline-color: var(--GW-mode-selector-border-color);
     }
 }
 </style>
@@ -2070,9 +2067,7 @@ body.special-halloween-dark h6 {
 
     /*  Mode selector (light/dark mode).
      */
-    --GW-mode-selector-background-color: var(--GW-body-background-color);
-    --GW-mode-selector-mobile-background-color: rgba(0, 0, 0, 0.75);
-    --GW-mode-selector-border-hover-color: #7c7c7c;
+    --GW-mode-selector-border-color: #7c7c7c;
     --GW-mode-selector-button-text-color: #a6a6a6;
     --GW-mode-selector-button-hover-text-color: #fff;
 
@@ -3374,19 +3369,20 @@ GW.notificationCenter.prefireProcessors["GW.contentDidInject"] = (eventInfo) => 
 
 
 /********************/
-/* SCROLL LISTENERS */
+/* EVENT LISTENERS */
 /********************/
 
-GW.scrollListeners = { };
-/*  Adds a scroll event listener to the page.
+GW.eventListeners = { };
+
+/*  Adds a named event listener to the page (or other target).
  */
-function addScrollListener(fn, name, options = { }, target = document) {
+function addNamedEventListener(eventName, fn, name, options = { }, target = document) {
     if (options.defer) {
         doWhenPageLoaded(() => {
             requestAnimationFrame(() => {
                 if (options.ifDeferCallWhenAdd)
                     fn();
-                addScrollListener(fn, name, { defer: false }, target);
+                addNamedEventListener(eventName, fn, name, { defer: false }, target);
             });
         });
         return;
@@ -3395,26 +3391,58 @@ function addScrollListener(fn, name, options = { }, target = document) {
     let wrapper = (event) => {
         requestAnimationFrame(() => {
             fn(event);
-            target.addEventListener("scroll", wrapper, { once: true, passive: true });
+            target.addEventListener(eventName, wrapper, { once: true, passive: true });
         });
     }
-    target.addEventListener("scroll", wrapper, { once: true, passive: true });
+    target.addEventListener(eventName, wrapper, { once: true, passive: true });
 
-    /*  Retain a reference to the scroll listener, if a name is provided.
+    /*  Retain a reference to the event listener, if a name is provided.
      */
-    if (name)
-        GW.scrollListeners[name] = { wrapper: wrapper, target: target };
+    if (name) {
+    	if (GW.eventListeners[eventName] == null)
+    		GW.eventListeners[eventName] = { };
+
+        GW.eventListeners[eventName][name] = { wrapper: wrapper, target: target };
+    }
 
     return wrapper;
 }
-/*  Removes a named scroll event listener from the page.
+
+/*  Removes a named event listener from the page (or other target).
+ */
+function removeNamedEventListener(eventName, name) {
+	if (GW.eventListeners[eventName] == null)
+		return;
+
+    let listener = GW.eventListeners[eventName][name];
+    if (listener) {
+        listener.target.removeEventListener(eventName, listener.wrapper);
+        GW.eventListeners[eventName][name] = null;
+    }
+}
+
+/*  Adds a scroll event listener to the page (or other target).
+ */
+function addScrollListener(fn, name, options = { }, target = document) {
+	return addNamedEventListener("scroll", fn, name, options, target);
+}
+
+/*  Removes a named scroll event listener from the page (or other target).
  */
 function removeScrollListener(name) {
-    let listener = GW.scrollListeners[name];
-    if (listener) {
-        listener.target.removeEventListener("scroll", listener.wrapper);
-        GW.scrollListeners[name] = null;
-    }
+	removeNamedEventListener("scroll", name);
+}
+
+/*  Adds a resize event listener to the window.
+ */
+function addWindowResizeListener(fn, name, options) {
+	return addNamedEventListener("resize", fn, name, options, window);
+}
+
+/*  Removes a named resize event listener from the window.
+ */
+function removeWindowResizeListener(name) {
+	removeNamedEventListener("resize", name);
 }
 
 
@@ -3934,18 +3962,7 @@ ReaderMode.injectStyleBlock(ReaderMode.styles, "reader-mode-styles");
 doWhenBodyExists(ReaderMode.setMode);
 </script>
 
-
-
-
-
-
-
-
-
-
-
-
-<link rel="preload" href="/static/css/fonts.css?v=1682217271" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
-<link rel="preload" href="/static/css/default.css?v=1683991350" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
-<link rel="preload" href="/static/css/links.css?v=1682780256" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/fonts.css?v=1684024553" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/default.css?v=1684012919" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/links.css?v=1682784367" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/img/icon/icons.svg" as="image">

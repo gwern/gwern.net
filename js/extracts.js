@@ -421,7 +421,7 @@ Extracts = {
     //  Called by: Extracts.preparePopup
     //  Called by: Extracts.preparePopin
     //  Called by: Extracts.rewritePopinContent
-    titleForPopFrame: (popFrame) => {
+    titleForPopFrame: (popFrame, titleText) => {
         let target = popFrame.spawningTarget;
 
         //  Special handling for certain popup types.
@@ -431,20 +431,20 @@ Extracts = {
                                     : Extracts[`titleForPopin_${targetTypeName}`])
                                 || Extracts[`titleForPopFrame_${targetTypeName}`];
         if (specialTitleFunction)
-            return specialTitleFunction(popFrame);
+            return specialTitleFunction(popFrame, titleText);
         else
-            return Extracts.standardPopFrameTitleElementForTarget(target);
+            return Extracts.standardPopFrameTitleElementForTarget(target, titleText);
     },
 
 	//	Called by: Extracts.rewritePopinContent
 	//	Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
-	updatePopFrameTitle: (popFrame, title) => {
+	updatePopFrameTitle: (popFrame, titleText) => {
         GWLog("Extracts.updatePopFrameTitle", "extracts.js", 2);
 
 		if (popFrame.titleBar) {
-			popFrame.titleBar.querySelector(".popframe-title").replaceChildren(Extracts.titleForPopFrame(popFrame));
+			popFrame.titleBar.querySelector(".popframe-title").replaceChildren(Extracts.titleForPopFrame(popFrame, titleText));
 		} else if (popFrame.titleBarContents) {
-			popFrame.titleBarContents.find(x => x.classList.contains("popframe-title")).replaceChildren(Extracts.titleForPopFrame(popFrame));
+			popFrame.titleBarContents.find(x => x.classList.contains("popframe-title")).replaceChildren(Extracts.titleForPopFrame(popFrame, titleText));
 		}
 	},
 
