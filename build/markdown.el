@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-05-12 22:16:23 gwern"
+;;; When:  Time-stamp: "2023-05-13 11:59:59 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -398,6 +398,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" )" . ")")
                         ("?!" . "‽")
                         ("!?" . "‽")
+                        (" ?" . "?")
                         (" — " . "—")
                         (" – " . "—")
                         (" − " . "—")
