@@ -1148,11 +1148,31 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_DOCUMENT: (popFrame) => {
-        //  Set title of popup from page title.
         let iframe = popFrame.document.querySelector("iframe");
         if (iframe) {
+        	/*	All of this `srcURL` stuff is necessary as a workaround for a 
+        		Chrome bug that scrolls the parent page when an iframe popup
+        		has a `src` attribute with a hash and that hash points to an
+        		old-style anchor (`<a name="foo">`).
+        	 */
+			let srcURL = new URL(iframe.src);
+			if (   srcURL.pathname.endsWith(".html")
+				&& srcURL.hash > "") {
+				srcURL.savedHash = srcURL.hash;
+				srcURL.hash = "";
+				iframe.src = srcURL.href;
+			}
+
             iframe.addEventListener("load", (event) => {
-                Extracts.updatePopFrameTitle(popFrame, iframe.contentDocument.title);
+				if (srcURL.savedHash) {
+					let selector = selectorFromHash(srcURL.savedHash);
+					let element = iframe.contentDocument.querySelector(`${selector}, [name='${(selector.slice(1))}']`);
+					if (element)
+						iframe.contentWindow.scrollTo(0, element.getBoundingClientRect().y);
+				}
+
+				//  Set title of popup from page title.
+				Extracts.updatePopFrameTitle(popFrame, iframe.contentDocument.title);
             });
         }
 
