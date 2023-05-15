@@ -239,6 +239,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | aU' ["www.unz.com/gnxp/", "razib.substack.com", "www.razib.com", "www.gnxp.com", "twitter.com/razibkhan"] = aI "RK" "text,sans" -- Razib Khan
  | u'' "www.outsideonline.com" = aI "𝕆" "text,sans" -- imitate the shadowing on Outside Online's 'O' <https://www.outsideonline.com/wp-content/uploads/2021/07/favicon-194x194-1.png>
  | u'' "jaymans.wordpress.com" = aI "J👨🏾" "text,sans" -- JayMan
+ | u'' "norvig.com" = aI "N" "text,sans" -- Google Director of Research <https://en.wikipedia.org/wiki/Peter_Norvig>; <http://norvig.com/favicon.ico> is actually instantly recognizable & well-chosen, but unfortunately, only works because of the *colors*... so we'll settle for a plain sans capital N.
 
  -- Tri/triple TLAs
  | u' "animenewsnetwork.com" = aI "ANN" "text,tri"
@@ -341,6 +342,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "oeis.org" = aI "OEIS" "text,quad,sans" -- On-Line Encyclopedia of Integer Sequences
  | u'' "bldgblog.com" = aI "BLDG" "text,quad,monospace" -- BLDGBLOG (“building blog”, 2004), by Geoff Manaugh <https://en.wikipedia.org/wiki/BLDGBLOG>
  | u' "twitter.com/patio11" || aU'' ["www.bitsaboutmoney.com", "training.kalzumeus.com", "www.kalzumeus.com"] = aI "pt11" "text,quad,monospace" -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...
+ | u'' "mathshistory.st-andrews.ac.uk" = aI "M  T" "text,quad,sans" -- MacTutor History of Mathematics Archive: a weird one, <https://mathshistory.st-andrews.ac.uk/static/img/logo.png> - crude sans but only 2 letters kinda like a diagonal in a square or a TeX. Experiment with using EN SPACE to force a diagonal quad layout.
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"

@@ -9,7 +9,7 @@ archivePerRunN = 13
 -- some URLs are so cheap & easy & reliable to archive that we don't need to count them
 -- against our manual-review limit, because we won't meaningfully manually review them.
 isCheapArchive :: String -> Bool
-isCheapArchive url = anyInfix url [".pdf", "#pdf", "twitter.com", "https://scribe.rip/", "https://news.ycombinator.com"]
+isCheapArchive url = anyInfix url [".pdf", "#pdf", "twitter.com", "https://scribe.rip/", "news.ycombinator.com"]
 
 -- sometimes we may want to do automated transformations of a URL *before* we check any whitelists. In the case of
 -- Arxiv, we want to generate the PDF equivalent of the HTML abstract landing page, so the PDF gets archived, but then
