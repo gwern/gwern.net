@@ -243,6 +243,9 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			} else {
 				//	Additional wrapper is required for most tag types.
 				collapseWrapper = wrapElement(collapseBlock, null, "DIV", true, [ "collapse", "expand-on-hover" ]);
+
+				//	This is a block collapse.
+				collapseWrapper.classList.add("collapse-block");
 			}
 
 			//	Mark as expanded, if need be.

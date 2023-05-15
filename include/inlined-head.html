@@ -264,15 +264,16 @@
 
 	/*	Page toolbar.
 	 */
+    --GW-page-toolbar-border-color: #aaa;
 	--GW-page-toolbar-button-color: #aaa;
 	--GW-page-toolbar-button-active-color: #000;
-	--GW-page-toolbar-border-color: #aaa;
+    --GW-page-toolbar-button-text-color: #777;
+    --GW-page-toolbar-button-hover-text-color: #000;
 
-    /*  Mode selector (light/dark mode).
-     */
-    --GW-mode-selector-border-color: #aaa;
-    --GW-mode-selector-button-text-color: #777;
-    --GW-mode-selector-button-hover-text-color: #000;
+	/*	Mode selectors.
+	 */
+	--GW-mode-selector-button-icon-color: #e4e4e4;
+	--GW-mode-selector-button-selected-icon-color: #777;
 
 	/*	Reader mode.
 	 */
@@ -1749,7 +1750,7 @@ body.special-halloween-dark {
 
     --GW-math-block-scrollbar-border-color: var(--GW-blood-red);
 
-    --GW-mode-selector-border-color: var(--GW-blood-red-dried);
+    --GW-page-toolbar-border-color: var(--GW-blood-red-dried);
 
     --GW-back-to-top-link-color: var(--GW-blood-red-dried);
 
@@ -1780,19 +1781,6 @@ body.special-halloween-dark h6 {
     --GW-body-link-color: var(--GW-blood-red);
 
     color: var(--GW-body-text-color);
-}
-
-@media only screen and (hover: hover) {
-    body.special-halloween-dark #ui-elements-container .mode-selector {
-        outline-style: dotted;
-        outline-width: 1px;
-        outline-color: var(--GW-mode-selector-border-color);
-    }
-    body.special-halloween-dark #ui-elements-container .mode-selector:hover {
-        outline-style: double;
-        outline-width: 3px;
-        outline-color: var(--GW-mode-selector-border-color);
-    }
 }
 </style>
 <style id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)">
@@ -2061,15 +2049,16 @@ body.special-halloween-dark h6 {
 
 	/*	Page toolbar.
 	 */
+    --GW-page-toolbar-border-color: #7c7c7c;
 	--GW-page-toolbar-button-color: #7c7c7c;
 	--GW-page-toolbar-button-active-color: #fff;
-	--GW-page-toolbar-border-color: #7c7c7c;
+    --GW-page-toolbar-button-text-color: #a6a6a6;
+    --GW-page-toolbar-button-hover-text-color: #fff;
 
-    /*  Mode selector (light/dark mode).
-     */
-    --GW-mode-selector-border-color: #7c7c7c;
-    --GW-mode-selector-button-text-color: #a6a6a6;
-    --GW-mode-selector-button-hover-text-color: #fff;
+	/*	Mode selectors.
+	 */
+	--GW-mode-selector-button-icon-color: #404040;
+	--GW-mode-selector-button-selected-icon-color: #a6a6a6;
 
 	/*	Reader mode.
 	 */
@@ -2122,10 +2111,6 @@ body.special-halloween-dark h6 {
     /*  Reader mode.
      */
     --GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.85);
-
-	/*	Mode selectors.
-	 */
-	--GW-mode-selector-mobile-background-color: rgba(18, 18, 18, 0.75);
 
 	/*	Wikipedia math images assume a white background; transparent images
 		don’t look right if that assumption is violated.
@@ -2356,62 +2341,6 @@ img.invert-auto:hover {
  */
 a.include-loading.include-spinner::after {
 	filter: invert(1);
-}
-
-/*	All mode selectors.
- */
-div.mode-selector button::before,
-span.mode-selector button::before {
-    filter: invert(1);
-}
-
-/*	Inline mode selectors.
- */
-span.mode-selector {
-	opacity: 0.45;
-}
-span.mode-selector button::before {
-	opacity: 0.55;
-}
-span.dark-mode-selector button.select-mode-light::before {
-	opacity: 0.6;
-}
-
-/*	Fixed mode selectors.
- */
-@media only screen and (min-width: 1280px) {
-	div.mode-selector {
-		opacity: 0.45;
-	}
-	div.mode-selector button::before {
-		opacity: 0.55;
-	}
-	div.dark-mode-selector button.select-mode-light::before {
-		opacity: 0.6;
-	}
-}
-@media only screen and (max-width: 1279px) {
-    #ui-elements-container div.mode-selector button {
-        opacity: 0.3;
-    }
-    #ui-elements-container div.dark-mode-selector button.select-mode-light {
-        opacity: 0.35;
-    }
-    #ui-elements-container div.reader-mode-selector button.select-mode-off {
-        opacity: 0.35;
-    }
-    #ui-elements-container div.mode-selector button:hover,
-    #ui-elements-container div.mode-selector button.selected {
-        opacity: 0.85;
-    }
-    #ui-elements-container div.reader-mode-selector button.select-mode-on:hover,
-    #ui-elements-container div.reader-mode-selector button.select-mode-on.selected {
-        opacity: 0.75;
-    }
-    #ui-elements-container div.reader-mode-selector button.select-mode-off:hover,
-    #ui-elements-container div.reader-mode-selector button.select-mode-off.selected {
-        opacity: 0.9;
-    }
 }
 
 /*  Masked links key toggle info alert panel.
@@ -3962,7 +3891,7 @@ ReaderMode.injectStyleBlock(ReaderMode.styles, "reader-mode-styles");
 doWhenBodyExists(ReaderMode.setMode);
 </script>
 
-<link rel="preload" href="/static/css/fonts.css?v=1684024553" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
-<link rel="preload" href="/static/css/default.css?v=1684012919" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/fonts.css?v=1684129606" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/default.css?v=1684130069" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/css/links.css?v=1682784367" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/img/icon/icons.svg" as="image">
