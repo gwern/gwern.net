@@ -85,7 +85,7 @@ Extracts = { ...Extracts,
 							<input class="extracts-enable" name="extracts-enable-status" ${enabledRadioButtonChecked} value="enabled" type="radio">
 							<span class="button-text">
 								<span class="label">Enable</span>
-								<span class="explanation">Show ${(Extracts.popFrameTypeText())}s when ${actionDescription} annotated links.</span>
+								<span class="explanation">Show ${(Extracts.popFrameTypeText())}s when ${actionDescription} links.</span>
 							</span>
 						</label>
 						<label>
