@@ -203,6 +203,19 @@
     --GW-code-popframe-line-number-color: #7c7c7c;
     --GW-code-popframe-line-number-divider-color: #5c5c5c;
 
+    --GW-extracts-options-dialog-backdrop-background-color: rgba(0, 0, 0, 0.95);
+    --GW-extracts-options-dialog-background-color: var(--GW-body-background-color);
+    --GW-extracts-options-dialog-border-color: #7c7c7c;
+    --GW-extracts-options-dialog-box-shadow-color: #cecece;
+    --GW-extracts-options-dialog-horizontal-rule-color: #5c5c5c;
+    --GW-extracts-options-dialog-button-background-color: var(--GW-body-background-color);
+    --GW-extracts-options-dialog-button-text-color: #fff;
+    --GW-extracts-options-dialog-button-border-color: #fff;
+    --GW-extracts-options-dialog-button-hover-box-shadow-color: #fff;
+    --GW-extracts-options-dialog-option-button-explanation-text-color: #a6a6a6;
+    --GW-extracts-options-dialog-option-button-hover-text-color: #a6a6a6;
+    --GW-extracts-options-dialog-radio-button-border-color: #fff;
+
     /*  Popups.
      */
     --GW-popups-popup-background-color: var(--GW-body-background-color);
@@ -231,20 +244,6 @@
     --GW-popups-popup-scrollbar-thumb-hover-color: #6c6c6c;
     --GW-popups-popup-scrollbar-thumb-focused-color: #5c5c5c;
     --GW-popups-popup-scrollbar-thumb-hover-focused-color: #8b8b8b;
-
-    --GW-popups-popup-options-dialog-backdrop-background-color: rgba(0, 0, 0, 0.95);
-    --GW-popups-popup-options-dialog-background-color: var(--GW-body-background-color);
-    --GW-popups-popup-options-dialog-border-color: #7c7c7c;
-    --GW-popups-popup-options-dialog-box-shadow-color: #cecece;
-    --GW-popups-popup-options-dialog-horizontal-rule-color: #5c5c5c;
-    --GW-popups-popup-options-dialog-button-background-color: var(--GW-body-background-color);
-    --GW-popups-popup-options-dialog-button-text-color: #fff;
-    --GW-popups-popup-options-dialog-button-border-color: #fff;
-    --GW-popups-popup-options-dialog-button-hover-box-shadow-color: #fff;
-    --GW-popups-popup-options-dialog-option-button-explanation-text-color: #a6a6a6;
-    --GW-popups-popup-options-dialog-option-button-hover-text-color: #a6a6a6;
-    --GW-popups-popup-options-dialog-radio-button-border-color: #fff;
-    --GW-popups-show-popup-options-dialog-button-color: #8b8b8b;
 
     /*  Popins.
      */

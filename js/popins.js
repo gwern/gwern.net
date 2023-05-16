@@ -489,6 +489,9 @@ Popins = {
 		//	Save place.
 		let ancestor = popin.parentElement;
 
+		//	Remove from spawned popins stack.
+		Popins.spawnedPopins.shift();
+
 		//  Remove popin from page.
 		popin.remove();
 

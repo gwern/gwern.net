@@ -9,6 +9,13 @@ function rollDie(size) {
 	return Math.floor(Math.random() * (size - 1) + 1);
 }
 
+/*********************************************/
+/*	Returns the string with words capitalized.
+ */
+String.prototype.capitalizeWords = function () {
+	return this.replace(/\b\w/g, l => l.toUpperCase());
+};
+
 /********************************************************/
 /*  Returns the string trimmed of opening/closing quotes.
  */

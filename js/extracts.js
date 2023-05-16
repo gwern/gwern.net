@@ -676,9 +676,11 @@ Extracts = {
     /*  Popins.
      */
 
+	popinsDisabledLocalStorageItemKey: "extract-popins-disabled",
+
     //  Called by: Extracts.setup
     popinsEnabled: () => {
-        return (localStorage.getItem("extract-popins-disabled") != "true");
+        return (localStorage.getItem(Extracts.popinsDisabledLocalStorageItemKey) != "true");
     },
 
     /*  Called by popins.js when adding a target.
@@ -729,13 +731,10 @@ Extracts = {
         let popinTitle = Extracts.titleForPopFrame(popin);
         if (popinTitle) {
             popin.titleBarContents = [
+            	Extracts.showExtractsOptionsDialogPopFrameTitleBarButton(),
             	newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popinTitle.innerHTML }),
                 Popins.titleBarComponents.closeButton()
             ];
-
-            //  Add the options button.
-            if (Extracts.popinOptionsEnabled)
-                popin.titleBarContents.unshift(Extracts.showPopinOptionsDialogPopinTitleBarButton());
         }
 
         //  Special handling for certain popin types.
@@ -793,10 +792,12 @@ Extracts = {
     /*  Popups.
      */
 
+	popupsDisabledLocalStorageItemKey: "extract-popups-disabled",
+	
     //  Called by: Extracts.setup
     //  Called by: extracts-options.js
     popupsEnabled: () => {
-        return (localStorage.getItem("extract-popups-disabled") != "true");
+        return (localStorage.getItem(Extracts.popupsDisabledLocalStorageItemKey) != "true");
     },
 
     //  Called by: Extracts.preparePopup
@@ -858,7 +859,7 @@ Extracts = {
                 Popups.titleBarComponents.zoomButton().enableSubmenu(),
                 Popups.titleBarComponents.pinButton(),
                 newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popupTitle.innerHTML }),
-                Extracts.showPopupOptionsDialogPopupTitleBarButton()
+                Extracts.showExtractsOptionsDialogPopFrameTitleBarButton()
             ];
         }
 

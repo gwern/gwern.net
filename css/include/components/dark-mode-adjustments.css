@@ -302,9 +302,3 @@ a[data-link-icon-type*='svg'] .link-icon-hook::after {
 .annotation.wikipedia-entry figure img {
 	background-color: var(--GW-wikipedia-image-background-color);
 }
-
-/*	Popups-disabled icon/button.
- */
-div#popups-disabled-show-popup-options-dialog-button {
-    opacity: 0.5;
-}

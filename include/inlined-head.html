@@ -204,6 +204,19 @@
     --GW-code-popframe-line-number-color: #aaa;
     --GW-code-popframe-line-number-divider-color: #ccc;
 
+    --GW-extracts-options-dialog-backdrop-background-color: rgba(255,255,255,0.95);
+    --GW-extracts-options-dialog-background-color: var(--GW-body-background-color);
+    --GW-extracts-options-dialog-border-color: #aaa;
+    --GW-extracts-options-dialog-box-shadow-color: #444;
+    --GW-extracts-options-dialog-horizontal-rule-color: #ccc;
+    --GW-extracts-options-dialog-button-background-color: var(--GW-body-background-color);
+    --GW-extracts-options-dialog-button-text-color: #000;
+    --GW-extracts-options-dialog-button-border-color: #000;
+    --GW-extracts-options-dialog-button-hover-box-shadow-color: #000;
+    --GW-extracts-options-dialog-option-button-explanation-text-color: #777;
+    --GW-extracts-options-dialog-option-button-hover-text-color: #777;
+    --GW-extracts-options-dialog-radio-button-border-color: #000;
+
     /*  Popups.
      */
     --GW-popups-popup-background-color: var(--GW-body-background-color);
@@ -232,20 +245,6 @@
     --GW-popups-popup-scrollbar-thumb-hover-color: #bbb;
     --GW-popups-popup-scrollbar-thumb-focused-color: #ccc;
     --GW-popups-popup-scrollbar-thumb-hover-focused-color: #999;
-
-    --GW-popups-popup-options-dialog-backdrop-background-color: rgba(255,255,255,0.95);
-    --GW-popups-popup-options-dialog-background-color: var(--GW-body-background-color);
-    --GW-popups-popup-options-dialog-border-color: #aaa;
-    --GW-popups-popup-options-dialog-box-shadow-color: #444;
-    --GW-popups-popup-options-dialog-horizontal-rule-color: #ccc;
-    --GW-popups-popup-options-dialog-button-background-color: var(--GW-body-background-color);
-    --GW-popups-popup-options-dialog-button-text-color: #000;
-    --GW-popups-popup-options-dialog-button-border-color: #000;
-    --GW-popups-popup-options-dialog-button-hover-box-shadow-color: #000;
-    --GW-popups-popup-options-dialog-option-button-explanation-text-color: #777;
-    --GW-popups-popup-options-dialog-option-button-hover-text-color: #777;
-    --GW-popups-popup-options-dialog-radio-button-border-color: #000;
-    --GW-popups-show-popup-options-dialog-button-color: #999;
 
     /*  Popins.
      */
@@ -1989,6 +1988,19 @@ body.special-halloween-dark h6 {
     --GW-code-popframe-line-number-color: #7c7c7c;
     --GW-code-popframe-line-number-divider-color: #5c5c5c;
 
+    --GW-extracts-options-dialog-backdrop-background-color: rgba(0, 0, 0, 0.95);
+    --GW-extracts-options-dialog-background-color: var(--GW-body-background-color);
+    --GW-extracts-options-dialog-border-color: #7c7c7c;
+    --GW-extracts-options-dialog-box-shadow-color: #cecece;
+    --GW-extracts-options-dialog-horizontal-rule-color: #5c5c5c;
+    --GW-extracts-options-dialog-button-background-color: var(--GW-body-background-color);
+    --GW-extracts-options-dialog-button-text-color: #fff;
+    --GW-extracts-options-dialog-button-border-color: #fff;
+    --GW-extracts-options-dialog-button-hover-box-shadow-color: #fff;
+    --GW-extracts-options-dialog-option-button-explanation-text-color: #a6a6a6;
+    --GW-extracts-options-dialog-option-button-hover-text-color: #a6a6a6;
+    --GW-extracts-options-dialog-radio-button-border-color: #fff;
+
     /*  Popups.
      */
     --GW-popups-popup-background-color: var(--GW-body-background-color);
@@ -2017,20 +2029,6 @@ body.special-halloween-dark h6 {
     --GW-popups-popup-scrollbar-thumb-hover-color: #6c6c6c;
     --GW-popups-popup-scrollbar-thumb-focused-color: #5c5c5c;
     --GW-popups-popup-scrollbar-thumb-hover-focused-color: #8b8b8b;
-
-    --GW-popups-popup-options-dialog-backdrop-background-color: rgba(0, 0, 0, 0.95);
-    --GW-popups-popup-options-dialog-background-color: var(--GW-body-background-color);
-    --GW-popups-popup-options-dialog-border-color: #7c7c7c;
-    --GW-popups-popup-options-dialog-box-shadow-color: #cecece;
-    --GW-popups-popup-options-dialog-horizontal-rule-color: #5c5c5c;
-    --GW-popups-popup-options-dialog-button-background-color: var(--GW-body-background-color);
-    --GW-popups-popup-options-dialog-button-text-color: #fff;
-    --GW-popups-popup-options-dialog-button-border-color: #fff;
-    --GW-popups-popup-options-dialog-button-hover-box-shadow-color: #fff;
-    --GW-popups-popup-options-dialog-option-button-explanation-text-color: #a6a6a6;
-    --GW-popups-popup-options-dialog-option-button-hover-text-color: #a6a6a6;
-    --GW-popups-popup-options-dialog-radio-button-border-color: #fff;
-    --GW-popups-show-popup-options-dialog-button-color: #8b8b8b;
 
     /*  Popins.
      */
@@ -2392,12 +2390,6 @@ a[data-link-icon-type*='svg'] .link-icon-hook::after {
  */
 .annotation.wikipedia-entry figure img {
 	background-color: var(--GW-wikipedia-image-background-color);
-}
-
-/*	Popups-disabled icon/button.
- */
-div#popups-disabled-show-popup-options-dialog-button {
-    opacity: 0.5;
 }
 </style>
 <script>
@@ -3890,9 +3882,7 @@ ReaderMode.injectStyleBlock(ReaderMode.styles, "reader-mode-styles");
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
 </script>
-
-
-<link rel="preload" href="/static/css/fonts.css?v=1684222055" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
-<link rel="preload" href="/static/css/default.css?v=1684223690" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/fonts.css?v=1684262897" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/default.css?v=1684267353" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/css/links.css?v=1682784367" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/img/icon/icons.svg" as="image">
