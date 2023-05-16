@@ -762,7 +762,7 @@ Extracts = {
         let target = popin.spawningTarget;
 
         //  Update the title.
-        Extracts.updatePopFrameTitle(popin, Extracts.titleForPopFrame(popin));
+        Extracts.updatePopFrameTitle(popin);
 
         //  Special handling for certain popin types.
         let targetTypeName = Extracts.targetTypeInfo(target).typeName;

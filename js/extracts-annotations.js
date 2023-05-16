@@ -120,7 +120,7 @@ Extracts = { ...Extracts,
             Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.content.dataSourceClass.split(" ")));
 
         //  Update the title.
-        Extracts.updatePopFrameTitle(popFrame, Extracts.titleForPopFrame(popFrame));
+        Extracts.updatePopFrameTitle(popFrame);
     }
 };
 

@@ -5959,6 +5959,7 @@ body.lorem div[class^='drop-cap'] {
         0 -3px 0 -2px var(--GW-popins-popin-border-color),
         0 -4px 0 -2px var(--background-color),
         0 -5px 0 -2px var(--GW-popins-popin-border-color);
+    text-indent: 0;
 }
 
 .popin .partial-annotation-append-container .data-field {

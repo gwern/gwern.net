@@ -257,7 +257,7 @@ Extracts = { ...Extracts,
 		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses.map(x => `page-${x}`)));
 
 		//	Update pop-frame title.
-		Extracts.updatePopFrameTitle(popFrame, Extracts.titleForPopFrame(popFrame));
+		Extracts.updatePopFrameTitle(popFrame);
 
 		//	Provider-specific rewrites.
 		if (Extracts.popFrameProvider == Popups)
@@ -1261,7 +1261,7 @@ Extracts = { ...Extracts,
             Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.content.dataSourceClass.split(" ")));
 
 		//	Update pop-frame title.
-		Extracts.updatePopFrameTitle(popFrame, Extracts.titleForPopFrame(popFrame));
+		Extracts.updatePopFrameTitle(popFrame);
 	}
 };
 
