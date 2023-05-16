@@ -268,10 +268,11 @@
 
 	/*	Page toolbar widgets.
 	 */
-	--GW-page-toolbar-button-icon-color: #e4e4e4;
+	--GW-page-toolbar-button-icon-color: #aaa;
+	--GW-page-toolbar-button-selectable-icon-color: #e4e4e4;
 	--GW-page-toolbar-button-selected-icon-color: #777;
     --GW-page-toolbar-button-text-color: #666;
-    --GW-page-toolbar-button-selected-text-color: #ccc;
+    --GW-page-toolbar-button-disabled-text-color: #ccc;
 
 	/*	Reader mode.
 	 */

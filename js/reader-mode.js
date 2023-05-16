@@ -108,7 +108,7 @@ ReaderMode = { ...ReaderMode,
 
 		let modeSelectorInnerHTML = ReaderMode.modeOptions.map(modeOption => {
 			let [ name, label, desc, icon ] = modeOption;
-			let selected = (name == currentMode ? " selected" : "");
+			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
 			let active = ((   currentMode == "auto"
 						   && name == (ReaderMode.active ? "on" : "off"))
@@ -197,7 +197,8 @@ ReaderMode = { ...ReaderMode,
 
 		//	Clear current buttons state.
 		modeSelector.querySelectorAll("button").forEach(button => {
-			button.classList.remove("active", "selected");
+			button.classList.remove("active");
+			button.swapClasses([ "selectable", "selected" ], 0);
 			button.disabled = false;
 			if (button.title.endsWith(ReaderMode.selectedModeOptionNote))
 				button.title = button.title.slice(0, (-1 * ReaderMode.selectedModeOptionNote.length));
@@ -205,7 +206,7 @@ ReaderMode = { ...ReaderMode,
 
 		//	Set the correct button to be selected.
 		modeSelector.querySelectorAll(`.select-mode-${currentMode}`).forEach(button => {
-			button.classList.add("selected");
+			button.swapClasses([ "selectable", "selected" ], 1);
 			button.disabled = true;
 			button.title += ReaderMode.selectedModeOptionNote;
 		});

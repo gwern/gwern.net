@@ -7,7 +7,7 @@ Extracts = { ...Extracts,
 		let button = Extracts.popFrameProvider.titleBarComponents.optionsButton();
 
 		button.title = `Show ${(Extracts.popFrameTypeText())} options (enable/disable ${(Extracts.popFrameTypeText())}s)`;
-		button.innerHTML = GW.svg("eye-slash-solid");
+		button.innerHTML = GW.svg("message-slash-duotone");
 		button.classList.add("show-extracts-options-dialog");
 
 		button.addActivateEvent((event) => {
@@ -84,14 +84,14 @@ Extracts = { ...Extracts,
 						<label>
 							<input class="extracts-enable" name="extracts-enable-status" ${enabledRadioButtonChecked} value="enabled" type="radio">
 							<span class="button-text">
-								<span class="label">Enable</span>
+								<span class="label">Enable<span class="icon">${(GW.svg("message-lines-solid"))}</span></span>
 								<span class="explanation">Show ${(Extracts.popFrameTypeText())}s when ${actionDescription} links.</span>
 							</span>
 						</label>
 						<label>
 							<input class="extracts-disable" name="extracts-enable-status" ${disabledRadioButtonChecked} value="disabled" type="radio">
 							<span class="button-text">
-								<span class="label">Disable</span>
+								<span class="label">Disable<span class="icon">${(GW.svg("message-slash-solid"))}</span></span>
 								<span class="explanation">Don’t show ${(Extracts.popFrameTypeText())}s.</span>
 							</span>
 						</label>
@@ -118,10 +118,14 @@ Extracts = { ...Extracts,
 			Extracts.optionsDialog.querySelector("button.cancel-button").addActivateEvent(Extracts.optionsDialogCancelButtonClicked = (event) => {
 				GWLog("Extracts.optionsDialogCancelButtonClicked", "extracts.js", 2);
 
+				event.target.blur();
+
 				Extracts.fadeOptionsDialog();
 			});
 			Extracts.optionsDialog.querySelector("button.save-button").addActivateEvent(Extracts.optionsDialogSaveButtonClicked = (event) => {
 				GWLog("Extracts.optionsDialogSaveButtonClicked", "extracts.js", 2);
+
+				event.target.blur();
 
 				Extracts.saveOptions();
 				Extracts.fadeOptionsDialog();
@@ -202,6 +206,8 @@ Extracts = { ...Extracts,
 			GWLog("Extracts.showOptionsDialogButtonClicked", "extracts.js", 2);
 
 			event.stopPropagation();
+
+			event.target.blur();
 
 			Extracts.showOptionsDialog();
 		});

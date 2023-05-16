@@ -3559,8 +3559,8 @@ body.lorem div[class^='drop-cap'] {
 #page-toolbar .widget button .label {
     color: var(--GW-page-toolbar-button-text-color);
 }
-#page-toolbar .widget button.selected .label {
-	color: var(--GW-page-toolbar-button-selected-text-color);
+#page-toolbar .widget button:disabled .label {
+	color: var(--GW-page-toolbar-button-disabled-text-color);
 }
 
 #page-toolbar .widget button .icon {
@@ -3571,6 +3571,9 @@ body.lorem div[class^='drop-cap'] {
 	color: var(--GW-page-toolbar-button-icon-color);
 	transition:
 		color 0.1s ease;
+}
+#page-toolbar .widget button.selectable .icon {
+	color: var(--GW-page-toolbar-button-selectable-icon-color);
 }
 #page-toolbar .widget button.selected .icon {
 	color: var(--GW-page-toolbar-button-selected-icon-color);
@@ -5664,14 +5667,17 @@ body.lorem div[class^='drop-cap'] {
 .extracts-options-dialog .option-buttons {
     padding: 0.75em;
 }
+
 .extracts-options-dialog .option-buttons label {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     font-weight: bold;
     text-align: left;
     display: flex;
     align-items: flex-start;
     width: 100%;
     box-sizing: border-box;
+    position: relative;
+	cursor: pointer;
 }
 #popup-options-dialog.extracts-options-dialog .option-buttons label {
     padding: 0 0.75em;
@@ -5683,25 +5689,44 @@ body.lorem div[class^='drop-cap'] {
 #popin-options-dialog.extracts-options-dialog .option-buttons label + label {
     margin-top: 0.5em;
 }
+
 .extracts-options-dialog .option-buttons label .button-text {
     display: block;
     flex: 1 1 100%;
     padding: 0.5em 0.75em;
 }
+
 .extracts-options-dialog .option-buttons label input:checked + .button-text .label {
     text-decoration: underline;
 }
-.extracts-options-dialog .option-buttons label .explanation {
-    display: block;
-    font-weight: normal;
-    font-size: 0.875rem;
-    color: var(--GW-extracts-options-dialog-option-button-explanation-text-color);
+
+.extracts-options-dialog .option-buttons label .button-text .icon {
+    display: inline-block;
+    margin: 0 0 0 0.75em;
+    position: relative;
+    opacity: 0.5;
+    top: 0.08em;
 }
 @media only screen and (hover: hover) {
-	.extracts-options-dialog .option-buttons label:hover,
-	.extracts-options-dialog .option-buttons label:hover input {
-		cursor: pointer;
-	}
+    .extracts-options-dialog .option-buttons label:hover .button-text .icon {
+        opacity: 1.0;
+    }
+}
+.extracts-options-dialog .option-buttons label input.extracts-enable + .button-text .icon {
+    width: 0.75em;
+}
+.extracts-options-dialog .option-buttons label input.extracts-disable + .button-text .icon {
+    width: 0.875em;
+}
+
+.extracts-options-dialog .option-buttons label .button-text .explanation {
+    display: block;
+    font-weight: normal;
+    font-size: 0.7em;
+    color: var(--GW-extracts-options-dialog-option-button-explanation-text-color);
+}
+
+@media only screen and (hover: hover) {
 	.extracts-options-dialog .option-buttons label:hover {
 		color: var(--GW-extracts-options-dialog-option-button-hover-text-color);
 	}
@@ -6896,7 +6921,7 @@ ol.link-bibliography-list-compact > li::before {
 /* MODE SELECTORS */
 /******************/
 
-.mode-selector button.selected {
+.mode-selector button:disabled {
     cursor: default;
 }
 
