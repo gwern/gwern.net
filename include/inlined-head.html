@@ -265,15 +265,15 @@
 	/*	Page toolbar.
 	 */
     --GW-page-toolbar-border-color: #aaa;
-	--GW-page-toolbar-button-color: #aaa;
-	--GW-page-toolbar-button-active-color: #000;
-    --GW-page-toolbar-button-text-color: #777;
-    --GW-page-toolbar-button-hover-text-color: #000;
+	--GW-page-toolbar-control-button-color: #aaa;
+	--GW-page-toolbar-control-button-active-color: #000;
 
-	/*	Mode selectors.
+	/*	Page toolbar widgets.
 	 */
-	--GW-mode-selector-button-icon-color: #e4e4e4;
-	--GW-mode-selector-button-selected-icon-color: #777;
+	--GW-page-toolbar-button-icon-color: #e4e4e4;
+	--GW-page-toolbar-button-selected-icon-color: #777;
+    --GW-page-toolbar-button-text-color: #666;
+    --GW-page-toolbar-button-selected-text-color: #ccc;
 
 	/*	Reader mode.
 	 */
@@ -2050,15 +2050,15 @@ body.special-halloween-dark h6 {
 	/*	Page toolbar.
 	 */
     --GW-page-toolbar-border-color: #7c7c7c;
-	--GW-page-toolbar-button-color: #7c7c7c;
-	--GW-page-toolbar-button-active-color: #fff;
-    --GW-page-toolbar-button-text-color: #a6a6a6;
-    --GW-page-toolbar-button-hover-text-color: #fff;
+	--GW-page-toolbar-control-button-color: #7c7c7c;
+	--GW-page-toolbar-control-button-active-color: #fff;
 
-	/*	Mode selectors.
+	/*	Page toolbar widgets.
 	 */
-	--GW-mode-selector-button-icon-color: #404040;
-	--GW-mode-selector-button-selected-icon-color: #a6a6a6;
+	--GW-page-toolbar-button-icon-color: #404040;
+	--GW-page-toolbar-button-selected-icon-color: #a6a6a6;
+    --GW-page-toolbar-button-text-color: #b4b4b4;
+    --GW-page-toolbar-button-selected-text-color: #5c5c5c;
 
 	/*	Reader mode.
 	 */
@@ -3890,8 +3890,7 @@ ReaderMode.injectStyleBlock(ReaderMode.styles, "reader-mode-styles");
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
 </script>
-
-<link rel="preload" href="/static/css/fonts.css?v=1684129606" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
-<link rel="preload" href="/static/css/default.css?v=1684130069" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/fonts.css?v=1684178682" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/default.css?v=1684179521" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/css/links.css?v=1682784367" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/img/icon/icons.svg" as="image">

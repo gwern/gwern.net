@@ -263,17 +263,16 @@
 
 	/*	Page toolbar.
 	 */
-	--GW-page-toolbar-button-color: #7c7c7c;
-	--GW-page-toolbar-button-active-color: #fff;
-	--GW-page-toolbar-border-color: #7c7c7c;
+    --GW-page-toolbar-border-color: #7c7c7c;
+	--GW-page-toolbar-control-button-color: #7c7c7c;
+	--GW-page-toolbar-control-button-active-color: #fff;
 
-    /*  Mode selector (light/dark mode).
-     */
-    --GW-mode-selector-background-color: var(--GW-body-background-color);
-    --GW-mode-selector-mobile-background-color: rgba(0, 0, 0, 0.75);
-    --GW-mode-selector-border-hover-color: #7c7c7c;
-    --GW-mode-selector-button-text-color: #a6a6a6;
-    --GW-mode-selector-button-hover-text-color: #fff;
+	/*	Page toolbar widgets.
+	 */
+	--GW-page-toolbar-button-icon-color: #404040;
+	--GW-page-toolbar-button-selected-icon-color: #a6a6a6;
+    --GW-page-toolbar-button-text-color: #b4b4b4;
+    --GW-page-toolbar-button-selected-text-color: #5c5c5c;
 
 	/*	Reader mode.
 	 */

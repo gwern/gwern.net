@@ -498,9 +498,9 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
             }
         });
         //  Add listener to update caption max-width when window resizes.
-        window.addEventListener("resize", (event) => {
+        addWindowResizeListener(event => {
             allFullWidthMedia.forEach(constrainCaptionWidth);
-        });
+        }, "constrainFullWidthMediaCaptionWidthResizeListener");
     });
 }, "rewrite", (info) => info.fullWidthPossible);
 
@@ -830,7 +830,7 @@ function createFullWidthBlockLayoutStyles() {
 
     /*  Function to update layout variables (called immediately and on resize).
      */
-    let updateFullWidthBlockLayoutStyles = () => {
+    let updateFullWidthBlockLayoutStyles = (event) => {
         GWLog("updateFullWidthBlockLayoutStyles", "rewrite.js", 2);
 
         GW.fullWidthBlockLayout.pageWidth = rootElement.offsetWidth;
@@ -848,7 +848,7 @@ function createFullWidthBlockLayoutStyles() {
     updateFullWidthBlockLayoutStyles();
 
     //  Add listener to update layout variables on window resize.
-    window.addEventListener("resize", updateFullWidthBlockLayoutStyles);
+    addWindowResizeListener(updateFullWidthBlockLayoutStyles, "updateFullWidthBlockLayoutStylesResizeListener");
 }
 
 GW.notificationCenter.addHandlerForEvent("GW.pageLayoutWillComplete", (info) => {

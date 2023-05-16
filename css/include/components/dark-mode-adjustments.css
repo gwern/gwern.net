@@ -21,10 +21,6 @@
      */
     --GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.85);
 
-	/*	Mode selectors.
-	 */
-	--GW-mode-selector-mobile-background-color: rgba(18, 18, 18, 0.75);
-
 	/*	Wikipedia math images assume a white background; transparent images
 		don’t look right if that assumption is violated.
 
@@ -254,62 +250,6 @@ img.invert-auto:hover {
  */
 a.include-loading.include-spinner::after {
 	filter: invert(1);
-}
-
-/*	All mode selectors.
- */
-div.mode-selector button::before,
-span.mode-selector button::before {
-    filter: invert(1);
-}
-
-/*	Inline mode selectors.
- */
-span.mode-selector {
-	opacity: 0.45;
-}
-span.mode-selector button::before {
-	opacity: 0.55;
-}
-span.dark-mode-selector button.select-mode-light::before {
-	opacity: 0.6;
-}
-
-/*	Fixed mode selectors.
- */
-@media only screen and (min-width: 1280px) {
-	div.mode-selector {
-		opacity: 0.45;
-	}
-	div.mode-selector button::before {
-		opacity: 0.55;
-	}
-	div.dark-mode-selector button.select-mode-light::before {
-		opacity: 0.6;
-	}
-}
-@media only screen and (max-width: 1279px) {
-    #ui-elements-container div.mode-selector button {
-        opacity: 0.3;
-    }
-    #ui-elements-container div.dark-mode-selector button.select-mode-light {
-        opacity: 0.35;
-    }
-    #ui-elements-container div.reader-mode-selector button.select-mode-off {
-        opacity: 0.35;
-    }
-    #ui-elements-container div.mode-selector button:hover,
-    #ui-elements-container div.mode-selector button.selected {
-        opacity: 0.85;
-    }
-    #ui-elements-container div.reader-mode-selector button.select-mode-on:hover,
-    #ui-elements-container div.reader-mode-selector button.select-mode-on.selected {
-        opacity: 0.75;
-    }
-    #ui-elements-container div.reader-mode-selector button.select-mode-off:hover,
-    #ui-elements-container div.reader-mode-selector button.select-mode-off.selected {
-        opacity: 0.9;
-    }
 }
 
 /*  Masked links key toggle info alert panel.

@@ -1442,8 +1442,7 @@ body.special-halloween-dark {
 
     --GW-math-block-scrollbar-border-color: var(--GW-blood-red);
 
-    --GW-mode-selector-border-color: var(--GW-blood-red-arterial);
-    --GW-mode-selector-border-hover-color: var(--GW-blood-red-dried);
+    --GW-page-toolbar-border-color: var(--GW-blood-red-dried);
 
     --GW-back-to-top-link-color: var(--GW-blood-red-dried);
 
@@ -1474,17 +1473,4 @@ body.special-halloween-dark h6 {
     --GW-body-link-color: var(--GW-blood-red);
 
     color: var(--GW-body-text-color);
-}
-
-@media only screen and (hover: hover) {
-    body.special-halloween-dark #ui-elements-container .mode-selector {
-        outline-style: dotted;
-        outline-width: 1px;
-        outline-color: var(--GW-mode-selector-border-color);
-    }
-    body.special-halloween-dark #ui-elements-container .mode-selector:hover {
-        outline-style: double;
-        outline-width: 3px;
-        outline-color: var(--GW-mode-selector-border-hover-color);
-    }
 }

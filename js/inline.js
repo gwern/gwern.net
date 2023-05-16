@@ -895,19 +895,20 @@ GW.notificationCenter.prefireProcessors["GW.contentDidInject"] = (eventInfo) => 
 
 
 /********************/
-/* SCROLL LISTENERS */
+/* EVENT LISTENERS */
 /********************/
 
-GW.scrollListeners = { };
-/*  Adds a scroll event listener to the page.
+GW.eventListeners = { };
+
+/*  Adds a named event listener to the page (or other target).
  */
-function addScrollListener(fn, name, options = { }, target = document) {
+function addNamedEventListener(eventName, fn, name, options = { }, target = document) {
     if (options.defer) {
         doWhenPageLoaded(() => {
             requestAnimationFrame(() => {
                 if (options.ifDeferCallWhenAdd)
                     fn();
-                addScrollListener(fn, name, { defer: false }, target);
+                addNamedEventListener(eventName, fn, name, { defer: false }, target);
             });
         });
         return;
@@ -916,26 +917,58 @@ function addScrollListener(fn, name, options = { }, target = document) {
     let wrapper = (event) => {
         requestAnimationFrame(() => {
             fn(event);
-            target.addEventListener("scroll", wrapper, { once: true, passive: true });
+            target.addEventListener(eventName, wrapper, { once: true, passive: true });
         });
     }
-    target.addEventListener("scroll", wrapper, { once: true, passive: true });
+    target.addEventListener(eventName, wrapper, { once: true, passive: true });
 
-    /*  Retain a reference to the scroll listener, if a name is provided.
+    /*  Retain a reference to the event listener, if a name is provided.
      */
-    if (name)
-        GW.scrollListeners[name] = { wrapper: wrapper, target: target };
+    if (name) {
+    	if (GW.eventListeners[eventName] == null)
+    		GW.eventListeners[eventName] = { };
+
+        GW.eventListeners[eventName][name] = { wrapper: wrapper, target: target };
+    }
 
     return wrapper;
 }
-/*  Removes a named scroll event listener from the page.
+
+/*  Removes a named event listener from the page (or other target).
+ */
+function removeNamedEventListener(eventName, name) {
+	if (GW.eventListeners[eventName] == null)
+		return;
+
+    let listener = GW.eventListeners[eventName][name];
+    if (listener) {
+        listener.target.removeEventListener(eventName, listener.wrapper);
+        GW.eventListeners[eventName][name] = null;
+    }
+}
+
+/*  Adds a scroll event listener to the page (or other target).
+ */
+function addScrollListener(fn, name, options = { }, target = document) {
+	return addNamedEventListener("scroll", fn, name, options, target);
+}
+
+/*  Removes a named scroll event listener from the page (or other target).
  */
 function removeScrollListener(name) {
-    let listener = GW.scrollListeners[name];
-    if (listener) {
-        listener.target.removeEventListener("scroll", listener.wrapper);
-        GW.scrollListeners[name] = null;
-    }
+	removeNamedEventListener("scroll", name);
+}
+
+/*  Adds a resize event listener to the window.
+ */
+function addWindowResizeListener(fn, name, options) {
+	return addNamedEventListener("resize", fn, name, options, window);
+}
+
+/*  Removes a named resize event listener from the window.
+ */
+function removeWindowResizeListener(name) {
+	removeNamedEventListener("resize", name);
 }
 
 

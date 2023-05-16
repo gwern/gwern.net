@@ -904,11 +904,11 @@ Sidenotes = { ...Sidenotes,
 			/*  Add a resize listener so that sidenote positions are recalculated when
 				the window is resized.
 				*/
-			window.addEventListener("resize", Sidenotes.windowResized = (event) => {
+			addWindowResizeListener(Sidenotes.windowResized = (event) => {
 				GWLog("Sidenotes.windowResized", "sidenotes.js", 2);
 
 				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
-			});
+			}, "Sidenotes.recalculateSidenotePositionsOnWindowResize");
 
 			/*	Add handler to bind more sidenote-slide events if more 
 				citations are injected (e.g., in a popup).
@@ -940,9 +940,9 @@ Sidenotes = { ...Sidenotes,
 			GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
 			GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
 			GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
-			window.removeEventListener("resize", Sidenotes.windowResized);
 			GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents);
 			removeScrollListener("Sidenotes.unSlideSidenotesOnScroll");
+			removeWindowResizeListener("Sidenotes.recalculateSidenotePositionsOnWindowResize");
 		}, (mediaQuery) => {
 			/*	Deactivate event handlers.
 				*/
@@ -950,9 +950,9 @@ Sidenotes = { ...Sidenotes,
 			GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
 			GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
 			GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
-			window.removeEventListener("resize", Sidenotes.windowResized);
 			GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents);
 			removeScrollListener("Sidenotes.unSlideSidenotesOnScroll");
+			removeWindowResizeListener("Sidenotes.recalculateSidenotePositionsOnWindowResize");
 		});
 
 		//	Once the sidenotes are constructed, lay them out.
@@ -990,9 +990,11 @@ Sidenotes = { ...Sidenotes,
 	hideInterferingUIElements: () => {
 		requestAnimationFrame(() => {
 			setTimeout(() => {
-				DarkMode.hideModeSelector();
-				ReaderMode.hideModeSelector();
+				//	Page toolbar.
+				GW.pageToolbar.toggleCollapseState(true);
+				GW.pageToolbar.fade();
 
+				//	Back-to-top link.
 				GW.backToTop.classList.toggle("hidden", true)
 			}, 25);
 		});

@@ -63,6 +63,31 @@
     }
 }
 
+
+/********************/
+/* GENERIC ELEMENTS */
+/********************/
+
+button {
+    appearance: none;
+    border: none;
+    background-color: transparent;
+    line-height: 1;
+    font-family: var(--GW-sans-serif-font-stack);
+    font-size: 1rem;
+    font-weight: normal;
+    font-style: normal;
+    text-align: center;
+    color: inherit;
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+
 /*********************/
 /* ARTICLE CONTAINER */
 /*********************/
@@ -70,6 +95,7 @@
 /*  (ie. article) */
 /*  Nothing!
     */
+
 
 /*******************/
 /* COLLAPSE BLOCKS */
@@ -3443,107 +3469,265 @@ body.lorem div[class^='drop-cap'] {
 /* PAGE TOOLBAR */
 /****************/
 
+/*	Show no toolbar if no items in it.
+ */
+#page-toolbar .widgets:empty ~ * {
+	display: none;
+}
+
+/***************************/
+/*	Toolbar control buttons.
+ */
 #page-toolbar > button {
-	appearance: none;
-	border: none;
-	background-color: transparent;
-    padding: 0;
-    margin: 0;
-    font-size: inherit;
-    font-family: inherit;
-    font-weight: inherit;
-    color: var(--GW-page-toolbar-button-color);
+    color: var(--GW-page-toolbar-control-button-color);
+}
+#page-toolbar > button.toggle-button:active {
+	color: var(--GW-page-toolbar-control-button-active-color);	
 }
 #page-toolbar > button svg {
     display: block;
 }
 
-/*	NOTE: Temporary.
-	—SA 2023-05-05
+/*	Collapse button (chevron); hidden on desktop.
  */
-@media only screen and (max-width: 649px) {
-	#page-toolbar:not(.mobile) {
-		display: none;
-	}
-}
-
-/*	Show no toolbar if no items in it.
- */
-#page-toolbar.mobile .buttons:empty ~ * {
+#page-toolbar.desktop > button.collapse-button {
 	display: none;
 }
 
-/*	Collapse button (chevron down).
+/*	Collapse button (chevron) in mobile layout.
  */
 #page-toolbar.mobile > button.collapse-button {
-    order: -1;
+    order: 1;
     padding: 0 12px;
     outline: 1px dotted currentColor;
-    background-color: var(--GW-body-background-color);
-    transition: 
-        opacity 0.25s ease-out 0.25s;
-}
-#page-toolbar.mobile > button.collapse-button:active {
-    color: var(--GW-page-toolbar-button-active-color);
+    background-color: var(--background-color);
 }
 
 /*	Main toggle button (gear).
  */
-#page-toolbar.mobile > button.main-toggle-button {
-    order: 1;
+#page-toolbar > button.main-toggle-button {
+    order: -1;
+    opacity: 0.4;
+}
+#page-toolbar > button.main-toggle-button:active {
+	transform: scale(0.95);
+}
+@media only screen and (hover: hover) {
+	#page-toolbar > button.main-toggle-button:hover {
+		opacity: 1.0;
+		transition:
+			opacity 0.15s ease;
+	}
+	#page-toolbar:not(.collapsed):not(.expanded-temp) > button.main-toggle-button {
+		opacity: 1.0;
+	}
+}
+
+/*	Main toggle button (gear) in vertical layout.
+ */
+#page-toolbar.vertical > button.main-toggle-button {
+	padding: 3px;
+}
+
+/******************/
+/*	Toolbar layout.
+ */
+#page-toolbar {
+    position: fixed;
+    display: flex;
+    align-items: stretch;
+    opacity: 1;
+}
+
+#page-toolbar .widgets {
+    display: flex;
+    align-items: stretch;
+    max-height: 100vh;
+    max-width: 100vw;
+    transition:
+    	transform 0.25s ease-out;
+}
+
+#page-toolbar .widget {
+	display: flex;
+	align-items: stretch;
+    background-color: var(--background-color);
+}
+
+#page-toolbar .widget button .label {
+    color: var(--GW-page-toolbar-button-text-color);
+}
+#page-toolbar .widget button.selected .label {
+	color: var(--GW-page-toolbar-button-selected-text-color);
+}
+
+#page-toolbar .widget button .icon {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+	color: var(--GW-page-toolbar-button-icon-color);
+	transition:
+		color 0.1s ease;
+}
+#page-toolbar .widget button.selected .icon {
+	color: var(--GW-page-toolbar-button-selected-icon-color);
+}
+@media only screen and (hover: hover) {
+	#page-toolbar .widget button:hover .icon {
+		color: var(--GW-page-toolbar-button-selected-icon-color);
+	}
+}
+#page-toolbar .widget button:not(:disabled):active .icon {
+	transform: scale(0.95);
+}
+
+/*	Icons-only toolbar mode.
+ */
+#page-toolbar.button-labels-not .widget button .label {
+	display: none;
+}
+
+/*	Vertical toolbar layout.
+ */
+#page-toolbar.vertical {
+	--toolbar-button-size: 32px;
+
+	flex-flow: column;
+    width: var(--toolbar-button-size);
+    top: 5px;
+    right: 4px;
+}
+
+#page-toolbar.vertical .widgets {
+    flex-flow: column;
+    transform-origin: top;
+}
+
+#page-toolbar.vertical .widget {
+	flex-flow: column;
+    outline: 1px dotted var(--GW-page-toolbar-border-color);
+    margin-top: 8px;
+}
+@media only screen and (hover: hover) {
+	#page-toolbar.vertical .widget {
+		transition:
+			box-shadow 0.1s ease;
+	}
+	#page-toolbar.vertical .widget:hover {
+		box-shadow:
+			0 0 0 1px var(--GW-page-toolbar-border-color),
+			0 0 0 2px var(--background-color),
+			0 0 0 3px var(--GW-page-toolbar-border-color);
+	}
+}
+
+#page-toolbar.vertical .widget button {
+	height: var(--toolbar-button-size);
+    position: relative;
+}
+#page-toolbar.vertical .widget button .icon {
+	padding: 4px;
+}
+#page-toolbar.vertical .widget button .label {
+    position: absolute;
+    right: calc(100% + 5px);
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-variant-caps: small-caps;
+    background-color: var(--background-color);
+    box-shadow: 
+        0 0 0 2px var(--background-color),
+        0 0 0 3px var(--GW-page-toolbar-border-color);
+    opacity: 0;
+    transition:
+        opacity 0.1s ease;
+}
+@media only screen and (hover: hover) {
+    #page-toolbar.vertical .widget button:hover .label {
+        opacity: 1;
+    }
+}
+
+/*	Mobile toolbar layout (reverse vertical).
+ */
+#page-toolbar.mobile {
+	--toolbar-button-size: 46px;
+
+	flex-flow: column-reverse;
+    width: var(--toolbar-button-size);
+    bottom: 0.5em;
+    right: 0.5em;
+}
+
+#page-toolbar.mobile .widgets {
+    flex-flow: column;
+    margin: 0 0 0.75em 0;
+    transform-origin: bottom;
+}
+
+#page-toolbar.mobile .widget {
+	flex-flow: column;
+	outline: 1px dotted var(--GW-page-toolbar-border-color);
+    margin-top: 0.5em;
+}
+
+#page-toolbar.mobile .widget button {
+	height: var(--toolbar-button-size);
+}
+#page-toolbar.mobile .widget button .icon {
+	padding: 7px;
+}
+
+/******************/
+/*	Fade on scroll.
+ */
+#page-toolbar.collapsed {
+    transition: 
+        opacity 2s ease-out;
+}
+#page-toolbar.collapsed.faded {
+	opacity: 0;
+}
+#page-toolbar.collapsed:hover {
+	transition:
+		opacity 0.15s ease;
+}
+
+/**********************/
+/*	Toolbar collapsing.
+ */
+#page-toolbar.animating > button.main-toggle-button {
     transition: 
         opacity 0.25s ease-out,
         transform 0.25s ease-out;
 }
-#page-toolbar.mobile > button.main-toggle-button:active {
-	transform: scale(0.95);
+
+/*	Toolbar collapsing (vertical mode).
+ */
+#page-toolbar.vertical.collapsed > button.main-toggle-button {
+    transform: rotateZ(0.5turn);
+}
+#page-toolbar.vertical.collapsed > button.main-toggle-button:active {
+    transform: rotateZ(0.5turn) scale(0.95);
 }
 
-/*	Toolbar layout.
- */
-#page-toolbar.mobile {
-    position: fixed;
-    display: flex;
-    flex-flow: column;
-    width: 2.5em;
-    align-items: stretch;
-    bottom: 0.5em;
-    right: 0.5em;
-    opacity: 1;
-}
-#page-toolbar.mobile .buttons {
-    margin: 0 0 0.75em 0;
-    display: flex;
-    flex-flow: column;
-    align-items: stretch;
-    transform-origin: bottom;
+#page-toolbar.vertical.collapsed .widgets {
+    transform: rotateX(-0.25turn);
+    max-height: 0;
     transition:
-    	transform 0.25s ease-out;
-}
-#page-toolbar.mobile .buttons .button-group {
-    padding: 2px 0;
-	outline: 1px dotted var(--GW-page-toolbar-border-color);
-}
-#page-toolbar.mobile .buttons > * {
-    margin: 0.5em 0 0 0;
+    	transform 0.25s ease-out,
+    	max-height 0s ease-out 0.25s;
 }
 
-/*	Fade on scroll.
+/*	Toolbar collapsing (mobile mode).
  */
-#page-toolbar.mobile.collapsed {
-    transition: 
-        opacity 2s ease-out;
-}
-#page-toolbar.mobile.collapsed.faded {
-	opacity: 0;
-}
-
-/*	Toolbar collapsing.
- */
-#page-toolbar.mobile.collapsed > .collapse-button {
-    opacity: 0;
-    transition: 
-        opacity 0.25s ease-out;
+#page-toolbar.mobile > button.main-toggle-button {
+	opacity: 1.0;
 }
 #page-toolbar.mobile.collapsed > button.main-toggle-button {
     opacity: 0.65;
@@ -3552,31 +3736,51 @@ body.lorem div[class^='drop-cap'] {
 #page-toolbar.mobile.collapsed > button.main-toggle-button:active {
     transform: rotateZ(-0.5turn) scale(0.95);
 }
-#page-toolbar.mobile.collapsed .buttons {
-    transform: translateY(calc(100% + 5em));
+#page-toolbar.mobile > button.collapse-button {
+    transition: 
+        opacity 0.25s ease-out 0.25s;
+}
+#page-toolbar.mobile.collapsed > button.collapse-button {
+    opacity: 0;
+    transition: 
+        opacity 0.25s ease-out;
+}
+
+#page-toolbar.mobile.collapsed .widgets {
     transform: rotateX(0.25turn);
+    max-height: 0;
+    transition:
+    	transform 0.25s ease-out,
+    	max-height 0s ease-out 0.25s;
 }
 
 /*	Slow collapsing.
  */
-#page-toolbar.mobile.collapsed.collapsed-slowly > button.main-toggle-button {
-    order: 1;
+#page-toolbar.collapsed.collapsed-slowly > button.main-toggle-button {
     transition: 
         opacity 0.75s ease-out,
         transform 0.75s linear;
 }
-#page-toolbar.mobile.collapsed.collapsed-slowly .buttons {
+
+#page-toolbar.collapsed.collapsed-slowly .widgets {
     transition:
     	transform 0.75s ease-out;
 }
 
-/* Page toolbar contents.
+/*	Slow collapsing (vertical layout).
  */
-#page-toolbar .dark-mode-selector {
-	order: 1;
+#page-toolbar.vertical.collapsed.collapsed-slowly .widgets {
+    transition:
+    	transform 0.75s ease-out,
+        max-height 0s ease-out 0.75s;
 }
-#page-toolbar .reader-mode-selector {
-	order: 2;
+
+/*	Slow collapsing (mobile layout).
+ */
+#page-toolbar.mobile.collapsed.collapsed-slowly .widgets {
+    transition:
+    	transform 0.75s ease-out,
+        max-height 0s ease-out 0.75s;
 }
 
 
@@ -6654,57 +6858,6 @@ ol.link-bibliography-list-compact > li::before {
 }
 
 
-/*************/
-/* DARK MODE */
-/*************/
-
-.dark-mode-selector {
-    --mode-selector-button-base-left-margin: 1.375em;
-    --mode-selector-button-base-left-spacing: 1.125em;
-}
-
-.dark-mode-selector button.select-mode-auto::before {
-    background-image: url('/static/img/icon/icons.svg#adjust-solid');
-}
-.dark-mode-selector button.select-mode-light::before {
-    background-image: url('/static/img/icon/icons.svg#sun-solid');
-}
-.dark-mode-selector button.select-mode-dark::before {
-    background-image: url('/static/img/icon/icons.svg#moon-solid');
-}
-
-.dark-mode-selector button.select-mode-dark {
-    --mode-selector-button-left-adjust: -0.125em;
-}
-
-@media only screen and (min-width: 1535px) {
-    #ui-elements-container .dark-mode-selector {
-        right: 0;
-        top: 0;
-    }
-}
-@media only screen and (max-width: 1534px) {
-    #ui-elements-container .dark-mode-selector {
-        right: 0;
-    }
-}
-@media only screen and (max-width: 1279px) {
-    #ui-elements-container .dark-mode-selector button.select-mode-light {
-        opacity: 0.15;
-    }
-}
-@media only screen and (max-width: 649px) {
-    #ui-elements-container .dark-mode-selector {
-        bottom: 1em;
-    }
-    #ui-elements-container .dark-mode-selector button {
-        border-width: 3px;
-    }
-    #ui-elements-container .dark-mode-selector button:last-child {
-        margin-bottom: 1px;
-    }
-}
-
 /***************/
 /* READER MODE */
 /***************/
@@ -6756,250 +6909,110 @@ ol.link-bibliography-list-compact > li::before {
     font-feature-settings: 'smcp';
 }
 
-/*┌───────────────────────┐*/
-/*│ Reader mode selector. │*/
-/*└───────────────────────┘*/
-
-.reader-mode-selector {
-    --mode-selector-button-base-left-margin: 1.875em;
-    --mode-selector-button-base-left-spacing: 1.25em;
-}
-
-.reader-mode-selector button.select-mode-auto::before {
-    background-image: url('/static/img/icon/icons.svg#book-with-gear');
-}
-.reader-mode-selector button.select-mode-on::before {
-    background-image: url('/static/img/icon/icons.svg#book-open-solid');
-}
-.reader-mode-selector button.select-mode-off::before {
-    background-image: url('/static/img/icon/icons.svg#book-open');
-    bottom: 0.15em;
-}
-
-@media only screen and (min-width: 1800px) {
-    #ui-elements-container .reader-mode-selector {
-        right: 11em;
-        top: 0;
-    }
-}
-@media only screen and (max-width: 1799px) {
-    #ui-elements-container .reader-mode-selector {
-        right: 0;
-        top: 2em;
-    }
-}
-@media only screen and (max-width: 1534px) {
-    #ui-elements-container .reader-mode-selector {
-        top: 7em;
-    }
-}
-@media only screen and (max-width: 1279px) {
-    #ui-elements-container .reader-mode-selector button.select-mode-off {
-        opacity: 0.15;
-    }
-    #ui-elements-container .reader-mode-selector button.select-mode-off:hover,
-    #ui-elements-container .reader-mode-selector button.select-mode-off.selected {
-        opacity: 0.6;
-    }
-}
-@media only screen and (max-width: 649px) {
-    #ui-elements-container .reader-mode-selector {
-        bottom: 9em;
-    }
-    #ui-elements-container .reader-mode-selector button {
-        border-width: 5px 3px 1px 3px;
-    }
-    #ui-elements-container .reader-mode-selector button::before {
-        top: 1px;
-    }
-}
 
 /******************/
 /* MODE SELECTORS */
 /******************/
 
-.mode-selector {
-    padding: 0 0.125em 0.125em 0.125em;
-    background-color: var(--GW-mode-selector-background-color);
+.mode-selector button.selected {
+    cursor: default;
 }
 
-/*  Mode selector buttons.
+/**********************************/
+/*	Mode selectors in page toolbar.
  */
 
-.mode-selector button {
-    --mode-selector-button-left-adjust: 0px;
-
-    appearance: none;
-    border: none;
-    background-color: transparent;
-    padding: 0.5em;
-    line-height: 1;
-    font-family: var(--GW-sans-serif-font-stack);
-    font-size: 0.75rem;
-    text-align: center;
-    color: var(--GW-mode-selector-button-text-color);
-    position: relative;
-    display: flex;
-    margin: 0 0 0 calc(  var(--mode-selector-button-base-left-margin)
-                       + var(--mode-selector-button-left-adjust));
+#page-toolbar .dark-mode-selector {
+	order: 1;
 }
-.mode-selector button::before {
-	content: "";
-    position: absolute;
-    width: 1.4em;
-    height: 1.4em;
-    left: calc(-1 * (  var(--mode-selector-button-base-left-spacing)
-                     + var(--mode-selector-button-left-adjust)));
-    background-repeat: no-repeat;
-    opacity: 0.4;
-}
-.mode-selector button:not(.selected):hover::before {
-    opacity: 1.0;
-}
-.mode-selector button:not(:disabled):hover {
-    color: var(--GW-mode-selector-button-hover-text-color);
-    cursor: pointer;
-}
-.mode-selector button:not(:disabled):active {
-    transform: translateY(2px);
-}
-.mode-selector button:hover::after,
-.mode-selector button.selected::after,
-.mode-selector button.active:not(:hover)::after {
-    content: "";
-    position: absolute;
-    bottom: 0.25em;
-    left: 0;
-    right: 0;
-    width: calc(100% - 12px);
-    margin: auto;
-}
-.mode-selector button:not(:disabled):active::after {
-    transform: translateY(-2px);
-}
-.mode-selector button:hover::after,
-.mode-selector button.selected::after {
-    border-bottom: 1px solid currentColor;
-}
-.mode-selector button.active:not(:hover)::after {
-    border-bottom: 1px dotted currentColor;
+#page-toolbar .reader-mode-selector {
+	order: 2;
 }
 
+#page-toolbar .mode-selector button .label {
+    text-underline-position: from-font;
+    text-underline-offset: -1px;
+    text-decoration: none;
+}
+#page-toolbar .mode-selector button.selected .label {
+    text-decoration: underline from-font;
+}
+#page-toolbar .mode-selector button.active .label {
+    text-decoration: dotted underline from-font;
+}
+
+/*	Vertical layout.
+ */
+#page-toolbar.vertical .mode-selector {
+    padding: 2px 0;
+}
+#page-toolbar.vertical .mode-selector button + button {
+    margin-top: 3px;
+}
+
+/*	Mobile layout.
+ */
+#page-toolbar.mobile .mode-selector {
+    padding: 2px 0;
+}
+
+/*************************/
 /*  Inline mode selectors.
  */
-
+ 
 .mode-selector-inline {
-    --GW-mode-selector-background-color: var(--background-color);
-
-    display: inline-block;
+    display: inline-flex;
     position: relative;
-    bottom: 0.125em;
+    padding: 0.25em 0.5em;
+    bottom: -0.15em;
 }
 
-.mode-selector-inline button {
-    display: inline-block;
-    margin: 0 0 0 calc(  var(--mode-selector-button-base-left-margin)
-                       + var(--mode-selector-button-left-adjust)
-                       - 0.25em);
+.mode-selector-inline button .icon {
+    width: 1.125em;
+    display: flex;
+    opacity: 0.4;
 }
-
-/*  Fixed mode selectors.
- */
-
-@media only screen and (min-width: 650px) {
-	#ui-elements-container .mode-selector {
-		position: absolute;
-		display: flex;
-		box-sizing: content-box;
-		margin: 3px;
-		opacity: 0.3;
-		transition:
-			opacity 2s ease;
-	}
-	#ui-elements-container .mode-selector.hidden {
-		opacity: 0;
-	}
-
-	@media only screen and (hover: hover) {
-		#ui-elements-container .mode-selector {
-			outline: 3px solid transparent;
-		}
-		#ui-elements-container .mode-selector:hover {
-			outline: 3px double var(--GW-mode-selector-border-hover-color);
-		}
-	}
-	@media only screen and (hover: none) {
-		#ui-elements-container .mode-selector {
-			outline: 1px dotted var(--GW-mode-selector-border-hover-color);
-		}
-	}
-}
-@media only screen and (max-width: 1534px) {
-    #ui-elements-container .mode-selector {
-        flex-flow: column;
-        padding: 0.15em 0.1em;
-        align-items: flex-start;
+@media only screen and (hover: hover) {
+    .mode-selector-inline button .icon {
+        transition:
+            opacity 0.1s ease;
     }
-    #ui-elements-container .mode-selector button + button {
-        margin-top: 0.25em;
-    }
-}
-@media only screen and (max-width: 1279px) {
-    #ui-elements-container .mode-selector {
+    .mode-selector-inline button:hover .icon {
         opacity: 1.0;
     }
-    #ui-elements-container .mode-selector button {
-        margin: 0;
-        padding: 0;
-        width: 2em;
-        height: 2em;
-        align-items: center;
-        box-shadow: none;
-        color: transparent;
-        opacity: 0.1;
-    }
-    #ui-elements-container .mode-selector button + button {
-        margin-top: 0.5em;
-    }
-    #ui-elements-container .mode-selector button:hover,
-    #ui-elements-container .mode-selector button.selected {
-        opacity: 0.5;
-    }
-    #ui-elements-container .mode-selector button::before {
-        left: 12.5%;
-        width: 75%;
-        height: 75%;
-        opacity: 1.0;
-    }
-    #ui-elements-container .mode-selector button:not(:disabled):hover {
-        color: transparent;
-    }
+}
+.mode-selector-inline button .label {
+    font-size: 0.75em;
+    margin-left: 0.25em;
+    position: relative;
+}
+.mode-selector-inline button + button {
+    margin-left: 0.625em;
 }
 
-@media only screen and (max-width: 649px) {
-    #ui-elements-container .mode-selector {
-        padding: 0;
-        display: flex;
-        flex-flow: column;
-        align-items: stretch;
-    }
-    #ui-elements-container .mode-selector button {
-        width: unset;
-        height: 45px;
-    }
-    #ui-elements-container .mode-selector button + button {
-        margin: 0;
-    }
-    #ui-elements-container .mode-selector button::before {
-        width: 100%;
-        height: 100%;
-        left: 0;
-        top: 0;
-        padding: 7px;
-        box-sizing: border-box;
-        background-origin: content-box;
-    }
+.mode-selector-inline button:hover .label::after,
+.mode-selector-inline button.selected .label::after,
+.mode-selector-inline button.active:not(:hover) .label::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
 }
+.mode-selector-inline button:hover .label::after,
+.mode-selector-inline button.selected .label::after {
+    border-bottom: 1px solid currentColor;
+}
+.mode-selector-inline button.active:not(:hover) .label::after {
+    border-bottom: 1px dotted currentColor;
+}
+.mode-selector button:not(:disabled):active .label {
+    transform: translateY(2px);
+}
+.mode-selector button:not(:disabled):active .label::after {
+    transform: translateY(-2px);
+}
+
 
 /******************************/
 /* GENERAL ACTIVITY INDICATOR */

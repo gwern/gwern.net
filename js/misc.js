@@ -1,8 +1,109 @@
+/*******************/
+/* INJECT TRIGGERS */
+/*******************/
+
+GW.elementInjectTriggers = { };
+
+function onInject(uuid, f) {
+	GW.elementInjectTriggers[uuid] = f;
+}
+
+function observeInjectedElementsInDocument(doc) {
+	let observer = new MutationObserver((mutationsList, observer) => {
+		if (Object.entries(GW.elementInjectTriggers).length == 0)
+			return;
+
+		for (mutationRecord of mutationsList) {
+			for ([ uuid, f ] of Object.entries(GW.elementInjectTriggers)) {
+				for (node of mutationRecord.addedNodes) {
+					if (node instanceof HTMLElement) {
+						if (node.dataset.uuid == uuid) {
+							f(node);
+							delete GW.elementInjectTriggers[uuid];
+							break;
+						} else {
+							let nestedNode = node.querySelector(`[data-uuid='${uuid}']`);
+							if (nestedNode) {
+								f(nestedNode);
+								delete GW.elementInjectTriggers[uuid];
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	});
+
+	observer.observe(doc, { subtree: true, childList: true });
+}
+
+observeInjectedElementsInDocument(document);
+
+/******************************************************************************/
+/*	Returns a placeholder element that, when injected, runs the given transform
+	on itself. (If true passed for ‘construct’ argument, returns constructed
+	DOM object; otherwise, returns HTML string.)
+ */
+function placeholder(transform, construct = false) {
+	let uuid = crypto.randomUUID();
+
+	onInject(uuid, transform);
+
+	let elementHTML = `<span data-uuid="${uuid}"></span>`;
+	return (construct 
+			? elementFromHTML(elementHTML) 
+			: elementHTML);
+}
+
+
 /**********/
 /* ASSETS */
 /**********/
 
 GW.assets = { };
+
+doAjax({
+	location: "/static/img/icon/icons.svg",
+	onSuccess: (event) => {
+		GW.svgIconFile = newDocument(event.target.response);
+
+		GW.notificationCenter.fireEvent("GW.SVGIconsLoaded");
+	}
+});
+
+function doWhenSVGIconsLoaded(f) {
+    if (GW.svgIconFile != null)
+        f();
+    else
+        GW.notificationCenter.addHandlerForEvent("GW.SVGIconsLoaded", (info) => {
+            f();
+        }, { once: true });
+}
+
+GW.svg = (icon) => {
+	if (GW.svgIconFile == null) {
+		return placeholder(element => {
+			doWhenSVGIconsLoaded(() => {
+				element.outerHTML = GW.svg(icon);
+			});
+		});
+	}
+
+	let iconView = GW.svgIconFile.querySelector(`#${icon}`);
+	if (iconView == null)
+		return null;
+
+	let viewBox = iconView.getAttribute("viewBox").split(" ").map(x => parseFloat(x));
+	let g = iconView.nextElementSibling;
+	let xOffset = parseFloat(g.getAttribute("transform").match(/translate\((.+?), .+\)/)[1]);
+	viewBox[0] -= xOffset;
+	viewBox = viewBox.join(" ");
+
+	return (  `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="${viewBox}">`
+			+ g.innerHTML
+			+ `</svg>`);
+};
 
 
 /******************/
@@ -651,7 +752,21 @@ function addUIElement(element) {
 GW.pageToolbar = {
 	maxDemos: 1,
 
+	hoverUncollapseDelay: 400,
+	unhoverCollapseDelay: 2500,
+	demoCollapseDelay: 2500,
+
+	/*	These values must be synced with CSS. Do not modify them in isolation!
+	 */
+	collapseDuration: 250,
+	demoCollapseDuration: 750,
+	fadeAfterCollapseDuration: 250,
+
 	toolbar: null,
+
+	setupComplete: false,
+
+	mouseInToolbar: false,
 
 	/*	Adds and returns page toolbar. (If page toolbar already exists, returns
 		existing page toolbar.)
@@ -659,142 +774,281 @@ GW.pageToolbar = {
 		NOTE: This function may run before GW.pageToolbar.setup().
 	 */
 	getToolbar: () => {
-		return (   GW.pageToolbar.toolbar
-				?? addUIElement(  `<div id="page-toolbar"`
-								+ (GW.isMobile() ? ` class="mobile"` : ``)
-								+ `><div class="buttons"></div></div>`));
+		return (    GW.pageToolbar.toolbar
+				?? (GW.pageToolbar.toolbar = addUIElement(`<div id="page-toolbar"><div class="widgets"></div></div>`)));
 	},
 
-	/*	Adds provided button (first creating it from HTML, if necessary) to the
-		page toolbar, and returns the added button.
+	/*	Adds a widget (which may contain buttons or whatever else) (first 
+		creating it from HTML, if necessary) to the page toolbar, and returns 
+		the added widget.
 
 		NOTE: This function may run before GW.pageToolbar.setup().
 	 */
-	addButton: (button) => {
-		if (typeof button == "string")
-			button = elementFromHTML(button);
+	addWidget: (widget) => {
+		if (typeof widget == "string")
+			widget = elementFromHTML(widget);
 
-		return GW.pageToolbar.getToolbar().querySelector(".buttons").appendChild(button);
+		widget.classList.add("widget");
+
+		//	If setup has run, update state after adding widget.
+		if (GW.pageToolbar.setupComplete)
+			GW.pageToolbar.updateState();
+
+		return GW.pageToolbar.getToolbar().querySelector(".widgets").appendChild(widget);
 	},
 
-	/*	Adds a button group containing the provided buttons (first creating
-		them from HTML, if necessary) to the page toolbar, and returns the
-		added button group.
+	/*	Removes a widget with the given ID and returns it.
 
 		NOTE: This function may run before GW.pageToolbar.setup().
 	 */
-	addButtonGroup: (buttons, buttonGroupProperties) => {
-		if (typeof buttons == "string")
-			buttons = Array.from(newDocument(buttons).children);
+	removeWidget: (widgetID) => {
+		let widget = GW.pageToolbar.getToolbar().querySelector(`.widget#${widgetID}`);
+		if (widget == null)
+			return null;
 
-		let buttonGroup = newElement("DIV", buttonGroupProperties);
-		buttonGroup.classList.add("button-group");
-		buttonGroup.append(...buttons);
+		widget.remove();
 
-		return GW.pageToolbar.getToolbar().querySelector(".buttons").appendChild(buttonGroup);
+		//	If setup has run, update state after removing widget.
+		if (GW.pageToolbar.setupComplete)
+			GW.pageToolbar.updateState();
+
+		return widget;
 	},
 
-	toggleCollapseState: () => {
-		if (GW.pageToolbar.toolbar.classList.contains("collapsed")) {
-			GW.pageToolbar.uncollapse();
+	isCollapsed: () => {
+		return GW.pageToolbar.toolbar.classList.contains("collapsed");
+	},
+
+	isTempExpanded: () => {
+		return GW.pageToolbar.toolbar.classList.contains("expanded-temp");
+	},
+
+	/*	Collapse or uncollapse toolbar. (The second argument uncollapses 
+		temporarily or collapses slowly. By default, uncollapse permanently and
+		collapse quickly.)
+
+		NOTE: Use only this method to collapse or uncollapse toolbar; the
+		.collapse() and .uncollapse() methods are for internal use only.
+	 */
+	toggleCollapseState: (collapse, tempOrSlowly = false) => {
+		GW.pageToolbar.toolbar.classList.remove("expanded-temp");
+
+		if (collapse == undefined) {
+			if (GW.pageToolbar.isCollapsed()) {
+				GW.pageToolbar.uncollapse();
+				if (tempOrSlowly)
+					GW.pageToolbar.toolbar.classList.add("expanded-temp");
+			} else {
+				GW.pageToolbar.collapse();
+			}
+		} else if (collapse == true) {
+			GW.pageToolbar.collapse(tempOrSlowly);
 		} else {
-			GW.pageToolbar.collapse();
+			GW.pageToolbar.uncollapse();
+			if (tempOrSlowly)
+				GW.pageToolbar.toolbar.classList.add("expanded-temp");
 		}
 	},
 
+	/*	Collapse toolbar.
+
+		(For internal use only; do not call except from .toggleCollapseState().)
+	 */
 	collapse: (slowly = false) => {
 		clearTimeout(GW.pageToolbar.toolbar.collapseTimer);
 
 		GW.pageToolbar.toolbar.classList.add("collapsed");
 
 		if (slowly) {
-			GW.pageToolbar.toolbar.classList.add("collapsed-slowly");
-			GW.pageToolbar.toolbar.collapseTimer = setTimeout(GW.pageToolbar.collapse, 750);
+			GW.pageToolbar.addToolbarClassesTemporarily("animating", "collapsed-slowly", 
+				GW.pageToolbar.demoCollapseDuration + GW.pageToolbar.fadeAfterCollapseDuration);
 		} else {
-			GW.pageToolbar.toolbar.classList.remove("collapsed-slowly");
+			GW.pageToolbar.addToolbarClassesTemporarily("animating", 
+				GW.pageToolbar.collapseDuration + GW.pageToolbar.fadeAfterCollapseDuration);
 		}
 	},
 
+	/*	Uncollapse toolbar.
+
+		(For internal use only; do not call except from .toggleCollapseState().)
+	 */
 	uncollapse: () => {
 		clearTimeout(GW.pageToolbar.toolbar.collapseTimer);
+
+		GW.pageToolbar.addToolbarClassesTemporarily("animating", 
+			GW.pageToolbar.collapseDuration + GW.pageToolbar.fadeAfterCollapseDuration);
 
 		GW.pageToolbar.toolbar.classList.remove("collapsed", "collapsed-slowly");
 	},
 
+	/*	Fade toolbar to full transparency.
+	 */
 	fade: () => {
 		GW.pageToolbar.toolbar.classList.add("faded");
 	},
 
+	/*	Un-fade toolbar from full transparency.
+	 */
 	unfade: () => {
 		GW.pageToolbar.toolbar.classList.remove("faded");
 	},
 
-	updateState: (event) => {
-		//	Collapse on scroll.
-		let thresholdScrollDistance = (0.2 * window.innerHeight);
-		if (   GW.scrollState.unbrokenUpScrollDistance   > (0.2 * window.innerHeight)
-			|| GW.scrollState.unbrokenDownScrollDistance > (0.2 * window.innerHeight))
-			GW.pageToolbar.collapse();
+	/*	Temporarily add one or more classes to the toolbar. Takes 2 or more 
+		arguments; the 1st through n-1’th argument are strings (class names),
+		while the last argument is a number (the time duration after which
+		the added classes shall be removed).
+	 */
+	addToolbarClassesTemporarily: (...args) => {
+		clearTimeout(GW.pageToolbar.toolbar.tempClassTimer);
 
-		//	Fade on scroll; unfade when scrolling to top.
-		let pageScrollPosition = getPageScrollPosition();
-		if (   pageScrollPosition == 0
-			|| pageScrollPosition == 100
-			|| GW.scrollState.unbrokenUpScrollDistance   > (0.8 * window.innerHeight)) {
-			GW.pageToolbar.unfade();
-		} else if (GW.scrollState.unbrokenDownScrollDistance > (0.8 * window.innerHeight)) {
-			GW.pageToolbar.fade();
+		let duration = args.last;
+
+		GW.pageToolbar.toolbar.classList.add(...(args.slice(0, -1)));
+		GW.pageToolbar.toolbar.tempClassTimer = setTimeout(() => {
+			GW.pageToolbar.toolbar.classList.remove(...(args.slice(0, -1)));
+		}, duration);
+	},
+
+	/*	Update layout, position, and collapse state of toolbar.
+		(Called when window is scrolled or resized, and also when widgets are
+		 added or removed.)
+	 */
+	updateState: (event) => {
+		if (   event 
+			&& event.type == "scroll"
+			&& GW.pageToolbar.mouseInToolbar == false) {
+			//	Collapse on scroll.
+			let thresholdScrollDistance = (0.2 * window.innerHeight);
+			if (   GW.scrollState.unbrokenUpScrollDistance   > (0.2 * window.innerHeight)
+				|| GW.scrollState.unbrokenDownScrollDistance > (0.2 * window.innerHeight))
+				GW.pageToolbar.toggleCollapseState(true);
+
+			//	Fade on scroll; unfade when scrolling to top.
+			let pageScrollPosition = getPageScrollPosition();
+			if (   pageScrollPosition == 0
+				|| pageScrollPosition == 100
+				|| GW.scrollState.unbrokenUpScrollDistance       > (0.8 * window.innerHeight)) {
+				GW.pageToolbar.unfade();
+			} else if (GW.scrollState.unbrokenDownScrollDistance > (0.8 * window.innerHeight)) {
+				GW.pageToolbar.fade();
+			}
+		} else {
+			if (GW.isMobile()) {
+				GW.pageToolbar.toolbar.classList.add("mobile", "button-labels-not");
+			} else {
+				GW.pageToolbar.toolbar.classList.add("desktop");
+				GW.pageToolbar.toolbar.classList.remove("vertical", "horizontal", "button-labels-not");
+
+				GW.pageToolbar.toolbar.classList.add("vertical");
+			}
 		}
 	},
 
 	setup: () => {
-		if (GW.isMobile()) {
-			GW.pageToolbar.toolbar = GW.pageToolbar.getToolbar();
+		GW.pageToolbar.toolbar = GW.pageToolbar.getToolbar();
 
-			let startCollapsed = getSavedCount("page-toolbar-demos-count") >= GW.pageToolbar.maxDemos;
-			if (startCollapsed) {
-				GW.pageToolbar.collapse();
-			} else {
-				incrementSavedCount("page-toolbar-demos-count");
-			}
+		let startCollapsed = getSavedCount("page-toolbar-demos-count") >= GW.pageToolbar.maxDemos;
+		if (startCollapsed) {
+			GW.pageToolbar.toggleCollapseState(true);
+		} else {
+			incrementSavedCount("page-toolbar-demos-count");
+		}
 
-			GW.pageToolbar.toolbar.append(
-				elementFromHTML(
-					`<button type="button" title="Toggle button for dark mode & reader mode controls." class="toggle-button main-toggle-button" tabindex="-1">`
-				  + `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z"/></svg>`
-				  + `</button>`
-				),
-				elementFromHTML(
-					`<button type="button" title="Collapse button for dark mode & reader mode controls." class="toggle-button collapse-button" tabindex="-1">`
-				  + `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M441.9 167.3l-19.8-19.8c-4.7-4.7-12.3-4.7-17 0L224 328.2 42.9 147.5c-4.7-4.7-12.3-4.7-17 0L6.1 167.3c-4.7 4.7-4.7 12.3 0 17l209.4 209.4c4.7 4.7 12.3 4.7 17 0l209.4-209.4c4.7-4.7 4.7-12.3 0-17z"/></svg>`
-				  + `</button>`
-				)
-			);
+		GW.pageToolbar.toolbar.append(
+			newElement("BUTTON", {
+				type: "button",
+				title: "Collapse/expand controls",
+				class: "toggle-button main-toggle-button",
+				tabindex: "-1"
+			}, {
+				innerHTML: GW.svg("gear-solid")
+			}),
+			newElement("BUTTON", {
+				type: "button",
+				title: "Collapse controls",
+				class: "toggle-button collapse-button",
+				tabindex: "-1"
+			}, {
+				innerHTML: GW.svg("chevron-down-regular")
+			})
+		);
 
-			//	Activate buttons.
-			GW.pageToolbar.toolbar.querySelectorAll("button.toggle-button").forEach(button => {
-				button.addActivateEvent(event => { GW.pageToolbar.toggleCollapseState(); });
+		//	Activate buttons.
+		GW.pageToolbar.toolbar.querySelectorAll("button.toggle-button").forEach(button => {
+			//	Toggle collapse state on click/tap.
+			button.addEventListener("click", (event) => {
+				//	Left-click only.
+				if (event.button != 0)
+					return;
 
-				//	Unfade main toggle button on click/tap.
-				if (button.classList.contains("main-toggle-button"))
+				if (GW.pageToolbar.isTempExpanded()) {
+					/*	Do not re-collapse if temp-expanded; instead,
+						permanentize expanded state (expand-lock).
+					 */
+					GW.pageToolbar.toggleCollapseState(false);
+				} else {
+					//	Expand or collapse.
+					GW.pageToolbar.toggleCollapseState();
+				}
+			});
+
+			if (button.classList.contains("main-toggle-button")) {
+				if (GW.isMobile()) {
+					//	Unfade on tap.
 					button.addEventListener("mousedown", (event) => {
 						GW.pageToolbar.unfade();
 					});
-			});
+				} else {
+					//	Unfade on hover.
+					GW.pageToolbar.toolbar.addEventListener("mouseenter", (event) => {
+						GW.pageToolbar.unfade();
+					});
 
-			doWhenPageLoaded(() => {
-				/*	Slowly collapse toolbar shortly after page load (if it’s not
-					already collapsed).
-				 */
-				if (startCollapsed == false)
-					setTimeout(GW.pageToolbar.collapse, 2500, true);
+					//	Uncollapse on hover.
+					onEventAfterDelayDo(button, "mouseenter", GW.pageToolbar.hoverUncollapseDelay, (event) => {
+						if (GW.pageToolbar.isCollapsed())
+							GW.pageToolbar.toggleCollapseState(false, true);
+					}, [ "mouseleave", "mousedown" ]);
 
-				//	Update toolbar state on scroll.
-				addScrollListener(GW.pageToolbar.updateState, "updatePageToolbarStateScrollListener", { defer: true });
+					//	Collapse on unhover.
+					onEventAfterDelayDo(GW.pageToolbar.toolbar, "mouseleave", GW.pageToolbar.unhoverCollapseDelay, (event) => {
+						if (GW.pageToolbar.isTempExpanded())
+							GW.pageToolbar.toggleCollapseState(true);
+					}, "mouseenter");
+				}
+			}
+		});
+
+		/*	Track when mouse pointer is hovering over toolbar (to prevent
+			collapse-on-scroll and fade-on-scroll from triggering then).
+		 */
+		if (GW.isMobile() == false) {
+			GW.pageToolbar.toolbar.addEventListener("mouseenter", (event) => {
+				GW.pageToolbar.mouseInToolbar = true;
 			});
-		} else {
-			//	TODO: Desktop version
+			GW.pageToolbar.toolbar.addEventListener("mouseleave", (event) => {
+				GW.pageToolbar.mouseInToolbar = false;
+			});
 		}
+
+		//	Set initial state.
+		GW.pageToolbar.updateState();
+
+		doWhenPageLoaded(() => {
+			/*	Slowly collapse toolbar shortly after page load (if it’s not
+				already collapsed).
+			 */
+			if (startCollapsed == false)
+				setTimeout(GW.pageToolbar.toggleCollapseState, GW.pageToolbar.demoCollapseDelay, true, true);
+
+			//	Update toolbar state on scroll.
+			addScrollListener(GW.pageToolbar.updateState, "updatePageToolbarStateListener", { defer: true });
+
+			//	Update toolbar state on window resize.
+			addWindowResizeListener(GW.pageToolbar.updateState, "updatePageToolbarStateListener", { defer: true });
+		});
+
+		GW.pageToolbar.setupComplete = true;
 	},
 };
 

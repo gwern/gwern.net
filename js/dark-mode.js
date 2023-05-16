@@ -37,9 +37,9 @@ DarkMode = { ...DarkMode,
 	/*	Configuration.
 	 */
 	modeOptions: [
-		[ 'auto', 'Auto', 'Set light or dark mode automatically, according to system-wide setting (Win: Start → Personalization → Colors; Mac: Apple → System-Preferences → General → Appearance; iOS: Settings → Display-and-Brightness; Android: Settings → Display)' ],
-		[ 'light', 'Light', 'Light mode at all times (black-on-white)' ],
-		[ 'dark', 'Dark', 'Dark mode at all times (inverted: white-on-black)' ]
+		[ "auto", "Auto", "Set light or dark mode automatically, according to system-wide setting (Win: Start → Personalization → Colors; Mac: Apple → System-Preferences → General → Appearance; iOS: Settings → Display-and-Brightness; Android: Settings → Display)", "adjust-solid" ],
+		[ "light", "Light", "Light mode at all times (black-on-white)", "sun-solid" ],
+		[ "dark", "Dark", "Dark mode at all times (inverted: white-on-black)", "moon-solid" ]
 	],
 
 	selectedModeOptionNote: " [This option is currently selected.]",
@@ -82,12 +82,12 @@ DarkMode = { ...DarkMode,
 	},
 
 	//	Called by: DarkMode.injectModeSelector
-	modeSelectorHTMLComponents: (inline = false) => {
+	modeSelectorHTML: (inline = false) => {
 		//	Get saved mode setting (or default).
 		let currentMode = DarkMode.currentMode();
 
 		let modeSelectorInnerHTML = DarkMode.modeOptions.map(modeOption => {
-			let [ name, label, desc ] = modeOption;
+			let [ name, label, desc, icon ] = modeOption;
 			let selected = (name == currentMode ? " selected" : "");
 			let disabled = (name == currentMode ? " disabled" : "");
 			let active = ((   currentMode == "auto"
@@ -103,19 +103,26 @@ DarkMode = { ...DarkMode,
 						tabindex="-1"
 						data-name="${name}"
 						title="${desc}"
-							>${label}</button>`;
+							>`
+						+ `<span class="icon">${(GW.svg(icon))}</span>`
+						+ `<span class="label">${label}</span>`
+					 + `</button>`;
 		  }).join("");
 
+		let selectorTag = (inline ? "span" : "div");
 		let selectorId = (inline ? "" : "dark-mode-selector");
 		let selectorClass = ("dark-mode-selector mode-selector" + (inline ? " mode-selector-inline" : ""));
 
-		return (inline
-				? `<span id="${selectorId}" class="${selectorClass}">${modeSelectorInnerHTML}</span>`
-				: [ modeSelectorInnerHTML, { id: selectorId, class: selectorClass } ]);
+		return `<${selectorTag} id="${selectorId}" class="${selectorClass}">${modeSelectorInnerHTML}</${selectorTag}>`;
 	},
 
 	modeSelectButtonClicked: (event) => {
 		GWLog("DarkMode.modeSelectButtonClicked", "dark-mode.js", 2);
+
+		let button = event.target.closest("button");
+
+		// Determine which setting was chosen (ie. which button was clicked).
+		let selectedMode = button.dataset.name;
 
 		/*	We don’t want clicks to go through if the transition 
 			between modes has not completed yet, so we disable the 
@@ -123,9 +130,6 @@ DarkMode = { ...DarkMode,
 			modes.
 		 */
 		doIfAllowed(() => {
-			// Determine which setting was chosen (ie. which button was clicked).
-			let selectedMode = event.target.dataset.name;
-
 			// Save the new setting.
 			DarkMode.saveMode(selectedMode);
 
@@ -141,43 +145,21 @@ DarkMode = { ...DarkMode,
 		//	Inject the mode selector widget.
 		let modeSelector;
 		if (replacedElement) {
-			modeSelector = elementFromHTML(DarkMode.modeSelectorHTMLComponents(true));
+			modeSelector = elementFromHTML(DarkMode.modeSelectorHTML(true));
 			replacedElement.replaceWith(modeSelector);
 		} else {
-			modeSelector = DarkMode.modeSelector = GW.pageToolbar.addButtonGroup(...(DarkMode.modeSelectorHTMLComponents()));
+			modeSelector = DarkMode.modeSelector = GW.pageToolbar.addWidget(DarkMode.modeSelectorHTML());
 		}
 
-		//  Add event listeners.
-		requestAnimationFrame(() => {
-			//	Activate mode selector widget buttons.
-			modeSelector.querySelectorAll("button").forEach(button => {
-				button.addActivateEvent(DarkMode.modeSelectButtonClicked);
-			});
-
-			if (modeSelector == DarkMode.modeSelector) {
-				//	Show the button on hover (if it’s hid via scroll-down).
-				DarkMode.modeSelector.addEventListener("mouseenter", (event) => {
-					//	Fire event.
-					GW.notificationCenter.fireEvent("GW.modeSelectorMouseEnter");
-				});
-				GW.notificationCenter.addHandlerForEvent("GW.modeSelectorMouseEnter", (info) => {
-					DarkMode.showModeSelector();
-				});
-			}
+		//	Activate mode selector widget buttons.
+		modeSelector.querySelectorAll("button").forEach(button => {
+			button.addActivateEvent(DarkMode.modeSelectButtonClicked);
 		});
 
 		//	Register event handler to update mode selector state.
 		GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", (info) => {
 			DarkMode.updateModeSelectorState(modeSelector);
 		});
-
-		if (   modeSelector == DarkMode.modeSelector
-			&& GW.isMobile() == false) {
-			//	On desktop, show/hide the main selector on scroll up/down.
-			addScrollListener(DarkMode.updateModeSelectorVisibility,
-				"DarkMode.updateModeSelectorVisibilityScrollListener", 
-				{ defer: true, ifDeferCallWhenAdd: true });
-		}
 
 		/*	Add active media query to update mode selector state when system dark
 			mode setting changes. (This is relevant only for the ‘auto’ setting.)
@@ -224,52 +206,6 @@ DarkMode = { ...DarkMode,
 							 : "light";
 			modeSelector.querySelector(`.select-mode-${activeMode}`).classList.add("active");
 		}
-	},
-
-	//	Called by: DarkMode.updateModeSelectorVisibilityScrollListener
-	updateModeSelectorVisibility: (event) => {
-		GWLog("DarkMode.updateModeSelectorVisibility", "dark-mode.js", 3);
-
-		if (DarkMode.modeSelector == null)
-			return;
-
-		//	One PgDn’s worth of scroll distance, approximately.
-		let onePageScrollDistance = (0.8 * window.innerHeight);
-
-		/*	Hide mode selector when scrolling a full page down.
-		 */
-		if (GW.scrollState.unbrokenDownScrollDistance > onePageScrollDistance) {
-			DarkMode.hideModeSelector();
-		}
-
-		/*	On desktop, show mode selector when scrolling to top of page, or a full
-			page up.
-		 */
-		if (   GW.scrollState.unbrokenUpScrollDistance > onePageScrollDistance
-			|| GW.scrollState.lastScrollTop <= 0) {
-			DarkMode.showModeSelector();
-		}
-	},
-
-	//	Called by: DarkMode.updateModeSelectorVisibility
-	//	Called by: dark mode selector ‘mouseenter’ event handler
-	showModeSelector: () => {
-		GWLog("DarkMode.showModeSelector", "dark-mode.js", 3);
-
-		if (DarkMode.modeSelector == null)
-			return;
-
-		DarkMode.modeSelector.classList.remove("hidden");
-	},
-
-	//	Called by: DarkMode.updateModeSelectorVisibility
-	hideModeSelector: () => {
-		GWLog("DarkMode.hideModeSelector", "dark-mode.js", 3);
-
-		if (DarkMode.modeSelector == null)
-			return;
-
-		DarkMode.modeSelector.classList.add("hidden");
 	}
 };
 
