@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-05-10 16:06:02 gwern"
+# When:  Time-stamp: "2023-05-12 19:52:50 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -145,6 +145,7 @@ gwhttp () {
 export -f gwhttp
 
 ## Move a file and sync it and update all callers:
+## TODO: handle pages/essays, not just files? see <rename.hs> for a sketch.
 gwmv () {
     if [ $# != 2 ]; then
         echo "Need two arguments: OLD file and NEW file! Only got: \"$@\""

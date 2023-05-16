@@ -9,10 +9,10 @@
 /**********/
 
 :root {
-	--GW-image-single-black-star-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 5,0 C 4,4 4,4 0,5 4,6 4,6 5,10 6,6 6,6 10,5 6,4 6,4 5,0 Z" /></svg>');
-	--GW-image-single-white-star-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 5,0 C 4,4 4,4 0,5 4,6 4,6 5,10 6,6 6,6 10,5 6,4 6,4 5,0 Z" /><path d="M 5,2.5 C 4.5,4.5 4.5,4.5 2.5,5 4.5,5.5 4.5,5.5 5,7.5 5.5,5.5 5.5,5.5 7.5,5 5.5,4.5 5.5,4.5 5,2.5 Z" style="fill:%23ffffff" /></svg>');
-	--GW-image-single-white-star-rotated-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 8.75,1.25 C 5,3.5 5,3.5 1.25,1.25 3.5,5 3.5,5 1.25,8.75 5,6.5 5,6.5 8.75,8.75 6.5,5 6.5,5 8.75,1.25 Z" /><path d="M 7,3 C 5,4.2 5,4.2 3,3 4.2,5 4.2,5 3,7 5,5.8 5,5.8 7,7 5.8,5 5.8,5 7,3 Z" style="fill:%23ffffff" /></svg>');
-	--GW-image-checkerboard-999-fff-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMZmZmf///ywAAAAABAAEAAACBgQShqgJBQA7');
+    --GW-image-single-black-star-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 5,0 C 4,4 4,4 0,5 4,6 4,6 5,10 6,6 6,6 10,5 6,4 6,4 5,0 Z" /></svg>');
+    --GW-image-single-white-star-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 5,0 C 4,4 4,4 0,5 4,6 4,6 5,10 6,6 6,6 10,5 6,4 6,4 5,0 Z" /><path d="M 5,2.5 C 4.5,4.5 4.5,4.5 2.5,5 4.5,5.5 4.5,5.5 5,7.5 5.5,5.5 5.5,5.5 7.5,5 5.5,4.5 5.5,4.5 5,2.5 Z" style="fill:%23ffffff" /></svg>');
+    --GW-image-single-white-star-rotated-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 8.75,1.25 C 5,3.5 5,3.5 1.25,1.25 3.5,5 3.5,5 1.25,8.75 5,6.5 5,6.5 8.75,8.75 6.5,5 6.5,5 8.75,1.25 Z" /><path d="M 7,3 C 5,4.2 5,4.2 3,3 4.2,5 4.2,5 3,7 5,5.8 5,5.8 7,7 5.8,5 5.8,5 7,3 Z" style="fill:%23ffffff" /></svg>');
+    --GW-image-checkerboard-999-fff-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMZmZmf///ywAAAAABAAEAAACBgQShqgJBQA7');
 }
 
 /**********/
@@ -168,7 +168,7 @@ button {
     z-index: 12;
 }
 
-/*	Fix for NoScript users.
+/*  Fix for NoScript users.
  */
 .collapse-block:not(.expanded):not(.expanded-not)::before {
     display: none;
@@ -201,7 +201,7 @@ button {
 .collapse > .disclosure-button:focus {
     outline: none;
 }
- 
+
 .collapse-block > .disclosure-button {
     position: absolute;
     top: 0;
@@ -263,16 +263,16 @@ button {
 }
 
 .collapse-block > .disclosure-button .part .label {
-	opacity: 0;
+    opacity: 0;
 }
 .collapse-block > .disclosure-button.labels-visible .part .label {
-	opacity: 1;
+    opacity: 1;
 }
 
 /*  Top part of disclosure button.
  */
 .collapse-block > .disclosure-button .part.top {
-	--icon-size: var(--collapse-toggle-top-height);
+    --icon-size: var(--collapse-toggle-top-height);
 
     top: 0;
     height: var(--collapse-toggle-top-height);
@@ -299,7 +299,7 @@ button {
 /*  Bottom part of disclosure button.
  */
 .collapse-block > .disclosure-button .part.bottom {
-	--icon-size: var(--collapse-toggle-bottom-height);
+    --icon-size: var(--collapse-toggle-bottom-height);
 
     bottom: 0;
     height: var(--collapse-toggle-bottom-height);
@@ -323,17 +323,17 @@ button {
     transform: rotate(0.25turn);
 }
 
-/*	Disclosure button edge cases.
+/*  Disclosure button edge cases.
  */
 .collapse-block.just-auto-expanded > .disclosure-button.labels-visible .part .label {
-	opacity: 0;
-	transition: none;
+    opacity: 0;
+    transition: none;
 }
 .collapse-block.no-abstract.expanded-not > .disclosure-button .part.bottom > span {
-	display: none;
+    display: none;
 }
 
-/*	Inline disclosure button.
+/*  Inline disclosure button.
  */
 .collapse-inline > .disclosure-button,
 .collapse-inline > .disclosure-button .icon {
@@ -343,20 +343,20 @@ button {
 }
 .collapse-inline > .disclosure-button {
     --collapse-button-text-color: var(--GW-collapse-inline-disclosure-button-text-color);
-    
+
     height: 1em;
     vertical-align: text-bottom;
     position: relative;
     bottom: 0.15em;
 }
 .collapse-inline.expanded > .disclosure-button {
-	--collapse-button-text-color: var(--GW-collapse-inline-expanded-disclosure-button-text-color);
+    --collapse-button-text-color: var(--GW-collapse-inline-expanded-disclosure-button-text-color);
 
     height: calc(1em * 4/3);
     bottom: 0;
 }
 .collapse-inline.expanded > .disclosure-button {
-	--collapse-button-text-color: var(--GW-collapse-inline-expanded-disclosure-button-text-color);
+    --collapse-button-text-color: var(--GW-collapse-inline-expanded-disclosure-button-text-color);
 }
 .collapse-inline > .disclosure-button:hover,
 .collapse-inline > .disclosure-button.hover {
@@ -367,7 +367,7 @@ button {
     height: 100%;
     color: var(--collapse-button-text-color);
     transition:
-    	color 0.1s ease;
+        color 0.1s ease;
 }
 .collapse-inline.expanded > .disclosure-button.start .icon {
     margin-right: -0.4em;
@@ -669,7 +669,7 @@ blockquote .collapse-block.has-abstract.expanded-not > .disclosure-button .part:
     margin-bottom: 0.5em;
 }
 
-/*	Edge cases.
+/*  Edge cases.
  */
 
 .footnote > .collapse.section-backlinks-container:last-child {
@@ -728,9 +728,9 @@ li > .collapse-block.expanded > .collapse-content-wrapper > ul {
     margin-top: 0.5em;
 }
 
-/*	Is this necessary? Not if the other one is removed...
-	—SA 2022-05-07
-/* 
+/*  Is this necessary? Not if the other one is removed...
+    —SA 2022-05-07
+/*
 .collapse [class^='horizontal-rule'] {
     clear: none;
 }
@@ -1112,10 +1112,10 @@ hr {
     display: flex;
 }
 
-/*	Is this necessary? It looks bad on /clippy. We’ll find out!
-	—SA 2022-05-04
+/*  Is this necessary? It looks bad on /clippy. We’ll find out!
+    —SA 2022-05-04
  */
-/* 
+/*
 [class^='horizontal-rule'] {
     clear: both;
 }
@@ -1380,8 +1380,8 @@ figure + figure {
 
 figure.float-left,
 figure.float-right {
-	position: relative;
-	z-index: 1;
+    position: relative;
+    z-index: 1;
 }
 
 .figure-inner-wrapper {
@@ -1589,7 +1589,7 @@ blockquote table table {
 /* loosely inspired by https://edwardtufte.github.io/tufte-css/#epigraphs */
 
 .epigraph {
-	display: flow-root;
+    display: flow-root;
     margin: 2em auto;
     padding: 0.5em 2.5em 0.375em 2.5em;
 }
@@ -1710,7 +1710,7 @@ a.footnote-ref {
     transition:
         box-shadow 0.15s ease 0.05s;
 }
-/*	Expanded hover/tap area.
+/*  Expanded hover/tap area.
  */
 a.footnote-ref::after {
     content: "";
@@ -1769,11 +1769,13 @@ h1 sub, h1 sup, h2 sub, h2 sup {
  */
 sup a,
 sub a {
-    margin-left: 0.1em;
+    margin-left:  0.10em;
+    margin-right: 0.13em;
 }
 sup a + a,
 sub a + a {
-    margin-left: 0.2em;
+    margin-left:  0.20em;
+    margin-right: 0.13em;
 }
 
 /*=------------------------=*/
@@ -3503,7 +3505,7 @@ body.lorem div[class^='drop-cap'] {
     background-color: var(--background-color);
 }
 
-/*	Main toggle button (gear).
+/*  Main toggle button (gear).
  */
 #page-toolbar > button.main-toggle-button {
     order: -1;
@@ -3754,7 +3756,7 @@ body.lorem div[class^='drop-cap'] {
     	max-height 0s ease-out 0.25s;
 }
 
-/*	Slow collapsing.
+/*  Slow collapsing.
  */
 #page-toolbar.collapsed.collapsed-slowly > button.main-toggle-button {
     transition: 
@@ -3764,7 +3766,7 @@ body.lorem div[class^='drop-cap'] {
 
 #page-toolbar.collapsed.collapsed-slowly .widgets {
     transition:
-    	transform 0.75s ease-out;
+        transform 0.75s ease-out;
 }
 
 /*	Slow collapsing (vertical layout).
@@ -3878,14 +3880,14 @@ body.lorem div[class^='drop-cap'] {
 }
 
 #image-focus-overlay img.loading {
-	box-shadow: 0 0 0 1px var(--SA-image-focus-overlay-image-caption-separator-color) inset;
-	background-color: transparent;
+    box-shadow: 0 0 0 1px var(--SA-image-focus-overlay-image-caption-separator-color) inset;
+    background-color: transparent;
 }
 #image-focus-overlay .loading-spinner {
-	visibility: hidden;
-	color: var(--SA-image-focus-overlay-image-caption-separator-color);
-	width: 40vw;
-	height: fit-content;
+    visibility: hidden;
+    color: var(--SA-image-focus-overlay-image-caption-separator-color);
+    width: 40vw;
+    height: fit-content;
     position: absolute;
     width: 100%;
     height: 100%;
@@ -3904,7 +3906,7 @@ body.lorem div[class^='drop-cap'] {
     animation: fa-spin 2s infinite linear;
 }
 #image-focus-overlay img.loading + .loading-spinner {
-	visibility: visible;
+    visibility: visible;
 }
 
 /*=-------------------=*/
@@ -5511,7 +5513,7 @@ body.lorem div[class^='drop-cap'] {
 /*└──────────────────────────────────┘*/
 
 .popup.local-document-transform.tweet {
-	min-height: var(--GW-popups-tweet-popup-min-height);
+    min-height: var(--GW-popups-tweet-popup-min-height);
 }
 
 /*┌──────────────────────────┐*/
@@ -5802,8 +5804,8 @@ body.lorem div[class^='drop-cap'] {
 }
 
 .popin-ancestor {
-	position: relative !important;
-	z-index: 100 !important;
+    position: relative !important;
+    z-index: 100 !important;
 }
 
 .popin + .popin {
@@ -6467,7 +6469,7 @@ section.highlight-fading::before {
     font-style: inherit;
 }
 
-/*	Tweets.
+/*  Tweets.
  */
 
 .local-document-transform.tweet .data-field.annotation-abstract {
@@ -6605,10 +6607,10 @@ ol.link-bibliography-list-compact > li::before {
     .site-of-the-day blockquote {
         font-size: calc((17/18) * var(--GW-body-text-font-size));
         margin: 3.5em auto 2.75em auto;
-        padding: 
-            var(--box-padding-top) 
+        padding:
+            var(--box-padding-top)
             calc(var(--box-size) - var(--box-padding-top))
-            var(--box-padding-bottom) 
+            var(--box-padding-bottom)
             calc(var(--box-size) + var(--box-padding-top) + var(--box-horizontal-offset));
     }
 }
@@ -6800,12 +6802,12 @@ ol.link-bibliography-list-compact > li::before {
 /**************************/
 
 #floating-header {
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100%;
-	background-color: var(--GW-body-background-color);
-	box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background-color: var(--GW-body-background-color);
+    box-sizing: border-box;
     box-shadow: 0 2px 6px var(--GW-floating-header-box-shadow-color);
     transition:
         top 0.2s ease-out;
@@ -6815,7 +6817,7 @@ ol.link-bibliography-list-compact > li::before {
     top: -2.5em;
 }
 #floating-header.hidden .link-chain a.page-title {
-	display: none;
+    display: none;
 }
 
 #floating-header .link-chain {
@@ -6850,11 +6852,11 @@ ol.link-bibliography-list-compact > li::before {
 #floating-header .scroll-indicator {
     height: 3px;
     margin: 0 -8px;
-	background-image: linear-gradient(var(--GW-floating-header-scroll-indicator-color),
-									  var(--GW-floating-header-scroll-indicator-color));
-	background-position: 0 0;
-	background-repeat: no-repeat;
-	background-size: 0 0;
+    background-image: linear-gradient(var(--GW-floating-header-scroll-indicator-color),
+                                      var(--GW-floating-header-scroll-indicator-color));
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: 0 0;
 }
 
 

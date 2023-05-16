@@ -613,4 +613,6 @@ linkIconTestUnitsText =
          , ("https://www.kalzumeus.com/2018/10/19/japanese-hometown-tax/", "pt11", "text,quad,monospace")
          , ("https://www.lrb.co.uk/the-paper/v42/n18/james-lasdun/bats-on-the-ceiling", "LRB", "text,tri")
          , ("https://archiveofourown.org/works/17356235", "Ao3", "text,tri")
+         , ("https://mathshistory.st-andrews.ac.uk/Extras/Poincare_Intuition/", "M  T", "text,quad,sans")
+         , ("http://norvig.com/experiment-design.html", "N", "text,sans")
         ]

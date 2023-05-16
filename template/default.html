@@ -4,11 +4,13 @@
     <meta charset="utf-8">
 
     <!-- SSI: CSS+JS inline for speed -->
-    <!-- INLINED-HEAD-BEGIN --><!--#include virtual="/static/include/inlined-head.html" --><!-- INLINED-HEAD-END -->
+    <!-- INLINED-HEAD-BEGIN -->
+    <!--#include virtual="/static/include/inlined-head.html" --><!-- INLINED-HEAD-END -->
 
     <!-- SSI: fetch the title & body fonts immediately to avoid re-rendering -->
     <!-- SSI: also inline minimal set of font CSS needed for initial screen, for speed -->
-    <!-- INLINED-FONTS-BEGIN --><!--#include virtual="/static/include/inlined-fonts.html" --><!-- INLINED-FONTS-END -->
+    <!-- INLINED-FONTS-BEGIN -->
+    <!--#include virtual="/static/include/inlined-fonts.html" --><!-- INLINED-FONTS-END -->
 
     <!-- SSI: Inlined asset versions -->
     <!-- INLINED-ASSET-VERSIONS-BEGIN--><!--#include virtual="/static/include/inlined-asset-versions.html" --><!-- INLINED-ASSET-VERSIONS-END -->
@@ -122,15 +124,15 @@
         <noscript><div id="noscript-warning-footer" class="admonition error"><div class="admonition-title"><p>[<strong>Error</strong>: JS disabled.]</p></div> <p>[Backlinks, similar links, and the link-bibliography require JS enabled to transclude.]</p></div></noscript>
         $if(backlinksYes)$<section id="backlinks-section" class="level1">
           <h1><a href="#backlinks-section" title="Link to section: § 'Further Reading'">Further Reading</a></h1>
-          <a id="backlinks" href="/metadata/annotation/backlink/$escapedURL$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="backlinks include-strict">[backlinks]</a>
+          <a id="backlinks" href="/metadata/annotation/backlink/$escapedURL$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="backlinks include-strict">[Backlinks]</a>
         </section>$endif$
         $if(linkbibYes)$<section id="link-bibliography-section" class="level1">
           <h1><a href="#link-bibliography-section" title="Link to section: § 'Link Bibliography'">Link Bibliography</a></h1>
-          <a id="link-bibliography" href="/metadata/annotation/link-bibliography/$escapedURL$" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include link-bibliography">[link bibliography]</a>$endif$
+          <a id="link-bibliography" href="/metadata/annotation/link-bibliography/$escapedURL$" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include link-bibliography">[Link bibliography]</a>$endif$
         </section>
         $if(similarsYes)$<section id="similars-section" class="level1">
           <h1><a href="#similars-section" title="Link to section: § 'Similar Links'">Similar Links</a></h1>
-          <a id="similars" href="/metadata/annotation/similar/$escapedURL$" title="Similar links for this link (by text embedding). Lazily-transcluded version at footer of page for easier scrolling." class="similars include-strict">[similar]</a>
+          <a id="similars" href="/metadata/annotation/similar/$escapedURL$" title="Similar links for this link (by text embedding). Lazily-transcluded version at footer of page for easier scrolling." class="similars include-strict">[Similars]</a>
           </section>$endif$
           $endif$
         </div> <!-- NOTE: unmatched, because it closes the opening div from the hakyll.hs $$body$$ Pandoc template -->
@@ -162,7 +164,8 @@
     </main>
 
     <!-- SSI: Versioned external CSS/JS assets -->
-    <!-- INLINED-FOOT-BEGIN --><!--#include virtual="/static/include/inlined-foot.html" --><!-- INLINED-FOOT-END -->
+    <!-- INLINED-FOOT-BEGIN -->
+    <!--#include virtual="/static/include/inlined-foot.html" --><!-- INLINED-FOOT-END -->
 
     <!-- 2×2 A/B test of indentation vs newline, and justified vs not  -->
     <script id="justificationindentation-abtest-js">

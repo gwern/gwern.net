@@ -40,7 +40,7 @@ main = do errors <- fmap lines getContents
           mapM_ putStrLn redirectsGenerated
 
 escape :: String -> String
-escape = replaceMany [("?","\\?"), ("[", "\\["), ("]", "\\]"), ("(", "\\("), (")", "\\)")]
+escape = replaceMany [("?","\\?"), ("[", "\\["), ("]", "\\]"), ("(", "\\("), (")", "\\)"), ("^", "\\^"), ("$", "\\$")]
 
 sortBySecondField :: [(String, String)] -> [(String, String)]
 sortBySecondField = sortOn snd
