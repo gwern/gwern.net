@@ -74,7 +74,7 @@ button {
     background-color: transparent;
     line-height: 1;
     font-family: var(--GW-sans-serif-font-stack);
-    font-size: 1rem;
+    font-size: inherit;
     font-weight: normal;
     font-style: normal;
     text-align: center;
@@ -3593,7 +3593,7 @@ body.lorem div[class^='drop-cap'] {
 /*	Vertical toolbar layout.
  */
 #page-toolbar.vertical {
-	--toolbar-button-size: 32px;
+	--toolbar-button-size: 4vmin;
 
 	flex-flow: column;
     width: var(--toolbar-button-size);
@@ -3639,7 +3639,7 @@ body.lorem div[class^='drop-cap'] {
     margin: auto;
     display: flex;
     align-items: center;
-    padding: 0 8px;
+    padding: 0 10px;
     font-variant-caps: small-caps;
     background-color: var(--background-color);
     box-shadow: 
