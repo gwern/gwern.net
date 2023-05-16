@@ -5714,6 +5714,7 @@ body.lorem div[class^='drop-cap'] {
 }
 .extracts-options-dialog .option-buttons label input.extracts-enable + .button-text .icon {
     width: 0.75em;
+    left: 0.12em;
 }
 .extracts-options-dialog .option-buttons label input.extracts-disable + .button-text .icon {
     width: 0.875em;
