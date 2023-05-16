@@ -575,10 +575,3 @@ Popins = {
 };
 
 GW.notificationCenter.fireEvent("Popins.didLoad");
-
-/******************/
-/*	Initialization.
-	*/
-doWhenPageLoaded(() => {
-	Popins.setup();
-});

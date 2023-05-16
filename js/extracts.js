@@ -133,9 +133,6 @@ Extracts = {
             Extracts.removeTargetsWithin(container);
         });
 
-		//	Remove pop-frames & containers.
-		Extracts.popFrameProvider.cleanup();
-
         //  Remove content inject event handler.
     	GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Extracts.processTargetsOnContentInject);
 
@@ -143,13 +140,8 @@ Extracts = {
 		if (Extracts.popFrameProvider == Popins)
 			GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Extracts.cleanPopinsFromInjectedContent);
 
-        if (Extracts.popFrameProvider == Popups) {
-            //  Remove “popups disabled” icon/button, if present.
-            if (Extracts.popupOptionsEnabled)
-                Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
-        } else {
-            //  TODO: this!
-        }
+		//	Remove pop-frames & containers.
+		Extracts.popFrameProvider.cleanup();
 
         //  Fire cleanup-complete event.
         GW.notificationCenter.fireEvent("Extracts.cleanupDidComplete");
@@ -201,24 +193,21 @@ Extracts = {
         if (Extracts.popFrameProvider == Popups) {
             GWLog("Setting up for popups.", "extracts.js", 1);
 
-            if (Extracts.popupsEnabled() == false) {
-                if (Extracts.popupOptionsEnabled) {
-                    //  Inject “popups disabled” icon/button.
-                    Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
-                }
+            if (Extracts.popupsEnabled() == false)
                 return;
-            }
 
             GWLog("Activating popups.", "extracts.js", 1);
         } else {
             GWLog("Setting up for popins.", "extracts.js", 1);
 
-			if (Extracts.popinsEnabled() == false) {
+			if (Extracts.popinsEnabled() == false)
 				return;
-			}
 
             GWLog("Activating popins.", "extracts.js", 1);
         }
+
+		//	Run provider setup.
+		Extracts.popFrameProvider.setup();
 
         /*  Add handler to set up targets in loaded content (including
             newly-spawned pop-frames; this allows for recursion), and to
@@ -869,11 +858,8 @@ Extracts = {
                 Popups.titleBarComponents.zoomButton().enableSubmenu(),
                 Popups.titleBarComponents.pinButton(),
                 newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popupTitle.innerHTML }),
+                Extracts.showPopupOptionsDialogPopupTitleBarButton()
             ];
-
-            //  Add the options button.
-            if (Extracts.popupOptionsEnabled)
-                popup.titleBarContents.push(Extracts.showPopupOptionsDialogPopupTitleBarButton());
         }
 
         //  Special handling for certain popup types.

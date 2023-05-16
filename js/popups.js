@@ -35,6 +35,7 @@ Popups = {
 
         //  Remove popups container.
         document.querySelectorAll(`#${Popups.popupContainerID}`).forEach(element => element.remove());
+		Popups.popupContainer = null;
 
 		//  Remove Escape key event listener.
 		document.removeEventListener("keyup", Popups.keyUp);
@@ -2133,10 +2134,3 @@ Popups = {
 };
 
 GW.notificationCenter.fireEvent("Popups.didLoad");
-
-/******************/
-/*	Initialization.
-	*/
-doWhenPageLoaded(() => {
-	Popups.setup();
-});

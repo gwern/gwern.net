@@ -474,19 +474,13 @@ ReaderMode = { ...ReaderMode,
 
 GW.notificationCenter.fireEvent("ReaderMode.didLoad");
 
-/*	Ensure that we run setup only after Extracts and Popups/Popins have
-	completed their setups. (This is so that the onclick handlers and so on are
-	already in place.)
+/*	Ensure that we run setup only after Extracts have completed their setups. 
+	(This is so that the onclick handlers and so on are already in place.)
  */
-let setupSetup = () => {
-    GW.notificationCenter.addHandlerForEvent(Extracts.popFrameProviderName + ".setupDidComplete", (info) => {
-        ReaderMode.setup();
-    }, { once: true });
-}
 if (window.Extracts) {
-    setupSetup();
+    ReaderMode.setup();
 } else {
     GW.notificationCenter.addHandlerForEvent("Extracts.didLoad", (info) => {
-        setupSetup();
+        ReaderMode.setup();
     }, { once: true });
 }

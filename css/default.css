@@ -3648,6 +3648,7 @@ body.lorem div[class^='drop-cap'] {
     opacity: 0;
     transition:
         opacity 0.1s ease;
+    pointer-events: none;
 }
 @media only screen and (hover: hover) {
     #page-toolbar.vertical .widget button:hover .label {
@@ -5618,6 +5619,7 @@ body.lorem div[class^='drop-cap'] {
     background-color: var(--background-color);
     padding: 0 0.75em;
     height: 2em;
+    align-items: center;
     line-height: 1;
     font-weight: 600;
     color: var(--GW-popups-popup-options-dialog-button-text-color);
@@ -5713,51 +5715,12 @@ body.lorem div[class^='drop-cap'] {
         0 0 0 1em var(--GW-popups-popup-options-dialog-button-hover-box-shadow-color) inset;
 }
 
-/*  With popups disabled, the “show popup options dialog” icon/button.
-    */
-#popups-disabled-show-popup-options-dialog-button {
-    position: fixed;
-    top: calc(0.55em + 3px);
-    right: 12em;
-    z-index: 1;
-    opacity: 0.3;
-    visibility: visible;
-    transition:
-        opacity 2s ease;
+/*	Popup options button in page toolbar.
+ */
+#page-toolbar #show-popup-options-dialog-button {
+	order: 3;
 }
-@media only screen and (max-width: 1760px) {
-    #popups-disabled-show-popup-options-dialog-button {
-        top: 15em;
-        right: 0.6em;
-    }
-}
-#popups-disabled-show-popup-options-dialog-button.hidden {
-    opacity: 0;
-}
-#popups-disabled-show-popup-options-dialog-button:hover {
-    opacity: 1.0;
-    transition: none;
-}
-#popups-disabled-show-popup-options-dialog-button button {
-    appearance: none;
-    border: none;
-    font-family: inherit;
-    font-size: inherit;
-    background: inherit;
-    color: var(--GW-popups-show-popup-options-dialog-button-color);
-    fill: currentColor;
-    padding: 0;
-    line-height: 1;
-    display: block;
-    width: 1.125em;
-}
-#popups-disabled-show-popup-options-dialog-button button:hover {
-    cursor: pointer;
-    opacity: 1.0;
-}
-#popups-disabled-show-popup-options-dialog-button button:active {
-    transform: scale(0.95);
-}
+
 
 /**********/
 /* POPINS */
