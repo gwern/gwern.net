@@ -5914,6 +5914,11 @@ body.lorem div[class^='drop-cap'] {
     opacity: 0.35;
 }
 
+.popin .popframe-title-bar-button.show-extracts-options-dialog-button {
+    padding: 6px;
+    opacity: 0.8;
+}
+
 /*  Popin stack counter.
     */
 .popin-stack-counter {
