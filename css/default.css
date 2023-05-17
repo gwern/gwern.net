@@ -1786,7 +1786,7 @@ sub a + a {
     margin: 0 0 0 0.5em;
     position: relative;
     display: inline-block;
-    font-size: 1rem;
+    font-size: 1em;
     line-height: 0.5;
     text-indent: 0;
     border: 1px dotted var(--GW-footnote-backlink-border-color);
@@ -1811,29 +1811,16 @@ sub a + a {
 /*= Special styling adjustments within footnotes =*/
 /*=----------------------------------------------=*/
 
-.footnotes li {
-    position: relative;
-}
-
 .footnotes blockquote + a.footnote-back,
 .footnotes pre + a.footnote-back,
 .footnotes .sourceCode + a.footnote-back {
-    position: absolute;
-    right: 0;
-    background-color: var(--background-color);
-}
-
-.footnotes pre + a.footnote-back,
-.footnotes .sourceCode + a.footnote-back {
-    top: calc(100% - 1px);
+    top: 0;
+    float: right;
 }
 
 .footnotes blockquote:nth-last-child(1),
 .footnotes blockquote:nth-last-child(2) {
     margin-bottom: 0.5em;
-}
-.footnotes blockquote + a.footnote-back {
-    top: calc(100% - 0.5em - 1px);
 }
 
 /*=-----------=*/
@@ -4500,12 +4487,6 @@ body.lorem div[class^='drop-cap'] {
 .popframe-body #footnotes > hr:first-child,
 .popframe-body #footnotes > hr:first-child + a.section-self-link {
     display: none;
-}
-
-.popframe-body #footnotes li > blockquote:nth-last-child(2),
-.popframe-body #footnotes li > pre:nth-last-child(2),
-.popframe-body #footnotes li > .sourceCode:nth-last-child(2) {
-    margin-bottom: 2em;
 }
 
 .popframe-body .footnotes .footnote-back {
