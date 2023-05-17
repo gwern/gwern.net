@@ -1176,7 +1176,7 @@ addContentLoadHandler(GW.contentLoadHandlers.injectTOCMinimizeButton = (eventInf
         "title": "Collapse table of contents",
         "tabindex": "-1"
     }, {
-        "innerHTML": `<span>${GW.assets.collapseChevron}</span>`
+        "innerHTML": `<span>${(GW.svg("chevron-left-solid"))}</span>`
     });
     TOC.appendChild(button);
 
@@ -1372,52 +1372,12 @@ addContentLoadHandler(GW.contentLoadHandlers.injectFootnoteSelfLinks = (eventInf
 addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventInfo) => {
     GWLog("rewriteFootnoteBackLinks", "rewrite.js", 1);
 
-    /*  Base font size (1rem) is 20px at this time, making a good default.
-        That value might change later, but this’ll still be a fine default;
-        the width/height get adjusted below, anyway, so no big deal if the
-        default is not the final value. We mostly care about having _a_ value
-        for the width/height for page load performance reasons.
-     */
-    let defaultSize = 20;
     eventInfo.container.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
         let backlink = footnote.querySelector(".footnote-back");
-        if (backlink.querySelector("img"))
+        if (backlink.querySelector("svg, .placeholder"))
             return;
 
-        backlink.textContent = "";
-        backlink.appendChild(newElement("IMG", {
-            width: defaultSize,
-            height: defaultSize,
-            loading: "lazy",
-            alt: "↩ Right arrow curving left [footnote return link] arrow",
-            src: "/static/img/icon/icons.svg#arrow-hook-left"
-        }));
-    });
-}, "rewrite");
-
-/******************************************************************************/
-/*  Set size properly, after setting default value in rewriteFootnoteBackLinks.
- */
-addContentInjectHandler(GW.contentInjectHandlers.rectifyFootnoteBackLinkArrowSize = (eventInfo) => {
-    GWLog("rectifyFootnoteBackLinkArrowSize", "rewrite.js", 1);
-
-    let footnotesList = eventInfo.container.querySelector("#footnotes > ol");
-    if (!footnotesList)
-        return;
-
-    requestIdleCallback(() => {
-        let size = parseInt(getComputedStyle(footnotesList).fontSize);
-        if (!size)
-            return;
-
-        eventInfo.container.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
-            let arrow = footnote.querySelector(".footnote-back img");
-            if (!arrow)
-                return;
-
-            arrow.width = size;
-            arrow.height = size;
-        });
+        backlink.innerHTML = GW.svg("arrow-hook-left");
     });
 }, "rewrite");
 
@@ -2028,10 +1988,10 @@ addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (even
         //  Inject button bar.
         mathBlock.insertAdjacentHTML("beforeend",
               `<span class="block-button-bar">`
-            + `<button type="button" class="copy" tabindex="-1" title="Copy LaTeX source of this equation to clipboard">`
-            + `<img src="/static/img/icon/copy.svg">`
-            + `</button>`
-            + `<span class="scratchpad"></span>`
+				+ `<button type="button" class="copy" tabindex="-1" title="Copy LaTeX source of this equation to clipboard">`
+					+ GW.svg("copy-regular")
+				+ `</button>`
+				+ `<span class="scratchpad"></span>`
             + `</span>`);
     });
 }, "rewrite");

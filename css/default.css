@@ -54,8 +54,8 @@
     --GW-popins-popin-max-height: 75vh;
     --GW-popins-popin-min-height: 120px;
     --GW-popins-popin-border-width: 3px;
-    --GW-popins-popin-title-bar-height: 1.75rem;
-    --GW-popins-popin-footer-bar-height: 1.75rem;
+    --GW-popins-popin-title-bar-height: calc(1rem * 16/9);
+    --GW-popins-popin-footer-bar-height: calc(1rem * 16/9);
 }
 @supports (-moz-user-focus: normal) {
     :root {
@@ -1833,7 +1833,7 @@ sub a + a {
     margin-bottom: 0.5em;
 }
 .footnotes blockquote + a.footnote-back {
-    top: calc(100% - 0.5em);
+    top: calc(100% - 0.5em - 1px);
 }
 
 /*=-----------=*/
@@ -2774,20 +2774,19 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     background-color: var(--GW-body-background-color);
     cursor: pointer;
 }
-.math.block .block-button-bar button img {
-    display: block;
+.math.block .block-button-bar button svg {
     opacity: 0.65;
 }
-@media only screen and (min-width: 650px) {
-    .math.block .block-button-bar button img {
+@media only screen and (hover: hover) {
+    .math.block .block-button-bar button svg {
         opacity: 0.45;
     }
-    .math.block .block-button-bar button:hover img {
+    .math.block .block-button-bar button:hover svg {
         opacity: 0.65;
     }
 }
-.math.block .block-button-bar button:active img {
-    transform: scale(0.95);
+.math.block .block-button-bar button:active svg {
+    transform: translateY(1px);
 }
 
 /********/
@@ -5043,6 +5042,9 @@ body.lorem div[class^='drop-cap'] {
 .popup .popframe-title-bar-button.zoom-button {
     padding: 5px;
 }
+.popup .popframe-title-bar-button.show-extracts-options-dialog-button {
+    padding: 5px;
+}
 
 .popup.mini-title-bar button.zoom-button,
 .popup.mini-title-bar button.options-button {
@@ -5055,6 +5057,7 @@ body.lorem div[class^='drop-cap'] {
 .popup .popframe-title-bar .submenu {
     position: absolute;
     top: var(--popup-title-bar-height);
+    left: -1px;
     background-color: var(--background-color);
     display: grid;
     grid-template-columns: auto auto auto;
@@ -6901,14 +6904,13 @@ ol.link-bibliography-list-compact > li::before {
         visibility 0.15s ease,
         opacity 0.15s ease;
 }
-#masked-links-key-toggle-info-alert img {
-    display: inline-block;
+#masked-links-key-toggle-info-alert .icon {
+    display: inline-flex;
     width: 1.25em;
-    filter: invert(1) drop-shadow(0 0 3px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color));
-    vertical-align: text-bottom;
-    margin: 0 0.625em 0 0;
-    top: -0.05em;
+    filter: drop-shadow(0 0 3px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color));
+    margin: 0 0.75em 0 0;
     position: relative;
+    top: 0.15em;
 }
 #masked-links-key-toggle-info-alert .key {
     border: 1px solid var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-border-color);

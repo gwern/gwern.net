@@ -275,21 +275,6 @@ a[data-link-icon-type*='svg'] .link-icon-hook::after {
     filter: invert(1);
 }
 
-/*  Block buttons must be inverted.
- */
-.mjpage__block .block-button-bar button img,
-.mjpage__block .block-button-bar button img:hover {
-    filter: invert(1);
-}
-
-/*  Footnote back-to-citation link icons.
- */
-.footnotes .footnote-back img,
-.footnotes .footnote-back img:hover {
-    filter: invert(1);
-}
-
-
 /*	Math in Wikipedia pop-frames.
  */
 .annotation.wikipedia-entry .mwe-math-element img {

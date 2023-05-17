@@ -616,9 +616,14 @@ function includeContent(includeLink, content) {
 
 	//	Intelligent rectification of contained HTML structure.
 	if (wrapper.closest("#footnotes > ol") == null) {
-		wrapper.querySelectorAll(".footnote-self-link, .footnote-back").forEach(link => {
+		wrapper.querySelectorAll(".footnote-self-link").forEach(link => {
 			link.remove();
 		});
+		if (wrapper.querySelector("#footnotes > ol") == null) {
+			wrapper.querySelectorAll(".footnote-back").forEach(link => {
+				link.remove();
+			});
+		}
 	}
 
 	//	Clear loading state of all include-links.

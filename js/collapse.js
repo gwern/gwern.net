@@ -1,8 +1,3 @@
-GW.assets.collapseChevron = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23CCC"/></svg>`;
-GW.assets.collapseChevronThin = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><path d="M89.45 87.5l143.1 152c4.375 4.625 6.562 10.56 6.562 16.5c0 5.937-2.188 11.87-6.562 16.5l-143.1 152C80.33 434.1 65.14 434.5 55.52 425.4c-9.688-9.125-10.03-24.38-.9375-33.94l128.4-135.5l-128.4-135.5C45.49 110.9 45.83 95.75 55.52 86.56C65.14 77.47 80.33 77.87 89.45 87.5z"/></svg>`;
-GW.assets.bracketLeftThin = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 384"><path d="M 0,336 V 48 C 0,0 0,0 48,0 h 132 c 6.6,0 12,3.4 12,10 v 8 c 0,6.6 -5.4,10 -12,10 H 48 C 28.06,28 28,28.14 28,48 v 288 c 0,19.86 0.14,20 20,20 h 132 c 6.6,0 12,3.4 12,10 v 8 c 0,6.6 -5.4,10 -12,10 H 48 C 0,384 0,384 0,336 Z" /></svg>`;
-GW.assets.bracketRightThin = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 384"><path d="M 192,336 V 48 C 192,0 192,0 144,0 H 12 C 5.4,0 0,3.4 0,10 v 8 c 0,6.6 5.4,10 12,10 h 132 c 19.94,0 20,0.14 20,20 v 288 c 0,19.86 -0.14,20 -20,20 H 12 c -6.6,0 -12,3.4 -12,10 v 8 c 0,6.6 5.4,10 12,10 h 132 c 48,0 48,0 48,-48 z" /></svg>`;
-
 /*****************************************************************************/
 /*	Visibility of block collapse labels depends on how many times the user has
 	used them already.
@@ -153,13 +148,13 @@ function newDisclosureButton(block = true, start = true) {
 		disclosureButtonHTML += `<span class="part top">`
 									 + `<span class="label"></span>`
 									 + `<span class="icon">`
-										+ GW.assets.collapseChevron
+										+ GW.svg("chevron-left-solid")
 									 + `</span>`
 								 + `</span>`
 								 + `<span class="part bottom">`
 									 + `<span class="label"></span>`
 									 + `<span class="icon">`
-										+ GW.assets.collapseChevron
+										+ GW.svg("chevron-left-solid")
 									 + `</span>`
 								 + `</span>`;
 	} else {
@@ -335,13 +330,13 @@ function updateDisclosureButtonState(collapseBlock, showLabels) {
 		disclosureButton.classList.toggle("labels-visible", showLabels || GW.collapse.alwaysShowCollapseInteractionHints);
 	} else {
 		if (isCollapsed(collapseBlock)) {
-			disclosureButton.querySelector(".icon").innerHTML = GW.assets.bracketLeftThin 
-															  + GW.assets.collapseChevronThin 
-															  + GW.assets.bracketRightThin;
+			disclosureButton.querySelector(".icon").innerHTML = GW.svg("bracket-square-left-sharp-light") 
+															  + GW.svg("angle-right-regular")
+															  + GW.svg("bracket-square-right-sharp-light");
 		} else {
 			let collapseContentWrapper = collapseBlock.querySelector(".collapse-content-wrapper");
-			collapseContentWrapper.previousElementSibling.querySelector(".icon").innerHTML = GW.assets.bracketLeftThin;
-			collapseContentWrapper.nextElementSibling.querySelector(".icon").innerHTML = GW.assets.bracketRightThin;
+			collapseContentWrapper.previousElementSibling.querySelector(".icon").innerHTML = GW.svg("bracket-square-left-sharp-light");
+			collapseContentWrapper.nextElementSibling.querySelector(".icon").innerHTML = GW.svg("bracket-square-right-sharp-light");
 		}
 	}
 }
@@ -473,7 +468,7 @@ function expandLockCollapseBlock(collapseBlock) {
 	//	Expand.
 	let wasCollapsed = isCollapsed(collapseBlock);
 
-	collapseBlock.classList.remove("collapse", "expanded", "expanded-not", "expand-on-hover");
+	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover");
 	if (collapseBlock.className == "")
 		collapseBlock.removeAttribute("class");
 

@@ -74,19 +74,15 @@ ImageFocus = {
 			<div class="image-number"></div>
 			<div class="slideshow-buttons">
 				<button type="button" class="slideshow-button previous" tabindex="-1" title="Previous image">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-						<path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z"/>
-					</svg>
+					${(GW.svg("chevron-left-solid"))}
 				</button>
 				<button type="button" class="slideshow-button next" tabindex="-1" title="Next image">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-						<path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/>
-					</svg>
+					${(GW.svg("chevron-right-solid"))}
 				</button>
 			</div>
 			<div class="caption"></div>
 			<div class="loading-spinner">
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 24.103v8.169a11.995 11.995 0 0 0 9.698 11.768C396.638 63.425 472 150.461 472 256c0 118.663-96.055 216-216 216-118.663 0-216-96.055-216-216 0-104.534 74.546-192.509 174.297-211.978A11.993 11.993 0 0 0 224 32.253v-8.147c0-7.523-6.845-13.193-14.237-11.798C94.472 34.048 7.364 135.575 8.004 257.332c.72 137.052 111.477 246.956 248.531 246.667C393.255 503.711 504 392.789 504 256c0-121.187-86.924-222.067-201.824-243.704C294.807 10.908 288 16.604 288 24.103z"/></svg>
+				${(GW.svg("circle-notch-light"))}
 			</div>
 		</div>`);
 
@@ -511,11 +507,17 @@ ImageFocus = {
 			].join("") 
 		  + `</div>`
 		  + `<p class="image-url" title="Click to copy image URL to clipboard">`
-		  + `<code class="url">${ImageFocus.currentlyFocusedImage.src}</code>`
-		  + `<span class="icon-container">`
-		  + `<span class="icon normal"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M433.941 65.941l-51.882-51.882A48 48 0 0 0 348.118 0H176c-26.51 0-48 21.49-48 48v48H48c-26.51 0-48 21.49-48 48v320c0 26.51 21.49 48 48 48h224c26.51 0 48-21.49 48-48v-48h80c26.51 0 48-21.49 48-48V99.882a48 48 0 0 0-14.059-33.941zM266 464H54a6 6 0 0 1-6-6V150a6 6 0 0 1 6-6h74v224c0 26.51 21.49 48 48 48h96v42a6 6 0 0 1-6 6zm128-96H182a6 6 0 0 1-6-6V54a6 6 0 0 1 6-6h106v88c0 13.255 10.745 24 24 24h88v202a6 6 0 0 1-6 6zm6-256h-64V48h9.632c1.591 0 3.117.632 4.243 1.757l48.368 48.368a6 6 0 0 1 1.757 4.243V112z"/></svg></span>`
-		  + `<span class="icon copied"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg></span>`
-		  + `</span>`
+			  + `<code class="url">`
+				  + ImageFocus.currentlyFocusedImage.src
+			  + `</code>`
+			  + `<span class="icon-container">`
+				  + `<span class="icon normal">`
+					  + GW.svg("copy-regular")
+				  + `</span>`
+				  + `<span class="icon copied">`
+					  + GW.svg("circle-check-solid")
+				  + `</span>`
+			  + `</span>`
 		  + `</p>`));
 
 		//	Activate click-to-copy on image URL.

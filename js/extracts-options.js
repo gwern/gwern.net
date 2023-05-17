@@ -7,7 +7,7 @@ Extracts = { ...Extracts,
 		let button = Extracts.popFrameProvider.titleBarComponents.optionsButton();
 
 		button.title = `Show ${(Extracts.popFrameTypeText())} options (enable/disable ${(Extracts.popFrameTypeText())}s)`;
-		button.innerHTML = GW.svg("message-lines-regular");
+		button.innerHTML = GW.svg("message-dots-regular");
 		button.classList.add("show-extracts-options-dialog-button");
 
 		button.addActivateEvent((event) => {

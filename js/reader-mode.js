@@ -269,8 +269,10 @@ ReaderMode = { ...ReaderMode,
 			//	Inject info alert.
 			ReaderMode.maskedLinksKeyToggleInfoAlert = addUIElement(`<div id="masked-links-key-toggle-info-alert">`
 				+ `<p>`
-				+ `<img src="/static/img/icon/book-open-solid.svg">`
-				+ `Hold <span class="key">alt</span> / <span class="key">option</span> key to show links</p>`
+					+ `<span class="icon">`
+						+ GW.svg("book-open-solid")
+					+ `</span>`
+					+ `Hold <span class="key">alt</span> / <span class="key">option</span> key to show links</p>`
 				+ `</div>`);
 
 			//	Add key down/up listeners, to show/hide masked links with Alt key.

@@ -4,28 +4,51 @@
 
 GW.elementInjectTriggers = { };
 
+/****************************************************************************/
+/*	Register element inject trigger for the given uuid. (In other words, when 
+	element with `data-uuid` attribute with value equal to the given uuid is 
+	injected into the document, run the given function on the element.)
+
+	Returns the uuid.
+
+	(If null is passed for the uuid, one will be generated automatically.)
+
+	Each entry thus added triggers only once per uuid, then deletes itself.
+ */
 function onInject(uuid, f) {
+	uuid = uuid ?? crypto.randomUUID();
+
 	GW.elementInjectTriggers[uuid] = f;
+
+	return uuid;
 }
 
+/***********************************************************************/
+/*	Watch for element injections in the given document. Process injected 
+	elements through registered inject triggers.
+ */
 function observeInjectedElementsInDocument(doc) {
 	let observer = new MutationObserver((mutationsList, observer) => {
 		if (Object.entries(GW.elementInjectTriggers).length == 0)
 			return;
+
+		let doTrigger = (node, f) => {
+			node.dataset.uuid = null;
+			f(node);
+			delete GW.elementInjectTriggers[uuid];
+		};
 
 		for (mutationRecord of mutationsList) {
 			for ([ uuid, f ] of Object.entries(GW.elementInjectTriggers)) {
 				for (node of mutationRecord.addedNodes) {
 					if (node instanceof HTMLElement) {
 						if (node.dataset.uuid == uuid) {
-							f(node);
-							delete GW.elementInjectTriggers[uuid];
+							doTrigger(node, f);
 							break;
 						} else {
 							let nestedNode = node.querySelector(`[data-uuid='${uuid}']`);
 							if (nestedNode) {
-								f(nestedNode);
-								delete GW.elementInjectTriggers[uuid];
+								doTrigger(nestedNode, f);
 								break;
 							}
 						}
@@ -41,27 +64,38 @@ function observeInjectedElementsInDocument(doc) {
 observeInjectedElementsInDocument(document);
 
 /******************************************************************************/
-/*	Returns a placeholder element that, when injected, runs the given transform
-	on itself. (If true passed for ‘construct’ argument, returns constructed
-	DOM object; otherwise, returns HTML string.)
+/*	Returns a placeholder element that, when injected, replaces itself with the
+	return value of the provided replacement function (to which the placeholder
+	is passed).
+
+	If an optional wrapper function is given, replacement is done within an
+	anonymous closure which is passed to the wrapper function. (This can be 
+	used to, e.g., delay replacement, by passing a suitable doWhen function
+	as the wrapper.)
  */
-function placeholder(transform, construct = false) {
-	let uuid = crypto.randomUUID();
+function placeholder(replaceFunction, wrapperFunction = null) {
+	let transform;
+	if (wrapperFunction) {
+		transform = (element) => {
+			wrapperFunction(() => {
+				element.replaceWith(replaceFunction(element));
+			});
+		};
+	} else {
+		transform = (element) => {
+			element.replaceWith(replaceFunction(element));
+		};
+	}
 
-	onInject(uuid, transform);
+	let uuid = onInject(null, transform);
 
-	let elementHTML = `<span data-uuid="${uuid}"></span>`;
-	return (construct 
-			? elementFromHTML(elementHTML) 
-			: elementHTML);
+	return `<span class="placeholder" data-uuid="${uuid}"></span>`;
 }
 
 
 /**********/
 /* ASSETS */
 /**********/
-
-GW.assets = { };
 
 doAjax({
 	location: "/static/img/icon/icons.svg",
@@ -82,13 +116,8 @@ function doWhenSVGIconsLoaded(f) {
 }
 
 GW.svg = (icon) => {
-	if (GW.svgIconFile == null) {
-		return placeholder(element => {
-			doWhenSVGIconsLoaded(() => {
-				element.outerHTML = GW.svg(icon);
-			});
-		});
-	}
+	if (GW.svgIconFile == null)
+		return placeholder(element => elementFromHTML(GW.svg(icon)), doWhenSVGIconsLoaded);
 
 	let iconView = GW.svgIconFile.querySelector(`#${icon}`);
 	if (iconView == null)
@@ -1093,7 +1122,7 @@ if (GW.isMobile() == false) doWhenPageLoaded(() => {
     GWLog("injectBackToTopLink", "rewrite.js", 1);
 
     GW.backToTop = addUIElement(`<div id="back-to-top"><a href="#top" tabindex="-1" title="Back to top">`
-        + `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M6.1 422.3l209.4-209.4c4.7-4.7 12.3-4.7 17 0l209.4 209.4c4.7 4.7 4.7 12.3 0 17l-19.8 19.8c-4.7 4.7-12.3 4.7-17 0L224 278.4 42.9 459.1c-4.7 4.7-12.3 4.7-17 0L6.1 439.3c-4.7-4.7-4.7-12.3 0-17zm0-143l19.8 19.8c4.7 4.7 12.3 4.7 17 0L224 118.4l181.1 180.7c4.7 4.7 12.3 4.7 17 0l19.8-19.8c4.7-4.7 4.7-12.3 0-17L232.5 52.9c-4.7-4.7-12.3-4.7-17 0L6.1 262.3c-4.7 4.7-4.7 12.3 0 17z"/></svg>`
+        + GW.svg("arrow-up-to-line-light")
         + `</a></div>`);
 
     //  Show/hide the back-to-top link on scroll up/down.
@@ -1289,7 +1318,7 @@ if (GW.isMobile())
 
 doWhenBodyExists(() => {
     GW.activityIndicator = addUIElement(`<div id="general-activity-indicator" class="on">`
-        + `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 32c0 17.673-14.327 32-32 32s-32-14.327-32-32 14.327-32 32-32 32 14.327 32 32zm-32 416c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm256-192c0-17.673-14.327-32-32-32s-32 14.327-32 32 14.327 32 32 32 32-14.327 32-32zm-448 0c0-17.673-14.327-32-32-32S0 238.327 0 256s14.327 32 32 32 32-14.327 32-32zm33.608 126.392c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm316.784 0c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zM97.608 65.608c-17.673 0-32 14.327-32 32 0 17.673 14.327 32 32 32s32-14.327 32-32c0-17.673-14.327-32-32-32z"/></svg>`
+        + GW.svg("spinner-regular")
         + `</div>`);
 });
 
