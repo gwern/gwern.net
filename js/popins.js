@@ -152,6 +152,10 @@ Popins = {
 		return document.querySelector(".popin");
 	},
 
+	allSpawnedPopFrames: () => {
+		return Popins.allSpawnedPopins();
+	},
+
 	//	Called by: Popins.targetClicked (event handler)
 	//	Called by: Popins.cleanup
 	//	Called by: extracts.js

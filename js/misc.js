@@ -543,13 +543,18 @@ Notes = {
         if (!citation.classList.contains("footnote-ref"))
             return null;
 
-        let citationNumber = citation.id.substr(5);
+        let citationNumber = Notes.noteNumber(citation);
+        let selector = `#fn${citationNumber}, #sn${citationNumber}`;
+
+        let allNotes = Array.from(document.querySelectorAll(selector)
+        			   ).concat(Array.from(citation.getRootNode().querySelectorAll(selector))
+        			   ).concat(Extracts.popFrameProvider.allSpawnedPopFrames().flatMap(popFrame => 
+									Array.from(popFrame.body.querySelectorAll(selector)))
+        			   ).unique();
         /*  We must check to ensure that the note in question is from the same
             page as the citation (to distinguish between main document and any
             full-page embeds that may be spawned).
          */
-        let selector = `#fn${citationNumber}, #sn${citationNumber}`;
-        let allNotes = Array.from(document.querySelectorAll(selector)).concat(Array.from(citation.getRootNode().querySelectorAll(selector)));
         return allNotes.filter(note => {
             let footnoteBackLink = note.querySelector(".footnote-back");
             return (   footnoteBackLink != null

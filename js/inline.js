@@ -192,6 +192,12 @@ if (Array.prototype.findLastIndex === undefined) {
 	}
 }
 
+/*	Returns copy of the array, with duplicate values removed.
+ */
+Array.prototype.unique = function () {
+	return this.filter((value, index, array) => array.indexOf(value) == index);
+}
+
 
 /************************/
 /* ACTIVE MEDIA QUERIES */

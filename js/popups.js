@@ -214,6 +214,10 @@ Popups = {
 			togglePageScrolling(false);
 	},
 
+	allSpawnedPopFrames: () => {
+		return Popups.allSpawnedPopups();
+	},
+
 	//	Called by: extracts.js
 	//	Called by: many functions, all in popups.js
 	allSpawnedPopups: () => {

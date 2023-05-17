@@ -2574,6 +2574,12 @@ if (Array.prototype.findLastIndex === undefined) {
 	}
 }
 
+/*	Returns copy of the array, with duplicate values removed.
+ */
+Array.prototype.unique = function () {
+	return this.filter((value, index, array) => array.indexOf(value) == index);
+}
+
 
 /************************/
 /* ACTIVE MEDIA QUERIES */
@@ -3869,7 +3875,7 @@ ReaderMode.injectStyleBlock(ReaderMode.styles, "reader-mode-styles");
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
 </script>
-<link rel="preload" href="/static/css/fonts.css?v=1684352572" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/fonts.css?v=1684354295" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/css/default.css?v=1684353174" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/css/links.css?v=1682784367" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/img/icon/icons.svg" as="image">
