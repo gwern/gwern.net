@@ -110,22 +110,32 @@ if ($force || (`git diff-index --cached HEAD -- {$preloaded_assets}`)) {
 	`git add {$static_dir}/include/.`;
 }
 
-## Templates.
-$versioned_templates = [ ];
-$versioned_template_patterns = [
-	"{$static_dir}/template/include/*.tmpl",
-	"{$static_dir}/template/include/templates.json",
+## Icons.
+$icons = [ ];
+$icon_patterns = [
+	"{$static_dir}/img/icon/*.svg"
 ];
-foreach ($versioned_template_patterns as $pattern)
-	$versioned_templates = array_merge($versioned_templates, glob($pattern));
-$versioned_templates = implode(" ", $versioned_templates);
-if ($force || (`git diff-index --cached HEAD -- {$versioned_templates}`)) {
-	require_once("{$build_dir}/build_template_versions.php");
-	`git add {$static_dir}/include/.`;
+foreach ($icon_patterns as $pattern)
+	$icons = array_merge($icons, glob($pattern));
+if ($force || (`git diff-index --cached HEAD -- {$icons}`)) {
+	require_once("{$build_dir}/build_icon_sprite_file.php");
+	`git add {$static_dir}/img/icon/. {$static_dir}/include/.`;
 }
 
-## Icons.
-require_once("{$build_dir}/build_icon_sprite_file.php");
-`git add {$static_dir}/img/icon/. {$static_dir}/include/.`;
+## Assets.
+$versioned_assets = [
+	"{$static_dir}/img/icon/icons.svg",
+	"{$static_dir}/template/include/templates.json",
+];
+$versioned_asset_patterns = [
+	"{$static_dir}/template/include/*.tmpl",
+];
+foreach ($versioned_asset_patterns as $pattern)
+	$versioned_assets = array_merge($versioned_assets, glob($pattern));
+$versioned_assets = implode(" ", $versioned_assets);
+if ($force || (`git diff-index --cached HEAD -- {$versioned_assets}`)) {
+	require_once("{$build_dir}/build_asset_versions.php");
+	`git add {$static_dir}/include/.`;
+}
 
 ?>

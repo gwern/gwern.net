@@ -98,7 +98,7 @@ function placeholder(replaceFunction, wrapperFunction = null) {
 /**********/
 
 doAjax({
-	location: "/static/img/icon/icons.svg",
+	location: versionedAssetURL("/static/img/icon/icons.svg"),
 	onSuccess: (event) => {
 		GW.svgIconFile = newDocument(event.target.response);
 
