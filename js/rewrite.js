@@ -1867,6 +1867,23 @@ addContentLoadHandler(GW.contentLoadHandlers.noBreakForCitations = (eventInfo) =
     });
 }, "rewrite");
 
+/****************************************************************************/
+/*	Designate containers wherein colors (e.g. link colors) should be inverted
+	(because the container has a dark background).
+ */
+addContentLoadHandler(GW.contentLoadHandlers.designatedColorInvertedContainers = (eventInfo) => {
+    GWLog("designatedColorInvertedContainers", "rewrite.js", 1);
+
+	let selector = [
+		".admonition.warning",
+		".admonition.error"
+	].join(", ");
+
+	eventInfo.container.querySelectorAll(selector).forEach(container => {
+		container.classList.add("colors-invert");
+	});
+}, "rewrite");
+
 
 /*************/
 /* DROP CAPS */

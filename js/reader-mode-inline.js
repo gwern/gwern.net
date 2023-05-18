@@ -73,7 +73,7 @@ ReaderMode = {
 			background-repeat: no-repeat;
 		}
 		body.reader-mode-active #markdownBody a.has-annotation .link-icon-hook {			
-			background-image: var(--GW-dotted-underline-background-image);
+			background-image: var(--link-underline-background-image);
 			background-size: 2px 1px;
 			background-repeat: repeat-x;
 		}

@@ -515,7 +515,8 @@ Extracts = {
          */
         if ([ "IFRAME", "OBJECT", "IMG" ].includes(objectOfSomeSort.tagName)) {
 			objectOfSomeSort.onerror = (event) => {
-				popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+				Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
+				Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
 			};
         }
     },

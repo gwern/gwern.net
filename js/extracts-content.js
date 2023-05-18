@@ -267,7 +267,7 @@ Extracts = { ...Extracts,
 
 		//	Something failed somehow.
 		if (isNodeEmpty(injectEventInfo.container)) {
-			popFrame.classList.toggle("loading-failed", true);
+			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
 			return;
 		}
 
@@ -1094,7 +1094,7 @@ Extracts = { ...Extracts,
         popup.document.querySelector("img").classList.remove("spawns-popup");
 
         if (popup.document.querySelector("img[width][height]"))
-            popup.classList.add("dimensions-specified");
+        	Extracts.popFrameProvider.addClassesToPopFrame(popup, "dimensions-specified");
     },
 };
 
