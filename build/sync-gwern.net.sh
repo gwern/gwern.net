@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-05-14 09:41:16 gwern"
+# When:  Time-stamp: "2023-05-16 09:31:15 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -979,7 +979,7 @@ else
                               pdftk "$FILE" input_pw output "$TEMP" && mv "$TEMP" "$FILE";
                           fi; }
     export -f removeEncryption
-    (find ./ -type f -name "*.pdf" -not -size 0 | sort | parallel removeEncryption &)
+    find ./ -type f -name "*.pdf" -not -size 0 | sort | parallel removeEncryption
 
     λ(){ find ./ -type f -name "*.djvu"; }
     wrap λ "Legacy DjVu detected (convert to JBIG2 PDF; see <https://gwern.net/design-graveyard#djvu-files>)."

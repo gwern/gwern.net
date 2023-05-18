@@ -1119,5 +1119,6 @@ whiteList url
       , "https://www.alzchem.com/de/" -- homepage
       , "https://heypi.com/talk" -- interactive
       , "https://vecta.io/nano" -- service
+      , "https://jukebox.openai.com/" -- interactive
       ] = True
     | otherwise = False
