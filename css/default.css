@@ -4,21 +4,40 @@
 /* General desktop/mobile: loaded in initial.css */
 /* default.css: contains everything else, like drop caps, link icons, tables, etc */
 
+
 /**********/
 /* IMAGES */
 /**********/
 
 :root {
-    --GW-image-single-black-star-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 5,0 C 4,4 4,4 0,5 4,6 4,6 5,10 6,6 6,6 10,5 6,4 6,4 5,0 Z" /></svg>');
-    --GW-image-single-white-star-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 5,0 C 4,4 4,4 0,5 4,6 4,6 5,10 6,6 6,6 10,5 6,4 6,4 5,0 Z" /><path d="M 5,2.5 C 4.5,4.5 4.5,4.5 2.5,5 4.5,5.5 4.5,5.5 5,7.5 5.5,5.5 5.5,5.5 7.5,5 5.5,4.5 5.5,4.5 5,2.5 Z" style="fill:%23ffffff" /></svg>');
-    --GW-image-single-white-star-rotated-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 8.75,1.25 C 5,3.5 5,3.5 1.25,1.25 3.5,5 3.5,5 1.25,8.75 5,6.5 5,6.5 8.75,8.75 6.5,5 6.5,5 8.75,1.25 Z" /><path d="M 7,3 C 5,4.2 5,4.2 3,3 4.2,5 4.2,5 3,7 5,5.8 5,5.8 7,7 5.8,5 5.8,5 7,3 Z" style="fill:%23ffffff" /></svg>');
-    --GW-image-checkerboard-999-fff-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMZmZmf///ywAAAAABAAEAAACBgQShqgJBQA7');
+    --GW-image-single-black-star-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 5,0 C 4,4 4,4 0,5 4,6 4,6 5,10 6,6 6,6 10,5 6,4 6,4 5,0 Z"/></svg>');
+    --GW-image-single-white-star-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 5,0 C 4,4 4,4 0,5 4,6 4,6 5,10 6,6 6,6 10,5 6,4 6,4 5,0 Z" /><path d="M 5,2.5 C 4.5,4.5 4.5,4.5 2.5,5 4.5,5.5 4.5,5.5 5,7.5 5.5,5.5 5.5,5.5 7.5,5 5.5,4.5 5.5,4.5 5,2.5 Z" style="fill:%23ffffff"/></svg>');
+    --GW-image-single-white-star-rotated-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 8.75,1.25 C 5,3.5 5,3.5 1.25,1.25 3.5,5 3.5,5 1.25,8.75 5,6.5 5,6.5 8.75,8.75 6.5,5 6.5,5 8.75,1.25 Z" /><path d="M 7,3 C 5,4.2 5,4.2 3,3 4.2,5 4.2,5 3,7 5,5.8 5,5.8 7,7 5.8,5 5.8,5 7,3 Z" style="fill:%23ffffff"/></svg>');
+
+    --GW-image-checkerboard-777-fff-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMXd3d////ywAAAAABAAEAAACBgQShqgJBQA7');
+    --GW-image-checkerboard-000-fff-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAP///ywAAAAABAAEAAACBgQShqgJBQA7');
+    --GW-image-checkerboard-888-000-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
+    --GW-image-checkerboard-bfbfbf-000-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
+
+	--GW-image-linear-dotted-000-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIEBCSGBQA7');
+	--GW-image-linear-dotted-888-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAIiIiP///wAAACH5BAkAAAMALAAAAAAEAAIAAAIETDaGBQA7');
+	--GW-image-linear-dotted-fff-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIETCSGBQA7');
+	--GW-image-linear-dotted-bbb-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAALu7u////wAAACH5BAkAAAMALAAAAAAEAAIAAAIETDaGBQA7');
+
+	--GW-image-pattern-dotted-e6e6e6-on-fff-gif: url('data:image/gif;base64,R0lGODlhCAAIAPAAMebm5v///ywAAAAACAAIAAACDIxhgcma2yKE8kVWAAA7');
+	--GW-image-pattern-dotted-fff-on-e6e6e6-gif: url('data:image/gif;base64,R0lGODlhCAAIAPAAMebm5v///ywAAAAACAAIAAACDIRjgMma2yKE8kVWAAA7');
+    --GW-image-pattern-dotted-161616-on-3e3e3e-gif: url('data:image/gif;base64,R0lGODlhCAAIAPAAMRYWFj4+PiwAAAAACAAIAAACDIxhgcma2yKE8kVWAAA7');
+    --GW-image-pattern-dotted-161616-on-252525-gif: url('data:image/gif;base64,R0lGODlhCAAIAPAAMRYWFiUlJSwAAAAACAAIAAACDIxhgcma2yKE8kVWAAA7');
 }
+
 
 /**********/
 /* COLORS */
 /**********/
-/* colors are now in /static/css/colors.css (light-mode) or /include/dark-mode-GENERATED.css + /include/components/dark-mode-adjustments.css +/include/components/colors-dark-GENERATED.css (dark-mode) */
+/*	colors are now in /static/css/colors.css + /include/components/light-mode-adjustments.css (light mode) 
+	or /include/components/colors-dark-GENERATED.css + /include/components/dark-mode-adjustments.css (dark mode)
+ */
+
 
 /*******************/
 /* OTHER VARIABLES */
@@ -2129,13 +2148,13 @@ section.footnotes > hr:first-child.highlighted::before {
     width: 12px;
 }
 #markdownBody .sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb {
-    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMXd3d////ywAAAAABAAEAAACBgQShqgJBQA7');
+    background-image: var(--GW-checkerboard-scrollbar-background-image);
+    background-size: 2px;
     box-shadow:
         0 0 0 2px var(--background-color) inset;
-    background-size: 2px;
 }
 #markdownBody .sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb:hover {
-    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAP///ywAAAAABAAEAAACBgQShqgJBQA7');
+    background-image: var(--GW-checkerboard-scrollbar-hover-background-image);
 }
 
 /*  Scroll bar styles (for Firefox).
@@ -2422,7 +2441,7 @@ table td > code {
     height: 16px;
 }
 .table-scroll-wrapper::-webkit-scrollbar-thumb {
-    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMXd3d////ywAAAAABAAEAAACBgQShqgJBQA7');
+    background-image: var(--GW-checkerboard-scrollbar-background-image);
     background-size: 2px;
     box-shadow:
         0 2px 0 0   var(--background-color) inset,
@@ -2430,7 +2449,7 @@ table td > code {
         0 2px 0 1px var(--GW-table-scrollbar-border-color) inset;
 }
 .table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
-    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAP///ywAAAAABAAEAAACBgQShqgJBQA7');
+    background-image: var(--GW-checkerboard-scrollbar-hover-background-image);
 }
 @media only screen and (max-width: 649px) {
     .table-scroll-wrapper::-webkit-scrollbar {
@@ -3126,6 +3145,7 @@ span.link-bibliography a {
 /* - <div class="admonition warning"><div class="admonition-title">Warning title (*)</div> text</div> */
 /* - <div class="admonition error"><div class="admonition-title">Error title (*)</div> text</div> */
 .admonition {
+	display: flow-root;
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.875em;
     position: relative;
@@ -3161,29 +3181,34 @@ span.link-bibliography a {
 }
 
 .admonition::before {
+    content: "";
     width: 2.875em;
     height: 100%;
     position: absolute;
-    top: 0;
+    top: 0.125em;
     right: 100%;
     padding: 0.60em;
     box-sizing: border-box;
+    background-origin: content-box;
+    background-clip: content-box;
 }
 
 .admonition.tip::before {
-    content: url('/static/img/icon/info-circle.svg');
+    background-image: url('/static/img/icon/icons.svg#info-circle-regular');
 }
 .admonition.note::before {
-    content: url('/static/img/icon/arrow-right-white.svg');
-    padding: 0.85em;
+    background-image: url('/static/img/icon/icons.svg#hand-point-right-regular');
+    filter: invert(1);
 }
 .admonition.warning::before {
-    content: url('/static/img/icon/exclamation-triangle-white.svg');
-    padding-top: 0.75em;
+    background-image: url('/static/img/icon/icons.svg#triangle-exclamation-regular');
+    filter: invert(1);
 }
 .admonition.error::before {
-    content: url('/static/img/icon/skull-crossbones-white.svg');
+    background-image: url('/static/img/icon/icons.svg#skull-crossbones-solid');
     padding: 0.75em;
+    top: 0;
+    filter: invert(1);
 }
 
 .admonition p:last-child {
@@ -3200,26 +3225,6 @@ span.link-bibliography a {
 
 .admonition .footnote-ref {
     text-shadow: none;
-}
-
-.admonition.warning {
-    --GW-dotted-underline-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMZqamv///ywAAAAABAACAAACBEwAhgUAOw==');
-}
-.admonition.error {
-    --GW-dotted-underline-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMVpaWv///ywAAAAABAACAAACBEwAhgUAOw==');
-}
-.admonition.warning a,
-.admonition.error a {
-    color: var(--GW-admonition-reversed-link-color);
-}
-.admonition.warning a:hover,
-.admonition.error a:hover {
-    color: var(--GW-admonition-reversed-link-color-hover);
-}
-
-.admonition.warning a[data-link-icon-type='svg']::after,
-.admonition.error a[data-link-icon-type='svg']::after {
-    filter: invert(1);
 }
 
 /*  Admonitions in/as page abstracts (e.g. /haskell/archiving-github).
@@ -4126,7 +4131,7 @@ body.lorem div[class^='drop-cap'] {
         visibility 1s ease,
         color 1s ease,
         background-color 1s ease,
-        bottom 0.3s ease;
+        bottom 0.15s ease;
 }
 #image-focus-overlay .help-overlay.open {
     width: fit-content;
@@ -4140,9 +4145,13 @@ body.lorem div[class^='drop-cap'] {
 }
 
 #image-focus-overlay .help-overlay::after {
-    content: url('/static/img/icon/question.svg');
+    content: "";
+    background-image: url('/static/img/icon/icons.svg#question');
+    background-origin: content-box;
+    background-clip: content-box;
     position: absolute;
     width: 1em;
+    height: 1.5em;
     right: 0;
     bottom: 0;
     padding: 10px;
@@ -4170,7 +4179,7 @@ body.lorem div[class^='drop-cap'] {
     margin: 0.75em 0 0 0;
 }
 #image-focus-overlay .help-overlay.hidden {
-    bottom: -2em;
+    bottom: -2.25em;
 }
 
 @media only screen and (max-width: 1179px) {
@@ -4184,7 +4193,7 @@ body.lorem div[class^='drop-cap'] {
     }
     #image-focus-overlay .help-overlay.hidden {
         bottom: unset;
-        top: -2em;
+        top: -2.25em;
     }
 }
 
@@ -4672,6 +4681,12 @@ body.lorem div[class^='drop-cap'] {
     margin: auto;
 }
 
+/*  Don’t show when loading failed.
+ */
+.popframe-body.object.loading-failed iframe {
+    visibility: hidden;
+}
+
 /*┌───────────────────┐*/
 /*│ Image pop-frames. │*/
 /*└───────────────────┘*/
@@ -4680,6 +4695,12 @@ body.lorem div[class^='drop-cap'] {
     */
 .popframe.image.loading-failed::after {
     content: "Image not found.";
+}
+
+/*  Don’t show when loading failed.
+ */
+.popframe-body.image.loading-failed figure {
+    visibility: hidden;
 }
 
 /*┌───────────────────┐*/
@@ -4692,9 +4713,9 @@ body.lorem div[class^='drop-cap'] {
 
 /*  Don’t show while loading, or when loading failed.
  */
-.popframe.video.loading .popframe-content-view,
-.popframe.video.loading-failed .popframe-content-view {
-    display: none;
+.popframe-body.video.loading figure,
+.popframe-body.video.loading-failed figure {
+    visibility: hidden;
 }
 
 /*  “Loading failed” message.
@@ -4714,9 +4735,9 @@ body.lorem div[class^='drop-cap'] {
 
 /*  Don’t show while loading, or when loading failed.
  */
-.popframe.audio.loading .popframe-content-view,
-.popframe.audio.loading-failed .popframe-content-view {
-    display: none;
+.popframe-body.audio.loading figure,
+.popframe-body.audio.loading-failed figure {
+    visibility: hidden;
 }
 
 /*  “Loading failed” message.
@@ -5268,18 +5289,18 @@ body.lorem div[class^='drop-cap'] {
  */
 .popup.loading::before,
 .popup.rendering::before {
+	content: "";
     position: absolute;
-    width: 3em;
-    height: 3em;
-    max-height: calc(6em - var(--popup-title-bar-height) - 1px);
+    width: calc(100% - 1em);
+    height: auto;
+    max-width: 3em;
+    max-height: 3em;
     top: var(--popup-title-bar-height);
     bottom: 0;
     left: 0;
     right: 0;
     margin: auto;
     text-indent: 0;
-    display: block;
-    overflow: hidden;
     opacity: 0.2;
     z-index: 1;
 }
@@ -5291,20 +5312,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 24.103v8.169a11.995 11.995 0 0 0 9.698 11.768C396.638 63.425 472 150.461 472 256c0 118.663-96.055 216-216 216-118.663 0-216-96.055-216-216 0-104.534 74.546-192.509 174.297-211.978A11.993 11.993 0 0 0 224 32.253v-8.147c0-7.523-6.845-13.193-14.237-11.798C94.472 34.048 7.364 135.575 8.004 257.332c.72 137.052 111.477 246.956 248.531 246.667C393.255 503.711 504 392.789 504 256c0-121.187-86.924-222.067-201.824-243.704C294.807 10.908 288 16.604 288 24.103z"/></svg>');
+    background-image: url('/static/img/icon/icons.svg#circle-notch-light');
     animation: fa-spin 2s infinite linear;
-}
-
-.popup.image.loading img,
-.popup.image.loading-failed img,
-.popup.object.loading-failed iframe {
-    visibility: hidden;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M460.115 373.846l-6.941-4.008c-5.546-3.202-7.564-10.177-4.661-15.886 32.971-64.838 31.167-142.731-5.415-205.954-36.504-63.356-103.118-103.876-175.8-107.701C260.952 39.963 256 34.676 256 28.321v-8.012c0-6.904 5.808-12.337 12.703-11.982 83.552 4.306 160.157 50.861 202.106 123.67 42.069 72.703 44.083 162.322 6.034 236.838-3.14 6.149-10.75 8.462-16.728 5.011z"/></svg>');
+    background-image: url('/static/img/icon/icons.svg#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5433,23 +5448,17 @@ body.lorem div[class^='drop-cap'] {
     background-color: var(--background-color);
 }
 
-/*  Loading spinner.
-    */
-.popup.image.loading::before {
-    height: 2em;
-    width: 2em;
-}
-
 /*  “Loading failed” message.
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M193.94 256L296.5 153.44l21.15-21.15c3.12-3.12 3.12-8.19 0-11.31l-22.63-22.63c-3.12-3.12-8.19-3.12-11.31 0L160 222.06 36.29 98.34c-3.12-3.12-8.19-3.12-11.31 0L2.34 120.97c-3.12 3.12-3.12 8.19 0 11.31L126.06 256 2.34 379.71c-3.12 3.12-3.12 8.19 0 11.31l22.63 22.63c3.12 3.12 8.19 3.12 11.31 0L160 289.94 262.56 392.5l21.15 21.15c3.12 3.12 8.19 3.12 11.31 0l22.63-22.63c3.12-3.12 3.12-8.19 0-11.31L193.94 256z"/></svg>');
+    content: "";
+    background-image: url('/static/img/icon/icons.svg#xmark-regular');
+    background-position: center;
     box-sizing: border-box;
-    padding: 8px;
-    width: calc(var(--GW-popups-image-popup-min-size) - 2 * var(--GW-popups-popup-border-width));
-    height: calc(var(--GW-popups-image-popup-min-size) - 2 * var(--GW-popups-popup-border-width));
+    margin: 8px;
+    width: calc(var(--GW-popups-image-popup-min-size) - 2 * var(--GW-popups-popup-border-width) - 16px);
+    height: calc(var(--GW-popups-image-popup-min-size) - 2 * var(--GW-popups-popup-border-width) - 16px);
     opacity: 0.2;
-    margin: auto;
 }
 
 /*┌───────────────┐*/
@@ -6019,13 +6028,14 @@ body.lorem div[class^='drop-cap'] {
 }
 .popin .popframe-scroll-view::-webkit-scrollbar-thumb {
     background-color: var(--GW-popins-popin-scrollbar-thumb-color);
-    background-image: var(--GW-image-checkerboard-999-fff-2x-gif);
+    background-image: var(--GW-checkerboard-scrollbar-background-image);
     background-size: 2px;
     box-shadow:
         0 0 0 3px var(--background-color) inset;
 }
 .popin .popframe-scroll-view::-webkit-scrollbar-thumb:hover {
     background-color: var(--GW-popins-popin-scrollbar-thumb-hover-color);
+    background-image: var(--GW-checkerboard-scrollbar-hover-background-image);
 }
 
 /*  Scroll bar styles (for Firefox).
@@ -6088,7 +6098,7 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 24.103v8.169a11.995 11.995 0 0 0 9.698 11.768C396.638 63.425 472 150.461 472 256c0 118.663-96.055 216-216 216-118.663 0-216-96.055-216-216 0-104.534 74.546-192.509 174.297-211.978A11.993 11.993 0 0 0 224 32.253v-8.147c0-7.523-6.845-13.193-14.237-11.798C94.472 34.048 7.364 135.575 8.004 257.332c.72 137.052 111.477 246.956 248.531 246.667C393.255 503.711 504 392.789 504 256c0-121.187-86.924-222.067-201.824-243.704C294.807 10.908 288 16.604 288 24.103z"/></svg>');
+    content: url('/static/img/icon/icons.svg#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
@@ -6101,7 +6111,7 @@ body.lorem div[class^='drop-cap'] {
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M460.115 373.846l-6.941-4.008c-5.546-3.202-7.564-10.177-4.661-15.886 32.971-64.838 31.167-142.731-5.415-205.954-36.504-63.356-103.118-103.876-175.8-107.701C260.952 39.963 256 34.676 256 28.321v-8.012c0-6.904 5.808-12.337 12.703-11.982 83.552 4.306 160.157 50.861 202.106 123.67 42.069 72.703 44.083 162.322 6.034 236.838-3.14 6.149-10.75 8.462-16.728 5.011z"/></svg>');
+    content: url('/static/img/icon/icons.svg#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -7058,7 +7068,7 @@ a.include-loading-failed:empty {
 
 a.include-loading.include-spinner {
     pointer-events: none;
-    --spinner-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M222.7 32.15C227.7 49.08 218.1 66.9 201.1 71.94C121.8 95.55 64 169.1 64 255.1C64 362 149.1 447.1 256 447.1C362 447.1 448 362 448 255.1C448 169.1 390.2 95.55 310.9 71.94C293.9 66.9 284.3 49.08 289.3 32.15C294.4 15.21 312.2 5.562 329.1 10.6C434.9 42.07 512 139.1 512 255.1C512 397.4 397.4 511.1 256 511.1C114.6 511.1 0 397.4 0 255.1C0 139.1 77.15 42.07 182.9 10.6C199.8 5.562 217.6 15.21 222.7 32.15V32.15z"/></svg>');
+    --spinner-image: url('/static/img/icon/icons.svg#circle-notch-solid');
 }
 
 /*  Loading spinner.

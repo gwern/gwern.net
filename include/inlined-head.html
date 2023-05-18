@@ -15,6 +15,9 @@
     --GW-body-link-color: #333;
     --GW-body-link-hover-color: #888;
     --GW-body-link-visited-color: #666;
+    --GW-body-link-inverted-color: #eee;
+    --GW-body-link-inverted-hover-color: #ccc;
+    --GW-body-link-inverted-visited-color: #ddd;
 
     /*  Blockquotes.
      */
@@ -229,8 +232,6 @@
     --GW-popups-box-shadow-focused-color: #aaa;
 
     --GW-popups-popup-title-bar-background-color: #fff;
-    --GW-popups-popup-title-bar-pattern: url('data:image/gif;base64,R0lGODlhCAAIAPAAMebm5v///ywAAAAACAAIAAACDIxhgcma2yKE8kVWAAA7');
-    --GW-popups-popup-title-bar-pattern-focused: url('data:image/gif;base64,R0lGODlhCAAIAPAAMebm5v///ywAAAAACAAIAAACDIRjgMma2yKE8kVWAAA7');
     --GW-popups-popup-title-bar-button-color: #bbb;
     --GW-popups-popup-title-bar-button-color-hover: #000;
 	--GW-popups-popup-title-color: #aaa;
@@ -303,6 +304,596 @@
 	 */
 	--GW-nav-header-link-color: #999;
 	--GW-nav-header-link-hover-color: #000;
+}
+:root {
+    --GW-popups-popup-title-bar-pattern: var(--GW-image-pattern-dotted-e6e6e6-on-fff-gif);
+    --GW-popups-popup-title-bar-pattern-focused: var(--GW-image-pattern-dotted-fff-on-e6e6e6-gif);
+
+    --GW-dotted-underline-background-image: var(--GW-image-linear-dotted-000-transparent-2x-gif);
+    --GW-dotted-underline-hover-background-image: var(--GW-image-linear-dotted-888-transparent-2x-gif);
+    --GW-dotted-underline-inverted-background-image: var(--GW-image-linear-dotted-fff-transparent-2x-gif);
+    --GW-dotted-underline-inverted-hover-background-image: var(--GW-image-linear-dotted-bbb-transparent-2x-gif);
+
+	--GW-checkerboard-scrollbar-background-image: var(--GW-image-checkerboard-777-fff-2x-gif);
+	--GW-checkerboard-scrollbar-hover-background-image: var(--GW-image-checkerboard-000-fff-2x-gif);
+}
+</style>
+<style id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)">
+:root {
+    /*  General.
+     */
+    --GW-body-background-color: #000;
+    --GW-body-text-color: #fff;
+
+    /*  Selection.
+     */
+    --GW-text-selection-background-color: #dcdcdc;
+    --GW-text-selection-color: #000;
+
+	/*	Links.
+	 */
+    --GW-body-link-color: #dcdcdc;
+    --GW-body-link-hover-color: #999;
+    --GW-body-link-visited-color: #b4b4b4;
+    --GW-body-link-inverted-color: #333;
+    --GW-body-link-inverted-hover-color: #5c5c5c;
+    --GW-body-link-inverted-visited-color: #494949;
+
+    /*  Blockquotes.
+     */
+    --GW-blockquote-border-color-level-one: #5c5c5c;
+    --GW-blockquote-border-color-level-two: #646464;
+    --GW-blockquote-border-color-level-three: #747474;
+    --GW-blockquote-border-color-level-four: #7f7f7f;
+    --GW-blockquote-background-color-level-one: #212121;
+    --GW-blockquote-background-color-level-two: #3e3e3e;
+    --GW-blockquote-background-color-level-three: #4f4f4f;
+
+    /*  Abstracts.
+     */
+    --GW-abstract-border-color: #6c6c6c;
+
+    /*  Table of contents.
+     */
+    --GW-TOC-border-color: #5c5c5c;
+    --GW-TOC-background-color: #212121;
+    --GW-TOC-collapse-button-text-color: #5c5c5c;
+    --GW-TOC-collapse-button-text-hover-color: #000;
+    --GW-TOC-collapse-button-color: rgba(33, 33, 33, 0.8);
+    --GW-TOC-collapse-button-hover-color: #494949;
+    --GW-TOC-collapse-button-border-hover-color: #fff;
+    --GW-TOC-link-hover-background-color: #363636;
+    --GW-TOC-link-hover-color: #fff;
+    --GW-TOC-link-hover-indicator-bar-color: #5c5c5c;
+    --GW-TOC-number-color: #929292;
+    --GW-TOC-number-hover-color: #ddd;
+
+    /*  Collapse blocks.
+        */
+	--GW-abstract-collapse-blockquote-hover-color: #333;
+	--GW-collapse-disclosure-button-color: #333;
+	--GW-collapse-disclosure-button-hover-color: #494949;
+	--GW-collapse-in-blockquote-disclosure-button-color: #494949;
+	--GW-collapse-in-blockquote-disclosure-button-hover-color: #5c5c5c;
+	--GW-collapse-disclosure-button-text-color: #6c6c6c;
+	--GW-collapse-disclosure-button-text-hover-color: #000;
+	--GW-collapse-in-blockquote-disclosure-button-text-color: #8b8b8b;
+	--GW-collapse-in-blockquote-disclosure-button-text-hover-color: #999;
+	--GW-collapse-inline-disclosure-button-text-color: #c1c1c1;
+	--GW-collapse-inline-expanded-disclosure-button-text-color: #6c6c6c;
+	--GW-collapse-inline-disclosure-button-text-hover-color: #8b8b8b;
+
+    /*  Headings.
+     */
+    --GW-H1-border-color: #999;
+    --GW-H2-border-color: #999;
+
+    /*  Comments.
+     */
+    --GW-comment-section-top-border-color: #8b8b8b;
+
+    /*  Lists.
+     */
+    --GW-bulleted-list-marker-color: #9f9f9f;
+
+    /*  Figures.
+     */
+    --GW-figure-outline-color: #999;
+    --GW-figure-caption-outline-color: #999;
+
+    /*  Epigraphs.
+     */
+    --GW-epigraph-quotation-mark-color: #9f9f9f;
+
+    /*  Footnotes.
+     */
+    --GW-footnote-border-color: #7c7c7c;
+    --GW-footnote-highlighted-border-color: #7c7c7c;
+    --GW-footnotes-section-top-rule-color: #5c5c5c;
+    --GW-footnote-backlink-border-color: #fff;
+    --GW-footnote-backlink-border-hover-color: #8b8b8b;
+
+    /*  Footnote references.
+     */
+    --GW-highlighted-link-outline-color: #8b8b8b;
+
+    /*  Sidenotes.
+     */
+    --GW-sidenote-highlight-box-shadow-color: #7c7c7c;
+    --GW-sidenote-border-color: #7c7c7c;
+    --GW-sidenote-scrollbar-thumb-color: #7c7c7c;
+    --GW-sidenote-scrollbar-thumb-hover-color: #8b8b8b;
+    --GW-sidenote-self-link-border-color: #7c7c7c;
+
+	/*	Annotations.
+	 */
+	--GW-section-highlighted-border-color: #b4b4b4;
+
+    /*  Tables.
+     */
+    --GW-table-border-color: #fff;
+    --GW-table-caption-border-color: #fff;
+    --GW-table-row-horizontal-border-color: #fff;
+    --GW-table-scrollbar-thumb-color: #7c7c7c;
+    --GW-table-scrollbar-thumb-hover-color: #8b8b8b;
+    --GW-table-scrollbar-border-color: #fff;
+    --GW-table-column-heading-hover-background-color: #2b3637;
+    --GW-table-sorted-column-heading-background-color: #166983;
+    --GW-table-sorted-column-heading-text-color: #000;
+    --GW-table-sorted-column-heading-text-shadow-color: #fff;
+    --GW-table-zebra-stripe-alternate-row-background-color: #252525;
+    --GW-table-row-hover-outline-color: #fff;
+
+    /*  Code blocks.
+     */
+    --GW-code-element-border-color: #606060;
+    --GW-code-element-background-color: #1d1d1d;
+    --GW-pre-element-border-color: #606060;
+    --GW-pre-element-background-color: #1d1d1d;
+    --GW-pre-element-scrollbar-track-color: #1d1d1d;
+    --GW-pre-element-scrollbar-thumb-color: #5c5c5c;
+    --GW-pre-element-scrollbar-thumb-hover-color: #8b8b8b;
+
+    /*  Syntax highlight theme.
+     */
+    --GW-syntax-highlight-color-normal: #f1edec;
+    --GW-syntax-highlight-color-attribute: #d8deff;
+    --GW-syntax-highlight-color-data-type: inherit;
+    --GW-syntax-highlight-color-variable: #b4b4b4;
+    --GW-syntax-highlight-color-other: inherit;
+    --GW-syntax-highlight-color-preprocessor: inherit;
+    --GW-syntax-highlight-color-extension: #a6a6a6;
+    --GW-syntax-highlight-color-comment: #a6a6a6;
+    --GW-syntax-highlight-color-control-flow: #b6edaa;
+    --GW-syntax-highlight-color-keyword: #d8deff;
+    --GW-syntax-highlight-color-operator: #d8deff;
+    --GW-syntax-highlight-color-special-char: #94adb6;
+    --GW-syntax-highlight-color-built-in: #d8deff;
+    --GW-syntax-highlight-color-function: #d8deff;
+    --GW-syntax-highlight-color-constant: inherit;
+    --GW-syntax-highlight-color-base-n: inherit;
+    --GW-syntax-highlight-color-dec-val: inherit;
+    --GW-syntax-highlight-color-float: inherit;
+    --GW-syntax-highlight-color-information: inherit;
+    --GW-syntax-highlight-color-char: inherit;
+    --GW-syntax-highlight-color-string: inherit;
+    --GW-syntax-highlight-color-verbatim-string: inherit;
+    --GW-syntax-highlight-color-alert: #ff815c;
+    --GW-syntax-highlight-color-error: #ff4727;
+    --GW-syntax-highlight-color-import: #a6a6a6;
+    --GW-syntax-highlight-color-special-string: #b4b4b4;
+
+    /*  Math.
+     */
+    --GW-math-block-background-color: #252525;
+    --GW-math-block-background-color-flash: #000;
+    --GW-math-block-scrollbar-border-color: #5c5c5c;
+    --GW-math-block-scrollbar-thumb-color: #5c5c5c;
+    --GW-math-block-scrollbar-thumb-hover-color: #8b8b8b;
+
+    /*  Drop caps.
+     */
+    --GW-drop-caps-yinit-color: #f9f9f9;
+    --GW-drop-caps-yinit-text-shadow-color: #a6a6a6;
+    --GW-drop-caps-de-zs-color: #efefef;
+    --GW-drop-caps-cheshire-color: #f1f1f1;
+    --GW-drop-caps-kanzlei-color: #f1f1f1;
+
+    /*  Admonitions.
+     */
+    --GW-admonition-note-left-border-color: #929292;
+    --GW-admonition-note-background-color: #4f4f4f;
+    --GW-admonition-tip-left-border-color: #4f4f4f;
+    --GW-admonition-tip-background-color: #303030;
+    --GW-admonition-warning-left-border-color: #bdbdbd;
+    --GW-admonition-warning-background-color: #8a8a8a;
+    --GW-admonition-warning-text-color: #000;
+    --GW-admonition-error-left-border-color: #e1e1e1;
+    --GW-admonition-error-background-color: #bdbdbd;
+    --GW-admonition-error-text-color: #000;
+    --GW-admonition-reversed-link-color: #494949;
+    --GW-admonition-reversed-link-color-hover: #5c5c5c;
+    --GW-admonition-reversed-link-underline-gradient-line-color: #5c5c5c;
+    --GW-admonition-reversed-link-underline-gradient-line-color-hover: #6c6c6c;
+
+	/*	Footer.
+	 */
+    --GW-bottom-ornament-line-color: #fff;
+
+	/*	Pop-frames (popups or popins).
+	 */
+    --GW-code-popframe-line-highlight-background-color: #181700;
+    --GW-code-popframe-line-highlight-border-color: #494949;
+    --GW-code-popframe-line-number-color: #7c7c7c;
+    --GW-code-popframe-line-number-divider-color: #5c5c5c;
+
+    --GW-extracts-options-dialog-backdrop-background-color: rgba(0, 0, 0, 0.95);
+    --GW-extracts-options-dialog-background-color: var(--GW-body-background-color);
+    --GW-extracts-options-dialog-border-color: #7c7c7c;
+    --GW-extracts-options-dialog-box-shadow-color: #cecece;
+    --GW-extracts-options-dialog-horizontal-rule-color: #5c5c5c;
+    --GW-extracts-options-dialog-button-background-color: var(--GW-body-background-color);
+    --GW-extracts-options-dialog-button-text-color: #fff;
+    --GW-extracts-options-dialog-button-border-color: #fff;
+    --GW-extracts-options-dialog-button-hover-box-shadow-color: #fff;
+    --GW-extracts-options-dialog-option-button-explanation-text-color: #a6a6a6;
+    --GW-extracts-options-dialog-option-button-hover-text-color: #a6a6a6;
+    --GW-extracts-options-dialog-radio-button-border-color: #fff;
+
+    /*  Popups.
+     */
+    --GW-popups-popup-background-color: var(--GW-body-background-color);
+
+    --GW-popups-object-popup-background-color: #000;
+
+    --GW-popups-popup-border-color: #5c5c5c;
+    --GW-popups-box-shadow-color: #5c5c5c;
+    --GW-popups-popup-border-focused-color: #7c7c7c;
+    --GW-popups-box-shadow-focused-color: #7c7c7c;
+
+    --GW-popups-popup-title-bar-background-color: #000;
+    --GW-popups-popup-title-bar-button-color: #6c6c6c;
+    --GW-popups-popup-title-bar-button-color-hover: #fff;
+	--GW-popups-popup-title-color: #7c7c7c;
+    --GW-popups-popup-title-link-hover-color: var(--GW-body-link-hover-color);
+    --GW-popups-popup-title-bar-button-focused-color: #a6a6a6;
+    --GW-popups-popup-title-bar-button-focused-color-hover: #fff;
+    --GW-popups-popup-title-bar-submenu-box-shadow-color: #494949;
+	--GW-popups-popup-title-focused-color: #fff;
+    --GW-popups-popup-title-link-hover-focused-color: var(--GW-body-link-hover-color);
+
+    --GW-popups-popup-scrollbar-thumb-color: #494949;
+    --GW-popups-popup-scrollbar-thumb-hover-color: #6c6c6c;
+    --GW-popups-popup-scrollbar-thumb-focused-color: #5c5c5c;
+    --GW-popups-popup-scrollbar-thumb-hover-focused-color: #8b8b8b;
+
+    /*  Popins.
+     */
+    --GW-popins-popin-background-color: var(--GW-body-background-color);
+    --GW-popins-popin-border-color: #7c7c7c;
+    --GW-popins-box-shadow-color: #7c7c7c;
+    --GW-popins-popin-title-bar-background-color: #000;
+    --GW-popins-popin-title-bar-button-color: #b4b4b4;
+    --GW-popins-popin-scrollbar-thumb-color: #5c5c5c;
+    --GW-popins-popin-scrollbar-thumb-hover-color: #8b8b8b;
+    --GW-popins-popin-stack-counter-text-color: #000;
+
+    /*  Image focus.
+     */
+    --GW-image-focus-image-hover-drop-shadow-color: #a6a6a6;
+
+	/*	Page toolbar.
+	 */
+    --GW-page-toolbar-border-color: #7c7c7c;
+	--GW-page-toolbar-control-button-color: #7c7c7c;
+	--GW-page-toolbar-control-button-active-color: #fff;
+
+	/*	Page toolbar widgets.
+	 */
+	--GW-page-toolbar-button-icon-color: #7c7c7c;
+	--GW-page-toolbar-button-selectable-icon-color: #404040;
+	--GW-page-toolbar-button-selected-icon-color: #a6a6a6;
+    --GW-page-toolbar-button-text-color: #b4b4b4;
+    --GW-page-toolbar-button-disabled-text-color: #5c5c5c;
+
+	/*	Reader mode.
+	 */
+	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.6);
+	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color: #000;
+	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color: #fff;
+	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-border-color: #6c6c6c;
+	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-background-color: #cecece;
+
+	/*	“Back to top” link.
+	 */
+	--GW-back-to-top-link-color: #5c5c5c;
+	--GW-back-to-top-link-hover-color: #8b8b8b;
+
+	/*	Mobile floating header.
+	 */
+	--GW-floating-header-box-shadow-color: #5c5c5c;
+	--GW-floating-header-scroll-indicator-color: #8b8b8b;
+
+	/*	“Skip to content” accessibility link.
+	 */
+	--GW-skip-to-content-text-color: #000;
+	--GW-skip-to-content-border-color: #000;
+	--GW-skip-to-content-background-color: #ff8272;
+
+	/*	Nav header.
+	 */
+	--GW-nav-header-link-color: #8b8b8b;
+	--GW-nav-header-link-hover-color: #fff;
+}
+:root {
+    /*  Adjust background color to prevent pixels from turning off (contrary to popular belief, pixels turning off saves trivial energy, like <1% in measurements, and causes nasty scrolling/update jank due to delay in pixels turning back on), and improve contrast with the white.
+     */
+    --GW-body-background-color: #161616;
+
+    /*  Dial back from pure white to keep contrast from being *too* high & 'stark' (#fff bg / #000 text seems to work in light mode, but not in dark mode, perhaps because of differences in lighting environment?)
+     */
+    --GW-body-text-color: #f1f1f1;
+
+    /*  Adjust this one color in the syntax highlighting color scheme to make it
+        less saturated. (The automatic inversion algorithm doesn’t quite handle
+        it in the way we want.)
+     */
+    --GW-syntax-highlight-color-control-flow: #cce1c8;
+
+    /*  Variable for SVGs to use (like for the —𝔊— footers on the index page)
+     */
+    --GW-body-background-color-inverted: #ededed;
+
+    /*  Reader mode.
+     */
+    --GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.85);
+
+	/*	Wikipedia math images assume a white background; transparent images
+		don’t look right if that assumption is violated.
+
+		NOTE: This color value is --GW-body-background-color with the CSS
+		`invert(1)` filter applied. If you modify --GW-body-background-color,
+		modify this also!
+	 */
+	--GW-wikipedia-math-image-background-color: #e9e9e9;
+
+	/*	Wikipedia images in figures likewise assume a white background, but
+		might be transparent (and don’t get inverted).
+	 */
+	--GW-wikipedia-image-background-color: #fff;
+
+	/*	Similar to the above, but for all SVGs, which don’t get inverted.
+	 */
+	--GW-transparent-svg-background-color: #fff;
+
+    --GW-popups-popup-title-bar-pattern: var(--GW-image-pattern-dotted-161616-on-252525-gif);
+    --GW-popups-popup-title-bar-pattern-focused: var(--GW-image-pattern-dotted-161616-on-3e3e3e-gif);
+
+    --GW-dotted-underline-background-image: var(--GW-image-linear-dotted-fff-transparent-2x-gif);
+    --GW-dotted-underline-hover-background-image: var(--GW-image-linear-dotted-bbb-transparent-2x-gif);
+    --GW-dotted-underline-inverted-background-image: var(--GW-image-linear-dotted-000-transparent-2x-gif);
+    --GW-dotted-underline-inverted-hover-background-image: var(--GW-image-linear-dotted-888-transparent-2x-gif);
+
+	--GW-checkerboard-scrollbar-background-image: var(--GW-image-checkerboard-888-000-2x-gif);
+	--GW-checkerboard-scrollbar-hover-background-image: var(--GW-image-checkerboard-bfbfbf-000-2x-gif);
+}
+
+/* some SVGs used in annotations/essays (eg. /doc/genetics/selection/artificial//2023-meyer-figure1-moralacceptabilityandpersonalwillingnesstouseembryoselectionorgeneticeditinginausapopulationsurvey.svg ) were authored as transparent SVGs, assuming a *white* background. In dark-mode, with a black background set, they are illegible.
+So, in dark mode only, impose a white background on SVGs in <figure>s.
+(This is scoped narrowly to only apply to SVGs which are displayed in <figure>, and not SVGs elsewhere—because SVGs elsewhere are probably part of the site design, and will have been designed to work with dark mode; forcing a white background on them may have unpredictable bad effects. If it turns out that this is still too broad, we may have to instead manually edit SVGs to force a white background, or selectively whitelist them for a white background.) */
+figure img[src$=".svg"] {
+	background-color: var(--GW-transparent-svg-background-color);
+}
+
+/*	Audio elements don’t change color in dark mode, so their hover styles need
+	adjusted.
+ */
+.markdownBody figure audio:hover {
+    border-color: var(--GW-figure-outline-color);
+    box-shadow:
+        0 0 4px 0 currentColor inset,
+        0 0 4px 0 currentColor;
+}
+/*  Special styles for special browsers.
+	*/
+@supports (-moz-user-focus: normal) {
+	.markdownBody figure audio {
+	    border-color: var(--GW-figure-outline-color);
+	}
+}
+
+/*	Create a ‘footer’ at the bottom of pages which looks like ‘—————𝔊—————’,
+	similar to the arabesque navbar.
+
+	Footers help denote “this is the end”, and avoid the somewhat lame effect of
+	just having the anonymous feedback link at the end of the page and ending
+	there with nothing else.
+
+	NOTE: this is for mobile only, and takes the place of desktop’s full
+	arabesque navbar (see default.css).
+
+	Implementation: Modifying the ‘fill’ does not work so well when we call an
+	SVG as a ‘background-image’ (like for the  footers on the index page), so we
+	do variable+invert tricks to get a white copy of the logo as a hack.
+ */
+@media only screen and (max-width: 649px) {
+    a#footer-logo::after {
+        filter: invert(1);
+        background-color: var(--GW-body-background-color-inverted);
+    }
+}
+
+/*  The ‘celestial symbol’ horizontal rules are SVGs and must be inverted.
+ */
+hr::after,
+.horizontal-rule-nth-0 hr::after {
+    opacity: 1;
+    filter: invert(1) drop-shadow(0 0 0 currentColor);
+}
+.horizontal-rule-nth-1 hr::after {
+    opacity: 0.75;
+    filter: invert(1);
+}
+.horizontal-rule-nth-2 hr::after {
+    opacity: 0.85;
+    filter: invert(1);
+}
+
+/*  Drop cap opacity adjustment.
+ */
+.drop-cap-goudy::first-letter,
+.drop-cap-goudy > p::first-letter {
+    opacity: 0.95;
+}
+
+/*  Admonition icons.
+ */
+div.admonition.tip::before {
+    filter: invert(1);
+}
+div.admonition.note::before {
+    filter: none;
+}
+div.admonition.warning::before {
+    filter: none;
+}
+div.admonition.error::before {
+    filter: none;
+}
+
+/*	SVG icons in the two darker styles of admonitions.
+ */
+div.admonition.warning a[data-link-icon-type='svg'] .link-icon-hook::after,
+div.admonition.error a[data-link-icon-type='svg'] .link-icon-hook::after {
+    filter: none;
+}
+
+/*  List bullets are SVGs and have to be inverted.
+ */
+ul > li::before {
+    filter: invert(1);
+}
+
+/*  Exclusion for TOC entries.
+ */
+.TOC ul > li::before {
+    filter: none;
+}
+
+/*  For sortable table column headings, we use dark versions of the up/down/both
+    arrow icons.
+ */
+table th.tablesorter-header {
+    background-image: url('/static/img/tablesorter/tablesorter-bg-dark.gif');
+}
+table th.tablesorter-headerAsc {
+    background-image: url('/static/img/tablesorter/tablesorter-asc-dark.gif');
+}
+table th.tablesorter-headerDesc {
+    background-image: url('/static/img/tablesorter/tablesorter-desc-dark.gif');
+}
+
+/*  Images that are marked as '.invert' by the server are inverted,
+    hue-rotated, and desaturated. Other (non-invertible) images are merely
+    desaturated. Hovering over an image restores it to its original state.
+    Hierarchy: ‘.invert-not’: no inversion or grayscale;
+    ‘.invert’/‘.invert-auto’: inverted (uninverted upon mouse hover);
+    none: grayscaled (ungrayscaled on hover).
+ */
+img.invert,
+img.invert-auto {
+    filter: grayscale(50%) invert(100%) brightness(95%) hue-rotate(180deg);
+}
+img:not(.invert):not(.invert-auto) {
+    filter: grayscale(50%);
+}
+img,
+img.invert,
+img.invert-auto {
+    transition: filter 0.25s ease;
+}
+img:hover,
+img.invert:hover,
+img.invert-auto:hover,
+img:not(.invert):not(.invert-auto):hover {
+    filter: none;
+    transition: filter 0s ease 0.25s;
+}
+/*	Image alt-text.
+ */
+img.invert::before,
+img.invert-auto::before {
+	filter: invert(1);
+}
+img.invert:hover::before,
+img.invert-auto:hover::before {
+	filter: none;
+}
+/*	Styling the image alt-text interferes with the transitions in dark mode.
+	(We include non-class’d `img` in this selector for consistency.)
+
+	TEMPORARY until we transition to a color-based instead of filter-based
+	scheme for this. —SA 2022-07-29
+ */
+img,
+img:hover,
+img.invert,
+img.invert:hover,
+img.invert-auto,
+img.invert-auto:hover {
+	transition: none;
+}
+
+/*  For images which have been manually marked up with ‘.invert-not’, we
+    avoid any filtering at all. If they are manually marked up (artwork,
+    diagrams with multiple subtly-different colors matched to a legend/caption),
+    the color is important and shouldn’t be faded out by default.
+ */
+#markdownBody img.invert-not { filter: none; }
+
+/*  The loading spinner for object popups (image, iframe, object) is inverted
+    and made more visible in dark mode.
+ */
+.popframe.loading::before {
+    filter: invert(1);
+    opacity: 0.4;
+}
+
+/*  “Loading failed” messages for object popups.
+ */
+.popframe.loading-failed::after {
+    opacity: 0.4;
+}
+
+/*	Include-link loading spinner.
+ */
+a.include-loading.include-spinner::after {
+	filter: invert(1);
+}
+
+/*  Masked links key toggle info alert panel.
+ */
+div#masked-links-key-toggle-info-alert img {
+    filter: drop-shadow(0 0 3px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color));
+}
+
+/*  All SVG linkicons have to be inverted.
+ */
+a[data-link-icon-type*='svg'] .link-icon-hook::after {
+    filter: invert(1);
+}
+
+/*	Math in Wikipedia pop-frames.
+ */
+.annotation.wikipedia-entry .mwe-math-element img {
+	filter: invert(1);
+	background-color: var(--GW-wikipedia-math-image-background-color);
+}
+
+/*	Images in figures in Wikipedia pop-frames.
+ */
+.annotation.wikipedia-entry figure img {
+	background-color: var(--GW-wikipedia-image-background-color);
 }
 </style>
 <style id="inlined-styles">
@@ -1410,6 +2001,21 @@ a {
 May be able at some point to simplify this using regular link underlining, since CSS4's `text-decoration-skip-ink` by default avoids overlapping with text descenders (but as of Oct 2019, no Edge/IE or Safari support, and only the latest Firefox 70 supports it; maybe in a few years...): https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration-skip-ink#Browser_Compatibility https://www.caniuse.com/#feat=mdn-css_properties_text-decoration-skip-ink (Right now, Firefox skip-ink looks quite bad: it doesn't skip enough ink, defeating the point, and also positions the underline badly!)
 */
 
+/*	Color-inverted containers.
+ */
+.markdownBody .colors-invert a {
+    color: var(--GW-body-link-inverted-color);
+}
+.markdownBody .colors-invert a:hover {
+    color: var(--GW-body-link-inverted-hover-color);
+}
+.markdownBody .colors-invert a:visited {
+	color: var(--GW-body-link-inverted-visited-color);
+}
+.markdownBody .colors-invert a:visited:hover {
+    color: var(--GW-body-link-inverted-hover-color);
+}
+
 .markdownBody a {
 	--link-underline-background-color: var(--background-color);
 	--link-underline-gradient-line-color: currentColor;
@@ -1781,602 +2387,6 @@ body.special-halloween-dark h6 {
     --GW-body-link-color: var(--GW-blood-red);
 
     color: var(--GW-body-text-color);
-}
-</style>
-<style id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)">
-:root {
-    /*  General.
-     */
-    --GW-body-background-color: #000;
-    --GW-body-text-color: #fff;
-
-    /*  Selection.
-     */
-    --GW-text-selection-background-color: #dcdcdc;
-    --GW-text-selection-color: #000;
-
-	/*	Links.
-	 */
-    --GW-body-link-color: #dcdcdc;
-    --GW-body-link-hover-color: #999;
-    --GW-body-link-visited-color: #b4b4b4;
-
-    /*  Blockquotes.
-     */
-    --GW-blockquote-border-color-level-one: #5c5c5c;
-    --GW-blockquote-border-color-level-two: #646464;
-    --GW-blockquote-border-color-level-three: #747474;
-    --GW-blockquote-border-color-level-four: #7f7f7f;
-    --GW-blockquote-background-color-level-one: #212121;
-    --GW-blockquote-background-color-level-two: #3e3e3e;
-    --GW-blockquote-background-color-level-three: #4f4f4f;
-
-    /*  Abstracts.
-     */
-    --GW-abstract-border-color: #6c6c6c;
-
-    /*  Table of contents.
-     */
-    --GW-TOC-border-color: #5c5c5c;
-    --GW-TOC-background-color: #212121;
-    --GW-TOC-collapse-button-text-color: #5c5c5c;
-    --GW-TOC-collapse-button-text-hover-color: #000;
-    --GW-TOC-collapse-button-color: rgba(33, 33, 33, 0.8);
-    --GW-TOC-collapse-button-hover-color: #494949;
-    --GW-TOC-collapse-button-border-hover-color: #fff;
-    --GW-TOC-link-hover-background-color: #363636;
-    --GW-TOC-link-hover-color: #fff;
-    --GW-TOC-link-hover-indicator-bar-color: #5c5c5c;
-    --GW-TOC-number-color: #929292;
-    --GW-TOC-number-hover-color: #ddd;
-
-    /*  Collapse blocks.
-        */
-	--GW-abstract-collapse-blockquote-hover-color: #333;
-	--GW-collapse-disclosure-button-color: #333;
-	--GW-collapse-disclosure-button-hover-color: #494949;
-	--GW-collapse-in-blockquote-disclosure-button-color: #494949;
-	--GW-collapse-in-blockquote-disclosure-button-hover-color: #5c5c5c;
-	--GW-collapse-disclosure-button-text-color: #6c6c6c;
-	--GW-collapse-disclosure-button-text-hover-color: #000;
-	--GW-collapse-in-blockquote-disclosure-button-text-color: #8b8b8b;
-	--GW-collapse-in-blockquote-disclosure-button-text-hover-color: #999;
-	--GW-collapse-inline-disclosure-button-text-color: #c1c1c1;
-	--GW-collapse-inline-expanded-disclosure-button-text-color: #6c6c6c;
-	--GW-collapse-inline-disclosure-button-text-hover-color: #8b8b8b;
-
-    /*  Headings.
-     */
-    --GW-H1-border-color: #999;
-    --GW-H2-border-color: #999;
-
-    /*  Comments.
-     */
-    --GW-comment-section-top-border-color: #8b8b8b;
-
-    /*  Lists.
-     */
-    --GW-bulleted-list-marker-color: #9f9f9f;
-
-    /*  Figures.
-     */
-    --GW-figure-outline-color: #999;
-    --GW-figure-caption-outline-color: #999;
-
-    /*  Epigraphs.
-     */
-    --GW-epigraph-quotation-mark-color: #9f9f9f;
-
-    /*  Footnotes.
-     */
-    --GW-footnote-border-color: #7c7c7c;
-    --GW-footnote-highlighted-border-color: #7c7c7c;
-    --GW-footnotes-section-top-rule-color: #5c5c5c;
-    --GW-footnote-backlink-border-color: #fff;
-    --GW-footnote-backlink-border-hover-color: #8b8b8b;
-
-    /*  Footnote references.
-     */
-    --GW-highlighted-link-outline-color: #8b8b8b;
-
-    /*  Sidenotes.
-     */
-    --GW-sidenote-highlight-box-shadow-color: #7c7c7c;
-    --GW-sidenote-border-color: #7c7c7c;
-    --GW-sidenote-scrollbar-thumb-color: #7c7c7c;
-    --GW-sidenote-scrollbar-thumb-hover-color: #8b8b8b;
-    --GW-sidenote-self-link-border-color: #7c7c7c;
-
-	/*	Annotations.
-	 */
-	--GW-section-highlighted-border-color: #b4b4b4;
-
-    /*  Tables.
-     */
-    --GW-table-border-color: #fff;
-    --GW-table-caption-border-color: #fff;
-    --GW-table-row-horizontal-border-color: #fff;
-    --GW-table-scrollbar-thumb-color: #7c7c7c;
-    --GW-table-scrollbar-thumb-hover-color: #8b8b8b;
-    --GW-table-scrollbar-border-color: #fff;
-    --GW-table-column-heading-hover-background-color: #2b3637;
-    --GW-table-sorted-column-heading-background-color: #166983;
-    --GW-table-sorted-column-heading-text-color: #000;
-    --GW-table-sorted-column-heading-text-shadow-color: #fff;
-    --GW-table-zebra-stripe-alternate-row-background-color: #252525;
-    --GW-table-row-hover-outline-color: #fff;
-
-    /*  Code blocks.
-     */
-    --GW-code-element-border-color: #606060;
-    --GW-code-element-background-color: #1d1d1d;
-    --GW-pre-element-border-color: #606060;
-    --GW-pre-element-background-color: #1d1d1d;
-    --GW-pre-element-scrollbar-track-color: #1d1d1d;
-    --GW-pre-element-scrollbar-thumb-color: #5c5c5c;
-    --GW-pre-element-scrollbar-thumb-hover-color: #8b8b8b;
-
-    /*  Syntax highlight theme.
-     */
-    --GW-syntax-highlight-color-normal: #f1edec;
-    --GW-syntax-highlight-color-attribute: #d8deff;
-    --GW-syntax-highlight-color-data-type: inherit;
-    --GW-syntax-highlight-color-variable: #b4b4b4;
-    --GW-syntax-highlight-color-other: inherit;
-    --GW-syntax-highlight-color-preprocessor: inherit;
-    --GW-syntax-highlight-color-extension: #a6a6a6;
-    --GW-syntax-highlight-color-comment: #a6a6a6;
-    --GW-syntax-highlight-color-control-flow: #b6edaa;
-    --GW-syntax-highlight-color-keyword: #d8deff;
-    --GW-syntax-highlight-color-operator: #d8deff;
-    --GW-syntax-highlight-color-special-char: #94adb6;
-    --GW-syntax-highlight-color-built-in: #d8deff;
-    --GW-syntax-highlight-color-function: #d8deff;
-    --GW-syntax-highlight-color-constant: inherit;
-    --GW-syntax-highlight-color-base-n: inherit;
-    --GW-syntax-highlight-color-dec-val: inherit;
-    --GW-syntax-highlight-color-float: inherit;
-    --GW-syntax-highlight-color-information: inherit;
-    --GW-syntax-highlight-color-char: inherit;
-    --GW-syntax-highlight-color-string: inherit;
-    --GW-syntax-highlight-color-verbatim-string: inherit;
-    --GW-syntax-highlight-color-alert: #ff815c;
-    --GW-syntax-highlight-color-error: #ff4727;
-    --GW-syntax-highlight-color-import: #a6a6a6;
-    --GW-syntax-highlight-color-special-string: #b4b4b4;
-
-    /*  Math.
-     */
-    --GW-math-block-background-color: #252525;
-    --GW-math-block-background-color-flash: #000;
-    --GW-math-block-scrollbar-border-color: #5c5c5c;
-    --GW-math-block-scrollbar-thumb-color: #5c5c5c;
-    --GW-math-block-scrollbar-thumb-hover-color: #8b8b8b;
-
-    /*  Drop caps.
-     */
-    --GW-drop-caps-yinit-color: #f9f9f9;
-    --GW-drop-caps-yinit-text-shadow-color: #a6a6a6;
-    --GW-drop-caps-de-zs-color: #efefef;
-    --GW-drop-caps-cheshire-color: #f1f1f1;
-    --GW-drop-caps-kanzlei-color: #f1f1f1;
-
-    /*  Admonitions.
-     */
-    --GW-admonition-note-left-border-color: #929292;
-    --GW-admonition-note-background-color: #4f4f4f;
-    --GW-admonition-tip-left-border-color: #4f4f4f;
-    --GW-admonition-tip-background-color: #303030;
-    --GW-admonition-warning-left-border-color: #bdbdbd;
-    --GW-admonition-warning-background-color: #8a8a8a;
-    --GW-admonition-warning-text-color: #000;
-    --GW-admonition-error-left-border-color: #e1e1e1;
-    --GW-admonition-error-background-color: #bdbdbd;
-    --GW-admonition-error-text-color: #000;
-    --GW-admonition-reversed-link-color: #494949;
-    --GW-admonition-reversed-link-color-hover: #5c5c5c;
-    --GW-admonition-reversed-link-underline-gradient-line-color: #5c5c5c;
-    --GW-admonition-reversed-link-underline-gradient-line-color-hover: #6c6c6c;
-
-	/*	Footer.
-	 */
-    --GW-bottom-ornament-line-color: #fff;
-
-	/*	Pop-frames (popups or popins).
-	 */
-    --GW-code-popframe-line-highlight-background-color: #181700;
-    --GW-code-popframe-line-highlight-border-color: #494949;
-    --GW-code-popframe-line-number-color: #7c7c7c;
-    --GW-code-popframe-line-number-divider-color: #5c5c5c;
-
-    --GW-extracts-options-dialog-backdrop-background-color: rgba(0, 0, 0, 0.95);
-    --GW-extracts-options-dialog-background-color: var(--GW-body-background-color);
-    --GW-extracts-options-dialog-border-color: #7c7c7c;
-    --GW-extracts-options-dialog-box-shadow-color: #cecece;
-    --GW-extracts-options-dialog-horizontal-rule-color: #5c5c5c;
-    --GW-extracts-options-dialog-button-background-color: var(--GW-body-background-color);
-    --GW-extracts-options-dialog-button-text-color: #fff;
-    --GW-extracts-options-dialog-button-border-color: #fff;
-    --GW-extracts-options-dialog-button-hover-box-shadow-color: #fff;
-    --GW-extracts-options-dialog-option-button-explanation-text-color: #a6a6a6;
-    --GW-extracts-options-dialog-option-button-hover-text-color: #a6a6a6;
-    --GW-extracts-options-dialog-radio-button-border-color: #fff;
-
-    /*  Popups.
-     */
-    --GW-popups-popup-background-color: var(--GW-body-background-color);
-
-    --GW-popups-object-popup-background-color: #000;
-
-    --GW-popups-popup-border-color: #5c5c5c;
-    --GW-popups-box-shadow-color: #5c5c5c;
-    --GW-popups-popup-border-focused-color: #7c7c7c;
-    --GW-popups-box-shadow-focused-color: #7c7c7c;
-
-    --GW-popups-popup-title-bar-background-color: #000;
-    --GW-popups-popup-title-bar-pattern: url('data:image/gif;base64,R0lGODlhCAAIAPAAMebm5v///ywAAAAACAAIAAACDIxhgcma2yKE8kVWAAA7');
-    --GW-popups-popup-title-bar-pattern-focused: url('data:image/gif;base64,R0lGODlhCAAIAPAAMebm5v///ywAAAAACAAIAAACDIRjgMma2yKE8kVWAAA7');
-    --GW-popups-popup-title-bar-button-color: #6c6c6c;
-    --GW-popups-popup-title-bar-button-color-hover: #fff;
-	--GW-popups-popup-title-color: #7c7c7c;
-    --GW-popups-popup-title-link-hover-color: var(--GW-body-link-hover-color);
-    --GW-popups-popup-title-bar-button-focused-color: #a6a6a6;
-    --GW-popups-popup-title-bar-button-focused-color-hover: #fff;
-    --GW-popups-popup-title-bar-submenu-box-shadow-color: #494949;
-	--GW-popups-popup-title-focused-color: #fff;
-    --GW-popups-popup-title-link-hover-focused-color: var(--GW-body-link-hover-color);
-
-    --GW-popups-popup-scrollbar-thumb-color: #494949;
-    --GW-popups-popup-scrollbar-thumb-hover-color: #6c6c6c;
-    --GW-popups-popup-scrollbar-thumb-focused-color: #5c5c5c;
-    --GW-popups-popup-scrollbar-thumb-hover-focused-color: #8b8b8b;
-
-    /*  Popins.
-     */
-    --GW-popins-popin-background-color: var(--GW-body-background-color);
-    --GW-popins-popin-border-color: #7c7c7c;
-    --GW-popins-box-shadow-color: #7c7c7c;
-    --GW-popins-popin-title-bar-background-color: #000;
-    --GW-popins-popin-title-bar-button-color: #b4b4b4;
-    --GW-popins-popin-scrollbar-thumb-color: #5c5c5c;
-    --GW-popins-popin-scrollbar-thumb-hover-color: #8b8b8b;
-    --GW-popins-popin-stack-counter-text-color: #000;
-
-    /*  Image focus.
-     */
-    --GW-image-focus-image-hover-drop-shadow-color: #a6a6a6;
-
-	/*	Page toolbar.
-	 */
-    --GW-page-toolbar-border-color: #7c7c7c;
-	--GW-page-toolbar-control-button-color: #7c7c7c;
-	--GW-page-toolbar-control-button-active-color: #fff;
-
-	/*	Page toolbar widgets.
-	 */
-	--GW-page-toolbar-button-icon-color: #7c7c7c;
-	--GW-page-toolbar-button-selectable-icon-color: #404040;
-	--GW-page-toolbar-button-selected-icon-color: #a6a6a6;
-    --GW-page-toolbar-button-text-color: #b4b4b4;
-    --GW-page-toolbar-button-disabled-text-color: #5c5c5c;
-
-	/*	Reader mode.
-	 */
-	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.6);
-	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color: #000;
-	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color: #fff;
-	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-border-color: #6c6c6c;
-	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-background-color: #cecece;
-
-	/*	“Back to top” link.
-	 */
-	--GW-back-to-top-link-color: #5c5c5c;
-	--GW-back-to-top-link-hover-color: #8b8b8b;
-
-	/*	Mobile floating header.
-	 */
-	--GW-floating-header-box-shadow-color: #5c5c5c;
-	--GW-floating-header-scroll-indicator-color: #8b8b8b;
-
-	/*	“Skip to content” accessibility link.
-	 */
-	--GW-skip-to-content-text-color: #000;
-	--GW-skip-to-content-border-color: #000;
-	--GW-skip-to-content-background-color: #ff8272;
-
-	/*	Nav header.
-	 */
-	--GW-nav-header-link-color: #8b8b8b;
-	--GW-nav-header-link-hover-color: #fff;
-}
-:root {
-    /*  Adjust background color to prevent pixels from turning off (contrary to popular belief, pixels turning off saves trivial energy, like <1% in measurements, and causes nasty scrolling/update jank due to delay in pixels turning back on), and improve contrast with the white.
-     */
-    --GW-body-background-color: #161616;
-
-    /*  Dial back from pure white to keep contrast from being *too* high & 'stark' (#fff bg / #000 text seems to work in light mode, but not in dark mode, perhaps because of differences in lighting environment?)
-     */
-    --GW-body-text-color: #f1f1f1;
-
-    /*  Adjust this one color in the syntax highlighting color scheme to make it
-        less saturated. (The automatic inversion algorithm doesn’t quite handle
-        it in the way we want.)
-     */
-    --GW-syntax-highlight-color-control-flow: #cce1c8;
-
-    /*  Variable for SVGs to use (like for the —𝔊— footers on the index page)
-     */
-    --GW-body-background-color-inverted: #ededed;
-
-    /*  Reader mode.
-     */
-    --GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.85);
-
-	/*	Wikipedia math images assume a white background; transparent images
-		don’t look right if that assumption is violated.
-
-		NOTE: This color value is --GW-body-background-color with the CSS
-		`invert(1)` filter applied. If you modify --GW-body-background-color,
-		modify this also!
-	 */
-	--GW-wikipedia-math-image-background-color: #e9e9e9;
-
-	/*	Wikipedia images in figures likewise assume a white background, but
-		might be transparent (and don’t get inverted).
-	 */
-	--GW-wikipedia-image-background-color: #fff;
-
-	/*	Similar to the above, but for all SVGs, which don’t get inverted.
-	 */
-	--GW-transparent-svg-background-color: #fff;
-
-    --GW-popups-popup-title-bar-pattern: url('data:image/gif;base64,R0lGODlhCAAIAPAAMRYWFiUlJSwAAAAACAAIAAACDIxhgcma2yKE8kVWAAA7');
-    --GW-popups-popup-title-bar-pattern-focused: url('data:image/gif;base64,R0lGODlhCAAIAPAAMRYWFj4+PiwAAAAACAAIAAACDIxhgcma2yKE8kVWAAA7');
-}
-
-
-/* some SVGs used in annotations/essays (eg. /doc/genetics/selection/artificial//2023-meyer-figure1-moralacceptabilityandpersonalwillingnesstouseembryoselectionorgeneticeditinginausapopulationsurvey.svg ) were authored as transparent SVGs, assuming a *white* background. In dark-mode, with a black background set, they are illegible.
-So, in dark mode only, impose a white background on SVGs in <figure>s.
-(This is scoped narrowly to only apply to SVGs which are displayed in <figure>, and not SVGs elsewhere—because SVGs elsewhere are probably part of the site design, and will have been designed to work with dark mode; forcing a white background on them may have unpredictable bad effects. If it turns out that this is still too broad, we may have to instead manually edit SVGs to force a white background, or selectively whitelist them for a white background.) */
-figure img[src$=".svg"] {
-	background-color: var(--GW-transparent-svg-background-color);
-}
-
-/*	Audio elements don’t change color in dark mode, so their hover styles need
-	adjusted.
- */
-.markdownBody figure audio:hover {
-    border-color: var(--GW-figure-outline-color);
-    box-shadow:
-        0 0 4px 0 currentColor inset,
-        0 0 4px 0 currentColor;
-}
-/*  Special styles for special browsers.
-	*/
-@supports (-moz-user-focus: normal) {
-	.markdownBody figure audio {
-	    border-color: var(--GW-figure-outline-color);
-	}
-}
-
-/*	Create a ‘footer’ at the bottom of pages which looks like ‘—————𝔊—————’,
-	similar to the arabesque navbar.
-
-	Footers help denote “this is the end”, and avoid the somewhat lame effect of
-	just having the anonymous feedback link at the end of the page and ending
-	there with nothing else.
-
-	NOTE: this is for mobile only, and takes the place of desktop’s full
-	arabesque navbar (see default.css).
-
-	Implementation: Modifying the ‘fill’ does not work so well when we call an
-	SVG as a ‘background-image’ (like for the  footers on the index page), so we
-	do variable+invert tricks to get a white copy of the logo as a hack.
- */
-@media only screen and (max-width: 649px) {
-    a#footer-logo::after {
-        filter: invert(1);
-        background-color: var(--GW-body-background-color-inverted);
-    }
-}
-
-/*  The ‘celestial symbol’ horizontal rules are SVGs and must be inverted.
- */
-hr::after,
-.horizontal-rule-nth-0 hr::after {
-    opacity: 1;
-    filter: invert(1) drop-shadow(0 0 0 currentColor);
-}
-.horizontal-rule-nth-1 hr::after {
-    opacity: 0.75;
-    filter: invert(1);
-}
-.horizontal-rule-nth-2 hr::after {
-    opacity: 0.85;
-    filter: invert(1);
-}
-
-/*  Drop cap opacity adjustment.
- */
-.drop-cap-goudy::first-letter,
-.drop-cap-goudy > p::first-letter {
-    opacity: 0.95;
-}
-
-/*  Admonition icons.
- */
-div.admonition::before {
-    filter: invert(1);
-}
-
-/*	Dotted link underlines in admonitions.
- */
-div.admonition.warning,
-div.admonition.error {
-    --GW-dotted-underline-background-image: var(--GW-dotted-underline-hover-dark-background-image);
-}
-
-/*	SVG icons in the two darker styles of admonitions.
- */
-div.admonition.warning a[data-link-icon-type='svg'] .link-icon-hook::after,
-div.admonition.error a[data-link-icon-type='svg'] .link-icon-hook::after {
-    filter: none;
-}
-
-/*  List bullets are SVGs and have to be inverted.
- */
-ul > li::before {
-    filter: invert(1);
-}
-
-/*  Exclusion for TOC entries.
- */
-.TOC ul > li::before {
-    filter: none;
-}
-
-/*  For sortable table column headings, we use dark versions of the up/down/both
-    arrow icons.
- */
-table th.tablesorter-header {
-    background-image: url('/static/img/tablesorter/tablesorter-bg-dark.gif');
-}
-table th.tablesorter-headerAsc {
-    background-image: url('/static/img/tablesorter/tablesorter-asc-dark.gif');
-}
-table th.tablesorter-headerDesc {
-    background-image: url('/static/img/tablesorter/tablesorter-desc-dark.gif');
-}
-
-/*  The pixel-grid-checkerboard pattern of these scroll bars is created by GIF
-    background-images; we use alternate versions of the images in dark mode.
- */
-.table-wrapper::-webkit-scrollbar-thumb {
-    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
-}
-.table-wrapper::-webkit-scrollbar-thumb:hover {
-    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
-}
-
-.sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb {
-    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
-}
-.sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb:hover {
-    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
-}
-
-/*  Images that are marked as '.invert' by the server are inverted,
-    hue-rotated, and desaturated. Other (non-invertible) images are merely
-    desaturated. Hovering over an image restores it to its original state.
-    Hierarchy: ‘.invert-not’: no inversion or grayscale;
-    ‘.invert’/‘.invert-auto’: inverted (uninverted upon mouse hover);
-    none: grayscaled (ungrayscaled on hover).
- */
-img.invert,
-img.invert-auto {
-    filter: grayscale(50%) invert(100%) brightness(95%) hue-rotate(180deg);
-}
-img:not(.invert):not(.invert-auto) {
-    filter: grayscale(50%);
-}
-img,
-img.invert,
-img.invert-auto {
-    transition: filter 0.25s ease;
-}
-img:hover,
-img.invert:hover,
-img.invert-auto:hover,
-img:not(.invert):not(.invert-auto):hover {
-    filter: none;
-    transition: filter 0s ease 0.25s;
-}
-/*	Image alt-text.
- */
-img.invert::before,
-img.invert-auto::before {
-	filter: invert(1);
-}
-img.invert:hover::before,
-img.invert-auto:hover::before {
-	filter: none;
-}
-/*	Styling the image alt-text interferes with the transitions in dark mode.
-	(We include non-class’d `img` in this selector for consistency.)
-
-	TEMPORARY until we transition to a color-based instead of filter-based
-	scheme for this. —SA 2022-07-29
- */
-img,
-img:hover,
-img.invert,
-img.invert:hover,
-img.invert-auto,
-img.invert-auto:hover {
-	transition: none;
-}
-
-/*  For images which have been manually marked up with ‘.invert-not’, we
-    avoid any filtering at all. If they are manually marked up (artwork,
-    diagrams with multiple subtly-different colors matched to a legend/caption),
-    the color is important and shouldn’t be faded out by default.
- */
-#markdownBody img.invert-not { filter: none; }
-
-/*  The loading spinner for object popups (image, iframe, object) is inverted
-    and made more visible in dark mode.
- */
-.popframe.loading::before {
-    filter: invert(1);
-    opacity: 0.4;
-}
-
-/*  “Loading failed” messages for object popups.
- */
-.popframe.loading-failed::after {
-    opacity: 0.4;
-}
-
-/*	Include-link loading spinner.
- */
-a.include-loading.include-spinner::after {
-	filter: invert(1);
-}
-
-/*  Masked links key toggle info alert panel.
- */
-div#masked-links-key-toggle-info-alert img {
-    filter: drop-shadow(0 0 3px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color));
-}
-
-/*  The dotted underline for Wikipedia links is created by a
-    pixel-grid-checkerboard background-image. We use an alternate version of
-    this image in dark mode.
- */
-.markdownBody a[href].has-annotation:hover {
-    background-image: var(--GW-dotted-underline-hover-dark-background-image);
-}
-.markdownBody a[href].has-annotation.decorate-not {
-	background-image: none;
-}
-
-/*  All SVG linkicons have to be inverted.
- */
-a[data-link-icon-type*='svg'] .link-icon-hook::after {
-    filter: invert(1);
-}
-
-/*	Math in Wikipedia pop-frames.
- */
-.annotation.wikipedia-entry .mwe-math-element img {
-	filter: invert(1);
-	background-color: var(--GW-wikipedia-math-image-background-color);
-}
-
-/*	Images in figures in Wikipedia pop-frames.
- */
-.annotation.wikipedia-entry figure img {
-	background-color: var(--GW-wikipedia-image-background-color);
 }
 </style>
 <script>
@@ -3722,7 +3732,7 @@ ReaderMode = {
 			background-repeat: no-repeat;
 		}
 		body.reader-mode-active #markdownBody a.has-annotation .link-icon-hook {			
-			background-image: var(--GW-dotted-underline-background-image);
+			background-image: var(--link-underline-background-image);
 			background-size: 2px 1px;
 			background-repeat: repeat-x;
 		}
@@ -3875,7 +3885,7 @@ ReaderMode.injectStyleBlock(ReaderMode.styles, "reader-mode-styles");
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
 </script>
+<link rel="preload" href="/static/css/fonts.css?v=1684436736" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/default.css?v=1684436731" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/links.css?v=1684430958" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/img/icon/icons.svg" as="image">
-<link rel="preload" href="/static/css/fonts.css?v=1684357509" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
-<link rel="preload" href="/static/css/default.css?v=1684353174" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
-<link rel="preload" href="/static/css/links.css?v=1682784367" as="style" onload="this.onload = null; this.rel = 'stylesheet'">

@@ -15,6 +15,7 @@ $ssi_includes = [
 ## Components of generated/assembled inlined style sheets.
 $css_components = [
 	"{$static_dir}/css/include/colors.css",
+	"{$static_dir}/css/include/components/light-mode-adjustments.css",
 	"{$static_dir}/css/include/components/dark-mode-adjustments.css"
 ];
 $css_components = implode(" ", $css_components);
@@ -25,7 +26,7 @@ if ($force || (`git diff-index --cached HEAD -- {$css_components}`)) {
 
 ## Inlined styles and scripts.
 $head_includes = [
-	"{$static_dir}/css/include/colors.css",
+	"{$static_dir}/css/include/light-mode-GENERATED.css",
 	"{$static_dir}/css/include/dark-mode-GENERATED.css",
 	"{$static_dir}/css/include/initial.css",
 	"{$static_dir}/js/dark-mode-inline.js",

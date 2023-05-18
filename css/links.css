@@ -1,9 +1,3 @@
-:root {
-    --GW-dotted-underline-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMQAAAP///ywAAAAABAACAAACBAQShgUAOw==');
-    --GW-dotted-underline-hover-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMYiIiP///ywAAAAABAACAAACBAQShgUAOw==');
-    --GW-dotted-underline-hover-dark-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMQAAAJ6eniwAAAAABAACAAACBAQShgUAOw==');
-}
-
 /************************/
 /* POP-FRAME INDICATORS */
 /************************/
@@ -61,14 +55,29 @@
 /*	Dotted underlines for annotated links.
  */
 .markdownBody a.has-annotation {
-    background-image: var(--GW-dotted-underline-background-image);
+	--link-underline-background-image: var(--GW-dotted-underline-background-image);
+
+    background-image: var(--link-underline-background-image);
     background-size: 2px 1px;
 }
 .markdownBody a.has-annotation:hover {
-    background-image: var(--GW-dotted-underline-hover-background-image);
+    --link-underline-background-image: var(--GW-dotted-underline-hover-background-image);
 }
 .markdownBody a.has-annotation.decorate-not {
 	background-image: none;
+}
+
+/*	Reversed link colors.
+ */
+.markdownBody .colors-invert a.has-annotation {
+	--link-underline-background-image: var(--GW-dotted-underline-inverted-background-image);
+}
+.markdownBody .colors-invert a.has-annotation:hover {
+	--link-underline-background-image: var(--GW-dotted-underline-inverted-hover-background-image);
+}
+
+.markdownBody .colors-invert a[data-link-icon-type='svg'] .link-icon-hook::after {
+    filter: invert(1);
 }
 
 

@@ -39,10 +39,17 @@
 	 */
 	--GW-transparent-svg-background-color: #fff;
 
-    --GW-popups-popup-title-bar-pattern: url('data:image/gif;base64,R0lGODlhCAAIAPAAMRYWFiUlJSwAAAAACAAIAAACDIxhgcma2yKE8kVWAAA7');
-    --GW-popups-popup-title-bar-pattern-focused: url('data:image/gif;base64,R0lGODlhCAAIAPAAMRYWFj4+PiwAAAAACAAIAAACDIxhgcma2yKE8kVWAAA7');
-}
+    --GW-popups-popup-title-bar-pattern: var(--GW-image-pattern-dotted-161616-on-252525-gif);
+    --GW-popups-popup-title-bar-pattern-focused: var(--GW-image-pattern-dotted-161616-on-3e3e3e-gif);
 
+    --GW-dotted-underline-background-image: var(--GW-image-linear-dotted-fff-transparent-2x-gif);
+    --GW-dotted-underline-hover-background-image: var(--GW-image-linear-dotted-bbb-transparent-2x-gif);
+    --GW-dotted-underline-inverted-background-image: var(--GW-image-linear-dotted-000-transparent-2x-gif);
+    --GW-dotted-underline-inverted-hover-background-image: var(--GW-image-linear-dotted-888-transparent-2x-gif);
+
+	--GW-checkerboard-scrollbar-background-image: var(--GW-image-checkerboard-888-000-2x-gif);
+	--GW-checkerboard-scrollbar-hover-background-image: var(--GW-image-checkerboard-bfbfbf-000-2x-gif);
+}
 
 /* some SVGs used in annotations/essays (eg. /doc/genetics/selection/artificial//2023-meyer-figure1-moralacceptabilityandpersonalwillingnesstouseembryoselectionorgeneticeditinginausapopulationsurvey.svg ) were authored as transparent SVGs, assuming a *white* background. In dark-mode, with a black background set, they are illegible.
 So, in dark mode only, impose a white background on SVGs in <figure>s.
@@ -114,15 +121,17 @@ hr::after,
 
 /*  Admonition icons.
  */
-div.admonition::before {
+div.admonition.tip::before {
     filter: invert(1);
 }
-
-/*	Dotted link underlines in admonitions.
- */
-div.admonition.warning,
-div.admonition.error {
-    --GW-dotted-underline-background-image: var(--GW-dotted-underline-hover-dark-background-image);
+div.admonition.note::before {
+    filter: none;
+}
+div.admonition.warning::before {
+    filter: none;
+}
+div.admonition.error::before {
+    filter: none;
 }
 
 /*	SVG icons in the two darker styles of admonitions.
@@ -155,23 +164,6 @@ table th.tablesorter-headerAsc {
 }
 table th.tablesorter-headerDesc {
     background-image: url('/static/img/tablesorter/tablesorter-desc-dark.gif');
-}
-
-/*  The pixel-grid-checkerboard pattern of these scroll bars is created by GIF
-    background-images; we use alternate versions of the images in dark mode.
- */
-.table-wrapper::-webkit-scrollbar-thumb {
-    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
-}
-.table-wrapper::-webkit-scrollbar-thumb:hover {
-    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
-}
-
-.sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb {
-    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
-}
-.sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb:hover {
-    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
 }
 
 /*  Images that are marked as '.invert' by the server are inverted,
@@ -256,17 +248,6 @@ a.include-loading.include-spinner::after {
  */
 div#masked-links-key-toggle-info-alert img {
     filter: drop-shadow(0 0 3px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color));
-}
-
-/*  The dotted underline for Wikipedia links is created by a
-    pixel-grid-checkerboard background-image. We use an alternate version of
-    this image in dark mode.
- */
-.markdownBody a[href].has-annotation:hover {
-    background-image: var(--GW-dotted-underline-hover-dark-background-image);
-}
-.markdownBody a[href].has-annotation.decorate-not {
-	background-image: none;
 }
 
 /*  All SVG linkicons have to be inverted.

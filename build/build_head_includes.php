@@ -23,9 +23,9 @@ echo "Building <head> includes...\n";
  */
 
 $includes = [
-	[ 'colors.css', 'id="inlined-styles-colors"' ],
-	[ 'initial.css', 'id="inlined-styles"' ],
+	[ 'light-mode-GENERATED.css', 'id="inlined-styles-colors"' ],
 	[ 'dark-mode-GENERATED.css', 'id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)"' ],
+	[ 'initial.css', 'id="inlined-styles"' ],
 	[ 'inline.js' ],
 	[ 'dark-mode-inline.js' ],
 	[ 'reader-mode-inline.js' ],
