@@ -297,6 +297,29 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 	});
 }, "rewrite");
 
+addContentInjectHandler(GW.contentInjectHandlers.rectifySectionCollapseLayout = (eventInfo) => {
+	GWLog("rectifySectionCollapseLayout", "collapse.js", 1);
+
+	let baseFontSize = parseInt(getComputedStyle(eventInfo.container).getPropertyValue("--GW-base-font-size"));
+
+	eventInfo.container.querySelectorAll("section.collapse").forEach(section => {
+		section.style.removeProperty("--collapse-toggle-top-height");
+		section.style.removeProperty("--collapse-toggle-top-icon-size");
+
+		requestAnimationFrame(() => {
+			let minHeight = baseFontSize * parseFloat(getComputedStyle(section).getPropertyValue("--collapse-toggle-top-height"));
+			let headingTextRects = Array.from(section.firstElementChild.querySelector("a").getClientRects());
+			let oneLineHeight = headingTextRects.first.height;
+			let totalHeight = headingTextRects.map(rect => rect.height).reduce((acc, val) => acc + val);
+			if (totalHeight <= minHeight)
+				return;
+
+			section.style.setProperty("--collapse-toggle-top-height", Math.round(totalHeight + oneLineHeight * 0.25) + "px");
+			section.style.setProperty("--collapse-toggle-top-icon-size", Math.round(oneLineHeight * 1.25) + "px");
+		});
+	});
+}, "rewrite");
+
 /******************************************************************************/
 /*  Collapse all expanded collapse blocks. (Mostly relevant when popping up
 	sections of an already-displayed full page, which may have collapses in it,

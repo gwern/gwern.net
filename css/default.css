@@ -116,6 +116,15 @@ button {
     */
 
 
+/************/
+/* SECTIONS */
+/************/
+
+#markdownBody > section:first-child {
+    margin-top: 0;
+}
+
+
 /*******************/
 /* COLLAPSE BLOCKS */
 /*******************/
@@ -130,6 +139,9 @@ button {
     --collapse-toggle-bottom-height: 2rem;
     --collapse-toggle-left-width: 0.5rem;
     --collapse-left-offset: 1em;
+
+    --collapse-toggle-top-icon-size: var(--collapse-toggle-top-height);
+    --collapse-toggle-bottom-icon-size: var(--collapse-toggle-bottom-height);
 
     position: relative;
     min-height: calc(  var(--collapse-toggle-top-height)
@@ -273,7 +285,7 @@ button {
 
 .collapse-block > .disclosure-button .part .icon {
     width: var(--icon-size);
-    height: 100%;
+    height: var(--icon-size);
     padding: calc(var(--icon-size) / 4);
     box-sizing: border-box;
 }
@@ -291,7 +303,7 @@ button {
 /*  Top part of disclosure button.
  */
 .collapse-block > .disclosure-button .part.top {
-    --icon-size: var(--collapse-toggle-top-height);
+    --icon-size: var(--collapse-toggle-top-icon-size);
 
     top: 0;
     height: var(--collapse-toggle-top-height);
@@ -318,7 +330,7 @@ button {
 /*  Bottom part of disclosure button.
  */
 .collapse-block > .disclosure-button .part.bottom {
-    --icon-size: var(--collapse-toggle-bottom-height);
+    --icon-size: var(--collapse-toggle-bottom-icon-size);
 
     bottom: 0;
     height: var(--collapse-toggle-bottom-height);
@@ -452,6 +464,8 @@ button {
 /*  Collapsible sections (the <section> element).
  */
 section.collapse {
+	--collapse-toggle-top-height: 2.125rem;
+
     margin-left: calc(-1 * var(--collapse-left-offset));
     padding-left: var(--collapse-left-offset);
 
@@ -462,6 +476,10 @@ section.collapse {
 section.collapse.has-abstract,
 section.collapse.expanded {
     padding-top: 0;
+}
+
+section.collapse.no-abstract.expanded-not {
+    --collapse-toggle-bottom-height: 0;
 }
 
 section.collapse.expanded > .disclosure-button .part.top .label {
@@ -475,10 +493,11 @@ section.collapse > :first-child {
     min-height: var(--collapse-toggle-top-height);
     margin:
         0
-        var(--collapse-toggle-top-height)
+        2.5em
         0
         calc(-1 * var(--collapse-toggle-left-width));
-    padding: 0;
+    padding: 0.1em 0 0 0;
+    box-sizing: border-box;
     z-index: 12;
     pointer-events: none;
 }
@@ -493,17 +512,15 @@ section.collapse > :first-child > a * {
 }
 
 section.collapse > :first-child > a::after {
-    top: -0.1em;
-    left: 0.5em;
+    top: unset;
+    bottom: 0.3em;
+    right: -1.25em;
 }
 
 section.collapse > h1:first-child > a {
     top: 0.1em;
 }
 
-section.collapse > h2:first-child {
-    line-height: 1.1;
-}
 section.collapse > h2:first-child::after {
     content: none;
 }
@@ -823,10 +840,6 @@ section:not(.collapse) > h1:first-child {
 .markdownBody section:not(.collapse) > h1:first-child a {
     position: relative;
 }
-.markdownBody section:not(.collapse) > h1:first-child a::after {
-    position: absolute;
-    top: 0.15em;
-}
 @media all and (min-width: 1180px) {
     section:not(.collapse) > h1:first-child {
         margin: 1.75em 0 0.375em -0.75rem;
@@ -836,9 +849,6 @@ section:not(.collapse) > h1:first-child {
         box-shadow:
             0 -5px 0 0 var(--background-color) inset,
             0 -6px 0 0 var(--GW-H1-border-color) inset;
-    }
-    .markdownBody section:not(.collapse) > h1:first-child a::after {
-        left: -0.75em;
     }
 }
 
@@ -866,12 +876,6 @@ h2::after {
 }
 .markdownBody section:not(.collapse) > h2:first-child a {
     position: relative;
-}
-.markdownBody section:not(.collapse) > h2:first-child a::after {
-    position: absolute;
-    top: 0.1em;
-    left: unset;
-    right: -0.75em;
 }
 @media all and (min-width: 650px) {
     section:not(.collapse) > h2:first-child {
@@ -916,9 +920,9 @@ h2 + section > h3:first-child {
 section > :first-child a::after {
     content: "\00B6"; /* Pilcrow sign: ¶ */
     font-size: 0.75em;
-    position: relative;
-    top: -0.2em;
-    left: 0.35em;
+    position: absolute;
+    top: 0.15em;
+    right: 0;
     visibility: hidden;
     opacity: 0;
     transition: opacity 0s ease 0.1s;
@@ -939,6 +943,18 @@ section.highlighted > :first-child a::after {
 section:target > :first-child a::after {
     opacity: 0.5;
 }
+
+@media all and (min-width: 1180px) {
+    .markdownBody section:not(.collapse) > h1:first-child a::after {
+		right: unset;
+        left: -0.75em;
+    }
+}
+
+.markdownBody section:not(.collapse) > h2:first-child a::after {
+    right: -0.75em;
+}
+
 
 /*********************/
 /* TABLE OF CONTENTS */
@@ -4469,6 +4485,9 @@ body.lorem div[class^='drop-cap'] {
 
 .popframe-body blockquote {
     margin: 1em 0;
+}
+.popframe-body .abstract blockquote {
+    margin-top: 0;
 }
 
 .popframe-body .epigraph > blockquote {

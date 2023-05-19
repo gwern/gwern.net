@@ -935,13 +935,16 @@ a[data-link-icon-type*='svg'] .link-icon-hook::after {
 /* GENERAL */
 /***********/
 
+html {
+    font-size: var(--GW-base-font-size);
+}
+
 html,
 .shadow-body {
 	--background-color: var(--GW-body-background-color);
 
     background-color: var(--background-color);
     color: var(--GW-body-text-color);
-    font-size: var(--GW-base-font-size);
     font-weight: 400;
     font-family: var(--GW-serif-font-stack);
 }
@@ -1239,7 +1242,7 @@ header h1 em {
 @media all and (min-width: 650px) {
     #page-metadata {
         overflow: auto;
-        font-size: calc((19/20) * var(--GW-base-font-size));
+        font-size: calc((19/20) * var(--GW-body-text-font-size));
     }
     #page-description {
         margin: 0 auto 0.75em auto;
@@ -1248,13 +1251,13 @@ header h1 em {
     }
     #page-metadata-block,
     #page-metadata > .link-tags {
-        font-size: calc((18/20) * var(--GW-base-font-size));
+        font-size: calc((18/20) * var(--GW-body-text-font-size));
     }
 }
 @media all and (max-width: 649px) {
     #page-metadata {
         overflow: visible;
-        font-size: calc((17/18) * var(--GW-base-font-size));
+        font-size: calc((17/18) * var(--GW-body-text-font-size));
     }
     #page-description {
         margin: 0 auto 1em auto;
@@ -1268,7 +1271,7 @@ header h1 em {
         margin: 0 auto 0.75em auto;
     }
     #page-metadata-block {
-        font-size: calc((16/18) * var(--GW-base-font-size));
+        font-size: calc((16/18) * var(--GW-body-text-font-size));
         line-height: calc(25/16);
     }
     #page-metadata-block > #page-author::after,
@@ -3885,7 +3888,6 @@ ReaderMode.injectStyleBlock(ReaderMode.styles, "reader-mode-styles");
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
 </script>
-<link rel="preload" href="/static/img/icon/icons.svg" as="image">
-<link rel="preload" href="/static/css/fonts.css?v=1684436736" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
-<link rel="preload" href="/static/css/default.css?v=1684506326" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/fonts.css?v=1684522978" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+<link rel="preload" href="/static/css/default.css?v=1684522582" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
 <link rel="preload" href="/static/css/links.css?v=1684430958" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
