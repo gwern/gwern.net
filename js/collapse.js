@@ -231,8 +231,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 					let bareContentTags = [ "P", "UL", "OL" ];
 					if (   bareContentTags.includes(collapseBlock.firstElementChild.tagName)
 						|| (   collapseBlock.classList.contains("has-abstract")
-							&& bareContentTags.includes(collapseBlock.firstElementChild.firstElementChild.tagName)
-							&& bareContentTags.includes(collapseBlock.firstElementChild.nextElementSibling.tagName)))
+							&& bareContentTags.includes(collapseBlock.firstElementChild.firstElementChild.tagName)))
 						collapseBlock.classList.add("bare-content");
 				}
 			} else {
