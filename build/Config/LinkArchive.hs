@@ -9,7 +9,7 @@ archivePerRunN = 13
 -- some URLs are so cheap & easy & reliable to archive that we don't need to count them
 -- against our manual-review limit, because we won't meaningfully manually review them.
 isCheapArchive :: String -> Bool
-isCheapArchive url = anyInfix url [".pdf", "#pdf", "twitter.com", "https://scribe.rip/", "news.ycombinator.com"]
+isCheapArchive url = anyInfix url [".pdf", "#pdf", "twitter.com", "nitter.moomoo.me", "https://scribe.rip/", "news.ycombinator.com"]
 
 -- sometimes we may want to do automated transformations of a URL *before* we check any whitelists. In the case of
 -- Arxiv, we want to generate the PDF equivalent of the HTML abstract landing page, so the PDF gets archived, but then
@@ -23,10 +23,12 @@ transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
                             . replace "https://openreview.net/forum" "https://openreview.net/pdf"
                             -- Mobile Reddit snapshots for live popups much better than Old Reddit (although Old Reddit is a much better browsing/user experience)
                             . replace "https://old.reddit.com" "https://i.reddit.com"
+                            . replace "https://www.reddit.com" "https://i.reddit.com"
                             . replace "https://twitter.com" "https://nitter.moomoo.me"
                             . replace "https://medium.com" "https://scribe.rip" -- clean Medium frontend; can also handle custom domains with a bit more work: <https://scribe.rip/faq#custom-domains>
 transformURLsForLinking   = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
   sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" . -- handle oddities like hep-ph
+  replace "https://www.reddit.com" "https://old.reddit.com" . -- Old Reddit is much politer to send people to
   -- make IA book/item pages pop up nicer in live-links, by making them jump to the metadata section (which is all that works in the JS-less live-link iframe), and skipping the warnings about JS not being available. `#flag-button-container` is, weirdly enough, the first available ID to jump to, there's no better ID set inside the metadata section, it's all classes.
   (\u -> if u `anyPrefix` ["https://archive.org/details/"]    && '#' `notElem` u && not (u `anyInfix` ["flag-button-container"]) then u ++ "#flag-button-container" else u)
   . replace "https://medium.com" "https://scribe.rip"
@@ -80,10 +82,6 @@ fiddled with, but it works now and is live on Gwern.net.
 While the logic is a little opaque to readers, I think this handles Arxiv much more cleanly than before. -}
 
 ------------------------------------------------------------------------------------------------------------------------
-
--- some URLs are too high-quantity + high-quality to bother preview-checking manually, so we skip those:
-skipPreview :: String -> Bool
-skipPreview l = not (anyPrefix l ["https://nitter.moomoo.me"] || anyInfix l [".pdf"])
 
 -- whitelist of strings/domains which are safe to link to directly, either because they have a long history of stability
 -- & reader-friendly design, or attempting to archive them is pointless (eg. interactive services); and blacklist of
@@ -702,7 +700,7 @@ whiteList url
       , "hivemind-repo.s3-us-west-2.amazonaws.com/twdne3/" -- large binaries
       , "fursona.app" -- redirect to Google Colab
       , "old.reddit.com/r/reinforcementlearning/search" -- service
-      , "https://old.reddit.com/r/reinforcementlearning/" -- stable
+      , "https://www.reddit.com/r/reinforcementlearning/" -- stable
       , "usesthis.com" -- stable
       , "modafinil-store.com" -- dead
       , "https://huggingface.co/calculator/" -- interactive
@@ -877,7 +875,7 @@ whiteList url
       , "https://icar-project.com/" -- homepage
       , "https://discord.com/invite/" -- service
       , "https://same.energy/" -- interactive/service
-      , "https://old.reddit.com/r/MediaSynthesis/" -- low-quality due to Imgur/image embeds
+      , "https://www.reddit.com/r/MediaSynthesis/" -- low-quality due to Imgur/image embeds
       , "proceedings.mlr.press/" -- stable
       , "https://absa.org/" -- homepage
       , "https://www.agriapet.co.uk/" -- homepage
@@ -888,8 +886,8 @@ whiteList url
       , "https://free.law/recap" -- homepage
       , "https://dominicfrisby.com/" -- homepage
       , "https://forum.effectivealtruism.org" -- stable
-      , "https://old.reddit.com/r/hangovereffect/" -- homepage
-      , "https://old.reddit.com/r/AnimeResearch/" -- homepage
+      , "https://www.reddit.com/r/hangovereffect/" -- homepage
+      , "https://www.reddit.com/r/AnimeResearch/" -- homepage
       , "https://bwc.thelab.dc.gov/" -- low quality
       , "https://www.trubrain.com/" -- homepage
       , "https://energycontrol.org/quienes-somos/proyectos/" -- homepage
@@ -1095,7 +1093,7 @@ whiteList url
       , "https://csm.ai/commonsim-1-generating-3d-worlds-2/" -- low quality (video embeds)
       , "https://wilson1yan.github.io/teco/" -- low quality (video embeds)
       , "https://www.matthewtancik.com/nerf" -- low quality (video embeds)
-      , "https://old.reddit.com/r/thisisthewayitwillbe/" -- private
+      , "https://www.reddit.com/r/thisisthewayitwillbe/" -- private
       , "https://valle-demo.github.io/" -- low quality (audio embeds)
       , "https://www.riffusion.com/about" -- low quality (audio embeds)
       , "https://flavioschneider.notion.site/flavioschneider/Audio-Generation-with-Diffusion-c4f29f39048d4f03a23da13078a44cdb" -- low quality (audio embeds)

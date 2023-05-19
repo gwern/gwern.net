@@ -912,7 +912,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[pP]roper scoring rule", "https://en.wikipedia.org/wiki/Proper_scoring_rule")
         , ("[rR]epeated measures", "https://en.wikipedia.org/wiki/Repeated_measures_design")
         , ("[tT]acit knowledge", "https://en.wikipedia.org/wiki/Tacit_knowledge")
-        , ("\\/r\\/DecisionTheory", "https://old.reddit.com/r/DecisionTheory/")
+        , ("\\/r\\/DecisionTheory", "https://www.reddit.com/r/DecisionTheory/")
         , ("[aA]dditive regression models", "https://en.wikipedia.org/wiki/Generalized_additive_model")
         , ("[aA]rbtt", "https://arbtt.nomeata.de/")
         , ("brms", "https://github.com/paul-buerkner/brms")
@@ -1010,4 +1010,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("NLSY97", "https://en.wikipedia.org/wiki/National_Longitudinal_Surveys#NLSY97")
         , ("LibriSpeech", "https://danielpovey.com/files/2015_icassp_librispeech.pdf")
         , ("(AF2|AlphaFold[ -]?2)", "https://www.nature.com/articles/s41586-021-03819-2#deepmind")
+        , ("[Cc]erebellum", "https://en.wikipedia.org/wiki/Cerebellum")
         ]

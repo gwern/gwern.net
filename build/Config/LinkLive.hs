@@ -3717,7 +3717,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://nutritionj.biomedcentral.com/articles/10.1186/s12937-017-0269-y"
             , "https://nypost.com/2019/11/02/stanford-professor-who-changed-america-with-just-one-study-was-also-a-liar/"
             , "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/"
-            , "https://old.reddit.com/r/haskell/comments/fid5w/haskell_summers_of_code_retrospective_updated_for/c1gutlo"
+            , "https://www.reddit.com/r/haskell/comments/fid5w/haskell_summers_of_code_retrospective_updated_for/c1gutlo"
             , "https://oll.libertyfund.org/title/detmold-the-historical-political-and-diplomatic-writings-vol-2#lf0076-02_label_005"
             , "https://omdia.tech.informa.com/"
             , "https://omega0.xyz/omega8008/ETJ-PS/cc5d.ps"

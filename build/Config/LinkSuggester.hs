@@ -986,7 +986,7 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     ( "https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1000097"
       , [ "Preferred Reporting Items for Systematic Reviews and Meta-Analyses: The PRISMA Statement', Moher et al 2009"
         , "PRISMA" ])
-  , ( "https://old.reddit.com/r/MachineLearning/comments/akbc11/p_tag_estimation_for_animestyle_girl_image/"
+  , ( "https://www.reddit.com/r/MachineLearning/comments/akbc11/p_tag_estimation_for_animestyle_girl_image/"
     , [ "DeepDanbooru" ]
     ), ( "https://openai.com/research/openai-five-defeats-dota-2-world-champions" , [ "OA5"  ] ), ( "https://pactwebserial.wordpress.com/" , [ "Pact" ] ), ( "https://pdfs.semanticscholar.org/2576/fd36efa9be01a26269e94925283de306cd83.pdf"
     , [ "Consumer Heterogeneity and Paid Search Effectiveness: A Large Scale Field Experiment"
