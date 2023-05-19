@@ -2682,6 +2682,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     display: block;
     overflow: hidden;
     margin: 1.25em auto;
+    text-indent: 0;
     border: 1px solid var(--GW-math-block-scrollbar-border-color);
 }
 
