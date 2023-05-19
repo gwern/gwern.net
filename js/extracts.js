@@ -638,21 +638,25 @@ Extracts = {
         popFrame.body.classList.add("markdownBody");
 
 		//	Inject styles.
-		[ "inlined-styles-colors", 
-		  "inlined-styles", 
-		  "inlined-dark-mode-styles", 
-		  "inlined-fonts", 
-		  "graphical-link-icons",
-		  "mathjax-styles" ].forEach(styleBlockID => {
-		  	let existingStyleBlock = document.getElementById(styleBlockID);
-		  	if (existingStyleBlock == null)
-		  		return;
-
-			let styleBlock = existingStyleBlock.cloneNode(true);
+		let inlinedStyleIDs = [ 
+			"inlined-styles-colors", 
+			"inlined-styles", 
+			"inlined-dark-mode-styles", 
+			"inlined-fonts", 
+			"mathjax-styles"
+		];
+		Array.from(document.styleSheets).filter(styleSheet => 
+			(   styleSheet.ownerNode.tagName == "LINK" 
+			 || inlinedStyleIDs.includes(styleSheet.ownerNode.id))
+		).forEach(styleSheet => {
+			let styleBlock = elementFromHTML("<style>"
+				+ Array.from(styleSheet.cssRules).map(rule => rule.cssText).join("\n")
+				+ "</style>");
+			[ "id", "media" ].forEach(attribute => {
+				if (styleSheet.ownerNode.hasAttribute(attribute))
+					styleBlock.setAttribute(attribute, styleSheet.ownerNode.getAttribute(attribute));
+			});
 			popFrame.document.insertBefore(styleBlock, popFrame.body);
-		});
-		document.querySelectorAll("link[rel='stylesheet']").forEach(cssLink => {
-			popFrame.document.insertBefore(cssLink.cloneNode(true), popFrame.body);
 		});
 
 		//	Add handler to update popup position when content changes.
