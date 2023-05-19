@@ -11,7 +11,7 @@ Popups = {
 		*/
     popupContainerID: "popup-container",
     popupContainerParentSelector: "html",
-    popupContainerZIndex: "10001",
+    popupContainerZIndex: "10000",
 
     popupBreathingRoomX: 12.0,
     popupBreathingRoomY: 8.0,
