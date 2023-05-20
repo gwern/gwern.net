@@ -409,6 +409,9 @@ Popins = {
 				Popins.removePopin(existingPopin);
 		});
 
+		//	Set rendering progress indicator (spinner).
+		Popins.addClassesToPopFrame(target.popin, "rendering");
+
 		//  Inject the popin.
 		if (containingDocument.popin) {
 			/*  Save the parent popin’s scroll state when pushing it down the
@@ -445,6 +448,12 @@ Popins = {
 		});
 
 		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
+
+		requestAnimationFrame(() => {
+			//	Disable rendering progress indicator (spinner).
+			if (target.popin)
+				Popins.removeClassesFromPopFrame(target.popin, "rendering");
+		});
 	},
 
 	/*	Returns full viewport rect for popin and all auxiliary elements

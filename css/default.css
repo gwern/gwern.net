@@ -6100,18 +6100,18 @@ body.lorem div[class^='drop-cap'] {
  */
 .popin.loading::before,
 .popin.rendering::before {
+	content: "";
     position: absolute;
-    width: 3em;
-    height: 3em;
-    max-height: 6em;
+    width: calc(100% - 1em);
+    height: auto;
+    max-width: 3em;
+    max-height: 3em;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     margin: auto;
     text-indent: 0;
-    display: block;
-    overflow: hidden;
     opacity: 0.2;
     z-index: 1;
 }
@@ -6123,20 +6123,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    content: url('/static/img/icon/icons.svg#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg#circle-notch-light');
     animation: fa-spin 2s infinite linear;
-}
-
-.popin-body.image.loading img,
-.popin-body.image.loading-failed img,
-.popin-body.object.loading-failed iframe {
-    visibility: hidden;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    content: url('/static/img/icon/icons.svg#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
