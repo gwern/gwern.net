@@ -1613,8 +1613,9 @@ function enableLinkIcon(link) {
     if (link.dataset.linkIconType.includes("text")) {
         link.style.setProperty("--link-icon", `"${(link.dataset.linkIcon)}"`);
     } else if (link.dataset.linkIconType.includes("svg")) {
+		let iconFileURL = versionedAssetURL("/static/img/icon/icons.svg");
         link.style.setProperty("--link-icon-url",
-            `url("/static/img/icon/icons.svg#${(link.dataset.linkIcon)}")`);
+            `url("${iconFileURL.pathname}${iconFileURL.search}#${(link.dataset.linkIcon)}")`);
     }
 
     //  Set class.
