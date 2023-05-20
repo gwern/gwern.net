@@ -170,121 +170,125 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 
 	//  Construct all collapse blocks (in correct final state).
 	eventInfo.container.querySelectorAll(".collapse").forEach(collapseBlock => {
-		let startExpanded = (collapseBlock.contains(getHashTargetedElement()) == true);
-
+		//	Compensate for Pandoc putting .collapse class on headings.
 		if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].includes(collapseBlock.tagName)) {
 			collapseBlock.classList.remove("collapse");
 			if (collapseBlock.className == "")
 				collapseBlock.removeAttribute("class");
-		} else {
-			if (GW.isMobile() == false)
-				collapseBlock.classList.add("expand-on-hover");
 
-			let collapseWrapper;
-			if ([ "DIV", "SECTION", "SPAN" ].includes(collapseBlock.tagName)) {
-				/*	Rewrap spans that are NOT inline collapses (i.e., those that
-					are, for some reason, wrapping block-level content).
-				 */
-				if (   collapseBlock.tagName == "SPAN"
-					&& containsBlockChildren(collapseBlock))
-					collapseBlock = rewrapContents(collapseBlock, null, "DIV", true, true);
-
-				//	Designate collapse type (block or inline).
-				if ([ "SPAN" ].includes(collapseBlock.tagName))
-					collapseBlock.classList.add("collapse-inline");
-				else
-					collapseBlock.classList.add("collapse-block");
-
-				//	No additional wrapper needed for these tag types.
-				collapseWrapper = collapseBlock;
-
-				//	Ensure correct structure and classes of abstracts.
-				collapseWrapper.querySelectorAll(".collapse > .abstract").forEach(collapseAbstract => {
-					/*	Abstracts (the .abstract class) can end up in collapses
-						without this being known in advance, so may not have the
-						.abstract-collapse class, as they should.
-					 */
-					collapseAbstract.classList.add("abstract-collapse");
-				});
-				collapseWrapper.querySelectorAll(".collapse > .abstract-collapse").forEach(collapseAbstract => {
-					//	Mark those collapse blocks that have abstracts.
-					collapseAbstract.closest(".collapse").classList.add("has-abstract");
-
-					if (collapseWrapper.classList.contains("collapse-block")) {
-						if (   collapseAbstract.children.length == 0
-							&& collapseAbstract.childNodes.length > 0) {
-							//	Wrap bare text nodes.
-							collapseAbstract.innerHTML = `<p>${(collapseAbstract.innerHTML.trim())}</p>`;
-						} else if (   collapseAbstract.firstElementChild
-								   && collapseAbstract.firstElementChild.tagName == "BLOCKQUOTE") {
-							//	Make sure “real” abstracts are marked as such.
-							collapseAbstract.classList.add("abstract");
-						}
-					}
-				});
-
-				//	Designate “bare content” collapse blocks.
-				if (collapseWrapper.classList.contains("collapse-block")) {
-					let bareContentTags = [ "P", "UL", "OL" ];
-					if (   bareContentTags.includes(collapseBlock.firstElementChild.tagName)
-						|| (   collapseWrapper.classList.contains("has-abstract")
-							&& bareContentTags.includes(collapseBlock.firstElementChild.firstElementChild.tagName)))
-						collapseWrapper.classList.add("bare-content");
-				}
-			} else {
-				//	Additional wrapper is required for most tag types.
-				collapseWrapper = wrapElement(collapseBlock, null, "DIV", true, [ "collapse", "expand-on-hover" ]);
-
-				//	This is a block collapse.
-				collapseWrapper.classList.add("collapse-block");
-			}
-
-			//	Mark as expanded, if need be.
-			collapseWrapper.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1)
-
-			//  Inject the disclosure button.
-			if (collapseWrapper.classList.contains("collapse-inline")) {
-				//	Button at start.
-				if (collapseBlock.firstElementChild.classList.contains("abstract-collapse"))
-					collapseWrapper.insertBefore(newDisclosureButton(false), collapseBlock.firstElementChild.nextSibling);
-				else
-					collapseWrapper.insertBefore(newDisclosureButton(false), collapseWrapper.firstChild);
-
-				//	Button at end.
-				collapseWrapper.insertBefore(newDisclosureButton(false, false), null);
-			} else if ([ "SECTION" ].includes(collapseWrapper.tagName)) {
-				collapseWrapper.insertBefore(newDisclosureButton(), collapseWrapper.firstElementChild.nextElementSibling);
-			} else {
-				collapseWrapper.insertBefore(newDisclosureButton(), collapseWrapper.firstChild);
-			}
-
-			//	Slight HTML structure rectification.
-			if (   collapseWrapper.parentElement
-				&& [ "P" ].includes(collapseWrapper.parentElement.tagName) == true
-				&& [ "SPAN" ].includes(collapseWrapper.tagName) == false
-				&& isOnlyChild(collapseWrapper))
-				unwrap(collapseWrapper.parentElement);
-
-			//	Construct collapse content wrapper.
-			let collapseContentWrapperTagName = collapseWrapper.tagName == "SPAN" ? "SPAN" : "DIV";
-			let collapseContentWrapper = newElement(collapseContentWrapperTagName, { "class": "collapse-content-wrapper" });
-			let childNodesArray = Array.from(collapseWrapper.childNodes);
-			collapseContentWrapper.append(...childNodesArray.slice(childNodesArray.findLastIndex(node => {
-				return (   node instanceof Element 
-						&& node.matches(".disclosure-button:not(.end), .abstract-collapse"));
-			}) + 1));
-			collapseWrapper.append(collapseContentWrapper);
-			/*	Move the auxiliary (closing) disclosure button of an inline 
-				collapse back to its proper place.
-			 */
-			if ([ "SPAN" ].includes(collapseWrapper.tagName))
-				collapseWrapper.append(collapseContentWrapper.lastElementChild);
-
-			//	Designate abstract-less collapse blocks.
-			if (collapseContentWrapper.previousElementSibling.classList.contains("abstract-collapse") == false)
-				collapseWrapper.classList.add("no-abstract");
+			return;
 		}
 
+		let startExpanded = (collapseBlock.contains(getHashTargetedElement()) == true);
+
+		if (GW.isMobile() == false)
+			collapseBlock.classList.add("expand-on-hover");
+
+		let collapseWrapper;
+		if ([ "DIV", "SECTION", "SPAN" ].includes(collapseBlock.tagName)) {
+			/*	Rewrap spans that are NOT inline collapses (i.e., those that
+				are, for some reason, wrapping block-level content).
+			 */
+			if (   collapseBlock.tagName == "SPAN"
+				&& containsBlockChildren(collapseBlock))
+				collapseBlock = rewrapContents(collapseBlock, null, "DIV", true, true);
+
+			//	Designate collapse type (block or inline).
+			if ([ "SPAN" ].includes(collapseBlock.tagName))
+				collapseBlock.classList.add("collapse-inline");
+			else
+				collapseBlock.classList.add("collapse-block");
+
+			//	No additional wrapper needed for these tag types.
+			collapseWrapper = collapseBlock;
+
+			//	Ensure correct structure and classes of abstracts.
+			collapseWrapper.querySelectorAll(".collapse > .abstract").forEach(collapseAbstract => {
+				/*	Abstracts (the .abstract class) can end up in collapses
+					without this being known in advance, so may not have the
+					.abstract-collapse class, as they should.
+				 */
+				collapseAbstract.classList.add("abstract-collapse");
+			});
+			collapseWrapper.querySelectorAll(".collapse > .abstract-collapse").forEach(collapseAbstract => {
+				//	Mark those collapse blocks that have abstracts.
+				collapseAbstract.closest(".collapse").classList.add("has-abstract");
+
+				if (collapseWrapper.classList.contains("collapse-block")) {
+					if (   collapseAbstract.children.length == 0
+						&& collapseAbstract.childNodes.length > 0) {
+						//	Wrap bare text nodes.
+						collapseAbstract.innerHTML = `<p>${(collapseAbstract.innerHTML.trim())}</p>`;
+					} else if (   collapseAbstract.firstElementChild
+							   && collapseAbstract.firstElementChild.tagName == "BLOCKQUOTE") {
+						//	Make sure “real” abstracts are marked as such.
+						collapseAbstract.classList.add("abstract");
+					}
+				}
+			});
+
+			//	Designate “bare content” collapse blocks.
+			if (collapseWrapper.classList.contains("collapse-block")) {
+				let bareContentTags = [ "P", "UL", "OL" ];
+				if (   bareContentTags.includes(collapseBlock.firstElementChild.tagName)
+					|| (   collapseWrapper.classList.contains("has-abstract")
+						&& bareContentTags.includes(collapseBlock.firstElementChild.firstElementChild.tagName)))
+					collapseWrapper.classList.add("bare-content");
+			}
+		} else {
+			//	Additional wrapper is required for most tag types.
+			collapseWrapper = wrapElement(collapseBlock, null, "DIV", true, [ "collapse", "expand-on-hover" ]);
+
+			//	This is a block collapse.
+			collapseWrapper.classList.add("collapse-block");
+		}
+
+		//	Mark as expanded, if need be.
+		collapseWrapper.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1)
+
+		//  Inject the disclosure button.
+		if (collapseWrapper.classList.contains("collapse-inline")) {
+			//	Button at start.
+			if (collapseBlock.firstElementChild.classList.contains("abstract-collapse"))
+				collapseWrapper.insertBefore(newDisclosureButton(false), collapseBlock.firstElementChild.nextSibling);
+			else
+				collapseWrapper.insertBefore(newDisclosureButton(false), collapseWrapper.firstChild);
+
+			//	Button at end.
+			collapseWrapper.insertBefore(newDisclosureButton(false, false), null);
+		} else if ([ "SECTION" ].includes(collapseWrapper.tagName)) {
+			collapseWrapper.insertBefore(newDisclosureButton(), collapseWrapper.firstElementChild.nextElementSibling);
+		} else {
+			collapseWrapper.insertBefore(newDisclosureButton(), collapseWrapper.firstChild);
+		}
+
+		//	Slight HTML structure rectification.
+		if (   collapseWrapper.parentElement
+			&& [ "P" ].includes(collapseWrapper.parentElement.tagName) == true
+			&& [ "SPAN" ].includes(collapseWrapper.tagName) == false
+			&& isOnlyChild(collapseWrapper))
+			unwrap(collapseWrapper.parentElement);
+
+		//	Construct collapse content wrapper.
+		let collapseContentWrapperTagName = collapseWrapper.tagName == "SPAN" ? "SPAN" : "DIV";
+		let collapseContentWrapper = newElement(collapseContentWrapperTagName, { "class": "collapse-content-wrapper" });
+		let childNodesArray = Array.from(collapseWrapper.childNodes);
+		collapseContentWrapper.append(...childNodesArray.slice(childNodesArray.findLastIndex(node => {
+			return (   node instanceof Element 
+					&& node.matches(".disclosure-button:not(.end), .abstract-collapse"));
+		}) + 1));
+		collapseWrapper.append(collapseContentWrapper);
+		/*	Move the auxiliary (closing) disclosure button of an inline 
+			collapse back to its proper place.
+		 */
+		if ([ "SPAN" ].includes(collapseWrapper.tagName))
+			collapseWrapper.append(collapseContentWrapper.lastElementChild);
+
+		//	Designate abstract-less collapse blocks.
+		if (collapseContentWrapper.previousElementSibling.classList.contains("abstract-collapse") == false)
+			collapseWrapper.classList.add("no-abstract");
+
+		//	Fire event.
 		if (startExpanded) {
 			GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
 				source: "prepareCollapseBlocks",
