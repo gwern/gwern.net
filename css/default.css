@@ -7086,8 +7086,9 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    pointer-events: none;
     --spinner-image: url('/static/img/icon/icons.svg#circle-notch-solid');
+
+    pointer-events: none;
 }
 
 /*  Loading spinner.
@@ -7101,7 +7102,8 @@ a.include-loading.include-spinner::after {
 }
 
 a.include-loading.include-spinner:empty::after {
-    content: var(--spinner-image);
+	content: "";
+    background-image: var(--spinner-image);
     width: 1.25em;
     height: 1.25em;
     margin: 0;
