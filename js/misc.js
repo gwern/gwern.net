@@ -555,11 +555,7 @@ Notes = {
             page as the citation (to distinguish between main document and any
             full-page embeds that may be spawned).
          */
-        return allNotes.filter(note => {
-            let footnoteBackLink = note.querySelector(".footnote-back");
-            return (   footnoteBackLink != null
-                    && footnoteBackLink.pathname == citation.pathname);
-        });
+        return allNotes.filter(note => (note.querySelector(".footnote-back")?.pathname == citation.pathname));
     }
 };
 
