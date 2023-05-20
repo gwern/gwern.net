@@ -5177,12 +5177,16 @@ body.lorem div[class^='drop-cap'] {
 }
 .popup .popframe-scroll-view::-webkit-scrollbar-thumb {
     background-color: var(--GW-popups-popup-scrollbar-thumb-color);
+    background-image: var(--GW-checkerboard-scrollbar-background-image);
+    background-size: 2px;
     box-shadow:
         0 0 0 3px var(--background-color) inset;
 }
 .popup .popframe-scroll-view::-webkit-scrollbar-thumb:hover {
     background-color: var(--GW-popups-popup-scrollbar-thumb-hover-color);
+    background-image: var(--GW-checkerboard-scrollbar-hover-background-image);
 }
+
 
 /*  Scroll bar styles (for Firefox).
     */
@@ -5910,7 +5914,7 @@ body.lorem div[class^='drop-cap'] {
     font-weight: inherit;
     font-style: inherit;
     margin: 0 1px;
-    padding: 4px;
+    padding: 6px;
     height: 100%;
     flex: 1 0 auto;
     width: calc(var(--GW-popins-popin-title-bar-height) - 1px);
@@ -5932,10 +5936,6 @@ body.lorem div[class^='drop-cap'] {
     opacity: 0.35;
 }
 
-.popin .popframe-title-bar-button.show-extracts-options-dialog-button {
-    padding: 6px;
-    opacity: 0.8;
-}
 
 /*  Popin stack counter.
     */
