@@ -340,9 +340,10 @@ function updateDisclosureButtonState(collapseBlock, showLabels) {
 
 	let disclosureButton = collapseBlock.querySelector(".disclosure-button");
 
+	let action = GW.isMobile() ? "Tap" : "Click";
 	let labelHTML = isCollapsed(collapseBlock)
-					? `Click to expand`
-					: `Click to collapse`;
+					? `${action} to expand`
+					: `${action} to collapse`;
 
 	disclosureButton.querySelectorAll(".part .label").forEach(label => {
 		label.innerHTML = labelHTML;
