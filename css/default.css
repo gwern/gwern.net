@@ -757,10 +757,10 @@ li > .collapse-block:only-child {
 li:last-child > .collapse-block:only-child {
     margin: 0.25em 0 0.75em 0;
 }
-li > .collapse-block > .collapse-content-wrapper > ul {
+li > .collapse-block.no-abstract > .collapse-content-wrapper > ul:first-child {
     margin-top: 0.125em;
 }
-li > .collapse-block.expanded > .collapse-content-wrapper > ul {
+li > .collapse-block.no-abstract.expanded > .collapse-content-wrapper > ul:first-child {
     margin-top: 0.5em;
 }
 
