@@ -33,23 +33,21 @@ function expandCollapseBlocksToReveal(node) {
 
     //  Expand the nearest collapse block.
     let collapseBlock = element.closest(".collapse");
-    let expansionOccurred = isCollapsed(collapseBlock);
-    collapseBlock.swapClasses([ "expanded", "expanded-not" ], 0);
-    if (expansionOccurred)
-		updateDisclosureButtonState(collapseBlock);
+    let expanded = isCollapsed(collapseBlock);
+    toggleCollapseBlockState(collapseBlock, expanded);
 
     /*  Expand any higher-level collapse blocks!
         Fire state change event only if we did NOT have to do any further
         expansion (otherwise we’ll do redundant layout).
      */
-    if (!expandCollapseBlocksToReveal(collapseBlock.parentElement) && expansionOccurred)
+    if (!expandCollapseBlocksToReveal(collapseBlock.parentElement) && expanded)
     	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
     		source: "expandCollapseBlocksToReveal",
     		collapseBlock: collapseBlock
     	});
 
     //  Report whether we had to expand a collapse block.
-    return expansionOccurred;
+    return expanded;
 }
 
 /*******************************************************************************/
@@ -75,8 +73,7 @@ function collapseCollapseBlock(collapseBlock, fireEvent = true) {
 	});
 
 	//	Collapse block.
-    collapseBlock.swapClasses([ "expanded", "expanded-not" ], 1);
-	updateDisclosureButtonState(collapseBlock);
+	toggleCollapseBlockState(collapseBlock, false);
 
 	//	Fire event, if need be.
 	if (fireEvent) {
@@ -202,18 +199,18 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 				collapseWrapper = collapseBlock;
 
 				//	Ensure correct structure and classes of abstracts.
-				collapseBlock.querySelectorAll(".collapse > .abstract").forEach(collapseAbstract => {
+				collapseWrapper.querySelectorAll(".collapse > .abstract").forEach(collapseAbstract => {
 					/*	Abstracts (the .abstract class) can end up in collapses
 						without this being known in advance, so may not have the
 						.abstract-collapse class, as they should.
 					 */
 					collapseAbstract.classList.add("abstract-collapse");
 				});
-				collapseBlock.querySelectorAll(".collapse > .abstract-collapse").forEach(collapseAbstract => {
+				collapseWrapper.querySelectorAll(".collapse > .abstract-collapse").forEach(collapseAbstract => {
 					//	Mark those collapse blocks that have abstracts.
 					collapseAbstract.closest(".collapse").classList.add("has-abstract");
 
-					if (collapseBlock.classList.contains("collapse-block")) {
+					if (collapseWrapper.classList.contains("collapse-block")) {
 						if (   collapseAbstract.children.length == 0
 							&& collapseAbstract.childNodes.length > 0) {
 							//	Wrap bare text nodes.
@@ -227,12 +224,12 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 				});
 
 				//	Designate “bare content” collapse blocks.
-				if (collapseBlock.classList.contains("collapse-block")) {
+				if (collapseWrapper.classList.contains("collapse-block")) {
 					let bareContentTags = [ "P", "UL", "OL" ];
 					if (   bareContentTags.includes(collapseBlock.firstElementChild.tagName)
-						|| (   collapseBlock.classList.contains("has-abstract")
+						|| (   collapseWrapper.classList.contains("has-abstract")
 							&& bareContentTags.includes(collapseBlock.firstElementChild.firstElementChild.tagName)))
-						collapseBlock.classList.add("bare-content");
+						collapseWrapper.classList.add("bare-content");
 				}
 			} else {
 				//	Additional wrapper is required for most tag types.
@@ -246,7 +243,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			collapseWrapper.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1)
 
 			//  Inject the disclosure button.
-			if (collapseBlock.classList.contains("collapse-inline")) {
+			if (collapseWrapper.classList.contains("collapse-inline")) {
 				//	Button at start.
 				if (collapseBlock.firstElementChild.classList.contains("abstract-collapse"))
 					collapseWrapper.insertBefore(newDisclosureButton(false), collapseBlock.firstElementChild.nextSibling);
@@ -255,7 +252,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 
 				//	Button at end.
 				collapseWrapper.insertBefore(newDisclosureButton(false, false), null);
-			} else if ([ "SECTION" ].includes(collapseBlock.tagName)) {
+			} else if ([ "SECTION" ].includes(collapseWrapper.tagName)) {
 				collapseWrapper.insertBefore(newDisclosureButton(), collapseWrapper.firstElementChild.nextElementSibling);
 			} else {
 				collapseWrapper.insertBefore(newDisclosureButton(), collapseWrapper.firstChild);
@@ -291,12 +288,16 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 		if (startExpanded) {
 			GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
 				source: "prepareCollapseBlocks",
-				collapseBlock: collapseBlock
+				collapseBlock: collapseWrapper
 			});
 		}
 	});
 }, "rewrite");
 
+/*****************************************************************************/
+/*	Ensure that top part of disclosure button (including chevron icon) matches
+	height of section heading text, for section collapses.
+ */
 addContentInjectHandler(GW.contentInjectHandlers.rectifySectionCollapseLayout = (eventInfo) => {
 	GWLog("rectifySectionCollapseLayout", "collapse.js", 1);
 
@@ -364,6 +365,30 @@ function updateDisclosureButtonState(collapseBlock, showLabels) {
 	}
 }
 
+/***************************************/
+/*	Expand or collapse a collapse block.
+ */
+function toggleCollapseBlockState(collapseBlock, expanding) {
+	//	Set proper classes.
+	collapseBlock.swapClasses([ "expanded", "expanded-not" ], expanding ? 0 : 1);
+
+	//	Update label text and other HTML-based UI state.
+	updateDisclosureButtonState(collapseBlock, GW.collapse.showCollapseInteractionHintsOnHover);
+
+	//	Compensate for block indentation due to nesting (e.g., lists).
+	if (collapseBlock.classList.contains("collapse-block")) {
+		if (expanding) {
+			let contentRect = collapseBlock.querySelector(".collapse-content-wrapper").getBoundingClientRect();
+			let enclosingContentRect = collapseBlock.closest(".markdownBody").getBoundingClientRect();
+			let offset = getComputedStyle(collapseBlock).getPropertyValue("--collapse-left-offset");
+
+			collapseBlock.style.marginLeft = `calc(${(enclosingContentRect.x - contentRect.x)}px - ${offset})`;
+		} else { // if (collapsing)
+			collapseBlock.style.marginLeft = "";
+		}
+	}
+}
+
 /*************************************************/
 /*  Add event listeners to the disclosure buttons.
  */
@@ -387,28 +412,29 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 				&& collapseBlock.classList.contains("just-auto-expanded"))
 				return;
 
+			//	Expanding? Collapsing? (For readability and consistency.)
+			let expanding = isCollapsed(collapseBlock);
+			let collapsing = (expanding == false);
+
 			//	Keep count of clicks to uncollapse.
-			if (   collapseBlock.classList.contains("collapse-block")
-				&& isCollapsed(collapseBlock)
+			if (   expanding
+				&& collapseBlock.classList.contains("collapse-block")
 				&& event.type == "click")
 				incrementSavedCount("clicked-to-expand-collapse-block-count");
 
-			//	Set proper classes.
-			collapseBlock.swapClasses([ "expanded", "expanded-not" ], isCollapsed(collapseBlock) ? 0 : 1);
-
-			//	Update label text and other HTML-based UI state.
-			updateDisclosureButtonState(collapseBlock, GW.collapse.showCollapseInteractionHintsOnHover);
+			//	Expand or collapse.
+			toggleCollapseBlockState(collapseBlock, expanding);
 
 			/*	If a collapse block was collapsed from the bottom, it might now
 				be up off the screen. Scroll it into view.
 			 */
-			if (   isCollapsed(collapseBlock)
+			if (   collapsing
 				&& isOnScreen(collapseBlock) == false)
 				scrollElementIntoView(collapseBlock);
 			/*	If a collapse block was expanded from the bottom, the top of the
 				collapse block might be up off the screen. Scroll it into view.
 			 */
-			else if (   isCollapsed(collapseBlock) == false
+			else if (   expanding
 					 && collapseBlock.getBoundingClientRect().top < 0)
 				scrollElementIntoView(collapseBlock);
 
