@@ -444,6 +444,7 @@ button {
     z-index: 1;
 }
 .collapse-block > .abstract-collapse.abstract {
+	margin-top: 0;
     margin-left: calc(-1 * (var(--collapse-toggle-left-width) + 2px));
 }
 .collapse-block > .abstract-collapse:not(.abstract) {
@@ -1614,8 +1615,9 @@ blockquote table table {
 
 /*  EPITAPH (eg /LARPing)
  */
-.text-center {
+.markdownBody .text-center {
     text-align: center;
+    text-indent: 0;
 }
 
 /*************/

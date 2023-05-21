@@ -986,6 +986,10 @@ body.justified-not .markdownBody li {
     }
 }
 
+* + .abstract {
+	margin-top: 1.5em;
+}
+
 /*  Auto-smallcaps the first line of the introduction (= the first `<p>` after
     an ‘abstract’ div); this avoids the need to manually specify what to
     smallcaps, and it auto-adjusts to screen/line-width, which is nicer.

@@ -1885,6 +1885,19 @@ addContentLoadHandler(GW.contentLoadHandlers.designatedColorInvertedContainers =
 	});
 }, "rewrite");
 
+/*********************************************/
+/*	Fix incorrect text block tag types.
+
+	- .text-center are <div> but should be <p>
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rectifySpecialTextBlockTagTypes = (eventInfo) => {
+    GWLog("rectifySpecialTextBlockTagTypes", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".text-center").forEach(div => {
+		rewrapContents(div, null, "P", true, true);
+	});
+});
+
 
 /*************/
 /* DROP CAPS */
@@ -1904,7 +1917,10 @@ addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) 
         ".markdownBody > section:first-of-type > .epigraph:nth-child(2) + p",
         ".markdownBody .abstract:not(.scrape-abstract-not) + p"
     ].join(", ");
-    let exclusionSelector = [
+    let excludedElementsSelector = [
+    	".text-center"
+    ].join(", ");
+    let excludedContainerElementsSelector = [
         "#footer",
         "#aotd"
     ].join(", ");
@@ -1913,15 +1929,15 @@ addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) 
         dropCapClass = dropCapClass.replace("-caps-", "-cap-");
 
     eventInfo.container.querySelectorAll(dropCapBlocksSelector).forEach(dropCapBlock => {
-        if (dropCapBlock.closest(exclusionSelector))
+        if (   dropCapBlock.matches(excludedElementsSelector)
+        	|| dropCapBlock.closest(excludedContainerElementsSelector))
             return;
 
         /*  Drop cap class could be set globally, or overridden by a .abstract;
             the latter could be `drop-cap-not` (which nullifies any page-global
             drop-cap class for the given block).
          */
-        let precedingAbstract = (   dropCapBlock.previousElementSibling
-                                 && dropCapBlock.previousElementSibling.classList.contains("abstract"))
+        let precedingAbstract = dropCapBlock.previousElementSibling?.classList.contains("abstract")
                                 ? dropCapBlock.previousElementSibling
                                 : null;
         dropCapClass = (precedingAbstract
