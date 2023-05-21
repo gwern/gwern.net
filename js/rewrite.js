@@ -1723,7 +1723,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteInflationAdjusters = (eventI
 			component and adjusted amount has more than one whole digit.
 		 */
 		let forceRound = (   unadjusted.textContent.includes(".") == false
-						  && adjusted.textContent.match(/([0-9]+)\.|$/)[1].length > 1);
+						  && adjusted.textContent.match(/([0-9]+)(\.|$)/)[1].length > 1);
 		adjusted.textContent = prettifyCurrencyString(adjusted.textContent, false, forceRound);
 	});
 }, "rewrite");
