@@ -116,7 +116,7 @@ siteBlackList = [
           "nitro.biosci.arizona.edu", "nitter.moomoo.me", "nmteaco.com", "n.neurology.org", "noahpinion.substack.com",
           "nonsymbolic.org", "nootropicsdepot.com", "norvig.com", "nostalgebraist.tumblr.com", "novelai.net",
           "nowak.ece.wisc.edu", "numinous.productions", "nutritionj.biomedcentral.com", "nv-adlr.github.io", "nyaa.si",
-          "nymag.com", "nypost.com", "ohtori.nu", "okmij.org", "old.reddit.com",
+          "nymag.com", "nypost.com", "ohtori.nu", "okmij.org", "old.reddit.com", "www.reddit.com",
           "oll.libertyfund.org", "omega0.xyz", "onlinelibrary.wiley.com", "online.ucpress.edu", "online.wsj.com",
           "openaccess.thecvf.com", "openai.com", "openreview.net", "opensnp.org", "opinionator.blogs.nytimes.com",
           "orbit.dtu.dk", "orbi.uliege.be", "originstamp.com", "orionmagazine.org", "oscarbonilla.com",

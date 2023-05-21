@@ -342,6 +342,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<xref rid=\"sec[0-9]+\" ref-type=\"sec\">([A-Za-z]+ [0-9]+)</xref>", "<strong>\\1</strong>") -- PLOS: '<xref rid="sec022" ref-type="sec">Experiment 3</xref>' etc.
          , ("^en$", "")
          , (" ([0-9]) h ", " \\1h ") -- hour abbreviation
+         , ("between ([0-9%]+) and ([0-9]+)", "\\1–\\2") -- "range between 2 and 10" → "range 2–10"
          , ("([0-9%]) – ([0-9])", "\\1–\\2") -- space-separated en-dash ranges eg. "with a range of ~0.60 – 0.71 for height"
          , ("([0-9%]) – ([a-z])", "\\1—\\2") -- a number-alphabet en-dash is usually an em-dash eg. "a Fréchet Inception Distance (FID) of 10.59 – beating the baseline BigGAN model—at"
          , ("([a-zA-Z]) – ([[:punct:]])", "\\1—\\2") -- en dash errors in WP abstracts: usually meant em-dash. eg. 'disc format – <a href="https://en.wikipedia.org/wiki/Universal_Media_Disc">Universal'
@@ -359,6 +360,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" ([0-9]+%?)-([0-9]+)", " \\1–\\2")
          , ("([0-9]+%?)-([0-9]+) ", "\\1–\\2 ")
          , ("([0-9]) %", "\\1%")
+         , (" ([0-9]+) out of the ([0-9]+) ", " \\1⁄\\2 ")
          , (" ([0-9]+) out of ([0-9]+) ", " \\1⁄\\2 ") -- need space-separation due to examples like 'smartphones are now used by 5.8 out of 7.0 billion people on earth'
          , (" ([0-9][0-9]?[0-9]?) of ([0-9][0-9]?[0-9]?) ", " \\1⁄\\2 ")
          , ("([0-9]+) of ([0-9]+)", "\\1⁄\\2")

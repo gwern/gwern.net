@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-05-18 09:47:10 gwern"
+When:  Time-stamp: "2023-05-19 09:36:13 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -227,7 +227,7 @@ archiveURLCheck l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "li
 
 -- take a URL, archive it, and if successful return the hashed path
 archiveURL :: String -> IO (Maybe Path)
-archiveURL l = do let args = if C.isCheapArchive l then [l] else [l, "--no-preview"]
+archiveURL l = do let args = if not (C.isCheapArchive l) then [l] else [l, "--no-preview"]
                   (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArchive.sh" args
                   case exit of
                      ExitSuccess -> do let result = U.toString stdout
