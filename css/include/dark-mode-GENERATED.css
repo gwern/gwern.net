@@ -345,8 +345,8 @@
 	 */
 	--GW-transparent-svg-background-color: #fff;
 
-    --GW-popups-popup-title-bar-pattern: var(--GW-image-pattern-dotted-161616-on-252525-gif);
-    --GW-popups-popup-title-bar-pattern-focused: var(--GW-image-pattern-dotted-161616-on-3e3e3e-gif);
+    --GW-popups-popup-title-bar-pattern: var(--GW-image-pattern-dotted-161616-on-252525-2x-gif);
+    --GW-popups-popup-title-bar-pattern-focused: var(--GW-image-pattern-dotted-161616-on-3e3e3e-2x-gif);
 
     --GW-dotted-underline-background-image: var(--GW-image-linear-dotted-fff-transparent-2x-gif);
     --GW-dotted-underline-hover-background-image: var(--GW-image-linear-dotted-bbb-transparent-2x-gif);
