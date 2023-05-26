@@ -33,7 +33,7 @@
 /**********/
 /* COLORS */
 /**********/
-/*	colors are now in /static/css/colors.css + /include/components/light-mode-adjustments.css (light mode) 
+/*	colors are now in /static/css/colors.css + /include/components/light-mode-adjustments.css (light mode)
 	or /include/components/colors-dark-GENERATED.css + /include/components/dark-mode-adjustments.css (dark mode)
  */
 
@@ -1286,7 +1286,7 @@ table, code, pre, a, h1, h2, h3, h4, h5, h6 {
 /*=-----------------------=*/
 /*= Bulleted list markers =*/
 /*=-----------------------=*/
-/* NOTE: should be able to simplify list markers ~2026 using ::marker, see https://web.dev/css-marker-pseudo-element/ https://www.caniuse.com/css-marker-pseudo */
+/* NOTE: cannot replace with ::marker use due to its severe limits; see https://web.dev/css-marker-pseudo-element/ https://www.caniuse.com/css-marker-pseudo */
 ul > li::before {
     position: absolute;
     z-index: 1;
@@ -3498,7 +3498,7 @@ body.lorem div[class^='drop-cap'] {
     color: var(--GW-page-toolbar-control-button-color);
 }
 #page-toolbar > button.toggle-button:active {
-	color: var(--GW-page-toolbar-control-button-active-color);	
+	color: var(--GW-page-toolbar-control-button-active-color);
 }
 #page-toolbar > button svg {
     display: block;
@@ -3659,7 +3659,7 @@ body.lorem div[class^='drop-cap'] {
     padding: 0 10px;
     font-variant-caps: small-caps;
     background-color: var(--background-color);
-    box-shadow: 
+    box-shadow:
         0 0 0 2px var(--background-color),
         0 0 0 3px var(--GW-page-toolbar-border-color);
     opacity: 0;
@@ -3707,7 +3707,7 @@ body.lorem div[class^='drop-cap'] {
 /*	Fade on scroll.
  */
 #page-toolbar.collapsed {
-    transition: 
+    transition:
         opacity 2s ease-out;
 }
 #page-toolbar.collapsed.faded {
@@ -3722,7 +3722,7 @@ body.lorem div[class^='drop-cap'] {
 /*	Toolbar collapsing.
  */
 #page-toolbar.animating > button.main-toggle-button {
-    transition: 
+    transition:
         opacity 0.25s ease-out,
         transform 0.25s ease-out;
 }
@@ -3757,12 +3757,12 @@ body.lorem div[class^='drop-cap'] {
     transform: rotateZ(-0.5turn) scale(0.95);
 }
 #page-toolbar.mobile > button.collapse-button {
-    transition: 
+    transition:
         opacity 0.25s ease-out 0.25s;
 }
 #page-toolbar.mobile.collapsed > button.collapse-button {
     opacity: 0;
-    transition: 
+    transition:
         opacity 0.25s ease-out;
 }
 
@@ -3777,7 +3777,7 @@ body.lorem div[class^='drop-cap'] {
 /*  Slow collapsing.
  */
 #page-toolbar.collapsed.collapsed-slowly > button.main-toggle-button {
-    transition: 
+    transition:
         opacity 0.75s ease-out,
         transform 0.75s linear;
 }
@@ -5650,7 +5650,7 @@ body.lorem div[class^='drop-cap'] {
 #popin-options-dialog.extracts-options-dialog .controls-aux {
 	justify-content: space-between;
 }
- 
+
 .extracts-options-dialog .controls-aux button {
     --background-color: var(--GW-extracts-options-dialog-button-background-color);
 
@@ -6986,7 +6986,7 @@ ol.link-bibliography-list-compact > li::before {
 /*************************/
 /*  Inline mode selectors.
  */
- 
+
 .mode-selector-inline {
     display: inline-flex;
     position: relative;
