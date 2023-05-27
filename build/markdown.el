@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-05-19 11:44:58 gwern"
+;;; When:  Time-stamp: "2023-05-27 10:02:09 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -158,7 +158,7 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
 ;; TODO Abbreviation ideas:
 ;; script outputs: https://pastebin.com/rU0TyG5B
 ;; (!W → (!Wikipedia)
-;; !Mar → ^[!Margin: ]
+;; !Mar → []{.marginnote}
 ;; bc → because
 ;; iq → intelligence
 ;; moda → modafinil
@@ -195,6 +195,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
 
        (let ; Blind unconditional rewrites:
            ((blind '(("﻿" . "") ; byte order mark?
+                     (" " . "")
                      ("" . "fi")
                      ("" . "fl")
                      ("\\\u2013" . "--")
@@ -215,7 +216,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("\\\\u03bc" . "μ")
                      ("\\\\u2018" . "‘")
                      ("\\\\u2019" . "’")
-                     ("\u2009" . " ")
+                     ("\u2009" . " ")
                      ("\\\\u2013" . "–")
                      ("â\\" . "'")
                      ("â" . "'")
@@ -1238,6 +1239,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (query-replace "(t =" "(_t_ =" nil begin end)
          (query-replace " t-test" " _t_-test" nil begin end)
          (query-replace " t test" " _t_-test" nil begin end)
+         (query-replace "(t test" "(_t_-test" nil begin end)
          (query-replace " R2 " " R^2^ " nil begin end)
          (query-replace "(R2 " "(R^2^ " nil begin end)
          (query-replace "R2=" " R^2^ ="  nil begin end)
@@ -1284,13 +1286,13 @@ Mostly string search-and-replace to enforce house style in terms of format."
 
        (query-replace "Figs. " "Figures " nil begin end)
        (query-replace "Fig. " "Figure " nil begin end)
-       (query-replace-regexp "Supplementary [fF]ig\\. \\([0-9]+[a-fA-F]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Supp Fig. 1. ', 'Fig. 2a)' etc
-       (query-replace-regexp "Supplementary [fF]ig\\. \\([0-9]+[a-fA-F]*\\)"    "**Supplementary Figure \\1**"   nil begin end) ; 'Supp Fig. 1,', 'Fig. 2a,' etc
-       (query-replace-regexp "Supplementary [fF]igure \\([0-9]+[a-fA-F]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Supp Figure 1. The graph' etc
-       (query-replace-regexp "Supplementary ([fF]ig\\. \\([0-9]+[a-fA-F]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Supp Fig. 3b)
-       (query-replace-regexp "Supplementary ([fF]igure \\([0-9]+[a-fA-F]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Supp Figure 3b)
-       (query-replace-regexp "Supplementary ([fF]ig\\. \\([0-9]+[a-fA-F]*\\),"  "(**Supplementary Figure \\1**," nil begin end) ; (Supp Fig. 3b,
-       (query-replace-regexp "Supplementary [fF]igures \\([0-9]+[a-fA-F]*\\) and \\([0-9]+[a-fA-F]*\\)"  "**Supplementary Figures \\1** & **\\2**" nil begin end)
+       (query-replace-regexp "Supplementary [fF]ig\\. \\(S?[0-9]+[a-fA-F]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Supp Fig. 1. ', 'Fig. 2a)' etc
+       (query-replace-regexp "Supplementary [fF]ig\\. \\(S?[0-9]+[a-fA-F]*\\)"    "**Supplementary Figure \\1**"   nil begin end) ; 'Supp Fig. 1,', 'Fig. 2a,' etc
+       (query-replace-regexp "Supplementary [fF]igure \\(S?[0-9]+[a-fA-F]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Supp Figure 1. The graph' etc
+       (query-replace-regexp "Supplementary ([fF]ig\\. \\(S?[0-9]+[a-fA-F]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Supp Fig. 3b)
+       (query-replace-regexp "Supplementary ([fF]igure \\(S?[0-9]+[a-fA-F]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Supp Figure 3b)
+       (query-replace-regexp "Supplementary ([fF]ig\\. \\(S?[0-9]+[a-fA-F]*\\),"  "(**Supplementary Figure \\1**," nil begin end) ; (Supp Fig. 3b,
+       (query-replace-regexp "Supplementary [fF]igures \\(S?[0-9]+[a-fA-F]*\\) and \\([0-9]+[a-fA-F]*\\)"  "**Supplementary Figures \\1** & **\\2**" nil begin end)
        (query-replace-regexp "[fF]ig\\.? ?\\(S?\\)\\([0-9\\.]+[a-fA-F]*\\)\\.?" "**Figure \\1\\2**."  nil begin end) ; 'Fig. 1. ', 'Fig. 2a)', 'Figure 1.5' etc
        (query-replace-regexp "[fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\)"    "**Figure \\1\\2**"   nil begin end) ; 'Fig. 1,', 'Fig. 2a,' etc
        (query-replace-regexp "[fF]igure \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\.?\\)" "**Figure \\1\\2**"  nil begin end) ; 'Figure 1. The graph' etc
@@ -1768,13 +1770,15 @@ Used in abstracts for topics, first-level list emphasis, etc."
   (surround-region-or-word "**" "**"))
 (defun html-insert-smallcaps ()
   "Surround selected region (or word) with smallcaps syntax.
-Built-in CSS class in HTML & Pandoc Markdown, span syntax is equivalent to `[FOO]{.smallcaps}`.
+Built-in CSS class in HTML & Pandoc Markdown, span syntax is equivalent to
+`[FOO]{.smallcaps}`.
 Smallcaps are used on Gwern.net for second-level emphasis after bold has been used."
   (interactive)
   (surround-region-or-word "<span class=\"smallcaps\">" "</span>"))
 (defun markdown-insert-smallcaps ()
-  "Surround selected region (or word) with smallcaps syntax (Pandoc Markdown syntax).
-Built-in CSS class in HTML & Pandoc Markdown, equivalent to `<span class=\"smallcaps\">FOO</span>`.
+  "Surround selected region (or word) with smallcaps syntax (Pandoc Markdown).
+Built-in CSS class in HTML & Pandoc Markdown, equivalent to
+`<span class=\"smallcaps\">FOO</span>`.
 Smallcaps are used on Gwern.net for second-level emphasis after bold has been used."
   (interactive)
   (surround-region-or-word "[" "]{.smallcaps}"))
@@ -1788,14 +1792,13 @@ Compiled by Interwiki.hs to the equivalent (usually) of `<a href=\"https://en.wi
   (interactive)
   (surround-region-or-word "[" "](!W)"))
 (defun markdown-insert-margin-note ()
-  "Surround selected region FOO BAR (or word FOO) with a 'margin note': `^[!Margin: FOO BAR]`.
-This creates marginal glosses (in the left-margin) using custom overloaded footnote syntax.
-These margin-notes are used as very abbreviated italicized summaries of the following paragraph
-(like very small inlined section headers).
-NOTE: no HTML version: margin notes are not supported in annotations because no footnote support.
-(Maybe they could be, just always inline+italicized, similar to narrow windows?)"
+  "Surround selected region FOO BAR (or word FOO) with a 'margin-note'.
+\(Implemented as a special `<span>` class.\)
+This creates marginal glosses (in the left margin) as counterparts to sidenotes.
+These margin-notes are used as very abbreviated italicized summaries of the
+ paragraph \(like very small inlined section headers\)."
   (interactive)
-  (surround-region-or-word "^[!Margin: " "]"))
+  (surround-region-or-word "[" "]{.marginnote}"))
 ;; keybindings:
 ;;; Markdown:
 (add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-e" 'markdown-insert-emphasis)))
