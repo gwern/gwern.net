@@ -18,7 +18,7 @@ Popups = {
     popupBreathingRoomYTight: -4.0,
 
     popupTriggerDelay: 650,
-    popupFadeoutDelay: 50,
+    popupFadeoutDelay: 100,
     popupFadeoutDuration: 250,
 
 	/******************/
@@ -651,7 +651,7 @@ Popups = {
 	//	Called by: Popups.popupMouseDown (event handler)
 	//	Called by: Popups.injectPopup
 	popupIsResizeable: (popup) => {
-		return (   (   Popups.popupIsPinned(popup) 
+		return (   (   Popups.popupIsPinned(popup)
 					|| Popups.popupIsZoomed(popup))
 				&& (   Popups.popupAllowsHorizontalResize(popup)
 					|| Popups.popupAllowsVerticalResize(popup)));
@@ -1194,7 +1194,7 @@ Popups = {
 
 				button.swapClasses([ "pin", "unpin" ], (Popups.popupIsPinned(popup) ? 1 : 0));
 
-				button.disabled = (   Popups.popupIsCollapsed(popup) 
+				button.disabled = (   Popups.popupIsCollapsed(popup)
 								   || Popups.popupIsZoomed(popup))
 			};
 
@@ -1387,11 +1387,11 @@ Popups = {
 			let provisionalPopupYPosition = 0.0;
 
 			let offToTheSide = false;
-			let popupSpawnYOriginForSpawnAbove = targetViewportRect.top 
+			let popupSpawnYOriginForSpawnAbove = targetViewportRect.top
 											   - (tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
-			let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom 
+			let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom
 											   + (tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
-			if (   Popups.containingPopFrame(target) 
+			if (   Popups.containingPopFrame(target)
 				|| Popups.preferSidePositioning(target)) {
 				/*  The popup is a nested popup, or the target specifies that it
 					prefers to have popups spawned to the side; we try to put
@@ -1443,7 +1443,7 @@ Popups = {
 						Popups.positionPopup(popup, null, true);
 						return;
 					} else {
-						/*	... or, failing that, we will have to put it off to 
+						/*	... or, failing that, we will have to put it off to
 							the right after all.
 						 */
 						offToTheSide = true;
@@ -1727,7 +1727,7 @@ Popups = {
 		Popups.addClassesToPopFrame(popup, "resizing");
 
 		//  Save position, if need be.
-		if (   !("previousXPosition" in popup.dataset) 
+		if (   !("previousXPosition" in popup.dataset)
 			&& !("previousYPosition" in popup.dataset)) {
 			popup.dataset.previousXPosition = popup.viewportRect.left;
 			popup.dataset.previousYPosition = popup.viewportRect.top;
@@ -2073,7 +2073,7 @@ Popups = {
 			&& event.button == 0)
 			return;
 
-		/*	Unlike ‘mouseenter’ and ‘mouseleave’, ‘mousedown’ behaves like 
+		/*	Unlike ‘mouseenter’ and ‘mouseleave’, ‘mousedown’ behaves like
 			‘mouseover’/‘mouseout’ in that it attaches to the innermost element,
 			which might not be our spawning target (but instead some descendant
 			element); we must find the actual spawning target.
