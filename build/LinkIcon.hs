@@ -127,7 +127,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.esquire.com" = aI "ℰ" "text"
  | aU'' ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' "www.evacommentary.org" || u' "twitter.com/EvaMonkey/" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
  | aU'' ["www.fda.gov","fis.fda.gov","clinicaltrials.gov"] = aI "FDA" "text,tri,sans" -- U.S. Food & Drug Administration
- | u'' "hpmor.com" || u' "www.fanfiction.net/r/5782108/" || u' "old.reddit.com/r/HPMOR/" = aI "MoR" "text,tri,italic"
+ | u'' "hpmor.com" || u' "www.fanfiction.net/r/5782108/" || u' "www.reddit.com/r/HPMOR/" = aI "MoR" "text,tri,italic"
  | u' "mozilla.org" = aI "FF" "text,sans" -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized, and confusable with DeepMind.
  | u'' "www.goodreads.com" = aI "GR" "text" -- GoodReads: logo doesn’t make sense as a grayscale
  | u'' "www.harney.com" = aI "H" "text" -- The Harney & Sons logo is too fancy to scale down reasonably
@@ -185,7 +185,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.rifters.com" = aI "P.W." "text,sans" -- Peter Watts
  | u'' "www.antipope.org" = aI "C.S." "text,sans" -- Charles Stross
  | u'' "www.ribbonfarm.com" = aI "ℝ𝔽" "text,sans"
- | aU'' ["en.touhouwiki.net", "touhou.fandom.com", "w.atwiki.jp"] || u' "old.reddit.com/r/TOUHOUMUSIC/" = aI "☯" "text" -- NOTE: override Fandom catch-all
+ | aU'' ["en.touhouwiki.net", "touhou.fandom.com", "w.atwiki.jp"] || u' "www.reddit.com/r/TOUHOUMUSIC/" = aI "☯" "text" -- NOTE: override Fandom catch-all
  | u'' "www.reuters.com" = aI "R" "text,sans" -- the official Reuters logo <https://en.wikipedia.org/wiki/File:Reuters_Logo.svg> looks like it's summoning a seraphim
  | u'' "www.deviantart.com" = aI "DA" "text,sans" -- the official logo <https://en.wikipedia.org/wiki/File:DeviantArt_Logo.svg> isn't *too* bad and is at least 8 years old, but I don't recognize it so I doubt most readers would.
  | u'' "www.smithsonianmag.com" = aI "SM" "text"
@@ -232,7 +232,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "replicationindex.com" = aI "RI" "text,sans"
  | u' ".yahoo.com" = aI "Y!" "text,sans"
  | u' "github.com/huggingface/" || u' "medium.com/huggingface/" || u'' "huggingface.co" = aI "\129303" "text" -- "🤗" HUGGING FACE U+1F917
- | u'' "quantifiedself.com" || u'' "forum.quantifiedself.com" || u' "old.reddit.com/r/QuantifiedSelf/" = aI "QS" "text,sans"
+ | u'' "quantifiedself.com" || u'' "forum.quantifiedself.com" || u' "www.reddit.com/r/QuantifiedSelf/" = aI "QS" "text,sans"
  | u'' "www.pragmatic.ml" = aI "𝕄" "text" -- Madison May, machine learning blog
  | u'' "www.research.va.gov" = aI "VA" "text,sans" -- US Department of Veterans Affair (mostly linked for Million Veteran Project)
  | u'' "apnews.com" = aI "AP" "text,sans"
@@ -256,7 +256,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "freakonomics.com" = aI "FRK" "text,tri,sans" -- hybrid apple-orange icon (get it, "comparing apples & oranges") doesn't work as favicon or link
  | u'' "aiimpacts.org" = aI "AII" "text,tri"
  | u'' "scp-wiki.wikidot.com" = aI "SCP" "text,tri,sans"
- | aU'' ["latitude.io", "play.aidungeon.io", "aidungeon.medium.com"] || u' "old.reddit.com/r/AIDungeon"  || u' "www.patreon.com/AIDungeon" = aI "AID" "text,tri,sans"
+ | aU'' ["latitude.io", "play.aidungeon.io", "aidungeon.medium.com"] || u' "www.reddit.com/r/AIDungeon"  || u' "www.patreon.com/AIDungeon" = aI "AID" "text,tri,sans"
  | u'' "nap.nationalacademies.org" = aI "NAP" "text,tri"
  | u' ".cnn.com" = aI "CNN" "text,tri,sans"
  | u'' "www.npr.org" || u'' "text.npr.org" = aI "npr" "text,tri,sans" -- NPR styles it in lowercase in their |n|p|r| logo
@@ -362,7 +362,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | aU'' ["www.ncbi.nlm.nih.gov", "pubmed.ncbi.nlm.nih.gov"] = aI "nlm-ncbi" "svg" -- NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg). primary user: ncbi.nlm.nih.gov
  | u'' "www.patreon.com" = aI "patreon" "svg" -- Patreon. (Used the old one (https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg) because I don’t like the new one.)
  | aU' ["plos.org", "plosone.org", "plosmedicine.org"] = aI "plos" "svg" -- PLOS ONE in all their domain permutations… primary user: journals.plos.org
- | u' "reddit.com" = aI "reddit" "svg" -- old.reddit.com
+ | u' "reddit.com" = aI "reddit" "svg" -- www.reddit.com
  | aU' ["overflow.net", "overflow.com", "stackexchange.com"] = aI "stackexchange" "svg" -- The *Exchange/*Overflow family of websites.
  | u' "substack.com" = aI "substack" "svg" -- gwern.substack.com
  | u'' "www.theguardian.com" || u'' "www.guardian.co.uk" = aI "theguardian" "svg" -- El Grauniad.
