@@ -1792,6 +1792,8 @@ a.footnote-ref {
     default size & padding makes the ‘TH’ really stand out. e.g.
 
     https://gwern.net/doc/sociology/index#johow-et-al-2019-section ‘“HIGH CONSANGUINITY PROMOTES INTERGENERATIONAL WEALTH CONCENTRATION IN SOCIOECONOMICALLY PRIVILEGED KRUMMHÖRN FAMILIES OF THE 18TH AND 19TH CENTURIES”, JOHOW ET AL 2019’
+
+Subscripts are included for consistency and cases like “CO<sub>2</sub> Coin: Decentralized Carbon Capture Blockchains” or “New Kinship And <em>F</em><sub>ST</sub> Estimates Reveal Higher Levels of Differentiation in the Global Human Population”.
  */
 h1 sub, h1 sup, h2 sub, h2 sup {
     font-size: 0.6em;
