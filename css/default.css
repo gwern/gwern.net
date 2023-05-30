@@ -19,13 +19,13 @@
     --GW-image-checkerboard-888-000-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
     --GW-image-checkerboard-bfbfbf-000-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
 
-	--GW-image-linear-dotted-000-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIEBCSGBQA7');
-	--GW-image-linear-dotted-888-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAIiIiP///wAAACH5BAkAAAMALAAAAAAEAAIAAAIETDaGBQA7');
-	--GW-image-linear-dotted-fff-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIETCSGBQA7');
-	--GW-image-linear-dotted-bbb-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAALu7u////wAAACH5BAkAAAMALAAAAAAEAAIAAAIETDaGBQA7');
+    --GW-image-linear-dotted-000-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIEBCSGBQA7');
+    --GW-image-linear-dotted-888-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAIiIiP///wAAACH5BAkAAAMALAAAAAAEAAIAAAIETDaGBQA7');
+    --GW-image-linear-dotted-fff-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIETCSGBQA7');
+    --GW-image-linear-dotted-bbb-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAALu7u////wAAACH5BAkAAAMALAAAAAAEAAIAAAIETDaGBQA7');
 
-	--GW-image-pattern-dotted-e6e6e6-on-fff-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMebm5v///ywAAAAAEAAQAAACHowPcKgb6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
-	--GW-image-pattern-dotted-fff-on-e6e6e6-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMebm5v///ywAAAAAEAAQAAACHoQfcagL6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
+    --GW-image-pattern-dotted-e6e6e6-on-fff-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMebm5v///ywAAAAAEAAQAAACHowPcKgb6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
+    --GW-image-pattern-dotted-fff-on-e6e6e6-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMebm5v///ywAAAAAEAAQAAACHoQfcagL6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
     --GW-image-pattern-dotted-161616-on-3e3e3e-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMRYWFj4+PiwAAAAAEAAQAAACHowPcKgb6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
     --GW-image-pattern-dotted-161616-on-252525-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMRYWFiUlJSwAAAAAEAAQAAACHowPcKgb6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
 }
@@ -33,8 +33,8 @@
 /**********/
 /* COLORS */
 /**********/
-/*	colors are now in /static/css/colors.css + /include/components/light-mode-adjustments.css (light mode)
-	or /include/components/colors-dark-GENERATED.css + /include/components/dark-mode-adjustments.css (dark mode)
+/*  colors are now in /static/css/colors.css + /include/components/light-mode-adjustments.css (light mode)
+    or /include/components/colors-dark-GENERATED.css + /include/components/dark-mode-adjustments.css (dark mode)
  */
 
 
@@ -443,7 +443,7 @@ button {
     z-index: 1;
 }
 .collapse-block > .abstract-collapse.abstract {
-	margin-top: 0;
+    margin-top: 0;
     margin-left: calc(-1 * (var(--collapse-toggle-left-width) + 2px));
 }
 .collapse-block > .abstract-collapse:not(.abstract) {
@@ -464,7 +464,7 @@ button {
 /*  Collapsible sections (the <section> element).
  */
 section.collapse {
-	--collapse-toggle-top-height: 2.125rem;
+    --collapse-toggle-top-height: 2.125rem;
 
     margin-left: calc(-1 * var(--collapse-left-offset));
     padding-left: var(--collapse-left-offset);
@@ -555,7 +555,7 @@ div.collapse.has-abstract.expanded-not > .disclosure-button .part::before {
 /***************************/
 /*  Collapsible code blocks.
  */
-
+/* NOTE: '.sourceCode' is a Pandoc-hardwired CSS class for code blocks. We do not rewrite it to '.source-code' for consistency with all our other custom classes, because that risks confusion & interoperability problems, which is not worth it for a bit of name consistency. */
 .sourceCode.collapse {
     margin-top: 1.75em;
     margin-bottom: 1.75em;
@@ -946,7 +946,7 @@ section:target > :first-child a::after {
 
 @media all and (min-width: 1180px) {
     .markdownBody section:not(.collapse) > h1:first-child a::after {
-		right: unset;
+        right: unset;
         left: -0.75em;
     }
 }
@@ -1585,7 +1585,7 @@ blockquote blockquote {
     margin-top: 0.5em;
 }
 
-/*  Interviews (e.g. https://gwern.net/Morning-writing#examples).
+/*  Interviews (e.g. <https://gwern.net/morning-writing#examples>).
  */
 blockquote p > code:first-child,
 blockquote p > a:first-child code:first-child {
@@ -1598,6 +1598,11 @@ blockquote p > a:first-child code:first-child {
 }
 
 /*  Tables in blockquotes.
+
+Used extensively in Wikipedia infoboxes like <https://en.wikipedia.org/wiki/BHLHE41>
+where an entry in the infobox table may itself consist of more infoboxes/tables,
+and inasmuch as Wikipedia transclusions are often in `<blockquote>`s,
+then their `table table` entries will be in a `blockquote table table`.
  */
 blockquote table {
     font-size: 0.7em;
@@ -3165,7 +3170,7 @@ span.link-bibliography a {
 /* - <div class="admonition warning"><div class="admonition-title">Warning title (*)</div> text</div> */
 /* - <div class="admonition error"><div class="admonition-title">Error title (*)</div> text</div> */
 .admonition {
-	display: flow-root;
+    display: flow-root;
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.875em;
     position: relative;
@@ -3477,9 +3482,9 @@ body.lorem div[class^='drop-cap'] {
     pointer-events: auto;
 }
 @media only screen and (hover: hover) {
-	#ui-elements-container:hover {
-		z-index: 10001;
-	}
+    #ui-elements-container:hover {
+        z-index: 10001;
+    }
 }
 
 
@@ -3487,32 +3492,32 @@ body.lorem div[class^='drop-cap'] {
 /* PAGE TOOLBAR */
 /****************/
 
-/*	Show no toolbar if no items in it.
+/*  Show no toolbar if no items in it.
  */
 #page-toolbar .widgets:empty ~ * {
-	display: none;
+    display: none;
 }
 
 /***************************/
-/*	Toolbar control buttons.
+/*  Toolbar control buttons.
  */
 #page-toolbar > button {
     color: var(--GW-page-toolbar-control-button-color);
 }
 #page-toolbar > button.toggle-button:active {
-	color: var(--GW-page-toolbar-control-button-active-color);
+    color: var(--GW-page-toolbar-control-button-active-color);
 }
 #page-toolbar > button svg {
     display: block;
 }
 
-/*	Collapse button (chevron); hidden on desktop.
+/*  Collapse button (chevron); hidden on desktop.
  */
 #page-toolbar.desktop > button.collapse-button {
-	display: none;
+    display: none;
 }
 
-/*	Collapse button (chevron) in mobile layout.
+/*  Collapse button (chevron) in mobile layout.
  */
 #page-toolbar.mobile > button.collapse-button {
     order: 1;
@@ -3528,27 +3533,27 @@ body.lorem div[class^='drop-cap'] {
     opacity: 0.4;
 }
 #page-toolbar > button.main-toggle-button:active {
-	transform: scale(0.95);
+    transform: scale(0.95);
 }
 @media only screen and (hover: hover) {
-	#page-toolbar > button.main-toggle-button:hover {
-		opacity: 1.0;
-		transition:
-			opacity 0.15s ease;
-	}
-	#page-toolbar:not(.collapsed):not(.expanded-temp) > button.main-toggle-button {
-		opacity: 1.0;
-	}
+    #page-toolbar > button.main-toggle-button:hover {
+        opacity: 1.0;
+        transition:
+            opacity 0.15s ease;
+    }
+    #page-toolbar:not(.collapsed):not(.expanded-temp) > button.main-toggle-button {
+        opacity: 1.0;
+    }
 }
 
-/*	Main toggle button (gear) in vertical layout.
+/*  Main toggle button (gear) in vertical layout.
  */
 #page-toolbar.vertical > button.main-toggle-button {
-	padding: 3px;
+    padding: 3px;
 }
 
 /******************/
-/*	Toolbar layout.
+/*  Toolbar layout.
  */
 #page-toolbar {
     position: fixed;
@@ -3563,12 +3568,12 @@ body.lorem div[class^='drop-cap'] {
     max-height: 100vh;
     max-width: 100vw;
     transition:
-    	transform 0.25s ease-out;
+        transform 0.25s ease-out;
 }
 
 #page-toolbar .widget {
-	display: flex;
-	align-items: stretch;
+    display: flex;
+    align-items: stretch;
     background-color: var(--background-color);
 }
 
@@ -3576,45 +3581,45 @@ body.lorem div[class^='drop-cap'] {
     color: var(--GW-page-toolbar-button-text-color);
 }
 #page-toolbar .widget button:disabled .label {
-	color: var(--GW-page-toolbar-button-disabled-text-color);
+    color: var(--GW-page-toolbar-button-disabled-text-color);
 }
 
 #page-toolbar .widget button .icon {
-	display: flex;
-	width: 100%;
-	height: 100%;
-	box-sizing: border-box;
-	color: var(--GW-page-toolbar-button-icon-color);
-	transition:
-		color 0.1s ease;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    color: var(--GW-page-toolbar-button-icon-color);
+    transition:
+        color 0.1s ease;
 }
 #page-toolbar .widget button.selectable .icon {
-	color: var(--GW-page-toolbar-button-selectable-icon-color);
+    color: var(--GW-page-toolbar-button-selectable-icon-color);
 }
 #page-toolbar .widget button.selected .icon {
-	color: var(--GW-page-toolbar-button-selected-icon-color);
+    color: var(--GW-page-toolbar-button-selected-icon-color);
 }
 @media only screen and (hover: hover) {
-	#page-toolbar .widget button:hover .icon {
-		color: var(--GW-page-toolbar-button-selected-icon-color);
-	}
+    #page-toolbar .widget button:hover .icon {
+        color: var(--GW-page-toolbar-button-selected-icon-color);
+    }
 }
 #page-toolbar .widget button:not(:disabled):active .icon {
-	transform: scale(0.95);
+    transform: scale(0.95);
 }
 
-/*	Icons-only toolbar mode.
+/*  Icons-only toolbar mode.
  */
 #page-toolbar.button-labels-not .widget button .label {
-	display: none;
+    display: none;
 }
 
-/*	Vertical toolbar layout.
+/*  Vertical toolbar layout.
  */
 #page-toolbar.vertical {
-	--toolbar-button-size: 4vmin;
+    --toolbar-button-size: 4vmin;
 
-	flex-flow: column;
+    flex-flow: column;
     width: var(--toolbar-button-size);
     top: 5px;
     right: 4px;
@@ -3626,29 +3631,29 @@ body.lorem div[class^='drop-cap'] {
 }
 
 #page-toolbar.vertical .widget {
-	flex-flow: column;
+    flex-flow: column;
     outline: 1px dotted var(--GW-page-toolbar-border-color);
     margin-top: 8px;
 }
 @media only screen and (hover: hover) {
-	#page-toolbar.vertical .widget {
-		transition:
-			box-shadow 0.1s ease;
-	}
-	#page-toolbar.vertical .widget:hover {
-		box-shadow:
-			0 0 0 1px var(--GW-page-toolbar-border-color),
-			0 0 0 2px var(--background-color),
-			0 0 0 3px var(--GW-page-toolbar-border-color);
-	}
+    #page-toolbar.vertical .widget {
+        transition:
+            box-shadow 0.1s ease;
+    }
+    #page-toolbar.vertical .widget:hover {
+        box-shadow:
+            0 0 0 1px var(--GW-page-toolbar-border-color),
+            0 0 0 2px var(--background-color),
+            0 0 0 3px var(--GW-page-toolbar-border-color);
+    }
 }
 
 #page-toolbar.vertical .widget button {
-	height: var(--toolbar-button-size);
+    height: var(--toolbar-button-size);
     position: relative;
 }
 #page-toolbar.vertical .widget button .icon {
-	padding: 4px;
+    padding: 4px;
 }
 #page-toolbar.vertical .widget button .label {
     position: absolute;
@@ -3675,12 +3680,12 @@ body.lorem div[class^='drop-cap'] {
     }
 }
 
-/*	Mobile toolbar layout (reverse vertical).
+/*  Mobile toolbar layout (reverse vertical).
  */
 #page-toolbar.mobile {
-	--toolbar-button-size: 46px;
+    --toolbar-button-size: 46px;
 
-	flex-flow: column-reverse;
+    flex-flow: column-reverse;
     width: var(--toolbar-button-size);
     bottom: 0.5em;
     right: 0.5em;
@@ -3693,35 +3698,35 @@ body.lorem div[class^='drop-cap'] {
 }
 
 #page-toolbar.mobile .widget {
-	flex-flow: column;
-	outline: 1px dotted var(--GW-page-toolbar-border-color);
+    flex-flow: column;
+    outline: 1px dotted var(--GW-page-toolbar-border-color);
     margin-top: 0.5em;
 }
 
 #page-toolbar.mobile .widget button {
-	height: var(--toolbar-button-size);
+    height: var(--toolbar-button-size);
 }
 #page-toolbar.mobile .widget button .icon {
-	padding: 7px;
+    padding: 7px;
 }
 
 /******************/
-/*	Fade on scroll.
+/*  Fade on scroll.
  */
 #page-toolbar.collapsed {
     transition:
         opacity 2s ease-out;
 }
 #page-toolbar.collapsed.faded {
-	opacity: 0;
+    opacity: 0;
 }
 #page-toolbar.collapsed:hover {
-	transition:
-		opacity 0.15s ease;
+    transition:
+        opacity 0.15s ease;
 }
 
 /**********************/
-/*	Toolbar collapsing.
+/*  Toolbar collapsing.
  */
 #page-toolbar.animating > button.main-toggle-button {
     transition:
@@ -3729,7 +3734,7 @@ body.lorem div[class^='drop-cap'] {
         transform 0.25s ease-out;
 }
 
-/*	Toolbar collapsing (vertical mode).
+/*  Toolbar collapsing (vertical mode).
  */
 #page-toolbar.vertical.collapsed > button.main-toggle-button {
     transform: rotateZ(0.5turn);
@@ -3742,14 +3747,14 @@ body.lorem div[class^='drop-cap'] {
     transform: rotateX(-0.25turn);
     max-height: 0;
     transition:
-    	transform 0.25s ease-out,
-    	max-height 0s ease-out 0.25s;
+        transform 0.25s ease-out,
+        max-height 0s ease-out 0.25s;
 }
 
-/*	Toolbar collapsing (mobile mode).
+/*  Toolbar collapsing (mobile mode).
  */
 #page-toolbar.mobile > button.main-toggle-button {
-	opacity: 1.0;
+    opacity: 1.0;
 }
 #page-toolbar.mobile.collapsed > button.main-toggle-button {
     opacity: 0.65;
@@ -3772,8 +3777,8 @@ body.lorem div[class^='drop-cap'] {
     transform: rotateX(0.25turn);
     max-height: 0;
     transition:
-    	transform 0.25s ease-out,
-    	max-height 0s ease-out 0.25s;
+        transform 0.25s ease-out,
+        max-height 0s ease-out 0.25s;
 }
 
 /*  Slow collapsing.
@@ -3789,19 +3794,19 @@ body.lorem div[class^='drop-cap'] {
         transform 0.75s ease-out;
 }
 
-/*	Slow collapsing (vertical layout).
+/*  Slow collapsing (vertical layout).
  */
 #page-toolbar.vertical.collapsed.collapsed-slowly .widgets {
     transition:
-    	transform 0.75s ease-out,
+        transform 0.75s ease-out,
         max-height 0s ease-out 0.75s;
 }
 
-/*	Slow collapsing (mobile layout).
+/*  Slow collapsing (mobile layout).
  */
 #page-toolbar.mobile.collapsed.collapsed-slowly .widgets {
     transition:
-    	transform 0.75s ease-out,
+        transform 0.75s ease-out,
         max-height 0s ease-out 0.75s;
 }
 
@@ -5322,7 +5327,7 @@ body.lorem div[class^='drop-cap'] {
  */
 .popup.loading::before,
 .popup.rendering::before {
-	content: "";
+    content: "";
     position: absolute;
     width: calc(100% - 1em);
     height: auto;
@@ -5608,7 +5613,7 @@ body.lorem div[class^='drop-cap'] {
 }
 
 /****************/
-/*	Dialog frame.
+/*  Dialog frame.
  */
 .extracts-options-dialog > div {
     --background-color: var(--GW-extracts-options-dialog-background-color);
@@ -5623,7 +5628,7 @@ body.lorem div[class^='drop-cap'] {
 }
 
 /********************/
-/*	Dialog title bar.
+/*  Dialog title bar.
  */
 .extracts-options-dialog .extracts-options-dialog-title-bar {
     padding: 0.5em;
@@ -5638,19 +5643,19 @@ body.lorem div[class^='drop-cap'] {
 }
 
 /*****************************/
-/*	Dialog auxiliary controls.
+/*  Dialog auxiliary controls.
  */
 .extracts-options-dialog .controls-aux {
-	display: flex;
-	align-items: stretch;
+    display: flex;
+    align-items: stretch;
     padding: 0.75em;
     border-top: 1px solid var(--GW-extracts-options-dialog-horizontal-rule-color);
 }
 #popup-options-dialog.extracts-options-dialog .controls-aux {
-	justify-content: flex-end;
+    justify-content: flex-end;
 }
 #popin-options-dialog.extracts-options-dialog .controls-aux {
-	justify-content: space-between;
+    justify-content: space-between;
 }
 
 .extracts-options-dialog .controls-aux button {
@@ -5666,12 +5671,12 @@ body.lorem div[class^='drop-cap'] {
     border: 1px solid var(--GW-extracts-options-dialog-button-border-color);
 }
 @media only screen and (hover: hover) {
-	.extracts-options-dialog .controls-aux button:hover {
-		cursor: pointer;
-		box-shadow:
-			0 0 0 2px var(--background-color) inset,
-			0 0 0 3px var(--GW-extracts-options-dialog-button-hover-box-shadow-color) inset;
-	}
+    .extracts-options-dialog .controls-aux button:hover {
+        cursor: pointer;
+        box-shadow:
+            0 0 0 2px var(--background-color) inset,
+            0 0 0 3px var(--GW-extracts-options-dialog-button-hover-box-shadow-color) inset;
+    }
 }
 .extracts-options-dialog .controls-aux button:active {
     box-shadow:
@@ -5688,7 +5693,7 @@ body.lorem div[class^='drop-cap'] {
 }
 
 /************************/
-/*	Dialog main controls.
+/*  Dialog main controls.
  */
 .extracts-options-dialog .option-buttons {
     padding: 0.75em;
@@ -5703,7 +5708,7 @@ body.lorem div[class^='drop-cap'] {
     width: 100%;
     box-sizing: border-box;
     position: relative;
-	cursor: pointer;
+    cursor: pointer;
 }
 #popup-options-dialog.extracts-options-dialog .option-buttons label {
     padding: 0 0.75em;
@@ -5754,12 +5759,12 @@ body.lorem div[class^='drop-cap'] {
 }
 
 @media only screen and (hover: hover) {
-	.extracts-options-dialog .option-buttons label:hover {
-		color: var(--GW-extracts-options-dialog-option-button-hover-text-color);
-	}
-	.extracts-options-dialog .option-buttons label:hover .button-text .label {
-		text-decoration: dotted underline;
-	}
+    .extracts-options-dialog .option-buttons label:hover {
+        color: var(--GW-extracts-options-dialog-option-button-hover-text-color);
+    }
+    .extracts-options-dialog .option-buttons label:hover .button-text .label {
+        text-decoration: dotted underline;
+    }
 }
 
 .extracts-options-dialog .option-buttons input {
@@ -5783,10 +5788,10 @@ body.lorem div[class^='drop-cap'] {
 }
 
 /*******************************************/
-/*	Extracts options button in page toolbar.
+/*  Extracts options button in page toolbar.
  */
 #page-toolbar #show-extracts-options-dialog-button {
-	order: 3;
+    order: 3;
 }
 
 
@@ -6104,7 +6109,7 @@ body.lorem div[class^='drop-cap'] {
  */
 .popin.loading::before,
 .popin.rendering::before {
-	content: "";
+    content: "";
     position: absolute;
     width: calc(100% - 1em);
     height: auto;
@@ -6948,14 +6953,14 @@ ol.link-bibliography-list-compact > li::before {
 }
 
 /**********************************/
-/*	Mode selectors in page toolbar.
+/*  Mode selectors in page toolbar.
  */
 
 #page-toolbar .dark-mode-selector {
-	order: 1;
+    order: 1;
 }
 #page-toolbar .reader-mode-selector {
-	order: 2;
+    order: 2;
 }
 
 #page-toolbar .mode-selector button .label {
@@ -6970,7 +6975,7 @@ ol.link-bibliography-list-compact > li::before {
     text-decoration: dotted underline from-font;
 }
 
-/*	Vertical layout.
+/*  Vertical layout.
  */
 #page-toolbar.vertical .mode-selector {
     padding: 2px 0;
@@ -6979,7 +6984,7 @@ ol.link-bibliography-list-compact > li::before {
     margin-top: 3px;
 }
 
-/*	Mobile layout.
+/*  Mobile layout.
  */
 #page-toolbar.mobile .mode-selector {
     padding: 2px 0;
@@ -7106,7 +7111,7 @@ a.include-loading.include-spinner::after {
 }
 
 a.include-loading.include-spinner:empty::after {
-	content: "";
+    content: "";
     background-image: var(--spinner-image);
     width: 1.25em;
     height: 1.25em;
