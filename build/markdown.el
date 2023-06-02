@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-05-27 10:02:09 gwern"
+;;; When:  Time-stamp: "2023-06-01 18:22:20 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -375,6 +375,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("ω2" . "ω<sup>2</sup>")
                      ("chi-squared" . "<em>χ</em><sup>2</sup>")
                      (" Escherichia coli" . " <em>Escherichia coli</em>")
+                     (" E. coli" . " <em>E. coli</em>")
+                     (" Saccharomyces cerevisiae" . " <em>Saccharomyces cerevisiae</em>")
                      ("two-by-two" . "2×2")
                      (" B.M.I" . " BMI")
 
@@ -562,6 +564,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" s−1" . " s^−1^")
                         ("ml−1" . "ml<sup>−1</sup>")
                         ("^-1 " . "^−1^ ")
+                        (" d−1" . " d<sup>−1</sup>")
                         ("dl−1" . "dl<sup>−1</sup>")
                         ("kb−1" . "kb<sup>−1</sup>")
                         (" g-related" . " _g_-related")
@@ -615,6 +618,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" Wm−1" . " Wm<sup>−1</sup>")
                         (" K−1" . " K<sup>−1</sup>")
                         (" kg−1" . " kg<sup>−1</sup>")
+                        ("l−1" . "l<sup>−1</sup>")
                         ("60Co" . "^60^Co")
                         (" I2" . " _I_^2^")
                         ("≤p≤" . " ≤ _p_ ≤ ")
@@ -912,18 +916,19 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ; would look confusing if written '−0.3–−3.7'. It's correct & unambiguous because it uses MINUS SIGN & EN DASH
                         ; appropriately, but the glyphs are way too similar-looking. (Sorry, I didn't design English punctuation.)
                         ; And this is also true if any of the numbers have minus signs (eg. '−0.3–3.7' or '0.3–−3.7' would be no better).
-                        (" one to \\([0-9\\.]+\\)" . " \\1–\\2")
-                        ("from \\([0-9\\.]+\\) to \\([0-9\\.]+\\)" . "\\1–\\2")
-                        ("\\([0-9\\.]+\\) to \\([0-9\\.]+\\)" . "\\1–\\2")
-                        ("from \\([0-9\\.]+\\) to \\([0-9\\.]+\\)" . "\\1 → \\2")
-                        ("\\([a-z]+\\)- and \\([a-z]+-[a-z]+\\)" . "\\1 & \\2")
-                        ("\\([0-9\\.]+\\) to \\([0-9\\.]+\\)" . "\\1 → \\2")
-                        ("between \\([0-9\\.]+\\) and \\([0-9\\.]+\\)" . "\\1–\\2") ; "range between 2 and 10" → "range 2–10"
-                        (" \\([0-9\\.]+\\) or \\([0-9\\.]+\\) " . " \\1–\\2 ")
+                        (" one to \\([0-9.]+\\)"                   . " \\1–\\2")
+                        ("from \\([0-9.]+\\) to \\([0-9.]+\\)"     . "\\1–\\2")
+                        ("\\([0-9\\.]+\\) to \\([0-9\\.]+\\)"      . "\\1–\\2")
+                        ("from \\([0-9.]+\\) to \\([0-9.]+\\)"     . "\\1 → \\2")
+                        ("\\([a-z]+\\)- and \\([a-z]+-[a-z]+\\)"   . "\\1 & \\2")
+                        ("\\([0-9.]+\\) to \\([0-9.]+\\)"          . "\\1 → \\2")
+                        ("between \\([0-9.]+\\) and \\([0-9.]+\\)" . "\\1–\\2") ; "range between 2 and 10" → "range 2–10"
+                        (" \\([0-9.]+\\) or \\([0-9.]+\\) "        . " \\1–\\2 ")
+                        ("\\([0-9]+\\)- to \\([0-9]+\\)-"          . "\\1--\\2-") ; "18- to 20-year-olds" → "18--20-year-olds"
                         )
                       ))
          (dolist (pair regexps)
-           (query-replace (car pair) (cdr pair) nil begin end))
+           (query-replace-regexp (car pair) (cdr pair) nil begin end))
          )
 
        ; format abstract sub-headings with bold if we are writing an abstract and not a Markdown file:
@@ -1365,7 +1370,6 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([[:punct:]]\\)\\([0-9,- ]+\\)$" "\\1<sup>\\2</sup>" nil begin end) ; looser: handle end of line
        (query-replace-regexp " \\[\\([0-9, -]+\\)\\]\\([[:punct:]]\\)" "\\2<sup>\\1</sup> " nil begin end) ; 'contributing to higher energy intake [42].'
        (query-replace-regexp "\\[\\([0-9, -]+\\)\\] " "<sup>\\1</sup> " nil begin end)
-       (query-replace-regexp "\\([0-9]+\\)- to \\([0-9]+\\)-" "\\1--\\2-" nil begin end) ; "18- to 20-year-olds" → "18--20-year-olds"
        (query-replace-regexp "\\([0-9]+\\)- and \\([0-9]+\\)-" "\\1 & \\2-" nil begin end) ; "We use 1979- and 1997-cohort National Longitudinal Survey of Youth (NLSY) data" → "We use 1979 & 1997-cohort"
 
        (query-replace-regexp "\\([[:alnum:]]\\)- " "\\1---" nil begin end)
