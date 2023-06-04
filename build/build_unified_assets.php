@@ -66,7 +66,7 @@ foreach ($templates as $template_path) {
 	$template_name = $m[1];
 
 	$template = file_get_contents($template_path);
-	$template = '`' . str_replace('`', '\`', $template) . '`';
+	$template = '`' . str_replace([ '`', '\\' ], [ '\`', '\\\\' ], $template) . '`';
 
 	$templates_file .= "\t\"{$template_name}\": ";
 	$templates_file .= $template;
