@@ -1161,112 +1161,6 @@ button {
 /* SECTIONS */
 /************/
 
-/************/
-/*	Headings.
- */
-
-.heading {
-    margin: 0;
-    position: relative;
-    display: flow-root;
-    line-height: 1;
-}
-@media all and (min-width: 1180px) {
-    .heading {
-		margin-left: calc(-1 * var(--base-font-size));
-	}
-}
-
-/*	H1.
- */
-
-section.level1 > .heading {
-    text-align: right;
-    font-weight: 600;
-	font-variant-caps: small-caps;
-    letter-spacing: -0.75px;
-    padding: 0 0.05em 0.025em calc(1.25 * var(--base-font-size));
-    border-bottom: 1px solid var(--GW-H1-border-color);
-}
-@media all and (max-width: 1179px) {
-	section.level1 > .heading {
-		font-size: 1.75em;
-	}
-}
-@media all and (min-width: 1180px) {
-    section.level1 > .heading {
-        font-size: 2em;
-    }
-}
-
-section.level1 > .heading em {
-	font-variant-caps: normal;
-}
-section.level1 > .heading em:last-child {
-    padding-right: 0.075em;
-}
-
-/*	H2.
- */
-section.level2 > .heading {
-    text-transform: uppercase;
-    font-size: 1.4em;
-    padding: 0 calc(0.75 * var(--base-font-size)) 0.05em 0;
-    border-bottom: 1px dotted var(--GW-H2-border-color);
-}
-
-/*	H3.
- */
-section.level3 > .heading {
-    text-transform: capitalize;
-    font-size: 1.35em;
-    font-weight: bold;
-}
-
-/*	H4.
- */
-section.level4 > .heading {
-    text-transform: capitalize;
-    font-size: 1.2em;
-}
-
-/*	H5.
- */
-section.level5 > .heading {
-    text-transform: capitalize;
-    font-size: 1.1em;
-}
-
-/*	H6.
- */
-section.level6 > .heading {
-    text-transform: capitalize;
-    font-size: 1.1em;
-    font-weight: normal;
-    font-style: italic;
-}
-
-/*=---------------------------=*/
-/*= Misc. styling in headings =*/
-/*=---------------------------=*/
-
-/*	Disable bold within headings.
- */
-.heading strong {
-	font-weight: inherit;
-}
-
-/*	Inline code in headings.
- */
-.heading code {
-    border: none;
-    padding: 0;
-    background-color: inherit;
-    font-size: inherit;
-    font-weight: bold;
-    font-variant-caps: normal;
-}
-
 /*=----------------------------=*/
 /*= Section heading self-links =*/
 /*=----------------------------=*/
@@ -2511,18 +2405,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685857159#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685918337#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685857159#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685918337#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685857159#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685918337#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685857159#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1685918337#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -3668,9 +3562,9 @@ section.footnotes .footnote-self-link {
     left: 0;
     width: 100%;
     opacity: 0.85;
-    line-height: 1.5;
     padding: 2em 0 0 0;
     font-size: 0.85em;
+    line-height: calc(1.3 / 0.85);
     transition:
         opacity 0.25s ease-in,
         transform 0.25s ease-in;
@@ -4560,12 +4454,13 @@ body.lorem div[class^='drop-cap'] {
 /* POP-FRAMES */
 /**************/
 
-.popframe .popframe-title-link::after {
-    display: none;
-}
+/*******************/
+/*	Pop-frame title.
+ */
 
-.popframe .popframe-title-link-archived::after {
-    content: none;
+.popframe .popframe-title .popframe-title-link::after,
+.popframe .popframe-title .popframe-title-link-archived::after {
+    display: none;
 }
 
 .popframe .popframe-title .separator {
@@ -4579,6 +4474,7 @@ body.lorem div[class^='drop-cap'] {
     background-color: inherit;
     font-size: 0.95em;
 }
+
 .popframe .popframe-title code + span {
     margin-left: 0.25em;
 }
@@ -5502,14 +5398,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685857159#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685918337#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685857159#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685918337#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5642,7 +5538,7 @@ body.lorem div[class^='drop-cap'] {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1685857159#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685918337#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -6072,14 +5968,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685857159#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685918337#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685857159#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685918337#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -7152,7 +7048,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1685857159#question');
+    background-image: url('/static/img/icon/icons.svg?v=1685918337#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7640,7 +7536,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1685857159#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1685918337#circle-notch-solid');
 
     pointer-events: none;
 }

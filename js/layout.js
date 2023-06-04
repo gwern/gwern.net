@@ -17,16 +17,17 @@ function inflictABTestClassesUponContainer(container, conditions) {
 		indent: document.body.classList.contains(indentClassNames[0]) ? 0 : 1
 	};
 
-	container.querySelectorAll(".markdownBody").forEach(markdownBody => {
-		if (markdownBody.closest(GW.layout.blockLayoutExclusionSelector))
-			return;
-
-		markdownBody.swapClasses(justifyClassNames, conditions.justify);
-		markdownBody.swapClasses(indentClassNames, conditions.indent);
-	});
 	if (container.matches?.(".markdownBody")) {
 		container.swapClasses(justifyClassNames, conditions.justify);
 		container.swapClasses(indentClassNames, conditions.indent);
+	} else {
+		container.querySelectorAll(".markdownBody").forEach(markdownBody => {
+			if (markdownBody.closest(GW.layout.blockLayoutExclusionSelector))
+				return;
+
+			markdownBody.swapClasses(justifyClassNames, conditions.justify);
+			markdownBody.swapClasses(indentClassNames, conditions.indent);
+		});
 	}
 };
 
@@ -34,14 +35,9 @@ function inflictABTestClassesUponContainer(container, conditions) {
 /*	Inflict the indentation AB test.
  */
 addContentInjectHandler(GW.contentInjectHandlers.inflictABTestClasses = (eventInfo) => {
-    GWLog("inflictABTestClasses", "rewrite.js", 1);
+    GWLog("inflictABTestClasses", "layout.js", 1);
 
-	if (eventInfo.container.matches(".markdownBody"))
-		inflictABTestClassesUponContainer(eventInfo.container);
-	else if (eventInfo.document.body?.matches(".markdownBody"))
-		inflictABTestClassesUponContainer(eventInfo.document.body);
-	else
-		inflictABTestClassesUponContainer(eventInfo.container);
+	inflictABTestClassesUponContainer(eventInfo.container);
 }, ">rewrite");
 
 
@@ -50,6 +46,8 @@ addContentInjectHandler(GW.contentInjectHandlers.inflictABTestClasses = (eventIn
 /**********/
 
 GW.layout = {
+	cache: { },
+
 	containersNeedingLayout: [ ],
 
 	layoutProcessors: [ ],
@@ -198,6 +196,15 @@ GW.layout = {
 	]
 };
 
+GW.layout.defaultOptions = processLayoutOptions({
+	blockContainers: GW.layout.blockContainers,
+	blockElements: GW.layout.blockElements,
+	skipElements: GW.layout.skipElements,
+	nonEmptyElements: GW.layout.nonEmptyElements,
+	wrapperElements: GW.layout.wrapperElements,
+	halfWrapperElements: GW.layout.halfWrapperElements
+});
+
 /**********************************************************************/
 /*	Registers a layout processor function, which will be applied to all 
 	rendered content as part of the dynamic layout process.
@@ -244,9 +251,12 @@ function startDynamicLayoutInContainer(container) {
 				GW.layout.containersNeedingLayout.push(affectedContainer);
 		});
 		requestAnimationFrame(() => {
+			GW.layout.cache.currentPassBegin = performance.now();
+
 			//	Do layout in all waiting containers.
 			while (GW.layout.containersNeedingLayout.length > 0) {
 				let nextContainer = GW.layout.containersNeedingLayout.shift();
+				inflictABTestClassesUponContainer(nextContainer);
 				GW.layout.layoutProcessors.forEach(layoutProcessor => {
 					let [ processor, options ] = layoutProcessor;
 
@@ -278,9 +288,7 @@ doWhenBodyExists(() => {
 	(or for the main page content, if block not specified), false otherwise.
  */
 function indentModeActive(block) {
-	block = block ?? document.querySelector("#markdownBody");
-
-	return (block.closest(".markdownBody")?.matches(".indented") == true);
+	return (block?.getRootNode().body.classList.contains("indented") == true);
 }
 
 /*****************************************************************************/
@@ -289,6 +297,22 @@ function indentModeActive(block) {
 	read or used in any way except being passed to another function.)
  */
 function processLayoutOptions(options) {
+	if (options == null)
+		return GW.layout.defaultOptions;
+
+	if (options["blockElementsSelector"] != null)
+		return options;
+
+	let cacheKey = options.cacheKey;
+	if (cacheKey == null) {
+		cacheKey = "";
+		for (let [ key, value ] of Object.entries(options))
+			cacheKey += `| ${key}: ` + value.join(", ");
+		options.cacheKey = cacheKey;
+	}
+	if (GW.layout.cache[cacheKey])
+		return GW.layout.cache[cacheKey];
+
 	[	"blockContainers",
 		"blockElements",
 		"skipElements",
@@ -296,26 +320,76 @@ function processLayoutOptions(options) {
 		"wrapperElements",
 		"halfWrapperElements"
 	].forEach(optionKey => {
-		let selectorKey = optionKey + "Selector";
-		if (options[selectorKey] != null)
-			return;
-
-		if (options[optionKey] == null) {
-			options[optionKey] = GW.layout[optionKey];
+		let option = options[optionKey];
+		if (option == null) {
+			option = GW.layout[optionKey];
 
 			let capitalizedOptionKey = optionKey.slice(0, 1).toUpperCase() + optionKey.slice(1);
-			let alsoOptionKey = "also" + capitalizedOptionKey;
-			let notOptionKey = "not" + capitalizedOptionKey;
 
-			if (options[alsoOptionKey] != null)
-				options[optionKey] = [ ...options[optionKey], options[alsoOptionKey] ];
+			let alsoOption = options["also" + capitalizedOptionKey];
+			if (alsoOption != null)
+				option = option.concat(alsoOption);
 
-			if (options[notOptionKey] != null)
-				options[optionKey] = options[optionKey].filter(x => options[notOptionKey].includes(x) == false);
+			let notOption = options["not" + capitalizedOptionKey];
+			if (notOption != null)
+				option = option.filter(x => notOption.includes(x) == false);
+
+			options[optionKey] = option;
 		}
 
-		options[selectorKey] = options[optionKey].join(", ");
+		if ([ "wrapperElements", "halfWrapperElements" ].includes(optionKey) == false)
+			options[optionKey + "Selector"] = option.join(", ");
 	});
+
+	options.wrapperOptions = { };
+
+	let topFilter = (x => [ ...options.wrapperElements, ...options.halfWrapperElements ].includes(x) == false);
+	options.wrapperOptions["downOut"] = {
+		blockElementsSelector: options.blockElements.filter(topFilter).join(", "),
+		blockContainersSelector: options.blockContainers.filter(topFilter).join(", "),
+		wrappersSelector: [ ...options.wrapperElements, ...options.halfWrapperElements ].join(", ")
+	};
+	options.wrapperOptions["upIn"] = options.wrapperOptions["downOut"];
+
+	let bottomFilter = (x => options.wrapperElements.includes(x) == false);
+	options.wrapperOptions["downIn"] = {
+		blockElementsSelector: options.blockElements.filter(bottomFilter).join(", "),
+		blockContainersSelector: options.blockContainers.filter(bottomFilter).join(", "),
+		wrappersSelector: options.wrapperElements.join(", ")
+	};
+	options.wrapperOptions["upOut"] = options.wrapperOptions["downIn"];
+
+	GW.layout.cache[cacheKey] = options;
+
+	return options;
+}
+
+/******************************************************************/
+/*	Generate element layout cache key for given action and options.
+	(Or, just use provided cache key, if any.)
+ */
+function generateCacheKey(action, options) {
+	return `${action} ${options.cacheKey}`;
+}
+
+/***************************************************************************/
+/*	Retrieve desired result from element’s layout cache, or calculate it and 
+	store in element’s layout cache; and, in any case, return.
+ */
+function useLayoutCache(element, uniqueKey, options, f) {
+	options = processLayoutOptions(options);
+
+	let cacheKey = generateCacheKey(uniqueKey, options);
+
+	if (  (element.layoutCache?.time ?? 0) < GW.layout.cache.currentPassBegin
+		|| element.layoutCache[cacheKey] == null) {
+		if ((element.layoutCache?.time ?? 0) < GW.layout.cache.currentPassBegin)
+			element.layoutCache = { time: GW.layout.cache.currentPassBegin };
+
+		element.layoutCache[cacheKey] = f(element, options);
+	}
+
+	return element.layoutCache[cacheKey];
 }
 
 /***************************************************************************/
@@ -323,72 +397,75 @@ function processLayoutOptions(options) {
 
 	Types: upOut, downOut, upIn, downIn
  */
-function isWrapper(element, wrapperType, options = { }) {
-	processLayoutOptions(options);
+function isWrapper(element, wrapperType, options) {
+	if (element == null)
+		return null;
 
-	let filter = [ "downOut", "upIn" ].includes(wrapperType)
-				 ? (x => [ ...options.wrapperElements, ...options.halfWrapperElements ].includes(x) == false)
-				 : (x => options.wrapperElements.includes(x) == false)
-	let blockElementsSelector = options.blockElements.filter(filter).join(", ");
-	let blockContainersSelector = options.blockContainers.filter(filter).join(", ");
-	let wrappersSelector = [ "downOut", "upIn" ].includes(wrapperType)
-						   ? [ ...options.wrapperElements, ...options.halfWrapperElements ].join(", ")
-						   : options.wrapperElements.join(", ");
-
-	return (   element?.matches(wrappersSelector) == true
-			&& element?.matches(blockElementsSelector) != true
-			&& element?.matches(blockContainersSelector) != true);
+	return useLayoutCache(element, "isWrapper", options, (element, options) => {
+		return (   element?.matches(options.wrapperOptions[wrapperType].wrappersSelector) == true
+				&& element?.matches(options.wrapperOptions[wrapperType].blockElementsSelector) != true
+				&& element?.matches(options.wrapperOptions[wrapperType].blockContainersSelector) != true);
+	});
 }
 
 /*****************************************************************/
 /*	Returns true if element is a skipped element, false otherwise.
  */
-function isSkipped(element, options = { }) {
-	processLayoutOptions(options);
+function isSkipped(element, options) {
+	if (element == null)
+		return null;
 
-	return (element?.matches(options.skipElementsSelector) == true);
+	return useLayoutCache(element, "isSkipped", options, (element, options) => {
+		return (element?.matches(options.skipElementsSelector) == true);
+	});
 }
 
 /**************************************************************/
 /*	Returns true if element is a layout block, false otherwise.
  */
-function isBlock(element, options = { }) {
-	processLayoutOptions(options);
+function isBlock(element, options) {
+	if (element == null)
+		return null;
 
-	return (element?.matches(options.blockElementsSelector) == true);
+	return useLayoutCache(element, "isBlock", options, (element, options) => {
+		return (element?.matches(options.blockElementsSelector) == true);
+	});
 }
 
 /***************************************************************************/
 /*	Returns true if element is an always-not-empty element, false otherwise.
  */
-function isNonEmpty(element, options = { }) {
-	processLayoutOptions(options);
+function isNonEmpty(element, options) {
+	if (element == null)
+		return null;
 
-	return (element?.matches(options.nonEmptyElementsSelector) == true);
+	return useLayoutCache(element, "isNonEmpty", options, (element, options) => {
+		(element?.matches(options.nonEmptyElementsSelector) == true);
+	});
 }
 
 /******************************************************************/
 /*	Returns nearest enclosing block container of the given element.
 	(Might be null.)
  */
-function blockContainerOf(element, options = { }) {
+function blockContainerOf(element, options) {
 	if (element == null)
 		return null;
 
-	processLayoutOptions(options);
-
-	return element.parentElement?.closest(options.blockContainersSelector);
+	return useLayoutCache(element, "blockContainer", options, (element, options) => {
+		return element.parentElement?.closest(options.blockContainersSelector);
+	});
 }
 
 /**************************************************************************/
 /*	Returns layout block sequential (next or previous) to the given element
 	in the block flow.
  */
-function sequentialBlockOf(element, direction, options = { }) {
+function sequentialBlockOf(element, direction, options) {
 	if (element == null)
 		return null;
 
-	processLayoutOptions(options);
+	options = processLayoutOptions(options);
 
 	let siblingKey = direction + "ElementSibling";
 	let wrapperDirection = (direction == "next" ? "down" : "up");
@@ -424,27 +501,37 @@ function sequentialBlockOf(element, direction, options = { }) {
 /*	Returns layout block previous to the given element in the block flow.
 	(Might be null.)
  */
-function previousBlockOf(element, options = { }) {
-	return sequentialBlockOf(element, "previous", options);
+function previousBlockOf(element, options) {
+	if (element == null)
+		return null;
+
+	return useLayoutCache(element, "previousBlock", options, (element, options) => {
+		return sequentialBlockOf(element, "previous", options);
+	});
 }
 
 /************************************************************************/
 /*	Returns layout block next from the given element in the block flow.
 	(Might be null.)
  */
-function nextBlockOf(element, options = { }) {
-	return sequentialBlockOf(element, "next", options);
+function nextBlockOf(element, options) {
+	if (element == null)
+		return null;
+
+	return useLayoutCache(element, "nextBlock", options, (element, options) => {
+		return sequentialBlockOf(element, "next", options);
+	});
 }
 
 /***************************************************************/
 /*	Returns terminal (first or last) layout block of an element.
 	(Might be the element itself, or null.)
  */
-function terminalBlockOf(element, terminus, options = { }) {
+function terminalBlockOf(element, terminus, options) {
 	if (element == null)
 		return null;
 
-	processLayoutOptions(options);
+	options = processLayoutOptions(options);
 
 	let wrapperType = (terminus == "first" ? "down" : "up") + "In";
 
@@ -470,16 +557,26 @@ function terminalBlockOf(element, terminus, options = { }) {
 /*	Returns last layout block of an element.
 	(Might be the element itself, or null.)
  */
-function lastBlockOf(element, options = { }) {
-	return terminalBlockOf(element, "last", options);
+function lastBlockOf(element, options) {
+	if (element == null)
+		return null;
+
+	return useLayoutCache(element, "lastBlock", options, (element, options) => {
+		return terminalBlockOf(element, "last", options);
+	});
 }
 
 /********************************************/
 /*	Returns first layout block of an element.
 	(Might be the element itself, or null.)
  */
-function firstBlockOf(element, options = { }) {
-	return terminalBlockOf(element, "first", options);
+function firstBlockOf(element, options) {
+	if (element == null)
+		return null;
+
+	return useLayoutCache(element, "firstBlock", options, (element, options) => {
+		return terminalBlockOf(element, "first", options);
+	});
 }
 
 /***************************************************************************/
@@ -487,11 +584,11 @@ function firstBlockOf(element, options = { }) {
 	the given element with no other blocks in the chain of descent; wrappers 
 	don’t count).
  */
-function childBlocksOf(element, options = { }) {
+function childBlocksOf(element, options) {
 	if (element == null)
 		return null;
 
-	processLayoutOptions(options);
+	options = processLayoutOptions(options);
 
 	let childBlocks = Array.from(element.children);
 
@@ -531,7 +628,10 @@ function getBlockSpacingMultiplier(block, debug = false) {
 			/*	Headings do not normally count as layout blocks, but they do 
 				here, except headings of collapsible sections.
 			 */
-			return (block) => (   previousBlockOf(block, { alsoBlockElements: [ "section:not(.collapse) > .heading" ] })?.matches(parts[1]) 
+			return (block) => (   previousBlockOf(block, {
+									alsoBlockElements: [ "section:not(.collapse) > .heading" ],
+									cacheKey: "alsoBlocks_nonCollapseSectionHeadings"
+								  })?.matches(parts[1]) 
 							   && block.matches(parts[2]));
 		} else {
 			return (block) => block.matches(selector);
@@ -611,7 +711,10 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 
 	//	Designate float-containing lists.
 	container.querySelectorAll(".markdownBody li .float").forEach(floatBlock => {
-		let options = { alsoBlockContainers: [ ".list" ] };
+		let options = {
+			alsoBlockContainers: [ ".list" ],
+			cacheKey: "alsoBlockContainers_lists"
+		};
 		let container = blockContainerOf(floatBlock, options);
 		while (container?.matches(".list")) {
 			container.classList.add("has-floats");
@@ -628,7 +731,10 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 			return false;
 
 		for (let listItem of list.children) {
-			if (childBlocksOf(listItem, { notWrapperElements: [ ".list" ] }).filter(x => x.matches(".list") != true).length > 1)
+			if (childBlocksOf(listItem, {
+					notWrapperElements: [ ".list" ],
+					cacheKey: "notWrappers_lists"
+				}).filter(x => x.matches(".list") != true).length > 1)
 				return true;
 		}
 
@@ -642,10 +748,16 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 			the designation of “bigness” is applied to *list levels within a
 			list tree*, not to individual lists).
 		 */
-		 let container = blockContainerOf(list, { alsoBlockContainers: [ "li" ] });
+		 let container = blockContainerOf(list, {
+		 	alsoBlockContainers: [ "li" ],
+		 	cacheKey: "alsoBlockContainers_listItems"
+		 });
 		 if (container?.matches("li")) {
 		 	for (let listItem of container.parentElement.children) {
-				if (childBlocksOf(listItem, { notWrapperElements: [ ".list" ] }).findIndex(x => isBigList(x)) != -1) {
+				if (childBlocksOf(listItem, {
+						notWrapperElements: [ ".list" ],
+						cacheKey: "notWrappers_lists"
+					}).findIndex(x => isBigList(x)) != -1) {
 					bigList = true;
 					break;
 				}
@@ -668,7 +780,8 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 			 except headings of collapsible sections.)
 		 */
 		block.classList.toggle("first-block", previousBlockOf(block, {
-			alsoBlockElements: [ "section:not(.collapse) > .heading" ]
+			alsoBlockElements: [ "section:not(.collapse) > .heading" ],
+			cacheKey: "alsoBlocks_nonCollapseSectionHeadings"
 		}) == null);
 
 		//	Apply special paragraph classes.
@@ -691,7 +804,8 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 			].join(", ");
 			let strictPreviousBlock = previousBlockOf(block, { 
 				notWrapperElements: [ "li", ".list" ], 
-				notHalfWrapperElements: [ "section" ] 
+				notHalfWrapperElements: [ "section" ],
+				cacheKey: "notWrappers_listsAndListItems_notHalfWrappers_sections"
 			});
 			if (   strictPreviousBlock == null
 				|| strictPreviousBlock.matches(previousBlockSelector) == true)
@@ -704,7 +818,8 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 			let listHeading = false;
 			let strictNextBlock = nextBlockOf(block, { 
 				alsoBlockElements: [ ".list" ], 
-				notWrapperElements: [ ".list" ]
+				notWrapperElements: [ ".list" ],
+				cacheKey: "alsoBlocks_lists_notWrappers_lists"
 			});
 			if (   strictNextBlock?.matches(".list")
 				&& block.textContent.trim().endsWith(":"))
@@ -723,7 +838,11 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 					return (   blockContainerOf(block, options)?.matches(containerSelector) == true
 							&& previousBlockOf(block, options) == null);
 				}
-				let options = { alsoSkipElements: [ ".epigraph" ], alsoBlockContainers: [ "li" ] };
+				let options = {
+					alsoSkipElements: [ ".epigraph" ],
+					alsoBlockContainers: [ "li" ],
+					cacheKey: "alsoSkip_epigraphs_alsoBlocks_lists"
+				};
 				if (   isFirstWithin(block, "#markdownBody", options)
 					|| (   isFirstWithin(block, "section", options)
 						&& isFirstWithin(blockContainerOf(block), "#markdownBody"))
@@ -734,7 +853,10 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 		}
 
 		//	Designate blocks in lists (the .in-list class).
-		block.classList.toggle("in-list", blockContainerOf(block, { alsoBlockContainers: [ "li" ] })?.matches("li") == true);
+		block.classList.toggle("in-list", blockContainerOf(block, {
+			alsoBlockContainers: [ "li" ],
+			cacheKey: "alsoBlocks_listItems"
+		})?.matches("li") == true);
 	});
 
 	//	Designate those list items which need more spacing (when not indenting).

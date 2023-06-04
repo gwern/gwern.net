@@ -319,6 +319,7 @@ article {
 @media all and (min-width: 650px) {
     #page-metadata {
         font-size: calc((19/20) * var(--GW-body-text-font-size));
+        line-height: calc(1.5 / (19/20));
     }
 
 	/*	Page description.
@@ -858,6 +859,8 @@ body[class*='-index'] #TOC.TOC-links-only li {
 		https://practicaltypography.com/alternate-figures.html#oldstyle-figures
 	 */
     font-variant-numeric: oldstyle-nums;
+
+	line-height: var(--line-height);
 }
 
 /*  Replaces A/B-test-set average value; the wider the screen, the more
@@ -866,22 +869,22 @@ body[class*='-index'] #TOC.TOC-links-only li {
  */
 @media all and (max-width: 649px) {
     .markdownBody {
-        line-height: 1.45;
+        --line-height: 1.45;
     }
 }
 @media all and (max-width: 999px) {
 	.markdownBody {
-		line-height: 1.50;
+		--line-height: 1.50;
 	}
 }
 @media all and (max-width: 1199px) {
 	.markdownBody {
-		line-height: 1.55;
+		--line-height: 1.55;
 	}
 }
 @media all and (min-width: 1200px) {
 	.markdownBody {
-		line-height: 1.60;
+		--line-height: 1.60;
 	}
 }
 
@@ -912,6 +915,112 @@ section.level1:nth-of-type(n+4) {
     contain-intrinsic-size: 200vh;
 }
  */
+
+/************/
+/*	Headings.
+ */
+
+.heading {
+    margin: 0;
+    position: relative;
+    display: flow-root;
+    line-height: 1;
+}
+@media all and (min-width: 1180px) {
+    .heading {
+		margin-left: calc(-1 * var(--base-font-size));
+	}
+}
+
+/*	H1.
+ */
+
+section.level1 > .heading {
+    text-align: right;
+    font-weight: 600;
+	font-variant-caps: small-caps;
+    letter-spacing: -0.75px;
+    padding: 0 0.05em 0.025em calc(1.25 * var(--base-font-size));
+    border-bottom: 1px solid var(--GW-H1-border-color);
+}
+@media all and (max-width: 1179px) {
+	section.level1 > .heading {
+		font-size: 1.75em;
+	}
+}
+@media all and (min-width: 1180px) {
+    section.level1 > .heading {
+        font-size: 2em;
+    }
+}
+
+section.level1 > .heading em {
+	font-variant-caps: normal;
+}
+section.level1 > .heading em:last-child {
+    padding-right: 0.075em;
+}
+
+/*	H2.
+ */
+section.level2 > .heading {
+    text-transform: uppercase;
+    font-size: 1.4em;
+    padding: 0 calc(0.75 * var(--base-font-size)) 0.05em 0;
+    border-bottom: 1px dotted var(--GW-H2-border-color);
+}
+
+/*	H3.
+ */
+section.level3 > .heading {
+    text-transform: capitalize;
+    font-size: 1.35em;
+    font-weight: bold;
+}
+
+/*	H4.
+ */
+section.level4 > .heading {
+    text-transform: capitalize;
+    font-size: 1.2em;
+}
+
+/*	H5.
+ */
+section.level5 > .heading {
+    text-transform: capitalize;
+    font-size: 1.1em;
+}
+
+/*	H6.
+ */
+section.level6 > .heading {
+    text-transform: capitalize;
+    font-size: 1.1em;
+    font-weight: normal;
+    font-style: italic;
+}
+
+/*=---------------------------=*/
+/*= Misc. styling in headings =*/
+/*=---------------------------=*/
+
+/*	Disable bold within headings.
+ */
+.heading strong {
+	font-weight: inherit;
+}
+
+/*	Inline code in headings.
+ */
+.heading code {
+    border: none;
+    padding: 0;
+    background-color: inherit;
+    font-size: inherit;
+    font-weight: bold;
+    font-variant-caps: normal;
+}
 
 /*=------------=*/
 /*= /doc/index =*/
@@ -1049,6 +1158,7 @@ blockquote {
 
 blockquote > * {
 	font-size: calc(var(--blockquote-font-size-scaling-factor) * 1em);
+	line-height: calc(var(--line-height) / var(--blockquote-font-size-scaling-factor));
 }
 
 /*  Three-level of blockquote emphasis (darkening).

@@ -309,9 +309,10 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifySectionCollapseLayout = 
 		section.style.removeProperty("--collapse-toggle-top-height");
 		section.style.removeProperty("--collapse-toggle-top-icon-size");
 
-		requestAnimationFrame(() => {
-			let oneLineHeight = Array.from(section.firstElementChild.querySelector("a").getClientRects()).first?.height ?? 0;
-			let totalHeight = section.firstElementChild.querySelector("a").getBoundingClientRect().height;
+		requestIdleCallback(() => {
+			let rects = Array.from(section.firstElementChild.querySelector("a").getClientRects());
+			let oneLineHeight = rects.first?.height ?? 0;
+			let totalHeight = rects.reduce((h, r) => h + r.height, 0);
 			if (   oneLineHeight == 0
 				|| totalHeight == 0)
 				return;
@@ -320,7 +321,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifySectionCollapseLayout = 
 			section.style.setProperty("--collapse-toggle-top-icon-size", Math.round(oneLineHeight * 1.15) + "px");
 		});
 	});
-}, "rewrite");
+}, ">rewrite");
 
 /******************************************************************************/
 /*  Collapse all expanded collapse blocks. (Mostly relevant when popping up

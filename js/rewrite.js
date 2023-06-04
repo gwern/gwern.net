@@ -440,9 +440,23 @@ function setImageDimensions(image, fixWidth = false, fixHeight = false) {
 
     image.style.aspectRatio = `${width} / ${height}`;
 
-    let maxHeight = parseInt(getComputedStyle(image).maxHeight);
-    if (maxHeight)
-        width = Math.round(Math.min(width, maxHeight * (width/height)));
+	if (image.maxHeight == null) {
+		//	Avoid computing style when possible.
+		if (image.matches("#markdownBody figure:not(.float) img")) {
+			//	This should match `1rem`.
+			let baseFontSize = GW.isMobile() ? "18" : "20";
+
+			/*	This should match the `max-height` property value for images
+				in the main content column.
+			 */
+			image.maxHeight = window.innerHeight - (8 * GW.baseFontSize);
+		} else {
+			image.maxHeight = parseInt(getComputedStyle(image).maxHeight);
+		}
+	}
+
+    if (image.maxHeight)
+        width = Math.round(Math.min(width, image.maxHeight * (width/height)));
 
     if (fixWidth) {
         image.style.width = `${width}px`;
@@ -457,6 +471,10 @@ function setImageDimensions(image, fixWidth = false, fixHeight = false) {
  */
 addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) => {
     GWLog("setImageDimensions", "rewrite.js", 1);
+
+	//	Do not set image dimensions in sidenotes.
+	if (eventInfo.container == Sidenotes.hiddenSidenoteStorage)
+		return;
 
     eventInfo.container.querySelectorAll("figure img[width][height]").forEach(image => {
         let fixWidth = (   eventInfo.contentType == "annotation"
@@ -773,99 +791,11 @@ function hyphenate(eventInfo) {
     });
 }
 
-/*******************************************************************************/
-/*  Set line height of element to its computed line height, rounded to the
-    nearest pixel.
-
-    (Actually, the value of the CSS `line-height` property is set to a unitless
-     value computed to result in the rendered line height being an integer pixel
-     value.)
-
-    Returns the CSS property value as a string.
-
-    If the `returnOnly` argument is TRUE, then the property is not actually set;
-    the value to be set is only returned.
- */
-function rectifyLineHeight(elementOrSelector, container = document.body, returnOnly = false) {
-    if (typeof elementOrSelector == "string")
-        elementOrSelector = container.querySelector(elementOrSelector);
-
-    if (elementOrSelector == null)
-        return null;
-
-    let e = elementOrSelector;
-    let style = getComputedStyle(e);
-    let fontSize = parseFloat(style.fontSize);
-    let lineHeight = Math.round(parseFloat(style.lineHeight));
-    if (isNaN(fontSize) || isNaN(lineHeight))
-        return null;
-    let lineHeightPropertyValue = `calc(${lineHeight}/${fontSize})`;
-    if (!returnOnly)
-        e.style.lineHeight = lineHeightPropertyValue;
-    return lineHeightPropertyValue;
-}
-
-/**********************************************************************/
-/*  Rectify line heights of elements matching a given set of selectors.
- */
-function rectifyLineHeights(eventInfo) {
-    GWLog("rectifyLineHeights", "rewrite.js", 1);
-
-    /*  Note: these selectors should be “all block elements on which the font
-        size is adjusted”. It seems possible but code-complex and
-        runtime-expensive to find all such elements dynamically; using a fixed
-        selector list is simpler and faster but, of course, has the downside of
-        many likely false negatives. (False positives can also occur but should
-        be mostly harmless, or, at any rate, no more harmful than true
-        positives. Possible sources of harm from true or false positives include
-        render time penalty [minor] and failure to recalculate line heights in
-        response to changes in computed values caused by, e.g., viewport shifts
-        [major]. The latter could perhaps be addressed by calling this function
-        from a window resize listener [inefficient] or from some sort of
-        mutation observer or some other low-overhead observer/listener that
-        watches for changes in CSS in response to various transformations and
-        events.) The selector list may also become stale as changes to HTML
-        structure and to the CSS codebase are not reliably propagated to parts
-        of the code such as this.
-
-        The current implementation should thus be considered a prototype, and
-        revisited at a later date.
-            —SA 2022-06-23
-     */
-    let selectors = [
-        "#page-description",
-        "blockquote",
-        ".sidenote"
-    ];
-
-    /*  On the first pass, compute the adjusted values for line-height of all
-        affected elements; on the second pass, actually set the values. (This is
-        done to prevent cascades of deviations from ideal [fractional] values
-        due to rounding, in nested line-height-adjusted elements.)
-     */
-    let elements = [ ];
-    eventInfo.container.querySelectorAll(selectors.join(", ")).forEach(element => {
-        if (element.style.lineHeight > "")
-            return;
-        let lineHeight = rectifyLineHeight(element, eventInfo.container, true);
-        elements.push({
-            element:    element,
-            lineHeight: lineHeight
-        });
-    });
-    elements.forEach(e => {
-        if (   null != e.element
-            && null != e.lineHeight)
-            e.element.style.lineHeight = e.lineHeight;
-    });
-}
-
 /**********************************************/
 /*  Add content inject handlers for typography.
  */
 addContentInjectHandler(GW.contentInjectHandlers.rectifyTypography = (eventInfo) => {
     hyphenate(eventInfo);
-    rectifyLineHeights(eventInfo);
 }, "rewrite");
 
 /************************************************************************/
@@ -1975,14 +1905,16 @@ addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) 
     });
 }, ">rewrite", (info) => (info.container == document.body));
 
+/***********************************************************************/
+/*	Prevent blocks with drop caps from overlapping the block below them.
+ */
 addContentInjectHandler(GW.contentInjectHandlers.preventDropCapsOverlap = (eventInfo) => {
     GWLog("preventDropCapsOverlap", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll("[class*='drop-cap-']").forEach(dropCapBlock => {
         if (dropCapBlock.nextElementSibling) {
             if (   dropCapBlock.nextElementSibling.classList.containsAnyOf([ "columns", "collapse", "list-heading" ])
-                || [ "SECTION", "OL", "UL" ].includes(dropCapBlock.nextElementSibling.tagName)
-                || [ "0", "0px" ].includes(getComputedStyle(dropCapBlock.nextElementSibling).borderWidth) == false)
+                || [ "SECTION", "OL", "UL", "BLOCKQUOTE" ].includes(dropCapBlock.nextElementSibling.tagName))
                 dropCapBlock.classList.add("overlap-not");
         } else {
             dropCapBlock.classList.add("overlap-not");

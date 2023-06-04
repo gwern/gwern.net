@@ -156,7 +156,8 @@ Sidenotes = { ...Sidenotes,
 
 		Sidenotes.sidenotes.forEach(sidenote => {
 			let citation = Sidenotes.counterpart(sidenote);
-			sidenote.classList.toggle("hidden", isWithinCollapsedBlock(citation));
+			if (citation)
+				sidenote.classList.toggle("hidden", isWithinCollapsedBlock(citation));
 		});
 	},
 
@@ -526,7 +527,7 @@ Sidenotes = { ...Sidenotes,
 	/*  Constructs the HTML structure, and associated listeners and auxiliaries,
 		of the sidenotes.
 		*/
-	constructSidenotes: (loadEventInfo) => {
+	constructSidenotes: () => {
 		GWLog("Sidenotes.constructSidenotes", "sidenotes.js", 1);
 
 		/*  Do nothing if constructSidenotes() somehow gets run extremely early 
@@ -665,13 +666,13 @@ Sidenotes = { ...Sidenotes,
 			source: "Sidenotes.constructSidenotes",
 			container: Sidenotes.hiddenSidenoteStorage,
 			document: document,
-			loadLocation: loadEventInfo.loadLocation
+			loadLocation: location
 		});
 		GW.notificationCenter.fireEvent("GW.contentDidInject", {
 			source: "Sidenotes.constructSidenotes",
 			container: Sidenotes.hiddenSidenoteStorage,
 			document: document,
-			loadLocation: loadEventInfo.loadLocation,
+			loadLocation: location,
 			flags: 0
 		});
 	},
@@ -968,7 +969,17 @@ Sidenotes = { ...Sidenotes,
 		addContentInjectHandler(Sidenotes.constructSidenotesWhenMainPageContentDidInject = (eventInfo) => {
 			GWLog("Sidenotes.constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
 
-			Sidenotes.constructSidenotes(eventInfo);
+			if (eventInfo.container == document.body) {
+				Sidenotes.constructSidenotes();
+			} else {
+				Sidenotes.sidenotesNeedConstructing = true;
+				requestIdleCallback(() => {
+					if (Sidenotes.sidenotesNeedConstructing == true) {
+						Sidenotes.constructSidenotes();
+						Sidenotes.sidenotesNeedConstructing = false;
+					}
+				});
+			}
 		}, "rewrite", (info) => (   info.document == document
 								 && info.source != "Sidenotes.constructSidenotes"));
 
