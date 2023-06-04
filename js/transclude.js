@@ -734,6 +734,9 @@ function includeContent(includeLink, content) {
         }
     }
 
+	//	Retain reference to nodes.
+	let addedNodes = Array.from(wrapper.childNodes);
+
     //  Unwrap.
     unwrap(wrapper);
 
@@ -751,7 +754,8 @@ function includeContent(includeLink, content) {
     if (includeLink.delayed) {
         GW.notificationCenter.fireEvent("Rewrite.contentDidChange", {
             source: "transclude",
-            document: containingDocument
+            document: containingDocument,
+            nodes: addedNodes
         });
     }
 
@@ -792,7 +796,7 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 			let sectionLabelHTML = targetBlock.tagName == "SECTION"
 								   ? `“${(targetBlock.firstElementChild.textContent)}”`
 								   : `footnote <span class="footnote-number">${(Notes.noteNumberFromHash(targetBlock.id))}</span>`;
-			backlinksBlock.querySelector("p strong").innerHTML = `Backlinks for <a href="${sectionLabelLinkTarget}" class="link-page">${sectionLabelHTML}</a>`;
+			backlinksBlock.querySelector("p strong").innerHTML = `Backlinks for <a href="${sectionLabelLinkTarget}" class="link-page">${sectionLabelHTML}</a>:`;
 
 			//	List.
 			backlinksBlock.append(newElement("UL", { "class": "aux-links-list backlinks-list" }));
@@ -1092,49 +1096,7 @@ Transclude = {
     /*  Templating.
      */
 
-	templateDirectoryPathname: "/static/template/include/",
-	templateListFileName: "templates.json",
-
 	templates: { },
-
-	loadTemplates: () => {
-        GWLog("Transclude.loadTemplates", "transclude.js", 1);
-
-		doAjax({
-			location: versionedAssetURL(Transclude.templateDirectoryPathname + Transclude.templateListFileName).href,
-			responseType: "json",
-			onSuccess: (event) => {
-				let templateList = event.target.response;
-				for (templateName of templateList)
-					Transclude.loadTemplateByName(templateName);
-			}
-		});
-	},
-
-	loadTemplateByName: (templateName) => {
-        GWLog("Transclude.loadTemplateByName", "transclude.js", 2);
-
-		doAjax({
-			location: versionedAssetURL(Transclude.templateDirectoryPathname + templateName + ".tmpl").href,
-			responseType: "text",
-			onSuccess: (event) => {
-				Transclude.templates[templateName] = event.target.response;
-
-				GW.notificationCenter.fireEvent("Transclude.templateDidLoad", {
-					source: "Transclude.loadTemplateByName",
-					templateName: templateName
-				});
-			},
-			onFailure: (event) => {
-				Transclude.templates[templateName] = "LOADING_FAILED";
-
-				GW.notificationCenter.fireEvent("Transclude.templateLoadDidFail", {
-					source: "Transclude.loadTemplateByName",
-					templateName: templateName
-				});
-			}
-		});
-	},
 
 	doWhenTemplateLoaded: (templateName, loadHandler, loadFailHandler = null) => {
 		let template = Transclude.templates[templateName];
@@ -1191,7 +1153,7 @@ Transclude = {
 		"blockquote",
 		[	"section",
 			".markdownBody > *",
-			".include-wrapper-block",
+// 			".include-wrapper-block",
 			].join(", ")
 	],
 
@@ -1678,7 +1640,8 @@ Transclude = {
         if (link.delayed) {
             GW.notificationCenter.fireEvent("Rewrite.contentDidChange", {
                 source: "transclude.loadingFailed",
-                document: link.eventInfo.document
+                document: link.eventInfo.document,
+                nodes: [ link ]
             });
         }
     },
@@ -1689,7 +1652,7 @@ Transclude = {
             return;
 
 		//	Clear classes.
-		link.classList.remove("include-loading", "inclide-loading-failed");
+		link.classList.remove("include-loading", "include-loading-failed");
 
 		//	Revert to normal link functionality.
 		Transclude.resetLinkBehavior(link);
@@ -1712,11 +1675,6 @@ Transclude = {
         }
 	}
 };
-
-/***************************/
-/*	Load standard templates.
- */
-Transclude.loadTemplates();
 
 /****************************/
 /*  Process transclude-links.

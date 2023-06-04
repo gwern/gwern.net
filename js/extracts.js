@@ -214,25 +214,18 @@ Extracts = {
             add hover/click event listeners to annotated targets, to load
             annotations (fragments).
          */
-        GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", Extracts.processTargetsOnContentInject = (info) => {
+        addContentInjectHandler(Extracts.processTargetsOnContentInject = (eventInfo) => {
             GWLog("Extracts.processTargetsOnContentInject", "extracts.js", 2);
 
-            Extracts.processTargetsInContainer(info.container);
-
-			//	Fire targets-processed event.
-			GW.notificationCenter.fireEvent("Extracts.targetsDidProcessOnContentInject", {
-				source: "Extracts.processTargetsOnContentInject",
-				container: info.container,
-				document: info.document
-			});
-        }, { phase: "eventListeners" });
+            Extracts.processTargetsInContainer(eventInfo.container);
+        }, "eventListeners");
 
 		//	Add handler to prevent “phantom” popins.
 		if (Extracts.popFrameProvider == Popins) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", Extracts.cleanPopinsFromInjectedContent = (eventInfo) => {
+			addContentInjectHandler((eventInfo) => {
 				//	Clean any existing popins.
 				Popins.removeAllPopinsInContainer(eventInfo.container);
-			}, { phase: "rewrite" });
+			}, "rewrite");
 		}
 
         //  Fire setup-complete event.
@@ -640,9 +633,8 @@ Extracts = {
 		//	Inject styles.
 		let inlinedStyleIDs = [ 
 			"inlined-styles-colors", 
-			"inlined-styles", 
-			"inlined-dark-mode-styles", 
-			"inlined-fonts", 
+			"inlined-styles-colors-dark", 
+			"initial-styles", 
 			"mathjax-styles"
 		];
 		Array.from(document.styleSheets).filter(styleSheet => 
@@ -725,6 +717,9 @@ Extracts = {
         GWLog("Extracts.preparePopin", "extracts.js", 2);
 
         let target = popin.spawningTarget;
+
+		//	Activate dynamic layout for the popin.
+		startDynamicLayoutInContainer(popin.body);
 
         /*  Call generic pop-frame prepare function (which will attempt to fill
             the popin).
@@ -850,6 +845,9 @@ Extracts = {
             return existingPopup;
         }
 
+		//	Activate dynamic layout for the popup.
+		startDynamicLayoutInContainer(popup.body);
+
         /*  Call generic pop-frame prepare function (which will attempt to fill
             the popup).
          */
@@ -924,7 +922,3 @@ Extracts.additionalRewrites.push(Extracts.lazyLoadImages = (popFrame) => {
 		});
 	});
 });
-
-GW.notificationCenter.fireEvent("Extracts.didLoad");
-
-Extracts.setup();

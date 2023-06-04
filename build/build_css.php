@@ -2,12 +2,13 @@
 
 echo "Building color CSS...\n";
 
-$css_include_dir = __DIR__ . "/../css/include";
-$build_dir = __DIR__;
+$static_root = __DIR__ . "/..";
+$css_dir = "{$static_root}/css";
+$build_dir = "{$static_root}/build";
 
-`php {$build_dir}/color-scheme-convert.php {$css_include_dir}/colors.css 1 "Lab" 0.55 > {$css_include_dir}/components/colors-dark-GENERATED.css`;
+`php {$build_dir}/color-scheme-convert.php {$css_dir}/colors.css 1 "Lab" 0.55 > {$css_dir}/colors-dark-GENERATED.css`;
 
-`cat {$css_include_dir}/colors.css {$css_include_dir}/components/light-mode-adjustments.css > {$css_include_dir}/light-mode-GENERATED.css`;
-`cat {$css_include_dir}/components/colors-dark-GENERATED.css {$css_include_dir}/components/dark-mode-adjustments.css > {$css_include_dir}/dark-mode-GENERATED.css`;
+`cat {$css_dir}/colors.css {$css_dir}/light-mode-adjustments.css > {$css_dir}/light-mode-GENERATED.css`;
+`cat {$css_dir}/colors-dark-GENERATED.css {$css_dir}/dark-mode-adjustments.css > {$css_dir}/dark-mode-GENERATED.css`;
 
 ?>

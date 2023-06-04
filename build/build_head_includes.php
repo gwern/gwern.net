@@ -2,6 +2,8 @@
 
 echo "Building <head> includes...\n";
 
+require_once(__DIR__ . '/build_functions.php');
+
 /*
  Instructions:
 
@@ -22,48 +24,65 @@ echo "Building <head> includes...\n";
  (Configuration for non-Apache servers left as exercise for reader.)
  */
 
+## Paths
+
+$static_root = __DIR__ . "/..";
+$js_dir = "{$static_root}/js";
+$css_dir = "{$static_root}/css";
+$includes_dir = "{$static_root}/include";
+
+## Includes
+
 $includes = [
 	[ 'light-mode-GENERATED.css', 'id="inlined-styles-colors"' ],
-	[ 'dark-mode-GENERATED.css', 'id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)"' ],
-	[ 'initial.css', 'id="inlined-styles"' ],
-	[ 'inline.js' ],
-	[ 'dark-mode-inline.js' ],
-	[ 'reader-mode-inline.js' ],
+	[ 'dark-mode-GENERATED.css', 'id="inlined-styles-colors-dark" media="all and (prefers-color-scheme: dark)"' ],
+	[ '<link id="initial-styles" rel="stylesheet" type="text/css" href="/static/css/head.css">' ],
+	[ '<script src="/static/js/head.js"></script>' ]
 ];
 
-$outfile = "";
+## Action
 
+$outfile = "";
 foreach ($includes as $include) {
-	$file_name = $include[0];
+	$file = $include[0];
 	$attributes = @$include[1];
 
-	$type = "";
-	if (preg_match('/\.js$/', $file_name))
-		$type = "script";
-	else if (preg_match('/\.css$/', $file_name))
-		$type = "style";
+	$type = '';
+	if (preg_match('/\.js$/', $file))
+		$type = 'script';
+	else if (preg_match('/\.css$/', $file))
+		$type = 'style';
+	else if (preg_match('/(src|href)=/', $file))
+		$type = 'external';
 	else
 		continue;
 
-	$dir_prefix;
+	$file_path;
 	switch ($type) {
-		case "script":
-			$dir_prefix = __DIR__ . "/../js/";
+		case 'script':
+			$file_path = "{$js_dir}/{$file}";
 			break;
-		case "style":
-			$dir_prefix = __DIR__ . "/../css/include/";
+		case 'style':
+			$file_path = "{$css_dir}/{$file}";
+			break;
+		case 'external':
+			preg_match('/(src|href)="\/static\/(.+?)"/', $file, $m);
+			$file_path = "{$static_root}/{$m[2]}";
 			break;
 		default:
 			break;
 	}
 
-	$outfile .= "<{$type}" . ($attributes ? " {$attributes}" : "") . ">\n";
-	$outfile .= file_get_contents($dir_prefix . $file_name);
-	$outfile .= "</{$type}>\n";
+	if ($type == 'external') {
+		preg_match('/"\/static\/(.+?)(\.[^\.\/]+?)"/i', $file, $m);
+		$href = VersionedAssetHref($m[1], $m[2]);
+		$outfile .= preg_replace('/(src|href)="(.+?)"/', "$1={$href}", $file) . "\n";
+	} else {
+		$outfile .= "<{$type}" . ($attributes ? " {$attributes}" : "") . ">\n";
+		$outfile .= file_get_contents($file_path);
+		$outfile .= "</{$type}>\n";
+	}
 }
-
-$includes_dir = __DIR__ . "/../include";
-
 file_put_contents("{$includes_dir}/inlined-head.html", $outfile);
 
 ?>

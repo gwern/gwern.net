@@ -60,10 +60,7 @@ function GWLog (string, source = "", level = 1) {
 
 	let outputString = (`[${GWTimestamp()}]  ` + sourcestamp + string);
 
-	if (GW.console)
-		GW.console.print(outputString);
-	else
-		console.log(outputString);
+	console.log(outputString);
 }
 GW.setLogLevel = (level, permanently = false) => {
     if (permanently)
@@ -81,31 +78,6 @@ function GWStopWatch(f, ...args) {
 }
 
 
-/***********/
-/* CONSOLE */
-/***********/
-
-GW.consoleTempBuffer = "";
-GW.console = {
-	print: (string) => {
-		GW.consoleTempBuffer += string;
-		GW.consoleTempBuffer += "\n";
-	},
-};
-
-function $ (f) {
-    try {
-        let result = typeof f == "function"
-                     ? f()
-                     : eval(f);
-        if (result != undefined)
-            GW.console.print(result);
-    } catch (e) {
-        GW.console.print(e);
-    }
-}
-
-
 /*******************/
 /* ERROR REPORTING */
 /*******************/
@@ -118,84 +90,6 @@ function $ (f) {
 function GWServerLogError(errorString, errorType) {
     doAjax({ location: `${location.origin}/static/404-error-` + fixedEncodeURIComponent(errorString) });
     GWLog(`Reporting ${(errorType || "error")}:  ${errorString}`, "error reporting", 1);
-}
-
-
-/*************************/
-/* JS CLASS MODIFICATION */
-/*************************/
-
-/*  The first item of the array (or null if array is empty).
- */
-Object.defineProperty(Array.prototype, "first", {
-    get() {
-        if (this.length == 0)
-            return null;
-
-        return this[0];
-    }
-});
-
-/*  The last item of the array (or null if array is empty).
- */
-Object.defineProperty(Array.prototype, "last", {
-    get() {
-        if (this.length == 0)
-            return null;
-
-        return this[(this.length - 1)];
-    }
-});
-
-/*  Remove given item from array.
- */
-Array.prototype.remove = function (item) {
-    let index = this.indexOf(item);
-    if (index !== -1)
-        this.splice(index, 1);
-};
-
-/*  Remove from array the first item that passes the provided test function.
-    The test function should take an array item and return true/false.
-    */
-Array.prototype.removeIf = function (test) {
-    let index = this.findIndex(test);
-    if (index !== -1)
-        this.splice(index, 1);
-};
-
-/*  Insert the given item into the array just before the first item that passes
-    the provided test function. If no item passes the test function, append the
-    item to the end of the array.
- */
-Array.prototype.insertBefore = function (item, test) {
-    let index = this.findIndex(test);
-    if (index === -1) {
-        this.push(item);
-    } else {
-        this.splice(index, 0, item);
-    }
-};
-
-/*	Polyfill for findLastIndex, for older browser versions 
-	(Firefox 103 and lower, Chrome 96 and lower).
-	https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findLastIndex
-	NOTE: Does not support the `thisArg` parameter.
- */
-if (Array.prototype.findLastIndex === undefined) {
-	Array.prototype.findLastIndex = function (test) {
-		for (let i = this.length - 1; i >= 0; i--) {
-			if (test(this[i], i, this))
-				return i;
-		}
-		return -1;
-	}
-}
-
-/*	Returns copy of the array, with duplicate values removed.
- */
-Array.prototype.unique = function () {
-	return this.filter((value, index, array) => array.indexOf(value) == index);
 }
 
 
@@ -311,18 +205,30 @@ function _π(...args) {
     return product;
 }
 
-/*  Returns val, or def if val == defval. (By default, defval is -1.)
-    (In other words, `defval(X,Y,Z)` is “return X if Y is Z [else, just Y]”.)
- */
-function defval(def, val, defval = -1) {
-    return (val == defval) ? def : val;
-}
 
-/*  Returns val, or min if val < min, or max if val > max.
-    (In other words, clamps val to [min,max].)
+/*************/
+/* DOCUMENTS */
+/*************/
+
+/*  Return the location (URL) associated with a document.
+    (Document|DocumentFragment) => URL
  */
-function valMinMax(val, min, max) {
-    return Math.max(Math.min(val, max), min);
+function baseLocationForDocument(doc) {
+	if (doc == null) {
+		return null;
+	} else if (doc == document) {
+        return new URL(location.href);
+    } else if (   doc.body instanceof Element
+               && doc.body.classList.contains("popframe-body")) {
+        let spawningTarget = (Extracts.popFrameProvider == Popups
+                              ? doc.body.popup.spawningTarget
+                              : doc.body.popin.spawningTarget);
+        return new URL(spawningTarget.href);
+    } else if (doc.baseLocation) {
+        return new URL(doc.baseLocation.href);
+    } else {
+        return null;
+    }
 }
 
 
@@ -875,14 +781,154 @@ GW.notificationCenter = {
     }
 };
 
-/*  Event-specific handler phase order for the ‘GW.contentDidLoad’ event.
+
+/**************************/
+/* LOAD & INJECT HANDLERS */
+/**************************/
+
+/*******************************************************************************/
+/*  NOTE on the GW.contentDidLoad and GW.contentDidInject events:
+
+    These events are fired whenever any new local page content is loaded and
+    injected into the page, respectively. (Here “loaded” may mean “loaded via a
+    network request”, “constructed from a template”, or any other process by
+    which a new unit of page content is created. This includes the initial page
+    load, but also such things as annotations being lazy-loaded, etc. Likewise,
+    “injected” may mean “injected into the base page”, “injected into a
+    pop-frame shadow-root”, “injected into a DocumentFragment in cache”, etc.)
+
+    Many event handlers are attached to these, because a great deal of
+    processing must take place before newly-loaded page content is ready for
+    presentation to the user. Typography rectification must take place; the HTML
+    structure of certain page elements (such as tables, figures, etc.) must be
+    reconfigured; CSS classes must be added; various event listeners attached;
+    etc. Most of rewrite.js consists of exactly such “content load handlers” and 
+    “content inject handlers”, a.k.a. “rewrite functions”. (Additional content 
+    load and inject handlers are defined elsewhere in the code, as appropriate; 
+    e.g. the handler that attaches event listeners to annotated links to load 
+    annotations when the user mouses over such links, which is found in 
+    extracts-annotations.js.)
+
+    The GW.contentDidLoad event has the following named handler phases (see
+    above for details on what this means):
+
+        [ "transclude", "rewrite" ]
+
+    The GW.contentDidInject event has the following named handler phases:
+
+        [ "rewrite", "eventListeners" ]
+
+    The GW.contentDidLoad and GW.contentDidInject events should have the
+    following keys and values in their event info dictionary (see above
+    for details on event info dictionaries):
+
+        ‘source’ (key) (required)
+            String that indicates function (or event name, if fired from a
+            browser event listener) from which the event is fired (such as
+            ‘Annotation.load’).
+
+        ‘container’ (key) (required)
+            DOM object containing the loaded content. (For the GW.contentDidLoad
+            event fired on the initial page load, the value of this key is
+            `document`, i.e. the root document of the page. For pop-frames, this
+            may be the `document` property of the pop-frame, or a
+            DocumentFragment containing the embedded page elements.) The
+            container will contain nothing but the newly-loaded content.
+            (This key can be thought of as “what has been loaded?”.)
+
+        ‘document’ (key) (required)
+            Document into which the content was loaded. May or may not be
+            identical with the value of the ‘container’ key (in those cases when
+            the loaded content is a whole document itself). The value of this
+            key is necessarily either a Document (i.e., the root document of the
+            page) or a DocumentFragment. (This key can be thought of as “into
+            where has the loaded content been loaded?”.)
+
+        ‘contentType’ (key)
+            String that indicates content type of the loaded content. Might be
+            null (which indicates the default content type: local page content).
+            Otherwise may be `annotation` or something else.
+
+        ‘loadLocation’ (key)
+            URL object (https://developer.mozilla.org/en-US/docs/Web/API/URL)
+            which specifies the URL from which the loaded content was loaded.
+            For the main page, the represented URL will be the value of
+            `location.href`. For pop-frames, transcludes, etc., the represented
+            URL will be that of the page in which the content resides. (If the
+            loaded/injected content is not sourced from any page, this key will
+            have a null value.)
+
+    The GW.contentDidInject event should additionally have a value for the
+    following key:
+
+        ‘flags’ (key) (required)
+            Bit field containing various flags (combined via bitwise OR). The
+            values of the flags are defined in GW.contentDidInjectEventFlags.
+
+            (Note that event handlers for the ‘GW.contentDidInject’ event can
+             access the values of these flags directly via property access on
+             the event info, e.g. the following two expressions are equivalent:
+
+               eventInfo.flags & GW.contentDidInjectEventFlags.clickable != 0
+
+               eventInfo.clickable
+
+             It is recommended that the latter form be used.)
+
+            The flags are:
+
+            ‘clickable’
+                Currently unused. Reserved for future use.
+
+            ‘stripCollapses’
+                Specifies whether the loaded content is permitted to have
+                collapsed sections. Generally false. If the value of this key 
+                is true, then any collapse blocks in the loaded content will be
+                automatically expanded and stripped, and all content in
+                collapsible sections will be visible at all times.
+
+            ‘fullWidthPossible’
+                Specifies whether full-width elements are permitted in the
+                loaded content. Generally true only for the main page load. If
+                false, elements marked as full-width will be laid out as if for
+                a mobile (narrow) viewport, regardless of the actual dimensions
+                of the loaded content’s container (i.e. they will not actually
+                be “full-width”).
+ */
+
+GW.contentLoadHandlers = { };
+
+/*  Add content load handler (i.e., an event handler for the GW.contentDidLoad
+    event). (Convenience function.)
+ */
+function addContentLoadHandler(handler, phase, condition = null, once = false) {
+    GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", handler, {
+    	phase: phase,
+    	condition: condition,
+    	once: once
+    });
+}
+
+GW.contentInjectHandlers = { };
+
+/*  Add content inject handler (i.e., an event handler for the
+    GW.contentDidInject event). (Convenience function.)
+ */
+function addContentInjectHandler(handler, phase, condition = null, once = false) {
+    GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", handler, {
+    	phase: phase,
+    	condition: condition,
+    	once: once
+    });
+}
+
+/*  Event-specific handler phase order for the ‘GW.contentDidLoad’ and 
+	‘GW.contentDidInject’ events.
  */
 GW.notificationCenter.handlerPhaseOrders["GW.contentDidLoad"] = [ "transclude", "rewrite" ];
 GW.notificationCenter.handlerPhaseOrders["GW.contentDidInject"] = [ "rewrite", "eventListeners" ];
 
 /*  Event-specific boolean flags for the ‘GW.contentDidInject’ event.
-
-    See rewrite.js for details on the meaning of these flags.
  */
 GW.contentDidInjectEventFlags = {
     clickable:          1 << 0,

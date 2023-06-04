@@ -1,5 +1,1068 @@
 @charset "UTF-8";
 
+/********************/
+/* SOURCE SERIF PRO */
+/********************/
+
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 200;
+	font-style: normal;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-ExtraLight.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 200;
+	font-style: italic;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-ExtraLightItalic.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 300;
+	font-style: normal;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Light.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 300;
+	font-style: italic;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-LightItalic.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 400;
+	font-style: normal;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Regular.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 400;
+	font-style: italic;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-RegularItalic.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 600;
+	font-style: normal;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Semibold.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 600;
+	font-style: italic;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-SemiboldItalic.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 700;
+	font-style: normal;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Bold.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 700;
+	font-style: italic;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-BoldItalic.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 900;
+	font-style: normal;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Black.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 900;
+	font-style: italic;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-BlackItalic.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+
+/*******************/
+/* SOURCE SANS PRO */
+/*******************/
+
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-weight: 200;
+	font-style: normal;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-ExtraLight.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-weight: 200;
+	font-style: italic;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-ExtraLightItalic.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-weight: 300;
+	font-style: normal;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Light.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-weight: 300;
+	font-style: italic;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-LightItalic.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-weight: 400;
+	font-style: normal;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Regular.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-weight: 400;
+	font-style: italic;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-RegularItalic.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-weight: 600;
+	font-style: normal;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Semibold.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-weight: 600;
+	font-style: italic;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-SemiboldItalic.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-weight: 700;
+	font-style: normal;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Bold.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-weight: 700;
+	font-style: italic;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-BoldItalic.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-weight: 900;
+	font-style: normal;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Black.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-weight: 900;
+	font-style: italic;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-BlackItalic.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+
+/*****************/
+/* IBM PLEX MONO */
+/*****************/
+
+@font-face {
+	font-family: 'IBM Plex Mono';
+	font-weight: normal;
+	font-style: normal;
+	src: url('/static/font/ibm-plex-mono/IBMPlexMono-Regular.otf?v=1606177027') format('opentype');
+	font-display: swap;
+}
+@font-face {
+	font-family: 'IBM Plex Mono';
+	font-weight: normal;
+	font-style: italic;
+	src: url('/static/font/ibm-plex-mono/IBMPlexMono-RegularItalic.otf?v=1606177027') format('opentype');
+	font-display: swap;
+}
+@font-face {
+	font-family: 'IBM Plex Mono';
+	font-weight: bold;
+	font-style: normal;
+	src: url('/static/font/ibm-plex-mono/IBMPlexMono-Bold.otf?v=1606177026') format('opentype');
+	font-display: swap;
+}
+@font-face {
+	font-family: 'IBM Plex Mono';
+	font-weight: bold;
+	font-style: italic;
+	src: url('/static/font/ibm-plex-mono/IBMPlexMono-BoldItalic.otf?v=1606177027') format('opentype');
+	font-display: swap;
+}
+
+/***********/
+/* QUIVIRA */
+/***********/
+
+@font-face {
+	font-family: 'Quivira';
+	font-weight: normal;
+	src: url('/static/font/quivira/Quivira-SUBSETTED.ttf?v=1648781861') format('truetype');
+	font-display: swap;
+}
+
+/**************/
+/* NOTO EMOJI */
+/**************/
+
+@font-face {
+	font-family: 'Noto Emoji';
+	font-weight: normal;
+	src: url('/static/font/noto-emoji/NotoEmoji-Bold-SUBSETTED.ttf?v=1651378359') format('truetype');
+	font-display: swap;
+}
+
+/************************/
+/* DEUTSCHE ZIERSCHRIFT */
+/************************/
+
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-A.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0041;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-B.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0042;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-C.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0043;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-D.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0044;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-E.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0045;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-F.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0046;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-G.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0047;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-H.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0048;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-I.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0049;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-J.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004A;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-K.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004B;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-L.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004C;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-M.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004D;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-N.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004E;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-O.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004F;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-P.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0050;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-Q.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0051;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-R.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0052;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-S.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0053;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-T.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0054;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-U.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0055;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-V.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0056;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-W.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0057;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-X.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0058;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-Y.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0059;
+}
+@font-face {
+	font-family: 'Deutsche Zierschrift';
+	src: url('/static/font/drop-cap/de-zs/DeutscheZierschrift-Z.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+005A;
+}
+
+/*********/
+/* YINIT */
+/*********/
+
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-A.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0041;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-B.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0042;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-C.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0043;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-D.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0044;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-E.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0045;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-F.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0046;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-G.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0047;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-H.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0048;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-I.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0049;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-J.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004A;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-K.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004B;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-L.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004C;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-M.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004D;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-N.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004E;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-O.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004F;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-P.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0050;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-Q.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0051;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-R.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0052;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-S.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0053;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-T.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0054;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-U.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0055;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-V.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0056;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-W.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0057;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-X.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0058;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-Y.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0059;
+}
+@font-face {
+	font-family: 'Yinit';
+	src: url('/static/font/drop-cap/yinit/Yinit-Z.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+005A;
+}
+
+/*******************/
+/* GOUDY INITIALEN */
+/*******************/
+
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-A.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0041;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-B.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0042;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-C.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0043;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-D.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0044;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-E.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0045;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-F.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0046;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-G.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0047;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-H.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0048;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-I.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0049;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-J.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004A;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-K.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004B;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-L.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004C;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-M.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004D;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-N.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004E;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-O.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004F;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-P.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0050;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-Q.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0051;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-R.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0052;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-S.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0053;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-T.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0054;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-U.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0055;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-V.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0056;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-W.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0057;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-X.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0058;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-Y.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0059;
+}
+@font-face {
+	font-family: 'Goudy Initialen';
+	src: url('/static/font/drop-cap/goudy/GoudyInitialen-Z.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+005A;
+}
+
+/*********************/
+/* CHESHIRE INITIALS */
+/*********************/
+
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-A.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0041;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-B.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0042;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-C.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0043;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-D.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0044;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-E.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0045;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-F.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0046;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-G.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0047;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-H.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0048;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-I.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0049;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-J.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004A;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-K.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004B;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-L.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004C;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-M.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004D;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-N.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004E;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-O.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004F;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-P.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0050;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-Q.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0051;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-R.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0052;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-S.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0053;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-T.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0054;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-U.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0055;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-V.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0056;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-W.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0057;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-X.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0058;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-Y.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0059;
+}
+@font-face {
+	font-family: 'Cheshire Initials';
+	src: url('/static/font/drop-cap/cheshire/Cheshire-Initials-Z.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+005A;
+}
+
+/*********************/
+/* KANZLEI INITIALEN */
+/*********************/
+
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-A.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0041;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-B.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0042;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-C.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0043;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-D.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0044;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-E.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0045;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-F.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0046;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-G.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0047;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-H.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0048;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-I.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0049;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-J.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004A;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-K.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004B;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-L.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004C;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-M.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004D;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-N.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004E;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-O.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+004F;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-P.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0050;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-Q.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0051;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-R.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0052;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-S.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0053;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-T.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0054;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-U.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0055;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-V.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0056;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-W.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0057;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-X.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0058;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-Y.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+0059;
+}
+@font-face {
+	font-family: 'Kanzlei Initialen';
+	src: url('/static/font/drop-cap/kanzlei/Kanzlei-Initialen-Z.ttf?v=1604173830') format('truetype');
+	font-display: swap;
+	unicode-range: U+005A;
+}
+@charset "UTF-8";
+
 /**********/
 /* IMAGES */
 /**********/
@@ -1425,18 +2488,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685837986#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685837986#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685837986#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1685837986#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -4460,14 +5523,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685837986#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685837986#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -4600,7 +5663,7 @@ body.lorem div[class^='drop-cap'] {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685837986#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5030,14 +6093,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685837986#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685837986#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6110,7 +7173,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg#question');
+    background-image: url('/static/img/icon/icons.svg?v=1685837986#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -6598,7 +7661,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1685837986#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -6792,4 +7855,1071 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 }
 #console .console-command-line-entry-field input:focus {
     outline: none;
+}
+/************************/
+/* POP-FRAME INDICATORS */
+/************************/
+
+/* If a link has an automatic or custom link annotation (eg. a paper abstract, or excerpts), subtly mark it with a dog-ear/tag-like icon, */
+/* so users don't get frustrated hovering over links which have no useful annotation (which is an unfortunate number). */
+/* At some point, if enough links get annotated & annotation is the default, we might flip this to be a warning for non-annotated links. */
+/* We exclude it on the homepage because every linked page has a description/abstract, and the triangles everywhere add a lot of visual clutter. */
+.has-content.has-indicator-hook {
+    margin: 0 0.08em;
+    padding-left: 0.3em;
+    position: relative;
+    z-index: 1;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+.has-content .indicator-hook {
+    position: relative;
+    padding-left: 0.3em;
+    margin-left: -0.3em;
+    z-index: -1;
+}
+.has-content:not(.has-indicator-hook) .indicator-hook {
+	display: none;
+}
+
+.has-content .indicator-hook::before {
+    content: " ";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    color: inherit;
+    background-image:
+        linear-gradient(var(--link-underline-background-color),
+                        var(--link-underline-background-color)),
+        linear-gradient(var(--link-underline-background-color),
+                        var(--link-underline-background-color)),
+        linear-gradient(var(--link-underline-gradient-line-color),
+                        var(--link-underline-gradient-line-color));
+    background-size:
+        1px 0.6em,
+        1px 0.1em,
+        1px 1em;
+    background-position:
+        0 0,
+        0 100%,
+        0 calc(100% - 0.1em);
+    background-repeat: no-repeat;
+}
+
+/*	Dotted underlines for annotated links.
+ */
+.markdownBody a.has-annotation {
+	--link-underline-background-image: var(--GW-dotted-underline-background-image);
+
+    background-image: var(--link-underline-background-image);
+    background-size: 2px 1px;
+}
+.markdownBody a.has-annotation:hover {
+    --link-underline-background-image: var(--GW-dotted-underline-hover-background-image);
+}
+.markdownBody a.has-annotation.decorate-not {
+	background-image: none;
+}
+
+/*	Reversed link colors.
+ */
+.markdownBody .colors-invert a.has-annotation {
+	--link-underline-background-image: var(--GW-dotted-underline-inverted-background-image);
+}
+.markdownBody .colors-invert a.has-annotation:hover {
+	--link-underline-background-image: var(--GW-dotted-underline-inverted-hover-background-image);
+}
+
+.markdownBody .colors-invert a[data-link-icon-type='svg'] .link-icon-hook::after {
+    filter: invert(1);
+}
+
+
+/**************/
+/* LINK ICONS */
+/**************/
+
+/*******************************************************************************/
+/*  The philosophy of link icons is that the hyperlink text & surrounding
+    context often leaves much out, which would be impossible to express inline
+    conveniently (such as filetypes like PDF: a link being PDF is no longer a
+    big deal for desktop readers, whose browser will open them quickly,
+    natively, and render accurately, but due to the unfortunate state of mobile
+    PDF viewing, mobile readers still care and may prefer not to open a PDF).
+
+    Link icons provide some additional information in a compact iconic form
+    which doesn't interrupt the text or require manual annotation, and are
+    useful for denoting the logical source, the topic, the file format, or
+    anything else one might be able to infer using regexes on a URL.
+
+    To visualize the current set of link icons, see /lorem#link-icons.
+
+    Link icons for domains can be auto-generated by extracting favicons from the
+    domain (eg. https://www.pmwiki.org/wiki/Cookbook/ExternalLinksFavicons );
+    this would be useful for many sites, particularly user-contributed ones, but
+    I don't use this approach on Gwern.net for several reasons:
+
+    1. most favicons look bad on their own (often they're too low-resolution to
+       use inline) and aren't even recognizable by a reader anyway;
+    2. most favicons need tweaking to fit into Gwern.net to avoid shattering the
+       monochrome theme, and to get proper margins/spacing/opacity in both light
+       & dark mode;
+    3. domains and icons are long-tailed: most domains are linked only 1 or 2
+       times, so even if they are high quality and usable as-is, readers would
+       not recognize or benefit from them, and if they did, the benefit would be
+       astronomically tiny (because they'd see it once or twice, max).
+
+    Because Gwern.net is written just by myself, it is not hard to add new icons
+    as the need arises and a domain or filetype becomes common enough that an
+    icon might be useful, and the icons need to be manually-edited anyway.
+ */
+/*  Note: some file extension link types have are selected additionally by
+    origin on Gwern.net, because they frequently appear at the ends of ordinary
+    web page URLs.
+ */
+
+/*=================*/
+/*= COMMON STYLES =*/
+/*=================*/
+
+/*******************/
+/*  Graphical icons.
+    */
+a[data-link-icon-type='svg'] .link-icon-hook::after {
+    --link-icon-size: 0.5em;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.25em;
+
+    content: "";
+    position: static;
+    padding: 0 var(--link-icon-size) 0 0;
+    margin: 0 0 0 var(--link-icon-offset-x);
+    background-image: var(--link-icon-url);
+    background-size: var(--link-icon-size);
+    background-position-x: center;
+    background-position-y: var(--link-icon-offset-y);
+    background-repeat: no-repeat;
+    opacity: 0.6;
+}
+a[data-link-icon-type='svg']:hover .link-icon-hook::after {
+    opacity: 0.3;
+}
+
+/*****************/
+/*  Textual icons.
+    */
+a[data-link-icon-type*='text'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.125em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-font-serif: Noto Emoji, Quivira, var(--GW-serif-font-stack);
+    --link-icon-font-sans: Noto Emoji, Quivira, var(--GW-sans-serif-font-stack);
+    --link-icon-font-mono: Noto Emoji, Quivira, var(--GW-monospaced-font-stack);
+
+    content: var(--link-icon);
+    font-size: var(--link-icon-size);
+    font-weight: 600;
+    font-style: normal;
+    font-family: var(--link-icon-font-serif);
+    margin: 0 0 0 var(--link-icon-offset-x);
+    vertical-align: baseline;
+    position: relative;
+    bottom: var(--link-icon-offset-y);
+    opacity: 0.83;
+    padding: 0;
+    background-image: none;
+    background-size: unset;
+    line-height: 1;
+    overflow-wrap: normal;
+}
+a[data-link-icon-type*='sans'] .link-icon-hook::after {
+    font-family: var(--link-icon-font-sans);
+}
+a[data-link-icon-type*='mono'] .link-icon-hook::after {
+    font-family: var(--link-icon-font-mono);
+    opacity: 0.7;
+}
+a[data-link-icon-type*='bold'] .link-icon-hook::after {
+    font-weight: bold;
+    opacity: 0.83;
+}
+a[data-link-icon-type*='italic'] .link-icon-hook::after {
+    font-style: italic;
+
+    --link-icon-size: 0.85em;
+    --link-icon-offset-x: 0.10em;
+}
+a[data-link-icon-type*='overline'] .link-icon-hook::after {
+    text-decoration: overline;
+
+    --link-icon-offset-y: 0.2em;
+}
+
+/*===========================================*/
+/*= ICONS FOR CERTAIN LINK TYPES: BY TARGET =*/
+/*===========================================*/
+
+/*=----------------------------=*/
+/*= Within-page (anchor) links =*/
+/*=----------------------------=*/
+
+a[data-link-icon='¶'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-y: 0.45em;
+    --link-icon-offset-x: 0.2em;
+
+    font-weight: normal;
+    opacity: 0.7;
+}
+
+a[data-link-icon='arrow-up'] .link-icon-hook::after,
+a[data-link-icon='arrow-down'] .link-icon-hook::after {
+    --link-icon-size: 0.65em;
+    --link-icon-offset-x: 0.2em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.8;
+}
+a[data-link-icon='arrow-up']:hover .link-icon-hook::after,
+a[data-link-icon='arrow-down']:hover .link-icon-hook::after {
+    opacity: 0.4;
+}
+
+/*=------------------------------=*/
+/*= Internal (within-site) links =*/
+/*=------------------------------=*/
+
+a[data-link-icon='𝔊'] .link-icon-hook::after {
+    --link-icon-size: 0.9em;
+    --link-icon-offset-y: 0.15em;
+    --link-icon-offset-x: 0.12em;
+
+    opacity: 0.75;
+}
+
+/*=----------------------------------------------------=*/
+/*= Cross-directory links on tag index pages =*/
+/*=----------------------------------------------------=*/
+
+a[data-link-icon='arrow-up-left'] .link-icon-hook::after,
+a[data-link-icon='arrow-down-right'] .link-icon-hook::after,
+a[data-link-icon='arrow-right'] .link-icon-hook::after {
+    --link-icon-size: 0.65em;
+    --link-icon-offset-x: 0.2em;
+    --link-icon-offset-y: 0.3em;
+
+    opacity: 0.8;
+}
+a[data-link-icon='arrow-up-left']:hover .link-icon-hook::after,
+a[data-link-icon='arrow-down-right']:hover .link-icon-hook::after,
+a[data-link-icon='arrow-right']:hover .link-icon-hook::after {
+    opacity: 0.4;
+}
+
+/*=-------------------------------=*/
+/*= Textual per-domain link icons =*/
+/*=-------------------------------=*/
+
+/******************/
+/*  Logotype icons.
+    */
+
+a[data-link-icon='𝛘'] .link-icon-hook::after { /* Arxiv */
+    --link-icon-size: 0.7em;
+    --link-icon-offset-x: 0.1em;
+    --link-icon-offset-y: 0.6em;
+
+    opacity: 0.7;
+}
+
+a[data-link-icon='❐'] .link-icon-hook::after { /* Booru */
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.15em;
+}
+
+a[data-link-icon='⧖'] .link-icon-hook::after { /* Longecity */
+    --link-icon-size: 0.9em;
+    --link-icon-offset-y: 0.1em;
+    --link-icon-offset-x: 0.1em;
+
+    opacity: 0.70;
+}
+
+a[data-link-icon='♡'] .link-icon-hook::after { /* Fandom/Wikia */
+    --link-icon-offset-x: 0.05em;
+
+    opacity: 1.0;
+    text-shadow: 0 0 0 currentcolor;
+}
+
+a[data-link-icon='MS'] .link-icon-hook::after {
+    --link-icon-size: 0.65em;
+    --link-icon-offset-y: 0.35em;
+}
+
+a[data-link-icon='n'] .link-icon-hook::after { /* Nature */
+    --link-icon-size: 0.9em;
+    --link-icon-offset-y: 0.3em;
+    --link-icon-offset-x: 0.1em;
+
+    opacity: 0.85;
+}
+
+a[data-link-icon='s'] .link-icon-hook::after {
+    --link-icon-size: 1em;
+}
+
+a[data-link-icon='Ss'] .link-icon-hook::after {
+    --link-icon-offset-x: 0.15em;
+}
+
+a[data-link-icon='Vox'] .link-icon-hook::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.1em; /* shift left a bit */
+}
+
+a[data-link-icon='ψ'] .link-icon-hook::after {
+    --link-icon-offset-y: 0.4em;
+
+    opacity: 0.75;
+}
+
+a[data-link-icon='ℵ'] .link-icon-hook::after { /* Unsong ALEF */
+    --link-icon-size: 0.8em;
+
+    font-weight: normal;
+}
+
+a[data-link-icon='▅▇▃'] .link-icon-hook::after {
+    --link-icon-size: 0.5em;
+    --link-icon-offset-x: 0.25em;
+
+    margin-right: 0.15em;
+    opacity: 0.7;
+}
+
+a[data-link-icon='▲'] .link-icon-hook::after { /* Melting Asphalt (Kevin Simler) */
+    --link-icon-offset-x: 0;
+    --link-icon-offset-y: 0.25em;
+
+    opacity: 0.75;
+}
+
+a[data-link-icon='𝔐'] .link-icon-hook::after {
+    --link-icon-size: 1em;
+    opacity: 0.95;
+}
+
+a[data-link-icon='▽'] .link-icon-hook::after { /* The Verge */
+    --link-icon-size: 0.9em;
+}
+
+a[data-link-icon='∇'] .link-icon-hook::after { /* The Gradient.pub */
+    --link-icon-size: 0.85em;
+
+    opacity: 0.85;
+}
+
+a[data-link-icon='✉'] .link-icon-hook::after {
+    --link-icon-size: 1.1em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.05em;
+
+    font-weight: bold;
+    opacity: 0.80;
+}
+
+a[data-link-icon='M𝐑'] .link-icon-hook::after {
+    opacity: 0.75;
+}
+
+a[data-link-icon='𝐁'] .link-icon-hook::after {
+    opacity: 0.77;
+}
+
+a[data-link-icon='𝐌'] .link-icon-hook::after {
+    opacity: 0.7;
+}
+
+a[data-link-icon='𝛌'] .link-icon-hook::after {
+    --link-icon-size: 1em;
+
+    opacity: 0.6;
+}
+
+a[data-link-icon='𝛘'] .link-icon-hook::after {
+    --link-icon-offset-y: 0.4em;
+
+    opacity: 0.75;
+}
+
+a[data-link-icon='෴'] .link-icon-hook::after { /* Moustache / antilop.cc */
+    --link-icon-offset-y: 0.5em;
+}
+
+a[data-link-icon='🤖'] .link-icon-hook::after { /* ROBOT FACE U+1F916 beepb00p.xyz */
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.3em;
+
+    opacity: 0.75;
+}
+
+a[data-link-icon='GPP'] .link-icon-hook::after { /* Game Programming Patterns: shrink & elevate */
+    --link-icon-size: 0.6em;
+    --link-icon-offset-y: 0.6em;
+}
+
+a[data-link-icon='⛨'] .link-icon-hook::after { /* Cambridge */
+    --link-icon-size: 0.9em;
+    --link-icon-offset-x: 0.10em; /* NOTE: this may be too much for Chrome, but the FF needs it */
+    --link-icon-offset-y: 0.10em;
+
+    font-weight: normal;
+}
+
+a[data-link-icon='𝒩𝒴'] .link-icon-hook::after { /* nymag.com New York Magazine */
+    opacity: 0.7;
+}
+
+a[data-link-icon='𝕳'] .link-icon-hook::after { /* NZ Herald */
+    --link-icon-offset-y: 0.4em;
+
+    opacity: 0.7;
+}
+
+a[data-link-icon='𝔐'] .link-icon-hook::after { /* Daily Mail */
+    --link-icon-size: 0.75em;
+    --link-icon-offset-y: 0.5em;
+}
+
+a[data-link-icon='𝛌'] .link-icon-hook::after { /* Haskell */
+    --link-icon-size: 0.8em;
+}
+
+a[data-link-icon='𝓝'] .link-icon-hook::after { /* Nintil */
+    --link-icon-size: 0.85em;
+    opacity: 0.9;
+}
+
+a[data-link-icon='𝓥'] .link-icon-hook::after { /* Variety */
+    --link-icon-size: 0.85em;
+    opacity: 0.9;
+}
+
+a[data-link-icon='ρ'] .link-icon-hook::after { /* Project Rho */
+    --link-icon-size: 0.8em;
+    --link-icon-offset-y: 0.5em;
+    --link-icon-offset-x: 0.10em;
+
+    opacity: 0.75;
+}
+
+a[data-link-icon='ℰ'] .link-icon-hook::after { /* Esquire */
+    opacity: 0.9;
+    --link-icon-size: 0.8em;
+}
+
+/****************************/
+/* Triple-letter 'tri' initials: too few for quad, but too big for
+   regular font size/offset. Common with TLA orgs. */
+a[data-link-icon-type*='tri'] .link-icon-hook::after {
+    --link-icon-size: 0.65em;
+    --link-icon-offset-y: 0.4em;
+    --link-icon-offset-x: 0.2em;
+
+    opacity: 0.90;
+}
+
+/****************************/
+/*  Quad-letter 'quad' square icons.
+    */
+a[data-link-icon-type*='quad'] .link-icon-hook::after {
+    text-indent: 0;
+    overflow-wrap: break-word;
+    display: inline-block;
+    text-align: center;
+    left: 0;
+    bottom: 0.3em;
+    font-size: 0.52em;
+    font-weight: bold;
+    line-height: 0.8;
+    width: 1.5em;
+    opacity: 0.83;
+}
+
+/*  Quad-letter square icons in a sans face.
+    */
+a[data-link-icon-type*='quad'][data-link-icon-type*='sans'] .link-icon-hook::after {
+    margin: 0;
+}
+
+/*  Quad-letter square icons in a monospace face.
+    */
+a[data-link-icon-type*='quad'][data-link-icon-type*='mono'] .link-icon-hook::after {
+    letter-spacing: 0.05em;
+    line-height: 0.85;
+}
+
+a[data-link-icon='VICE'] .link-icon-hook::after {
+    --link-icon-offset-x: 0.1em; /* shift left a bit */
+}
+
+a[data-link-icon='PNAS'] .link-icon-hook::after {
+    width: 1.4em;
+}
+
+a[data-link-icon='MDPI'] .link-icon-hook::after,
+a[data-link-icon='EPUB'] .link-icon-hook::after,
+a[data-link-icon='TPDR'] .link-icon-hook::after,
+a[data-link-icon='NBER'] .link-icon-hook::after {
+    width: 1.6em;
+}
+
+/*=---------------------------------=*/
+/*= Graphical per-domain link icons =*/
+/*=---------------------------------=*/
+
+a[data-link-icon='amazon'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.65;
+}
+a[data-link-icon='amazon']:hover .link-icon-hook::after {
+    opacity: 0.4;
+}
+
+a[data-link-icon='bitcoin'] .link-icon-hook::after {
+    --link-icon-size: 0.55em;
+    --link-icon-offset-x: 0.2em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.65;
+}
+
+a[data-link-icon='chi-dna'] .link-icon-hook::after {
+    --link-icon-size: 0.58em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.25em;
+
+    opacity: 0.85;
+}
+a[data-link-icon='chi-dna']:hover .link-icon-hook::after {
+    opacity: 0.6;
+}
+
+a[data-link-icon='deepmind'] .link-icon-hook::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.7;
+}
+a[data-link-icon='deepmind']:hover .link-icon-hook::after {
+    opacity: 0.5;
+}
+
+a[data-link-icon='distillpub'] .link-icon-hook::after {
+    --link-icon-size: 0.45em;
+    --link-icon-offset-x: 0.2em;
+    --link-icon-offset-y: 0.15em;
+
+    opacity: 0.6;
+}
+
+a[data-link-icon='dropbox'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.55;
+}
+
+a[data-link-icon='econlib'] .link-icon-hook::after { /* torch */
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.1em;
+
+    opacity: 0.75;
+}
+
+a[data-link-icon='erowid'] .link-icon-hook::after {
+    --link-icon-size: 0.95em;
+    --link-icon-offset-x: 0.1em;
+    --link-icon-offset-y: 0.1em;
+
+    opacity: 0.9;
+}
+a[data-link-icon='erowid']:hover .link-icon-hook::after {
+    opacity: 0.7;
+}
+
+a[data-link-icon='facebook'] .link-icon-hook::after {
+    --link-icon-size: 0.5em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.1em;
+
+    opacity: 0.6;
+}
+a[data-link-icon='facebook']:hover .link-icon-hook::after {
+    opacity: 0.35;
+}
+
+a[data-link-icon='github'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.65;
+}
+
+a[data-link-icon='alphabet'] .link-icon-hook::after {
+    --link-icon-size: 0.60em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.3em;
+
+    opacity: 0.6;
+}
+
+a[data-link-icon='google-scholar'] .link-icon-hook::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.4em;
+
+    opacity: 0.60;
+}
+a[data-link-icon='google-scholar']:hover .link-icon-hook::after {
+    opacity: 0.4;
+}
+
+a[data-link-icon='hn'] .link-icon-hook::after {
+    --link-icon-size: 0.7em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.65;
+}
+a[data-link-icon='hn']:hover .link-icon-hook::after {
+    opacity: 0.2;
+}
+
+a[data-link-icon='internetarchive'] .link-icon-hook::after {
+    --link-icon-size: 0.55em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.3em;
+
+    opacity: 0.6;
+}
+a[data-link-icon='internetarchive']:hover .link-icon-hook::after {
+    opacity: 0.4;
+}
+
+a[data-link-icon='mega'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.50;
+}
+
+a[data-link-icon='miri'] .link-icon-hook::after {
+    --link-icon-size: 1.05em;
+    --link-icon-offset-x: 0.1em;
+    --link-icon-offset-y: 0.15em;
+
+    opacity: 0.65;
+}
+
+a[data-link-icon='nasa'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-y: 0.2em;
+    --link-icon-offset-x: 0.15em;
+
+    opacity: 0.65;
+}
+
+a[data-link-icon='nautilus'] .link-icon-hook::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-offset-x: 0.15em;
+
+    opacity: 0.7;
+}
+a[data-link-icon='nautilus']:hover .link-icon-hook::after {
+    opacity: 0.5;
+}
+
+a[data-link-icon='newyorktimes'] .link-icon-hook::after {
+    --link-icon-size: 0.65em;
+    --link-icon-offset-x: 0.1em;
+    --link-icon-offset-y: 0.15em;
+
+    opacity: 0.6;
+}
+a[data-link-icon='newyorktimes']:hover .link-icon-hook::after {
+    opacity: 0.4;
+}
+
+a[data-link-icon='nlm-ncbi'] .link-icon-hook::after {
+    --link-icon-size: 0.6em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.9;
+}
+a[data-link-icon='nlm-ncbi']:hover .link-icon-hook::after {
+    opacity: 0.5;
+}
+
+a[data-link-icon='openai'] .link-icon-hook::after {
+    --link-icon-size: 0.7em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.25em;
+
+    opacity: 0.7;
+}
+a[data-link-icon='openai']:hover .link-icon-hook::after {
+    opacity: 0.4;
+}
+
+a[data-link-icon='patreon'] .link-icon-hook::after {
+    --link-icon-size: 0.7em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.15em;
+
+    opacity: 0.65;
+}
+a[data-link-icon='plos'] .link-icon-hook::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.10em;
+
+    opacity: 0.80;
+}
+
+a[data-link-icon='reddit'] .link-icon-hook::after {
+    --link-icon-size: 0.80em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.65;
+}
+
+a[data-link-icon='springerlink'] .link-icon-hook::after {
+    --link-icon-size: 0.9em;
+    --link-icon-offset-x: 0.1em;
+    --link-icon-offset-y: 0.1em;
+
+    opacity: 0.8;
+}
+a[data-link-icon='springerlink']:hover .link-icon-hook::after {
+    opacity: 0.5;
+}
+
+a[data-link-icon='stackexchange'] .link-icon-hook::after {
+    --link-icon-size: 0.6em;
+    --link-icon-offset-x: 0.2em;
+    --link-icon-offset-y: 0.25em;
+
+    opacity: 0.55;
+}
+
+a[data-link-icon='substack'] .link-icon-hook::after {
+    --link-icon-size: 0.55em;
+    --link-icon-offset-x: 0.2em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.55;
+}
+a[data-link-icon='theguardian'] .link-icon-hook::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.25em;
+
+    opacity: 0.55;
+}
+
+a[data-link-icon='thenewyorker'] .link-icon-hook::after {
+    --link-icon-size: 0.65em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.15em;
+
+    opacity: 0.6
+}
+a[data-link-icon='thenewyorker']:hover .link-icon-hook::after {
+    opacity: 0.45;
+}
+
+a[data-link-icon='tumblr'] .link-icon-hook::after {
+    --link-icon-size: 0.47em;
+    --link-icon-offset-x: 0.25em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.52;
+}
+
+a[data-link-icon='twitter'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.2em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.5;
+}
+
+a[data-link-icon='uptontea'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.25em;
+    --link-icon-offset-y: 0.45em;
+
+    opacity: 0.55;
+}
+
+a[data-link-icon='video'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.4em;
+
+    opacity: 0.55;
+}
+a[data-link-icon='video']:hover .link-icon-hook::after {
+    opacity: 0.2;
+}
+
+a[data-link-icon='washingtonpost'] .link-icon-hook::after {
+    --link-icon-size: 0.85em;
+    --link-icon-offset-x: 0.2em;
+    --link-icon-offset-y: 0.25em;
+
+    opacity: 0.85;
+}
+a[data-link-icon='washingtonpost']:hover .link-icon-hook::after {
+    opacity: 0.55;
+}
+
+a[data-link-icon='wired'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.55;
+}
+
+a[data-link-icon='youtube'] .link-icon-hook::after {
+    --link-icon-size: 0.88em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.25em;
+
+    opacity: 0.5;
+}
+a[data-link-icon='youtube']:hover .link-icon-hook::after {
+    opacity: 0.2;
+}
+
+a[data-link-icon='yud'] .link-icon-hook::after {
+    --link-icon-offset-y: 0.15em;
+}
+
+a[data-link-icon='the-telegraph'] .link-icon-hook::after { /* Darken & shift left */
+    --link-icon-size: 0.6em;
+    --link-icon-offset-x: 0.1em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.75;
+}
+
+a[data-link-icon='open-philanthropy'] .link-icon-hook::after { /* Darken & shift left/up */
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.1em;
+    --link-icon-offset-y: 0.1em;
+
+    opacity: 0.95;
+}
+
+a[data-link-icon='atlas-obscura'] .link-icon-hook::after { /* Darken & shift left/up */
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.05em;
+    --link-icon-offset-y: 0.1em;
+    opacity: 0.85;
+}
+
+a[data-link-icon='eleutherai'] .link-icon-hook::after { /* Darken, enlarge, & shift left/up */
+    --link-icon-size: 0.98em;
+    --link-icon-offset-x: 0.05em;
+    --link-icon-offset-y: 0.0em;
+
+    opacity: 0.95;
+}
+
+a[data-link-icon='apple'] .link-icon-hook::after { /* Darken, enlarge, & shift left/up */
+    --link-icon-size: 0.70em;
+    --link-icon-offset-y: 0em;
+    --link-icon-offset-x: 0.1em;
+    opacity: 0.5;
+}
+
+a[data-link-icon='quanta'] .link-icon-hook::after { /* Darken, enlarge, & shift left/up */
+    --link-icon-size: 0.9em;
+    --link-icon-offset-y: 0.1em;
+    --link-icon-offset-x: 0.1em;
+
+    opacity: 0.9;
+}
+a[data-link-icon='quanta']:hover .link-icon-hook::after {
+    opacity: 0.5;
+}
+
+a[data-link-icon='creative-commons'] .link-icon-hook::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-y: 0.1em;
+    --link-icon-offset-x: 0.15em;
+
+    opacity: 0.8;
+}
+
+a[data-link-icon='tensorflow'] .link-icon-hook::after {
+    --link-icon-size: 0.7em;
+    --link-icon-offset-y: 0.2em;
+    --link-icon-offset-x: 0.1em;
+
+    opacity: 0.6;
+}
+
+a[data-link-icon='alcor'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-offset-x: 0.15em;
+
+    opacity: 0.65;
+}
+
+a[data-link-icon='cochrane-collaboration'] .link-icon-hook::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-y: 0.2em;
+    --link-icon-offset-x: 0.2em;
+
+    opacity: 0.75;
+}
+a[data-link-icon='cochrane-collaboration']:hover .link-icon-hook::after {
+    opacity: 0.45;
+}
+
+a[data-link-icon='connected-papers'] .link-icon-hook::after {
+    --link-icon-size: 0.6em;
+    --link-icon-offset-y: 0.1em;
+    --link-icon-offset-x: 0.2em;
+
+    opacity: 0.65;
+}
+
+/* LibGen/Sci-Hub */
+a[data-link-icon='raven'] .link-icon-hook::after {
+    --link-icon-size: 0.65em;
+    --link-icon-offset-y: 0.2em;
+    --link-icon-offset-x: 0.1em;
+
+    opacity: 0.60;
+}
+
+a[data-link-icon='hoover-institution'] .link-icon-hook::after {
+    --link-icon-size: 0.5em;
+    --link-icon-offset-y: 0.0em;
+    --link-icon-offset-x: 0.15em;
+
+    opacity: 0.65;
+}
+
+a[data-link-icon='wandb'] .link-icon-hook::after {
+    --link-icon-size: 0.7em;
+    --link-icon-offset-y: 0.1em;
+    --link-icon-offset-x: 0.15em;
+
+    opacity: 0.65;
+}
+
+a[data-link-icon='the-pirate-bay'] .link-icon-hook::after {
+    --link-icon-size: 0.9em;
+    --link-icon-offset-y: 0.3em;
+    --link-icon-offset-x: 0.2em;
+
+    opacity: 0.75;
+}
+
+a[data-link-icon='metaculus'] .link-icon-hook::after {
+    --link-icon-size: 0.55em;
+    --link-icon-offset-y: 0.2em;
+    --link-icon-offset-x: 0.2em;
+
+    opacity: 0.70;
+}
+a[data-link-icon='metaculus']:hover .link-icon-hook::after {
+    opacity: 0.45;
+}
+
+a[data-link-icon='stat-news'] .link-icon-hook::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-y: 0em;
+    --link-icon-offset-x: 0.15em;
+
+    opacity: 1;
+}
+
+a[data-link-icon='magnifying-glass'] .link-icon-hook::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-y: 0em;
+    --link-icon-offset-x: -0.1em;
+
+    opacity: 0.75;
+}
+
+a[data-link-icon='anthropic'] .link-icon-hook::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-y: 0.1em;
+    --link-icon-offset-x: -0em;
+
+    opacity: 0.6
+}
+
+a[data-link-icon='laion'] .link-icon-hook::after {
+    --link-icon-size: 0.7em;
+    --link-icon-offset-y: 0.1em;
+
+    opacity: 0.7;
+}
+
+a[data-link-icon='tex'] .link-icon-hook::after { /* TeX logotype (actually uses Source Serif) */
+    --link-icon-size: 1em;
+    --link-icon-offset-x: 0.05em;
+
+    opacity: 0.8;
+}
+
+/*=------------------=*/
+/*= Wikipedia links. =*/
+/*=------------------=*/
+
+a[data-link-icon='wikipedia'] .link-icon-hook::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.05em;
+    --link-icon-offset-y: 0.25em;
+
+    opacity: 0.9;
+}
+a[data-link-icon='wikipedia']:hover .link-icon-hook::after {
+    opacity: 0.5;
+}
+
+/*  Suppress the WP link icon suffix (knowledge of WP ‘articles’ vs.
+    Talk pages/History/etc is baked into the links by the link-annotated +
+    has-annotation classes, see LinkMetadata.hs’s `wikipediaArticleNamespace`
+    function); the dotted-underlining is enough.
+ */
+a[data-link-icon='wikipedia'].has-annotation .link-icon-hook {
+    display: none;
 }

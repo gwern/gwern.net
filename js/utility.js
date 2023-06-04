@@ -9,6 +9,110 @@ function rollDie(size) {
 	return Math.floor(Math.random() * (size - 1) + 1);
 }
 
+/**************************************************************************/
+/*	Returns array, of given size, of consecutive integers, with given start 
+	value.
+ */
+function range(start, size) {
+	return [...Array(size).keys()].map(i => i + start);
+}
+
+/****************************************************************************/
+/*  Returns val, or def if val == defval. (By default, defval is -1.)
+    (In other words, `defval(X,Y,Z)` is “return X if Y is Z [else, just Y]”.)
+ */
+function defval(def, val, defval = -1) {
+    return (val == defval) ? def : val;
+}
+
+/*********************************************************/
+/*  Returns val, or min if val < min, or max if val > max.
+    (In other words, clamps val to [min,max].)
+ */
+function valMinMax(val, min, max) {
+    return Math.max(Math.min(val, max), min);
+}
+
+/***********************************************************/
+/*  The first item of the array (or null if array is empty).
+ */
+Object.defineProperty(Array.prototype, "first", {
+    get() {
+        if (this.length == 0)
+            return null;
+
+        return this[0];
+    }
+});
+
+/**********************************************************/
+/*  The last item of the array (or null if array is empty).
+ */
+Object.defineProperty(Array.prototype, "last", {
+    get() {
+        if (this.length == 0)
+            return null;
+
+        return this[(this.length - 1)];
+    }
+});
+
+/********************************/
+/*  Remove given item from array.
+ */
+Array.prototype.remove = function (item) {
+    let index = this.indexOf(item);
+    if (index !== -1)
+        this.splice(index, 1);
+};
+
+/***************************************************************************/
+/*  Remove from array the first item that passes the provided test function.
+    The test function should take an array item and return true/false.
+    */
+Array.prototype.removeIf = function (test) {
+    let index = this.findIndex(test);
+    if (index !== -1)
+        this.splice(index, 1);
+};
+
+/******************************************************************************/
+/*  Insert the given item into the array just before the first item that passes
+    the provided test function. If no item passes the test function, append the
+    item to the end of the array.
+ */
+Array.prototype.insertBefore = function (item, test) {
+    let index = this.findIndex(test);
+    if (index === -1) {
+        this.push(item);
+    } else {
+        this.splice(index, 0, item);
+    }
+};
+
+/*********************************************************/
+/*	Polyfill for findLastIndex, for older browser versions 
+	(Firefox 103 and lower, Chrome 96 and lower).
+	https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findLastIndex
+	NOTE: Does not support the `thisArg` parameter.
+ */
+if (Array.prototype.findLastIndex === undefined) {
+	Array.prototype.findLastIndex = function (test) {
+		for (let i = this.length - 1; i >= 0; i--) {
+			if (test(this[i], i, this))
+				return i;
+		}
+		return -1;
+	}
+}
+
+/************************************************************/
+/*	Returns copy of the array, with duplicate values removed.
+ */
+Array.prototype.unique = function () {
+	return this.filter((value, index, array) => array.indexOf(value) == index);
+}
+
 /*********************************************/
 /*	Returns the string with words capitalized.
  */
@@ -133,8 +237,8 @@ Element.prototype.addActivateEvent = function(fn, includeMouseDown) {
     Second argument is 0 or 1 (index of class to add; the other is removed).
  */
 Element.prototype.swapClasses = function (classes, whichToAdd) {
-    this.classList.add(classes[whichToAdd]);
     this.classList.remove(classes[1 - whichToAdd]);
+    this.classList.add(classes[whichToAdd]);
 };
 
 /******************************************************************************/
@@ -347,12 +451,12 @@ function wrapAll(selector,
 				 useExistingWrappers = false, 
 				 moveClasses = false) {
     let wrapperFunction;
-    if (typeof wrapClassOrFunction == "string") {
+    if (typeof wrapClassOrFunction == "function") {
+        wrapperFunction = wrapClassOrFunction;
+    } else {
         wrapperFunction = (element) => {
             wrapElement(element, wrapClassOrFunction, wrapTagName, useExistingWrappers, moveClasses);
         };
-    } else {
-        wrapperFunction = wrapClassOrFunction;
     }
 
     container.querySelectorAll(selector).forEach(wrapperFunction);
@@ -507,6 +611,9 @@ function lazyLoadObserver(f, target, options = { }) {
     empty does not prevent this function from returning true!)
  */
 function isOnlyChild(node) {
+	if (node == null)
+		return undefined;
+
     if (node.parentElement == null)
         return undefined;
 
@@ -526,11 +633,14 @@ function isOnlyChild(node) {
 /*  Returns true if the node contains only whitespace and/or other empty nodes.
  */
 function isNodeEmpty(node) {
+	if (node == null)
+		return undefined;
+
     if (node.nodeType == Node.TEXT_NODE)
         return (node.textContent.match(/\S/) == null);
 
     if (   node.nodeType == Node.ELEMENT_NODE
-        && [ "IMG", "VIDEO", "AUDIO", "IFRAME", "OBJECT" ].includes(node.tagName))
+        && [ "IMG", "SVG", "VIDEO", "AUDIO", "IFRAME", "OBJECT" ].includes(node.tagName.toUpperCase()))
         return false;
 
     if (node.childNodes.length == 0)

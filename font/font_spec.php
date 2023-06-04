@@ -26,7 +26,7 @@
 
 	NOTE on ‘font-display: swap’:
 	We display text as soon as possible (e.g., for body text, system font such 
-	as Baskerville; see font stacks defined in /static/css/include/initial.css)
+	as Baskerville; see font stacks defined in /static/css/initial.css)
 	and re-render with webfont (e.g. Source Serif Pro) whenever it downloads:
 	https://developers.google.com/web/updates/2016/02/font-display
 	https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display

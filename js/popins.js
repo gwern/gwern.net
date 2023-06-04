@@ -558,9 +558,7 @@ Popins = {
 				Popins.removePopin(popin);
 			});
 		} else {
-			$(() => {
-				Popins.injectPopinForTarget(target);
-			});
+			Popins.injectPopinForTarget(target);
 		}
 
 		document.activeElement.blur();

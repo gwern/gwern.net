@@ -305,22 +305,19 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 addContentInjectHandler(GW.contentInjectHandlers.rectifySectionCollapseLayout = (eventInfo) => {
 	GWLog("rectifySectionCollapseLayout", "collapse.js", 1);
 
-	let baseFontSize = parseInt(getComputedStyle(eventInfo.container).getPropertyValue("--GW-base-font-size"));
-
 	eventInfo.container.querySelectorAll("section.collapse").forEach(section => {
 		section.style.removeProperty("--collapse-toggle-top-height");
 		section.style.removeProperty("--collapse-toggle-top-icon-size");
 
 		requestAnimationFrame(() => {
-			let minHeight = baseFontSize * parseFloat(getComputedStyle(section).getPropertyValue("--collapse-toggle-top-height"));
-			let headingTextRects = Array.from(section.firstElementChild.querySelector("a").getClientRects());
-			let oneLineHeight = headingTextRects.first.height;
-			let totalHeight = headingTextRects.map(rect => rect.height).reduce((acc, val) => acc + val);
-			if (totalHeight <= minHeight)
+			let oneLineHeight = Array.from(section.firstElementChild.querySelector("a").getClientRects()).first?.height ?? 0;
+			let totalHeight = section.firstElementChild.querySelector("a").getBoundingClientRect().height;
+			if (   oneLineHeight == 0
+				|| totalHeight == 0)
 				return;
 
-			section.style.setProperty("--collapse-toggle-top-height", Math.round(totalHeight + oneLineHeight * 0.25) + "px");
-			section.style.setProperty("--collapse-toggle-top-icon-size", Math.round(oneLineHeight * 1.25) + "px");
+			section.style.setProperty("--collapse-toggle-top-height", Math.round(totalHeight + oneLineHeight * 0.15) + "px");
+			section.style.setProperty("--collapse-toggle-top-icon-size", Math.round(oneLineHeight * 1.15) + "px");
 		});
 	});
 }, "rewrite");
@@ -379,8 +376,17 @@ function toggleCollapseBlockState(collapseBlock, expanding) {
 	//	Update label text and other HTML-based UI state.
 	updateDisclosureButtonState(collapseBlock, GW.collapse.showCollapseInteractionHintsOnHover);
 
-	//	Compensate for block indentation due to nesting (e.g., lists).
-	if (collapseBlock.classList.contains("collapse-block")) {
+	/*	Compensate for block indentation due to nesting (e.g., lists).
+
+		(Don’t do this for full-width collapses, as the full-width code will
+		 already apply suitable side margins.)
+
+		(Also don’t do this for collapses in blockquotes, which get treated
+		 specially.)
+	 */
+	if (   collapseBlock.classList.contains("collapse-block")
+		&& collapseBlock.closest("blockquote") == null
+		&& collapseBlock.querySelector(".collapse-content-wrapper").classList.contains("width-full") == false) {
 		if (expanding) {
 			let contentRect = collapseBlock.querySelector(".collapse-content-wrapper").getBoundingClientRect();
 			let enclosingContentRect = collapseBlock.closest(".markdownBody").getBoundingClientRect();

@@ -2,148 +2,6 @@
 /* author: Said Achmiz */
 /* license: MIT */
 
-/*******************************************************************************/
-/*  NOTE on the GW.contentDidLoad and GW.contentDidInject events:
-
-    These events are fired whenever any new local page content is loaded and
-    injected into the page, respectively. (Here “loaded” may mean “loaded via a
-    network request”, “constructed from a template”, or any other process by
-    which a new unit of page content is created. This includes the initial page
-    load, but also such things as annotations being lazy-loaded, etc. Likewise,
-    “injected” may mean “injected into the base page”, “injected into a
-    pop-frame shadow-root”, “injected into a DocumentFragment in cache”, etc.)
-
-    Many event handlers are attached to these, because a great deal of
-    processing must take place before newly-loaded page content is ready for
-    presentation to the user. Typography rectification must take place; the HTML
-    structure of certain page elements (such as tables, figures, etc.) must be
-    reconfigured; CSS classes must be added; various event listeners attached;
-    etc. Most of this file (rewrite.js) consists of exactly such “content load
-    handlers” and “content inject handlers”, a.k.a. “rewrite functions”.
-    (Additional content load and inject handlers are defined elsewhere in the
-    code, as appropriate; e.g. the handler that attaches event listeners to
-    annotated links to load annotations when the user mouses over such links,
-    which is found in extracts-annotations.js.)
-
-    The GW.contentDidLoad event has the following named handler phases (see
-    inline.js for details on what this means):
-
-        [ "transclude", "rewrite" ]
-
-    The GW.contentDidInject event has the following named handler phases:
-
-        [ "rewrite", "eventListeners" ]
-
-    The GW.contentDidLoad and GW.contentDidInject events should have the
-    following keys and values in their event info dictionary (see inline.js
-    for details on event info dictionaries):
-
-        ‘source’ (key) (required)
-            String that indicates function (or event name, if fired from a
-            browser event listener) from which the event is fired (such as
-            ‘Annotation.load’).
-
-        ‘container’ (key) (required)
-            DOM object containing the loaded content. (For the GW.contentDidLoad
-            event fired on the initial page load, the value of this key is
-            `document`, i.e. the root document of the page. For pop-frames, this
-            may be the `document` property of the pop-frame, or a
-            DocumentFragment containing the embedded page elements.) The
-            container will contain nothing but the newly-loaded content.
-            (This key can be thought of as “what has been loaded?”.)
-
-        ‘document’ (key) (required)
-            Document into which the content was loaded. May or may not be
-            identical with the value of the ‘container’ key (in those cases when
-            the loaded content is a whole document itself). The value of this
-            key is necessarily either a Document (i.e., the root document of the
-            page) or a DocumentFragment. (This key can be thought of as “into
-            where has the loaded content been loaded?”.)
-
-        ‘contentType’ (key)
-            String that indicates content type of the loaded content. Might be
-            null (which indicates the default content type: local page content).
-            Otherwise may be `annotation` or something else.
-
-        ‘loadLocation’ (key)
-            URL object (https://developer.mozilla.org/en-US/docs/Web/API/URL)
-            which specifies the URL from which the loaded content was loaded.
-            For the main page, the represented URL will be the value of
-            `location.href`. For pop-frames, transcludes, etc., the represented
-            URL will be that of the page in which the content resides. (If the
-            loaded/injected content is not sourced from any page, this key will
-            have a null value.)
-
-    The GW.contentDidInject event should additionally have a value for the
-    following key:
-
-        ‘flags’ (key) (required)
-            Bit field containing various flags (combined via bitwise OR). The
-            values of the flags are defined in GW.contentDidInjectEventFlags.
-
-            (Note that event handlers for the ‘GW.contentDidInject’ event can
-             access the values of these flags directly via property access on
-             the event info, e.g. the following two expressions are equivalent:
-
-               eventInfo.flags & GW.contentDidInjectEventFlags.clickable != 0
-
-               eventInfo.clickable
-
-             It is recommended that the latter form be used.)
-
-            The flags are:
-
-            ‘clickable’
-                Currently unused. Reserved for future use.
-
-            ‘stripCollapses’
-                Specifies whether the loaded content is permitted to have
-                collapsed sections. Generally false. If the value of this key is
-                true, then any collapse blocks in the loaded content will be
-                automatically expanded and stripped, and all content in
-                collapsible sections will be visible at all times.
-
-            ‘fullWidthPossible’
-                Specifies whether full-width elements are permitted in the
-                loaded content. Generally true only for the main page load. If
-                false, elements marked as full-width will be laid out as if for
-                a mobile (narrow) viewport, regardless of the actual dimensions
-                of the loaded content’s container (i.e. they will not actually
-                be “full-width”).
- */
-
-
-/**************************/
-/* LOAD & INJECT HANDLERS */
-/**************************/
-
-/*****************************************************************************/
-/*  Add content load handler (i.e., an event handler for the GW.contentDidLoad
-    event).
- */
-function addContentLoadHandler(handler, phase, condition = null) {
-    let options = { phase: phase };
-    if (condition)
-        options.condition = condition;
-    GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", handler, options);
-}
-
-GW.contentLoadHandlers = { };
-
-/*************************************************************/
-/*  Add content inject handler (i.e., an event handler for the
-    GW.contentDidInject event).
- */
-function addContentInjectHandler(handler, phase, condition = null) {
-    let options = { phase: phase };
-    if (condition)
-        options.condition = condition;
-    GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", handler, options);
-}
-
-GW.contentInjectHandlers = { };
-
-
 /*************/
 /* CLIPBOARD */
 /*************/
@@ -208,6 +66,234 @@ addContentInjectHandler(GW.contentInjectHandlers.injectBacklinksLinkIntoLocalSec
         });
     }
 }, "rewrite", (info) => (info.context == "popFrame"));
+
+
+/*********/
+/* LISTS */
+/*********/
+
+GW.layout.orderedListTypes = [
+	"decimal",
+	"lower-alpha",
+	"upper-alpha",
+	"lower-roman",
+	"upper-roman"
+];
+
+/*****************************************************************************/
+/*	Returns the type (CSS `list-item` counter value type) of an <ol> element.
+ */
+function orderedListType(list) {
+	if (list?.tagName != "OL")
+		return null;
+
+	for (let type of GW.layout.orderedListTypes)
+		if (list.classList.contains(`list-type-${type}`))
+			return type;
+
+	return null;
+}
+
+/************************************************************************/
+/*	Sets the type (CSS `list-item` counter value type) of an <ol> element.
+ */
+function setOrderedListType(list, type) {
+	if (list?.tagName != "OL")
+		return;
+
+	for (let type of GW.layout.orderedListTypes)
+		list.classList.remove(`list-type-${type}`);
+
+	list.classList.add(`list-type-${type}`);
+}
+
+/*******************************************************************/
+/*	Returns the nesting level (an integer in [1,listCyclePeriod]) of 
+	a <ul> element.
+ */
+function unorderedListLevel(list) {
+	if (list?.tagName != "UL")
+		return 0;
+
+	let prefix = "list-level-";
+
+	return (parseInt(Array.from(list.classList).find(c => c.startsWith(prefix))?.slice(prefix.length)) || 1);
+}
+
+/***********************************************************/
+/*	Sets CSS class matching nesting level of a <ul> element.
+ */
+function setUnorderedListLevel(list, level) {
+	if (list?.tagName != "UL")
+		return;
+
+	let prefix = "list-level-";
+
+	list.swapClasses([ Array.from(list.classList).find(c => c.startsWith(prefix)), `${prefix}${level}` ], 1);
+}
+
+/***********************************/
+/*  Designate list type via a class.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.designateListTypes = (eventInfo) => {
+    GWLog("designateListTypes", "rewrite.js", 1);
+
+    //	Workaround for case-insensitivity of CSS selectors.
+    eventInfo.container.querySelectorAll("ol[type]").forEach(list => {
+        switch (list.type) {
+        case '1':
+            setOrderedListType(list, "decimal");
+            break;
+        case 'a':
+            setOrderedListType(list, "lower-alpha");
+            break;
+        case 'A':
+            setOrderedListType(list, "upper-alpha");
+            break;
+        case 'i':
+            setOrderedListType(list, "lower-roman");
+            break;
+        case 'I':
+            setOrderedListType(list, "upper-roman");
+            break;
+        default:
+            break;
+        }
+    });
+
+	//	If not explicitly specified, cycle between these three list types.
+    eventInfo.container.querySelectorAll("ol:not([type])").forEach(list => {
+		let enclosingList = list.parentElement?.closest("ol");
+		let enclosingListType = enclosingList?.parentElement?.matches("section#footnotes")
+								? null
+								: orderedListType(enclosingList);
+
+    	switch (enclosingListType) {
+		case "decimal":
+			setOrderedListType(list, "upper-roman");
+			break;
+		case "upper-roman":
+			setOrderedListType(list, "lower-alpha");
+			break;
+		case "lower-alpha":
+		default:
+			setOrderedListType(list, "decimal");
+			break;
+    	}
+    });
+
+	//	Set list levels.
+	let listCyclePeriod = 3;
+	eventInfo.container.querySelectorAll("ul").forEach(list => {
+		setUnorderedListLevel(list, (unorderedListLevel(list.parentElement?.closest("ul")) % listCyclePeriod) + 1);
+	});
+}, ">rewrite");
+
+/*****************************************************************/
+/*	Wrap text nodes and inline elements in list items in <p> tags.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.paragraphizeListTextNodes = (eventInfo) => {
+    GWLog("paragraphizeListTextNodes", "rewrite.js", 1);
+
+	let inlineElementSelector = [
+		"a",
+		"em",
+		"strong",
+		"code",
+		"sup",
+		"sub",
+		"span"
+	].join(", ");
+
+	eventInfo.container.querySelectorAll("li").forEach(listItem => {
+		let nodes = Array.from(listItem.childNodes);
+		let nodeSequence = [ ];
+		let node;
+		do {
+			node = nodes.shift();
+
+			if (   node?.nodeType == Node.TEXT_NODE
+				|| (   node?.nodeType == Node.ELEMENT_NODE
+					&& node.matches(inlineElementSelector))) {
+				nodeSequence.push(node);
+			} else {
+				if (   nodeSequence.length > 0
+					&& nodeSequence.findIndex(n => isNodeEmpty(n) == false) != -1) {
+					listItem.insertBefore(newElement("P"), nodeSequence.first).append(...nodeSequence);
+				}
+
+				nodeSequence = [ ];
+			}
+		} while (node);
+	});
+}, "rewrite");
+
+/**********************************************/
+/*  Rectify styling/structure of list headings.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rectifyListHeadings = (eventInfo) => {
+    GWLog("rectifyListHeadings", "rewrite.js", 1);
+
+    eventInfo.container.querySelectorAll("p > strong:only-child").forEach(boldElement => {
+        if (   boldElement.parentElement.childNodes.length == 2
+            && boldElement.parentElement.firstChild == boldElement
+            && boldElement.parentElement.lastChild.nodeType == Node.TEXT_NODE
+            && boldElement.parentElement.lastChild.nodeValue == ":") {
+            boldElement.parentElement.lastChild.remove();
+            boldElement.lastTextNode.nodeValue += ":";
+        }
+
+        if (   boldElement.parentElement.childNodes.length == 1
+            && boldElement.parentElement.tagName == "P"
+            && boldElement.parentElement.nextElementSibling
+            && boldElement.closest("LI") == null
+            && (   [ "UL", "OL" ].includes(boldElement.parentElement.nextElementSibling.tagName)
+                || boldElement.parentElement.nextElementSibling.classList.contains("columns")))
+            boldElement.parentElement.classList.add("list-heading");
+    });
+}, "rewrite");
+
+
+/***************/
+/* BLOCKQUOTES */
+/***************/
+
+/*************************************************************************/
+/*	Returns the nesting level (an integer in [1,blockquoteCyclePeriod]) of 
+	a <blockquote> element.
+ */
+function blockquoteLevel(blockquote) {
+	if (blockquote?.tagName != "BLOCKQUOTE")
+		return 0;
+
+	let prefix = "blockquote-level-";
+
+	return (parseInt(Array.from(blockquote.classList).find(c => c.startsWith(prefix))?.slice(prefix.length)) || 1);
+}
+
+/*******************************************************************/
+/*	Sets CSS class matching nesting level of a <blockquote> element.
+ */
+function setBlockquoteLevel(blockquote, level) {
+	if (blockquote?.tagName != "BLOCKQUOTE")
+		return;
+
+	let prefix = "blockquote-level-";
+
+	blockquote.swapClasses([ Array.from(blockquote.classList).find(c => c.startsWith(prefix)), `${prefix}${level}` ], 1);
+}
+
+/******************************************/
+/*  Designate blockquote level via a class.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.designateBlockquoteLevels = (eventInfo) => {
+    GWLog("designateBlockquoteLevels", "rewrite.js", 1);
+
+	let blockquoteCyclePeriod = 6;
+	eventInfo.container.querySelectorAll("blockquote").forEach(blockquote => {
+		setBlockquoteLevel(blockquote, (blockquoteLevel(blockquote.parentElement?.closest("blockquote")) % blockquoteCyclePeriod) + 1);
+	});
+}, ">rewrite");
 
 
 /**********/
@@ -374,7 +460,8 @@ addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) =>
 
     eventInfo.container.querySelectorAll("figure img[width][height]").forEach(image => {
         let fixWidth = (   eventInfo.contentType == "annotation"
-                        && image.classList.containsAnyOf([ "float-left", "float-right" ]));
+                        && (   image.classList.containsAnyOf([ "float-left", "float-right" ])
+                        	|| image.closest("figure")?.classList.containsAnyOf([ "float-left", "float-right" ])));
         setImageDimensions(image, fixWidth);
     });
 
@@ -552,19 +639,30 @@ GW.notificationCenter.addHandlerForEvent("ImageFocus.imageOverlayDidDisappear", 
 /* CODE BLOCKS */
 /***************/
 
-/***********************************************************/
-/*  Wrap each pre.width-full in a div.width-full and a
-    div.full-width-code-block-wrapper (for layout purposes).
+/*************************************************************/
+/*	Wrap each <pre> in a div.sourceCode (for layout purposes).
+ */
+addContentLoadHandler(GW.contentLoadHandlers.wrapPreBlocks = (eventInfo) => {
+    GWLog("wrapPreBlocks", "rewrite.js", 1);
+
+	wrapAll("pre", "sourceCode", "DIV", eventInfo.container, true, false);
+}, "rewrite");
+
+/**********************************************************************/
+/*  Wrap each pre.width-full in a div.width-full (for layout purposes).
  */
 addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (eventInfo) => {
     GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
-    wrapAll("pre.width-full", "width-full", "DIV", eventInfo.container, true, [ "sourceCode" ]);
+    wrapAll("pre.width-full", "width-full", "DIV", eventInfo.container, true, false);
 }, "rewrite", (info) => info.fullWidthPossible);
 
 /*************************************************************************/
 /*  Fix code block styling glitch by setting code block height to rendered
     height, eliminating fractional pixels.
+
+    UPDATE: This seems to no longer be necessary anyhow. Wait for some more 
+    time, then remove. —SA 2023-05-23
  */
 // addContentInjectHandler(GW.contentInjectHandlers.rectifyCodeBlockHeights = (eventInfo) => {
 //     GWLog("rectifyCodeBlockHeights", "rewrite.js", 1);
@@ -765,9 +863,9 @@ function rectifyLineHeights(eventInfo) {
 /**********************************************/
 /*  Add content inject handlers for typography.
  */
-addContentInjectHandler(GW.contentInjectHandlers.rectifyTypography = (info) => {
-    hyphenate(info);
-    rectifyLineHeights(info);
+addContentInjectHandler(GW.contentInjectHandlers.rectifyTypography = (eventInfo) => {
+    hyphenate(eventInfo);
+    rectifyLineHeights(eventInfo);
 }, "rewrite");
 
 /************************************************************************/
@@ -1374,6 +1472,10 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
 
     eventInfo.container.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
         let backlink = footnote.querySelector(".footnote-back");
+
+		if (isOnlyChild(backlink))
+			backlink.parentElement.classList.add("footnote-back-block");
+
         if (backlink.querySelector("svg, .placeholder"))
             return;
 
@@ -1416,11 +1518,10 @@ addContentInjectHandler(GW.contentInjectHandlers.bindHighlightEventsToFootnoteSe
 
     if (allCitations.length > 0) {
         //  Add handler to re-bind events if more notes are injected.
-        GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+        addContentInjectHandler(GW.contentInjectHandlers.rebindHighlightEventsToFootnoteSelfLinks = (eventInfo) => {
             allCitations.forEach(bindEventsToCitation);
-        }, { condition: (info) => (   info.document == document
-                                   || info.document == eventInfo.document)
-        });
+        }, "eventListeners", (info) => (   info.document == document
+        								|| info.document == eventInfo.document));
     }
 }, "eventListeners");
 
@@ -1766,74 +1867,6 @@ addContentInjectHandler(GW.contentInjectHandlers.addDoubleClickListenersToInflat
     });
 }, "eventListeners");
 
-/********************************************************/
-/*  Designate ordered list type via a class.
-    (Workaround for case-insensitivity of CSS selectors.)
- */
-addContentLoadHandler(GW.contentLoadHandlers.designateOrderedListTypes = (eventInfo) => {
-    GWLog("designateOrderedListTypes", "rewrite.js", 1);
-
-    eventInfo.container.querySelectorAll("ol[type]").forEach(list => {
-        switch (list.type) {
-        case '1':
-            list.classList.add("list-type-decimal");
-            break;
-        case 'a':
-            list.classList.add("list-type-lower-alpha");
-            break;
-        case 'A':
-            list.classList.add("list-type-upper-alpha");
-            break;
-        case 'i':
-            list.classList.add("list-type-lower-roman");
-            break;
-        case 'I':
-            list.classList.add("list-type-upper-roman");
-            break;
-        default:
-            break;
-        }
-    });
-}, "rewrite");
-
-/**********************************************/
-/*  Rectify styling/structure of list headings.
- */
-addContentLoadHandler(GW.contentLoadHandlers.rectifyListHeadings = (eventInfo) => {
-    GWLog("rectifyListHeadings", "rewrite.js", 1);
-
-    eventInfo.container.querySelectorAll("p > strong:only-child").forEach(boldElement => {
-        if (   boldElement.parentElement.childNodes.length == 2
-            && boldElement.parentElement.firstChild == boldElement
-            && boldElement.parentElement.lastChild.nodeType == Node.TEXT_NODE
-            && boldElement.parentElement.lastChild.nodeValue == ":") {
-            boldElement.parentElement.lastChild.remove();
-            boldElement.lastTextNode.nodeValue += ":";
-        }
-
-        if (   boldElement.parentElement.childNodes.length == 1
-            && boldElement.parentElement.tagName == "P"
-            && boldElement.parentElement.nextElementSibling
-            && boldElement.closest("LI") == null
-            && (   [ "UL", "OL" ].includes(boldElement.parentElement.nextElementSibling.tagName)
-                || boldElement.parentElement.nextElementSibling.classList.contains("columns")))
-            boldElement.parentElement.classList.add("list-heading");
-    });
-}, "rewrite");
-
-/***************************************************************/
-/*  Mark the link lists on the index page, for styling purposes.
- */
-addContentLoadHandler(GW.contentLoadHandlers.designateIndexPageSectionLinkLists = (eventInfo) => {
-    GWLog("designateIndexPageSectionLinkLists", "rewrite.js", 1);
-
-    eventInfo.container.querySelectorAll("section > ul").forEach(sectionLinkList => {
-        sectionLinkList.classList.add("section-link-list");
-    });
-}, "rewrite", (info) => (   info.container == document.body
-                         && (   info.loadLocation.pathname == "/"
-                             || info.loadLocation.pathname == "/index")));
-
 /***************************************************************************/
 /*  Clean up image alt-text. (Shouldn’t matter, because all image URLs work,
     right? Yeah, right...)
@@ -1896,7 +1929,19 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifySpecialTextBlockTagTypes = (
 	eventInfo.container.querySelectorAll(".text-center").forEach(div => {
 		rewrapContents(div, null, "P", true, true);
 	});
-});
+}, "rewrite");
+
+/*******************************************************/
+/*	Designate ordinal superscripts (1st, 2nd, 3rd, nth).
+ */
+addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => {
+    GWLog("designateOrdinals", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("sup").forEach(sup => {
+		if ([ "st", "nd", "rd", "th" ].includes(sup.textContent.toLowerCase()))
+			sup.classList.add("ordinal");
+	});
+}, "rewrite");
 
 
 /*************/
@@ -1909,30 +1954,11 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifySpecialTextBlockTagTypes = (
 addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) => {
     GWLog("applyDropCapsClasses", "rewrite.js", 1);
 
-    //  Add ‘drop-cap-’ class to requisite blocks.
-    let dropCapBlocksSelector = [
-        ".markdownBody > p:first-child",
-        ".markdownBody > section:first-of-type > p:nth-child(2)",
-        ".markdownBody > .epigraph:first-child + p",
-        ".markdownBody > section:first-of-type > .epigraph:nth-child(2) + p",
-        ".markdownBody .abstract:not(.scrape-abstract-not) + p"
-    ].join(", ");
-    let excludedElementsSelector = [
-    	".text-center"
-    ].join(", ");
-    let excludedContainerElementsSelector = [
-        "#footer",
-        "#aotd"
-    ].join(", ");
     let dropCapClass = Array.from(eventInfo.container.classList).find(cssClass => cssClass.startsWith("drop-caps-"));
     if (dropCapClass)
         dropCapClass = dropCapClass.replace("-caps-", "-cap-");
 
-    eventInfo.container.querySelectorAll(dropCapBlocksSelector).forEach(dropCapBlock => {
-        if (   dropCapBlock.matches(excludedElementsSelector)
-        	|| dropCapBlock.closest(excludedContainerElementsSelector))
-            return;
-
+    eventInfo.container.querySelectorAll(".intro-graf").forEach(dropCapBlock => {
         /*  Drop cap class could be set globally, or overridden by a .abstract;
             the latter could be `drop-cap-not` (which nullifies any page-global
             drop-cap class for the given block).
@@ -1942,12 +1968,12 @@ addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) 
                                 : null;
         dropCapClass = (precedingAbstract
                         ? Array.from(precedingAbstract.classList).find(cssClass => cssClass.startsWith("drop-cap-"))
-                        : null) || dropCapClass;
+                        : null) ?? dropCapClass;
         if (   dropCapClass
             && dropCapClass != "drop-cap-not")
             dropCapBlock.classList.add(dropCapClass);
     });
-}, "rewrite", (info) => (info.container == document.body));
+}, ">rewrite", (info) => (info.container == document.body));
 
 addContentInjectHandler(GW.contentInjectHandlers.preventDropCapsOverlap = (eventInfo) => {
     GWLog("preventDropCapsOverlap", "rewrite.js", 1);
@@ -1962,12 +1988,28 @@ addContentInjectHandler(GW.contentInjectHandlers.preventDropCapsOverlap = (event
             dropCapBlock.classList.add("overlap-not");
         }
     });
-}, "rewrite", (info) => (info.document == document))
+}, ">rewrite", (info) => (info.document == document))
 
 
 /********/
 /* MATH */
 /********/
+
+/**************************************/
+/*	Unwrap <p> wrappers of math blocks.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.unwrapMathBlocks = (eventInfo) => {
+    GWLog("unwrapMathBlocks", "rewrite.js", 1);
+
+    eventInfo.container.querySelectorAll(".mjpage__block").forEach(mathBlock => {
+        mathBlock = mathBlock.closest(".math");
+        mathBlock.classList.add("block");
+
+		if (   mathBlock.parentElement?.matches("p")
+			&& isOnlyChild(mathBlock))
+			unwrap(mathBlock.parentElement);
+	});
+}, "rewrite");
 
 /*****************************************************************************/
 /*  Makes it so that copying a rendered equation or other math element copies
@@ -1981,8 +2023,8 @@ addCopyProcessor((event, selection) => {
         return false;
     }
 
-    selection.querySelectorAll(".mjx-chtml").forEach(mathBlock => {
-        mathBlock.innerHTML = " " + mathBlock.querySelector(".mjx-math").getAttribute("aria-label") + " ";
+    selection.querySelectorAll(".mjx-chtml").forEach(mathElement => {
+        mathElement.innerHTML = " " + mathElement.querySelector(".mjx-math").getAttribute("aria-label") + " ";
     });
 
     return true;
@@ -1999,13 +2041,13 @@ addCopyProcessor((event, selection) => {
 addContentInjectHandler(GW.contentInjectHandlers.addDoubleClickListenersToMathBlocks = (eventInfo) => {
     GWLog("addDoubleClickListenersToMathBlocks", "rewrite.js", 1);
 
-    eventInfo.container.querySelectorAll(".mjpage").forEach(mathBlock => {
-        mathBlock.addEventListener("dblclick", (event) => {
-            document.getSelection().selectAllChildren(mathBlock.querySelector(".mjx-chtml"));
+    eventInfo.container.querySelectorAll(".mjpage").forEach(mathElement => {
+        mathElement.addEventListener("dblclick", (event) => {
+            document.getSelection().selectAllChildren(mathElement.querySelector(".mjx-chtml"));
         });
-        mathBlock.title = mathBlock.classList.contains("mjpage__block")
-                          ? "Double-click to select equation, then copy, to get LaTeX source (or, just click the Copy button in the top-right of the equation area)"
-                          : "Double-click to select equation; copy to get LaTeX source";
+        mathElement.title = mathElement.classList.contains("mjpage__block")
+        					? "Double-click to select equation, then copy, to get LaTeX source (or, just click the Copy button in the top-right of the equation area)"
+        					: "Double-click to select equation; copy to get LaTeX source";
     });
 }, "eventListeners");
 
@@ -2015,10 +2057,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addDoubleClickListenersToMathBl
 addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (eventInfo) => {
     GWLog("addBlockButtonsToMathBlocks", "rewrite.js", 1);
 
-    eventInfo.container.querySelectorAll(".mjpage__block").forEach(mathBlock => {
-        mathBlock = mathBlock.closest(".math");
-        mathBlock.classList.add("block");
-
+    eventInfo.container.querySelectorAll(".math.block").forEach(mathBlock => {
         //  Inject button bar.
         mathBlock.insertAdjacentHTML("beforeend",
               `<span class="block-button-bar">`
@@ -2113,7 +2152,7 @@ function reportBrokenAnchorLink(link) {
 /*  Check for broken anchor (location hash not pointing to any element on the
     page) both at page load time and whenever the hash changes.
  */
-GW.notificationCenter.addHandlerForEvent("GW.hashHandlingSetupDidComplete", GW.brokenAnchorCheck = (info) => {
+GW.notificationCenter.addHandlerForEvent("GW.hashHandlingSetupDidComplete", GW.brokenAnchorCheck = (eventInfo) => {
     GWLog("GW.brokenAnchorCheck", "rewrite.js", 1);
 
     if (   location.hash > ""
@@ -2144,8 +2183,8 @@ window.addEventListener("beforeprint", (event) => {
         container.querySelectorAll(".collapse").forEach(expandLockCollapseBlock);
     }
 
-    GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView = (info) => {
-        expand(info.container);
+    GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView = (eventInfo) => {
+        expand(eventInfo.container);
     });
 
     expand(document);

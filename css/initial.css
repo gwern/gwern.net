@@ -1,0 +1,1649 @@
+/*************/
+/* VARIABLES */
+/*************/
+
+:root {
+    --GW-serif-font-stack: "Source Serif Pro", "Apple Garamond", "Baskerville", "Libre Baskerville", "Droid Serif", "Times New Roman", "Times", serif, "Noto Emoji", "Quivira";
+    --GW-sans-serif-font-stack: "Source Sans Pro", "Lucida Sans Unicode", "Helvetica", "Trebuchet MS", sans-serif, "Noto Emoji", "Quivira";
+    --GW-monospaced-font-stack: "IBM Plex Mono", "Liberation Mono", "Consolas", "Courier", monospace, "Noto Emoji", "Quivira";
+
+    --GW-body-text-font-size: 20px;
+
+	--GW-body-max-width: 935px;
+	--GW-body-side-padding: 20px;
+}
+@media all and (max-width: 649px) {
+    :root {
+        --GW-body-text-font-size: 18px;
+
+		--GW-body-side-padding: 15px;
+    }
+}
+
+
+/***********/
+/* GENERAL */
+/***********/
+
+html,
+.shadow-body {
+    --base-font-size: var(--GW-body-text-font-size);
+	--background-color: var(--GW-body-background-color);
+
+    background-color: var(--background-color);
+    color: var(--GW-body-text-color);
+    font-weight: 400;
+    font-family: var(--GW-serif-font-stack);
+	font-size: var(--base-font-size);
+}
+
+
+/********************/
+/* GENERIC ELEMENTS */
+/********************/
+
+svg {
+    fill: currentColor;
+}
+
+
+/**********/
+/* LAYOUT */
+/**********/
+
+html {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    max-width: var(--GW-body-max-width);
+    padding: 0 var(--GW-body-side-padding);
+    margin: 0 auto;
+}
+
+main {
+    position: relative;
+}
+@media only screen and (min-width: 650px) {
+    main {
+        min-height: 100vh;
+        display: flex;
+        flex-flow: column;
+    }
+    article {
+        flex: 1 1 auto;
+    }
+}
+
+
+/***********/
+/* SIDEBAR */
+/***********/
+
+#sidebar {
+    display: flex;
+    justify-content: center;
+}
+
+/*	Sidebar links (including logo).
+ */
+#sidebar a {
+    display: block;
+    border: 1px dotted currentColor;
+    text-align: center;
+    margin: 1px 0 1px 2px;
+}
+
+/*	Logo.
+ */
+#sidebar a#logo {
+    display: flex;
+    margin: 1px 0;
+}
+#sidebar a#logo svg {
+	height: 100%;
+}
+
+/*	Sidebar links (not including logo).
+ */
+#sidebar-links {
+    flex: 1 1 100%;
+    display: flex;
+    flex-flow: row wrap;
+}
+#sidebar-links a {
+    flex: 1 1 auto;
+    padding: 0.25em 0.75em;
+}
+
+@media all and (max-width: 649px) {
+    #sidebar {
+        margin-top: 1em;
+    }
+
+	/*	Logo.
+	 */
+    #sidebar a#logo {
+        padding: 0.5em 0.375em;
+    }
+    #sidebar a#logo svg {
+        width: 2.5em;
+    }
+
+	/*	Sidebar links (not including logo).
+	 */
+    #sidebar-links a {
+        font-variant-caps: small-caps;
+    }
+    #sidebar-links a:nth-child(1),
+    #sidebar-links a:nth-child(2),
+    #sidebar-links a:nth-child(3) {
+        min-width: 25%;
+    }
+    #sidebar-links a.patreon {
+        display: none;
+    }
+}
+
+@media all and (min-width: 650px) {
+    #sidebar {
+        margin-top: 0.5em;
+    }
+
+	/*	Sidebar links (including logo).
+	 */
+    #sidebar a {
+        color: var(--GW-nav-header-link-color);
+    }
+    #sidebar a:hover {
+        color: var(--GW-nav-header-link-hover-color);
+    }
+
+	/*	Sidebar links (not including logo).
+	 */
+    #sidebar-links a {
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    @media all and (max-width: 1179px) {
+		/*	Logo.
+		 */
+        #sidebar a#logo {
+            padding: 0.25em 0.375em;
+        }
+        #sidebar a#logo svg {
+            width: 1em;
+        }
+    }
+    @media all and (min-width: 1180px) {
+		/*	Logo.
+		 */
+        #sidebar a#logo {
+            position: absolute;
+            right: 100%;
+            margin: 0 0.75em 0 0;
+            padding: 0.125em;
+            border: none;
+            opacity: 0.5;
+        }
+        #sidebar a#logo:hover {
+            opacity: 1.0;
+        }
+        #sidebar a#logo svg {
+            width: 4em;
+        }
+
+		/*	Sidebar links (not including logo).
+		 */
+		#sidebar-links a:first-child {
+			margin-left: 0;
+		}
+    }
+}
+
+
+/***************/
+/* PAGE HEADER */
+/***************/
+
+@media all and (max-width: 649px) {
+    header {
+        padding: 0 1em;
+		margin-top: 1.75rem;
+    }
+}
+@media all and (min-width: 650px) {
+    header {
+        padding: 0 2em;
+		margin-top: 2.125rem;
+    }
+}
+
+header h1 {
+    margin: 0;
+    text-align: center;
+    line-height: 1.15;
+    text-transform: none;
+    font-variant-caps: small-caps;
+    font-size: 2.5em;
+    font-weight: 600;
+    letter-spacing: -1px;
+}
+@media all and (max-width: 649px) {
+    header h1 {
+        font-size: 2em;
+    }
+}
+
+/*	Source Serif Pro has no italic small caps, sadly.
+ */
+header h1 em {
+	font-variant-caps: normal;
+}
+
+
+/*********************/
+/* ARTICLE CONTAINER */
+/*********************/
+
+article {
+    margin-top: 2rem;
+}
+
+
+/***********************/
+/* PAGE METADATA BLOCK */
+/***********************/
+
+#page-metadata {
+    line-height: 1.5;
+}
+
+#page-metadata > * + * {
+	margin-top: 0.75em;
+}
+
+/*	Page description.
+ */
+/*	Override normal handling of italics: before, we wrapped descriptions in 
+	`<em>`; however, they compile to HTML which can contain italics of their 
+	own (eg. book titles). This causes HTML Tidy to warn about nested italics 
+	(which is valid HTML but *usually* means you’ve made an error - this often 
+	triggers when I mess up bolding, for example, like on /gpt-3). So we 
+	removed the wrapper in favor of the above `font-style: italic`. However, 
+	now the titles don’t unitalicize automatically like they would for nested 
+	italics! So we force italicized titles back to normal Roman font to match 
+	the expected typographic convention.
+ */
+#page-metadata #page-description {
+    font-style: italic;
+}
+#page-metadata #page-description em {
+    font-style: normal;
+}
+
+/*	Page tags.
+ */
+#page-metadata .link-tags {
+    font-style: italic;
+}
+#page-metadata .link-tags a {
+    white-space: nowrap;
+    margin-right: 0.05em;
+}
+#page-metadata .link-tags a:nth-child(n+2) {
+    margin-left: 0.10em;
+}
+
+/*	Page metadata fields.
+ */
+#page-metadata #page-metadata-block > span {
+    white-space: nowrap;
+}
+#page-metadata #page-metadata-block > span:not(:last-child)::after {
+	/*  Interpunct separators for the metadata fields; looks nicer than 
+		semicolons or slashes
+	 */
+    content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
+    margin: 0 0.35em 0 0.65em;
+}
+#page-metadata #page-metadata-block #page-author {
+    white-space: normal;
+}
+#page-metadata #page-metadata-block #page-source a {
+    font-variant-numeric: oldstyle-nums;
+}
+
+@media all and (min-width: 650px) {
+    #page-metadata {
+        font-size: calc((19/20) * var(--GW-body-text-font-size));
+    }
+
+	/*	Page description.
+	 */
+    #page-metadata #page-description {
+    	--text-alignment: justify;
+    	--text-hyphenation: auto;
+    }
+
+	/*	Page tags.
+	 */
+    #page-metadata .link-tags {
+        font-size: calc((18/20) * var(--GW-body-text-font-size));
+    }
+
+	/*	Page metadata fields.
+	 */
+    #page-metadata #page-metadata-block {
+        font-size: calc((18/20) * var(--GW-body-text-font-size));
+    }
+}
+@media all and (max-width: 649px) {
+    #page-metadata {
+        font-size: calc((17/18) * var(--GW-body-text-font-size));
+    }
+
+	/*	Page description.
+	 */
+    #page-metadata #page-description {
+        line-height: calc(25/17);
+    }
+
+	/*	Page tags.
+	 */
+    #page-metadata .link-tags {
+        text-align: center;
+    }
+
+	/*	Page metadata fields.
+	 */
+    #page-metadata #page-metadata-block {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: center;
+        font-size: calc((16/18) * var(--GW-body-text-font-size));
+        line-height: calc(25/16);
+        text-align: center;
+    }
+    /* date, status */
+    #page-metadata #page-metadata-block #page-date-range,
+    #page-metadata #page-metadata-block #page-status {
+        order: 1;
+    }
+    /* certainty, importance */
+    #page-metadata #page-metadata-block #page-confidence,
+    #page-metadata #page-metadata-block #page-importance {
+        order: 3;
+    }
+    /* backlinks, similar, bibliography */
+    #page-metadata #page-metadata-block .backlinks,
+    #page-metadata #page-metadata-block .similars,
+    #page-metadata #page-metadata-block .link-bibliography {
+        order: 5;
+    }
+    /* line breaks in two places */
+    #page-metadata #page-metadata-block::before,
+    #page-metadata #page-metadata-block::after {
+        content: "";
+        width: 100%;
+    }
+    #page-metadata #page-metadata-block #page-author::after,
+    #page-metadata #page-metadata-block #page-status::after,
+    #page-metadata #page-metadata-block #page-importance::after {
+        content: none;
+    }
+    /* break between date/status and certainty/importance */
+    #page-metadata #page-metadata-block::before {
+        order: 2;
+    }
+    /* break between certainty/importance and backlinks/similar/bibliography */
+    #page-metadata #page-metadata-block::after {
+        order: 4;
+    }
+}
+
+
+/*********************/
+/* TABLE OF CONTENTS */
+/*********************/
+
+.TOC:empty {
+    display: none;
+}
+
+.TOC {
+	--text-alignment: left;
+	--text-hyphenation: none;
+
+    border: 1px solid var(--GW-TOC-border-color);
+    background-color: var(--GW-TOC-background-color);
+    font-family: var(--GW-sans-serif-font-stack);
+    line-height: 1.25;
+}
+
+/*************************/
+/*	TOC for main document.
+ */
+
+#TOC {
+    padding: 0.625em 0.75em 0.75em 0.75em;
+    position: relative;
+    z-index: 20;
+}
+@media all and (min-width: 901px) {
+	/*	On desktop, we want the TOC side by side with the content.
+	 */
+    #TOC {
+		margin: 2rem 2.25rem 1rem 0;
+        float: left;
+        max-width: 285px;
+    }
+}
+@media all and (max-width: 900px) {
+	/*  On mobile, we want the TOC to be inline.
+	 */
+    #TOC {
+        margin: 2rem auto 0 auto;
+    }
+}
+
+/*********************************/
+/*	TOCs on directory index pages.
+ */
+
+@media all and (max-width: 649px) {
+    body[class*='-index'] #TOC {
+        margin-top: 2.5rem;
+    }
+}
+@media all and (min-width: 650px) {
+    body[class*='-index'] #TOC {
+        float: unset;
+        max-width: unset;
+        margin-right: unset;
+        margin-top: 3rem;
+    }
+}
+
+/*	TOCs with nothing but links (no “Miscellaneous”, no link bibliography).
+	(This happens on some directory index pages.)
+ */
+
+body[class*='-index'] #TOC.TOC-links-only {
+    padding-top: 2.5em;
+}
+
+body[class*='-index'] #TOC.TOC-links-only::before {
+    content: "Contents";
+    position: absolute;
+    font-size: 1.125em;
+    font-weight: bold;
+    top: 0.5em;
+    left: 0.75em;
+}
+@media all and (max-width: 900px) {
+    body[class*='-index'] #TOC.TOC-links-only::before {
+        left: 0.5em;
+    }
+}
+
+body[class*='-index'] #TOC.TOC-links-only li {
+    font-weight: normal;
+    font-size: 0.9em;
+}
+
+/******************/
+/*  TOC collapsing.
+ */
+
+#TOC.collapsed {
+    height: 2em;
+    box-sizing: border-box;
+}
+
+#TOC.collapsed + * {
+    clear: both;
+}
+
+#TOC.collapsed > ul {
+    max-height: 0;
+    overflow: hidden;
+}
+
+/*	Collapsed TOC label.
+ */
+
+#TOC.collapsed::before {
+    content: "[Contents]";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    padding: 0 0 0 0.5em;
+    display: flex;
+    align-items: center;
+    z-index: 2;
+    pointer-events: none;
+    font-size: 1.125em;
+    font-weight: bold;
+    opacity: 0.5;
+}
+@media only screen and (hover: hover) {
+    #TOC.collapsed:hover::before {
+        opacity: 1.0;
+    }
+}
+@media all and (max-width: 900px) {
+    #TOC.collapsed::before {
+        padding: 0 0.5em;
+        right: 0;
+        margin: auto;
+        justify-content: center;
+    }
+}
+
+/*	TOC collapse toggle button.
+ */
+
+#TOC .toc-collapse-toggle-button {
+    appearance: none;
+    border: none;
+    background-color: var(--GW-TOC-collapse-button-color);
+    position: absolute;
+    height: calc(2em - 2px);
+    padding: 0.3em 0.4em;
+    top: 0;
+    right: 0;
+    display: flex;
+    justify-content: flex-end;
+    color: var(--GW-TOC-collapse-button-text-color);
+    font-family: var(--GW-sans-serif-font-stack);
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: inherit;
+    z-index: 1;
+    cursor: pointer;
+}
+#TOC.collapsed .toc-collapse-toggle-button {
+    width: 100%;
+    height: 100%;
+}
+
+#TOC .toc-collapse-toggle-button span {
+    display: flex;
+    width: calc(1.4em - 2px);
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+#TOC .toc-collapse-toggle-button svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-0.25turn);
+    transition:
+        transform 0.1s ease;
+}
+#TOC.collapsed .toc-collapse-toggle-button svg {
+    transform: rotate(0);
+}
+
+@media only screen and (hover: hover) {
+    #TOC .toc-collapse-toggle-button:hover {
+        color: var(--GW-TOC-collapse-button-text-hover-color);
+        background-color: var(--GW-TOC-collapse-button-hover-color);
+        outline: 1px dotted var(--GW-TOC-collapse-button-border-hover-color);
+    }
+}
+
+@media all and (max-width: 649px) {
+	/*	In expanded state, place button above.
+	 */
+    #TOC:not(.collapsed) .toc-collapse-toggle-button {
+        top: -1.75em;
+        right: unset;
+        left: -1px;
+        justify-content: center;
+        border: inherit;
+        background-color: inherit;
+        margin: auto;
+        width: 2em;
+        height: 1.75em;
+        padding: 3px;
+        box-sizing: border-box;
+        opacity: 1.0;
+    }
+    /*  Extended tap area.
+     */
+    #TOC:not(.collapsed) .toc-collapse-toggle-button::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: -100%;
+        top: 0;
+    }
+}
+
+/*=-----------------=*/
+/*= TOC list layout =*/
+/*=-----------------=*/
+
+.TOC ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+@media all and (max-width: 900px) {
+	/*	Divider line between the columns.
+	 */
+    #TOC {
+        background-image:
+            linear-gradient(var(--GW-TOC-border-color),
+                            var(--GW-TOC-border-color));
+        background-repeat: no-repeat;
+        background-size: 1px 100%;
+        background-position: 50% 0;
+    }
+
+	/*	Two-column layout.
+	 */
+    #TOC > ul {
+        column-count: 2;
+        column-gap: 1.25em;
+    }
+	#TOC ul > li:first-child {
+		break-before: avoid-column;
+	}
+
+	/*	But not on directory index pages.
+	 */
+    body[class*='-index'] #TOC {
+        background-image: none;
+    }
+    body[class*='-index'] #TOC > ul {
+        column-count: 1;
+    }
+}
+
+.TOC ul ul {
+    margin: 0;
+    padding-left: 0.7em;
+    padding-top: 0.35em;
+}
+
+.TOC ul > li {
+    font-weight: bold;
+    margin: 0 0 0.5em 0;
+    padding-left: 1.125em;
+    position: relative;
+    overflow-wrap: break-word;
+}
+.TOC ul > li:last-child {
+    margin-bottom: 0;
+}
+
+@media all and (max-width: 900px) {
+	/*	No numbers on mobile.
+	 */
+    #TOC ul > li {
+        padding-left: 0;
+    }
+    #TOC ul > li::before {
+        content: none;
+    }
+}
+
+.TOC ul > li li {
+    font-weight: normal;
+    font-size: 0.9em;
+}
+
+@media all and (max-width: 649px) {
+    #TOC ul > li li a {
+        padding: 1px 0 0 0;
+    }
+    #TOC ul > li li li a {
+        padding: 2px 0 0 0;
+    }
+    #TOC ul > li li li li a {
+        padding: 3px 0 0 0;
+    }
+    #TOC ul > li li li li a {
+        padding: 4px 0 0 0;
+    }
+}
+
+/*=------------------=*/
+/*= TOC link styling =*/
+/*=------------------=*/
+
+.TOC a {
+    border: 0;
+    display: inline-block;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    padding: 0 0.25rem 0 0;
+}
+@media only screen and (hover: hover) {
+	.TOC a:hover,
+	.markdownBody .TOC a:hover {
+		background-color: var(--GW-TOC-link-hover-background-color);
+		color: var(--GW-TOC-link-hover-color);
+	}
+	.TOC a:hover::after,
+	.markdownBody .TOC a:hover::after {
+		content: "";
+		display: inline-block;
+		position: absolute;
+		left: 100%;
+		top: 0;
+		background-color: var(--GW-TOC-link-hover-indicator-bar-color);
+		width: 0.25em;
+		height: 100%;
+	}
+}
+@media only screen and (hover: none) {
+	.TOC a {
+		position: relative;
+	}
+	.TOC a::before {
+		content: "";
+		position: absolute;
+		left: -0.50em;
+		top: -0.25em;
+		width: calc(100% + 0.75em);
+		height: calc(100% + 0.50em);
+	}
+}
+
+/*	Inline code in TOC links.
+ */
+.TOC code {
+    font-family: inherit;
+    font-size: inherit;
+    border: none;
+    padding: 0;
+    background-color: inherit;
+}
+
+/*=-------------------------------=*/
+/*= Wikipedia-style TOC numbering =*/
+/*=-------------------------------=*/
+
+.TOC > ul {
+    counter-reset: htoc_1;
+}
+.TOC > ul > li::before {
+    counter-increment: htoc_1;
+    content: counter(htoc_1) "\2006  ";
+}
+.TOC > ul ul {
+    counter-reset: htoc_2;
+}
+.TOC > ul ul > li::before {
+    counter-increment: htoc_2;
+    content: counter(htoc_1) "." counter(htoc_2) "\2006  ";
+}
+.TOC > ul ul ul {
+    counter-reset: htoc_3;
+}
+.TOC > ul ul ul > li::before {
+    counter-increment: htoc_3;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "\2006  ";
+}
+.TOC > ul ul ul ul {
+    counter-reset: htoc_4;
+}
+.TOC > ul ul ul ul li::before {
+    counter-increment: htoc_4;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "\2006  ";
+}
+.TOC > ul ul ul ul ul {
+    counter-reset: htoc_5;
+}
+.TOC > ul ul ul ul ul > li::before {
+    counter-increment: htoc_5;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "\2006  ";
+}
+.TOC > ul ul ul ul ul ul {
+    counter-reset: htoc_6;
+}
+.TOC > ul ul ul ul ul ul > li::before {
+    counter-increment: htoc_6;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "." counter(htoc_6) "\2006  ";
+}
+.TOC ul > li::before {
+    position: absolute;
+    right: calc(100% - 1em);
+    left: unset;
+    width: 111px;
+    height: initial;
+    padding: 0;
+    text-align: right;
+	font-weight: normal;
+	font-variant-numeric: tabular-nums;
+    pointer-events: none;
+    color: var(--GW-TOC-number-color);
+}
+.TOC ul > li:hover::before {
+    color: var(--GW-TOC-number-hover-color);
+}
+
+
+/****************/
+/* MAIN CONTENT */
+/****************/
+
+#markdownBody {
+	margin-top: 2rem;
+}
+
+.markdownBody {
+	--base-block-spacing: 0.25em;
+
+    /*  Try to avoid scrollbars on paragraphs: prevents long unbroken
+        un-hyphenatable lines from causing H-scrolling.
+     */
+    overflow-wrap: break-word;
+
+	/*  Cute ‘old-style’ numerals, look a little nicer inline in text, and 
+		available natively in the SS fonts:
+
+		https://practicaltypography.com/alternate-figures.html#oldstyle-figures
+	 */
+    font-variant-numeric: oldstyle-nums;
+}
+
+/*  Replaces A/B-test-set average value; the wider the screen, the more
+	line-height is necessary, and no one size suits all, so set 4 brackets 
+	of increasing height.
+ */
+@media all and (max-width: 649px) {
+    .markdownBody {
+        line-height: 1.45;
+    }
+}
+@media all and (max-width: 999px) {
+	.markdownBody {
+		line-height: 1.50;
+	}
+}
+@media all and (max-width: 1199px) {
+	.markdownBody {
+		line-height: 1.55;
+	}
+}
+@media all and (min-width: 1200px) {
+	.markdownBody {
+		line-height: 1.60;
+	}
+}
+
+/*	`bsm` = “block spacing multiplier”
+ */
+.markdownBody .block {
+	margin-top: calc(var(--base-block-spacing) * var(--bsm));
+}
+
+
+/************/
+/* SECTIONS */
+/************/
+
+/*	Collapsed sections should not intersect the TOC.
+ */
+section.collapse.expanded-not {
+	display: flow-root;
+}
+
+/*  Lazy-load below-fold sections in supported browsers.
+    Disabled temporarily pending layout redesign to compensate for layout
+    containment. —Obormot 2021-03-21
+    */
+/*
+section.level1:nth-of-type(n+4) {
+    content-visibility: auto;
+    contain-intrinsic-size: 200vh;
+}
+ */
+
+/*=------------=*/
+/*= /doc/index =*/
+/*=------------=*/
+
+body[class*='-index'] section#see-also > h1:first-child a {
+    display: none;
+}
+
+
+/**************/
+/* PARAGRAPHS */
+/**************/
+
+p {
+	margin: 0;
+}
+
+p.empty-graf {
+	height: 0 !important;
+	margin: 0 !important;
+	visibility: hidden;
+}
+
+/*  On wide screens (desktop), use fully-justified text (words get
+    broken/hyphenated as necessary to avoid a ‘ragged margin’), overriding
+    browser default of ‘flush left, ragged right’ (see
+    https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left )
+
+    On mobile/narrow screens, that doesn’t work as well: because browsers do
+    greedy layout, justification forces ‘s t r e t c h e d out’ words
+    and large spaces, leading to blatant
+    https://en.wikipedia.org/wiki/River_(typography) , getting worse the
+    narrower the screen (eg. in lists). On wide screens, it isn’t too bad, and
+    justification is still better than not, but on mobile it is extremely
+    noticeable. Switching to flush left ragged right doesn’t look as nicely
+    ‘even’, but it avoids that pathological behavior. (More advanced 
+    typesetting algorithms like Knuth-Plass
+    https://en.wikipedia.org/wiki/Line_wrap_and_word_wrap#Minimum_raggedness
+    can handle mobile widths nicely, but no contemporary browser implements 
+    them natively, and all JS implementations I’ve looked at are buggy.)
+
+    However, do hyphenate at all widths.
+*/
+
+/************************************************/
+/*	AB testing indentation vs. paragraph spacing.
+ */
+
+.markdownBody p:not(.first-graf) {
+	text-indent: var(--text-indent);
+}
+
+/*	Prevent inheritance of indentation property.
+ */
+.markdownBody p * {
+	text-indent: 0em;
+}
+
+/*	Specify indentation.
+ */
+.markdownBody.indented {
+	--text-indent: 1.75em;
+}
+/*	Larger indentation in main content column on non-phones.
+ */
+@media only screen and (min-width: 650px) {
+	#markdownBody.indented {
+		--text-indent: 2.5em;
+	}
+}
+.markdownBody.indented-not {
+	--text-indent: 0em;
+}
+
+/************************************/
+/*	AB texting justification vs. not.
+ */
+ 
+.markdownBody p {
+    -webkit-hyphens: var(--text-hyphenation);
+    hyphens: var(--text-hyphenation);
+}
+@media all and (min-width: 900px) {
+	.markdownBody p {
+		text-align: var(--text-alignment);
+	}
+}
+
+/*	Specify alignment and hyphenation.
+ */
+.markdownBody.justified {
+    --text-alignment: justify;
+    --text-hyphenation: auto;
+}
+.markdownBody.justified-not {
+	--text-alignment: left;
+	--text-hyphenation: none;
+}
+
+/**************/
+/*	Exceptions.
+ */
+
+/*  EPITAPH (eg /LARPing)
+ */
+.markdownBody p.text-center {
+    text-align: center;
+    text-indent: 0;
+}
+
+
+/***************/
+/* BLOCKQUOTES */
+/***************/
+
+blockquote {
+	--blockquote-vertical-padding: 0.9em;
+	--blockquote-horizontal-padding: 1.25em;
+	--blockquote-font-size-scaling-factor: 0.95;
+
+    display: flow-root;
+    margin: 0;
+    overflow: visible;
+    border: 1px solid var(--border-color);
+    background-color: var(--background-color);
+    padding: var(--blockquote-vertical-padding) var(--blockquote-horizontal-padding);
+}
+@media all and (max-width: 649px) {
+    blockquote {
+		--blockquote-vertical-padding: 0.7em;
+		--blockquote-horizontal-padding: 1em;
+    }
+}
+
+blockquote > * {
+	font-size: calc(var(--blockquote-font-size-scaling-factor) * 1em);
+}
+
+/*  Three-level of blockquote emphasis (darkening).
+ */
+blockquote,
+.blockquote-level-1,
+.blockquote-level-4 {
+    --background-color: var(--GW-blockquote-background-color-level-one);
+}
+.blockquote-level-2,
+.blockquote-level-5 {
+    --background-color: var(--GW-blockquote-background-color-level-two);
+}
+.blockquote-level-3,
+.blockquote-level-6 {
+    --background-color: var(--GW-blockquote-background-color-level-three);
+}
+
+/*	Borders must follow a different cycle.
+ */
+blockquote,
+.blockquote-level-1 {
+	--border-color: var(--GW-blockquote-border-color-level-one);
+}
+.blockquote-level-2,
+.blockquote-level-5 {
+	--border-color: var(--GW-blockquote-border-color-level-two);
+}
+.blockquote-level-3,
+.blockquote-level-6 {
+	--border-color: var(--GW-blockquote-border-color-level-three);
+}
+.blockquote-level-4 {
+	--border-color: var(--GW-blockquote-border-color-level-four);
+}
+
+
+/*********/
+/* LISTS */
+/*********/
+
+.list {
+    --list-left-padding: 2.5em;
+
+	margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+@media all and (max-width: 649px) {
+    .list {
+        --list-left-padding: 1.75em;
+    }
+}
+
+li {
+    position: relative;
+    display: flow-root;
+    padding: 0 0 0 var(--list-left-padding);
+}
+
+/*=-----------------------=*/
+/*= Bulleted list markers =*/
+/*=-----------------------=*/
+
+ul > li::before {
+	content: var(--list-bullet);
+    position: absolute;
+    z-index: 1;
+    display: block;
+	left: calc(var(--list-left-padding) - 1.375em);
+	top: 0;
+    width: 0.75em;
+    height: 1.25em;
+    padding: 1px 0 0 0;
+    opacity: var(--list-bullet-opacity);
+}
+
+ul,
+ul.list-level-1 {
+	--list-bullet: var(--GW-image-single-black-star-svg);
+	--list-bullet-opacity: 0.65;
+}
+ul.list-level-2 {
+    --list-bullet: var(--GW-image-single-white-star-svg);
+    --list-bullet-opacity: 0.85;
+}
+ul.list-level-3 {
+    /*	This rotates into more of a ‘lozenge’ square for variety’s sake.
+     */
+    --list-bullet: var(--GW-image-single-white-star-rotated-svg);
+    --list-bullet-opacity: 0.85;
+}
+
+/*=-----------------------=*/
+/*= Numbered list markers =*/
+/*=-----------------------=*/
+
+ol {
+    counter-reset: list-item;
+}
+
+ol > li {
+    counter-increment: list-item;
+}
+
+ol > li::before {
+    position: absolute;
+    z-index: 1;
+    display: block;
+	left: 0;
+	top: 0;
+    width: 2.125em;
+    text-align: right;
+}
+
+/*  Specific list type overrides. (Used by auto-sequencing, but can also be 
+	invoked manually from the source.)
+
+	Manual invocation assumes writing plain `<ol>` HTML lists instead of Arabic 
+	numerals like `<ol type="1">`. Pandoc Markdown defaults to the latter if you
+	write '1./2.' etc, but an alternate syntax, '#.' is supported which yields a 
+	plain `<ol>` which can be more easily styled. 
+	(See https://pandoc.org/MANUAL.html#extension-startnum .)
+*/
+ol > li::before,
+ol.list-type-decimal > li::before {
+    content: counter(list-item, decimal) ".";
+}
+ol.list-type-lower-alpha > li::before {
+    content: counter(list-item, lower-alpha) ".";
+}
+ol.list-type-upper-alpha > li::before {
+    content: counter(list-item, upper-alpha) ".";
+}
+ol.list-type-lower-roman > li::before {
+    content: counter(list-item, lower-roman) ".";
+}
+ol.list-type-upper-roman > li::before {
+    content: counter(list-item, upper-roman) ".";
+}
+
+
+/*********/
+/* LINKS */
+/*********/
+
+a {
+    text-decoration: none;
+    color: var(--GW-body-link-color); /* off-black */
+}
+/*  Slightly gray out links the reader has already visited, so they know if
+    they’ve seen that content before. (A critical affordance in densely
+    hyperlinked longform.)
+ */
+.markdownBody a:hover {
+    color: var(--GW-body-link-hover-color);
+}
+.markdownBody a:visited {
+	color: var(--GW-body-link-visited-color);
+}
+.markdownBody a:visited:hover {
+    color: var(--GW-body-link-hover-color);
+}
+
+/*=------------------------=*/
+/*= Fancy link underlining =*/
+/*=------------------------=*/
+
+/*  Tufte CSS for underlining (https://github.com/edwardtufte/tufte-css)
+    The advantage of all this CSS linenoise compared to the previous 'text-decoration: none; border-bottom: 1px Solid grey;' solution from http://devhints.wordpress.com/2006/10/24/css-links-with-different-color-underlines/
+    is the 'skip-ink': when dealing with characters with 'descenders', like 'y', 'g', 'p', 'q' etc, with regular underlining the bottom stroke overlaps with the line and it's harder to read;
+    by adding this text-shadow stuff and backgrounding, a little break is made in the underline to add contrast and keep the descender fully visible and outlined. (The downside is that the overlapping text-shadows can also slightly damage the rendering of slashes & parentheses, which come too close and get partially erased.)
+
+    Unfortunately, we don't want to add underlines to links in the TOC because it clutters it (all the lines are links and are in small font), so we have to avoid styling the TOC, which is difficult.
+    I got around this by adding in the Hakyll template an additional <div> just for the body of the Markdown content, excluding the TOC, and changing the Tufte CSS to target *that* instead.
+
+May be able at some point to simplify this using regular link underlining, since CSS4's `text-decoration-skip-ink` by default avoids overlapping with text descenders (but as of Oct 2019, no Edge/IE or Safari support, and only the latest Firefox 70 supports it; maybe in a few years...): https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration-skip-ink#Browser_Compatibility https://www.caniuse.com/#feat=mdn-css_properties_text-decoration-skip-ink (Right now, Firefox skip-ink looks quite bad: it doesn't skip enough ink, defeating the point, and also positions the underline badly!)
+*/
+
+/*	Color-inverted containers.
+ */
+.markdownBody .colors-invert a {
+    color: var(--GW-body-link-inverted-color);
+}
+.markdownBody .colors-invert a:hover {
+    color: var(--GW-body-link-inverted-hover-color);
+}
+.markdownBody .colors-invert a:visited {
+	color: var(--GW-body-link-inverted-visited-color);
+}
+.markdownBody .colors-invert a:visited:hover {
+    color: var(--GW-body-link-inverted-hover-color);
+}
+
+.markdownBody a {
+	--link-underline-background-color: var(--background-color);
+	--link-underline-gradient-line-color: currentColor;
+
+    background-image: linear-gradient(var(--link-underline-gradient-line-color), 
+    								  var(--link-underline-gradient-line-color));
+    background-size: 1px 1px;
+    background-repeat: repeat-x;
+    background-position: 0% calc(100% - 0.1em);
+
+    /*  Disable oldstyle nums in underlined links because the oldstyle nums are almost subscript-like and overlap */
+    font-variant-numeric: lining-nums;
+}
+.markdownBody a,
+.markdownBody a * {
+    text-shadow:
+         0      0.05em  var(--link-underline-background-color),
+         0.05em 0.05em  var(--link-underline-background-color),
+        -0.05em 0.05em  var(--link-underline-background-color),
+         0.17em 0.05em  var(--link-underline-background-color),
+        -0.17em 0.05em  var(--link-underline-background-color),
+         0.17em 0       var(--link-underline-background-color),
+        -0.17em 0       var(--link-underline-background-color);
+}
+
+/*	Links with decoration disabled.
+ */
+.markdownBody a.decorate-not,
+.markdownBody a.decorate-not * {
+    background-image: none;
+    text-shadow: none;
+}
+
+/* eliminate the blurring of headers and links when selecting by overriding the text-shadow: */
+::selection {
+    text-shadow: none;
+    background: var(--GW-text-selection-background-color);
+    color: var(--GW-text-selection-color);
+}
+
+/*  Prevent code block background color and border from obscuring link
+    underlining, for inline <code> elements in links.
+ */
+a code {
+    border-bottom-width: 0;
+    word-break: normal;
+    background-color: transparent;
+}
+
+/*  Reduce text-shadow overlap partially erasing letters next to smallcaps:
+    eg. in `<a href="https://www.microcovid.org/">"microCOVID project"</a>`,
+    the ‘o’ in ‘micro’ will be partially erased and look like a ‘c’ without
+    some sort of extra spacing.
+ */
+.markdownBody a .smallcaps {
+    margin-left: 0.8px;
+}
+
+/*  Like above, but for subscripts and superscripts.
+ */
+.markdownBody a sub,
+.markdownBody a sup {
+    padding: 0 0.05em;
+}
+
+/*  Prevent text-shadow of italics in links from creating visual glitches
+    (also fixes occasional link icon overlaps, eg. a WP link to ‘MGS:V’ where
+    the right-tilted ‘V’ would touch the WP ‘W’ link icon).
+ */
+.markdownBody em {
+    margin-right: 0.1em;
+
+	/*	Source Serif Pro has no italic small caps.
+	 */
+    font-variant-caps: normal;
+}
+
+
+/*************/
+/* SIDENOTES */
+/*************/
+
+/*  Hide sidenote columns on narrow viewports.
+    */
+@media only screen and (max-width: 1760px) {
+    #sidenote-column-left,
+    #sidenote-column-right {
+        display: none;
+    }
+}
+
+/*  Breakpoint for sidenotes.
+ */
+@media only screen and (min-width: 1761px) {
+    #markdownBody {
+        position: relative;
+    }
+}
+
+/*=--------------=*/
+/*= Margin notes =*/
+/*=--------------=*/
+
+/*  On wide viewports, hide the margin notes until it is determined which layout
+	form it should take (‘sidenote’ or ‘inline’).
+ */
+@media only screen and (min-width: 1761px) {
+    .marginnote:not(.inline):not(.sidenote) {
+        display: none;
+    }
+}
+
+
+/*****************/
+/* ACCESSIBILITY */
+/*****************/
+/* Provide a link which skips straight to the content bypassing the sidebar &
+   metadata block; this link is positioned off-screen until <Tab>-navigated to,
+   which focuses it, highlighting it in a big red block in the upper-left corner.
+   Implementation & rationale from https://webaim.org/techniques/skipnav/
+   Further background: https://www.w3.org/TR/WCAG20-TECHS/G1.html
+ */
+#skip-to-content-link  {
+    padding: 0.3em 0.75em 0.4em 0.65em;
+    position: absolute;
+    top: -2.375em;
+    left: 0;
+    font-family: var(--GW-sans-serif-font-stack);
+    color: var(--GW-skip-to-content-text-color);
+    background-color: var(--GW-skip-to-content-background-color);
+    border-color: var(--GW-skip-to-content-border-color);
+    border-style: double;
+    border-width: 0 3px 3px 0;
+    outline: none;
+    z-index: 10001;
+    transition:
+        top 1s ease-out;
+}
+#skip-to-content-link:focus {
+    top: 0;
+    transition:
+        top 0.1s ease-in;
+}
+
+
+/***********/
+/* CONSOLE */
+/***********/
+
+#console.hidden {
+    bottom: calc(-1 * var(--GW-console-view-height));
+    opacity: 0;
+}
+
+
+/*******************************/
+/* PAGE-SPECIFIC MODIFICATIONS */
+/*******************************/
+
+/*=--------=*/
+/*= /index =*/
+/*=--------=*/
+
+/*  On the index page, we hide article-related formatting, begging, to make it
+    more compact & classy.
+ */
+body.index header,
+body.index #TOC,
+body.index #sidebar a.patreon {
+    display: none;
+}
+
+body.index article,
+body.index #markdownBody {
+	margin-top: 0;
+}
+
+/***********/
+/*	Nav bar.
+ */
+
+/*  No index self-link. */
+body.index #sidebar a#logo {
+    pointer-events: none;
+}
+
+/*  Special nav link styling on /index. */
+@media all and (min-width: 650px) {
+    body.index #sidebar a {
+        color: var(--GW-nav-header-link-hover-color);
+    }
+    body.index #sidebar a:hover {
+        color: var(--GW-nav-header-link-color);
+    }
+}
+@media all and (min-width: 1180px) {
+    body.index #sidebar a#logo {
+        opacity: 1.0;
+    }
+}
+
+/*****************/
+/*  Column layout.
+ */
+
+/* Suppress bonus section in single/double-column layout */
+body.index #markdownBody #notable {
+    display: none;
+}
+@media only screen and (min-width: 961px) {
+    body.index #markdownBody {
+        display: grid;
+        grid-row-gap: 0.5em;
+    }
+    @media only screen and (max-width: 1040px) {
+        body.index #markdownBody {
+            grid-template-columns: 1fr;
+        }
+        body.index #markdownBody section > ul {
+            column-count: 2;
+            column-gap: 3em;
+        }
+        body.index #markdownBody section > ul li {
+            break-inside: avoid;
+        }
+    }
+    @media only screen and (min-width: 1041px) {
+        body.index #markdownBody {
+			grid-template-columns: 1fr 1fr;
+	        grid-column-gap: 2em;
+        }
+		body.index #markdownBody .abstract,
+		body.index #markdownBody hr {
+			grid-column-start: 1;
+			grid-column-end: -1;
+		}
+    }
+	/*  On sufficiently-wide screens, we can get 3 columns in nicely; to preserve
+		the initial row being ‘meta’ blocks, we leave #notable visible
+		(for a newest/popular/notable triplet)
+	 */
+	@media only screen and (min-width: 1761px) {
+		body.index #markdownBody {
+			grid-template-columns: 45ch 45ch 45ch;
+			margin-left: -20ch;
+		}
+		body.index #markdownBody #notable {
+			display: block;
+		}
+		body.index #markdownBody .abstract {
+			max-width: 935px;
+			margin-left: 20ch;
+		}
+	}
+}
+
+/*****************/
+/*	Link sections.
+ */
+
+/*	Headings.
+ */
+body.index #markdownBody section h1 {
+    font-size: 1.5em;
+    line-height: 1.125;
+    text-align: left;
+    font-weight: bold;
+    margin-left: 0;
+    padding: 0;
+    border-bottom: 1px dotted currentColor;
+}
+/*  No pilcrows.
+ */
+body.index #markdownBody section h1 a::after {
+    display: none;
+}
+
+/*  Link lists.
+ */
+body.index #markdownBody section ul {
+	--list-left-padding: 1.375em;
+	--text-alignment: left;
+    --list-bullet: var(--GW-image-single-white-star-svg);
+    --list-bullet-opacity: 0.85;
+}
+body.index #markdownBody section ul ul {
+    --list-bullet: var(--GW-image-single-white-star-rotated-svg);
+    --list-bullet-opacity: 0.85;
+}
+
+@media only screen and (max-width: 649px) {
+    body.index #markdownBody section ul p {
+		margin-bottom: 0.15em;
+        line-height: 1.65;
+        overflow-wrap: break-word;
+    }
+	body.index #markdownBody section ul li::before {
+		top: 0.1em;
+	}
+}
+
+/**********************************/
+/*	Miscellaneous things on /index.
+ */
+
+/*	For desktop users, we hide the horizontal rulers on the /index page as they 
+	are unnecessary given the flowing columns; for mobile users, we’ll separate 
+	sections by rulers because they only get a single very long column to scroll 
+	through, which lacks a sense of hierarchy/chunking. However, desktop users 
+	still get the initial <hr> inserted by sed to divide the two blocks of 
+	New/Popular/Notable from all-topics sections (which has no class set on it).
+ */
+@media all and (min-width: 650px) {
+/*  Horizontal ruler on the home page.
+    */
+    body.index div[class^='horizontal-rule'] {
+        display: none;
+    }
+}
+
+/*  Back-to-top link on home page.
+    */
+@media only screen and (min-width: 1761px) {
+    body.index #back-to-top {
+        left: calc((100% - 1430px - 50px)/2);
+    }
+}
+
+
+/*********************/
+/* SPECIAL OCCASIONS */
+/*********************/
+
+/*=-----------=*/
+/*= Halloween =*/
+/*=-----------=*/
+
+body.special-halloween-dark {
+    --GW-blood-red: #b00;
+    --GW-blood-red-dried: #700;
+    --GW-blood-red-arterial: #e00;
+
+    --GW-sidebar-horizontal-rule-color: var(--GW-blood-red);
+
+    --GW-TOC-border-color: var(--GW-blood-red-dried);
+    --GW-abstract-border-color: var(--GW-blood-red-dried);
+
+    --GW-pre-element-border-color: var(--GW-blood-red-dried);
+
+    --GW-epigraph-quotation-mark-color: var(--GW-blood-red-dried);
+
+    --GW-H1-border-color: var(--GW-blood-red);
+    --GW-H2-border-color: var(--GW-blood-red);
+
+    --GW-drop-caps-yinit-color: var(--GW-blood-red);
+    --GW-drop-caps-yinit-text-shadow-color: var(--GW-blood-red);
+    --GW-drop-caps-de-zs-color: var(--GW-blood-red);
+    --GW-drop-caps-cheshire-color: var(--GW-blood-red);
+    --GW-drop-caps-kanzlei-color: var(--GW-blood-red);
+
+    --GW-figure-outline-color: var(--GW-blood-red-dried);
+    --GW-figure-caption-outline-color: var(--GW-blood-red);
+
+    --GW-footnotes-section-top-rule-color: var(--GW-blood-red-dried);
+    --GW-footnote-border-color: var(--GW-blood-red-arterial);
+    --GW-sidenote-highlight-box-shadow-color: var(--GW-blood-red-arterial);
+    --GW-footnote-backlink-border-color: var(--GW-blood-red);
+
+    --GW-sidenote-self-link-border-color: var(--GW-blood-red-arterial);
+    --GW-sidenote-border-color: var(--GW-blood-red-arterial);
+
+    --GW-math-block-scrollbar-border-color: var(--GW-blood-red);
+
+    --GW-page-toolbar-border-color: var(--GW-blood-red-dried);
+
+    --GW-back-to-top-link-color: var(--GW-blood-red-dried);
+
+    --GW-body-link-hover-color: var(--GW-blood-red-arterial);
+
+    --GW-highlighted-link-outline-color: var(--GW-blood-red);
+}
+
+body.special-halloween-dark blockquote {
+    --GW-blockquote-border-color: var(--GW-blood-red-dried);
+}
+
+body.special-halloween-dark #logo {
+    color: var(--GW-blood-red);
+}
+
+body.special-halloween-dark #navigation a {
+    color: var(--GW-blood-red);
+}
+
+body.special-halloween-dark h1,
+body.special-halloween-dark h2,
+body.special-halloween-dark h3,
+body.special-halloween-dark h4,
+body.special-halloween-dark h5,
+body.special-halloween-dark h6 {
+    --GW-body-text-color: var(--GW-blood-red);
+    --GW-body-link-color: var(--GW-blood-red);
+
+    color: var(--GW-body-text-color);
+}

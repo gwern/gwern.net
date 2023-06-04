@@ -131,13 +131,13 @@ ImageFocus = {
 		ImageFocus.galleryImagesSelector = suffixedSelector(ImageFocus.contentImagesSelector, ".gallery-image");
 
         //  Add handler to set up events for images in injected content.
-        GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", ImageFocus.processImagesOnContentInject = (info) => {
+        addContentInjectHandler(ImageFocus.processImagesOnContentInject = (eventInfo) => {
             GWLog("ImageFocus.processImagesOnContentInject", "image-focus.js", 2);
 
-            ImageFocus.processImagesWithin(info.container);
+            ImageFocus.processImagesWithin(eventInfo.container);
 
 			//	If this content is (or is being loaded into) the main page...
-			if (info.document == document) {
+			if (eventInfo.document == document) {
 				//  Count how many images there are in the page, and set the “… of X” label to that.
 				ImageFocus.overlay.querySelector(".image-number").dataset.numberOfImages = document.querySelectorAll(ImageFocus.galleryImagesSelector).length;
 
@@ -148,10 +148,10 @@ ImageFocus = {
 			//	Fire targets-processed event.
 			GW.notificationCenter.fireEvent("ImageFocus.imagesDidProcessOnContentInject", {
 				source: "ImageFocus.processImagesOnContentInject",
-				container: info.container,
-				document: info.document
+				container: eventInfo.container,
+				document: eventInfo.document
 			});
-        }, { phase: "eventListeners" });
+        }, "eventListeners");
 
 		//	Add handler to focus image on hashchange event.
 		GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", (info) => {

@@ -33,13 +33,13 @@ function observeInjectedElementsInDocument(doc) {
 			return;
 
 		let doTrigger = (node, f) => {
-			node.dataset.uuid = null;
+			delete GW.elementInjectTriggers[node.dataset.uuid];
 			f(node);
-			delete GW.elementInjectTriggers[uuid];
+			node.dataset.uuid = null;
 		};
 
 		for (mutationRecord of mutationsList) {
-			for ([ uuid, f ] of Object.entries(GW.elementInjectTriggers)) {
+			for (let [ uuid, f ] of Object.entries(GW.elementInjectTriggers)) {
 				for (node of mutationRecord.addedNodes) {
 					if (node instanceof HTMLElement) {
 						if (node.dataset.uuid == uuid) {
@@ -151,31 +151,6 @@ function versionedAssetURL(pathname) {
     return new URL(  location.origin
                    + pathname
                    + versionString);
-}
-
-
-/*************/
-/* DOCUMENTS */
-/*************/
-
-/********************************************************/
-/*  Return the location (URL) associated with a document.
-    (Document|DocumentFragment) => URL
- */
-function baseLocationForDocument(doc) {
-    if (doc == document) {
-        return new URL(location.href);
-    } else if (   doc.body instanceof Element
-               && doc.body.classList.contains("popframe-body")) {
-        let spawningTarget = (Extracts.popFrameProvider == Popups
-                              ? doc.body.popup.spawningTarget
-                              : doc.body.popin.spawningTarget);
-        return new URL(spawningTarget.href);
-    } else if (doc.baseLocation) {
-        return new URL(doc.baseLocation.href);
-    } else {
-        return null;
-    }
 }
 
 
@@ -626,7 +601,11 @@ function updatePageTOC(newContent, needsProcessing = false) {
             let entryText = section.id == "footnotes"
                             ? "Footnotes"
                             : section.firstElementChild.querySelector("a").innerHTML;
-            entry.innerHTML = `<a id='toc-${section.id}' href='#${fixedEncodeURIComponent(section.id)}'>${entryText}</a>`;
+            entry.innerHTML = `<a 
+            					class='link-self decorate-not'
+            					id='toc-${section.id}' 
+            					href='#${fixedEncodeURIComponent(section.id)}'
+            						>${entryText}</a>`;
 
             //  Get or construct the <ul> element.
             let subList = Array.from(parentTOCElement.childNodes).find(child => child.tagName == "UL");

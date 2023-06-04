@@ -8,7 +8,7 @@ $inlined_head_file_path = "{$static_root}/include/inlined-head.html";
 $inlined_foot_file_path = "{$static_root}/include/inlined-foot.html";
 
 $replaced_asset_link_patterns = [
-	'/(?:<noscript>)?(<link .+? href="(\/static\/css\/.+?)".*?>)(?:<\/noscript>)?/'
+	'/(?:<noscript>)?(<(?:link|script) .*? ?(?:href|src)="(\/static\/(?:css|js)\/.+?)".*?>)(?:<\/noscript>)?/'
 ];
 
 ## If the SSI includes aren’t already built, build them.
@@ -27,16 +27,22 @@ file_put_contents($inlined_foot_file_path,
 											global $versioned_asset_pathnames;
 											$versioned_asset_pathnames[] = $m[2];
 
-											return "<noscript>{$m[1]}</noscript>";
+											return (str_contains($m[2], ".css")
+													? "<noscript>{$m[1]}</noscript>"
+													: $m[1]);
 										}, 
 										file_get_contents($inlined_foot_file_path)));
 
 ## Append preload links to <head> includes file.
 file_put_contents($inlined_head_file_path,
-				  trim(preg_replace('/<link rel="preload" .+? as="style" .+?>\n/', '', file_get_contents($inlined_head_file_path)))
+				  trim(preg_replace('/<link rel="preload" .+? as=".+?" .+?>\n/', '', file_get_contents($inlined_head_file_path)))
 				  . "\n"
 				  . implode("\n", array_map(function ($pathname) {
-				  		return "<link rel=\"preload\" href=\"{$pathname}\" as=\"style\" onload=\"this.onload = null; this.rel = 'stylesheet'\">";
+				  		$as = str_contains($pathname, ".css") ? "style" : "script";
+				  		$onload = str_contains($pathname, ".css")
+				  				  ? "this.onload = null; this.rel = 'stylesheet'"
+				  				  : "";
+				  		return "<link rel=\"preload\" href=\"{$pathname}\" as=\"{$as}\" onload=\"{$onload}\">";
 				  	}, $versioned_asset_pathnames))
 				  . "\n");
 

@@ -31,7 +31,6 @@ $static_root = __DIR__ . "/..";
 
 $css_dir = "{$static_root}/css";
 $font_dir = "{$static_root}/font";
-$include_dir = "{$static_root}/include";
 
 ## ACTION
 
@@ -42,10 +41,7 @@ $spec_file = ob_get_contents();
 ob_end_clean();
 
 $out = [ '@charset "UTF-8";' ];
-$inlined = [ 
-	'<!-- Full font CSS is loaded in footer. Here, inline only the minimal set of font CSS needed for initial screen, for speed: -->',
-	'<style id="inlined-fonts">'
-];
+$initial = [ '@charset "UTF-8";' ];
 
 $entries_to_inline = [ ];
 
@@ -69,22 +65,23 @@ foreach ($spec_blocks as $spec_block) {
 		if (($entry['italic'] ?? null) !== '') {
 			$constructed_rule = construct_rule($entry);
 			if (should_inline($entry))
-				$inlined[] = $constructed_rule;
+				$initial[] = "\n" . $constructed_rule;
 			$out[] = $constructed_rule;
 		}
 		if (($entry['italic'] ?? null) !== null) {
 			$constructed_rule = construct_rule($entry, true);
 			if (should_inline($entry, true))
-				$inlined[] = $constructed_rule;
+				$initial[] = $constructed_rule;
 			$out[] = $constructed_rule;
 		}
 	}
 }
 
-$inlined[] = '</style>';
+$out = implode("\n", $out) . "\n";
+$initial = implode("\n", $initial) . "\n";
 
-file_put_contents("{$css_dir}/fonts-GENERATED.css", implode("\n", $out));
-file_put_contents("{$include_dir}/inlined-fonts.html", implode("\n", $inlined));
+file_put_contents("{$css_dir}/fonts-GENERATED.css", $out);
+file_put_contents("{$css_dir}/initial-fonts-GENERATED.css", $initial);
 
 ## FUNCTIONS
 

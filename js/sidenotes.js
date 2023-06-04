@@ -30,9 +30,8 @@ Sidenotes = {
 		".width-full img",
 		".width-full video",
 		".width-full .caption-wrapper",
-		".table-wrapper.width-full",
-		".table-wrapper .width-full",
-		".sourceCode.width-full",
+		".width-full table",
+		".width-full pre",
 		".marginnote"
 	],
 
@@ -592,6 +591,9 @@ Sidenotes = { ...Sidenotes,
 				"textContent": noteNumber 
 			}));
 
+			//	Remove footnote self-link.
+			sidenote.querySelector(".footnote-self-link")?.remove();
+
 			//	Add listener to update sidenote positions when media loads.
 			sidenote.querySelectorAll("figure img, figure video").forEach(mediaElement => {
 				mediaElement.addEventListener("load", (event) => {
@@ -744,18 +746,12 @@ Sidenotes = { ...Sidenotes,
 			when the viewport width changes. Also add event handler to update
 			margin note style in transcluded content and pop-frames.
 			*/
-		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
+		addContentLoadHandler((info) => {
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
 				Sidenotes.setMarginNoteStyle(info);
 			});
-		}, { 
-			phase: "rewrite",
-			condition: (info) => (info.container == document.body),
-			once: true
-		});
-		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-			Sidenotes.setMarginNoteStyle(info);
-		});
+		}, "rewrite", (info) => info.container == document.body, true);
+		addContentInjectHandler(Sidenotes.setMarginNoteStyle, ">rewrite");
 
 		/*	When an anchor link is clicked that sets the hash to its existing
 			value, weird things happen. In particular, weird things happen with
@@ -763,23 +759,20 @@ Sidenotes = { ...Sidenotes,
 			properly when that happens. (No ‘hashchange’ event is fired in this
 			case, so we cannot depend on the ‘GW.hashDidChange’ event handler.)
 		 */
-		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+		addContentInjectHandler(Sidenotes.addFauxHashChangeEventsToNoteMetaLinks = (eventInfo) => {
 			let selector = [
 				"a.footnote-ref",
 				"a.sidenote-self-link",
 				".sidenote a.footnote-back"
 			].join(", ");
 
-			info.container.querySelectorAll(selector).forEach(link => {
+			eventInfo.container.querySelectorAll(selector).forEach(link => {
 				link.addActivateEvent((event) => {
 					if (link.hash == location.hash)
 						Sidenotes.updateStateAfterHashChange();
 				});
 			});
-		}, {
-			phase: "eventListeners",
-			condition: (info) => (info.document == document)
-		});
+		}, "eventListeners", (info) => info.document == document);
 
 		/*  In footnote mode (ie. on viewports too narrow to support sidenotes),
 			footnote reference links (i.e., citations) should point down to 
@@ -803,16 +796,13 @@ Sidenotes = { ...Sidenotes,
 			});
 		});
 
-		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Sidenotes.rewriteCitationTargetsInLoadedContent = (info) => {
+		addContentLoadHandler(Sidenotes.rewriteCitationTargetsInLoadedContent = (eventInfo) => {
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
 				if (citation.pathname == location.pathname)
 					citation.href = (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches ? "#sn" : "#fn") 
 									+ Notes.noteNumberFromHash(citation.hash);
 			});
-		}, { 
-			phase: "rewrite",
-			condition: (info) => (info.document == document) 
-		});
+		}, "rewrite", (info) => info.document == document);
 
 		/*	What happens if the page loads with a URL hash that points to a 
 			sidenote or footnote or citation? We need to scroll appropriately,
@@ -913,8 +903,8 @@ Sidenotes = { ...Sidenotes,
 			/*	Add handler to bind more sidenote-slide events if more 
 				citations are injected (e.g., in a popup).
 			 */
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents = (info) => {
-				info.container.querySelectorAll("a.footnote-ref").forEach(citation => {
+			addContentInjectHandler(Sidenotes.bindAdditionalSidenoteSlideEvents = (eventInfo) => {
+				eventInfo.container.querySelectorAll("a.footnote-ref").forEach(citation => {
 					if (citation.pathname != location.pathname)
 						return;
 
@@ -926,7 +916,7 @@ Sidenotes = { ...Sidenotes,
 						});
 					});
 				});
-			}, { condition: (info) => (info.document != document) });
+			}, "eventListeners", (info) => info.document != document);
 
 			/*	Add a scroll listener to un-slide all sidenotes on scroll.
 			 */
@@ -975,14 +965,12 @@ Sidenotes = { ...Sidenotes,
 		/*  Construct the sidenotes whenever content is injected into the main
 			page (including the initial page load).
 			*/
-		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", Sidenotes.constructSidenotesWhenMainPageContentDidInject = (info) => {
+		addContentInjectHandler(Sidenotes.constructSidenotesWhenMainPageContentDidInject = (eventInfo) => {
 			GWLog("Sidenotes.constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
 
-			Sidenotes.constructSidenotes(info);
-		}, { 
-			condition: (info) => (   info.document == document
-								  && info.source != "Sidenotes.constructSidenotes")
-		});
+			Sidenotes.constructSidenotes(eventInfo);
+		}, "rewrite", (info) => (   info.document == document
+								 && info.source != "Sidenotes.constructSidenotes"));
 
 		GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");
 	},

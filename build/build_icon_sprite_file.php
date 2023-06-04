@@ -75,10 +75,11 @@ file_put_contents($icon_file_path, implode("\n", $out) . "\n");
 
 ## Append preload link to <head> includes file.
 $icon_file_pathname = '/static/img/icon/icons.svg';
+$file_mod_time = filemtime($icon_file_path);
 file_put_contents($inlined_head_file_path,
 				  trim(preg_replace('/<link rel="preload" href=".+?\/icons.svg" .+?>/', '', file_get_contents($inlined_head_file_path)))
 				  . "\n"
-				  . "<link rel=\"preload\" href=\"{$icon_file_pathname}\" as=\"image\">"
+				  . "<link rel=\"preload\" href=\"{$icon_file_pathname}?v={$file_mod_time}\" as=\"image\">"
 				  . "\n");
 
 ?>

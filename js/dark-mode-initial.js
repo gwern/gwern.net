@@ -22,7 +22,7 @@ DarkMode = {
 		GWLog("DarkMode.setMode", "dark-mode.js", 1);
 
 		//	The style block should be inlined (and already loaded).
-		let darkModeStyles = document.querySelector("#inlined-dark-mode-styles");
+		let darkModeStyles = document.querySelector("#inlined-styles-colors-dark");
 		if (darkModeStyles == null)
 			return;
 

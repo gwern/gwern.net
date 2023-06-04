@@ -1,0 +1,62 @@
+@charset "UTF-8";
+
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 400;
+	font-style: normal;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Regular.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 400;
+	font-style: italic;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-RegularItalic.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 600;
+	font-style: normal;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Semibold.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+
+@font-face {
+	font-family: 'Source Serif Pro';
+	font-weight: 700;
+	font-style: normal;
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Bold.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-weight: 400;
+	font-style: normal;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Regular.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-weight: 400;
+	font-style: italic;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-RegularItalic.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+
+@font-face {
+	font-family: 'Source Sans Pro';
+	font-weight: 700;
+	font-style: normal;
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Bold.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}

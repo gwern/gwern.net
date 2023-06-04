@@ -1579,9 +1579,7 @@ Popups = {
 			GWLog("Popups.popupSpawnTimer fired", "popups.js", 2);
 
 			//	Spawn the popup.
-			$(() => {
-				Popups.spawnPopup(target, { x: event.clientX, y: event.clientY });
-			});
+			Popups.spawnPopup(target, { x: event.clientX, y: event.clientY });
 		}, popupTriggerDelay);
 	},
 
