@@ -7390,9 +7390,9 @@ Transclude.templates = {
 		   href="<{titleLinkHref}>"
 		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
 		   <{titleLinkIconMetadata}>
-			   ><{fullTitleHTML}></a>\
-		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\
-		<[IF abstract & ![ originalURL | authorDateAux ] ]>:<[IFEND]>\
+			   ><{fullTitleHTML}></a>\\
+		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
+		<[IF abstract & ![ originalURL | authorDateAux ] ]>:<[IFEND]>\\
 
 		<[IF originalURL]>
 		<span class="originalURL">[<a
@@ -7401,9 +7401,9 @@ Transclude.templates = {
 			 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
 			 alt="Original URL for this archived link; may be broken."
 				 ><{originalURLText}></a>]</span>
-		<[IFEND]>\
+		<[IFEND]>\\
 
-		<[IF authorDateAux]><[IF2 author | date]>,\ <[IF2END]><{authorDateAux}><[IF2 abstract]>:<[IF2END]><[IFEND]>
+		<[IF authorDateAux]><[IF2 author | date]>,\\ <[IF2END]><{authorDateAux}><[IF2 abstract]>:<[IF2END]><[IFEND]>
 	</p>
 	<[IF abstract]>
 	<blockquote class="data-field annotation-abstract"><{abstract}></blockquote>
@@ -7417,8 +7417,8 @@ Transclude.templates = {
 		   href="<{titleLinkHref}>"
 		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
 		   <{titleLinkIconMetadata}>
-			   ><{titleHTML}></a>\
-		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\
+			   ><{titleHTML}></a>\\
+		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
 
 		<[IF originalURL]>
 		<span class="originalURL">[<a
@@ -7444,8 +7444,8 @@ Transclude.templates = {
 		   href="<{titleLinkHref}>"
 		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
 		   <{titleLinkIconMetadata}>
-			   ><{titleHTML}></a>\
-		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\
+			   ><{titleHTML}></a>\\
+		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
 
 		<[IF originalURL]>
 		<span class="originalURL">[<a

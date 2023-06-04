@@ -414,6 +414,7 @@ article {
 }
 
 .TOC {
+	--text-indent: 0em;
 	--text-alignment: left;
 	--text-hyphenation: none;
 

@@ -36,7 +36,12 @@ function inflictABTestClassesUponContainer(container, conditions) {
 addContentInjectHandler(GW.contentInjectHandlers.inflictABTestClasses = (eventInfo) => {
     GWLog("inflictABTestClasses", "rewrite.js", 1);
 
-	inflictABTestClassesUponContainer(eventInfo.container)
+	if (eventInfo.container.matches(".markdownBody"))
+		inflictABTestClassesUponContainer(eventInfo.container);
+	else if (eventInfo.document.body?.matches(".markdownBody"))
+		inflictABTestClassesUponContainer(eventInfo.document.body);
+	else
+		inflictABTestClassesUponContainer(eventInfo.container);
 }, ">rewrite");
 
 
@@ -75,7 +80,7 @@ GW.layout = {
 		".table-wrapper",
 		".math.block",
 		".admonition",
-		".annotation"
+		".TOC"
 	],
 
 	//	Wrappers are transparent at the top and bottom.
@@ -107,7 +112,7 @@ GW.layout = {
 	//	Do not apply block layout classes within these containers.
 	blockLayoutExclusionSelector: [
 		"#page-metadata",
-		".TOC"
+		".TOC > *"
 	].join(", "),
 
 	blockSpacing: [
@@ -121,10 +126,17 @@ GW.layout = {
 		[ ".heading + section",			 5, false ],
 		[ ".heading + *",				 4, false ],
 
+		[ ".annotation p.data-field.title + p.data-field",	
+										 1, false ],
+		[ ".annotation p.data-field.title + .data-field.annotation-abstract",
+										 3, false ],
+
 		[ "p.footnote-back-block",		 1, false ],
 		[ "p.first-graf",				10 ],
 		[ "p.list-heading",				10 ],
 		[ "p",							(block) => (indentModeActive(block) ? 0 : 10) ],
+
+		[ ".TOC",						10 ],
 
 		[ ".collapse-block",			10 ],
 
@@ -156,8 +168,6 @@ GW.layout = {
 		[ ".math.block",				10 ],
 
 		[ ".admonition",				10 ],
-
-		[ ".annotation",				10 ]
 	],
 
 	blockSpacingAdjustments: [
@@ -181,8 +191,10 @@ GW.layout = {
 			".list-heading + .in-list"
 			],								(bsm, block) => bsm - 2 ],
 
-		[ ".list-heading + .aux-links-list p",
-											(bsm, block) => bsm - 2 ],
+		[ ".aux-links-append p + .aux-links-append p.list-heading",
+											(bsm, block) => bsm + 2 ],
+
+		[ ".TOC + .collapse-block",		 	(bsm, block) => bsm - 4 ],
 	]
 };
 
@@ -512,7 +524,7 @@ function elementSummaryString(element) {
 /********************************************************/
 /*	Returns block spacing multiplier for the given block.
  */
-function getBlockSpacingMultiplier(block) {
+function getBlockSpacingMultiplier(block, debug = false) {
 	let predicateFromSelector = (selector) => {
 		let parts = selector.match(/^(.+) \+ (.+)$/);
 		if (parts) {
@@ -541,16 +553,23 @@ function getBlockSpacingMultiplier(block) {
 		return (predicate(block) == true);
 	};
 
+	if (debug)
+		console.log(block);
 	for (let [ predicate, result, adjustable = true ] of GW.layout.blockSpacing) {
 		if (predicateMatches(predicate, block)) {
+			if (debug)
+				console.log(predicate);
 			let bsm = (typeof result == "function")
 					  ? result(block)
 					  : result;
 
 			if (adjustable) {
 				for (let [ predicate, transform ] of GW.layout.blockSpacingAdjustments)
-					if (predicateMatches(predicate, block))
+					if (predicateMatches(predicate, block)) {
+						if (debug)
+							console.log(predicate);
 						bsm = Math.max(0, transform(bsm, block));
+					}
 			}
 
 			return bsm;
@@ -655,40 +674,47 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 		//	Apply special paragraph classes.
 		if (block.matches("p") == true) {
 			//	Empty paragraphs (the .empty-graf class; not displayed).
-			let empty = isNodeEmpty(block);
-			block.classList.toggle("empty-graf", empty);
-			if (empty)
+			let emptyGraf = isNodeEmpty(block);
+			block.classList.toggle("empty-graf", emptyGraf);
+			if (emptyGraf)
 				return;
 
-			/*	Paragraphs preceded directly by other paragraphs (not in lists)
-				(the .first-graf class).
+			/*	Paragraphs not preceded directly by other paragraphs 
+				(not in lists) (the .first-graf class).
 			 */
+			let firstGraf = false;
+			let previousBlockSelector = [
+				":not(p)",
+				".text-center",
+				".page-description-annotation",
+				".annotation .data-field"
+			].join(", ");
 			let strictPreviousBlock = previousBlockOf(block, { 
 				notWrapperElements: [ "li", ".list" ], 
 				notHalfWrapperElements: [ "section" ] 
 			});
-			if (   strictPreviousBlock?.matches("p") != true
-				|| block.matches(".text-center") == true
-				|| strictPreviousBlock?.matches(".text-center") == true
-				|| strictPreviousBlock?.matches(".page-description-annotation") == true) {
-				block.classList.toggle("first-graf", true);
-			}
+			if (   strictPreviousBlock == null
+				|| strictPreviousBlock.matches(previousBlockSelector) == true)
+				firstGraf = true;
+			block.classList.toggle("first-graf", firstGraf);
 			
 			/*	Colon-terminated paragraphs followed by lists 
 				(the .list-heading class).
 			 */
+			let listHeading = false;
 			let strictNextBlock = nextBlockOf(block, { 
 				alsoBlockElements: [ ".list" ], 
 				notWrapperElements: [ ".list" ]
 			});
 			if (   strictNextBlock?.matches(".list")
-				&& block.textContent.trim().endsWith(":")) {
-				block.classList.toggle("list-heading", true);
-			}
+				&& block.textContent.trim().endsWith(":"))
+				listHeading = true;
+			block.classList.toggle("list-heading", listHeading);
 
 			/*	Introductory paragraphs of documents or self-contained parts
 				of documents (the .intro-graf class).
 			 */
+			let introGraf = false;
 			if (   block.matches(".text-center") != true
 				&& block.closest("#footer") == null
 				&& block.firstElementChild?.matches("span.smallcaps") != true
@@ -702,8 +728,9 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 					|| (   isFirstWithin(block, "section", options)
 						&& isFirstWithin(blockContainerOf(block), "#markdownBody"))
 					|| previousBlockOf(block, options)?.matches(".abstract blockquote, #page-metadata"))
-					block.classList.toggle("intro-graf", true);
+					introGraf = true;
 			}
+			block.classList.toggle("intro-graf", introGraf);
 		}
 
 		//	Designate blocks in lists (the .in-list class).
@@ -750,10 +777,8 @@ addLayoutProcessor(GW.layout.applyBlockSpacingInContainer = (container) => {
 		let firstBlockWithin = firstBlockOf(listItem);
 		let bsm = firstBlockWithin?.style.getPropertyValue("--bsm") ?? 0;
 		if (bsm) {
-			if (listItem.dataset.bsmMod) {
+			if (listItem.dataset.bsmMod)
 				bsm = "" + (parseInt(bsm) + parseInt(listItem.dataset.bsmMod));
-				delete listItem.dataset.bsmMod;
-			}
 
 			/*	We must propagate the spacing of the first block within the 
 				list item to the list item itself.
@@ -762,6 +787,8 @@ addLayoutProcessor(GW.layout.applyBlockSpacingInContainer = (container) => {
 			listItem.style.setProperty("--bsm", bsm);
 			firstBlockWithin.style.setProperty("--bsm", 0);
 		}
+		if (listItem.dataset.bsmMod)
+			delete listItem.dataset.bsmMod;
 	});
 });
 

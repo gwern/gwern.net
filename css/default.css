@@ -872,6 +872,26 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
     border-top: 1px solid var(--GW-TOC-border-color);
 }
 
+.annotation .collapse.aux-links-container .collapse-content-wrapper {
+    padding: 0.5em 0 0.5em 2px;
+}
+.annotation .collapse.expanded-not.aux-links-container .collapse-content-wrapper {
+	--base-block-spacing: 0.15em;
+}
+
+/****************************************************/
+/*	Collapses in directory index link bibliographies.
+ */
+
+.collapse.tag-index-link-bibliography-block.expanded-not {
+    padding-left: 0.75em;
+    margin-left: -1px;
+}
+
+.collapse.tag-index-link-bibliography-block .collapse-content-wrapper {
+	padding: 0.5em 0;
+}
+
 /*************************/
 /*  Per-section backlinks.
  */
@@ -885,6 +905,9 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 
 .collapse.section-backlinks-container .collapse-content-wrapper {
 	padding: 0.5em 0 0.75em 0;
+}
+.collapse.expanded-not.section-backlinks-container .collapse-content-wrapper {
+	--base-block-spacing: 0.15em;
 }
 
 .collapse.section-backlinks-container.expanded-not > .disclosure-button .part::before {
@@ -2893,41 +2916,64 @@ section.footnotes .footnote-self-link {
 /* ANNOTATIONS */
 /***************/
 
+/***************/
 /*  Data fields.
-    */
-.annotation .data-field,
-.annotation-partial .data-field {
+ */
+
+.annotation p.data-field,
+.annotation-partial p.data-field {
 	--text-alignment: left;
 	--text-indent: 0em;
 }
-.annotation .data-field + .data-field,
-.annotation-partial .data-field + .data-field {
-    margin-top: 0.25em;
+
+.annotation span.data-field,
+.annotation-partial span.data-field {
+	--text-hyphenation: none;
 }
 
+/*	Title link.
+ */
 .annotation .data-field.title .title-link,
 .annotation-partial .data-field.title .title-link {
     font-weight: bold;
 }
-.annotation .data-field.title + p {
-    text-indent: 0;
-}
 
+/*	Original URL.
+ */
 .annotation .originalURL,
 .annotation-partial .originalURL {
     font-variant-caps: small-caps;
     margin-left: 0.25em;
 }
-.annotation div.data-field.annotation-abstract {
-    margin-top: 0.5em;
+
+/*  Italicize link tags in popups/indexes similar to the page metadata block’s
+    tags, for consistency.
+ */
+.annotation .link-tags {
+    font-style: italic;
+
+    /*	Tags are enclosed in ()s, but as links with the text-shadow trick, the 
+    	italic slant leads to the usual ‘chomp’ without additional margin.
+     */
+    margin-left: 0.1em;
 }
-.annotation blockquote.data-field.annotation-abstract {
-    margin-top: 1em;
-}
+
+/*	Annotation abstract (body).
+ */
 .annotation .data-field.annotation-abstract:empty {
     display: none;
 }
-.annotation .data-field.annotation-abstract:not(blockquote) > .page-description-annotation::before {
+
+/*************************************/
+/*	Content (in annotation abstracts).
+ */
+
+/*	Page description in annotation abstract.
+ */
+.annotation .data-field.annotation-abstract .page-description-annotation {
+    font-style: italic;
+}
+.annotation .data-field.annotation-abstract .page-description-annotation:not(.first-block)::before {
     content: "";
     display: block;
     overflow: auto;
@@ -2940,6 +2986,7 @@ section.footnotes .footnote-self-link {
 .annotation figure {
     clear: both;
 }
+
 .annotation figure.float .image-wrapper {
     max-width: 100%;
 }
@@ -2948,13 +2995,41 @@ section.footnotes .footnote-self-link {
     display: flex;
 }
 
-.annotation .page-description-annotation {
-    font-style: italic;
-    margin-bottom: 0.5em;
+/*	TOCs in annotations.
+ */
+blockquote .TOC {
+    padding: 0.5em 0.5em 0.75em 0.75em;
+
+    /*  The following four properties are to prevent both overlap and
+        margin-collapse of the TOC when there’s a floated thumbnail figure
+        that juts down below the abstract text.
+     */
+    clear: both;
+    display: inline-block;
+    box-sizing: border-box;
+    width: 100%;
 }
 
+/*  “Aux links” in link bibliographies, directory indexes, and other transcluded
+    (rather than pop-framed) annotations.
+ */
+
+ol.link-bibliography-list-compact {
+    --list-left-padding: 2.25em;
+}
+ol.link-bibliography-list-compact > li::before {
+    font-family: var(--GW-monospaced-font-stack);
+}
+@media all and (max-width: 649px) {
+    ol.link-bibliography-list-compact {
+        --list-left-padding: 1.75em;
+    }
+}
+
+/*********************/
 /*  Wikipedia entries.
  */
+
 .annotation.wikipedia-entry .table-wrapper {
     margin: 1.5em 0 1.5em 0;
     clear: both;
@@ -3066,6 +3141,7 @@ section.footnotes .footnote-self-link {
     font-style: inherit;
 }
 
+/**********/
 /*  Tweets.
  */
 
@@ -3079,103 +3155,6 @@ section.footnotes .footnote-self-link {
 .local-document-transform.tweet figure {
     margin: 2em auto 0.1em auto;
     max-width: unset;
-}
-
-/*  “Aux links” (backlinks, similars, “see also”, etc.) section of annotations.
- */
-
-.annotation .aux-links-append {
-    margin-top: 0.5em;
-    padding-left: 2px;
-    padding-bottom: 0.125em;
-}
-
-.annotation .aux-links-append + .aux-links-append {
-    margin-top: 1.5em;
-}
-
-.annotation .TOC + .aux-links-container {
-    margin-top: 1em;
-}
-
-.annotation .aux-links-append > .columns > ul {
-    margin-top: 0.5em;
-    margin-bottom: 0.25em;
-}
-
-.annotation .aux-links-append > div > .columns:not(:first-child) {
-    margin-top: 1em;
-}
-
-.annotation .aux-links-append ul {
-    margin-bottom: 0.5em;
-}
-
-/*  “Aux links” in link bibliographies, directory indexes, and other transcluded
-    (rather than pop-framed) annotations.
- */
-
-ol.link-bibliography-list-compact {
-    --list-left-padding: 2.25em;
-}
-ol.link-bibliography-list-compact > li::before {
-    font-family: var(--GW-monospaced-font-stack);
-}
-@media all and (max-width: 649px) {
-    ol.link-bibliography-list-compact {
-        padding-left: 1.75em;
-    }
-}
-
-#link-bibliography > ol > li > p + p {
-    text-indent: 0;
-    margin-top: 0.5em;
-}
-
-.link-bibliography-list-compact li .annotation blockquote {
-    margin-bottom: 0.75em;
-}
-
-.tag-index-link-bibliography-block.expanded-not {
-    padding-left: 0.75em;
-    margin-left: -1px;
-}
-.tag-index-link-bibliography-block.expanded-not .link-bibliography-list-label {
-    margin-top: 0.375em;
-}
-
-/*  Italicize link tags in popups/indexes similar to the page metadata block’s
-    tags, for consistency.
- */
-.annotation .link-tags {
-    font-style: italic;
-
-    /*	Tags are enclosed in ()s, but as links with the text-shadow trick, the 
-    	italic slant leads to the usual ‘chomp’ without additional margin.
-     */
-    margin-left: 0.1em;
-}
-
-blockquote .TOC {
-    margin: 1.25em 0 0 0;
-    padding: 0.5em 0.5em 0.75em 0.75em;
-
-    /*  The following three properties are to prevent both overlap and
-        margin-collapse of the TOC when there’s a floated thumbnail figure
-        that juts down below the abstract text.
-     */
-    clear: both;
-    display: inline-block;
-    width: calc(100% - 1.25em);    /* Subtract side padding. */
-}
-
-span.link-tags a,
-span.aux-links a,
-span.backlinks a,
-span.similars a,
-span.link-bibliography a {
-    -webkit-hyphens: none;
-    hyphens: none;
 }
 
 
@@ -3518,12 +3497,13 @@ body.lorem div[class^='drop-cap'] {
 /* POP-FRAMES */
 /**************/
 
-.popframe .popframe-title-link::after {
-    display: none;
-}
+/*******************/
+/*	Pop-frame title.
+ */
 
-.popframe .popframe-title-link-archived::after {
-    content: none;
+.popframe .popframe-title .popframe-title-link::after,
+.popframe .popframe-title .popframe-title-link-archived::after {
+    display: none;
 }
 
 .popframe .popframe-title .separator {
@@ -3537,6 +3517,7 @@ body.lorem div[class^='drop-cap'] {
     background-color: inherit;
     font-size: 0.95em;
 }
+
 .popframe .popframe-title code + span {
     margin-left: 0.25em;
 }
