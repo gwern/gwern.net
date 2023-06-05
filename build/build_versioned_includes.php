@@ -27,7 +27,7 @@ require_once(__DIR__ . '/build_functions.php');
 $static_root = __DIR__ . '/..';
 
 $files = [
-	'inlined-foot'
+	'inlined-asset-links'
 ];
 
 foreach ($files as $file) {

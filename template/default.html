@@ -74,6 +74,10 @@
 
   <!-- Skip fancy css like drop-caps on index pages -->
   $if(index)$<body class="$safeURL$ indented justified">$else$<body class="$safeURL$ $cssExtension$ indented justified">$endif$
+    <!-- SSI: Inlined asset links -->
+    <!-- INLINED-ASSET-LINKS-BEGIN-->
+    <!--#include virtual="/static/include/inlined-asset-links.html" -->
+    <!-- INLINED-ASSET-LINKS-END -->
 
     <a id="skip-to-content-link" href="#markdownBody">Skip to main content</a>
 
@@ -160,10 +164,6 @@
 
       </article>
     </main>
-
-    <!-- SSI: Versioned external CSS/JS assets -->
-    <!-- INLINED-FOOT-BEGIN -->
-    <!--#include virtual="/static/include/inlined-foot.html" --><!-- INLINED-FOOT-END -->
 
     <!-- 2×2 A/B test of indentation vs newline, and justified vs not  -->
     <script id="justificationindentation-abtest-js">

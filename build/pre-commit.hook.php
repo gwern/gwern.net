@@ -6,12 +6,6 @@ $force = @$argv[1] == "--force";
 $build_dir = __DIR__;
 $static_dir = "{$build_dir}/..";
 
-## SSI includes.
-$ssi_includes = [
-	"{$static_dir}/include/inlined-head.html",
-	"{$static_dir}/include/inlined-foot.html"
-];
-
 ## Fonts and font CSS.
 $fonts_and_font_css = [
 	"{$static_dir}/font/font_spec.php"
@@ -108,23 +102,11 @@ if ($force || (`git diff-index --cached HEAD -- {$head_includes}`)) {
 $versioned_files = [
 	"{$static_dir}/css/style.css",
 	"{$static_dir}/js/script.js",
-	"{$static_dir}/template/inlined-foot-template.html"
+	"{$static_dir}/template/inlined-asset-links-template.html"
 ];
 $versioned_files = implode(" ", $versioned_files);
 if ($force || (`git diff-index --cached HEAD -- {$versioned_files}`)) {
 	require_once("{$build_dir}/build_versioned_includes.php");
-	`git add {$static_dir}/include/.`;
-}
-
-## Preloaded assets.
-$preloaded_assets = [
-	"{$static_dir}/css/style.css",
-	"{$static_dir}/template/inlined-foot-template.html"
-];
-$preloaded_assets = array_merge($preloaded_assets, $ssi_includes);
-$preloaded_assets = implode(" ", $preloaded_assets);
-if ($force || (`git diff-index --cached HEAD -- {$preloaded_assets}`)) {
-	require_once("{$build_dir}/build_asset_preload_links.php");
 	`git add {$static_dir}/include/.`;
 }
 
