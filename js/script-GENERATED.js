@@ -7525,8 +7525,7 @@ Extracts = {
             ".section-self-link",
             ".footnote-self-link",
             ".sidenote-self-link",
-            "[aria-hidden='true']",
-            "#footer-logo"
+            "[aria-hidden='true']"
         ].join(", "),
         excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
         //  See comment at Extracts.isLocalPageLink for info on this function.
@@ -13127,22 +13126,6 @@ addContentInjectHandler(GW.contentInjectHandlers.activateMathBlockButtons = (eve
 }, "eventListeners");
 
 
-/**********/
-/* FOOTER */
-/**********/
-
-/*******************************************/
-/*  Move the footer logo link to the bottom.
- */
-addContentLoadHandler(GW.contentLoadHandlers.rewriteFooterLogo = (eventInfo) => {
-    GWLog("rewriteFooterLogo", "rewrite.js", 1);
-
-    document.querySelector("article").appendChild(
-        newElement("DIV", { "id": "footer-logo-container" })).appendChild(
-        document.querySelector("#footer-logo"));
-}, "rewrite", (info) => info.container == document.body);
-
-
 /**********************************/
 /* BROKEN HTML STRUCTURE CHECKING */
 /**********************************/
@@ -16054,7 +16037,7 @@ ReaderMode = { ...ReaderMode,
 	 */
 	maskedLinksSelector: "p a, li a",
 
-	deactivateTriggerElementSelector: "#reader-mode-disable-when-here, #see-also, #external-links, #appendix, #appendices, #navigation, #footer, #footer-logo",
+	deactivateTriggerElementSelector: "#reader-mode-disable-when-here, #see-also, #external-links, #appendix, #appendices, #navigation, #footer, #footer-decoration-container",
 
 	showMaskedLinksDelay: 250,
 
