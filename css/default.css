@@ -62,6 +62,10 @@
     --GW-popins-popin-border-width: 3px;
     --GW-popins-popin-title-bar-height: calc(1rem * 16/9);
     --GW-popins-popin-footer-bar-height: calc(1rem * 16/9);
+
+	--GW-page-toolbar-collapse-duration: 0.25s;
+	--GW-page-toolbar-slow-collapse-duration: 1s;
+	--GW-page-toolbar-fade-after-collapse-duration: 0.25s;
 }
 @supports (-moz-user-focus: normal) {
     :root {
@@ -5453,8 +5457,8 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
  */
 #page-toolbar.animating > button.main-toggle-button {
     transition:
-        opacity 0.25s ease-out,
-        transform 0.25s ease-out;
+        opacity var(--GW-page-toolbar-collapse-duration) ease-out,
+        transform var(--GW-page-toolbar-collapse-duration) ease-out;
 }
 
 /*  Toolbar collapsing (vertical mode).
@@ -5470,8 +5474,8 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     transform: rotateX(-0.25turn);
     max-height: 0;
     transition:
-        transform 0.25s ease-out,
-        max-height 0s ease-out 0.25s;
+        transform var(--GW-page-toolbar-collapse-duration) ease-out,
+        max-height 0s ease-out var(--GW-page-toolbar-collapse-duration);
 }
 
 /*  Toolbar collapsing (mobile mode).
@@ -5488,49 +5492,49 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 }
 #page-toolbar.mobile > button.collapse-button {
     transition:
-        opacity 0.25s ease-out 0.25s;
+        opacity var(--GW-page-toolbar-fade-after-collapse-duration) ease-out var(--GW-page-toolbar-collapse-duration);
 }
 #page-toolbar.mobile.collapsed > button.collapse-button {
     opacity: 0;
     transition:
-        opacity 0.25s ease-out;
+        opacity var(--GW-page-toolbar-collapse-duration) ease-out;
 }
 
 #page-toolbar.mobile.collapsed .widgets {
     transform: rotateX(0.25turn);
     max-height: 0;
     transition:
-        transform 0.25s ease-out,
-        max-height 0s ease-out 0.25s;
+        transform var(--GW-page-toolbar-collapse-duration) ease-out,
+        max-height 0s ease-out var(--GW-page-toolbar-collapse-duration);
 }
 
 /*  Slow collapsing.
  */
 #page-toolbar.collapsed.collapsed-slowly > button.main-toggle-button {
     transition:
-        opacity 0.75s ease-out,
-        transform 0.75s linear;
+        opacity var(--GW-page-toolbar-slow-collapse-duration) ease-out,
+        transform var(--GW-page-toolbar-slow-collapse-duration) linear;
 }
 
 #page-toolbar.collapsed.collapsed-slowly .widgets {
     transition:
-        transform 0.75s ease-out;
+        transform var(--GW-page-toolbar-slow-collapse-duration) ease-out;
 }
 
 /*  Slow collapsing (vertical layout).
  */
 #page-toolbar.vertical.collapsed.collapsed-slowly .widgets {
     transition:
-        transform 0.75s ease-out,
-        max-height 0s ease-out 0.75s;
+        transform var(--GW-page-toolbar-slow-collapse-duration) ease-out,
+        max-height 0s ease-out var(--GW-page-toolbar-slow-collapse-duration);
 }
 
 /*  Slow collapsing (mobile layout).
  */
 #page-toolbar.mobile.collapsed.collapsed-slowly .widgets {
     transition:
-        transform 0.75s ease-out,
-        max-height 0s ease-out 0.75s;
+        transform var(--GW-page-toolbar-slow-collapse-duration) ease-out,
+        max-height 0s ease-out var(--GW-page-toolbar-slow-collapse-duration);
 }
 
 
