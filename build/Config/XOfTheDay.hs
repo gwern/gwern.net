@@ -116,7 +116,7 @@ siteBlackList = [
           "nitro.biosci.arizona.edu", "nitter.moomoo.me", "nmteaco.com", "n.neurology.org", "noahpinion.substack.com",
           "nonsymbolic.org", "nootropicsdepot.com", "norvig.com", "nostalgebraist.tumblr.com", "novelai.net",
           "nowak.ece.wisc.edu", "numinous.productions", "nutritionj.biomedcentral.com", "nv-adlr.github.io", "nyaa.si",
-          "nymag.com", "nypost.com", "ohtori.nu", "okmij.org", "old.reddit.com",
+          "nymag.com", "nypost.com", "ohtori.nu", "okmij.org", "old.reddit.com", "www.reddit.com",
           "oll.libertyfund.org", "omega0.xyz", "onlinelibrary.wiley.com", "online.ucpress.edu", "online.wsj.com",
           "openaccess.thecvf.com", "openai.com", "openreview.net", "opensnp.org", "opinionator.blogs.nytimes.com",
           "orbit.dtu.dk", "orbi.uliege.be", "originstamp.com", "orionmagazine.org", "oscarbonilla.com",
@@ -465,4 +465,4 @@ siteBlackList = [
           "www.armyupress.army.mil","rajpurkar.github.io", "mssprovenance.blogspot.com", "psychclassics.yorku.ca", "twitter.com",
           "hpmor.com","xtools.wmcloud.org","tech.msu.edu", "nap.nationalacademies.org", "docs.iza.org","www.findarticles.com","hal.science",
           "platform.openai.com","www8.austlii.edu.au","www.noahpinion.blog","www.mattridley.co.uk","www.cryonicsarchive.org","shs.hal.science",
-          "psychology.wvu.edu","blogs.lanecc.edu","bayesianinvestor.com", "danielpovey.com", "www.nasonline.org", "calteches.library.caltech.edu"]
+          "psychology.wvu.edu","blogs.lanecc.edu","bayesianinvestor.com", "danielpovey.com", "www.nasonline.org", "calteches.library.caltech.edu", "pile.eleuther.ai"]

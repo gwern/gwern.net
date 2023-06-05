@@ -1011,4 +1011,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("LibriSpeech", "https://danielpovey.com/files/2015_icassp_librispeech.pdf")
         , ("(AF2|AlphaFold[ -]?2)", "https://www.nature.com/articles/s41586-021-03819-2#deepmind")
         , ("[Cc]erebellum", "https://en.wikipedia.org/wiki/Cerebellum")
+        , ("enwik8", "https://mattmahoney.net/dc/textdata.html")
         ]

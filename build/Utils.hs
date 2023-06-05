@@ -342,6 +342,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<xref rid=\"sec[0-9]+\" ref-type=\"sec\">([A-Za-z]+ [0-9]+)</xref>", "<strong>\\1</strong>") -- PLOS: '<xref rid="sec022" ref-type="sec">Experiment 3</xref>' etc.
          , ("^en$", "")
          , (" ([0-9]) h ", " \\1h ") -- hour abbreviation
+         , ("between ([0-9%]+) and ([0-9]+)", "\\1–\\2") -- "range between 2 and 10" → "range 2–10"
          , ("([0-9%]) – ([0-9])", "\\1–\\2") -- space-separated en-dash ranges eg. "with a range of ~0.60 – 0.71 for height"
          , ("([0-9%]) – ([a-z])", "\\1—\\2") -- a number-alphabet en-dash is usually an em-dash eg. "a Fréchet Inception Distance (FID) of 10.59 – beating the baseline BigGAN model—at"
          , ("([a-zA-Z]) – ([[:punct:]])", "\\1—\\2") -- en dash errors in WP abstracts: usually meant em-dash. eg. 'disc format – <a href="https://en.wikipedia.org/wiki/Universal_Media_Disc">Universal'
@@ -359,6 +360,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" ([0-9]+%?)-([0-9]+)", " \\1–\\2")
          , ("([0-9]+%?)-([0-9]+) ", "\\1–\\2 ")
          , ("([0-9]) %", "\\1%")
+         , (" ([0-9]+) out of the ([0-9]+) ", " \\1⁄\\2 ")
          , (" ([0-9]+) out of ([0-9]+) ", " \\1⁄\\2 ") -- need space-separation due to examples like 'smartphones are now used by 5.8 out of 7.0 billion people on earth'
          , (" ([0-9][0-9]?[0-9]?) of ([0-9][0-9]?[0-9]?) ", " \\1⁄\\2 ")
          , ("([0-9]+) of ([0-9]+)", "\\1⁄\\2")
@@ -524,7 +526,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<span class=\"math inline\">\\(n\\)</span>", "<em>n</em>")
          , ("<span class=\"math inline\">\\(\\pi\\)</span>", "π")
          , ("<span class=\"math inline\">\\(1,...,n\\)</span>", "1,...,<em>n</em>")
-         , ("<span class=\"math inline\">\\(\\pi^*\\)</span>", "π<sup>*</sup>")
+         , ("<span class=\"math inline\">\\(\\pi^*\\)</span>", "π<sup>✱</sup>")
          , ("<span class=\"math inline\">\\(c\\)</span>", "<em>c</em>")
          , ("<span class=\"math inline\">\\(G\\)</span>", "<em>G</em>")
          , ("<span class=\"math inline\">\\(\\hbar\\)</span>", "ℏ")
@@ -678,11 +680,13 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" O(N)", " 𝒪(<em>N</em>)")
          , (" O(T)", " 𝒪(<em>T</em>)")
          , (" O(1)", " 𝒪(1)")
+         , ("<span class=\"math inline\">\\(TC^0\\)</span>", "<em>TC</em><sup>0</sup>")
          , ("<span class=\"math inline\">\\(n^{O(k)}\\)</span>", "<em>n</em><sup>𝒪(<em>k</em>)</sup>")
          , ("<span class=\"math inline\">\\(S^</em>(0.8)\\)</span>", "<em>S</em><sup>✱</sup>(0.8)")
          , ("<span class=\"math inline\">\\(S^</em>(0)\\)</span>", "<em>S</em><sup>✱</sup>(0)")
          , ("<span class=\"math inline\">\\(S^<em>(0)\\)</span>", "<em>S</em><sup>✱</sup>(0)")
          , ("<span class=\"math inline\">\\(S^</em>(0.8)\\)</span>", "<em>S</em><sup>✱</sup>(0.8)")
+         , ("<sup>*</sup>", "<sup>✱</sup>")
          , ("<span class=\"math inline\">\\(1 - \\frac{1}{e}\\)</span>", "1 − 1⁄<em>e</em>")
          , ("<span class=\"math inline\">\\(N \\times T\\)</span>", "<em>N</em> × <em>T</em>")
          , ("<span class=\"math inline\">\\(\\mathsf{TC}^0\\)</span>", "<strong>TC</strong><sup>0</sup>")
@@ -1213,7 +1217,10 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("10(-)(10)", "10<sup>−10</sup>")
          , ("R (2) ", "R<sup>2</sup> ")
          , ("CO(2)", "CO<sub>2</sub>")
+         , ("2^n-1",  "2<sup><em>n</em>−1</sup>")
+         , ("2^n-1)", "2<sup><em>n</em>−1</sup>)")
          , (" = .",    " = 0.")
+         , ("=−", " = −")
          , (" gf ", " <em>gf</em> ")
          , (" gc ", " <em>gc</em> ")
          , ("( g = ", "(<em>g</em> = ")
@@ -1526,8 +1533,10 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<em>C</em>. <em>elegans</em>", "<em>C. elegans</em>")
          , (" Caenorhabditis elegans ", " <em>Caenorhabditis elegans</em> ")
          , (" C. elegans", " <em>C. elegans</em>")
+         , (" Octopus insularis", " <em>Octopus insularis</em>")
          , (" T. gondii", " <em>T. gondii</em>")
          , (" Equus ", " <em>Equus</em> ")
+         , (" Saccharomyces cerevisiae", " <em>Saccharomyces cerevisiae</em>")
          , ("Lempel–Ziv–Markov", "Lempel-Ziv-Markov")
          , ("learn-ing", "learning")
          , ("Per- formance", "Performance")
@@ -1572,6 +1581,11 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("within- and cross", "within & cross")
          , ("self- and parent-reported", "self & parent-reported")
          , ("self- and psychiatrist-rated", "self-rated & psychiatrist-rated")
+         , ("full- and half-sibling", "full & half-sibling")
+         , ("full- and half-sibling pairs", "full & half-sibling pairs")
+         , ("Human–Cat", "Human-Cat")
+         , ("D1 receptor- and dopamine D2 receptor-expressing", "D1 receptor-expression & dopamine D2 receptor-expressing")
+         , ("sex- and age-matched", "sex & age-matched")
          , ("self– and informant", "self & informant")
          , ("quasi–causal", "quasi-causal")
          , ("self–reported", "self-reported")
@@ -1650,11 +1664,13 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("humanlike", "human-like")
          , ("nevermind", "never mind")
          , ("parametris", "parameteriz")
+         , ("parameterise", "parameterize")
          , ("normalis", "normaliz")
          , ("generalizt", "generalist")
          , ("generalise", "generalize")
          , ("generalisi", "generalizi")
          , ("generalisa", "generaliza")
+         , (" visualisation", " visualization")
          , (" disincentivis", " disincentiviz")
          , (" incentivis", " incentiviz")
          , (" randomis", " randomiz")
@@ -1664,6 +1680,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("benefitt", "benefit")
          , ("noninsight", "non-insight")
          , (" colour", " color")
+         , (" Colour", " Color")
          , (" UNet", " U-Net")
          , ("PsycArticles", "PsycARTICLES")
          , ("behaviour", "behavior")
@@ -1692,6 +1709,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("‰", "%") -- PER MILLE SIGN https://en.wikipedia.org/wiki/Per_mille - only example I've ever seen was erroneous
          , ("FROH", "<em>F<sub>ROH</sub></em>")
          , (" Ne ", " <em>N<sub>e</sub></em> ")
+         , (" CO2", " CO<sub>2</sub>")
+         , (" O2", " O<sub>2</sub>")
          , ("NAD+", "NAD⁺")
          , ("amp#x02019;", "’")
          , ("Oamp#x02019;", "O’")
@@ -1766,7 +1785,7 @@ linkCanonicalize l | "https://gwern.net/" `isPrefixOf` l = replace "https://gwer
 filterMeta :: String -> String
 filterMeta ea = if anyInfix ea badSubstrings || elem ea badWholes then "" else ea
  where badSubstrings, badWholes :: [String]
-       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd", "pdftk-java", "OP-ESRJ", "FUJIT S. U.", "JRC5", "klynch", "pruich", "Micron", "Anonymous Submission", "Asterisk", "KBarry2", ",-0", "fi-5530C2dj", "FUJIT S. U.", "LEVET_Layout", "Digitized by the ", "shaniahl", ".orig.pdf", ".dvi", ".tif", ".qxd", ".ps", "doi:10", "DOI", ".tmp", ".pdf", ".eps", ".PDF", ".indd", "APA template", "Abbyy", "Author Guidelines", "156x234mm", "C:\\", "D:\\", "CUP_JBS", ".vp", ".wpd", "EBSCOhost", ".doc", ".docx", ".qxp", "PDF_Banner", ".pmd", "MergedFile", "No Job Name", "PII: ", "ProQuest Dissertation", "ScanGate", "Science Journals", "Science Magazine", "Untitled", ".CHP", ".chp", ".tex", ".fm", "http://content.nejm.org/cgi/content/", "stdin", "Corel PHOTO-PAINT", "Thomson Press India", "B L Ganju", "Meta˚Analytic", "RealObjects", "PDFreactor(R)", "Licensed for: Oxford University", "CoVantage", "RYALS327-SCAN", "www.debenu.com", "WWS-5ZM9", "<unknown>", "[ M1C44 ]", "WWS-5ZM", "html2ps ", "version 1.0 beta2", "jason.richwine", "jmaynard", "jmcfadde", "k.albert", "kstange", "macftz01", "markj", "mcdonaldm", "mchahino", "meiersa", "mkc43", "pilc2501", "pm016", "pm025", "pm054", "pubdat", "randerer", "renee.lojewski", "tiff2ps", "yeh", "Admin", "C U. P. Printing", "Debenu ", "Quick P. D. F. Library 9.12", "www.debenu.com", "JPL 99", "MinnickD", "Office", "Owner", "SPDF", "Writer", "jcpham", "DLE4&lt;8", "8AB@0B&gt", "Paperless", "psjoin 0.2", "Apex", "CoVantage", "Elsevier Science", "PsycINFO", "kristine gallo", "TeX", "PDFplus", "Elsevier", "N/A", "OmniPage", "scansoft", "Articlizer", "ARTICLIZER"]
+       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd", "pdftk-java", "OP-ESRJ", "FUJIT S. U.", "JRC5", "klynch", "pruich", "Micron", "Anonymous Submission", "Asterisk", "KBarry2", ",-0", "fi-5530C2dj", "FUJIT S. U.", "LEVET_Layout", "Digitized by the ", "shaniahl", ".orig.pdf", ".dvi", ".tif", ".qxd", ".ps", "doi:10", "DOI", ".tmp", ".pdf", ".eps", ".PDF", ".indd", "APA template", "Abbyy", "Author Guidelines", "156x234mm", "C:\\", "D:\\", "CUP_JBS", ".vp", ".wpd", "EBSCOhost", ".doc", ".docx", ".qxp", "PDF_Banner", ".pmd", "MergedFile", "No Job Name", "PII: ", "ProQuest Dissertation", "ScanGate", "Science Journals", "Science Magazine", "Untitled", ".CHP", ".chp", ".tex", ".fm", "http://content.nejm.org/cgi/content/", "stdin", "Corel PHOTO-PAINT", "Thomson Press India", "B L Ganju", "Meta˚Analytic", "RealObjects", "PDFreactor(R)", "Licensed for: Oxford University", "CoVantage", "RYALS327-SCAN", "www.debenu.com", "WWS-5ZM9", "<unknown>", "[ M1C44 ]", "WWS-5ZM", "html2ps ", "version 1.0 beta2", "jason.richwine", "jmaynard", "jmcfadde", "k.albert", "kstange", "macftz01", "markj", "mcdonaldm", "mchahino", "meiersa", "mkc43", "pilc2501", "pm016", "pm025", "pm054", "pubdat", "randerer", "renee.lojewski", "tiff2ps", "yeh", "Admin", "C U. P. Printing", "Debenu ", "Quick P. D. F. Library 9.12", "www.debenu.com", "JPL 99", "MinnickD", "Office", "Owner", "SPDF", "Writer", "jcpham", "DLE4&lt;8", "8AB@0B&gt", "Paperless", "psjoin 0.2", "Apex", "CoVantage", "Elsevier Science", "PsycINFO", "kristine gallo", "TeX", "PDFplus", "Elsevier", "N/A", "OmniPage", "scansoft", "Articlizer", "ARTICLIZER", "c:/ncn"]
        badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association", "om", "lhf", "comp", "khan", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo", "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "mchahino", "LaTeX2e", "Paperless", "fulvio", "Winter", "yeh", "markj", "Vahrenhorst", "vahrenhorst", "Vahrenhorst 2004", "Vahrenhorst 2008", "pilc2501", "yeh 2008", "markj 2009", "021186U129", "02_ASQ523602 1..33", "03_gbb155 240..248", "1)", "1.0b", "110s(6) Science. 555-", "1247", "2913 | 01 Chorney", "301246", "378787 1100..1105", "4559", "459119", "4AD004/Prov9 FMV/4P", "52457938", "7.0 psym 7#1 2002", "72508-danigelis.q41", "9757 van Stuijvenberg", "99202", "BBS1200319 661..726", "BBS1300119 297..350", "Backtalk", "Backups", "BatesTalk", "Brookings draft v", "CAM200", "CDP370136 177..182", "CMMI10", "COLLINCH01", "COMM34$U44", "COPSINGOLEVET", "DO00010384 643..650", "DP 14-009", "Digestion", "Final_EXIT_text", "Gerontotherapeutics", "Harrison J", "II", "IMD JATS", "ISO/IEC 9899:yyyy", "Information", "JC162160 1642..1651", "JEOBP_14_2_2011", "JMCB16U208", "Journal06-04b.cdr", "Latvala", "Layout 1", "MASTER THESIS 5", "MIT-LCS:MIT/LCS/TR-164", "MSS21283 927..934", "Masters' Thesis", "Nowicka, R", "OP-ESRJ170071 1..13", "OP-QJEC150001 571..614 ++", "P:TEXSICOMP 9-1 8849 8849", "PEDS20142707_pap_peds 1..9", "PEDS_20173872 1..11", "S0747-5632(00)00043-1", "PME00042", "PSCI13124", "Print", "RAAG_A_1310021_O", "RULES-2014-P-CON", "Review", "SIA", "Schniederjans_lo", "Slide 1", "Standards 05-06", "TF-TPDR120086 1..8 ++", "Title", "Title:", "Tobler_CameraReady", "US020180204116A120180719", "Unknown", "VJMB_A_1327416_O", "Ventura - 12JBR8", "Vol 9#5", "WR02015.fm", "Wildcats", "ZP577", "ajps_461_HR", "anp060-79 407..506", "bhm211 1737..1747", "btn127 1381..1385", "c011.tex", "cns_317_LR", "ddl206 2721..2731", "default", "desc_745.fm", "e08:9", "ejn_5217 3532..3540", "emon-84-04-01 3..28", "es-2013-03688w 1..9", "foo", "hcrj901068 151..157", "hred_91_110.42_66", "inhy_60_205.213_218", "ipg1200217a", "jasar08282 841..854", "jcp20186 373..378", "jcp25202 175..179", "jcpp_1798 1192..1199", "jn169326 872..877", "khan", "mbev_16_1218.1791_1798", "mgs;01jan95", "osteo-1203 257..264", "oup_cercor_bhy157 1..11 ++", "pnas201201895 1..8", "pnp06457 1125..1128", "rssa_a0157 469..482", "s00221-005-2334-6ca-web 23..30", "stdin", "template", "title", "vsp0092 187..211", "ÿþ1", "ÿþ14-226", "“Alt", "arsalan", "b", "chowe", "comp", "comp5", "cretu", "dan", "decosta", "fulvio", "gottfredson", "lhf", "om", "times", "user", "van den Hurk", "Word", "Canon", "pdftk-java 3.0.9"]
 
 -- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+double-space, and general whitespace cleaning

@@ -14,13 +14,13 @@
     --GW-image-checkerboard-888-000-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
     --GW-image-checkerboard-bfbfbf-000-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
 
-	--GW-image-linear-dotted-000-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIEBCSGBQA7');
-	--GW-image-linear-dotted-888-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAIiIiP///wAAACH5BAkAAAMALAAAAAAEAAIAAAIETDaGBQA7');
-	--GW-image-linear-dotted-fff-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIETCSGBQA7');
-	--GW-image-linear-dotted-bbb-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAALu7u////wAAACH5BAkAAAMALAAAAAAEAAIAAAIETDaGBQA7');
+    --GW-image-linear-dotted-000-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIEBCSGBQA7');
+    --GW-image-linear-dotted-888-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAIiIiP///wAAACH5BAkAAAMALAAAAAAEAAIAAAIETDaGBQA7');
+    --GW-image-linear-dotted-fff-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIETCSGBQA7');
+    --GW-image-linear-dotted-bbb-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAALu7u////wAAACH5BAkAAAMALAAAAAAEAAIAAAIETDaGBQA7');
 
-	--GW-image-pattern-dotted-e6e6e6-on-fff-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMebm5v///ywAAAAAEAAQAAACHowPcKgb6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
-	--GW-image-pattern-dotted-fff-on-e6e6e6-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMebm5v///ywAAAAAEAAQAAACHoQfcagL6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
+    --GW-image-pattern-dotted-e6e6e6-on-fff-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMebm5v///ywAAAAAEAAQAAACHowPcKgb6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
+    --GW-image-pattern-dotted-fff-on-e6e6e6-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMebm5v///ywAAAAAEAAQAAACHoQfcagL6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
     --GW-image-pattern-dotted-161616-on-3e3e3e-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMRYWFj4+PiwAAAAAEAAQAAACHowPcKgb6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
     --GW-image-pattern-dotted-161616-on-252525-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMRYWFiUlJSwAAAAAEAAQAAACHowPcKgb6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
 }
@@ -645,6 +645,12 @@ div.collapse.no-abstract.expanded-not > .disclosure-button .part::before {
 
 /***************************/
 /*  Collapsible code blocks.
+ */
+
+/*	NOTE: ‘.sourceCode’ is a Pandoc-hardwired CSS class for code blocks. We do 
+	not rewrite it to ‘.source-code’ for consistency with all our other custom 
+	classes, because that risks confusion & interoperability problems, which is 
+	not worth it for a bit of name consistency.
  */
 
 .sourceCode.collapse.expanded .collapse-content-wrapper {
@@ -5180,9 +5186,9 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     pointer-events: auto;
 }
 @media only screen and (hover: hover) {
-	#ui-elements-container:hover {
-		z-index: 10001;
-	}
+    #ui-elements-container:hover {
+        z-index: 10001;
+    }
 }
 
 
@@ -5190,32 +5196,32 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 /* PAGE TOOLBAR */
 /****************/
 
-/*	Show no toolbar if no items in it.
+/*  Show no toolbar if no items in it.
  */
 #page-toolbar .widgets:empty ~ * {
-	display: none;
+    display: none;
 }
 
 /***************************/
-/*	Toolbar control buttons.
+/*  Toolbar control buttons.
  */
 #page-toolbar > button {
     color: var(--GW-page-toolbar-control-button-color);
 }
 #page-toolbar > button.toggle-button:active {
-	color: var(--GW-page-toolbar-control-button-active-color);	
+    color: var(--GW-page-toolbar-control-button-active-color);
 }
 #page-toolbar > button svg {
     display: block;
 }
 
-/*	Collapse button (chevron); hidden on desktop.
+/*  Collapse button (chevron); hidden on desktop.
  */
 #page-toolbar.desktop > button.collapse-button {
-	display: none;
+    display: none;
 }
 
-/*	Collapse button (chevron) in mobile layout.
+/*  Collapse button (chevron) in mobile layout.
  */
 #page-toolbar.mobile > button.collapse-button {
     order: 1;
@@ -5231,27 +5237,27 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     opacity: 0.4;
 }
 #page-toolbar > button.main-toggle-button:active {
-	transform: scale(0.95);
+    transform: scale(0.95);
 }
 @media only screen and (hover: hover) {
-	#page-toolbar > button.main-toggle-button:hover {
-		opacity: 1.0;
-		transition:
-			opacity 0.15s ease;
-	}
-	#page-toolbar:not(.collapsed):not(.expanded-temp) > button.main-toggle-button {
-		opacity: 1.0;
-	}
+    #page-toolbar > button.main-toggle-button:hover {
+        opacity: 1.0;
+        transition:
+            opacity 0.15s ease;
+    }
+    #page-toolbar:not(.collapsed):not(.expanded-temp) > button.main-toggle-button {
+        opacity: 1.0;
+    }
 }
 
-/*	Main toggle button (gear) in vertical layout.
+/*  Main toggle button (gear) in vertical layout.
  */
 #page-toolbar.vertical > button.main-toggle-button {
-	padding: 3px;
+    padding: 3px;
 }
 
 /******************/
-/*	Toolbar layout.
+/*  Toolbar layout.
  */
 #page-toolbar {
     position: fixed;
@@ -5266,12 +5272,12 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     max-height: 100vh;
     max-width: 100vw;
     transition:
-    	transform 0.25s ease-out;
+        transform 0.25s ease-out;
 }
 
 #page-toolbar .widget {
-	display: flex;
-	align-items: stretch;
+    display: flex;
+    align-items: stretch;
     background-color: var(--background-color);
 }
 
@@ -5279,45 +5285,45 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     color: var(--GW-page-toolbar-button-text-color);
 }
 #page-toolbar .widget button:disabled .label {
-	color: var(--GW-page-toolbar-button-disabled-text-color);
+    color: var(--GW-page-toolbar-button-disabled-text-color);
 }
 
 #page-toolbar .widget button .icon {
-	display: flex;
-	width: 100%;
-	height: 100%;
-	box-sizing: border-box;
-	color: var(--GW-page-toolbar-button-icon-color);
-	transition:
-		color 0.1s ease;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    color: var(--GW-page-toolbar-button-icon-color);
+    transition:
+        color 0.1s ease;
 }
 #page-toolbar .widget button.selectable .icon {
-	color: var(--GW-page-toolbar-button-selectable-icon-color);
+    color: var(--GW-page-toolbar-button-selectable-icon-color);
 }
 #page-toolbar .widget button.selected .icon {
-	color: var(--GW-page-toolbar-button-selected-icon-color);
+    color: var(--GW-page-toolbar-button-selected-icon-color);
 }
 @media only screen and (hover: hover) {
-	#page-toolbar .widget button:hover .icon {
-		color: var(--GW-page-toolbar-button-selected-icon-color);
-	}
+    #page-toolbar .widget button:hover .icon {
+        color: var(--GW-page-toolbar-button-selected-icon-color);
+    }
 }
 #page-toolbar .widget button:not(:disabled):active .icon {
-	transform: scale(0.95);
+    transform: scale(0.95);
 }
 
-/*	Icons-only toolbar mode.
+/*  Icons-only toolbar mode.
  */
 #page-toolbar.button-labels-not .widget button .label {
-	display: none;
+    display: none;
 }
 
-/*	Vertical toolbar layout.
+/*  Vertical toolbar layout.
  */
 #page-toolbar.vertical {
-	--toolbar-button-size: 4vmin;
+    --toolbar-button-size: 4vmin;
 
-	flex-flow: column;
+    flex-flow: column;
     width: var(--toolbar-button-size);
     top: 5px;
     right: 4px;
@@ -5329,29 +5335,29 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 }
 
 #page-toolbar.vertical .widget {
-	flex-flow: column;
+    flex-flow: column;
     outline: 1px dotted var(--GW-page-toolbar-border-color);
     margin-top: 8px;
 }
 @media only screen and (hover: hover) {
-	#page-toolbar.vertical .widget {
-		transition:
-			box-shadow 0.1s ease;
-	}
-	#page-toolbar.vertical .widget:hover {
-		box-shadow:
-			0 0 0 1px var(--GW-page-toolbar-border-color),
-			0 0 0 2px var(--background-color),
-			0 0 0 3px var(--GW-page-toolbar-border-color);
-	}
+    #page-toolbar.vertical .widget {
+        transition:
+            box-shadow 0.1s ease;
+    }
+    #page-toolbar.vertical .widget:hover {
+        box-shadow:
+            0 0 0 1px var(--GW-page-toolbar-border-color),
+            0 0 0 2px var(--background-color),
+            0 0 0 3px var(--GW-page-toolbar-border-color);
+    }
 }
 
 #page-toolbar.vertical .widget button {
-	height: var(--toolbar-button-size);
+    height: var(--toolbar-button-size);
     position: relative;
 }
 #page-toolbar.vertical .widget button .icon {
-	padding: 4px;
+    padding: 4px;
 }
 #page-toolbar.vertical .widget button .label {
     position: absolute;
@@ -5364,7 +5370,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     padding: 0 10px;
     font-variant-caps: small-caps;
     background-color: var(--background-color);
-    box-shadow: 
+    box-shadow:
         0 0 0 2px var(--background-color),
         0 0 0 3px var(--GW-page-toolbar-border-color);
     opacity: 0;
@@ -5378,12 +5384,12 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     }
 }
 
-/*	Mobile toolbar layout (reverse vertical).
+/*  Mobile toolbar layout (reverse vertical).
  */
 #page-toolbar.mobile {
-	--toolbar-button-size: 46px;
+    --toolbar-button-size: 46px;
 
-	flex-flow: column-reverse;
+    flex-flow: column-reverse;
     width: var(--toolbar-button-size);
     bottom: 0.5em;
     right: 0.5em;
@@ -5396,43 +5402,43 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 }
 
 #page-toolbar.mobile .widget {
-	flex-flow: column;
-	outline: 1px dotted var(--GW-page-toolbar-border-color);
+    flex-flow: column;
+    outline: 1px dotted var(--GW-page-toolbar-border-color);
     margin-top: 0.5em;
 }
 
 #page-toolbar.mobile .widget button {
-	height: var(--toolbar-button-size);
+    height: var(--toolbar-button-size);
 }
 #page-toolbar.mobile .widget button .icon {
-	padding: 7px;
+    padding: 7px;
 }
 
 /******************/
-/*	Fade on scroll.
+/*  Fade on scroll.
  */
 #page-toolbar.collapsed {
-    transition: 
+    transition:
         opacity 2s ease-out;
 }
 #page-toolbar.collapsed.faded {
-	opacity: 0;
+    opacity: 0;
 }
 #page-toolbar.collapsed:hover {
-	transition:
-		opacity 0.15s ease;
+    transition:
+        opacity 0.15s ease;
 }
 
 /**********************/
-/*	Toolbar collapsing.
+/*  Toolbar collapsing.
  */
 #page-toolbar.animating > button.main-toggle-button {
-    transition: 
+    transition:
         opacity 0.25s ease-out,
         transform 0.25s ease-out;
 }
 
-/*	Toolbar collapsing (vertical mode).
+/*  Toolbar collapsing (vertical mode).
  */
 #page-toolbar.vertical.collapsed > button.main-toggle-button {
     transform: rotateZ(0.5turn);
@@ -5445,14 +5451,14 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     transform: rotateX(-0.25turn);
     max-height: 0;
     transition:
-    	transform 0.25s ease-out,
-    	max-height 0s ease-out 0.25s;
+        transform 0.25s ease-out,
+        max-height 0s ease-out 0.25s;
 }
 
-/*	Toolbar collapsing (mobile mode).
+/*  Toolbar collapsing (mobile mode).
  */
 #page-toolbar.mobile > button.main-toggle-button {
-	opacity: 1.0;
+    opacity: 1.0;
 }
 #page-toolbar.mobile.collapsed > button.main-toggle-button {
     opacity: 0.65;
@@ -5462,12 +5468,12 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     transform: rotateZ(-0.5turn) scale(0.95);
 }
 #page-toolbar.mobile > button.collapse-button {
-    transition: 
+    transition:
         opacity 0.25s ease-out 0.25s;
 }
 #page-toolbar.mobile.collapsed > button.collapse-button {
     opacity: 0;
-    transition: 
+    transition:
         opacity 0.25s ease-out;
 }
 
@@ -5475,14 +5481,14 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     transform: rotateX(0.25turn);
     max-height: 0;
     transition:
-    	transform 0.25s ease-out,
-    	max-height 0s ease-out 0.25s;
+        transform 0.25s ease-out,
+        max-height 0s ease-out 0.25s;
 }
 
 /*  Slow collapsing.
  */
 #page-toolbar.collapsed.collapsed-slowly > button.main-toggle-button {
-    transition: 
+    transition:
         opacity 0.75s ease-out,
         transform 0.75s linear;
 }
@@ -5492,19 +5498,19 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
         transform 0.75s ease-out;
 }
 
-/*	Slow collapsing (vertical layout).
+/*  Slow collapsing (vertical layout).
  */
 #page-toolbar.vertical.collapsed.collapsed-slowly .widgets {
     transition:
-    	transform 0.75s ease-out,
+        transform 0.75s ease-out,
         max-height 0s ease-out 0.75s;
 }
 
-/*	Slow collapsing (mobile layout).
+/*  Slow collapsing (mobile layout).
  */
 #page-toolbar.mobile.collapsed.collapsed-slowly .widgets {
     transition:
-    	transform 0.75s ease-out,
+        transform 0.75s ease-out,
         max-height 0s ease-out 0.75s;
 }
 
@@ -6218,14 +6224,14 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 }
 
 /**********************************/
-/*	Mode selectors in page toolbar.
+/*  Mode selectors in page toolbar.
  */
 
 #page-toolbar .dark-mode-selector {
-	order: 1;
+    order: 1;
 }
 #page-toolbar .reader-mode-selector {
-	order: 2;
+    order: 2;
 }
 
 #page-toolbar .mode-selector button .label {
@@ -6240,7 +6246,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     text-decoration: dotted underline from-font;
 }
 
-/*	Vertical layout.
+/*  Vertical layout.
  */
 #page-toolbar.vertical .mode-selector {
     padding: 2px 0;
@@ -6249,7 +6255,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     margin-top: 3px;
 }
 
-/*	Mobile layout.
+/*  Mobile layout.
  */
 #page-toolbar.mobile .mode-selector {
     padding: 2px 0;
@@ -6258,7 +6264,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 /*************************/
 /*  Inline mode selectors.
  */
- 
+
 .mode-selector-inline {
     display: inline-flex;
     position: relative;
@@ -6377,7 +6383,7 @@ a.include-loading.include-spinner::after {
 }
 
 a.include-loading.include-spinner:empty::after {
-	content: "";
+    content: "";
     background-image: var(--spinner-image);
     width: 1.25em;
     height: 1.25em;

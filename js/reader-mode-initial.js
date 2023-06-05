@@ -4,15 +4,23 @@ ReaderMode = {
     styles: `
         ${(_π("body.reader-mode-active ",
               [ "#sidebar-links",
-                "#page-metadata",
+                "#page-metadata #page-status",
+                "#page-metadata #page-confidence",
+                "#page-metadata #page-importance",
+                "#page-metadata .backlinks",
+                "#page-metadata .link-bibliography",
+                "#page-metadata .similars",
+                "#page-metadata #page-date-range::after",
                 "#TOC ul li::before",
                 "#footer",
                 "#footer-logo",
                 "#navigation",
                 "#sidenote-column-left",
                 "#sidenote-column-right",
+                "#annotation-of-the-day",
                 ".inflation-adjusted .subsup",
-                ".footnote-ref"
+                ".footnote-ref",
+                ".footnote-back"
                 ]
               ).join(",\n"))} {
             display: none;
@@ -40,54 +48,54 @@ ReaderMode = {
                 -0.17em  0.05em 0 0 var(--link-underline-background-color),
                 -0.17em -0.05em 0 0 var(--link-underline-background-color),
                 -0.17em  0      0 0 var(--link-underline-background-color);
-			background-image:
-				linear-gradient(var(--link-underline-background-color),
-								var(--link-underline-background-color)),
-				linear-gradient(var(--link-underline-gradient-line-color),
-								var(--link-underline-gradient-line-color)),
-				linear-gradient(var(--link-underline-gradient-line-color),
-								var(--link-underline-gradient-line-color));
-			background-size:
-       			1px  0.5em,
-				100% 1px,
-				1px  calc(0.75em - 0.1em);
-			background-position:
-				0 0.1em,
-				0 calc(100% - 0.1em),
-				0 calc(100% - 0.1em);
+            background-image:
+                linear-gradient(var(--link-underline-background-color),
+                                var(--link-underline-background-color)),
+                linear-gradient(var(--link-underline-gradient-line-color),
+                                var(--link-underline-gradient-line-color)),
+                linear-gradient(var(--link-underline-gradient-line-color),
+                                var(--link-underline-gradient-line-color));
+            background-size:
+                1px  0.5em,
+                100% 1px,
+                1px  calc(0.75em - 0.1em);
+            background-position:
+                0 0.1em,
+                0 calc(100% - 0.1em),
+                0 calc(100% - 0.1em);
         }
         body.reader-mode-active #markdownBody a .link-icon-hook {
-			position: absolute;
-			box-shadow:
-				 0.17em  0.05em 0 0 var(--link-underline-background-color),
-				 0.17em -0.05em 0 0 var(--link-underline-background-color),
-				 0.17em  0      0 0 var(--link-underline-background-color);
-			background-color: var(--link-underline-background-color);
-			background-image:
-				linear-gradient(var(--link-underline-gradient-line-color),
-								var(--link-underline-gradient-line-color));
-			background-size:
-				100% 1px;
-			background-position:
-				0 calc(100% - 0.2em);
-			background-repeat: no-repeat;
-		}
-		body.reader-mode-active #markdownBody a.has-annotation .link-icon-hook {			
-			background-image: var(--link-underline-background-image);
-			background-size: 2px 1px;
-			background-repeat: repeat-x;
-		}
+            position: absolute;
+            box-shadow:
+                 0.17em  0.05em 0 0 var(--link-underline-background-color),
+                 0.17em -0.05em 0 0 var(--link-underline-background-color),
+                 0.17em  0      0 0 var(--link-underline-background-color);
+            background-color: var(--link-underline-background-color);
+            background-image:
+                linear-gradient(var(--link-underline-gradient-line-color),
+                                var(--link-underline-gradient-line-color));
+            background-size:
+                100% 1px;
+            background-position:
+                0 calc(100% - 0.2em);
+            background-repeat: no-repeat;
+        }
+        body.reader-mode-active #markdownBody a.has-annotation .link-icon-hook {
+            background-image: var(--link-underline-background-image);
+            background-size: 2px 1px;
+            background-repeat: repeat-x;
+        }
         body.reader-mode-active #markdownBody a .indicator-hook,
         body.reader-mode-active #markdownBody a .link-icon-hook {
-        	visibility: hidden;
+            visibility: hidden;
         }
         body.reader-mode-active #markdownBody a:hover {
-        	position: relative;
-        	z-index: 111;
+            position: relative;
+            z-index: 111;
         }
         body.reader-mode-active #markdownBody a:hover .indicator-hook,
         body.reader-mode-active #markdownBody a:hover .link-icon-hook {
-        	visibility: visible;
+            visibility: visible;
         }
         body.reader-mode-active.masked-links-hidden #markdownBody a .indicator-hook,
         body.reader-mode-active.masked-links-hidden #markdownBody a .link-icon-hook {
@@ -109,25 +117,26 @@ ReaderMode = {
         body.reader-mode-active.masked-links-hidden #markdownBody a code {
             border-bottom-width: 1px;
         }
-        /*	Citations.
+        /*  Citations.
          */
-		body.reader-mode-active .cite-joiner {
-			display: initial;
-		}
-		body.reader-mode-active .cite-author + .cite-date::before {
-			content: " ";
-		}
-		body.reader-mode-active .cite-author-plural::after {
-			content: none;
-		}
-		body.reader-mode-active .cite-date {
-			vertical-align: unset;
-			font-size: unset;
-			line-height: unset;
-			font-variant-numeric: unset;
-			margin-left: unset;
-		}
-        /*	Mobile layout adjustments.
+        body.reader-mode-active .cite-joiner {
+            display: initial;
+        }
+        body.reader-mode-active .cite-date::before {
+            content: " ";
+        }
+
+        body.reader-mode-active .cite-date {
+            vertical-align: unset;
+            font-size: unset;
+            line-height: unset;
+            font-variant-numeric: unset;
+            margin-left: unset;
+        }
+        body.reader-mode-active .cite-author-plural::after {
+                 content: " " ;
+        }
+        /*  Mobile layout adjustments.
          */
         @media only screen and (max-width: 649px) {
             body.reader-mode-active #sidebar {
@@ -162,7 +171,7 @@ ReaderMode = {
         }
     `,
 
-	readerModeTitleNote: " (reader mode)",
+    readerModeTitleNote: " (reader mode)",
 
     /*  Inject a style block with the given content and element ID.
      */
@@ -183,8 +192,8 @@ ReaderMode = {
         if (ReaderMode.enabled() == true)
             ReaderMode.activate();
 
-		//	Fire event.
-		GW.notificationCenter.fireEvent("ReaderMode.didSetMode");
+        //  Fire event.
+        GW.notificationCenter.fireEvent("ReaderMode.didSetMode");
     },
 
     /*  Returns true if reader mode is set to be enabled for the current page,
@@ -215,8 +224,8 @@ ReaderMode = {
         //  Add body classes.
         document.body.classList.add("reader-mode-active", "masked-links-hidden");
 
-		//	Update document title.
-		document.title += ReaderMode.readerModeTitleNote;
+        //  Update document title.
+        document.title += ReaderMode.readerModeTitleNote;
     },
 };
 

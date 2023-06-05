@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-05-09 09:09:12 gwern"
+When: Time-stamp: "2023-05-27 10:02:43 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -47,7 +47,6 @@ import Hakyll (compile, composeRoutes, constField,
                loadAndApplyTemplate, match, modificationTimeField, mapContext,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess, boolField, toFilePath,
                templateCompiler, version, Compiler, Context, Item, unsafeCompiler, noResult, getUnderlying)
-import Text.Pandoc.Shared (blocksToInlines)
 import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
                     def, pandocExtensions, readerExtensions, readMarkdown, writeHtml5String,
                     Block(..), HTMLMathMethod(MathJax), defaultMathJaxURL, Inline(..),
@@ -313,7 +312,7 @@ pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `con
      let pw
            = if indexp then walk convertInterwikiLinks p else
                walk (footnoteAnchorChecker . convertInterwikiLinks) $
-                 walk linkAuto $ walk marginNotes p
+                 walk linkAuto p
      unless indexp $ createAnnotations md pw
      let pb = walk (hasAnnotation md) $ addPageLinkWalk pw  -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
      pbt <- fmap typographyTransform . walkM (localizeLink adb archived)
@@ -343,24 +342,6 @@ headerSelflink :: Block -> Block
 headerSelflink (Header a (href,b,c) d) = Header a (href,b,c) [Link nullAttr (walk titlecaseInline d) ("#"`T.append`href,
                                                                                "Link to section: § '" `T.append` inlinesToText d `T.append` "'")]
 headerSelflink x = x
-
--- https://edwardtufte.github.io/tufte-css/#sidenotes
--- support Tufte-CSS-style margin notes with a syntax like
--- 'Foo bar.^[!Margin: Short explanation.] Baz quux burble…'
---
--- > marginNotes (Note [Para [Str "!Margin:", Space, Str "Test."]])
--- → Span ("",["marginnote"],[]) [Para [Space, Str "Test."]]
---
--- This sets a 'marginnote' HTML class on the footnote anchor. `sidenotes.js` specially supports these and renders them differently, removing the numerals. We strip the 'Note' because otherwise it will get a number despite being hidden, and that's confusing.
--- Margin notes can be used for general comments on a region of text which aren't intended to refer to a specific word or sentence, and avoiding spurious precision makes it a little easier for the reader.
--- I intend to experiment with them as a way to summarize paragraphs in a short sentence, somewhat like http://www.pgbovine.net/PhD-memoir/pguo-PhD-grind.pdf or how https://ebooks.adelaide.edu.au/c/coleridge/samuel_taylor/rime/#part1 glosses each section of verse, which can be a little tricky to follow.
-marginNotes :: Inline -> Inline
-marginNotes x@(Note (bs:cs)) =
-  case bs of
-    Para (Str m:ms) -> if "!Margin:" /= m then x else
-                            Span ("", ["marginnote"], []) (blocksToInlines $ Para ms:cs)
-    _ -> x
-marginNotes x = x
 
 -- Check for footnotes which may be broken and rendering wrong, with the content inside the body rather than as a footnote. (An example was present for an embarrassingly long time in /gpt-3…)
 footnoteAnchorChecker :: Inline -> Inline

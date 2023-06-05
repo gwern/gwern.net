@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-05-17 18:29:50 gwern"
+;;; When:  Time-stamp: "2023-06-01 18:22:20 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -158,7 +158,7 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
 ;; TODO Abbreviation ideas:
 ;; script outputs: https://pastebin.com/rU0TyG5B
 ;; (!W → (!Wikipedia)
-;; !Mar → ^[!Margin: ]
+;; !Mar → []{.marginnote}
 ;; bc → because
 ;; iq → intelligence
 ;; moda → modafinil
@@ -195,6 +195,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
 
        (let ; Blind unconditional rewrites:
            ((blind '(("﻿" . "") ; byte order mark?
+                     (" " . "")
                      ("" . "fi")
                      ("" . "fl")
                      ("\\\u2013" . "--")
@@ -215,7 +216,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("\\\\u03bc" . "μ")
                      ("\\\\u2018" . "‘")
                      ("\\\\u2019" . "’")
-                     ("\u2009" . " ")
+                     ("\u2009" . " ")
                      ("\\\\u2013" . "–")
                      ("â\\" . "'")
                      ("â" . "'")
@@ -374,6 +375,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("ω2" . "ω<sup>2</sup>")
                      ("chi-squared" . "<em>χ</em><sup>2</sup>")
                      (" Escherichia coli" . " <em>Escherichia coli</em>")
+                     (" E. coli" . " <em>E. coli</em>")
+                     (" Saccharomyces cerevisiae" . " <em>Saccharomyces cerevisiae</em>")
                      ("two-by-two" . "2×2")
                      (" B.M.I" . " BMI")
 
@@ -561,6 +564,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" s−1" . " s^−1^")
                         ("ml−1" . "ml<sup>−1</sup>")
                         ("^-1 " . "^−1^ ")
+                        (" d−1" . " d<sup>−1</sup>")
                         ("dl−1" . "dl<sup>−1</sup>")
                         ("kb−1" . "kb<sup>−1</sup>")
                         (" g-related" . " _g_-related")
@@ -614,6 +618,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" Wm−1" . " Wm<sup>−1</sup>")
                         (" K−1" . " K<sup>−1</sup>")
                         (" kg−1" . " kg<sup>−1</sup>")
+                        ("l−1" . "l<sup>−1</sup>")
                         ("60Co" . "^60^Co")
                         (" I2" . " _I_^2^")
                         ("≤p≤" . " ≤ _p_ ≤ ")
@@ -911,18 +916,19 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ; would look confusing if written '−0.3–−3.7'. It's correct & unambiguous because it uses MINUS SIGN & EN DASH
                         ; appropriately, but the glyphs are way too similar-looking. (Sorry, I didn't design English punctuation.)
                         ; And this is also true if any of the numbers have minus signs (eg. '−0.3–3.7' or '0.3–−3.7' would be no better).
-                        (" one to \\([0-9\\.]+\\)" . " \\1–\\2")
-                        ("from \\([0-9\\.]+\\) to \\([0-9\\.]+\\)" . "\\1–\\2")
-                        ("\\([0-9\\.]+\\) to \\([0-9\\.]+\\)" . "\\1–\\2")
-                        ("from \\([0-9\\.]+\\) to \\([0-9\\.]+\\)" . "\\1 → \\2")
-                        ("\\([a-z]+\\)- and \\([a-z]+-[a-z]+\\)" . "\\1 & \\2")
-                        ("\\([0-9\\.]+\\) to \\([0-9\\.]+\\)" . "\\1 → \\2")
-                        ("between \\([0-9\\.]+\\) and \\([0-9\\.]+\\)" . "\\1–\\2")
-                        (" \\([0-9\\.]+\\) or \\([0-9\\.]+\\) " . " \\1–\\2 ")
+                        (" one to \\([0-9.]+\\)"                   . " \\1–\\2")
+                        ("from \\([0-9.]+\\) to \\([0-9.]+\\)"     . "\\1–\\2")
+                        ("\\([0-9\\.]+\\) to \\([0-9\\.]+\\)"      . "\\1–\\2")
+                        ("from \\([0-9.]+\\) to \\([0-9.]+\\)"     . "\\1 → \\2")
+                        ("\\([a-z]+\\)- and \\([a-z]+-[a-z]+\\)"   . "\\1 & \\2")
+                        ("\\([0-9.]+\\) to \\([0-9.]+\\)"          . "\\1 → \\2")
+                        ("between \\([0-9.]+\\) and \\([0-9.]+\\)" . "\\1–\\2") ; "range between 2 and 10" → "range 2–10"
+                        (" \\([0-9.]+\\) or \\([0-9.]+\\) "        . " \\1–\\2 ")
+                        ("\\([0-9]+\\)- to \\([0-9]+\\)-"          . "\\1--\\2-") ; "18- to 20-year-olds" → "18--20-year-olds"
                         )
                       ))
          (dolist (pair regexps)
-           (query-replace (car pair) (cdr pair) nil begin end))
+           (query-replace-regexp (car pair) (cdr pair) nil begin end))
          )
 
        ; format abstract sub-headings with bold if we are writing an abstract and not a Markdown file:
@@ -1238,6 +1244,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (query-replace "(t =" "(_t_ =" nil begin end)
          (query-replace " t-test" " _t_-test" nil begin end)
          (query-replace " t test" " _t_-test" nil begin end)
+         (query-replace "(t test" "(_t_-test" nil begin end)
          (query-replace " R2 " " R^2^ " nil begin end)
          (query-replace "(R2 " "(R^2^ " nil begin end)
          (query-replace "R2=" " R^2^ ="  nil begin end)
@@ -1268,6 +1275,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([0-9]+\\) of the \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
        (query-replace-regexp " \\([0-9][0-9]?[0-9]?\\) of \\([0-9][0-9]?[0-9]?\\) " " \\1⁄\\2 " nil begin end)
        (query-replace-regexp "\\([0-9]+\\) out of \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
+       (query-replace-regexp "\\([0-9]+\\) out of the \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
        (query-replace-regexp "\\([0-9]+\\) in every \\([0-9]+\\)" "\\1⁄\\2" nil begin end) ; eg. "approximately one in every 10 citations across leading psychology journals is inaccurate"
        (query-replace "...." "..." nil begin end)
        (query-replace "....." "..." nil begin end)
@@ -1283,13 +1291,13 @@ Mostly string search-and-replace to enforce house style in terms of format."
 
        (query-replace "Figs. " "Figures " nil begin end)
        (query-replace "Fig. " "Figure " nil begin end)
-       (query-replace-regexp "Supplementary [fF]ig\\. \\([0-9]+[a-fA-F]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Supp Fig. 1. ', 'Fig. 2a)' etc
-       (query-replace-regexp "Supplementary [fF]ig\\. \\([0-9]+[a-fA-F]*\\)"    "**Supplementary Figure \\1**"   nil begin end) ; 'Supp Fig. 1,', 'Fig. 2a,' etc
-       (query-replace-regexp "Supplementary [fF]igure \\([0-9]+[a-fA-F]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Supp Figure 1. The graph' etc
-       (query-replace-regexp "Supplementary ([fF]ig\\. \\([0-9]+[a-fA-F]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Supp Fig. 3b)
-       (query-replace-regexp "Supplementary ([fF]igure \\([0-9]+[a-fA-F]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Supp Figure 3b)
-       (query-replace-regexp "Supplementary ([fF]ig\\. \\([0-9]+[a-fA-F]*\\),"  "(**Supplementary Figure \\1**," nil begin end) ; (Supp Fig. 3b,
-       (query-replace-regexp "Supplementary [fF]igures \\([0-9]+[a-fA-F]*\\) and \\([0-9]+[a-fA-F]*\\)"  "**Supplementary Figures \\1** & **\\2**" nil begin end)
+       (query-replace-regexp "Supplementary [fF]ig\\. \\(S?[0-9]+[a-fA-F]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Supp Fig. 1. ', 'Fig. 2a)' etc
+       (query-replace-regexp "Supplementary [fF]ig\\. \\(S?[0-9]+[a-fA-F]*\\)"    "**Supplementary Figure \\1**"   nil begin end) ; 'Supp Fig. 1,', 'Fig. 2a,' etc
+       (query-replace-regexp "Supplementary [fF]igure \\(S?[0-9]+[a-fA-F]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Supp Figure 1. The graph' etc
+       (query-replace-regexp "Supplementary ([fF]ig\\. \\(S?[0-9]+[a-fA-F]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Supp Fig. 3b)
+       (query-replace-regexp "Supplementary ([fF]igure \\(S?[0-9]+[a-fA-F]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Supp Figure 3b)
+       (query-replace-regexp "Supplementary ([fF]ig\\. \\(S?[0-9]+[a-fA-F]*\\),"  "(**Supplementary Figure \\1**," nil begin end) ; (Supp Fig. 3b,
+       (query-replace-regexp "Supplementary [fF]igures \\(S?[0-9]+[a-fA-F]*\\) and \\([0-9]+[a-fA-F]*\\)"  "**Supplementary Figures \\1** & **\\2**" nil begin end)
        (query-replace-regexp "[fF]ig\\.? ?\\(S?\\)\\([0-9\\.]+[a-fA-F]*\\)\\.?" "**Figure \\1\\2**."  nil begin end) ; 'Fig. 1. ', 'Fig. 2a)', 'Figure 1.5' etc
        (query-replace-regexp "[fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\)"    "**Figure \\1\\2**"   nil begin end) ; 'Fig. 1,', 'Fig. 2a,' etc
        (query-replace-regexp "[fF]igure \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\.?\\)" "**Figure \\1\\2**"  nil begin end) ; 'Figure 1. The graph' etc
@@ -1362,7 +1370,6 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([[:punct:]]\\)\\([0-9,- ]+\\)$" "\\1<sup>\\2</sup>" nil begin end) ; looser: handle end of line
        (query-replace-regexp " \\[\\([0-9, -]+\\)\\]\\([[:punct:]]\\)" "\\2<sup>\\1</sup> " nil begin end) ; 'contributing to higher energy intake [42].'
        (query-replace-regexp "\\[\\([0-9, -]+\\)\\] " "<sup>\\1</sup> " nil begin end)
-       (query-replace-regexp "\\([0-9]+\\)- to \\([0-9]+\\)-" "\\1--\\2-" nil begin end) ; "18- to 20-year-olds" → "18--20-year-olds"
        (query-replace-regexp "\\([0-9]+\\)- and \\([0-9]+\\)-" "\\1 & \\2-" nil begin end) ; "We use 1979- and 1997-cohort National Longitudinal Survey of Youth (NLSY) data" → "We use 1979 & 1997-cohort"
 
        (query-replace-regexp "\\([[:alnum:]]\\)- " "\\1---" nil begin end)
@@ -1767,13 +1774,15 @@ Used in abstracts for topics, first-level list emphasis, etc."
   (surround-region-or-word "**" "**"))
 (defun html-insert-smallcaps ()
   "Surround selected region (or word) with smallcaps syntax.
-Built-in CSS class in HTML & Pandoc Markdown, span syntax is equivalent to `[FOO]{.smallcaps}`.
+Built-in CSS class in HTML & Pandoc Markdown, span syntax is equivalent to
+`[FOO]{.smallcaps}`.
 Smallcaps are used on Gwern.net for second-level emphasis after bold has been used."
   (interactive)
   (surround-region-or-word "<span class=\"smallcaps\">" "</span>"))
 (defun markdown-insert-smallcaps ()
-  "Surround selected region (or word) with smallcaps syntax (Pandoc Markdown syntax).
-Built-in CSS class in HTML & Pandoc Markdown, equivalent to `<span class=\"smallcaps\">FOO</span>`.
+  "Surround selected region (or word) with smallcaps syntax (Pandoc Markdown).
+Built-in CSS class in HTML & Pandoc Markdown, equivalent to
+`<span class=\"smallcaps\">FOO</span>`.
 Smallcaps are used on Gwern.net for second-level emphasis after bold has been used."
   (interactive)
   (surround-region-or-word "[" "]{.smallcaps}"))
@@ -1787,14 +1796,13 @@ Compiled by Interwiki.hs to the equivalent (usually) of `<a href=\"https://en.wi
   (interactive)
   (surround-region-or-word "[" "](!W)"))
 (defun markdown-insert-margin-note ()
-  "Surround selected region FOO BAR (or word FOO) with a 'margin note': `^[!Margin: FOO BAR]`.
-This creates marginal glosses (in the left-margin) using custom overloaded footnote syntax.
-These margin-notes are used as very abbreviated italicized summaries of the following paragraph
-(like very small inlined section headers).
-NOTE: no HTML version: margin notes are not supported in annotations because no footnote support.
-(Maybe they could be, just always inline+italicized, similar to narrow windows?)"
+  "Surround selected region FOO BAR (or word FOO) with a 'margin-note'.
+\(Implemented as a special `<span>` class.\)
+This creates marginal glosses (in the left margin) as counterparts to sidenotes.
+These margin-notes are used as very abbreviated italicized summaries of the
+ paragraph \(like very small inlined section headers\)."
   (interactive)
-  (surround-region-or-word "^[!Margin: " "]"))
+  (surround-region-or-word "[" "]{.marginnote}"))
 ;; keybindings:
 ;;; Markdown:
 (add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-e" 'markdown-insert-emphasis)))

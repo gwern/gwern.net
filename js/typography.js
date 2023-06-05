@@ -1,8 +1,8 @@
 /*	Typography.js
 	(Copyright 2020 Said Achmiz)
 	MIT License
-	
-	is based on 
+
+	is based on
 
 	https://github.com/kellym/smartquotes.js
 	(Copyright 2013 Kelly Martin)
@@ -85,7 +85,7 @@ Typography = {
 			[ /([a-z]) -(\u201d)/ig, retainLength => (retainLength ? '$1\u2063\u2014$2' : '$1\u2014$2') ],
 			[ /(\u201c)- ([a-z])/ig, retainLength => (retainLength ? '$1\u2014\u2063$2' : '$1\u2014$2') ],
 			// turn a double or triple hyphen, optionally surrounded by spaces, between words, or at the start of a line, into an em-dash
-			[ /([a-z"'“”‘’]|\n)( ?---? ?)([a-z"'“”‘’])/ig, retainLength => (retainLength 
+			[ /([a-z"'“”‘’]|\n)( ?---? ?)([a-z"'“”‘’])/ig, retainLength => (retainLength
 				? (m0, m1, m2, m3) => (m1 + '\u2014'.padStart(m2.length - 1, '\u2063') + m3)
 				: (m0, m1, m2, m3) => (m1 + '\u2014' + m3)
 			  ) ],
@@ -145,7 +145,7 @@ Typography = {
 		return str;
 	},
 	substringSansSeparators: (text, value, position) => {
-		return text.substr(position, value.length).replace('\u2063', '');
+		return text.substr(position, value.length).replace(/\u2063/g, '');
 	},
 	replaceZeroWidthSpaces: (element) => {
 		let replacements = [ ];
@@ -153,7 +153,7 @@ Typography = {
 			if (node.nodeType === Node.ELEMENT_NODE) {
 				Typography.replaceZeroWidthSpaces(node);
 			} else if (node.nodeType === Node.TEXT_NODE) {
-				let zwsRegExp = new RegExp(Typography.replacementDefinitionGroups.separators.map(x => x[0].source).join("|"), "g"); 
+				let zwsRegExp = new RegExp(Typography.replacementDefinitionGroups.separators.map(x => x[0].source).join("|"), "g");
 				let parts = [ ];
 				let start = 0;
 				let match = null;
@@ -184,7 +184,7 @@ Typography = {
 			let prevNodeIsWBR = false;
 			for (let i = 0; i < element.childNodes.length; i++) {
 				let node = element.childNodes[i];
-				if (   node.nodeType === Node.ELEMENT_NODE 
+				if (   node.nodeType === Node.ELEMENT_NODE
 					&& node.tagName == "WBR") {
 					if (prevNodeIsWBR) {
 						node.remove();

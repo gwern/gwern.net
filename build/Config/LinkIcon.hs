@@ -615,4 +615,5 @@ linkIconTestUnitsText =
          , ("https://archiveofourown.org/works/17356235", "Ao3", "text,tri")
          , ("https://mathshistory.st-andrews.ac.uk/Extras/Poincare_Intuition/", "M  T", "text,quad,sans")
          , ("http://norvig.com/experiment-design.html", "N", "text,sans")
+         , ("www.scholarpedia.org", "scholarpedia", "svg")
         ]

@@ -1418,7 +1418,7 @@ Popups = {
     popupBreathingRoomYTight: -4.0,
 
     popupTriggerDelay: 650,
-    popupFadeoutDelay: 50,
+    popupFadeoutDelay: 100,
     popupFadeoutDuration: 250,
 
 	/******************/
@@ -2051,7 +2051,7 @@ Popups = {
 	//	Called by: Popups.popupMouseDown (event handler)
 	//	Called by: Popups.injectPopup
 	popupIsResizeable: (popup) => {
-		return (   (   Popups.popupIsPinned(popup) 
+		return (   (   Popups.popupIsPinned(popup)
 					|| Popups.popupIsZoomed(popup))
 				&& (   Popups.popupAllowsHorizontalResize(popup)
 					|| Popups.popupAllowsVerticalResize(popup)));
@@ -2594,7 +2594,7 @@ Popups = {
 
 				button.swapClasses([ "pin", "unpin" ], (Popups.popupIsPinned(popup) ? 1 : 0));
 
-				button.disabled = (   Popups.popupIsCollapsed(popup) 
+				button.disabled = (   Popups.popupIsCollapsed(popup)
 								   || Popups.popupIsZoomed(popup))
 			};
 
@@ -2787,11 +2787,11 @@ Popups = {
 			let provisionalPopupYPosition = 0.0;
 
 			let offToTheSide = false;
-			let popupSpawnYOriginForSpawnAbove = targetViewportRect.top 
+			let popupSpawnYOriginForSpawnAbove = targetViewportRect.top
 											   - (tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
-			let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom 
+			let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom
 											   + (tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
-			if (   Popups.containingPopFrame(target) 
+			if (   Popups.containingPopFrame(target)
 				|| Popups.preferSidePositioning(target)) {
 				/*  The popup is a nested popup, or the target specifies that it
 					prefers to have popups spawned to the side; we try to put
@@ -2843,7 +2843,7 @@ Popups = {
 						Popups.positionPopup(popup, null, true);
 						return;
 					} else {
-						/*	... or, failing that, we will have to put it off to 
+						/*	... or, failing that, we will have to put it off to
 							the right after all.
 						 */
 						offToTheSide = true;
@@ -3125,7 +3125,7 @@ Popups = {
 		Popups.addClassesToPopFrame(popup, "resizing");
 
 		//  Save position, if need be.
-		if (   !("previousXPosition" in popup.dataset) 
+		if (   !("previousXPosition" in popup.dataset)
 			&& !("previousYPosition" in popup.dataset)) {
 			popup.dataset.previousXPosition = popup.viewportRect.left;
 			popup.dataset.previousYPosition = popup.viewportRect.top;
@@ -3471,7 +3471,7 @@ Popups = {
 			&& event.button == 0)
 			return;
 
-		/*	Unlike ‘mouseenter’ and ‘mouseleave’, ‘mousedown’ behaves like 
+		/*	Unlike ‘mouseenter’ and ‘mouseleave’, ‘mousedown’ behaves like
 			‘mouseover’/‘mouseout’ in that it attaches to the innermost element,
 			which might not be our spawning target (but instead some descendant
 			element); we must find the actual spawning target.
@@ -10527,8 +10527,8 @@ Extracts.setup();
 /*	Typography.js
 	(Copyright 2020 Said Achmiz)
 	MIT License
-	
-	is based on 
+
+	is based on
 
 	https://github.com/kellym/smartquotes.js
 	(Copyright 2013 Kelly Martin)
@@ -10611,7 +10611,7 @@ Typography = {
 			[ /([a-z]) -(\u201d)/ig, retainLength => (retainLength ? '$1\u2063\u2014$2' : '$1\u2014$2') ],
 			[ /(\u201c)- ([a-z])/ig, retainLength => (retainLength ? '$1\u2014\u2063$2' : '$1\u2014$2') ],
 			// turn a double or triple hyphen, optionally surrounded by spaces, between words, or at the start of a line, into an em-dash
-			[ /([a-z"'“”‘’]|\n)( ?---? ?)([a-z"'“”‘’])/ig, retainLength => (retainLength 
+			[ /([a-z"'“”‘’]|\n)( ?---? ?)([a-z"'“”‘’])/ig, retainLength => (retainLength
 				? (m0, m1, m2, m3) => (m1 + '\u2014'.padStart(m2.length - 1, '\u2063') + m3)
 				: (m0, m1, m2, m3) => (m1 + '\u2014' + m3)
 			  ) ],
@@ -10671,7 +10671,7 @@ Typography = {
 		return str;
 	},
 	substringSansSeparators: (text, value, position) => {
-		return text.substr(position, value.length).replace('\u2063', '');
+		return text.substr(position, value.length).replace(/\u2063/g, '');
 	},
 	replaceZeroWidthSpaces: (element) => {
 		let replacements = [ ];
@@ -10679,7 +10679,7 @@ Typography = {
 			if (node.nodeType === Node.ELEMENT_NODE) {
 				Typography.replaceZeroWidthSpaces(node);
 			} else if (node.nodeType === Node.TEXT_NODE) {
-				let zwsRegExp = new RegExp(Typography.replacementDefinitionGroups.separators.map(x => x[0].source).join("|"), "g"); 
+				let zwsRegExp = new RegExp(Typography.replacementDefinitionGroups.separators.map(x => x[0].source).join("|"), "g");
 				let parts = [ ];
 				let start = 0;
 				let match = null;
@@ -10710,7 +10710,7 @@ Typography = {
 			let prevNodeIsWBR = false;
 			for (let i = 0; i < element.childNodes.length; i++) {
 				let node = element.childNodes[i];
-				if (   node.nodeType === Node.ELEMENT_NODE 
+				if (   node.nodeType === Node.ELEMENT_NODE
 					&& node.tagName == "WBR") {
 					if (prevNodeIsWBR) {
 						node.remove();
