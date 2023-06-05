@@ -237,7 +237,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("CRISPR/Cas9", "https://en.wikipedia.org/wiki/Cas9")
         , ("CTRL", "https://arxiv.org/abs/1909.05858#salesforce")
         , ("C\\. ?S\\. ?Lewis", "https://en.wikipedia.org/wiki/C._S._Lewis")
-        , ("Carmen", "https://en.wikipedia.org/wiki/Carmen")
         , ("Catch-22", "https://en.wikipedia.org/wiki/Catch-22")
         , ("Catherynne M. Valente", "https://en.wikipedia.org/wiki/Catherynne_M._Valente")
         , ("CelebA", "https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html")
