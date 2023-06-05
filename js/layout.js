@@ -129,6 +129,9 @@ GW.layout = {
 		[ ".annotation p.data-field.title + .data-field.annotation-abstract",
 										 3, false ],
 
+		[ ".aux-links-container + .aux-links-container",
+										 0, false ],
+
 		[ "p.footnote-back-block",		 1, false ],
 		[ "p.first-graf",				10 ],
 		[ "p.list-heading",				10 ],
