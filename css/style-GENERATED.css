@@ -4116,8 +4116,8 @@ ol.link-bibliography-list-compact > li::before {
 #x-of-the-day {
 	position: relative;
 	margin-top: 2.5rem;
-	padding: 2rem 1.5rem 3.5rem 1.5rem;
-	border: 1px solid #ccc;
+	padding: 2.5rem 1.5rem 3.75rem 1.5rem;
+	border: 1px solid var(--GW-x-of-the-day-border-color);
 }
 
 #x-of-the-day::before,
@@ -4149,14 +4149,8 @@ ol.link-bibliography-list-compact > li::before {
 /*  Quote of the day.
  */
  
-#x-of-the-day .quote-of-the-day {
-    margin: 2.25em auto 3.25em auto;
-}
-@media only screen and (max-width: 649px) {
-    #x-of-the-day .quote-of-the-day {
-        margin: 2.5em 1em 3.75em 1em;
-    }
-}
+/*	No special styles, for now.
+ */
 
 /*******************/
 /*  Site of the day.
@@ -4177,7 +4171,7 @@ ol.link-bibliography-list-compact > li::before {
 #x-of-the-day .site-of-the-day blockquote {
     --background-color: var(--GW-body-background-color);
 
-    margin: 3.5em auto 2.75em auto;
+    margin: 3.5em auto 3.25em auto;
     position: relative;
     height: var(--box-size);
     width: fit-content;

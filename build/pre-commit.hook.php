@@ -137,14 +137,13 @@ if ($force || (`git diff-index --cached HEAD -- {$head_includes}`)) {
 ## External styles and scripts.
 ## Build the SSI-included <body> section, with non-blocking (versioned) links 
 ## to style.css and script.js.
-$versioned_files = [
+$body_includes = [
 	"{$static_dir}/css/style-VERSIONED.css",
-	"{$static_dir}/js/script-GENERATED.js",
-	"{$static_dir}/template/inlined-asset-links-template.html"
+	"{$static_dir}/js/script-GENERATED.js"
 ];
-$versioned_files = implode(" ", $versioned_files);
-if ($force || (`git diff-index --cached HEAD -- {$versioned_files}`)) {
-	require_once("{$build_dir}/build_versioned_includes.php");
+$body_includes = implode(" ", $body_includes);
+if ($force || (`git diff-index --cached HEAD -- {$body_includes}`)) {
+	require_once("{$build_dir}/build_body_includes.php");
 	`git add {$static_dir}/include/.`;
 }
 

@@ -2411,18 +2411,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685996139#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685997306#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685996139#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685997306#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685996139#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685997306#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685996139#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1685997306#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -4116,8 +4116,8 @@ ol.link-bibliography-list-compact > li::before {
 #x-of-the-day {
 	position: relative;
 	margin-top: 2.5rem;
-	padding: 2rem 1.5rem 3.5rem 1.5rem;
-	border: 1px solid #ccc;
+	padding: 2.5rem 1.5rem 3.75rem 1.5rem;
+	border: 1px solid var(--GW-x-of-the-day-border-color);
 }
 
 #x-of-the-day::before,
@@ -4149,14 +4149,8 @@ ol.link-bibliography-list-compact > li::before {
 /*  Quote of the day.
  */
  
-#x-of-the-day .quote-of-the-day {
-    margin: 2.25em auto 3.25em auto;
-}
-@media only screen and (max-width: 649px) {
-    #x-of-the-day .quote-of-the-day {
-        margin: 2.5em 1em 3.75em 1em;
-    }
-}
+/*	No special styles, for now.
+ */
 
 /*******************/
 /*  Site of the day.
@@ -4177,7 +4171,7 @@ ol.link-bibliography-list-compact > li::before {
 #x-of-the-day .site-of-the-day blockquote {
     --background-color: var(--GW-body-background-color);
 
-    margin: 3.5em auto 2.75em auto;
+    margin: 3.5em auto 3.25em auto;
     position: relative;
     height: var(--box-size);
     width: fit-content;
@@ -5332,14 +5326,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685996139#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685997306#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685996139#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685997306#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5472,7 +5466,7 @@ body.lorem div[class^='drop-cap'] {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1685996139#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685997306#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5895,14 +5889,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685996139#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685997306#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685996139#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685997306#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6966,7 +6960,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1685996139#question');
+    background-image: url('/static/img/icon/icons.svg?v=1685997306#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7454,7 +7448,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1685996139#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1685997306#circle-notch-solid');
 
     pointer-events: none;
 }
