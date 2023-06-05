@@ -4224,7 +4224,7 @@ ol.link-bibliography-list-compact > li::before {
 /*********************/
 
 #footer-decoration-container {
-    margin: 0 0 1em 0;
+    margin: 2rem 0 1rem 0;
     line-height: 0;
 }
 

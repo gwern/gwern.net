@@ -2411,18 +2411,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685992033#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685992672#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685992033#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685992672#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685992033#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685992672#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685992033#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1685992672#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -4224,7 +4224,7 @@ ol.link-bibliography-list-compact > li::before {
 /*********************/
 
 #footer-decoration-container {
-    margin: 0 0 1em 0;
+    margin: 2rem 0 1rem 0;
     line-height: 0;
 }
 
@@ -5308,14 +5308,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685992033#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685992672#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685992033#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685992672#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5448,7 +5448,7 @@ body.lorem div[class^='drop-cap'] {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1685992033#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685992672#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5871,14 +5871,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685992033#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685992672#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685992033#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685992672#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6942,7 +6942,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1685992033#question');
+    background-image: url('/static/img/icon/icons.svg?v=1685992672#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7430,7 +7430,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1685992033#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1685992672#circle-notch-solid');
 
     pointer-events: none;
 }
