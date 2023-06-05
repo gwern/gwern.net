@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-05-27 10:02:43 gwern"
+When: Time-stamp: "2023-06-05 11:24:25 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -298,7 +298,7 @@ descField d = field d $ \item -> do
                     Just desc ->
                      let cleanedDesc = runPure $ do
                               pandocDesc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack desc)
-                              let pandocDesc' = walk convertInterwikiLinks $ linebreakingTransform pandocDesc
+                              let pandocDesc' = convertInterwikiLinks $ linebreakingTransform pandocDesc
                               htmlDesc <- writeHtml5String def pandocDesc' -- NOTE: we can skip 'safeHtmlWriterOptions' use here because descriptions are always very simple & will never have anything complex like tables
                               return $ T.unpack htmlDesc
                       in case cleanedDesc of
@@ -310,8 +310,8 @@ pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `con
                            -- tag-directories/link-bibliographies special-case: we don't need to run all the heavyweight passes, and LinkAuto has a regrettable tendency to screw up section headers, so we check to see if we are processing a document with 'index: true' set in the YAML metadata, and if we are, we slip several of the rewrite transformations:
   do let indexp = indexp' == "true"
      let pw
-           = if indexp then walk convertInterwikiLinks p else
-               walk (footnoteAnchorChecker . convertInterwikiLinks) $
+           = if indexp then convertInterwikiLinks p else
+               walk footnoteAnchorChecker $ convertInterwikiLinks $
                  walk linkAuto p
      unless indexp $ createAnnotations md pw
      let pb = walk (hasAnnotation md) $ addPageLinkWalk pw  -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links

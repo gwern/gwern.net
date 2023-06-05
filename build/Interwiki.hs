@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Interwiki (convertInterwikiLinks, inlinesToText, wpPopupClasses, interwikiTestSuite) where
+module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, inlinesToText, wpPopupClasses, interwikiTestSuite) where
 
 import Data.List (intersect, nub)
 import Data.Containers.ListUtils (nubOrd)
@@ -8,7 +8,8 @@ import qualified Data.Text as T (append, concat, head, isInfixOf, null, tail, ta
 import Network.URI (parseURIReference, uriPath, uriAuthority, uriRegName)
 import qualified Network.URI.Encode as E (encodeTextWith, isAllowed)
 
-import Text.Pandoc (Inline(..), nullAttr)
+import Text.Pandoc (Inline(..), Pandoc, nullAttr)
+import Text.Pandoc.Walk (walk)
 
 import Utils (replaceManyT, anyPrefixT, fixedPoint)
 import qualified Config.Interwiki as C (redirectDB, quoteOverrides)
@@ -43,13 +44,17 @@ inlinesToText = T.concat . map go
                -- fall through with a blank:
                _        -> " "::T.Text
 
+-- wrap `convertInterwikiLinksInline` with its document-level context for error-reporting purposes. It is too difficult to debug errors like empty links (eg. a `<a href="!W"></a>`) when you have no idea where they are located, and the empty link, almost by definition, has no information about itself & can be quite hard to search for (especially if it's generated or in an intermediate).
+convertInterwikiLinks :: Pandoc -> Pandoc
+convertInterwikiLinks doc = walk (convertInterwikiLinksInline doc) doc
+
 -- BUG: Escaping bugs with Unicode: eg. [Pāli Canon](!W) / <https://en.wikipedia.org/wiki/P%C4%81li_Canon>
 -- but if I simply Network.HTTP.urlEncode the article, that breaks a lot of other stuff (like colons in namespaces)...? What *is* the right way to escape/encode WP article names?
-convertInterwikiLinks :: Inline -> Inline
-convertInterwikiLinks x@(Link _ []           _) = error $ "Link error (convertInterwikiLinks): no anchor text‽ " ++ show x
-convertInterwikiLinks x@(Link _ _ ("", _))      = x
-convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
-  if not (T.null article) && T.head article == ' ' then error $ "Link error (convertInterwikiLinks): tooltip malformed with excess whitespace? " ++ show x else
+convertInterwikiLinksInline :: Pandoc -> Inline -> Inline
+convertInterwikiLinksInline doc x@(Link _ []           _) = error $ "Link error (convertInterwikiLinksInline): no anchor text‽ " ++ show x ++ " : " ++ show doc
+convertInterwikiLinksInline _ x@(Link _ _ ("", _))        = x
+convertInterwikiLinksInline _ x@(Link (ident, classes, kvs) ref (interwiki, article)) =
+  if not (T.null article) && T.head article == ' ' then error $ "Link error (convertInterwikiLinksInline): tooltip malformed with excess whitespace? " ++ show x else
   if T.head interwiki == '!' then
         case M.lookup (T.tail interwiki) interwikiMap of
                 Just url  -> let attr' = (ident,
@@ -76,7 +81,7 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
                          fixedPoint wpURLRedirectRewrites $ u `T.append` (E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '\'', '+'])) $ replaceManyT [("–", "%E2%80%93"), ("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $ deunicode a')
     deunicode :: T.Text -> T.Text
     deunicode = replaceManyT [("‘", "\'"), ("’", "\'"), (" ", " "), (" ", " ")]
-convertInterwikiLinks x = x
+convertInterwikiLinksInline _ x = x
 
 -- special case rewrites: for example, automatically rewrite anchor texts ending in "'s" to delete it (eg. "George Washington's" to "George Washington") if it is not a special-case where that is part of the official name (eg. "Antoine's"). This makes writing much easier because you can simply write '[George Washington's](!W) first act as president was' instead of ''[George Washington's](!W "George Washington") first act...'. This sort of possessive rewriting gets especially annoying in long runs of "$CREATOR's $MEDIA" like in reviews.
 wpURLRewrites, wpURLRedirectRewrites :: T.Text -> T.Text
@@ -101,7 +106,7 @@ interwikiTestSuite = let redirectsCircular = (map fst C.redirectDB) `intersect` 
   in if not (null redirectsCircular) then error ("Interwiki.hs: circular redirects detected: " ++ show redirectsCircular)
      else if redirectsDuplicate then error "Interwiki.hs: duplicate redirects detected (in either original or destination)"
   else
-            map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\(link1, link2) -> convertInterwikiLinks link1 /= link2) [
+            map (\(a,b) -> (a, (convertInterwikiLinksInline undefined) a, b)) $ filter (\(link1, link2) -> (convertInterwikiLinksInline undefined) link1 /= link2) [
           -- !Wikipedia
           (Link nullAttr [Str "Pondicherry"] ("!Wikipedia",""),
             Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))

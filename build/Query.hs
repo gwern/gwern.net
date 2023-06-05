@@ -1,7 +1,7 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2023-01-21 14:53:19 gwern"
+When:  Time-stamp: "2023-06-05 11:25:12 gwern"
 License: CC-0
 -}
 
@@ -30,7 +30,7 @@ extractLinksWith :: (Inline -> Bool) -> Bool -> T.Text -> [T.Text]
 extractLinksWith rule md txt = extractURLsWith rule $ parseMarkdownOrHTML md txt
 
 extractURLsWith :: (Inline -> Bool) -> Pandoc -> [T.Text]
-extractURLsWith rule = queryWith (map (\(url,_,_) -> url) . extractURLWith rule) . walk convertInterwikiLinks
+extractURLsWith rule = queryWith (map (\(url,_,_) -> url) . extractURLWith rule) . convertInterwikiLinks
 
 -- | Read 1 Pandoc AST and return its URLs as Strings
 extractURLs :: Pandoc -> [T.Text]
@@ -45,7 +45,7 @@ extractURLWith rule x@(Link _ anchorText (url, tooltip))
 extractURLWith _ _ = []
 
 extractLinkIDsWith :: (Inline -> Bool) -> T.Text -> Bool -> T.Text -> [(T.Text, T.Text)]
-extractLinkIDsWith rule filename md txt = queryWith extractIDs $ walk convertInterwikiLinks $ parseMarkdownOrHTML md txt
+extractLinkIDsWith rule filename md txt = queryWith extractIDs $ convertInterwikiLinks $ parseMarkdownOrHTML md txt
   where extractIDs :: Inline -> [(T.Text, T.Text)]
         extractIDs x@(Link ("",_,_) _ (url,_)) = if rule x then [(url, filename)] else []
         extractIDs x@(Link (ident,_,_) _ (url,_)) = if rule x then [(url, (T.takeWhile (/='#') $ filename) `T.append` "#" `T.append` ident)] else []
@@ -62,7 +62,7 @@ extractURL = extractURLWith (const True)
 --
 -- Special links: this will convert interwiki links to the full URLs, but it will leave alone any local links (it will not prefix 'https://gwern.net') or any inflation-adjusted links (currently, links starting with '$' or '₿').
 extractURLsAndAnchorTooltips :: Pandoc -> [(T.Text,[T.Text])]
-extractURLsAndAnchorTooltips = queryWith extractURLSquashed . walk convertInterwikiLinks
+extractURLsAndAnchorTooltips = queryWith extractURLSquashed . convertInterwikiLinks
  where
    extractURLSquashed :: Inline -> [(T.Text,[T.Text])]
    extractURLSquashed (Link _ il (u,""))     = [(u, [cleanURL $ inlinesToText il])]

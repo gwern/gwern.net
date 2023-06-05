@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-06-04 16:29:06 gwern"
+# When:  Time-stamp: "2023-06-05 10:22:46 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -114,7 +114,7 @@ else
     ghci -i/home/gwern/wiki/static/build/ ./static/build/GenerateSimilar.hs  -e 'e <- readEmbeddings' &>/dev/null
 
     # duplicates a later check but if we have a fatal link error, we'd rather find out now rather than 30 minutes later while generating annotations:
-    λ(){ grep -F -e 'href=""' -- ./metadata/*.yaml || true; }
+    λ(){ grep -F -e 'href=""' -e 'href="!W"></a>' -e "href='!W'></a>" -- ./metadata/*.yaml || true; }
     wrap λ "Malformed empty link in annotations?"
 
     # another early fatal check: if there is a Markdown file 'foo.page' and also a subdirectory 'foo/' in the same directory, then this will result in, later, a fatal error when one tries to compile 'foo.page' → 'foo' (the HTML file) but 'foo' (the directory) already exists.

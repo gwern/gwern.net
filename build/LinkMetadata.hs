@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-05-12 22:29:22 gwern"
+When:  Time-stamp: "2023-06-05 11:23:54 gwern"
 License: CC-0
 -}
 
@@ -345,7 +345,8 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                       unless (null abst) $ void $ createAnnotations md pandoc
                       pandoc' <- if null abst then return pandoc
                                     else do
-                                          let p = walk (convertInterwikiLinks . nominalToRealInflationAdjuster) $
+                                          let p = walk nominalToRealInflationAdjuster $
+                                                  convertInterwikiLinks $
                                                   walk (hasAnnotation md) $
                                                   walk addPageLinkWalk $
                                                   walk (parseRawBlock nullAttr) pandoc

@@ -7,7 +7,6 @@ import qualified Data.Text.IO as TIO (getContents)
 import System.Directory (setCurrentDirectory)
 
 import Text.Pandoc (def, pandocExtensions, runPure, readerExtensions, readMarkdown, writeHtml5String)
-import Text.Pandoc.Walk (walk)
 
 import LinkMetadata (cleanAbstractsHTML)
 import LinkAuto (linkAuto)
@@ -20,7 +19,7 @@ main = do originalMarkdown <- TIO.getContents
 
           let clean = runPure $ do
                 pandoc <- readMarkdown def{readerExtensions=pandocExtensions} originalMarkdown
-                let pandoc' = walk convertInterwikiLinks pandoc
+                let pandoc' = convertInterwikiLinks pandoc
                 let pandoc'' = linkAuto pandoc'
                 writeHtml5String safeHtmlWriterOptions pandoc''
           let html = case clean of
