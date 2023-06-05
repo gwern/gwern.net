@@ -60,7 +60,8 @@ GW.layout = {
 		"blockquote",
 		".epigraph",
 		".admonition",
-		".sidenote"
+		".sidenote",
+		"#x-of-the-day"
 	],
 
 	//	Block elements get layout classes applied to them.
@@ -99,7 +100,8 @@ GW.layout = {
 		".empty",
 		".float",
 		"noscript",
-		"button"
+		"button",
+		"a:empty"
 	],
 
 	//	Elements which always participate in block layout, even when empty.

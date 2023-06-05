@@ -7,6 +7,7 @@ $build_dir = __DIR__;
 $static_dir = "{$build_dir}/..";
 
 ## Fonts and font CSS.
+## Build the font CSS from the font spec.
 $fonts_and_font_css = [
 	"{$static_dir}/font/font_spec.php"
 ];
@@ -27,6 +28,7 @@ if ($force || (`git diff-index --cached HEAD -- {$fonts_and_font_css}`)) {
 }
 
 ## Components of color (light/dark) inlined CSS.
+## Build the inlined color CSS (for light and dark mode).
 $css_components = [
 	"{$static_dir}/css/colors.css",
 	"{$static_dir}/css/light-mode-adjustments.css",
@@ -39,6 +41,8 @@ if ($force || (`git diff-index --cached HEAD -- {$css_components}`)) {
 }
 
 ## Unified assets (JS & CSS).
+## Assemble all the .css and .js files into head.css/style.css and 
+## head.js/script.js, respectively.
 $disparate_assets = [
 	'{$static_dir}/js/utility.js',
 	'{$static_dir}/js/initial.js',
@@ -86,6 +90,7 @@ if ($force || (`git diff-index --cached HEAD -- {$disparate_assets}`)) {
 }
 
 ## Icons.
+## Build the icons.svg sprite file out of individual SVG icons.
 $icons = [ ];
 $icon_patterns = [
 	"{$static_dir}/img/icon/*.svg"
@@ -98,7 +103,8 @@ if ($force || (`git diff-index --cached HEAD -- {$icons}`)) {
 	`git add {$static_dir}/img/icon/. {$static_dir}/include/.`;
 }
 
-## Assets (icons & templates).
+## Icons, redux.
+## Ensure that the CSS files use versioned links to icons.svg.
 $versioned_assets = [
 	"{$static_dir}/img/icon/icons.svg"
 ];
@@ -114,6 +120,8 @@ if ($force || (`git diff-index --cached HEAD -- {$versioned_assets}`)) {
 }
 
 ## Initial styles and scripts.
+## Build the SSI-included <head> section, with both inlined styles and blocking
+## (versioned) links to head.css and head.js.
 $head_includes = [
 	"{$static_dir}/css/light-mode-GENERATED.css",
 	"{$static_dir}/css/dark-mode-GENERATED.css",
@@ -127,14 +135,15 @@ if ($force || (`git diff-index --cached HEAD -- {$head_includes}`)) {
 }
 
 ## External styles and scripts.
-$versioned_files = [
+## Build the SSI-included <body> section, with non-blocking (versioned) links 
+## to style.css and script.js.
+$body_includes = [
 	"{$static_dir}/css/style-VERSIONED.css",
-	"{$static_dir}/js/script-GENERATED.js",
-	"{$static_dir}/template/inlined-asset-links-template.html"
+	"{$static_dir}/js/script-GENERATED.js"
 ];
-$versioned_files = implode(" ", $versioned_files);
-if ($force || (`git diff-index --cached HEAD -- {$versioned_files}`)) {
-	require_once("{$build_dir}/build_versioned_includes.php");
+$body_includes = implode(" ", $body_includes);
+if ($force || (`git diff-index --cached HEAD -- {$body_includes}`)) {
+	require_once("{$build_dir}/build_body_includes.php");
 	`git add {$static_dir}/include/.`;
 }
 

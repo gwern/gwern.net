@@ -303,4 +303,8 @@
 	 */
 	--GW-nav-header-link-color: #8b8b8b;
 	--GW-nav-header-link-hover-color: #fff;
+
+	/*	X of the day.
+	 */
+	--GW-x-of-the-day-border-color: #5c5c5c;
 }
