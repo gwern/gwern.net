@@ -48,6 +48,7 @@ $disparate_assets = [
 
 	'initial.css',
 	'initial-fonts-VERSIONED.css',
+	'reader-mode-initial.css',
 
 	'misc.js',
 	'popups.js',

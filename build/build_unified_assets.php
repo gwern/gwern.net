@@ -13,6 +13,12 @@ $template_dir = "{$static_root}/template/include";
 
 ## FILES
 
+$head_css = [
+	'initial.css',
+	'initial-fonts-VERSIONED.css',
+	'reader-mode-initial.css'
+];
+
 $head_js = [
 	'utility.js',
 	'initial.js',
@@ -21,9 +27,10 @@ $head_js = [
 	'reader-mode-initial.js'
 ];
 
-$head_css = [
-	'initial.css',
-	'initial-fonts-VERSIONED.css'
+$css = [
+	'fonts-VERSIONED.css',
+	'default.css',
+	'links.css'
 ];
 
 $js = [
@@ -49,15 +56,16 @@ $js = [
 	'reader-mode.js'
 ];
 
-$css = [
-	'fonts-VERSIONED.css',
-	'default.css',
-	'links.css'
-];
-
 $templates = glob("{$template_dir}/*.tmpl");
 
 ## ACTION
+
+## Initial CSS.
+$head_css_file = "";
+foreach ($head_css as $head_css_component) {
+	$head_css_file .= file_get_contents("{$css_dir}/{$head_css_component}");
+}
+file_put_contents("{$css_dir}/head-GENERATED.css", $head_css_file);
 
 ## Transclude templates.
 $templates_file = "Transclude.templates = {\n";
@@ -74,13 +82,6 @@ foreach ($templates as $template_path) {
 }
 $templates_file .= "};\n";
 file_put_contents("{$js_dir}/transclude-templates-GENERATED.js", $templates_file);
-
-## Initial CSS.
-$head_css_file = "";
-foreach ($head_css as $head_css_component) {
-	$head_css_file .= file_get_contents("{$css_dir}/{$head_css_component}");
-}
-file_put_contents("{$css_dir}/head-GENERATED.css", $head_css_file);
 
 ## Initial JS.
 $head_js_file = "";
