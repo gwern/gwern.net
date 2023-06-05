@@ -9,6 +9,8 @@ ReaderMode = {
                 "#page-metadata #page-importance",
                 "#page-metadata .backlinks",
                 "#page-metadata .link-bibliography",
+                "#page-metadata .similars",
+                "#page-metadata #page-date-range::after",
                 "#TOC ul li::before",
                 "#footer",
                 "#footer-logo",
