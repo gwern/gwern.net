@@ -1125,6 +1125,10 @@
     --GW-popins-popin-border-width: 3px;
     --GW-popins-popin-title-bar-height: calc(1rem * 16/9);
     --GW-popins-popin-footer-bar-height: calc(1rem * 16/9);
+
+	--GW-page-toolbar-collapse-duration: 0.25s;
+	--GW-page-toolbar-slow-collapse-duration: 1s;
+	--GW-page-toolbar-fade-after-collapse-duration: 0.25s;
 }
 @supports (-moz-user-focus: normal) {
     :root {
@@ -2411,18 +2415,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685997306#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686006228#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685997306#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686006228#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685997306#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686006228#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685997306#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1686006228#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5327,14 +5331,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685997306#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686006228#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685997306#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686006228#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5467,7 +5471,7 @@ body.lorem div[class^='drop-cap'] {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1685997306#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686006228#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5890,14 +5894,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685997306#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686006228#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685997306#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686006228#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6516,8 +6520,8 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
  */
 #page-toolbar.animating > button.main-toggle-button {
     transition:
-        opacity 0.25s ease-out,
-        transform 0.25s ease-out;
+        opacity var(--GW-page-toolbar-collapse-duration) ease-out,
+        transform var(--GW-page-toolbar-collapse-duration) ease-out;
 }
 
 /*  Toolbar collapsing (vertical mode).
@@ -6533,8 +6537,8 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     transform: rotateX(-0.25turn);
     max-height: 0;
     transition:
-        transform 0.25s ease-out,
-        max-height 0s ease-out 0.25s;
+        transform var(--GW-page-toolbar-collapse-duration) ease-out,
+        max-height 0s ease-out var(--GW-page-toolbar-collapse-duration);
 }
 
 /*  Toolbar collapsing (mobile mode).
@@ -6551,49 +6555,49 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 }
 #page-toolbar.mobile > button.collapse-button {
     transition:
-        opacity 0.25s ease-out 0.25s;
+        opacity var(--GW-page-toolbar-fade-after-collapse-duration) ease-out var(--GW-page-toolbar-collapse-duration);
 }
 #page-toolbar.mobile.collapsed > button.collapse-button {
     opacity: 0;
     transition:
-        opacity 0.25s ease-out;
+        opacity var(--GW-page-toolbar-collapse-duration) ease-out;
 }
 
 #page-toolbar.mobile.collapsed .widgets {
     transform: rotateX(0.25turn);
     max-height: 0;
     transition:
-        transform 0.25s ease-out,
-        max-height 0s ease-out 0.25s;
+        transform var(--GW-page-toolbar-collapse-duration) ease-out,
+        max-height 0s ease-out var(--GW-page-toolbar-collapse-duration);
 }
 
 /*  Slow collapsing.
  */
 #page-toolbar.collapsed.collapsed-slowly > button.main-toggle-button {
     transition:
-        opacity 0.75s ease-out,
-        transform 0.75s linear;
+        opacity var(--GW-page-toolbar-slow-collapse-duration) ease-out,
+        transform var(--GW-page-toolbar-slow-collapse-duration) linear;
 }
 
 #page-toolbar.collapsed.collapsed-slowly .widgets {
     transition:
-        transform 0.75s ease-out;
+        transform var(--GW-page-toolbar-slow-collapse-duration) ease-out;
 }
 
 /*  Slow collapsing (vertical layout).
  */
 #page-toolbar.vertical.collapsed.collapsed-slowly .widgets {
     transition:
-        transform 0.75s ease-out,
-        max-height 0s ease-out 0.75s;
+        transform var(--GW-page-toolbar-slow-collapse-duration) ease-out,
+        max-height 0s ease-out var(--GW-page-toolbar-slow-collapse-duration);
 }
 
 /*  Slow collapsing (mobile layout).
  */
 #page-toolbar.mobile.collapsed.collapsed-slowly .widgets {
     transition:
-        transform 0.75s ease-out,
-        max-height 0s ease-out 0.75s;
+        transform var(--GW-page-toolbar-slow-collapse-duration) ease-out,
+        max-height 0s ease-out var(--GW-page-toolbar-slow-collapse-duration);
 }
 
 
@@ -6961,7 +6965,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1685997306#question');
+    background-image: url('/static/img/icon/icons.svg?v=1686006228#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7449,7 +7453,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1685997306#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1686006228#circle-notch-solid');
 
     pointer-events: none;
 }

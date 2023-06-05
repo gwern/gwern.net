@@ -763,13 +763,16 @@ GW.pageToolbar = {
 
 	hoverUncollapseDelay: 400,
 	unhoverCollapseDelay: 2500,
-	demoCollapseDelay: 2500,
+	demoCollapseDelay: 4000,
 
 	/*	These values must be synced with CSS. Do not modify them in isolation!
+		(Listed variables that correspond to each parameter are in default.css.
+		 Divide these values by 1000 and specify them in seconds, e.g. a value
+		 of 250 becomes a CSS value of `0.25s`.)
 	 */
-	collapseDuration: 250,
-	demoCollapseDuration: 750,
-	fadeAfterCollapseDuration: 250,
+	collapseDuration: 250, // --GW-page-toolbar-collapse-duration
+	demoCollapseDuration: 1000, // --GW-page-toolbar-slow-collapse-duration
+	fadeAfterCollapseDuration: 250, // --GW-page-toolbar-fade-after-collapse-duration
 
 	toolbar: null,
 
