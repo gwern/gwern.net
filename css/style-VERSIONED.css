@@ -4300,6 +4300,7 @@ ol.link-bibliography-list-compact > li::before {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        opacity: 0.8;
     }
     #navigation a {
         line-height: 1;
@@ -4311,14 +4312,14 @@ ol.link-bibliography-list-compact > li::before {
     #navigation a svg {
         margin: 0;
         width: 100%;
-        height: 1.6em;
+        height: 1.65em;
     }
     #navigation #navigation-next,
     #navigation #navigation-previous {
         flex-grow: 1;
     }
     #navigation #navigation-center {
-        width: 17%;
+        width: 15%;
     }
     #navigation #navigation-next {
         transform: scale(-1, 1);
