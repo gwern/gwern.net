@@ -97,22 +97,22 @@ main {
 
 /*	Logo.
  */
-#sidebar a#logo {
+#sidebar a.logo {
     display: flex;
     margin: 1px 0;
 }
-#sidebar a#logo svg {
+#sidebar a.logo svg {
 	height: 100%;
 }
 
 /*	Sidebar links (not including logo).
  */
-#sidebar-links {
+#sidebar .sidebar-links {
     flex: 1 1 100%;
     display: flex;
     flex-flow: row wrap;
 }
-#sidebar-links a {
+#sidebar .sidebar-links a {
     flex: 1 1 auto;
     padding: 0.25em 0.75em;
 }
@@ -124,24 +124,24 @@ main {
 
 	/*	Logo.
 	 */
-    #sidebar a#logo {
+    #sidebar a.logo {
         padding: 0.5em 0.375em;
     }
-    #sidebar a#logo svg {
+    #sidebar a.logo svg {
         width: 2.5em;
     }
 
 	/*	Sidebar links (not including logo).
 	 */
-    #sidebar-links a {
+    #sidebar .sidebar-links a {
         font-variant-caps: small-caps;
     }
-    #sidebar-links a:nth-child(1),
-    #sidebar-links a:nth-child(2),
-    #sidebar-links a:nth-child(3) {
+    #sidebar .sidebar-links a:nth-child(1),
+    #sidebar .sidebar-links a:nth-child(2),
+    #sidebar .sidebar-links a:nth-child(3) {
         min-width: 25%;
     }
-    #sidebar-links a.patreon {
+    #sidebar .sidebar-links a.patreon {
         display: none;
     }
 }
@@ -162,7 +162,7 @@ main {
 
 	/*	Sidebar links (not including logo).
 	 */
-    #sidebar-links a {
+    #sidebar .sidebar-links a {
         text-transform: uppercase;
         font-weight: 600;
     }
@@ -170,17 +170,17 @@ main {
     @media all and (max-width: 1179px) {
 		/*	Logo.
 		 */
-        #sidebar a#logo {
+        #sidebar a.logo {
             padding: 0.25em 0.375em;
         }
-        #sidebar a#logo svg {
+        #sidebar a.logo svg {
             width: 1em;
         }
     }
     @media all and (min-width: 1180px) {
 		/*	Logo.
 		 */
-        #sidebar a#logo {
+        #sidebar a.logo {
             position: absolute;
             right: 100%;
             margin: 0 0.75em 0 0;
@@ -188,16 +188,16 @@ main {
             border: none;
             opacity: 0.5;
         }
-        #sidebar a#logo:hover {
+        #sidebar a.logo:hover {
             opacity: 1.0;
         }
-        #sidebar a#logo svg {
+        #sidebar a.logo svg {
             width: 4em;
         }
 
 		/*	Sidebar links (not including logo).
 		 */
-		#sidebar-links a:first-child {
+		#sidebar .sidebar-links a:first-child {
 			margin-left: 0;
 		}
     }
@@ -277,10 +277,10 @@ article {
 	italics! So we force italicized titles back to normal Roman font to match 
 	the expected typographic convention.
  */
-#page-metadata #page-description {
+#page-metadata .page-description {
     font-style: italic;
 }
-#page-metadata #page-description em {
+#page-metadata .page-description em {
     font-style: normal;
 }
 
@@ -299,20 +299,20 @@ article {
 
 /*	Page metadata fields.
  */
-#page-metadata #page-metadata-block > span {
+#page-metadata .page-metadata-fields > span {
     white-space: nowrap;
 }
-#page-metadata #page-metadata-block > span:not(:last-child)::after {
+#page-metadata .page-metadata-fields > span:not(:last-child)::after {
 	/*  Interpunct separators for the metadata fields; looks nicer than 
 		semicolons or slashes
 	 */
     content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
     margin: 0 0.35em 0 0.65em;
 }
-#page-metadata #page-metadata-block #page-author {
+#page-metadata .page-metadata-fields .page-author {
     white-space: normal;
 }
-#page-metadata #page-metadata-block #page-source a {
+#page-metadata .page-metadata-fields .page-source a {
     font-variant-numeric: oldstyle-nums;
 }
 
@@ -324,7 +324,7 @@ article {
 
 	/*	Page description.
 	 */
-    #page-metadata #page-description {
+    #page-metadata .page-description {
     	--text-alignment: justify;
     	--text-hyphenation: auto;
     }
@@ -337,7 +337,7 @@ article {
 
 	/*	Page metadata fields.
 	 */
-    #page-metadata #page-metadata-block {
+    #page-metadata .page-metadata-fields {
         font-size: calc((18/20) * var(--GW-body-text-font-size));
     }
 }
@@ -348,7 +348,7 @@ article {
 
 	/*	Page description.
 	 */
-    #page-metadata #page-description {
+    #page-metadata .page-description {
         line-height: calc(25/17);
     }
 
@@ -360,7 +360,7 @@ article {
 
 	/*	Page metadata fields.
 	 */
-    #page-metadata #page-metadata-block {
+    #page-metadata .page-metadata-fields {
         display: flex;
         flex-flow: row wrap;
         justify-content: center;
@@ -369,38 +369,38 @@ article {
         text-align: center;
     }
     /* date, status */
-    #page-metadata #page-metadata-block #page-date-range,
-    #page-metadata #page-metadata-block #page-status {
+    #page-metadata .page-metadata-fields .page-date-range,
+    #page-metadata .page-metadata-fields .page-status {
         order: 1;
     }
     /* certainty, importance */
-    #page-metadata #page-metadata-block #page-confidence,
-    #page-metadata #page-metadata-block #page-importance {
+    #page-metadata .page-metadata-fields .page-confidence,
+    #page-metadata .page-metadata-fields .page-importance {
         order: 3;
     }
     /* backlinks, similar, bibliography */
-    #page-metadata #page-metadata-block .backlinks,
-    #page-metadata #page-metadata-block .similars,
-    #page-metadata #page-metadata-block .link-bibliography {
+    #page-metadata .page-metadata-fields .backlinks,
+    #page-metadata .page-metadata-fields .similars,
+    #page-metadata .page-metadata-fields .link-bibliography {
         order: 5;
     }
     /* line breaks in two places */
-    #page-metadata #page-metadata-block::before,
-    #page-metadata #page-metadata-block::after {
+    #page-metadata .page-metadata-fields::before,
+    #page-metadata .page-metadata-fields::after {
         content: "";
         width: 100%;
     }
-    #page-metadata #page-metadata-block #page-author::after,
-    #page-metadata #page-metadata-block #page-status::after,
-    #page-metadata #page-metadata-block #page-importance::after {
+    #page-metadata .page-metadata-fields .page-author::after,
+    #page-metadata .page-metadata-fields .page-status::after,
+    #page-metadata .page-metadata-fields .page-importance::after {
         content: none;
     }
     /* break between date/status and certainty/importance */
-    #page-metadata #page-metadata-block::before {
+    #page-metadata .page-metadata-fields::before {
         order: 2;
     }
     /* break between certainty/importance and backlinks/similar/bibliography */
-    #page-metadata #page-metadata-block::after {
+    #page-metadata .page-metadata-fields::after {
         order: 4;
     }
 }
@@ -1535,7 +1535,7 @@ body.index #markdownBody {
  */
 
 /*  No index self-link. */
-body.index #sidebar a#logo {
+body.index #sidebar a.logo {
     pointer-events: none;
 }
 
@@ -1549,7 +1549,7 @@ body.index #sidebar a#logo {
     }
 }
 @media all and (min-width: 1180px) {
-    body.index #sidebar a#logo {
+    body.index #sidebar a.logo {
         opacity: 1.0;
     }
 }
@@ -1739,7 +1739,7 @@ body.special-halloween-dark blockquote {
     --GW-blockquote-border-color: var(--GW-blood-red-dried);
 }
 
-body.special-halloween-dark #logo {
+body.special-halloween-dark #sidebar a.logo {
     color: var(--GW-blood-red);
 }
 
@@ -1819,4 +1819,180 @@ body.special-halloween-dark h6 {
 	src: url('/static/font/ssp/SourceSansPro-BASIC-Bold.ttf?v=1604173830') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
+}
+body.reader-mode-active #sidebar .sidebar-links, 
+body.reader-mode-active #page-metadata .page-status,
+body.reader-mode-active #page-metadata .page-confidence,
+body.reader-mode-active #page-metadata .page-importance,
+body.reader-mode-active #page-metadata .backlinks,
+body.reader-mode-active #page-metadata .link-bibliography,
+body.reader-mode-active #page-metadata .similars,
+body.reader-mode-active #page-metadata .page-date-range::after,
+body.reader-mode-active #TOC ul li::before,
+body.reader-mode-active #sidenote-column-left,
+body.reader-mode-active #sidenote-column-right,
+body.reader-mode-active #navigation,
+body.reader-mode-active #footer,
+body.reader-mode-active #footer-decoration-container,
+body.reader-mode-active .inflation-adjusted .subsup,
+body.reader-mode-active .footnote-ref,
+body.reader-mode-active .footnote-back {
+	display: none;
+}
+
+body.reader-mode-active #sidebar a.logo {
+	border-color: transparent;
+}
+
+@media only screen and (max-width: 649px) {
+	body.reader-mode-active #TOC {
+		margin-top: 1em;
+	}
+}
+
+body.reader-mode-active #TOC ul li {
+	padding-left: 0.125em;
+}
+
+body.reader-mode-active #markdownBody .spawns-popup,
+body.reader-mode-active #markdownBody .spawns-popin {
+	margin: 0;
+	padding: 0;
+}
+
+body.reader-mode-active #markdownBody a .indicator-hook::before {
+	padding-left: 0.3em;
+	box-shadow:
+		-0.17em  0.05em 0 0 var(--link-underline-background-color),
+		-0.17em -0.05em 0 0 var(--link-underline-background-color),
+		-0.17em  0      0 0 var(--link-underline-background-color);
+	background-image:
+		linear-gradient(var(--link-underline-background-color),
+						var(--link-underline-background-color)),
+		linear-gradient(var(--link-underline-gradient-line-color),
+						var(--link-underline-gradient-line-color)),
+		linear-gradient(var(--link-underline-gradient-line-color),
+						var(--link-underline-gradient-line-color));
+	background-size:
+		1px  0.5em,
+		100% 1px,
+		1px  calc(0.75em - 0.1em);
+	background-position:
+		0 0.1em,
+		0 calc(100% - 0.1em),
+		0 calc(100% - 0.1em);
+}
+
+body.reader-mode-active #markdownBody a .link-icon-hook {
+	position: absolute;
+	box-shadow:
+		 0.17em  0.05em 0 0 var(--link-underline-background-color),
+		 0.17em -0.05em 0 0 var(--link-underline-background-color),
+		 0.17em  0      0 0 var(--link-underline-background-color);
+	background-color: var(--link-underline-background-color);
+	background-image:
+		linear-gradient(var(--link-underline-gradient-line-color),
+						var(--link-underline-gradient-line-color));
+	background-size:
+		100% 1px;
+	background-position:
+		0 calc(100% - 0.2em);
+	background-repeat: no-repeat;
+}
+
+body.reader-mode-active #markdownBody a.has-annotation .link-icon-hook {
+	background-image: var(--link-underline-background-image);
+	background-size: 2px 1px;
+	background-repeat: repeat-x;
+}
+
+body.reader-mode-active #markdownBody a .indicator-hook,
+body.reader-mode-active #markdownBody a .link-icon-hook {
+	visibility: hidden;
+}
+
+body.reader-mode-active #markdownBody a:hover {
+	position: relative;
+	z-index: 111;
+}
+
+body.reader-mode-active #markdownBody a:hover .indicator-hook,
+body.reader-mode-active #markdownBody a:hover .link-icon-hook {
+	visibility: visible;
+}
+
+body.reader-mode-active.masked-links-hidden #markdownBody a .indicator-hook,
+body.reader-mode-active.masked-links-hidden #markdownBody a .link-icon-hook {
+	display: none;
+}
+
+body.reader-mode-active.masked-links-hidden #markdownBody p a:not(.popup-open),
+body.reader-mode-active.masked-links-hidden #markdownBody p a:not(.popup-open):visited,
+body.reader-mode-active.masked-links-hidden #markdownBody p a:not(.popup-open):hover {
+	color: inherit;
+	background: none;
+	cursor: text;
+}
+
+body.reader-mode-active.masked-links-hidden #markdownBody a:link,
+body.reader-mode-active.masked-links-hidden #markdownBody a:link * {
+	text-shadow: none;
+}
+
+body.reader-mode-active.masked-links-hidden #markdownBody a code {
+	border-bottom-width: 1px;
+}
+
+/*  Citations.
+ */
+body.reader-mode-active .cite-joiner {
+	display: initial;
+}
+body.reader-mode-active .cite-date::before {
+	content: " ";
+}
+
+body.reader-mode-active .cite-date {
+	vertical-align: unset;
+	font-size: unset;
+	line-height: unset;
+	font-variant-numeric: unset;
+	margin-left: unset;
+}
+body.reader-mode-active .cite-author-plural::after {
+	content: " ";
+}
+
+/*  Mobile layout adjustments.
+ */
+@media only screen and (max-width: 649px) {
+	body.reader-mode-active #sidebar {
+		position: relative;
+		margin: 1em 0 0 0;
+	}
+	body.reader-mode-active #sidebar a.logo {
+		width: 100%;
+		justify-content: center;
+		margin: 0;
+		padding: 0;
+	}
+	body.reader-mode-active #sidebar a.logo svg {
+		width: 1.5rem;
+		background-color: var(--GW-body-background-color);
+		padding: 0 10px 0 11px;
+		margin: auto;
+	}
+	body.reader-mode-active #sidebar a.logo::before {
+		content: "";
+		position: absolute;
+		width: 100%;
+		height: 0;
+		border-bottom: 1px dotted var(--GW-bottom-ornament-line-color);
+		left: 0;
+		top: 50%;
+		z-index: -1;
+	}
+	body.reader-mode-active header h1 {
+		margin: 0.625em 0 0.375em 0;
+	}
 }

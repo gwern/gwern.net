@@ -86,31 +86,6 @@ if ($force || (`git diff-index --cached HEAD -- {$disparate_assets}`)) {
 	`git add {$static_dir}/css/. {$static_dir}/js/.`;
 }
 
-## Inlined styles and scripts.
-$head_includes = [
-	"{$static_dir}/css/light-mode-GENERATED.css",
-	"{$static_dir}/css/dark-mode-GENERATED.css",
-	"{$static_dir}/css/head.css",
-	"{$static_dir}/js/head.js"
-];
-$head_includes = implode(" ", $head_includes);
-if ($force || (`git diff-index --cached HEAD -- {$head_includes}`)) {
-	require_once("{$build_dir}/build_head_includes.php");
-	`git add {$static_dir}/include/.`;
-}
-
-## External styles and scripts.
-$versioned_files = [
-	"{$static_dir}/css/style.css",
-	"{$static_dir}/js/script.js",
-	"{$static_dir}/template/inlined-asset-links-template.html"
-];
-$versioned_files = implode(" ", $versioned_files);
-if ($force || (`git diff-index --cached HEAD -- {$versioned_files}`)) {
-	require_once("{$build_dir}/build_versioned_includes.php");
-	`git add {$static_dir}/include/.`;
-}
-
 ## Icons.
 $icons = [ ];
 $icon_patterns = [
@@ -137,6 +112,31 @@ $versioned_assets = implode(" ", $versioned_assets);
 if ($force || (`git diff-index --cached HEAD -- {$versioned_assets}`)) {
 	require_once("{$build_dir}/build_asset_versions.php");
 	`git add {$static_dir}/include/. {$static_dir}/css/.`;
+}
+
+## Initial styles and scripts.
+$head_includes = [
+	"{$static_dir}/css/light-mode-GENERATED.css",
+	"{$static_dir}/css/dark-mode-GENERATED.css",
+	"{$static_dir}/css/head-VERSIONED.css",
+	"{$static_dir}/js/head-GENERATED.js"
+];
+$head_includes = implode(" ", $head_includes);
+if ($force || (`git diff-index --cached HEAD -- {$head_includes}`)) {
+	require_once("{$build_dir}/build_head_includes.php");
+	`git add {$static_dir}/include/.`;
+}
+
+## External styles and scripts.
+$versioned_files = [
+	"{$static_dir}/css/style-VERSIONED.css",
+	"{$static_dir}/js/script-GENERATED.js",
+	"{$static_dir}/template/inlined-asset-links-template.html"
+];
+$versioned_files = implode(" ", $versioned_files);
+if ($force || (`git diff-index --cached HEAD -- {$versioned_files}`)) {
+	require_once("{$build_dir}/build_versioned_includes.php");
+	`git add {$static_dir}/include/.`;
 }
 
 ?>

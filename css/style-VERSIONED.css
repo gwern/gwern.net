@@ -2411,18 +2411,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685939536#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685992033#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685939536#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685992033#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685939536#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685992033#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685939536#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1685992033#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -4223,20 +4223,20 @@ ol.link-bibliography-list-compact > li::before {
 /* BOTTOM DECORATION */
 /*********************/
 
-#footer-logo-container {
+#footer-decoration-container {
     margin: 0 0 1em 0;
     line-height: 0;
 }
 
-#footer-logo {
+#footer-decoration-container .footer-logo {
     position: relative;
     opacity: 0.3;
     pointer-events: none;
 }
-#footer-logo:hover {
+#footer-decoration-container .footer-logo:hover {
     opacity: 1.0;
 }
-#footer-logo::before {
+#footer-decoration-container .footer-logo::before {
     content: "";
     display: block;
     position: absolute;
@@ -4245,7 +4245,7 @@ ol.link-bibliography-list-compact > li::before {
     border-bottom: 1px dotted var(--GW-bottom-ornament-line-color);
     width: 100%;
 }
-#footer-logo::after {
+#footer-decoration-container .footer-logo::after {
     content: "";
     background-color: var(--GW-body-background-color);
     background-image: url('/static/img/logo/logo-smooth.svg');
@@ -5308,14 +5308,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685939536#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685992033#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685939536#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685992033#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5448,7 +5448,7 @@ body.lorem div[class^='drop-cap'] {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1685939536#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685992033#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5871,14 +5871,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685939536#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685992033#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685939536#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685992033#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6942,7 +6942,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1685939536#question');
+    background-image: url('/static/img/icon/icons.svg?v=1685992033#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7430,7 +7430,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1685939536#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1685992033#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7515,13 +7515,13 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     #skip-to-content-link,
     #ui-elements-container,
     #sidebar,
-    #page-metadata-block .similars,
-    #page-metadata-block .link-bibliography,
-    #page-importance::after,
+    #page-metadata .page-metadata-fields .backlinks,
+    #page-metadata .page-metadata-fields .similars,
+    #page-metadata .page-metadata-fields .link-bibliography,
+    #page-metadata .page-metadata-fields .page-importance::after,
     #navigation,
     .toc-collapse-toggle-button,
-    #footer,
-    #aotd {
+    #footer {
         display: none;
     }
 
