@@ -2280,7 +2280,8 @@ GW.layout = {
 		".empty",
 		".float",
 		"noscript",
-		"button"
+		"button",
+		"a:empty"
 	],
 
 	//	Elements which always participate in block layout, even when empty.
