@@ -258,6 +258,10 @@ article {
 /***********************/
 
 #page-metadata {
+	--text-alignment: center;
+	--text-hyphenation: none;
+	--text-indent: 0em;
+
     line-height: 1.5;
 }
 
@@ -265,6 +269,7 @@ article {
 	margin-top: 0.75em;
 }
 
+/********************/
 /*	Page description.
  */
 /*	Override normal handling of italics: before, we wrapped descriptions in 
@@ -284,6 +289,7 @@ article {
     font-style: normal;
 }
 
+/*************/
 /*	Page tags.
  */
 #page-metadata .link-tags {
@@ -297,8 +303,14 @@ article {
     margin-left: 0.10em;
 }
 
+/************************/
 /*	Page metadata fields.
  */
+#page-metadata .page-metadata-fields {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: center;
+}
 #page-metadata .page-metadata-fields > span {
     white-space: nowrap;
 }
@@ -309,24 +321,47 @@ article {
     content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
     margin: 0 0.35em 0 0.65em;
 }
+
+/*	Flex order.
+ */
+/* date, author, status */
+#page-metadata .page-metadata-fields .page-date-range,
+#page-metadata .page-metadata-fields .page-author,
+#page-metadata .page-metadata-fields .page-status {
+	order: 1;
+}
+/* certainty, importance */
+#page-metadata .page-metadata-fields .page-confidence,
+#page-metadata .page-metadata-fields .page-importance {
+	order: 3;
+}
+/* backlinks, similar, bibliography */
+#page-metadata .page-metadata-fields .backlinks,
+#page-metadata .page-metadata-fields .similars,
+#page-metadata .page-metadata-fields .link-bibliography {
+	order: 5;
+}
+
+/*	Author.
+ */
 #page-metadata .page-metadata-fields .page-author {
     white-space: normal;
 }
-#page-metadata .page-metadata-fields .page-source a {
+
+/*	Page source link.
+ */
+#page-metadata .page-metadata-fields .page-date-range .page-source a {
     font-variant-numeric: oldstyle-nums;
 }
+
+/*=------------=*/
+/*= Responsive =*/
+/*=------------=*/
 
 @media all and (min-width: 650px) {
     #page-metadata {
         font-size: calc((19/20) * var(--GW-body-text-font-size));
         line-height: calc(1.5 / (19/20));
-    }
-
-	/*	Page description.
-	 */
-    #page-metadata .page-description {
-    	--text-alignment: justify;
-    	--text-hyphenation: auto;
     }
 
 	/*	Page tags.
@@ -340,6 +375,19 @@ article {
     #page-metadata .page-metadata-fields {
         font-size: calc((18/20) * var(--GW-body-text-font-size));
     }
+    /* line break in one place */
+    #page-metadata .page-metadata-fields::after {
+        content: "";
+        width: 100%;
+        height: calc(1em * (3/18));
+    }
+    /* break between certainty/importance and backlinks/similar/bibliography */
+    #page-metadata .page-metadata-fields::after {
+        order: 4;
+    }
+	#page-metadata .page-metadata-fields > .page-importance::after {
+		display: none;
+	}
 }
 @media all and (max-width: 649px) {
     #page-metadata {
@@ -352,12 +400,6 @@ article {
         line-height: calc(25/17);
     }
 
-	/*	Page tags.
-	 */
-    #page-metadata .link-tags {
-        text-align: center;
-    }
-
 	/*	Page metadata fields.
 	 */
     #page-metadata .page-metadata-fields {
@@ -366,34 +408,13 @@ article {
         justify-content: center;
         font-size: calc((16/18) * var(--GW-body-text-font-size));
         line-height: calc(25/16);
-        text-align: center;
-    }
-    /* date, status */
-    #page-metadata .page-metadata-fields .page-date-range,
-    #page-metadata .page-metadata-fields .page-status {
-        order: 1;
-    }
-    /* certainty, importance */
-    #page-metadata .page-metadata-fields .page-confidence,
-    #page-metadata .page-metadata-fields .page-importance {
-        order: 3;
-    }
-    /* backlinks, similar, bibliography */
-    #page-metadata .page-metadata-fields .backlinks,
-    #page-metadata .page-metadata-fields .similars,
-    #page-metadata .page-metadata-fields .link-bibliography {
-        order: 5;
     }
     /* line breaks in two places */
     #page-metadata .page-metadata-fields::before,
     #page-metadata .page-metadata-fields::after {
         content: "";
         width: 100%;
-    }
-    #page-metadata .page-metadata-fields .page-author::after,
-    #page-metadata .page-metadata-fields .page-status::after,
-    #page-metadata .page-metadata-fields .page-importance::after {
-        content: none;
+        height: calc(1em * (3/18));
     }
     /* break between date/status and certainty/importance */
     #page-metadata .page-metadata-fields::before {
@@ -402,6 +423,11 @@ article {
     /* break between certainty/importance and backlinks/similar/bibliography */
     #page-metadata .page-metadata-fields::after {
         order: 4;
+    }
+    #page-metadata .page-metadata-fields .page-author::after,
+    #page-metadata .page-metadata-fields .page-status::after,
+    #page-metadata .page-metadata-fields .page-importance::after {
+        display: none;
     }
 }
 
@@ -438,7 +464,7 @@ article {
 	/*	On desktop, we want the TOC side by side with the content.
 	 */
     #TOC {
-		margin: 2rem 2.25rem 1rem 0;
+		margin: 3rem 2.25rem 1rem 0;
         float: left;
         max-width: 285px;
     }
@@ -1103,11 +1129,7 @@ p.empty-graf {
 .markdownBody p {
     -webkit-hyphens: var(--text-hyphenation);
     hyphens: var(--text-hyphenation);
-}
-@media all and (min-width: 900px) {
-	.markdownBody p {
-		text-align: var(--text-alignment);
-	}
+	text-align: var(--text-alignment);
 }
 
 /*	Specify alignment and hyphenation.
@@ -1115,6 +1137,11 @@ p.empty-graf {
 .markdownBody.justified {
     --text-alignment: justify;
     --text-hyphenation: auto;
+}
+@media only screen and (max-width: 649px) {
+	.markdownBody.justified {
+		--text-alignment: left;
+	}
 }
 .markdownBody.justified-not {
 	--text-alignment: left;
