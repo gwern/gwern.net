@@ -464,7 +464,7 @@ article {
 	/*	On desktop, we want the TOC side by side with the content.
 	 */
     #TOC {
-		margin: 3rem 2.25rem 1rem 0;
+		margin: 2rem 2.25rem 1rem 0;
         float: left;
         max-width: 285px;
     }
@@ -473,7 +473,7 @@ article {
 	/*  On mobile, we want the TOC to be inline.
 	 */
     #TOC {
-        margin: 2rem auto 0 auto;
+        margin: 3rem auto 0 auto;
     }
 }
 
@@ -529,6 +529,12 @@ body[class*='-index'] #TOC.TOC-links-only li {
 #TOC.collapsed {
     height: 2em;
     box-sizing: border-box;
+}
+@media all and (max-width: 900px) {
+	#TOC.collapsed {
+		margin-top: 2rem;
+		background-image: none;
+	}
 }
 
 #TOC.collapsed + * {
