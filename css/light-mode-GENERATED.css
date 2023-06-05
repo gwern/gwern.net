@@ -303,6 +303,10 @@
 	 */
 	--GW-nav-header-link-color: #999;
 	--GW-nav-header-link-hover-color: #000;
+
+	/*	X of the day.
+	 */
+	--GW-x-of-the-day-border-color: #ccc;
 }
 :root {
     --GW-popups-popup-title-bar-pattern: var(--GW-image-pattern-dotted-e6e6e6-on-fff-2x-gif);

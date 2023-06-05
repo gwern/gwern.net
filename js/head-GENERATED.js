@@ -2241,7 +2241,8 @@ GW.layout = {
 		"blockquote",
 		".epigraph",
 		".admonition",
-		".sidenote"
+		".sidenote",
+		"#x-of-the-day"
 	],
 
 	//	Block elements get layout classes applied to them.

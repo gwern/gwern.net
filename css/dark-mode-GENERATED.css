@@ -303,6 +303,10 @@
 	 */
 	--GW-nav-header-link-color: #8b8b8b;
 	--GW-nav-header-link-hover-color: #fff;
+
+	/*	X of the day.
+	 */
+	--GW-x-of-the-day-border-color: #5c5c5c;
 }
 :root {
     /*  Adjust background color to prevent pixels from turning off (contrary to popular belief, pixels turning off saves trivial energy, like <1% in measurements, and causes nasty scrolling/update jank due to delay in pixels turning back on), and improve contrast with the white.

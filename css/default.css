@@ -2798,18 +2798,6 @@ section.footnotes .footnote-self-link {
     text-align: center;
     font-variant-caps: small-caps;
 }
-#footer > p:first-child::after {
-    content: var(--GW-image-single-black-star-svg);
-    display: block;
-    width: 1em;
-    margin: 3rem auto 0 auto;
-    opacity: 0.3;
-}
-@media all and (max-width: 649px) {
-    #footer > p:first-child::after {
-        margin: 2.5rem auto 0 auto;
-    }
-}
 
 
 /***************/
@@ -3062,27 +3050,50 @@ ol.link-bibliography-list-compact > li::before {
 /* X OF THE DAY */
 /****************/
 
+#x-of-the-day {
+	position: relative;
+	margin-top: 2.5rem;
+	padding: 2.5rem 1.5rem 3.75rem 1.5rem;
+	border: 1px solid var(--GW-x-of-the-day-border-color);
+}
+
+#x-of-the-day::before,
+#x-of-the-day::after {
+	content: "";
+	position: absolute;
+	left: 0.5rem;
+	width: calc(100% - 1rem);
+	height: 2rem;
+	background-image: 
+		url('/static/img/ornament/three-wavy-lines-ornament-left.svg'),
+		url('/static/img/ornament/three-wavy-lines-ornament-right.svg');	
+	background-repeat: no-repeat;
+	background-size: 4rem 100%;
+	background-position: 
+		center left, 
+		center right;
+	opacity: 0.15;
+}
+#x-of-the-day::before {
+	top: 0.5rem;
+}
+#x-of-the-day::after {
+	bottom: 0.5rem;
+	transform: scaleY(-1);
+}
+
+/*******************/
 /*  Quote of the day.
  */
-#footer .epigraph {
-    margin: 2.25em auto 3.25em auto;
-}
-@media only screen and (max-width: 649px) {
-    #footer .epigraph {
-        margin: 2.5em 1em 3.75em 1em;
-    }
-}
-
-/*  Annotation of the day.
+ 
+/*	No special styles, for now.
  */
-#aotd {
-    margin-bottom: 2em;
-}
 
+/*******************/
 /*  Site of the day.
  */
 
-.site-of-the-day {
+#x-of-the-day .site-of-the-day {
     --box-size: 4em;
     --box-padding-top: 1em;
     --box-padding-bottom: 3em;
@@ -3094,10 +3105,10 @@ ol.link-bibliography-list-compact > li::before {
     padding-right: calc(var(--box-horizontal-offset) * 0.25);
 }
 
-.site-of-the-day blockquote {
+#x-of-the-day .site-of-the-day blockquote {
     --background-color: var(--GW-body-background-color);
 
-    margin: 3.5em auto 2.75em auto;
+    margin: 3.5em auto 3.25em auto;
     position: relative;
     height: var(--box-size);
     width: fit-content;
@@ -3115,7 +3126,7 @@ ol.link-bibliography-list-compact > li::before {
     align-items: center;
 }
 @media only screen and (max-width: 649px) {
-    .site-of-the-day blockquote {
+    #x-of-the-day .site-of-the-day blockquote {
         font-size: calc((17/18) * var(--GW-body-text-font-size));
         margin: 3.5em auto 2.75em auto;
         padding:
@@ -3126,8 +3137,8 @@ ol.link-bibliography-list-compact > li::before {
     }
 }
 
-.site-of-the-day blockquote::before,
-.site-of-the-day blockquote::after {
+#x-of-the-day .site-of-the-day blockquote::before,
+#x-of-the-day .site-of-the-day blockquote::after {
     content: "";
     position: absolute;
     width: var(--box-total-size);
@@ -3138,21 +3149,28 @@ ol.link-bibliography-list-compact > li::before {
     background-size: cover;
     top: 0;
 }
-.site-of-the-day blockquote::before {
+#x-of-the-day .site-of-the-day blockquote::before {
     left: 0;
 }
-.site-of-the-day blockquote::after {
+#x-of-the-day .site-of-the-day blockquote::after {
     right: 0;
     background-position: right;
 }
 
-.site-of-the-day blockquote p {
+#x-of-the-day .site-of-the-day blockquote p {
     position: relative;
-    z-index: 1;
-}
-#footer .site-of-the-day blockquote p {
     margin: 0;
     line-height: 1;
+    z-index: 1;
+}
+
+/*************************/
+/*  Annotation of the day.
+ */
+
+#x-of-the-day .annotation-of-the-day {
+	width: fit-content;
+	margin: auto;
 }
 
 
@@ -3161,7 +3179,7 @@ ol.link-bibliography-list-compact > li::before {
 /*********************/
 
 #footer-decoration-container {
-    margin: 2rem 0 1rem 0;
+    margin: 1.5rem 0 1rem 0;
     line-height: 0;
 }
 
