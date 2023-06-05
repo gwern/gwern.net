@@ -1026,7 +1026,7 @@ section.level6 > .heading {
 /*= /doc/index =*/
 /*=------------=*/
 
-body[class*='-index'] section#see-also > h1:first-child a {
+body[class*='-index'] section#see-also > .heading a {
     display: none;
 }
 

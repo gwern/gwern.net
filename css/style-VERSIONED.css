@@ -2405,18 +2405,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685918337#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685937732#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685918337#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685937732#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685918337#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685937732#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685918337#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1685937732#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -4490,67 +4490,24 @@ body.lorem div[class^='drop-cap'] {
 }
 
 .popframe-body .TOC {
-    margin: 1.25em 0 0 0;
     padding: 0.5em 0.5em 0.75em 0.75em;
 
-    /*  The following three properties are to prevent both overlap and
+    /*  The following for properties are to prevent both overlap and
         margin-collapse of the TOC when there’s a floated thumbnail figure
         that juts down below the abstract text.
      */
     clear: both;
     display: inline-block;
-    width: calc(100% - 1.25em);    /* Subtract side padding. */
-}
-
-.popframe-body .TOC a:hover::after {
-    margin: 0;
-    bottom: unset;
-    font-size: inherit;
-    opacity: unset;
-}
-
-.popframe-body ul,
-.popframe-body ol {
-    overflow: unset;
-}
-
-.popframe-body p + ul,
-.popframe-body p + ol {
-    margin-top: 0.25em;
-    margin-bottom: 0.75em;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .popframe-body .list {
     --text-alignment: left;
 }
 
-.popframe-body h1,
-.popframe-body h2,
-.popframe-body h3,
-.popframe-body h4,
-.popframe-body h5,
-.popframe-body h6 {
+.popframe-body .heading {
     margin-left: 0;
-}
-.popframe-body h1 a:link,
-.popframe-body h2 a:link,
-.popframe-body h3 a:link,
-.popframe-body h4 a:link,
-.popframe-body h5 a:link,
-.popframe-body h6 a:link {
-    background-image: none;
-    text-shadow: none;
-}
-
-.popframe-body blockquote {
-    margin: 1em 0;
-}
-.popframe-body .abstract blockquote {
-    margin-top: 0;
-}
-
-.popframe-body .epigraph > blockquote {
-    margin: auto;
 }
 
 .popframe-body > figure:only-child {
@@ -4558,22 +4515,16 @@ body.lorem div[class^='drop-cap'] {
     max-width: unset;
 }
 
-.popframe-body.local-page > blockquote:first-child,
-.popframe-body.local-page > .table-wrapper:first-child {
-    margin-top: calc(3em/9);
-}
-.popframe-body.local-page > blockquote:last-child,
-.popframe-body.local-page > .table-wrapper:last-child {
-    margin-bottom: calc(1em/9);
-}
-
 .popframe-body pre {
     max-height: unset;
 }
 
-.popframe-body > hr:first-child {
-    display: none;
+.popframe-body .marginnote {
+    display: initial;
 }
+
+/*	Footnotes sections in pop-frames.
+ */
 
 .popframe-body #footnotes > hr:first-child,
 .popframe-body #footnotes > hr:first-child + a.section-self-link {
@@ -4584,39 +4535,23 @@ body.lorem div[class^='drop-cap'] {
     vertical-align: text-top;
 }
 
-/*  Drop caps in pop-frames.
-    */
-.popframe-body .drop-cap-goudy > p,
-.popframe-body .drop-cap-yinit > p,
-.popframe-body .drop-cap-de-zs > p,
-.popframe-body .drop-cap-cheshire > p,
-.popframe-body .drop-cap-kanzlei > p {
-    text-indent: 0;
-}
-.popframe-body .drop-cap-goudy > p::first-letter {
+/*	Drop caps in pop-frames.
+ */
+
+.popframe-body p.drop-cap-goudy::first-letter {
     font-size: 6.5em;
 }
-.popframe-body .drop-cap-yinit > p::first-letter {
+.popframe-body p.drop-cap-yinit::first-letter {
     font-size: 5.125em;
 }
-.popframe-body .drop-cap-de-zs > p::first-letter {
+.popframe-body p.drop-cap-de-zs::first-letter {
     font-size: 6.375em;
 }
-.popframe-body .drop-cap-cheshire > p::first-letter {
+.popframe-body p.drop-cap-cheshire::first-letter {
     font-size: 6.375em;
 }
-.popframe-body .drop-cap-kanzlei > p::first-letter {
+.popframe-body p.drop-cap-kanzlei::first-letter {
     font-size: 6.625em;
-}
-
-.popframe-body > [class^='drop-cap-']:last-child {
-    overflow: hidden;
-}
-
-/*  Margin notes in pop-frames.
-    */
-.popframe-body .marginnote {
-    display: initial;
 }
 
 /*=-----------------=*/
@@ -4627,46 +4562,39 @@ body.lorem div[class^='drop-cap'] {
 /*│ Aux-link pop-frames. │*/
 /*└──────────────────────┘*/
 
-.popframe-body ul.aux-links-list {
-    margin: 0.75em 0 0.5em 0;
-    padding: 0 0 0 1.75em;
-}
-
 /*┌────────────────────────┐*/
 /*│ Annotation pop-frames. │*/
 /*└────────────────────────┘*/
 
+/*	For example, Wikipedia annotations.
+ */
 .popframe-body > .annotation:only-child > p.data-field.title:only-of-type {
     font-size: 1.125em;
-    line-height: 1.35;
-    margin-bottom: 0.375em;
 }
 
-.popframe-body > div.annotation > div.annotation-abstract > collapse-block {
+/*	Collapses in annotations.
+ */
+.popframe-body > .annotation > .annotation-abstract > .collapse-block {
     margin-left: calc(-1 * var(--collapse-left-offset));
     padding-left: var(--collapse-left-offset);
-    margin-right: -2px;
-    padding-right: 0.5em;
 }
-.popframe-body > div.annotation > div.annotation-abstract > .collapse.aux-links-container {
+
+/*	Aux-links collapses in annotations.
+ */
+.popframe-body > .annotation > .annotation-abstract > .collapse.aux-links-container {
+    padding-right: 0.5em;
     border-right: 1px solid var(--GW-TOC-border-color);
 }
-.popframe-body > div.annotation > div.annotation-abstract > .collapse.aux-links-container.expanded-not {
+.popframe-body > .annotation > .annotation-abstract > .collapse.aux-links-container.expanded-not {
     border-left: 1px solid var(--GW-TOC-border-color);
-    padding-left: 0.5em;
 }
-.popframe-body > div.annotation > div.annotation-abstract > .collapse.aux-links-container:last-child {
-    margin-bottom: 0;
+.popframe-body > .annotation > .annotation-abstract > .collapse.aux-links-container:last-child {
     border-bottom: 1px solid var(--GW-TOC-border-color);
 }
 
 /*┌──────────────────────┐*/
 /*│ Footnote pop-frames. │*/
 /*└──────────────────────┘*/
-
-.popframe-body.footnote > blockquote:last-child {
-    margin-bottom: calc(1em/9);
-}
 
 /*┌──────────────────────────────┐*/
 /*│ Citation context pop-frames. │*/
@@ -4683,6 +4611,9 @@ body.lorem div[class^='drop-cap'] {
 .popframe-body.local-code-file div.sourceCode {
     height: 100%;
 }
+
+/*	Truncated syntax-highlighted code pop-frames, and the note at their end.
+ */
 .popframe-body.local-code-file div.sourceCode.truncated {
     height: calc(100% - 1.75em);
 }
@@ -4691,6 +4622,7 @@ body.lorem div[class^='drop-cap'] {
     height: 1.75em;
     text-align: center;
 }
+
 .popframe-body.local-code-file pre {
     height: 100%;
     border: none;
@@ -4853,19 +4785,6 @@ body.lorem div[class^='drop-cap'] {
     overflow-x: hidden;
 }
 
-.popframe-body > section:only-child > h1,
-.popframe-body > section:only-child > h2,
-.popframe-body > section:only-child > h3,
-.popframe-body > section:only-child > h4,
-.popframe-body > section:only-child > h5,
-.popframe-body > section:only-child > h6 {
-    margin-top: 0;
-}
-
-.popframe-body #page-metadata {
-    margin: 0;
-    overflow: visible;
-}
 .popframe-body #page-metadata::after {
     content: "";
     display: block;
@@ -4875,51 +4794,36 @@ body.lorem div[class^='drop-cap'] {
 }
 
 .popframe-body .collapse.section-backlinks-container {
-    margin-top: 1em;
     padding-right: 0.5em;
     border-color: var(--GW-TOC-border-color);
     border-style: solid;
     border-width: 1px 1px 1px 0;
 }
-.popframe-body .collapse.section-backlinks-container:last-child {
-    margin-bottom: 0;
-}
 
+/*	Section pop-frame metadata (e.g., backlinks link).
+ */
 .popframe-body section .section-metadata {
-    margin-top: -0.5em;
-    margin-bottom: 1em;
     text-align: right;
 }
 .popframe-body section.level1 .section-metadata {
     text-align: left;
 }
-.popframe-body section .section-metadata + p {
-    text-indent: 0;
-}
-
-.popframe-body > section:first-child > :first-child {
-    margin-top: 0;
-}
 
 /*┌─────────────────┐*/
 /*│ Tag pop-frames. │*/
 /*└─────────────────┘*/
+
 /*  On tag/directory index pop-frames, we want to hide the initial ‘# Links’
     <h1> because it takes up way too much space and adds nothing.
  */
-.popframe-body h1.display-pop-not {
+.popframe-body section.display-pop-not > .heading {
     display: none;
 }
-.popframe-body section.display-pop-not:not(:first-child) {
-    margin-top: 2.75em;
-}
 
-/*  We also want to squeeze the directory list because the default
-    unordered-list padding of 2em bottom uses up too much of a pop-frame.
+/*	Hide “See Also”… also.
  */
-.popframe-body #directory-indexes ul {
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
+.popframe-body[class*='-index'] section#see-also > .heading {
+    display: none;
 }
 
 
@@ -5398,14 +5302,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685918337#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685937732#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685918337#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685937732#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5538,7 +5442,7 @@ body.lorem div[class^='drop-cap'] {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1685918337#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1685937732#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5968,14 +5872,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685918337#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685937732#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1685918337#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1685937732#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -7048,7 +6952,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1685918337#question');
+    background-image: url('/static/img/icon/icons.svg?v=1685937732#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7536,7 +7440,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1685918337#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1685937732#circle-notch-solid');
 
     pointer-events: none;
 }
