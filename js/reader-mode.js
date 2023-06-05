@@ -4,7 +4,7 @@ ReaderMode = { ...ReaderMode,
 	 */
 	maskedLinksSelector: "p a, li a",
 
-	deactivateTriggerElementSelector: "#reader-mode-disable-when-here, #see-also, #external-links, #appendix, #appendices, #navigation, #footer, #footer-logo",
+	deactivateTriggerElementSelector: "#reader-mode-disable-when-here, #see-also, #external-links, #appendix, #appendices, #navigation, #footer, #footer-decoration-container",
 
 	showMaskedLinksDelay: 250,
 

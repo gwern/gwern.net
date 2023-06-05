@@ -90,7 +90,7 @@ figure img[src$=".svg"] {
 	do variable+invert tricks to get a white copy of the logo as a hack.
  */
 @media only screen and (max-width: 649px) {
-    a#footer-logo::after {
+    #footer-decoration-container a.footer-logo::after {
         filter: invert(1);
         background-color: var(--GW-body-background-color-inverted);
     }

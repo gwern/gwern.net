@@ -97,22 +97,22 @@ main {
 
 /*	Logo.
  */
-#sidebar a#logo {
+#sidebar a.logo {
     display: flex;
     margin: 1px 0;
 }
-#sidebar a#logo svg {
+#sidebar a.logo svg {
 	height: 100%;
 }
 
 /*	Sidebar links (not including logo).
  */
-#sidebar-links {
+#sidebar .sidebar-links {
     flex: 1 1 100%;
     display: flex;
     flex-flow: row wrap;
 }
-#sidebar-links a {
+#sidebar .sidebar-links a {
     flex: 1 1 auto;
     padding: 0.25em 0.75em;
 }
@@ -124,24 +124,24 @@ main {
 
 	/*	Logo.
 	 */
-    #sidebar a#logo {
+    #sidebar a.logo {
         padding: 0.5em 0.375em;
     }
-    #sidebar a#logo svg {
+    #sidebar a.logo svg {
         width: 2.5em;
     }
 
 	/*	Sidebar links (not including logo).
 	 */
-    #sidebar-links a {
+    #sidebar .sidebar-links a {
         font-variant-caps: small-caps;
     }
-    #sidebar-links a:nth-child(1),
-    #sidebar-links a:nth-child(2),
-    #sidebar-links a:nth-child(3) {
+    #sidebar .sidebar-links a:nth-child(1),
+    #sidebar .sidebar-links a:nth-child(2),
+    #sidebar .sidebar-links a:nth-child(3) {
         min-width: 25%;
     }
-    #sidebar-links a.patreon {
+    #sidebar .sidebar-links a.patreon {
         display: none;
     }
 }
@@ -162,7 +162,7 @@ main {
 
 	/*	Sidebar links (not including logo).
 	 */
-    #sidebar-links a {
+    #sidebar .sidebar-links a {
         text-transform: uppercase;
         font-weight: 600;
     }
@@ -170,17 +170,17 @@ main {
     @media all and (max-width: 1179px) {
 		/*	Logo.
 		 */
-        #sidebar a#logo {
+        #sidebar a.logo {
             padding: 0.25em 0.375em;
         }
-        #sidebar a#logo svg {
+        #sidebar a.logo svg {
             width: 1em;
         }
     }
     @media all and (min-width: 1180px) {
 		/*	Logo.
 		 */
-        #sidebar a#logo {
+        #sidebar a.logo {
             position: absolute;
             right: 100%;
             margin: 0 0.75em 0 0;
@@ -188,16 +188,16 @@ main {
             border: none;
             opacity: 0.5;
         }
-        #sidebar a#logo:hover {
+        #sidebar a.logo:hover {
             opacity: 1.0;
         }
-        #sidebar a#logo svg {
+        #sidebar a.logo svg {
             width: 4em;
         }
 
 		/*	Sidebar links (not including logo).
 		 */
-		#sidebar-links a:first-child {
+		#sidebar .sidebar-links a:first-child {
 			margin-left: 0;
 		}
     }
@@ -277,10 +277,10 @@ article {
 	italics! So we force italicized titles back to normal Roman font to match 
 	the expected typographic convention.
  */
-#page-metadata #page-description {
+#page-metadata .page-description {
     font-style: italic;
 }
-#page-metadata #page-description em {
+#page-metadata .page-description em {
     font-style: normal;
 }
 
@@ -299,20 +299,20 @@ article {
 
 /*	Page metadata fields.
  */
-#page-metadata #page-metadata-block > span {
+#page-metadata .page-metadata-fields > span {
     white-space: nowrap;
 }
-#page-metadata #page-metadata-block > span:not(:last-child)::after {
+#page-metadata .page-metadata-fields > span:not(:last-child)::after {
 	/*  Interpunct separators for the metadata fields; looks nicer than 
 		semicolons or slashes
 	 */
     content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
     margin: 0 0.35em 0 0.65em;
 }
-#page-metadata #page-metadata-block #page-author {
+#page-metadata .page-metadata-fields .page-author {
     white-space: normal;
 }
-#page-metadata #page-metadata-block #page-source a {
+#page-metadata .page-metadata-fields .page-source a {
     font-variant-numeric: oldstyle-nums;
 }
 
@@ -324,7 +324,7 @@ article {
 
 	/*	Page description.
 	 */
-    #page-metadata #page-description {
+    #page-metadata .page-description {
     	--text-alignment: justify;
     	--text-hyphenation: auto;
     }
@@ -337,7 +337,7 @@ article {
 
 	/*	Page metadata fields.
 	 */
-    #page-metadata #page-metadata-block {
+    #page-metadata .page-metadata-fields {
         font-size: calc((18/20) * var(--GW-body-text-font-size));
     }
 }
@@ -348,7 +348,7 @@ article {
 
 	/*	Page description.
 	 */
-    #page-metadata #page-description {
+    #page-metadata .page-description {
         line-height: calc(25/17);
     }
 
@@ -360,7 +360,7 @@ article {
 
 	/*	Page metadata fields.
 	 */
-    #page-metadata #page-metadata-block {
+    #page-metadata .page-metadata-fields {
         display: flex;
         flex-flow: row wrap;
         justify-content: center;
@@ -369,38 +369,38 @@ article {
         text-align: center;
     }
     /* date, status */
-    #page-metadata #page-metadata-block #page-date-range,
-    #page-metadata #page-metadata-block #page-status {
+    #page-metadata .page-metadata-fields .page-date-range,
+    #page-metadata .page-metadata-fields .page-status {
         order: 1;
     }
     /* certainty, importance */
-    #page-metadata #page-metadata-block #page-confidence,
-    #page-metadata #page-metadata-block #page-importance {
+    #page-metadata .page-metadata-fields .page-confidence,
+    #page-metadata .page-metadata-fields .page-importance {
         order: 3;
     }
     /* backlinks, similar, bibliography */
-    #page-metadata #page-metadata-block .backlinks,
-    #page-metadata #page-metadata-block .similars,
-    #page-metadata #page-metadata-block .link-bibliography {
+    #page-metadata .page-metadata-fields .backlinks,
+    #page-metadata .page-metadata-fields .similars,
+    #page-metadata .page-metadata-fields .link-bibliography {
         order: 5;
     }
     /* line breaks in two places */
-    #page-metadata #page-metadata-block::before,
-    #page-metadata #page-metadata-block::after {
+    #page-metadata .page-metadata-fields::before,
+    #page-metadata .page-metadata-fields::after {
         content: "";
         width: 100%;
     }
-    #page-metadata #page-metadata-block #page-author::after,
-    #page-metadata #page-metadata-block #page-status::after,
-    #page-metadata #page-metadata-block #page-importance::after {
+    #page-metadata .page-metadata-fields .page-author::after,
+    #page-metadata .page-metadata-fields .page-status::after,
+    #page-metadata .page-metadata-fields .page-importance::after {
         content: none;
     }
     /* break between date/status and certainty/importance */
-    #page-metadata #page-metadata-block::before {
+    #page-metadata .page-metadata-fields::before {
         order: 2;
     }
     /* break between certainty/importance and backlinks/similar/bibliography */
-    #page-metadata #page-metadata-block::after {
+    #page-metadata .page-metadata-fields::after {
         order: 4;
     }
 }
@@ -1535,7 +1535,7 @@ body.index #markdownBody {
  */
 
 /*  No index self-link. */
-body.index #sidebar a#logo {
+body.index #sidebar a.logo {
     pointer-events: none;
 }
 
@@ -1549,7 +1549,7 @@ body.index #sidebar a#logo {
     }
 }
 @media all and (min-width: 1180px) {
-    body.index #sidebar a#logo {
+    body.index #sidebar a.logo {
         opacity: 1.0;
     }
 }
@@ -1739,7 +1739,7 @@ body.special-halloween-dark blockquote {
     --GW-blockquote-border-color: var(--GW-blood-red-dried);
 }
 
-body.special-halloween-dark #logo {
+body.special-halloween-dark #sidebar a.logo {
     color: var(--GW-blood-red);
 }
 

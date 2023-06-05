@@ -3160,20 +3160,20 @@ ol.link-bibliography-list-compact > li::before {
 /* BOTTOM DECORATION */
 /*********************/
 
-#footer-logo-container {
+#footer-decoration-container {
     margin: 0 0 1em 0;
     line-height: 0;
 }
 
-#footer-logo {
+#footer-decoration-container .footer-logo {
     position: relative;
     opacity: 0.3;
     pointer-events: none;
 }
-#footer-logo:hover {
+#footer-decoration-container .footer-logo:hover {
     opacity: 1.0;
 }
-#footer-logo::before {
+#footer-decoration-container .footer-logo::before {
     content: "";
     display: block;
     position: absolute;
@@ -3182,7 +3182,7 @@ ol.link-bibliography-list-compact > li::before {
     border-bottom: 1px dotted var(--GW-bottom-ornament-line-color);
     width: 100%;
 }
-#footer-logo::after {
+#footer-decoration-container .footer-logo::after {
     content: "";
     background-color: var(--GW-body-background-color);
     background-image: url('/static/img/logo/logo-smooth.svg');
@@ -6452,13 +6452,13 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     #skip-to-content-link,
     #ui-elements-container,
     #sidebar,
-    #page-metadata-block .similars,
-    #page-metadata-block .link-bibliography,
-    #page-importance::after,
+    #page-metadata .page-metadata-fields .backlinks,
+    #page-metadata .page-metadata-fields .similars,
+    #page-metadata .page-metadata-fields .link-bibliography,
+    #page-metadata .page-metadata-fields .page-importance::after,
     #navigation,
     .toc-collapse-toggle-button,
-    #footer,
-    #aotd {
+    #footer {
         display: none;
     }
 
