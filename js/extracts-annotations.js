@@ -255,8 +255,10 @@ Extracts = { ...Extracts,
 					*/
 				GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", (info) => {
 					allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
-						annotatedTarget.removeAnnotationLoadEvents();
-						annotatedTarget.removeAnnotationLoadEvents = null;
+						if (annotatedTarget.removeAnnotationLoadEvents) {
+							annotatedTarget.removeAnnotationLoadEvents();
+							annotatedTarget.removeAnnotationLoadEvents = null;
+						}
 					});
 				}, { once: true });
             }

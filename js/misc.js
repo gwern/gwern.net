@@ -827,6 +827,24 @@ GW.pageToolbar = {
 		return widget;
 	},
 
+	/*	Do not modify this value without updating CSS also!
+
+		--GW-page-toolbar-widget-flash-rise-duration (default.css)
+	 */
+	widgetFlashRiseDuration: 250,
+	widgetFlashStayDuration: 1000,
+
+	flashWidget: (widgetID) => {
+		let widget = GW.pageToolbar.getToolbar().querySelector(`.widget#${widgetID}`);
+		if (widget == null)
+			return null;
+
+		widget.classList.add("flashing");
+		setTimeout(() => {
+			widget.classList.remove("flashing");
+		}, GW.pageToolbar.widgetFlashRiseDuration + GW.pageToolbar.widgetFlashStayDuration);
+	},
+
 	isCollapsed: () => {
 		return GW.pageToolbar.toolbar.classList.contains("collapsed");
 	},

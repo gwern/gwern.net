@@ -189,6 +189,15 @@ Extracts = {
         //  Set service provider object.
         Extracts.popFrameProvider = window[Extracts.popFrameProviderName];
 
+		//	Inject mode selectors, if need be.
+		if (Extracts.modeSelector == null) {
+			Extracts.injectModeSelector();
+			document.querySelectorAll(".extracts-mode-selector-inline").forEach(element => {
+				Extracts.injectModeSelector(element);
+			});
+		}
+
+		//	Do not proceed if disabled.
         if (Extracts.popFrameProvider == Popups) {
             GWLog("Setting up for popups.", "extracts.js", 1);
 
@@ -608,6 +617,12 @@ Extracts = {
     /*  Pop-frames (in general).
      */
 
+	popFrameTypeText: () => {
+		return (Extracts.popFrameProvider == Popups
+				? "popup"
+				: "popin");
+	},
+
     //  Called by: Extracts.preparePopup
     //  Called by: Extracts.preparePopin
     preparePopFrame: (popFrame) => {
@@ -729,7 +744,7 @@ Extracts = {
         let popinTitle = Extracts.titleForPopFrame(popin);
         if (popinTitle) {
             popin.titleBarContents = [
-            	Extracts.showExtractsOptionsDialogPopFrameTitleBarButton(),
+            	Extracts.disableExtractPopFramesPopFrameTitleBarButton(),
             	newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popinTitle.innerHTML }),
                 Popins.titleBarComponents.closeButton()
             ];
@@ -860,7 +875,7 @@ Extracts = {
                 Popups.titleBarComponents.zoomButton().enableSubmenu(),
                 Popups.titleBarComponents.pinButton(),
                 newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popupTitle.innerHTML }),
-                Extracts.showExtractsOptionsDialogPopFrameTitleBarButton()
+                Extracts.disableExtractPopFramesPopFrameTitleBarButton()
             ];
         }
 

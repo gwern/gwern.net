@@ -1564,8 +1564,10 @@ Extracts = { ...Extracts,
 					*/
 				GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", (info) => {
 					allTargetsInContainer.forEach(target => {
-						target.removeContentLoadEvents();
-						target.removeContentLoadEvents = null;
+						if (target.removeContentLoadEvents) {
+							target.removeContentLoadEvents();
+							target.removeContentLoadEvents = null;
+						}
 					});
 				}, { once: true });
             }

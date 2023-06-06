@@ -1129,6 +1129,7 @@
 	--GW-page-toolbar-collapse-duration: 0.25s;
 	--GW-page-toolbar-slow-collapse-duration: 1s;
 	--GW-page-toolbar-fade-after-collapse-duration: 0.25s;
+	--GW-page-toolbar-widget-flash-rise-duration: 0.25s;
 }
 @supports (-moz-user-focus: normal) {
     :root {
@@ -2415,18 +2416,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686019243#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686078492#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686019243#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686078492#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686019243#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686078492#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686019243#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1686078492#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5060,12 +5061,12 @@ body.lorem div[class^='drop-cap'] {
 .popup .popframe-title-bar-button.zoom-button {
     padding: 5px;
 }
-.popup .popframe-title-bar-button.show-extracts-options-dialog-button {
-    padding: 5px;
+.popup .popframe-title-bar-button.extracts-disable-button.disabled {
+    padding: 3px;
 }
 
 .popup.mini-title-bar button.zoom-button,
-.popup.mini-title-bar button.options-button {
+.popup.mini-title-bar button.extracts-disable-button {
     display: none;
 }
 
@@ -5331,14 +5332,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686019243#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686078492#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686019243#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686078492#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5471,7 +5472,7 @@ body.lorem div[class^='drop-cap'] {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1686019243#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686078492#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5711,6 +5712,9 @@ body.lorem div[class^='drop-cap'] {
     opacity: 0.35;
 }
 
+.popin .popframe-title-bar-button.disable-extracts-button {
+    padding: 4px;
+}
 
 /*  Popin stack counter.
     */
@@ -5894,14 +5898,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686019243#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686078492#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686019243#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686078492#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6044,214 +6048,6 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     font-style: normal;
     font-size: var(--GW-body-text-font-size);
     text-align: unset;
-}
-
-
-/***************************/
-/* EXTRACTS OPTIONS DIALOG */
-/***************************/
-
-.extracts-options-dialog {
-    --background-color: var(--GW-extracts-options-dialog-backdrop-background-color);
-
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--background-color);
-    z-index: 2;
-    opacity: 1;
-    transition:
-        opacity 0.15s ease;
-}
-.extracts-options-dialog.fading {
-    opacity: 0;
-}
-
-/****************/
-/*	Dialog frame.
- */
-.extracts-options-dialog > div {
-    --background-color: var(--GW-extracts-options-dialog-background-color);
-
-    position: absolute;
-    margin: 1em;
-    background-color: var(--background-color);
-    border: 1px solid var(--GW-extracts-options-dialog-border-color);
-    box-shadow: 0 2px 2px 0 var(--GW-extracts-options-dialog-box-shadow-color);
-    font-family: var(--GW-sans-serif-font-stack);
-    user-select: none;
-}
-
-/********************/
-/*	Dialog title bar.
- */
-.extracts-options-dialog .extracts-options-dialog-title-bar {
-    padding: 0.5em;
-    border-bottom: 1px solid var(--GW-extracts-options-dialog-horizontal-rule-color);
-}
-
-.extracts-options-dialog h1 {
-    margin: 0;
-    text-align: center;
-    font-variant-caps: normal;
-    font-size: 1.5em;
-}
-
-/*****************************/
-/*	Dialog auxiliary controls.
- */
-.extracts-options-dialog .controls-aux {
-	display: flex;
-	align-items: stretch;
-    padding: 0.75em;
-    border-top: 1px solid var(--GW-extracts-options-dialog-horizontal-rule-color);
-}
-#popup-options-dialog.extracts-options-dialog .controls-aux {
-	justify-content: flex-end;
-}
-#popin-options-dialog.extracts-options-dialog .controls-aux {
-	justify-content: space-between;
-}
- 
-.extracts-options-dialog .controls-aux button {
-    --background-color: var(--GW-extracts-options-dialog-button-background-color);
-
-    background-color: var(--background-color);
-    padding: 0 0.75em;
-    height: 2em;
-    align-items: center;
-    line-height: 1;
-    font-weight: bold;
-    color: var(--GW-extracts-options-dialog-button-text-color);
-    border: 1px solid var(--GW-extracts-options-dialog-button-border-color);
-}
-@media only screen and (hover: hover) {
-	.extracts-options-dialog .controls-aux button:hover {
-		cursor: pointer;
-		box-shadow:
-			0 0 0 2px var(--background-color) inset,
-			0 0 0 3px var(--GW-extracts-options-dialog-button-hover-box-shadow-color) inset;
-	}
-}
-.extracts-options-dialog .controls-aux button:active {
-    box-shadow:
-        0 0 0 4px var(--background-color) inset,
-        0 0 0 5px var(--GW-extracts-options-dialog-button-hover-box-shadow-color) inset;
-}
-
-.extracts-options-dialog .controls-aux button.default-button {
-    outline: 2px solid var(--GW-extracts-options-dialog-button-border-color);
-}
-
-.extracts-options-dialog .controls-aux button.save-button {
-    margin-left: 1em;
-}
-
-/************************/
-/*	Dialog main controls.
- */
-.extracts-options-dialog .option-buttons {
-    padding: 0.75em;
-}
-
-.extracts-options-dialog .option-buttons label {
-    font-size: 1.25rem;
-    font-weight: bold;
-    text-align: left;
-    display: flex;
-    align-items: flex-start;
-    width: 100%;
-    box-sizing: border-box;
-    position: relative;
-	cursor: pointer;
-}
-#popup-options-dialog.extracts-options-dialog .option-buttons label {
-    padding: 0 0.75em;
-}
-#popin-options-dialog.extracts-options-dialog .option-buttons label {
-    padding: 0 0.5em;
-    border: 1px dotted var(--GW-extracts-options-dialog-button-border-color);
-}
-#popin-options-dialog.extracts-options-dialog .option-buttons label + label {
-    margin-top: 0.5em;
-}
-
-.extracts-options-dialog .option-buttons label .button-text {
-    display: block;
-    flex: 1 1 100%;
-    padding: 0.5em 0.75em;
-}
-
-.extracts-options-dialog .option-buttons label input:checked + .button-text .label {
-    text-decoration: underline;
-}
-
-.extracts-options-dialog .option-buttons label .button-text .icon {
-    display: inline-block;
-    margin: 0 0 0 0.75em;
-    position: relative;
-    opacity: 0.5;
-    top: 0.08em;
-}
-@media only screen and (hover: hover) {
-    .extracts-options-dialog .option-buttons label:hover .button-text .icon {
-        opacity: 1.0;
-    }
-}
-.extracts-options-dialog .option-buttons label input.extracts-enable + .button-text .icon {
-    width: 0.75em;
-    left: 0.12em;
-}
-.extracts-options-dialog .option-buttons label input.extracts-disable + .button-text .icon {
-    width: 0.875em;
-}
-
-.extracts-options-dialog .option-buttons label .button-text .explanation {
-    display: block;
-    font-weight: normal;
-    font-size: 0.7em;
-    color: var(--GW-extracts-options-dialog-option-button-explanation-text-color);
-}
-
-@media only screen and (hover: hover) {
-	.extracts-options-dialog .option-buttons label:hover {
-		color: var(--GW-extracts-options-dialog-option-button-hover-text-color);
-	}
-	.extracts-options-dialog .option-buttons label:hover .button-text .label {
-		text-decoration: dotted underline;
-	}
-}
-
-.extracts-options-dialog .option-buttons input {
-    appearance: none;
-    font-family: inherit;
-    font-size: inherit;
-    border: 1px solid var(--GW-extracts-options-dialog-radio-button-border-color);
-    width: 1rem;
-    height: 1rem;
-    padding: 0;
-    margin: 0.75em 0 0 0;
-    flex: 1 0 auto;
-    transition:
-        box-shadow 0.15s ease;
-}
-
-.extracts-options-dialog .option-buttons input:checked {
-    box-shadow:
-        0 0 0 3px var(--background-color) inset,
-        0 0 0 1em var(--GW-extracts-options-dialog-button-hover-box-shadow-color) inset;
-}
-
-/*******************************************/
-/*	Extracts options button in page toolbar.
- */
-#page-toolbar #show-extracts-options-dialog-button {
-	order: 3;
 }
 
 
@@ -6421,21 +6217,26 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 }
 
 #page-toolbar.vertical .widget {
-    flex-flow: column;
-    outline: 1px dotted var(--GW-page-toolbar-border-color);
-    margin-top: 8px;
-}
-@media only screen and (hover: hover) {
-    #page-toolbar.vertical .widget {
-        transition:
-            box-shadow 0.1s ease;
-    }
-    #page-toolbar.vertical .widget:hover {
-        box-shadow:
+	--widget-box-shadow-double-outline:
             0 0 0 1px var(--GW-page-toolbar-border-color),
             0 0 0 2px var(--background-color),
             0 0 0 3px var(--GW-page-toolbar-border-color);
+
+    flex-flow: column;
+    outline: 1px dotted var(--GW-page-toolbar-border-color);
+    margin-top: 8px;
+	transition:
+		box-shadow 0.1s ease;
+}
+@media only screen and (hover: hover) {
+    #page-toolbar.vertical .widget:hover {
+        box-shadow: var(--widget-box-shadow-double-outline);
     }
+}
+#page-toolbar.vertical .widget.flashing {
+	box-shadow: var(--widget-box-shadow-double-outline);
+	transition:
+		box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease;
 }
 
 #page-toolbar.vertical .widget button {
@@ -6488,9 +6289,21 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 }
 
 #page-toolbar.mobile .widget {
+	--widget-box-shadow-double-outline:
+            0 0 0 1px var(--GW-page-toolbar-border-color),
+            0 0 0 2px var(--background-color),
+            0 0 0 3px var(--GW-page-toolbar-border-color);
+
     flex-flow: column;
     outline: 1px dotted var(--GW-page-toolbar-border-color);
     margin-top: 0.5em;
+	transition:
+		box-shadow 0.15s ease;
+}
+#page-toolbar.mobile .widget.flashing {
+	box-shadow: var(--widget-box-shadow-double-outline);
+	transition:
+		box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease;
 }
 
 #page-toolbar.mobile .widget button {
@@ -6965,7 +6778,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1686019243#question');
+    background-image: url('/static/img/icon/icons.svg?v=1686078492#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7319,6 +7132,9 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 #page-toolbar .reader-mode-selector {
     order: 2;
 }
+#page-toolbar .extracts-mode-selector {
+    order: 3;
+}
 
 #page-toolbar .mode-selector button .label {
     text-underline-position: from-font;
@@ -7345,6 +7161,21 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
  */
 #page-toolbar.mobile .mode-selector {
     padding: 2px 0;
+}
+
+/*	Specific mode selectors & buttons.
+ */
+#page-toolbar.vertical .extracts-mode-selector button.select-mode-on .icon {
+	padding: 5px;
+}
+#page-toolbar.vertical .extracts-mode-selector button.select-mode-off .icon {
+	padding: 2px;
+}
+#page-toolbar.mobile .extracts-mode-selector button.select-mode-on .icon {
+	padding: 7px;
+}
+#page-toolbar.mobile .extracts-mode-selector button.select-mode-off .icon {
+	padding: 4px;
 }
 
 /*************************/
@@ -7397,10 +7228,10 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 .mode-selector-inline button.active:not(:hover) .label::after {
     border-bottom: 1px dotted currentColor;
 }
-.mode-selector button:not(:disabled):active .label {
+.mode-selector-inline button:not(:disabled):active .label {
     transform: translateY(2px);
 }
-.mode-selector button:not(:disabled):active .label::after {
+.mode-selector-inline button:not(:disabled):active .label::after {
     transform: translateY(-2px);
 }
 
@@ -7453,7 +7284,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1686019243#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1686078492#circle-notch-solid');
 
     pointer-events: none;
 }
