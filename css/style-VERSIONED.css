@@ -1129,7 +1129,8 @@
 	--GW-page-toolbar-collapse-duration: 0.25s;
 	--GW-page-toolbar-slow-collapse-duration: 1s;
 	--GW-page-toolbar-fade-after-collapse-duration: 0.25s;
-	--GW-page-toolbar-widget-flash-rise-duration: 0.25s;
+	--GW-page-toolbar-widget-flash-rise-duration: 0.75s;
+	--GW-page-toolbar-widget-flash-fall-duration: 0.75s;
 }
 @supports (-moz-user-focus: normal) {
     :root {
@@ -2416,18 +2417,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686086541#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686088919#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686086541#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686088919#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686086541#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686088919#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686086541#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1686088919#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5332,14 +5333,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686086541#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686088919#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686086541#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686088919#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5472,7 +5473,7 @@ body.lorem div[class^='drop-cap'] {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1686086541#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686088919#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5898,14 +5899,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686086541#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686088919#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686086541#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686088919#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6236,7 +6237,11 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 #page-toolbar.vertical .widget.flashing {
 	box-shadow: var(--widget-box-shadow-double-outline);
 	transition:
-		box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease;
+		box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease-out;
+}
+#page-toolbar.vertical .widget.flashing-fade {
+	transition:
+		box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-in;
 }
 
 #page-toolbar.vertical .widget button {
@@ -6303,7 +6308,11 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 #page-toolbar.mobile .widget.flashing {
 	box-shadow: var(--widget-box-shadow-double-outline);
 	transition:
-		box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease;
+		box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease-out;
+}
+#page-toolbar.mobile .widget.flashing-fade {
+	transition:
+		box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-in;
 }
 
 #page-toolbar.mobile .widget button {
@@ -6778,7 +6787,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1686086541#question');
+    background-image: url('/static/img/icon/icons.svg?v=1686088919#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7284,7 +7293,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1686086541#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1686088919#circle-notch-solid');
 
     pointer-events: none;
 }

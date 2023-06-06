@@ -763,7 +763,7 @@ GW.pageToolbar = {
 
 	hoverUncollapseDelay: 400,
 	unhoverCollapseDelay: 2500,
-	demoCollapseDelay: 4000,
+	demoCollapseDelay: 5000,
 
 	/*	These values must be synced with CSS. Do not modify them in isolation!
 		(Listed variables that correspond to each parameter are in default.css.
@@ -773,6 +773,11 @@ GW.pageToolbar = {
 	collapseDuration: 250, // --GW-page-toolbar-collapse-duration
 	demoCollapseDuration: 1000, // --GW-page-toolbar-slow-collapse-duration
 	fadeAfterCollapseDuration: 250, // --GW-page-toolbar-fade-after-collapse-duration
+
+	//	Do not modify these two values without updating CSS also!
+	widgetFlashRiseDuration: 750, // --GW-page-toolbar-widget-flash-rise-duration
+	widgetFlashFallDuration: 750, // --GW-page-toolbar-widget-flash-fall-duration
+	widgetFlashStayDuration: 1000,
 
 	toolbar: null,
 
@@ -827,22 +832,20 @@ GW.pageToolbar = {
 		return widget;
 	},
 
-	/*	Do not modify this value without updating CSS also!
-
-		--GW-page-toolbar-widget-flash-rise-duration (default.css)
-	 */
-	widgetFlashRiseDuration: 250,
-	widgetFlashStayDuration: 1000,
-
-	flashWidget: (widgetID) => {
+	flashWidget: (widgetID, quickly = false) => {
 		let widget = GW.pageToolbar.getToolbar().querySelector(`.widget#${widgetID}`);
 		if (widget == null)
 			return null;
 
+		let durationFactor = quickly ? 0.25 : 1.0;
+
 		widget.classList.add("flashing");
 		setTimeout(() => {
-			widget.classList.remove("flashing");
-		}, GW.pageToolbar.widgetFlashRiseDuration + GW.pageToolbar.widgetFlashStayDuration);
+			widget.swapClasses([ "flashing", "flashing-fade" ], 1);
+			setTimeout(() => {
+				widget.classList.remove("flashing-fade");
+			}, GW.pageToolbar.widgetFlashFallDuration);
+		}, GW.pageToolbar.widgetFlashRiseDuration + (GW.pageToolbar.widgetFlashStayDuration * durationFactor));
 	},
 
 	isCollapsed: () => {
@@ -1068,8 +1071,16 @@ GW.pageToolbar = {
 			/*	Slowly collapse toolbar shortly after page load (if it’s not
 				already collapsed).
 			 */
-			if (startCollapsed == false)
-				setTimeout(GW.pageToolbar.toggleCollapseState, GW.pageToolbar.demoCollapseDelay, true, true);
+			if (startCollapsed == false) {
+				requestAnimationFrame(() => {
+					Array.from(GW.pageToolbar.getToolbar().querySelector(".widgets").children).forEach(widget => {
+						let order = parseInt(getComputedStyle(widget).order);
+						setTimeout(GW.pageToolbar.flashWidget, order * GW.pageToolbar.widgetFlashRiseDuration * 4/3, widget.id, true);
+					});
+
+					setTimeout(GW.pageToolbar.toggleCollapseState, GW.pageToolbar.demoCollapseDelay, true, true);
+				});
+			}
 
 			//	Update toolbar state on scroll.
 			addScrollListener(GW.pageToolbar.updateState, "updatePageToolbarStateListener", { defer: true });

@@ -9,7 +9,7 @@ Extracts = { ...Extracts,
 
 	selectedModeOptionNote: " [This option is currently selected.]",
 
-	popFramesDisableDespawnDelay: 2500,
+	popFramesDisableDespawnDelay: 2000,
 	popFramesDisableAutoToggleDelay: 250,
 
 	/******************/
