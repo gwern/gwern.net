@@ -449,7 +449,7 @@ function setImageDimensions(image, fixWidth = false, fixHeight = false) {
 			/*	This should match the `max-height` property value for images
 				in the main content column.
 			 */
-			image.maxHeight = window.innerHeight - (8 * GW.baseFontSize);
+			image.maxHeight = window.innerHeight - (8 * baseFontSize);
 		} else {
 			image.maxHeight = parseInt(getComputedStyle(image).maxHeight);
 		}

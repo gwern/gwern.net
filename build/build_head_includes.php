@@ -36,8 +36,9 @@ $includes_dir = "{$static_root}/include";
 $includes = [
 	[ 'light-mode-GENERATED.css', 'id="inlined-styles-colors"' ],
 	[ 'dark-mode-GENERATED.css', 'id="inlined-styles-colors-dark" media="all and (prefers-color-scheme: dark)"' ],
-	[ '<link id="initial-styles" rel="stylesheet" type="text/css" href="/static/css/head.css">' ],
-	[ '<script src="/static/js/head.js"></script>' ]
+	[ '<link id="initial-styles" rel="stylesheet" href="/static/css/head.css">' ],
+	[ '<script src="/static/js/head.js"></script>' ],
+	[ '<link rel="preload" href="/static/img/icon/icons.svg" as="image">' ]
 ];
 
 ## Action
@@ -83,6 +84,7 @@ foreach ($includes as $include) {
 		$outfile .= "</{$type}>\n";
 	}
 }
+
 file_put_contents("{$includes_dir}/inlined-head.html", $outfile);
 
 ?>
