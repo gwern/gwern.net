@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-06-05 10:22:46 gwern"
+# When:  Time-stamp: "2023-06-05 18:35:17 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -434,7 +434,7 @@ else
                    -e '^mjx-vsize$' -e '^new$' -e '^outline-not$' -e '^warning$' -e '^markdown-body$' -e '^similars$' -e '^similars-append$' \
                    -e '^text-center$' -e '^abstract-tag-directory$' -e '^page-description-annotation$' -e '^link-bibliography$' \
                    -e '^link-bibliography-append$' -e '^expand-on-hover$' -e '^include-block-context$' -e 'tag-index-link-bibliography-block' \
-                   -e '^aux-links-container$' -e '^decorate-not$' -e '^include-omit-metadata$'; }
+                   -e '^aux-links-container$' -e '^decorate-not$' -e '^include-omit-metadata$' -e '^quote-of-the-day$'; }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
     λ(){ echo "$PAGES_ALL" | grep -F -v 'Hafu' | xargs --max-args=500 grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
@@ -515,7 +515,7 @@ else
     λ(){ gf -e ' ?' ./metadata/full.yaml; }
     wrap λ "Problem with question-marks (perhaps the crossref/Emacs copy-paste problem?)."
 
-    λ(){ grep -F --invert-match -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -- ./metadata/full.yaml ./metadata/half.yaml | \
+    λ(){ grep -F --invert-match -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -e '<em>N,N</em>' -- ./metadata/full.yaml ./metadata/half.yaml | \
              ge -e ',[A-Za-z]'; }
     wrap λ "Look for run-together commas (but exclude chemical names where that's correct)."
 
@@ -536,7 +536,7 @@ else
             -e '[⁰ⁱ⁴⁵⁶⁷⁸⁹⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]' -e '<p>Table [0-9]' -e '<p>Figure [0-9]' \
             -e 'id="[0-9]' -e '</[a-z][a-z]\+\?' -e 'via.*ihub' -e " '$" -e "’’" -e ' a [aei]' -e '</[0-9]\+' \
             -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' -e '#googl$' -e "#googl$'" -e 'gwtag' -e ' <p><strong>[A-Z][A-Z][A-Z]\+</strong>' \
-            -e '&org=.*&org=' -e '[0-9]⁄[0-9]\.[0-9]' -e '[0-9]\.[0-9]⁄[0-9]' -e '<strong>Keywords</strong>: .*;' -- ./metadata/*.yaml; }
+            -e '&org=.*&org=' -e '[0-9]⁄[0-9]\.[0-9]' -e '[0-9]\.[0-9]⁄[0-9]' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database (regexp matches)."
 
     λ(){ grep -F --color=always -e ']{' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
