@@ -126,7 +126,8 @@ $head_includes = [
 	"{$static_dir}/css/light-mode-GENERATED.css",
 	"{$static_dir}/css/dark-mode-GENERATED.css",
 	"{$static_dir}/css/head-VERSIONED.css",
-	"{$static_dir}/js/head-GENERATED.js"
+	"{$static_dir}/js/head-GENERATED.js",
+	"{$static_dir}/img/icon/icons.svg"
 ];
 $head_includes = implode(" ", $head_includes);
 if ($force || (`git diff-index --cached HEAD -- {$head_includes}`)) {
