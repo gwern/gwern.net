@@ -36,8 +36,12 @@ $includes_dir = "{$static_root}/include";
 $includes = [
 	[ 'light-mode-GENERATED.css', 'id="inlined-styles-colors"' ],
 	[ 'dark-mode-GENERATED.css', 'id="inlined-styles-colors-dark" media="all and (prefers-color-scheme: dark)"' ],
-	[ '<link id="initial-styles" rel="stylesheet" href="/static/css/head.css">' ],
+
+	[ '<link rel="stylesheet" href="/static/css/head.css">' ],
 	[ '<script src="/static/js/head.js"></script>' ],
+
+	[ '<link rel="preload" href="/static/css/style.css" as="style">' ], 
+	[ '<link rel="preload" href="/static/js/script.js" as="script">' ], 
 	[ '<link rel="preload" href="/static/img/icon/icons.svg" as="image">' ]
 ];
 
