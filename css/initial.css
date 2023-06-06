@@ -464,7 +464,7 @@ article {
 	/*	On desktop, we want the TOC side by side with the content.
 	 */
     #TOC {
-		margin: 2rem 2.25rem 1rem 0;
+		margin: 2.25rem 2.25rem 1rem 0;
         float: left;
         max-width: 285px;
     }
@@ -874,7 +874,7 @@ body[class*='-index'] #TOC.TOC-links-only li {
 /****************/
 
 #markdownBody {
-	margin-top: 2rem;
+	margin-top: 2.25rem;
 }
 
 .markdownBody {
