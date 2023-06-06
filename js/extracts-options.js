@@ -9,7 +9,7 @@ Extracts = { ...Extracts,
 
 	selectedModeOptionNote: " [This option is currently selected.]",
 
-	popFramesDisableDespawnDelay: 2500,
+	popFramesDisableDespawnDelay: 2000,
 	popFramesDisableAutoToggleDelay: 250,
 
 	/******************/
@@ -157,9 +157,7 @@ Extracts = { ...Extracts,
 					setTimeout(() => {
 						Extracts.disableExtractPopFrames();
 
-						setTimeout(() => {
-							GW.pageToolbar.toggleCollapseState(true);
-						}, GW.pageToolbar.demoCollapseDelay + GW.pageToolbar.widgetFlashStayDuration);
+						GW.pageToolbar.toggleCollapseState(true, true, GW.pageToolbar.demoCollapseDelay + GW.pageToolbar.widgetFlashStayDuration);
 					}, GW.pageToolbar.widgetFlashRiseDuration);
 				}, Extracts.popFramesDisableAutoToggleDelay);
 			}, Extracts.popFramesDisableDespawnDelay);

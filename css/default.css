@@ -66,7 +66,8 @@
 	--GW-page-toolbar-collapse-duration: 0.25s;
 	--GW-page-toolbar-slow-collapse-duration: 1s;
 	--GW-page-toolbar-fade-after-collapse-duration: 0.25s;
-	--GW-page-toolbar-widget-flash-rise-duration: 0.25s;
+	--GW-page-toolbar-widget-flash-rise-duration: 0.75s;
+	--GW-page-toolbar-widget-flash-fall-duration: 0.75s;
 }
 @supports (-moz-user-focus: normal) {
     :root {
@@ -5173,7 +5174,11 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 #page-toolbar.vertical .widget.flashing {
 	box-shadow: var(--widget-box-shadow-double-outline);
 	transition:
-		box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease;
+		box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease-out;
+}
+#page-toolbar.vertical .widget.flashing-fade {
+	transition:
+		box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-in;
 }
 
 #page-toolbar.vertical .widget button {
@@ -5240,7 +5245,11 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 #page-toolbar.mobile .widget.flashing {
 	box-shadow: var(--widget-box-shadow-double-outline);
 	transition:
-		box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease;
+		box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease-out;
+}
+#page-toolbar.mobile .widget.flashing-fade {
+	transition:
+		box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-in;
 }
 
 #page-toolbar.mobile .widget button {
