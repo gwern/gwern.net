@@ -863,14 +863,17 @@ GW.pageToolbar = {
 		NOTE: Use only this method to collapse or uncollapse toolbar; the
 		.collapse() and .uncollapse() methods are for internal use only.
 	 */
-	toggleCollapseState: (collapse, tempOrSlowly = false) => {
+	toggleCollapseState: (collapse, tempOrSlowly = false, delay) => {
+		if (collapse && delay) {
+			GW.pageToolbar.toolbar.collapseTimer = setTimeout(GW.pageToolbar.toggleCollapseState, delay, collapse, tempOrSlowly);
+			return;
+		}
+
 		GW.pageToolbar.toolbar.classList.remove("expanded-temp");
 
 		if (collapse == undefined) {
 			if (GW.pageToolbar.isCollapsed()) {
 				GW.pageToolbar.uncollapse();
-				if (tempOrSlowly)
-					GW.pageToolbar.toolbar.classList.add("expanded-temp");
 			} else {
 				GW.pageToolbar.collapse();
 			}
@@ -888,6 +891,10 @@ GW.pageToolbar = {
 		(For internal use only; do not call except from .toggleCollapseState().)
 	 */
 	collapse: (slowly = false) => {
+		//	Don’t collapse if hovering.
+		if (GW.pageToolbar.toolbar.matches(":hover"))
+			return;
+
 		clearTimeout(GW.pageToolbar.toolbar.collapseTimer);
 
 		GW.pageToolbar.toolbar.classList.add("collapsed");
@@ -1078,7 +1085,7 @@ GW.pageToolbar = {
 						setTimeout(GW.pageToolbar.flashWidget, order * GW.pageToolbar.widgetFlashRiseDuration * 4/3, widget.id, true);
 					});
 
-					setTimeout(GW.pageToolbar.toggleCollapseState, GW.pageToolbar.demoCollapseDelay, true, true);
+					GW.pageToolbar.toggleCollapseState(true, true, GW.pageToolbar.demoCollapseDelay);
 				});
 			}
 
@@ -10494,9 +10501,7 @@ Extracts = { ...Extracts,
 					setTimeout(() => {
 						Extracts.disableExtractPopFrames();
 
-						setTimeout(() => {
-							GW.pageToolbar.toggleCollapseState(true);
-						}, GW.pageToolbar.demoCollapseDelay + GW.pageToolbar.widgetFlashStayDuration);
+						GW.pageToolbar.toggleCollapseState(true, true, GW.pageToolbar.demoCollapseDelay + GW.pageToolbar.widgetFlashStayDuration);
 					}, GW.pageToolbar.widgetFlashRiseDuration);
 				}, Extracts.popFramesDisableAutoToggleDelay);
 			}, Extracts.popFramesDisableDespawnDelay);
