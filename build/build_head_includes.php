@@ -40,8 +40,6 @@ $includes = [
 	[ '<link rel="stylesheet" href="/static/css/head.css">' ],
 	[ '<script src="/static/js/head.js"></script>' ],
 
-	[ '<link rel="preload" href="/static/css/style.css" as="style">' ], 
-	[ '<link rel="preload" href="/static/js/script.js" as="script">' ], 
 	[ '<link rel="preload" href="/static/img/icon/icons.svg" as="image">' ]
 ];
 
