@@ -633,7 +633,6 @@ Extracts = {
 		let inlinedStyleIDs = [ 
 			"inlined-styles-colors", 
 			"inlined-styles-colors-dark", 
-			"initial-styles", 
 			"mathjax-styles"
 		];
 		Array.from(document.styleSheets).filter(styleSheet => 
