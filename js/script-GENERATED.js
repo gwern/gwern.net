@@ -10329,8 +10329,8 @@ Extracts = { ...Extracts,
 	/*	Configuration.
 	 */
 	modeOptions: [
-		[ "on", "On", `Link pop-frames enabled.`, "message-lines-solid" ],
-		[ "off", "Off", `Link pop-frames disabled.`, "message-slash-solid" ],
+		[ "on", "On", `Enable link pop-frames.`, "message-lines-solid" ],
+		[ "off", "Off", `Disable link pop-frames.`, "message-slash-solid" ],
 	],
 
 	selectedModeOptionNote: " [This option is currently selected.]",
