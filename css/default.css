@@ -1265,16 +1265,16 @@ p.intro-graf::first-line {
 
 @media all and (max-width: 649px) {
     .epigraph {
-        padding: 0;
+        padding: 1.5em 0.75em;
         font-size: 0.95em;
     }
     .epigraph > blockquote::before {
-        left: -0.38em;
-        top: -0.75em;
+        left: -0.3em;
+        top: -0.9em;
     }
     .epigraph > blockquote::after {
-        right: -0.38em;
-        bottom: -1.25em;
+        right: -0.3em;
+        bottom: -1.4em;
     }
 }
 
@@ -2792,11 +2792,11 @@ section.footnotes .footnote-self-link {
 /**********/
 
 #footer {
-    margin-top: 2.5rem;
+    margin-top: 2.25rem;
 }
 @media all and (max-width: 649px) {
     #footer {
-        margin-top: 3rem;
+        margin-top: 2rem;
     }
 }
 
@@ -3062,6 +3062,12 @@ ol.link-bibliography-list-compact > li::before {
 	padding: 2.5rem 1.5rem 3.75rem 1.5rem;
 	border: 1px solid var(--GW-x-of-the-day-border-color);
 }
+@media all and (max-width: 649px) {
+	#x-of-the-day {
+		margin-top: 3rem;
+		padding: 3.5rem 1rem 3.75rem 1rem;
+	}
+}
 
 #x-of-the-day::before,
 #x-of-the-day::after {
@@ -3108,16 +3114,22 @@ ol.link-bibliography-list-compact > li::before {
 
     --box-horizontal-offset: calc(var(--box-padding-top) * 2.0);
 
+    margin: 3.5em 0 3.25em 0;
     padding-right: calc(var(--box-horizontal-offset) * 0.25);
+}
+@media only screen and (max-width: 649px) {
+    #x-of-the-day .site-of-the-day {
+        margin: 2.75em -1em;
+    }
 }
 
 #x-of-the-day .site-of-the-day blockquote {
     --background-color: var(--GW-body-background-color);
 
-    margin: 3.5em auto 3.25em auto;
     position: relative;
     height: var(--box-size);
     width: fit-content;
+    margin: auto;
     padding:
         var(--box-padding-top)
         calc(var(--box-size) + 2.0 * var(--box-padding-top))
@@ -3134,7 +3146,6 @@ ol.link-bibliography-list-compact > li::before {
 @media only screen and (max-width: 649px) {
     #x-of-the-day .site-of-the-day blockquote {
         font-size: calc((17/18) * var(--GW-body-text-font-size));
-        margin: 3.5em auto 2.75em auto;
         padding:
             var(--box-padding-top)
             calc(var(--box-size) - var(--box-padding-top))
@@ -3229,44 +3240,54 @@ ol.link-bibliography-list-compact > li::before {
 /*********************/
 /*	Navigation bar for previous/next page links (horizontal divider based on: 
 	https://commons.wikimedia.org/wiki/File:Filet_arabesque.svg )
-	On mobile, instead of the arabesque #navigation, we insert a G footer.
+	On mobile, we hide the forward/back links.
  */
 
+#navigation {
+	margin: 2.5em 0 0 0;
+	display: flex;
+	align-items: center;
+	opacity: 0.8;
+}
+#navigation a {
+	line-height: 1;
+	display: flex;
+}
+#navigation a:hover {
+	color: var(--GW-nav-header-link-color);
+}
+#navigation a svg {
+	margin: 0;
+	width: 100%;
+	height: 1.65em;
+}
+
+@media only screen and (min-width: 650px) {
+	#navigation {
+		justify-content: space-between;
+	}
+	#navigation #navigation-next,
+	#navigation #navigation-previous {
+		flex-grow: 1;
+	}
+	#navigation #navigation-next {
+		transform: scale(-1, 1);
+	}
+	#navigation #navigation-center {
+		width: 15%;
+	}
+}
 @media only screen and (max-width: 649px) {
-    #navigation {
+	#navigation {
+		justify-content: center;
+	}
+    #navigation #navigation-next,
+	#navigation #navigation-previous {
         display: none;
     }
-}
-@media only screen and (min-width: 650px) {
-    #navigation {
-        margin: 2.5em 0 0 0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        opacity: 0.8;
-    }
-    #navigation a {
-        line-height: 1;
-        display: flex;
-    }
-    #navigation a:hover {
-        color: var(--GW-nav-header-link-color);
-    }
-    #navigation a svg {
-        margin: 0;
-        width: 100%;
-        height: 1.65em;
-    }
-    #navigation #navigation-next,
-    #navigation #navigation-previous {
-        flex-grow: 1;
-    }
-    #navigation #navigation-center {
-        width: 15%;
-    }
-    #navigation #navigation-next {
-        transform: scale(-1, 1);
-    }
+	#navigation #navigation-center {
+		width: 25%;
+	}
 }
 
 
