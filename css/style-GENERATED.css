@@ -1205,6 +1205,29 @@ section.level1 > .heading a::after {
 	left: 0;
 }
 
+/*	Pilcrow in H3, H4, H5, H6.
+ */
+section.level3 > .heading a,
+section.level4 > .heading a,
+section.level5 > .heading a,
+section.level6 > .heading a {
+	position: relative;
+}
+section.level3 > .heading a::after,
+section.level4 > .heading a::after,
+section.level5 > .heading a::after,
+section.level6 > .heading a::after {
+	right: -1.5em;
+}
+section.level3 > .heading a::after,
+section.level4 > .heading a::after {
+	bottom: 0.4em;
+}
+section.level5 > .heading a::after,
+section.level6 > .heading a::after {
+	bottom: 0.3em;
+}
+
 /**********************************************************/
 /*	Highlighted sections. (Due to extract popups, usually.)
  */
