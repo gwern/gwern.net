@@ -144,7 +144,7 @@ body.reader-mode-active .markdownBody p code {
 
 /*  Mobile layout adjustments.
  */
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
 	body.reader-mode-active #sidebar {
 		position: relative;
 	}

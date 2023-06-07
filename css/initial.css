@@ -65,7 +65,7 @@ body {
 main {
     position: relative;
 }
-@media only screen and (min-width: 650px) {
+@media all and (min-width: 650px) {
     main {
         min-height: 100vh;
         display: flex;
@@ -564,7 +564,7 @@ body[class*='-index'] #TOC.TOC-links-only li {
     font-weight: bold;
     opacity: 0.5;
 }
-@media only screen and (hover: hover) {
+@media all and (hover: hover) {
     #TOC.collapsed:hover::before {
         opacity: 1.0;
     }
@@ -624,7 +624,7 @@ body[class*='-index'] #TOC.TOC-links-only li {
     transform: rotate(0);
 }
 
-@media only screen and (hover: hover) {
+@media all and (hover: hover) {
     #TOC .toc-collapse-toggle-button:hover {
         color: var(--GW-TOC-collapse-button-text-hover-color);
         background-color: var(--GW-TOC-collapse-button-hover-color);
@@ -763,7 +763,7 @@ body[class*='-index'] #TOC.TOC-links-only li {
     position: relative;
     padding: 0 0.25rem 0 0;
 }
-@media only screen and (hover: hover) {
+@media all and (hover: hover) {
 	.TOC a:hover,
 	.markdownBody .TOC a:hover {
 		background-color: var(--GW-TOC-link-hover-background-color);
@@ -781,7 +781,7 @@ body[class*='-index'] #TOC.TOC-links-only li {
 		height: 100%;
 	}
 }
-@media only screen and (hover: none) {
+@media all and (hover: none) {
 	.TOC a {
 		position: relative;
 	}
@@ -1119,7 +1119,7 @@ p.empty-graf {
 }
 /*	Larger indentation in main content column on non-phones.
  */
-@media only screen and (min-width: 650px) {
+@media all and (min-width: 650px) {
 	#markdownBody.indented {
 		--text-indent: 2.5em;
 	}
@@ -1144,7 +1144,7 @@ p.empty-graf {
     --text-alignment: justify;
     --text-hyphenation: auto;
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
 	.markdownBody.justified {
 		--text-alignment: left;
 	}
@@ -1470,7 +1470,7 @@ a code {
 
 /*  Hide sidenote columns on narrow viewports.
     */
-@media only screen and (max-width: 1760px) {
+@media all and (max-width: 1760px) {
     #sidenote-column-left,
     #sidenote-column-right {
         display: none;
@@ -1479,7 +1479,7 @@ a code {
 
 /*  Breakpoint for sidenotes.
  */
-@media only screen and (min-width: 1761px) {
+@media all and (min-width: 1761px) {
     #markdownBody {
         position: relative;
     }
@@ -1492,7 +1492,7 @@ a code {
 /*  On wide viewports, hide the margin notes until it is determined which layout
 	form it should take (‘sidenote’ or ‘inline’).
  */
-@media only screen and (min-width: 1761px) {
+@media all and (min-width: 1761px) {
     .marginnote:not(.inline):not(.sidenote) {
         display: none;
     }
@@ -1595,12 +1595,12 @@ body.index #sidebar a.logo {
 body.index #markdownBody #notable {
     display: none;
 }
-@media only screen and (min-width: 961px) {
+@media all and (min-width: 961px) {
     body.index #markdownBody {
         display: grid;
         grid-row-gap: 0.5em;
     }
-    @media only screen and (max-width: 1040px) {
+    @media all and (max-width: 1040px) {
         body.index #markdownBody {
             grid-template-columns: 1fr;
         }
@@ -1612,7 +1612,7 @@ body.index #markdownBody #notable {
             break-inside: avoid;
         }
     }
-    @media only screen and (min-width: 1041px) {
+    @media all and (min-width: 1041px) {
         body.index #markdownBody {
 			grid-template-columns: 1fr 1fr;
 	        grid-column-gap: 2em;
@@ -1627,7 +1627,7 @@ body.index #markdownBody #notable {
 		the initial row being ‘meta’ blocks, we leave #notable visible
 		(for a newest/popular/notable triplet)
 	 */
-	@media only screen and (min-width: 1761px) {
+	@media all and (min-width: 1761px) {
 		body.index #markdownBody {
 			grid-template-columns: 45ch 45ch 45ch;
 			margin-left: -20ch;
@@ -1676,7 +1676,7 @@ body.index #markdownBody section ul ul {
     --list-bullet-opacity: 0.85;
 }
 
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     body.index #markdownBody section ul p {
 		margin-bottom: 0.15em;
         line-height: 1.65;
@@ -1708,7 +1708,7 @@ body.index #markdownBody section ul ul {
 
 /*  Back-to-top link on home page.
     */
-@media only screen and (min-width: 1761px) {
+@media all and (min-width: 1761px) {
     body.index #back-to-top {
         left: calc((100% - 1430px - 50px)/2);
     }

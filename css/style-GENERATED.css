@@ -2564,7 +2564,7 @@ table td > code {
 .table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
     background-image: var(--GW-checkerboard-scrollbar-hover-background-image);
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     .table-scroll-wrapper::-webkit-scrollbar {
         height: 6px;
     }
@@ -2745,7 +2745,7 @@ pre::-webkit-scrollbar-thumb {
 pre::-webkit-scrollbar-thumb:hover {
     background-color: var(--GW-pre-element-scrollbar-thumb-hover-color);
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     pre::-webkit-scrollbar {
         height: 10px;
     }
@@ -2855,7 +2855,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         0 0 0 2px var(--background-color) inset,
         0 0 0 8px var(--GW-math-block-scrollbar-thumb-hover-color) inset;
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     .math.block .mjpage::-webkit-scrollbar {
         height: 10px;
     }
@@ -2880,7 +2880,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     border-style: solid;
     border-width: 1px;
 }
-@media only screen and (min-width: 650px) {
+@media all and (min-width: 650px) {
     .math.block .block-button-bar {
         opacity: 0;
         visibility: hidden;
@@ -2909,7 +2909,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 .math.block .block-button-bar button svg {
     opacity: 0.65;
 }
-@media only screen and (hover: hover) {
+@media all and (hover: hover) {
     .math.block .block-button-bar button svg {
         opacity: 0.45;
     }
@@ -4180,7 +4180,7 @@ ol.link-bibliography-list-compact > li::before {
     margin: 3.5em 0 3.25em 0;
     padding-right: calc(var(--box-horizontal-offset) * 0.25);
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     #x-of-the-day .site-of-the-day {
         margin: 2.75em -1em;
     }
@@ -4206,7 +4206,7 @@ ol.link-bibliography-list-compact > li::before {
     display: flex;
     align-items: center;
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     #x-of-the-day .site-of-the-day blockquote {
         font-size: calc((17/18) * var(--GW-body-text-font-size));
         padding:
@@ -4325,7 +4325,7 @@ ol.link-bibliography-list-compact > li::before {
 	height: 1.65em;
 }
 
-@media only screen and (min-width: 650px) {
+@media all and (min-width: 650px) {
 	#navigation {
 		justify-content: space-between;
 	}
@@ -4340,7 +4340,7 @@ ol.link-bibliography-list-compact > li::before {
 		width: 15%;
 	}
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
 	#navigation {
 		justify-content: center;
 	}
@@ -4392,7 +4392,7 @@ ol.link-bibliography-list-compact > li::before {
     height: 100%;
 }
 
-@media only screen and (min-width: 1080px) {
+@media all and (min-width: 1080px) {
     #back-to-top {
         right: calc(((100% - (var(--GW-body-max-width) + 2 * var(--GW-body-side-padding))) / 2) - 35px);
     }
@@ -4403,7 +4403,7 @@ ol.link-bibliography-list-compact > li::before {
         border-color: currentColor;
     }
 }
-@media only screen and (max-width: 1079px) {
+@media all and (max-width: 1079px) {
     #back-to-top {
         right: 1rem;
         bottom: 1rem;
@@ -6090,7 +6090,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 #ui-elements-container > * {
     pointer-events: auto;
 }
-@media only screen and (hover: hover) {
+@media all and (hover: hover) {
     #ui-elements-container:hover {
         z-index: 10001;
     }
@@ -6144,7 +6144,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 #page-toolbar > button.main-toggle-button:active {
     transform: scale(0.95);
 }
-@media only screen and (hover: hover) {
+@media all and (hover: hover) {
     #page-toolbar > button.main-toggle-button:hover {
         opacity: 1.0;
         transition:
@@ -6208,7 +6208,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 #page-toolbar .widget button.selected .icon {
     color: var(--GW-page-toolbar-button-selected-icon-color);
 }
-@media only screen and (hover: hover) {
+@media all and (hover: hover) {
     #page-toolbar .widget button:hover .icon {
         color: var(--GW-page-toolbar-button-selected-icon-color);
     }
@@ -6251,7 +6251,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 	transition:
 		box-shadow 0.1s ease;
 }
-@media only screen and (hover: hover) {
+@media all and (hover: hover) {
     #page-toolbar.vertical .widget:hover {
         box-shadow: var(--widget-box-shadow-double-outline);
     }
@@ -6292,7 +6292,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
         opacity 0.1s ease;
     pointer-events: none;
 }
-@media only screen and (hover: hover) {
+@media all and (hover: hover) {
     #page-toolbar.vertical .widget button:hover .label {
         opacity: 1;
     }
@@ -6597,7 +6597,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     transition:
         bottom 0.15s ease;
 }
-@media only screen and (max-width: 1179px) {
+@media all and (max-width: 1179px) {
     #image-focus-overlay .caption {
         max-width: calc(100% - 2em);
         left: 1em;
@@ -6605,7 +6605,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
         z-index: 2;
     }
 }
-@media only screen and (min-width: 650px) {
+@media all and (min-width: 650px) {
     #image-focus-overlay .caption {
         font-size: 2vmin;
     }
@@ -6637,7 +6637,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     padding: 0.25em 1.25em;
     border-radius: 8px;
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     #image-focus-overlay .caption .caption-text-wrapper {
         font-size: 0.9em;
         padding: 0.125em 0.75em 0.25em 0.75em;
@@ -6693,7 +6693,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     transition:
         background-color 0.15s ease-out;
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     #image-focus-overlay .caption .image-url {
         position: fixed;
         top: 4.5em;
@@ -6710,7 +6710,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     font-size: 0.8em;
     color: var(--SA-image-focus-overlay-image-caption-link-color);
 }
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     #image-focus-overlay .caption .image-url .url {
         font-size: 0.75em;
     }
@@ -6845,7 +6845,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     bottom: -2.25em;
 }
 
-@media only screen and (max-width: 1179px) {
+@media all and (max-width: 1179px) {
     #image-focus-overlay .help-overlay {
         bottom: unset;
         top: 1em;
@@ -6915,7 +6915,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     justify-content: space-between;
     pointer-events: none;
 }
-@media only screen and (max-width: 1179px) {
+@media all and (max-width: 1179px) {
     #image-focus-overlay .slideshow-buttons {
         z-index: 1;
     }
@@ -6953,7 +6953,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     background-color: transparent;
 }
 
-@media only screen and (hover: hover) {
+@media all and (hover: hover) {
     #image-focus-overlay .slideshow-buttons button:hover {
         background-color: var(--SA-image-focus-overlay-slideshow-button-hover-background-color);
         color: var(--SA-image-focus-overlay-slideshow-button-hover-color);
@@ -6964,7 +6964,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
             drop-shadow(0 0 3px var(--SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color));
     }
 }
-@media only screen and (hover: none) {
+@media all and (hover: none) {
     #image-focus-overlay .slideshow-buttons button:not(:disabled) {
         background-color: var(--SA-image-focus-overlay-slideshow-button-hover-background-color);
         color: var(--SA-image-focus-overlay-slideshow-button-hover-color);
@@ -7225,7 +7225,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     display: flex;
     opacity: 0.4;
 }
-@media only screen and (hover: hover) {
+@media all and (hover: hover) {
     .mode-selector-inline button .icon {
         transition:
             opacity 0.1s ease;
@@ -7296,7 +7296,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     100% { transform: rotate(360deg); }
 }
 
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     display: none;
 }
 

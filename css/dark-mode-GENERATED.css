@@ -399,7 +399,7 @@ figure img[src$=".svg"] {
 	SVG as a ‘background-image’ (like for the  footers on the index page), so we
 	do variable+invert tricks to get a white copy of the logo as a hack.
  */
-@media only screen and (max-width: 649px) {
+@media all and (max-width: 649px) {
     #footer-decoration-container a.footer-logo::after {
         filter: invert(1);
         background-color: var(--GW-body-background-color-inverted);
