@@ -5859,6 +5859,7 @@ body.lorem div[class^='drop-cap'] {
     background-color: var(--background-color);
     padding: var(--popins-popin-content-padding);
     display: flow-root;
+    contain: content;
 }
 
 /*┌─────────────┐*/
