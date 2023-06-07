@@ -797,15 +797,13 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 
 .annotation .collapse.aux-links-container {
     --collapse-toggle-top-height: calc(2.25 * var(--base-font-size));
+    --collapse-toggle-bottom-height: calc(2.5 * var(--base-font-size));
 
     border-top: 1px solid var(--GW-TOC-border-color);
 }
 
 .annotation .collapse.aux-links-container .collapse-content-wrapper {
     padding: 0.5em 0 0.5em 2px;
-}
-.annotation .collapse.expanded-not.aux-links-container .collapse-content-wrapper {
-	--base-block-spacing: 0.15em;
 }
 
 /****************************************************/
@@ -834,9 +832,6 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 
 .collapse.section-backlinks-container .collapse-content-wrapper {
 	padding: 0.5em 0 0.75em 0;
-}
-.collapse.expanded-not.section-backlinks-container .collapse-content-wrapper {
-	--base-block-spacing: 0.15em;
 }
 
 .collapse.section-backlinks-container.expanded-not > .disclosure-button .part::before {

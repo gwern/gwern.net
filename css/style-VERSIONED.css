@@ -1860,15 +1860,13 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 
 .annotation .collapse.aux-links-container {
     --collapse-toggle-top-height: calc(2.25 * var(--base-font-size));
+    --collapse-toggle-bottom-height: calc(2.5 * var(--base-font-size));
 
     border-top: 1px solid var(--GW-TOC-border-color);
 }
 
 .annotation .collapse.aux-links-container .collapse-content-wrapper {
     padding: 0.5em 0 0.5em 2px;
-}
-.annotation .collapse.expanded-not.aux-links-container .collapse-content-wrapper {
-	--base-block-spacing: 0.15em;
 }
 
 /****************************************************/
@@ -1897,9 +1895,6 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 
 .collapse.section-backlinks-container .collapse-content-wrapper {
 	padding: 0.5em 0 0.75em 0;
-}
-.collapse.expanded-not.section-backlinks-container .collapse-content-wrapper {
-	--base-block-spacing: 0.15em;
 }
 
 .collapse.section-backlinks-container.expanded-not > .disclosure-button .part::before {
@@ -2440,18 +2435,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686120121#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686132254#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686120121#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686132254#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686120121#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686132254#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686120121#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1686132254#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5373,14 +5368,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686120121#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686132254#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686120121#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686132254#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5513,7 +5508,7 @@ body.lorem div[class^='drop-cap'] {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1686120121#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686132254#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5940,14 +5935,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686120121#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686132254#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686120121#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686132254#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6828,7 +6823,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1686120121#question');
+    background-image: url('/static/img/icon/icons.svg?v=1686132254#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7334,7 +7329,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1686120121#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1686132254#circle-notch-solid');
 
     pointer-events: none;
 }
