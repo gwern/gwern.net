@@ -2314,6 +2314,8 @@ GW.layout = {
 
 		[ ".aux-links-container + .aux-links-container",
 										 0, false ],
+		[ ".collapse.expanded-not p.aux-links-list-label + p",
+										 0, false ],
 
 		[ "p.footnote-back-block",		 1, false ],
 		[ "p.first-graf",				10 ],

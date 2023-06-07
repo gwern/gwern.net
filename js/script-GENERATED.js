@@ -13997,9 +13997,12 @@ Sidenotes = { ...Sidenotes,
 	 */
 	counterpart: (element) => {
 		let number = Notes.noteNumberFromHash(element.id);
-		return (element.classList.contains("sidenote")
-			    ? Sidenotes.citationOfNumber(number)
-			    : Sidenotes.sidenoteOfNumber(number));
+		let counterpart = (element.classList.contains("sidenote")
+						   ? Sidenotes.citationOfNumber(number)
+						   : Sidenotes.sidenoteOfNumber(number));
+		if (counterpart == null)
+			GWLog(`Counterpart of ${element.tagName}#${element.id}.${(Array.from(element.classList).join("."))} not found!`, "sidenotes.js", 0);
+		return counterpart;
 	},
 
 	/*  The “target counterpart” is the element associated with the target, i.e.:
@@ -14069,8 +14072,7 @@ Sidenotes = { ...Sidenotes,
 
 		Sidenotes.sidenotes.forEach(sidenote => {
 			let citation = Sidenotes.counterpart(sidenote);
-			if (citation)
-				sidenote.classList.toggle("hidden", isWithinCollapsedBlock(citation));
+			sidenote.classList.toggle("hidden", isWithinCollapsedBlock(citation));
 		});
 	},
 
