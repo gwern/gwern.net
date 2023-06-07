@@ -3882,7 +3882,7 @@ section.footnotes .footnote-self-link {
 }
 @media all and (max-width: 649px) {
     #footer {
-        margin-top: 2rem;
+        margin-top: 2.5rem;
     }
 }
 
@@ -4330,7 +4330,6 @@ ol.link-bibliography-list-compact > li::before {
  */
 
 #navigation {
-	margin: 2.5em 0 0 0;
 	display: flex;
 	align-items: center;
 	opacity: 0.8;
@@ -4350,6 +4349,7 @@ ol.link-bibliography-list-compact > li::before {
 
 @media all and (min-width: 650px) {
 	#navigation {
+		margin: 2.5em 0 0 0;
 		justify-content: space-between;
 	}
 	#navigation #navigation-next,
@@ -4365,6 +4365,7 @@ ol.link-bibliography-list-compact > li::before {
 }
 @media all and (max-width: 649px) {
 	#navigation {
+		margin: 3em 0 0 0;
 		justify-content: center;
 	}
     #navigation #navigation-next,
