@@ -45,7 +45,7 @@ quoteDBPath, quotePath :: FilePath
 quoteDBPath = "metadata/quotes.hs"
 quotePath   = "metadata/today-quote.html"
 quoted :: Snippet -> String
-quoted (quote,attribution,_) = "<div class=\"epigraph\">\n<blockquote><p>" ++ typesetHtmlField quote ++ "</p>" ++
+quoted (quote,attribution,_) = "<div class=\"epigraph quote-of-the-day\">\n<blockquote><p>" ++ typesetHtmlField quote ++ "</p>" ++
                                (if null attribution then "" else "\n<p>" ++ typesetHtmlField attribution ++ "</p>") ++
                                "</blockquote>\n</div>"
 
