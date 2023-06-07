@@ -12953,7 +12953,9 @@ addContentLoadHandler(GW.contentLoadHandlers.cleanUpImageAltText = (eventInfo) =
 
 /************************************************************************/
 /*  Prevent line breaks immediately before citations (which “orphans” the
-    citation on the next line, and looks ugly).
+    citation on the next line, and looks ugly) and immediately after citations
+    (which causes punctuation following a citation to be orphaned, and also
+    looks ugly).
  */
 addContentLoadHandler(GW.contentLoadHandlers.noBreakForCitations = (eventInfo) => {
     GWLog("noBreakForCitations", "rewrite.js", 1);
@@ -12961,7 +12963,7 @@ addContentLoadHandler(GW.contentLoadHandlers.noBreakForCitations = (eventInfo) =
     eventInfo.container.querySelectorAll(".footnote-ref").forEach(citation => {
         citation.insertAdjacentHTML("beforebegin", "&NoBreak;");
         let textNode = citation.querySelector("sup").firstTextNode;
-        textNode.textContent = "\u{2060}" + textNode.textContent;
+        textNode.textContent = "\u{2060}" + textNode.textContent + "\u{2060}";
     });
 }, "rewrite");
 
