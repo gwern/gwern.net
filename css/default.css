@@ -1185,7 +1185,31 @@ img::before {
 /**************/
 /* INTERVIEWS */
 /**************/
-/*  e.g. https://gwern.net/Morning-writing#examples
+
+/***************************************************/
+/*	New style interviews
+	(e.g. https://gwern.net/lorem-block#interviews )
+ */
+
+blockquote.interview ul {
+	--list-left-padding: 0em;
+	--text-indent: 2.5em;
+}
+
+blockquote.interview ul li::before {
+	display: none;
+}
+
+blockquote.interview .speaker {
+	font-variant-caps: small-caps;
+	letter-spacing: -0.25px;
+}
+
+/*****************************************************/
+/*  Legacy styles for un-converted interviews
+	(e.g. https://gwern.net/Morning-writing#examples )
+
+	NOTE: Remove this once interviews are all converted. —SA 2023-06-07
  */
 
 blockquote p > code:first-child,
