@@ -789,6 +789,7 @@ goodDomainsSimple =
     , "www.bitsaboutmoney.com"
     , "www.cs.ox.ac.uk"
     , "blogs.lanecc.edu"
+    , "mattmahoney.net"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com",
@@ -2873,7 +2874,7 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://www.candyjapan.com/results-from-box-design-ab-test"
             , "https://www.catalogtree.net/about"
             , "https://www.cato-unbound.org/2007/09/10/robin-hanson/cut-medicine-half/"
-            , "https://www.cbsnews.com/stories/2011/03/16/business/main20043737.shtml"
+            , "https://www.cbsnews.com/news/food-prices-increase-most-in-36-years/"
             , "https://www.cdc.gov/trendstatement/"
             , "https://www.chicagotribune.com/news/ct-xpm-1989-02-28-8903090006-story.html"
             , "https://www.chrisplaysgames.com/gadgets/2019/02/25/how-i-learned-to-stop-worrying-and-love-transfer-learning/"
@@ -3092,6 +3093,7 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://philpapers.org/archive/SOTAOA.pdf#miri"
             , "https://www.youtube.com/embed/gaMuet_ibWE"
             , "https://blogs.lanecc.edu/dhatthecc/wp-content/uploads/sites/28/2015/06/Moretti-Slaughterhouse-of-Lit.pdf"
+            , "http://mattmahoney.net/dc/dce.html"
             ]
 
 badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
@@ -4323,7 +4325,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.petco.com/shop/en/petcostore/product/friskies-salmon-canned-cat-food"
             , "https://www.peterbloem.nl/blog/transformers"
             , "https://www.petforums.co.uk/threads/strange-things-that-you-cats-do.475528/page-3#post-1065130574"
-            , "https://www.philanthropy.com/article/FinancialLeadership-Woes/138335/"
+            , "https://web.archive.org/web/20130409070513/https://www.philanthropy.com/article/FinancialLeadership-Woes/138335/"
             , "https://www.phillymag.com/news/2007/06/18/medicine-this-will-keep-you-awake/"
             , "https://www.pixiv.net/users/38983753"
             , "https://www.pluralsight.com/search?q=R"

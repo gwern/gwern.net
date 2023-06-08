@@ -349,7 +349,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("([[:punct:]]) – ([a-zA-Z])", "\\1—\\2")
          , ("([a-zA-Z’]) – ([a-zA-Z])", "\\1—\\2") -- eg: "Aspects of General Intelligence – a Deep Phenotyping Approach"
          , ("([a-zA-Z’]) - ([a-zA-Z])", "\\1—\\2") -- spaced hyphens: also usually em dashes: "Towards personalized human AI interaction - adapting the behavior of AI agents"
-         , (" = -([0-9])", " = −\\1") -- eg. 'β = -0.08', HYPHEN to MINUS SIGN
+         , (" -([0-9])", " −\\1") -- eg. 'β = -0.08', HYPHEN to MINUS SIGN; review of annotations shows that this is almost always safe to do except in a few very rare cases like a psychiatry paper abbreviating 'DSM-3, -4, and -5'.
          , ("×10[-–—]([0-9]+)", " × 10<sup>−\\1</sup>")
          , (" × 10[-–—]([0-9]+)", " × 10<sup>−\\1</sup>") -- the Unicode '×' seems to never match when used inside a range...?
          , ("([0-9]) [x×] 10[-–—]([0-9]+)", "\\1 × 10<sup>−\\2</sup>")
@@ -1215,10 +1215,15 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("10(-)(8)", "10<sup>−8</sup>")
          , ("10(-)(9)", "10<sup>−9</sup>")
          , ("10(-)(10)", "10<sup>−10</sup>")
+         , ("10(-16)", "10<sup>−16</sup>")
+         , ("10(-33)", "10<sup>−33</sup>")
+         , ("10(-14)", "10<sup>−14</sup>")
          , ("R (2) ", "R<sup>2</sup> ")
          , ("CO(2)", "CO<sub>2</sub>")
          , ("2^n-1",  "2<sup><em>n</em>−1</sup>")
          , ("2^n-1)", "2<sup><em>n</em>−1</sup>)")
+         , ("d(-1)", "d<sup>−1</sup>")
+         , ("min(-1)", "min<sup>−1</sup>")
          , (" = .",    " = 0.")
          , ("=−", " = −")
          , (" gf ", " <em>gf</em> ")
@@ -1541,6 +1546,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("learn-ing", "learning")
          , ("Per- formance", "Performance")
          , ("per- formance", "performance")
+         , ("Swed-ish", "Swedish")
          , (" itis ", " it is ")
          , (" k ", " <em>k</em> ")
          , (" k-shot", " <em>k</em>-shot")

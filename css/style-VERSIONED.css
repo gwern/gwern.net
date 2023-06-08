@@ -2480,18 +2480,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686183233#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686078504#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686183233#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686078504#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686183233#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686078504#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686183233#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1686078504#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5413,14 +5413,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686183233#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686078504#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686183233#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686078504#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5553,7 +5553,7 @@ body.lorem div[class^='drop-cap'] {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1686183233#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686078504#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5980,14 +5980,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686183233#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686078504#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686183233#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686078504#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6868,7 +6868,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1686183233#question');
+    background-image: url('/static/img/icon/icons.svg?v=1686078504#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7374,7 +7374,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1686183233#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1686078504#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7593,7 +7593,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     z-index: -1;
 }
 .has-content:not(.has-indicator-hook) .indicator-hook {
-	display: none;
+    display: none;
 }
 
 .has-content .indicator-hook::before {
@@ -7623,10 +7623,10 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     background-repeat: no-repeat;
 }
 
-/*	Dotted underlines for annotated links.
+/*  Dotted underlines for annotated links.
  */
 .markdownBody a.has-annotation {
-	--link-underline-background-image: var(--GW-dotted-underline-background-image);
+    --link-underline-background-image: var(--GW-dotted-underline-background-image);
 
     background-image: var(--link-underline-background-image);
     background-size: 2px 1px;
@@ -7635,16 +7635,16 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     --link-underline-background-image: var(--GW-dotted-underline-hover-background-image);
 }
 .markdownBody a.has-annotation.decorate-not {
-	background-image: none;
+    background-image: none;
 }
 
-/*	Reversed link colors.
+/*  Reversed link colors.
  */
 .markdownBody .colors-invert a.has-annotation {
-	--link-underline-background-image: var(--GW-dotted-underline-inverted-background-image);
+    --link-underline-background-image: var(--GW-dotted-underline-inverted-background-image);
 }
 .markdownBody .colors-invert a.has-annotation:hover {
-	--link-underline-background-image: var(--GW-dotted-underline-inverted-hover-background-image);
+    --link-underline-background-image: var(--GW-dotted-underline-inverted-hover-background-image);
 }
 
 .markdownBody .colors-invert a[data-link-icon-type='svg'] .link-icon-hook::after {
@@ -8603,7 +8603,7 @@ a[data-link-icon='laion'] .link-icon-hook::after {
     --link-icon-size: 0.7em;
     --link-icon-offset-y: 0.1em;
 
-    opacity: 0.7;
+    opacity: 0.65;
 }
 
 a[data-link-icon='tex'] .link-icon-hook::after { /* TeX logotype (actually uses Source Serif) */
@@ -8611,6 +8611,12 @@ a[data-link-icon='tex'] .link-icon-hook::after { /* TeX logotype (actually uses 
     --link-icon-offset-x: 0.05em;
 
     opacity: 0.8;
+}
+
+a[data-link-icon='scholarpedia'] .link-icon-hook::after {
+    --link-icon-size: 0.80em;
+    --link-icon-offset-x: 0.05em;
+    opacity: 1.0;
 }
 
 /*=------------------=*/

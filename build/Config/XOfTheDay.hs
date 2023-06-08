@@ -465,4 +465,4 @@ siteBlackList = [
           "www.armyupress.army.mil","rajpurkar.github.io", "mssprovenance.blogspot.com", "psychclassics.yorku.ca", "twitter.com",
           "hpmor.com","xtools.wmcloud.org","tech.msu.edu", "nap.nationalacademies.org", "docs.iza.org","www.findarticles.com","hal.science",
           "platform.openai.com","www8.austlii.edu.au","www.noahpinion.blog","www.mattridley.co.uk","www.cryonicsarchive.org","shs.hal.science",
-          "psychology.wvu.edu","blogs.lanecc.edu","bayesianinvestor.com", "danielpovey.com", "www.nasonline.org", "calteches.library.caltech.edu", "pile.eleuther.ai"]
+          "psychology.wvu.edu","blogs.lanecc.edu","bayesianinvestor.com", "danielpovey.com", "www.nasonline.org", "calteches.library.caltech.edu", "pile.eleuther.ai", "verdagon.dev"]

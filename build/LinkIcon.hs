@@ -293,6 +293,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "thelastpsychiatrist.com" = aI "TLP" "text,tri,sans"
  | u'' "www.lrb.co.uk" = aI "LRB" "text,tri" -- London Review of Books <https://en.wikipedia.org/wiki/London_Review_of_Books>
  | u'' "archiveofourown.org" = aI "Ao3" "text,tri" -- Archive of Our Own <https://archiveofourown.org/> <https://en.wikipedia.org/wiki/Archive_of_Our_Own>
+ | u'' "www.nlsinfo.org" = aI "NLS" "text,tri,sans" -- the National Longitudinal Surveys (BLS), eg. NLSY79 <https://en.wikipedia.org/wiki/National_Longitudinal_Surveys>
 
  -- Quad-letter-square icons.
  | aU'' ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)

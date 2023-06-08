@@ -40,7 +40,8 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "digital.library.unt.edu"
                      "www.aiweirdness.com", "etherscan.io", "www.theringer.com", "cs.stanford.edu", "mmlab.ie.cuhk.edu.hk", "www.cs.toronto.edu",
                      "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org",
                      "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com",
-                     "www.acpjournals.org", "www.inverse.com", "hal.science", "www.findarticles.com"]
+                     "www.acpjournals.org", "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com",
+                     "mattmahoney.net"]
 ------------------------------------------------------------------------------------------
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
@@ -616,4 +617,5 @@ linkIconTestUnitsText =
          , ("https://mathshistory.st-andrews.ac.uk/Extras/Poincare_Intuition/", "M  T", "text,quad,sans")
          , ("http://norvig.com/experiment-design.html", "N", "text,sans")
          , ("http://www.scholarpedia.org/article/Applications_of_algorithmic_information_theory", "scholarpedia", "svg")
+         , ("https://www.nlsinfo.org/content/cohorts/nlsy97", "NLS", "text,tri,sans")
         ]

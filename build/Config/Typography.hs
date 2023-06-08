@@ -17,4 +17,4 @@ surnameFalsePositivesWhiteList = ["Et", "et", "Al", "al", "Accurate", "Aesthetic
                                   "Syntheses", "Than", "The", "Things", "Throughout", "Thursday", "Tuesday", "Until", "Wednesday", "Weekly",
                                   "Winter", "Writing", "Year", "Yearly", "Zilch", "In", "Judging", "From", "Study", "Experiment", "Florence",
                                   "Between", "Caseness", "Goodbye", "By", "Around", "Christmas", "One", "Wars", "Michigan", "Act", "Circa",
-                                  "Horizon", "Study", "Alamos", "Dover", "War"]
+                                  "Horizon", "Study", "Alamos", "Dover", "War", "London", "York", "Paris", "Berlin", "Francisco"]
