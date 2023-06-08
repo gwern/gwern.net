@@ -3091,19 +3091,28 @@ addLayoutProcessor(GW.layout.applyBlockSpacingInContainer = (container) => {
 			return;
 
 		let firstBlockWithin = firstBlockOf(listItem);
-		let bsm = listItem.style.getPropertyValue("--bsm") ?? firstBlockWithin?.style.getPropertyValue("--bsm") ?? 0;
-		if (bsm) {
-			if (listItem.dataset.bsmMod)
-				bsm = "" + (parseInt(bsm) + parseInt(listItem.dataset.bsmMod));
 
+		let bsm = listItem.style.getPropertyValue("--bsm");
+		if (bsm == "") {
+			bsm = firstBlockWithin?.style.getPropertyValue("--bsm");
+			if (   bsm > "" 
+				&& listItem.dataset.bsmMod > "")
+				bsm = "" + (parseInt(bsm) + parseInt(listItem.dataset.bsmMod));
+		}
+
+		if (bsm > "") {
 			/*	We must propagate the spacing of the first block within the 
 				list item to the list item itself.
 			 */
 			listItem.classList.add("block");
 			listItem.style.setProperty("--bsm", bsm);
-			if (firstBlockWithin != listItem)
+
+			//	Avoid double-counting.
+			if (   firstBlockWithin != null 
+				&& firstBlockWithin != listItem)
 				firstBlockWithin.style.setProperty("--bsm", 0);
 		}
+
 		if (listItem.dataset.bsmMod)
 			delete listItem.dataset.bsmMod;
 	});
