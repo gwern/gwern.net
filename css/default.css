@@ -1195,12 +1195,13 @@ img::before {
  */
 ul.interview {
 	--list-left-padding: 1.5em;
+	--speaker-spacing: 0.75ch;
 }
 
 /*	Exchanges.
  */
 ul.interview li.exchange ul {
-	--list-left-padding: 1.75em;
+	--list-left-padding: 1.625em;
 }
 ul.interview li.exchange::before {
 	left: 0;
@@ -1221,8 +1222,8 @@ ul.interview .speaker {
 	font-variant-caps: small-caps;
 	letter-spacing: -0.25px;
 	display: inline-block;
-	min-width: calc(var(--list-left-padding) - 1ch);
-	margin-right: 1ch;
+	min-width: calc(var(--list-left-padding) - var(--speaker-spacing));
+	margin-right: var(--speaker-spacing);
 }
 
 /*****************************************************/
