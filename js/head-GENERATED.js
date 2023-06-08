@@ -2260,7 +2260,9 @@ GW.layout = {
 		".table-wrapper",
 		".math.block",
 		".admonition",
-		".TOC"
+		".TOC",
+		".interview .exchange",
+		".interview .utterance"
 	],
 
 	//	Wrappers are transparent at the top and bottom.
@@ -2316,6 +2318,10 @@ GW.layout = {
 										 0, false ],
 		[ ".collapse.expanded-not p.aux-links-list-label + p",
 										 0, false ],
+
+		[ ".interview .exchange",		(block) => (indentModeActive(block) ? 2 : 4) ],
+		[ ".interview .utterance",		(block) => (indentModeActive(block) ? 2 : 4) ],
+		[ ".interview p",				 0 ],
 
 		[ "p.footnote-back-block",		 1, false ],
 		[ "p.first-graf",				10 ],
@@ -3054,7 +3060,8 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 				return;
 
 			if (   listItem.closest(".list").matches(".big-list")
-				&& previousBlockOf(firstBlockOf(listItem))?.matches("p, blockquote") == true)
+				&& previousBlockOf(firstBlockOf(listItem))?.matches("p, blockquote") == true
+				&& isBlock(listItem) != true)
 				listItem.dataset.bsmMod = "2";
 		});
 	}
@@ -3085,7 +3092,7 @@ addLayoutProcessor(GW.layout.applyBlockSpacingInContainer = (container) => {
 			return;
 
 		let firstBlockWithin = firstBlockOf(listItem);
-		let bsm = firstBlockWithin?.style.getPropertyValue("--bsm") ?? 0;
+		let bsm = listItem.style.getPropertyValue("--bsm") ?? firstBlockWithin?.style.getPropertyValue("--bsm") ?? 0;
 		if (bsm) {
 			if (listItem.dataset.bsmMod)
 				bsm = "" + (parseInt(bsm) + parseInt(listItem.dataset.bsmMod));
@@ -3095,7 +3102,8 @@ addLayoutProcessor(GW.layout.applyBlockSpacingInContainer = (container) => {
 			 */
 			listItem.classList.add("block");
 			listItem.style.setProperty("--bsm", bsm);
-			firstBlockWithin.style.setProperty("--bsm", 0);
+			if (firstBlockWithin != listItem)
+				firstBlockWithin.style.setProperty("--bsm", 0);
 		}
 		if (listItem.dataset.bsmMod)
 			delete listItem.dataset.bsmMod;

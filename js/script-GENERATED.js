@@ -11392,6 +11392,31 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyListHeadings = (eventInfo) =
 /* BLOCKQUOTES */
 /***************/
 
+/****************************************/
+/*	Rectify HTML structure of interviews.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => {
+    GWLog("designateBlockquoteLevels", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("blockquote > div.interview").forEach(interviewWrapper => {
+		let blockquote = interviewWrapper.parentElement;
+		interviewWrapper.parentElement.classList.add("interview");
+		unwrap(interviewWrapper);
+
+		for (let child of blockquote.firstElementChild.children) {
+			child.classList.add("exchange");
+			for (let grandchild of child.firstElementChild.children) {
+				grandchild.classList.add("utterance");
+
+				let speaker = grandchild.firstElementChild.firstElementChild;
+				speaker.classList.add("speaker");
+				speaker.innerHTML += speaker.nextSibling.textContent.slice(0, 1);
+				speaker.nextSibling.textContent = speaker.nextSibling.textContent.slice(1).trimStart();
+			}
+		}
+	});
+}, "rewrite");
+
 /*************************************************************************/
 /*	Returns the nesting level (an integer in [1,blockquoteCyclePeriod]) of 
 	a <blockquote> element.
