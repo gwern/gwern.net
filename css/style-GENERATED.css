@@ -5287,8 +5287,9 @@ body.lorem div[class^='drop-cap'] {
 /*└─────────────┘*/
 
 .popup-body {
+	--line-height: 1.5;
+
     font-size: 0.9em;
-    line-height: 1.50;
 }
 
 /*┌─────────────────┐*/
@@ -5327,8 +5328,9 @@ body.lorem div[class^='drop-cap'] {
 }
 
 .popup.zoomed.full .popframe-content-view {
+	--line-height: 1.6;
+
     font-size: 1em;
-    line-height: 1.60;
 }
 
 .popup.object.zoomed .popframe-content-view,

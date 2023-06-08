@@ -2479,18 +2479,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686199359#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686208295#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686199359#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686208295#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686199359#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686208295#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686199359#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1686208295#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5287,8 +5287,9 @@ body.lorem div[class^='drop-cap'] {
 /*└─────────────┘*/
 
 .popup-body {
+	--line-height: 1.5;
+
     font-size: 0.9em;
-    line-height: 1.50;
 }
 
 /*┌─────────────────┐*/
@@ -5327,8 +5328,9 @@ body.lorem div[class^='drop-cap'] {
 }
 
 .popup.zoomed.full .popframe-content-view {
+	--line-height: 1.6;
+
     font-size: 1em;
-    line-height: 1.60;
 }
 
 .popup.object.zoomed .popframe-content-view,
@@ -5412,14 +5414,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686199359#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686208295#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686199359#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686208295#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5552,7 +5554,7 @@ body.lorem div[class^='drop-cap'] {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1686199359#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686208295#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5979,14 +5981,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686199359#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686208295#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686199359#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686208295#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6867,7 +6869,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1686199359#question');
+    background-image: url('/static/img/icon/icons.svg?v=1686208295#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7373,7 +7375,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1686199359#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1686208295#circle-notch-solid');
 
     pointer-events: none;
 }
