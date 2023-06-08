@@ -328,7 +328,11 @@ Extracts = { ...Extracts,
 				&& popup.document.querySelector("img.page-thumbnail") == null) {
 				let pageAbstract = popup.document.querySelector("#page-metadata + .abstract blockquote");
 				if (pageAbstract)
-					pageAbstract.insertAdjacentHTML("afterbegin", `<figure>${referenceData.pageThumbnailHTML}</figure>`);
+					pageAbstract.insertBefore(newElement("FIGURE", {
+						class: "float-right"
+					}, {
+						innerHTML: referenceData.pageThumbnailHTML
+					}), pageAbstract.firstChild);
 			}
 		}
 

@@ -264,22 +264,25 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyListHeadings = (eventInfo) =
 addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => {
     GWLog("designateBlockquoteLevels", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("blockquote > div.interview").forEach(interviewWrapper => {
-		let blockquote = interviewWrapper.parentElement;
-		interviewWrapper.parentElement.classList.add("interview");
-		unwrap(interviewWrapper);
+	eventInfo.container.querySelectorAll("div.interview").forEach(interviewWrapper => {
+		let interview = interviewWrapper.firstElementChild;
+		interview.classList.add("interview");
 
-		for (let child of blockquote.firstElementChild.children) {
-			child.classList.add("exchange");
-			for (let grandchild of child.firstElementChild.children) {
-				grandchild.classList.add("utterance");
+		for (let exchange of interview.children) {
+			exchange.classList.add("exchange");
 
-				let speaker = grandchild.firstElementChild.firstElementChild;
+			for (let utterance of exchange.firstElementChild.children) {
+				utterance.classList.add("utterance");
+
+				let speaker = utterance.querySelector("strong");
 				speaker.classList.add("speaker");
+
 				speaker.innerHTML += speaker.nextSibling.textContent.slice(0, 1);
 				speaker.nextSibling.textContent = speaker.nextSibling.textContent.slice(1).trimStart();
 			}
 		}
+
+		unwrap(interviewWrapper);
 	});
 }, "rewrite");
 

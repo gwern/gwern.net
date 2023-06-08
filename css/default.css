@@ -1193,32 +1193,31 @@ img::before {
 
 /*	Interview.
  */
-blockquote.interview ul {
+ul.interview {
 	--list-left-padding: 1.5em;
 }
 
 /*	Exchanges.
  */
-blockquote.interview li.exchange ul {
+ul.interview li.exchange ul {
 	--list-left-padding: 1.75em;
-	--text-indent: 2em;
 }
-blockquote.interview li.exchange::before {
+ul.interview li.exchange::before {
 	left: 0;
 }
 
 /*	Utterances.
  */
-blockquote.interview li.utterance {
+ul.interview li.utterance {
 	text-indent: calc(-1 * var(--list-left-padding));
 }
-blockquote.interview li.utterance::before {
+ul.interview li.utterance::before {
 	display: none;
 }
 
 /*	Speakers.
  */
-blockquote.interview .speaker {
+ul.interview .speaker {
 	font-variant-caps: small-caps;
 	letter-spacing: -0.25px;
 	display: inline-block;
@@ -4225,8 +4224,9 @@ body.lorem div[class^='drop-cap'] {
 /*└─────────────┘*/
 
 .popup-body {
+	--line-height: 1.5;
+
     font-size: 0.9em;
-    line-height: 1.50;
 }
 
 /*┌─────────────────┐*/
@@ -4265,8 +4265,9 @@ body.lorem div[class^='drop-cap'] {
 }
 
 .popup.zoomed.full .popframe-content-view {
+	--line-height: 1.6;
+
     font-size: 1em;
-    line-height: 1.60;
 }
 
 .popup.object.zoomed .popframe-content-view,
