@@ -2258,12 +2258,13 @@ img::before {
  */
 ul.interview {
 	--list-left-padding: 1.5em;
+	--speaker-spacing: 0.75ch;
 }
 
 /*	Exchanges.
  */
 ul.interview li.exchange ul {
-	--list-left-padding: 1.75em;
+	--list-left-padding: 1.625em;
 }
 ul.interview li.exchange::before {
 	left: 0;
@@ -2284,8 +2285,8 @@ ul.interview .speaker {
 	font-variant-caps: small-caps;
 	letter-spacing: -0.25px;
 	display: inline-block;
-	min-width: calc(var(--list-left-padding) - 1ch);
-	margin-right: 1ch;
+	min-width: calc(var(--list-left-padding) - var(--speaker-spacing));
+	margin-right: var(--speaker-spacing);
 }
 
 /*****************************************************/
@@ -2479,18 +2480,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686217768#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686237565#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686217768#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686237565#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686217768#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686237565#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686217768#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1686237565#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5414,14 +5415,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686217768#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686237565#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686217768#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686237565#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5554,7 +5555,7 @@ body.lorem div[class^='drop-cap'] {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1686217768#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686237565#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5981,14 +5982,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686217768#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686237565#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686217768#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686237565#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6869,7 +6870,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1686217768#question');
+    background-image: url('/static/img/icon/icons.svg?v=1686237565#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7375,7 +7376,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1686217768#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1686237565#circle-notch-solid');
 
     pointer-events: none;
 }
