@@ -1191,18 +1191,39 @@ img::before {
 	(e.g. https://gwern.net/lorem-block#interviews )
  */
 
+/*	Interview.
+ */
 blockquote.interview ul {
-	--list-left-padding: 0em;
-	--text-indent: 2.5em;
+	--list-left-padding: 1.5em;
 }
 
-blockquote.interview ul li::before {
+/*	Exchanges.
+ */
+blockquote.interview li.exchange ul {
+	--list-left-padding: 1.75em;
+	--text-indent: 2em;
+}
+blockquote.interview li.exchange::before {
+	left: 0;
+}
+
+/*	Utterances.
+ */
+blockquote.interview li.utterance {
+	text-indent: calc(-1 * var(--list-left-padding));
+}
+blockquote.interview li.utterance::before {
 	display: none;
 }
 
+/*	Speakers.
+ */
 blockquote.interview .speaker {
 	font-variant-caps: small-caps;
 	letter-spacing: -0.25px;
+	display: inline-block;
+	min-width: calc(var(--list-left-padding) - 1ch);
+	margin-right: 1ch;
 }
 
 /*****************************************************/

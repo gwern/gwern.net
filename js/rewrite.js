@@ -273,7 +273,11 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => 
 			child.classList.add("exchange");
 			for (let grandchild of child.firstElementChild.children) {
 				grandchild.classList.add("utterance");
-				grandchild.firstElementChild.firstElementChild.classList.add("speaker");
+
+				let speaker = grandchild.firstElementChild.firstElementChild;
+				speaker.classList.add("speaker");
+				speaker.innerHTML += speaker.nextSibling.textContent.slice(0, 1);
+				speaker.nextSibling.textContent = speaker.nextSibling.textContent.slice(1).trimStart();
 			}
 		}
 	});
