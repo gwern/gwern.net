@@ -138,9 +138,8 @@ GW.layout = {
 		[ ".collapse.expanded-not p.aux-links-list-label + p",
 										 0, false ],
 
-		[ ".interview .exchange",		(block) => (indentModeActive(block) ? 2 : 4) ],
-		[ ".interview .utterance",		(block) => (indentModeActive(block) ? 2 : 4) ],
-		[ ".interview p",				 0 ],
+		[ ".interview .exchange",		 4, false ],
+		[ ".interview .utterance",		 2, false ],
 
 		[ "p.footnote-back-block",		 1, false ],
 		[ "p.first-graf",				10 ],

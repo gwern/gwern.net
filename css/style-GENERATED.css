@@ -2256,32 +2256,31 @@ img::before {
 
 /*	Interview.
  */
-blockquote.interview ul {
+ul.interview {
 	--list-left-padding: 1.5em;
 }
 
 /*	Exchanges.
  */
-blockquote.interview li.exchange ul {
+ul.interview li.exchange ul {
 	--list-left-padding: 1.75em;
-	--text-indent: 2em;
 }
-blockquote.interview li.exchange::before {
+ul.interview li.exchange::before {
 	left: 0;
 }
 
 /*	Utterances.
  */
-blockquote.interview li.utterance {
+ul.interview li.utterance {
 	text-indent: calc(-1 * var(--list-left-padding));
 }
-blockquote.interview li.utterance::before {
+ul.interview li.utterance::before {
 	display: none;
 }
 
 /*	Speakers.
  */
-blockquote.interview .speaker {
+ul.interview .speaker {
 	font-variant-caps: small-caps;
 	letter-spacing: -0.25px;
 	display: inline-block;
