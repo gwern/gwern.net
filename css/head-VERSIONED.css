@@ -1639,6 +1639,9 @@ body.index #markdownBody #notable {
 			max-width: 935px;
 			margin-left: 20ch;
 		}
+		body.index #markdownBody hr {
+			margin-left: -5ch;
+		}
 	}
 }
 
