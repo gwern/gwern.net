@@ -2735,6 +2735,10 @@ section.footnotes .footnote-self-link {
     vertical-align: text-top;
 }
 
+#markdownBody .sidenote blockquote > * {
+	line-height: calc(1.25 / (var(--blockquote-font-size-scaling-factor) * 0.85))
+}
+
 /*=-------------------------------=*/
 /*= Sidenote self-links (numbers) =*/
 /*=-------------------------------=*/
