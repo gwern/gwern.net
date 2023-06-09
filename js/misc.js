@@ -165,7 +165,7 @@ function versionedAssetURL(pathname) {
 	to do with a link on the basis of it having or not having a link hash.)
  */
 function isAnnotationLink(link) {
-	return (Annotations.isAnnotatedLink(link) || Transclude.isAnnotationTransclude(link));
+	return (Annotations.isAnnotatedLinkFull(link) || Transclude.isAnnotationTransclude(link));
 }
 
 /****************************************************************************/

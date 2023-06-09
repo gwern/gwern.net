@@ -1076,20 +1076,23 @@ Transclude = {
         return Array.from(container.querySelectorAll("a[class*='include']")).filter(link => Transclude.isIncludeLink(link));
     },
 
-    isAnnotationTransclude: (includeLink) => {
-        if ((   Transclude.hasAnnotation(includeLink) 
-        	 || includeLink.classList.containsAnyOf([ "include-annotation" ])
+    isAnnotationTransclude: (link) => {
+		if (Transclude.isIncludeLink(link) == false)
+			return false;
+
+        if ((   Transclude.hasAnnotation(link) 
+        	 || link.classList.contains("include-annotation")
         	 ) == false)
             return false;
 
         return ((   Transclude.transcludeAnnotationsByDefault
-        		 && Transclude.hasAnnotation(includeLink))
-                ? includeLink.classList.contains("include-content") == false
-                : includeLink.classList.contains("include-annotation") == true);
+        		 && Transclude.hasAnnotation(link))
+                ? link.classList.contains("include-content") == false
+                : link.classList.contains("include-annotation") == true);
     },
 
-	hasAnnotation: (includeLink) => {
-		return (Annotations.isAnnotatedLink(includeLink));
+	hasAnnotation: (link) => {
+		return (Annotations.isAnnotatedLink(link));
 	},
 
     /**************/
