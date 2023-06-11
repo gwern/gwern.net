@@ -1191,7 +1191,7 @@ blockquote {
 
 blockquote > * {
 	font-size: calc(var(--blockquote-font-size-scaling-factor) * 1em);
-	line-height: calc(var(--line-height) / var(--blockquote-font-size-scaling-factor));
+	line-height: calc((var(--line-height) - 0.05) / var(--blockquote-font-size-scaling-factor));
 }
 
 /*  Three-level of blockquote emphasis (darkening).
