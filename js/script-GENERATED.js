@@ -11402,7 +11402,10 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyListHeadings = (eventInfo) =
 addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => {
     GWLog("designateBlockquoteLevels", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("div.interview").forEach(interviewWrapper => {
+	eventInfo.container.querySelectorAll("div.interview, div.interview > div.collapse").forEach(interviewWrapper => {
+		if (interviewWrapper.firstElementChild.tagName != "UL")
+			return;
+
 		let interview = interviewWrapper.firstElementChild;
 		interview.classList.add("interview");
 
