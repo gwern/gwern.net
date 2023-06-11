@@ -11413,10 +11413,19 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => 
 				utterance.classList.add("utterance");
 
 				let speaker = utterance.querySelector("strong");
-				speaker.classList.add("speaker");
 
-				speaker.innerHTML += speaker.nextSibling.textContent.slice(0, 1);
-				speaker.nextSibling.textContent = speaker.nextSibling.textContent.slice(1).trimStart();
+				//	If the speaker is wrapped, find the outermost wrapper.
+				let nextNode;
+				while (   speaker.parentElement
+					   && speaker.parentElement.tagName != "P")
+					speaker = speaker.parentElement;
+				nextNode = speaker.nextSibling;
+				speaker.classList.add("speaker");
+				speaker.querySelector("speaker")?.classList.remove("speaker");
+
+				//	Move colon.
+				(speaker.querySelector("strong") ?? speaker).innerHTML += nextNode.textContent.slice(0, 1);
+				nextNode.textContent = nextNode.textContent.slice(1).trimStart();
 			}
 		}
 
