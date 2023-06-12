@@ -2477,6 +2477,7 @@ p.intro-graf::first-line {
     box-sizing: border-box;
     background-origin: content-box;
     background-clip: content-box;
+    background-repeat: no-repeat;
 }
 
 .admonition.tip::before {
