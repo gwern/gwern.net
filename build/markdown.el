@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-06-01 18:22:20 gwern"
+;;; When:  Time-stamp: "2023-06-11 21:49:43 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -368,6 +368,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("e\\.g\\., " . "eg. ")
                      ("Na\\+" . "Na⁺")
                      ("K\\+" . "K⁺")
+                     ("Ca2+" . "Ca<sup>2</sup>⁺")
                      ("<sup>+</sup>" . "⁺")
                      ("et al.\n" . "et al")
                      (" ω 2" . " ω<sup>2</sup>")
@@ -1102,6 +1103,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "Background and Aims\n" "**Background & Aims**: ")
          (replace-all "\n\nMETHODS\n" "\n\n**Method**: ")
          (replace-all "METHODS: " "**Method**: ")
+         (replace-all "\nMETHODS " "\n**Method**: ")
          (replace-all "\n\nRESULTS" "\n\n**Results**: ")
          (replace-all "\nMain results\n\n" "\n**Results**: ")
          (replace-all "\n\nCONCLUSIONS" "\n\n**Conclusions**: ")

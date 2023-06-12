@@ -1118,5 +1118,6 @@ whiteList url
       , "https://heypi.com/talk" -- interactive
       , "https://vecta.io/nano" -- service
       , "https://jukebox.openai.com/" -- interactive
+      , "https://www.photoprompts.io/" -- interactive
       ] = True
     | otherwise = False

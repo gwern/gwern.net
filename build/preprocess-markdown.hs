@@ -12,7 +12,7 @@ import LinkMetadata (cleanAbstractsHTML)
 import LinkAuto (linkAuto)
 import Interwiki (convertInterwikiLinks)
 import qualified GenerateSimilar as GS (singleShotRecommendations)
-import Utils (safeHtmlWriterOptions)
+import Utils (safeHtmlWriterOptions, sed)
 
 main :: IO ()
 main = do originalMarkdown <- TIO.getContents
@@ -31,4 +31,4 @@ main = do originalMarkdown <- TIO.getContents
           setCurrentDirectory "/home/gwern/wiki/"
 
           matchList <- GS.singleShotRecommendations html
-          unless (matchList == "") $ putStrLn $ "<div class=\"collapse aux-links-container\">\n<div class=\"aux-links-append see-also-append\">\n\n<p><strong>See Also</strong>:</p>\n\n" ++ T.unpack matchList ++ "\n</div>\n</div>"
+          unless (matchList == "") $ putStrLn $ "<div class=\"collapse aux-links-container\">\n<div class=\"aux-links-append see-also-append\">\n\n<p><strong>See Also</strong>:</p>\n\n" ++ (sed "<span>(.*)</span>" "\\1" $ T.unpack matchList) ++ "\n</div>\n</div>"

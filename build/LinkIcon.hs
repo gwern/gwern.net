@@ -82,6 +82,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "schmidhuber" || u' "people.idsia.ch/~juergen/" = aI "SMDH" "text,quad,sans" -- Jürgen Schmidhuber homepage & tagged links; should override Arxiv, Bloomberg, NYT, Facebook etc
  | u' "facebook" || u' ".fb.com"  = aI "facebook" "svg"
  | u' "sites.google.com/berkeley.edu" || aU'' ["ml.berkeley.edu", "people.eecs.berkeley.edu", "bair.berkeley.edu"] = aI "BAIR" "text,quad,mono" -- Berkeley AI Research: Chelsea Finn, Sergey Levine, robotics, Decision Transformer, etc. Overrides Google Sites.
+ | u' "pandoc" && not (u' "tufte") = aI "PNDC" "text,quad,sans" -- general catch-all, overrides Google Groups (`pandoc-discuss`), with a further override for Tufte-related stuff (which get 'ET')
  | u'' "groups.google.com" = aI "✉" "text"
  | u'' "scholar.google.com" = aI "google-scholar" "svg" -- Google Scholar.
  | u'' "docs.google.com" = aI "worddoc" "svg"
