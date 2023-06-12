@@ -21,9 +21,9 @@ isCheapArchive url = anyInfix url [".pdf", "#pdf", "twitter.com", "nitter.moomoo
 transformURLsForArchiving, transformURLsForLinking :: String -> String
 transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/pdf/\\1.pdf\\2" . sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://arxiv.org/pdf/\\1/\\2.pdf\\3"
                             . replace "https://openreview.net/forum" "https://openreview.net/pdf"
-                            -- Mobile Reddit snapshots for live popups much better than Old Reddit (although Old Reddit is a much better browsing/user experience)
-                            . replace "https://old.reddit.com" "https://i.reddit.com"
-                            . replace "https://www.reddit.com" "https://i.reddit.com"
+                            -- Old Reddit is the preferred browsing & archiving frontend given the death of `i.reddit.com` & `.compact`
+                            . replace "https://i.reddit.com" "https://old.reddit.com"
+                            . replace "https://www.reddit.com" "https://old.reddit.com"
                             . replace "https://twitter.com" "https://nitter.moomoo.me"
                             . replace "https://medium.com" "https://scribe.rip" -- clean Medium frontend; can also handle custom domains with a bit more work: <https://scribe.rip/faq#custom-domains>
 transformURLsForLinking   = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
@@ -1119,5 +1119,7 @@ whiteList url
       , "https://vecta.io/nano" -- service
       , "https://jukebox.openai.com/" -- interactive
       , "https://www.photoprompts.io/" -- interactive
+      , "https://www.reddit.com/r/politics/" -- homepage
+      , "https://www.reddit.com/r/keto/" -- homepage
       ] = True
     | otherwise = False
