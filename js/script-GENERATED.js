@@ -13058,33 +13058,6 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
 /* DROP CAPS */
 /*************/
 
-/*******************************************************/
-/*  Apply classes to blocks that should have a drop cap.
- */
-addContentLoadHandler(GW.contentLoadHandlers.applyDropCapsClasses = (eventInfo) => {
-    GWLog("applyDropCapsClasses", "rewrite.js", 1);
-
-    let dropCapClass = Array.from(eventInfo.container.classList).find(cssClass => cssClass.startsWith("drop-caps-"));
-    if (dropCapClass)
-        dropCapClass = dropCapClass.replace("-caps-", "-cap-");
-
-    eventInfo.container.querySelectorAll(".intro-graf").forEach(dropCapBlock => {
-        /*  Drop cap class could be set globally, or overridden by a .abstract;
-            the latter could be `drop-cap-not` (which nullifies any page-global
-            drop-cap class for the given block).
-         */
-        let precedingAbstract = dropCapBlock.previousElementSibling?.classList.contains("abstract")
-                                ? dropCapBlock.previousElementSibling
-                                : null;
-        dropCapClass = (precedingAbstract
-                        ? Array.from(precedingAbstract.classList).find(cssClass => cssClass.startsWith("drop-cap-"))
-                        : null) ?? dropCapClass;
-        if (   dropCapClass
-            && dropCapClass != "drop-cap-not")
-            dropCapBlock.classList.add(dropCapClass);
-    });
-}, ">rewrite", (info) => (info.container == document.body));
-
 /***********************************************************************/
 /*	Prevent blocks with drop caps from overlapping the block below them.
  */

@@ -2872,6 +2872,20 @@ function getBlockSpacingMultiplier(block, debug = false) {
 	return undefined;
 }
 
+/******************************************************************************/
+/*	Returns a block’s drop cap class (‘drop-cap-goudy’, etc.), or null if none.
+ */
+function dropCapClassOf(block) {
+	return Array.from(block.classList).find(cssClass => /^drop-caps?-/.test(cssClass))?.replace("-caps-", "-cap-");
+}
+
+/*************************************/
+/*	Strip drop cap classes from block.
+ */
+function stripDropCapClassesFrom(block) {
+	block.classList.remove(...(Array.from(block.classList).filter(className => className.startsWith("drop-cap-"))));
+}
+
 
 /*********************/
 /* LAYOUT PROCESSORS */
@@ -3036,11 +3050,29 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 					alsoBlockContainers: [ "li" ],
 					cacheKey: "alsoSkip_epigraphs_alsoBlocks_lists"
 				};
+
+				let previousBlock = previousBlockOf(block, options);
 				if (   isFirstWithin(block, "#markdownBody", options)
 					|| (   isFirstWithin(block, "section", options)
 						&& isFirstWithin(blockContainerOf(block), "#markdownBody"))
-					|| previousBlockOf(block, options)?.matches(".abstract blockquote, #page-metadata"))
+					|| previousBlock?.matches(".abstract blockquote, #page-metadata"))
 					introGraf = true;
+
+				/*  Add drop cap class. This could be set globally, or 
+					overridden by a .abstract; the latter could be 
+					`drop-cap-not` (which nullifies any page-global drop-cap 
+					class for the given block).
+				 */
+				if (introGraf) {
+					let dropCapClass = (previousBlock?.matches(".abstract blockquote")
+										? dropCapClassOf(previousBlock)
+										: null) ?? dropCapClassOf(document.body);
+					if (   dropCapClass != ""
+						&& dropCapClass != "drop-cap-not")
+						block.classList.add(dropCapClass);
+				} else {
+					stripDropCapClassesFrom(block);
+				}
 			}
 			block.classList.toggle("intro-graf", introGraf);
 		}
