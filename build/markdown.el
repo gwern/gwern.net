@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-06-11 21:49:43 gwern"
+;;; When:  Time-stamp: "2023-06-12 19:20:45 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1437,6 +1437,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([a-zA-Z]\\)–\\([[a-zA-Z]]\\)"       "\\1-\\2"       nil begin end) ; remove mistakenly used en dashes
        (query-replace-regexp "\\([a-zA-Z]\\)–\\([a-zA-Z]\\)"               "\\1-\\2"       nil begin end) ; check for misplaced en-dashes…
        (query-replace-regexp "\\([a-zA-Z]\\)--\\([a-zA-Z]\\)"               "\\1-\\2"       nil begin end) ; …and the Markdown-escaped version as well [we don't check for em-dash because that's more likely to be correct when between letters, it's just en-dash-between-letters that's usually wrong)
+       (query-replace-regexp "\\([a-zA-Z]\\)--\\([a-zA-Z]\\)"               "\\1---\\2"       nil begin end) ; if it's not a single hyphen after all, then it may be an EM DASH that's intended.
        (query-replace-regexp "\\([ ,(\[]\\)-\\([[:digit:]]\\)"                   "\\1−\\2" nil begin end) ; minus sign instead of hyphen
        (query-replace-regexp " --\\([[:digit:]]\\)"   " −\\1"      nil begin end) ; replace mistaken en-dashes with minus signs
        (query-replace-regexp " -\\[\\$" " −[$" nil begin end) ; minus sign: replace "It saves -[$1]($2021)" → "It saves −[$1]($2021)"
@@ -1473,7 +1474,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
        ; (query-replace-regexp "’\\([A-Za-qt-z]+\\)" "’ \\1" nil begin end) ; run-together apostrophes from PDFs
        (query-replace-regexp "^  \\([A-Za-z[:punct:]]+.*\\)" "    \\1" nil begin end) ; sometimes we get pseudo-indented text which I expect to get a code block but isn't enough.
        (query-replace-regexp "^\\([0-9]\\)) " "\\1. " nil begin end) ; convert single-parenthesis ordered lists to normal ordered list
-       (query-replace-regexp "^ +<" " <" nil begin end) (query-replace-regexp "^ +</" " </" nil begin end) ; fix problems with leading whitespace causing HTML snippets to be treated as 4-space-indented literals
+       (query-replace-regexp "^ +<" " <" nil begin end)
+       (query-replace-regexp "^ +</" " </" nil begin end) ; fix problems with leading whitespace causing HTML snippets to be treated as 4-space-indented literals
 
        (query-replace " <sup>" "<sup>" nil begin end)
        (query-replace "*8" "**" nil begin end)
@@ -1578,7 +1580,7 @@ by word boundaries.
 (defgroup markdown-newline-removal nil
   "Options for removing newlines within paragraphs in Markdown text."
   :group 'markdown)
-(defcustom markdown-excluded-chars (rx (any ?- ?\n ?\d ?# ?* ?>))
+(defcustom markdown-excluded-chars (rx (any ?- ?\n ?\d ?# ?* ?> ?. ??))
   "Characters to exclude when removing newlines within paragraphs in Markdown text."
   :type 'regexp
   :group 'markdown-newline-removal)

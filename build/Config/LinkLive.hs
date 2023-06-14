@@ -3231,7 +3231,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://bayesianinvestor.com/blog/index.php/2008/11/13/automated-market-maker-results/"
             , "https://www.berlin.de/polizei/polizeimeldungen/pressemitteilung.261025.php"
             , "http://www.bronxbanterblog.com/2013/10/01/the-power-and-the-gory/"
-            , "https://buffalonews.com/city-region/police-courts/former-ub-student-admits-using-bitcoins-while-dealing-in-drugs-20160823/"
+            , "https://web.archive.org/web/20160824143608/https://buffalonews.com/city-region/police-courts/former-ub-student-admits-using-bitcoins-while-dealing-in-drugs-20160823/"
             , "http://www.buttercupfestival.com/poetry.htm"
             , "http://www.byrnehobart.com/blog/why-are-middlebrow-dismissals-so-tempting/"
             , "http://www.cap-lore.com/Hardware/Wheel.html"

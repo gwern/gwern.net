@@ -8,7 +8,8 @@ import Data.Containers.ListUtils (nubOrd)
 import Data.List (sort)
 import qualified Control.Monad.Parallel as Par (mapM_)
 import System.Environment (getArgs)
-import Data.Map.Strict as M (fromList, lookup, keys, filter)
+import Data.Map.Strict as M (fromList, lookup, keys, filter) -- restrictKeys, toList
+-- import Data.Set as S (fromList)
 
 import GenerateSimilar (embed, embeddings2Forest, findN, missingEmbeddings, readEmbeddings, similaritemExistsP, writeEmbeddings, writeOutMatch, pruneEmbeddings)
 import qualified Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit)
@@ -79,3 +80,24 @@ main = do md  <- readLinkMetadata
                                       )
                   mdl
                 printGreen "Done."
+
+-- sortTagByTopic :: String -> IO [FilePath]
+-- sortTagByTopic tag = do md  <- readLinkMetadata
+--                         let mdl = M.keys $ M.filter (\(_,_,_,_,tags,abstract) -> tag `elem` tags && abstract /= "") md
+--                         let seed = head mdl
+--                         -- bdb <- readBacklinksDB
+--                         edb <- readEmbeddings
+--                         let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
+--                         let edbDB' = M.restrictKeys edbDB (S.fromList mdl)
+--                         let edb' = map (\(a,(b,c,d,e)) -> (a,b,c,d,e)) $ M.toList edbDB'
+--                         ddb <- embeddings2Forest edb'
+--                         undefined
+
+-- lookupNextAndShrink results [] _ _ = results
+-- lookupNextAndShrink results _ [] _ = results
+-- lookupNextAndShrink accumulated remainingTargets remainingEmbeddings previous =
+--   do ddb <- embeddings2Forest remainingEmbeddings
+--      case M.lookup previous remainingEmbeddings of
+--        Nothing        -> undefined
+--        Just (b,c,d,e) -> do let match = head $ snd $ findN ddb 1 C.iterationLimit (previous,b,c,d,e)
+--                             undefined
