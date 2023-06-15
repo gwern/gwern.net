@@ -2701,9 +2701,11 @@ section.footnotes .footnote-self-link {
 .markdownBody .margin-notes-block {
 	text-align: center;
 }
+
 .markdownBody .margin-notes-block .marginnote:nth-last-child(n+2)::after {
-	content: "·";
-	padding: 0 0.75em;
+	content: "•";
+	margin: 0 0.75em;
+	opacity: 0.5;
 }
 
 

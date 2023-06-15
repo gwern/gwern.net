@@ -11928,12 +11928,22 @@ addContentLoadHandler(GW.contentLoadHandlers.aggregateMarginNotes = (eventInfo) 
 			//	Inject the margin notes block and a horizontal rule.
 			marginNotesBlock = newElement("P", { class: "margin-notes-block" });
 			section.insertBefore(marginNotesBlock, firstBlock);
-			section.insertBefore(newElement("HR"), firstBlock);
 		}
 
-		//	Clone the note (unwrapping the inner wrapper, unneeded hered).
+		//	Clone the note.
 		let clonedNote = marginNote.cloneNode(true);
+
+		//	Unwrap the inner wrapper (unneeded here).
 		unwrap(clonedNote.firstElementChild);
+
+		//	Trim whitespace.
+		clonedNote.innerHTML = clonedNote.innerHTML.trim();
+
+		//	Strip trailing period.
+		if (clonedNote.textContent.endsWith("."))
+			clonedNote.lastTextNode.nodeValue = clonedNote.lastTextNode.nodeValue.slice(0, -1);
+
+		//	Append.
 		marginNotesBlock.append(clonedNote);
 	});
 }, "rewrite");
