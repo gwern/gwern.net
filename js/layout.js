@@ -554,7 +554,10 @@ function terminalBlockOf(element, terminus, options) {
 				 i != (terminus == "first" ? element.children.length : -1); 
 			     i += (terminus == "first" ? 1                       : -1)) {
 			let terminalBlock = terminalBlockOf(element.children[i], terminus, options);
-			if (terminalBlock)
+			if (   terminalBlock
+				&& isSkipped(terminalBlock, options) == false
+				&& (   isNodeEmpty(terminalBlock) == false
+					|| isNonEmpty(terminalBlock, options) == true))
 				return terminalBlock;
 		}
 	}

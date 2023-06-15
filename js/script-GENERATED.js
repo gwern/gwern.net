@@ -11919,8 +11919,9 @@ addContentLoadHandler(GW.contentLoadHandlers.aggregateMarginNotes = (eventInfo) 
 				abstract and/or epigraph that opens the section.
 			 */
 			let firstBlock = firstBlockOf(section, {
-				notBlockElements: [ "section", ".abstract blockquote", ".epigraph" ],
-				alsoWrapperElements: [ "section" ]
+				notBlockElements: [ "section" ],
+				alsoWrapperElements: [ "section", ".markdownBody" ],
+				alsoSkipElements: [ ".abstract blockquote", ".epigraph" ]
 			});
 			while (firstBlock.parentElement != section)
 				firstBlock = firstBlock.parentElement;
