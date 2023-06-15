@@ -2873,17 +2873,33 @@ function getBlockSpacingMultiplier(block, debug = false) {
 	return undefined;
 }
 
-/******************************************************************************/
-/*	Returns a block’s drop cap class (‘drop-cap-goudy’, etc.), or null if none.
+/*****************************************************************************/
+/*	Returns a block’s drop cap type (‘goudy’, ‘yinit’, etc.), or null if none.
  */
-function dropCapClassOf(block) {
-	return Array.from(block.classList).find(cssClass => /^drop-caps?-/.test(cssClass))?.replace("-caps-", "-cap-");
+function dropCapTypeOf(block) {
+	return Array.from(block.classList).find(cssClass => /^drop-caps?-/.test(cssClass))?.replace("-caps-", "-cap-")?.slice("drop-cap-".length);
+}
+
+/******************************************************************************/
+/*	Adds a drop cap class to a block. Drop caps may be ‘kanzlei’, ‘de-zs’, etc.
+	(See default.css for the list.)
+ */
+function addDropCapClassTo(block, dropCapType) {
+	if (block.classList.contains("force-drop-cap"))
+		return;
+
+	stripDropCapClassesFrom(block);
+
+	block.classList.add(`drop-cap-${dropCapType}`);
 }
 
 /*************************************/
 /*	Strip drop cap classes from block.
  */
 function stripDropCapClassesFrom(block) {
+	if (block.classList.contains("force-drop-cap"))
+		return;
+
 	block.classList.remove(...(Array.from(block.classList).filter(className => className.startsWith("drop-cap-"))));
 }
 
@@ -3059,21 +3075,25 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 					|| previousBlock?.matches(".abstract blockquote, #page-metadata"))
 					introGraf = true;
 
+				//	The .intro-graf class also implies .first-graf.
+				if (introGraf)
+					block.classList.add("first-graf");
+
 				/*  Add drop cap class. This could be set globally, or 
 					overridden by a .abstract; the latter could be 
 					`drop-cap-not` (which nullifies any page-global drop-cap 
 					class for the given block).
 				 */
 				if (introGraf) {
-					let dropCapClass = (previousBlock?.matches(".abstract blockquote")
-										? dropCapClassOf(previousBlock)
-										: null) ?? dropCapClassOf(document.body);
-					if (   dropCapClass != ""
-						&& dropCapClass != "drop-cap-not")
-						block.classList.add(dropCapClass);
-
-					//	The .intro-graf class also implies .first-graf.
-					block.classList.add("first-graf");
+					let dropCapType = (previousBlock?.matches(".abstract blockquote")
+									   ? dropCapTypeOf(previousBlock)
+									   : null) ?? dropCapTypeOf(document.body);
+					if (   dropCapType != null
+						&& dropCapType != "not") {
+						addDropCapClassTo(block, dropCapType);
+					} else {
+						stripDropCapClassesFrom(block);
+					}
 				} else {
 					stripDropCapClassesFrom(block);
 				}
