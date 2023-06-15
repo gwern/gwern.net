@@ -2281,6 +2281,7 @@ GW.layout = {
 	//	Elements which do not participate in block layout.
 	skipElements: [
 		".empty",
+		".empty-graf",
 		".float",
 		"noscript",
 		"button",
