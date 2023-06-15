@@ -36,7 +36,8 @@ Sidenotes = {
 	],
 
 	constrainMarginNotesWithinSelectors: [
-		".backlink-context"
+		".backlink-context",
+		".margin-notes-block"
 	],
 
 	/*	The smallest width (in CSS dimensions) at which sidenotes will be shown.

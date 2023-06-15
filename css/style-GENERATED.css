@@ -3757,6 +3757,18 @@ section.footnotes .footnote-self-link {
     right: calc(var(--GW-body-max-width) + (2.875em / (0.85/0.875)) + 64px);
 }
 
+/*******************************************/
+/*	Margin note blocks at start of sections.
+ */
+
+.markdownBody .margin-notes-block {
+	text-align: center;
+}
+.markdownBody .margin-notes-block .marginnote:nth-last-child(n+2)::after {
+	content: "·";
+	padding: 0 0.75em;
+}
+
 
 /**********/
 /* FOOTER */
