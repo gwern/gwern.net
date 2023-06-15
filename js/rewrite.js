@@ -765,6 +765,35 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (eventInfo) => {
     });
 }, "rewrite");
 
+/**************************/
+/*	Aggregate margin notes.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.aggregateMarginNotes = (eventInfo) => {
+	eventInfo.container.querySelectorAll(".marginnote").forEach(marginNote => {
+		if (marginNote.textContent.trim() == "☞")
+			return;
+
+		let section = marginNote.closest("section, .markdownBody");
+
+		let marginNotesBlock = Array.from(section.children).find(child => child.matches(".margin-notes-block"));
+		if (marginNotesBlock == null) {
+			let firstBlock = firstBlockOf(section, {
+				notBlockElements: [ "section", ".abstract blockquote", ".epigraph" ],
+				alsoWrapperElements: [ "section" ]
+			});
+			while (firstBlock.parentElement != section)
+				firstBlock = firstBlock.parentElement;
+			marginNotesBlock = newElement("P", { class: "margin-notes-block" });
+			section.insertBefore(marginNotesBlock, firstBlock);
+			section.insertBefore(newElement("HR"), firstBlock);
+		}
+
+		let clonedNote = marginNote.cloneNode(true);
+		unwrap(clonedNote.firstElementChild);
+		marginNotesBlock.append(clonedNote);
+	});
+}, "rewrite");
+
 
 /**************/
 /* TYPOGRAPHY */

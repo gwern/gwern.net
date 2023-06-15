@@ -842,6 +842,7 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 			let previousBlockSelector = [
 				":not(p)",
 				".text-center",
+				".margin-notes-block",
 				".page-description-annotation",
 				".annotation .data-field"
 			].join(", ");
@@ -873,7 +874,7 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 				of documents (the .intro-graf class).
 			 */
 			let introGraf = false;
-			if (   block.matches(".text-center") != true
+			if (   block.matches(".text-center, .margin-notes-block") != true
 				&& block.closest("#footer") == null
 				&& block.firstElementChild?.matches("span.smallcaps") != true
 				&& block.firstChild instanceof HTMLAnchorElement != true) {
