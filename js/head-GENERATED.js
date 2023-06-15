@@ -2482,7 +2482,7 @@ doWhenBodyExists(() => {
 	(or for the main page content, if block not specified), false otherwise.
  */
 function indentModeActive(block) {
-	return (block?.getRootNode().body.classList.contains("indented") == true);
+	return (block?.getRootNode()?.body?.classList?.contains("indented") == true);
 }
 
 /*****************************************************************************/
