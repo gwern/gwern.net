@@ -968,5 +968,26 @@ addLayoutProcessor(GW.layout.applyBlockSpacingInContainer = (container) => {
 		if (listItem.dataset.bsmMod)
 			delete listItem.dataset.bsmMod;
 	});
+
+	//	Floats require special treatment.
+	container.querySelectorAll(selectorize([ ".float" ])).forEach(floatBlock => {
+		if (floatBlock.closest(GW.layout.blockLayoutExclusionSelector))
+			return;
+
+		//	Floating elements take on the top margin of the next block.
+		let nextBlock = nextBlockOf(floatBlock, { alsoBlockElements: [ "li" ] });
+		let nextBlockBSM = nextBlock?.style?.getPropertyValue("--bsm");
+
+		if (nextBlockBSM) {
+			/*	If the next block (in the strict sense, i.e. not counting list 
+				items!) is a paragraph, then adjust margin.
+			 */
+			let strictNextBlock = nextBlockOf(floatBlock);
+			if (strictNextBlock.matches("p"))
+				nextBlockBSM = "" + (parseInt(nextBlockBSM) + 2);
+
+			floatBlock.style.setProperty("--bsm", nextBlockBSM);
+		}
+	});
 });
 
