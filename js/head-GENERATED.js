@@ -3071,6 +3071,9 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 					if (   dropCapClass != ""
 						&& dropCapClass != "drop-cap-not")
 						block.classList.add(dropCapClass);
+
+					//	The .intro-graf class also implies .first-graf.
+					block.classList.add(".first-graf");
 				} else {
 					stripDropCapClassesFrom(block);
 				}
@@ -3081,7 +3084,7 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 		//	Designate blocks in lists (the .in-list class).
 		block.classList.toggle("in-list", blockContainerOf(block, {
 			alsoBlockContainers: [ "li" ],
-			cacheKey: "alsoBlocks_listItems"
+			cacheKey: "alsoBlockContainers_listItems"
 		})?.matches("li") == true);
 	});
 
@@ -3156,7 +3159,10 @@ addLayoutProcessor(GW.layout.applyBlockSpacingInContainer = (container) => {
 			return;
 
 		//	Floating elements take on the top margin of the next block.
-		let nextBlock = nextBlockOf(floatBlock, { alsoBlockElements: [ "li" ] });
+		let nextBlock = nextBlockOf(floatBlock, {
+			alsoBlockElements: [ "li" ],
+			cacheKey: "alsoBlocks_listItems"
+		});
 		let nextBlockBSM = nextBlock?.style?.getPropertyValue("--bsm");
 
 		if (nextBlockBSM) {
