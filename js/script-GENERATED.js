@@ -11915,17 +11915,23 @@ addContentLoadHandler(GW.contentLoadHandlers.aggregateMarginNotes = (eventInfo) 
 
 		let marginNotesBlock = Array.from(section.children).find(child => child.matches(".margin-notes-block"));
 		if (marginNotesBlock == null) {
+			/*	Construct the margin notes block. It should go after any 
+				abstract and/or epigraph that opens the section.
+			 */
 			let firstBlock = firstBlockOf(section, {
 				notBlockElements: [ "section", ".abstract blockquote", ".epigraph" ],
 				alsoWrapperElements: [ "section" ]
 			});
 			while (firstBlock.parentElement != section)
 				firstBlock = firstBlock.parentElement;
+
+			//	Inject the margin notes block and a horizontal rule.
 			marginNotesBlock = newElement("P", { class: "margin-notes-block" });
 			section.insertBefore(marginNotesBlock, firstBlock);
 			section.insertBefore(newElement("HR"), firstBlock);
 		}
 
+		//	Clone the note (unwrapping the inner wrapper, unneeded hered).
 		let clonedNote = marginNote.cloneNode(true);
 		unwrap(clonedNote.firstElementChild);
 		marginNotesBlock.append(clonedNote);
