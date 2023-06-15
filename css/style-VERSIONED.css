@@ -2060,168 +2060,8 @@ ol.has-floats > li {
 /***********/
 /* FIGURES */
 /***********/
-
-figure {
-    display: flow-root;
-    margin: 0 auto;
-}
-@media all and (min-width: 650px) {
-    figure {
-        max-width: calc(100% - 5em);
-    }
-}
-
-/*  Floating figures. (Mostly for amusing asides/memes.)
+/*	Additional figure styles.
  */
-@media all and (min-width: 650px) {
-	/*	Applies to floating small tables also.
-	 */
-	.markdownBody {
-		--float-side-margin: 2em;
-	}
-	.markdownBody blockquote {
-		--float-side-margin: 1.5em;
-	}
-
-	figure.float {
-        max-width: calc(50% - var(--float-side-margin));
-        margin-bottom: calc(var(--float-side-margin) * 0.5);
-	}
-    figure.float-right {
-        float: right;
-        margin-right: 0;
-        margin-left: var(--float-side-margin);
-    }
-    figure.float-left {
-        float: left;
-        margin-left: 0;
-        margin-right: var(--float-side-margin);
-    }
-
-	/*	Reduce reflow.
-	 */
-	img.float-right,
-	img.float-left {
-		max-width: calc(50% - var(--float-side-margin));
-	}
-}
-
-/*******************/
-/*	Figure contents.
- */
-
-.figure-inner-wrapper {
-    display: flex;
-    flex-flow: column;
-    margin: auto;
-    width: fit-content;
-    max-width: 100%;
-}
-
-figure img,
-figure video,
-figure svg {
-    display: block;
-    max-height: calc(100vh - 8rem);
-    max-width: 100%;
-    height: auto;
-    width: auto;
-    margin: 0 auto;
-
-    /*  This is to prevent overflow of image alt-text in Chrome.
-     */
-    overflow: hidden;
-}
-
-figure img {
-    background-color: var(--background-color);
-}
-
-figure img,
-figure video {
-    outline: 1px solid var(--GW-figure-outline-color);
-}
-
-figure.outline-not img,
-figure.outline-not video {
-    outline: none;
-}
-
-figure audio {
-    display: block;
-    margin: 0 auto;
-    height: 54px;
-    border-radius: 27px;
-    position: relative;
-    z-index: 1;
-    top: 1px;
-    box-sizing: border-box;
-    border: 1px solid transparent;
-}
-/*  Special styles for special browsers.
-    */
-@supports (-moz-user-focus: normal) {
-    figure audio {
-        height: 42px;
-        border-radius: 21px;
-    }
-}
-figure audio:hover {
-    border-color: var(--GW-figure-outline-color);
-    box-shadow:
-        0 0 4px 0 var(--GW-figure-outline-color) inset,
-        0 0 4px 0 var(--GW-figure-outline-color);
-}
-
-/*******************/
-/*  Figure captions.
-    */
-
-figcaption {
-    font-size: 0.9em;
-    font-weight: bold;
-    line-height: 1.50;
-    margin: auto;
-    padding: 0.25em 0.5em calc(0.25em + 1px) 0.5em;
-    width: fit-content;
-    text-align: center;
-	background-color: var(--background-color);
-}
-@media all and (max-width: 649px) {
-    figcaption {
-        font-size: 0.875em;
-    }
-}
-
-figcaption strong {
-    font-weight: inherit;
-    font-variant-caps: small-caps;
-}
-
-.caption-wrapper {
-    display: block;
-    outline: 1px solid var(--GW-figure-caption-outline-color);
-    margin: 1px auto 0 auto;
-    width: 100%;
-}
-
-figure.outline-not .caption-wrapper {
-    outline: none;
-}
-
-video + .caption-wrapper {
-    margin-top: 2px;
-}
-
-/***********************************************************************/
-/*  Enable the various `![caption](/doc/foo/bar.jpg){.width-full}` uses;
-    analogous to width-full tables
- */
-figure.width-full {
-    position: relative;
-    max-width: unset;
-    clear: both;
-}
 
 /*  Figures in sidenotes should take up the full width of the sidenote.
     */
@@ -2481,18 +2321,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686597001#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686809180#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686597001#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686809180#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686597001#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686809180#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686597001#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1686809180#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5420,14 +5260,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686597001#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686809180#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686597001#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686809180#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5560,7 +5400,7 @@ body.lorem div[class^='drop-cap'] {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1686597001#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1686809180#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5987,14 +5827,14 @@ body.lorem div[class^='drop-cap'] {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686597001#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686809180#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1686597001#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1686809180#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6875,7 +6715,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1686597001#question');
+    background-image: url('/static/img/icon/icons.svg?v=1686809180#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7381,7 +7221,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1686597001#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1686809180#circle-notch-solid');
 
     pointer-events: none;
 }
