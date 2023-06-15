@@ -3049,7 +3049,7 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 				let options = {
 					alsoSkipElements: [ ".epigraph" ],
 					alsoBlockContainers: [ "li" ],
-					cacheKey: "alsoSkip_epigraphs_alsoBlocks_lists"
+					cacheKey: "alsoSkip_epigraphs_alsoBlockContainers_listItems"
 				};
 
 				let previousBlock = previousBlockOf(block, options);
@@ -3073,7 +3073,7 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 						block.classList.add(dropCapClass);
 
 					//	The .intro-graf class also implies .first-graf.
-					block.classList.add(".first-graf");
+					block.classList.add("first-graf");
 				} else {
 					stripDropCapClassesFrom(block);
 				}
