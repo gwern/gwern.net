@@ -769,6 +769,8 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (eventInfo) => {
 /*	Aggregate margin notes.
  */
 addContentLoadHandler(GW.contentLoadHandlers.aggregateMarginNotes = (eventInfo) => {
+    GWLog("aggregateMarginNotes", "rewrite.js", 1);
+
 	eventInfo.container.querySelectorAll(".marginnote").forEach(marginNote => {
 		if (marginNote.textContent.trim() == "☞")
 			return;
@@ -808,6 +810,15 @@ addContentLoadHandler(GW.contentLoadHandlers.aggregateMarginNotes = (eventInfo) 
 
 		//	Append.
 		marginNotesBlock.append(clonedNote);
+	});
+
+	//	Don’t show margin notes block if there are fewer notes than this.
+	let minimumAggregatedNotesCount = 3;
+
+	eventInfo.container.querySelectorAll(".margin-notes-block").forEach(marginNotesBlock => {
+		if (marginNotesBlock.children.length < minimumAggregatedNotesCount)
+			marginNotesBlock.classList.add("hidden");
+			
 	});
 }, "rewrite");
 

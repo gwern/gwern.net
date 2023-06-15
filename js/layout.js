@@ -101,6 +101,7 @@ GW.layout = {
 	skipElements: [
 		".empty",
 		".empty-graf",
+		".hidden",
 		".float",
 		"noscript",
 		"button",
@@ -886,7 +887,7 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 							&& previousBlockOf(block, options) == null);
 				}
 				let options = {
-					alsoSkipElements: [ ".epigraph" ],
+					alsoSkipElements: [ ".epigraph", ".margin-notes-block" ],
 					alsoBlockContainers: [ "li" ],
 					cacheKey: "alsoSkip_epigraphs_alsoBlockContainers_listItems"
 				};
