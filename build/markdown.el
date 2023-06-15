@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-06-12 19:20:45 gwern"
+;;; When:  Time-stamp: "2023-06-14 12:55:01 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -192,6 +192,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (de-unicode)
        (de-unicode)
        (flyspell-buffer)
+       (delete-trailing-whitespace)
 
        (let ; Blind unconditional rewrites:
            ((blind '(("﻿" . "") ; byte order mark?
