@@ -36,7 +36,7 @@ import Typography (identUniquefy)
 import Utils (replace, writeUpdatedFile, printRed, toPandoc, anySuffix)
 import Config.Misc as C (miscellaneousLinksCollapseLimit)
 import GenerateSimilar (sortSimilarsStartingWithNewest)
-
+-- import Text.Show.Pretty (ppShow)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -45,6 +45,7 @@ main = do dirs <- getArgs
 
           meta <- readLinkMetadata
 
+          -- Prelude.mapM_ (generateDirectory True meta dirs') dirs'
           Prelude.mapM_ (generateDirectory True meta dirs') (dirs' `using` parListChunk chunkSize rseq) -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
 
           -- Special-case directories:
@@ -52,12 +53,12 @@ main = do dirs <- getArgs
           metaNewest <- readLinkMetadataNewest 100
           generateDirectory False metaNewest ["doc/", "doc/newest/", "/"] "doc/newest/"
   where chunkSize :: Int
-        chunkSize = 5
+        chunkSize = 10
 
 generateDirectory :: Bool -> Metadata -> [FilePath] -> FilePath -> IO ()
 generateDirectory filterp md dirs dir'' = do
 
-  print dirs >> print dir''
+  -- print dirs >> print dir''
 
   -- for the arabesque navbar 'previous'/'next', we want to fill more useful than the default values, but also not be too redundant with the up/sideways/downwards tag-directory links; so we pass in the (lexicographically) sorted list of all tag-directories being created this run, and try to provide previous/next links to the 'previous' and the 'next' directory, which may be a parent, sibling, or nothing at all.
   -- so eg. /doc/cryonics/index will point to `previous: /doc/crime/terrorism/index \n next: /doc/cs/index`
@@ -105,9 +106,9 @@ generateDirectory filterp md dirs dir'' = do
   let titledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t /= "") links
   let untitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t == "") links
   let allUnannotatedUntitledP = (length untitledLinks >= 3) && all (=="") (map (\(_,(_,_,_,_,_,annotation)) -> annotation) untitledLinks) -- whether to be compact columns
-  print ("titledLinks:"::String) >> print titledLinks
+  -- print ("titledLinks:"::String) >> putStrLn (ppShow $ sort titledLinks)
   titledLinksSorted <- sortSimilarsStartingWithNewest md titledLinks
-  print ("-------------------------------------------------------"::String) >> print ("titledLinksSorted:"::String) >> print titledLinksSorted
+  -- print ("-------------------------------------------------------"::String) >> print ("titledLinksSorted:"::String) >> print titledLinksSorted
 
   let titledLinksSections   = generateSections  titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
   let untitledLinksSection  = generateListItems untitledLinks
@@ -164,6 +165,7 @@ generateDirectory filterp md dirs dir'' = do
     -- compare with the old version, and update if there are any differences:
     Right p' -> do let contentsNew = T.pack header `T.append` p'
                    writeUpdatedFile "directory" (dir'' ++ "index.page") contentsNew
+  -- print $ "dir'' done: " ++ dir''
 
 generateLinkBibliographyItems :: [(String,MetadataItem,FilePath)] -> [Block]
 generateLinkBibliographyItems [] = []
@@ -313,15 +315,16 @@ generateSections links linksSorted linkswp
           wp
             = [Header 2 ("titled-links-wikipedia", ["link-annotated-not"], [])
                  [Str "Wikipedia"],
-               OrderedList (1, UpperAlpha, DefaultDelim)
+               OrderedList (1, DefaultStyle, DefaultDelim)
                  (map LM.generateAnnotationTransclusionBlock linkswp)]
 
 -- for the sorted-by-magic links, they all are by definition already generated as a section; so instead of bloating the page & ToC with even more sections, let's just generate a transclude of the original section!
 generateReferenceToPreviousSection :: [(FilePath, MetadataItem)] -> Block
-generateReferenceToPreviousSection = OrderedList (1, UpperAlpha, DefaultDelim) . map (\(f,(_,aut,dt,_,_,_)) ->
+generateReferenceToPreviousSection = OrderedList (1, UpperAlpha, DefaultDelim) . concatMap (\(f,(_,aut,dt,_,_,_)) ->
                                                   let linkId = generateID f aut dt in
-                                                    let sectionID = "#" `T.append` linkId `T.append` "-section"
-                                                    in [Para [Link ("", ["include"], []) [Str "[previous entry]"] (sectionID, "")]]
+                                                    if linkId=="" then [] else
+                                                      let sectionID = "#" `T.append` linkId `T.append` "-section"
+                                                      in [[Para [Link ("", ["include"], []) [Str "[previous entry]"] (sectionID, "")]]]
                                                                       )
 generateSections' :: Int -> [(FilePath, MetadataItem)] -> [Block]
 generateSections' headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_)) ->

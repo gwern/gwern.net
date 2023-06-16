@@ -424,14 +424,15 @@ lookupNextAndShrink accumulated [a] _  _ = return $ nub (accumulated ++ [a])
 lookupNextAndShrink accumulated remainingTargets remainingEmbeddings previous =
   do -- print "accumulated: " >> print accumulated >> print "remainingEmbeddings length: " >> print (length remainingEmbeddings)
      let remainingEmbeddings' = Prelude.filter (\(f,_,_,_,_) -> f /= previous) remainingEmbeddings
-     if length remainingEmbeddings' < 2 then return $ nub (accumulated ++ [previous]) else
+     if length remainingEmbeddings' < 2 then return (accumulated ++ remainingTargets) else
       do ddb <- embeddings2Forest remainingEmbeddings'
          -- print "passed embeddings2Forest"
          case M.lookup previous (M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) remainingEmbeddings) of
-            Nothing        -> lookupNextAndShrink (accumulated ++ [previous]) remainingTargets remainingEmbeddings' previous
-            Just (b,c,d,e) -> let match = findNearest ddb 1 (previous,b,c,d,e) :: [FilePath] in
-                                if null match then lookupNextAndShrink (accumulated ++ [previous]) remainingTargets remainingEmbeddings' previous
+            Nothing        -> putStrLn ("accumulated: " ++ ppShow accumulated) >> putStrLn ("remainingTargets: " ++ ppShow remainingTargets) >> putStrLn ("remainingEmbeddings: " ++ ppShow (map (\(a,b,c,d,_) -> (a,b,c,d)) remainingEmbeddings)) >> putStrLn ("previous: " ++ previous) >> error "Exited at Nothing in lookupNextAndShrink, this should never happen?" -- lookupNextAndShrink (accumulated ++ [previous]) remainingTargets remainingEmbeddings' previous
+            Just (b,c,d,e) -> let match = filter (/=previous) $ findNearest ddb 2 (previous,b,c,d,e) :: [FilePath]
+                                  remainingTargets' = Prelude.filter (\f -> f /= (head match) && f /= previous) remainingTargets in
+                                if null match then lookupNextAndShrink (accumulated ++ [previous]) remainingTargets' remainingEmbeddings' previous
                                 else let match' = head match
-                                         remainingTargets' = Prelude.filter (/= match') remainingTargets
-                                         accumulated' = accumulated ++ [previous, match']
+
+                                         accumulated' = accumulated ++ [match']
                                      in lookupNextAndShrink accumulated' remainingTargets' remainingEmbeddings' match'
