@@ -485,7 +485,10 @@ Annotations = { ...Annotations,
 				let pageDescriptionClass = "page-description-annotation";
 				let pageDescription = referenceEntry.querySelector(`div.${pageDescriptionClass}`);
 				if (pageDescription)
-					unwrap(pageDescription, [ pageDescriptionClass ]);
+					unwrap(pageDescription, {
+						moveClasses: true,
+						classesToMove: [ pageDescriptionClass ]
+					});
 			},
 
 			basePathname: "/metadata/annotation/",

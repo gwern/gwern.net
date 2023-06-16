@@ -462,12 +462,43 @@ function wrapAll(selector,
     container.querySelectorAll(selector).forEach(wrapperFunction);
 }
 
-/****************************************/
-/*  Replace an element with its contents.
+/**************************************************************************/
+/*  Replace an element with its contents. Returns array of unwrapped nodes.
+
+	Options:
+
+		moveID
+
+		moveClasses
+		classesToMove
+
+		preserveBlockSpacing
  */
-function unwrap(wrapper, moveClasses = false) {
+function unwrap(wrapper, options = {
+	moveID: false,
+	moveClasses: false,
+	classesToMove: null,
+	preserveBlockSpacing: false
+}) {
     if (wrapper.parentNode == null)
         return;
+
+	let nodes = Array.from(wrapper.childNodes);
+
+	//	Move ID, if specified.
+	if (   options.moveID === true
+		&& wrapper.id > ""
+		&& wrapper.children.length == 1) {
+		wrapper.firstElementChild.id = wrapper.id;
+	}
+
+	//	Preserve block spacing, if specified.
+	if (   options.preserveBlockSpacing === true
+		&& wrapper.children.length > 0) {
+		let bsm = wrapper.style.getPropertyValue("--bsm");
+		if (bsm > "")
+			wrapper.firstElementChild.setProperty("--bsm", bsm);
+	}
 
     while (wrapper.childNodes.length > 0) {
 		let child = wrapper.firstChild;
@@ -477,23 +508,22 @@ function unwrap(wrapper, moveClasses = false) {
 		if (!(child instanceof Element))
 			continue;
 
-		if (moveClasses === false)
-			continue;
-
-		if (moveClasses === true) {
-			child.classList.add(...(wrapper.classList));
-			continue;
+		//	Move classes, if specified.
+		if (options.moveClasses === true) {
+			if (options.classesToMove == null) {
+				child.classList.add(...(wrapper.classList));
+			} else {
+				options.classesToMove.forEach(cssClass => {
+					if (wrapper.classList.contains(cssClass))
+						child.classList.add(cssClass);
+				});
+			}
 		}
-
-		if (!(moveClasses instanceof Array))
-			continue;
-
-		moveClasses.forEach(cssClass => {
-			if (wrapper.classList.contains(cssClass))
-				child.classList.add(cssClass);
-		});
     }
+
     wrapper.remove();
+
+	return nodes;
 }
 
 /******************************************************************************/
@@ -508,9 +538,9 @@ function rewrapContents(...args) {
 /*******************************************************/
 /*  Unwrap all elements specified by the given selector.
  */
-function unwrapAll(selector, root = document, moveClasses = false) {
+function unwrapAll(selector, root = document, options = { }) {
     root.querySelectorAll(selector).forEach(element => {
-        unwrap(element, moveClasses);
+        unwrap(element, options);
     });
 }
 
