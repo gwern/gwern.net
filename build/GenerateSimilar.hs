@@ -10,7 +10,7 @@ import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T  (append, intercalate, isPrefixOf, length, pack, strip, take, unlines, unpack, Text)
 import Data.List ((\\), intercalate,  nub)
 import Data.Maybe (fromJust, fromMaybe)
-import qualified Data.Map.Strict as M (filter, keys, lookup, fromList, toList, difference, withoutKeys)
+import qualified Data.Map.Strict as M (filter, keys, lookup, fromList, toList, difference, withoutKeys, restrictKeys)
 import System.Directory (doesFileExist, renameFile)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Read (readMaybe)
@@ -32,7 +32,7 @@ import Data.Conduit.List (sourceList)
 
 import LinkBacklink (getForwardLinks, readBacklinksDB, Backlinks)
 import Columns as C (listLength)
-import LinkMetadata (readLinkMetadata, authorsTruncate, parseRawInline)
+import LinkMetadata (readLinkMetadata, authorsTruncate, parseRawInline, sortItemPathDate)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
@@ -365,3 +365,52 @@ generateItem md linkTagsP p2 = case M.lookup p2 md of
                                               if null tags || not linkTagsP then [] else [("link-tags", T.pack $ unwords tags) ]
                                             ) [parseRawInline nullAttr $ RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
                                     ]
+
+-----------------------------------
+-- 'sort by magic': a way to sort by loose 'topic' or 'cluster' using embeddings. Instead of being forced to create 1D lists of items by sorting solely on simple properties like date or alphabetical order, we can instead 'sort' by embedding, where we pick a (possibly arbitrary, but a good starting point might be the newest/oldest item) 'seed' item, and then look up its nearest-neighbor, and so on. This produces a list which essentially constructs clusters in a linearized fashion.
+
+{-
+md <- LinkMetadata.readLinkMetadata
+m <- sortTagByTopic md tagTest
+m
+let m' = map (\f -> Data.Maybe.fromJust $ M.lookup f md) m
+putStrLn $ Text.Show.Pretty.ppShow $ nub $ map (\(t,_,_,_,_,_) -> t) $ LinkMetadata.sortItemDate m' -- by date
+putStrLn $ Text.Show.Pretty.ppShow $ nub $ map (\(t,_,_,_,_,_) -> t) $ m' -- by topic
+
+tagTest :: String
+tagTest = "psychology/smell"
+-}
+
+sortTagByTopic :: Metadata -> String -> IO [FilePath]
+sortTagByTopic md tag = do let mdl = M.filter (\(_,_,_,_,tags,abstract) -> tag `elem` tags && abstract /= "") md
+                           let paths = M.keys mdl
+                           let mdlSorted = LinkMetadata.sortItemPathDate $ map (\(f,i) -> (f,(i,""))) $ M.toList mdl
+                           let newest = fst $ head mdlSorted
+                           sortSimilars newest paths
+
+
+sortSimilars :: FilePath -> [FilePath] -> IO [FilePath]
+sortSimilars seed paths = do edb <- readEmbeddings
+                             let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
+                             let edbDB' = M.restrictKeys edbDB (S.fromList paths)
+                             let edb' = map (\(a,(b,c,d,e)) -> (a,b,c,d,e)) $ M.toList edbDB'
+                             -- print edb'
+                             lookupNextAndShrink [] paths edb' seed
+
+lookupNextAndShrink :: [FilePath]
+              -> [FilePath]
+              -> [(FilePath, Integer, String, String, [Double])]
+              -> FilePath
+              -> IO [FilePath]
+lookupNextAndShrink results     []   _ _ = return results
+lookupNextAndShrink results     _   [] _ = return results
+lookupNextAndShrink accumulated [t] _  _ = return (accumulated ++ [t])
+lookupNextAndShrink accumulated remainingTargets remainingEmbeddings previous =
+  do let remainingEmbeddings' = Prelude.filter (\(f,_,_,_,_) -> f /= previous) remainingEmbeddings
+     ddb <- embeddings2Forest remainingEmbeddings'
+     case M.lookup previous (M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) remainingEmbeddings) of
+        Nothing        -> undefined
+        Just (b,c,d,e) -> let match = (head $ findNearest ddb 1 (previous,b,c,d,e)) :: FilePath
+                              remainingTargets' = Prelude.filter (/= match) remainingTargets
+                              accumulated' = accumulated ++ [previous, match]
+                           in lookupNextAndShrink accumulated' remainingTargets' remainingEmbeddings' match

@@ -8,17 +8,13 @@ import Data.Containers.ListUtils (nubOrd)
 import Data.List (sort)
 import qualified Control.Monad.Parallel as Par (mapM_)
 import System.Environment (getArgs)
-import Data.Map.Strict as M (fromList, lookup, keys, filter, restrictKeys, toList)
-import Data.Set as S (fromList)
+import Data.Map.Strict as M (fromList, lookup, keys, filter)
 
-import GenerateSimilar (embed, embeddings2Forest, findN, findNearest, missingEmbeddings, readEmbeddings, similaritemExistsP, writeEmbeddings, writeOutMatch, pruneEmbeddings)
+import GenerateSimilar (embed, embeddings2Forest, findN, missingEmbeddings, readEmbeddings, similaritemExistsP, writeEmbeddings, writeOutMatch, pruneEmbeddings)
 import qualified Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit)
 import LinkBacklink (readBacklinksDB)
-import LinkMetadata (readLinkMetadata, Metadata)
+import LinkMetadata (readLinkMetadata)
 import Utils (printGreen)
-
-import           System.IO.Unsafe (unsafePerformIO)
-import Debug.Trace (trace)
 
 maxEmbedAtOnce :: Int
 maxEmbedAtOnce = 750
@@ -83,46 +79,3 @@ main = do md  <- readLinkMetadata
                                       )
                   mdl
                 printGreen "Done."
-
-{-
-md <- LinkMetadata.readLinkMetadata
-m <- sortTagByTopic md tagTest
-m
-let m' = map (\f -> Data.Maybe.fromJust $ M.lookup f md) m
-putStrLn $ Text.Show.Pretty.ppShow $ nub $ map (\(t,_,_,_,_,_) -> t) $ LinkMetadata.sortItemDate m' -- by date
-putStrLn $ Text.Show.Pretty.ppShow $ nub $ map (\(t,_,_,_,_,_) -> t) $ m' -- by topic
--}
-
-tagTest :: String
-tagTest = "psychology/smell"
-
-sortTagByTopic :: Metadata -> String -> IO [FilePath]
-sortTagByTopic md tag = do let mdl = M.keys $ M.filter (\(_,_,_,_,tags,abstract) -> tag `elem` tags && abstract /= "") md
-                           let seed = head mdl
-                           edb <- readEmbeddings
-                           let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
-                           let edbDB' = M.restrictKeys edbDB (S.fromList mdl)
-                           let edb' = map (\(a,(b,c,d,e)) -> (a,b,c,d,e)) $ M.toList edbDB'
-                           print seed
-                           print mdl
-                           print edb'
-                           let serialized = lookupNextAndShrink [] mdl edb' seed
-                           return serialized
-
-lookupNextAndShrink :: [FilePath]
-              -> [FilePath]
-              -> [(FilePath, Integer, String, String, [Double])]
-              -> FilePath
-              -> [FilePath]
-lookupNextAndShrink results [] _ _ = results
-lookupNextAndShrink results _ [] _ = results
-lookupNextAndShrink accumulated [t] _ _ = accumulated ++ [t]
-lookupNextAndShrink accumulated remainingTargets remainingEmbeddings previous =
-  let remainingEmbeddings' = Prelude.filter (\(f,_,_,_,_) -> f /= previous) remainingEmbeddings
-      ddb = trace ("Accumulated: " ++ show accumulated) $ unsafePerformIO $ embeddings2Forest remainingEmbeddings' in
-    case M.lookup previous (M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) remainingEmbeddings) of
-        Nothing        -> undefined
-        Just (b,c,d,e) -> let match = (head $ findNearest ddb 1 (previous,b,c,d,e)) :: FilePath
-                              remainingTargets' = Prelude.filter (/= match) remainingTargets
-                              accumulated' = accumulated ++ [previous, match]
-                           in lookupNextAndShrink accumulated' remainingTargets' remainingEmbeddings' match
