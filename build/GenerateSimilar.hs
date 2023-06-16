@@ -282,14 +282,14 @@ similaritemExistsP p = doesFileExist $ take 274 $ "metadata/annotation/similar/"
 writeOutMatch :: Metadata -> Backlinks -> (String, [String]) -> IO ()
 writeOutMatch md bdb (p,matches) =
   if length matches < C.minimumSuggestions then return () else
-  do case M.lookup p md of
-       Nothing             -> return ()
-       Just (_,_,_,_,_,"") -> return ()
-       Just ("",_,_,_,_,_) -> return ()
-       Just (_,_,_,_,_,abst) -> do
-             let similarLinksHtmlFragment = generateMatches md bdb False False p abst matches
-             let f = take 274 $ "metadata/annotation/similar/" ++ urlEncode p ++ ".html"
-             writeUpdatedFile "similar" f similarLinksHtmlFragment
+  case M.lookup p md of
+    Nothing             -> return ()
+    Just (_,_,_,_,_,"") -> return ()
+    Just ("",_,_,_,_,_) -> return ()
+    Just (_,_,_,_,_,abst) -> do
+          let similarLinksHtmlFragment = generateMatches md bdb False False p abst matches
+          let f = take 274 $ "metadata/annotation/similar/" ++ urlEncode p ++ ".html"
+          writeUpdatedFile "similar" f similarLinksHtmlFragment
 
 generateMatches :: Metadata -> Backlinks -> Bool -> Bool -> String -> String -> [String] -> T.Text
 generateMatches md bdb linkTagsP singleShot p abst matches =
@@ -367,18 +367,16 @@ generateItem md linkTagsP p2 = case M.lookup p2 md of
                                     ]
 
 -----------------------------------
--- 'sort by magic': a way to sort by loose 'topic' or 'cluster' using embeddings. Instead of being forced to create 1D lists of items by sorting solely on simple properties like date or alphabetical order, we can instead 'sort' by embedding, where we pick a (possibly arbitrary, but a good starting point might be the newest/oldest item) 'seed' item, and then look up its nearest-neighbor, and so on. This produces a list which essentially constructs clusters in a linearized fashion.
+-- 'sort by magic': a way to sort by loose 'topic' or 'cluster' using embeddings. Instead of being forced to create 1D lists of items by sorting solely on simple properties like date or alphabetical order, we can instead 'sort' by embedding, where we pick a (possibly arbitrary, but a good starting point might be the newest/oldest item) 'seed' item, and then look up *its* nearest-neighbor, and so on. This produces a list which essentially constructs clusters in a linearized fashion. See /design#tags
 
 {-
 md <- LinkMetadata.readLinkMetadata
+let tagTest = "psychology/smell"
 m <- sortTagByTopic md tagTest
 m
 let m' = map (\f -> Data.Maybe.fromJust $ M.lookup f md) m
 putStrLn $ Text.Show.Pretty.ppShow $ nub $ map (\(t,_,_,_,_,_) -> t) $ LinkMetadata.sortItemDate m' -- by date
 putStrLn $ Text.Show.Pretty.ppShow $ nub $ map (\(t,_,_,_,_,_) -> t) $ m' -- by topic
-
-tagTest :: String
-tagTest = "psychology/smell"
 -}
 
 sortTagByTopic :: Metadata -> String -> IO [FilePath]
@@ -388,13 +386,23 @@ sortTagByTopic md tag = do let mdl = M.filter (\(_,_,_,_,tags,abstract) -> tag `
                            let newest = fst $ head mdlSorted
                            sortSimilars newest paths
 
+sortSimilarsStartingWithNewest :: Metadata -> [(FilePath, MetadataItem)] -> IO [(FilePath, MetadataItem)]
+sortSimilarsStartingWithNewest md items = do
+  let md' = (flip M.restrictKeys) (S.fromList $ map fst items) $ M.filter (\(_,_,_,_,_,abstract) -> abstract /= "") md
+  let mdlSorted = LinkMetadata.sortItemPathDate $ map (\(f,i) -> (f,(i,""))) $ M.toList md'
+  let paths = M.keys md'
+  let newest = fst $ head mdlSorted
+  pathsSorted <- sortSimilars newest paths
+  return $ resort pathsSorted items
+
+resort :: Eq a => [a] -> [(a,b)] -> [(a,b)]
+resort keys list = map (\k -> (k, fromJust $ lookup k list)) keys
 
 sortSimilars :: FilePath -> [FilePath] -> IO [FilePath]
 sortSimilars seed paths = do edb <- readEmbeddings
                              let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
                              let edbDB' = M.restrictKeys edbDB (S.fromList paths)
                              let edb' = map (\(a,(b,c,d,e)) -> (a,b,c,d,e)) $ M.toList edbDB'
-                             -- print edb'
                              lookupNextAndShrink [] paths edb' seed
 
 lookupNextAndShrink :: [FilePath]
@@ -404,12 +412,12 @@ lookupNextAndShrink :: [FilePath]
               -> IO [FilePath]
 lookupNextAndShrink results     []   _ _ = return results
 lookupNextAndShrink results     _   [] _ = return results
-lookupNextAndShrink accumulated [t] _  _ = return (accumulated ++ [t])
+lookupNextAndShrink accumulated [t] _  _ = return $ nub (accumulated ++ [t])
 lookupNextAndShrink accumulated remainingTargets remainingEmbeddings previous =
   do let remainingEmbeddings' = Prelude.filter (\(f,_,_,_,_) -> f /= previous) remainingEmbeddings
      ddb <- embeddings2Forest remainingEmbeddings'
      case M.lookup previous (M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) remainingEmbeddings) of
-        Nothing        -> undefined
+        Nothing        -> error "lookupNextAndShrink: lookup returned Nothing, this should be impossible?"
         Just (b,c,d,e) -> let match = (head $ findNearest ddb 1 (previous,b,c,d,e)) :: FilePath
                               remainingTargets' = Prelude.filter (/= match) remainingTargets
                               accumulated' = accumulated ++ [previous, match]

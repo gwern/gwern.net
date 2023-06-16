@@ -35,6 +35,7 @@ import Query (extractImages)
 import Typography (identUniquefy)
 import Utils (replace, writeUpdatedFile, printRed, toPandoc, anySuffix)
 import Config.Misc as C (miscellaneousLinksCollapseLimit)
+import GenerateSimilar -- (sortSimilarsStartingWithNewest)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -99,9 +100,12 @@ generateDirectory filterp md dirs dir'' = do
   let titledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t /= "") links
   let untitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t == "") links
   let allUnannotatedUntitledP = (length untitledLinks >= 3) && all (=="") (map (\(_,(_,_,_,_,_,annotation)) -> annotation) untitledLinks) -- whether to be compact columns
+  print ("titledLinks:"::String) >> print titledLinks
+  titledLinksSorted <- sortSimilarsStartingWithNewest md titledLinks
+  print ("-------------------------------------------------------"::String) >> print ("titledLinksSorted:"::String) >> print titledLinksSorted
 
-  let titledLinksSections   = generateSections titledLinks (map (\(f,a,_) -> (f,a)) linksWP)
-  let untitledLinksSection  = generateListItems (untitledLinks)
+  let titledLinksSections   = generateSections  titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
+  let untitledLinksSection  = generateListItems untitledLinks
 
   -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnailText'
   let imageFirst = take 1 $ concatMap (\(_,(_,_,_,_,_,abstract),_) -> extractImages (toPandoc abstract)) links
@@ -307,18 +311,38 @@ generateDirectoryItems parent current ds =
 generateListItems :: [(FilePath, MetadataItem)] -> Block
 generateListItems p = BulletList (map (\(f,a) -> LM.generateAnnotationTransclusionBlock (f,a)) p)
 
-generateSections :: [(FilePath, MetadataItem)] -> [(FilePath, MetadataItem)] -> [Block]
-generateSections links [] = generateSections' links
-generateSections links linkswp = generateSections' links ++ [Header 2 ("titled-links-wikipedia", ["link-annotated-not"], []) [Str "Wikipedia"],
-                                                               OrderedList (1, UpperAlpha, DefaultDelim) (map LM.generateAnnotationTransclusionBlock linkswp)]
+generateSections :: [(FilePath, MetadataItem)] -> [(FilePath, MetadataItem)] -> [(FilePath, MetadataItem)] -> [Block]
+generateSections links linksSorted linkswp
+    | null linkswp && null links = []
+    | null linkswp && not (null links) = annotated ++ sorted
+    | not (null linkswp) && null links = wp
+    | otherwise                        = annotated ++ sorted ++ wp
+    where annotated = generateSections' 2 links
+          sorted
+            = Header 2
+                  ("", ["link-annotated-not", "collapse"], [])
+                  [Str "Sort By Magic"]
+                 : [generateReferenceToPreviousSection linksSorted]
+          wp
+            = [Header 2 ("titled-links-wikipedia", ["link-annotated-not"], [])
+                 [Str "Wikipedia"],
+               OrderedList (1, UpperAlpha, DefaultDelim)
+                 (map LM.generateAnnotationTransclusionBlock linkswp)]
 
-generateSections' :: [(FilePath, MetadataItem)] -> [Block]
-generateSections' = concatMap (\(f,a@(t,aut,dt,_,_,_)) ->
+-- for the sorted-by-magic links, they all are by definition already generated as a section; so instead of bloating the page & ToC with even more sections, let's just generate a transclude of the original section!
+generateReferenceToPreviousSection :: [(FilePath, MetadataItem)] -> Block
+generateReferenceToPreviousSection = OrderedList (1, UpperAlpha, DefaultDelim) . map (\(f,(_,aut,dt,_,_,_)) ->
+                                                  let linkId = generateID f aut dt in
+                                                    let sectionID = "#" `T.append` linkId `T.append` "-section"
+                                                    in [Para [Link ("", ["include"], []) [Str "[previous entry]"] (sectionID, "")]]
+                                                                      )
+generateSections' :: Int -> [(FilePath, MetadataItem)] -> [Block]
+generateSections' headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_)) ->
                                 let sectionID = if aut=="" then "" else let linkId = generateID f aut dt in
                                                                           if linkId=="" then "" else linkId `T.append` "-section"
                                     authorShort = authorsToCite f aut dt
                                     sectionTitle = T.pack $ "“"++titlecase t++"”" ++
                                                      (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt)
                                 in
-                                 [Header 2 (sectionID, ["link-annotated-not"], []) [parseRawInline nullAttr $ RawInline (Format "html") sectionTitle]]
-                                 ++ LM.generateAnnotationTransclusionBlock (f,a))
+                                 Header headerLevel (sectionID, ["link-annotated-not"], []) [parseRawInline nullAttr $ RawInline (Format "html") sectionTitle]
+                                 : LM.generateAnnotationTransclusionBlock (f,a))
