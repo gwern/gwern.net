@@ -4661,7 +4661,10 @@ Annotations = { ...Annotations,
 				let pageDescriptionClass = "page-description-annotation";
 				let pageDescription = referenceEntry.querySelector(`div.${pageDescriptionClass}`);
 				if (pageDescription)
-					unwrap(pageDescription, [ pageDescriptionClass ]);
+					unwrap(pageDescription, {
+						moveClasses: true,
+						classesToMove: [ pageDescriptionClass ]
+					});
 			},
 
 			basePathname: "/metadata/annotation/",
@@ -9398,7 +9401,7 @@ Extracts = { ...Extracts,
 			The sidenote, once transcluded, must then be unwrapped specially.)
 		 */
 		if (injectEventInfo.container.firstElementChild.classList.contains("sidenote"))
-			injectEventInfo.container.replaceChildren(...(injectEventInfo.container.querySelector(".sidenote-inner-wrapper").children));
+			unwrap(injectEventInfo.container.querySelector(".sidenote-inner-wrapper"));
     },
 };
 
