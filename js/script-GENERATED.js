@@ -15399,7 +15399,16 @@ ImageFocus = {
 		let imageWidth, imageHeight;
 		if ((new URL(ImageFocus.imageInFocus.src)).pathname.endsWith(".svg")) {
 			//	Special handling for SVGs, which have no intrinsic size.
-			imageWidth = imageHeight = Math.min(window.innerWidth, window.innerHeight);
+			if (ImageFocus.imageInFocus.dataset.aspectRatio > "") {
+				ImageFocus.imageInFocus.style.aspectRatio = ImageFocus.imageInFocus.dataset.aspectRatio;
+
+				let parts = ImageFocus.imageInFocus.dataset.aspectRatio.match(/([0-9]+) \/ ([0-9]+)/);
+				let aspectRatio = parseInt(parts[1]) / parseInt(parts[2]);
+				imageWidth = window.innerHeight * aspectRatio;
+				imageHeight = window.innerHeight;
+			} else {
+				imageWidth = imageHeight = Math.min(window.innerWidth, window.innerHeight);
+			}
 		} else {
 			//	Non-SVGs have intrinsic size.
 			imageWidth = ImageFocus.imageInFocus.naturalWidth || ImageFocus.imageInFocus.getAttribute("width");
