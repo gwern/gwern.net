@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-06-05 11:23:54 gwern"
+When:  Time-stamp: "2023-06-16 14:20:45 gwern"
 License: CC-0
 -}
 
@@ -14,13 +14,13 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, parseRawBlock, parseRawInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, simplifiedHTMLString, dateTruncateBad, typesetHtmlField) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, parseRawBlock, parseRawInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, simplifiedHTMLString, dateTruncateBad, typesetHtmlField, lookupFallback) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
 import qualified Data.ByteString as B (appendFile, readFile)
 import Data.Char (isPunctuation, toLower, isSpace, isNumber)
-import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union) -- traverseWithKey, union, Map
+import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size) -- traverseWithKey, union, Map
 import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.IORef (IORef)
@@ -584,6 +584,26 @@ findDuplicatesURLsByAffiliation md = let urls  = nubOrd . filter ('.' `elem`) $ 
                                          affiliationWhitelist = ["page=", "lilianweng.github.io"]
                                          affiliationURLs = M.filter (\vs -> any (\v -> anyInfix v affiliationURLPatterns) vs) urlDB
                                      in M.toList $ M.filter (\v -> length (filter (\v' -> not (anyInfix v' affiliationWhitelist)) v) > 1) affiliationURLs
+
+
+-- how do we handle files with appended data, which are linked like '/doc/reinforcement-learning/model-free/2020-bellemare.pdf#google' but exist as files as '/doc/reinforcement-learning/model-free/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
+lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
+lookupFallback m u = case M.lookup u m of
+                       Nothing -> tryPrefix
+                       Just ("","","","",[],"") -> tryPrefix
+                       Just mi -> (u,mi)
+                       where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m
+                                             u' = if M.size possibles > 0 then fst $ head $ M.toList possibles else u
+                                         in
+                                               (if (".page" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", [], "")) else
+                                                  -- sometimes the fallback is useless eg, a link to a section will trigger a 'longer' hit, like
+                                                  -- '/review/cat.page' will trigger a fallback to /review/cat#fuzz-testing'; the
+                                                  -- longer hit will also be empty, usually, and so not better. We check for that case and return
+                                                  -- the original path and not the longer path.
+                                                  let possibleFallback = lookupFallback m u' in
+                                                    if snd possibleFallback == ("", "", "", "", [], "") then (u, ("", "", "", "", [], "")) else
+                                                      (u',snd possibleFallback))
+
 
 -------------------------------------------------------------------------------------------------------------------------------
 

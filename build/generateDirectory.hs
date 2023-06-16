@@ -20,14 +20,14 @@ import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
                     Block(BulletList, Div, Header, Para, RawBlock, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle, UpperAlpha), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
-import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
+import qualified Data.Map as M (keys, lookup, filterWithKey)
 import qualified Data.Text as T (append, pack, unpack, Text)
-import Control.Monad.Parallel as Par (mapM_)
+import Control.Parallel.Strategies (parListChunk, rseq, using)
 import Text.Pandoc.Walk (walk)
 
 import Interwiki (inlinesToText)
 import LinkID (generateID, authorsToCite)
-import LinkMetadata as LM (readLinkMetadata, readLinkMetadataNewest, generateAnnotationTransclusionBlock, authorsTruncate, parseRawBlock, hasAnnotation, parseRawInline, annotateLink)
+import LinkMetadata as LM (readLinkMetadata, readLinkMetadataNewest, generateAnnotationTransclusionBlock, authorsTruncate, parseRawBlock, hasAnnotation, parseRawInline, annotateLink, lookupFallback)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Tags (listTagDirectories, abbreviateTag)
 import LinkBacklink (getLinkBibLinkCheck)
@@ -35,7 +35,8 @@ import Query (extractImages)
 import Typography (identUniquefy)
 import Utils (replace, writeUpdatedFile, printRed, toPandoc, anySuffix)
 import Config.Misc as C (miscellaneousLinksCollapseLimit)
-import GenerateSimilar -- (sortSimilarsStartingWithNewest)
+import GenerateSimilar (sortSimilarsStartingWithNewest)
+
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -44,15 +45,19 @@ main = do dirs <- getArgs
 
           meta <- readLinkMetadata
 
-          Par.mapM_ (generateDirectory True meta dirs') dirs' -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
+          Prelude.mapM_ (generateDirectory True meta dirs') (dirs' `using` parListChunk chunkSize rseq) -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
 
           -- Special-case directories:
           -- 'newest': the _n_ newest link annotations created (currently, 'newest' is not properly tracked, and is inferred from being at the bottom/end of full.yaml/partial.yaml TODO: actually track annotation creation dates...)
           metaNewest <- readLinkMetadataNewest 100
           generateDirectory False metaNewest ["doc/", "doc/newest/", "/"] "doc/newest/"
+  where chunkSize :: Int
+        chunkSize = 5
 
 generateDirectory :: Bool -> Metadata -> [FilePath] -> FilePath -> IO ()
 generateDirectory filterp md dirs dir'' = do
+
+  print dirs >> print dir''
 
   -- for the arabesque navbar 'previous'/'next', we want to fill more useful than the default values, but also not be too redundant with the up/sideways/downwards tag-directory links; so we pass in the (lexicographically) sorted list of all tag-directories being created this run, and try to provide previous/next links to the 'previous' and the 'next' directory, which may be a parent, sibling, or nothing at all.
   -- so eg. /doc/cryonics/index will point to `previous: /doc/crime/terrorism/index \n next: /doc/cs/index`
@@ -254,24 +259,6 @@ sortByDate = sortBy (\(f,(_,_,d,_,_,_),_) (f',(_,_,d',_,_,_),_) ->
 getNewestDate :: [(FilePath,MetadataItem,FilePath)] -> String
 getNewestDate [] = ""
 getNewestDate ((_,(_,_,date,_,_,_),_):_) = date
-
--- how do we handle files with appended data, which are linked like '/doc/reinforcement-learning/model-free/2020-bellemare.pdf#google' but exist as files as '/doc/reinforcement-learning/model-free/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
-lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
-lookupFallback m u = case M.lookup u m of
-                       Nothing -> tryPrefix
-                       Just ("","","","",[],"") -> tryPrefix
-                       Just mi -> (u,mi)
-                       where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m
-                                             u' = if M.size possibles > 0 then fst $ head $ M.toList possibles else u
-                                         in
-                                               (if (".page" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", [], "")) else
-                                                  -- sometimes the fallback is useless eg, a link to a section will trigger a 'longer' hit, like
-                                                  -- '/review/cat.page' will trigger a fallback to /review/cat#fuzz-testing'; the
-                                                  -- longer hit will also be empty, usually, and so not better. We check for that case and return
-                                                  -- the original path and not the longer path.
-                                                  let possibleFallback = lookupFallback m u' in
-                                                    if snd possibleFallback == ("", "", "", "", [], "") then (u, ("", "", "", "", [], "")) else
-                                                      (u',snd possibleFallback))
 
 generateDirectoryItems :: Maybe FilePath -> FilePath -> [FilePath] -> [[Block]]
 generateDirectoryItems parent current ds =

@@ -206,6 +206,8 @@ type Forest = RPForest Double (V.Vector (Embed DVector Double String))
 -- [(0.8555555555555556,(60,1,32)),(0.46888888888888886,(21,5,12))]
 -- TODO: I am not sure why it keeps picking '1' tree as optimum, and that seems like it might be related to the instances where no hits are returned?
 embeddings2Forest :: Embeddings -> IO Forest
+embeddings2Forest []     = error "embeddings2Forest called with no arguments, which is meaningless."
+embeddings2Forest (_:[]) = error "embeddings2Forest called with only 1 arguments, which is useless."
 embeddings2Forest e = do let f = embeddings2ForestConfigurable 30 3 32 e
                          let fl = serialiseRPForest f
                          when (length fl < 2) $ error "embeddings2Forest: serialiseRPForest returned an invalid empty result on the output of embeddings2ForestConfigurable‽"
@@ -387,12 +389,17 @@ sortTagByTopic md tag = do let mdl = M.filter (\(_,_,_,_,tags,abstract) -> tag `
                            sortSimilars newest paths
 
 sortSimilarsStartingWithNewest :: Metadata -> [(FilePath, MetadataItem)] -> IO [(FilePath, MetadataItem)]
+sortSimilarsStartingWithNewest _ [] = return []
+sortSimilarsStartingWithNewest _ [a] = return [a]
+sortSimilarsStartingWithNewest _ [a, b] = return [a, b]
 sortSimilarsStartingWithNewest md items = do
   let md' = (flip M.restrictKeys) (S.fromList $ map fst items) $ M.filter (\(_,_,_,_,_,abstract) -> abstract /= "") md
   let mdlSorted = LinkMetadata.sortItemPathDate $ map (\(f,i) -> (f,(i,""))) $ M.toList md'
   let paths = M.keys md'
   let newest = fst $ head mdlSorted
+  -- print "mdlSorted: " >> print mdlSorted >> print "newest: " >> print newest
   pathsSorted <- sortSimilars newest paths
+  -- print "pathsSorted: " >> print pathsSorted
   return $ resort pathsSorted items
 
 resort :: Eq a => [a] -> [(a,b)] -> [(a,b)]
@@ -403,6 +410,7 @@ sortSimilars seed paths = do edb <- readEmbeddings
                              let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
                              let edbDB' = M.restrictKeys edbDB (S.fromList paths)
                              let edb' = map (\(a,(b,c,d,e)) -> (a,b,c,d,e)) $ M.toList edbDB'
+                             -- print "edb' length: " >> print (length edb')
                              lookupNextAndShrink [] paths edb' seed
 
 lookupNextAndShrink :: [FilePath]
@@ -412,13 +420,18 @@ lookupNextAndShrink :: [FilePath]
               -> IO [FilePath]
 lookupNextAndShrink results     []   _ _ = return results
 lookupNextAndShrink results     _   [] _ = return results
-lookupNextAndShrink accumulated [t] _  _ = return $ nub (accumulated ++ [t])
+lookupNextAndShrink accumulated [a] _  _ = return $ nub (accumulated ++ [a])
 lookupNextAndShrink accumulated remainingTargets remainingEmbeddings previous =
-  do let remainingEmbeddings' = Prelude.filter (\(f,_,_,_,_) -> f /= previous) remainingEmbeddings
-     ddb <- embeddings2Forest remainingEmbeddings'
-     case M.lookup previous (M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) remainingEmbeddings) of
-        Nothing        -> error "lookupNextAndShrink: lookup returned Nothing, this should be impossible?"
-        Just (b,c,d,e) -> let match = (head $ findNearest ddb 1 (previous,b,c,d,e)) :: FilePath
-                              remainingTargets' = Prelude.filter (/= match) remainingTargets
-                              accumulated' = accumulated ++ [previous, match]
-                           in lookupNextAndShrink accumulated' remainingTargets' remainingEmbeddings' match
+  do -- print "accumulated: " >> print accumulated >> print "remainingEmbeddings length: " >> print (length remainingEmbeddings)
+     let remainingEmbeddings' = Prelude.filter (\(f,_,_,_,_) -> f /= previous) remainingEmbeddings
+     if length remainingEmbeddings' < 2 then return $ nub (accumulated ++ [previous]) else
+      do ddb <- embeddings2Forest remainingEmbeddings'
+         -- print "passed embeddings2Forest"
+         case M.lookup previous (M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) remainingEmbeddings) of
+            Nothing        -> lookupNextAndShrink (accumulated ++ [previous]) remainingTargets remainingEmbeddings' previous
+            Just (b,c,d,e) -> let match = findNearest ddb 1 (previous,b,c,d,e) :: [FilePath] in
+                                if null match then lookupNextAndShrink (accumulated ++ [previous]) remainingTargets remainingEmbeddings' previous
+                                else let match' = head match
+                                         remainingTargets' = Prelude.filter (/= match') remainingTargets
+                                         accumulated' = accumulated ++ [previous, match']
+                                     in lookupNextAndShrink accumulated' remainingTargets' remainingEmbeddings' match'
