@@ -8,7 +8,7 @@ module GenerateSimilar where
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str, Strong), Format(..), runPure, Pandoc(..), nullAttr)
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T  (append, intercalate, isPrefixOf, length, pack, strip, take, unlines, unpack, Text)
-import Data.List ((\\), intercalate,  nub)
+import Data.List ((\\), intercalate,  nub, tails, sort)
 import Data.Maybe (fromJust, fromMaybe)
 import qualified Data.Map.Strict as M (filter, keys, lookup, fromList, toList, difference, withoutKeys, restrictKeys, member)
 import System.Directory (doesFileExist, renameFile)
@@ -60,6 +60,11 @@ type Embedding  = (String, -- URL/path
                     String, -- OA API model embedding version/ID (important because comparing embeddings from different models is nonsense)
                     [Double]) -- the actual embedding vector; NOTE: 'Float' in Haskell is 32-bit single-precision float (FP32); OA API apparently returns 64-bit double-precision (FP64), so we use 'Double' instead. (Given the very small magnitude of the Doubles, it is probably a bad idea to try to save space/compute by casting to Float.)
 type Embeddings = [Embedding]
+
+last5 :: (a, b, c, d, e) -> e
+last5  (_,_,_,_,e) = e
+last4 :: (a, b, c, d) -> d
+last4  (_,_,_,d) = d
 
 readEmbeddings :: IO Embeddings
 readEmbeddings = readEmbeddingsPath C.embeddingsPath
@@ -207,7 +212,7 @@ type Forest = RPForest Double (V.Vector (Embed DVector Double String))
 -- TODO: I am not sure why it keeps picking '1' tree as optimum, and that seems like it might be related to the instances where no hits are returned?
 embeddings2Forest :: Embeddings -> IO Forest
 embeddings2Forest []     = error "embeddings2Forest called with no arguments, which is meaningless."
-embeddings2Forest (_:[]) = error "embeddings2Forest called with only 1 arguments, which is useless."
+embeddings2Forest [_]    = error "embeddings2Forest called with only 1 arguments, which is useless."
 embeddings2Forest e = do let f = embeddings2ForestConfigurable 30 3 32 e
                          let fl = serialiseRPForest f
                          when (length fl < 2) $ error "embeddings2Forest: serialiseRPForest returned an invalid empty result on the output of embeddings2ForestConfigurable‽"
@@ -376,9 +381,14 @@ md <- LinkMetadata.readLinkMetadata
 let tagTest = "psychology/smell"
 m <- sortTagByTopic md tagTest
 m
-let m' = map (\f -> Data.Maybe.fromJust $ M.lookup f md) m
-putStrLn $ Text.Show.Pretty.ppShow $ nub $ map (\(t,_,_,_,_,_) -> t) $ LinkMetadata.sortItemDate m' -- by date
-putStrLn $ Text.Show.Pretty.ppShow $ nub $ map (\(t,_,_,_,_,_) -> t) $ m' -- by topic
+let m' = map (map (\f -> Data.Maybe.fromJust $ M.lookup f md)) m
+putStrLn $ Text.Show.Pretty.ppShow $ nub $ map (map (\(t,_,_,_,_,_) -> t)) $ map LinkMetadata.sortItemDate m' -- by date
+putStrLn $ Text.Show.Pretty.ppShow $ nub $ map (map (\(t,_,_,_,_,_) -> t)) $ m' -- by topic
+edb <- readEmbeddings
+let ml = clusterIntoSublist edb m
+putStrLn $ ppShow ml
+let ml' = map (map (\f -> (\(t,_,_,_,_,_) -> t) $ Data.Maybe.fromJust $ M.lookup f md)) ml
+putStrLn $ ppShow ml'
 -}
 
 sortTagByTopic :: Metadata -> String -> IO [FilePath]
@@ -392,10 +402,10 @@ sortTagByTopic md tag = do
 
                            sortSimilars edb newest paths
 
-sortSimilarsStartingWithNewest :: Metadata -> [(FilePath, MetadataItem)] -> IO [(FilePath, MetadataItem)]
+sortSimilarsStartingWithNewest :: Metadata -> [(FilePath, MetadataItem)] -> IO [[(FilePath, MetadataItem)]]
 sortSimilarsStartingWithNewest _ [] = return []
-sortSimilarsStartingWithNewest _ [a] = return [a]
-sortSimilarsStartingWithNewest _ [a, b] = return [a, b]
+sortSimilarsStartingWithNewest _ [a] = return [[a]]
+sortSimilarsStartingWithNewest _ [a, b] = return [[a, b]]
 sortSimilarsStartingWithNewest md items = do
   edb <- readEmbeddings
   let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
@@ -406,8 +416,9 @@ sortSimilarsStartingWithNewest md items = do
        let newest = fst $ head mdlSorted
        -- print "mdlSorted: " >> print mdlSorted >> print "newest: " >> print newest
        pathsSorted <- sortSimilars edb newest paths
+       let pathsSorted' = clusterIntoSublist edb pathsSorted
        -- print "pathsSorted: " >> print pathsSorted
-       return $ resort pathsSorted items
+       return $ map (\i -> resort i items) pathsSorted'
 
 resort :: Eq a => [a] -> [(a,b)] -> [(a,b)]
 resort keys list = map (\k -> (k, fromJust $ lookup k list)) keys
@@ -428,31 +439,6 @@ sortSimilars edb seed paths = do
                              -- print "sortSimilars: done"
                              -- print ("edb' length: "  ++ show (length edb'))
                              lookupNextAndShrink paths' edb' seed
-
--- lookupNextAndShrink :: [FilePath]
---               -> [FilePath]
---               -> [(FilePath, Integer, String, String, [Double])]
---               -> FilePath
---               -> IO [FilePath]
--- lookupNextAndShrink results     []   _ _ = return results
--- lookupNextAndShrink results     _   [] _ = return results
--- lookupNextAndShrink accumulated [a] _  _ = return $ nub (accumulated ++ [a])
--- lookupNextAndShrink accumulated remainingTargets remainingEmbeddings previous =
---   do print ("previous: " ++ previous) >> print "accumulated: " >> print accumulated >> print ("remainingEmbeddings length: " ++ show (length remainingEmbeddings))
---      -- let remainingEmbeddings' = Prelude.filter (\(f,_,_,_,_) -> f /= previous) remainingEmbeddings
---      if length remainingEmbeddings < 2 then return (accumulated ++ remainingTargets) else
---       do ddb <- embeddings2Forest remainingEmbeddings
---          -- print "passed embeddings2Forest"
---          case M.lookup previous (M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) remainingEmbeddings) of
---             Nothing        -> putStrLn ("accumulated: " ++ ppShow accumulated) >> putStrLn ("remainingTargets: " ++ ppShow remainingTargets) >> putStrLn ("remainingEmbeddings: " ++ ppShow (map (\(a,b,c,d,_) -> (a,b,c,d)) remainingEmbeddings)) >> putStrLn ("previous: " ++ previous) >> error "Exited at Nothing in lookupNextAndShrink, this should never happen?" -- lookupNextAndShrink (accumulated ++ [previous]) remainingTargets remainingEmbeddings previous
---             Just (b,c,d,e) -> let match = filter (/=previous) $ findNearest ddb 2 (previous,b,c,d,e) :: [FilePath]
---                                   remainingTargets' = Prelude.filter (\f -> f `notElem` match && f /= previous) remainingTargets in
---                                 if null match then lookupNextAndShrink (accumulated ++ [previous]) (tail remainingTargets') remainingEmbeddings (head remainingTargets)
---                                 else let match' = head match
-
---                                          accumulated' = accumulated ++ [match']
---                                      in let remainingEmbeddings' = Prelude.filter (\(f,_,_,_,_) -> f /= match') remainingEmbeddings
---                                             in lookupNextAndShrink accumulated' remainingTargets' remainingEmbeddings' match'
 
 lookupNextAndShrink :: [FilePath]
               -> [(FilePath, Integer, String, String, [Double])]
@@ -476,3 +462,44 @@ lookupNextAndShrink targets embeddings previous = do results <- go targets embed
                                                                                 fallback
                                                    else
                                                      lookupNextAndShrink (filter (\f -> f/=previous && f/=match') ta) (Prelude.filter (\(f,_,_,_,_) -> f/= previous) embeddings) match'
+
+---------------------
+
+pairwiseDistance :: [Double] -> [Double] -> Double
+pairwiseDistance [] _ = error "Empty list passed to pairwiseDistance"
+pairwiseDistance _ [] = error "Empty list passed to pairwiseDistance"
+pairwiseDistance a b = fromListDv a `metricL2` fromListDv b
+
+pairwiseDistanceEmbedding :: Embedding -> Embedding -> Double
+pairwiseDistanceEmbedding a b = last5 a `pairwiseDistance` last5 b
+
+pairwiseDistances :: [(FilePath, Embedding)] -> [(Double, FilePath)]
+pairwiseDistances xs = concatMap processPair $ zip xs (tail $ tails xs)
+  where
+    processPair ((fp1, (_, _, _, _, emb1)), (_, (_, _, _, _, emb2)):_)
+      = [(pairwiseDistance emb1 emb2, fp1)]
+    processPair _ = []
+
+splitAtIndices :: [Int] -> [a] -> [[a]]
+splitAtIndices [] xs = [xs]
+splitAtIndices (i:is) xs = firstPart : splitAtIndices (map (subtract i) is) remaining
+  where
+    (firstPart, remaining) = splitAt i xs
+
+-- merge empty or 1-item lists into the following list, to avoid what looks like spurious clusters generated by the heuristic.
+mergeSingletons :: [[a]] -> [[a]]
+mergeSingletons [] = []
+mergeSingletons [x] = [x]
+mergeSingletons (x:y:xs)
+  | length x < 2 = mergeSingletons ((x ++ y) : xs)
+  | otherwise     = x : mergeSingletons (y : xs)
+
+clusterIntoSublist :: Embeddings -> [FilePath] -> [[FilePath]]
+clusterIntoSublist _ []    = [[]]
+clusterIntoSublist _ [a]   = [[a]]
+clusterIntoSublist es list = let k = 1 `max` (round(sqrt(fromIntegral $ length list :: Double)) - 2)
+                                 edb = M.fromList $ map (\(a,b,c,d,e) -> (a,(a,b,c,d,e))) es
+                                 list' = map (\f -> (f, fromMaybe ("",0,"","",[]) $ M.lookup f edb)) list
+                                 listDistanceDescending = (sort $ zip (pairwiseDistances list') [0::Int ..]) :: [((Double,FilePath), Int)]
+                                 distancesLargestIndices = map snd $ take k listDistanceDescending
+                            in mergeSingletons $ splitAtIndices distancesLargestIndices list

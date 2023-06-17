@@ -300,7 +300,7 @@ generateDirectoryItems parent current ds =
 generateListItems :: [(FilePath, MetadataItem)] -> Block
 generateListItems p = BulletList (map (\(f,a) -> LM.generateAnnotationTransclusionBlock (f,a)) p)
 
-generateSections :: [(FilePath, MetadataItem)] -> [(FilePath, MetadataItem)] -> [(FilePath, MetadataItem)] -> [Block]
+generateSections :: [(FilePath, MetadataItem)] -> [[(FilePath, MetadataItem)]] -> [(FilePath, MetadataItem)] -> [Block]
 generateSections links linksSorted linkswp
     | null linkswp && null links = []
     | null linkswp && not (null links) = annotated ++ sorted
@@ -308,10 +308,10 @@ generateSections links linksSorted linkswp
     | otherwise                        = annotated ++ sorted ++ wp
     where annotated = generateSections' 2 links
           sorted
-            = Header 2
-                  ("", ["link-annotated-not", "collapse"], [])
-                  [Str "Sort By Magic"]
-                 : [generateReferenceToPreviousSection linksSorted]
+            = [Header 2 ("", ["link-annotated-not", "collapse"], [])
+                 [Str "Sort By Magic"],
+               OrderedList (1, DefaultStyle, DefaultDelim)
+                 (map generateReferenceToPreviousSection linksSorted)]
           wp
             = [Header 2 ("titled-links-wikipedia", ["link-annotated-not"], [])
                  [Str "Wikipedia"],
@@ -319,13 +319,15 @@ generateSections links linksSorted linkswp
                  (map LM.generateAnnotationTransclusionBlock linkswp)]
 
 -- for the sorted-by-magic links, they all are by definition already generated as a section; so instead of bloating the page & ToC with even more sections, let's just generate a transclude of the original section!
-generateReferenceToPreviousSection :: [(FilePath, MetadataItem)] -> Block
-generateReferenceToPreviousSection = OrderedList (1, UpperAlpha, DefaultDelim) . concatMap (\(f,(_,aut,dt,_,_,_)) ->
+generateReferenceToPreviousSection :: [(FilePath, MetadataItem)] -> [Block]
+generateReferenceToPreviousSection items = [OrderedList (1, UpperAlpha, DefaultDelim) $
+                                             concatMap (\(f,(_,aut,dt,_,_,_)) ->
                                                   let linkId = generateID f aut dt in
                                                     if linkId=="" then [] else
                                                       let sectionID = "#" `T.append` linkId `T.append` "-section"
                                                       in [[Para [Link ("", ["include"], []) [Str "[previous entry]"] (sectionID, "")]]]
-                                                                      )
+                                                       ) items
+                                           ]
 generateSections' :: Int -> [(FilePath, MetadataItem)] -> [Block]
 generateSections' headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_)) ->
                                 let sectionID = if aut=="" then "" else let linkId = generateID f aut dt in
