@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-06-11 21:49:51 gwern"
+# When:  Time-stamp: "2023-06-16 22:47:53 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -148,7 +148,7 @@ else
                       | sort | grep -F --invert-match -e 'doc/www' -e 'doc/rotten.com' -e 'doc/genetics/selection/www.mountimprobable.com' \
                                         -e 'doc/biology/2000-iapac-norvir' -e 'doc/gwern.net-gitstats' -e 'doc/reinforcement-learning/armstrong-controlproblem' \
                                         -e 'doc/statistics/order/beanmachine-multistage' -e 'doc/personal/2011-gwern-yourmorals.org/' \
-                                        -e 'confidential/' -e 'private/' -e 'secret/')"
+                                        -e 'confidential/' -e 'private/' -e 'secret/' -e 'newest/')"
 
     # wait for generateLinkBibliography to finish to ensure the annotation link-bibs are all created:
     bold "Updating link bibliographies…"

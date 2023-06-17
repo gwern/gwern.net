@@ -41,7 +41,7 @@ import GenerateSimilar (sortSimilarsStartingWithNewest)
 main :: IO ()
 main = do dirs <- getArgs
           -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
-          let dirs' = map (\dir -> replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) $ sort dirs
+          let dirs' = map (\dir -> replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
           meta <- readLinkMetadata
 
@@ -165,7 +165,7 @@ generateDirectory filterp md dirs dir'' = do
     -- compare with the old version, and update if there are any differences:
     Right p' -> do let contentsNew = T.pack header `T.append` p'
                    writeUpdatedFile "directory" (dir'' ++ "index.page") contentsNew
-  -- print $ "dir'' done: " ++ dir''
+  -- putStrLn $ "dir'' done: " ++ dir''
 
 generateLinkBibliographyItems :: [(String,MetadataItem,FilePath)] -> [Block]
 generateLinkBibliographyItems [] = []

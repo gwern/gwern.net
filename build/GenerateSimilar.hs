@@ -10,7 +10,7 @@ import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T  (append, intercalate, isPrefixOf, length, pack, strip, take, unlines, unpack, Text)
 import Data.List ((\\), intercalate,  nub)
 import Data.Maybe (fromJust, fromMaybe)
-import qualified Data.Map.Strict as M (filter, keys, lookup, fromList, toList, difference, withoutKeys, restrictKeys)
+import qualified Data.Map.Strict as M (filter, keys, lookup, fromList, toList, difference, withoutKeys, restrictKeys, member)
 import System.Directory (doesFileExist, renameFile)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Read (readMaybe)
@@ -142,7 +142,7 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
 
           (if null tags then "" else "Keywords: " ++ intercalate ", " tags ++ "."),
 
-          replace "\n[]\n" "" $ replace "<hr />" "" abst]
+          replace "\n[]\n" "" $ replace "<hr>" "" $ replace "<hr />" "" abst]
         parsedEither = let parsed = runPure $ readHtml def{readerExtensions = pandocExtensions } document
                        in case parsed of
                           Left e -> error $ "Failed to parse HTML document into Pandoc AST: error: " ++ show e ++ " : " ++ show mi ++ " : " ++ T.unpack document
@@ -382,57 +382,97 @@ putStrLn $ Text.Show.Pretty.ppShow $ nub $ map (\(t,_,_,_,_,_) -> t) $ m' -- by 
 -}
 
 sortTagByTopic :: Metadata -> String -> IO [FilePath]
-sortTagByTopic md tag = do let mdl = M.filter (\(_,_,_,_,tags,abstract) -> tag `elem` tags && abstract /= "") md
+sortTagByTopic md tag = do
+                           edb <- readEmbeddings
+                           let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
+                           let mdl = M.filter (\(_,_,_,_,tags,abstract) -> tag `elem` tags && abstract /= "") md
                            let paths = M.keys mdl
-                           let mdlSorted = LinkMetadata.sortItemPathDate $ map (\(f,i) -> (f,(i,""))) $ M.toList mdl
+                           let mdlSorted =  filter (\(f,_) -> M.member f edbDB) $ LinkMetadata.sortItemPathDate $ map (\(f,i) -> (f,(i,""))) $ M.toList mdl
                            let newest = fst $ head mdlSorted
-                           sortSimilars newest paths
+
+                           sortSimilars edb newest paths
 
 sortSimilarsStartingWithNewest :: Metadata -> [(FilePath, MetadataItem)] -> IO [(FilePath, MetadataItem)]
 sortSimilarsStartingWithNewest _ [] = return []
 sortSimilarsStartingWithNewest _ [a] = return [a]
 sortSimilarsStartingWithNewest _ [a, b] = return [a, b]
 sortSimilarsStartingWithNewest md items = do
-  let md' = (flip M.restrictKeys) (S.fromList $ map fst items) $ M.filter (\(_,_,_,_,_,abstract) -> abstract /= "") md
+  edb <- readEmbeddings
+  let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
+  let md' = M.restrictKeys md (S.fromList $ filter (`M.member` edbDB) $ map fst items)
   let mdlSorted = LinkMetadata.sortItemPathDate $ map (\(f,i) -> (f,(i,""))) $ M.toList md'
-  let paths = M.keys md'
-  let newest = fst $ head mdlSorted
-  -- print "mdlSorted: " >> print mdlSorted >> print "newest: " >> print newest
-  pathsSorted <- sortSimilars newest paths
-  -- print "pathsSorted: " >> print pathsSorted
-  return $ resort pathsSorted items
+  if null mdlSorted then return [] else
+    do let paths = M.keys md'
+       let newest = fst $ head mdlSorted
+       -- print "mdlSorted: " >> print mdlSorted >> print "newest: " >> print newest
+       pathsSorted <- sortSimilars edb newest paths
+       -- print "pathsSorted: " >> print pathsSorted
+       return $ resort pathsSorted items
 
 resort :: Eq a => [a] -> [(a,b)] -> [(a,b)]
 resort keys list = map (\k -> (k, fromJust $ lookup k list)) keys
 
-sortSimilars :: FilePath -> [FilePath] -> IO [FilePath]
-sortSimilars seed paths = do edb <- readEmbeddings
+sortSimilars :: Embeddings -> FilePath -> [FilePath] -> IO [FilePath]
+sortSimilars _ _ []    = return []
+sortSimilars _ _ [a]   = return [a]
+sortSimilars _ ""   _     = error "sortSimilars given an invalid seed!"
+sortSimilars edb seed paths = do
                              let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
-                             let edbDB' = M.restrictKeys edbDB (S.fromList paths)
+                             let edbDB' = M.restrictKeys edbDB (S.fromList (seed:paths))
                              let edb' = map (\(a,(b,c,d,e)) -> (a,b,c,d,e)) $ M.toList edbDB'
-                             -- print "edb' length: " >> print (length edb')
-                             lookupNextAndShrink [] paths edb' seed
+                             let paths' = filter (/= seed) paths
+                             -- print "sortSimilars: begin"
+                             -- putStrLn $ ppShow $ map (\(a,b,c,d,_) -> (a,b,take 100 c,d)) edb'
+                             -- putStrLn $ "paths': " ++ ppShow paths'
+                             -- print ("Seed: " ++ seed)
+                             -- print "sortSimilars: done"
+                             -- print ("edb' length: "  ++ show (length edb'))
+                             lookupNextAndShrink paths' edb' seed
+
+-- lookupNextAndShrink :: [FilePath]
+--               -> [FilePath]
+--               -> [(FilePath, Integer, String, String, [Double])]
+--               -> FilePath
+--               -> IO [FilePath]
+-- lookupNextAndShrink results     []   _ _ = return results
+-- lookupNextAndShrink results     _   [] _ = return results
+-- lookupNextAndShrink accumulated [a] _  _ = return $ nub (accumulated ++ [a])
+-- lookupNextAndShrink accumulated remainingTargets remainingEmbeddings previous =
+--   do print ("previous: " ++ previous) >> print "accumulated: " >> print accumulated >> print ("remainingEmbeddings length: " ++ show (length remainingEmbeddings))
+--      -- let remainingEmbeddings' = Prelude.filter (\(f,_,_,_,_) -> f /= previous) remainingEmbeddings
+--      if length remainingEmbeddings < 2 then return (accumulated ++ remainingTargets) else
+--       do ddb <- embeddings2Forest remainingEmbeddings
+--          -- print "passed embeddings2Forest"
+--          case M.lookup previous (M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) remainingEmbeddings) of
+--             Nothing        -> putStrLn ("accumulated: " ++ ppShow accumulated) >> putStrLn ("remainingTargets: " ++ ppShow remainingTargets) >> putStrLn ("remainingEmbeddings: " ++ ppShow (map (\(a,b,c,d,_) -> (a,b,c,d)) remainingEmbeddings)) >> putStrLn ("previous: " ++ previous) >> error "Exited at Nothing in lookupNextAndShrink, this should never happen?" -- lookupNextAndShrink (accumulated ++ [previous]) remainingTargets remainingEmbeddings previous
+--             Just (b,c,d,e) -> let match = filter (/=previous) $ findNearest ddb 2 (previous,b,c,d,e) :: [FilePath]
+--                                   remainingTargets' = Prelude.filter (\f -> f `notElem` match && f /= previous) remainingTargets in
+--                                 if null match then lookupNextAndShrink (accumulated ++ [previous]) (tail remainingTargets') remainingEmbeddings (head remainingTargets)
+--                                 else let match' = head match
+
+--                                          accumulated' = accumulated ++ [match']
+--                                      in let remainingEmbeddings' = Prelude.filter (\(f,_,_,_,_) -> f /= match') remainingEmbeddings
+--                                             in lookupNextAndShrink accumulated' remainingTargets' remainingEmbeddings' match'
 
 lookupNextAndShrink :: [FilePath]
-              -> [FilePath]
               -> [(FilePath, Integer, String, String, [Double])]
               -> FilePath
               -> IO [FilePath]
-lookupNextAndShrink results     []   _ _ = return results
-lookupNextAndShrink results     _   [] _ = return results
-lookupNextAndShrink accumulated [a] _  _ = return $ nub (accumulated ++ [a])
-lookupNextAndShrink accumulated remainingTargets remainingEmbeddings previous =
-  do -- print "accumulated: " >> print accumulated >> print "remainingEmbeddings length: " >> print (length remainingEmbeddings)
-     let remainingEmbeddings' = Prelude.filter (\(f,_,_,_,_) -> f /= previous) remainingEmbeddings
-     if length remainingEmbeddings' < 2 then return (accumulated ++ remainingTargets) else
-      do ddb <- embeddings2Forest remainingEmbeddings'
-         -- print "passed embeddings2Forest"
-         case M.lookup previous (M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) remainingEmbeddings) of
-            Nothing        -> putStrLn ("accumulated: " ++ ppShow accumulated) >> putStrLn ("remainingTargets: " ++ ppShow remainingTargets) >> putStrLn ("remainingEmbeddings: " ++ ppShow (map (\(a,b,c,d,_) -> (a,b,c,d)) remainingEmbeddings)) >> putStrLn ("previous: " ++ previous) >> error "Exited at Nothing in lookupNextAndShrink, this should never happen?" -- lookupNextAndShrink (accumulated ++ [previous]) remainingTargets remainingEmbeddings' previous
-            Just (b,c,d,e) -> let match = filter (/=previous) $ findNearest ddb 2 (previous,b,c,d,e) :: [FilePath]
-                                  remainingTargets' = Prelude.filter (\f -> f /= (head match) && f /= previous) remainingTargets in
-                                if null match then lookupNextAndShrink (accumulated ++ [previous]) remainingTargets' remainingEmbeddings' previous
-                                else let match' = head match
-
-                                         accumulated' = accumulated ++ [match']
-                                     in lookupNextAndShrink accumulated' remainingTargets' remainingEmbeddings' match'
+lookupNextAndShrink     []   _ _ = return []
+lookupNextAndShrink     [a]  _ _ = return [a]
+lookupNextAndShrink targets embeddings previous = do results <- go targets embeddings
+                                                     return $ previous:results
+  where go ta em = do ddb <- embeddings2Forest em
+                      -- putStrLn ("remainingTargets: " ++ ppShow ta) >> putStrLn ("remainingEmbeddings: " ++ ppShow (map (\(a,b,c,d,_) -> (a,b,take 100 c,d)) em)) >> putStrLn ("previous: " ++ previous)
+                      case M.lookup previous (M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) em) of
+                              Nothing ->  putStr "Exited at Nothing in lookupNextAndShrink, this should never happen?" >> error ""
+                              Just (b,c,d,e) -> do -- putStrLn $ "findNearest: " ++ show (findNearest ddb 6 (previous,b,c,d,e))
+                                                   let match = filter (/=previous) $ findNearest ddb 6 (previous,b,c,d,e) :: [FilePath]
+                                                   let match' = head match
+                                                   if null match then
+                                                          let fallback = head targets in
+                                                            lookupNextAndShrink (filter (\f -> f/=previous && f/=fallback) ta)
+                                                                                (Prelude.filter (\(f,_,_,_,_) -> f/= previous) embeddings)
+                                                                                fallback
+                                                   else
+                                                     lookupNextAndShrink (filter (\f -> f/=previous && f/=match') ta) (Prelude.filter (\(f,_,_,_,_) -> f/= previous) embeddings) match'
