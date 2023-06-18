@@ -36,7 +36,7 @@ import LinkMetadata (readLinkMetadata, authorsTruncate, parseRawInline, sortItem
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, safeHtmlWriterOptions, anyPrefixT)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, safeHtmlWriterOptions, anyPrefixT, printRed, trim)
 
 import Config.GenerateSimilar as C
 
@@ -381,6 +381,7 @@ md <- LinkMetadata.readLinkMetadata
 let tagTest = "psychology/smell"
 m <- sortTagByTopic md tagTest
 m
+
 let m' = map (map (\f -> Data.Maybe.fromJust $ M.lookup f md)) m
 putStrLn $ Text.Show.Pretty.ppShow $ nub $ map (map (\(t,_,_,_,_,_) -> t)) $ map LinkMetadata.sortItemDate m' -- by date
 putStrLn $ Text.Show.Pretty.ppShow $ nub $ map (map (\(t,_,_,_,_,_) -> t)) $ m' -- by topic
@@ -418,10 +419,28 @@ sortSimilarsStartingWithNewest md items = do
        pathsSorted <- sortSimilars edb newest paths
        let pathsSorted' = clusterIntoSublist edb pathsSorted
        -- print "pathsSorted: " >> print pathsSorted
-       return $ map (\i -> resort i items) pathsSorted'
+       return $ map (`restoreAssoc` items) pathsSorted'
 
-resort :: Eq a => [a] -> [(a,b)] -> [(a,b)]
-resort keys list = map (\k -> (k, fromJust $ lookup k list)) keys
+sortSimilarsStartingWithNewestWithTag :: Metadata -> [(FilePath, MetadataItem)] -> IO [(String, [(FilePath, MetadataItem)])]
+sortSimilarsStartingWithNewestWithTag _ [] = return []
+sortSimilarsStartingWithNewestWithTag _ [a] = return [("",[a])]
+sortSimilarsStartingWithNewestWithTag _ [a, b] = return [("",[a]), ("",[b])]
+sortSimilarsStartingWithNewestWithTag md items =
+  do lists <- sortSimilarsStartingWithNewest md items
+     mapM (\fs -> do suggestion <- processTitles $ map (\(_,(t,_,_,_,_,_)) -> t) fs
+                     return (suggestion, fs)) lists
+
+processTitles :: [String] -> IO String
+processTitles [] = return ""
+processTitles a =
+      do let a' = take 2048 $ unlines a
+         (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/tagguesser.py", a']
+         case status of
+           ExitFailure err -> printRed "tagguesser.py failed!" >> printRed (show err) >> return "" -- printGreen (ppShow (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb])) >> printRed "tagguesser.py failed!" >> return ""
+           _ -> return $ (trim . U.toString) mb
+
+restoreAssoc :: Eq a => [a] -> [(a,b)] -> [(a,b)]
+restoreAssoc keys list = map (\k -> (k, fromJust $ lookup k list)) keys
 
 sortSimilars :: Embeddings -> FilePath -> [FilePath] -> IO [FilePath]
 sortSimilars _ _ []    = return []

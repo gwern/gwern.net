@@ -35,7 +35,7 @@ import Query (extractImages)
 import Typography (identUniquefy)
 import Utils (replace, writeUpdatedFile, printRed, toPandoc, anySuffix)
 import Config.Misc as C (miscellaneousLinksCollapseLimit)
-import GenerateSimilar (sortSimilarsStartingWithNewest)
+import GenerateSimilar (sortSimilarsStartingWithNewestWithTag)
 -- import Text.Show.Pretty (ppShow)
 
 main :: IO ()
@@ -107,7 +107,7 @@ generateDirectory filterp md dirs dir'' = do
   let untitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t == "") links
   let allUnannotatedUntitledP = (length untitledLinks >= 3) && all (=="") (map (\(_,(_,_,_,_,_,annotation)) -> annotation) untitledLinks) -- whether to be compact columns
   -- print ("titledLinks:"::String) >> putStrLn (ppShow $ sort titledLinks)
-  titledLinksSorted <- sortSimilarsStartingWithNewest md titledLinks
+  titledLinksSorted <- sortSimilarsStartingWithNewestWithTag md titledLinks
   -- print ("-------------------------------------------------------"::String) >> print ("titledLinksSorted:"::String) >> print titledLinksSorted
 
   let titledLinksSections   = generateSections  titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
@@ -300,7 +300,7 @@ generateDirectoryItems parent current ds =
 generateListItems :: [(FilePath, MetadataItem)] -> Block
 generateListItems p = BulletList (map (\(f,a) -> LM.generateAnnotationTransclusionBlock (f,a)) p)
 
-generateSections :: [(FilePath, MetadataItem)] -> [[(FilePath, MetadataItem)]] -> [(FilePath, MetadataItem)] -> [Block]
+generateSections :: [(FilePath, MetadataItem)] -> [(String,[(FilePath, MetadataItem)])] -> [(FilePath, MetadataItem)] -> [Block]
 generateSections links linksSorted linkswp
     | null linkswp && null links = []
     | null linkswp && not (null links) = annotated ++ sorted
@@ -319,8 +319,9 @@ generateSections links linksSorted linkswp
                  (map LM.generateAnnotationTransclusionBlock linkswp)]
 
 -- for the sorted-by-magic links, they all are by definition already generated as a section; so instead of bloating the page & ToC with even more sections, let's just generate a transclude of the original section!
-generateReferenceToPreviousSection :: [(FilePath, MetadataItem)] -> [Block]
-generateReferenceToPreviousSection items = [OrderedList (1, UpperAlpha, DefaultDelim) $
+generateReferenceToPreviousSection :: (String, [(FilePath, MetadataItem)]) -> [Block]
+generateReferenceToPreviousSection (tag,items) = [Para [Code nullAttr (T.pack tag), Str ":"],
+                                                  OrderedList (1, UpperAlpha, DefaultDelim) $
                                              concatMap (\(f,(_,aut,dt,_,_,_)) ->
                                                   let linkId = generateID f aut dt in
                                                     if linkId=="" then [] else
