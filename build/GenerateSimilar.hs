@@ -433,7 +433,7 @@ sortSimilarsStartingWithNewestWithTag md items =
 processTitles :: [String] -> IO String
 processTitles [] = return ""
 processTitles a =
-      do let a' = take 2048 $ unlines a
+      do let a' = take (2048*3) $ unlines a
          (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/tagguesser.py", a']
          case status of
            ExitFailure err -> printRed "tagguesser.py failed!" >> printRed (show err) >> return "" -- printGreen (ppShow (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb])) >> printRed "tagguesser.py failed!" >> return ""

@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-06-14 12:55:01 gwern"
+;;; When:  Time-stamp: "2023-06-16 18:03:20 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -376,6 +376,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("τ2" . "τ<sup>2</sup>")
                      ("ω2" . "ω<sup>2</sup>")
                      ("chi-squared" . "<em>χ</em><sup>2</sup>")
+                     ("X2(2)" . "<em>χ</em><sup>2</sup>")
                      (" Escherichia coli" . " <em>Escherichia coli</em>")
                      (" E. coli" . " <em>E. coli</em>")
                      (" Saccharomyces cerevisiae" . " <em>Saccharomyces cerevisiae</em>")
