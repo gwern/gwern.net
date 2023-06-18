@@ -107,7 +107,7 @@ generateDirectory filterp md dirs dir'' = do
   let untitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t == "") links
   let allUnannotatedUntitledP = (length untitledLinks >= 3) && all (=="") (map (\(_,(_,_,_,_,_,annotation)) -> annotation) untitledLinks) -- whether to be compact columns
   -- print ("titledLinks:"::String) >> putStrLn (ppShow $ sort titledLinks)
-  titledLinksSorted <- sortSimilarsStartingWithNewestWithTag md titledLinks
+  titledLinksSorted <- if not filterp then return [] else sortSimilarsStartingWithNewestWithTag md titledLinks -- skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
   -- print ("-------------------------------------------------------"::String) >> print ("titledLinksSorted:"::String) >> print titledLinksSorted
 
   let titledLinksSections   = generateSections  titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
@@ -308,10 +308,9 @@ generateSections links linksSorted linkswp
     | otherwise                        = annotated ++ sorted ++ wp
     where annotated = generateSections' 2 links
           sorted
-            = [Header 2 ("", ["link-annotated-not", "collapse"], [])
-                 [Str "Sort By Magic"],
-               OrderedList (1, DefaultStyle, DefaultDelim)
-                 (map generateReferenceToPreviousSection linksSorted)]
+            = [Header 2 ("", ["link-annotated-not"], [])
+                 [Str "Sort By Magic"]] ++
+                 (concatMap generateReferenceToPreviousSection linksSorted)
           wp
             = [Header 2 ("titled-links-wikipedia", ["link-annotated-not"], [])
                  [Str "Wikipedia"],
@@ -320,7 +319,7 @@ generateSections links linksSorted linkswp
 
 -- for the sorted-by-magic links, they all are by definition already generated as a section; so instead of bloating the page & ToC with even more sections, let's just generate a transclude of the original section!
 generateReferenceToPreviousSection :: (String, [(FilePath, MetadataItem)]) -> [Block]
-generateReferenceToPreviousSection (tag,items) = [Para [Code nullAttr (T.pack tag), Str ":"],
+generateReferenceToPreviousSection (tag,items) = [Header 3 ("", ["link-annotated-not", "collapse"], []) [Code nullAttr (T.pack tag)],
                                                   OrderedList (1, UpperAlpha, DefaultDelim) $
                                              concatMap (\(f,(_,aut,dt,_,_,_)) ->
                                                   let linkId = generateID f aut dt in

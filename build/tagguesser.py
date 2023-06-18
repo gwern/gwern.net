@@ -4,7 +4,7 @@
 # tagguesser.py: suggest a tag for links/annotations based on a list of titles fed into the OA API
 # Author: Gwern Branwen
 # Date: 2023-06-17
-# When:  Time-stamp: "2023-06-17 22:42:31 gwern"
+# When:  Time-stamp: "2023-06-18 15:36:10 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python tagguesser.py
@@ -12,7 +12,8 @@
 # Used in sort-by-magic to label the implicit clusters found by resorting a list of annotations using pairwise nearest-neighbors.
 # The clusters can then be extracted into separate sublists, and the sublists labeled one by one, by taking the titles of each
 # annotation (the abstract is probably major overkill, when we just want essentially a single global keyword) and just asking
-# GPT to summarize them all as a single word/phrase. Can be used to suggest new tags (the name + candidate links to populate it).
+# GPT to summarize them all (shuffling to reduce ordering effects) as a single word/phrase. Can be used to suggest new tags
+# (the name + candidate links to populate it).
 # See /design#tags for more.
 
 import signal
@@ -39,7 +40,7 @@ def run_with_timeout(func_name, args=(), kwargs={}, timeout=5):
 if len(sys.argv) == 1:
     target = sys.stdin.read().strip()
 else:
-    target = sys.argv[1]
+    target = '\n'.join(random.sample(sys.argv[1].split('\n'), len(sys.argv[1].split('\n'))))
 
 messages = [
     {"role": "system", "content": "You are a helpful webmaster & research assistant "},
