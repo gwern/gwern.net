@@ -17,14 +17,6 @@ function range(start, size) {
 	return [...Array(size).keys()].map(i => i + start);
 }
 
-/****************************************************************************/
-/*  Returns val, or def if val == defval. (By default, defval is -1.)
-    (In other words, `defval(X,Y,Z)` is “return X if Y is Z [else, just Y]”.)
- */
-function defval(def, val, defval = -1) {
-    return (val == defval) ? def : val;
-}
-
 /*********************************************************/
 /*  Returns val, or min if val < min, or max if val > max.
     (In other words, clamps val to [min,max].)

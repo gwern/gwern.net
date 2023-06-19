@@ -12848,6 +12848,7 @@ addContentInjectHandler(GW.contentInjectHandlers.cleanSpuriousLinkIcons = (event
 
     let excludedLinkSelector = [
         /*  Index page, and embeds thereof, do not need the G icon.
+
             NOTE: we do not use the usual method of suppressing G icons
             (`.icon-not` class), because /index and /static/404 are *so* long
             and routinely modified/expanded, so doing it ‘manually’ would risk
@@ -12855,7 +12856,8 @@ addContentInjectHandler(GW.contentInjectHandlers.cleanSpuriousLinkIcons = (event
          */
         "body.index",
         "body.static-404",
-        ".popframe-body.page-index",
+        ".popframe-body.index",
+        ".popframe-body.static-404",
 
         /*  TOC links should never have link icons under any circumstances.
          */
