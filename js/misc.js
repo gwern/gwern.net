@@ -783,8 +783,6 @@ GW.pageToolbar = {
 
 	setupComplete: false,
 
-	mouseInToolbar: false,
-
 	/*	Adds and returns page toolbar. (If page toolbar already exists, returns
 		existing page toolbar.)
 
@@ -891,10 +889,6 @@ GW.pageToolbar = {
 		(For internal use only; do not call except from .toggleCollapseState().)
 	 */
 	collapse: (slowly = false) => {
-		//	Don’t collapse if hovering.
-		if (GW.pageToolbar.toolbar.matches(":hover"))
-			return;
-
 		clearTimeout(GW.pageToolbar.toolbar.collapseTimer);
 
 		GW.pageToolbar.toolbar.classList.add("collapsed");
@@ -956,7 +950,7 @@ GW.pageToolbar = {
 	updateState: (event) => {
 		if (   event 
 			&& event.type == "scroll"
-			&& GW.pageToolbar.mouseInToolbar == false) {
+			&& GW.pageToolbar.toolbar.matches(":hover") == false) {
 			//	Collapse on scroll.
 			let thresholdScrollDistance = (0.2 * window.innerHeight);
 			if (   GW.scrollState.unbrokenUpScrollDistance   > (0.2 * window.innerHeight)
@@ -989,7 +983,9 @@ GW.pageToolbar = {
 
 		let startCollapsed = getSavedCount("page-toolbar-demos-count") >= GW.pageToolbar.maxDemos;
 		if (startCollapsed) {
-			GW.pageToolbar.toggleCollapseState(true);
+			//	Don’t collapse if hovering.
+			if (GW.pageToolbar.toolbar.matches(":hover") == false)
+				GW.pageToolbar.toggleCollapseState(true);
 		} else {
 			incrementSavedCount("page-toolbar-demos-count");
 		}
@@ -1059,18 +1055,6 @@ GW.pageToolbar = {
 			}
 		});
 
-		/*	Track when mouse pointer is hovering over toolbar (to prevent
-			collapse-on-scroll and fade-on-scroll from triggering then).
-		 */
-		if (GW.isMobile() == false) {
-			GW.pageToolbar.toolbar.addEventListener("mouseenter", (event) => {
-				GW.pageToolbar.mouseInToolbar = true;
-			});
-			GW.pageToolbar.toolbar.addEventListener("mouseleave", (event) => {
-				GW.pageToolbar.mouseInToolbar = false;
-			});
-		}
-
 		//	Set initial state.
 		GW.pageToolbar.updateState();
 
@@ -1085,7 +1069,9 @@ GW.pageToolbar = {
 						setTimeout(GW.pageToolbar.flashWidget, order * GW.pageToolbar.widgetFlashRiseDuration * 4/3, widget.id, true);
 					});
 
-					GW.pageToolbar.toggleCollapseState(true, true, GW.pageToolbar.demoCollapseDelay);
+					//	Don’t collapse if hovering.
+					if (GW.pageToolbar.toolbar.matches(":hover") == false)
+						GW.pageToolbar.toggleCollapseState(true, true, GW.pageToolbar.demoCollapseDelay);
 				});
 			}
 
