@@ -227,7 +227,25 @@ Extracts = { ...Extracts,
     rewritePopFrameContent_LOCAL_PAGE: (popFrame, injectEventInfo = null) => {
         GWLog("Extracts.rewritePopFrameContent_LOCAL_PAGE", "extracts.js", 2);
 
+		let target = popFrame.spawningTarget;
+
 		if (injectEventInfo == null) {
+			//	Preliminary rewrites.
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				//	Add page body classes.
+				let referenceData = Content.referenceDataForLink(target);
+				Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses));
+
+				//	Update pop-frame title.
+				Extracts.updatePopFrameTitle(popFrame);
+			}, {
+				phase: "<",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Main rewrites.
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 				Extracts.rewritePopFrameContent_LOCAL_PAGE(popFrame, info);
 			}, {
@@ -249,15 +267,6 @@ Extracts = { ...Extracts,
 		}
 
 		//	REAL REWRITES BEGIN HERE
-
-        let target = popFrame.spawningTarget;
-
-		//	Add page body classes.
-		let referenceData = Content.referenceDataForLink(target);
-		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses));
-
-		//	Update pop-frame title.
-		Extracts.updatePopFrameTitle(popFrame);
 
 		//	Provider-specific rewrites.
 		if (Extracts.popFrameProvider == Popups)

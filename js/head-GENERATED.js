@@ -17,14 +17,6 @@ function range(start, size) {
 	return [...Array(size).keys()].map(i => i + start);
 }
 
-/****************************************************************************/
-/*  Returns val, or def if val == defval. (By default, defval is -1.)
-    (In other words, `defval(X,Y,Z)` is “return X if Y is Z [else, just Y]”.)
- */
-function defval(def, val, defval = -1) {
-    return (val == defval) ? def : val;
-}
-
 /*********************************************************/
 /*  Returns val, or min if val < min, or max if val > max.
     (In other words, clamps val to [min,max].)
@@ -1134,7 +1126,7 @@ function cancelDoWhenMatchMedia(name) {
 /*  Product of two string arrays. (Argument can be a string, which is equivalent
     to passing an array with a single string member.)
     Returns array whose members are all results of concatenating each left hand
-    array string with each right hand array string, eg.:
+    array string with each right hand array string, e.g.:
 
         [ "a", "b" ].π([ "x", "y" ])
 
@@ -1237,7 +1229,7 @@ function baseLocationForDocument(doc) {
 GW.notificationCenter = {
     /*  Dictionary of registered event handlers for named events.
 
-        KEYS are event names (eg. ‘GW.contentDidLoad’).
+        KEYS are event names (e.g. ‘GW.contentDidLoad’).
 
         VALUES are arrays of handler definitions for each event. Each handler
         definition is a dictionary with the following keys/values:
@@ -1274,6 +1266,24 @@ GW.notificationCenter = {
                 event.
 
                 The format for this string is as follows:
+
+				- If the entire string is equal to “<”, then the given handler 
+				  function will be called prior to any handlers that are 
+				  assigned to any other phase (or to no specific phase). (Within
+				  this “before all others” ‘pseudo-phase’, handlers are called
+				  in the order in which they were added.)
+
+				- If the entire string is equal to “>”, then the given handler
+				  function will be called after any handlers that are assigned
+				  to any other phase (or to no specific phase). (Within this
+				  “after all others” ‘pseudo-phase’, handlers are called in the
+				  order in which they were added.)
+
+				- If the string is empty, then the given handler function will
+				  be called after all other handlers, but before any handlers
+				  that were assigned to phase “>”. (Within this “no particular
+				  phase” ‘pseudo-phase’, handlers are called in the order in 
+				  which they were added.)
 
                 - If the first character is anything other than ‘<’ or ‘>’, the
                   entire string is treated as the name of a handler phase. The
@@ -1356,12 +1366,12 @@ GW.notificationCenter = {
     /*  Register a new event handler for the named event. Arguments are:
 
         - ‘eventName’
-            The name of an event (eg. ‘GW.contentDidLoad’).
+            The name of an event (e.g. ‘GW.contentDidLoad’).
 
         - ‘f’
             Event handler function. When the event fires, this function will be
-            called. Not that if a condition is specified in the event handler
-            options (ie. if a condition function is provided as the value of
+            called. Note that if a condition is specified in the event handler
+            options (i.e. if a condition function is provided as the value of
             the ‘condition’ key in the event handler options dictionary), then
             the handler function will be called only if the condition function
             evaluates true).
@@ -1395,7 +1405,7 @@ GW.notificationCenter = {
         }
 
         /*  If there’s not already a handlers array for the given event (which
-            may be, eg. because no event handlers have yet been registered
+            may be, e.g. because no event handlers have yet been registered
             for this event), create the array.
          */
         if (GW.notificationCenter.eventHandlers[eventName] == null)
@@ -1413,102 +1423,108 @@ GW.notificationCenter = {
         if (handlers.findIndex(handler => handler.f == f) !== -1)
             return;
 
-        /*  By default, add the new handler to the end of the handlers array
-            for this event (so that, when the event is fired, this new handler
-            gets called after all the previously registered handlers).
-
-            However, if a defined handler phase order exists for the event
-            that we’re registering this handler for (see ‘phaseOrder’, below),
-            and a phase has been specified in this handler’s options dictionary,
-            then that might result in this handler being inserted into the named
-            event’s handler array at a different point.
+        /*  Get the handler phase order for the named event, if any. (Add to it
+        	the built-in phases “<” and “>”.)
          */
-        let insertAt = handlers.length;
+        let phaseOrder = [ "<", ...(GW.notificationCenter.handlerPhaseOrders[eventName] ?? [ ]), ">" ];
 
-        /*  Get the handler phase order for the named event, if any.
+		//	Ensure phase option is non-null.
+		options.phase = (options.phase ?? "");
 
-            (If no handler phases have been defined for the given event, then
-             we will ignore the value of the ‘phase’ key in the new handler’s
-             options dictionary, and simply stick with the default behavior of
-             adding the new handler at the end of the event’s handler array.)
-         */
-        let phaseOrder = GW.notificationCenter.handlerPhaseOrders[eventName];
+		/*  Get the target phase name, which may be the full value of the
+			‘phase’ key of the options dictionary, OR it may be that value
+			minus the first character (if the value of the ‘phase’ key
+			begins with a ‘<’ or a ‘>’ character).
+			*/
+		let targetPhase = options.phase.match(/^([<>]?)(.+)?/)[2];
 
-        /*  If the handler we’re registering isn’t assigned to any particular
-            handler phase, we will simply add it to the end of the handler array
-            for the given event (and the next large block of code, within the
-            conditional below, will not be executed). However, we still want to
-            set an empty-string value for the ‘phase’ key of the handler’s
-            options dictionary, in order for the ‘phaseAt’ function (below) to
-            work properly.
-         */
-        if (phaseOrder)
-            options.phase = (options.phase || "");
+		/*  Get the index of the target phase in the defined handler phase
+			order for the named event.
+		 */
+		let targetPhaseIndex = phaseOrder.indexOf(targetPhase);
 
-        /*  Only if (a) there’s a defined handler phase order for the given
-            event, AND (b) the handler we’re registering is being assigned to a
-            specific phase, do we have anything to do here...
-         */
-        if (   options.phase > ""
-            && phaseOrder) {
-            /*  Get the target phase name, which may be the full value of the
-                ‘phase’ key of the options dictionary, OR it may be that value
-                minus the first character (if the value of the ‘phase’ key
-                begins with a ‘<’ or a ‘>’ character).
-                */
-            let targetPhase = options.phase.match(/^([<>]?)(.+)/)[2];
+		/*  Takes an index into the given event’s handler array. Returns a
+			dictionary with these keys/values:
 
-            /*  Get the index of the target phase in the defined handler phase
-                order for the named event. If the specified phase is not found
-                in the defined handler phase order, set targetPhaseIndex to
-                the length of the phase order array, thus ensuring that, by
-                default, the new handler will be appended to the end of the
-                event’s handlers array.
-             */
-            let targetPhaseIndex = defval(phaseOrder.length, phaseOrder.indexOf(targetPhase), -1);
+			- ‘phase’ [key]
+				The name of the phase to which the handler at the given
+				index is assigned (could be an empty string).
 
-            /*  Takes an index into the given event’s handler array. Returns a
-                dictionary with these keys/values:
+			- ‘before’ [key]
+				Boolean value; true if the handler at the given index is
+				assigned to run before the specified phase, false otherwise
+				(ie. if it’s instead assigned to run either during or
+				after the specified phase).
 
-                - ‘phase’ [key]
-                    The name of the phase to which the handler at the given
-                    index is assigned (could be an empty string).
+			- ‘after’ [key]
+				Boolean value; true if the handler at the given index is
+				assigned to run after the specified phase, false otherwise
+				(ie. if it’s instead assigned to run either before or
+				during the specified phase).
 
-                - ‘before’ [key]
-                    Boolean value; true if the handler at the given index is
-                    assigned to run before the specified phase, false otherwise
-                    (ie. if it’s instead assigned to run either during or
-                    after the specified phase).
+			(Note that for an event handler which has not been assigned to
+			 any specific phase, ‘phase’ will be the empty string, and both
+			 ‘before’ and ‘after’ will be false.)
 
-                - ‘after’ [key]
-                    Boolean value; true if the handler at the given index is
-                    assigned to run after the specified phase, false otherwise
-                    (ie. if it’s instead assigned to run either before or
-                    during the specified phase).
+			Returns null if the given index is out of bounds of the event’s
+			handler definitions array.
+		 */
+		let phaseAt = (index) => {
+			if (index >= handlers.length)
+				return null;
+			let parts = handlers[index].options.phase.match(/^([<>]?)(.*)$/);
+			return (parts[2] > ""
+					? { phase: parts[2],
+						before: (parts[1] == "<"),
+						after: (parts[1] == ">") }
+					: { phase: parts[1] });
+		};
 
-                (Note that for an event handler which has not been assigned to
-                 any specific phase, ‘phase’ will be the empty string, and both
-                 ‘before’ and ‘after’ will be false.)
+		//	Where in the handlers array to insert the new handler?
+        let insertAt;
+        if (options.phase == "<") {
+			/*	If the handler we’re registering is assigned to phase “<” (i.e.,
+				is specified to run before all others), it’s inserted 
+				immediately after all other handlers already likewise specified.
+			 */
+        	for (var i = 0; i < handlers.length; i++) {
+        		if (phaseAt(i).phase != "<")
+        			break;
+        	}
 
-                Returns null if the given index is out of bounds of the event’s
-                handler definitions array.
-             */
-            let phaseAt = (index) => {
-                if (index >= handlers.length)
-                    return null;
-                let parts = handlers[index].options.phase.match(/^([<>]?)(.*)$/);
-                return {
-                    phase: parts[2],
-                    before: (parts[1] == "<"),
-                    after: (parts[1] == ">")
-                };
-            };
+			insertAt = i;
+        } else if (options.phase == ">") {
+			/*	If the handler we’re registering is assigned to phase “>” (i.e.,
+				is specified to run after all others), it’s inserted immediately
+				after all other handlers already so specified (i.e., at the very
+				end of the handlers array).
+			 */
+        	insertAt = handlers.length;
+        } else if (   options.phase == ""
+        		   || targetPhaseIndex == -1) {
+			/*  If the handler we’re registering isn’t assigned to any 
+				particular handler phase, or if it’s assigned to a phase that
+				does not actually exist in this event’s handler phase order, 
+				we will add it just before all handlers of phase “>” (i.e., 
+				those handlers specified to be called after all others).
+			 */
+        	for (var j = 0; j < handlers.length; j++) {
+        		if (phaseAt(j).phase == ">")
+        			break;
+        	}
+
+			insertAt = j;
+        } else {
+			/*	The handler is specified to run before, during, or after a named
+				phase (i.e., not “<” or “>”) that (as we’ve confirmed already) 
+				exists in this event’s defined handler phase order.
+			 */
 
             if (options.phase.startsWith("<")) {
                 /*  The handler is assigned to be called before the specified
                     phase.
                  */
-                for (var i = 0; i < handlers.length; i++) {
+                for (var k = 0; k < handlers.length; k++) {
                     /*  We have found the index before which to insert, if the
                         handler at this index is assigned to be called during
                         or after our target phase, OR if it is assigned to be
@@ -1518,65 +1534,43 @@ GW.notificationCenter = {
                          are assigned either to any earlier phase or to before
                          the specified phase.)
                      */
-                    if (    phaseAt(i).phase == targetPhase
-                        && !phaseAt(i).before)
-                        break;
-                    if (phaseOrder.slice(targetPhaseIndex + 1).includes(phaseAt(i).phase))
+                    let phaseAtThisIndex = phaseAt(k);
+                    if (   (   phaseAtThisIndex.phase == targetPhase
+                        	&& phaseAtThisIndex.before == false)
+                        || phaseOrder.slice(targetPhaseIndex + 1).includes(phaseAtThisIndex.phase))
                         break;
                 }
 
-                /*  If neither of the break conditions in the loop were
-                    encountered, i is now equal to the handler array length,
-                    and the new handler will be added to the end of the array.
-                    Otherwise, it’ll be inserted in the appropriate place.
-                 */
-                insertAt = i;
+                insertAt = k;
             } else if (options.phase.startsWith(">")) {
                 /*  The handler is assigned to be called after the specified
                     phase.
                  */
-                for (var j = handlers.length - 1; j > -1; j--) {
+                for (var m = handlers.length - 1; m > -1; m--) {
                     /*  We have found the index _after_ which to insert (hence
-                        the `j++`), if the handler at this index is assigned to
+                        the `m++`), if the handler at this index is assigned to
                         be called before, during, or after the target phase, OR
                         if it is assigned to be called before, during, or after
                         any earlier phase.
 
                         (In other words, we have passed - moving backwards
                          through the handlers array - all the handlers which
-                         are assigned either to any later phase or to after
-                         or during the specified phase.)
+                         are assigned to any later phase.)
                      */
-                    if (phaseAt(j).phase == targetPhase) {
-                        j++;
-                        break;
-                    }
-
-                    /*  There are no “earlier phases” if the target phase index
-                        is either 0 or out of array bounds of the phase order.
-                        (The latter will happen if the target phase is not in
-                         the defined phase order for the given event.)
-                    */
-                    if (   targetPhaseIndex > 0
-                        && targetPhaseIndex < phaseOrder.length
-                        && phaseOrder.slice(0, targetPhaseIndex - 1).includes(phaseAt(j).phase)) {
-                        j++;
+                    let phaseAtThisIndex = phaseAt(m);
+                    if (   phaseAtThisIndex.phase == targetPhase
+                    	|| phaseOrder.slice(0, targetPhaseIndex - 1).includes(phaseAtThisIndex.phase)) {
+                        m++;
                         break;
                     }
                 }
 
-                /*  If neither of the break conditions in the loop were
-                    encountered, j is now equal to -1; in this case, set j to
-                    the handlers array length, such that the new handler will be
-                    added to the end of the array. Otherwise, it’ll be inserted
-                    in the appropriate place.
-                 */
-                insertAt = defval(handlers.length, j, -1);
+                insertAt = m;
             } else {
                 /*  The handler is assigned to be called during the specified
                     phase.
                  */
-                for (var k = 0; k < handlers.length; k++) {
+                for (var n = 0; n < handlers.length; n++) {
                     /*  We have found the index before which to insert, if the
                         handler at this index is assigned to be called after the
                         target phase, OR if it is assigned to be called before,
@@ -1586,19 +1580,14 @@ GW.notificationCenter = {
                          are assigned either to any earlier phase or to before
                          or during the specified phase.)
                      */
-                    if (   phaseAt(k).phase == targetPhase
-                        && phaseAt(k).after)
-                        break;
-                    if (phaseOrder.slice(targetPhaseIndex + 1).includes(phaseAt(k).phase))
+                    let phaseAtThisIndex = phaseAt(n);
+                    if (   (   phaseAtThisIndex.phase == targetPhase
+                        	&& phaseAtThisIndex.after == true)
+                        || phaseOrder.slice(targetPhaseIndex + 1).includes(phaseAtThisIndex.phase))
                         break;
                 }
 
-                /*  If neither of the break conditions in the loop were
-                    encountered, k is now equal to the handler array length,
-                    and the new handler will be added to the end of the array.
-                    Otherwise, it’ll be inserted in the appropriate place.
-                 */
-                insertAt = k;
+                insertAt = n;
             }
         }
 
@@ -1676,19 +1665,19 @@ GW.notificationCenter = {
         string identifying the function, browser event, or other context which
         caused the given event to be fired (such as ‘DOMContentLoaded’ or
         ‘Annotations.load’). In addition to any ways in which it may be used
-        by an event handler, this string (ie. the value of the ‘source’ key)
+        by an event handler, this string (i.e. the value of the ‘source’ key)
         is (if present) included in the console message that is printed when the
         event is fired.
      */
     fireEvent: (eventName, eventInfo = { }) => {
-        if (!eventName)
+        if (eventName == null)
             return;
 
         //  Register this event as currently being fired.
         GW.notificationCenter.currentEvents.push(eventName);
 
         /*  Store event name in info dictionary, so that event handlers can
-            access it. (This permits, eg. the same handler to handle multiple
+            access it. (This permits, e.g. the same handler to handle multiple
             events, and conditionally select behavior based on which event is
             calling the handler.)
          */
@@ -2045,7 +2034,7 @@ function togglePageScrolling(enable) {
         arguments), allows the assignment of arbitrary CSS properties to the
         page on the basis of scroll state. This is purely a convenience (which
         may be useful if, for example, some styling needs to change on the basis
-        of change in page scroll state, eg. modifying the appearance of scroll
+        of change in page scroll state, e.g. modifying the appearance of scroll
         bars). No specific CSS properties are needed in order for this function
         to work properly.
      */
