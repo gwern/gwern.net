@@ -455,7 +455,7 @@ function isNonEmpty(element, options) {
 		return null;
 
 	return useLayoutCache(element, "isNonEmpty", options, (element, options) => {
-		(element?.matches(options.nonEmptyElementsSelector) == true);
+		return (element?.matches(options.nonEmptyElementsSelector) == true);
 	});
 }
 
