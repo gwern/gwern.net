@@ -472,6 +472,9 @@ function unwrap(wrapper, options = {
 	classesToMove: null,
 	preserveBlockSpacing: false
 }) {
+	if (wrapper == null)
+		return;
+
     if (wrapper.parentNode == null)
         return;
 
@@ -2246,7 +2249,7 @@ addContentInjectHandler(GW.contentInjectHandlers.inflictABTestClasses = (eventIn
 /**********/
 
 GW.layout = {
-	cache: { },
+	optionsCache: { },
 
 	containersNeedingLayout: [ ],
 
@@ -2305,7 +2308,8 @@ GW.layout = {
 		".float",
 		"noscript",
 		"button",
-		"a:empty"
+		"a:empty",
+		".heading.collapse"
 	],
 
 	//	Elements which always participate in block layout, even when empty.
@@ -2465,7 +2469,7 @@ function startDynamicLayoutInContainer(container) {
 				GW.layout.containersNeedingLayout.push(affectedContainer);
 		});
 		requestAnimationFrame(() => {
-			GW.layout.cache.currentPassBegin = performance.now();
+			GW.layout.currentPassBegin = performance.now();
 
 			//	Do layout in all waiting containers.
 			while (GW.layout.containersNeedingLayout.length > 0) {
@@ -2524,8 +2528,8 @@ function processLayoutOptions(options) {
 			cacheKey += `| ${key}: ` + value.join(", ");
 		options.cacheKey = cacheKey;
 	}
-	if (GW.layout.cache[cacheKey])
-		return GW.layout.cache[cacheKey];
+	if (GW.layout.optionsCache[cacheKey])
+		return GW.layout.optionsCache[cacheKey];
 
 	[	"blockContainers",
 		"blockElements",
@@ -2573,7 +2577,7 @@ function processLayoutOptions(options) {
 	};
 	options.wrapperOptions["upOut"] = options.wrapperOptions["downIn"];
 
-	GW.layout.cache[cacheKey] = options;
+	GW.layout.optionsCache[cacheKey] = options;
 
 	return options;
 }
@@ -2595,10 +2599,10 @@ function useLayoutCache(element, uniqueKey, options, f) {
 
 	let cacheKey = generateCacheKey(uniqueKey, options);
 
-	if (  (element.layoutCache?.time ?? 0) < GW.layout.cache.currentPassBegin
+	if (  (element.layoutCache?.time ?? 0) < GW.layout.currentPassBegin
 		|| element.layoutCache[cacheKey] == null) {
-		if ((element.layoutCache?.time ?? 0) < GW.layout.cache.currentPassBegin)
-			element.layoutCache = { time: GW.layout.cache.currentPassBegin };
+		if ((element.layoutCache?.time ?? 0) < GW.layout.currentPassBegin)
+			element.layoutCache = { time: GW.layout.currentPassBegin };
 
 		element.layoutCache[cacheKey] = f(element, options);
 	}
@@ -2654,7 +2658,7 @@ function isNonEmpty(element, options) {
 		return null;
 
 	return useLayoutCache(element, "isNonEmpty", options, (element, options) => {
-		(element?.matches(options.nonEmptyElementsSelector) == true);
+		return (element?.matches(options.nonEmptyElementsSelector) == true);
 	});
 }
 
@@ -2741,7 +2745,7 @@ function nextBlockOf(element, options) {
 /*	Returns terminal (first or last) layout block of an element.
 	(Might be the element itself, or null.)
  */
-function terminalBlockOf(element, terminus, options) {
+function terminalBlockOf(element, terminus, options, strictDescent = false) {
 	if (element == null)
 		return null;
 
@@ -2749,12 +2753,14 @@ function terminalBlockOf(element, terminus, options) {
 
 	let wrapperType = (terminus == "first" ? "down" : "up") + "In";
 
-	//	Look inside wrappers.
-	if (isWrapper(element, wrapperType, options)) {
-		for (let i  = (terminus == "first" ? 0                       : element.children.length - 1); 
-				 i != (terminus == "first" ? element.children.length : -1); 
-			     i += (terminus == "first" ? 1                       : -1)) {
-			let terminalBlock = terminalBlockOf(element.children[i], terminus, options);
+	//	Look inside wrappers (or any block, if strictDescent is specified).
+	if (   strictDescent == true
+		|| isWrapper(element, wrapperType, options)) {
+		let childBlocks = childBlocksOf(element);
+		for (let i  = (terminus == "first" ? 0                  : childBlocks.length - 1); 
+				 i != (terminus == "first" ? childBlocks.length : -1); 
+			     i += (terminus == "first" ? 1                  : -1)) {
+			let terminalBlock = terminalBlockOf(childBlocks[i], terminus, options);
 			if (   terminalBlock
 				&& isSkipped(terminalBlock, options) == false
 				&& (   isNodeEmpty(terminalBlock) == false
@@ -2763,8 +2769,9 @@ function terminalBlockOf(element, terminus, options) {
 		}
 	}
 
-	//	The element itself is a layout block.
-	if (isBlock(element, options))
+	//	The element itself is a layout block (only if no strictDescent).
+	if (   strictDescent == false
+		&& isBlock(element, options))
 		return element;
 
 	return null;
@@ -2774,26 +2781,34 @@ function terminalBlockOf(element, terminus, options) {
 /*	Returns last layout block of an element.
 	(Might be the element itself, or null.)
  */
-function lastBlockOf(element, options) {
+function lastBlockOf(element, options, strictDescent) {
 	if (element == null)
 		return null;
 
-	return useLayoutCache(element, "lastBlock", options, (element, options) => {
-		return terminalBlockOf(element, "last", options);
-	});
+	if (strictDescent) {
+		return terminalBlockOf(element, "last", options, true);
+	} else {
+		return useLayoutCache(element, "lastBlock", options, (element, options) => {
+			return terminalBlockOf(element, "last", options);
+		});
+	}
 }
 
 /********************************************/
 /*	Returns first layout block of an element.
 	(Might be the element itself, or null.)
  */
-function firstBlockOf(element, options) {
+function firstBlockOf(element, options, strictDescent) {
 	if (element == null)
 		return null;
 
-	return useLayoutCache(element, "firstBlock", options, (element, options) => {
-		return terminalBlockOf(element, "first", options);
-	});
+	if (strictDescent) {
+		return terminalBlockOf(element, "first", options, true);
+	} else {
+		return useLayoutCache(element, "firstBlock", options, (element, options) => {
+			return terminalBlockOf(element, "first", options);
+		});
+	}
 }
 
 /***************************************************************************/
@@ -2805,18 +2820,23 @@ function childBlocksOf(element, options) {
 	if (element == null)
 		return null;
 
-	options = processLayoutOptions(options);
+	return useLayoutCache(element, "childBlocks", options, (element, options) => {
+		options = processLayoutOptions(options);
 
-	let childBlocks = Array.from(element.children);
+		let childBlocks = Array.from(element.children);
 
-	for (let i = 0; i < childBlocks.length; i++) {
-		if (isWrapper(childBlocks[i], "downIn", options)) {
-			childBlocks.splice(i, 1, ...childBlocks[i].children);
-			i--;
+		for (let i = 0; i < childBlocks.length; i++) {
+			if (isWrapper(childBlocks[i], "downIn", options)) {
+				childBlocks.splice(i, 1, ...childBlocks[i].children);
+				i--;
+			} else if (isBlock(childBlocks[i], options) == false) {
+				childBlocks.splice(i, 1);
+				i--;
+			}
 		}
-	}
 
-	return childBlocks;
+		return childBlocks;
+	});
 }
 
 /**************************************************************************/
@@ -2843,7 +2863,8 @@ function getBlockSpacingMultiplier(block, debug = false) {
 		let parts = selector.match(/^(.+) \+ (.+)$/);
 		if (parts) {
 			/*	Headings do not normally count as layout blocks, but they do 
-				here, except headings of collapsible sections.
+				here (unless it’s a heading of a collapse section, in which case
+				it still doesn’t count as a layout block).
 			 */
 			return (block) => (   previousBlockOf(block, {
 									alsoBlockElements: [ "section:not(.collapse) > .heading" ],
@@ -3023,8 +3044,9 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 			elements that do not participate in block flow) in their block 
 			container (the .first-block class).
 
-			(Headings do not normally count as layout blocks, but they do here,
-			 except headings of collapsible sections.)
+			Headings do not normally count as layout blocks, but they do here 
+			(unless it’s a heading of a collapse section, in which case it still
+			 doesn’t count as a layout block).
 		 */
 		block.classList.toggle("first-block", previousBlockOf(block, {
 			alsoBlockElements: [ "section:not(.collapse) > .heading" ],
