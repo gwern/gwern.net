@@ -1121,5 +1121,6 @@ whiteList url
       , "https://www.photoprompts.io/" -- interactive
       , "https://www.reddit.com/r/politics/" -- homepage
       , "https://www.reddit.com/r/keto/" -- homepage
+      , "https://danijar.com/project/dreamerv3/" -- low quality (video embeds)
       ] = True
     | otherwise = False

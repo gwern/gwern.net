@@ -519,8 +519,8 @@ mergeSingletons (x:y:xs)
 clusterIntoSublist :: Embeddings -> [FilePath] -> [[FilePath]]
 clusterIntoSublist _ []    = [[]]
 clusterIntoSublist _ [a]   = [[a]]
-clusterIntoSublist es list = let k = 1 `max` (round(sqrt(fromIntegral $ length list :: Double)) - 1)
-                                 if k == 1 then [[list]] else
+clusterIntoSublist es list = let k = 1 `max` (round(sqrt(fromIntegral $ length list :: Double)) - 1) in
+                                 if k == 1 then [list] else
                                   let edb = M.fromList $ map (\(a,b,c,d,e) -> (a,(a,b,c,d,e))) es
                                       list' = map (\f -> (f, fromMaybe ("",0,"","",[]) $ M.lookup f edb)) list
                                       listDistanceDescending = (sort $ zip (pairwiseDistances list') [0::Int ..]) :: [((Double,FilePath), Int)]

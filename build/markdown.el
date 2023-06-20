@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-06-16 18:03:20 gwern"
+;;; When:  Time-stamp: "2023-06-19 21:53:12 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -213,6 +213,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("Î¼g" . "µg")
                      ("\nâ¢\n" . "- ")
                      ("â¢ " . "- ")
+                     ("<br><br>" . "\n\n")
                      ("Kendall's Ï" . "Kendall's <em>τ</em>")
                      ("\\\\u03bc" . "μ")
                      ("\\\\u2018" . "‘")
@@ -468,6 +469,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("Cmax" . "C~max~")
                         ("AUClast" . "AUC~last~")
                         ("AUC∞" . "AUC~∞~")
+                        ("AUC0–t" . "AUC~0–t~")
                         ("SDage " . "SD~age~")
                         ("RR=" . "RR = ")
                         ("r =" . "_r_ = ")
@@ -919,6 +921,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ; would look confusing if written '−0.3–−3.7'. It's correct & unambiguous because it uses MINUS SIGN & EN DASH
                         ; appropriately, but the glyphs are way too similar-looking. (Sorry, I didn't design English punctuation.)
                         ; And this is also true if any of the numbers have minus signs (eg. '−0.3–3.7' or '0.3–−3.7' would be no better).
+                        ("between \\([0-9.]+\\) and \\([0-9.]+\\)" . "\\1–\\2")
                         (" one to \\([0-9.]+\\)"                   . " \\1–\\2")
                         ("from \\([0-9.]+\\) to \\([0-9.]+\\)"     . "\\1–\\2")
                         ("\\([0-9\\.]+\\) to \\([0-9\\.]+\\)"      . "\\1–\\2")
@@ -1046,6 +1049,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "\n\nMethods and Results\n" "\n\n**Methods & Results**: ")
          (replace-all "Results:" "**Results**: ")
          (replace-all "Results\\. " "**Results**: ")
+         (replace-all "\nResult:" "\n**Results**: ")
+         (replace-all "\nResult\\. " "\n**Results**: ")
          (replace-all "Measurements and Results\n" "\n**Measurements & Results**: ")
          (replace-all "Results\n" "\n**Results**: ")
          (replace-all "Aims:" "**Aims**: ")
