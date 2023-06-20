@@ -472,6 +472,9 @@ function unwrap(wrapper, options = {
 	classesToMove: null,
 	preserveBlockSpacing: false
 }) {
+	if (wrapper == null)
+		return;
+
     if (wrapper.parentNode == null)
         return;
 

@@ -535,18 +535,125 @@ Notes = {
 };
 
 
+/****************/
+/* MARGIN NOTES */
+/****************/
+
+GW.marginNotes = {
+	//	Don’t show margin notes block if there are fewer notes than this.
+	minimumAggregatedNotesCount: 3,
+
+	aggregationNeededInDocuments: [ ]
+};
+
+/****************************************************************************/
+/*	Aggregate margin notes, on the next animation frame, if not already done.
+ */
+function aggregateMarginNotesIfNeeded(eventInfo) {
+	if (GW.marginNotes.aggregationNeededInDocuments.includes(eventInfo.document) == false)
+		GW.marginNotes.aggregationNeededInDocuments.push(eventInfo.document);
+
+	requestAnimationFrame(() => {
+		if (GW.marginNotes.aggregationNeededInDocuments.includes(eventInfo.document) == false)
+			return;
+
+		GW.marginNotes.aggregationNeededInDocuments.remove(eventInfo.document);
+
+		aggregateMarginNotes(eventInfo);
+	});
+}
+
+/**************************/
+/*	Aggregate margin notes.
+ */
+function aggregateMarginNotes(eventInfo) {
+    GWLog("aggregateMarginNotes", "misc.js", 2);
+
+	eventInfo.document.querySelectorAll(".marginnote").forEach(marginNote => {
+		if (marginNote.textContent.trim() == "☞")
+			return;
+
+		let section = marginNote.closest("section, .markdownBody");
+
+		let marginNotesBlock = childBlocksOf(section).find(child => child.matches(".margin-notes-block"));
+		if (marginNotesBlock == null) {
+			/*	Construct the margin notes block. It should go after any 
+				abstract and/or epigraph that opens the section.
+			 */
+			let firstBlock = firstBlockOf(section, {
+				alsoSkipElements: [ ".abstract blockquote", ".abstract-collapse p", ".epigraph" ]
+			}, true);
+			while (firstBlock.parentElement.matches("section, .markdownBody, .collapse-content-wrapper") == false)
+				firstBlock = firstBlock.parentElement;
+
+			//	Inject the margin notes block and a horizontal rule.
+			marginNotesBlock = newElement("P", { class: "margin-notes-block" });
+			firstBlock.parentElement.insertBefore(marginNotesBlock, firstBlock);
+		}
+
+		//	Prevent duplication.
+		if (Array.from(marginNotesBlock.children).findIndex(child => {
+				let trimmedNoteContent = marginNote.textContent.trim()
+				return (trimmedNoteContent.endsWith(".")
+						? child.textContent.trim() == trimmedNoteContent.slice(0, -1)
+						: child.textContent.trim() == trimmedNoteContent);
+			}) != -1)
+			return;
+
+		//	Clone the note.
+		let clonedNote = marginNote.cloneNode(true);
+
+		//	Unwrap the inner wrapper (unneeded here).
+		unwrap(clonedNote.querySelector(".marginnote-inner-wrapper"));
+
+		//	Trim whitespace.
+		clonedNote.innerHTML = clonedNote.innerHTML.trim();
+
+		//	Strip trailing period.
+		if (clonedNote.textContent.endsWith("."))
+			clonedNote.lastTextNode.nodeValue = clonedNote.lastTextNode.nodeValue.slice(0, -1);
+
+		//	Append.
+		marginNotesBlock.append(clonedNote);
+	});
+
+	//	Update visibility of margin note blocks.
+	eventInfo.document.querySelectorAll(".margin-notes-block").forEach(marginNotesBlock => {
+		marginNotesBlock.classList.toggle("hidden", marginNotesBlock.children.length < GW.marginNotes.minimumAggregatedNotesCount);			
+	});
+}
+
+
 /*********************/
 /* TABLE OF CONTENTS */
 /*********************/
 
-/*******************************************************************************/
-/*  Updates the page TOC with any sections within the given container that don’t
-    already have TOC entries.
+GW.TOC = { };
+
+/*********************************************************************/
+/*	Update page TOC, on the next animation frame, if not already done.
+ */
+function updatePageTOCIfNeeded(eventInfo) {
+	GW.TOC.needsUpdate = true;
+
+	requestAnimationFrame(() => {
+		if (GW.TOC.needsUpdate == false)
+			return;
+
+		GW.TOC.needsUpdate = false;
+
+		updatePageTOC(eventInfo);
+	});
+}
+
+/*****************************************************************************/
+/*  Updates the page TOC with any sections in the page that don’t already have 
+	TOC entries.
  */
 //  Called by: updateMainPageTOC (rewrite.js)
 //  Called by: includeContent (transclude.js)
-function updatePageTOC(newContent, needsProcessing = false) {
-    GWLog("updatePageTOC", "transclude.js", 2);
+function updatePageTOC(eventInfo) {
+    GWLog("updatePageTOC", "misc.js", 2);
 
     let TOC = document.querySelector("#TOC");
     if (!TOC)
@@ -555,87 +662,72 @@ function updatePageTOC(newContent, needsProcessing = false) {
     //  Don’t nest TOC entries any deeper than this.
     let maxNestingDepth = 4;
 
-    /*  Find where to insert the new TOC entries.
-    	Any already-existing <section> should have a TOC entry.
-    	(Unless the TOC entry has been removed or is missing for some reason,
-    	 in which case use the entry for the section after that, and so on.)
-     */
-    let parentSection = newContent.closest("section") ?? document.querySelector("#markdownBody");
-    let parentTOCElement = parentSection.id == "markdownBody"
-                           ? TOC
-                           : TOC.querySelector(`#toc-${(CSS.escape(parentSection.id))}`).parentElement;
+	//	Collect new entries, for later processing (if need be).
+	let newEntries = [ ];
 
-    let currentSection = newContent;
-    let nextSection = null;
-    let nextSectionTOCLink = null;
-    do {
-    	nextSection = Array.from(parentSection.children).filter(child =>
+	document.querySelectorAll("#markdownBody section").forEach(section => {
+		//	If this section already has a TOC entry, return.
+		if (TOC.querySelector(`a[href$='#${(CSS.escape(fixedEncodeURIComponent(section.id)))}']`) != null)
+			return;
+
+		//  If this section is too deeply nested, do not add it.
+		if (sectionLevel(section) > maxNestingDepth)
+			return;
+
+		/*  Find where to insert the new TOC entry.
+			Any already-existing <section> should have a TOC entry.
+			(Unless the TOC entry has been removed or is missing for some reason,
+			 in which case use the entry for the section after that, and so on.)
+		 */
+		let parentSection = section.parentElement.closest("section") ?? document.querySelector("#markdownBody");
+		let parentTOCElement = parentSection.id == "markdownBody"
+							   ? TOC
+							   : TOC.querySelector(`#toc-${(CSS.escape(parentSection.id))}`).closest("li");
+
+		let nextSection = null;
+		let nextSectionTOCLink = null;
+		let followingSections = childBlocksOf(parentSection).filter(child => 
 			   child.tagName == "SECTION"
-			&& child.compareDocumentPosition(currentSection) == Node.DOCUMENT_POSITION_PRECEDING
-		).first;
-		currentSection = nextSection;
-		nextSectionTOCLink = nextSection ? parentTOCElement.querySelector(`#toc-${(CSS.escape(nextSection.id))}`) : null;
-	} while (nextSection && nextSectionTOCLink == null);
-    let followingTOCElement = nextSectionTOCLink
-                              ? nextSectionTOCLink.parentElement
-                              : null;
+			&& child.compareDocumentPosition(section) == Node.DOCUMENT_POSITION_PRECEDING
+		);
+		do {
+			nextSection = followingSections.shift();
+			nextSectionTOCLink = nextSection 
+								 ? parentTOCElement.querySelector(`#toc-${(CSS.escape(nextSection.id))}`) 
+								 : null;
+		} while (   nextSection 
+				 && nextSectionTOCLink == null);
+		let followingTOCElement = nextSectionTOCLink
+								  ? nextSectionTOCLink.closest("li")
+								  : null;
 
-    //  TOC entry insertion function, called recursively.
-    function addToPageTOC(newContent, parentTOCElement, followingTOCElement) {
-        let addedEntries = [ ];
+		//  Construct entry.
+		let entry = newElement("LI");
+		let entryText = section.id == "footnotes"
+						? "Footnotes"
+						: section.firstElementChild.querySelector("a").innerHTML;
+		entry.innerHTML = `<a 
+							class='link-self decorate-not'
+							id='toc-${section.id}' 
+							href='#${fixedEncodeURIComponent(section.id)}'
+								>${entryText}</a>`;
 
-        newContent.querySelectorAll("section").forEach(section => {
-            /*  We may have already added this section in a recursive call from
-                a previous section.
-             */
-            if (parentTOCElement.querySelector(`a[href$='#${(CSS.escape(fixedEncodeURIComponent(section.id)))}']`) != null)
-                return;
+		//  Get or construct the <ul> element.
+		let subList = (   Array.from(parentTOCElement.childNodes).find(child => child.tagName == "UL") 
+					   ?? parentTOCElement.appendChild(newElement("UL")));
 
-            /*  If this section is too deeply nested, do not add it.
-             */
-            if (sectionLevel(section) > maxNestingDepth)
-                return;
+		//	Insert and store.
+		subList.insertBefore(entry, followingTOCElement);
+		newEntries.push(entry);
+	});
 
-            //  Construct entry.
-            let entry = newElement("LI");
-            let entryText = section.id == "footnotes"
-                            ? "Footnotes"
-                            : section.firstElementChild.querySelector("a").innerHTML;
-            entry.innerHTML = `<a 
-            					class='link-self decorate-not'
-            					id='toc-${section.id}' 
-            					href='#${fixedEncodeURIComponent(section.id)}'
-            						>${entryText}</a>`;
+	//  Process the new entries to activate pop-frame spawning.
+	newEntries.forEach(Extracts.addTargetsWithin);
 
-            //  Get or construct the <ul> element.
-            let subList = Array.from(parentTOCElement.childNodes).find(child => child.tagName == "UL");
-            if (!subList) {
-                subList = newElement("UL");
-                parentTOCElement.appendChild(subList);
-            }
-
-            subList.insertBefore(entry, followingTOCElement);
-            addedEntries.push(entry);
-
-            //  Recursive call, to added sections nested within this one.
-            addToPageTOC(section, entry, null);
-        });
-
-        return addedEntries;
-    }
-
-    //  Add the new entries.
-    let newEntries = addToPageTOC(newContent, parentTOCElement, followingTOCElement);
-
-    if (needsProcessing) {
-        //  Process the new entries to activate pop-frame spawning.
-        newEntries.forEach(Extracts.addTargetsWithin);
-
-		//	Rectify typography in new entries.
-        newEntries.forEach(entry => {
-	        Typography.processElement(entry, Typography.replacementTypes.WORDBREAKS, true);
-        });
-    }
+	//	Rectify typography in new entries.
+	newEntries.forEach(entry => {
+		Typography.processElement(entry, Typography.replacementTypes.WORDBREAKS, true);
+	});
 }
 
 
@@ -6376,10 +6468,13 @@ function includeContent(includeLink, content) {
     	&& Transclude.isAnnotationTransclude(includeLink) == false)
         updateFootnotesAfterInclusion(includeLink, wrapper, newContentFootnotesSection);
 
-    //  Update TOC, if need be, when transcluding into the base page.
+	//  Update TOC, if need be, when transcluding into the base page.
     if (   containingDocument == document
     	&& Transclude.isAnnotationTransclude(includeLink) == false)
-        updatePageTOC(wrapper, true);
+        updatePageTOCIfNeeded(includeLink.eventInfo);
+
+	//	Aggregate margin notes.
+	aggregateMarginNotesIfNeeded(includeLink.eventInfo);
 
 	//	Import style sheets, if need be.
 	if (   containingDocument == document
@@ -6665,7 +6760,7 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
 		});
 
         //  Update page TOC to add footnotes section entry.
-        updatePageTOC(footnotesSectionWrapper, true);
+        updatePageTOCIfNeeded(includeLink.eventInfo);
 
         //  Unwrap.
         unwrap(footnotesSectionWrapper);
@@ -11907,53 +12002,7 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (eventInfo) => {
 addContentLoadHandler(GW.contentLoadHandlers.aggregateMarginNotes = (eventInfo) => {
     GWLog("aggregateMarginNotes", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".marginnote").forEach(marginNote => {
-		if (marginNote.textContent.trim() == "☞")
-			return;
-
-		let section = marginNote.closest("section, .markdownBody");
-
-		let marginNotesBlock = Array.from(section.children).find(child => child.matches(".margin-notes-block"));
-		if (marginNotesBlock == null) {
-			/*	Construct the margin notes block. It should go after any 
-				abstract and/or epigraph that opens the section.
-			 */
-			let firstBlock = firstBlockOf(section, {
-				alsoSkipElements: [ ".abstract blockquote", ".epigraph" ]
-			}, true);
-			while (firstBlock.parentElement != section)
-				firstBlock = firstBlock.parentElement;
-
-			//	Inject the margin notes block and a horizontal rule.
-			marginNotesBlock = newElement("P", { class: "margin-notes-block" });
-			section.insertBefore(marginNotesBlock, firstBlock);
-		}
-
-		//	Clone the note.
-		let clonedNote = marginNote.cloneNode(true);
-
-		//	Unwrap the inner wrapper (unneeded here).
-		unwrap(clonedNote.firstElementChild);
-
-		//	Trim whitespace.
-		clonedNote.innerHTML = clonedNote.innerHTML.trim();
-
-		//	Strip trailing period.
-		if (clonedNote.textContent.endsWith("."))
-			clonedNote.lastTextNode.nodeValue = clonedNote.lastTextNode.nodeValue.slice(0, -1);
-
-		//	Append.
-		marginNotesBlock.append(clonedNote);
-	});
-
-	//	Don’t show margin notes block if there are fewer notes than this.
-	let minimumAggregatedNotesCount = 3;
-
-	eventInfo.container.querySelectorAll(".margin-notes-block").forEach(marginNotesBlock => {
-		if (marginNotesBlock.children.length < minimumAggregatedNotesCount)
-			marginNotesBlock.classList.add("hidden");
-			
-	});
+	aggregateMarginNotesIfNeeded(eventInfo);
 }, "rewrite");
 
 
@@ -12464,7 +12513,7 @@ addContentLoadHandler(GW.contentLoadHandlers.stripTOCLinkSpans = (eventInfo) => 
 addContentLoadHandler(GW.contentLoadHandlers.updateMainPageTOC = (eventInfo) => {
     GWLog("updateMainPageTOC", "rewrite.js", 1);
 
-    updatePageTOC(eventInfo.container.querySelector("#markdownBody"));
+    updatePageTOCIfNeeded(eventInfo);
 }, "rewrite", (info) => (info.container == document.body));
 
 /*************************************************/

@@ -3352,13 +3352,6 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
     width: 20%;
 }
 
-/*=--------=*/
-/*= /lorem =*/
-/*=--------=*/
-
-body.lorem div[class^='drop-cap'] {
-    margin: 1em 0 0 0;
-}
 
 
 /**************/

@@ -771,53 +771,7 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (eventInfo) => {
 addContentLoadHandler(GW.contentLoadHandlers.aggregateMarginNotes = (eventInfo) => {
     GWLog("aggregateMarginNotes", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".marginnote").forEach(marginNote => {
-		if (marginNote.textContent.trim() == "☞")
-			return;
-
-		let section = marginNote.closest("section, .markdownBody");
-
-		let marginNotesBlock = Array.from(section.children).find(child => child.matches(".margin-notes-block"));
-		if (marginNotesBlock == null) {
-			/*	Construct the margin notes block. It should go after any 
-				abstract and/or epigraph that opens the section.
-			 */
-			let firstBlock = firstBlockOf(section, {
-				alsoSkipElements: [ ".abstract blockquote", ".epigraph" ]
-			}, true);
-			while (firstBlock.parentElement != section)
-				firstBlock = firstBlock.parentElement;
-
-			//	Inject the margin notes block and a horizontal rule.
-			marginNotesBlock = newElement("P", { class: "margin-notes-block" });
-			section.insertBefore(marginNotesBlock, firstBlock);
-		}
-
-		//	Clone the note.
-		let clonedNote = marginNote.cloneNode(true);
-
-		//	Unwrap the inner wrapper (unneeded here).
-		unwrap(clonedNote.firstElementChild);
-
-		//	Trim whitespace.
-		clonedNote.innerHTML = clonedNote.innerHTML.trim();
-
-		//	Strip trailing period.
-		if (clonedNote.textContent.endsWith("."))
-			clonedNote.lastTextNode.nodeValue = clonedNote.lastTextNode.nodeValue.slice(0, -1);
-
-		//	Append.
-		marginNotesBlock.append(clonedNote);
-	});
-
-	//	Don’t show margin notes block if there are fewer notes than this.
-	let minimumAggregatedNotesCount = 3;
-
-	eventInfo.container.querySelectorAll(".margin-notes-block").forEach(marginNotesBlock => {
-		if (marginNotesBlock.children.length < minimumAggregatedNotesCount)
-			marginNotesBlock.classList.add("hidden");
-			
-	});
+	aggregateMarginNotesIfNeeded(eventInfo);
 }, "rewrite");
 
 
@@ -1328,7 +1282,7 @@ addContentLoadHandler(GW.contentLoadHandlers.stripTOCLinkSpans = (eventInfo) => 
 addContentLoadHandler(GW.contentLoadHandlers.updateMainPageTOC = (eventInfo) => {
     GWLog("updateMainPageTOC", "rewrite.js", 1);
 
-    updatePageTOC(eventInfo.container.querySelector("#markdownBody"));
+    updatePageTOCIfNeeded(eventInfo);
 }, "rewrite", (info) => (info.container == document.body));
 
 /*************************************************/
