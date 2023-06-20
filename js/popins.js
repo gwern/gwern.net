@@ -227,16 +227,11 @@ Popins = {
 		popin.titleBar.appendChild(popin.titleBar.stackCounter);
 
 		//  Add the provided title bar contents (buttons, title, etc.).
-		popin.titleBarContents.forEach(elementOrHTML => {
-			if (typeof elementOrHTML == "string") {
-				popin.titleBar.insertAdjacentHTML("beforeend", elementOrHTML);
-			} else {
-				popin.titleBar.appendChild(elementOrHTML);
-			}
-			let newlyAddedElement = popin.titleBar.lastElementChild;
+		popin.titleBarContents.forEach(element => {
+			popin.titleBar.appendChild(element);
 
-			if (newlyAddedElement.buttonAction)
-				newlyAddedElement.addActivateEvent(newlyAddedElement.buttonAction);
+			if (element.buttonAction)
+				element.addActivateEvent(element.buttonAction);
 		});
 	},
 

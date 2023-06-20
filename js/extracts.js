@@ -264,7 +264,7 @@ Extracts = {
 			if (link.querySelector(".indicator-hook") != null)
 				return;
 
-			link.insertAdjacentHTML("afterbegin", `<span class="indicator-hook"></span>`);
+			link.insertBefore(newElement("SPAN", { class: "indicator-hook" }), link.firstChild);
 
 			/*	Inject U+2060 WORD JOINER at start of first text node of the
 				link. (It _must_ be injected as a Unicode character into the

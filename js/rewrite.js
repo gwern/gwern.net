@@ -902,8 +902,7 @@ function createFullWidthBlockLayoutStyles() {
 
     /*  Inject styles block to hold dynamically updated layout variables.
      */
-    document.querySelector("head").insertAdjacentHTML("beforeend", `<style id="full-width-block-layout-styles"></style>`);
-    let fullWidthBlockLayoutStyles = document.querySelector("#full-width-block-layout-styles");
+    let fullWidthBlockLayoutStyles = document.querySelector("head").appendChild(newElement("STYLE", { id: "full-width-block-layout-styles" }));
 
     /*  Function to update layout variables (called immediately and on resize).
      */
@@ -1433,13 +1432,14 @@ addContentLoadHandler(GW.contentLoadHandlers.injectFootnoteSelfLinks = (eventInf
         if (footnote.querySelector(".footnote-self-link"))
             return;
 
-        let footnoteNumber = footnote.id.slice(2);
-        footnote.insertAdjacentHTML("afterbegin",
-            `<a
-                href="#fn${footnoteNumber}"
-                title="Link to footnote ${footnoteNumber}"
-                class="footnote-self-link"
-                    >&nbsp;</a>`);
+        let footnoteNumber = Notes.noteNumber(footnote);
+        footnote.insertBefore(newElement("A", {
+        	href: `#fn${footnoteNumber}`,
+        	title: `Link to footnote ${footnoteNumber}`,
+        	class: "footnote-self-link"
+        }, {
+        	innerHTML: "&nbsp;"
+        }), footnote.firstChild);
     });
 }, "rewrite");
 
@@ -1689,7 +1689,7 @@ function enableLinkIcon(link) {
         return;
 
     //  Add hook.
-    link.insertAdjacentHTML("beforeend", `<span class="link-icon-hook">\u{2060}</span>`);
+    link.appendChild(newElement("SPAN", { class: "link-icon-hook" }, { innerHTML: "\u{2060}" }));
 
     //  Set CSS variable.
     if (link.dataset.linkIconType.includes("text")) {
@@ -1878,7 +1878,7 @@ addContentLoadHandler(GW.contentLoadHandlers.noBreakForCitations = (eventInfo) =
     GWLog("noBreakForCitations", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll(".footnote-ref").forEach(citation => {
-        citation.insertAdjacentHTML("beforebegin", "&NoBreak;");
+    	citation.parentElement.insertBefore(document.createTextNode("\u{2060}"), citation);
         let textNode = citation.querySelector("sup").firstTextNode;
         textNode.textContent = "\u{2060}" + textNode.textContent + "\u{2060}";
     });
@@ -2017,13 +2017,19 @@ addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (even
 
     eventInfo.container.querySelectorAll(".math.block").forEach(mathBlock => {
         //  Inject button bar.
-        mathBlock.insertAdjacentHTML("beforeend",
-              `<span class="block-button-bar">`
-				+ `<button type="button" class="copy" tabindex="-1" title="Copy LaTeX source of this equation to clipboard">`
-					+ GW.svg("copy-regular")
-				+ `</button>`
-				+ `<span class="scratchpad"></span>`
-            + `</span>`);
+        mathBlock.appendChild(newElement("SPAN", { class: "block-button-bar" })).append(
+        	newElement("BUTTON", {
+				type: "button",
+				class: "copy",
+				tabindex: "-1",
+				title: "Copy LaTeX source of this equation to clipboard"
+			}, {
+				innerHTML: GW.svg("copy-regular")
+			}), 
+			newElement("SPAN", {
+				class: "scratchpad"
+			})
+		);
     });
 }, "rewrite");
 

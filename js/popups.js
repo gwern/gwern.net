@@ -50,21 +50,18 @@ Popups = {
 
         //  Inject popups container.
         let popupContainerParent = document.querySelector(Popups.popupContainerParentSelector);
-        if (!popupContainerParent) {
+        if (popupContainerParent == null) {
             GWLog("Popup container parent element not found. Exiting.", "popups.js", 1);
             return;
         }
-        popupContainerParent.insertAdjacentHTML("beforeend", `<div
-        	id="${Popups.popupContainerID}"
-        	class="popup-container"
-        	style="z-index: ${Popups.popupContainerZIndex};"
-        		></div>`);
-        requestAnimationFrame(() => {
-            Popups.popupContainer = document.querySelector(`#${Popups.popupContainerID}`);
+        Popups.popupContainer = popupContainerParent.appendChild(newElement("DIV", {
+        	id: Popups.popupContainerID,
+        	class: "popup-container",
+        	style: `z-index: ${Popups.popupContainerZIndex};`
+        }));
 
-			//  Add Escape key event listener.
-			document.addEventListener("keyup", Popups.keyUp);
-        });
+		//  Add Escape key event listener.
+		document.addEventListener("keyup", Popups.keyUp);
 
 		GW.notificationCenter.fireEvent("Popups.setupDidComplete");
 	},
@@ -984,21 +981,16 @@ Popups = {
 		popup.insertBefore(popup.titleBar, popup.firstElementChild);
 
 		//  Add the provided title bar contents (buttons, title, etc.).
-		popup.titleBarContents.forEach(elementOrHTML => {
-			if (typeof elementOrHTML == "string") {
-				popup.titleBar.insertAdjacentHTML("beforeend", elementOrHTML);
-			} else {
-				popup.titleBar.appendChild(elementOrHTML);
-			}
-			let newlyAddedElement = popup.titleBar.lastElementChild;
+		popup.titleBarContents.forEach(element => {
+			popup.titleBar.appendChild(element);
 
-			if (newlyAddedElement.buttonAction)
-				newlyAddedElement.addActivateEvent(newlyAddedElement.buttonAction);
+			if (element.buttonAction)
+				element.addActivateEvent(element.buttonAction);
 
 			//  Add popup-positioning submenu to zoom button.
-			if (   newlyAddedElement.classList.contains("zoom-button")
-				&& newlyAddedElement.submenuEnabled)
-				Popups.titleBarComponents.addSubmenuToButton(newlyAddedElement, "zoom-button-submenu", Popups.titleBarComponents.popupZoomButtons());
+			if (   element.classList.contains("zoom-button")
+				&& element.submenuEnabled)
+				Popups.titleBarComponents.addSubmenuToButton(element, "zoom-button-submenu", Popups.titleBarComponents.popupZoomButtons());
 		});
 
 		//  Add state-updating function.
