@@ -33,6 +33,10 @@
 :root {
     --GW-sidenotes-max-width: 550px;
 
+	/*	Does not get inverted, so should not be in colors.css.
+	 */
+	--GW-popframes-iframe-background-color: #fff;
+
     --GW-popups-popup-max-width: 640px;
     --GW-popups-popup-max-height: 480px;
     --GW-popups-popup-with-footer-min-width: 480px;
@@ -3596,6 +3600,10 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popframe-body.object object {
     display: block;
     margin: auto;
+}
+
+.popframe-body.object iframe {
+	background-color: var(--GW-popframes-iframe-background-color);
 }
 
 /*  Don’t show when loading failed.

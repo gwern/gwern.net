@@ -1567,21 +1567,18 @@ Popups = {
 
         //  Inject popups container.
         let popupContainerParent = document.querySelector(Popups.popupContainerParentSelector);
-        if (!popupContainerParent) {
+        if (popupContainerParent == null) {
             GWLog("Popup container parent element not found. Exiting.", "popups.js", 1);
             return;
         }
-        popupContainerParent.insertAdjacentHTML("beforeend", `<div
-        	id="${Popups.popupContainerID}"
-        	class="popup-container"
-        	style="z-index: ${Popups.popupContainerZIndex};"
-        		></div>`);
-        requestAnimationFrame(() => {
-            Popups.popupContainer = document.querySelector(`#${Popups.popupContainerID}`);
+        Popups.popupContainer = popupContainerParent.appendChild(newElement("DIV", {
+        	id: Popups.popupContainerID,
+        	class: "popup-container",
+        	style: `z-index: ${Popups.popupContainerZIndex};`
+        }));
 
-			//  Add Escape key event listener.
-			document.addEventListener("keyup", Popups.keyUp);
-        });
+		//  Add Escape key event listener.
+		document.addEventListener("keyup", Popups.keyUp);
 
 		GW.notificationCenter.fireEvent("Popups.setupDidComplete");
 	},
@@ -2501,21 +2498,16 @@ Popups = {
 		popup.insertBefore(popup.titleBar, popup.firstElementChild);
 
 		//  Add the provided title bar contents (buttons, title, etc.).
-		popup.titleBarContents.forEach(elementOrHTML => {
-			if (typeof elementOrHTML == "string") {
-				popup.titleBar.insertAdjacentHTML("beforeend", elementOrHTML);
-			} else {
-				popup.titleBar.appendChild(elementOrHTML);
-			}
-			let newlyAddedElement = popup.titleBar.lastElementChild;
+		popup.titleBarContents.forEach(element => {
+			popup.titleBar.appendChild(element);
 
-			if (newlyAddedElement.buttonAction)
-				newlyAddedElement.addActivateEvent(newlyAddedElement.buttonAction);
+			if (element.buttonAction)
+				element.addActivateEvent(element.buttonAction);
 
 			//  Add popup-positioning submenu to zoom button.
-			if (   newlyAddedElement.classList.contains("zoom-button")
-				&& newlyAddedElement.submenuEnabled)
-				Popups.titleBarComponents.addSubmenuToButton(newlyAddedElement, "zoom-button-submenu", Popups.titleBarComponents.popupZoomButtons());
+			if (   element.classList.contains("zoom-button")
+				&& element.submenuEnabled)
+				Popups.titleBarComponents.addSubmenuToButton(element, "zoom-button-submenu", Popups.titleBarComponents.popupZoomButtons());
 		});
 
 		//  Add state-updating function.
@@ -3890,16 +3882,11 @@ Popins = {
 		popin.titleBar.appendChild(popin.titleBar.stackCounter);
 
 		//  Add the provided title bar contents (buttons, title, etc.).
-		popin.titleBarContents.forEach(elementOrHTML => {
-			if (typeof elementOrHTML == "string") {
-				popin.titleBar.insertAdjacentHTML("beforeend", elementOrHTML);
-			} else {
-				popin.titleBar.appendChild(elementOrHTML);
-			}
-			let newlyAddedElement = popin.titleBar.lastElementChild;
+		popin.titleBarContents.forEach(element => {
+			popin.titleBar.appendChild(element);
 
-			if (newlyAddedElement.buttonAction)
-				newlyAddedElement.addActivateEvent(newlyAddedElement.buttonAction);
+			if (element.buttonAction)
+				element.addActivateEvent(element.buttonAction);
 		});
 	},
 
@@ -7879,7 +7866,7 @@ Extracts = {
 			if (link.querySelector(".indicator-hook") != null)
 				return;
 
-			link.insertAdjacentHTML("afterbegin", `<span class="indicator-hook"></span>`);
+			link.insertBefore(newElement("SPAN", { class: "indicator-hook" }), link.firstChild);
 
 			/*	Inject U+2060 WORD JOINER at start of first text node of the
 				link. (It _must_ be injected as a Unicode character into the
@@ -12133,8 +12120,7 @@ function createFullWidthBlockLayoutStyles() {
 
     /*  Inject styles block to hold dynamically updated layout variables.
      */
-    document.querySelector("head").insertAdjacentHTML("beforeend", `<style id="full-width-block-layout-styles"></style>`);
-    let fullWidthBlockLayoutStyles = document.querySelector("#full-width-block-layout-styles");
+    let fullWidthBlockLayoutStyles = document.querySelector("head").appendChild(newElement("STYLE", { id: "full-width-block-layout-styles" }));
 
     /*  Function to update layout variables (called immediately and on resize).
      */
@@ -12664,13 +12650,14 @@ addContentLoadHandler(GW.contentLoadHandlers.injectFootnoteSelfLinks = (eventInf
         if (footnote.querySelector(".footnote-self-link"))
             return;
 
-        let footnoteNumber = footnote.id.slice(2);
-        footnote.insertAdjacentHTML("afterbegin",
-            `<a
-                href="#fn${footnoteNumber}"
-                title="Link to footnote ${footnoteNumber}"
-                class="footnote-self-link"
-                    >&nbsp;</a>`);
+        let footnoteNumber = Notes.noteNumber(footnote);
+        footnote.insertBefore(newElement("A", {
+        	href: `#fn${footnoteNumber}`,
+        	title: `Link to footnote ${footnoteNumber}`,
+        	class: "footnote-self-link"
+        }, {
+        	innerHTML: "&nbsp;"
+        }), footnote.firstChild);
     });
 }, "rewrite");
 
@@ -12920,7 +12907,7 @@ function enableLinkIcon(link) {
         return;
 
     //  Add hook.
-    link.insertAdjacentHTML("beforeend", `<span class="link-icon-hook">\u{2060}</span>`);
+    link.appendChild(newElement("SPAN", { class: "link-icon-hook" }, { innerHTML: "\u{2060}" }));
 
     //  Set CSS variable.
     if (link.dataset.linkIconType.includes("text")) {
@@ -13109,7 +13096,7 @@ addContentLoadHandler(GW.contentLoadHandlers.noBreakForCitations = (eventInfo) =
     GWLog("noBreakForCitations", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll(".footnote-ref").forEach(citation => {
-        citation.insertAdjacentHTML("beforebegin", "&NoBreak;");
+    	citation.parentElement.insertBefore(document.createTextNode("\u{2060}"), citation);
         let textNode = citation.querySelector("sup").firstTextNode;
         textNode.textContent = "\u{2060}" + textNode.textContent + "\u{2060}";
     });
@@ -13248,13 +13235,19 @@ addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (even
 
     eventInfo.container.querySelectorAll(".math.block").forEach(mathBlock => {
         //  Inject button bar.
-        mathBlock.insertAdjacentHTML("beforeend",
-              `<span class="block-button-bar">`
-				+ `<button type="button" class="copy" tabindex="-1" title="Copy LaTeX source of this equation to clipboard">`
-					+ GW.svg("copy-regular")
-				+ `</button>`
-				+ `<span class="scratchpad"></span>`
-            + `</span>`);
+        mathBlock.appendChild(newElement("SPAN", { class: "block-button-bar" })).append(
+        	newElement("BUTTON", {
+				type: "button",
+				class: "copy",
+				tabindex: "-1",
+				title: "Copy LaTeX source of this equation to clipboard"
+			}, {
+				innerHTML: GW.svg("copy-regular")
+			}), 
+			newElement("SPAN", {
+				class: "scratchpad"
+			})
+		);
     });
 }, "rewrite");
 
