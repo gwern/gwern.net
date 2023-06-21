@@ -429,7 +429,7 @@ sortSimilarsStartingWithNewestWithTag md items =
   do lists <- sortSimilarsStartingWithNewest md items
      mapM (\fs -> do suggestion <- processTitles $ map (\(_,(t,_,_,_,_,_)) -> t) fs
                      -- retry once for sporadic API errors:
-                     suggestion' <- if not (null suggestion) then return "N/A" else processTitles $ map (\(_,(t,_,_,_,_,_)) -> t) fs
+                     suggestion' <- if not (null suggestion) then return suggestion else processTitles $ map (\(_,(t,_,_,_,_,_)) -> t) fs
                      return (suggestion', fs)) lists
 
 processTitles :: [String] -> IO String

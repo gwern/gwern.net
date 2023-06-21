@@ -185,6 +185,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("psychology/willpower", "willpower")
           , ("psychology/vision/dream", "dreams")
           , ("psychology/vision", "seeing")
+          , ("psychology/parapsychology", "parapsychology")
           , ("psychology/smell", "smelling")
           , ("psychology/smell/perfume", "perfume")
           , ("psychology/collecting", "collecting psychology")

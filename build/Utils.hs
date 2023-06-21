@@ -669,6 +669,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<span class=\"math inline\">\\(ii\\)</span>", "2")
          , ("<span class=\"math inline\">\\(iii\\)</span>", "3")
          , ("<span class=\"math inline\">\\(iv\\)</span>", "4")
+         , ("<span class=\"math inline\">\\(S^3\\)</span>", "<em>S</em><sup>3</sup>")
          , (" TD()", " TD(λ)")
          , ("({\\lambda})", "(λ)")
          , ("O((log n log log n)^2)", "𝒪(log<sup>2</sup> <em>n</em> log log <em>n</em>)")
