@@ -5085,9 +5085,15 @@ Annotations.dataSources.wikipedia = {
 
 				thumbnailParents.push(image.parentElement);
 
-				let closestRow = image.closest("tr, [style*='display']");
-				while (!(closestRow.tagName == "TR" || closestRow.style.display == "table-row"))
+				let closestRow = image.parentElement;
+				while (   closestRow != null
+					   && !(   closestRow.tagName == "TR" 
+					   		|| closestRow.style.display == "table-row")) {
 					closestRow = closestRow.parentElement.closest("tr, [style*='display']");
+				}
+				if (closestRow == null)
+					return;
+
 				let allImagesInRow = closestRow.querySelectorAll("img");
 				if (allImagesInRow.length > 1) {
 					let rowWrapper = newElement("SPAN", { "class": "image-wrapper image-row-wrapper" });
@@ -5108,11 +5114,11 @@ Annotations.dataSources.wikipedia = {
 			referenceEntry.insertBefore(figure, referenceEntry.firstElementChild);
 
 			//  Rectify classes.
-			thumbnailParents.first.closest("table").classList.toggle("infobox", true);
+			thumbnailParents.first?.closest("table")?.classList.toggle("infobox", true);
 
 			//  Remove the whole row where each thumbnail was.
 			thumbnailParents.forEach(thumbnailParent => {
-				thumbnailParent.closest("tr").remove();
+				thumbnailParent.closest("tr")?.remove();
 			});
 		} else if (   thumbnail
 				   && thumbnail.closest("figure")) {
@@ -5133,7 +5139,7 @@ Annotations.dataSources.wikipedia = {
 			figureBlock.querySelectorAll("img").forEach(image => {
 				figure.appendChild(image);
 			});
-			figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": figureBlock.querySelector(".thumbcaption").innerHTML }));
+			figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": figureBlock.querySelector(".thumbcaption")?.innerHTML }));
 			figureBlock.parentNode.insertBefore(figure, figureBlock);
 			figureBlock.remove();
 		});
