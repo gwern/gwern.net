@@ -4,7 +4,7 @@
 # tagguesser.py: suggest a tag for links/annotations based on a list of titles fed into the OA API
 # Author: Gwern Branwen
 # Date: 2023-06-17
-# When:  Time-stamp: "2023-06-18 15:36:10 gwern"
+# When:  Time-stamp: "2023-06-21 10:01:13 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python tagguesser.py
@@ -16,6 +16,7 @@
 # (the name + candidate links to populate it).
 # See /design#tags for more.
 
+import random
 import signal
 import sys
 import openai
@@ -37,10 +38,15 @@ def run_with_timeout(func_name, args=(), kwargs={}, timeout=5):
         signal.alarm(0)
     return result
 
+def shuffle_input(input_text):
+    lines = input_text.split('\n')
+    return '\n'.join(random.sample(lines, len(lines)))
+
 if len(sys.argv) == 1:
-    target = sys.stdin.read().strip()
+    input_text = sys.stdin.read().strip()
 else:
-    target = '\n'.join(random.sample(sys.argv[1].split('\n'), len(sys.argv[1].split('\n'))))
+    input_text = sys.argv[1]
+target = shuffle_input(input_text)
 
 messages = [
     {"role": "system", "content": "You are a helpful webmaster & research assistant "},

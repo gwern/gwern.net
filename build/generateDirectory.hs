@@ -310,6 +310,7 @@ generateSections links linksSorted linkswp
           sorted
             = [Header 2 ("", ["link-annotated-not"], [])
                  [Str "Sort By Magic"]] ++
+                 ([Div ("",[],[("demo-type", "sort-by-magic-preface")]) [Para [Str "Annotations sorted by machine learning into ", Link nullAttr [Str "inferred 'tags'"] ("/design#future-tag-features",""), Str ". This provides an alternative way to browse: instead of by ", Emph [Str "date"], Str " order, one can browse in ", Emph [Str "topic"], Str " order. Beginning with the newest annotation, it uses the embedding of each annotation to attempt to create a list of nearest-neighbor annotations, creating a progression of topics. The 'sorted' list has been automatically clustered into multiple sections & auto-labeled for easier browsing. For more details, see the link."]]]) ++
                  (concatMap generateReferenceToPreviousSection linksSorted)
           wp
             = [Header 2 ("titled-links-wikipedia", ["link-annotated-not"], [])
@@ -319,7 +320,7 @@ generateSections links linksSorted linkswp
 
 -- for the sorted-by-magic links, they all are by definition already generated as a section; so instead of bloating the page & ToC with even more sections, let's just generate a transclude of the original section!
 generateReferenceToPreviousSection :: (String, [(FilePath, MetadataItem)]) -> [Block]
-generateReferenceToPreviousSection (tag,items) = [Header 3 ("", ["link-annotated-not", "collapse"], []) [Code nullAttr (T.pack tag)],
+generateReferenceToPreviousSection (tag,items) = [Header 3 ("", ["link-annotated-not", "collapse"], [("title","Machine-generated tag name for the following cluster of links.")]) [Code nullAttr (T.pack tag)],
                                                   OrderedList (1, UpperAlpha, DefaultDelim) $
                                              concatMap (\(f,(_,aut,dt,_,_,_)) ->
                                                   let linkId = generateID f aut dt in

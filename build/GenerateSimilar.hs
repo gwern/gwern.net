@@ -390,6 +390,14 @@ let ml = clusterIntoSublist edb m
 putStrLn $ ppShow ml
 let ml' = map (map (\f -> (\(t,_,_,_,_,_) -> t) $ Data.Maybe.fromJust $ M.lookup f md)) ml
 putStrLn $ ppShow ml'
+
+----
+
+md <- LinkMetadata.readLinkMetadata
+let tagTest = "psychology/smell"
+let mdl = M.toList $ M.filter (\(_,_,_,_,tags,abstract) -> tagTest `elem` tags && abstract /= "") md
+mls <- sortSimilarsStartingWithNewestWithTag md mdl
+map fst mls
 -}
 
 sortTagByTopic :: Metadata -> String -> IO [FilePath]
@@ -438,7 +446,7 @@ processTitles a =
       do let a' = take (4096*3) $ unlines a
          (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/tagguesser.py", a']
          case status of
-           ExitFailure err -> printRed "tagguesser.py failed!" >> printRed (show err) >> return "" -- printGreen (ppShow (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb])) >> printRed "tagguesser.py failed!" >> return ""
+           ExitFailure err -> printRed "tagguesser.py failed!" >> printRed (show err) >> print a' >> return "" -- printGreen (ppShow (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb])) >> printRed "tagguesser.py failed!" >> return ""
            _ -> return $ (trim . U.toString) mb
 
 restoreAssoc :: Eq a => [a] -> [(a,b)] -> [(a,b)]
