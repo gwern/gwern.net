@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-06-19 21:53:12 gwern"
+;;; When:  Time-stamp: "2023-06-21 21:28:20 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -202,7 +202,10 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("\\\u2013" . "--")
                      ("â" . "")
                      ("â" . "“")
+                     ("ì" . "“")
                      ("â" . "”")
+                     ("î" . "”")
+                     ("í" . "’")
                      ("â" . "–")
                      ("â" . "−")
                      ("\n    \\\\u2022\n" . "\n- ")
@@ -300,6 +303,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("ﬁ" . "fi")
                      ("ﬀ" . "ff")
                      ("ﬃ" . "ffi")
+                     ("¢ " . "ffi")
                      ("ﬂ" . "fl")
                      ("￿" . "fi")
                      ("Æ" . "fi")
@@ -1267,8 +1271,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (query-replace "n-of-1" "<em>n</em>-of-1" nil begin end)
          (query-replace " g = " " _g_ = " nil begin end)
          (query-replace " g's" " _g_'s" nil begin end)
-         (query-replace "(g = " "(_g_ = " nil begin end)
-         (query-replace "(g value" "(_g_ value" nil begin end)
+         (query-replace "(g " "(_g_ " nil begin end)
+         (query-replace " g)" " _g_)" nil begin end)
          (query-replace "(m = " "(_m_ =" nil begin end)
          (query-replace "LaTeX" "<span class=\"logotype-latex\">L<span class=\"logotype-latex-a\">a</span>T<span class=\"logotype-latex-e\">e</span>X</span>" nil begin end) ; <span class="logotype-latex">L<span class="logotype-latex-a">a</span>T<span class="logotype-latex-e">e</span>X</span>
          (query-replace "LATEX" "<span class=\"logotype-latex\">L<span class=\"logotype-latex-a\">a</span>T<span class=\"logotype-latex-e\">e</span>X</span>" nil begin end)

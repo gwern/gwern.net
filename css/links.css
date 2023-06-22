@@ -558,7 +558,7 @@ a[data-link-icon='chi-dna']:hover .link-icon-hook::after {
 }
 
 a[data-link-icon='deepmind'] .link-icon-hook::after {
-    --link-icon-size: 0.8em;
+    --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
 

@@ -41,7 +41,7 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "digital.library.unt.edu"
                      "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org",
                      "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com",
                      "www.acpjournals.org", "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com",
-                     "mattmahoney.net", "dataverse.harvard.edu"]
+                     "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org"]
 ------------------------------------------------------------------------------------------
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
