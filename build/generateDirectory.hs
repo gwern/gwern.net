@@ -326,7 +326,7 @@ generateReferenceToPreviousSection (tag,items) = [Header 3 ("", ["link-annotated
                                                   let linkId = generateID f aut dt in
                                                     if linkId=="" then [] else
                                                       let sectionID = "#" `T.append` linkId `T.append` "-section"
-                                                      in [[Para [Link ("", ["include"], []) [Str "[previous entry]"] (sectionID, "")]]]
+                                                      in [[Para [Link ("", ["include", "include-even-when-collapsed"], []) [Str "[see previous entry]"] (sectionID, "")]]]
                                                        ) items
                                            ]
 generateSections' :: Int -> [(FilePath, MetadataItem)] -> [Block]
