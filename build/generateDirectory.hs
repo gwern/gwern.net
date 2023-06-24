@@ -301,16 +301,18 @@ generateListItems :: [(FilePath, MetadataItem)] -> Block
 generateListItems p = BulletList (map (\(f,a) -> LM.generateAnnotationTransclusionBlock (f,a)) p)
 
 generateSections :: [(FilePath, MetadataItem)] -> [(String,[(FilePath, MetadataItem)])] -> [(FilePath, MetadataItem)] -> [Block]
-generateSections links linksSorted linkswp
-    | null linkswp && null links = []
-    | null linkswp && not (null links) = annotated ++ sorted
-    | not (null linkswp) && null links = wp
-    | otherwise                        = annotated ++ sorted ++ wp
+generateSections links linksSorted linkswp = (if null links then [] else annotated) ++
+                                             (if null linksSorted then [] else sorted) ++
+                                             (if null linkswp then [] else wp)
     where annotated = generateSections' 2 links
           sorted
             = [Header 2 ("", ["link-annotated-not"], [])
                  [Str "Sort By Magic"]] ++
-                 ([Div ("",[],[("demo-type", "sort-by-magic-preface")]) [Para [Str "Annotations sorted by machine learning into ", Link nullAttr [Str "inferred 'tags'"] ("/design#future-tag-features",""), Str ". This provides an alternative way to browse: instead of by ", Emph [Str "date"], Str " order, one can browse in ", Emph [Str "topic"], Str " order. Beginning with the newest annotation, it uses the embedding of each annotation to attempt to create a list of nearest-neighbor annotations, creating a progression of topics. The 'sorted' list has been automatically clustered into multiple sections & auto-labeled for easier browsing. For more details, see the link."]]]) ++
+                 [Div ("",[],[("demo-type", "sort-by-magic-preface")])
+                   [Para [Str "Annotations sorted by machine learning into ", Link nullAttr [Str "inferred 'tags'"] ("/design#future-tag-features",""), Str ". This provides an alternative way to browse: instead of by ", Emph [Str "date"], Str " order, one can browse in ", Emph [Str "topic"], Str " order. The 'sorted' list has been automatically clustered into multiple sections & auto-labeled for easier browsing."],
+                    Para [Str "Beginning with the newest annotation, it uses the embedding of each annotation to attempt to create a list of nearest-neighbor annotations, creating a progression of topics. For more details, see the link."]
+                   ]
+                 ] ++
                  (concatMap generateReferenceToPreviousSection linksSorted)
           wp
             = [Header 2 ("titled-links-wikipedia", ["link-annotated-not"], [])
