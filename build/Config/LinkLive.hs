@@ -4493,7 +4493,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.xn--4dbcyzi5a.com/%d7%9e%d7%94%d7%95%d7%9c%d7%a0%d7%93-%d7%91%d7%90%d7%94%d7%91%d7%94-%d7%a0%d7%aa%d7%a4%d7%a1-%d7%a6%d7%a2%d7%99%d7%a8-%d7%a9%d7%94%d7%96%d7%9e%d7%99%d7%9f-%d7%97%d7%91%d7%99%d7%9c%d7%95%d7%aa-%d7%a7/"
             , "https://www.ycombinator.com/documents/"
             , "https://www.york.ac.uk/depts/maths/histstat/fisher274.pdf"
-            , "https://www108.lamp.le.ac.uk/ojs1/index.php/pst/issue/archive"
+            , "https://journals.le.ac.uk/ojs1/index.php/pst/issue/archive"
             , "https://www2.bfi.org.uk/films-tv-people/4ce2b707390e5"
             , "https://www2.ed.gov/rschstat/eval/tech/evidence-based-practices/finalreport.pdf"
             , "https://www2.guidestar.org/profile/13-1624016"

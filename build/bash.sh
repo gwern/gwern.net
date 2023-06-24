@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-05-12 19:52:50 gwern"
+# When:  Time-stamp: "2023-06-23 11:56:09 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -214,6 +214,7 @@ gwmvdir () {
 ## gwtag URL [tag]
 ## eg. `gwtag https://foo iq psychology sociology`
 alias gwt="gwtag"
+alias t="gwtag"
 gwtag () { (
              cd ~/wiki/ &&
                      # echo "---" && grep -F -- "$1" ./metadata/*.yaml || true
@@ -231,9 +232,7 @@ GWERNNET_DIRS_SHORT="$(echo $GWERNNET_DIRS_FULL | tr '/' '\n' | sort --unique)"
 GWERNNET_DIRS_SUFFIXES="$(echo $GWERNNET_DIRS_FULL | tr ' ' '\n' | grep -E -e '[a-z0-9-]\+/[a-z0-9-]\+/[a-z0-9-]\+' | \
                                rev | cut --delimiter='/' --fields=1-2 | rev)"
 complete -W "$GWERNNET_DIRS_FULL $GWERNNET_DIRS_SHORT $GWERNNET_DIRS_SUFFIXES" -f upload
-complete -W "$GWERNNET_DIRS_FULL $GWERNNET_DIRS_SHORT $GWERNNET_DIRS_SUFFIXES" u
-complete -W "$GWERNNET_DIRS_FULL $GWERNNET_DIRS_SHORT $GWERNNET_DIRS_SUFFIXES" gwtag
-complete -W "$GWERNNET_DIRS_FULL $GWERNNET_DIRS_SHORT $GWERNNET_DIRS_SUFFIXES" gwt
+complete -W "$GWERNNET_DIRS_FULL $GWERNNET_DIRS_SHORT $GWERNNET_DIRS_SUFFIXES" u gwtag gwt t
 alias u="upload"
 # 'upload' moved to ~/wiki/static/build/upload for easier calling from XMonad
 

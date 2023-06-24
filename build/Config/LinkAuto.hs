@@ -818,7 +818,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("([Gg]enerali([zs]ed)? [Ll]inear [Mm]odels?|GLMs)", "https://en.wikipedia.org/wiki/Generalized_linear_model") -- exclude 'GLM' because that's https://arxiv.org/abs/2210.02414#baai
         , ("[Mm]ultivariate linear model", "https://en.wikipedia.org/wiki/Multivariate_linear_model")
         , ("([Mm]utation load|[Gg]enetic load)", "https://en.wikipedia.org/wiki/Genetic_load")
-        , ("[Nn]-grams?", "https://en.wikipedia.org/wiki/N-grams")
+        , ("([Nn]-grams?|<em>[Nn]</em>-gram?)", "https://en.wikipedia.org/wiki/N-grams")
         , ("[Nn][- ]?body problems?", "https://en.wikipedia.org/wiki/N-body_problem")
         , ("[Nn]atural experiment", "https://en.wikipedia.org/wiki/Natural_experiment")
         , ("[Nn]atural selection", "https://en.wikipedia.org/wiki/Natural_selection")
@@ -882,7 +882,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ss]chizoid", "https://en.wikipedia.org/wiki/Schizoid_personality_disorder")
         , ("[Ss]ecurity[ -]through[ -]obscurity", "https://en.wikipedia.org/wiki/Security_through_obscurity")
         , ("[Ss]elegiline", "https://en.wikipedia.org/wiki/Selegiline")
-        , ("[Ss]emaglutide", "https://en.wikipedia.org/wiki/Semaglutide")
+        , ("([Ss]emaglutide|Wegovy|Ozempic|Rybelsus)", "https://en.wikipedia.org/wiki/Semaglutide")
         , ("([Cc]ell(ular)?[Ss]enescen(ce|t).?|[Ss]enescen(ce|t).?)", "https://en.wikipedia.org/wiki/Cellular_senescence")
         , ("[Ss]enolytics?", "https://en.wikipedia.org/wiki/Senolytic")
         , ("[Ss]equential analysis", "https://en.wikipedia.org/wiki/Sequential_analysis")

@@ -618,4 +618,5 @@ linkIconTestUnitsText =
          , ("http://www.scholarpedia.org/article/Applications_of_algorithmic_information_theory", "scholarpedia", "svg")
          , ("https://www.nlsinfo.org/content/cohorts/nlsy97", "NLS", "text,tri,sans")
          , ("https://groups.google.com/g/pandoc-discuss/c/jgb-Q0F2p1Y/m/1DogIEAtAQAJ", "PNDC", "text,quad,sans")
+         , ("https://scale.com/", "SCLE", "text,quad,monospace")
         ]
