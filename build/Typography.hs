@@ -31,7 +31,7 @@ import Config.Typography as C
 
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = let year = currentYear in
-                        walk (citefyInline year . linkLive . linkIcon) .
+                        walk (imageCaptionLinebreak . citefyInline year . linkLive . linkIcon) .
                         walk mergeSpaces .
                         linebreakingTransform .
                         rulersCycle C.cycleCount
@@ -216,3 +216,19 @@ titlecase' t = let t' = titlecase $ titlecase'' t
 titlecaseInline :: Inline -> Inline
 titlecaseInline (Str s) = Str $ T.pack $ titlecase' $ T.unpack s
 titlecaseInline       x = x
+
+----
+-- Figure figcaption style:
+-- image captions would benefit from a bit of linebreak. I can't find a way with GPT-4 to make this work reliably in CSS-only because breaking at italics is unreliable (eg '**Figure 1**: n= 10.'), can't match on a structure like '<figcaption>first-of(<strong>+text+<em>)'. Editing in a <br> by hand is doable and I've done it a few times but not sure this is the best way or I want to go back and edit it into them all when the rule seems reasonably clear: 'if a figcaption starts with strong then text then em, and then has additional text not starting with em/strong, wrap the additional text in a new paragraph.'
+{- $ echo '![**Figure 1**: Caption](foo.jpg)' | pandoc -w native
+[Para[Image("",[],[])[Strong[Str"Figure",Space,Str"1"],Str":",Space,Str"Caption"]("foo.jpg","fig:")]]
+$ echo '![**Figure 1**: _Caption._ Foo bar.](foo.jpg)' | pandoc -w native
+[Para[Image("",[],[])[Strong[Str"Figure",Space,Str"1"],Str":",Space,Emph[Str"Caption."],Space,Str"Foo",Space,Str"bar."]("foo.jpg","fig:")]]
+→ [Para [Image ("",[],[]) [Strong [Str "Figure",Space,Str "1"],Str ":",Space,Emph [Str "Caption."],LineBreak,Str "Foo",Space,Str "bar."] ("foo.jpg","fig:")]]
+→ <figure><img src="foo.jpg" alt="Figure 1: Caption. Foo bar." /><figcaption aria-hidden="true"><strong>Figure 1</strong>: <em>Caption.</em><br />Foo bar.</figcaption></figure>
+-}
+imageCaptionLinebreak :: Inline -> Inline
+imageCaptionLinebreak (Image y (Strong a : Str ":" : Space : Emph b : Space : c) z) = Image y
+                                                                                      (Strong a : Str ":" : Space : Emph b : LineBreak : c)
+                                                                                      z
+imageCaptionLinebreak x = x
