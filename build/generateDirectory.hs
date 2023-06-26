@@ -59,6 +59,8 @@ generateDirectory :: Bool -> Metadata -> [FilePath] -> FilePath -> IO ()
 generateDirectory filterp md dirs dir'' = do
 
   -- print dirs >> print dir''
+  -- remove the tag for *this* directory; it is redundant to display 'cat/catnip' on every doc/link inside '/doc/cat/catnip/index.page', after all.
+  let tagSelf = if dir'' == "doc/" then "" else init $ replace "doc/" "" dir'' -- "doc/cat/catnip/" → 'cat/catnip'
 
   -- for the arabesque navbar 'previous'/'next', we want to fill more useful than the default values, but also not be too redundant with the up/sideways/downwards tag-directory links; so we pass in the (lexicographically) sorted list of all tag-directories being created this run, and try to provide previous/next links to the 'previous' and the 'next' directory, which may be a parent, sibling, or nothing at all.
   -- so eg. /doc/cryonics/index will point to `previous: /doc/crime/terrorism/index \n next: /doc/cs/index`
@@ -107,7 +109,7 @@ generateDirectory filterp md dirs dir'' = do
   let untitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t == "") links
   let allUnannotatedUntitledP = (length untitledLinks >= 3) && all (=="") (map (\(_,(_,_,_,_,_,annotation)) -> annotation) untitledLinks) -- whether to be compact columns
   -- print ("titledLinks:"::String) >> putStrLn (ppShow $ sort titledLinks)
-  titledLinksSorted <- if not filterp then return [] else sortSimilarsStartingWithNewestWithTag md titledLinks -- skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
+  titledLinksSorted <- if not filterp then return [] else sortSimilarsStartingWithNewestWithTag md tagSelf titledLinks -- skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
   -- print ("-------------------------------------------------------"::String) >> print ("titledLinksSorted:"::String) >> print titledLinksSorted
 
   let titledLinksSections   = generateSections  titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
@@ -118,9 +120,6 @@ generateDirectory filterp md dirs dir'' = do
 
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst)) ++ "\n"
   let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if captionText /= "" then captionText else if altText /= "" then altText else "") (head imageFirst))) ++ "'\n"
-
-  -- remove the tag for *this* directory; it is redundant to display 'cat/catnip' on every doc/link inside '/doc/cat/catnip/index.page', after all.
-  let tagSelf = if dir'' == "doc/" then "" else init $ replace "doc/" "" dir'' -- "doc/cat/catnip/" ? 'cat/catnip'
 
   let header = generateYAMLHeader parentDirectory' previous next tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
   let sectionDirectoryChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren

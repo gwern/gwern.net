@@ -21,7 +21,7 @@ import System.Exit (ExitCode(ExitFailure))
 import qualified Data.Binary as DB (decodeFileOrFail, encodeFile)
 import Network.HTTP (urlEncode)
 import System.FilePath (takeBaseName)
-import Control.Monad (when)
+import Control.Monad (when, foldM)
 import Data.Set as S (fromList)
 
 import qualified Data.Vector as V (toList, Vector)
@@ -396,7 +396,7 @@ putStrLn $ ppShow ml'
 md <- LinkMetadata.readLinkMetadata
 let tagTest = "psychology/smell"
 let mdl = M.toList $ M.filter (\(_,_,_,_,tags,abstract) -> tagTest `elem` tags && abstract /= "") md
-mls <- sortSimilarsStartingWithNewestWithTag md mdl
+mls <- sortSimilarsStartingWithNewestWithTag md tagTest mdl
 map fst mls
 -}
 
@@ -429,21 +429,29 @@ sortSimilarsStartingWithNewest md items = do
        -- print "pathsSorted: " >> print pathsSorted
        return $ map (`restoreAssoc` items) pathsSorted'
 
-sortSimilarsStartingWithNewestWithTag :: Metadata -> [(FilePath, MetadataItem)] -> IO [(String, [(FilePath, MetadataItem)])]
-sortSimilarsStartingWithNewestWithTag _ [] = return []
-sortSimilarsStartingWithNewestWithTag _ [a] = return [("",[a])]
-sortSimilarsStartingWithNewestWithTag _ [a, b] = return [("",[a]), ("",[b])]
-sortSimilarsStartingWithNewestWithTag md items =
-  do lists <- sortSimilarsStartingWithNewest md items
-     mapM (\fs -> do suggestion <- processTitles $ map (\(_,(t,_,_,_,_,_)) -> t) fs
-                     -- retry once for sporadic API errors:
-                     suggestion' <- if not (null suggestion) then return suggestion else processTitles $ map (\(_,(t,_,_,_,_,_)) -> t) fs
-                     return (suggestion', fs)) lists
+-- instead of a mapM, we foldM: we need the list of 'all tags generated thus far' to pass into the blacklist option, so we don't wind up
+-- with a bunch of duplicate auto-labels.
+sortSimilarsStartingWithNewestWithTag :: Metadata -> String -> [(FilePath, MetadataItem)] -> IO [(String, [(FilePath, MetadataItem)])]
+sortSimilarsStartingWithNewestWithTag _ _ [] = return []
+sortSimilarsStartingWithNewestWithTag _ _ [a] = return [("",[a])]
+sortSimilarsStartingWithNewestWithTag _ _ [a, b] = return [("",[a]), ("",[b])]
+sortSimilarsStartingWithNewestWithTag md parentTag items =
+  do
+    lists <- sortSimilarsStartingWithNewest md items
+    (result, _) <- foldM processWithBlacklistAccumulator ([], []) lists
+    return result
+  where
+    processWithBlacklistAccumulator :: ([(String, [(FilePath, MetadataItem)])], [String]) -> [(FilePath, MetadataItem)] -> IO ([(String, [(FilePath, MetadataItem)])], [String])
+    processWithBlacklistAccumulator (acc, blacklist) fs = do
+      suggestion <- processTitles parentTag blacklist $ map (\(_,(t,_,_,_,_,_)) -> t) fs
+      -- retry once for sporadic API errors:
+      suggestion' <- if not (null suggestion) then return suggestion else processTitles parentTag blacklist $ map (\(_,(t,_,_,_,_,_)) -> t) fs
+      return (acc ++ [(suggestion', fs)], blacklist ++ [suggestion'])
 
-processTitles :: [String] -> IO String
-processTitles [] = return ""
-processTitles a =
-      do let a' = take (4096*3) $ unlines a
+processTitles :: String -> [String] -> [String] -> IO String
+processTitles _ _ [] = return ""
+processTitles parentTag blacklistTags a =
+      do let a' = take (4096*3) $ unlines $ [parentTag, unwords blacklistTags] ++ a
          (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/tagguesser.py", a']
          case status of
            ExitFailure err -> printRed "tagguesser.py failed!" >> printRed (show err) >> print a' >> return "" -- printGreen (ppShow (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb])) >> printRed "tagguesser.py failed!" >> return ""
