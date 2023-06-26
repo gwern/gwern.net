@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2023-05-09 17:13:36 gwern"
+-- When:  Time-stamp: "2023-06-25 15:47:19 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -14,6 +14,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- any economics or technology discussion where a nominal price from 1950 is 11x the 2019 real
 -- price! (Misunderstanding of inflation may be getting worse over time:
 -- <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3469008> )
+-- This may have been inspired by the 2008 Wikipedia template: <https://en.wikipedia.org/wiki/Template:Inflation>.
 --
 -- Years/dates are specified in a variant of my interwiki link syntax; for example: '[$50]($2000)'
 -- or '[₿0.5](₿2017-01-01)'. Dollar amounts use year, and Bitcoins use full dates, as the greater

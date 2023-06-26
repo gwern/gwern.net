@@ -1283,6 +1283,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" = 0", " = 0")
          , ("cm3", "cm<sup>3</sup>")
          , (" cm(3)", " cm<sup>3</sup>")
+         , ("R2 <", "R<sup>2</sup> <")
          , ("R2 ", "R<sup>2</sup> ")
          , (" R2", " R<sup>2</sup>")
          , (" R(2)", " R<sup>2</sup>")

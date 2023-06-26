@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-06-22 12:26:10 gwern"
+;;; When:  Time-stamp: "2023-06-25 09:52:11 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1331,8 +1331,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
 
        (query-replace-regexp "Chapter \\([0-9]+[a-fA-F]*\\)" "**Ch\\1**"  nil begin end) ; 'Chapter 1', 'Chapter 7a' etc
 
-       (query-replace-regexp "Supplementary [Tt]able\\. \\([0-9]+[a-fA-F]*\\)\\." "**Supplementary Table \\1**."  nil begin end) ; 'Table. 1. ', 'Table. 2a)' etc
-       (query-replace-regexp "Supplementary [Tt]able\\. \\([0-9]+[a-fA-F]*\\)"    "**Supplementary Table \\1**"   nil begin end) ; 'Table. 1,', 'Table. 2a,' etc
+       (query-replace-regexp "Supplementary [Tt]able\\.? \\([0-9]+[a-fA-F]*\\)\\." "**Supplementary Table \\1**."  nil begin end) ; 'Table. 1. ', 'Table. 2a)' etc
+       (query-replace-regexp "Supplementary [Tt]able\\.? \\([0-9]+[a-fA-F]*\\)"    "**Supplementary Table \\1**"   nil begin end) ; 'Table. 1,', 'Table. 2a,' etc
        (query-replace-regexp "Supplementary [Tt]able \\([0-9]+[a-fA-F]*\\)\\." "**Supplementary Table \\1**:"  nil begin end) ; 'Table 1. The graph' etc
        (query-replace-regexp "Supplementary ([Tt]able\\. \\([0-9]+[a-fA-F]*\\))"  "(**Supplementary Table \\1**)" nil begin end) ; (Table. 3b)
        (query-replace-regexp "Supplementary ([Tt]able \\([0-9]+[a-fA-F]*\\))"  "(**Supplementary Table \\1**)" nil begin end) ; (Table 3b)

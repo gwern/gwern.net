@@ -8442,7 +8442,7 @@ a[data-link-icon='metaculus']:hover .link-icon-hook::after {
 }
 
 a[data-link-icon='stat-news'] .link-icon-hook::after {
-    --link-icon-size: 0.8em;
+    --link-icon-size: 0.85em;
     --link-icon-offset-y: 0em;
     --link-icon-offset-x: 0.15em;
 
@@ -8458,7 +8458,7 @@ a[data-link-icon='magnifying-glass'] .link-icon-hook::after {
 }
 
 a[data-link-icon='anthropic'] .link-icon-hook::after {
-    --link-icon-size: 0.8em;
+    --link-icon-size: 0.75em;
     --link-icon-offset-y: 0.1em;
     --link-icon-offset-x: -0em;
 
@@ -8473,14 +8473,14 @@ a[data-link-icon='laion'] .link-icon-hook::after {
 }
 
 a[data-link-icon='tex'] .link-icon-hook::after { /* TeX logotype (actually uses Source Serif) */
-    --link-icon-size: 1em;
+    --link-icon-size: 1.05em;
     --link-icon-offset-x: 0.05em;
 
     opacity: 0.8;
 }
 
 a[data-link-icon='scholarpedia'] .link-icon-hook::after {
-    --link-icon-size: 0.80em;
+    --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.05em;
     opacity: 1.0;
 }
