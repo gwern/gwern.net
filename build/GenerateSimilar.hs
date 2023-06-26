@@ -32,11 +32,11 @@ import Data.Conduit.List (sourceList)
 
 import LinkBacklink (getForwardLinks, readBacklinksDB, Backlinks)
 import Columns as C (listLength)
-import LinkMetadata (readLinkMetadata, authorsTruncate, parseRawInline, sortItemPathDate)
+import LinkMetadata (readLinkMetadata, authorsTruncate, sortItemPathDate)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, safeHtmlWriterOptions, anyPrefixT, printRed, trim)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, safeHtmlWriterOptions, anyPrefixT, printRed, trim, parseRawInline)
 
 import Config.GenerateSimilar as C
 

@@ -19,8 +19,9 @@ import qualified Data.Text as T (Text, pack, unpack, isInfixOf, isPrefixOf, isSu
 import Text.Regex (subRegex, mkRegex)
 import Text.Regex.TDFA ((=~))
 
-import Text.Pandoc (def, nullMeta, runPure,
-                    writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Code, Image, Link, Span, Str), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension)
+import Text.Pandoc (def, nullAttr, nullMeta, runPure,
+                    writerColumns, writePlain, Block(Div, Plain, RawBlock), Pandoc(Pandoc), Inline(Code, Image, Link, RawInline, Span, Str), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..))
+import Text.Pandoc.Walk (walk)
 
 -- Auto-update the current year.
 {-# NOINLINE currentYear #-}
@@ -75,6 +76,58 @@ toPandoc abst = let clean = runPure $ readHtml def{readerExtensions=pandocExtens
                 in case clean of
                      Left e -> error $ ppShow e ++ ": " ++ abst
                      Right output -> output
+
+parseRawAllClean :: Pandoc -> Pandoc
+parseRawAllClean = walk cleanUpDivsEmpty . walk cleanUpSpans . walk (parseRawInline nullAttr) . walk (parseRawBlock nullAttr)
+
+parseRawBlock :: Attr -> Block -> Block
+parseRawBlock attr x@(RawBlock (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
+                                          case pandoc of
+                                            Left e -> error (show x ++ " : " ++ show e)
+                                            Right (Pandoc _ blocks) -> Div attr blocks
+parseRawBlock _ x = x
+parseRawInline :: Attr -> Inline -> Inline
+parseRawInline attr x@(RawInline (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
+                                          case pandoc of
+                                            Left e -> error (show x ++ " : " ++ show e)
+                                            Right (Pandoc _ [Para inlines]) -> Span attr inlines
+                                            Right (Pandoc _ [Plain inlines]) -> Span attr inlines
+                                            Right (Pandoc _ inlines) -> Span attr (extractAndFlattenInlines inlines)
+parseRawInline _ x = x
+extractAndFlattenInlines :: [Block] -> [Inline]
+extractAndFlattenInlines [RawBlock (Format "html") x]  = [RawInline (Format "html") x]
+extractAndFlattenInlines x = error ("extractAndFlattenInlines: hit a RawBlock which couldn't be parsed? : " ++ show x)
+
+-- we probably want to remove the link-auto-skipped Spans if we are not actively debugging, because they inflate the markup & browser DOM.
+-- We can't just remove the Span using a 'Inline -> Inline' walk, because a Span is an Inline with an [Inline] payload, so if we just remove the Span wrapper, it is a type error: we've actually done 'Inline -> [Inline]'.
+-- Block elements always have [Inline] (or [[Inline]]) and not Inline arguments if they have Inline at all; likewise, Inline element also have only [Inline] argumens.
+-- So, every instance of a Span *must* be inside an [Inline]. Therefore, we can walk an [Inline], and remove the wrapper, and then before++payload++after :: [Inline] and it typechecks and doesn't change the shape.
+--
+-- > cleanUpSpans [Str "foo", Span ("",["link-auto-skipped"],[]) [Str "Bar", Emph [Str "Baz"]], Str "Quux"]
+--                               [Str "foo",                                     Str "Bar", Emph [Str "Baz"],  Str "Quux"]
+-- > walk cleanUpSpans $ Pandoc nullMeta [Para [Str "foo", Span ("",["link-auto-skipped"],[]) [Str "Bar", Emph [Str "Baz"]], Str "Quux"]]
+-- Pandoc (Meta {unMeta = fromList []}) [Para [Str "foo",Str "Bar",Emph [Str "Baz"],Str "Quux"]]
+--
+-- NOTE: might need to generalize this to clean up other Span crud?
+cleanUpSpans :: [Inline] -> [Inline]
+cleanUpSpans [] = []
+cleanUpSpans   (Span ("",[],[]) payload : rest) = payload ++ rest
+cleanUpSpans x@(Span (_,[],_) _ : _) = x
+cleanUpSpans   (Span (_,["link-auto-skipped"],_) payload : rest) = payload ++ rest
+cleanUpSpans   (Span (_,["link-auto-first", "link-auto"],_) payload : rest) = payload ++ rest
+cleanUpSpans   (Span (a,classes,b) c : rest) = let classes' = filter (\cl -> cl `notElem` ["link-auto","link-auto-first","link-auto-skipped"]) classes in
+                                                       Span (a,classes',b) c : rest
+cleanUpSpans (x@Link{} : rest) =  removeClass "link-auto" x : cleanUpSpans rest
+cleanUpSpans (r:rest) = r : cleanUpSpans rest
+
+cleanUpDivsEmpty :: [Block] -> [Block]
+cleanUpDivsEmpty [] = []
+cleanUpDivsEmpty (Div ("",[],[]) payload : rest) = payload ++ rest
+cleanUpDivsEmpty (r:rest) = r : cleanUpDivsEmpty rest -- if it is not a nullAttr, then it is important and carrying a class like "abstract" or something, and must be preserved.
+
+
+simplifiedHTMLString :: String -> String
+simplifiedHTMLString arg = trim $ T.unpack $ simplified $ parseRawBlock nullAttr (RawBlock (Text.Pandoc.Format "html") (T.pack arg))
 
 -- Add or remove a class to a Link or Span; this is a null op if the class is already present or it
 -- is not a Link/Span.
@@ -740,12 +793,19 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<span class=\"math inline\">\\(L_\\infty\\)</span>", "𝓁<sub>∞</sub>")
          , ("<span class=\"math inline\">\\(\\ell_p\\)</span>", "𝓁<sub>p</sub>")
          , ("<span class=\"math inline\">\\(0&lt;p&lt;1\\)</span>", "0 &lt; <em>p</em> &lt; 1")
+         , ("<span class=\"math inline\">\\(x &lt; 1\\)</span>", "<em>x</em> &lt; 1")
+         , ("<span class=\"math inline\">\\(\\mathbf{R}^3\\)</span>", "𝐑<sup>3</sup>")
+         , ("<span class=\"math inline\">\\(\\partial_t u = \\Delta u + B(u,u)\\)</span>", "∂<sub><em>t</em></sub><em>u</em> = Δ<em>u</em> + <em>B</em>(<em>u</em>, <em>u</em>)")
+         , ("<span class=\"math inline\">\\(\\langle B(u,u), u\\rangle=0\\)</span>", "〈<em>B</em>(<em>u</em>, <em>u</em>), <em>u</em>〉 = 0")
+         , ("<span class=\"math inline\">\\(\\partial_t u = \\Delta u + \\tilde B(u,u)\\)</span>", "∂<sub><em>t</em></sub><em>u</em> = Δ<em>u</em> + <em>B̃</em>(<em>u</em>, <em>u</em>)")
+         , ("<span class=\"math inline\">\\(B(u,u)\\)</span>", "<em>B</em>(<em>u</em>, <em>u</em>)")
+         , ("<span class=\"math inline\">\\(\\tilde B\\)</span>", "<em>B̃</em>")
          , (" L-∞", " 𝓁<sub>∞</sub>")
          , (" L∞", " 𝓁<sub>∞</sub>")
            -- rest:
          , ("(PsycINFO Database Record", "")
-         , ("</p> <p>", "</p>\n<p>")
-         , ("</p><p>", "</p>\n<p>")
+         , ("</p> <p>. ", ".</p> <p>")
+         , ("</p><p>", "</p> <p>")
          , ("</li> <li>", "</li>\n<li>")
          , ("</p> <figure>", "</p>\n<figure>")
          , ("</figure> <p>", "</figure>\n<p>")

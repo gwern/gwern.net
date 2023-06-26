@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-06-05 11:24:25 gwern"
+When: Time-stamp: "2023-06-26 12:05:46 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -67,11 +67,11 @@ import LinkAuto (linkAuto)
 import LinkBacklink (getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck)
 import LinkIcon (linkIconTest)
 import LinkLive (linkLiveTest, linkLivePrioritize)
-import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadata, writeAnnotationFragments, createAnnotations, hasAnnotation, simplifiedHTMLString)
+import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadata, writeAnnotationFragments, createAnnotations, hasAnnotation,)
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv, testTags)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
-import Utils (printGreen, printRed, replace, safeHtmlWriterOptions)
+import Utils (printGreen, printRed, replace, safeHtmlWriterOptions, simplifiedHTMLString)
 
 main :: IO ()
 main =
@@ -316,8 +316,7 @@ pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `con
      unless indexp $ createAnnotations md pw
      let pb = walk (hasAnnotation md) $ addPageLinkWalk pw  -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
      pbt <- fmap typographyTransform . walkM (localizeLink adb archived)
-              $
-              if indexp then pb else
+              $ if indexp then pb else
                 walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) pb
      let pbth = addPageLinkWalk $ walk headerSelflink pbt
      if indexp then return pbth else

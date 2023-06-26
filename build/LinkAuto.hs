@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
-module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, cleanUpDivsEmpty) where
+module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered) where
 
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2023-04-16 18:04:22 gwern"
+When:  Time-stamp: "2023-06-26 13:03:59 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -52,11 +52,11 @@ import Control.Parallel.Strategies (parMap, rseq)
 import Control.Monad.State (evalState, get, put, State)
 import System.IO.Unsafe (unsafePerformIO)
 
-import Text.Pandoc (topDown, nullAttr, readerExtensions, def, writeHtml5String, pandocExtensions, runPure, readHtml, Pandoc(..), Inline(Link,Image,Code,Span,Str), Block(Div)) -- nullMeta, Inline(Space), Block(Para)
+import Text.Pandoc (topDown, nullAttr, readerExtensions, def, writeHtml5String, pandocExtensions, runPure, readHtml, Pandoc(..), Inline(Link,Image,Code,Span,Str)) -- nullMeta, Inline(Space), Block(Para)
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness/segfault/strange-closure issues (native Text, and useful splitting), so to save my sanity... BUG: TDFA seems to have slow Text instances: https://github.com/haskell-hvr/regex-tdfa/issues/9
 
-import Utils (addClass, removeClass, frequency, simplifiedDoc, safeHtmlWriterOptions)
+import Utils (addClass, frequency, simplifiedDoc, safeHtmlWriterOptions, cleanUpDivsEmpty, cleanUpSpans)
 import Query (extractURLs)
 import Interwiki (inlinesToText)
 import Typography (mergeSpaces)
@@ -94,7 +94,7 @@ linkAutoFiltered subsetter p =
   let plain = simplifiedDoc p :: T.Text -- cache the plain text of the document
   in
        let customDefinitions' = filterMatches plain $ filterDefinitions p (customDefinitions subsetter) in
-         if null customDefinitions' then p else topDown cleanUpDivsEmpty $ topDown cleanUpSpansLinkAutoSkipped $ cleanupNestedLinks $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
+         if null customDefinitions' then p else topDown cleanUpDivsEmpty $ topDown cleanUpSpans $ cleanupNestedLinks $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
 
 -----------
 
@@ -125,32 +125,6 @@ cleanupNestedLinks = topDown go
         goDeeper (Link _ is _) = Str $ inlinesToText is -- Span nullAttr is
         goDeeper x = x
 
--- we probably want to remove the link-auto-skipped Spans if we are not actively debugging, because they inflate the markup & browser DOM.
--- We can't just remove the Span using a 'Inline -> Inline' walk, because a Span is an Inline with an [Inline] payload, so if we just remove the Span wrapper, it is a type error: we've actually done 'Inline -> [Inline]'.
--- Block elements always have [Inline] (or [[Inline]]) and not Inline arguments if they have Inline at all; likewise, Inline element also have only [Inline] argumens.
--- So, every instance of a Span *must* be inside an [Inline]. Therefore, we can walk an [Inline], and remove the wrapper, and then before++payload++after :: [Inline] and it typechecks and doesn't change the shape.
---
--- > cleanUpSpansLinkAutoSkipped [Str "foo", Span ("",["link-auto-skipped"],[]) [Str "Bar", Emph [Str "Baz"]], Str "Quux"]
---                               [Str "foo",                                     Str "Bar", Emph [Str "Baz"],  Str "Quux"]
--- > walk cleanUpSpansLinkAutoSkipped $ Pandoc nullMeta [Para [Str "foo", Span ("",["link-auto-skipped"],[]) [Str "Bar", Emph [Str "Baz"]], Str "Quux"]]
--- Pandoc (Meta {unMeta = fromList []}) [Para [Str "foo",Str "Bar",Emph [Str "Baz"],Str "Quux"]]
---
--- NOTE: might need to generalize this to clean up other Span crud?
-cleanUpSpansLinkAutoSkipped :: [Inline] -> [Inline]
-cleanUpSpansLinkAutoSkipped [] = []
-cleanUpSpansLinkAutoSkipped   (Span ("",[],[]) payload : rest) = payload ++ rest
-cleanUpSpansLinkAutoSkipped x@(Span (_,[],_) _ : _) = x
-cleanUpSpansLinkAutoSkipped   (Span (_,["link-auto-skipped"],_) payload : rest) = payload ++ rest
-cleanUpSpansLinkAutoSkipped   (Span (_,["link-auto-first", "link-auto"],_) payload : rest) = payload ++ rest
-cleanUpSpansLinkAutoSkipped   (Span (a,classes,b) c : rest) = let classes' = filter (\cl -> cl `notElem` ["link-auto","link-auto-first","link-auto-skipped"]) classes in
-                                                       Span (a,classes',b) c : rest
-cleanUpSpansLinkAutoSkipped (x@Link{} : rest) =  removeClass "link-auto" x : cleanUpSpansLinkAutoSkipped rest
-cleanUpSpansLinkAutoSkipped (r:rest) = r : cleanUpSpansLinkAutoSkipped rest
-
-cleanUpDivsEmpty :: [Block] -> [Block]
-cleanUpDivsEmpty [] = []
-cleanUpDivsEmpty (Div ("",[],[]) payload : rest) = payload ++ rest
-cleanUpDivsEmpty (r:rest) = r : cleanUpDivsEmpty rest -- if it is not a nullAttr, then it is important and carrying a class like "abstract" or something, and must be preserved.
 
 -----------
 

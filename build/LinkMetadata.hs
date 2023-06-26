@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-06-16 14:20:45 gwern"
+When:  Time-stamp: "2023-06-26 12:06:28 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, parseRawBlock, parseRawInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, simplifiedHTMLString, dateTruncateBad, typesetHtmlField, lookupFallback) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, dateTruncateBad, typesetHtmlField, lookupFallback) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
@@ -37,7 +37,7 @@ import System.GlobalLock (lock)
 import Text.Pandoc (readerExtensions, Inline(Link, Span),
                     def, writeHtml5String, runPure, pandocExtensions,
                     readHtml, nullAttr, nullMeta,
-                    Inline(Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div, Plain), Attr)
+                    Inline(Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote))
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA ((=~))
 import Text.Show.Pretty (ppShow)
@@ -58,7 +58,7 @@ import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(..
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
-import Utils (writeUpdatedFile, printGreen, printRed, sed, trim, simplified, anyInfix, anyPrefix, anySuffix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, anySuffix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, parseRawAllClean)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 
@@ -349,7 +349,7 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                                                   convertInterwikiLinks $
                                                   walk (hasAnnotation md) $
                                                   walk addPageLinkWalk $
-                                                  walk (parseRawBlock nullAttr) pandoc
+                                                  parseRawAllClean pandoc
                                           walkM (invertImageInline <=< imageLinkHeightWidthSet <=< localizeLink am archived) p
                       let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
                       when (length (urlEncode u') > 273) (printRed "Warning, annotation fragment path → URL truncated!" >>
@@ -477,26 +477,6 @@ addHasAnnotation (title,aut,dt,_,_,abstrct) (Link (a,b,c) e (f,g))
       | otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
     x' = Link (a,b,c) e (f,g')
 addHasAnnotation _ z = z
-
-parseRawBlock :: Attr -> Block -> Block
-parseRawBlock attr x@(RawBlock (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
-                                          case pandoc of
-                                            Left e -> error (show x ++ " : " ++ show e)
-                                            Right (Pandoc _ blocks) -> Div attr blocks
-parseRawBlock _ x = x
-parseRawInline :: Attr -> Inline -> Inline
-parseRawInline attr x@(RawInline (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
-                                          case pandoc of
-                                            Left e -> error (show x ++ " : " ++ show e)
-                                            Right (Pandoc _ [Para inlines]) -> Span attr inlines
-                                            Right (Pandoc _ [Plain inlines]) -> Span attr inlines
-                                            Right (Pandoc _ inlines) -> Span attr (extractAndFlattenInlines inlines)
-parseRawInline _ x = x
-extractAndFlattenInlines :: [Block] -> [Inline]
-extractAndFlattenInlines x = error (show x)
-
-simplifiedHTMLString :: String -> String
-simplifiedHTMLString arg = trim $ T.unpack $ simplified $ parseRawBlock nullAttr (RawBlock (Text.Pandoc.Format "html") (T.pack arg))
 
 generateAnnotationBlock :: Bool -> Bool -> (FilePath, Maybe MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
 generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
