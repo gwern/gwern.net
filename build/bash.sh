@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-06-23 11:56:09 gwern"
+# When:  Time-stamp: "2023-06-26 09:15:31 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -236,6 +236,25 @@ complete -W "$GWERNNET_DIRS_FULL $GWERNNET_DIRS_SHORT $GWERNNET_DIRS_SUFFIXES" u
 alias u="upload"
 # 'upload' moved to ~/wiki/static/build/upload for easier calling from XMonad
 
+# wait for a file to become quiescent because eg. Firefox is still downloading it:
+is_downloading() {
+  file="$1"
+  current_time=$(date +%s)
+
+  # Check if the file exists
+  if [ -f "$file" ]; then
+    modified_time=$(stat -c %Y "$file")
+    elapsed_time=$((current_time - modified_time))
+
+    # Sleep if last-modified time is not at least 2 seconds ago
+    if [ $elapsed_time -lt 2 ]; then
+      sleep $((2 - elapsed_time))
+    fi
+  else
+    echo "File not found."
+  fi
+}
+
 # GPT-3-written:
 # shortcut for handling link-archiving review:
 # Bash shell function named `mvuri` which will take a filename with a URI encoding
@@ -254,5 +273,6 @@ mvuri () {
   local SOURCE
   SOURCE="$(find ~/ -maxdepth 1 -name "*.html" -print -quit)"
   echo "$SOURCE" "$DESTINATION"
+  is_downloading "$SOURCE"
   mv "$SOURCE" "$DESTINATION"
 }
