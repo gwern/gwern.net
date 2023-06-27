@@ -1322,24 +1322,38 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (eventIn
         //  Mark with special class, for styling purposes.
         TOC.classList.add("TOC-links-only");
     }
+
+	//	Update visibility.
+	updateTOCVisibility(TOC);
 }, "rewrite", (info) => (   info.container == document.body
                          && /\/(index)?$/.test(location.pathname)));
 
-/**************************************************************************/
-/*  If the table of contents has but one entry (or none at all), remove it.
+/*******************************************************************************/
+/*	Update visibility of a TOC. (Hide if no entries; if main page TOC, also hide
+	if one entry.)
  */
-addContentLoadHandler(GW.contentLoadHandlers.removeTOCIfSingleEntry = (eventInfo) => {
+function updateTOCVisibility(TOC) {
+    let numEntries = TOC.querySelectorAll("li").length;
+    if (   (   TOC.id == "TOC"
+            && numEntries <= 1)
+        || numEntries == 0) {
+        TOC.classList.toggle("hidden", true);
+    } else {
+        TOC.classList.toggle("hidden", false);
+    }
+}
+
+/************************************************************************/
+/*  If the table of contents has but one entry (or none at all), hide it.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.updateTOCVisibility = (eventInfo) => {
     GWLog("removeTOCIfSingleEntry", "rewrite.js", 1);
 
     let TOC = eventInfo.container.querySelector(".TOC");
     if (TOC == null)
         return;
 
-    let numEntries = TOC.querySelectorAll("li").length;
-    if (   (   TOC.id == "TOC"
-            && numEntries <= 1)
-        || numEntries == 0)
-        TOC.remove();
+	updateTOCVisibility(TOC);
 }, "rewrite");
 
 

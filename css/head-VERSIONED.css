@@ -440,6 +440,10 @@ article {
     display: none;
 }
 
+.TOC.hidden {
+	display: none;
+}
+
 .TOC {
 	--text-indent: 0em;
 	--text-alignment: left;
