@@ -195,37 +195,7 @@ addContentInjectHandler(GW.contentInjectHandlers.designateListTypes = (eventInfo
 addContentLoadHandler(GW.contentLoadHandlers.paragraphizeListTextNodes = (eventInfo) => {
     GWLog("paragraphizeListTextNodes", "rewrite.js", 1);
 
-	let inlineElementSelector = [
-		"a",
-		"em",
-		"strong",
-		"code",
-		"sup",
-		"sub",
-		"span"
-	].join(", ");
-
-	eventInfo.container.querySelectorAll("li").forEach(listItem => {
-		let nodes = Array.from(listItem.childNodes);
-		let nodeSequence = [ ];
-		let node;
-		do {
-			node = nodes.shift();
-
-			if (   node?.nodeType == Node.TEXT_NODE
-				|| (   node?.nodeType == Node.ELEMENT_NODE
-					&& node.matches(inlineElementSelector))) {
-				nodeSequence.push(node);
-			} else {
-				if (   nodeSequence.length > 0
-					&& nodeSequence.findIndex(n => isNodeEmpty(n) == false) != -1) {
-					listItem.insertBefore(newElement("P"), nodeSequence.first).append(...nodeSequence);
-				}
-
-				nodeSequence = [ ];
-			}
-		} while (node);
-	});
+	eventInfo.container.querySelectorAll("li").forEach(paragraphizeTextNodesOfElement);
 }, "rewrite");
 
 /**********************************************/
@@ -412,6 +382,15 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthTables = (eventInf
 /***********/
 /* FIGURES */
 /***********/
+
+/******************************************************************/
+/*	Wrap text nodes and inline elements in figcaptions in <p> tags.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.paragraphizeFigcaptionTextNodes = (eventInfo) => {
+    GWLog("paragraphizeFigcaptionTextNodes", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("figcaption").forEach(paragraphizeTextNodesOfElement);
+}, "rewrite");
 
 /***************************************************************************/
 /*  Make sure that the figcaption, alt-text, and title are, collectively, as

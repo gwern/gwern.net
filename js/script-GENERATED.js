@@ -11419,37 +11419,7 @@ addContentInjectHandler(GW.contentInjectHandlers.designateListTypes = (eventInfo
 addContentLoadHandler(GW.contentLoadHandlers.paragraphizeListTextNodes = (eventInfo) => {
     GWLog("paragraphizeListTextNodes", "rewrite.js", 1);
 
-	let inlineElementSelector = [
-		"a",
-		"em",
-		"strong",
-		"code",
-		"sup",
-		"sub",
-		"span"
-	].join(", ");
-
-	eventInfo.container.querySelectorAll("li").forEach(listItem => {
-		let nodes = Array.from(listItem.childNodes);
-		let nodeSequence = [ ];
-		let node;
-		do {
-			node = nodes.shift();
-
-			if (   node?.nodeType == Node.TEXT_NODE
-				|| (   node?.nodeType == Node.ELEMENT_NODE
-					&& node.matches(inlineElementSelector))) {
-				nodeSequence.push(node);
-			} else {
-				if (   nodeSequence.length > 0
-					&& nodeSequence.findIndex(n => isNodeEmpty(n) == false) != -1) {
-					listItem.insertBefore(newElement("P"), nodeSequence.first).append(...nodeSequence);
-				}
-
-				nodeSequence = [ ];
-			}
-		} while (node);
-	});
+	eventInfo.container.querySelectorAll("li").forEach(paragraphizeTextNodesOfElement);
 }, "rewrite");
 
 /**********************************************/
@@ -11636,6 +11606,15 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthTables = (eventInf
 /***********/
 /* FIGURES */
 /***********/
+
+/******************************************************************/
+/*	Wrap text nodes and inline elements in figcaptions in <p> tags.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.paragraphizeFigcaptionTextNodes = (eventInfo) => {
+    GWLog("paragraphizeFigcaptionTextNodes", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("figcaption").forEach(paragraphizeTextNodesOfElement);
+}, "rewrite");
 
 /***************************************************************************/
 /*  Make sure that the figcaption, alt-text, and title are, collectively, as
@@ -15578,7 +15557,10 @@ ImageFocus = {
 
 			//  Reset the hash, if needed.
 			if (location.hash.startsWith("#if_slide_")) {
-				relocate(ImageFocus.savedHash || location.pathname);
+				let previousURL = new URL(location.href);
+				previousURL.hash = ImageFocus.savedHash ?? "";
+				relocate(previousURL.href);
+
 				ImageFocus.savedHash = null;
 			}
 		}
@@ -15634,6 +15616,11 @@ ImageFocus = {
 	setImageFocusCaption: () => {
 		GWLog("ImageFocus.setImageFocusCaption", "image-focus.js", 2);
 
+		//	Used in comparison below.
+		function textContentOf(node) {
+			return node.textContent.trim().replace(/\n\n/g, " ");
+		}
+
 		/*	Get the figure caption, the ‘title’ attribute of the image, and the 
 			‘alt’ attribute of the image. Clean each of typographic invisibles
 			and educate quotes. Discard duplicate strings. Wrap all remaining 
@@ -15649,16 +15636,20 @@ ImageFocus = {
 				if (element)
 					Typography.processElement(element, Typography.replacementTypes.CLEAN|Typography.replacementTypes.QUOTES);
 
+				if (element.tagName == "FIGCAPTION")
+					element.innerHTML = Array.from(element.children).map(p => p.innerHTML).join("<br>\n<br>\n");
+
 				return element;
 			}).filter((element, index, array) => (
 					element != null
 				 && isNodeEmpty(element) == false
 				 && array.findIndex(otherElement => (
 				 		otherElement != null
-					 && otherElement.textContent.trim() == element.textContent.trim())
+					 && textContentOf(otherElement) == textContentOf(element))
 					) == index)
-			).map(element => `<p>${(element.innerHTML.trim())}</p>`)
-			].join("") 
+			).map(element => 
+				`<p>${(element.innerHTML.trim())}</p>`
+			)].join("") 
 		  + `</div>`
 		  + `<p class="image-url" title="Click to copy image URL to clipboard">`
 			  + `<code class="url">`

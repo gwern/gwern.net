@@ -207,6 +207,8 @@ GW.layout = {
 		[ ".aux-links-append p + .aux-links-append p.list-heading",
 											(bsm, block) => bsm + 2 ],
 
+		[ "figcaption *",					(bsm, block) => bsm - 2 ],
+
 		[ ".TOC + .collapse-block",		 	(bsm, block) => bsm - 4 ],
 	]
 };

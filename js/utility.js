@@ -678,6 +678,50 @@ function isNodeEmpty(node) {
     return true;
 }
 
+/************************************************************************/
+/*	Wrap text nodes and inline elements in the given element in <p> tags.
+ */
+function paragraphizeTextNodesOfElement(element) {
+	let inlineElementSelector = [
+		"a",
+		"em",
+		"strong",
+		"code",
+		"sup",
+		"sub",
+		"span"
+	].join(", ");
+
+	let nodes = Array.from(element.childNodes);
+	let nodeSequence = [ ];
+	let node;
+	do {
+		node = nodes.shift();
+
+		if (   node?.nodeType == Node.TEXT_NODE
+			|| (   node?.nodeType == Node.ELEMENT_NODE
+				&& node.matches(inlineElementSelector))) {
+			nodeSequence.push(node);
+		} else {
+			if (   nodeSequence.length > 0
+				&& nodeSequence.findIndex(n => isNodeEmpty(n) == false) != -1) {
+				let nextNode = nodeSequence.last.nextSibling;
+				let graf = newElement("P");
+				graf.append(...nodeSequence);
+				graf.innerHTML = graf.innerHTML.trim();
+				element.insertBefore(graf, nextNode)
+			}
+
+			nodeSequence = [ ];
+
+			//	Remove <br> elements.
+			if (   node?.nodeType == Node.ELEMENT_NODE
+				&& node.tagName == "BR")
+				node.remove();
+		}
+	} while (node);
+}
+
 /***************************************************/
 /*  Causes an element’s contents to become selected.
  */

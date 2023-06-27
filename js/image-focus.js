@@ -433,7 +433,10 @@ ImageFocus = {
 
 			//  Reset the hash, if needed.
 			if (location.hash.startsWith("#if_slide_")) {
-				relocate(ImageFocus.savedHash || location.pathname);
+				let previousURL = new URL(location.href);
+				previousURL.hash = ImageFocus.savedHash ?? "";
+				relocate(previousURL.href);
+
 				ImageFocus.savedHash = null;
 			}
 		}
@@ -489,6 +492,11 @@ ImageFocus = {
 	setImageFocusCaption: () => {
 		GWLog("ImageFocus.setImageFocusCaption", "image-focus.js", 2);
 
+		//	Used in comparison below.
+		function textContentOf(node) {
+			return node.textContent.trim().replace(/\n\n/g, " ");
+		}
+
 		/*	Get the figure caption, the ‘title’ attribute of the image, and the 
 			‘alt’ attribute of the image. Clean each of typographic invisibles
 			and educate quotes. Discard duplicate strings. Wrap all remaining 
@@ -504,16 +512,20 @@ ImageFocus = {
 				if (element)
 					Typography.processElement(element, Typography.replacementTypes.CLEAN|Typography.replacementTypes.QUOTES);
 
+				if (element.tagName == "FIGCAPTION")
+					element.innerHTML = Array.from(element.children).map(p => p.innerHTML).join("<br>\n<br>\n");
+
 				return element;
 			}).filter((element, index, array) => (
 					element != null
 				 && isNodeEmpty(element) == false
 				 && array.findIndex(otherElement => (
 				 		otherElement != null
-					 && otherElement.textContent.trim() == element.textContent.trim())
+					 && textContentOf(otherElement) == textContentOf(element))
 					) == index)
-			).map(element => `<p>${(element.innerHTML.trim())}</p>`)
-			].join("") 
+			).map(element => 
+				`<p>${(element.innerHTML.trim())}</p>`
+			)].join("") 
 		  + `</div>`
 		  + `<p class="image-url" title="Click to copy image URL to clipboard">`
 			  + `<code class="url">`
