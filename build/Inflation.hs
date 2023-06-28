@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2023-06-25 15:47:19 gwern"
+-- When:  Time-stamp: "2023-06-27 10:25:22 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -190,6 +190,7 @@ investing in stock X 10 years ago?' but 'what is its return compared to simply l
 my standard stock index?'. If X returns 70% but the S&P 500 returned 200%, then including any
 numbers like '70%' is actively misleading to the reader: it should actually be '−130%' or something,
 to incorporate the enormous opportunity cost of making such a lousy investment like X.
+(See <https://marginalrevolution.com/marginalrevolution/2016/10/performance-pay-nobel.html>.)
 
 Another example of the silliness of not thinking about the use: ever notice those stock tickers in
 financial websites like WSJ articles, where every mention of a company is followed by today's stock

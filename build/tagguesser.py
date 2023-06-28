@@ -4,7 +4,7 @@
 # tagguesser.py: suggest a tag for links/annotations based on a list of titles fed into the OA API
 # Author: Gwern Branwen
 # Date: 2023-06-17
-# When:  Time-stamp: "2023-06-25 20:43:13 gwern"
+# When:  Time-stamp: "2023-06-27 10:23:56 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python tagguesser.py
@@ -62,7 +62,7 @@ target = shuffle_input(targetUnshuffled)
 
 messages = [
     {"role": "system", "content": "You are a helpful webmaster & research assistant "},
-    {"role": "user", "content": f"Below is a list of article titles (between the '<title>' and '</title>' labels) with some unifying theme or topic.\nPlease suggest a 1-word or 2-words-max phrase, which can be used as a tag for organizing documents, which is more specific than the current tag for them ('{parent_tag}'). The tag should summarize them in a simple comprehensible way, be easy to type, be singular not plural, be lowercase alphanumerical only, English, and be command-line & URL safe.\nExample tags include 'mead, video, fiction, psychedelic, scaling, discrete, bird, tabular, anxiety, hardware, heritable, t5, adversarial, dnm-archive, imitation-learning, mulberry-tree, muzero, nonfiction, long-now, sociology, prediction, linkrot'.\nOutput your tag suggestion on a single line by itself, with no other formatting or padding. Do not make any comments or suggestions. Do not print anything but your suggested tag. Do not use any of the following tags: '{blacklist_tags}'.\n<titles>\n{target}\n</titles>"}
+    {"role": "user", "content": f"Below is a list of article titles (between the '<title>' and '</title>' labels) with some unifying theme or topic.\nPlease suggest a 1-word or 2-words-max phrase, which can be used as a tag for organizing documents, which is more specific than the current tag for them ('{parent_tag}'). The tag should summarize them in a simple comprehensible way, be easy to type, be singular not plural, be lowercase alphanumerical only, English, and be command-line & URL safe.\nExample tags include 'mead, video, fiction, psychedelic, scaling, discrete, bird, tabular, anxiety, hardware, heritable, t5, adversarial, dnm-archive, imitation-learning, mulberry-tree, muzero, nonfiction, long-now, sociology, prediction, linkrot'.\nOutput your tag suggestion on a single line by itself, with no other formatting or padding such as quotation marks. Do not make any comments or suggestions. Do not print anything but your suggested tag. Do not use any of the following tags: '{blacklist_tags}'.\n<titles>\n{target}\n</titles>"}
 ]
 
 result = run_with_timeout(
