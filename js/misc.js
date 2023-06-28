@@ -728,6 +728,9 @@ function updatePageTOC(eventInfo) {
 	newEntries.forEach(entry => {
 		Typography.processElement(entry, Typography.replacementTypes.WORDBREAKS, true);
 	});
+
+	//	Update visibility.
+	updateTOCVisibility(TOC);
 }
 
 
