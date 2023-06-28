@@ -20,7 +20,7 @@ import Text.Regex (subRegex, mkRegex)
 import Text.Regex.TDFA ((=~))
 
 import Text.Pandoc (def, nullAttr, nullMeta, runPure,
-                    writerColumns, writePlain, Block(Div, Plain, RawBlock), Pandoc(Pandoc), Inline(Code, Image, Link, RawInline, Span, Str), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..))
+                    writerColumns, writePlain, Block(Div, Plain, RawBlock), Pandoc(Pandoc), Inline(Code, Image, Link, RawInline, Span, Str), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown)
 import Text.Pandoc.Walk (walk)
 
 -- Auto-update the current year.
@@ -78,7 +78,7 @@ toPandoc abst = let clean = runPure $ readHtml def{readerExtensions=pandocExtens
                      Right output -> output
 
 parseRawAllClean :: Pandoc -> Pandoc
-parseRawAllClean = walk cleanUpDivsEmpty . walk cleanUpSpans . walk (parseRawInline nullAttr) . walk (parseRawBlock nullAttr)
+parseRawAllClean = topDown cleanUpDivsEmpty . walk cleanUpSpans . walk (parseRawInline nullAttr) . walk (parseRawBlock nullAttr)
 
 parseRawBlock :: Attr -> Block -> Block
 parseRawBlock attr x@(RawBlock (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
@@ -100,7 +100,7 @@ extractAndFlattenInlines x = error ("extractAndFlattenInlines: hit a RawBlock wh
 
 -- we probably want to remove the link-auto-skipped Spans if we are not actively debugging, because they inflate the markup & browser DOM.
 -- We can't just remove the Span using a 'Inline -> Inline' walk, because a Span is an Inline with an [Inline] payload, so if we just remove the Span wrapper, it is a type error: we've actually done 'Inline -> [Inline]'.
--- Block elements always have [Inline] (or [[Inline]]) and not Inline arguments if they have Inline at all; likewise, Inline element also have only [Inline] argumens.
+-- Block elements always have [Inline] (or [[Inline]]) and not Inline arguments if they have Inline at all; likewise, Inline element also have only [Inline] arguments.
 -- So, every instance of a Span *must* be inside an [Inline]. Therefore, we can walk an [Inline], and remove the wrapper, and then before++payload++after :: [Inline] and it typechecks and doesn't change the shape.
 --
 -- > cleanUpSpans [Str "foo", Span ("",["link-auto-skipped"],[]) [Str "Bar", Emph [Str "Baz"]], Str "Quux"]
