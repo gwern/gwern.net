@@ -49,9 +49,9 @@ main = do
 
           let links = filter (\arg -> " "/= arg && ""/=arg && (head arg == '/' || "http" `isPrefixOf` arg)) args
           allTags <- listTagsAll
-          let tags = (filter (\t -> t `elem` allTags || tail t `elem` allTags) $ map (\t -> if head t == '-' then "-" ++ guessTagFromShort allTags (filter (/=',') $ tail t)
+          let tags = (map (\t -> if head t == '-' then "-" ++ guessTagFromShort allTags (filter (/=',') $ tail t)
                                                                                             else guessTagFromShort allTags $ filter (/=',') t) $ -- we store tags comma-separated so sometimes we might leave in a stray tag when copy-pasting
-                filter (\t -> t `notElem` links || ("-"++t) `notElem` links) args) :: [String]
+                filter (\t -> t `notElem` links && ("-"++t) `notElem` links) args) :: [String]
 
           when (null tags) $ error ("Error: Forgot tags? " ++ show args)
           mapM_ (\arg' -> do filep <- doesDirectoryExist ("doc/"++ if head arg' == '-' then tail arg' else arg')
