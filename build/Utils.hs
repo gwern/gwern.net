@@ -15,12 +15,15 @@ import System.IO.Temp (emptySystemTempFile)
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Show.Pretty (ppShow)
 import qualified Data.Text as T (Text, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf, replace)
+import System.Exit (ExitCode(ExitFailure))
+import qualified Data.ByteString.Lazy.UTF8 as U (toString)
+import Data.FileStore.Utils (runShellCommand)
 
 import Text.Regex (subRegex, mkRegex)
 import Text.Regex.TDFA ((=~))
 
 import Text.Pandoc (def, nullAttr, nullMeta, runPure,
-                    writerColumns, writePlain, Block(Div, Plain, RawBlock), Pandoc(Pandoc), Inline(Code, Image, Link, RawInline, Span, Str), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown)
+                    writerColumns, writePlain, Block(Div, Plain, RawBlock), Pandoc(Pandoc), Inline(Code, Image, Link, Math, RawInline, Span, Str), MathType(InlineMath), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown)
 import Text.Pandoc.Walk (walk)
 
 -- Auto-update the current year.
@@ -258,14 +261,12 @@ checkURL :: String -> IO ()
 checkURL u = do let doubleURL = u =~ badUrlRegex -- I keep accidentally concatenating Arxiv URLs when tagging.
                 if not doubleURL then return () else error u
 
-
 processDOI, processDOIArxiv :: String -> String
 processDOI = replace "–" "-" . replace "—" "-" . replace "https://doi.org/" "" . sed "^doi:" ""
  -- Arxiv has some weird URLs and edge-cases like <https://arxiv.org/abs/hep-ph/0204295> (note double-subdirectory & lack of period-separation).
 processDOIArxiv url = "10.48550/arXiv." ++
                                sed "https://arxiv.org/[a-z-]+/([0-9]+\\.[0-9]+).*" "\\1" -- regular current Arxiv URL pattern
                                (sed "https://arxiv.org/abs/[a-z-]+/([0-9]+).*" "\\1" url) -- old-style like 'hep-ph'
-
 
 -- handle initials consistently as period+space-separated; delete titles; delete the occasional final Oxford 'and' cluttering up author lists
 cleanAuthors :: String -> String
@@ -289,6 +290,17 @@ cleanAuthors = trim . replaceMany [(". . ", ". "), ("?",""), (",,", ","), (",,",
                          (" ([A-Z]) ", " \\1. ")                                             -- "John H Smith"   → "John H. Smith"
                          ]
 
+-- convert a LaTeX expression to Unicode/HTML/CSS by an OA API script.
+-- > Text.Pandoc.Walk.walkM inlineMath2Text [Math InlineMath "a + b = c"]
+-- [RawInline (Format "html") "<em>a</em> + <em>b</em> = <em>c</em>"]
+inlineMath2Text :: Inline -> IO Inline
+inlineMath2Text x@(Math InlineMath a) =
+  do (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/latex2unicode.py", T.unpack a]
+     let mb' = T.pack $ trim $ U.toString mb
+     case status of
+       ExitFailure err -> printGreen (intercalate " : " [T.unpack a, T.unpack mb', ppShow status, ppShow err, ppShow mb']) >> printRed "latex2unicode.py failed!" >> return x
+       _ -> return $ if mb' == a then x else RawInline (Format "html") mb'
+inlineMath2Text x = return x
 
 -- run all necessary rewrites on a string to clean up malformation, inconsistent formatting, errors, convert to house style, etc
 cleanAbstractsHTML :: String -> String
@@ -428,6 +440,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("RR=([.0-9])", "RR = \\1") -- 'RR=2.9' → 'RR = 2.09'
          , ("OR=([.0-9])", "OR = \\1") -- 'OR=2.9' → 'OR = 2.09'
          , ("AOR=([.0-9])", "AOR = \\1") -- 'AOR=2.9' → 'AOR = 2.09'
+         -- NOTE TO SELF: all math-inline expressions may be deletable if the OA API latex2unicode.py script works out well.
          -- math regexes
          , ("<span class=\"math inline\">\\\\\\(([a-zA-Z])\\\\\\)</span>", "<em>\\1</em>") -- '<span class="math inline">\(d\)</span>', 'the state matrix <span class="math inline">\(A\)</span>'
          , ("<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\\\)</span>", "\\1") -- '<span class="math inline">\(30\)</span>'
@@ -800,6 +813,10 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<span class=\"math inline\">\\(\\partial_t u = \\Delta u + \\tilde B(u,u)\\)</span>", "∂<sub><em>t</em></sub><em>u</em> = Δ<em>u</em> + <em>B̃</em>(<em>u</em>, <em>u</em>)")
          , ("<span class=\"math inline\">\\(B(u,u)\\)</span>", "<em>B</em>(<em>u</em>, <em>u</em>)")
          , ("<span class=\"math inline\">\\(\\tilde B\\)</span>", "<em>B̃</em>")
+         , ("<span class=\"math inline\">\\9<em>r</em> &gt; 1</span>", "<em>r</em> &gt; 1")
+         , ("<span class=\"math inline\">\\(1-\\tilde O(n^{-1/3})\\)</span>",       "1 − 𝑂̃(<em>n</em><sup>−1⁄3</sup>)")
+         , ("<span class=\"math inline\">\\(\\tilde O(n^{-1/4})\\)</span>",         "1 − 𝑂̃(<em>n</em><sup>−1⁄4</sup>)")
+         , ("<span class=\"math inline\">\\(1-\\tilde \\Omega(n^{-1/3})\\)</span>", "1 − Ω̃(<em>n</em><sup>−1⁄3</sup>)")
          , (" L-∞", " 𝓁<sub>∞</sub>")
          , (" L∞", " 𝓁<sub>∞</sub>")
            -- rest:

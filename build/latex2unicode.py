@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2023-06-30 12:33:23 gwern"
+# When:  Time-stamp: "2023-06-30 17:27:26 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -50,6 +50,7 @@ Task: Convert LaTeX inline expressions from ArXiv-style TeX math to inline Unico
 Details:
 
 - Convert only if the result is unambiguous.
+- Note that inputs may be very short, because each LaTeX fragment in an ArXiv abstract is processed individually. Many inputs will be a short as single letters (which are variables).
 - Assume only default environment settings with no redefinitions or uses like `\newcommand` or `\begin`.
 - Do not modify block-level equations, or complex structures such as diagrams or tables or arrays or matrices (eg `\begin{bmatrix}`), or illustrations such as drawn by TikZ or `\draw` , as those require special processing. Do not convert them & simply repeat it if the input is not an inline math expression.
 - If a TeX command has no reasonable Unicode equivalent, such as the `\overrightarrow{AB}`/`\vec{AB}` or `\check{a}` or `\\underline`/`overline` commands in LaTeX, simply repeat it.
@@ -63,12 +64,12 @@ Details:
 - Convert roots such as square or cube roots if that would be unambiguous. For example, `\sqrt[3]{8}` → `∛8` is good, but not `\sqrt[3]{ab}` because `∛<em>ab</em>` is ambiguous; do not convert complex roots like `\sqrt[3]{ab}`.
 - Color & styling: if necessary, you may use very simple CSS inline with a `<span style="">` declaration, such as to color something blue using `<span style="color: blue">`.
 - Be careful about dash use: correctly use MINUS SIGN (−) vs EM DASH (—) vs EN DASH (–) vs hyphen (-).
-- More examples: ` O(1)` → ` 𝒪(1)`; `<span class="math inline">\(\mathsf{TC}^0\)</span>` → `<strong>TC</strong><sup>0</sup>`; `<span class="math inline">\(\approx\)</span>` → `~`; `<span class="math inline">\(1-\tilde \Omega(n^{-1/3})\)</span>` → `1 − Ω̃(<em>n</em><sup>−1⁄3</sup>)`; `<span class="math inline">\(\mathbf{R}^3\)</span>` → `𝐑<sup>3</sup>`; `<span class="math inline">\(\ell_p\)</span>` → `𝓁<sub>p</sub>`; `\textcircled{r}` → `ⓡ`; `(\nabla \log p_t\)` → `∇ log <em>p<sub>t</sub></em>`; `\(\partial_t u = \Delta u + \tilde B(u,u)\)` → `∂<sub><em>t</em></sub><em>u</em> = Δ<em>u</em> + <em>B̃</em>(<em>u</em>, <em>u</em>)`; `\(1 - \frac{1}{e}\)` → `"1 − 1⁄<em>e</em>`; `O(\sqrt{T}` → `𝒪(√<em>T</em>)`; `<span class="math inline">\(^\circ\)</span>` → `°`; `<span class="math inline">\(^\bullet\)</span>` → `•`; `6\times 10^{-6}\)` → `6×10<sup>−6</sup>`; `5\div10` → `5 ÷ 10`; `\Pr(\text{text} | \alpha)` → `Pr(text | α)`; `<span class="math inline">\(\hbar\)</span>` → `ℏ`; `\frac{1}{2}`→ `1⁄2`; `\nabla` → `∇`; `<span>\(r \to\infty\)</span>` → `<em>r</em> → ∞`; `\hat{a}` → `â`; \textit{zero-shot}` → `<em>zero-shot</em>`; `\(f(x) = x \cdot \text{sigmoid}(\beta x)\)` → `<em>f(x)</em> = <em>x</em> × sigmoid(β <em>x</em>)`; `\clubsuit` → `♣`; `\textcolor{red}{x}` → `<span style="color: red">x</span>`; `\textbf{bolding}` → `<strong>bolding</strong>`; `\textit{emphasis}` → `<em>emphasis</em>`;
+- More examples: ` O(1)` → ` 𝒪(1)`; `<span class="math inline">\(\mathsf{TC}^0\)</span>` → `<strong>TC</strong><sup>0</sup>`; `<span class="math inline">\(\approx\)</span>` → `~`; `<span class="math inline">\(1-\tilde \Omega(n^{-1/3})\)</span>` → `1 − Ω̃(<em>n</em><sup>−1⁄3</sup>)`; `<span class="math inline">\(\mathbf{R}^3\)</span>` → `𝐑<sup>3</sup>`; `<span class="math inline">\(\ell_p\)</span>` → `𝓁<sub>p</sub>`; `\textcircled{r}` → `ⓡ`; `(\nabla \log p_t\)` → `∇ log <em>p<sub>t</sub></em>`; `\(\partial_t u = \Delta u + \tilde B(u,u)\)` → `∂<sub><em>t</em></sub><em>u</em> = Δ<em>u</em> + <em>B̃</em>(<em>u</em>, <em>u</em>)`; `\(1 - \frac{1}{e}\)` → `"1 − 1⁄<em>e</em>`; `O(\sqrt{T}` → `𝒪(√<em>T</em>)`; `<span class="math inline">\(^\circ\)</span>` → `°`; `<span class="math inline">\(^\bullet\)</span>` → `•`; `6\times 10^{-6}\)` → `6×10<sup>−6</sup>`; `5\div10` → `5 ÷ 10`; `\Pr(\text{text} | \alpha)` → `Pr(text | α)`; `<span class="math inline">\(\hbar\)</span>` → `ℏ`; `\frac{1}{2}`→ `1⁄2`; `\nabla` → `∇`; `<span>\(r \to\infty\)</span>` → `<em>r</em> → ∞`; `\hat{a}` → `â`; \textit{zero-shot}` → `<em>zero-shot</em>`; `\(f(x) = x \cdot \text{sigmoid}(\beta x)\)` → `<em>f(x)</em> = <em>x</em> × sigmoid(β <em>x</em>)`; `\clubsuit` → `♣`; `\textcolor{red}{x}` → `<span style="color: red">x</span>`; `\textbf{bolding}` → `<strong>bolding</strong>`; `\textit{emphasis}` → `<em>emphasis</em>`; `B` → `<em>B</em>`; `u` → `<em>u</em>`; `X + Y` → `<em>X</em> + <em>Y</em>`.
 
 Task example:
 
-Input to convert: `<span class="math inline">\(H\gg1\)</span>`
-Converted output: `<em>H</em> ≫ 1`
+Input to convert: <span class="math inline">\(H\gg1\)</span>
+Converted output: <em>H</em> ≫ 1
 
 Task:
 

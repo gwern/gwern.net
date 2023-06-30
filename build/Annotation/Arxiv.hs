@@ -8,11 +8,13 @@ import Text.Show.Pretty (ppShow)
 import System.Exit (ExitCode(ExitFailure))
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, HTMLMathMethod(MathJax),
                     defaultMathJaxURL, def, readLaTeX, writeHtml5String, WrapOption(WrapNone), runPure, pandocExtensions)
+import Text.Pandoc.Walk (walk)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, Tag(TagText))
+import System.IO.Unsafe (unsafePerformIO)
 
 import LinkAuto (linkAutoHtml5String)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path)
-import Utils (checkURL, printRed, cleanAuthors, replace, cleanAbstractsHTML, processDOI, safeHtmlWriterOptions, replaceMany, sedMany, printGreen, trimTitle, processDOIArxiv)
+import Utils (checkURL, printRed, cleanAuthors, replace, cleanAbstractsHTML, processDOI, safeHtmlWriterOptions, replaceMany, sedMany, printGreen, trimTitle, processDOIArxiv, inlineMath2Text)
 import Paragraph (processParagraphizer)
 
 arxiv :: Path -> IO (Either Failure (Path, MetadataItem))
@@ -94,7 +96,7 @@ processArxivAbstract a = let cleaned = runPure $ do
                                     pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack tex
                                       -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.
 
-                                    writeHtml5String safeHtmlWriterOptions{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc
+                                    writeHtml5String safeHtmlWriterOptions{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} $ walk (unsafePerformIO . inlineMath2Text) pandoc
               in case cleaned of
                  Left e -> error $ " : " ++ ppShow e ++ " : " ++ a
                  Right output -> cleanAbstractsHTML $ cleanArxivAbstracts $ T.unpack output
