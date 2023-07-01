@@ -1926,6 +1926,13 @@ span.smallcaps {
     font-variant-caps: small-caps;
 }
 
+/*	Fixes a bug, not with thickness of the strikethrough line, but its position.
+	(No, I have no idea why it works like that.)
+ */
+del {
+	text-decoration-thickness: from-font;
+}
+
 /*  LaTeX/TeX: Format the logotypes correctly (a higher up, e lower)
     (borrowed from https://latex.now.sh/ )
     */
