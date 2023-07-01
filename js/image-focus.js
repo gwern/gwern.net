@@ -512,7 +512,7 @@ ImageFocus = {
 				if (element)
 					Typography.processElement(element, Typography.replacementTypes.CLEAN|Typography.replacementTypes.QUOTES);
 
-				if (element.tagName == "FIGCAPTION")
+				if (element?.tagName == "FIGCAPTION")
 					element.innerHTML = Array.from(element.children).map(p => p.innerHTML).join("<br>\n<br>\n");
 
 				return element;
