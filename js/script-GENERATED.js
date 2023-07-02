@@ -569,13 +569,15 @@ function aggregateMarginNotesIfNeeded(eventInfo) {
 function aggregateMarginNotes(eventInfo) {
     GWLog("aggregateMarginNotes", "misc.js", 2);
 
+	let marginNotesBlockClass = "margin-notes-block";
+
 	eventInfo.document.querySelectorAll(".marginnote").forEach(marginNote => {
 		if (marginNote.textContent.trim() == "☞")
 			return;
 
 		let section = marginNote.closest("section, .markdownBody");
 
-		let marginNotesBlock = childBlocksOf(section).find(child => child.matches(".margin-notes-block"));
+		let marginNotesBlock = section.querySelector(`#${(CSS.escape(section.id))}-${marginNotesBlockClass}`);
 		if (marginNotesBlock == null) {
 			/*	Construct the margin notes block. It should go after any 
 				abstract and/or epigraph that opens the section.
@@ -587,7 +589,10 @@ function aggregateMarginNotes(eventInfo) {
 				firstBlock = firstBlock.parentElement;
 
 			//	Inject the margin notes block and a horizontal rule.
-			marginNotesBlock = newElement("P", { class: "margin-notes-block" });
+			marginNotesBlock = newElement("P", {
+				class: marginNotesBlockClass,
+				id: `${section.id}-${marginNotesBlockClass}`
+			});
 			firstBlock.parentElement.insertBefore(marginNotesBlock, firstBlock);
 		}
 
@@ -618,7 +623,7 @@ function aggregateMarginNotes(eventInfo) {
 	});
 
 	//	Update visibility of margin note blocks.
-	eventInfo.document.querySelectorAll(".margin-notes-block").forEach(marginNotesBlock => {
+	eventInfo.document.querySelectorAll(`.${marginNotesBlockClass}`).forEach(marginNotesBlock => {
 		marginNotesBlock.classList.toggle("hidden", marginNotesBlock.children.length < GW.marginNotes.minimumAggregatedNotesCount);			
 	});
 }
