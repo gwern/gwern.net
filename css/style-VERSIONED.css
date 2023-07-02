@@ -1175,10 +1175,6 @@ button {
 /*= Section heading self-links =*/
 /*=----------------------------=*/
 
-.heading a {
-    background: none;
-}
-
 .heading a::after {
     content: "\00B6"; /* Pilcrow sign: ¶ */
     font-size: 0.75em;
@@ -2325,18 +2321,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1688337204#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1688337534#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1688337204#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1688337534#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1688337204#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1688337534#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1688337204#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1688337534#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -3712,78 +3708,6 @@ section.footnotes .footnote-self-link {
 #markdownBody #sidenote-column-right .sidenote.targeted > .sidenote-self-link::before,
 #markdownBody #sidenote-column-right .sidenote > .sidenote-self-link:hover::before {
     left: -1px;
-}
-
-/*=--------------=*/
-/*= Margin notes =*/
-/*=--------------=*/
-/* display inline on mobile/narrow windows; on sufficiently-wide screens, pop out as number-less sidenotes */
-
-.marginnote {
-    /* bolding turns out to be too obtrusive for users' liking; italicized both inline & popped-out */
-    font-style: italic;
-    color: var(--GW-body-text-color);
-    font-family: var(--GW-serif-font-stack);
-}
-.marginnote.inline {
-    color: inherit;
-}
-#markdownBody .marginnote.sidenote {
-	--text-hyphenation: none;
-
-    display: flex;
-    justify-content: right;
-    width: calc(50vw - (var(--GW-body-max-width) / 2 + 96px));
-    max-width: var(--GW-sidenotes-max-width);
-    right: calc(100% + 64px);
-    left: unset;
-
-    /*  We inherit left and right padding from .sidenote class. */
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
-
-    font-size: calc(var(--GW-body-text-font-size) * 0.85);
-    text-align: left;
-    opacity: 0.85;
-    z-index: 1;
-}
-#markdownBody .marginnote.sidenote .marginnote-inner-wrapper {
-    display: block;
-    width: fit-content;
-}
-
-#markdownBody .marginnote.sidenote:hover {
-    box-shadow: none;
-}
-/* make links in margin notes (somewhat unusual but should be supported simply because that's what one would expect) clickable/hover-able */
-#markdownBody .marginnote.sidenote::after {
-    z-index: -1;
-}
-
-/*  Margin notes within admonitions need special layout.
-    This is based on the width of the admonition icon area.
-    */
-#markdownBody .admonition .marginnote.sidenote {
-    width: calc(50vw - ((var(--GW-body-max-width) + (2.875em / (0.85/0.875)))/2 + 96px));
-    right: calc(var(--GW-body-max-width) + (2.875em / (0.85/0.875)) + 64px);
-}
-
-/*******************************************/
-/*	Margin note blocks at start of sections.
- */
-
-.markdownBody .margin-notes-block {
-	text-align: center;
-}
-
-.markdownBody .margin-notes-block.hidden {
-	display: none;
-}
-
-.markdownBody .margin-notes-block .marginnote:nth-last-child(n+2)::after {
-	content: "•";
-	margin: 0 0.75em;
-	opacity: 0.5;
 }
 
 
@@ -5286,14 +5210,14 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1688337204#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1688337534#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1688337204#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1688337534#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5426,7 +5350,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1688337204#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1688337534#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5853,14 +5777,14 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1688337204#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1688337534#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1688337204#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1688337534#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6741,7 +6665,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1688337204#question');
+    background-image: url('/static/img/icon/icons.svg?v=1688337534#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7247,7 +7171,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1688337204#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1688337534#circle-notch-solid');
 
     pointer-events: none;
 }
