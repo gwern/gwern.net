@@ -608,6 +608,9 @@ function aggregateMarginNotes(eventInfo) {
 		//	Clone the note.
 		let clonedNote = marginNote.cloneNode(true);
 
+		//	Set margin note type class.
+		clonedNote.swapClasses([ "inline", "sidenote" ], 0);
+
 		//	Unwrap the inner wrapper (unneeded here).
 		unwrap(clonedNote.querySelector(".marginnote-inner-wrapper"));
 
