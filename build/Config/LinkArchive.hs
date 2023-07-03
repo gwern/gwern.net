@@ -1122,5 +1122,7 @@ whiteList url
       , "https://www.reddit.com/r/politics/" -- homepage
       , "https://www.reddit.com/r/keto/" -- homepage
       , "https://danijar.com/project/dreamerv3/" -- low quality (video embeds)
+      , "https://tonyzhaozh.github.io/aloha/" -- low quality (video embeds)
+      , "https://maggieappleton.com/transcopyright-dreams#designing-speculative-interfaces" -- low quality (Figma embeds)
       ] = True
     | otherwise = False
