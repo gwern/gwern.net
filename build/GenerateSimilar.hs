@@ -11,7 +11,7 @@ import qualified Data.Text as T  (append, intercalate, isPrefixOf, length, pack,
 import Data.List ((\\), intercalate,  nub, tails, sort)
 import Data.Maybe (fromJust, fromMaybe)
 import qualified Data.Map.Strict as M (filter, keys, lookup, fromList, toList, difference, withoutKeys, restrictKeys, member)
-import System.Directory (doesFileExist, renameFile)
+import System.Directory (doesFileExist, renameFile, removeFile)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Read (readMaybe)
 import Text.Show.Pretty (ppShow)
@@ -30,7 +30,7 @@ import Data.RPTree (knn, forest, metricL2, rpTreeCfg, fpMaxTreeDepth, fpDataChun
 import Data.Conduit (ConduitT)
 import Data.Conduit.List (sourceList)
 
-import LinkBacklink (getForwardLinks, readBacklinksDB, Backlinks)
+import LinkBacklink (getSimilarLink, getForwardLinks, readBacklinksDB, Backlinks)
 import Columns as C (listLength)
 import LinkMetadata (readLinkMetadata, authorsTruncate, sortItemPathDate)
 import LinkMetadataTypes (Metadata, MetadataItem)
@@ -284,7 +284,11 @@ findN f 20 C.iterationLimit $ head edb
 -}
 
 similaritemExistsP :: String -> IO Bool
-similaritemExistsP p = doesFileExist $ take 274 $ "metadata/annotation/similar/" ++ urlEncode p ++ ".html"
+similaritemExistsP = doesFileExist . fst . getSimilarLink
+
+-- opposite of writeOutMatch: we delete the on-disk version to force a rebuild. This may be to clean up in general, or it may be because a new item got embedded & turned out to be a similar-hit, and since distance is reciprocal, we want to rebuild *both*. Deleting on-disk is an easy way to force a rebuild using the existing logic.
+expireMatches :: [String] -> IO ()
+expireMatches = mapM_ (removeFile . fst . getSimilarLink)
 
 writeOutMatch :: Metadata -> Backlinks -> (String, [String]) -> IO ()
 writeOutMatch md bdb (p,matches) =
