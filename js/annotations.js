@@ -443,7 +443,15 @@ Annotations = { ...Annotations,
 				}
 
 				//	Pop-frame title text.
-				let popFrameTitleText = titleText.trimQuotes();
+				let popFrameTitle = referenceElement.cloneNode(true);
+				//	Trim quotes.
+				let [ first, last ] = [ popFrameTitle.firstTextNode, popFrameTitle.lastTextNode ];
+				if (   /^['"‘“]/.test(first.textContent) == true
+					&& /['"’”]$/.test(last.textContent)  == true) {
+					first.textContent = first.textContent.slice(1);
+					last.textContent = last.textContent.slice(0, -1);
+				}
+				let popFrameTitleText = popFrameTitle.innerHTML;
 
 				return {
 					content: {
