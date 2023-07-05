@@ -619,4 +619,5 @@ linkIconTestUnitsText =
          , ("https://www.nlsinfo.org/content/cohorts/nlsy97", "NLS", "text,tri,sans")
          , ("https://groups.google.com/g/pandoc-discuss/c/jgb-Q0F2p1Y/m/1DogIEAtAQAJ", "PNDC", "text,quad,sans")
          , ("https://scale.com/", "SCLE", "text,quad,monospace")
+         , ("https://radiolab.org/podcast/91725-words#ember29180666", "audio-waveform-lines", "svg")
         ]

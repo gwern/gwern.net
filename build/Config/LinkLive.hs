@@ -790,6 +790,7 @@ goodDomainsSimple =
     , "blogs.lanecc.edu"
     , "mattmahoney.net"
     , "scale.com"
+    , "radiolab.org"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com",
@@ -3090,6 +3091,7 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://blogs.lanecc.edu/dhatthecc/wp-content/uploads/sites/28/2015/06/Moretti-Slaughterhouse-of-Lit.pdf"
             , "http://mattmahoney.net/dc/dce.html"
             , "https://scale.com/blog/chatgpt-vs-claude"
+            , "https://radiolab.org/podcast/122291-in-running/transcript"
             ]
 
 badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
