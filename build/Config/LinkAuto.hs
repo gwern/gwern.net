@@ -1003,7 +1003,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ss]ystematic [Rr]eviews?", "https://en.wikipedia.org/wiki/Systematic_review")
         , ("MS MARCO", "https://arxiv.org/abs/1611.09268#microsoft")
         , ("Procgen", "https://openai.com/research/procgen-benchmark")
-        , ("([Ccc]hain[ -][Oo]f[ -][Tt]hought|CoT)", "https://arxiv.org/abs/2201.11903#google") -- Chain of thought/chain-of-thought/CoT inner-monologue variant
+        , ("([Ccc]hain[ -][Oo]f[ -][Tt]hought|CoT)", "https://arxiv.org/abs/2201.11903#google") -- Chain-of-thought/chain-of-thought/CoT inner-monologue variant
         , ("BIG-[Bb]ench", "https://arxiv.org/abs/2206.04615") -- BIG-bench / BIG-Bench
         , ("NLSY79", "https://en.wikipedia.org/wiki/National_Longitudinal_Surveys#NLSY79")
         , ("NLSY97", "https://en.wikipedia.org/wiki/National_Longitudinal_Surveys#NLSY97")

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-07-02 10:59:07 gwern"
+# When:  Time-stamp: "2023-07-05 09:29:14 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -389,7 +389,7 @@ else
          grep -F -- '–' ./metadata/*.hs || true; }
     wrap λ "En-dashes in URLs?"
 
-    λ(){ grep -F -e 'http' ./metadata/*.hs ./metadata/*.yaml | grep -F -v -e 'https://en.wikipedia.org/wiki/' -e '10/arc-1-gestation/1' -e 'the-elves-leave-middle-earth-' -e '2011/05/from-the-bookcase-no-2' -e 'd-a-rovinskiis-collection-of-russian-lubki-18th' -e 'commons.wikimedia.org/wiki/File:Flag_of_the_NSDAP_' | grep -F -e "%E2%80%93" -e "%E2%80%94" -e "%E2%88%92"; }
+    λ(){ grep -F -e 'http' ./metadata/*.hs ./metadata/*.yaml | grep -F --invert-match -e 'https://en.wikipedia.org/wiki/' -e '10/arc-1-gestation/1' -e 'the-elves-leave-middle-earth-' -e '2011/05/from-the-bookcase-no-2' -e 'd-a-rovinskiis-collection-of-russian-lubki-18th' -e 'commons.wikimedia.org/wiki/File:Flag_of_the_NSDAP_' | grep -F -e "%E2%80%93" -e "%E2%80%94" -e "%E2%88%92"; }
     wrap λ "*Escaped* En/em/minus dashes in URLs?"
 
     λ(){ gf -e '\\' ./static/css/*.css; }
@@ -438,14 +438,14 @@ else
                    -e '^aux-links-container$' -e '^decorate-not$' -e '^include-omit-metadata$' -e '^quote-of-the-day$' -e '^interview$'; }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
-    λ(){ echo "$PAGES_ALL" | grep -F -v 'Hafu' | xargs --max-args=500 grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
+    λ(){ echo "$PAGES_ALL" | grep -F --invert-match 'Hafu' | xargs --max-args=500 grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
              grep -F --color=always -e ")'s " -e "}'s " -e '">?' -e '</a>s';
-         echo "$PAGES_ALL" | grep -F -v 'Hafu' | xargs --max-args=500 grep -E --with-filename --color=always -e '<a .*href=".*">\?';
+         echo "$PAGES_ALL" | grep -F --invert-match 'Hafu' | xargs --max-args=500 grep -E --with-filename --color=always -e '<a .*href=".*">\?';
        }
     wrap λ "Punctuation like possessives should go *inside* the link (unless it is an apostrophe in which case it should go outside due to Pandoc bug #8381)."
     ## NOTE: 8381 <https://github.com/jgm/pandoc/issues/8381> is a WONTFIX by jgm, so no solution but to manually check for it. Fortunately, it is rare.
 
-    λ(){ grep -E 'http.*http' metadata/archive.hs  | grep -F --invert-match -e 'web.archive.org' -e 'https-everywhere' -e 'check_cookie.html' -e 'translate.goog' -e 'archive.md' -e 'webarchive.loc.gov' -e 'https://http.cat/' -e '//)' | grep -F -v -e 'https://esolangs.org/wiki////'; }
+    λ(){ grep -E 'http.*http' metadata/archive.hs  | grep -F --invert-match -e 'web.archive.org' -e 'https-everywhere' -e 'check_cookie.html' -e 'translate.goog' -e 'archive.md' -e 'webarchive.loc.gov' -e 'https://http.cat/' -e '//)' | grep -F --invert-match -e 'https://esolangs.org/wiki////'; }
     wrap λ "Bad URL links in archive database (and perhaps site-wide)."
 
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e '<div>' | grep -F --invert-match -e 'I got around this by adding in the Hakyll template an additional'; }
@@ -454,7 +454,7 @@ else
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-link-tags' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link' -e 'include-replace}' -e 'include-replace ' -e 'drop-caps-de-kanzlei' -e '.backlink-not)' -e 'link-annotated link-annotated-partial' -e 'link-annotated-partial link-annotated' -e '{.margin-note}'; }
     wrap λ "Misspelled/outdated classes in Markdown/HTML."
 
-    λ(){ ghci -istatic/build/ static/build/LinkMetadata.hs -e 'do {md <- readLinkMetadata; putStrLn $ unlines $ map (\(f,(_,auts,_,_,_,_)) -> f ++ " : " ++ auts) $ M.toList md; }' | grep -F -e 'Francesca Gino' -e 'Dan Ariely' -e 'Michael LaCour' -e 'David Rosenhan' -e 'Diederik Stapel' -e 'Didier Raoult' -e 'Brian Wansink' -e 'Marc Hauser' -e 'Robert Rosenthal' -e 'J. Hendrik Schön' -e 'Matthew Walker' | grep -F -v -e '/doc/economics/experience-curve/2020-kc.pdf' -e '/doc/food/2002-wansink.pdf'; }
+    λ(){ ghci -istatic/build/ static/build/LinkMetadata.hs -e 'do {md <- readLinkMetadata; putStrLn $ unlines $ map (\(f,(_,auts,_,_,_,_)) -> f ++ " : " ++ auts) $ M.toList md; }' | grep -F -e 'Francesca Gino' -e 'Dan Ariely' -e 'Michael LaCour' -e 'David Rosenhan' -e 'Diederik Stapel' -e 'Didier Raoult' -e 'Brian Wansink' -e 'Marc Hauser' -e 'Robert Rosenthal' -e 'J. Hendrik Schön' -e 'Matthew Walker' | grep -F --invert-match -e '/doc/economics/experience-curve/2020-kc.pdf' -e '/doc/food/2002-wansink.pdf'; }
     wrap λ "Dishonest or serial fabricators detected as authors? If a publication should be annotated anyway, add a warning to the annotation & whitelist it."
 
      λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '/variable' | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e '{#'; }
@@ -510,7 +510,7 @@ else
     wrap λ "Links needing annotations by priority:"
 
     λ(){ ge -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -e 'https://goo.gl' -- ./metadata/*.yaml | \
-         grep -F -v -e 'https://web.archive.org/web/'; }
+         grep -F --invert-match -e 'https://web.archive.org/web/'; }
     wrap λ "Check possible typo in YAML metadata database."
 
     λ(){ ge '  - .*[a-z]–[a-Z]' ./metadata/full.yaml ./metadata/half.yaml; }
@@ -529,7 +529,7 @@ else
     λ(){ grep -E -e '[.,:;-<]</a>' -e '\]</a>' -- ./metadata/*.yaml | grep -F --invert-match -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>' -e '#' -e '[review]</a>' | ge -e '[.,:;-<]</a>'; }
     wrap λ "Look for punctuation inside links; unless it's a full sentence or a quote or a section link, generally prefer to put punctuation outside."
 
-    λ(){ gf -e '**' -e ' _' -e '_ ' -e '!!' -e '*' -- ./metadata/full.yaml ./metadata/half.yaml | grep -F -v '_search_algorithm'; } # need to exclude 'A* search'
+    λ(){ gf -e '**' -e ' _' -e '_ ' -e '!!' -e '*' -- ./metadata/full.yaml ./metadata/half.yaml | grep -F --invert-match '_search_algorithm'; } # need to exclude 'A* search'
     wrap λ "Look for italics errors."
 
     λ(){ gf -e 'amp#' -- ./metadata/*.yaml; }
@@ -574,7 +574,7 @@ else
             -e '… .' -e '... .'  -e '– ' -e  ' –' -e '### Competing' -e '<strong></strong>' -e '<span style="font-weight: 400;">' \
             -e '</p> </figcaption>' -e '</p></figcaption>' -e '<figcaption aria-hidden="true"><p>' -e '<figcaption aria-hidden="true"> <p>' \
             -e '<figcaption><p>' -e '<figcaption> <p>' -e 'Your input seems to be incomplete. Could you please provide' -- ./metadata/*.yaml | \
-             grep -F -v 'popular_shelves';
+             grep -F --invert-match 'popular_shelves';
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
 
@@ -587,10 +587,10 @@ else
     λ(){ grep -F -e "'''" -- ./metadata/full.yaml ./metadata/half.yaml; }
     wrap λ "Triple quotes in YAML, should be curly quotes for readability/safety."
 
-    λ(){ ge -v '^- - ' -- ./metadata/*.yaml | gf -e ' -- ' -e '---'; }
+    λ(){ ge --invert-match '^- - ' -- ./metadata/*.yaml | gf -e ' -- ' -e '---'; }
     wrap λ "Markdown hyphen problems in YAML metadata database"
 
-    λ(){ grep -E -e '^    - _' $PAGES | grep -F -v -e '_Additional Poems_' -e '_Aim for the Top!_' -e '_[Cognitive Surplus](!W)_' \
+    λ(){ grep -E -e '^    - _' $PAGES | grep -F --invert-match -e '_Additional Poems_' -e '_Aim for the Top!_' -e '_[Cognitive Surplus](!W)_' \
                                               -e '_Fontemon_' -e '_Forbes_' -e '_[Four Major Plays of Chikamatsu](!W)_' \
                                               -e '_[Neon Genesis Evangelion: Angelic Days](!W)_' -e '_Rebuild_' -e '_[Star Maker](!W)_' \
                                               -e '_[The Battles of Coxinga](!W)_' -e '_[The End of Evangelion](!W)_' -e '_The Fountain_' \
@@ -645,7 +645,7 @@ else
     λ(){ find ./ -type f -name '*gwner*' -or -name '*\.htm'; }
     wrap λ "Malformed filenames: dangerous strings in them?"
 
-    λ(){ find ./ -type f -wholename '*[^-a-zA-Z0-9_./~%#]*' | grep -F -v -e 'cattleya幻想写景' -e '緑華野菜子'; }
+    λ(){ find ./ -type f -wholename '*[^-a-zA-Z0-9_./~%#]*' | grep -F --invert-match -e 'cattleya幻想写景' -e '緑華野菜子'; }
     wrap λ "Malformed filenames: dangerous characters in them?"
 
     λ(){
@@ -724,7 +724,7 @@ else
 
  if [ "$SLOW" ]; then
     # test a random page modified in the past month for W3 validation & dead-link/anchor errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
-    CHECK_RANDOM_PAGE=$(echo "$PAGES" | grep -F -v -e '/fulltext' -e '/lorem' | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
+    CHECK_RANDOM_PAGE=$(echo "$PAGES" | grep -F --invert-match -e '/fulltext' -e '/lorem' | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
                        | shuf | head -1 | xargs urlencode)
     CHECK_RANDOM_ANNOTATION=$(find metadata/annotation/ -maxdepth 1 -name "*.html" -type f -size +2k | \
                                   shuf | head -1 | \
@@ -906,7 +906,7 @@ else
     λ(){ fdupes --quiet --sameline --size --nohidden $(find ./ -type d | grep -E --invert-match -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotation/backlink' -e 'metadata/annotation/similar' -e 'metadata/annotation/link-bibliography') | grep -F --invert-match -e 'bytes each' -e 'trimfill.png'; }
     wrap λ "Duplicate file check"
 
-    λ(){ find ./ -type f | grep -F -v -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.page' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' -e 'static/build/Config/' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | grep -E -v -e '^ +1 ' | sort --numeric-sort; }
+    λ(){ find ./ -type f | grep -F --invert-match -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.page' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' -e 'static/build/Config/' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | grep -E --invert-match -e '^ +1 ' | sort --numeric-sort; }
     wrap λ "File base names are preferably globally-unique, to avoid issues with duplicate search results and clashing link IDs."
 
     λ() { find . -perm u=r -path '.git' -prune; }
@@ -945,7 +945,7 @@ else
          done; }
     wrap λ "Archives of broken links"
 
-    λ(){ BROKEN_PDFS="$(find ./ -type f -name "*.pdf" -not -size 0 | sort | parallel --max-args=500 file | grep -v 'PDF document' | cut -d ':' -f 1)"
+    λ(){ BROKEN_PDFS="$(find ./ -type f -name "*.pdf" -not -size 0 | sort | parallel --max-args=500 file | grep --invert-match 'PDF document' | cut -d ':' -f 1)"
          for BROKEN_PDF in $BROKEN_PDFS; do
              echo "$BROKEN_PDF"; grep --before-context=3 "$BROKEN_PDF" ./metadata/archive.hs;
          done; }
@@ -1019,7 +1019,7 @@ else
     wrap λ "Compressing high-quality JPGs to ≤65% quality…"
 
     bold "Compressing new PNGs…"
-    png $(find ./doc/ -type f -name "*.png" -mtime -3)
+    png $(find ./doc/ -type f -name "*.png" -mtime -3 | grep -F --invert-match -e './doc/www/misc/')
 
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
     λ() { for IMAGE in $(find ./doc/ -type f -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-gwern-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'doc/ai/nn/transformer/gpt/dall-e/2/' -e '2022-09-21-gwern-stablediffusionv14-circulardropcapinitialsamples.png' -e '2022-09-22-gwern-stablediffusionv14-textualinversion-yinit-dropcapsexperiments.png' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/' -e 'doc/www/misc/' -e '2021-power-poster.png' -e '2002-change-table2-preandposttestscoresultsfrommindmappingshowminimaleffect.png' -e 'genetics/selection/www.mountimprobable.com/assets/images/card.png' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure6-successfulcicerohumandialogueexamplesfromtestgames.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure3-differentcicerointentsleadtodifferentdialogues.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure5-theeffectofdialogueoncicerosplanningandintents3possiblescenariosinanegotiationwithengland.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure2-trainingandinferenceofcicerointentcontrolleddialogue.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure1-architectureofcicerodiplomacyagent.jpg' -e '2021-roberts-figure2-manufacturingofhumanbloodbricks.jpg' ); do

@@ -518,7 +518,7 @@ linkIconTestUnitsText =
          , ("https://www.reddit.com/r/QuantifiedSelf/comments/1mfn0a/trying_to_detect_modafinils_stimulant_effect/", "QS", "text,sans")
          , ("https://www.alcor.org/library/alcor-membership-statistics/", "alcor", "svg")
          , ("https://arankomatsuzaki.wordpress.com/2021/03/04/state-of-the-art-image-generative-models/", "ak", "text,sans")
-         , ("https://nap.nationalacademies.org/catalog/25762/reflecting-sunlight-recommendations-for-solar-geoengineering-research-and-research-governance", "NAP", "text,tri")
+         , ("https://nap.nationalacademies.org/read/25762", "NAP", "text,tri")
          , ("https://pastebin.com/GrV3uYh5", "txt", "svg")
          , ("http://archives.cnn.com/2000/HEALTH/aging/04/19/hearing.loss.wmd/index.html", "CNN", "text,tri,sans")
          , ("https://lwn.net/Articles/286233/", "LWN", "text,tri,sans")
