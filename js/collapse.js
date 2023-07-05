@@ -211,6 +211,9 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 				collapseAbstract.classList.add("abstract-collapse");
 			});
 			collapseWrapper.querySelectorAll(".collapse > .abstract-collapse").forEach(collapseAbstract => {
+				//	Wrap bare text nodes and inline elements in <p> elements.
+				paragraphizeTextNodesOfElement(collapseAbstract);
+
 				//	Mark those collapse blocks that have abstracts.
 				collapseAbstract.closest(".collapse").classList.add("has-abstract");
 
