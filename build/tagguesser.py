@@ -4,7 +4,7 @@
 # tagguesser.py: suggest a tag for links/annotations based on a list of titles fed into the OA API
 # Author: Gwern Branwen
 # Date: 2023-06-17
-# When:  Time-stamp: "2023-06-30 12:10:32 gwern"
+# When:  Time-stamp: "2023-07-06 21:40:08 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python tagguesser.py

@@ -51,7 +51,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let keywordTags = if "#" `isInfixOf` p then [] else
                                             concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then Utils.split ", " $ snd $ head y else []) metas
                         let author = cleanAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
-                        let author' = if author /= "Gwern Branwen" then author else "gwern"
+                        let author' = if author == "Gwern Branwen" then "Gwern" else author
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas
                         let thumbnail' = if "https://gwern.net/static/img/logo/logo-whitebg-large-border.png" `isPrefixOf` thumbnail then "" else replace "https://gwern.net/" "" thumbnail

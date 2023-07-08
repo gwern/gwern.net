@@ -241,6 +241,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.outsideonline.com" = aI "𝕆" "text,sans" -- imitate the shadowing on Outside Online's 'O' <https://www.outsideonline.com/wp-content/uploads/2021/07/favicon-194x194-1.png>
  | u'' "jaymans.wordpress.com" = aI "J👨🏾" "text,sans" -- JayMan
  | u'' "norvig.com" = aI "N" "text,sans" -- Google Director of Research <https://en.wikipedia.org/wiki/Peter_Norvig>; <http://norvig.com/favicon.ico> is actually instantly recognizable & well-chosen, but unfortunately, only works because of the *colors*... so we'll settle for a plain sans capital N.
+ | u'' "novelai.net" = aI "🖋" "text" -- LOWER LEFT FOUNTAIN PEN (U+1F58B); NovelAI logo is a fountain pen nib.
 
  -- Tri/triple TLAs
  | u' "animenewsnetwork.com" = aI "ANN" "text,tri"
@@ -339,7 +340,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "tasvideos.org" = aI "TASV" "text,quad" -- TASVideos.org: tool-assisted game movies
  | u'' "habr.com" = aI "Habr" "text,quad,sans" -- Russian tech collaborative blog <https://en.wikipedia.org/wiki/Habr>
  | u'' "www.teds.ac.uk" = aI "TEDS" "text,quad,sans" -- UK twin registry founded by Robert Plomin, heavily used in behavioral genetics & sociology/psychology; it has a clever little logo (https://www.teds.ac.uk/Content/Images/TEDSlogo.png) & a monochrome SVG version would work… but unfortunately no one ever uses it & it is always known as "Twins Early Development Study (TEDS)"
- | u'' "stability.ai" || u' "#stability" = aI "SD" "text,sans"
+ | u'' "stability.ai" || u' "#stability" || u' "&org=stability" = aI "SD" "text,sans"
  | u'' "patrickcollison.com" = aI "PC" "text,sans"
  | u'' "oeis.org" = aI "OEIS" "text,quad,sans" -- On-Line Encyclopedia of Integer Sequences
  | u'' "bldgblog.com" = aI "BLDG" "text,quad,monospace" -- BLDGBLOG (“building blog”, 2004), by Geoff Manaugh <https://en.wikipedia.org/wiki/BLDGBLOG>

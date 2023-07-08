@@ -125,7 +125,7 @@ generateAnnotationOfTheDay md dbpath annotpath formatter =
   do db <- readAnnotDayDB dbpath
      let md' = M.toList $ M.filterWithKey (\k (_,author,_,_,_,abstract1) ->
                                               length abstract1 > C.minAnnotationAbstractLength &&
-                                              author /= "Gwern Branwen" && author /= "gwern" &&
+                                              author /= "Gwern Branwen" && author /= "gwern" && author /= "Gwern" &&
                                               k `notElem` db &&
                                               not ("/index" `isSuffixOf` k)) md
      let lengthList = sortOn (\(_, (_,_,_,_,_,abstract2)) -> length abstract2) md' -- ascending order (ie. largest last)

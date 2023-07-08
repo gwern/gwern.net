@@ -8366,7 +8366,7 @@ a[data-link-icon='metaculus'] .link-icon-hook::after {
     --link-icon-offset-y: 0.2em;
     --link-icon-offset-x: 0.2em;
 
-    opacity: 0.70;
+    opacity: 0.65;
 }
 a[data-link-icon='metaculus']:hover .link-icon-hook::after {
     opacity: 0.45;
@@ -8411,7 +8411,7 @@ a[data-link-icon='tex'] .link-icon-hook::after { /* TeX logotype (actually uses 
 }
 
 a[data-link-icon='scholarpedia'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
+    --link-icon-size: 0.80em;
     --link-icon-offset-x: 0.05em;
     opacity: 1.0;
 }

@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-06-25 09:52:11 gwern"
+;;; When:  Time-stamp: "2023-07-06 17:49:05 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1595,7 +1595,7 @@ by word boundaries.
 (defgroup markdown-newline-removal nil
   "Options for removing newlines within paragraphs in Markdown text."
   :group 'markdown)
-(defcustom markdown-excluded-chars (rx (any ?- ?\n ?\d ?# ?* ?> ?. ??))
+(defcustom markdown-excluded-chars (rx (any ?- ?\n ?\d ?# ?* ?> ?. ?? ?|))
   "Characters to exclude when removing newlines within paragraphs in Markdown text."
   :type 'regexp
   :group 'markdown-newline-removal)

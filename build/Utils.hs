@@ -1435,6 +1435,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("Neffective", "<em>n</em><sub>effective</sub>")
          , ("Neffective=", "<em>n</em><sub>effective</sub> = ")
          , (" n-gram", " <em>n</em>-gram")
+         , (" N-gram", " <em>n</em>-gram")
          , (" k &gt; ", " <em>nk</em> &gt; ")
          , (" k > ", " <em>k</em> > ")
          , (" N &gt; ", " <em>n</em> &gt; ")

@@ -356,7 +356,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("sociology/preference-falsification", "preference falsification")
           , ("sociology/abandoned-footnotes", "<em>Abandoned Footnotes</em>")
           , ("psychology/spaced-repetition", "spaced repetition")
-          , ("psychology/european-journal-of-parapsychology", "<em>EJP</em>")
+          , ("psychology/parapsychology/european-journal-of-parapsychology", "<em>EJP</em>")
           , ("psychology/animal/bird/neuroscience", "bird brains")
           , ("psychology/animal/bird", "bird")
           , ("psychology/animal/maze", "maze-running")
