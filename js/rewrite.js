@@ -1519,30 +1519,6 @@ addContentInjectHandler(GW.contentInjectHandlers.bindNoteHighlightEventsToCitati
 /* LINKS */
 /*********/
 
-/*******************************************************************************/
-/*	Disable Wikipedia annotations due to API breakage.
-
-	NOTE: Temporary, until I can rewrite the Wikipedia annotation data source in
-	annotations.js to work with a different Wikipedia API endpoint, to replace
-	the deprecated `mobile-sections` endpoint.
-
-	(See https://phabricator.wikimedia.org/T328036 )
-
-	For now, this will cause annotated Wikipedia links to degrade into live
-	popup links, which does not allow for pop-frame recursion and the rest of
-	our usual features, but it’s better than nothing.
-
-	— SA 2027-07-07
- */
-addContentLoadHandler(GW.contentLoadHandlers.disableWikipediaAnnotations = (eventInfo) => {
-    GWLog("disableWikipediaAnnotations", "rewrite.js", 1);
-
-	eventInfo.container.querySelectorAll("a.link-annotated").forEach(link => {
-		if (Annotations.dataSources.wikipedia.matches(link))
-			link.classList.remove("link-annotated");
-	});
-}, "rewrite");
-
 /**********************************************************************/
 /*  Qualify anchorlinks in loaded content by rewriting their `pathname`
     attributes.

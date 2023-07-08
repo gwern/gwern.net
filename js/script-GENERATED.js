@@ -4767,7 +4767,7 @@ Annotations.dataSources.wikipedia = {
 	matches: (link) => {
 		return (   /(.+?)\.wikipedia\.org/.test(link.hostname)
 				&& link.pathname.startsWith("/wiki/")
-				&& !(link.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:" ]))));
+				&& link.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:" ])) == false);
 	},
 
 	//	Called by: Annotations.processedAPIResponseForLink
@@ -4776,7 +4776,7 @@ Annotations.dataSources.wikipedia = {
 		annotationURL = new URL(link.href);
 
 		let wikiPageName = fixedEncodeURIComponent(/\/wiki\/(.+?)$/.exec(decodeURIComponent(annotationURL.pathname))[1]);
-		annotationURL.pathname = `/api/rest_v1/page/mobile-sections/${wikiPageName}`;
+		annotationURL.pathname = `/api/rest_v1/page/html/${wikiPageName}`;
 		annotationURL.hash = "";
 
 		return annotationURL;
@@ -4784,7 +4784,7 @@ Annotations.dataSources.wikipedia = {
 
 	//	Called by: Annotations.processedAPIResponseForLink
 	processAPIResponse: (response) => {
-		return JSON.parse(response);
+		return newDocument(response);
 	},
 
 	//	Called by: Annotations.referenceDataFromParsedAPIResponse
@@ -4793,24 +4793,25 @@ Annotations.dataSources.wikipedia = {
 
 		let responseHTML, titleHTML, fullTitleHTML, secondaryTitleLinksHTML;
 		if (articleLink.hash > "") {
-			let targetSection = response["remaining"]["sections"].find(section =>
-				//	This MUST be decodeURIComponent, and NOT selectorFromHash!!!
-				section["anchor"] == decodeURIComponent(articleLink.hash).slice(1)
-			);
+			let targetHeading = response.querySelector(selectorFromHash(articleLink.hash));
 
 			/*	Check whether we have tried to load a page section which does
 				not exist on the requested wiki page.
 			 */
-			if (!targetSection)
+			if (!targetHeading)
 				return null;
 
-			responseHTML = targetSection["text"];
+			//	The id is on the heading, so the section is its parent.
+			let targetSection = targetHeading.parentElement.cloneNode(true);
 
-			/*	Get heading, parse as HTML, and unwrap or delete links, but
-				save them for inclusion in the template.
-			 */
-			let targetHeading = newDocument(targetSection["line"]);
+			//	Excise heading.
+			targetHeading = targetSection.firstElementChild;
+			targetHeading.remove();
 
+			//	Content sans heading.
+			responseHTML = targetSection.innerHTML;
+
+			//	Unwrap or delete links, but save them for inclusion in the template.
 			secondaryTitleLinksHTML = "";
 			//	First link is the section title itself.
 			targetHeading.querySelectorAll("a:first-of-type").forEach(link => {
@@ -4831,22 +4832,24 @@ Annotations.dataSources.wikipedia = {
 			if (secondaryTitleLinksHTML > "")
 				secondaryTitleLinksHTML = ` (${secondaryTitleLinksHTML})`;
 
+			//	Cleaned section title.
 			titleHTML = targetHeading.innerHTML;
-			fullTitleHTML = `${titleHTML} (${response["lead"]["displaytitle"]})`;
+			fullTitleHTML = `${titleHTML} (${(response.querySelector("title").innerHTML)})`;
 		} else {
-			responseHTML = response["lead"]["sections"][0]["text"];
-			titleHTML = response["lead"]["displaytitle"];
+			responseHTML = response.querySelector("[data-mw-section-id='0']").innerHTML;
+			titleHTML = response.querySelector("title").innerHTML;
 			fullTitleHTML = titleHTML;
 
 			//	Build TOC.
-			let sections = response["remaining"]["sections"];
+			let sections = Array.from(response.querySelectorAll("section")).slice(1);
 			if (   sections 
 				&& sections.length > 0) {
 				responseHTML += `<div class="TOC columns"><ul>`;
 				let headingLevel = 2;
 				for (let i = 0; i < sections.length; i++) {
 					let section = sections[i];
-					let newHeadingLevel = 1 + parseInt(section["toclevel"]);
+					let headingElement = section.firstElementChild;
+					let newHeadingLevel = parseInt(headingElement.tagName.slice(1));
 					if (newHeadingLevel > headingLevel)
 						responseHTML += `<ul>`;
 
@@ -4858,10 +4861,10 @@ Annotations.dataSources.wikipedia = {
 						responseHTML += `</ul>`;
 
 					//	We must encode, because the anchor might contain quotes.
-					let urlEncodedAnchor = fixedEncodeURIComponent(section["anchor"]);
+					let urlEncodedAnchor = fixedEncodeURIComponent(headingElement.id);
 
 					//	Get heading, parse as HTML, and unwrap links.
-					let heading = newDocument(section["line"]);
+					let heading = headingElement.cloneNode(true);
 					heading.querySelectorAll("a").forEach(link => { unwrap(link); });
 
 					//	Construct TOC entry.
@@ -4881,7 +4884,7 @@ Annotations.dataSources.wikipedia = {
 
 		//	Pop-frame title text. Mark sections with ‘§’ symbol.
 		let popFrameTitleHTML = (articleLink.hash > ""
-								 ? `${response["lead"]["displaytitle"]} &#x00a7; ${titleHTML}`
+								 ? `${(response.querySelector("title").innerHTML)} &#x00a7; ${titleHTML}`
 								 : titleHTML);
 		let popFrameTitleText = newElement("SPAN", null, { innerHTML: popFrameTitleHTML }).textContent;
 
@@ -4910,6 +4913,8 @@ Annotations.dataSources.wikipedia = {
 	 */
 	qualifyWikipediaLink: (link, hostArticleLink) => {
 		//  Qualify link.
+		if (link.getAttribute("rel") == "mw:WikiLink")
+			link.pathname = "/wiki" + link.pathname;
 		if (link.getAttribute("href").startsWith("#"))
 			link.pathname = hostArticleLink.pathname;
 		if (link.hostname == location.hostname)
@@ -12761,30 +12766,6 @@ addContentInjectHandler(GW.contentInjectHandlers.bindNoteHighlightEventsToCitati
 /*********/
 /* LINKS */
 /*********/
-
-/*******************************************************************************/
-/*	Disable Wikipedia annotations due to API breakage.
-
-	NOTE: Temporary, until I can rewrite the Wikipedia annotation data source in
-	annotations.js to work with a different Wikipedia API endpoint, to replace
-	the deprecated `mobile-sections` endpoint.
-
-	(See https://phabricator.wikimedia.org/T328036 )
-
-	For now, this will cause annotated Wikipedia links to degrade into live
-	popup links, which does not allow for pop-frame recursion and the rest of
-	our usual features, but it’s better than nothing.
-
-	— SA 2027-07-07
- */
-addContentLoadHandler(GW.contentLoadHandlers.disableWikipediaAnnotations = (eventInfo) => {
-    GWLog("disableWikipediaAnnotations", "rewrite.js", 1);
-
-	eventInfo.container.querySelectorAll("a.link-annotated").forEach(link => {
-		if (Annotations.dataSources.wikipedia.matches(link))
-			link.classList.remove("link-annotated");
-	});
-}, "rewrite");
 
 /**********************************************************************/
 /*  Qualify anchorlinks in loaded content by rewriting their `pathname`
