@@ -3,7 +3,7 @@
 # similar.sh: get a neural net summary (embedding) of a text string (usually an annotation)
 # Author: Gwern Branwen
 # Date: 2021-12-05
-# When:  Time-stamp: "2023-02-14 12:56:34 gwern"
+# When:  Time-stamp: "2023-07-10 16:50:33 gwern"
 # License: CC-0
 #
 # Shell script to pass a document into the OpenAI API Embedding endpoint ( https://beta.openai.com/docs/api-reference/embeddings
@@ -48,7 +48,7 @@
 # set -x
 
 # Input: X BPEs of text
-# Output: https://beta.openai.com/docs/guides/embeddings/types-of-embedding-models
+# Output: https://beta.openai.com/docs/guides/embeddings/types-of-embedding-models (all deprecated: https://platform.openai.com/docs/deprecations)
 # ada-similarity [1024], babbage-similarity [2048], curie-similarity [4096], davinci-similarity [12288, or 12× ada]
 # Second-generation models:
 # text-embedding-ada-002 |  cl100k_base |   8191 input |    1536 output dimensionality |

@@ -49,9 +49,10 @@ singleShotRecommendations html =
 
      newEmbedding <- embed [] md bdb ("",("","","","",[],html))
      ddb <- embeddings2Forest (newEmbedding:edb)
-     let (_,n) = findN ddb (2*C.bestNEmbeddings) C.iterationLimit newEmbedding :: (String,[String])
+     let (_,hits) = findN ddb (2*C.bestNEmbeddings) C.iterationLimit newEmbedding :: (String,[String])
+     hitsSorted <- sortSimilars edb (head hits) hits
 
-     let matchListHtml = generateMatches md bdb True True "" html n :: T.Text
+     let matchListHtml = generateMatches md bdb True True "" html hitsSorted :: T.Text
      return matchListHtml
 
 type Embedding  = (String, -- URL/path
@@ -415,24 +416,6 @@ sortTagByTopic md tag = do
 
                            sortSimilars edb newest paths
 
-sortSimilarsStartingWithNewest :: Metadata -> [(FilePath, MetadataItem)] -> IO [[(FilePath, MetadataItem)]]
-sortSimilarsStartingWithNewest _ [] = return []
-sortSimilarsStartingWithNewest _ [a] = return [[a]]
-sortSimilarsStartingWithNewest _ [a, b] = return [[a, b]]
-sortSimilarsStartingWithNewest md items = do
-  edb <- readEmbeddings
-  let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
-  let md' = M.restrictKeys md (S.fromList $ filter (`M.member` edbDB) $ map fst items)
-  let mdlSorted = LinkMetadata.sortItemPathDate $ map (\(f,i) -> (f,(i,""))) $ M.toList md'
-  if null mdlSorted then return [] else
-    do let paths = M.keys md'
-       let newest = fst $ head mdlSorted
-       -- print "mdlSorted: " >> print mdlSorted >> print "newest: " >> print newest
-       pathsSorted <- sortSimilars edb newest paths
-       let pathsSorted' = clusterIntoSublist edb pathsSorted
-       -- print "pathsSorted: " >> print pathsSorted
-       return $ map (`restoreAssoc` items) pathsSorted'
-
 -- instead of a mapM, we foldM: we need the list of 'all tags generated thus far' to pass into the blacklist option, so we don't wind up
 -- with a bunch of duplicate auto-labels.
 sortSimilarsStartingWithNewestWithTag :: Metadata -> String -> [(FilePath, MetadataItem)] -> IO [(String, [(FilePath, MetadataItem)])]
@@ -461,8 +444,26 @@ processTitles parentTag blacklistTags a =
            ExitFailure err -> printRed "tagguesser.py failed!" >> printRed (show err) >> print a' >> return "" -- printGreen (ppShow (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb])) >> printRed "tagguesser.py failed!" >> return ""
            _ -> return $ (trim . U.toString) mb
 
-restoreAssoc :: Eq a => [a] -> [(a,b)] -> [(a,b)]
-restoreAssoc keys list = map (\k -> (k, fromJust $ lookup k list)) keys
+sortSimilarsStartingWithNewest :: Metadata -> [(FilePath, MetadataItem)] -> IO [[(FilePath, MetadataItem)]]
+sortSimilarsStartingWithNewest _ []     = return []
+sortSimilarsStartingWithNewest _ [a]    = return [[a]]
+sortSimilarsStartingWithNewest _ [a, b] = return [[a, b]]
+sortSimilarsStartingWithNewest md items = do
+  edb <- readEmbeddings
+  let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
+  let md' = M.restrictKeys md (S.fromList $ filter (`M.member` edbDB) $ map fst items)
+  let mdlSorted = LinkMetadata.sortItemPathDate $ map (\(f,i) -> (f,(i,""))) $ M.toList md'
+  if null mdlSorted then return [] else
+    do let paths = M.keys md'
+       let newest = fst $ head mdlSorted
+       -- print "mdlSorted: " >> print mdlSorted >> print "newest: " >> print newest
+       pathsSorted <- sortSimilars edb newest paths
+       let pathsSorted' = clusterIntoSublist edb pathsSorted
+       -- print "pathsSorted: " >> print pathsSorted
+       return $ map (`restoreAssoc` items) pathsSorted'
+  where
+    restoreAssoc :: Eq a => [a] -> [(a,b)] -> [(a,b)]
+    restoreAssoc keys list = map (\k -> (k, fromJust $ lookup k list)) keys
 
 sortSimilars :: Embeddings -> FilePath -> [FilePath] -> IO [FilePath]
 sortSimilars _ _ []    = return []

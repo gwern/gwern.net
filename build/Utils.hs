@@ -333,6 +333,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<em>R</em>  *<sup>2</sup>", "<em>R</em><sup>2</sup>")
 
          -- regexp substitutions:
+         , ("([0-9.]+)E10[-−–—]([0-9]+)", "\\1 × 10<sup>−\\2")
          , ("\\([0-9]\\)- (millisecond|second|minute|hour|day|week|month|year)", "\\1-\\2") -- line-break errors like 'we observed the mice for 2- minutes or 10-minutes afterwards'
          , ("\\\\emph{([a-zA-Z0-9-]+)}", "<em>\\1</em>")
          , ("\\\\textit{([a-zA-Z0-9-]+)}", "<em>\\1</em>")
@@ -1434,6 +1435,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("( n=", "( <em>n</em> = ")
          , ("Neffective", "<em>n</em><sub>effective</sub>")
          , ("Neffective=", "<em>n</em><sub>effective</sub> = ")
+         , ("Padjusted", "<em>p</em><sub>adjusted</sub>")
+         , ("Padjusted=", "<em>p</em><sub>adjusted</sub> = ")
          , (" n-gram", " <em>n</em>-gram")
          , (" N-gram", " <em>n</em>-gram")
          , (" k &gt; ", " <em>nk</em> &gt; ")

@@ -210,7 +210,7 @@ linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start wi
        , ("https://arxiv.org/abs/2201.12086#salesforce", "li-et-al-2022-blip")
        , ("https://arxiv.org/abs/math/0701086", "simkin-roychowdhury-2007-2")
        , ("https://arxiv.org/pdf/1706.03741.pdf#page=15", "christiano-et-al-2017-appendix")
-       , ("https://atrium.lib.uoguelph.ca/xmlui/bitstream/handle/10214/17526/%22%20manuscript.pdf?sequence=1&isAllowed=y", "dawson-et-al-2019-2")
+       , ("https://atrium.lib.uoguelph.ca/bitstream/handle/10214/17526/%22%20manuscript.pdf?sequence=1&isAllowed=y", "dawson-et-al-2019-2")
        , ("https://cdn.openai.com/papers/jukebox.pdf", "jukebox-paper")
        , ("https://colab.research.google.com/github/nickwalton/AIDungeon/blob/master/AIDungeon_2.ipynb", "walton-2019-aidungeon-2-colab")
        , ("https://danluu.com/input-lag/", "luu-computer-latency")

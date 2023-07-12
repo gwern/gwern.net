@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-07-06 17:49:05 gwern"
+;;; When:  Time-stamp: "2023-07-12 21:04:01 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -933,9 +933,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" one to \\([0-9.]+\\)"                   . " \\1–\\2")
                         ("from \\([0-9.]+\\) to \\([0-9.]+\\)"     . "\\1–\\2")
                         ("\\([0-9\\.]+\\) to \\([0-9\\.]+\\)"      . "\\1–\\2")
-                        ("from \\([0-9.]+\\) to \\([0-9.]+\\)"     . "\\1 → \\2")
+                        ("from \\([0-9.]+|one|two|three\\) to \\([0-9.]+\\)"     . "\\1 → \\2")
                         ("\\([a-z]+\\)- and \\([a-z]+-[a-z]+\\)"   . "\\1 & \\2")
-                        ("\\([0-9.]+\\) to \\([0-9.]+\\)"          . "\\1 → \\2")
+                        ("\\([0-9.]++|one|two|three\\) to \\([0-9.]+\\)"          . "\\1 → \\2")
                         ("between \\([0-9.]+\\) and \\([0-9.]+\\)" . "\\1–\\2") ; "range between 2 and 10" → "range 2–10"
                         (" \\([0-9.]+\\) or \\([0-9.]+\\) "        . " \\1–\\2 ")
                         ("\\([0-9]+\\)- to \\([0-9]+\\)-"          . "\\1--\\2-") ; "18- to 20-year-olds" → "18--20-year-olds"
@@ -984,9 +984,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "\nInterventions " "\n**Interventions**: ")
          (replace-all "\nMain Outcomes and Measures " "\n**Main Outcomes & Measures**: ")
          (replace-all "Measurement and Results:" "**Measurement & Results**:")
-         (replace-all "\nResults and conclusion " "\n**Results & Conclusions**: ")
+         (replace-all "\nResults and conclusion " "\n**Result & Conclusion**: ")
          (replace-all "\nResults " "\n**Results**: ")
-         (replace-all "\nConclusions and Relevance " "\n**Conclusions & Relevance**: ")
+         (replace-all "\nConclusions and Relevance " "\n**Conclusion & Relevance**: ")
          (replace-all "\nTrial Registration " "\n**Trial Registration**: ")
          (replace-all "Background\n" "\n**Background**: ")
          (replace-all "\nBackground " "**Background**: ")
@@ -1072,19 +1072,19 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "Findings\n" "\n**Results**: ")
          (replace-all "\nScope of review\n\n" "\n\n**Scope of Review**: ")
          (replace-all "\n\nReview methods " "\n\n**Review Methods**: ")
-         (replace-all "\nMajor conclusions\n\n" "\n\n**Major Conclusions**: ")
+         (replace-all "\nMajor conclusions\n\n" "\n\n**Conclusion**: ")
          (replace-all "\nFindings: " "\n**Results**: ")
          (replace-all "\nFinding: " "\n**Results**: ")
          (replace-all "\nFinding " "\n**Results**: ")
          (replace-all "\nQuestion " "\n**Question**: ")
          (replace-all "^Question " "**Question**: ")
          (replace-all "Significance:" "**Significance**: ")
-         (replace-all "Conclusions\n\n" "\n**Conclusions**: ")
-         (replace-all "Conclusions\n" "\n**Conclusions**: ")
+         (replace-all "Conclusions\n\n" "\n**Conclusion**: ")
+         (replace-all "Conclusions\n" "\n**Conclusion**: ")
          (replace-all "Conclusion:" "**Conclusion**: ")
-         (replace-all "Conclusions\\. " "**Conclusions**: ")
-         (replace-all "Conclusions:" "**Conclusions**: ")
-         (replace-all "Conclusions and Relevance:" "**Conclusions & Relevance**: ")
+         (replace-all "Conclusions\\. " "**Conclusion**: ")
+         (replace-all "Conclusions:" "**Conclusion**: ")
+         (replace-all "Conclusions and Relevance:" "**Conclusion & Relevance**: ")
          (replace-all "Conclusion\n" "\n**Conclusion**: ")
          (replace-all "\nConclusions " "\n**Conclusion**: ")
          (replace-all "\n\nConclusion " "\n\n**Conclusion**: ")
@@ -1121,10 +1121,10 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "\nMETHODS " "\n**Method**: ")
          (replace-all "\n\nRESULTS" "\n\n**Results**: ")
          (replace-all "\nMain results\n\n" "\n**Results**: ")
-         (replace-all "\n\nCONCLUSIONS" "\n\n**Conclusions**: ")
-         (replace-all "CONCLUSIONS\n\n" "\n**Conclusions**: ")
+         (replace-all "\n\nCONCLUSIONS" "\n\n**Conclusion**: ")
+         (replace-all "CONCLUSIONS\n\n" "\n**Conclusion**: ")
          (replace-all "Conclusions/Significance\n\n" "\n**Conclusion**: ")
-         (replace-all "\nAuthors' conclusions\n\n" "\n\n**Conclusions**: ")
+         (replace-all "\nAuthors' conclusions\n\n" "\n\n**Conclusion**: ")
          (replace-all "\nPractice implications" "\n**Practice Implications**: ")
          (replace-all "Trial Registration:" "**Trial Registration**: ")
          (replace-all "Trial registration:" "**Trial Registration**: ")
@@ -1391,7 +1391,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
 
        (query-replace-regexp "\\([[:alnum:]]\\)- " "\\1---" nil begin end)
        (query-replace-regexp "\\([[:alnum:]]\\)\\.\\. " "\\1... " nil begin end)
-       (query-replace-regexp "\\([0-9]\\) % " "\\1% " nil begin end)
+       (query-replace-regexp "\\([0-9]\\) %" "\\1%" nil begin end)
        (query-replace-regexp "\\([0-9]\\)folds?" "\\1×" nil begin end)
        (query-replace-regexp "\\([0-9]\\)-folds?" "\\1×" nil begin end)
        (query-replace-regexp "\\([0-9]\\) folds?" "\\1×" nil begin end)
@@ -1496,6 +1496,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace "*8" "**" nil begin end)
        (query-replace "8*" "**" nil begin end)
        (query-replace "!{" "![" nil begin end)
+       (query-replace "].(" ".](" nil begin end)
        (query-replace-regexp " \"'\\(.+\\)', " " \"‘\\1’, " nil begin end) ; avoid downstream YAML errors from titles encoded in tooltips with single straight quotes
        (replace-all "\n\n\n" "\n\n")
 

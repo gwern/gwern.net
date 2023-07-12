@@ -127,7 +127,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.sciencedirect.com" = aI "E" "text" -- Elsevier/Sciencedirect.com: also an ‘E’
  | u'' "www.esquire.com" = aI "ℰ" "text"
  | aU'' ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' "www.evacommentary.org" || u' "twitter.com/EvaMonkey/" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
- | aU'' ["www.fda.gov","fis.fda.gov","clinicaltrials.gov"] = aI "FDA" "text,tri,sans" -- U.S. Food & Drug Administration
+ | aU'' ["www.fda.gov","fis.fda.gov","clinicaltrials.gov", "classic.clinicaltrials.gov"] = aI "FDA" "text,tri,sans" -- U.S. Food & Drug Administration
  | u'' "hpmor.com" || u' "www.fanfiction.net/r/5782108/" || u' "www.reddit.com/r/HPMOR/" = aI "MoR" "text,tri,italic"
  | u' "mozilla.org" = aI "FF" "text,sans" -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized, and confusable with DeepMind.
  | u'' "www.goodreads.com" = aI "GR" "text" -- GoodReads: logo doesn’t make sense as a grayscale

@@ -703,7 +703,7 @@ whiteList url
       , "https://www.reddit.com/r/reinforcementlearning/" -- stable
       , "usesthis.com" -- stable
       , "modafinil-store.com" -- dead
-      , "https://huggingface.co/calculator/" -- interactive
+      , "https://huggingface.co/spaces/teven-projects/calculator" -- interactive
       , "sevensecularsermons.org" -- stable
       , "old.reddit.com/r/NavySealCopypasta/" -- updated/service
       , "listudy.org" -- service
@@ -1099,7 +1099,7 @@ whiteList url
       , "https://flavioschneider.notion.site/flavioschneider/Audio-Generation-with-Diffusion-c4f29f39048d4f03a23da13078a44cdb" -- low quality (audio embeds)
       , "https://kinyugo.github.io/msanii-demo/" -- low quality (audio embeds)
       , "https://www.tiktok.com/" -- low quality (video embeds)
-      , "https://avinayak.github.io/algorithms/programming/2021/02/19/finding-mona-lisa-in-the-game-of-life.html" -- low quality (not sure if video embed?)
+      , "https://a.tulv.in/algorithms/programming/2021/02/19/finding-mona-lisa-in-the-game-of-life.html" -- low quality (not sure if video embed?)
       , "https://blog.amandaghassaei.com/2022/10/25/digital-marbling/" -- low quality (video embeds)
       , "https://btm.qva.mybluehost.me/building-arbitrary-life-patterns-in-15-gliders/" -- low quality (video embeds)
       , "https://n-e-r-v-o-u-s.com/blog/?p=9225" -- low quality (video embeds)

@@ -263,7 +263,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Cryptonomicon", "https://en.wikipedia.org/wiki/Cryptonomicon")
         , ("(Cyphernomicon|Timothy C\\. May)", "https://en.wikipedia.org/wiki/Timothy_C._May")
         , ("D4PG", "https://arxiv.org/abs/1804.08617#deepmind")
-        -- , ("DALL[-·]E 2", "https://openai.com/product/dall-e-2")
+        -- , ("DALL[-·]E 2", "https://openai.com/dall-e-2")
         -- , ("DALL[-·]E 1", "https://openai.com/research/dall-e")
         , ("DARPA", "https://en.wikipedia.org/wiki/DARPA")
         , ("DDPG", "https://arxiv.org/abs/1509.02971#deepmind")
@@ -1012,4 +1012,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Cc]erebellum", "https://en.wikipedia.org/wiki/Cerebellum")
         , ("enwik8", "https://mattmahoney.net/dc/textdata.html")
         , ("[Pp]areto[ -]front(ier)?", "https://en.wikipedia.org/wiki/Pareto_front")
+        , ("Whisper", "https://openai.com/research/whisper")
         ]
