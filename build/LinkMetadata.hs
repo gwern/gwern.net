@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-07-02 11:01:12 gwern"
+When:  Time-stamp: "2023-07-16 11:56:46 gwern"
 License: CC-0
 -}
 
@@ -199,7 +199,7 @@ readLinkMetadataAndCheck = do
              let files = map (takeWhile (/='#') . tail) $ filter (\u -> head u == '/') urlsCP
              Par.mapM_ (\f -> let f' = if '.' `elem` f then f else f ++ ".page" in
                                     do exist <- doesFileExist f'
-                                       unless exist $ printRed ("Full annotation error: file does not exist? " ++ f ++ " (checked file name: " ++ f' ++ ")")) files
+                                       unless exist $ printRed ("Full+half annotation error: file does not exist? " ++ f ++ " (checked file name: " ++ f' ++ ")")) files
 
              -- auto-generated cached definitions; can be deleted if gone stale
              rewriteLinkMetadata half full "metadata/auto.yaml" -- do auto-cleanup  first
@@ -527,10 +527,10 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
                 (if null abst then []
                   else [BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
                                                    if (blp++slp++lb)=="" then ""
-                                                   else "<div class=\"collapse aux-links-container\">" `T.append`
-                                                        ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append\"" `T.append` " id=\"" `T.append` lidBacklinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-even-when-collapsed include-replace-container\" href=\"" `T.append` T.pack blp `T.append` "\">Backlinks for this annotation</a>.]</p>\n</div>")) `T.append`
-                                                         (if slp=="" then "" else ("<div class=\"similars-append aux-links-append\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-even-when-collapsed include-replace-container\" href=\"" `T.append` T.pack slp `T.append` "\">Similar links for this annotation</a>.]</p>\n</div>")) `T.append`
-                                                          (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include include-replace-container\" href=\"" `T.append` T.pack lb `T.append` "\">Link bibliography for this annotation</a>.]</p>\n</div>"))) `T.append`
+                                                   else "<div class=\"aux-links-container\">" `T.append`
+                                                        ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append\"" `T.append` " id=\"" `T.append` lidBacklinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-replace-container\" href=\"" `T.append` T.pack blp `T.append` "\"><strong>Backlinks</strong>:</a>]</p>\n</div>")) `T.append`
+                                                         (if slp=="" then "" else ("<div class=\"similars-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-even-when-collapsed include-replace-container\" href=\"" `T.append` T.pack slp `T.append` "\">Similar links for this annotation</a>.]</p>\n</div>")) `T.append`
+                                                          (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include include-replace-container\" href=\"" `T.append` T.pack lb `T.append` "\"><strong>Link Bibliography</strong>:</a>.]</p>\n</div>"))) `T.append`
                                                    "</div>"
                                                               )]
                        ])
