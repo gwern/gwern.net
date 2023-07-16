@@ -35,7 +35,7 @@ import Query (extractImages)
 import Typography (identUniquefy)
 import Utils (replace, writeUpdatedFile, printRed, toPandoc, anySuffix, parseRawBlock,  parseRawInline)
 import Config.Misc as C (miscellaneousLinksCollapseLimit)
-import GenerateSimilar (sortSimilarsStartingWithNewestWithTag)
+import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto)
 -- import Text.Show.Pretty (ppShow)
 
 main :: IO ()
@@ -301,7 +301,7 @@ generateListItems p = BulletList (map (\(f,a) -> LM.generateAnnotationTransclusi
 
 generateSections :: [(FilePath, MetadataItem)] -> [(String,[(FilePath, MetadataItem)])] -> [(FilePath, MetadataItem)] -> [Block]
 generateSections links linksSorted linkswp = (if null links then [] else annotated) ++
-                                             (if null linksSorted then [] else sorted) ++
+                                             (if length linksSorted < minTagAuto then [] else sorted) ++
                                              (if null linkswp then [] else wp)
     where annotated = generateSections' 2 links
           sorted

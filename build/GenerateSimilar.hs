@@ -251,7 +251,7 @@ findNearest f k e = map (\(_,Embed _ p) -> p) $ knnEmbedding f k e
 findN :: Forest -> Int -> Int -> Embedding -> (String,[String])
 findN _ 0 _    e = error ("findN called for k=0; embedding target: " ++ show e)
 findN _ _ 0    e = error ("findN failed to return enough candidates within iteration loop limit. Something went wrong! Embedding target: " ++ show e)
-findN f k iter e@(p1,_,_,_,_) = let results = take C.bestNEmbeddings $ nub $ filter (\p2 -> not $ C.blackList p2 && p1/=p2) $ findNearest f k e in
+findN f k iter e@(p1,_,_,_,_) = let results = take C.bestNEmbeddings $ nub $ filter (\p2 -> p2/="" && (not $ C.blackList p2) && p1/=p2) $ findNearest f k e in
                  -- NOTE: 'knn' is the fastest (and most accurate?), but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
                  -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed…)
                  -- If that happens, back off and request more k up to a max of 50.
@@ -464,6 +464,11 @@ sortSimilarsStartingWithNewest md items = do
   where
     restoreAssoc :: Eq a => [a] -> [(a,b)] -> [(a,b)]
     restoreAssoc keys list = map (\k -> (k, fromJust $ lookup k list)) keys
+
+-- on directory pages, what should be the minimum number of auto-tags/clusters inferred before we bother to show the reader it?
+-- Obviously, just 1 isn't very useful at all, but 2 might not be worth the overhead, and we usually use a '3' value.
+minTagAuto :: Int
+minTagAuto = 3
 
 sortSimilars :: Embeddings -> FilePath -> [FilePath] -> IO [FilePath]
 sortSimilars _ _ []    = return []
