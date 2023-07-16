@@ -4892,14 +4892,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Buttons in the popup title bar.
     */
 .popup .popframe-title-bar-button {
-    appearance: none;
-    border: none;
-    background-color: transparent;
-    font-size: inherit;
-    font-family: inherit;
-    font-weight: inherit;
-    font-style: inherit;
-    line-height: 0;
+	line-height: 0;
     margin: 0 1px;
     padding: 4px;
     height: 100%;
@@ -4930,8 +4923,10 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 .popup .popframe-title-bar-button:disabled {
-    pointer-events: none;
     opacity: 0.35;
+    color: var(--GW-popups-popup-title-bar-button-color);
+    cursor: default;
+    transform: none;
 }
 
 .popup .popframe-title-bar-button.zoom-button {
@@ -5153,19 +5148,19 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
     border-bottom-width: var(--popups-popup-border-width);
 }
 .popup.collapsed[class] {
-    height: unset;
-    min-height: unset;
+    height: unset !important;
+    min-height: unset !important;
 }
 .popup.collapsed .popframe-title-bar {
     border-bottom: none;
     height: calc(var(--popup-title-bar-height) - 1px);
 }
 .popup.collapsed .popframe-scroll-view {
-    height: 0;
+    height: 0 !important;
     margin-top: calc(var(--popup-title-bar-height) - 1px);
 }
 .popup.collapsed .popframe-scroll-view ~ * {
-    display: none;
+    display: none !important;
 }
 
 /*┌───────────────────────────┐*/

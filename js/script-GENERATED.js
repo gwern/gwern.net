@@ -2132,9 +2132,10 @@ Popups = {
 		}
 
 		/*  Re-add popup to its stack and re-attach it to its spawning target
-			(unless it’s pinned).
+			(unless it’s pinned or zoomed).
 			*/
-		if (!(Popups.popupIsPinned(popup))) {
+		if (   Popups.popupIsPinned(popup) == false
+			&& Popups.popupIsZoomed(popup) == false) {
 			popup.popupStack.push(popup);
 			Popups.attachPopupToTarget(popup);
 		}
@@ -2199,6 +2200,12 @@ Popups = {
 		return popup.classList.contains("zoomed");
 	},
 
+	//	Called by: Popups.titleBarComponents.zoomButton.submenu
+	popupIsZoomedToPlace: (popup, place) => {
+		return (   popup.classList.contains("zoomed")
+				&& popup.classList.contains(place));
+	},
+
 	//	Called by: Popups.updatePageScrollState
 	popupIsMaximized: (popup) => {
 		return (popup.classList.contains("zoomed") && popup.classList.contains("full"));
@@ -2242,8 +2249,8 @@ Popups = {
 			Popups.uncollapsePopup(popup);
 
 		//  Update classes.
-		Popups.addClassesToPopFrame(popup, "zoomed", place);
 		Popups.removeClassesFromPopFrame(popup, "restored", ...(Popups.titleBarComponents.popupPlaces));
+		Popups.addClassesToPopFrame(popup, "zoomed", place);
 
 		//  Viewport width must account for vertical scroll bar.
 		let viewportWidth = document.documentElement.offsetWidth;
@@ -2338,8 +2345,8 @@ Popups = {
 		GWLog("Popups.restorePopup", "popups.js", 2);
 
 		//  Update classes.
-		Popups.addClassesToPopFrame(popup, "restored");
 		Popups.removeClassesFromPopFrame(popup, "zoomed", "resized", ...(Popups.titleBarComponents.popupPlaces));
+		Popups.addClassesToPopFrame(popup, "restored");
 
 		//  Update popup size.
 		popup.style.width = "";
@@ -2656,6 +2663,12 @@ Popups = {
 				button.title = alternateStateEnabled ? button.alternateTitle : button.defaultTitle;
 
 				button.swapClasses([ "zoom", "restore" ], (alternateStateEnabled ? 1 : 0));
+
+				if (button.submenuEnabled == true) {
+					button.submenu.querySelectorAll(".submenu-button").forEach(submenuButton => {
+						submenuButton.updateState();
+					});
+				}
 			};
 
 			button.enableSubmenu = () => {
@@ -2670,17 +2683,38 @@ Popups = {
 		popupZoomButtons: () => {
 			return Popups.titleBarComponents.popupPlaces.map(place => {
 				let button = Popups.titleBarComponents.genericButton();
+
 				button.classList.add("submenu-button", "zoom-button", place);
 
-				button.innerHTML = Popups.titleBarComponents.getButtonIcon(`zoom-${place}`);
-				button.title = Popups.titleBarComponents.buttonTitles[`zoom-${place}`];
+				button.defaultHTML = Popups.titleBarComponents.getButtonIcon(`zoom-${place}`);
+				button.alternateHTML = Popups.titleBarComponents.getButtonIcon("restore");
+				button.innerHTML = button.defaultHTML;
+
+				button.defaultTitle = Popups.titleBarComponents.buttonTitles[`zoom-${place}`];
+				button.alternateTitle = Popups.titleBarComponents.buttonTitles["restore"];
+				button.title = button.defaultTitle;
 
 				button.buttonAction = (event) => {
 					event.stopPropagation();
 
 					let popup = Popups.containingPopFrame(button);
 
-					Popups.zoomPopup(popup, place);
+					if (button.classList.contains(`zoom-${place}`)) {
+						Popups.zoomPopup(popup, place);
+					} else {
+						Popups.restorePopup(popup);
+					}
+				};
+
+				button.updateState = () => {
+					let popup = Popups.containingPopFrame(button);
+
+					let alternateStateEnabled = Popups.popupIsZoomedToPlace(popup, place);
+
+					button.innerHTML = alternateStateEnabled ? button.alternateHTML : button.defaultHTML;
+					button.title = alternateStateEnabled ? button.alternateTitle : button.defaultTitle;
+
+					button.swapClasses([ `zoom-${place}`, "restore" ], (alternateStateEnabled ? 1 : 0));
 				};
 
 				return button;
@@ -3275,6 +3309,7 @@ Popups = {
 		window.onmousemove = (event) => {
 			window.popupBeingResized = popup;
 
+			Popups.removeClassesFromPopFrame(popup, ...(Popups.titleBarComponents.popupPlaces));
 			Popups.addClassesToPopFrame(popup, "resized");
 
 			let deltaX = event.clientX - dragStartMouseCoordX;
@@ -3527,6 +3562,16 @@ Popups = {
 	popupTitleBarDoubleClicked: (event) => {
 		GWLog("Popups.popupTitleBarDoubleClicked", "popups.js", 2);
 
+		let popup = Popups.containingPopFrame(event.target);
+
+		let clickedWithinDisabledButton = false;
+		popup.titleBar.querySelectorAll("button:disabled").forEach(disabledButton => {
+			if (pointWithinRect({ x: event.clientX, y: event.clientY }, disabledButton.getBoundingClientRect()))
+				clickedWithinDisabledButton = true;
+		});
+		if (clickedWithinDisabledButton)
+			return;
+
 		if (event.altKey == true) {
 			let expand = Popups.popupIsCollapsed(Popups.containingPopFrame(event.target));
 			Popups.allSpawnedPopups().forEach(popup => {
@@ -3536,7 +3581,7 @@ Popups = {
 					Popups.collapsePopup(popup);
 			});
 		} else {
-			Popups.collapseOrUncollapsePopup(Popups.containingPopFrame(event.target));
+			Popups.collapseOrUncollapsePopup(popup);
 		}
 	},
 
