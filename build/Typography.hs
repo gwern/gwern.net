@@ -232,6 +232,8 @@ $ echo '![**Figure 1**: _Caption._ Foo bar.](foo.jpg)' | pandoc -w native
 Image ("",[],[]) [Strong [Str "Figure 2"],Str ": ",Emph [Str "Instability of an unsteered bicycle."],LineBreak,Str " This shows 800 runs of a bicycle being pushed to the right. For each run, the path of the front wheel on the ground is shown until the bicycle has fallen over. The unstable oscillatory nature is due to the subcritical speed of the bicycle, which loses further speed with each oscillation."] ("/doc/reinforcement-learning/model-free/2001-cook-figure2-chaoticdynamicsofunsteeredvirtualbicycleover800runs.png","fig:")
 -}
 imageCaptionLinebreak :: Inline -> Inline
+-- special-case: 'Figure 1: (a) foo. (b) bar. Baz.' We don't want to linebreak there using the usual logic because it yields brokenness like 'Figure 1: (a\n) ...'. So detect & skip.
+imageCaptionLinebreak x@(Image _ (Strong _ : Str ": (" : Emph _ : _) _) = x
 imageCaptionLinebreak (Image y (Strong a : Str b : Space : Emph c : d) z) = Image y
                                                                                       (Strong a : Str b : Emph c : LineBreak : d)
                                                                                       z
