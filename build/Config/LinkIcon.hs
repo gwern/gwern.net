@@ -396,6 +396,7 @@ linkIconTestUnitsText =
          , ("https://www.theage.com.au/national/victoria/bitcoin-drug-millions-seized-in-victoria-20141015-116bby.html", "A", "text")
          , ("https://www.rifters.com/real/2009/01/iterating-towards-bethlehem.html", "P.W.", "text,sans")
          , ("https://www.abc.net.au/news/2013-08-23/police-turn-attention-to-online-drug-trade/4908264", "ABC", "text,tri,sans")
+         , ("https://abcnews.go.com/Health/MedicalMysteries/story?id=3679532&page=1", "ABC", "text,tri,sans")
          , ("https://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=602492", "IEEE", "text,mono,quad")
          , ("https://spectrum.ieee.org/classical-chinese", "IEEE", "text,mono,quad")
          , ("https://www.dailydot.com/crime/dark-web-black-market-reloaded-adam-bunger-gun-sales-arrest/", "D.", "text,sans")
@@ -619,6 +620,7 @@ linkIconTestUnitsText =
          , ("https://www.nlsinfo.org/content/cohorts/nlsy97", "NLS", "text,tri,sans")
          , ("https://groups.google.com/g/pandoc-discuss/c/jgb-Q0F2p1Y/m/1DogIEAtAQAJ", "PNDC", "text,quad,sans")
          , ("https://scale.com/", "SCLE", "text,quad,monospace")
-         , ("https://radiolab.org/podcast/91725-words#ember29180666", "audio-waveform-lines", "svg")
+         , ("https://radiolab.org/podcast/91725-words/transcript", "audio-waveform-lines", "svg")
          , ("https://novelai.net/novelai-improvements-on-stable-diffusion-e10d38db82ac", "🖋", "text")
+         , ("https://www.thebeliever.net/mithradites-of-fond-du-lac/", "𝐁", "text,serif")
         ]

@@ -1013,4 +1013,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("enwik8", "https://mattmahoney.net/dc/textdata.html")
         , ("[Pp]areto[ -]front(ier)?", "https://en.wikipedia.org/wiki/Pareto_front")
         , ("Whisper", "https://openai.com/research/whisper")
+        , ("F1[- ][Ss]core", "https://en.wikipedia.org/wiki/F-score")
         ]

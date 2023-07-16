@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-07-12 21:04:01 gwern"
+;;; When:  Time-stamp: "2023-07-15 20:00:14 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -632,6 +632,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" K−1" . " K<sup>−1</sup>")
                         (" kg−1" . " kg<sup>−1</sup>")
                         ("l−1" . "l<sup>−1</sup>")
+                        (" </sup>" . "</sup>")
+                        ("<sup> " . "<sup>")
                         ("60Co" . "^60^Co")
                         (" I2" . " _I_^2^")
                         ("≤p≤" . " ≤ _p_ ≤ ")

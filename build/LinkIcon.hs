@@ -242,6 +242,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "jaymans.wordpress.com" = aI "J👨🏾" "text,sans" -- JayMan
  | u'' "norvig.com" = aI "N" "text,sans" -- Google Director of Research <https://en.wikipedia.org/wiki/Peter_Norvig>; <http://norvig.com/favicon.ico> is actually instantly recognizable & well-chosen, but unfortunately, only works because of the *colors*... so we'll settle for a plain sans capital N.
  | u'' "novelai.net" = aI "🖋" "text" -- LOWER LEFT FOUNTAIN PEN (U+1F58B); NovelAI logo is a fountain pen nib.
+ | u'' "www.thebeliever.net" = aI "𝐁" "text,serif" -- _The Believer_ magazine <https://en.wikipedia.org/wiki/The_Believer_(magazine)>, McSweeney's spinoff (formerly <https://believermag.com>): logo is a dropshadow serif capital B logo
 
  -- Tri/triple TLAs
  | u' "animenewsnetwork.com" = aI "ANN" "text,tri"
@@ -252,7 +253,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.cdc.gov" = aI "CDC" "text,tri"
  | u'' "boardgamegeek.com" = aI "BGG" "text,tri,sans" -- puzzle-piece logo would be unrecognizable as link icon <https://cf.geekdo-static.com/images/logos/navbar-logo-bgg-b2.svg>
  | u'' "thehub7dnl5nmcz5.onion" = aI "Hub" "text,tri,sans"
- | u'' "www.abc.net.au" = aI "ABC" "text,tri,sans" -- <https://en.wikipedia.org/wiki/Australian_Broadcasting_Corporation>
+ | u'' "www.abc.net.au" || u'' "abcnews.go.com" = aI "ABC" "text,tri,sans" -- <https://en.wikipedia.org/wiki/Australian_Broadcasting_Corporation>
  | u'' "www.odt.co.nz" = aI "ODT" "text,tri"
  | u'' "knowyourmeme.com" = aI "KYM" "text,tri"
  | u'' "freakonomics.com" = aI "FRK" "text,tri,sans" -- hybrid apple-orange icon (get it, "comparing apples & oranges") doesn't work as favicon or link
