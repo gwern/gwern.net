@@ -4922,18 +4922,8 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
         drop-shadow(0 0 2px var(--background-color));
 }
 
-.popup .popframe-title-bar-button:disabled {
-    opacity: 0.35;
-    color: var(--GW-popups-popup-title-bar-button-color);
-    cursor: default;
-    transform: none;
-}
-
 .popup .popframe-title-bar-button.zoom-button {
     padding: 5px;
-}
-.popup .popframe-title-bar-button.extracts-disable-button.disabled {
-    padding: 3px;
 }
 
 .popup.mini-title-bar button.zoom-button,
@@ -5578,11 +5568,6 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
     max-height: 100%;
     width: 24px;
     height: 24px;
-}
-
-.popin .popframe-title-bar-button:disabled {
-    pointer-events: none;
-    opacity: 0.35;
 }
 
 .popin .popframe-title-bar-button.disable-extracts-button {

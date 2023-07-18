@@ -817,7 +817,7 @@ Extracts = {
     spawnedPopupMatchingTarget: (target) => {
         return Popups.allSpawnedPopups().find(popup =>
                    Extracts.targetsMatch(target, popup.spawningTarget)
-                && Popups.popupIsEphemeral(popup));
+                && Popups.popupIsPinned(popup) == false);
     },
 
     /*  Called by popups.js when adding a target.

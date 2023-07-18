@@ -1529,14 +1529,18 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
 /*	Popup/floating footnotes to avoid readers needing to scroll to the end of
 	the page to see any footnotes; see
 	http://ignorethecode.net/blog/2010/04/20/footnotes/ for details.
-Original author:  Lukas Mathis (2010-04-20)
-License: public domain ("And some people have asked me about a license for this piece of code. I think it’s far too short to get its own license, so I’m relinquishing any copyright claims. Consider the code to be public domain. No attribution is necessary.")
-	*/
+
+	Original author:  Lukas Mathis (2010-04-20)
+	License: public domain ("And some people have asked me about a license for 
+	this piece of code. I think it’s far too short to get its own license, so 
+	I’m relinquishing any copyright claims. Consider the code to be public 
+	domain. No attribution is necessary.")
+ */
 
 Popups = {
 	/**********/
 	/*	Config.
-		*/
+	 */
     popupContainerID: "popup-container",
     popupContainerParentSelector: "html",
     popupContainerZIndex: "10000",
@@ -1551,13 +1555,12 @@ Popups = {
 
 	/******************/
 	/*	Implementation.
-		*/
+	 */
 	popupFadeTimer: false,
 	popupDespawnTimer: false,
 	popupSpawnTimer: false,
 	popupContainer: null,
 
-	//	Called by: Popups.setup
 	cleanup: () => {
 		GWLog("Popups.cleanup", "popups.js", 1);
 
@@ -1569,7 +1572,6 @@ Popups = {
 		document.removeEventListener("keyup", Popups.keyUp);
 	},
 
-	//	Called by: popups.js (doWhenPageLoaded)
 	setup: () => {
 		GWLog("Popups.setup", "popups.js", 1);
 
@@ -1613,7 +1615,7 @@ Popups = {
 			}
 
 			//  Apply the test function to the target.
-			if (!targets.testTarget(target)) {
+			if (targets.testTarget(target) == false) {
 				target.classList.toggle("no-popup", true);
 				targetRestoreFunction(target);
 				return;
@@ -1657,7 +1659,7 @@ Popups = {
 			}
 
 			//  Apply the test function to the target.
-			if (!targets.testTarget(target)) {
+			if (targets.testTarget(target) == false) {
 				target.classList.toggle("no-popup", false);
 				return;
 			}
@@ -1689,7 +1691,7 @@ Popups = {
 
 	/*******************/
 	/*  General helpers.
-		*/
+	 */
 
 	popupContainerIsVisible: () => {
 		return (Popups.popupContainer.style.visibility != "hidden");
@@ -1727,9 +1729,6 @@ Popups = {
 		}
 	},
 
-	//	Called by: Popups.despawnPopup
-	//	Called by: Popups.zoomPopup
-	//	Called by: Popups.restorePopup
 	updatePageScrollState: () => {
 		GWLog("Popups.updatePageScrollState", "popups.js", 2);
 
@@ -1744,16 +1743,14 @@ Popups = {
 	},
 
 	//	Called by: extracts.js
-	//	Called by: many functions, all in popups.js
 	allSpawnedPopups: () => {
 		if (Popups.popupContainer == null)
 			return [ ];
 
-		return Array.from(Popups.popupContainer.children).filter(popup => !popup.classList.contains("fading"));
+		return Array.from(Popups.popupContainer.children).filter(popup => (popup.classList.contains("fading") == false));
 	},
 
 	//	Called by: extracts.js
-	//	Called by: many functions, all in popups.js
 	containingPopFrame: (element) => {
 		let shadowBody = element.closest(".shadow-body");
 		if (shadowBody)
@@ -1762,13 +1759,11 @@ Popups = {
 		return element.closest(".popup");
 	},
 
-	//	Called by: many functions in many places
 	addClassesToPopFrame: (popup, ...args) => {
 		popup.classList.add(...args);
 		popup.body.classList.add(...args);
 	},
 
-	//	Called by: many functions in many places
 	removeClassesFromPopFrame: (popup, ...args) => {
 		popup.classList.remove(...args);
 		popup.body.classList.remove(...args);
@@ -1776,10 +1771,10 @@ Popups = {
 
 	/****************************************/
 	/*  Visibility of elements within popups.
-		*/
+	 */
 
 	/*	Returns true if the given element is currently visible.
-		*/
+	 */
 	//	Called by: extracts-content.js
 	isVisible: (element) => {
 		let containingPopup = Popups.containingPopFrame(element);
@@ -1804,9 +1799,8 @@ Popups = {
 
 	/*******************************/
 	/*  Popup spawning & despawning.
-		*/
+	 */
 
-	//	Called by: Popups.spawnPopup
 	newPopup: (target) => {
 		GWLog("Popups.newPopup", "popups.js", 2);
 
@@ -1866,12 +1860,12 @@ Popups = {
 		if (target.popup)
 			Popups.despawnPopup(target.popup);
 
-		/*	Once this popup is spawned, despawn all ephemeral popups not in this
+		/*	Once this popup is spawned, despawn all non-pinned popups not in this
 			popup’s stack.
 		 */
 		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
 			Popups.allSpawnedPopups().forEach(spawnedPopup => {
-				if (   Popups.popupIsEphemeral(spawnedPopup)
+				if (   Popups.popupIsPinned(spawnedPopup) == false
 					&& target.popup.popupStack.indexOf(spawnedPopup) == -1)
 					Popups.despawnPopup(spawnedPopup);
 			});
@@ -1884,7 +1878,7 @@ Popups = {
 		target.popFrame = target.popup = Popups.newPopup(target);
 
 		//  Prepare the newly created popup for spawning.
-		if (!(target.popFrame = target.popup = target.preparePopup(target.popup))) {
+		if ((target.popFrame = target.popup = target.preparePopup(target.popup)) == null) {
 			//	Reset cursor to normal.
 			Popups.clearWaitCursorForTarget(target);
 
@@ -1892,7 +1886,7 @@ Popups = {
 		}
 
 		//  If title bar contents are provided, add a title bar (if needed).
-		if (  !target.popup.titleBar
+		if (   target.popup.titleBar == null
 			&& target.popup.titleBarContents.length > 0)
 			Popups.addTitleBarToPopup(target.popup);
 
@@ -1923,7 +1917,6 @@ Popups = {
 		});
 	},
 
-	//	Called by: Popups.spawnPopup
 	injectPopup: (popup) => {
 		GWLog("Popups.injectPopup", "popups.js", 2);
 
@@ -1974,9 +1967,6 @@ Popups = {
 		});
 	},
 
-	//	Called by: Popups.uncollapsePopup
-	//	Called by: Popups.restorePopup
-	//	Called by: Popups.unpinPopup
 	attachPopupToTarget: (popup) => {
 		GWLog("Popups.attachPopupToTarget", "popups.js", 2);
 
@@ -1987,10 +1977,6 @@ Popups = {
         popup.spawningTarget.popFrame = popup;
 	},
 
-	//	Called by: Popups.despawnPopup
-	//	Called by: Popups.collapsePopup
-	//	Called by: Popups.zoomPopup
-	//	Called by: Popups.pinPopup
 	//	Called by: extracts.js
 	detachPopupFromTarget: (popup) => {
 		GWLog("Popups.detachPopupFromTarget", "popups.js", 2);
@@ -2002,11 +1988,6 @@ Popups = {
         popup.spawningTarget.popFrame = null;
 	},
 
-	//	Called by: Popups.titleBarComponents.closeButton
-	//	Called by: Popups.spawnPopup
-	//	Called by: Popups.setPopupDespawnTimer
-	//	Called by: Popups.keyUp (event handler)
-	//	Called by: Popups.removeTargetsWithin
     despawnPopup: (popup) => {
 		GWLog("Popups.despawnPopup", "popups.js", 2);
 
@@ -2042,10 +2023,6 @@ Popups = {
         document.activeElement.blur();
     },
 
-	//	Called by: Popups.getPopupAncestorStack (recursively)
-	//	Called by: Popups.popupMouseEnter (event handler)
-	//	Called by: Popups.popupMouseLeave (event handler)
-	//	Called by: Popups.popupDragMouseUp (event handler)
 	getPopupAncestorStack: (popup) => {
 		let indexOfPopup = popup.popupStack.indexOf(popup);
 		if (indexOfPopup != -1) {
@@ -2066,16 +2043,11 @@ Popups = {
 
 	/********************/
 	/*  Popup collapsing.
-		*/
-	//	Called by: Popups.collapseOrUncollapsePopup
-	//	Called by: Popups.popupIsEphemeral
-	//	Called by: Popups.zoomPopup
-	//	Called by: Popups.popupTitleBarDoubleClicked (event handler)
+	 */
 	popupIsCollapsed: (popup) => {
 		return popup.classList.contains("collapsed");
 	},
 
-	//	Called by: Popups.keyUp (event handler)
 	collapseOrUncollapsePopup: (popup) => {
 		GWLog("Popups.collapseOrUncollapsePopup", "popups.js", 2);
 
@@ -2089,7 +2061,6 @@ Popups = {
 		popup.viewportRect = popup.getBoundingClientRect();
 	},
 
-	//	Called by: Popups.collapseOrUncollapsePopup
 	collapsePopup: (popup) => {
 		GWLog("Popups.collapsePopup", "popups.js", 3);
 
@@ -2102,9 +2073,8 @@ Popups = {
 			popup.style.height = "";
 		}
 
-		//  Remove popup from its stack and detach from spawning target.
-		popup.popupStack.remove(popup);
-		Popups.detachPopupFromTarget(popup);
+		//  Pin popup.
+		Popups.pinPopup(popup);
 
 		//  Clear timers.
 		Popups.clearPopupTimers(popup.spawningTarget);
@@ -2114,8 +2084,6 @@ Popups = {
 			popup.titleBar.updateState();
 	},
 
-	//	Called by: Popups.collapseOrUncollapsePopup
-	//	Called by: Popups.zoomPopup
 	uncollapsePopup: (popup) => {
 		GWLog("Popups.uncollapsePopup", "popups.js", 3);
 
@@ -2124,20 +2092,11 @@ Popups = {
 
 		//  Restore height, if need be.
 		if (popup.dataset.previousHeight) {
-			if (!Popups.popupIsEphemeral(popup))
+			if (Popups.popupIsPinned(popup) == true)
 				popup.style.height = popup.dataset.previousHeight;
 
 			//  Delete saved height.
 			delete popup.dataset["previousHeight"];
-		}
-
-		/*  Re-add popup to its stack and re-attach it to its spawning target
-			(unless it’s pinned or zoomed).
-			*/
-		if (   Popups.popupIsPinned(popup) == false
-			&& Popups.popupIsZoomed(popup) == false) {
-			popup.popupStack.push(popup);
-			Popups.attachPopupToTarget(popup);
 		}
 
 		//  Clear timers.
@@ -2150,10 +2109,10 @@ Popups = {
 
 	/********************************************************/
 	/*  Popup pinning/unpinning, zooming/tiling, & restoring.
-		*/
+	 */
 
 	/*  Popup tiling control keys.
-		*/
+	 */
 	popupTilingControlKeys: (localStorage.getItem("popup-tiling-control-keys") || ""),
 	//	This function is currently unused (but should be used in the future).
 	//		—SA, 2022-02-01
@@ -2164,21 +2123,8 @@ Popups = {
 		localStorage.setItem("popup-tiling-control-keys", Popups.popupTilingControlKeys);
 	},
 
-	//	Called by: Popups.titleBarComponents.pinButton
-	//	Called by: Popups.setPopupViewportRect
-	//	Called by: Popups.popupClicked (event handler)
-	//	Called by: Popups.popupDragMouseUp (event handler)
-	//	Called by: Popups.uncollapsePopup
-	//	Called by: extracts.js
-	popupIsEphemeral: (popup) => {
-		return !(Popups.popupIsPinned(popup) || Popups.popupIsZoomed(popup) || Popups.popupIsCollapsed(popup));
-	},
-
-	//	Called by: Popups.popupMouseDown (event handler)
-	//	Called by: Popups.injectPopup
 	popupIsResizeable: (popup) => {
-		return (   (   Popups.popupIsPinned(popup)
-					|| Popups.popupIsZoomed(popup))
+		return (   Popups.popupIsZoomed(popup)
 				&& (   Popups.popupAllowsHorizontalResize(popup)
 					|| Popups.popupAllowsVerticalResize(popup)));
 	},
@@ -2191,55 +2137,36 @@ Popups = {
 		return (popup.classList.contains("no-resize-height") == false);
 	},
 
-	//	Called by: Popups.zoomPopup
-	//	Called by: Popups.titleBarComponents.zoomButton
-	//	Called by: Popups.positionPopup
-	//	Called by: Popups.popupIsEphemeral
-	//	Called by: Popups.popupIsResizeable
 	popupIsZoomed: (popup) => {
 		return popup.classList.contains("zoomed");
 	},
 
-	//	Called by: Popups.titleBarComponents.zoomButton.submenu
 	popupIsZoomedToPlace: (popup, place) => {
 		return (   popup.classList.contains("zoomed")
 				&& popup.classList.contains(place));
 	},
 
-	//	Called by: Popups.updatePageScrollState
 	popupIsMaximized: (popup) => {
 		return (popup.classList.contains("zoomed") && popup.classList.contains("full"));
 	},
 
-	//	Called by: Popups.positionPopup
 	popupWasRestored: (popup) => {
 		return popup.classList.contains("restored");
 	},
 
-	//	Called by: Popups.restorePopup
-	//	Called by: Popups.pinOrUnpinPopup
-	//	Called by: Popups.titleBarComponents.pinButton
-	//	Called by: Popups.positionPopup
-	//	Called by: Popups.uncollapsePopup
-	//	Called by: Popups.popupIsEphemeral
-	//	Called by: Popups.popupIsResizeable
 	popupIsPinned: (popup) => {
 		return popup.classList.contains("pinned");
 	},
 
-	//	Called by: Popups.positionPopup
 	popupWasUnpinned: (popup) => {
 		return popup.classList.contains("unpinned");
 	},
 
-	//	Called by: Popups.titleBarComponents.zoomButton
-	//	Called by: Popups.titleBarComponents.popupZoomButtons
-	//	Called by: Popups.keyUp (event handler)
 	zoomPopup: (popup, place) => {
 		GWLog("Popups.zoomPopup", "popups.js", 2);
 
 		//  If popup isn’t already zoomed, save position.
-		if (!(Popups.popupIsZoomed(popup))) {
+		if (Popups.popupIsZoomed(popup) == false) {
 			popup.dataset.previousXPosition = popup.viewportRect.left;
 			popup.dataset.previousYPosition = popup.viewportRect.top;
 		}
@@ -2325,9 +2252,8 @@ Popups = {
 		}
 		popup.scrollView.style.maxHeight = "calc(100% - var(--popup-title-bar-height))";
 
-		//  Remove popup from its stack and detach from spawning target.
-		popup.popupStack.remove(popup);
-		Popups.detachPopupFromTarget(popup);
+		//  Pin popup.
+		Popups.pinPopup(popup);
 
 		//  Clear timers.
 		Popups.clearPopupTimers(popup.spawningTarget);
@@ -2340,7 +2266,6 @@ Popups = {
 			popup.titleBar.updateState();
 	},
 
-	//	Called by: Popups.titleBarComponents.zoomButton
 	restorePopup: (popup) => {
 		GWLog("Popups.restorePopup", "popups.js", 2);
 
@@ -2358,14 +2283,6 @@ Popups = {
 		//  Update popup position.
 		Popups.positionPopup(popup);
 
-		/*  Re-add popup to its stack and re-attach it to its spawning target
-			(unless it’s pinned).
-			*/
-		if (!(Popups.popupIsPinned(popup))) {
-			popup.popupStack.push(popup);
-			Popups.attachPopupToTarget(popup);
-		}
-
 		//  Clear timers.
 		Popups.clearPopupTimers(popup.spawningTarget);
 
@@ -2377,19 +2294,16 @@ Popups = {
 			popup.titleBar.updateState();
 	},
 
-	//	Called by: Popups.keyUp (event handler)
-	//	Called by: Popups.titleBarComponents.pinButton
 	pinOrUnpinPopup: (popup) => {
 		GWLog("Popups.pinOrUnpinPopup", "popups.js", 2);
 
-		if (Popups.popupIsPinned(popup)) {
+		if (Popups.popupIsPinned(popup) == true) {
 			Popups.unpinPopup(popup);
 		} else {
 			Popups.pinPopup(popup);
 		}
 	},
 
-	//	Called by: Popups.pinOrUnpinPopup
 	pinPopup: (popup) => {
 		GWLog("Popups.pinPopup", "popups.js", 2);
 
@@ -2401,7 +2315,6 @@ Popups = {
 		popup.titleBar.updateState();
 	},
 
-	//	Called by: Popups.pinOrUnpinPopup
 	unpinPopup: (popup) => {
 		GWLog("Popups.unpinPopup", "popups.js", 2);
 
@@ -2415,16 +2328,12 @@ Popups = {
 
 	/******************/
 	/*  Popup resizing.
-		*/
+	 */
 
-	//	Called by: Popups.titleBarComponents.zoomButton
-	//	Called by: Popups.popupResizeMouseUp (event handler)
 	popupWasResized: (popup) => {
 		return popup.classList.contains("resized");
 	},
 
-	//	Called by: Popups.injectPopup
-	//	Called by: Popups.popupMouseDown (event handler)
 	edgeOrCorner: (popup, relativeMousePos) => {
 		if (Popups.popupAllowsHorizontalResize(popup) == false) {
 			let cornerHandleSize = popup.borderWidth;
@@ -2476,7 +2385,6 @@ Popups = {
 		}
 	},
 
-	//	Called by: Popups.injectPopup
 	cursorForPopupBorder: (edgeOrCorner) => {
 		switch (edgeOrCorner) {
 		case "edge-top":
@@ -2498,11 +2406,10 @@ Popups = {
 
 	/*******************/
 	/*  Popup title bar.
-		*/
+	 */
 
 	/*  Add title bar to a popup which has a populated .titleBarContents.
-		*/
-	//	Called by: Popups.spawnPopup
+	 */
 	addTitleBarToPopup: (popup) => {
 		GWLog("Popups.addTitleBarToPopup", "popups.js", 2);
 
@@ -2545,7 +2452,7 @@ Popups = {
 	},
 
 	/*  Elements and methods related to popup title bars.
-		*/
+	 */
 	titleBarComponents: {
 		//  The standard positions for a popup to zoom to.
 		popupPlaces: [ "top-left", "top", "top-right", "left", "full", "right", "bottom-left", "bottom", "bottom-right" ],
@@ -2582,8 +2489,8 @@ Popups = {
 			"close": "Close this popup (hold Option/Alt to close all)",
 			"zoom": "Maximize this popup",
 			"restore": "Restore this popup to normal size and position",
-			"pin": "Pin this popup to the screen",
-			"unpin": "Un-pin this popup from the screen",
+			"pin": "Pin this popup to the screen (hold Option/Alt to pin all)",
+			"unpin": "Un-pin this popup from the screen (hold Option/Alt to pin all)",
 			"options": "Show options",
 			"zoom-top-left": "Place this popup in the top-left quarter of the screen",
 			"zoom-top": "Place this popup on the top half of the screen",
@@ -2737,7 +2644,16 @@ Popups = {
 			button.buttonAction = (event) => {
 				event.stopPropagation();
 
-				Popups.pinOrUnpinPopup(Popups.containingPopFrame(button));
+				let popup = Popups.containingPopFrame(button);
+
+				if (event.altKey == true) {
+					let action = Popups.popupIsPinned(popup) ? "unpinPopup" : "pinPopup";
+					Popups.allSpawnedPopups().forEach(popup => {
+						Popups[action](popup);
+					});
+				} else {
+					Popups.pinOrUnpinPopup(popup);
+				}
 			};
 
 			button.updateState = () => {
@@ -2747,9 +2663,6 @@ Popups = {
 				button.title = Popups.popupIsPinned(popup) ? button.alternateTitle : button.defaultTitle;
 
 				button.swapClasses([ "pin", "unpin" ], (Popups.popupIsPinned(popup) ? 1 : 0));
-
-				button.disabled = (   Popups.popupIsCollapsed(popup)
-								   || Popups.popupIsZoomed(popup))
 			};
 
 			return button;
@@ -2767,8 +2680,7 @@ Popups = {
 		},
 
 		/*  Add a submenu of the given class and with given buttons to a button.
-			*/
-		//	Called by: Popups.addTitleBarToPopup
+		 */
 		addSubmenuToButton: (button, submenuClass, submenuButtons) => {
 			let popup = Popups.containingPopFrame(button);
 
@@ -2805,10 +2717,8 @@ Popups = {
 
 	/*********************/
 	/*	Popups z-ordering.
-		*/
+	 */
 
-	//	Called by: Popups.bringPopupToFront
-	//	Called by: Popups.despawnPopup
 	updatePopupsZOrder: () => {
 		GWLog("Popups.updatePopupsZOrder", "popups.js", 3);
 
@@ -2821,24 +2731,15 @@ Popups = {
 		Popups.focusPopup(Popups.frontmostPopup());
 	},
 
-	//	Called by: Popups.bringPopupToFront
-	//	Called by: Popups.popupClicked (event handler)
 	popupIsFrontmost: (popup) => {
 		return (parseInt(popup.style.zIndex) == Popups.allSpawnedPopups().length);
 	},
 
-	//	Called by: Popups.updatePopupsZOrder
 	frontmostPopup: () => {
 		let allPopups = Popups.allSpawnedPopups();
 		return allPopups.find(popup => parseInt(popup.style.zIndex) == allPopups.length);
 	},
 
-	//	Called by: Popups.popupClicked (event handler)
-	//	Called by: Popups.popupMouseDown (event handler)
-	//	Called by: Popups.popupTitleBarMouseDown (event handler)
-	//	Called by: Popups.targetMouseEnter (event handler)
-	//	Called by: Popups.spawnPopup
-	//	Called by: Popups.injectPopup
 	bringPopupToFront: (popup) => {
 		GWLog("Popups.bringPopupToFront", "popups.js", 3);
 
@@ -2855,19 +2756,16 @@ Popups = {
 
 	/******************/
 	/*  Popup focusing.
-		*/
+	 */
 
-	//	Called by: Popups.focusedPopup
 	popupIsFocused: (popup) => {
 		return popup.classList.contains("focused");
 	},
 
-	//	Called by: Popups.keyUp (event handler)
 	focusedPopup: () => {
 		return Popups.allSpawnedPopups().find(popup => Popups.popupIsFocused(popup));
 	},
 
-	//	Called by: Popups.updatePopupsZOrder
 	focusPopup: (popup) => {
 		GWLog("Popups.focusPopup", "popups.js", 3);
 
@@ -2883,7 +2781,7 @@ Popups = {
 
 	/*********************/
 	/*  Popup positioning.
-		*/
+	 */
 
 	/*	Returns full viewport rect for popup and all auxiliary elements
 		(footers, etc.).
@@ -2892,18 +2790,11 @@ Popups = {
 		return rectUnion(popup.getBoundingClientRect(), ...(Array.from(popup.children).map(x => x.getBoundingClientRect())));
 	},
 
-	//	Called by: Popups.positionPopup
 	//	See also: extracts.js
 	preferSidePositioning: (target) => {
 		return target.preferSidePositioning ? target.preferSidePositioning() : false;
 	},
 
-	//	Called by: Popups.targetMouseEnter (event handler)
-	//	Called by: Popups.spawnPopup
-	//	Called by: Popups.zoomPopup
-	//	Called by: Popups.restorePopup
-	//	Called by: Popups.pinPopup
-	//	Called by: Popups.unpinPopup
 	positionPopup: (popup, spawnPoint, tight = false) => {
 		GWLog("Popups.positionPopup", "popups.js", 2);
 
@@ -2932,7 +2823,7 @@ Popups = {
 			/*  This is the width and height of the popup, as already determined
 				by the layout system, and taking into account the popup’s content,
 				and the max-width, min-width, etc., CSS properties.
-				*/
+			 */
 			let popupIntrinsicRect = Popups.getPopupViewportRect(popup);
 			let popupIntrinsicWidth = popupIntrinsicRect.width;
 			let popupIntrinsicHeight = popupIntrinsicRect.height;
@@ -2950,7 +2841,7 @@ Popups = {
 				/*  The popup is a nested popup, or the target specifies that it
 					prefers to have popups spawned to the side; we try to put
 					the popup off to the left or right.
-					*/
+				 */
 				offToTheSide = true;
 			}
 
@@ -2978,8 +2869,8 @@ Popups = {
 
 			/*  Can the popup fit above the target? If so, put it there.
 				Failing that, can it fit below the target? If so, put it there.
-				*/
-			if (!offToTheSide) {
+			 */
+			if (offToTheSide == false) {
 				if (  popupSpawnYOriginForSpawnAbove
 					- popupIntrinsicHeight
 					  >= 0) {
@@ -3005,17 +2896,17 @@ Popups = {
 				}
 			}
 
-			if (!offToTheSide) {
+			if (offToTheSide == false) {
 				/*  Place popup off to the right (and either above or below),
 					as per the previous block of code.
-					*/
+				 */
 				provisionalPopupXPosition = spawnPoint.x + Popups.popupBreathingRoomX;
 			}
 
 			/*  Does the popup extend past the right edge of the container?
 				If so, move it left, until its right edge is flush with
 				the container’s right edge.
-				*/
+			 */
 			if (  provisionalPopupXPosition
 				+ popupIntrinsicWidth
 				  > document.documentElement.offsetWidth) {
@@ -3026,7 +2917,7 @@ Popups = {
 			/*  Now (after having nudged the popup left, if need be),
 				does the popup extend past the *left* edge of the container?
 				Make its left edge flush with the container's left edge.
-				*/
+			 */
 			if (provisionalPopupXPosition < 0) {
 				provisionalPopupXPosition = 0;
 			}
@@ -3047,7 +2938,7 @@ Popups = {
 			if (Popups.popupIsZoomed(popup)) {
 				provisionalPopupXPosition = popup.zoomToX;
 				provisionalPopupYPosition = popup.zoomToY;
-			} else if (Popups.popupIsPinned(popup)) {
+			} else if (Popups.popupIsPinned(popup) == true) {
 				if (Popups.popupWasRestored(popup)) {
 					[ provisionalPopupXPosition, provisionalPopupYPosition ] = getPositionToRestore(popup);
 				} else {
@@ -3075,19 +2966,16 @@ Popups = {
 		});
 	},
 
-	//	Called by: Popups.popupMouseDown (event handler)
-	//	Called by: Popups.popupTitleBarMouseDown (event handler)
-	//	Called by: Popups.positionPopup
 	setPopupViewportRect: (popup, rect) => {
 		GWLog("Popups.setPopupViewportRect", "popups.js", 3);
 
-		if (Popups.popupIsEphemeral(popup)) {
+		if (Popups.popupIsPinned(popup) == false) {
             let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
 			rect.x -= popupContainerViewportRect.left;
 			rect.y -= popupContainerViewportRect.top;
 		}
 
-		popup.style.position = Popups.popupIsEphemeral(popup) ? "" : "fixed";
+		popup.style.position = Popups.popupIsPinned(popup) ? "fixed" : "";
 
 		popup.style.left = `${(Math.round(rect.x))}px`;
 		popup.style.top = `${(Math.round(rect.y))}px`;
@@ -3106,9 +2994,8 @@ Popups = {
 
 	/****************/
 	/*	Popup timers.
-		*/
+	 */
 
-	//	Called by: many fuctions, all in popups.js
     clearPopupTimers: (target) => {
 	    GWLog("Popups.clearPopupTimers", "popups.js", 3);
 
@@ -3120,7 +3007,6 @@ Popups = {
         clearTimeout(target.popupSpawnTimer);
     },
 
-	//	Called by: Popups.targetMouseEnter
 	setPopupSpawnTimer: (target, event) => {
 		GWLog("Popups.setPopupSpawnTimer", "popups.js", 2);
 
@@ -3137,9 +3023,6 @@ Popups = {
 		}, popupTriggerDelay);
 	},
 
-	//	Called by: Popups.popupMouseLeave (event handler)
-	//	Called by: Popups.popupDragMouseUp (event handler)
-	//	Called by: Popups.targetMouseLeave (event handler)
     setPopupFadeTimer: (target) => {
 		GWLog("Popups.setPopupFadeTimer", "popups.js", 2);
 
@@ -3150,7 +3033,6 @@ Popups = {
         }, Popups.popupFadeoutDelay);
     },
 
-	//	Called by: Popups.setPopupFadeTimer
     setPopupDespawnTimer: (target) => {
 		GWLog("Popups.setPopupDespawnTimer", "popups.js", 2);
 
@@ -3166,7 +3048,6 @@ Popups = {
 	/*	Popup progress UI indicators.
 	 */
 
-	//	Called by: Popups.setPopupSpawnTimer
 	setWaitCursorForTarget: (target) => {
 		GWLog("Popups.setWaitCursorForTarget", "popups.js", 2);
 
@@ -3176,8 +3057,6 @@ Popups = {
 			target.popup.style.cursor = "progress";
 	},
 
-	//	Called by: Popups.spawnPopup
-	//	Called by: Popups.despawnPopup
 	clearWaitCursorForTarget: (target) => {
 		GWLog("Popups.clearWaitCursorForTarget", "popups.js", 3);
 
@@ -3189,10 +3068,10 @@ Popups = {
 
 	/*******************/
 	/*  Event listeners.
-		*/
+	 */
 
    /*	The “user moved mouse out of popup” mouseleave event.
-    	*/
+    */
     //	Added by: Popups.injectPopup
 	popupMouseLeave: (event) => {
 		GWLog("Popups.popupMouseLeave", "popups.js", 2);
@@ -3210,7 +3089,7 @@ Popups = {
 	},
 
 	/*	The “user moved mouse back into popup” mouseenter event.
-		*/
+	 */
 	//	Added by: Popups.injectPopup
 	popupMouseEnter: (event) => {
 		GWLog("Popups.popupMouseEnter", "popups.js", 2);
@@ -3221,7 +3100,7 @@ Popups = {
 	},
 
 	/*  The “user clicked in body of popup” event.
-		*/
+	 */
 	//	Added by: Popups.injectPopup
     popupClicked: (event) => {
 		GWLog("Popups.popupClicked", "popups.js", 2);
@@ -3238,7 +3117,7 @@ Popups = {
     },
 
 	/*  The popup mouse down event (for resizing by dragging an edge/corner).
-		*/
+	 */
 	//	Added by: Popups.injectPopup
 	popupMouseDown: (event) => {
 		GWLog("Popups.popupMouseDown", "popups.js", 2);
@@ -3252,10 +3131,10 @@ Popups = {
 		/*  Make sure we’re clicking on the popup (ie. its edge) and not
 			on any of the popup’s contained elements; that this is a
 			left-click; and that the popup is pinned or zoomed.
-			*/
+		 */
 		if (   event.target != popup
 			|| event.button != 0
-			|| !(Popups.popupIsResizeable(popup)))
+			|| Popups.popupIsResizeable(popup) == false)
 			return;
 
 		//  Bring the popup to the front.
@@ -3294,7 +3173,7 @@ Popups = {
 
 		/*  Add the mouse up event listener (to window, not the popup, because
 			the drag might end anywhere, due to animation lag).
-			*/
+		 */
 		window.addEventListener("mouseup", Popups.popupResizeMouseUp);
 
 		//  Viewport width must account for vertical scroll bar.
@@ -3366,7 +3245,7 @@ Popups = {
 	},
 
 	/*  The resize-end mouseup event.
-		*/
+	 */
 	//	Added by: Popups.popupMouseDown
 	popupResizeMouseUp: (event) => {
 		GWLog("Popups.popupResizeMouseUp", "popups.js", 2);
@@ -3394,7 +3273,7 @@ Popups = {
 	},
 
 	/*  The popup mouseout event.
-		*/
+	 */
 	//	Added by: Popups.injectPopup
 	popupMouseOut: (event) => {
 		GWLog("Popups.popupMouseOut", "popups.js", 3);
@@ -3406,7 +3285,7 @@ Popups = {
 	},
 
 	/*  The popup title bar mouseup event.
-		*/
+	 */
 	//	Added by: Popups.addTitleBarToPopup
 	popupTitleBarMouseDown: (event) => {
 		GWLog("Popups.popupTitleBarMouseDown", "popups.js", 2);
@@ -3440,12 +3319,12 @@ Popups = {
 
 		/*  If the mouse-down event is on the popup title (and the title
 			is a link).
-			*/
+		 */
 		popup.linkDragTarget = event.target.closest("a");
 
 		/*  Deal with edge case where drag to screen bottom ends up
 			with the mouse-up event happening in the popup body.
-			*/
+		 */
 		popup.removeEventListener("click", Popups.popupClicked);
 
 		//  Point where the drag began.
@@ -3494,7 +3373,7 @@ Popups = {
 	},
 
 	/*  The mouseup event that ends a popup drag-to-move.
-		*/
+	 */
 	//	Added by: Popups.popupTitleBarMouseDown
 	popupDragMouseUp: (event) => {
 		GWLog("Popups.popupDragMouseUp", "popups.js", 2);
@@ -3531,10 +3410,10 @@ Popups = {
 			/*  If the drag of a non-pinned popup ended outside the
 				popup (possibly outside the viewport), treat this
 				as mousing out of the popup.
-				*/
-			if ((  !event.target.closest
-				 || Popups.containingPopFrame(event.target) == null)
-				&&  Popups.popupIsEphemeral(popup)) {
+			 */
+			if (   (   event.target.closest == null
+				    || Popups.containingPopFrame(event.target) == null)
+				&& Popups.popupIsPinned(popup) == false) {
 				Popups.getPopupAncestorStack(popup).reverse().forEach(popupInStack => {
 					Popups.clearPopupTimers(popupInStack.spawningTarget);
 					Popups.setPopupFadeTimer(popupInStack.spawningTarget);
@@ -3545,10 +3424,13 @@ Popups = {
 
 		//  Remove the listener (ie. we only want this fired once).
 		window.removeEventListener("mouseup", Popups.popupDragMouseUp);
+
+		//  Pin popup.
+		Popups.pinPopup(popup);
 	},
 
 	/*  The popup title bar mouseup event.
-		*/
+	 */
 	//	Added by: Popups.addTitleBarToPopup
 	popupTitleBarMouseUp: (event) => {
 		GWLog("Popups.popupTitleBarMouseUp", "popups.js", 2);
@@ -3557,20 +3439,12 @@ Popups = {
 	},
 
 	/*  The popup title bar double-click event.
-		*/
+	 */
 	//	Added by: Popups.addTitleBarToPopup
 	popupTitleBarDoubleClicked: (event) => {
 		GWLog("Popups.popupTitleBarDoubleClicked", "popups.js", 2);
 
 		let popup = Popups.containingPopFrame(event.target);
-
-		let clickedWithinDisabledButton = false;
-		popup.titleBar.querySelectorAll("button:disabled").forEach(disabledButton => {
-			if (pointWithinRect({ x: event.clientX, y: event.clientY }, disabledButton.getBoundingClientRect()))
-				clickedWithinDisabledButton = true;
-		});
-		if (clickedWithinDisabledButton)
-			return;
 
 		if (event.altKey == true) {
 			let expand = Popups.popupIsCollapsed(Popups.containingPopFrame(event.target));
@@ -3586,7 +3460,7 @@ Popups = {
 	},
 
 	/*	The target mouseenter event.
-		*/
+	 */
 	//	Added by: Popups.addTargetsWithin
 	targetMouseEnter: (event) => {
 		GWLog("Popups.targetMouseEnter", "popups.js", 2);
@@ -3603,14 +3477,14 @@ Popups = {
 		} else {
 			/*  If already spawned, just bring the popup to the front and
 				re-position it.
-				*/
+			 */
 			Popups.bringPopupToFront(event.target.popup);
 			Popups.positionPopup(event.target.popup, { x: event.clientX, y: event.clientY });
 		}
 	},
 
 	/*	The target mouseleave event.
-		*/
+	 */
 	//	Added by: Popups.addTargetsWithin
 	targetMouseLeave: (event) => {
 		GWLog("Popups.targetMouseLeave", "popups.js", 2);
@@ -3623,8 +3497,8 @@ Popups = {
 			Popups.setPopupFadeTimer(event.target);
 	},
 
-     /*	The “user (left- or right-) clicked target” mousedown event.
-    	*/
+    /*	The “user (left- or right-) clicked target” mousedown event.
+     */
     //	Added by: Popups.addTargetsWithin
 	targetMouseDown: (event) => {
 		GWLog("Popups.targetMouseDown", "popups.js", 2);
@@ -3646,18 +3520,19 @@ Popups = {
 		//	Cancel spawning of popups from the target.
 		Popups.clearPopupTimers(target);
 
-		//	Despawn any (ephemeral) popup already spawned from the target.
+		//	Despawn any (non-pinned) popup already spawned from the target.
 		if (target.popup)
 			Popups.despawnPopup(target.popup);
 	},
 
 	/*  The keyup event.
-		*/
+	 */
 	//	Added by: Popups.setup
 	keyUp: (event) => {
 		GWLog("Popups.keyUp", "popups.js", 3);
 		let allowedKeys = [ "Escape", "Esc", ...(Popups.popupTilingControlKeys.split("")) ];
-		if (!allowedKeys.includes(event.key) || Popups.allSpawnedPopups().length == 0)
+		if (   allowedKeys.includes(event.key) == false 
+			|| Popups.allSpawnedPopups().length == 0)
 			return;
 
 		event.preventDefault();
@@ -8494,7 +8369,7 @@ Extracts = {
     spawnedPopupMatchingTarget: (target) => {
         return Popups.allSpawnedPopups().find(popup =>
                    Extracts.targetsMatch(target, popup.spawningTarget)
-                && Popups.popupIsEphemeral(popup));
+                && Popups.popupIsPinned(popup) == false);
     },
 
     /*  Called by popups.js when adding a target.
