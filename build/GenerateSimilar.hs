@@ -442,7 +442,7 @@ processTitles parentTag blacklistTags a =
          (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/tagguesser.py", a']
          case status of
            ExitFailure err -> printRed "tagguesser.py failed!" >> printRed (show err) >> print a' >> return "" -- printGreen (ppShow (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb])) >> printRed "tagguesser.py failed!" >> return ""
-           _ -> return $ (trim . U.toString) mb
+           _ -> return $ (last . lines . trim . U.toString) mb
 
 sortSimilarsStartingWithNewest :: Metadata -> [(FilePath, MetadataItem)] -> IO [[(FilePath, MetadataItem)]]
 sortSimilarsStartingWithNewest _ []     = return []
