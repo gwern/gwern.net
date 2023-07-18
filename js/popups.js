@@ -596,7 +596,7 @@ Popups = {
 	},
 
 	popupIsResizeable: (popup) => {
-		return (   Popups.popupIsZoomed(popup)
+		return (   Popups.popupIsPinned(popup)
 				&& (   Popups.popupAllowsHorizontalResize(popup)
 					|| Popups.popupAllowsVerticalResize(popup)));
 	},
@@ -606,7 +606,8 @@ Popups = {
 	},
 
 	popupAllowsVerticalResize: (popup) => {
-		return (popup.classList.contains("no-resize-height") == false);
+		return (   popup.classList.contains("no-resize-height") == false
+				&& Popups.popupIsCollapsed(popup) == false);
 	},
 
 	popupIsZoomed: (popup) => {
@@ -1891,14 +1892,14 @@ Popups = {
 					Popups.setPopupFadeTimer(popupInStack.spawningTarget);
 				});
 			}
+
+			//  Pin popup.
+			Popups.pinPopup(popup);
 		}
 		window.popupBeingDragged = null;
 
 		//  Remove the listener (ie. we only want this fired once).
 		window.removeEventListener("mouseup", Popups.popupDragMouseUp);
-
-		//  Pin popup.
-		Popups.pinPopup(popup);
 	},
 
 	/*  The popup title bar mouseup event.
