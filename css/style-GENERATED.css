@@ -2013,15 +2013,12 @@ ol.has-floats > li {
 .markdownBody .columns > .list {
 	--text-alignment: left;
 
-    column-width: 15em;
+    column-width: 18em;
     column-gap: 3em;
 }
 
 .markdownBody .columns .list li {
     break-inside: avoid;
-}
-.markdownBody .columns .list .list {
-    --list-left-padding: 1.5em;
 }
 
 /**********************/
