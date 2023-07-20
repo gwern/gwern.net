@@ -3290,6 +3290,15 @@ addLayoutProcessor(GW.layout.applyBlockSpacingInContainer = (container) => {
 	});
 });
 
+/****************************************************************************/
+/*	Apply block layout classes to a document fragment, to make them available
+	to any other load handlers (rewrite functions).
+ */
+addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInDocumentFragment = (eventInfo) => {
+    GWLog("applyBlockLayoutClassesInDocumentFragment", "rewrite.js", 1);
+
+	GW.layout.applyBlockLayoutClassesInContainer(eventInfo.container);
+}, "<rewrite", (info) => (info.container instanceof DocumentFragment));
 /*	This code is part of dark-mode.js by Said Achmiz.
 	See the file `dark-mode.js` for license and more information.
  */
