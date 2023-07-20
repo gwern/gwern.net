@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-07-15 20:00:14 gwern"
+;;; When:  Time-stamp: "2023-07-18 21:10:44 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -992,6 +992,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "\nTrial Registration " "\n**Trial Registration**: ")
          (replace-all "Background\n" "\n**Background**: ")
          (replace-all "\nBackground " "**Background**: ")
+         (replace-all "Introduction: " "\n**Introduction**: ")
          (replace-all "\nAims\n" "\n**Aims**: ")
          (replace-all "\nDesign\n" "\n**Design**: ")
          (replace-all "\nSetting\n" "\n**Setting**: ")

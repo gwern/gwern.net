@@ -4,7 +4,7 @@
 # tagguesser.py: suggest a tag for links/annotations based on a list of titles fed into the OA API
 # Author: Gwern Branwen
 # Date: 2023-06-17
-# When:  Time-stamp: "2023-07-18 12:59:24 gwern"
+# When:  Time-stamp: "2023-07-18 13:52:22 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python tagguesser.py
@@ -68,7 +68,7 @@ messages = [
 result = run_with_timeout(
     "create",
     kwargs={
-        # "model": "gpt-4",
+        # "model": "gpt-4", # TODO: once caching is implemented, switch to GPT-4 for the highest-possible quality. (Unfortunately, it'd cost way too much to run them all through GPT-4 each time, which is how the current sort-by-magic auto-tagging works.)
         "model": "gpt-3.5-turbo",
         "messages": messages,
         # "max_tokens": 4090,
