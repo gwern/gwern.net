@@ -1043,3 +1043,12 @@ addLayoutProcessor(GW.layout.applyBlockSpacingInContainer = (container) => {
 	});
 });
 
+/****************************************************************************/
+/*	Apply block layout classes to a document fragment, to make them available
+	to any other load handlers (rewrite functions).
+ */
+addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInDocumentFragment = (eventInfo) => {
+    GWLog("applyBlockLayoutClassesInDocumentFragment", "rewrite.js", 1);
+
+	GW.layout.applyBlockLayoutClassesInContainer(eventInfo.container);
+}, "<rewrite", (info) => (info.container instanceof DocumentFragment));
