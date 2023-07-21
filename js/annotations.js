@@ -585,7 +585,7 @@ Annotations.dataSources.wikipedia = {
 			fullTitleHTML = `${titleHTML} (${(response.querySelector("title").innerHTML)})`;
 		} else {
 			responseHTML = response.querySelector("[data-mw-section-id='0']").innerHTML;
-			titleHTML = response.querySelector("title").innerHTML;
+			titleHTML = unescapeHTML(response.querySelector("title").innerHTML);
 			fullTitleHTML = titleHTML;
 
 			//	Build TOC.

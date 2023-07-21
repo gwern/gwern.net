@@ -859,6 +859,15 @@ function fixedEncodeURIComponent(str) {
     });
 }
 
+/********************************************/
+/*	Returns HTML-unescaped version of string.
+ */
+function unescapeHTML(str) {
+	let parser = new DOMParser();
+
+	return parser.parseFromString(str, "text/html").documentElement.textContent;
+}
+
 /***************************************************/
 /*	Return the value of a GET (i.e., URL) parameter.
 	*/
