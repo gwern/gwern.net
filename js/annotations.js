@@ -660,9 +660,12 @@ Annotations.dataSources.wikipedia = {
 	/*	Qualify a link in a Wikipedia article.
 	 */
 	qualifyWikipediaLink: (link, hostArticleLink) => {
+		if (link.getAttribute("href") == null)
+			return;
+
 		//  Qualify link.
 		if (link.getAttribute("rel") == "mw:WikiLink")
-			link.pathname = "/wiki" + link.pathname;
+			link.pathname = "/wiki" + link.getAttribute("href").slice(1);
 		if (link.getAttribute("href").startsWith("#"))
 			link.pathname = hostArticleLink.pathname;
 		if (link.hostname == location.hostname)
