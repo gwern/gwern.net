@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-07-11 15:37:12 gwern"
+When: Time-stamp: "2023-07-22 12:22:41 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -216,6 +216,7 @@ postCtx md =
     fieldsTagHTML  md <>
     titlePlainField "titlePlain" <>
     descField "title" <>
+    descPlainField "descriptionPlain" <>
     descField "description" <> -- constField "description" "N/A" <>
     -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.page as `index: true` to set it to a non-null value.) Likewise, "error404" for generating the 404.html page.
     -- similarly, 'author': default.html has a conditional to set 'Gwern Branwen' as the author in the HTML metadata if 'author' is not defined, but if it is, then the HTML metadata switches to the defined author & the non-default author is exposed in the visible page metadata as well for the human readers.
@@ -241,21 +242,28 @@ postCtx md =
     escapedTitleField "safeURL" <>
     (mapContext (\p -> urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) ("/" ++ replace ".page" ".html" p)) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotation/backlink/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotation/backlink/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotation/backlink/%2Fnotes%2FFaster.html'
 
-fieldsTagHTML :: Metadata -> Context String
-fieldsTagHTML m = field "tagsHTML" $ \item -> do
+lookupTags :: Metadata -> Item a -> Compiler (Maybe [String])
+lookupTags m item = do
   let path = "/" ++ replace ".page" "" (toFilePath $ itemIdentifier item)
   case M.lookup path m of
-    Nothing                 -> return "" -- noResult "no description field"
-    Just x@(_,_,_,_,tags,_) -> case runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta [tagsToLinksDiv $ map T.pack tags]) of
-                                 Left e -> error ("Failed to compile tags to HTML fragment: " ++ show path ++ show x ++ show e)
-                                 Right html -> return (T.unpack html)
+    Nothing               -> return Nothing
+    Just (_,_,_,_,tags,_) -> return $ Just tags
+
+fieldsTagHTML :: Metadata -> Context String
+fieldsTagHTML m = field "tagsHTML" $ \item -> do
+  maybeTags <- lookupTags m item
+  case maybeTags of
+    Nothing -> return "" -- noResult "no tag field"
+    Just tags -> case runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta [tagsToLinksDiv $ map T.pack tags]) of
+                   Left e -> error ("Failed to compile tags to HTML fragment: " ++ show item ++ show tags ++ show e)
+                   Right html -> return (T.unpack html)
 
 fieldsTagPlain :: Metadata -> Context String
 fieldsTagPlain m = field "tagsPlain" $ \item -> do
-  let path = "/" ++ replace ".page" "" (toFilePath $ itemIdentifier item)
-  case M.lookup path m of
-    Nothing               -> return "" -- noResult "no description field"
-    Just (_,_,_,_,tags,_) -> return $ intercalate ", " tags
+    maybeTags <- lookupTags m item
+    case maybeTags of
+      Nothing -> return "" -- noResult "no tag field"
+      Just tags -> return $ intercalate ", " tags
 
 -- should backlinks be in the metadata? We skip backlinks for newsletters & indexes (excluded from the backlink generation process as well) due to lack of any value of looking for backlinks to hose.
 -- HACK: uses unsafePerformIO. Not sure how to check up front without IO... Read the backlinks DB and thread it all the way through `postCtx`, and `main`?
@@ -289,6 +297,13 @@ titlePlainField d = field d $ \item -> do
                   case metadataMaybe of
                     Nothing -> noResult "no title field"
                     Just t -> return (simplifiedHTMLString t)
+descPlainField :: String -> Context String
+descPlainField d = field d $ \item -> do
+                  metadataMaybe <- getMetadataField (itemIdentifier item) "description"
+                  case metadataMaybe of
+                    Nothing -> noResult "no description field"
+                    Just t -> return (simplifiedHTMLString t)
+
 
 descField :: String -> Context String
 descField d = field d $ \item -> do
