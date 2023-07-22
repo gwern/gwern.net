@@ -897,6 +897,7 @@ function urlEncodeQuery(params) {
  */
 function doAjax(options) {
     let req = new XMLHttpRequest();
+
     req.addEventListener("load", (event) => {
         if (event.target.status < 400) {
             if (options["onSuccess"])
@@ -910,14 +911,23 @@ function doAjax(options) {
         if (options["onFailure"])
             options.onFailure(event);
     });
+
     let method = (options["method"] || "GET");
     let location = (options.location || document.location)
                    + ((options.params && method == "GET") ? ("?" + urlEncodeQuery(options.params)) : "");
     req.open(method, location);
+
     if (options["responseType"])
 	    req.responseType = options["responseType"];
-    if (options["method"] == "POST") {
+
+    if (options["method"] == "POST")
         req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+	if (options["headers"] != null)
+		for (let [ headerName, headerValue ] of Object.entries(options["headers"]))
+			req.setRequestHeader(headerName, headerValue);
+
+    if (options["method"] == "POST") {
         req.send(urlEncodeQuery(options.params));
     } else {
         req.send();
