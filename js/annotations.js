@@ -260,7 +260,8 @@ Annotations = { ...Annotations,
 
 					//	Send request to record failure in server logs.
 					GWServerLogError(sourceURL.href, "missing annotation");
-				}
+				},
+				headers: Annotations.dataSourceForLink(link).additionalAPIRequestHeaders
 			});
 		}
 
@@ -655,6 +656,10 @@ Annotations.dataSources.wikipedia = {
 			popFrameTitleText:      popFrameTitleText,
 			popFrameTitleLinkHref:  titleLinkHref
 		};
+	},
+
+	additionalAPIRequestHeaders: {
+		"Accept": 'text/html; charset=utf-8; profile="https://www.mediawiki.org/wiki/Specs/HTML/2.1.0"'
 	},
 
 	/*	Qualify a link in a Wikipedia article.
