@@ -1125,5 +1125,6 @@ whiteList url
       , "https://tonyzhaozh.github.io/aloha/" -- low quality (video embeds)
       , "https://maggieappleton.com/transcopyright-dreams#designing-speculative-interfaces" -- low quality (Figma embeds)
       , "https://dl.fbaipublicfiles.com/imagebind/imagebind_video.mp4" -- low quality (video embed - file format?)
+      , "https://vcai.mpi-inf.mpg.de/projects/DragGAN/" -- low quality (video embeds)
       ] = True
     | otherwise = False

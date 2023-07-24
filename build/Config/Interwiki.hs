@@ -760,6 +760,7 @@ redirectDB = [
           , ("https://en.wikipedia.org/wiki/Fuzz_testing", "https://en.wikipedia.org/wiki/Fuzzing")
           , ("https://en.wikipedia.org/wiki/GABA", "https://en.wikipedia.org/wiki/%CE%93-Aminobutyric_acid")
           , ("https://en.wikipedia.org/wiki/GAINAX", "https://en.wikipedia.org/wiki/Gainax")
+          , ("https://en.wikipedia.org/wiki/Studio Gainax", "https://en.wikipedia.org/wiki/Gainax")
           , ("https://en.wikipedia.org/wiki/Gamera_3", "https://en.wikipedia.org/wiki/Gamera_3:_Revenge_of_Iris")
           , ("https://en.wikipedia.org/wiki/Gamma-Aminobutyric_acid", "https://en.wikipedia.org/wiki/%CE%93-Aminobutyric_acid")
           , ("https://en.wikipedia.org/wiki/Gao_Gai_Gar", "https://en.wikipedia.org/wiki/The_King_of_Braves_GaoGaiGar")

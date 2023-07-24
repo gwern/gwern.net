@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-07-18 21:10:44 gwern"
+;;; When:  Time-stamp: "2023-07-20 10:36:17 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -376,6 +376,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("K\\+" . "K⁺")
                      ("Ca2+" . "Ca<sup>2</sup>⁺")
                      ("<sup>+</sup>" . "⁺")
+                     ("+-" . "±")
+                     ("+/−" . "±")
                      ("et al.\n" . "et al")
                      (" ω 2" . " ω<sup>2</sup>")
                      ("τ2" . "τ<sup>2</sup>")
@@ -546,6 +548,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("s9 " . "s’ ") ; workaround MedRxiv/BioRxiv consistent malformation of "s'" as "s9" (somehow); can't auto-replace due to 'CRISPR-Cas9' etc
                         (" −." . " −0.")
                         ("50/50" . "50:50")
+                        ("¼" . "1⁄4")
                         ("C3O2" . "C~3~O~2~")
                         ("CO2" . "CO~2~")
                         (" CO2" . " CO~2~")

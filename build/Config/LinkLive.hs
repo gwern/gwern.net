@@ -784,6 +784,7 @@ goodDomainsSimple =
     , "scale.com"
     , "radiolab.org"
     , "www.thebeliever.net"
+    , "fasttext.cc"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com",
@@ -3083,6 +3084,7 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "http://mattmahoney.net/dc/dce.html"
             , "https://scale.com/blog/chatgpt-vs-claude"
             , "https://radiolab.org/podcast/122291-in-running/transcript"
+            , "https://fasttext.cc/blog/2017/10/02/blog-post.html"
             ]
 
 badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
@@ -3419,7 +3421,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://chrome.google.com/webstore/detail/singlefile/mpiodijhokgodhhofbcjdecpffjipkle"
             , "https://chroniclingamerica.loc.gov/newspapers/"
             , "https://ciechanow.ski/lights-and-shadows/"
-            , "https://circ.ahajournals.org/cgi/content/meeting_abstract/120/18_MeetingAbstracts/S461-a"
+            , "https://www.ahajournals.org/doi/abs/10.1161/circ.120.suppl_18.S461-a"
             , "https://cis.org/articles/2010/teen-study.pdf"
             , "https://clarkesworldmagazine.com/watts_01_10/"
             , "https://clinicalepigeneticsjournal.biomedcentral.com/articles/10.1186/s13148-021-01218-y#Tab1"
@@ -3506,7 +3508,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://examine.com/supplements/Piracetam/"
             , "https://exrx.net/Nutrition/Antioxidants/Antioxidants"
             , "https://f1000research.com/articles/3-82/v1"
-            , "https://faculty.virginia.edu/cogage/links/publications/"
+            , "https://uva.theopenscholar.com/vcap/publications"
             , "https://fdaaa.trialstracker.net/"
             , "https://fifteen.ai/"
             , "https://finance.yahoo.com"
@@ -3525,7 +3527,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://freedom-to-tinker.com/2011/05/24/you-might-also-privacy-risks-collaborative-filtering/"
             , "https://fursona.app/"
             , "https://gallica.bnf.fr/ark:/12148/bpt6k851127r/"
-            , "https://gazette.secondstreetapp.com/Crime-Stoppers-Town-Hall-2/"
+            , "https://web.archive.org/web/20151107000041/http://gazette.com/air-force-academy-cadet-sentenced-for-dealing-drugs/article/1562468"
             , "https://gcta.freeforums.net/thread/213/analysis-greml-results-multiple-cohorts"
             , "https://genepi.qimr.edu.au/general/TwinPowerCalculator/"
             , "https://geneticalliance.org.uk/information/services-and-testing/how-can-i-access-preimplantation-genetic-diagnosis/#Question6"
@@ -4342,7 +4344,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://teams.rescuetime.com/"
             , "https://www.research.va.gov/mvp/"
             , "https://www.researchandmarkets.com/reportinfo.asp?report_id=305358"
-            , "https://www.researchgate.net/profile/Carole-Nowicke/publication/236212779_Secondary_and_Tertiary_Citing_A_Study_of_Referencing_Behavior_in_the_Literature_of_Citation_Analysis_Deriving_from_the_%27Ortega_Hypothesis%27_of_Cole_and_Cole/links/571e631208aead26e71a88a5/Secondary-and-Tertiary-Citing-A-Study-of-Referencing-Behavior-in-the-Literature-of-Citation-Analysis-Deriving-from-the-Ortega-Hypothesis-of-Cole-and-Cole.pdf#page=2"
+            , "/doc/statistics/bias/1995-hoerman.pdf"
             , "https://www.rightstufanime.com/Utena-Revolutionary-Girl-DVD-Set-3-Apocalypse-Saga-Hyb-Limited-Edition"
             , "https://www.rollingstone.com/culture/culture-features/smiley-face-murder-serial-killer-drowning-death-882042/"
             , "https://www.rrauction.com/auctions/lot-detail/31909050347196/"
