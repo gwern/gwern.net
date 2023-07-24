@@ -1302,9 +1302,16 @@ ul.list-level-3 {
 /*= Numbered list markers =*/
 /*=-----------------------=*/
 
+/*	This may not be necessary. It definitely causes the `start` HTML list
+	property to not work correctly, so if indeed it’s unnecessary otherwise, it
+	should be removed. Commenting it out for now until we can confirm that no 
+	bugs are caused by its absence.
+		—SA 2023-07-24
+/* 
 ol {
     counter-reset: list-item;
 }
+ */
 
 ol > li {
     counter-increment: list-item;
