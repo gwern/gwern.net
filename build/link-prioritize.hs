@@ -41,7 +41,7 @@ $ find ~/wiki/ -name "*.page" -type f -print0 | parallel --null ~/wiki/haskell/l
 8 http://forum.evageeks.org/viewtopic.php?p=366731#366731
 7 https://www.lesswrong.com/tag/inside-outside-view
 7 http://predictionbook.com/users/gwern
-6 https://www.reddit.com/r/TOUHOUMUSIC/search?q=author%3Agwern&sort=new&restrict_sr=on&t=all
+6 https://www.reddit.com/r/TOUHOUMUSIC/search/?q=author%3Agwern&sort=new&restrict_sr=on&t=all
 ...
 1 https://17th-angel.tumblr.com/post/11409371268/anno-a-transfer-student-opens-the-door-with-a
 1 http://1000enpark.com/park/tokyo/oota/photo_heiwajima/p_main.jpg
