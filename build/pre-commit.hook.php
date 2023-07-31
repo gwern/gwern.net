@@ -98,7 +98,9 @@ $icon_patterns = [
 foreach ($icon_patterns as $pattern)
 	$icons = array_merge($icons, glob($pattern));
 $icons = implode(" ", $icons);
-if ($force || (`git diff-index --cached HEAD -- {$icons}`)) {
+if (   $force 
+	|| (`git diff-index --cached HEAD -- {$build_dir}/build_icon_sprite_file.php`) 
+	|| (`git diff-index --cached HEAD -- {$icons}`)) {
 	require_once("{$build_dir}/build_icon_sprite_file.php");
 	`git add {$static_dir}/img/icon/. {$static_dir}/include/.`;
 }
