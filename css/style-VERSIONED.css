@@ -3312,7 +3312,7 @@ section.footnotes .section-self-link {
     position: absolute;
     width: 2em;
     height: 2em;
-    top: 3px;
+    top: -1px;
     border: 1px solid transparent;
     left: 0;
     right: 0;

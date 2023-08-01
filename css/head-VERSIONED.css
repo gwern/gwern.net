@@ -2237,6 +2237,13 @@ body.reader-mode-active.masked-links-hidden .markdownBody a code {
 	border-bottom-width: 1px;
 }
 
+/*	Footnotes section self-link.
+ */
+body.reader-mode-active .markdownBody section.footnotes .section-self-link:hover {
+	position: absolute !important;
+	cursor: pointer !important;
+}
+
 /*  Citations.
  */
 body.reader-mode-active .markdownBody .cite-joiner {
