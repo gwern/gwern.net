@@ -583,9 +583,16 @@ function aggregateMarginNotes(eventInfo) {
 				abstract and/or epigraph that opens the section.
 			 */
 			let firstBlock = firstBlockOf(section, {
-				alsoSkipElements: [ ".abstract blockquote", ".abstract-collapse p", ".epigraph" ]
+				alsoSkipElements: [ ".abstract blockquote", ".epigraph" ]
 			}, true);
-			while (firstBlock.parentElement.matches("section, .markdownBody, .collapse-content-wrapper") == false)
+
+			let marginNoteBlockContainerElementsSelector = [ 
+				"section",
+				".markdownBody",
+				".abstract-collapse:not(.abstract)",
+				".collapse-content-wrapper"
+			].join(", ");
+			while (firstBlock.parentElement.matches(marginNoteBlockContainerElementsSelector) == false)
 				firstBlock = firstBlock.parentElement;
 
 			//	Inject the margin notes block and a horizontal rule.
