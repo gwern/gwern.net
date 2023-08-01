@@ -4,9 +4,6 @@
 
 $static_dir = __DIR__;
 
-if (`git diff`)
-	`{$static_dir}/build/pre-commit.hook.php`;
-
 $file_name = $_GET['f'];
 
 $content_type = 'text/plain';
@@ -16,6 +13,9 @@ else if (str_ends_with($file_name, '.css'))
 	$content_type = 'text/css';
 
 header ("Content-type: {$content_type}; charset=utf-8");
+
+if (`git diff`)
+	`git add . ; {$static_dir}/build/pre-commit.hook.php`;
 
 echo file_get_contents("{$static_dir}/{$file_name}");
 
