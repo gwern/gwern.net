@@ -192,6 +192,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("psychology/linguistics", "language")
           , ("psychology/linguistics/bilingual", "bilingualism")
           , ("psychology/collecting", "collecting psychology")
+          , ("psychology/cognitive-bias/illusion-of-depth/extramission", "extramission sight theory")
           , ("psychology/cognitive-bias/illusion-of-depth", "illusion-of-depth bias")
           , ("psychiatry/meditation/lewis", "Lewis’s meditation experiment")
           , ("psychiatry/lithium", "lithium-in-water")

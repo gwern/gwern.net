@@ -382,7 +382,7 @@ linkIconTestUnitsText =
          , ("https://www.ribbonfarm.com/2011/09/23/the-milo-criterion/", "ℝ𝔽", "text,sans")
          , ("https://en.touhouwiki.net/wiki/Iyokan", "☯", "text")
          , ("https://touhou.fandom.com/wiki/Category:Music", "☯", "text")
-         , ("https://www.reddit.com/r/TOUHOUMUSIC/search?q=author%3Agwern&sort=new&restrict_sr=on&t=all", "☯", "text")
+         , ("https://www.reddit.com/r/TOUHOUMUSIC/search/?q=author%3Agwern&sort=new&restrict_sr=on&t=all", "☯", "text")
          , ("https://w.atwiki.jp/toho/pages/948.html", "☯", "text")
          , ("https://www.reuters.com/article/us-astrazeneca-targacept/astrazeneca-targacept-drug-fails-depression-test-idUSTRE7A71KO20111108", "R", "text,sans")
          , ("https://www.deviantart.com/caji9i/art/stylegan-neural-ahegao-842847987", "DA", "text,sans")
