@@ -1323,7 +1323,7 @@ ol > li::before {
     display: block;
 	left: 0;
 	top: 0;
-    width: 2.125em;
+    width: calc(var(--list-left-padding) - 0.375em);
     text-align: right;
 }
 
