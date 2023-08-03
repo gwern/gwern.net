@@ -510,7 +510,7 @@ section.collapse > .heading {
 }
 .collapse-inline.expanded > .disclosure-button.start .icon,
 .collapse-inline.has-abstract.expanded-not > .disclosure-button.start .icon {
-    margin-right: -0.4em;
+    margin-right: -0.2em;
 }
 
 .collapse-inline > .disclosure-button .icon svg {
