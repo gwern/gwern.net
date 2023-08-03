@@ -12,4 +12,10 @@ pngOne () { if [[ "$1" =~ .*\.png ]]; then du -h "$1"
          du -h "$1"; fi; }
 export -f pngOne
 
-find "$@" -type f | sort | parallel pngOne
+for item in "$@"; do
+    if [ -f "$item" ]; then
+        pngOne "$item" &
+    elif [ -d "$item" ]; then
+        find "$item" -type f | sort | parallel pngOne
+    fi
+done

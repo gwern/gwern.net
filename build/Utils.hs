@@ -1595,6 +1595,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("totall ", "total ")
          , ("minimis", "minimiz")
          , ("maximis", "maximiz")
+         , ("heterogenous", "heterogeneous")
          , ("(Canis Familiaris)", "(<em>Canis Familiaris</em>)")
          , ("(Canis familiaris)", "(<em>Canis familiaris</em>)")
          , (" Canis familiaris", " <em>Canis familiaris</em>")

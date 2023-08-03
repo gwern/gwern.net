@@ -623,4 +623,5 @@ linkIconTestUnitsText =
          , ("https://radiolab.org/podcast/91725-words/transcript", "audio-waveform-lines", "svg")
          , ("https://novelai.net/novelai-improvements-on-stable-diffusion-e10d38db82ac", "🖋", "text")
          , ("https://www.thebeliever.net/mithradites-of-fond-du-lac/", "𝐁", "text,serif")
+         , ("http://blog.sigfpe.com/2005/08/absence-of-evidence-is-evidence-of.html", "sgfp", "text-quad,monospace")
         ]
