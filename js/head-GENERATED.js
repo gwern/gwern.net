@@ -3118,6 +3118,12 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 			cacheKey: "alsoBlocks_nonCollapseSectionHeadings"
 		}) == null);
 
+		//	Designate blocks in lists (the .in-list class).
+		block.classList.toggle("in-list", blockContainerOf(block, {
+			alsoBlockContainers: [ "li" ],
+			cacheKey: "alsoBlockContainers_listItems"
+		})?.matches("li") == true);
+
 		//	Apply special paragraph classes.
 		if (block.matches("p") == true) {
 			//	Empty paragraphs (the .empty-graf class; not displayed).
@@ -3166,6 +3172,7 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 			 */
 			let introGraf = false;
 			if (   block.matches(".text-center, .margin-notes-block") != true
+				&& block.matches(".in-list") != true
 				&& block.closest("#footer") == null
 				&& block.firstElementChild?.matches("span.smallcaps") != true
 				&& block.firstChild instanceof HTMLAnchorElement != true) {
@@ -3211,12 +3218,6 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 			}
 			block.classList.toggle("intro-graf", introGraf);
 		}
-
-		//	Designate blocks in lists (the .in-list class).
-		block.classList.toggle("in-list", blockContainerOf(block, {
-			alsoBlockContainers: [ "li" ],
-			cacheKey: "alsoBlockContainers_listItems"
-		})?.matches("li") == true);
 	});
 
 	//	Designate those list items which need more spacing (when not indenting).
