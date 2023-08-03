@@ -13470,19 +13470,24 @@ function newDisclosureButton(block = true, start = true) {
 	let disclosureButtonHTML = `<button type="button" class="${className}" tabindex="-1" aria-label="Open/close collapsed section">`;
 	if (block) {
 		disclosureButtonHTML += `<span class="part top">`
-									 + `<span class="label"></span>`
-									 + `<span class="icon">`
-										+ GW.svg("chevron-left-solid")
-									 + `</span>`
+								 + `<span class="label"></span>`
+								 + `<span class="icon">`
+									+ GW.svg("chevron-left-solid")
 								 + `</span>`
-								 + `<span class="part bottom">`
-									 + `<span class="label"></span>`
-									 + `<span class="icon">`
-										+ GW.svg("chevron-left-solid")
-									 + `</span>`
-								 + `</span>`;
+							  + `</span>`
+							  + `<span class="part bottom">`
+							  	 + `<span class="label"></span>`
+								 + `<span class="icon">`
+									+ GW.svg("chevron-left-solid")
+								 + `</span>`
+							  + `</span>`;
 	} else {
-		disclosureButtonHTML += `<span class="icon"></span>`;
+		disclosureButtonHTML += `<span class="icon">`
+							  + (start
+								 ? GW.svg("bracket-square-left-sharp-light")
+								 : (  GW.svg("angle-right-regular")
+									+ GW.svg("bracket-square-right-sharp-light")))
+							  + `</span>`;
 	}
 	disclosureButtonHTML += `</button>`;
 
@@ -13578,10 +13583,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 		//  Inject the disclosure button.
 		if (collapseWrapper.classList.contains("collapse-inline")) {
 			//	Button at start.
-			if (collapseWrapper.firstElementChild.classList.contains("abstract-collapse"))
-				collapseWrapper.insertBefore(newDisclosureButton(false), collapseWrapper.firstElementChild.nextSibling);
-			else
-				collapseWrapper.insertBefore(newDisclosureButton(false), collapseWrapper.firstChild);
+			collapseWrapper.insertBefore(newDisclosureButton(false), collapseWrapper.firstChild);
 
 			//	Button at end.
 			collapseWrapper.insertBefore(newDisclosureButton(false, false), null);
@@ -13666,29 +13668,23 @@ addContentInjectHandler(GW.contentInjectHandlers.collapseExpandedCollapseBlocks 
 function updateDisclosureButtonState(collapseBlock, showLabels) {
 	GWLog("updateDisclosureButtonState", "collapse.js", 2);
 
-	let disclosureButton = collapseBlock.querySelector(".disclosure-button");
-
 	let action = GW.isMobile() ? "Tap" : "Click";
 	let labelHTML = isCollapsed(collapseBlock)
 					? `${action} to expand`
 					: `${action} to collapse`;
 
-	disclosureButton.querySelectorAll(".part .label").forEach(label => {
-		label.innerHTML = labelHTML;
-	});
-
 	if (collapseBlock.classList.contains("collapse-block")) {
+		let disclosureButton = collapseBlock.querySelector(".disclosure-button");
+
+		disclosureButton.querySelectorAll(".part .label").forEach(label => {
+			label.innerHTML = labelHTML;
+		});
+
 		disclosureButton.classList.toggle("labels-visible", showLabels || GW.collapse.alwaysShowCollapseInteractionHints);
 	} else {
-		if (isCollapsed(collapseBlock)) {
-			disclosureButton.querySelector(".icon").innerHTML = GW.svg("bracket-square-left-sharp-light") 
-															  + GW.svg("angle-right-regular")
-															  + GW.svg("bracket-square-right-sharp-light");
-		} else {
-			let collapseContentWrapper = collapseBlock.querySelector(".collapse-content-wrapper");
-			collapseContentWrapper.previousElementSibling.querySelector(".icon").innerHTML = GW.svg("bracket-square-left-sharp-light");
-			collapseContentWrapper.nextElementSibling.querySelector(".icon").innerHTML = GW.svg("bracket-square-right-sharp-light");
-		}
+		[ collapseBlock.firstElementChild, collapseBlock.lastElementChild ].forEach(disclosureButton => {
+			disclosureButton.title = labelHTML;
+		});
 	}
 }
 
