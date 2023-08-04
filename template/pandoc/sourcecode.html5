@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"$if(dir)$ dir="$dir$"$endif$>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+$for(author-meta)$
+  <meta name="author" content="$author-meta$" />
+$endfor$
+$if(date-meta)$
+  <meta name="dcterms.date" content="$date-meta$" />
+$endif$
+  <title>$pagetitle$ (Syntax-Highlighted Preview)</title>
+  </style>
+$for(css)$
+  <link rel="stylesheet" href="$css$">
+$endfor$
+</head>
+<body class="source-code">
+$if(title)$
+<header>
+<h1 class="title">$title$</h1>
+$for(author)$
+<p class="author">$author$</p>
+$endfor$
+$if(date)$
+<p class="date">$date$</p>
+$endif$
+</header>
+$endif$
+$body$
+$endfor$
+</body>
+</html>
