@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-07-25 20:17:11 gwern"
+# When:  Time-stamp: "2023-08-04 15:57:54 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -215,6 +215,7 @@ else
         declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["bash"]="Bash" ["html"]="HTML" ["conf"]="Bash" ["php"]="PHP" ["opml"]="Xml" ["xml"]="Xml" ["page"]="Markdown"
                                          # NOTE: we do 'text' to get a 'syntax-highlighted' version which has wrapped columns etc.
                                          ["txt"]="" ["yaml"]="YAML" ["jsonl"]="JSON" ["json"]="JSON" ["csv"]="CSV" )
+        LENGTH="2000"
         for FILE in "$@"; do
             FILEORIGINAL=$(echo "$FILE" | sed -e 's/_site//')
             FILENAME=$(basename -- "$FILE")
@@ -223,13 +224,13 @@ else
             FILELENGTH=$(cat "$FILE" | wc --lines)
             (echo -e "~~~~~~~~~~~~~~~~~~~~~{.$LANGUAGE}"; # NOTE: excessively long tilde-line is necessary to override/escape any tilde-blocks inside Markdown files: <https://pandoc.org/MANUAL.html#fenced-code-blocks>
             if [ $EXTENSION == "page" ]; then # the very long lines look bad in narrow popups, so we fold:
-                cat "$FILE" | fold --spaces --width=70 | sed -e 's/~~~/∼∼∼/g' | head -1100 | iconv -t utf8 -c;
+                cat "$FILE" | fold --spaces --width=70 | sed -e 's/~~~/∼∼∼/g' | head "-$LENGTH" | iconv -t utf8 -c;
             else
-                cat "$FILE" | head -1000;
+                cat "$FILE" | head "-$LENGTH";
             fi
              echo -e "\n~~~~~~~~~~~~~~~~~~~~~"
-             if (( $FILELENGTH >= 1000 )); then echo -e "\n\n…[File truncated due to length; see <a class=\"link-page\" href=\"$FILEORIGINAL\">original file</a>]…"; fi;
-            ) | pandoc --mathjax --write=html5 --from=markdown+smart | \
+             if (( $FILELENGTH >= "$LENGTH" )); then echo -e "\n\n…[File truncated due to length; see <a class=\"link-page\" href=\"$FILEORIGINAL\">original file</a>]…"; fi;
+            ) | pandoc --standalone --template=./static/template/pandoc/sourcecode.html5 --css=/static/css/colors.css --css=/static/css/initial.css --css=/static/css/default.css --mathjax --write=html5 --from=markdown+smart | \
                 ## delete annoying self-link links: Pandoc/skylighting doesn't make this configurable
                 sed -e 's/<span id="cb[0-9]\+-[0-9]\+"><a href="#cb[0-9]\+-[0-9]\+" aria-hidden="true" tabindex="-1"><\/a>//' -e 's/id="mathjax-styles" type="text\/css"/id="mathjax-styles"/' >> $FILE.html
         done

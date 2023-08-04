@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-07-20 10:36:17 gwern"
+;;; When:  Time-stamp: "2023-08-04 15:54:29 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -26,9 +26,29 @@
 
 ; (setq major-mode 'markdown-mode) ; needs to be done via 'Customize'?
 (setq markdown-command
-   "pandoc --mathjax --metadata title='Markdown preview' --to=html5 --standalone --number-sections --toc --reference-links --css=~/wiki/static/css/initial.css --css=~/wiki/static/css/links.css --css=~/wiki/static/css/default.css --css=~/wiki/static/css/dark-mode-adjustments.css --css=~/wiki/static/css/fonts.css --css=~/wiki/static/css/FontAwesome.css --css=~/wiki/static/css/dark-mode.css --css=~/wiki/static/css/colors.css --css=~/wiki/static/css/colors-dark.css -f markdown+smart --template=/home/gwern/bin/bin/pandoc-template-html5-articleedit.html5 -V lang=en-us")
+   "pandoc --mathjax --metadata title='Markdown preview' --to=html5 --standalone --number-sections --toc --reference-links --css=~/wiki/static/css/initial.css --css=~/wiki/static/css/links.css --css=~/wiki/static/css/default.css --css=~/wiki/static/css/dark-mode-adjustments.css --css=~/wiki/static/css/fonts.css --css=~/wiki/static/css/FontAwesome.css --css=~/wiki/static/css/dark-mode.css --css=~/wiki/static/css/colors.css --css=~/wiki/static/css/colors-dark.css -f markdown+smart --template=/home/gwern/wiki/static/template/pandoc/template-html5-articleedit.html5 -V lang=en-us")
 (setq markdown-enable-math t)
 (setq markdown-italic-underscore t)
+
+; warn on dangerous use of statistical-significance testing language:
+(add-hook 'markdown-mode-hook
+            (lambda ()
+              (font-lock-add-keywords nil '(
+                  (" significant" 0 'taylor-special-words-warning t)
+                  (" significance" 0 'taylor-special-words-warning t)
+              ))))
+(add-hook 'html-mode-hook
+            (lambda ()
+              (font-lock-add-keywords nil '(
+                  (" significant" 0 'taylor-special-words-warning t)
+                  (" significance" 0 'taylor-special-words-warning t)
+              ))))
+(add-hook 'yaml-mode-hook
+            (lambda ()
+              (font-lock-add-keywords nil '(
+                  (" significant" 0 'taylor-special-words-warning t)
+                  (" significance" 0 'taylor-special-words-warning t)
+              ))))
 
 ;I like unusual semantic punctuation!
 (defun interrobang () (interactive (insert-char ?‽ 1))) ;; interrobang: ‽ for replacing "?!"\"!?"
@@ -1895,7 +1915,7 @@ These margin-notes are used as very abbreviated italicized summaries of the
 ; mismatched quotes are no good either
 ; <http://stackoverflow.com/questions/9527593/customizing-check-parens-to-check-double-quotes>
 (add-hook 'markdown-mode-hook (lambda () (modify-syntax-entry ?\" "$" markdown-mode-syntax-table)))
-(add-hook 'yaml-mode-hook (lambda () (modify-syntax-entry ?{ "(" markdown-mode-syntax-table) (modify-syntax-entry ?} ")" markdown-mode-syntax-table)))
+(add-hook 'yaml-mode-hook (lambda () (modify-syntax-entry ?{  "(" markdown-mode-syntax-table) (modify-syntax-entry ?} ")" markdown-mode-syntax-table)))
 (add-hook 'yaml-mode-hook (lambda () (modify-syntax-entry ?\( "(" markdown-mode-syntax-table) (modify-syntax-entry ?\) ")" markdown-mode-syntax-table)))
 
 ; We visually highlight '\[' in Markdown files to emphasize that they are part of editorial insertions (like '[sic]') and *not* the ubiquitous Markdown link syntax. Confusing them can cause problems.
