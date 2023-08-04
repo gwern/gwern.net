@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-08-04 15:57:54 gwern"
+# When:  Time-stamp: "2023-08-04 16:08:51 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -230,7 +230,7 @@ else
             fi
              echo -e "\n~~~~~~~~~~~~~~~~~~~~~"
              if (( $FILELENGTH >= "$LENGTH" )); then echo -e "\n\n…[File truncated due to length; see <a class=\"link-page\" href=\"$FILEORIGINAL\">original file</a>]…"; fi;
-            ) | pandoc --standalone --template=./static/template/pandoc/sourcecode.html5 --css=/static/css/colors.css --css=/static/css/initial.css --css=/static/css/default.css --mathjax --write=html5 --from=markdown+smart | \
+            ) | pandoc --metadata title="$FILE" --standalone --template=./static/template/pandoc/sourcecode.html5 --css=/static/css/colors.css --css=/static/css/initial.css --css=/static/css/default.css --mathjax --write=html5 --from=markdown+smart | \
                 ## delete annoying self-link links: Pandoc/skylighting doesn't make this configurable
                 sed -e 's/<span id="cb[0-9]\+-[0-9]\+"><a href="#cb[0-9]\+-[0-9]\+" aria-hidden="true" tabindex="-1"><\/a>//' -e 's/id="mathjax-styles" type="text\/css"/id="mathjax-styles"/' >> $FILE.html
         done
