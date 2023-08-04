@@ -13575,6 +13575,9 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 
 			//	This is a block collapse.
 			collapseWrapper.classList.add("collapse-block");
+
+			//	Collapse blocks of this type never have abstracts.
+			collapseWrapper.classList.add("no-abstract");
 		}
 
 		//	Mark as expanded, if need be.
