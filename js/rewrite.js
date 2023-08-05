@@ -520,6 +520,24 @@ addContentInjectHandler(GW.contentInjectHandlers.updateImageDimensions = (eventI
     });
 }, "rewrite");
 
+/*********************************************************/
+/*  Ensure image dimensions update when device is rotated.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.addOrientationChangeImageDimensionUpdateEvents = (eventInfo) => {
+    GWLog("addOrientationChangeImageDimensionUpdateEvents", "rewrite.js", 1);
+
+	let images = eventInfo.container.querySelectorAll("figure img[width][height]");
+
+	GW.mediaQueries.portraitOrientation.addListener((event) => { 
+		requestAnimationFrame(() => {
+			images.forEach(image => {
+				image.style.width = "";
+				setImageDimensions(image);
+			});
+		});
+	});
+}, "eventListeners");
+
 /********************************/
 /*  Inject wrappers into figures.
  */
