@@ -461,7 +461,7 @@ function setImageDimensions(image, fixWidth = false, fixHeight = false) {
 
 	if (image.maxHeight == null) {
 		//	Avoid computing style when possible.
-		if (image.matches("#markdownBody figure:not(.float) img")) {
+		if (image.matches("#markdownBody figure img")) {
 			//	This should match `1rem`.
 			let baseFontSize = GW.isMobile() ? "18" : "20";
 
