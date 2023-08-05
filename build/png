@@ -2,20 +2,40 @@
 set -euo pipefail
 
 # do a mix of lossless then lossy optimization:
-pngOne () { if [[ "$1" =~ .*\.png ]]; then du -h "$1"
+pngOne () {
+    if [[ "$1" =~ .*\.png ]]; then
+        orig_size=$(du -k "$1" | cut -f1)
+        temp_file=$(mktemp --suffix=.png)
+        cp "$1" "$temp_file"
          # WARNING: can't overwrite on Ubuntu as pngnq is buggy and will simply delete the file! so create lossy version and overwrite manually:
-         nice -n 19 pngnq -v -s1 "$1"
-         FILE="${1%.*}"
-         mv "$FILE"-nq8.png "$1";
-         nice -n 19 advpng --iter 20 -z "$1";
-         nice -n 19 optipng -o9 "$1"
-         du -h "$1"; fi; }
+        nice -n 19 pngnq -v -s1 "$temp_file"
+        optimized_file="${temp_file%.*}"-nq8.png
+        if [ -f "$optimized_file" ]; then
+            nice -n 19 advpng --iter 20 -z "$optimized_file"
+            nice -n 19 optipng -o9 "$optimized_file"
+            new_size=$(du -k "$optimized_file" | cut -f1)
+            # calculate the percentage difference
+            diff=$(( 100*(orig_size - new_size)/orig_size ))
+            # only replace if new file is at least 10% smaller
+            if (( diff > 10 )); then
+                mv "$optimized_file" "$1";
+            else
+                echo "Optimized file is not at least 10% smaller. Leaving the original file untouched."
+            fi
+        else
+            echo "Optimized file $optimized_file doesn't exist. Leaving the original file untouched."
+        fi
+        rm -f "$temp_file" "$optimized_file"
+    else
+        echo "File $1 is not a PNG. Skipping."
+    fi
+}
 export -f pngOne
 
 for item in "$@"; do
     if [ -f "$item" ]; then
         pngOne "$item" &
     elif [ -d "$item" ]; then
-        find "$item" -type f | sort | parallel pngOne
+        find "$item" -type f -name "*.png" | sort | parallel pngOne
     fi
 done

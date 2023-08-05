@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-08-04 16:08:51 gwern"
+# When:  Time-stamp: "2023-08-04 23:01:43 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -833,6 +833,7 @@ else
           cm "text/css; charset=utf-8" 'https://gwern.net/static/css/fonts.css'
           cm "text/css; charset=utf-8" 'https://gwern.net/static/css/initial.css'
           cm "text/css; charset=utf-8" 'https://gwern.net/static/css/links.css'
+          cm "text/css; charset=utf-8" 'https://gwern.net/static/css/colors.css'
           cm "text/csv; charset=utf-8" 'https://gwern.net/doc/statistics/2013-google-index.csv'
           cm "text/html" 'https://gwern.net/atom.xml'
           cm "text/html; charset=utf-8" 'https://gwern.net/doc/cs/2012-terencetao-anonymity.html'
