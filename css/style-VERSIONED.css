@@ -6438,7 +6438,8 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
         z-index: 2;
     }
 }
-@media all and (min-width: 650px) {
+@media (min-width:  650px) and (orientation: portrait), 
+	   (min-height: 650px) and (orientation: landscape) {
     #image-focus-overlay .caption {
         font-size: 2vmin;
     }
@@ -6470,7 +6471,8 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     padding: 0.25em 1.25em;
     border-radius: 8px;
 }
-@media all and (max-width: 649px) {
+@media (max-width:  649px) and (orientation: portrait),
+	   (max-height: 649px) and (orientation: landscape) {
     #image-focus-overlay .caption .caption-text-wrapper {
         font-size: 0.9em;
         padding: 0.125em 0.75em 0.25em 0.75em;
@@ -6520,16 +6522,23 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     margin: 0.5em 0 0 0;
     padding: 0.5em 1.25em 0.75em 1.25em;
     border-radius: 8px;
-    background-color: var(--SA-image-focus-overlay-background-color);
+    background-color: var(--SA-image-focus-overlay-image-caption-background-color);
     cursor: copy;
     user-select: none;
     transition:
         background-color 0.15s ease-out;
 }
-@media all and (max-width: 649px) {
+@media (max-width:  649px) and (orientation: portrait) {
     #image-focus-overlay .caption .image-url {
         position: fixed;
         top: 4.5em;
+    }
+}
+@media (max-height: 649px) and (orientation: landscape) {
+    #image-focus-overlay .caption .image-url {
+        position: fixed;
+        top: 0;
+		margin: 0.5em 6.5em;
     }
 }
 
@@ -6543,9 +6552,14 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     font-size: 0.8em;
     color: var(--SA-image-focus-overlay-image-caption-link-color);
 }
-@media all and (max-width: 649px) {
+@media (max-width:  649px) and (orientation: portrait) {
     #image-focus-overlay .caption .image-url .url {
         font-size: 0.75em;
+    }
+}
+@media (max-height: 649px) and (orientation: landscape) {
+    #image-focus-overlay .caption .image-url .url {
+        font-size: 0.70em;
     }
 }
 #image-focus-overlay .caption .image-url:hover .url {
