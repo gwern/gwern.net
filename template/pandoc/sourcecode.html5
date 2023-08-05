@@ -11,12 +11,11 @@ $if(date-meta)$
   <meta name="dcterms.date" content="$date-meta$" />
 $endif$
   <title>$pagetitle$ (Syntax-Highlighted Preview)</title>
-  </style>
 $for(css)$
   <link rel="stylesheet" href="$css$">
 $endfor$
 </head>
-<body class="source-code">
+<body class="file-preview-source-code"> <!-- TODO: we should probably have a special prefix to properly namespace these sort of 'meta' body classes, to distinguish them from the page-title-derived body classes we use to CSS-style specific pages. -->
 $if(title)$
 <header>
 <h1 class="title">$title$</h1>
