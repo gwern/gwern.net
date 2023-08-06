@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-09-05 13:16:11 gwern"
+# When:  Time-stamp: "2023-09-07 11:33:03 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -66,10 +66,10 @@ else
           s 'https://mobile.twitter.com' 'https://twitter.com'; s 'https://www.twitter.com' 'https://twitter.com'; s 'https://en.reddit.com/' 'https://www.reddit.com/'; s 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'http://en.wikipedia.org' 'https://en.wikipedia.org'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com'; s 'www.super-memory.com' 'super-memory.com'; s 'https://www.bldgblog.com' 'https://bldgblog.com'; s 'https://www.clinicaltrials.gov' 'https://clinicaltrials.gov'; s 'https://nitter.net/' 'https://twitter.com/'; s 'https://arxiv.org/abs//' 'https://arxiv.org/abs/';
 
           ## link cruft rewrites:
-          s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?s=61' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ref=thebrowser.com' ''; s '?ignored=irrelevant' ''; s '](/docs/' '](/doc/'; s 'href="/docs/' 'href="/doc/'; s '.pdf#pdf' '.pdf'; s '#fromrss' ''; s '&amp;hl=en' ''; s '?rss=1' ''; s '/doc/statistics/decision-theory' '/doc/statistics/decision';
+          s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?s=61' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ref=thebrowser.com' ''; s '?ignored=irrelevant' ''; s '](/docs/' '](/doc/'; s 'href="/docs/' 'href="/doc/'; s '.pdf#pdf' '.pdf'; s '#fromrss' ''; s '&amp;hl=en' ''; s '?rss=1' ''; s '/doc/statistics/decision-theory' '/doc/statistics/decision'; s '?ref=quillette.com' '';
 
           ## name/entity consistency:
-          s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant'; s ' CIFAR10' 'CIFAR-10'; s 'TyDi QA' 'TyDiQA'; s 'Türkiye' 'Turkey'; s ' Poincare' ' Poincaré'; s 'Francois de La Rochefoucauld' 'François de La Rochefoucauld'; s 'Moliere' 'Molière'; s 'behavioural genetic' 'behavioral genetic'; s ' gwern.net' ' Gwern.net'; s 'chain of thought' 'chain-of-thought'; s 'Chain Of Thought' 'Chain-Of-Thought'; s 'Chain of Thought' 'Chain-of-Thought'; s 'Chain of thought' 'Chain-of-thought'; s 'MS Marco' 'MS MARCO'; s 'MS-MARCO' 'MS MARCO'; s 'NLSY-79' 'NLSY79'; s 'NLSY-97' 'NLSY97'; s 'state of the art' 'state-of-the-art'; s 'State of the Art' 'State-of-the-Art'; s 'Enwik8' 'enwik8'; s 'G. M. Fahy' 'Gregory M. Fahy'; s 'Greg M. Fahy' 'Gregory M. Fahy'; s 'Gary Kasparov' 'Garry Kasparov'; s 'Fel D1' 'Fel D 1'; s 'Fel d1' 'Fel d 1'; s 'CIFAR10' 'CIFAR-10'; s 'ImageNet1k' 'ImageNet-1k'; s 'ImageNet21k' 'ImageNet-21k'; s ' LeGuin' ' Le Guin';
+          s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant'; s ' CIFAR10' 'CIFAR-10'; s 'TyDi QA' 'TyDiQA'; s 'Türkiye' 'Turkey'; s ' Poincare' ' Poincaré'; s 'Francois de La Rochefoucauld' 'François de La Rochefoucauld'; s 'Moliere' 'Molière'; s 'behavioural genetic' 'behavioral genetic'; s ' gwern.net' ' Gwern.net'; s 'chain of thought' 'chain-of-thought'; s 'Chain Of Thought' 'Chain-Of-Thought'; s 'Chain of Thought' 'Chain-of-Thought'; s 'Chain of thought' 'Chain-of-thought'; s 'MS Marco' 'MS MARCO'; s 'MS-MARCO' 'MS MARCO'; s 'NLSY-79' 'NLSY79'; s 'NLSY-97' 'NLSY97'; s 'state of the art' 'state-of-the-art'; s 'State of the Art' 'State-of-the-Art'; s 'Enwik8' 'enwik8'; s 'G. M. Fahy' 'Gregory M. Fahy'; s 'Greg M. Fahy' 'Gregory M. Fahy'; s 'Gary Kasparov' 'Garry Kasparov'; s 'Fel D1' 'Fel D 1'; s 'Fel d1' 'Fel d 1'; s 'CIFAR10' 'CIFAR-10'; s 'ImageNet1k' 'ImageNet-1k'; s 'ImageNet21k' 'ImageNet-21k'; s ' LeGuin' ' Le Guin'; s 'DALL-E 1' 'DALL·E 1'; s 'DALL-E 2' 'DALL·E 2';
 
           ## abbreviation consistency:
           s '(ie,' '(ie.'; s '(ie ' '(ie. '; s 'i.e.,' 'ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s 'E.g.,' 'Eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
@@ -217,13 +217,14 @@ else
                                          ["txt"]="default" ["yaml"]="YAML" ["jsonl"]="JSON" ["json"]="JSON" ["csv"]="CSV" )
         LENGTH="2000"
         for FILE in "$@"; do
+
             FILEORIGINAL=$(echo "$FILE" | sed -e 's/_site//')
             FILENAME=$(basename -- "$FILE")
             EXTENSION="${FILENAME##*.}"
             LANGUAGE=${extensionToLanguage[$EXTENSION]}
             FILELENGTH=$(cat "$FILE" | wc --lines)
             (echo -e "~~~~~~~~~~~~~~~~~~~~~{.$LANGUAGE}"; # NOTE: excessively long tilde-line is necessary to override/escape any tilde-blocks inside Markdown files: <https://pandoc.org/MANUAL.html#fenced-code-blocks>
-            if [ $EXTENSION == "page" ]; then # the very long lines look bad in narrow popups, so we fold:
+            if [ $EXTENSION == "page" ] || [ $EXTENSION == "txt" ] ; then # the very long lines look bad in narrow popups, so we fold:
                 cat "$FILE" | fold --spaces --width=70 | sed -e 's/~~~/∼∼∼/g' | head "-$LENGTH";
             else
                 cat "$FILE" | head "-$LENGTH";
@@ -661,7 +662,7 @@ else
         OTHERS="$(find metadata/annotation/ -name "*.html"; echo index)"
         for PAGE in $PAGES $OTHERS ./static/404; do
             HTML="${PAGE%.page}"
-            TIDY=$(tidy -quiet -errors --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \
+            TIDY=$(tidy -quiet -errors --fix-style-tags no --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \
                        grep -F --invert-match -e '<link> proprietary attribute ' -e 'Warning: trimming empty <span>' \
                              -e "Error: missing quote mark for attribute value" -e 'Warning: <img> proprietary attribute "loading"' \
                              -e 'Warning: <svg> proprietary attribute "alt"' -e 'Warning: <source> proprietary attribute "alt"' \

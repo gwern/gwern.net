@@ -12,15 +12,15 @@ testCases = isUniqueKeys [
   (Link nullAttr [Str "Pondicherry"] ("!Wikipedia",""),
     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
   , (Link nullAttr [Emph [Str "Monty Python's Life of Brian"]] ("!Wikipedia",""),
-      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Monty Python's Life of Brian"]] ("https://en.wikipedia.org/wiki/Monty_Python's_Life_of_Brian", ""))
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Monty Python's Life of Brian"]] ("https://en.wikipedia.org/wiki/Monty_Python%27s_Life_of_Brian", ""))
   , (Link nullAttr [Str "SHA-1#Attacks"] ("!Wikipedia",""),
       Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "SHA-1#Attacks"] ("https://en.wikipedia.org/wiki/SHA-1#Attacks", ""))
   , (Link nullAttr [Str "Bayesian search theory"] ("!Wikipedia","USS Scorpion (SSN-589)#Search: 1968"),
       Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Bayesian search theory"] ("https://en.wikipedia.org/wiki/USS_Scorpion_(SSN-589)#Search:_1968", ""))
   , (Link nullAttr [Str "C++ templates"] ("!Wikipedia","Template (C++)"),
-     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "C++ templates"] ("https://en.wikipedia.org/wiki/Template_(C++)", ""))
+     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "C++ templates"] ("https://en.wikipedia.org/wiki/Template_(C%2B%2B)", ""))
   , (Link nullAttr [Str "Aaahh!!! Real Monsters"] ("!Wikipedia",""),
-    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Aaahh!!! Real Monsters"] ("https://en.wikipedia.org/wiki/Aaahh%21%21%21_Real_Monsters", ""))
+    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Aaahh!!! Real Monsters"] ("https://en.wikipedia.org/wiki/Aaahh!!!_Real_Monsters", ""))
     , (Link nullAttr [Str "Senryū"] ("!Wikipedia",""),
     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Senryū"] ("https://en.wikipedia.org/wiki/Senry%C5%AB", ""))
     , (Link nullAttr [Str "D&D"] ("!Wikipedia","Dungeons & Dragons"),
@@ -53,14 +53,6 @@ testCases = isUniqueKeys [
    -- !W + duplicate classes
   , (Link ("", ["id-not", "backlink-not", "link-annotated", "link-live"], []) [Str "Jure Robič"] ("!W",""),
       Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Jure Robič"] ("https://en.wikipedia.org/wiki/Jure_Robi%C4%8D", ""))
-  -- , (Link ("", ["id-not", "backlink-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("!W",""),
-  --    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
-  -- , (Link ("", ["id-not", "backlink-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("!W",""),
-  --    Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
-  -- , (Link ("", ["id-not", "backlink-not", "link-annotated", "link-live"], []) [Str "SpecialPondicherry"] ("!W",""),
-  --    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
-  -- , (Link ("", ["id-not", "backlink-not", "link-annotated-not", "link-live"], []) [Str "Category:Pondicherry"] ("!W",""),
-  --    Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
 
   -- !W + title
   , (Link nullAttr [Str "foo"] ("!W","Pondicherry"),
@@ -82,11 +74,11 @@ testCases = isUniqueKeys [
   , (Link nullAttr [Emph [Str "George Washington"]] ("!Wikipedia","George Washington's"),
       Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "George Washington"]] ("https://en.wikipedia.org/wiki/George_Washington's", ""))
   , (Link nullAttr [Emph [Str "Antoine's"]] ("!Wikipedia",""),
-      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Antoine's"]] ("https://en.wikipedia.org/wiki/Antoine's", ""))
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Antoine's"]] ("https://en.wikipedia.org/wiki/Antoine%27s", ""))
   , (Link nullAttr [Emph [Str "Antoine's"]] ("!Wikipedia","Antoine's"),
-      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Antoine's"]] ("https://en.wikipedia.org/wiki/Antoine's", ""))
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Antoine's"]] ("https://en.wikipedia.org/wiki/Antoine%27s", ""))
   , (Link nullAttr [Emph [Str "famous restaurant"]] ("!Wikipedia","Antoine's"),
-      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "famous restaurant"]] ("https://en.wikipedia.org/wiki/Antoine's", ""))
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "famous restaurant"]] ("https://en.wikipedia.org/wiki/Antoine%27s", ""))
 
     -- !W + quotation marks special-case rewrite:
     , (Link nullAttr [Emph [Str "“The Two Cultures”"]] ("!Wikipedia",""),
@@ -188,7 +180,7 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/1970_World's_Fair", "https://en.wikipedia.org/wiki/Expo_%2770")
           , ("https://en.wikipedia.org/wiki/1983_Beirut_barracks_bombing", "https://en.wikipedia.org/wiki/1983_Beirut_barracks_bombings")
           , ("https://en.wikipedia.org/wiki/1992-1993_Jack_in_the_Box_E._coli_outbreak", "https://en.wikipedia.org/wiki/1992%E2%80%931993_Jack_in_the_Box_E._coli_outbreak")
-          , ("https://en.wikipedia.org/wiki/1993_Jack_in_the_Box_E._coli_outbreak", "https://en.wikipedia.org/wiki/1992-1993_Jack_in_the_Box_E._coli_outbreak")
+          , ("https://en.wikipedia.org/wiki/1993_Jack_in_the_Box_E._coli_outbreak", "https://en.wikipedia.org/wiki/1992%E2%80%931993_Jack_in_the_Box_E._coli_outbreak")
           , ("https://en.wikipedia.org/wiki/20,000_Leagues_Under_the_Sea", "https://en.wikipedia.org/wiki/Twenty_Thousand_Leagues_Under_the_Seas")
           , ("https://en.wikipedia.org/wiki/2001:_A_Space_Odyssey_(film)", "https://en.wikipedia.org/wiki/2001:_A_Space_Odyssey")
           , ("https://en.wikipedia.org/wiki/2007_Glasgow_International_Airport_attack", "https://en.wikipedia.org/wiki/2007_Glasgow_Airport_attack")
@@ -263,7 +255,7 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Aim_for_the_Ace", "https://en.wikipedia.org/wiki/Aim_for_the_Ace!")
           , ("https://en.wikipedia.org/wiki/Aim_For_The_Top_2%21", "https://en.wikipedia.org/wiki/Diebuster")
           , ("https://en.wikipedia.org/wiki/Air_Force_Space_Command", "https://en.wikipedia.org/wiki/Space_Operations_Command")
-          , ("https://en.wikipedia.org/wiki/Airhammer", "https://en.wikipedia.org/wiki/Transformers_(toy_line)")
+          , ("https://en.wikipedia.org/wiki/Airhammer", "https://en.wikipedia.org/wiki/Transformers:_Generation_1")
           , ("https://en.wikipedia.org/wiki/AI_Winter", "https://en.wikipedia.org/wiki/AI_winter")
           , ("https://en.wikipedia.org/wiki/A.J._Budrys", "https://en.wikipedia.org/wiki/Algis_Budrys")
           , ("https://en.wikipedia.org/wiki/Akai_Takami", "https://en.wikipedia.org/wiki/Takami_Akai")
@@ -826,7 +818,7 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Dueling_scars", "https://en.wikipedia.org/wiki/Dueling_scar")
           , ("https://en.wikipedia.org/wiki/Duhem-Quine", "https://en.wikipedia.org/wiki/Duhem%E2%80%93Quine_thesis")
           , ("https://en.wikipedia.org/wiki/Duhem-Quine_thesis", "https://en.wikipedia.org/wiki/Duhem%E2%80%93Quine_thesis")
-          , ("https://en.wikipedia.org/wiki/Duke_of_Milan", "https://en.wikipedia.org/wiki/List_of_rulers_of_Milan")
+          , ("https://en.wikipedia.org/wiki/Duke_of_Milan", "https://en.wikipedia.org/wiki/List_of_dukes_of_Milan")
           , ("https://en.wikipedia.org/wiki/Dukkha", "https://en.wikipedia.org/wiki/Du%E1%B8%A5kha")
           , ("https://en.wikipedia.org/wiki/Dunbar_number", "https://en.wikipedia.org/wiki/Dunbar%27s_number")
           , ("https://en.wikipedia.org/wiki/Dunbar's_number", "https://en.wikipedia.org/wiki/Dunbar%27s_number")
@@ -1172,7 +1164,7 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Google_Storage", "https://en.wikipedia.org/wiki/Google_Cloud_Storage")
           , ("https://en.wikipedia.org/wiki/Google_Survey", "https://en.wikipedia.org/wiki/Google_Surveys")
           , ("https://en.wikipedia.org/wiki/Google_Video_Marketplace", "https://en.wikipedia.org/wiki/List_of_Google_products#Discontinued_in_2007")
-          , ("https://en.wikipedia.org/wiki/Google_X", "https://en.wikipedia.org/wiki/X_(company)")
+          , ("https://en.wikipedia.org/wiki/Google_X", "https://en.wikipedia.org/wiki/X_Development")
           , ("https://en.wikipedia.org/wiki/Goranger", "https://en.wikipedia.org/wiki/Himitsu_Sentai_Gorenger")
           , ("https://en.wikipedia.org/wiki/Gosenzo-sama_Banbanzai%21", "https://en.wikipedia.org/wiki/Gosenzo-sama_Banbanzai!")
           , ("https://en.wikipedia.org/wiki/Government_shutdowns", "https://en.wikipedia.org/wiki/Government_shutdown")
@@ -1359,7 +1351,7 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Imagawa_Ry%C5%8Dshun", "https://en.wikipedia.org/wiki/Imagawa_Sadayo")
           , ("https://en.wikipedia.org/wiki/Image_maps", "https://en.wikipedia.org/wiki/Image_map")
           , ("https://en.wikipedia.org/wiki/Imaginary_friends", "https://en.wikipedia.org/wiki/Imaginary_friend")
-          , ("https://en.wikipedia.org/wiki/Imam_al-Haddad", "https://en.wikipedia.org/wiki/Abd_Allah_ibn_Alawi_al-Haddad")
+          , ("https://en.wikipedia.org/wiki/Imam_al-Haddad", "https://en.wikipedia.org/wiki/%27Abdallah_ibn_%27Alawi_al-Haddad")
           , ("https://en.wikipedia.org/wiki/Inattention", "https://en.wikipedia.org/wiki/Attention")
           , ("https://en.wikipedia.org/wiki/Incentive-compatible", "https://en.wikipedia.org/wiki/Incentive_compatibility")
           , ("https://en.wikipedia.org/wiki/Incubation_effect", "https://en.wikipedia.org/wiki/Incubation_(psychology)")
@@ -1510,11 +1502,11 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Kido_Senshi_Gundam", "https://en.wikipedia.org/wiki/Mobile_Suit_Gundam")
           , ("https://en.wikipedia.org/wiki/Killer_whale", "https://en.wikipedia.org/wiki/Orca")
           , ("https://en.wikipedia.org/wiki/Kim_Il-sung", "https://en.wikipedia.org/wiki/Kim_Il_Sung")
-          , ("https://en.wikipedia.org/wiki/Kim_Il-Sung", "https://en.wikipedia.org/wiki/Kim_Il-sung")
+          , ("https://en.wikipedia.org/wiki/Kim_Il-Sung", "https://en.wikipedia.org/wiki/Kim_Il_Sung")
           , ("https://en.wikipedia.org/wiki/Kim_Jong-il", "https://en.wikipedia.org/wiki/Kim_Jong_Il")
-          , ("https://en.wikipedia.org/wiki/Kim_Jong-Il", "https://en.wikipedia.org/wiki/Kim_Jong-il")
+          , ("https://en.wikipedia.org/wiki/Kim_Jong-Il", "https://en.wikipedia.org/wiki/Kim_Jong_Il")
           , ("https://en.wikipedia.org/wiki/Kim_Jong-un", "https://en.wikipedia.org/wiki/Kim_Jong_Un")
-          , ("https://en.wikipedia.org/wiki/Kim_Jong-Un", "https://en.wikipedia.org/wiki/Kim_Jong-un")
+          , ("https://en.wikipedia.org/wiki/Kim_Jong-Un", "https://en.wikipedia.org/wiki/Kim_Jong_Un")
           , ("https://en.wikipedia.org/wiki/Kindle_Unlimited", "https://en.wikipedia.org/wiki/Kindle_Store#Kindle_Unlimited")
           , ("https://en.wikipedia.org/wiki/Kingdom_Of_Loathing", "https://en.wikipedia.org/wiki/Kingdom_of_Loathing")
           , ("https://en.wikipedia.org/wiki/King_Joe_(Ultra_monster)", "https://en.wikipedia.org/wiki/Ultraman")
@@ -1556,7 +1548,6 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Laser_microphones", "https://en.wikipedia.org/wiki/Laser_microphone")
           , ("https://en.wikipedia.org/wiki/Las_Sergas_de_Esplanadian", "https://en.wikipedia.org/wiki/Las_sergas_de_Esplandi%C3%A1n")
           , ("https://en.wikipedia.org/wiki/Lasso_%28statistics%29", "https://en.wikipedia.org/wiki/Lasso_(statistics)")
-          , ("https://en.wikipedia.org/wiki/Last_Generation_(activists)", "https://en.wikipedia.org/wiki/Letzte_Generation")
           , ("https://en.wikipedia.org/wiki/Latent_variable", "https://en.wikipedia.org/wiki/Latent_and_observable_variables")
           , ("https://en.wikipedia.org/wiki/Latex_and_PVC_fetishism", "https://en.wikipedia.org/wiki/Rubber_and_PVC_fetishism")
           , ("https://en.wikipedia.org/wiki/Launch_service_provider", "https://en.wikipedia.org/wiki/List_of_launch_service_providers")
@@ -1624,7 +1615,7 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/List_of_mergers_and_acquisitions_by_Google", "https://en.wikipedia.org/wiki/List_of_mergers_and_acquisitions_by_Alphabet")
           , ("https://en.wikipedia.org/wiki/List_of_oldest_madrasahs_in_continuous_operation", "https://en.wikipedia.org/wiki/List_of_Islamic_seminaries#List_of_oldest_Islamic_seminaries")
           , ("https://en.wikipedia.org/wiki/List_of_rasa'il_in_the_Encyclopedia_of_the_Brethren_of_Purity", "https://en.wikipedia.org/wiki/List_of_rasa%27il_in_the_Encyclopedia_of_the_Brethren_of_Purity")
-          , ("https://en.wikipedia.org/wiki/List_of_rulers_of_Milan", "https://en.wikipedia.org/wiki/Rulers_of_Milan")
+          , ("https://en.wikipedia.org/wiki/List_of_rulers_of_Milan", "https://en.wikipedia.org/wiki/List_of_dukes_of_Milan")
           , ("https://en.wikipedia.org/wiki/List_of_SJS_inducing_substances", "https://en.wikipedia.org/wiki/List_of_SJS-inducing_substances")
           , ("https://en.wikipedia.org/wiki/List_of_the_oldest_living_people", "https://en.wikipedia.org/wiki/List_of_oldest_living_people")
           , ("https://en.wikipedia.org/wiki/Lithium_pharmacology", "https://en.wikipedia.org/wiki/Lithium_(medication)")
@@ -1766,7 +1757,7 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Millennium_Problems", "https://en.wikipedia.org/wiki/Millennium_Prize_Problems")
           , ("https://en.wikipedia.org/wiki/Mills_College", "https://en.wikipedia.org/wiki/Mills_College_at_Northeastern_University")
           , ("https://en.wikipedia.org/wiki/Mini%E2%80%93Mental_State_Examination", "https://en.wikipedia.org/wiki/Mini%E2%80%93mental_state_examination")
-          , ("https://en.wikipedia.org/wiki/Mini-Mental_State_Examination", "https://en.wikipedia.org/wiki/Mini%E2%80%93Mental_State_Examination")
+          , ("https://en.wikipedia.org/wiki/Mini-Mental_State_Examination", "https://en.wikipedia.org/wiki/Mini%E2%80%93mental_state_examination")
           , ("https://en.wikipedia.org/wiki/Minimum_spanning_trees", "https://en.wikipedia.org/wiki/Minimum_spanning_tree")
           , ("https://en.wikipedia.org/wiki/MINIX", "https://en.wikipedia.org/wiki/Minix")
           , ("https://en.wikipedia.org/wiki/Minovsky_physics", "https://en.wikipedia.org/wiki/Gundam_Universal_Century_technology#Minovsky_physics")
@@ -1823,9 +1814,9 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Mt._Hiei", "https://en.wikipedia.org/wiki/Mount_Hiei")
           , ("https://en.wikipedia.org/wiki/Mt._Mihara", "https://en.wikipedia.org/wiki/Mount_Mihara")
           , ("https://en.wikipedia.org/wiki/Muawiyah_I", "https://en.wikipedia.org/wiki/Mu%27awiya_I")
-          , ("https://en.wikipedia.org/wiki/MUD", "https://en.wikipedia.org/wiki/Mud_(disambiguation)")
-          , ("https://en.wikipedia.org/wiki/MUDs", "https://en.wikipedia.org/wiki/MUD")
-          , ("https://en.wikipedia.org/wiki/Mu%E1%B8%A5ammad_ibn_M%C5%ABs%C4%81_al-Khw%C4%81rizm%C4%AB", "https://en.wikipedia.org/wiki/Muhammad_ibn_Musa_al-Khwarizmi")
+          , ("https://en.wikipedia.org/wiki/MUD", "https://en.wikipedia.org/wiki/Multi-user_dungeon")
+          , ("https://en.wikipedia.org/wiki/MUDs", "https://en.wikipedia.org/wiki/Multi-user_dungeon")
+          , ("https://en.wikipedia.org/wiki/Mu%E1%B8%A5ammad_ibn_M%C5%ABs%C4%81_al-Khw%C4%81rizm%C4%AB", "https://en.wikipedia.org/wiki/Al-Khwarizmi")
           , ("https://en.wikipedia.org/wiki/Muhammad_ibn_Musa_al-Khwarizmi", "https://en.wikipedia.org/wiki/Al-Khwarizmi")
           , ("https://en.wikipedia.org/wiki/MUJI", "https://en.wikipedia.org/wiki/Muji")
           , ("https://en.wikipedia.org/wiki/Multi-armed_bandit_problem", "https://en.wikipedia.org/wiki/Multi-armed_bandit")
@@ -1924,7 +1915,7 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Nitrosamines", "https://en.wikipedia.org/wiki/Nitrosamine")
           , ("https://en.wikipedia.org/wiki/Nixon_Shock", "https://en.wikipedia.org/wiki/Nixon_shock")
           , ("https://en.wikipedia.org/wiki/Noble_Lie", "https://en.wikipedia.org/wiki/Noble_lie")
-          , ("https://en.wikipedia.org/wiki/No_free_lunch", "https://en.wikipedia.org/wiki/There_ain%27t_no_such_thing_as_a_free_lunch")
+          , ("https://en.wikipedia.org/wiki/No_free_lunch", "https://en.wikipedia.org/wiki/No_such_thing_as_a_free_lunch")
           , ("https://en.wikipedia.org/wiki/No-globes", "https://en.wikipedia.org/wiki/List_of_technology_in_the_Dune_universe#No-chamber/No-ship")
           , ("https://en.wikipedia.org/wiki/No_Matter_How_I_Look_at_It,_It's_You_Guys'_Fault_I'm_Not_Popular%21", "https://en.wikipedia.org/wiki/No_Matter_How_I_Look_at_It,_It%27s_You_Guys%27_Fault_I%27m_Not_Popular!")
           , ("https://en.wikipedia.org/wiki/Non-cooperative_game", "https://en.wikipedia.org/wiki/Non-cooperative_game_theory")
@@ -2092,7 +2083,7 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Poisson_process", "https://en.wikipedia.org/wiki/Poisson_point_process")
           , ("https://en.wikipedia.org/wiki/Pok%C3%A9mon_Detective_Pikachu", "https://en.wikipedia.org/wiki/Detective_Pikachu_(film)")
           , ("https://en.wikipedia.org/wiki/Pok%C3%A9mon_Yellow", "https://en.wikipedia.org/wiki/Pok%C3%A9mon_Red,_Blue,_and_Yellow#Pokémon_Yellow")
-          , ("https://en.wikipedia.org/wiki/Pokemon_Yellow", "https://en.wikipedia.org/wiki/Pok%C3%A9mon_Yellow")
+          , ("https://en.wikipedia.org/wiki/Pokemon_Yellow", "https://en.wikipedia.org/wiki/Pok%C3%A9mon_Red,_Blue,_and_Yellow#Pok%C3%A9mon_Yellow")
           , ("https://en.wikipedia.org/wiki/Police_Foundation", "https://en.wikipedia.org/wiki/National_Policing_Institute")
           , ("https://en.wikipedia.org/wiki/Polychlorinated_biphenyls", "https://en.wikipedia.org/wiki/Polychlorinated_biphenyl")
           , ("https://en.wikipedia.org/wiki/Polycyclic_aromatic_hydrocarbons", "https://en.wikipedia.org/wiki/Polycyclic_aromatic_hydrocarbon")
@@ -2373,7 +2364,7 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Seeds_in_the_Heart:_Japanese_Literature_from_Earliest_Times_to_the_Late_Sixteenth_Century", "https://en.wikipedia.org/wiki/Seeds_in_the_Heart")
           , ("https://en.wikipedia.org/wiki/Seigenthaler_incident", "https://en.wikipedia.org/wiki/Wikipedia_Seigenthaler_biography_incident")
           , ("https://en.wikipedia.org/wiki/Seikai_no_Monsho", "https://en.wikipedia.org/wiki/Crest_of_the_Stars")
-          , ("https://en.wikipedia.org/wiki/Selectman", "https://en.wikipedia.org/wiki/Board_of_selectmen")
+          , ("https://en.wikipedia.org/wiki/Selectman", "https://en.wikipedia.org/wiki/Select_board")
           , ("https://en.wikipedia.org/wiki/Self-adhesive_stamps", "https://en.wikipedia.org/wiki/Self-adhesive_stamp")
           , ("https://en.wikipedia.org/wiki/Selfing", "https://en.wikipedia.org/wiki/Autogamy")
           , ("https://en.wikipedia.org/wiki/Self-talk", "https://en.wikipedia.org/wiki/Intrapersonal_communication")
@@ -2466,7 +2457,6 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Solar_sails", "https://en.wikipedia.org/wiki/Solar_sail")
           , ("https://en.wikipedia.org/wiki/Soldiers'_Pay", "https://en.wikipedia.org/wiki/Soldiers%27_Pay")
           , ("https://en.wikipedia.org/wiki/Solomonoff's_theory_of_inductive_inference", "https://en.wikipedia.org/wiki/Solomonoff%27s_theory_of_inductive_inference")
-          , ("https://en.wikipedia.org/wiki/Somalia_War_(2006%E2%80%932009)", "https://en.wikipedia.org/wiki/War_in_Somalia_(2006%E2%80%932009)")
           , ("https://en.wikipedia.org/wiki/Song_of_Solomon", "https://en.wikipedia.org/wiki/Song_of_Songs")
           , ("https://en.wikipedia.org/wiki/Sony_Handycam", "https://en.wikipedia.org/wiki/Handycam")
           , ("https://en.wikipedia.org/wiki/Sony_Music_Entertainment", "https://en.wikipedia.org/wiki/Sony_Music")
@@ -2606,7 +2596,7 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Tanegashima_space_center", "https://en.wikipedia.org/wiki/Tanegashima_Space_Center")
           , ("https://en.wikipedia.org/wiki/Tanner_lecture", "https://en.wikipedia.org/wiki/Tanner_Lectures_on_Human_Values")
           , ("https://en.wikipedia.org/wiki/Tanner_Lecture", "https://en.wikipedia.org/wiki/Tanner_Lectures_on_Human_Values")
-          , ("https://en.wikipedia.org/wiki/TANSTAAFL", "https://en.wikipedia.org/wiki/There_ain%27t_no_such_thing_as_a_free_lunch")
+          , ("https://en.wikipedia.org/wiki/TANSTAAFL", "https://en.wikipedia.org/wiki/No_such_thing_as_a_free_lunch")
           , ("https://en.wikipedia.org/wiki/TAOCP", "https://en.wikipedia.org/wiki/The_Art_of_Computer_Programming")
           , ("https://en.wikipedia.org/wiki/Tarento", "https://en.wikipedia.org/wiki/Television_personalities_in_Japan")
           , ("https://en.wikipedia.org/wiki/TarePanda", "https://en.wikipedia.org/wiki/Tarepanda")
@@ -2827,8 +2817,8 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Uranium_235", "https://en.wikipedia.org/wiki/Uranium-235")
           , ("https://en.wikipedia.org/wiki/Urban_legend", "https://en.wikipedia.org/wiki/Urban_legends_and_myths")
           , ("https://en.wikipedia.org/wiki/Urban_legends", "https://en.wikipedia.org/wiki/Urban_legends_and_myths")
+          , ("https://en.wikipedia.org/wiki/URL-encoding", "https://en.wikipedia.org/wiki/Percent-encoding")
           , ("https://en.wikipedia.org/wiki/URL_encoding", "https://en.wikipedia.org/wiki/Percent-encoding")
-          , ("https://en.wikipedia.org/wiki/URL-encoding", "https://en.wikipedia.org/wiki/URL_encoding")
           , ("https://en.wikipedia.org/wiki/Ursula_K._LeGuin", "https://en.wikipedia.org/wiki/Ursula_K._Le_Guin")
           , ("https://en.wikipedia.org/wiki/Usagi_Tsukino", "https://en.wikipedia.org/wiki/Sailor_Moon_(character)")
           , ("https://en.wikipedia.org/wiki/U.S.A._trilogy", "https://en.wikipedia.org/wiki/U.S.A._(trilogy)")
@@ -2886,7 +2876,7 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Walter_M._Miller_Junior", "https://en.wikipedia.org/wiki/Walter_M._Miller_Jr.")
           , ("https://en.wikipedia.org/wiki/Wang_tiles", "https://en.wikipedia.org/wiki/Wang_tile")
           , ("https://en.wikipedia.org/wiki/Ward's_Wiki", "https://en.wikipedia.org/wiki/WikiWikiWeb")
-          , ("https://en.wikipedia.org/wiki/War_in_Somalia_(2006-2009)", "https://en.wikipedia.org/wiki/Somalia_War_(2006%E2%80%932009)")
+          , ("https://en.wikipedia.org/wiki/War_in_Somalia_(2006-2009)", "https://en.wikipedia.org/wiki/War_in_Somalia_(2006%E2%80%932009)")
           , ("https://en.wikipedia.org/wiki/War_on_Cancer", "https://en.wikipedia.org/wiki/War_on_cancer")
           , ("https://en.wikipedia.org/wiki/War_on_Drugs", "https://en.wikipedia.org/wiki/War_on_drugs")
           , ("https://en.wikipedia.org/wiki/War_on_Poverty", "https://en.wikipedia.org/wiki/War_on_poverty")
@@ -2960,7 +2950,6 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Wunderkammer", "https://en.wikipedia.org/wiki/Cabinet_of_curiosities")
           , ("https://en.wikipedia.org/wiki/X_(company)", "https://en.wikipedia.org/wiki/X_(disambiguation)#Companies")
           , ("https://en.wikipedia.org/wiki/XCON", "https://en.wikipedia.org/wiki/Xcon")
-          , ("https://en.wikipedia.org/wiki/X_Development", "https://en.wikipedia.org/wiki/X_(company)")
           , ("https://en.wikipedia.org/wiki/Xinjiang_re-education_camps", "https://en.wikipedia.org/wiki/Xinjiang_internment_camps")
           , ("https://en.wikipedia.org/wiki/XKCD", "https://en.wikipedia.org/wiki/Xkcd")
           , ("https://en.wikipedia.org/wiki/X-Men_(TV_series)", "https://en.wikipedia.org/wiki/X-Men_(disambiguation)#Animated_TV_series")
@@ -3002,5 +2991,4 @@ redirectDB = isUniqueKeys [
           , ("https://en.wikipedia.org/wiki/Zettel_(Wittgenstein)", "https://en.wikipedia.org/wiki/Zettel_(Wittgenstein_book)")
           , ("https://en.wikipedia.org/wiki/Zipf's_law", "https://en.wikipedia.org/wiki/Zipf%27s_law")
           , ("https://en.wikipedia.org/wiki/Zooko's_triangle", "https://en.wikipedia.org/wiki/Zooko%27s_triangle")
-
   ]

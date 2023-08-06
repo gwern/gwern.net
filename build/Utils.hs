@@ -2004,6 +2004,7 @@ findCycles xs = snd $ foldl f ([], []) xs
       | cycleExists (rule : good) = (good, rule : bad)
       | otherwise = (rule : good, bad)
 
+{- `cycleExists` testsuite: (no need to rerun this)
 type TestCase = [(Int, Int)]
 type IsCycleExpected = Bool
 
@@ -2031,3 +2032,4 @@ testCycleDetection = testCycleExists
             , ([(1, 2), (2, 3), (3, 1)], True) -- where there is a cycle of nodes that all point to one another, but no node points to itself
             , ([(1, 1), (2, 2), (3, 3)], True) --where every node in the list points to itself (simple loop for every node)
             ]
+-}

@@ -1124,5 +1124,9 @@ whiteList url
       , "https://vcai.mpi-inf.mpg.de/projects/DragGAN/" -- low quality (video embeds)
       , "https://bshall.github.io/knn-vc/" -- low-quality (audio embeds)
       , "https://www.csm.ai/commonsim-1-generating-3d-worlds" -- low quality (video embeds)
+      , "https://cohere.com/" -- low quality (fails to archive)
+      , "https://tsm-hanlab.mit.edu/" -- low quality (video embeds)
+      , "https://muse-model.github.io/" -- low quality (video embeds)
+      , "https://accelagent.github.io/" -- low quality (interactive)
       ] = True
     | otherwise = False

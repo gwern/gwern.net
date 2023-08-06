@@ -97,7 +97,7 @@ linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start wi
        , ("http://www.vetta.org/2009/12/tick-tock-tick-tock-bing/", "legg-2009-tick-tock")
        , ("http://zenpundit.com/?p=52965", "greer-thucydides-roundtable")
        , ("https://ai.facebook.com/blog/state-of-the-art-open-source-chatbot", "blender-blog")
-       , ("https://ai.googleblog.com/2020/07/automl-zero-evolving-code-that-learns.html", "real-et-al-2020-blog")
+       , ("https://blog.research.google/2020/07/automl-zero-evolving-code-that-learns.html", "real-et-al-2020-blog")
        , ("https://artbreeder.com/", "simon-2019-2")
        , ("https://arxiv.org/abs/1610.04286", "rusu-et-al-2016-2")
        , ("https://arxiv.org/abs/1611.05397#deepmind", "jaderberg-et-al-2016-2")

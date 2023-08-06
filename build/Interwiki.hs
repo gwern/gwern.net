@@ -19,7 +19,9 @@ import qualified Config.Interwiki as C (redirectDB, quoteOverrides, testCases)
 -- It's more or less the same thing, but the interwiki mapping is cut down to only the ones I use, and it avoids a dependency on Gitit.
 -- | Convert a list of inlines into a string.
 inlinesToText :: [Inline] -> T.Text
-inlinesToText = T.concat . map go
+inlinesToText = -- HACK: dealing with RawInline pairs like [RawInline "<sup>", Text "th", RawInline "</sup>"] is a PITA to do properly (have to process to HTML and then back into AST), so we'll just handle special cases for now...
+  replaceManyT [("<sup>",""), ("</sup>",""), ("<sub>",""),("</sub>","")] .
+                T.concat . map go
   where go x = case x of
                -- reached the literal T.Text:
                Str s    -> s

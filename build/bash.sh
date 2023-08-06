@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-09-04 19:44:04 gwern"
+# When:  Time-stamp: "2023-09-06 20:58:03 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -11,6 +11,9 @@
 # Helper functions include: website cache invalidation; PDF metadata query & editing; tab-completion for tag/directory names; querying the newsletters, filenames, annotation database, website, and IRC (in increasing generality); site-wide string search-and-replace (including a HTTP→HTTPS special-case which comes up a lot fixing redirects); functions to rename files & directories; and a `gwtag` CLIcommand which create new annotations (if there is a usable annotation source, such as being an Arxiv link) or add/remove tags from specified files/URLs.
 #
 # See also: ~/wiki/static/build/upload, gwa, crossref, compressJpg2
+
+# Default parallelism:
+export N="29"
 
 set -e
 

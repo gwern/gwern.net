@@ -3621,7 +3621,7 @@ Popups = {
 GW.notificationCenter.fireEvent("Popups.didLoad");
 /*	Popup/floating footnotes to avoid readers needing to scroll to the end of
 	the page to see any footnotes; see
-	http://ignorethecode.net/blog/2010/04/20/footnotes/ for details.
+	https://ignorethecode.net/blog/2010/04/20/footnotes/ for details.
 Original author:  Lukas Mathis (2010-04-20)
 License: public domain ("And some people have asked me about a license for this piece of code. I think it’s far too short to get its own license, so I’m relinquishing any copyright claims. Consider the code to be public domain. No attribution is necessary.")
 	*/

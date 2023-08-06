@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-09-03 21:49:35 gwern"
+;;; When:  Time-stamp: "2023-09-07 12:13:06 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -414,6 +414,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      (" Saccharomyces cerevisiae" . " <em>Saccharomyces cerevisiae</em>")
                      ("two-by-two" . "2×2")
                      (" B.M.I" . " BMI")
+                     ("one-fourth" . "1⁄4")
+                     ("one-half" . "1⁄2")
+                     ("One-fifth" . "1⁄5<sup>th</sup>")
                      ("one-sixth" . "1⁄6<sup>th</sup>")
                      ("three-quarters" . "3⁄4<sup>ths</sup>")
                      ("two-thirds" . "2⁄3<sup>rds</sup>")
@@ -453,10 +456,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("95 %CI" . "95% CI")
                         ("95 % confidence interval" . "95% confidence interval")
                         (" , " . ", ")
-                        ("http://reddit.com" . "https://old.reddit.com")
-                        ("https://reddit.com" . "https://old.reddit.com")
-                        ("http://www.reddit.com" . "https://old.reddit.com")
-                        ("https://www.reddit.com" . "https://old.reddit.com")
+                        ("http://reddit.com"   . "https://www.reddit.com")
+                        ("https://reddit.com"  . "https://www.reddit.com")
+                        ("http://i.reddit.com" . "https://www.reddit.com")
                         ("https://mobile.twitter.com" . "https://twitter.com")
                         (" d=" . " _d_ = ") ; italicize p-values & sample sizes:
                         (" d = " . " _d_ = ")
@@ -494,6 +496,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" r values" . " _r_ values")
                         ("(rs =" . "(<em>r</em>s =")
                         (" rs =" . " <em>r</em>s =")
+                        ("rmeta =" . "<em>r</em><sub>meta</sub> =")
+                        ("rUKB =" . "<em>r</em><sub>UKB</sub> =")
                         ("Mr = " . "_M_~r~ = ")
                         ("zMR " . "_z_~MR~")
                         ("z score" . "_z_ score")
@@ -531,6 +535,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("p-value" . "_p_-value")
                         ("p value" . "_p_-value")
                         ("p-curve" . "_p_-curve")
+                        ("Padj" . "_p_<sub>adj</sub>")
                         ("(t<" . "(_t_ < ")
                         ("(t>" . "(_t_ > " )
                         (" t-statistic" . " _t_-statistic" )
@@ -971,16 +976,16 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ; would look confusing if written '−0.3–−3.7'. It's correct & unambiguous because it uses MINUS SIGN & EN DASH
                         ; appropriately, but the glyphs are way too similar-looking. (Sorry, I didn't design English punctuation.)
                         ; And this is also true if any of the numbers have minus signs (eg. '−0.3–3.7' or '0.3–−3.7' would be no better).
-                        ("between \\([0-9.]+\\) and \\([0-9.]+\\)" . "\\1–\\2")
-                        (" one to \\([0-9.]+\\)"                   . " \\1–\\2")
-                        ("from \\([0-9.]+\\) to \\([0-9.]+\\)"     . "\\1–\\2")
-                        ("\\([0-9\\.]+\\) to \\([0-9\\.]+\\)"      . "\\1–\\2")
-                        ("from \\([0-9.]+|one|two|three\\) to \\([0-9.]+\\)"     . "\\1 → \\2")
+                        ("between \\([0-9∞.]+\\) and \\([0-9∞.]+\\)" . "\\1–\\2")
+                        (" one to \\([0-9∞.]+\\)"                   . " \\1–\\2")
+                        ("from \\([0-9∞.]+\\) to \\([0-9∞.]+\\)"     . "\\1–\\2")
+                        ("\\([0-9∞\\.]+\\) to \\([0-9∞\\.]+\\)"      . "\\1–\\2")
+                        ("from \\([0-9∞.]+|one|two|three\\) to \\([0-9∞.]+\\)"     . "\\1 → \\2")
                         ("\\([a-z]+\\)- and \\([a-z]+-[a-z]+\\)"   . "\\1 & \\2")
-                        ("\\([0-9.]++|one|two|three\\) to \\([0-9.]+\\)"          . "\\1 → \\2")
-                        ("between \\([0-9.]+\\) and \\([0-9.]+\\)" . "\\1–\\2") ; "range between 2 and 10" → "range 2–10"
-                        (" \\([0-9.]+\\) or \\([0-9.]+\\) "        . " \\1–\\2 ")
-                        ("\\([0-9]+\\)- to \\([0-9]+\\)-"          . "\\1--\\2-") ; "18- to 20-year-olds" → "18--20-year-olds"
+                        ("\\([0-9∞.]++|one|two|three\\) to \\([0-9∞.]+\\)"          . "\\1 → \\2")
+                        ("between \\([0-9∞.]+\\) and \\([0-9∞.]+\\)" . "\\1–\\2") ; "range between 2 and 10" → "range 2–10"
+                        (" \\([0-9∞.]+\\) or \\([0-9∞.]+\\) "        . " \\1–\\2 ")
+                        ("\\([0-9∞]+\\)- to \\([0-9∞]+\\)-"          . "\\1--\\2-") ; "18- to 20-year-olds" → "18--20-year-olds"
                         )
                       ))
          (dolist (pair regexps)
@@ -1239,6 +1244,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (replace-all "\n\n\n" "\n\n")
        (replace-all ":  " ": ")
        (replace-all " ► " "\n- ")
+       (replace-all "\n► " "\n- ")
        (replace-all "Previous article in issueNext article in issue" "")
        (replace-all "Previous article in issue\nNext article in issue" "")
        (replace-all "\nAbstract\n" "\n")

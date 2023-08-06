@@ -384,7 +384,7 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://mason.gmu.edu/~rhanson/extraord.pdf"
     , [ "When Do Extraordinary Claims Give Extraordinary Evidence" ]
     )
-  , ( "http://pediatrics.aappublications.org/content/122/2/e472.short"
+  , ( "/doc/nootropic/2008-helland.pdf"
     , [ "Effect of Supplementing Pregnant and Lactating Mothers With n-3 Very-Long-Chain Fatty Acids on Children's IQ and Body Mass Index at 7 Years of Age"
       ]
     )
@@ -421,7 +421,7 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
       , "Sio & Ormerod 2009"
       ]
     )
-  , ( "https://ai.googleblog.com/2020/01/reformer-efficient-transformer.html"
+  , ( "https://blog.research.google/2020/01/reformer-efficient-transformer.html"
     , [ "Reformer: The Efficient Transformer"]
     )
   , ( "https://arbtt.nomeata.de/" , [ "arbtt" ] )

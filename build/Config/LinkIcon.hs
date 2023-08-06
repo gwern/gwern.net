@@ -42,7 +42,7 @@ prioritizeLinkIconBlackList = isUniqueList ["lilianweng.github.io", "digital.lib
                      "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org",
                      "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com",
                      "www.acpjournals.org", "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com",
-                     "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org"]
+                     "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com"]
 ------------------------------------------------------------------------------------------
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
@@ -133,7 +133,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://ajcn.nutrition.org/content/69/5/842.full", "OUP", "text,tri")
          , ("https://animekritik.wordpress.com/2011/05/12/evangelion-2-0-surnames-statements-and-makinami/", "NGE", "text,tri")
          , ("https://antilop.cc/sr/#assassination_plot", "෴", "text")
-         , ("https://apnews.com/269b3de1af34e17c1941a514f78d764c", "AP", "text,sans")
+         , ("https://apnews.com/article/ap-top-news-international-news-weekend-reads-china-health-269b3de1af34e17c1941a514f78d764c", "AP", "text,sans")
          , ("https://apps.apple.com/app/id307920888", "apple", "svg")
          , ("https://ar5iv.labs.arxiv.org/html/2112.11848",  "\120536","text")
          , ("https://arankomatsuzaki.wordpress.com/2021/03/04/state-of-the-art-image-generative-models/", "ak", "text,sans")
@@ -154,7 +154,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://arxiv.org/abs/2207.05221#anthropic", "anthropic", "svg")
          , ("https://arxiv.org/pdf/2009.06732.pdf#org=google&page=6",  "alphabet","svg")
          , ("https://ask.metafilter.com/16136/Fog-Gun-Shower", "MF", "text,sans,italic")
-         , ("https://astralcodexten.substack.com/p/know-your-amphetamines",  "SSC","text,tri")
+         , ("https://www.astralcodexten.com/p/know-your-amphetamines",  "SSC","text,tri")
          , ("https://babel.hathitrust.org/cgi/pt?id=uc1.c101988734&view=1up&seq=1", "internetarchive","svg")
          , ("https://bair.berkeley.edu/blog/2020/07/11/auction/", "BAIR", "text,quad,mono")
          , ("https://beepb00p.xyz/pkm-search.html", "\129302", "text")
@@ -300,7 +300,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://ml.berkeley.edu/blog/posts/clip-art/", "BAIR", "text,quad,mono")
          , ("https://mlp.fandom.com/wiki/A_Canterlot_Wedding_-_Part_1",  "MLPW","text,quad,sans")
          , ("https://myanimelist.net/anime/1370/Atama_Yama",  "MAL","text,tri,sans")
-         , ("https://nap.nationalacademies.org/read/25762", "NAP", "text,tri")
+         , ("https://nap.nationalacademies.org/read/25762/chapter/1", "NAP", "text,tri")
          , ("https://nautil.us/mapping-the-human-exposome-236726/", "nautilus", "svg")
          , ("https://news.ycombinator.com/item?id=10012625",  "hn","svg")
          , ("https://nintil.com/epigenetic-clocks", "𝓝", "text")
@@ -625,4 +625,5 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("/static/js/sidenotes.js",  "code","svg")
          , ("/static/nginx/twdne.conf",  "code","svg")
          , ("/static/template/default.html",  "code","svg")
+         , ("https://solar.lowtechmagazine.com/2015/12/fruit-walls-urban-farming.html", "☀", "text,sans")
         ]

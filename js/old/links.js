@@ -810,7 +810,7 @@ Links.specialTargetTestFunctions = {
                                    || (/slatestarcodex/i).test(link.href)
                                    || (/yvain/i).test(link.href)
                                    || Links.linkHostnameMatchesPattern(link, "slatestarscratchpad.tumblr.com")
-                                   || Links.linkHostnameMatchesPattern(link, "astralcodexten.substack.com")),
+                                   || Links.linkHostnameMatchesPattern(link, "www.astralcodexten.com")),
 
     //  Links to NBER, NOT including PDF file links
     "NBER": (link) => (   Links.linkHostnameMatchesPattern(link, "www.nber.org")

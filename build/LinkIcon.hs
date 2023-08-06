@@ -244,6 +244,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "norvig.com" = aI "N" "text,sans" -- Google Director of Research <https://en.wikipedia.org/wiki/Peter_Norvig>; <http://norvig.com/favicon.ico> is actually instantly recognizable & well-chosen, but unfortunately, only works because of the *colors*... so we'll settle for a plain sans capital N.
  | u'' "novelai.net" = aI "🖋" "text" -- LOWER LEFT FOUNTAIN PEN (U+1F58B); NovelAI logo is a fountain pen nib.
  | u'' "www.thebeliever.net" = aI "𝐁" "text,serif" -- _The Believer_ magazine <https://en.wikipedia.org/wiki/The_Believer_(magazine)>, McSweeney's spinoff (formerly <https://believermag.com>): logo is a dropshadow serif capital B logo
+ | u'' "solar.lowtechmagazine.com" = aI "☀" "text,sans" -- Low Tech Magazine (U+2600 BLACK SUN WITH RAYS)
 
  -- Tri/triple TLAs
  | u' "animenewsnetwork.com" = aI "ANN" "text,tri"
@@ -276,7 +277,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | aU' ["onegeek.org", "eva-fan.com", "evaotaku.com", "khara.co.jp", "gainax.co.jp", "17th-angel.tumblr.com", "gainax.com", "johakyu.net", "kanzaki.sub.jp", "homepage3.nifty.com", "www.cjas.org", "www.dummy-system.com", "www.evalegend.com", "www.usagi.org", "animekritik.wordpress.com", "fullfrontal.moe", "wavemotioncannon.com", "www.angelfire.com/anime4/"] = aI "NGE" "text,tri" -- Primary user: forum.evageeks.org wiki.evageeks.org
  | u'' "academic.oup.com" || u' ".nutrition.org" || u' ".oxfordjournals.org" = aI "OUP" "text,tri" -- Oxford Academic Journals / OUP
  | u'' "poniesatdawn.bandcamp.com" = aI "P@D" "text,tri"
- | u'' "slatestarscratchpad.tumblr.com" || u'' "astralcodexten.substack.com" || (u'' "slatestarcodex.com" && (extension u /= ".pdf")) || (isLocal x u && (u' "yvain" ||  u' "slatestarcodex")) = aI "SSC" "text,tri" -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead
+ | u'' "slatestarscratchpad.tumblr.com" || u'' "www.astralcodexten.com" || (u'' "slatestarcodex.com" && (extension u /= ".pdf")) || (isLocal x u && (u' "yvain" ||  u' "slatestarcodex")) = aI "SSC" "text,tri" -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead
  | u'' "plato.stanford.edu" = aI "SEP" "text,tri"
  | u'' "www.vox.com" = aI "Vox" "text,tri,italic"
  | aU'' ["blogs.wsj.com", "online.wsj.com", "www.wsj.com"] = aI "WSJ" "text,tri" -- The Wall Street Journal

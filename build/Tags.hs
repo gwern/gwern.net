@@ -207,7 +207,7 @@ tagsShort2LongRewrites = isUniqueKeys
     ("animal/iq", "iq/animal"), ("cellular-automata", "cellular-automaton"), ("mathematics", "math"),
     ("frank-p-ramsey", "frank-ramsey"), ("artificial-selection", "genetics/selection/artificial"), ("intrasexual-agression", "intrasexual-aggression"),
     ("javascript", "js"), ("psych/chess", "psychology/chess"), ("self-experiment", "quantified-self"),
-    ("energy","psychology/energy"), ("lithium","psychiatry/lithium")]
+    ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing")]
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   (map (\s -> (s, error s)) (isUniqueList ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f",

@@ -561,7 +561,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) $ isUniq
         , ("Saul Kripke", "https://en.wikipedia.org/wiki/Saul_Kripke")
         , ("Schelling point", "https://en.wikipedia.org/wiki/Focal_point_(game_theory)")
         , ("Scott Aaronson", "https://en.wikipedia.org/wiki/Scott_Aaronson")
-        , ("Scott Alexander", "https://astralcodexten.substack.com/")
+        , ("Scott Alexander", "https://www.astralcodexten.com/")
         , ("Scott Sumner", "https://en.wikipedia.org/wiki/Scott_Sumner")
         , ("Seymour Cray", "https://en.wikipedia.org/wiki/Seymour_Cray")
         , ("Shawn Bradley", "https://en.wikipedia.org/wiki/Shawn_Bradley")
