@@ -1983,6 +1983,25 @@ body.index #markdownBody section ul ul {
 }
 
 
+/*****************************/
+/* SOURCE CODE FILE PREVIEWS */
+/*****************************/
+/*	Syntax-highlighted code files, viewed by themselves (not in a popup).
+ */
+
+body.file-preview-source-code {
+	max-width: unset;
+	padding: 0;
+}
+body.file-preview-source-code pre {
+	max-height: unset;
+	border: none;
+}
+body.file-preview-source-code pre code {
+	padding: 1rem;
+}
+
+
 /*********************/
 /* SPECIAL OCCASIONS */
 /*********************/
