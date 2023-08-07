@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-08-05 20:21:07 gwern"
+# When:  Time-stamp: "2023-08-05 21:40:16 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -783,6 +783,7 @@ else
          cr 'https://gwern.net/doc/eva/2011-house' 'https://gwern.net/doc/anime/eva/2011-house'
          cr 'https://gwern.net/doc/cs/1955-nash' 'https://gwern.net/doc/cs/cryptography/1955-nash'
          cr 'https://gwern.net/doc/cs/cryptography/1955-nash' 'https://gwern.net/doc/cs/cryptography/1955-nash' # check www.gwern.net → gwern.net redirect
+
        }
     wrap λ "Check that some redirects go where they should"
     λ() { cm () { [[ "$1" != $(c --write-out '%{content_type}' "$2") ]] && echo "$1" "$2"; }
@@ -871,6 +872,9 @@ else
           cm "image/png"  'https://gwern.net/doc/technology/google/gwern-googlesearch-tools-daterange.png'
           cm "image/png"  'https://gwern.net/doc/technology/google/gwern-15-predicted-survivorship-curves.png'
           cm "application/wasm"  'https://gwern.net/static/js/patterns/en-us.wasm'
+          # special-case rewrite, handling double-slashed prefixes:
+          cm "application/pdf" 'https://gwern.net//doc/sociology/2022-yuan.pdf'
+          cm "text/html; charset=utf-8" 'https://gwern.net//index'
         }
     wrap λ "The live MIME types are incorrect"
 
