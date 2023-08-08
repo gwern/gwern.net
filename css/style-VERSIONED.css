@@ -6878,9 +6878,9 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 }
 
 
-/**************************/
-/* MOBILE FLOATING HEADER */
-/**************************/
+/*******************/
+/* FLOATING HEADER */
+/*******************/
 
 #floating-header {
     position: absolute;
@@ -6938,6 +6938,56 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     background-position: 0 0;
     background-repeat: no-repeat;
     background-size: 0 0;
+}
+
+/*┌─────────────────────────────────────┐*/
+/*│ Desktop version (for wide screens). │*/
+/*└─────────────────────────────────────┘*/
+
+@media (hover: hover) and (max-width: 1760px) {
+	#floating-header {
+		display: none;
+	}
+}
+@media (hover: hover) and (min-width: 1761px) {
+	#floating-header {
+		width: calc(50vw - (var(--GW-body-max-width) / 2 + 48px));
+    	box-shadow: 
+			0 0  0 1px var(--GW-body-background-color),
+			0 0  3px var(--GW-body-background-color),
+			0 0  5px var(--GW-body-background-color),
+			0 0  9px var(--GW-body-background-color),
+			0 0 17px var(--GW-body-background-color);
+		border-bottom: 1px solid var(--GW-floating-header-scroll-indicator-color);
+	}
+	body.index #floating-header {
+		display: none;
+	}
+	#floating-header .scroll-indicator {
+		margin: 0;
+	}
+	#floating-header .link-chain {
+		padding: 7px 10px 8px 10px
+	}
+	#floating-header .link-chain a {
+		display: block;
+	}
+	#floating-header .link-chain a.page-title {
+		margin: 0 0.75em;
+	}
+	#floating-header .link-chain a.page-title + a {
+		margin-top: 0.5em;
+	}
+	#floating-header .link-chain a:not(.page-title) {
+		text-align: left;
+		padding-left: calc((var(--link-index) - 1) * 1.25em);
+	}
+	#floating-header .link-chain a:not(.page-title) span {
+		font-size: calc(1em * (1 - (0.05 * (var(--link-index) - 1))));
+	}
+	#floating-header .link-chain a::before {
+		display: none;
+	}
 }
 
 

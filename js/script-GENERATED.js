@@ -1257,16 +1257,16 @@ if (GW.isMobile() == false) doWhenPageLoaded(() => {
 });
 
 
-/**************************/
-/* MOBILE FLOATING HEADER */
-/**************************/
+/*******************/
+/* FLOATING HEADER */
+/*******************/
 
-if (GW.isMobile()) GW.floatingHeader = {
+GW.floatingHeader = {
     minimumYOffset: 0,
 
-    maxChainLength: 3,
+    maxChainLength: GW.isMobile() ? 3 : 6,
 
-    maxHeaderHeight: 60,
+    maxHeaderHeight: GW.isMobile() ? 60 : 360,
 
     chainLinkClasses: {
         "…": "ellipsis",
@@ -1379,6 +1379,11 @@ if (GW.isMobile()) GW.floatingHeader = {
             chain.splice(1, 1);
         }
 
+		for (let i = 0; i < chain.length; i++) {
+			chain[i].style.setProperty("--link-index", i);
+			chain[i].innerHTML = `<span>${chain[i].innerHTML}</span>`;
+		}
+
         return chain;
     },
 
@@ -1390,13 +1395,13 @@ if (GW.isMobile()) GW.floatingHeader = {
 	setup: () => {
 		GWLog("GW.floatingHeader.setup", "rewrite.js", 1);
 
-		if (GW.isMobile() == false)
-			return;
-
 		GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden">`
 												+ `<div class="link-chain"></div>`
 												+ `<div class="scroll-indicator"></div>`
 												+ `</div>`);
+
+		if (GW.isMobile() == false)
+			GW.floatingHeader.header.classList.add("desktop");
 
 		//  Pre-query elements, so as not to waste cycles on each scroll event.
 		GW.floatingHeader.linkChain = GW.floatingHeader.header.querySelector(".link-chain");
@@ -1423,8 +1428,7 @@ if (GW.isMobile()) GW.floatingHeader = {
 	}
 };
 
-if (GW.isMobile())
-	doWhenPageLoaded(GW.floatingHeader.setup);
+doWhenPageLoaded(GW.floatingHeader.setup);
 
 
 /******************************/
