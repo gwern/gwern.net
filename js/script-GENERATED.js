@@ -1278,8 +1278,12 @@ GW.floatingHeader = {
     /*  Scroll down enough to make whatever’s under the header visible.
      */
     adjustScrollTop: () => {
+    	if (GW.isMobile() == false)
+    		return;
+
         if (GW.floatingHeader.header == null)
             return;
+
         let previousHash = GW.locationHash;
         requestAnimationFrame(() => {
             if (location.hash > "") {
@@ -1324,20 +1328,22 @@ GW.floatingHeader = {
         }
     },
 
-    getTrail: (offset = 0) => {
-        let element = document.elementFromPoint(window.innerWidth / 2,
-                                                GW.floatingHeader.minimumYOffset + offset);
+    getTrail: () => {
+    	let headerOffset = GW.isMobile() ? GW.floatingHeader.header.offsetHeight : 10;
+        let element = document.elementFromPoint(window.innerWidth / 2, headerOffset + 10);
+
+        if (   element.tagName == "SECTION"
+        	|| element == GW.floatingHeader.markdownBody)
+            return (GW.floatingHeader.currentTrail.length == 0
+                    ? [ "header" ]
+                    : GW.floatingHeader.currentTrail);
+
         if (GW.floatingHeader.firstSection.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_PRECEDING)
             return [ "header" ];
 
         if (   GW.floatingHeader.markdownBody.contains(element) == false
             && GW.floatingHeader.pageMainElement.contains(element) == true)
             return GW.floatingHeader.currentTrail;
-
-        if (element.tagName == "SECTION")
-            return (GW.floatingHeader.currentTrail.length == 0
-                    ? GW.floatingHeader.getTrail(offset - 10)
-                    : GW.floatingHeader.currentTrail);
 
         let trail = [ ];
         while (element = element.closest("section")) {
