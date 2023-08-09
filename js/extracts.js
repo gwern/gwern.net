@@ -25,7 +25,8 @@ Extracts = {
 	hooklessLinksContainersSelector: [
 		"body.index #markdownBody",
 		"#sidebar",
-		".TOC"
+		".TOC",
+		".floating-header"
 	].join(", "),
 
     /*  Targets.
@@ -36,7 +37,9 @@ Extracts = {
             ".section-self-link",
             ".footnote-self-link",
             ".sidenote-self-link",
-            "[aria-hidden='true']"
+            "[aria-hidden='true']",
+            "[href='#top']",
+            ".extract-not"
         ].join(", "),
         excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
         //  See comment at Extracts.isLocalPageLink for info on this function.

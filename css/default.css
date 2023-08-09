@@ -4861,7 +4861,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     pointer-events: auto;
 }
 @media all and (hover: hover) {
-    #ui-elements-container:hover {
+    #ui-elements-container.hover {
         z-index: 10001;
     }
 }
@@ -5834,7 +5834,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 #floating-header.hidden {
     top: -2.5em;
 }
-#floating-header.hidden .link-chain a.page-title {
+#floating-header.hidden .link-chain .link.page-title {
     display: none;
 }
 
@@ -5843,22 +5843,22 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     font-size: calc(1rem * 8/9);
     text-align: center;
 }
-#floating-header .link-chain a {
+#floating-header .link-chain .link {
     font-weight: 600;
 }
-#floating-header .link-chain a + a::before {
+#floating-header .link-chain .link + .link::before {
     content: "\200B\2002·\2002"
 }
-#floating-header .link-chain a.ellipsis::before {
+#floating-header .link-chain .link.ellipsis::before {
     content: "\200B\2002";
 }
-#floating-header .link-chain a.page-title {
+#floating-header .link-chain .link.page-title {
     font-variant-caps: small-caps;
     font-weight: normal;
     letter-spacing: -0.25px;
 }
-#floating-header .link-chain.truncate-page-title a.page-title,
-#floating-header.hidden .link-chain a.page-title {
+#floating-header .link-chain.truncate-page-title .link.page-title,
+#floating-header.hidden .link-chain .link.page-title {
     display: inline-block;
     white-space: nowrap;
     max-width: calc(100% - 12px);
@@ -5896,9 +5896,10 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 			0 0  9px var(--GW-body-background-color),
 			0 0 17px var(--GW-body-background-color);
 		border-bottom: 1px solid var(--GW-floating-header-scroll-indicator-color);
+		pointer-events: none;
 	}
-	body.index #floating-header {
-		display: none;
+	#floating-header > * {
+		pointer-events: auto;
 	}
 	#floating-header .scroll-indicator {
 		margin: 0;
@@ -5906,23 +5907,29 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 	#floating-header .link-chain {
 		padding: 7px 10px 8px 10px
 	}
-	#floating-header .link-chain a {
+	#floating-header .link-chain .link {
 		display: block;
 	}
-	#floating-header .link-chain a.page-title {
+	#floating-header .link-chain .link.page-title {
 		margin: 0 0.75em;
 	}
-	#floating-header .link-chain a.page-title + a {
+	#floating-header .link-chain .link.page-title + .link {
 		margin-top: 0.5em;
 	}
-	#floating-header .link-chain a:not(.page-title) {
+	#floating-header .link-chain .link:not(.page-title) {
 		text-align: left;
 		padding-left: calc((var(--link-index) - 1) * 1.25em);
 	}
-	#floating-header .link-chain a:not(.page-title) span {
+	#floating-header .link-chain .link:not(.page-title) a {
 		font-size: calc(1em * (1 - (0.05 * (var(--link-index) - 1))));
 	}
-	#floating-header .link-chain a::before {
+	#floating-header .link-chain .link::before {
+		display: none;
+	}
+
+	/*	No floating header on /index.
+	 */
+	body.index #floating-header {
 		display: none;
 	}
 }

@@ -853,12 +853,21 @@ function incrementSavedCount(key) {
     #ui-elements-container (creating the latter if it does not exist), and
     returns the added element.
  */
-function addUIElement(element) {
+function addUIElement(element, options = { }) {
     let uiElementsContainer = (   document.querySelector("#ui-elements-container")
     						   ?? document.querySelector("body").appendChild(newElement("DIV", { id: "ui-elements-container" })));
 
 	if (typeof element == "string")
 		element = elementFromHTML(element);
+
+	if (options.raiseOnHover == true) {
+		element.addEventListener("mouseenter", (event) => {
+			uiElementsContainer.classList.add("hover");
+		});
+		element.addEventListener("mouseleave", (event) => {
+			uiElementsContainer.classList.remove("hover");
+		});
+	}
 
     return uiElementsContainer.appendChild(element);
 }
@@ -900,7 +909,8 @@ GW.pageToolbar = {
 	 */
 	getToolbar: () => {
 		return (    GW.pageToolbar.toolbar
-				?? (GW.pageToolbar.toolbar = addUIElement(`<div id="page-toolbar"><div class="widgets"></div></div>`)));
+				?? (GW.pageToolbar.toolbar = addUIElement(`<div id="page-toolbar"><div class="widgets"></div></div>`,
+														  { raiseOnHover: true })));
 	},
 
 	/*	Adds a widget (which may contain buttons or whatever else) (first 
@@ -1315,9 +1325,18 @@ GW.floatingHeader = {
         if (   trail.join("/") != GW.floatingHeader.currentTrail.join("/")
             || maxChainLength < GW.floatingHeader.maxChainLength) {
             GW.floatingHeader.linkChain.classList.toggle("truncate-page-title", trail.length > maxChainLength);
+
             let chainLinks = GW.floatingHeader.constructLinkChain(trail, maxChainLength);
             GW.floatingHeader.linkChain.replaceChildren(...chainLinks);
-            chainLinks.forEach(link => { link.addActivateEvent(GW.floatingHeader.linkInChainClicked); });
+            let index = 0;
+            chainLinks.forEach(link => {
+            	link.addActivateEvent(GW.floatingHeader.linkInChainClicked);
+            	let span = wrapElement(link, "link", "SPAN", false, true);
+            	span.style.setProperty("--link-index", index++);
+            });
+
+			if (GW.isMobile() == false)
+				Extracts.addTargetsWithin(GW.floatingHeader.linkChain);
 
             //  Constrain header height.
             if (   GW.floatingHeader.header.offsetHeight > GW.floatingHeader.maxHeaderHeight
@@ -1384,11 +1403,6 @@ GW.floatingHeader = {
             chain[0].href = chain[1].href;
             chain.splice(1, 1);
         }
-
-		for (let i = 0; i < chain.length; i++) {
-			chain[i].style.setProperty("--link-index", i);
-			chain[i].innerHTML = `<span>${chain[i].innerHTML}</span>`;
-		}
 
         return chain;
     },
@@ -7603,7 +7617,8 @@ Extracts = {
 	hooklessLinksContainersSelector: [
 		"body.index #markdownBody",
 		"#sidebar",
-		".TOC"
+		".TOC",
+		".floating-header"
 	].join(", "),
 
     /*  Targets.
@@ -7614,7 +7629,9 @@ Extracts = {
             ".section-self-link",
             ".footnote-self-link",
             ".sidenote-self-link",
-            "[aria-hidden='true']"
+            "[aria-hidden='true']",
+            "[href='#top']",
+            ".extract-not"
         ].join(", "),
         excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
         //  See comment at Extracts.isLocalPageLink for info on this function.
