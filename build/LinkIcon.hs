@@ -63,7 +63,7 @@ import qualified Config.LinkIcon as C (prioritizeLinkIconMin, prioritizeLinkIcon
 -- maybe that's a vestigial concern?
 -- TODO: refactor into multiple functions, like 'linkIconOrg', 'linkIconQuad' etc, and then move into Config.LinkIcon:
 linkIcon :: Inline -> Inline
-linkIcon x@(Link (_,cl,attributes) _ (u, _))
+linkIcon x@(Link (_,cl,_) _ (u, _))
  -- Short-circuits for manual control (one can either disable icons with a `[Foo](URL){.icon-not}`
  -- class, or specify a preferred icon on a link, like `[Foo](URL){.link-icon="deepmind"
  -- .link-icon-type="svg"}` by specifying the attributes directly), or define a global URL/(link
@@ -435,14 +435,10 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  where u', u'' :: T.Text -> Bool
        -- simplest check for string anywhere; note that if it is a full domain name like `https://foo.com` (intended to match `https://foo.com/xyz.html`), then it will *not* match when the local-archive code fires and the URL gets rewritten to "/doc/foo.com/$HASH.html". So we error out if the user tries this, having forgotten that u' ≠ u'' in that respect.
        u' v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v then error ("LinkIcon.hs: Overly strict prefix in infix matching (u'): " ++ show u ++ ":" ++ show v) else
-         if originalURL=="" then v `T.isInfixOf` u else v `T.isInfixOf` originalURL
+         v `T.isInfixOf` u
        -- more stringent check, matching exactly the domain name:
        u'' v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v then error ("LinkIcon.hs: Overly strict prefix in infix matching (u''): " ++ show u ++ ":" ++ show v) else
-                 if originalURL=="" then isHostOrArchive v u else isHostOrArchive v originalURL
-       originalURL :: T.Text
-       originalURL = case lookup "data-url-original" attributes of
-                       Nothing -> ""
-                       Just url -> url
+                 isHostOrArchive v u
        aI :: T.Text -> T.Text -> Inline
        aI = addIcon x
        iE :: [T.Text] -> Bool

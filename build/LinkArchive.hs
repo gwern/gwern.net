@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-07-10 22:31:04 gwern"
+When:  Time-stamp: "2023-08-09 22:14:59 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -115,7 +115,7 @@ import Data.ByteString.Char8 (pack, unpack)
 import System.FilePath (takeFileName)
 import System.Directory (doesFileExist)
 
-import Utils (writeUpdatedFile, printGreen, printRed, addClass, currentDay)
+import Utils (writeUpdatedFile, printGreen, printRed, currentDay)
 import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, archivePerRunN, archiveDelay, isCheapArchive)
 
 type ArchiveMetadataItem = Either
@@ -136,12 +136,9 @@ localizeLink adb archivedN x@(Link (identifier, classes, pairs) b (targetURL, ta
   if C.whiteList (T.unpack targetURL) || "archive-not" `elem` classes then return x else
     do targetURL' <- rewriteLink adb archivedN $ T.unpack targetURL
        if targetURL' == T.unpack targetURL then return x -- no archiving has been done yet, return original
-       else do -- rewrite & annotate link with local archive:
-         let padding = if targetDescription == "" then "" else " "
-         let targetDescription' = T.unpack targetDescription ++ padding ++ "(Original URL: " ++ T.unpack targetURL ++ " )"
-         -- specify that the rewritten links are mirrors & to be ignored:
-         let archiveAttributes = [("rel", "archived alternate nofollow"), ("data-url-original", T.pack (C.transformURLsForLinking (T.unpack targetURL)))]
-         let archivedLink = addClass "archive-local" $ Link (identifier, classes, pairs++archiveAttributes) b (T.pack ('/':targetURL'), T.pack targetDescription')
+       else do -- annotate link with data attribute specifying with local archive:
+         let archiveAttributes = [("data-url-archive", T.pack ('/':targetURL'))]
+         let archivedLink = Link (identifier, classes, pairs++archiveAttributes) b (T.pack (C.transformURLsForLinking (T.unpack targetURL)), targetDescription)
          return archivedLink
 localizeLink _ _ x = return x
 

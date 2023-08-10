@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-08-05 21:40:16 gwern"
+# When:  Time-stamp: "2023-08-09 22:14:42 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -250,8 +250,7 @@ else
 
     bold "Stripping compile-time-only classes unnecessary at runtime…"
     cleanClasses () {
-        sed -i -e 's/class=\"\(.*\)archive-local \?/class="\1/g' \
-               -e 's/class=\"\(.*\)archive-not \?/class="\1/g' \
+        sed -i -e 's/class=\"\(.*\)archive-not \?/class="\1/g' \
                -e 's/class=\"\(.*\)id-not \?/class="\1/g' \
                `# TODO: revert 9f246da03503b3c20d3c38eecd235b5aa7caa0b3 and remove .backlink-not clutter once all link-ID problems are resolved` \
                -e 's/class=\"\(.*\)link-annotated-not \?/class="\1/g' \
@@ -411,7 +410,7 @@ else
     ## Whitelist of HTML classes which are authorized for use. Any new classes should be added here.
     λ(){ find metadata/annotation/ -name "*.html" \
              | shuf | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort -u | \
-             grep -E --invert-match -e '^see-also-append$' -e '^archive-local$' -e '^archive-not$' -e '^author$' -e '^full-authors-list$' -e '^aux-links$' -e '^backlink-not$' \
+             grep -E --invert-match -e '^see-also-append$' -e '^archive-not$' -e '^author$' -e '^full-authors-list$' -e '^aux-links$' -e '^backlink-not$' \
                    -e '^backlinks$' -e '^backlinks-append$' -e 'aux-links-append' -e '^bash$' -e '^Bash$' -e '^book-review-author$' \
                    -e '^book-review-date$' -e '^book-review-rating$' -e '^book-review-title$' -e '^cite-author$' -e '^cite-author-plural$' \
                    -e '^cite-date$' -e '^date$' -e '^display$' -e '^email$' -e '^external-page-embed$' -e '^id-not$' -e '^include$' \
