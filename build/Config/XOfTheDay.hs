@@ -446,7 +446,7 @@ siteBlackList = [
           "bps-research-digest.blogspot.com", "bost.ocks.org", "bmcmedgenet.biomedcentral.com", "bmcmedethics.biomedcentral.com", "blogs.sciencemag.org",
           "blog.vermorel.com", "blog.thinkst.com", "blog.tensorflow.org", "blog.talkingphilosophy.com", "blog.plover.com",
           "blog.paralleluniverse.co", "blog.oddhead.com", "blog.notdot.net", "blog.ninlabs.com", "blog.mldb.ai",
-          "blog.janestreet.com", "blog.jaibot.com", "blog.gerv.net", "blog.evjang.com", "blog.dshr.org",
+          "blog.janestreet.com", "blog.gerv.net", "blog.evjang.com", "blog.dshr.org",
           "blog.dansimons.com", "blog.cloudflare.com", "blog.chriszacharias.com", "blog.beeminder.com", "blog.animeinstrumentality.net",
           "blackgryph0n.bandcamp.com", "biology-web.nmsu.edu", "biohackinfo.com", "bioengineeringcommunity.nature.com", "bigheadjapan.bandcamp.com",
           "betterexplained.com", "bertcmiller.com", "benkling.tumblr.com", "benjaminreinhardt.com", "bbs.pku.edu.cn",

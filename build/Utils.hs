@@ -1505,7 +1505,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" LaTeX", " <span class=\"logotype-latex\">L<span class=\"logotype-latex-a\">a</span>T<span class=\"logotype-latex-e\">e</span>X</span>")
          , (" TeX", " <span class=\"logotype-tex\">T<sub>e</sub>X</span>")
          , ("DALL-E", "DALL·E")
-           -- many uses of 'approximately' are weasel-wordy which add nothing whatsoever semantically, so we can drop the '~':
+         -- many uses of 'approximately' are weasel-wordy which add nothing whatsoever semantically, so we can drop the '~':
          , ("~linearly", "linearly")
          , ("~every", "every")
          , ("~isometrically", "isometrically")
@@ -1521,6 +1521,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("~identical", "near-identical")
          , ("approximately ", "~")
          , ("Approximately ", "~")
+         , ("approx ", "~")
          , ("∼", "~")
          , ("GxE", "G×E")
          , (" 10x", " 10×")
