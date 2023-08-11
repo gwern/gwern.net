@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-08-09 22:14:59 gwern"
+When:  Time-stamp: "2023-08-11 11:57:35 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -137,8 +137,10 @@ localizeLink adb archivedN x@(Link (identifier, classes, pairs) b (targetURL, ta
     do targetURL' <- rewriteLink adb archivedN $ T.unpack targetURL
        if targetURL' == T.unpack targetURL then return x -- no archiving has been done yet, return original
        else do -- annotate link with data attribute specifying with local archive:
-         let archiveAttributes = [("data-url-archive", T.pack ('/':targetURL'))]
-         let archivedLink = Link (identifier, classes, pairs++archiveAttributes) b (T.pack (C.transformURLsForLinking (T.unpack targetURL)), targetDescription)
+         let cleanURL = T.pack $ C.transformURLsForLinking $ T.unpack targetURL
+         let archiveAttributes = ("data-url-archive", T.pack ('/':targetURL')) :
+                                  if cleanURL == targetURL then [] else [("data-url-html", cleanURL)]
+         let archivedLink = Link (identifier, classes, pairs++archiveAttributes) b (targetURL, targetDescription)
          return archivedLink
 localizeLink _ _ x = return x
 
