@@ -300,7 +300,7 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "/doc/sociology/1987-rossi.pdf"
     , [ "The Iron Law Of Evaluation And Other Metallic Rules', Rossi 1987"      ]
     )
-  , ( "/doc/sociology/1993-boehm.pdf"
+  , ( "/doc/sociology/intrasexual-aggression/1993-boehm.pdf"
     , [ "Egalitarian Behavior and Reverse Dominance Hierarchy [and Comments and Reply]', Boehm et al 1993"
       ]
     )
