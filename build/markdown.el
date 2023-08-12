@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-08-04 15:54:29 gwern"
+;;; When:  Time-stamp: "2023-08-11 18:18:21 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -216,7 +216,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
 
        (let ; Blind unconditional rewrites:
            ((blind '(("﻿" . "") ; byte order mark?
-                     (" " . "")
+                     (" " . " ")
                      ("" . "fi")
                      ("" . "fl")
                      ("\\\u2013" . "--")
@@ -319,6 +319,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("(gf)" . "(_g~f~_)")
                      ("_gf_" . "_g~f~_")
                      (" gF" . " _g~f~_")
+                     ("Gq" . "_G~q~_")
+                     ("Gc" . "_G~c~_")
+                     ("Gf" . "_G~f~_")
                      ("5-HT2A" . "5-HT~2A~")
                      ("ﬁ" . "fi")
                      ("ﬀ" . "ff")
@@ -491,6 +494,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("z score" . "_z_ score")
                         ("z-score" . "_z_-score")
                         (" z-" . " _z_-")
+                        ("Mage=" . "M~age~ = ")
                         ("Mage " . "M~age~")
                         ("Mage " . "M~age~")
                         ("tmax " . "t~max~")
@@ -498,11 +502,16 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("AUClast" . "AUC~last~")
                         ("AUC∞" . "AUC~∞~")
                         ("AUC0–t" . "AUC~0–t~")
+                        ("SDage=" . "SD~age~ = ")
                         ("SDage " . "SD~age~")
+                        ("mean=" . "mean = ")
+                        ("OR=" . "OR = ")
+                        ("AOR=" . "AOR = ")
                         ("RR=" . "RR = ")
                         ("r =" . "_r_ = ")
                         ("r=" . "_r_ = ")
                         ("r = " . "_r_ = ")
+                        ("r’ =" . "_r′_ = ")
                         ("(r range = " . "(_r_ range = ")
                         (" r’s " . " _r_’s ")
                         ("r ≈" . "_r_ ≈ ")
@@ -520,8 +529,6 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("(t<" . "(_t_ < ")
                         ("(t>" . "(_t_ > " )
                         (" t-statistic" . " _t_-statistic" )
-                        ("OR=" . "OR = ")
-                        ("AOR=" . "AOR = ")
                         ("HR=" . "HR = ")
                         ("rP=" . "_r~p~_ = ")
                         ("rP = " . "_r~p~_ = ")
@@ -1285,6 +1292,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (query-replace " t <" " _t_ <"  nil begin end)
          (query-replace " t =" " _t_ =" nil begin end)
          (query-replace "(t =" "(_t_ =" nil begin end)
+         (query-replace "(t="  "(_t_ = " nil begin end)
          (query-replace " t-test" " _t_-test" nil begin end)
          (query-replace " t test" " _t_-test" nil begin end)
          (query-replace "(t test" "(_t_-test" nil begin end)
