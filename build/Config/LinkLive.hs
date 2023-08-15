@@ -4125,7 +4125,7 @@ badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrio
             , "https://www.fox6now.com/news/brookfield-man-faces-multiple-charges-related-to-drugs-trafficking"
             , "https://www.foxnews.com/world/germany-3-charged-for-illegally-making-selling-firearms"
             , "https://www.frbsf.org/economic-research/wp-content/uploads/sites/4/wp2017-25.pdf"
-            , "https://www.frc.ri.cmu.edu/~hpm/project.archive/general.articles/1991/TempComp.html"
+            , "https://web.archive.org/web/20230525085828/https://www.frc.ri.cmu.edu/~hpm/project.archive/general.articles/1991/TempComp.html"
             , "https://www.freehaven.net/anonbib/topic.html"
             , "https://www.fs.fed.us/rm/pubs_journals/2000/rmrs_2000_mcdaniel_g001.pdf"
             , "https://www.fsigenetics.com/article/S1872-4973(18)30248-5/fulltext"

@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-08-11 18:18:21 gwern"
+;;; When:  Time-stamp: "2023-08-14 10:47:17 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -892,7 +892,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" twenty one" . " 21")
                         (" twenty-one" . " 21")
                         (" twenty" . " 20")
+                        (" twentieth" . " 20<sup>th</sup>")
                         (" nineteen" . " 19")
+                        ("nineteenth" . " 19<sup>th</sup>")
                         (" eighteen" . " 18")
                         (" seventeen" . " 17")
                         (" sixteen" . " 16")
