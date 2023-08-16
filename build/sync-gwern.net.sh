@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-08-14 10:21:15 gwern"
+# When:  Time-stamp: "2023-08-15 19:04:08 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -410,7 +410,7 @@ else
     ## Whitelist of HTML classes which are authorized for use. Any new classes should be added here.
     λ(){ find metadata/annotation/ -name "*.html" \
              | shuf | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort -u | \
-             grep -E --invert-match -e '^see-also-append$' -e '^archive-not$' -e '^author$' -e '^full-authors-list$' -e '^aux-links$' -e '^backlink-not$' \
+             grep -E --invert-match -e '^see-also-append$' -e '^archive-not$' -e '^archive-local$' -e '^author$' -e '^full-authors-list$' -e '^aux-links$' -e '^backlink-not$' \
                    -e '^backlinks$' -e '^backlinks-append$' -e 'aux-links-append' -e '^bash$' -e '^Bash$' -e '^book-review-author$' \
                    -e '^book-review-date$' -e '^book-review-rating$' -e '^book-review-title$' -e '^cite-author$' -e '^cite-author-plural$' \
                    -e '^cite-date$' -e '^date$' -e '^display$' -e '^email$' -e '^external-page-embed$' -e '^id-not$' -e '^include$' \
@@ -442,7 +442,7 @@ else
                    -e '^mjx-vsize$' -e '^new$' -e '^outline-not$' -e '^warning$' -e '^markdown-body$' -e '^similars$' -e '^similars-append$' \
                    -e '^text-center$' -e '^abstract-tag-directory$' -e '^page-description-annotation$' -e '^link-bibliography$' \
                    -e '^link-bibliography-append$' -e '^expand-on-hover$' -e '^include-block-context$' -e 'tag-index-link-bibliography-block' \
-                   -e '^aux-links-container$' -e '^decorate-not$' -e '^include-omit-metadata$' -e '^quote-of-the-day$' -e '^interview$'; }
+                   -e '^decorate-not$' -e '^include-omit-metadata$' -e '^quote-of-the-day$' -e '^interview$'; }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
     λ(){ echo "$PAGES_ALL" | grep -F --invert-match 'Hafu' | xargs --max-args=500 grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
