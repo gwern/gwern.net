@@ -1004,7 +1004,7 @@ whiteList url
       , "https://carolineec.github.io/informative_drawings/" -- low quality (video embeds)
       , "https://parti.research.google/" -- low-quality (initial image carousel doesn't work)
       , "https://unconventionality.github.io/" -- low-quality (interactive app breaks)
-      , "https://elicit.org/" -- homepage
+      , "https://elicit.com/" -- homepage
       , "https://yzqin.github.io/dexmv/" -- low-quality (video, GIF embeds break)
       , "https://say-can.github.io/" -- low quality (video embeds)
       , "https://wenlong.page/language-planner/" -- low quality (video embeds)

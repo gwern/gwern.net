@@ -181,7 +181,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.mirror.co.uk" = aI "M" "text,sans"
  | u'' "www.stuff.co.nz" = aI "NZ" "text,sans" -- even their official name 'Stuff' is lazy and unmemorable. I just think of them as 'that New Zealand website reporting on crime & DNM stuff'…
  | u'' "chronopause.com" = aI "M.D." "text,sans" -- Mike Darwin, similarly TODO: experiment with initials using periods - does this work as-is? How about quad? '﹒' SMALL FULL STOP U+FE52 does not work.
- | u'' "vitalik.ca" || u' "/doc/economics/2018-buterin.pdf" = aI "V.B." "text,sans" -- Vitalik Buterin, similarly
+ | u'' "vitalik.ca" || u' "/doc/economics/mechanism-design/quadratic-voting/2018-buterin.pdf" = aI "V.B." "text,sans" -- Vitalik Buterin, similarly
  | u'' "unenumerated.blogspot.com" || u' "szabo.best.vwh.net" || u' "nick-szabo" = aI "N.S." "text,sans" -- Nick Szabo
  | u'' "scottaaronson.blog" || u'' "www.scottaaronson.com" = aI "S.A." "text,sans" -- Scott Aaronson
  | u'' "www.rifters.com" = aI "P.W." "text,sans" -- Peter Watts
@@ -289,7 +289,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u' "www.cs.utexas.edu/~EWD/" = aI "EWD" "text,tri,sans" -- Edsger W. Dijkstra, of course, wrote in sans
  | u'' "iopscience.iop.org" = aI "IOP" "text,tri,sans" -- <https://en.wikipedia.org/wiki/IOP_Publishing> Institute of Physics Publishing
  | u'' "80000hours.org" = aI "80k" "text,tri,sans" -- 80,000 Hours (Centre for Effective Altruism, FHI, Oxford)
- | u' "www.ssc.wisc.edu/wlsresearch/" = aI "WLS" "text,tri,sans" -- Wisconsin Longitudinal Study
+ | u'' "researchers.wls.wisc.edu" || u' "www.ssc.wisc.edu/wlsresearch/" = aI "WLS" "text,tri,sans" -- Wisconsin Longitudinal Study
  | u' "host.robots.ox.ac.uk/pascal/VOC" = aI "VOC" "text,tri,sans" -- PASCAL VOC (Visual Object Classes) machine learning image dataset/competition
  | u'' "www.tandfonline.com" = aI "T&F" "text,tri,sans" -- Taylor & Francis: their icon is a small white oil lamp on a blue background, but it's illegible as a favicon and just looks like a white blob on a blue square; since these need to be monochrome, that makes it useless. Plus I recognize 'Taylor & Francis' (sans serif, as usual for STEM publishers) more anyway, so 'T&F' is the natural tri-text icon. A possible Unicode alternative for the AMPERSAND if it is too big is 'U+FE60 ﹠ SMALL AMPERSAND'.
  | u' "omega0.xyz/omega8008/" || aU' ["/doc/statistics/bayes/1988-jaynes-maximumentropyandbayesianmethods.pdf", "www-biba.inrialpes.fr/Jaynes/cc18i.pdf"] = aI "ETJ" "text,tri,sans" -- E. T. Jaynes book/paper website

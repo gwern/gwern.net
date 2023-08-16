@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-09-10 19:05:22 gwern"
+# When:  Time-stamp: "2023-09-16 19:06:58 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -50,7 +50,7 @@ function rename_file() {
 
   # if filename already exists, try to rename it
   if [[ -n "$new_file_path" ]]; then
-    for ((i=1; i<=20; i++)); do
+    for ((i=2; i<=20; i++)); do
       new_filename="${base_name}-${i}.${extension}"
       new_file_path=$(find ~/wiki/ -type f -name "$new_filename" -print -quit)
 
@@ -69,6 +69,7 @@ function rename_file() {
     return 1
   fi
 
+  FILENAME="$filename"
   return 0
 }
 rename_file "$FILENAME"

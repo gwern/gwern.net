@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-09-14 19:15:55 gwern"
+When:  Time-stamp: "2023-09-16 10:28:13 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -97,7 +97,7 @@ module LinkArchive (C.archivePerRunN, localizeLink, readArchiveMetadata, Archive
 import Control.Monad (filterM, unless)
 import Data.IORef (IORef, readIORef, writeIORef)
 import qualified Data.Map.Strict as M (fromList, insert, lookup, toAscList, Map)
-import Data.List (isInfixOf, isPrefixOf)
+import Data.List (isInfixOf, isPrefixOf, nub)
 import Data.Maybe (isNothing, fromMaybe)
 import Text.Read (readMaybe)
 import qualified Data.Text.IO as TIO (readFile)
@@ -142,7 +142,7 @@ localizeLink adb archivedN x@(Link (identifier, classes, pairs) b (targetURL, ta
                                     if mobileURL == targetURL then [] else [("data-href-mobile", mobileURL)]) ++
                                   (let cleanURL = T.pack $ C.transformURLsForLinking $ T.unpack targetURL in
                                   if cleanURL == targetURL then [] else [("data-url-html", cleanURL)])
-         let archiveAnnotatedLink = Link (identifier, classes, pairs++archiveAttributes) b (targetURL, targetDescription)
+         let archiveAnnotatedLink = Link (identifier, classes, nub (pairs++archiveAttributes)) b (targetURL, targetDescription)
          return archiveAnnotatedLink
 localizeLink _ _ x = return x
 

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-09-12 10:34:27 gwern"
+# When:  Time-stamp: "2023-09-16 12:42:05 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -1017,7 +1017,7 @@ else
 
     removeEncryption () { ENCRYPTION=$(exiftool -quiet -quiet -Encryption "$@");
                           if [ "$ENCRYPTION" != "" ]; then
-                              echo "$@"
+                              echo "Stripping encryption from $@…"
                               TEMP=$(mktemp /tmp/encrypted-XXXX.pdf)
                               pdftk "$@" input_pw output "$TEMP" && mv "$TEMP" "$@";
                           fi; }

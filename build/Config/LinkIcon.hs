@@ -18,7 +18,7 @@ prioritizeLinkIconMin = 4
 prioritizeLinkIconBlackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc:
 prioritizeLinkIconBlackList = isUniqueList ["lilianweng.github.io", "digital.library.unt.edu", "www.smartpowders.com", "www.silverhandmeadery.com",
                      "forums.animesuki.com", "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.theregister.com",
-                     "www.thedailybeast.com", "www.teanobi.com", "www.straighttalkonevidence.org", "www.joelonsoftware.com",
+                     "www.thedailybeast.com", "www.straighttalkonevidence.org", "www.joelonsoftware.com",
                      "www.jstage.jst.go.jp", "blog.codinghorror.com", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am",
                      "ascii.textfiles.com", "blog.johantibell.com", "humanvarieties.org", "ilovetypography.com",
                      "cognitivefun.net", "findarticles.com", "dataprivacylab.org", "www.thefreelibrary.com", "www.unitedpharmacies-uk.md",
@@ -42,7 +42,7 @@ prioritizeLinkIconBlackList = isUniqueList ["lilianweng.github.io", "digital.lib
                      "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org",
                      "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com",
                      "www.acpjournals.org", "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com",
-                     "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com", "jetpress.org"]
+                     "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com", "jetpress.org", "www.sudowrite.com"]
 ------------------------------------------------------------------------------------------
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
@@ -82,7 +82,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("/doc/darknet-market/usareshipper-profile.maff", "archive","svg")
          , ("/doc/design/typography/rubrication/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "ET", "text")
          , ("/doc/dual-n-back/2012-zhong.ebt",  "misc","svg")
-         , ("/doc/economics/2018-buterin.pdf", "V.B.", "text,sans")
+         , ("/doc/economics/mechanism-design/quadratic-voting/2018-buterin.pdf", "V.B.", "text,sans")
          , ("/doc/fiction/poetry/2011-yvain-iliadaslawsuit.html",  "SSC","text,tri")
          , ("/doc/genetics/heritable/2015-mosing-supplement.docx",  "worddoc","svg")
          , ("/doc/iq/2011-gensowski-figure7-totaleffectofiqandpersonalityonlifetimeearnings.png",  "image","svg")

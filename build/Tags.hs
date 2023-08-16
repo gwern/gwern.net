@@ -207,7 +207,7 @@ tagsShort2LongRewrites = isUniqueKeys
     ("animal/iq", "iq/animal"), ("cellular-automata", "cellular-automaton"), ("mathematics", "math"),
     ("frank-p-ramsey", "frank-ramsey"), ("artificial-selection", "genetics/selection/artificial"), ("intrasexual-agression", "intrasexual-aggression"),
     ("javascript", "js"), ("psych/chess", "psychology/chess"), ("self-experiment", "quantified-self"),
-    ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing")]
+    ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing"), ("quadratic-vote", "quadratic-voting")]
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   (map (\s -> (s, error s)) (isUniqueList ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f",
@@ -278,8 +278,9 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("economics/copyright", "copyright (economics)")
           , ("economics/automation/metcalfes-law", "Metcalfe’s Law")
           , ("economics/automation", "automation (economics)")
-          , ("economics/mechanism-design", "mechanism design")
+          , ("economics/mechanism-design/quadratic-voting", "quadratic voting")
           , ("economics/mechanism-design/auction", "auctions")
+          , ("economics/mechanism-design", "mechanism design")
           , ("design/typography/sidenote", "sidenotes (typography)")
           , ("design/typography/sentence-spacing", "sentence-spacing (typography)")
           , ("darknet-market/silk-road/1/lsd", "SR1 LSD")
@@ -381,6 +382,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("psychology/personality/psychopathy", "psychopath")
           , ("psychiatry/meditation", "meditation")
           , ("psychiatry/depression", "MDD")
+          , ("psychiatry/bipolar/autism", "autism+BP")
           , ("psychiatry/bipolar/elon-musk", "Elon Musk (BP)")
           , ("psychiatry/bipolar/sleep", "BP & sleep")
           , ("psychiatry/bipolar/lithium", "lithium (BP)")

@@ -256,7 +256,7 @@ siteBlackList = isUniqueList [
           "www.nzherald.co.nz", "www.odt.co.nz", "www.offconvex.org", "www.oglaf.com", "www.ohri.ca",
           "www.openphilanthropy.org", "www.optimox.com", "www.orbuch.com", "www.oregonlive.com", "www.oreilly.com",
           "www.oricon.co.jp", "www.orlandosentinel.com", "www.osti.gov", "www.otakustudy.com", "www.overthinkingit.com",
-          "www.owenstephens.co.uk", "www.patreon.com", "www.pcmag.com", "www.pcworld.com", "www.pelleas.net",
+          "www.owenstephens.co.uk", "www.patreon.com", "www.pcmag.com", "www.pcworld.com",
           "www.petco.com", "www.petforums.co.uk", "www.pewresearch.org", "www.pharma.uzh.ch", "www.pnas.org",
           "www.poetryfoundation.org", "www.politie.nl", "www.popsci.com", "www.popularmechanics.com", "www.pragmatic.ml",
           "www.pressandjournal.co.uk", "www.princeton.edu", "www.project-imas.com", "www.prolific.co", "www.propublica.org",
@@ -277,7 +277,7 @@ siteBlackList = isUniqueList [
           "www.spectator.co.uk", "www.spiceandtea.com", "www.spiegel.de", "www.ssc.wisc.edu", "www.standard.co.uk",
           "www.stat.columbia.edu", "www.strobe-statement.org", "www.stuartcheshire.org", "www.stuff.co.nz", "www.sudowrite.com",
           "www.sumsar.net", "www.sun-modalert.com", "www.syracuse.com", "www.tabletmag.com", "www.talyarkoni.org",
-          "www.tandfonline.com", "www.tarsnap.com", "www.teanobi.com", "www.teavana.com", "www.technologyreview.com",
+          "www.tandfonline.com", "www.tarsnap.com", "www.teavana.com", "www.technologyreview.com",
           "www.ted.com", "www.teds.ac.uk", "www.telegraph.co.uk", "www.tensorflow.org", "www.terrierman.com",
           "www.theadvertiser.com", "www.theage.com.au", "www.theatlantic.com", "www.thecut.com", "www.thedailybeast.com",
           "www.thefreelibrary.com", "www.theguardian.com", "www.thelancet.com", "www.thelocal.de", "www.theparisreview.org",
@@ -470,4 +470,4 @@ siteBlackList = isUniqueList [
           "psychology.wvu.edu","blogs.lanecc.edu","bayesianinvestor.com", "danielpovey.com", "www.nasonline.org", "calteches.library.caltech.edu",
           "pile.eleuther.ai", "verdagon.dev", "dataverse.harvard.edu", "tim.blog", "radiolab.org", "melaniemitchell.me", "www.ece.uvic.ca",
           "classic.clinicaltrials.gov", "www.takimag.com", "theathletic.com", "fasttext.cc", "ars.els-cdn.com", "pubs.aip.org",
-          "tools.openlab.psu.edu", "www.memteaimports.com","tomodachi.de","blog.daviskedrosky.com"]
+          "tools.openlab.psu.edu", "www.memteaimports.com","tomodachi.de","blog.daviskedrosky.com","researchers.wls.wisc.edu","www.harvey.ai"]

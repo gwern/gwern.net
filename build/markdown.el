@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-09-13 12:22:05 gwern"
+;;; When:  Time-stamp: "2023-09-16 23:09:47 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1059,10 +1059,10 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "Abstract:" "**Abstract**: ")
          (replace-all "Context:" "**Context**: ")
          (replace-all "Purpose:" "**Purpose**: ")
-         (replace-all "Rationale: " "**Rationale**: ")
-         (replace-all "Rationale\n" "**Rationale**: ")
-         (replace-all "Rationale: " "**Rationale**: ")
-         (replace-all "Rationale\n\n" "**Rationale**: ")
+         (replace-all "Rationale: " "**Background**: ")
+         (replace-all "Rationale\n" "**Background**: ")
+         (replace-all "Rationale: " "**Background**: ")
+         (replace-all "Rationale\n\n" "**Background**: ")
          (replace-all "Study Objectives\n" "**Objectives**: ")
          (replace-all "Study Objectives:\n" "**Objectives**: ")
          (replace-all "Objective:" "**Objective**: ")
@@ -1147,6 +1147,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "OBJECTIVE: " "\n**Objective**: ")
          (replace-all "\nObjectives " "\n**Objectives**: ")
          (replace-all "INTRODUCTION\n\n" "\n**Background**: ")
+         (replace-all "\nContext " "\n**Background**: ")
          (replace-all "INTRODUCTION\n" "**Background**: ")
          (replace-all "INTRODUCTION: " "**Background**: ")
          (replace-all "Introduction\n\n" "\n**Background**: ")
@@ -1756,7 +1757,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
       (replace-all "%3Csup%3Erd%3C/sup%3E" "rd")
       (replace-all "<!-- -->" "")
       ; unescaped single quotation marks will often break the YAML, so they need to either be replaced with the intended Unicode, or double-quoted to 'escape' them
-      (query-replace "'" "''" nil begin end)
+      ; (query-replace "'" "''" nil begin end)
       (delete-trailing-whitespace)
       (forward-line)
       (ding)
