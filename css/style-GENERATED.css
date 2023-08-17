@@ -6951,7 +6951,8 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 }
 @media (hover: hover) and (min-width: 1761px) {
 	#floating-header {
-		width: calc(50vw - (var(--GW-body-max-width) / 2 + 48px));
+		width: calc(50vw - (var(--GW-body-max-width) / 2 + 64px));
+		max-width: var(--GW-sidenotes-max-width);
     	box-shadow: 
 			0 0  0 1px var(--GW-body-background-color),
 			0 0  3px var(--GW-body-background-color),
@@ -6960,6 +6961,8 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 			0 0 17px var(--GW-body-background-color);
 		border-bottom: 1px solid var(--GW-floating-header-scroll-indicator-color);
 		pointer-events: none;
+		left: unset;
+		right: calc(50% + (var(--GW-body-max-width) / 2) + 64px);
 	}
 	#floating-header > * {
 		pointer-events: auto;
