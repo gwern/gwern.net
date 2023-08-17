@@ -1357,6 +1357,9 @@ GW.floatingHeader = {
                     ? [ "header" ]
                     : GW.floatingHeader.currentTrail);
 
+		if (GW.floatingHeader.firstSection == null)
+			return [ "header" ];
+
         if (GW.floatingHeader.firstSection.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_PRECEDING)
             return [ "header" ];
 
