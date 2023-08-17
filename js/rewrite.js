@@ -2135,7 +2135,7 @@ window.addEventListener("beforeprint", (event) => {
 
     function expand(container) {
         if (   container instanceof Element
-            && container.closest("#link-bibliography, .aux-links-container"))
+            && container.closest("#link-bibliography, .aux-links-append"))
             return;
 
         Transclude.triggerTranscludesInContainer(container);

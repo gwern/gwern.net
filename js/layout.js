@@ -136,7 +136,7 @@ GW.layout = {
 		[ ".annotation p.data-field.title + .data-field.annotation-abstract",
 										 3, false ],
 
-		[ ".aux-links-container + .aux-links-container",
+		[ ".aux-links-append + .aux-links-append",
 										 0, false ],
 		[ ".collapse.expanded-not p.aux-links-list-label + p",
 										 0, false ],

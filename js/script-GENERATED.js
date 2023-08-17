@@ -4697,6 +4697,13 @@ Annotations = { ...Annotations,
 					&& referenceEntry.firstElementChild.tagName == "DIV")
 					unwrap(referenceEntry.firstElementChild);
 
+				//	If there’s a “See Also” section, rectify its classes.
+				let seeAlsoList = referenceEntry.querySelector(_π(".see-also-append", " ", [ "ul", "ol" ]).join(", "));
+				if (seeAlsoList) {
+					seeAlsoList.classList.add("aux-links-list", "see-also-list");
+					seeAlsoList.previousElementSibling.classList.add("aux-links-list-label", "see-also-list-label");
+				}
+
 				//	Unwrap more extraneous <div>s, if present.
 				let pageDescriptionClass = "page-description-annotation";
 				let pageDescription = referenceEntry.querySelector(`div.${pageDescriptionClass}`);
@@ -13349,7 +13356,7 @@ window.addEventListener("beforeprint", (event) => {
 
     function expand(container) {
         if (   container instanceof Element
-            && container.closest("#link-bibliography, .aux-links-container"))
+            && container.closest("#link-bibliography, .aux-links-append"))
             return;
 
         Transclude.triggerTranscludesInContainer(container);

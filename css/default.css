@@ -682,18 +682,18 @@ div.collapse.no-abstract.expanded-not > .disclosure-button .part::before {
 	not worth it for a bit of name consistency.
  */
 
-.sourceCode.collapse.expanded .collapse-content-wrapper {
+.sourceCode.collapse.expanded > .collapse-content-wrapper {
     padding-top: 0.5em;
     padding-bottom: 0.5em;
 }
-.sourceCode.collapse.expanded-not .collapse-content-wrapper pre {
+.sourceCode.collapse.expanded-not > .collapse-content-wrapper pre {
     max-height: calc(  var(--collapse-toggle-top-height)
                      + var(--collapse-toggle-bottom-height));
     box-sizing: border-box;
     overflow: hidden;
 }
 
-.sourceCode.collapse.expanded-not .collapse-content-wrapper.width-full {
+.sourceCode.collapse.expanded-not > .collapse-content-wrapper.width-full {
     max-width: 100%;
     margin: 0 !important;
 }
@@ -728,7 +728,7 @@ div.collapse.no-abstract.expanded-not > .disclosure-button .part::before {
     margin-top: 2px;
 }
 
-.table-wrapper.collapse.expanded .collapse-content-wrapper {
+.table-wrapper.collapse.expanded > .collapse-content-wrapper {
     padding-top: 0.5em;
     padding-bottom: 0.5em;
 }
@@ -795,14 +795,14 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
     transcluded (rather than pop-framed) annotations.
  */
 
-.annotation .collapse.aux-links-container {
+.annotation .collapse.aux-links-append {
     --collapse-toggle-top-height: calc(2.25 * var(--base-font-size));
-    --collapse-toggle-bottom-height: calc(2.5 * var(--base-font-size));
+    --collapse-toggle-bottom-height: calc(2.25 * var(--base-font-size));
 
     border-top: 1px solid var(--GW-TOC-border-color);
 }
 
-.annotation .collapse.aux-links-container .collapse-content-wrapper {
+.annotation .collapse.no-abstract.aux-links-append > .collapse-content-wrapper {
     padding: 0.5em 0 0.5em 2px;
 }
 
@@ -815,7 +815,7 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
     margin-left: -1px;
 }
 
-.collapse.tag-index-link-bibliography-block .collapse-content-wrapper {
+.collapse.tag-index-link-bibliography-block > .collapse-content-wrapper {
 	padding: 0.5em 0;
 }
 
@@ -830,7 +830,7 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
     padding-left: var(--collapse-left-offset);
 }
 
-.collapse.section-backlinks-container .collapse-content-wrapper {
+.collapse.section-backlinks-container > .collapse-content-wrapper {
 	padding: 0.5em 0 0.75em 0;
 }
 
@@ -2757,6 +2757,12 @@ blockquote .TOC {
     width: 100%;
 }
 
+/*	“Aux links” (see also, similars, backlinks, link bibliography).
+ */
+.annotation .aux-links-list p {
+	text-align: left;
+}
+
 /*  “Aux links” in link bibliographies, directory indexes, and other transcluded
     (rather than pop-framed) annotations.
  */
@@ -3417,14 +3423,14 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 /*	Aux-links collapses in annotations.
  */
-.popframe-body > .annotation > .annotation-abstract > .collapse.aux-links-container {
+.popframe-body > .annotation > .annotation-abstract > .collapse.aux-links-append {
     padding-right: 0.5em;
     border-right: 1px solid var(--GW-TOC-border-color);
 }
-.popframe-body > .annotation > .annotation-abstract > .collapse.aux-links-container.expanded-not {
+.popframe-body > .annotation > .annotation-abstract > .collapse.aux-links-append.expanded-not {
     border-left: 1px solid var(--GW-TOC-border-color);
 }
-.popframe-body > .annotation > .annotation-abstract > .collapse.aux-links-container:last-child {
+.popframe-body > .annotation > .annotation-abstract > .collapse.aux-links-append:last-child {
     border-bottom: 1px solid var(--GW-TOC-border-color);
 }
 
