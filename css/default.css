@@ -599,10 +599,10 @@ section.collapse.no-abstract.expanded-not {
 }
 section.collapse.no-abstract.expanded-not > .collapse-content-wrapper {
 	max-height: var(--collapse-toggle-bottom-height);
-	padding: 0.25em 0.5em 0.25em 0;
+	padding: 0.5em 0.5em 0.5em 0;
 }
 section.collapse.no-abstract.expanded > .collapse-content-wrapper {
-	padding: 0.25em 0;
+	padding: 0.5em 0;
 }
 
 /*	No disclosure button label on top part (it could interfere with heading).
@@ -751,7 +751,7 @@ div.collapse.no-abstract.expanded-not > .disclosure-button .part::before {
     padding: 0.25em 0.5em;
 }
 .collapse.bare-content.no-abstract.expanded > .collapse-content-wrapper {
-    padding: 0.25em 0;
+    padding: 0.5em 0;
 }
 
 /****************************/

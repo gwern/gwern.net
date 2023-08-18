@@ -953,19 +953,6 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 			block.classList.toggle("intro-graf", introGraf);
 		}
 	});
-
-	//	Designate those list items which need more spacing (when not indenting).
-	if (indentModeActive(container) == false) {
-		container.querySelectorAll(selectorize([ "li:not(.footnote)" ])).forEach(listItem => {
-			if (listItem.closest(GW.layout.blockLayoutExclusionSelector))
-				return;
-
-			if (   listItem.closest(".list").matches(".big-list")
-				&& previousBlockOf(firstBlockOf(listItem))?.matches("p, blockquote") == true
-				&& isBlock(listItem) != true)
-				listItem.dataset.bsmMod = "2";
-		});
-	}
 });
 
 /**********************************************/
@@ -988,20 +975,34 @@ addLayoutProcessor(GW.layout.applyBlockSpacingInContainer = (container) => {
 	});
 
 	//	Lists require special treatment.
+
+	//	Designate those list items which need more spacing (when not indenting).
+	if (indentModeActive(container) == false) {
+		container.querySelectorAll(selectorize([ "li:not(.footnote)" ])).forEach(listItem => {
+			if (listItem.closest(GW.layout.blockLayoutExclusionSelector))
+				return;
+
+			if (   listItem.closest(".list").matches(".big-list")
+				&& previousBlockOf(firstBlockOf(listItem))?.matches("p, blockquote") == true
+				&& isBlock(listItem) != true)
+				listItem.dataset.bsmMod = "2";
+		});
+	}
+
+	//	Apply list spacing.
 	container.querySelectorAll(selectorize([ "li:not(.footnote)" ])).forEach(listItem => {
 		if (listItem.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
 
 		let firstBlockWithin = firstBlockOf(listItem);
+		let bsm = firstBlockWithin?.style.getPropertyValue("--bsm");
 
-		let bsm = listItem.style.getPropertyValue("--bsm");
-		if (bsm == "") {
-			bsm = firstBlockWithin?.style.getPropertyValue("--bsm");
-			if (   bsm > "" 
-				&& listItem.dataset.bsmMod > "")
-				bsm = "" + (parseInt(bsm) + parseInt(listItem.dataset.bsmMod));
-		}
+		//	Apply list item BSM modifier.
+		if (   bsm > "" 
+			&& listItem.dataset.bsmMod > "")
+			bsm = "" + (parseInt(bsm) + parseInt(listItem.dataset.bsmMod));
 
+		//	Apply BSM.
 		if (bsm > "") {
 			/*	We must propagate the spacing of the first block within the 
 				list item to the list item itself.
@@ -1015,6 +1016,7 @@ addLayoutProcessor(GW.layout.applyBlockSpacingInContainer = (container) => {
 				firstBlockWithin.style.setProperty("--bsm", 0);
 		}
 
+		//	Delete now-extraneous data attribute.
 		if (listItem.dataset.bsmMod)
 			delete listItem.dataset.bsmMod;
 	});
@@ -1030,7 +1032,6 @@ addLayoutProcessor(GW.layout.applyBlockSpacingInContainer = (container) => {
 			cacheKey: "alsoBlocks_listItems"
 		});
 		let nextBlockBSM = nextBlock?.style?.getPropertyValue("--bsm");
-
 		if (nextBlockBSM) {
 			/*	If the next block (in the strict sense, i.e. not counting list 
 				items!) is a paragraph, then adjust margin.
@@ -1049,7 +1050,16 @@ addLayoutProcessor(GW.layout.applyBlockSpacingInContainer = (container) => {
 	to any other load handlers (rewrite functions).
  */
 addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInDocumentFragment = (eventInfo) => {
-    GWLog("applyBlockLayoutClassesInDocumentFragment", "rewrite.js", 1);
+    GWLog("applyBlockLayoutClassesInDocumentFragment", "layout.js", 1);
 
 	GW.layout.applyBlockLayoutClassesInContainer(eventInfo.container);
 }, "<rewrite", (info) => (info.container instanceof DocumentFragment));
+
+/*********************************************************************/
+/*	Apply block spacing in collapse block when collapse state changes.
+ */
+GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (eventInfo) => {
+	GWLog("applyBlockSpacingInCollapseBlockOnStateChange", "layout.js", 2);
+
+	GW.layout.applyBlockSpacingInContainer(eventInfo.collapseBlock);
+});
