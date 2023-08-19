@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-07-22 12:22:41 gwern"
+When: Time-stamp: "2023-08-19 11:42:56 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -216,8 +216,7 @@ postCtx md =
     fieldsTagHTML  md <>
     titlePlainField "titlePlain" <>
     descField "title" <>
-    descPlainField "descriptionPlain" <>
-    descField "description" <> -- constField "description" "N/A" <>
+    descField "description" <>
     -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.page as `index: true` to set it to a non-null value.) Likewise, "error404" for generating the 404.html page.
     -- similarly, 'author': default.html has a conditional to set 'Gwern Branwen' as the author in the HTML metadata if 'author' is not defined, but if it is, then the HTML metadata switches to the defined author & the non-default author is exposed in the visible page metadata as well for the human readers.
     defaultContext <>
@@ -297,13 +296,6 @@ titlePlainField d = field d $ \item -> do
                   case metadataMaybe of
                     Nothing -> noResult "no title field"
                     Just t -> return (simplifiedHTMLString t)
-descPlainField :: String -> Context String
-descPlainField d = field d $ \item -> do
-                  metadataMaybe <- getMetadataField (itemIdentifier item) "description"
-                  case metadataMaybe of
-                    Nothing -> noResult "no description field"
-                    Just t -> return (simplifiedHTMLString t)
-
 
 descField :: String -> Context String
 descField d = field d $ \item -> do
@@ -319,7 +311,7 @@ descField d = field d $ \item -> do
                               return $ T.unpack htmlDesc
                       in case cleanedDesc of
                          Left _          -> noResult "no description field"
-                         Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
+                         Right finalDesc -> return $ replace "\"" "\\\"" $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
 
 pandocTransform :: Metadata -> ArchiveMetadata -> IORef Integer -> String -> Pandoc -> IO Pandoc
 pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
