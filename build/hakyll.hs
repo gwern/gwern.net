@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-08-19 11:42:56 gwern"
+When: Time-stamp: "2023-08-19 22:34:05 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -46,7 +46,7 @@ import Hakyll (compile, composeRoutes, constField,
                defaultHakyllWriterOptions, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
                loadAndApplyTemplate, match, modificationTimeField, mapContext,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess, boolField, toFilePath,
-               templateCompiler, version, Compiler, Context, Item, unsafeCompiler, noResult, getUnderlying)
+               templateCompiler, version, Compiler, Context, Item, unsafeCompiler, noResult, getUnderlying, escapeHtml)
 import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
                     def, pandocExtensions, readerExtensions, readMarkdown, writeHtml5String,
                     Block(..), HTMLMathMethod(MathJax), defaultMathJaxURL, Inline(..),
@@ -215,8 +215,9 @@ postCtx md =
     fieldsTagPlain md <>
     fieldsTagHTML  md <>
     titlePlainField "titlePlain" <>
-    descField "title" <>
-    descField "description" <>
+    descField False "title" "title" <>
+    descField True "description" "descriptionEscaped" <>
+    descField False "description" "description" <>
     -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.page as `index: true` to set it to a non-null value.) Likewise, "error404" for generating the 404.html page.
     -- similarly, 'author': default.html has a conditional to set 'Gwern Branwen' as the author in the HTML metadata if 'author' is not defined, but if it is, then the HTML metadata switches to the defined author & the non-default author is exposed in the visible page metadata as well for the human readers.
     defaultContext <>
@@ -297,8 +298,8 @@ titlePlainField d = field d $ \item -> do
                     Nothing -> noResult "no title field"
                     Just t -> return (simplifiedHTMLString t)
 
-descField :: String -> Context String
-descField d = field d $ \item -> do
+descField :: Bool -> String -> String -> Context String
+descField escape d d' = field d' $ \item -> do
                   metadata <- getMetadata (itemIdentifier item)
                   let descMaybe = lookupString d metadata
                   case descMaybe of
@@ -308,10 +309,10 @@ descField d = field d $ \item -> do
                               pandocDesc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack desc)
                               let pandocDesc' = convertInterwikiLinks $ linebreakingTransform pandocDesc
                               htmlDesc <- writeHtml5String def pandocDesc' -- NOTE: we can skip 'safeHtmlWriterOptions' use here because descriptions are always very simple & will never have anything complex like tables
-                              return $ T.unpack htmlDesc
+                              return $ (\t -> if escape then escapeHtml t else t) $ T.unpack htmlDesc
                       in case cleanedDesc of
                          Left _          -> noResult "no description field"
-                         Right finalDesc -> return $ replace "\"" "\\\"" $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
+                         Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
 
 pandocTransform :: Metadata -> ArchiveMetadata -> IORef Integer -> String -> Pandoc -> IO Pandoc
 pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
