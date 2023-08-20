@@ -579,7 +579,7 @@ linkIconTestUnitsText =
          , ("https://www.nytimes.com/2016/11/27/technology/artificial-intelligence-pioneer-jurgen-schmidhuber-overlooked.html", "SMDH", "text,quad,sans")
          , ("https://www.ssc.wisc.edu/wlsresearch/about/description.php", "WLS", "text,tri,sans")
          , ("http://host.robots.ox.ac.uk/pascal/VOC/", "VOC", "text,tri,sans")
-         , ("https://www.anthropic.com/news/announcement", "anthropic", "svg")
+         , ("https://www.anthropic.com/index/anthropic-raises-124-million-to-build-more-reliable-general-ai-systems", "anthropic", "svg")
          , ("https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html#anthropic", "anthropic", "svg")
          , ("https://arxiv.org/abs/2207.05221#anthropic", "anthropic", "svg")
          , ("https://jack-clark.net/2022/10/31/import-ai-308-recursively-self-improving-lms-3-1tb-of-code-data-dall-e2-makes-alien-errors/", "anthropic", "svg")

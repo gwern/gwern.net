@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-08-15 19:04:08 gwern"
+# When:  Time-stamp: "2023-08-19 15:45:09 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -77,7 +77,7 @@ else
           s ',”' '”,'; s ",’" "’,";
 
           ## spelling errors:
-          s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook'; s 'Tartarian' 'Tatarian'; s 'tartarian' 'tatarian'; s ' an One' ' a One'; s ' an one' ' a one'
+          s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook'; s 'Tartarian' 'Tatarian'; s 'tartarian' 'tatarian'; s ' an One' ' a One'; s ' an one' ' a one'; s '<p>he ' '<p>He ';
 
           ## citation consistency:
           s ']^[' '] ^['; s 'et. al.' 'et al'; s 'et al. (' 'et al ('; s ' et al. 1'  ' et al 1'; s ' et al. 2'  ' et al 2'; s ' et al., ' ' et al '; s 'et al., ' 'et al '; sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' metadata/*.yaml  `find . -name "*.page" -or -name "*.yaml"`; sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g'  `find . -name "*.page" -or -name "*.yaml"`;
@@ -86,7 +86,7 @@ else
           s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber';
 
           ## HTML/Markdown formatting:
-          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' ''; s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' ''; s '—-' '—'; s 'collapse-summary' 'abstract-collapse'; s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br /></li>' '</li>'; s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:';
+          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' ''; s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' ''; s '—-' '—'; s 'collapse-summary' 'abstract-collapse'; s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br /></li>' '</li>'; s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/';
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
@@ -504,7 +504,7 @@ else
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -F --with-filename --color=always -e '](/​image/​' -e '](/image/' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``'; }
     wrap λ "Miscellaneous fixed-string errors in compiled HTML."
 
-    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -E --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]\+"' -e 'href="#fn[0-9]\+"'; }
+    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -E --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]\+"' -e 'href="#fn[0-9]\+"' -e '"></a>' | grep -F -v -e 'tabindex="-1"></a>'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
     λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' ./static/redirect/nginx*.conf | grep -F -e 'default "";'; }
@@ -580,7 +580,7 @@ else
             -e '</em></em>' -e '<strong><strong>' -e '</strong></strong>' -e 'doi:' -e '\\\' -e 'href"http' \
             -e '… .' -e '... .'  -e '– ' -e  ' –' -e '### Competing' -e '<strong></strong>' -e '<span style="font-weight: 400;">' \
             -e '</p> </figcaption>' -e '</p></figcaption>' -e '<figcaption aria-hidden="true"><p>' -e '<figcaption aria-hidden="true"> <p>' \
-            -e '<figcaption><p>' -e '<figcaption> <p>' -e 'Your input seems to be incomplete. Could you please provide' -- ./metadata/*.yaml | \
+            -e '<figcaption><p>' -e '<figcaption> <p>' -e 'Your input seems to be incomplete.' -e 'tercile' -e 'tertile' -- ./metadata/*.yaml | \
              grep -F --invert-match 'popular_shelves';
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
@@ -856,6 +856,7 @@ else
           cm "text/xml" 'https://gwern.net/sitemap.xml'
           cm "text/markdown; charset=utf-8" 'https://gwern.net/2014-spirulina.page'
           cm "text/markdown; charset=utf-8" 'https://gwern.net/dnm-archive.page'
+          cm "text/markdown; charset=utf-8" 'https://gwern.net/gpt-3.page'
           cm "text/plain; charset=utf-8" 'https://gwern.net/doc/personal/2009-sleep.txt'
           cm "text/plain; charset=utf-8" 'https://gwern.net/static/redirect/nginx.conf'
           cm "text/x-adobe-acrobat-drm" 'https://gwern.net/doc/dual-n-back/2012-zhong.ebt'
@@ -1004,7 +1005,7 @@ else
                                                 -e '16aacaabe05dfc07c0e966b994d7dd0a727cd90e' -e 'metadata/today-quote.html' -e 'metadata/today-annotation.html' \
                                                 -e '023a48cb80d48b1438d2accbceb5dc8ad01e8e02' -e '/Starr_Report/' \
              | parallel --max-args=500 file | grep -F --invert-match -e 'HTML document, ' -e 'ASCII text' -e 'LaTeX document, UTF-8 Unicode text'; }
-    wrap λ "Corrupted HTMLs"
+    wrap λ "Corrupted filetype HTMLs"
 
     removeEncryption () { ENCRYPTION=$(exiftool -quiet -quiet -Encryption "$@");
                           if [ "$ENCRYPTION" != "" ]; then
