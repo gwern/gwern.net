@@ -33,9 +33,9 @@
 :root {
     --GW-sidenotes-max-width: 550px;
 
-	/*	Does not get inverted, so should not be in colors.css.
-	 */
-	--GW-popframes-iframe-background-color: #fff;
+    /*  Does not get inverted, so should not be in colors.css.
+     */
+    --GW-popframes-iframe-background-color: #fff;
 
     --GW-popups-popup-max-width: 640px;
     --GW-popups-popup-max-height: 480px;
@@ -67,11 +67,11 @@
     --GW-popins-popin-title-bar-height: calc(1rem * 16/9);
     --GW-popins-popin-footer-bar-height: calc(1rem * 16/9);
 
-	--GW-page-toolbar-collapse-duration: 0.25s;
-	--GW-page-toolbar-slow-collapse-duration: 1s;
-	--GW-page-toolbar-fade-after-collapse-duration: 0.25s;
-	--GW-page-toolbar-widget-flash-rise-duration: 0.75s;
-	--GW-page-toolbar-widget-flash-fall-duration: 0.75s;
+    --GW-page-toolbar-collapse-duration: 0.25s;
+    --GW-page-toolbar-slow-collapse-duration: 1s;
+    --GW-page-toolbar-fade-after-collapse-duration: 0.25s;
+    --GW-page-toolbar-widget-flash-rise-duration: 0.75s;
+    --GW-page-toolbar-widget-flash-fall-duration: 0.75s;
 }
 @supports (-moz-user-focus: normal) {
     :root {
@@ -135,38 +135,38 @@ section:target > .heading a::after {
     opacity: 0.5;
 }
 
-/*	Pilcrow in H1.
+/*  Pilcrow in H1.
  */
 section.level1 > .heading a::after {
-	right: unset;
-	left: 0;
+    right: unset;
+    left: 0;
 }
 
-/*	Pilcrow in H3, H4, H5, H6.
+/*  Pilcrow in H3, H4, H5, H6.
  */
 section.level3 > .heading a,
 section.level4 > .heading a,
 section.level5 > .heading a,
 section.level6 > .heading a {
-	position: relative;
+    position: relative;
 }
 section.level3 > .heading a::after,
 section.level4 > .heading a::after,
 section.level5 > .heading a::after,
 section.level6 > .heading a::after {
-	right: -1.5em;
+    right: -1.5em;
 }
 section.level3 > .heading a::after,
 section.level4 > .heading a::after {
-	bottom: 0.4em;
+    bottom: 0.4em;
 }
 section.level5 > .heading a::after,
 section.level6 > .heading a::after {
-	bottom: 0.3em;
+    bottom: 0.3em;
 }
 
 /**********************************************************/
-/*	Highlighted sections. (Due to extract popups, usually.)
+/*  Highlighted sections. (Due to extract popups, usually.)
  */
 
 section.highlighted {
@@ -213,21 +213,21 @@ section.highlight-fading::before {
     padding-bottom: var(--collapse-toggle-bottom-height);
 }
 
-/*	Offset block left when expanded, so the contents are the same width as the 
-	enclosing content column.
+/*  Offset block left when expanded, so the contents are the same width as the
+    enclosing content column.
  */
 .collapse-block.expanded {
     margin-left: calc(-1 * var(--collapse-left-offset));
     padding-left: var(--collapse-left-offset);
 }
 
-/*	Collapse blocks with no abstract show some of their contents when collapsed.
+/*  Collapse blocks with no abstract show some of their contents when collapsed.
  */
 .collapse-block.no-abstract.expanded-not {
     min-height: calc(  var(--collapse-toggle-top-height)
                      + var(--collapse-toggle-bottom-height));
-	padding-top: 0;
-	padding-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 /************************************/
@@ -264,16 +264,16 @@ section.collapse > .heading {
 /*  Collapse block contents.
  */
 
-/*	Block (any state).
+/*  Block (any state).
  */
 .collapse-block > .collapse-content-wrapper {
     position: relative;
-	box-sizing: border-box;
+    box-sizing: border-box;
 }
 
-/*	Block (collapsed).
+/*  Block (collapsed).
  */
- 
+
 .collapse-block.expanded-not > .collapse-content-wrapper {
     overflow: hidden;
     contain: content;
@@ -286,7 +286,7 @@ section.collapse > .heading {
                      + var(--collapse-toggle-bottom-height));
 }
 
-/*	Inline (collapsed).
+/*  Inline (collapsed).
  */
 .collapse-inline.expanded-not > .collapse-content-wrapper {
     display: inline-block;
@@ -319,7 +319,7 @@ section.collapse > .heading {
 /*********************/
 /*  Disclosure button.
  */
- 
+
 .collapse > .disclosure-button {
     --collapse-button-background-color: var(--GW-collapse-disclosure-button-color);
     --collapse-button-text-color: var(--GW-collapse-disclosure-button-text-color);
@@ -520,9 +520,9 @@ section.collapse > .heading {
 }
 
 .collapse-inline > .disclosure-button.end .icon svg:nth-last-of-type(2) {
-	margin: 0 -0.5em 0 0;
-	height: 85%;
-	margin: 0 -0.4em 0 0;
+    margin: 0 -0.5em 0 0;
+    height: 85%;
+    margin: 0 -0.4em 0 0;
 }
 
 .collapse-inline.expanded > .disclosure-button.end .icon svg:nth-last-of-type(2) {
@@ -534,41 +534,41 @@ section.collapse > .heading {
         transform 1s ease;
 }
 .collapse-inline.expanded-not.just-clicked > .disclosure-button.end:hover .icon svg:nth-last-of-type(2) {
-	transform: none;
+    transform: none;
     transition: none;
 }
 
 /********************/
 /*  Collapse summary.
  */
- 
+
 .collapse-block > .abstract-collapse {
     position: relative;
 }
 
-/*	Shift blockquoted abstract so that edge of blockquote is flush with left
-	stripe of collapse block (disclosure button click region).
+/*  Shift blockquoted abstract so that edge of blockquote is flush with left
+    stripe of collapse block (disclosure button click region).
  */
 .collapse-block > .abstract-collapse.abstract {
     margin-left: calc(-1 * (var(--collapse-left-offset) - var(--collapse-toggle-left-width)));
 }
 
-/*	Hide abstract blockquote border when collapsed.
+/*  Hide abstract blockquote border when collapsed.
  */
 .collapse-block.expanded-not > .abstract-collapse.abstract > blockquote {
     border-color: var(--background-color);
 }
 .collapse-block.expanded-not > .disclosure-button:hover + .abstract-collapse.abstract > blockquote {
-	--background-color: var(--GW-abstract-collapse-blockquote-hover-color);
+    --background-color: var(--GW-abstract-collapse-blockquote-hover-color);
 }
 
-/*	Non-blockquoted collapse summary.
+/*  Non-blockquoted collapse summary.
  */
 .collapse-block.expanded-not > .abstract-collapse:not(.abstract) {
-	padding: 0.5em 0;
+    padding: 0.5em 0;
 }
 .collapse-block.expanded > .abstract-collapse:not(.abstract) {
-	padding: 0.5em 0 0 0;
+    padding: 0.5em 0 0 0;
 }
 
 /************************************************/
@@ -576,50 +576,50 @@ section.collapse > .heading {
  */
 
 section.collapse {
-	--collapse-toggle-top-height: calc(2.125 * var(--base-font-size));
+    --collapse-toggle-top-height: calc(2.125 * var(--base-font-size));
 
     padding-top: 0;
 
-	/*	Offset collapsible sections left (so the content column doesn’t shift 
-		width when expanding). (This also makes nested collapse sections’ left
-		edges line up.)
-	 */
+    /*  Offset collapsible sections left (so the content column doesn’t shift
+        width when expanding). (This also makes nested collapse sections’ left
+        edges line up.)
+     */
     padding-left: var(--collapse-left-offset);
-	margin-left: calc(-1 * var(--collapse-left-offset));
+    margin-left: calc(-1 * var(--collapse-left-offset));
 }
 
 section.collapse.has-abstract.expanded > .collapse-content-wrapper {
-	padding-bottom: 0.5em;
+    padding-bottom: 0.5em;
 }
 
-/*	When a section has no abstract, show preview of contents.
+/*  When a section has no abstract, show preview of contents.
  */
 section.collapse.no-abstract.expanded-not {
-	--collapse-toggle-bottom-height: calc(5.25 * var(--base-font-size));
+    --collapse-toggle-bottom-height: calc(5.25 * var(--base-font-size));
 }
 section.collapse.no-abstract.expanded-not > .collapse-content-wrapper {
-	max-height: var(--collapse-toggle-bottom-height);
-	padding: 0.5em 0.5em 0.5em 0;
+    max-height: var(--collapse-toggle-bottom-height);
+    padding: 0.5em 0.5em 0.5em 0;
 }
 section.collapse.no-abstract.expanded > .collapse-content-wrapper {
-	padding: 0.5em 0;
+    padding: 0.5em 0;
 }
 
-/*	No disclosure button label on top part (it could interfere with heading).
+/*  No disclosure button label on top part (it could interfere with heading).
  */
 section.collapse.expanded > .disclosure-button .part.top .label {
     display: none;
 }
 
-/*	For abstract-less sections, content visible through disclosure button.
+/*  For abstract-less sections, content visible through disclosure button.
  */
 section.collapse.no-abstract.expanded-not > .disclosure-button .part.bottom::before {
-	opacity: 0.85;
+    opacity: 0.85;
 }
 
 /*  Heading.
  */
- 
+
 section.collapse > .heading {
     position: relative;
     min-height: var(--collapse-toggle-top-height);
@@ -632,17 +632,17 @@ section.collapse > .heading {
     pointer-events: none;
 }
 
-/*	H1.
+/*  H1.
  */
 section.collapse.level1 > .heading {
-	font-size: 1.75em;
+    font-size: 1.75em;
 }
 
-/*	Heading self-link.
+/*  Heading self-link.
  */
- 
+
 section.collapse > .heading a {
-	position: relative;
+    position: relative;
     pointer-events: auto;
 }
 section.collapse > .heading a,
@@ -655,10 +655,10 @@ section.collapse > .heading a::after {
     bottom: 0.4em;
 }
 
-/*	H1.
+/*  H1.
  */
 section.collapse.level1 > .heading a::after {
-	left: unset;
+    left: unset;
 }
 
 /**********************************/
@@ -676,10 +676,10 @@ div.collapse.no-abstract.expanded-not > .disclosure-button .part::before {
 /*  Collapsible code blocks.
  */
 
-/*	NOTE: ‘.sourceCode’ is a Pandoc-hardwired CSS class for code blocks. We do 
-	not rewrite it to ‘.source-code’ for consistency with all our other custom 
-	classes, because that risks confusion & interoperability problems, which is 
-	not worth it for a bit of name consistency.
+/*  NOTE: ‘.sourceCode’ is a Pandoc-hardwired CSS class for code blocks. We do
+    not rewrite it to ‘.source-code’ for consistency with all our other custom
+    classes, because that risks confusion & interoperability problems, which is
+    not worth it for a bit of name consistency.
  */
 
 .sourceCode.collapse.expanded > .collapse-content-wrapper {
@@ -807,7 +807,7 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 }
 
 /****************************************************/
-/*	Collapses in directory index link bibliographies.
+/*  Collapses in directory index link bibliographies.
  */
 
 .collapse.tag-index-link-bibliography-block.expanded-not {
@@ -816,13 +816,13 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 }
 
 .collapse.tag-index-link-bibliography-block > .collapse-content-wrapper {
-	padding: 0.5em 0;
+    padding: 0.5em 0;
 }
 
 /*************************/
 /*  Per-section backlinks.
  */
- 
+
 .collapse.section-backlinks-container {
     --collapse-toggle-top-height: calc(2.75 * var(--base-font-size));
 
@@ -831,7 +831,7 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 }
 
 .collapse.section-backlinks-container > .collapse-content-wrapper {
-	padding: 0.5em 0 0.75em 0;
+    padding: 0.5em 0 0.75em 0;
 }
 
 .collapse.section-backlinks-container.expanded-not > .disclosure-button .part::before {
@@ -842,7 +842,7 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 /*  Miscellaneous/general content in collapse blocks.
  */
 
-/*	Headings, of collapse-sections or regular sections, within collapses.
+/*  Headings, of collapse-sections or regular sections, within collapses.
  */
 .collapse section > .heading {
     margin-left: 0;
@@ -859,45 +859,45 @@ hr {
     margin: 0;
 }
 
-/*	These classes are created at compile-time by the ‘rulersCycle’ Pandoc 
-	rewrite pass in Typography.hs; they assign each use of <hr> in the body a 
-	class 0-2 (n modulo 3). This lets us create an astronomical theme cycle: 
-	the first, fourth, seventh etc rulers are the triple-white star; the 
-	second, fifth, eighth etc are a dotted moon; the third, sixth, ninth etc 
-	are a sun.
+/*  These classes are created at compile-time by the ‘rulersCycle’ Pandoc
+    rewrite pass in Typography.hs; they assign each use of <hr> in the body a
+    class 0-2 (n modulo 3). This lets us create an astronomical theme cycle:
+    the first, fourth, seventh etc rulers are the triple-white star; the
+    second, fifth, eighth etc are a dotted moon; the third, sixth, ninth etc
+    are a sun.
  */
 hr::after,
 .horizontal-rule-nth-0 hr::after {
-	/*	https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg
-		*/
-	--icon-size: 40px;
-	
-	content: "";
+    /*  https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg
+        */
+    --icon-size: 40px;
+
+    content: "";
     margin: auto;
-	box-sizing: border-box;
+    box-sizing: border-box;
     width: 40px;
     height: var(--icon-size);
-	background-image: url('/static/img/ornament/sun-verginasun-black.svg');
-	background-repeat: no-repeat;
-	background-position: center;
-	background-origin: content-box;
-	background-size: var(--icon-size);
+    background-image: url('/static/img/ornament/sun-verginasun-black.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-origin: content-box;
+    background-size: var(--icon-size);
     opacity: 0.80;
 }
 .horizontal-rule-nth-1 hr::after {
-    /*	https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg
-    	NOTE: alternative moon icon is /static/img/icon/japanesecrest-oookashippouofoookatadasuke-sun.svg 
-    	modified from https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg 
-    	- while nice, it lacks the intense moire effect of the Vergina Sun
+    /*  https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg
+        NOTE: alternative moon icon is /static/img/icon/japanesecrest-oookashippouofoookatadasuke-sun.svg
+        modified from https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg
+        - while nice, it lacks the intense moire effect of the Vergina Sun
      */
-	--icon-size: 28px;
-	
+    --icon-size: 28px;
+
     background-image: url('/static/img/ornament/japanesecrest-tsukinihoshi-dottedmoon.svg');
     opacity: 0.85;
 }
 .horizontal-rule-nth-2 hr::after {
-	--icon-size: 38px;
-	
+    --icon-size: 38px;
+
     background-image: url('/static/img/ornament/asterism-triplewhitestar.svg');
     opacity: 0.90;
 }
@@ -908,21 +908,21 @@ hr::after,
 /*********/
 
 /**************/
-/*	Edge cases.
+/*  Edge cases.
  */
 
-/*	Necessary for list items to wrap around floating elements in list items.
+/*  Necessary for list items to wrap around floating elements in list items.
 
-	NOTE: The consequence of this is that any list that contains a floating
-	element (e.g. a figure floated left or right) will not display correctly 
-	if positioned next to the page table of contents. Caveat emptor!
+    NOTE: The consequence of this is that any list that contains a floating
+    element (e.g. a figure floated left or right) will not display correctly
+    if positioned next to the page table of contents. Caveat emptor!
  */
 ul.has-floats > li,
 ol.has-floats > li {
-	display: list-item;
+    display: list-item;
 }
 
-/*	List headings are normally paragraphs, but should never be indented.
+/*  List headings are normally paragraphs, but should never be indented.
  */
 .markdownBody.indented p.list-heading {
     text-indent: 0;
@@ -932,23 +932,23 @@ ol.has-floats > li {
 /*****************/
 /* MULTI-COLUMNS */
 /*****************/
-/*	Inspired by Markdeep: 
-	https://casual-effects.com/markdeep/features.md.html#multiplecolumns
-	(limited multi-column support as a div class annotation)
+/*  Inspired by Markdeep:
+    https://casual-effects.com/markdeep/features.md.html#multiplecolumns
+    (limited multi-column support as a div class annotation)
 
-	This is particularly useful for extremely long (‘skinny’) lists where items
-	tend to be short, such as in /dnm-archive#overall-coverage or /replication
+    This is particularly useful for extremely long (‘skinny’) lists where items
+    tend to be short, such as in /dnm-archive#overall-coverage or /replication
 
-	Uses CSS3 columns: 
-	https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Columns/Using_multi-column_layouts 
-	https://www.caniuse.com/#feat=multicolumn
-	
-	Currently limited to lists due to issues with hidden:overflow in FF 
-	and sidenotes.js in Chrome.
+    Uses CSS3 columns:
+    https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Columns/Using_multi-column_layouts
+    https://www.caniuse.com/#feat=multicolumn
+
+    Currently limited to lists due to issues with hidden:overflow in FF
+    and sidenotes.js in Chrome.
  */
 
 .markdownBody .columns > .list {
-	--text-alignment: left;
+    --text-alignment: left;
 
     column-width: 18em;
     column-gap: 3em;
@@ -994,7 +994,7 @@ ol.has-floats > li {
 /***********/
 /* FIGURES */
 /***********/
-/*	Additional figure styles.
+/*  Additional figure styles.
  */
 
 /*  Figures in sidenotes should take up the full width of the sidenote.
@@ -1004,7 +1004,7 @@ ol.has-floats > li {
 }
 
 /*  Image alt-text.
-    */    
+    */
 img::before {
     content: attr(alt);
     font-family: var(--GW-sans-serif-font-stack);
@@ -1024,50 +1024,50 @@ img::before {
 /**************/
 
 /***************************************************/
-/*	New style interviews
-	(e.g. https://gwern.net/lorem-block#interviews )
+/*  New style interviews
+    (e.g. https://gwern.net/lorem-block#interviews )
  */
 
-/*	Interview.
+/*  Interview.
  */
 ul.interview {
-	--list-left-padding: 1.5em;
-	--speaker-spacing: 0.75ch;
+    --list-left-padding: 1.5em;
+    --speaker-spacing: 0.75ch;
 }
 
-/*	Exchanges.
+/*  Exchanges.
  */
 ul.interview li.exchange ul {
-	--list-left-padding: 1.625em;
+    --list-left-padding: 1.625em;
 }
 ul.interview li.exchange::before {
-	left: 0;
+    left: 0;
 }
 
-/*	Utterances.
+/*  Utterances.
  */
 ul.interview li.utterance {
-	text-indent: calc(-1 * var(--list-left-padding));
+    text-indent: calc(-1 * var(--list-left-padding));
 }
 ul.interview li.utterance::before {
-	display: none;
+    display: none;
 }
 
-/*	Speakers.
+/*  Speakers.
  */
 ul.interview .speaker {
-	font-variant-caps: small-caps;
-	letter-spacing: -0.25px;
-	display: inline-block;
-	min-width: calc(var(--list-left-padding) - var(--speaker-spacing));
-	margin-right: var(--speaker-spacing);
+    font-variant-caps: small-caps;
+    letter-spacing: -0.25px;
+    display: inline-block;
+    min-width: calc(var(--list-left-padding) - var(--speaker-spacing));
+    margin-right: var(--speaker-spacing);
 }
 
 /*****************************************************/
 /*  Legacy styles for un-converted interviews
-	(e.g. https://gwern.net/Morning-writing#examples )
+    (e.g. https://gwern.net/Morning-writing#examples )
 
-	NOTE: Remove this once interviews are all converted. —SA 2023-06-07
+    NOTE: Remove this once interviews are all converted. —SA 2023-06-07
  */
 
 blockquote p > code:first-child,
@@ -1084,7 +1084,7 @@ blockquote p > a:first-child code:first-child {
 /*************/
 /* ABSTRACTS */
 /*************/
-/*	Abstract for page or section.
+/*  Abstract for page or section.
  */
 
 .abstract blockquote {
@@ -1092,17 +1092,17 @@ blockquote p > a:first-child code:first-child {
 }
 
 /*  Auto-smallcaps introductory paragraphs of documents or sub-documents.
-	(This is also where drop caps appear.)
+    (This is also where drop caps appear.)
  */
 p.intro-graf::first-line {
-	font-variant-caps: small-caps;
+    font-variant-caps: small-caps;
 }
 
 
 /*************/
 /* EPIGRAPHS */
 /*************/
-/*	Loosely inspired by https://edwardtufte.github.io/tufte-css/#epigraphs
+/*  Loosely inspired by https://edwardtufte.github.io/tufte-css/#epigraphs
  */
 
 .epigraph {
@@ -1182,30 +1182,30 @@ p.intro-graf::first-line {
 /***************/
 /* ADMONITIONS */
 /***************/
-/*	Highlighted boxes: ‘admonitions’ are small break-out boxes with notes, tips,
-	warnings, etc. for the reader.
+/*  Highlighted boxes: ‘admonitions’ are small break-out boxes with notes, tips,
+    warnings, etc. for the reader.
 
-	These are particularly useful in didactic technical writing, where there are
-	many ways to slip up while using or coding something.
+    These are particularly useful in didactic technical writing, where there are
+    many ways to slip up while using or coding something.
 
-	Available (in increasing order of minatoriness): 
-	‘tip’, ‘note’, ‘warning’, ‘error’.
+    Available (in increasing order of minatoriness):
+    ‘tip’, ‘note’, ‘warning’, ‘error’.
 
-	Based on Markdeep's implementation: 
-	https://casual-effects.com/markdeep/features.md.html#basicformatting/admonitions 
-	(which appears loosely inspired by Wikipedia's notification templates like 
-	`{{NPOV}}`) and modified to grayscale (increasing intensity == increasing 
-	warning) for Gwern.net.
+    Based on Markdeep's implementation:
+    https://casual-effects.com/markdeep/features.md.html#basicformatting/admonitions
+    (which appears loosely inspired by Wikipedia's notification templates like
+    `{{NPOV}}`) and modified to grayscale (increasing intensity == increasing
+    warning) for Gwern.net.
 
-	Usage examples:
+    Usage examples:
 
-	- <div class="admonition tip"><div class="admonition-title">Tip title (optional)</div> text</div>
-	- <div class="admonition note"><div class="admonition-title">Note title (*)</div> text</div>
-	- <div class="admonition warning"><div class="admonition-title">Warning title (*)</div> text</div>
-	- <div class="admonition error"><div class="admonition-title">Error title (*)</div> text</div>
+    - <div class="admonition tip"><div class="admonition-title">Tip title (optional)</div> text</div>
+    - <div class="admonition note"><div class="admonition-title">Note title (*)</div> text</div>
+    - <div class="admonition warning"><div class="admonition-title">Warning title (*)</div> text</div>
+    - <div class="admonition error"><div class="admonition-title">Error title (*)</div> text</div>
  */
 .admonition {
-	display: flow-root;
+    display: flow-root;
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.875em;
     position: relative;
@@ -1332,20 +1332,20 @@ table {
     But when tried on heavy users like /clone#mackenzie-et-al-1986 or /ab-testing, floated small tables interact badly with code blocks/paragraphs/figures. One would need more intelligence than just making them all float left (or right), so they are left unfloated and must be manually floated (usually in a left/right zig-zag).
  */
 @media all and (min-width: 650px) {
-	.table-small.float {
-		max-width: calc(50% - var(--float-side-margin));
+    .table-small.float {
+        max-width: calc(50% - var(--float-side-margin));
         margin-bottom: calc(var(--float-side-margin) * 0.5);
-	}
-	.table-small.float-left {
-		float: left;
-		clear: right;
-		margin-right: var(--float-side-margin);
-	}
-	.table-small.float-right {
-		float: right;
-		clear: left;
-		margin-left: var(--float-side-margin);
-	}
+    }
+    .table-small.float-left {
+        float: left;
+        clear: right;
+        margin-right: var(--float-side-margin);
+    }
+    .table-small.float-right {
+        float: right;
+        clear: left;
+        margin-left: var(--float-side-margin);
+    }
 }
 
 /*=-------------=*/
@@ -1353,7 +1353,7 @@ table {
 /*=-------------=*/
 
 table caption {
-	--text-hyphenation: none;
+    --text-hyphenation: none;
 
     padding: 0.25em 0.75em;
     font-style: italic;
@@ -1368,7 +1368,7 @@ table td {
     line-height: 1.35;
 }
 table th {
-	--text-hyphenation: none;
+    --text-hyphenation: none;
 
     font-weight: bold;
     border-bottom: 1px solid var(--GW-table-row-horizontal-border-color);
@@ -1461,7 +1461,7 @@ table tr:nth-child(odd) td {
     background-color: var(--background-color);
 }
 
-/*	Small tables don’t get zebra-striped.
+/*  Small tables don’t get zebra-striped.
  */
 .table-small table tr:nth-child(odd) td {
     --background-color: inherit;
@@ -1476,13 +1476,13 @@ blockquote table tr:nth-child(odd) td {
     --background-color: var(--GW-body-background-color);
 }
 
-/*	Adjustment for nested tables in Wikipedia infoboxes.
+/*  Adjustment for nested tables in Wikipedia infoboxes.
  */
 blockquote table table {
     font-size: 1em;
 }
 
-/*	Hover row outline.
+/*  Hover row outline.
  */
 table tbody tr:hover {
     outline: 1px dotted var(--GW-table-row-hover-outline-color);
@@ -1530,14 +1530,14 @@ code {
 
     padding: 0 4px;
 
-    /*	Primary font: https://en.wikipedia.org/wiki/IBM_Plex
-    	This was chosen for its dotted/slashed zero (a sine qua non of 
-    	coding fonts where O/0 ambiguity is fatal), and for rendering well 
-    	on Macs.
+    /*  Primary font: https://en.wikipedia.org/wiki/IBM_Plex
+        This was chosen for its dotted/slashed zero (a sine qua non of
+        coding fonts where O/0 ambiguity is fatal), and for rendering well
+        on Macs.
      */
     font-family: var(--GW-monospaced-font-stack);
-    /*  OpenType stylistic sets to enable single-story ‘g’ and slashed zero 
-    	in IBM Plex Mono.
+    /*  OpenType stylistic sets to enable single-story ‘g’ and slashed zero
+        in IBM Plex Mono.
      */
     font-feature-settings: 'ss02', 'ss03';
 
@@ -1602,14 +1602,14 @@ pre:hover {
 /*= Source code highlighting for Pandoc/skylighting-generated syntax classes (not Pygments)  =*/
 /*=------------------------------------------------------------------------------------------=*/
 
-/*	Monochrome-ish code highlighting theme, loosely based on Pygments’s algol_nu 
+/*  Monochrome-ish code highlighting theme, loosely based on Pygments’s algol_nu
 
-	CSS: https://github.com/lukelbd/proplot/blob/master/docs/_static/pygments/algol_nu.css
-	demo: https://xyproto.github.io/splash/docs/longer/algol_nu.html
-	Python: https://github.com/pycom/EricShort/blob/master/ThirdParty/Pygments/pygments/styles/algol.py
+    CSS: https://github.com/lukelbd/proplot/blob/master/docs/_static/pygments/algol_nu.css
+    demo: https://xyproto.github.io/splash/docs/longer/algol_nu.html
+    Python: https://github.com/pycom/EricShort/blob/master/ThirdParty/Pygments/pygments/styles/algol.py
 
-	This skips the underlining and overuse of graying, and uses a bit of blue 
-	as an alternative, and retains red for warnings/errors.
+    This skips the underlining and overuse of graying, and uses a bit of blue
+    as an alternative, and retains red for warnings/errors.
  */
 code span    { color: var(--GW-syntax-highlight-color-normal); } /* Normal */
 code span.at { color: var(--GW-syntax-highlight-color-attribute); } /* Attribute */
@@ -1830,26 +1830,26 @@ table, code, pre, a, h1, h2, h3, h4, h5, h6 {
 
 sub,
 sup {
-	font-size: 0.7em;
-	position: relative;
+    font-size: 0.7em;
+    position: relative;
     line-height: 0.3em;
     font-variant-numeric: lining-nums;
 }
 
 sup.ordinal {
-	text-transform: lowercase;
-	top: 0.1em;
-	text-shadow: none;
+    text-transform: lowercase;
+    top: 0.1em;
+    text-shadow: none;
 }
 .heading sup.ordinal {
-	font-variant-caps: small-caps;
+    font-variant-caps: small-caps;
 }
 .markdownBody a sup.ordinal {
-	padding: 0;
+    padding: 0;
 }
 
 sub {
-	bottom: 0.1em;
+    bottom: 0.1em;
 }
 
 /*  SUBSCRIPT+SUPERSCRIPT (necessary for inflation adjuster, and other math)
@@ -1870,9 +1870,9 @@ sub {
     line-height: 1;
 }
 
-/*	Inflation adjustments.
+/*  Inflation adjustments.
 
-	Make sure that adjusted prices move as a block: no breaking in the middle
+    Make sure that adjusted prices move as a block: no breaking in the middle
     between the price & sup/sub; this works better than trying to use no-break
     Unicode entities.
  */
@@ -1895,18 +1895,18 @@ span.inflation-adjusted .subsup {
 /* MISC */
 /********/
 
-/*	Hanging Punctuation https://en.wikipedia.org/wiki/Hanging_punctuation
+/*  Hanging Punctuation https://en.wikipedia.org/wiki/Hanging_punctuation
 
-	Microtypography: paragraphs starting/ending in quote marks outdent the quote
-	slightly, so the paragraph continues to line up. This is most noticeable in 
-	epigraphs and blockquotes. Minor, but nice.
+    Microtypography: paragraphs starting/ending in quote marks outdent the quote
+    slightly, so the paragraph continues to line up. This is most noticeable in
+    epigraphs and blockquotes. Minor, but nice.
 
-	CSS standard: https://www.w3.org/TR/css-text-3/#propdef-hanging-punctuation
+    CSS standard: https://www.w3.org/TR/css-text-3/#propdef-hanging-punctuation
 
-	Supported only in Safari
-	( https://caniuse.com/css-hanging-punctuation 
-	  https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation#browser_compatibility )
-	as of 2023-04-20, but that has 19% market share, which is not nothing.
+    Supported only in Safari
+    ( https://caniuse.com/css-hanging-punctuation
+      https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation#browser_compatibility )
+    as of 2023-04-20, but that has 19% market share, which is not nothing.
  */
 p {
     hanging-punctuation: first last;
@@ -1919,11 +1919,11 @@ span.smallcaps {
     font-variant-caps: small-caps;
 }
 
-/*	Fixes a bug, not with thickness of the strikethrough line, but its position.
-	(No, I have no idea why it works like that.)
+/*  Fixes a bug, not with thickness of the strikethrough line, but its position.
+    (No, I have no idea why it works like that.)
  */
 del {
-	text-decoration-thickness: from-font;
+    text-decoration-thickness: from-font;
 }
 
 /*  LaTeX/TeX: Format the logotypes correctly (a higher up, e lower)
@@ -2127,7 +2127,7 @@ a.footnote-ref {
 }
 
 a.footnote-ref sup {
-	font-size: 0.75em;
+    font-size: 0.75em;
     vertical-align: baseline;
 }
 
@@ -2163,7 +2163,7 @@ a.footnote-ref.targeted {
         calc(-1 * var(--o-h-s)) var(--o-v-o) 0 calc(var(--o-p) + 3px) var(--GW-highlighted-link-outline-color)
 }
 
-/*	Deal with multiple footnote superscripts one after another; per Charuru
+/*  Deal with multiple footnote superscripts one after another; per Charuru
  */
 sup + sup,
 a.footnote-ref {
@@ -2192,13 +2192,13 @@ section.footnotes {
 }
 
 /*********************************************************/
-/*	Horizontal rule at the start of the footnotes section.
+/*  Horizontal rule at the start of the footnotes section.
  */
 
 section.footnotes > hr:first-child {
     position: relative;
-	display: flex;
-	margin: -0.5em 0;
+    display: flex;
+    margin: -0.5em 0;
 }
 section.footnotes > hr:first-child::after {
     content: "";
@@ -2206,7 +2206,7 @@ section.footnotes > hr:first-child::after {
     width: 2em;
     height: 2em;
     background-color: var(--background-color);
-	background-image: none;
+    background-image: none;
     z-index: 1;
     box-shadow:
         0 0 0 calc(0.5em - 1px) var(--background-color) inset,
@@ -2243,7 +2243,7 @@ section.footnotes > hr:first-child.highlighted::before {
     height: 3px;
 }
 
-/*	Footnotes section self-link.
+/*  Footnotes section self-link.
  */
 section.footnotes .section-self-link {
     position: absolute;
@@ -2259,7 +2259,7 @@ section.footnotes .section-self-link {
 }
 
 /*=----------------=*/
-/*=	Footnotes list =*/
+/*= Footnotes list =*/
 /*=----------------=*/
 
 section.footnotes > ol {
@@ -2271,7 +2271,7 @@ section.footnotes > ol > li {
     padding: 6px 0 0.25em 0;
 }
 
-/*	Footnote number.
+/*  Footnote number.
  */
 section.footnotes > ol > li::before {
     content: counter(footnotes);
@@ -2291,7 +2291,7 @@ section.footnotes > ol > li::before {
     z-index: 1;
 }
 
-/*	Dotted vertical line.
+/*  Dotted vertical line.
  */
 section.footnotes > ol > li::after {
     content: "";
@@ -2302,7 +2302,7 @@ section.footnotes > ol > li::after {
     left: calc(-0.75em - 1px);
 }
 
-/*	Footnote highlighting.
+/*  Footnote highlighting.
  */
 section.footnotes > ol > li.targeted::before,
 section.footnotes > ol > li.targeted::after,
@@ -2321,7 +2321,7 @@ section.footnotes > ol > li.highlighted::after {
     left: calc(-0.75em - 3px);
 }
 
-/*	Footnote self-links.
+/*  Footnote self-links.
  */
 section.footnotes .footnote-self-link {
     position: absolute;
@@ -2363,7 +2363,7 @@ section.footnotes .footnote-self-link {
 }
 
 .markdownBody .footnotes .footnote-back-block {
-	text-align: right;
+    text-align: right;
 }
 
 
@@ -2565,7 +2565,7 @@ section.footnotes .footnote-self-link {
 /*=--------------------------------------=*/
 
 #markdownBody .sidenote {
-	--base-block-spacing: 0.2em;
+    --base-block-spacing: 0.2em;
 }
 
 #markdownBody .sidenote .list {
@@ -2581,7 +2581,7 @@ section.footnotes .footnote-self-link {
 }
 
 #markdownBody .sidenote blockquote > * {
-	line-height: calc(1.25 / (var(--blockquote-font-size-scaling-factor) * 0.85))
+    line-height: calc(1.25 / (var(--blockquote-font-size-scaling-factor) * 0.85))
 }
 
 /*=-------------------------------=*/
@@ -2669,23 +2669,23 @@ section.footnotes .footnote-self-link {
 
 .annotation p.data-field,
 .annotation-partial p.data-field {
-	--text-alignment: left;
-	--text-indent: 0em;
+    --text-alignment: left;
+    --text-indent: 0em;
 }
 
 .annotation span.data-field,
 .annotation-partial span.data-field {
-	--text-hyphenation: none;
+    --text-hyphenation: none;
 }
 
-/*	Title link.
+/*  Title link.
  */
 .annotation .data-field.title .title-link,
 .annotation-partial .data-field.title .title-link {
     font-weight: bold;
 }
 
-/*	Original URL.
+/*  Original URL.
  */
 .annotation .originalURL,
 .annotation-partial .originalURL {
@@ -2699,23 +2699,23 @@ section.footnotes .footnote-self-link {
 .annotation .link-tags {
     font-style: italic;
 
-    /*	Tags are enclosed in ()s, but as links with the text-shadow trick, the 
-    	italic slant leads to the usual ‘chomp’ without additional margin.
+    /*  Tags are enclosed in ()s, but as links with the text-shadow trick, the
+        italic slant leads to the usual ‘chomp’ without additional margin.
      */
     margin-left: 0.1em;
 }
 
-/*	Annotation abstract (body).
+/*  Annotation abstract (body).
  */
 .annotation .data-field.annotation-abstract:empty {
     display: none;
 }
 
 /*************************************/
-/*	Content (in annotation abstracts).
+/*  Content (in annotation abstracts).
  */
 
-/*	Page description in annotation abstract.
+/*  Page description in annotation abstract.
  */
 .annotation .data-field.annotation-abstract .page-description-annotation {
     font-style: italic;
@@ -2742,7 +2742,7 @@ section.footnotes .footnote-self-link {
     display: flex;
 }
 
-/*	TOCs in annotations.
+/*  TOCs in annotations.
  */
 blockquote .TOC {
     padding: 0.5em 0.5em 0.75em 0.75em;
@@ -2757,10 +2757,10 @@ blockquote .TOC {
     width: 100%;
 }
 
-/*	“Aux links” (see also, similars, backlinks, link bibliography).
+/*  “Aux links” (see also, similars, backlinks, link bibliography).
  */
 .annotation .aux-links-list p {
-	text-align: left;
+    text-align: left;
 }
 
 /*  “Aux links” in link bibliographies, directory indexes, and other transcluded
@@ -2916,48 +2916,48 @@ ol.link-bibliography-list-compact > li::before {
 /****************/
 
 #x-of-the-day {
-	position: relative;
-	margin-top: 2.75rem;
-	padding: 2.5rem 1.5rem 3.75rem 1.5rem;
-	border: 1px solid var(--GW-x-of-the-day-border-color);
+    position: relative;
+    margin-top: 2.75rem;
+    padding: 2.5rem 1.5rem 3.75rem 1.5rem;
+    border: 1px solid var(--GW-x-of-the-day-border-color);
 }
 @media all and (max-width: 649px) {
-	#x-of-the-day {
-		margin-top: 3rem;
-		padding: 3.5rem 1rem 3.75rem 1rem;
-	}
+    #x-of-the-day {
+        margin-top: 3rem;
+        padding: 3.5rem 1rem 3.75rem 1rem;
+    }
 }
 
 #x-of-the-day::before,
 #x-of-the-day::after {
-	content: "";
-	position: absolute;
-	left: 0.5rem;
-	width: calc(100% - 1rem);
-	height: 2rem;
-	background-image: 
-		url('/static/img/ornament/three-wavy-lines-ornament-left.svg'),
-		url('/static/img/ornament/three-wavy-lines-ornament-right.svg');	
-	background-repeat: no-repeat;
-	background-size: 4rem 100%;
-	background-position: 
-		center left, 
-		center right;
-	opacity: 0.15;
+    content: "";
+    position: absolute;
+    left: 0.5rem;
+    width: calc(100% - 1rem);
+    height: 2rem;
+    background-image:
+        url('/static/img/ornament/three-wavy-lines-ornament-left.svg'),
+        url('/static/img/ornament/three-wavy-lines-ornament-right.svg');
+    background-repeat: no-repeat;
+    background-size: 4rem 100%;
+    background-position:
+        center left,
+        center right;
+    opacity: 0.15;
 }
 #x-of-the-day::before {
-	top: 0.5rem;
+    top: 0.5rem;
 }
 #x-of-the-day::after {
-	bottom: 0.5rem;
-	transform: scaleY(-1);
+    bottom: 0.5rem;
+    transform: scaleY(-1);
 }
 
 /*******************/
 /*  Quote of the day.
  */
- 
-/*	No special styles, for now.
+
+/*  No special styles, for now.
  */
 
 /*******************/
@@ -3045,8 +3045,8 @@ ol.link-bibliography-list-compact > li::before {
  */
 
 #x-of-the-day .annotation-of-the-day {
-	width: fit-content;
-	margin: auto;
+    width: fit-content;
+    margin: auto;
 }
 
 
@@ -3097,57 +3097,57 @@ ol.link-bibliography-list-compact > li::before {
 /*********************/
 /* SEQUENTIAL NAV UI */
 /*********************/
-/*	Navigation bar for previous/next page links (horizontal divider based on: 
-	https://commons.wikimedia.org/wiki/File:Filet_arabesque.svg )
-	On mobile, we hide the forward/back links.
+/*  Navigation bar for previous/next page links (horizontal divider based on:
+    https://commons.wikimedia.org/wiki/File:Filet_arabesque.svg )
+    On mobile, we hide the forward/back links.
  */
 
 #navigation {
-	display: flex;
-	align-items: center;
-	opacity: 0.8;
+    display: flex;
+    align-items: center;
+    opacity: 0.8;
 }
 #navigation a {
-	line-height: 1;
-	display: flex;
+    line-height: 1;
+    display: flex;
 }
 #navigation a:hover {
-	color: var(--GW-nav-header-link-color);
+    color: var(--GW-nav-header-link-color);
 }
 #navigation a svg {
-	margin: 0;
-	width: 100%;
-	height: 1.65em;
+    margin: 0;
+    width: 100%;
+    height: 1.65em;
 }
 
 @media all and (min-width: 650px) {
-	#navigation {
-		margin: 2.5em 0 0 0;
-		justify-content: space-between;
-	}
-	#navigation #navigation-next,
-	#navigation #navigation-previous {
-		flex-grow: 1;
-	}
-	#navigation #navigation-next {
-		transform: scale(-1, 1);
-	}
-	#navigation #navigation-center {
-		width: 15%;
-	}
+    #navigation {
+        margin: 2.5em 0 0 0;
+        justify-content: space-between;
+    }
+    #navigation #navigation-next,
+    #navigation #navigation-previous {
+        flex-grow: 1;
+    }
+    #navigation #navigation-next {
+        transform: scale(-1, 1);
+    }
+    #navigation #navigation-center {
+        width: 15%;
+    }
 }
 @media all and (max-width: 649px) {
-	#navigation {
-		margin: 3em 0 0 0;
-		justify-content: center;
-	}
+    #navigation {
+        margin: 3em 0 0 0;
+        justify-content: center;
+    }
     #navigation #navigation-next,
-	#navigation #navigation-previous {
+    #navigation #navigation-previous {
         display: none;
     }
-	#navigation #navigation-center {
-		width: 25%;
-	}
+    #navigation #navigation-center {
+        width: 25%;
+    }
 }
 
 
@@ -3297,7 +3297,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 /**************/
 
 /*******************/
-/*	Pop-frame title.
+/*  Pop-frame title.
  */
 
 .popframe .popframe-title .popframe-title-link::after,
@@ -3365,7 +3365,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
     display: initial;
 }
 
-/*	Footnotes sections in pop-frames.
+/*  Footnotes sections in pop-frames.
  */
 
 .popframe-body #footnotes > hr:first-child,
@@ -3377,7 +3377,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
     vertical-align: text-top;
 }
 
-/*	Drop caps in pop-frames.
+/*  Drop caps in pop-frames.
  */
 
 .popframe-body p.drop-cap-goudy::first-letter {
@@ -3408,20 +3408,20 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*│ Annotation pop-frames. │*/
 /*└────────────────────────┘*/
 
-/*	For example, Wikipedia annotations.
+/*  For example, Wikipedia annotations.
  */
 .popframe-body > .annotation:only-child > p.data-field.title:only-of-type {
     font-size: 1.125em;
 }
 
-/*	Collapses in annotations.
+/*  Collapses in annotations.
  */
 .popframe-body > .annotation > .annotation-abstract > .collapse-block {
     margin-left: calc(-1 * var(--collapse-left-offset));
     padding-left: var(--collapse-left-offset);
 }
 
-/*	Aux-links collapses in annotations.
+/*  Aux-links collapses in annotations.
  */
 .popframe-body > .annotation > .annotation-abstract > .collapse.aux-links-append {
     padding-right: 0.5em;
@@ -3454,7 +3454,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
     height: 100%;
 }
 
-/*	Truncated syntax-highlighted code pop-frames, and the note at their end.
+/*  Truncated syntax-highlighted code pop-frames, and the note at their end.
  */
 .popframe-body.local-code-file div.sourceCode.truncated {
     height: calc(100% - 1.75em);
@@ -3537,7 +3537,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 .popframe-body.object iframe {
-	background-color: var(--GW-popframes-iframe-background-color);
+    background-color: var(--GW-popframes-iframe-background-color);
 }
 
 /*  Don’t show when loading failed.
@@ -3646,7 +3646,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
     border-width: 1px 1px 1px 0;
 }
 
-/*	Section pop-frame metadata (e.g., backlinks link).
+/*  Section pop-frame metadata (e.g., backlinks link).
  */
 .popframe-body section .section-metadata {
     text-align: right;
@@ -3666,7 +3666,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
     display: none;
 }
 
-/*	Hide “See Also”... also.
+/*  Hide “See Also”... also.
  */
 .popframe-body[class*='-index'] section#see-also > .heading {
     display: none;
@@ -3832,7 +3832,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Buttons in the popup title bar.
     */
 .popup .popframe-title-bar-button {
-	line-height: 0;
+    line-height: 0;
     margin: 0 1px;
     padding: 4px;
     height: 100%;
@@ -4008,7 +4008,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*└─────────────┘*/
 
 .popup-body {
-	--line-height: 1.5;
+    --line-height: 1.5;
 
     font-size: 0.9em;
 }
@@ -4049,7 +4049,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 .popup.zoomed.full .popframe-content-view {
-	--line-height: 1.6;
+    --line-height: 1.6;
 
     font-size: 1em;
 }
@@ -4113,7 +4113,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
  */
 .popup.loading::before,
 .popup.rendering::before {
-	content: "";
+    content: "";
     position: absolute;
     width: calc(100% - 1em);
     height: auto;
@@ -4362,7 +4362,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*= POPUP CONTENT =*/
 /*=---------------=*/
 
-/*	None... for now.
+/*  None... for now.
  */
 
 
@@ -4675,7 +4675,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
  */
 .popin.loading::before,
 .popin.rendering::before {
-	content: "";
+    content: "";
     position: absolute;
     width: calc(100% - 1em);
     height: auto;
@@ -5016,7 +5016,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 }
 
 #page-toolbar.vertical .widget {
-	--widget-box-shadow-double-outline:
+    --widget-box-shadow-double-outline:
             0 0 0 1px var(--GW-page-toolbar-border-color),
             0 0 0 2px var(--background-color),
             0 0 0 3px var(--GW-page-toolbar-border-color);
@@ -5024,8 +5024,8 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     flex-flow: column;
     outline: 1px dotted var(--GW-page-toolbar-border-color);
     margin-top: 8px;
-	transition:
-		box-shadow 0.1s ease;
+    transition:
+        box-shadow 0.1s ease;
 }
 @media all and (hover: hover) {
     #page-toolbar.vertical .widget:hover {
@@ -5033,13 +5033,13 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     }
 }
 #page-toolbar.vertical .widget.flashing {
-	box-shadow: var(--widget-box-shadow-double-outline);
-	transition:
-		box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease-out;
+    box-shadow: var(--widget-box-shadow-double-outline);
+    transition:
+        box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease-out;
 }
 #page-toolbar.vertical .widget.flashing-fade {
-	transition:
-		box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-in;
+    transition:
+        box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-in;
 }
 
 #page-toolbar.vertical .widget button {
@@ -5092,7 +5092,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 }
 
 #page-toolbar.mobile .widget {
-	--widget-box-shadow-double-outline:
+    --widget-box-shadow-double-outline:
             0 0 0 1px var(--GW-page-toolbar-border-color),
             0 0 0 2px var(--background-color),
             0 0 0 3px var(--GW-page-toolbar-border-color);
@@ -5100,17 +5100,17 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     flex-flow: column;
     outline: 1px dotted var(--GW-page-toolbar-border-color);
     margin-top: 0.5em;
-	transition:
-		box-shadow 0.15s ease;
+    transition:
+        box-shadow 0.15s ease;
 }
 #page-toolbar.mobile .widget.flashing {
-	box-shadow: var(--widget-box-shadow-double-outline);
-	transition:
-		box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease-out;
+    box-shadow: var(--widget-box-shadow-double-outline);
+    transition:
+        box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease-out;
 }
 #page-toolbar.mobile .widget.flashing-fade {
-	transition:
-		box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-in;
+    transition:
+        box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-in;
 }
 
 #page-toolbar.mobile .widget button {
@@ -5381,8 +5381,8 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
         z-index: 2;
     }
 }
-@media (min-width:  650px) and (orientation: portrait), 
-	   (min-height: 650px) and (orientation: landscape) {
+@media (min-width:  650px) and (orientation: portrait),
+       (min-height: 650px) and (orientation: landscape) {
     #image-focus-overlay .caption {
         font-size: 2vmin;
     }
@@ -5415,7 +5415,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     border-radius: 8px;
 }
 @media (max-width:  649px) and (orientation: portrait),
-	   (max-height: 649px) and (orientation: landscape) {
+       (max-height: 649px) and (orientation: landscape) {
     #image-focus-overlay .caption .caption-text-wrapper {
         font-size: 0.9em;
         padding: 0.125em 0.75em 0.25em 0.75em;
@@ -5481,7 +5481,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     #image-focus-overlay .caption .image-url {
         position: fixed;
         top: 0;
-		margin: 0.5em 6.5em;
+        margin: 0.5em 6.5em;
     }
 }
 
@@ -5888,59 +5888,59 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 /*└─────────────────────────────────────┘*/
 
 @media (hover: hover) and (max-width: 1760px) {
-	#floating-header {
-		display: none;
-	}
+    #floating-header {
+        display: none;
+    }
 }
 @media (hover: hover) and (min-width: 1761px) {
-	#floating-header {
-		width: calc(50vw - (var(--GW-body-max-width) / 2 + 64px));
-		max-width: var(--GW-sidenotes-max-width);
-    	box-shadow: 
-			0 0  0 1px var(--GW-body-background-color),
-			0 0  3px var(--GW-body-background-color),
-			0 0  5px var(--GW-body-background-color),
-			0 0  9px var(--GW-body-background-color),
-			0 0 17px var(--GW-body-background-color);
-		border-bottom: 1px solid var(--GW-floating-header-scroll-indicator-color);
-		pointer-events: none;
-		left: unset;
-		right: calc(50% + (var(--GW-body-max-width) / 2) + 64px);
-	}
-	#floating-header > * {
-		pointer-events: auto;
-	}
-	#floating-header .scroll-indicator {
-		margin: 0;
-	}
-	#floating-header .link-chain {
-		padding: 7px 10px 8px 10px
-	}
-	#floating-header .link-chain .link {
-		display: block;
-	}
-	#floating-header .link-chain .link.page-title {
-		margin: 0 0.75em;
-	}
-	#floating-header .link-chain .link.page-title + .link {
-		margin-top: 0.5em;
-	}
-	#floating-header .link-chain .link:not(.page-title) {
-		text-align: left;
-		padding-left: calc((var(--link-index) - 1) * 1.25em);
-	}
-	#floating-header .link-chain .link:not(.page-title) a {
-		font-size: calc(1em * (1 - (0.05 * (var(--link-index) - 1))));
-	}
-	#floating-header .link-chain .link::before {
-		display: none;
-	}
+    #floating-header {
+        width: calc(50vw - (var(--GW-body-max-width) / 2 + 64px));
+        max-width: var(--GW-sidenotes-max-width);
+        box-shadow:
+            0 0  0 1px var(--GW-body-background-color),
+            0 0  3px var(--GW-body-background-color),
+            0 0  5px var(--GW-body-background-color),
+            0 0  9px var(--GW-body-background-color),
+            0 0 17px var(--GW-body-background-color);
+        border-bottom: 1px solid var(--GW-floating-header-scroll-indicator-color);
+        pointer-events: none;
+        left: unset;
+        right: calc(50% + (var(--GW-body-max-width) / 2) + 64px);
+    }
+    #floating-header > * {
+        pointer-events: auto;
+    }
+    #floating-header .scroll-indicator {
+        margin: 0;
+    }
+    #floating-header .link-chain {
+        padding: 7px 10px 8px 10px
+    }
+    #floating-header .link-chain .link {
+        display: block;
+    }
+    #floating-header .link-chain .link.page-title {
+        margin: 0 0.75em;
+    }
+    #floating-header .link-chain .link.page-title + .link {
+        margin-top: 0.5em;
+    }
+    #floating-header .link-chain .link:not(.page-title) {
+        text-align: left;
+        padding-left: calc((var(--link-index) - 1) * 1.25em);
+    }
+    #floating-header .link-chain .link:not(.page-title) a {
+        font-size: calc(1em * (1 - (0.05 * (var(--link-index) - 1))));
+    }
+    #floating-header .link-chain .link::before {
+        display: none;
+    }
 
-	/*	No floating header on /index.
-	 */
-	body.index #floating-header {
-		display: none;
-	}
+    /*  No floating header on /index.
+     */
+    body.index #floating-header {
+        display: none;
+    }
 }
 
 
@@ -6044,19 +6044,19 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     padding: 2px 0;
 }
 
-/*	Specific mode selectors & buttons.
+/*  Specific mode selectors & buttons.
  */
 #page-toolbar.vertical .extracts-mode-selector button.select-mode-on .icon {
-	padding: 5px;
+    padding: 5px;
 }
 #page-toolbar.vertical .extracts-mode-selector button.select-mode-off .icon {
-	padding: 2px;
+    padding: 2px;
 }
 #page-toolbar.mobile .extracts-mode-selector button.select-mode-on .icon {
-	padding: 7px;
+    padding: 7px;
 }
 #page-toolbar.mobile .extracts-mode-selector button.select-mode-off .icon {
-	padding: 4px;
+    padding: 4px;
 }
 
 /*************************/
@@ -6256,10 +6256,20 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     #page-metadata .page-metadata-fields .page-importance::after,
     #navigation,
     .toc-collapse-toggle-button,
-    #footer {
+    #TOC .toc-collapse-toggle-button,
+    .reader-mode-note,
+    .similar-links-search,
+    #footer, #footer-decoration-container {
         display: none;
     }
-
+    /* Restore the dot separator, which was deleted before by needing to delete the other metadata fields */
+    .page-author::after {
+        content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
+        margin: 0 0.35em 0 0.65em;
+    }
+    /* Label the page tags, as offline/in-print, they will look quite mysterious: */
+    #page-metadata .link-tags::before { content: "tags: ";
+                                        font-style: normal; }
     body {
         margin: 0;
     }
@@ -6273,8 +6283,8 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
         line-height: 1.6;
         text-align: justify;
     }
+    #markdownBody a { text-decoration: underline; }
 }
-
 
 /***********/
 /* CONSOLE */

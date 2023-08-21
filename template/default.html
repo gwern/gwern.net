@@ -66,7 +66,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light dark">
 
+    $if(author)$
+    <title>$titlePlain$, by $author$ · Gwern.net</title>
+    $else$
     <title>$titlePlain$ · Gwern.net</title>
+    $endif$
 
     <link rel="icon" type="image/png" href="/static/img/logo/logo-favicon-small.png">
     <link rel="apple-touch-icon" type="image/png" href="/static/img/logo/logo-favicon-appletouch.png">
