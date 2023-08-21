@@ -20,7 +20,6 @@
     }
 }
 
-
 /***********/
 /* GENERAL */
 /***********/
@@ -37,7 +36,6 @@ html,
 	font-size: var(--base-font-size);
 }
 
-
 /********************/
 /* GENERIC ELEMENTS */
 /********************/
@@ -45,7 +43,6 @@ html,
 svg {
     fill: currentColor;
 }
-
 
 /**********/
 /* LAYOUT */
@@ -75,7 +72,6 @@ main {
         flex: 1 1 auto;
     }
 }
-
 
 /***********/
 /* SIDEBAR */
@@ -203,7 +199,6 @@ main {
     }
 }
 
-
 /***************/
 /* PAGE HEADER */
 /***************/
@@ -243,7 +238,6 @@ header h1 em {
 	font-variant-caps: normal;
 }
 
-
 /*********************/
 /* ARTICLE CONTAINER */
 /*********************/
@@ -251,7 +245,6 @@ header h1 em {
 article {
     margin-top: 1.75rem;
 }
-
 
 /***********************/
 /* PAGE METADATA BLOCK */
@@ -272,14 +265,14 @@ article {
 /********************/
 /*	Page description.
  */
-/*	Override normal handling of italics: before, we wrapped descriptions in 
-	`<em>`; however, they compile to HTML which can contain italics of their 
-	own (eg. book titles). This causes HTML Tidy to warn about nested italics 
-	(which is valid HTML but *usually* means you’ve made an error - this often 
-	triggers when I mess up bolding, for example, like on /gpt-3). So we 
-	removed the wrapper in favor of the above `font-style: italic`. However, 
-	now the titles don’t unitalicize automatically like they would for nested 
-	italics! So we force italicized titles back to normal Roman font to match 
+/*	Override normal handling of italics: before, we wrapped descriptions in
+	`<em>`; however, they compile to HTML which can contain italics of their
+	own (eg. book titles). This causes HTML Tidy to warn about nested italics
+	(which is valid HTML but *usually* means you’ve made an error - this often
+	triggers when I mess up bolding, for example, like on /gpt-3). So we
+	removed the wrapper in favor of the above `font-style: italic`. However,
+	now the titles don’t unitalicize automatically like they would for nested
+	italics! So we force italicized titles back to normal Roman font to match
 	the expected typographic convention.
  */
 #page-metadata .page-description {
@@ -315,7 +308,7 @@ article {
     white-space: nowrap;
 }
 #page-metadata .page-metadata-fields > span:not(:last-child)::after {
-	/*  Interpunct separators for the metadata fields; looks nicer than 
+	/*  Interpunct separators for the metadata fields; looks nicer than
 		semicolons or slashes
 	 */
     content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
@@ -430,7 +423,6 @@ article {
         display: none;
     }
 }
-
 
 /*********************/
 /* TABLE OF CONTENTS */
@@ -876,7 +868,6 @@ body[class*='-index'] #TOC.TOC-links-only li {
     color: var(--GW-TOC-number-hover-color);
 }
 
-
 /****************/
 /* MAIN CONTENT */
 /****************/
@@ -893,7 +884,7 @@ body[class*='-index'] #TOC.TOC-links-only li {
      */
     overflow-wrap: break-word;
 
-	/*  Cute ‘old-style’ numerals, look a little nicer inline in text, and 
+	/*  Cute ‘old-style’ numerals, look a little nicer inline in text, and
 		available natively in the SS fonts:
 
 		https://practicaltypography.com/alternate-figures.html#oldstyle-figures
@@ -904,7 +895,7 @@ body[class*='-index'] #TOC.TOC-links-only li {
 }
 
 /*  Replaces A/B-test-set average value; the wider the screen, the more
-	line-height is necessary, and no one size suits all, so set 4 brackets 
+	line-height is necessary, and no one size suits all, so set 4 brackets
 	of increasing height.
  */
 @media all and (max-width: 649px) {
@@ -933,7 +924,6 @@ body[class*='-index'] #TOC.TOC-links-only li {
 .markdownBody .block {
 	margin-top: calc(var(--base-block-spacing) * var(--bsm));
 }
-
 
 /************/
 /* SECTIONS */
@@ -1075,7 +1065,6 @@ body[class*='-index'] section#see-also > .heading a {
     display: none;
 }
 
-
 /**************/
 /* PARAGRAPHS */
 /**************/
@@ -1102,10 +1091,10 @@ p.empty-graf {
     narrower the screen (eg. in lists). On wide screens, it isn’t too bad, and
     justification is still better than not, but on mobile it is extremely
     noticeable. Switching to flush left ragged right doesn’t look as nicely
-    ‘even’, but it avoids that pathological behavior. (More advanced 
+    ‘even’, but it avoids that pathological behavior. (More advanced
     typesetting algorithms like Knuth-Plass
     https://en.wikipedia.org/wiki/Line_wrap_and_word_wrap#Minimum_raggedness
-    can handle mobile widths nicely, but no contemporary browser implements 
+    can handle mobile widths nicely, but no contemporary browser implements
     them natively, and all JS implementations I’ve looked at are buggy.)
 
     However, do hyphenate at all widths.
@@ -1127,24 +1116,21 @@ p.empty-graf {
 
 /*	Specify indentation.
  */
-.markdownBody.indented {
+.markdownBody {
 	--text-indent: 1.75em;
 }
 /*	Larger indentation in main content column on non-phones.
  */
 @media all and (min-width: 650px) {
-	#markdownBody.indented {
+	#markdownBody {
 		--text-indent: 2.5em;
 	}
-}
-.markdownBody.indented-not {
-	--text-indent: 0em;
 }
 
 /************************************/
 /*	AB texting justification vs. not.
  */
- 
+
 .markdownBody p {
     -webkit-hyphens: var(--text-hyphenation);
     hyphens: var(--text-hyphenation);
@@ -1153,18 +1139,14 @@ p.empty-graf {
 
 /*	Specify alignment and hyphenation.
  */
-.markdownBody.justified {
+.markdownBody {
     --text-alignment: justify;
     --text-hyphenation: auto;
 }
 @media all and (max-width: 649px) {
-	.markdownBody.justified {
+	.markdownBody {
 		--text-alignment: left;
 	}
-}
-.markdownBody.justified-not {
-	--text-alignment: left;
-	--text-hyphenation: none;
 }
 
 /**************/
@@ -1177,7 +1159,6 @@ p.empty-graf {
     text-align: center;
     text-indent: 0;
 }
-
 
 /***************/
 /* BLOCKQUOTES */
@@ -1241,7 +1222,6 @@ blockquote,
 	--border-color: var(--GW-blockquote-border-color-level-four);
 }
 
-
 /*********/
 /* LISTS */
 /*********/
@@ -1304,10 +1284,10 @@ ul.list-level-3 {
 
 /*	This may not be necessary. It definitely causes the `start` HTML list
 	property to not work correctly, so if indeed it’s unnecessary otherwise, it
-	should be removed. Commenting it out for now until we can confirm that no 
+	should be removed. Commenting it out for now until we can confirm that no
 	bugs are caused by its absence.
 		—SA 2023-07-24
-/* 
+/*
 ol {
     counter-reset: list-item;
 }
@@ -1327,13 +1307,13 @@ ol > li::before {
     text-align: right;
 }
 
-/*  Specific list type overrides. (Used by auto-sequencing, but can also be 
+/*  Specific list type overrides. (Used by auto-sequencing, but can also be
 	invoked manually from the source.)
 
-	Manual invocation assumes writing plain `<ol>` HTML lists instead of Arabic 
+	Manual invocation assumes writing plain `<ol>` HTML lists instead of Arabic
 	numerals like `<ol type="1">`. Pandoc Markdown defaults to the latter if you
-	write '1./2.' etc, but an alternate syntax, '#.' is supported which yields a 
-	plain `<ol>` which can be more easily styled. 
+	write '1./2.' etc, but an alternate syntax, '#.' is supported which yields a
+	plain `<ol>` which can be more easily styled.
 	(See https://pandoc.org/MANUAL.html#extension-startnum .)
 */
 ol > li::before,
@@ -1352,7 +1332,6 @@ ol.list-type-lower-roman > li::before {
 ol.list-type-upper-roman > li::before {
     content: counter(list-item, upper-roman) ".";
 }
-
 
 /***********/
 /* FIGURES */
@@ -1525,7 +1504,6 @@ figure.width-full {
     clear: both;
 }
 
-
 /****************/
 /* MARGIN NOTES */
 /****************/
@@ -1598,7 +1576,6 @@ figure.width-full {
 	opacity: 0.5;
 }
 
-
 /*********/
 /* LINKS */
 /*********/
@@ -1655,7 +1632,7 @@ May be able at some point to simplify this using regular link underlining, since
 	--link-underline-background-color: var(--background-color);
 	--link-underline-gradient-line-color: currentColor;
 
-    background-image: linear-gradient(var(--link-underline-gradient-line-color), 
+    background-image: linear-gradient(var(--link-underline-gradient-line-color),
     								  var(--link-underline-gradient-line-color));
     background-size: 1px 1px;
     background-repeat: repeat-x;
@@ -1728,7 +1705,6 @@ a code {
     font-variant-caps: normal;
 }
 
-
 /*************/
 /* SIDENOTES */
 /*************/
@@ -1763,7 +1739,6 @@ a code {
     }
 }
 
-
 /*****************/
 /* ACCESSIBILITY */
 /*****************/
@@ -1795,7 +1770,6 @@ a code {
         top 0.1s ease-in;
 }
 
-
 /***********/
 /* CONSOLE */
 /***********/
@@ -1804,7 +1778,6 @@ a code {
     bottom: calc(-1 * var(--GW-console-view-height));
     opacity: 0;
 }
-
 
 /*******************************/
 /* PAGE-SPECIFIC MODIFICATIONS */
@@ -1959,11 +1932,11 @@ body.index #markdownBody section ul ul {
 /*	Miscellaneous things on /index.
  */
 
-/*	For desktop users, we hide the horizontal rulers on the /index page as they 
-	are unnecessary given the flowing columns; for mobile users, we’ll separate 
-	sections by rulers because they only get a single very long column to scroll 
-	through, which lacks a sense of hierarchy/chunking. However, desktop users 
-	still get the initial <hr> inserted by sed to divide the two blocks of 
+/*	For desktop users, we hide the horizontal rulers on the /index page as they
+	are unnecessary given the flowing columns; for mobile users, we’ll separate
+	sections by rulers because they only get a single very long column to scroll
+	through, which lacks a sense of hierarchy/chunking. However, desktop users
+	still get the initial <hr> inserted by sed to divide the two blocks of
 	New/Popular/Notable from all-topics sections (which has no class set on it).
  */
 @media all and (min-width: 650px) {
@@ -1982,7 +1955,6 @@ body.index #markdownBody section ul ul {
     }
 }
 
-
 /*****************************/
 /* SOURCE CODE FILE PREVIEWS */
 /*****************************/
@@ -2000,7 +1972,6 @@ body.file-preview-source-code pre {
 body.file-preview-source-code pre code {
 	padding: 1rem;
 }
-
 
 /*********************/
 /* SPECIAL OCCASIONS */

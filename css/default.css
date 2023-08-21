@@ -924,7 +924,7 @@ ol.has-floats > li {
 
 /*  List headings are normally paragraphs, but should never be indented.
  */
-.markdownBody.indented p.list-heading {
+.markdownBody p.list-heading {
     text-indent: 0;
 }
 
