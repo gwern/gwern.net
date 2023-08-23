@@ -1536,8 +1536,7 @@ Transclude = {
 								 "failed transclude template fill");
 			}
 		};
-		dataProvider.waitForDataLoad(includeLink,
-		   (link) => {
+		dataProvider.waitForDataLoad(includeLink, (link) => {
 		   	//	Load success handler.
 
 			/*	If a template is specified by name, then we’ll need to make sure

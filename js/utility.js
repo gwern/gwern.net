@@ -601,7 +601,8 @@ function stripStyles(element, propertiesToRemove = null, propertiesToSave = null
 /*  Call the given function when the given element (if `target` is an element),
     or the element specified by the given selector (if `target` is a string),
     intersects the viewport.
-    Optionally specify the interaction ratio.
+
+    Optionally specify the intersection ratio.
  */
 function lazyLoadObserver(f, target, options = { }) {
     if (typeof target == "string")
@@ -698,17 +699,29 @@ function paragraphizeTextNodesOfElement(element) {
 	do {
 		node = nodes.shift();
 
-		if (   node?.nodeType == Node.TEXT_NODE
-			|| (   node?.nodeType == Node.ELEMENT_NODE
-				&& node.matches(inlineElementSelector))) {
+		if (   (   node?.nodeType == Node.TEXT_NODE
+				|| (   node?.nodeType == Node.ELEMENT_NODE
+					&& node.matches(inlineElementSelector)))
+			&& (   isNodeEmpty(node) == false
+				|| node?.tagName == "A")) {
 			nodeSequence.push(node);
+		} else if (   isNodeEmpty(node)
+				   && node?.tagName != "A") {
+			node.remove();
 		} else {
-			if (   nodeSequence.length > 0
-				&& nodeSequence.findIndex(n => isNodeEmpty(n) == false) != -1) {
+			if (nodeSequence.length > 0) {
+				//	Get next non-empty child node of the element (may be null).
 				let nextNode = nodeSequence.last.nextSibling;
+				while (   isNodeEmpty(nextNode)
+					   && nextNode.tagName != "A")
+					   nextNode = nextNode.nextSibling;
+
+				//	Construct paragraph (<p>) to wrap node sequence.
+				//	(This removes the nodes from the element.)
 				let graf = newElement("P");
 				graf.append(...nodeSequence);
-				graf.innerHTML = graf.innerHTML.trim();
+
+				//	Insert paragraph (with the previously removed nodes).
 				element.insertBefore(graf, nextNode)
 			}
 
