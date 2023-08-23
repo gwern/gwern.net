@@ -5,7 +5,7 @@
 
 module GenerateSimilar where
 
-import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str, Strong), Format(..), runPure, Pandoc(..), nullAttr)
+import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Span, Str, Strong), Format(..), runPure, Pandoc(..), nullAttr)
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T  (append, intercalate, isPrefixOf, length, pack, strip, take, unlines, unpack, Text)
 import Data.List ((\\), intercalate,  nub, tails, sort)
@@ -331,7 +331,7 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
                                                linkMetadataGS = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "google-scholar"), ("link-icon-type", "svg")])
                                                linkMetadataCP = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "connected-papers"), ("link-icon-type", "svg")])
                                            in
-                                            [[Para $
+                                            [[Para [Span ("", ["similar-links-search"], []) (
                                               [Strong [Str "Search"], Str ": ",
                                                 Link linkMetadataGS
                                                 [Str "GS"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
@@ -351,7 +351,10 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
                                                  Link linkMetadataG
                                                  [Str "site"] (T.pack ("https://www.google.com/search?q=site:gwern.net+-site:gwern.net/metadata/" ++ urlEncode title'),
                                                                     T.pack ("Gwern.net site-wide search hits for ‘" ++ title' ++ "’."))
-                                               ]]]
+                                               ]
+                                              )
+                                             ]
+                                           ]]
 
              preface = if singleShot then [] else [Para [Strong [Str "Similar Links"], Str ":"]]
              linkList = BulletList $ similarItems ++ googleScholar

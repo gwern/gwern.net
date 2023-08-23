@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-07-22 12:22:41 gwern"
+When: Time-stamp: "2023-08-19 22:34:05 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -46,7 +46,7 @@ import Hakyll (compile, composeRoutes, constField,
                defaultHakyllWriterOptions, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
                loadAndApplyTemplate, match, modificationTimeField, mapContext,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess, boolField, toFilePath,
-               templateCompiler, version, Compiler, Context, Item, unsafeCompiler, noResult, getUnderlying)
+               templateCompiler, version, Compiler, Context, Item, unsafeCompiler, noResult, getUnderlying, escapeHtml)
 import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
                     def, pandocExtensions, readerExtensions, readMarkdown, writeHtml5String,
                     Block(..), HTMLMathMethod(MathJax), defaultMathJaxURL, Inline(..),
@@ -215,9 +215,9 @@ postCtx md =
     fieldsTagPlain md <>
     fieldsTagHTML  md <>
     titlePlainField "titlePlain" <>
-    descField "title" <>
-    descPlainField "descriptionPlain" <>
-    descField "description" <> -- constField "description" "N/A" <>
+    descField False "title" "title" <>
+    descField True "description" "descriptionEscaped" <>
+    descField False "description" "description" <>
     -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.page as `index: true` to set it to a non-null value.) Likewise, "error404" for generating the 404.html page.
     -- similarly, 'author': default.html has a conditional to set 'Gwern Branwen' as the author in the HTML metadata if 'author' is not defined, but if it is, then the HTML metadata switches to the defined author & the non-default author is exposed in the visible page metadata as well for the human readers.
     defaultContext <>
@@ -297,16 +297,9 @@ titlePlainField d = field d $ \item -> do
                   case metadataMaybe of
                     Nothing -> noResult "no title field"
                     Just t -> return (simplifiedHTMLString t)
-descPlainField :: String -> Context String
-descPlainField d = field d $ \item -> do
-                  metadataMaybe <- getMetadataField (itemIdentifier item) "description"
-                  case metadataMaybe of
-                    Nothing -> noResult "no description field"
-                    Just t -> return (simplifiedHTMLString t)
 
-
-descField :: String -> Context String
-descField d = field d $ \item -> do
+descField :: Bool -> String -> String -> Context String
+descField escape d d' = field d' $ \item -> do
                   metadata <- getMetadata (itemIdentifier item)
                   let descMaybe = lookupString d metadata
                   case descMaybe of
@@ -316,7 +309,7 @@ descField d = field d $ \item -> do
                               pandocDesc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack desc)
                               let pandocDesc' = convertInterwikiLinks $ linebreakingTransform pandocDesc
                               htmlDesc <- writeHtml5String def pandocDesc' -- NOTE: we can skip 'safeHtmlWriterOptions' use here because descriptions are always very simple & will never have anything complex like tables
-                              return $ T.unpack htmlDesc
+                              return $ (\t -> if escape then escapeHtml t else t) $ T.unpack htmlDesc
                       in case cleanedDesc of
                          Left _          -> noResult "no description field"
                          Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>

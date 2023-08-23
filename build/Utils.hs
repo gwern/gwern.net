@@ -1691,6 +1691,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("quasi–causal", "quasi-causal")
          , ("self–reported", "self-reported")
          , ("peer–reported", "peer-reported")
+         , ("profit-able", "profitable")
          , (" touse", " to use")
          , (" Copyright</p>", "")
          , (" GPT2", " GPT-2")
