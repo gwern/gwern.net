@@ -657,17 +657,29 @@ function isOnlyChild(node) {
 
 /******************************************************************************/
 /*  Returns true if the node contains only whitespace and/or other empty nodes.
+
+	Permissible options:
+
+		excludeTags [array]
+		alsoExcludeTags [array]
  */
-function isNodeEmpty(node) {
+function isNodeEmpty(node, options = { }) {
 	if (node == null)
 		return undefined;
 
     if (node.nodeType == Node.TEXT_NODE)
         return (node.textContent.match(/\S/) == null);
 
-    if (   node.nodeType == Node.ELEMENT_NODE
-        && [ "IMG", "SVG", "VIDEO", "AUDIO", "IFRAME", "OBJECT" ].includes(node.tagName.toUpperCase()))
-        return false;
+	if (node.nodeType == Node.ELEMENT_NODE) {
+		if (options.excludeTags != null) {
+			if (options.excludeTags.includes(node.tagName.toUpperCase()))
+				return false;
+		} else {
+			if (   [ "IMG", "SVG", "VIDEO", "AUDIO", "IFRAME", "OBJECT" ].includes(node.tagName.toUpperCase())
+				|| options.alsoExcludeTags?.includes(node.tagName.toUpperCase()))
+				return false;
+		}
+	}
 
     if (node.childNodes.length == 0)
         return true;
@@ -702,19 +714,16 @@ function paragraphizeTextNodesOfElement(element) {
 		if (   (   node?.nodeType == Node.TEXT_NODE
 				|| (   node?.nodeType == Node.ELEMENT_NODE
 					&& node.matches(inlineElementSelector)))
-			&& (   isNodeEmpty(node) == false
-				|| node?.tagName == "A")) {
+			&& isNodeEmpty(node, { alsoExcludeTags: [ "A" ] }) == false) {
 			nodeSequence.push(node);
-		} else if (   isNodeEmpty(node)
-				   && node?.tagName != "A") {
+		} else if (isNodeEmpty(node, { alsoExcludeTags: [ "A" ] })) {
 			node.remove();
 		} else {
 			if (nodeSequence.length > 0) {
 				//	Get next non-empty child node of the element (may be null).
 				let nextNode = nodeSequence.last.nextSibling;
-				while (   isNodeEmpty(nextNode)
-					   && nextNode.tagName != "A")
-					   nextNode = nextNode.nextSibling;
+				while (isNodeEmpty(nextNode, { alsoExcludeTags: [ "A" ] }))
+					nextNode = nextNode.nextSibling;
 
 				//	Construct paragraph (<p>) to wrap node sequence.
 				//	(This removes the nodes from the element.)
