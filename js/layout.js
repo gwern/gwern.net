@@ -1,46 +1,3 @@
-/********/
-/* MISC */
-/********/
-
-/************************************************************/
-/*	Inflict the indentation AB test upon the given container.
- */
-function inflictABTestClassesUponContainer(container, conditions) {
-	if (container.closest(GW.layout.blockLayoutExclusionSelector))
-		return;
-
-	let justifyClassNames = [ "justified-not", "justified" ];
-	let indentClassNames = [ "indented-not", "indented" ];
-
-	conditions = conditions ?? {
-		justify: document.body.classList.contains(justifyClassNames[0]) ? 0 : 1,
-		indent: document.body.classList.contains(indentClassNames[0]) ? 0 : 1
-	};
-
-	if (container.matches?.(".markdownBody")) {
-		container.swapClasses(justifyClassNames, conditions.justify);
-		container.swapClasses(indentClassNames, conditions.indent);
-	} else {
-		container.querySelectorAll(".markdownBody").forEach(markdownBody => {
-			if (markdownBody.closest(GW.layout.blockLayoutExclusionSelector))
-				return;
-
-			markdownBody.swapClasses(justifyClassNames, conditions.justify);
-			markdownBody.swapClasses(indentClassNames, conditions.indent);
-		});
-	}
-};
-
-/***********************************/
-/*	Inflict the indentation AB test.
- */
-addContentInjectHandler(GW.contentInjectHandlers.inflictABTestClasses = (eventInfo) => {
-    GWLog("inflictABTestClasses", "layout.js", 1);
-
-	inflictABTestClassesUponContainer(eventInfo.container);
-}, ">rewrite");
-
-
 /**********/
 /* LAYOUT */
 /**********/
@@ -147,7 +104,7 @@ GW.layout = {
 		[ "p.footnote-back-block",		 1, false ],
 		[ "p.first-graf",				10 ],
 		[ "p.list-heading",				10 ],
-		[ "p",							(block) => (indentModeActive(block) ? 0 : 10) ],
+		[ "p",							 0 ],
 
 		[ ".TOC",						10 ],
 
@@ -273,7 +230,6 @@ function startDynamicLayoutInContainer(container) {
 			//	Do layout in all waiting containers.
 			while (GW.layout.containersNeedingLayout.length > 0) {
 				let nextContainer = GW.layout.containersNeedingLayout.shift();
-				inflictABTestClassesUponContainer(nextContainer);
 				GW.layout.layoutProcessors.forEach(layoutProcessor => {
 					let [ processor, options ] = layoutProcessor;
 
@@ -299,14 +255,6 @@ function startDynamicLayoutInContainer(container) {
 doWhenBodyExists(() => {
 	startDynamicLayoutInContainer(document.body);
 });
-
-/***************************************************************************/
-/*	Returns true if indent mode is active for the block’s container, 
-	(or for the main page content, if block not specified), false otherwise.
- */
-function indentModeActive(block) {
-	return (block?.getRootNode()?.body?.classList?.contains("indented") == true);
-}
 
 /*****************************************************************************/
 /*	Process layout options object, so that it contains all the appropriate
@@ -975,19 +923,6 @@ addLayoutProcessor(GW.layout.applyBlockSpacingInContainer = (container) => {
 	});
 
 	//	Lists require special treatment.
-
-	//	Designate those list items which need more spacing (when not indenting).
-	if (indentModeActive(container) == false) {
-		container.querySelectorAll(selectorize([ "li:not(.footnote)" ])).forEach(listItem => {
-			if (listItem.closest(GW.layout.blockLayoutExclusionSelector))
-				return;
-
-			if (   listItem.closest(".list").matches(".big-list")
-				&& previousBlockOf(firstBlockOf(listItem))?.matches("p, blockquote") == true
-				&& isBlock(listItem) != true)
-				listItem.dataset.bsmMod = "2";
-		});
-	}
 
 	//	Apply list spacing.
 	container.querySelectorAll(selectorize([ "li:not(.footnote)" ])).forEach(listItem => {

@@ -20,6 +20,7 @@
     }
 }
 
+
 /***********/
 /* GENERAL */
 /***********/
@@ -36,6 +37,7 @@ html,
 	font-size: var(--base-font-size);
 }
 
+
 /********************/
 /* GENERIC ELEMENTS */
 /********************/
@@ -43,6 +45,7 @@ html,
 svg {
     fill: currentColor;
 }
+
 
 /**********/
 /* LAYOUT */
@@ -72,6 +75,7 @@ main {
         flex: 1 1 auto;
     }
 }
+
 
 /***********/
 /* SIDEBAR */
@@ -199,6 +203,7 @@ main {
     }
 }
 
+
 /***************/
 /* PAGE HEADER */
 /***************/
@@ -238,6 +243,7 @@ header h1 em {
 	font-variant-caps: normal;
 }
 
+
 /*********************/
 /* ARTICLE CONTAINER */
 /*********************/
@@ -245,6 +251,7 @@ header h1 em {
 article {
     margin-top: 1.75rem;
 }
+
 
 /***********************/
 /* PAGE METADATA BLOCK */
@@ -261,6 +268,7 @@ article {
 #page-metadata > * + * {
 	margin-top: 0.75em;
 }
+
 
 /********************/
 /*	Page description.
@@ -423,6 +431,7 @@ article {
         display: none;
     }
 }
+
 
 /*********************/
 /* TABLE OF CONTENTS */
@@ -868,6 +877,7 @@ body[class*='-index'] #TOC.TOC-links-only li {
     color: var(--GW-TOC-number-hover-color);
 }
 
+
 /****************/
 /* MAIN CONTENT */
 /****************/
@@ -924,6 +934,7 @@ body[class*='-index'] #TOC.TOC-links-only li {
 .markdownBody .block {
 	margin-top: calc(var(--base-block-spacing) * var(--bsm));
 }
+
 
 /************/
 /* SECTIONS */
@@ -1065,6 +1076,7 @@ body[class*='-index'] section#see-also > .heading a {
     display: none;
 }
 
+
 /**************/
 /* PARAGRAPHS */
 /**************/
@@ -1100,9 +1112,11 @@ p.empty-graf {
     However, do hyphenate at all widths.
 */
 
-/************************************************/
-/*	AB testing indentation vs. paragraph spacing.
- */
+.markdownBody p {
+    -webkit-hyphens: var(--text-hyphenation);
+    hyphens: var(--text-hyphenation);
+	text-align: var(--text-alignment);
+}
 
 .markdownBody p:not(.first-graf) {
 	text-indent: var(--text-indent);
@@ -1114,38 +1128,25 @@ p.empty-graf {
 	text-indent: 0em;
 }
 
-/*	Specify indentation.
+/*	Specify indentation, alignment, hyphenation.
  */
 .markdownBody {
 	--text-indent: 1.75em;
+    --text-alignment: justify;
+    --text-hyphenation: auto;
+}
+/*	Justification only matters for the wide.
+ */
+@media all and (max-width: 649px) {
+	.markdownBody {
+		--text-alignment: left;
+	}
 }
 /*	Larger indentation in main content column on non-phones.
  */
 @media all and (min-width: 650px) {
 	#markdownBody {
 		--text-indent: 2.5em;
-	}
-}
-
-/************************************/
-/*	AB texting justification vs. not.
- */
-
-.markdownBody p {
-    -webkit-hyphens: var(--text-hyphenation);
-    hyphens: var(--text-hyphenation);
-	text-align: var(--text-alignment);
-}
-
-/*	Specify alignment and hyphenation.
- */
-.markdownBody {
-    --text-alignment: justify;
-    --text-hyphenation: auto;
-}
-@media all and (max-width: 649px) {
-	.markdownBody {
-		--text-alignment: left;
 	}
 }
 
@@ -1159,6 +1160,7 @@ p.empty-graf {
     text-align: center;
     text-indent: 0;
 }
+
 
 /***************/
 /* BLOCKQUOTES */
@@ -1221,6 +1223,7 @@ blockquote,
 .blockquote-level-4 {
 	--border-color: var(--GW-blockquote-border-color-level-four);
 }
+
 
 /*********/
 /* LISTS */
@@ -1332,6 +1335,7 @@ ol.list-type-lower-roman > li::before {
 ol.list-type-upper-roman > li::before {
     content: counter(list-item, upper-roman) ".";
 }
+
 
 /***********/
 /* FIGURES */
@@ -1504,6 +1508,7 @@ figure.width-full {
     clear: both;
 }
 
+
 /****************/
 /* MARGIN NOTES */
 /****************/
@@ -1575,6 +1580,7 @@ figure.width-full {
 	margin: 0 0.75em;
 	opacity: 0.5;
 }
+
 
 /*********/
 /* LINKS */
@@ -1705,6 +1711,7 @@ a code {
     font-variant-caps: normal;
 }
 
+
 /*************/
 /* SIDENOTES */
 /*************/
@@ -1739,6 +1746,7 @@ a code {
     }
 }
 
+
 /*****************/
 /* ACCESSIBILITY */
 /*****************/
@@ -1770,6 +1778,7 @@ a code {
         top 0.1s ease-in;
 }
 
+
 /***********/
 /* CONSOLE */
 /***********/
@@ -1778,6 +1787,7 @@ a code {
     bottom: calc(-1 * var(--GW-console-view-height));
     opacity: 0;
 }
+
 
 /*******************************/
 /* PAGE-SPECIFIC MODIFICATIONS */
@@ -1955,6 +1965,7 @@ body.index #markdownBody section ul ul {
     }
 }
 
+
 /*****************************/
 /* SOURCE CODE FILE PREVIEWS */
 /*****************************/
@@ -1972,6 +1983,7 @@ body.file-preview-source-code pre {
 body.file-preview-source-code pre code {
 	padding: 1rem;
 }
+
 
 /*********************/
 /* SPECIAL OCCASIONS */
