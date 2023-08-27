@@ -785,6 +785,7 @@ goodDomainsSimple =
     , "radiolab.org"
     , "www.thebeliever.net"
     , "fasttext.cc"
+    , "nunosempere.com"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com",
@@ -3082,6 +3083,7 @@ goodLinks = map (\u -> (u,True)) ["https://demo.allennlp.org/next-token-lm"
             , "https://scale.com/blog/chatgpt-vs-claude"
             , "https://radiolab.org/podcast/122291-in-running/transcript"
             , "https://fasttext.cc/blog/2017/10/02/blog-post.html"
+            , "https://nunosempere.com/blog/2023/01/30/an-in-progress-experiment-to-test-how-laplace-s-rule-of/"
             ]
 
 badLinks = map (\u -> (u,False)) ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"

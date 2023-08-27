@@ -105,7 +105,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Terman (study|sample)|Terman's|[Gg]enetic [Ss]tudies [Oo]f [Gg]enius)", "https://en.wikipedia.org/wiki/Genetic_Studies_of_Genius")
         , ("(UKBB|UK Bio ?[Bb]ank)", "https://en.wikipedia.org/wiki/UK_Biobank")
         , ("(VoI|[Vv]alue [Oo]f [Ii]nformation)", "https://en.wikipedia.org/wiki/Value_of_Information")
-        , ("(W. S. Gosset|William Sealy Gosset|Student)", "https://en.wikipedia.org/wiki/William_Sealy_Gosset")
+        , ("(W. S. Gosset|William Sealy Gosset)", "https://en.wikipedia.org/wiki/William_Sealy_Gosset")
         , ("(W?GWAS?|[Gg]enome-[Ww]ide [Aa]ssociation [Aa]nalys(is|e|es)|[Gg]enome-[Ww]ide [Aa]ssociation [Ss]tud(y|ies))", "https://en.wikipedia.org/wiki/Genome-wide_association_study")
         , ("(WGAN|Wasserstein GAN)s?", "https://arxiv.org/abs/1701.07875")
         , ("(Waste Isolation Pilot Plant|WIPP)", "https://en.wikipedia.org/wiki/Waste_Isolation_Pilot_Plant")

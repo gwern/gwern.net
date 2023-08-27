@@ -431,7 +431,8 @@ sortSimilarsStartingWithNewestWithTag md parentTag items =
     (result, _) <- foldM processWithBlacklistAccumulator ([], []) lists
     return result
   where
-    processWithBlacklistAccumulator :: ([(String, [(FilePath, MetadataItem)])], [String]) -> [(FilePath, MetadataItem)] -> IO ([(String, [(FilePath, MetadataItem)])], [String])
+    processWithBlacklistAccumulator :: ([(String, [(FilePath, MetadataItem)])], [String]) -> [(FilePath, MetadataItem)]
+                                    -> IO ([(String, [(FilePath, MetadataItem)])], [String])
     processWithBlacklistAccumulator (acc, blacklist) fs = do
       suggestion <- processTitles parentTag blacklist $ map (\(_,(t,_,_,_,_,_)) -> t) fs
       -- retry once for sporadic API errors:

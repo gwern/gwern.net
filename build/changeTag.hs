@@ -45,7 +45,7 @@ main = do
           args <- fmap (map $ (\a -> if "doc/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://gwern.net/" "/") getArgs
 
           when (length args < 2) $ error "Error: Insufficient arguments (<2)."
-          when ("gwt" `elem` args) $ error "Invalid tag/URL 'gwt' detected! Is this entire command malformed? Exiting immediately."
+          when ("gwt" `elem` args || "t" `elem` args) $ error "Invalid tag/URL 'gwt'/'t' detected! Is this entire command malformed? Exiting immediately."
 
           let links = filter (\arg -> " "/= arg && ""/=arg && (head arg == '/' || "http" `isPrefixOf` arg)) args
           allTags <- listTagsAll

@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-08-14 10:47:17 gwern"
+;;; When:  Time-stamp: "2023-08-27 10:59:46 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -414,7 +414,10 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      (" Saccharomyces cerevisiae" . " <em>Saccharomyces cerevisiae</em>")
                      ("two-by-two" . "2×2")
                      (" B.M.I" . " BMI")
-
+                     ("one-sixth" . "1⁄6<sup>th</sup>")
+                     ("three-quarters" . "3⁄4<sup>ths</sup>")
+                     ("two-thirds" . "2⁄3<sup>rds</sup>")
+                     ("2 thirds" . "2⁄3<sup>rds</sup>")
                      )
                    )
             )
@@ -467,6 +470,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("p0" . "<em>p</em><sub>0</sub>")
                         ("pgc" . "<em>p<sub>gc</sub></em>")
                         ("(N" . "(_n_ ")
+                        ("(n, " . "(_n_, ")
                         (" N)" . " _n_)")
                         ("[n = " . "[_n_ = ")
                         ("[N=" . "[_n_ = ")
@@ -661,6 +665,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" Wm−1" . " Wm<sup>−1</sup>")
                         (" K−1" . " K<sup>−1</sup>")
                         (" kg−1" . " kg<sup>−1</sup>")
+                        ("μg-1" . "μg<sup>−1</sup>")
+                        ("μg−1" . "μg<sup>−1</sup>")
                         ("l−1" . "l<sup>−1</sup>")
                         (" </sup>" . "</sup>")
                         ("<sup> " . "<sup>")
@@ -1182,9 +1188,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "\nAuthor Summary\n\n" "\n\n**Author Summary**: ")
          (replace-all "Purpose\n\n" "\n**Purpose**: ")
          (replace-all "Purpose\n" "**Purpose**: ")
-         (replace-all "Design/methodology/approach\n\n" "\n**Design/Methodology/Approach**: ")
-         (replace-all "RESEARCH DESIGN AND METHODS " "**Research Design & Method**: ")
-         (replace-all "RESEARCH DESIGN AND METHODS\n\n" "\n**Research Design & Method**: ")
+         (replace-all "Design/methodology/approach\n\n" "\n**Method**: ")
+         (replace-all "RESEARCH DESIGN AND METHODS " "**Method**: ")
+         (replace-all "RESEARCH DESIGN AND METHODS\n\n" "\n**Method**: ")
          (replace-all "METHOD: " "**Method**: ")
          (replace-all "\nDesign " "\n**Design**: ")
          (replace-all "Research limitations/implications\n\n" "\n**Research Limitations/Implications**: ")
@@ -1239,6 +1245,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (replace-all "Statistically significant" "Statistically-significant")
        (replace-all "clinical significance" "clinical-significance")
        (replace-all "clinically significant" "clinically-significant")
+       (replace-all "statistically different" "statistically-significantly different")
+       (replace-all "statistical difference" "statistically-significant difference")
        (replace-all "genome-wide significant" "genome-wide statistically-significant")
        (replace-all "genome-wide significance" "genome-wide statistical-significance")
        (funcall-interactively #'query-replace-regexp " significantly" (query-replace-compile-replacement "\\,(let* ((replacements '((?1 \" statistically-significantly\") (?2 \" importantly\") (?3 \" largely\") (?4 \" substantially\"))) (choice (read-multiple-choice \"Replace: \" replacements))) (second choice))" t) nil begin end)
@@ -1344,56 +1352,56 @@ Mostly string search-and-replace to enforce house style in terms of format."
 
        (query-replace "Figs. " "Figures " nil begin end)
        (query-replace "Fig. " "Figure " nil begin end)
-       (query-replace-regexp "Supplementary [fF]ig\\. \\(S?[0-9]+[a-fA-F]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Supp Fig. 1. ', 'Fig. 2a)' etc
-       (query-replace-regexp "Supplementary [fF]ig\\. \\(S?[0-9]+[a-fA-F]*\\)"    "**Supplementary Figure \\1**"   nil begin end) ; 'Supp Fig. 1,', 'Fig. 2a,' etc
-       (query-replace-regexp "Supplementary [fF]igure \\(S?[0-9]+[a-fA-F]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Supp Figure 1. The graph' etc
-       (query-replace-regexp "Supplementary ([fF]ig\\. \\(S?[0-9]+[a-fA-F]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Supp Fig. 3b)
-       (query-replace-regexp "Supplementary ([fF]igure \\(S?[0-9]+[a-fA-F]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Supp Figure 3b)
-       (query-replace-regexp "Supplementary ([fF]ig\\. \\(S?[0-9]+[a-fA-F]*\\),"  "(**Supplementary Figure \\1**," nil begin end) ; (Supp Fig. 3b,
-       (query-replace-regexp "Supplementary [fF]igures \\(S?[0-9]+[a-fA-F]*\\) and \\([0-9]+[a-fA-F]*\\)"  "**Supplementary Figures \\1** & **\\2**" nil begin end)
-       (query-replace-regexp "[fF]ig\\.? ?\\(S?\\)\\([0-9\\.]+[a-fA-F]*\\)\\.?" "**Figure \\1\\2**."  nil begin end) ; 'Fig. 1. ', 'Fig. 2a)', 'Figure 1.5' etc
-       (query-replace-regexp "[fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\)"    "**Figure \\1\\2**"   nil begin end) ; 'Fig. 1,', 'Fig. 2a,' etc
-       (query-replace-regexp "[fF]igure \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\.?\\)" "**Figure \\1\\2**"  nil begin end) ; 'Figure 1. The graph' etc
-       (query-replace-regexp "([fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\))"  "(**Figure \\1\\2**)" nil begin end) ; (Fig. 3b)
-       (query-replace-regexp "([fF]igure \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\))"  "(**Figure \\1\\2**)" nil begin end) ; (Figure 3b)
-       (query-replace-regexp "([fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-fA-F]*\\),"  "(**Figure \\1\\2**," nil begin end) ; (Fig. S3b,
+       (query-replace-regexp "Supplementary [fF]ig\\. \\(S?[0-9]+[a-hA-H]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Supp Fig. 1. ', 'Fig. 2a)' etc
+       (query-replace-regexp "Supplementary [fF]ig\\. \\(S?[0-9]+[a-hA-H]*\\)"    "**Supplementary Figure \\1**"   nil begin end) ; 'Supp Fig. 1,', 'Fig. 2a,' etc
+       (query-replace-regexp "Supplementary [fF]igure \\(S?[0-9]+[a-hA-H]*\\)\\." "**Supplementary Figure \\1**."  nil begin end) ; 'Supp Figure 1. The graph' etc
+       (query-replace-regexp "Supplementary ([fF]ig\\. \\(S?[0-9]+[a-hA-H]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Supp Fig. 3b)
+       (query-replace-regexp "Supplementary ([fF]igure \\(S?[0-9]+[a-hA-H]*\\))"  "(**Supplementary Figure \\1**)" nil begin end) ; (Supp Figure 3b)
+       (query-replace-regexp "Supplementary ([fF]ig\\. \\(S?[0-9]+[a-hA-H]*\\),"  "(**Supplementary Figure \\1**," nil begin end) ; (Supp Fig. 3b,
+       (query-replace-regexp "Supplementary [fF]igures \\(S?[0-9]+[a-hA-H]*\\) and \\([0-9]+[a-hA-H]*\\)"  "**Supplementary Figures \\1** & **\\2**" nil begin end)
+       (query-replace-regexp "[fF]ig\\.? ?\\(S?\\)\\([0-9\\.]+[a-hA-H]*\\)\\.?" "**Figure \\1\\2**."  nil begin end) ; 'Fig. 1. ', 'Fig. 2a)', 'Figure 1.5' etc
+       (query-replace-regexp "[fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-hA-H]*\\)"    "**Figure \\1\\2**"   nil begin end) ; 'Fig. 1,', 'Fig. 2a,' etc
+       (query-replace-regexp "[fF]igure \\(S?\\)\\([0-9\\.]+[a-hA-H]*\\.?\\)" "**Figure \\1\\2**"  nil begin end) ; 'Figure 1. The graph' etc
+       (query-replace-regexp "([fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-hA-H]*\\))"  "(**Figure \\1\\2**)" nil begin end) ; (Fig. 3b)
+       (query-replace-regexp "([fF]igure \\(S?\\)\\([0-9\\.]+[a-hA-H]*\\))"  "(**Figure \\1\\2**)" nil begin end) ; (Figure 3b)
+       (query-replace-regexp "([fF]ig\\.? \\(S?\\)\\([0-9\\.]+[a-hA-H]*\\),"  "(**Figure \\1\\2**," nil begin end) ; (Fig. S3b,
 
-       (query-replace-regexp "[aA]ppendix.? ?\\([a-zA-Z]?\\)\\([0-9\\.]+[a-fA-F]*\\)"  "**Appendix \\1\\2**" nil begin end) ; 'Appendix A2'
+       (query-replace-regexp "[aA]ppendix.? ?\\([a-zA-Z]?\\)\\([0-9\\.]+[a-hA-H]*\\)"  "**Appendix \\1\\2**" nil begin end) ; 'Appendix A2'
 
        ; '§ SECTION SIGN' is better than writing out '<strong>Section N</strong>' everywhere. It's much shorter, we already use SECTION SIGN heavily, it reduces overuse of bold, is easier to grep for, and it saves a bit of time formatting annotations (because of the lack of lookahead/lookbehind in these regexp rewrites, 'Section N' will match every time, even if it's already wrapped in <strong></strong>/**bolding**, and I have to waste time skipping them). It would be nice to symbolize Figure/Table/Experiment/Data as well, but there's no widely-understood symbol which could be used, and usually no abbreviation either. (Perhaps 'Supplement.*' could be replaced by just 'S' and 'Figure' by 'Fig.' at some point…)
-       (query-replace-regexp "[Ss]ection ?\\([0-9.]+[a-fA-F]*\\)"  "§\\1" nil begin end) ; 'Section 9' → '§9', 'section 9' → '§9'
-       (query-replace-regexp "Part ?\\([0-9.]+[a-fA-F]*\\)"  "§\\1" nil begin end) ; 'Part 9' → '§9'
-       (query-replace-regexp "[Ss]ections ?\\([0-9.]+[a-fA-F]*\\) and \\([0-9.]+[a-fA-F]*\\)"  "§\\1 & §\\2" nil begin end) ; 'Sections 1 and 2' → '§1 & §2'
+       (query-replace-regexp "[Ss]ection ?\\([0-9.]+[a-hA-H]*\\)"  "§\\1" nil begin end) ; 'Section 9' → '§9', 'section 9' → '§9'
+       (query-replace-regexp "Part ?\\([0-9.]+[a-hA-H]*\\)"  "§\\1" nil begin end) ; 'Part 9' → '§9'
+       (query-replace-regexp "[Ss]ections ?\\([0-9.]+[a-hA-H]*\\) and \\([0-9.]+[a-hA-H]*\\)"  "§\\1 & §\\2" nil begin end) ; 'Sections 1 and 2' → '§1 & §2'
 
-       (query-replace-regexp "Chapter \\([0-9]+[a-fA-F]*\\)" "**Ch\\1**"  nil begin end) ; 'Chapter 1', 'Chapter 7a' etc
+       (query-replace-regexp "Chapter \\([0-9]+[a-hA-H]*\\)" "**Ch\\1**"  nil begin end) ; 'Chapter 1', 'Chapter 7a' etc
 
-       (query-replace-regexp "Supplementary [Tt]able\\.? \\([0-9]+[a-fA-F]*\\)\\." "**Supplementary Table \\1**."  nil begin end) ; 'Table. 1. ', 'Table. 2a)' etc
-       (query-replace-regexp "Supplementary [Tt]able\\.? \\([0-9]+[a-fA-F]*\\)"    "**Supplementary Table \\1**"   nil begin end) ; 'Table. 1,', 'Table. 2a,' etc
-       (query-replace-regexp "Supplementary [Tt]able \\([0-9]+[a-fA-F]*\\)\\." "**Supplementary Table \\1**:"  nil begin end) ; 'Table 1. The graph' etc
-       (query-replace-regexp "Supplementary ([Tt]able\\. \\([0-9]+[a-fA-F]*\\))"  "(**Supplementary Table \\1**)" nil begin end) ; (Table. 3b)
-       (query-replace-regexp "Supplementary ([Tt]able \\([0-9]+[a-fA-F]*\\))"  "(**Supplementary Table \\1**)" nil begin end) ; (Table 3b)
-       (query-replace-regexp "Supplementary ([Tt]able\\. \\([0-9]+[a-fA-F]*\\),"  "(**Supplementary Table \\1**," nil begin end) ; (Table. 3b,
-       (query-replace-regexp "Supplementary [Tt]ables \\([0-9]+[a-fA-F]*\\) and \\([0-9]+[a-fA-F]*\\)" "**Supplementary Tables \\1** & **\\2**" nil begin end)
+       (query-replace-regexp "Supplementary [Tt]able\\.? \\([0-9]+[a-hA-H]*\\)\\." "**Supplementary Table \\1**."  nil begin end) ; 'Table. 1. ', 'Table. 2a)' etc
+       (query-replace-regexp "Supplementary [Tt]able\\.? \\([0-9]+[a-hA-H]*\\)"    "**Supplementary Table \\1**"   nil begin end) ; 'Table. 1,', 'Table. 2a,' etc
+       (query-replace-regexp "Supplementary [Tt]able \\([0-9]+[a-hA-H]*\\)\\." "**Supplementary Table \\1**:"  nil begin end) ; 'Table 1. The graph' etc
+       (query-replace-regexp "Supplementary ([Tt]able\\. \\([0-9]+[a-hA-H]*\\))"  "(**Supplementary Table \\1**)" nil begin end) ; (Table. 3b)
+       (query-replace-regexp "Supplementary ([Tt]able \\([0-9]+[a-hA-H]*\\))"  "(**Supplementary Table \\1**)" nil begin end) ; (Table 3b)
+       (query-replace-regexp "Supplementary ([Tt]able\\. \\([0-9]+[a-hA-H]*\\),"  "(**Supplementary Table \\1**," nil begin end) ; (Table. 3b,
+       (query-replace-regexp "Supplementary [Tt]ables \\([0-9]+[a-hA-H]*\\) and \\([0-9]+[a-hA-H]*\\)" "**Supplementary Tables \\1** & **\\2**" nil begin end)
 
-       (query-replace-regexp "[Tt]ables?\\.? \\(S?[0-9]+[a-fA-F]*\\)\\." "**Table \\1**:"  nil begin end) ; 'Table. 1. ', 'Table. 2a)' etc
-       (query-replace-regexp "[Tt]ables?\\.? \\(S?[0-9]+[a-fA-F]*\\)"    "**Table \\1**"   nil begin end) ; 'Table. 1,', 'Table. 2a,' etc
-       (query-replace-regexp "[Tt]ables?\\.? \\(S?[a-fA-F]+[0-9]+\\)"    "**Table \\1**"   nil begin end) ; 'Table S3'
-       (query-replace-regexp "[Tt]ables? \\(S?[0-9]+[a-fA-F]*\\)\\." "**Table \\1**:"  nil begin end) ; 'Table 1. The graph' etc
-       (query-replace-regexp "([Tt]ables?\\.? \\(S?[0-9]+[a-fA-F]*\\))"  "(**Table \\1**)" nil begin end) ; (Table. 3b)
-       (query-replace-regexp "([Tt]ables? \\(S?[0-9]+[a-fA-F]*\\))"  "(**Table \\1**)" nil begin end) ; (Table 3b)
-       (query-replace-regexp "([Tt]ables?\\.? \\(S?[0-9]+[a-fA-F]*\\),"  "(**Table \\1**," nil begin end) ; (Table. 3b,
-       (query-replace-regexp "[Tt]ables?\\.? \\(S?[0-9]+[a-fA-F]*\\) and \\([0-9]+[a-fA-F]*\\)"  "**Table \\1** & **\\2**" nil begin end) ; 'Tables 9 and 10'
+       (query-replace-regexp "[Tt]ables?\\.? \\(S?[0-9]+[a-hA-H]*\\)\\." "**Table \\1**:"  nil begin end) ; 'Table. 1. ', 'Table. 2a)' etc
+       (query-replace-regexp "[Tt]ables?\\.? \\(S?[0-9]+[a-hA-H]*\\)"    "**Table \\1**"   nil begin end) ; 'Table. 1,', 'Table. 2a,' etc
+       (query-replace-regexp "[Tt]ables?\\.? \\(S?[a-hA-H]+[0-9]+\\)"    "**Table \\1**"   nil begin end) ; 'Table S3'
+       (query-replace-regexp "[Tt]ables? \\(S?[0-9]+[a-hA-H]*\\)\\." "**Table \\1**:"  nil begin end) ; 'Table 1. The graph' etc
+       (query-replace-regexp "([Tt]ables?\\.? \\(S?[0-9]+[a-hA-H]*\\))"  "(**Table \\1**)" nil begin end) ; (Table. 3b)
+       (query-replace-regexp "([Tt]ables? \\(S?[0-9]+[a-hA-H]*\\))"  "(**Table \\1**)" nil begin end) ; (Table 3b)
+       (query-replace-regexp "([Tt]ables?\\.? \\(S?[0-9]+[a-hA-H]*\\),"  "(**Table \\1**," nil begin end) ; (Table. 3b,
+       (query-replace-regexp "[Tt]ables?\\.? \\(S?[0-9]+[a-hA-H]*\\) and \\([0-9]+[a-hA-H]*\\)"  "**Table \\1** & **\\2**" nil begin end) ; 'Tables 9 and 10'
 
-       (query-replace-regexp "Experiment \\([0-9]+[a-fA-F]*\\)" "**Experiment \\1**"  nil begin end) ; 'Experiment 1', 'Experiment 2a' etc
+       (query-replace-regexp "Experiment \\([0-9]+[a-hA-H]*\\)" "**Experiment \\1**"  nil begin end) ; 'Experiment 1', 'Experiment 2a' etc
        (query-replace "Experiments 1 and 2" "**Experiments 1** & **2**" nil begin end)
-       (query-replace-regexp "[Ss]tudy \\([0-9]+[a-fA-F]*\\)" "**Study \\1**"  nil begin end)
-       (query-replace-regexp "[Ss]tudies \\([0-9]+[a-fA-F]*\\)[-–]+\\([0-9]+[a-fA-F]*\\)" "**Studies \\1--\\2**"  nil begin end)
-       (query-replace-regexp "[Ss]tudies \\([0-9]+[a-fA-F]*\\) and \\([0-9]+[a-fA-F]*\\)" "**Studies \\1** & **\\2**"  nil begin end)
-       (query-replace-regexp "[Ss]tudies \\([0-9]+[a-fA-F]*\\), \\([0-9]+[a-fA-F]*\\), and \\([0-9]+[a-fA-F]*\\)" "**Studies \\1**, **\\2**, & **\\3**"  nil begin end)
-       (query-replace-regexp "[Ss]tudies \\([0-9]+[a-fA-F]*\\), \\([0-9]+[a-fA-F]*\\), \\([0-9]+[a-fA-F]*\\)" "**Studies \\1**, **\\2**, **\\3**"  nil begin end)
+       (query-replace-regexp "[Ss]tudy \\([0-9]+[a-hA-H]*\\)" "**Study \\1**"  nil begin end)
+       (query-replace-regexp "[Ss]tudies \\([0-9]+[a-hA-H]*\\)[-–]+\\([0-9]+[a-hA-H]*\\)" "**Studies \\1--\\2**"  nil begin end)
+       (query-replace-regexp "[Ss]tudies \\([0-9]+[a-hA-H]*\\) and \\([0-9]+[a-hA-H]*\\)" "**Studies \\1** & **\\2**"  nil begin end)
+       (query-replace-regexp "[Ss]tudies \\([0-9]+[a-hA-H]*\\), \\([0-9]+[a-hA-H]*\\), and \\([0-9]+[a-hA-H]*\\)" "**Studies \\1**, **\\2**, & **\\3**"  nil begin end)
+       (query-replace-regexp "[Ss]tudies \\([0-9]+[a-hA-H]*\\), \\([0-9]+[a-hA-H]*\\), \\([0-9]+[a-hA-H]*\\)" "**Studies \\1**, **\\2**, **\\3**"  nil begin end)
 
        (query-replace-regexp "^\\( *\\)\\([0-9]+\\)\\. " "\\1#. " nil begin end) ; Markdown ordered-list number formatting: see default.css for more discussion, but using '1./2./3.' list numbering in Markdown yields hardwired number formatting rather than plain `<ol>`, which causes styling problems when nested in lists.
-       (query-replace-regexp "Supplementary Data \\([0-9]+[a-fA-F]*\\)" "**Supplementary Data \\1**"  nil begin end) ; '(Supplementary Data 7)'
+       (query-replace-regexp "Supplementary Data \\([0-9]+[a-hA-H]*\\)" "**Supplementary Data \\1**"  nil begin end) ; '(Supplementary Data 7)'
        (query-replace " 0)" " (0)" nil begin end) ; we do the number+paren check after the '(study 1)' check
        (query-replace " 1)" " (1)" nil begin end)
        (query-replace " 2)" " (2)" nil begin end)

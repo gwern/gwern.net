@@ -41,7 +41,7 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "digital.library.unt.edu"
                      "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org",
                      "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com",
                      "www.acpjournals.org", "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com",
-                     "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org"]
+                     "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org"]
 ------------------------------------------------------------------------------------------
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
@@ -624,4 +624,5 @@ linkIconTestUnitsText =
          , ("https://novelai.net/novelai-improvements-on-stable-diffusion-e10d38db82ac", "🖋", "text")
          , ("https://www.thebeliever.net/mithradites-of-fond-du-lac/", "𝐁", "text,serif")
          , ("http://blog.sigfpe.com/2005/08/absence-of-evidence-is-evidence-of.html", "sgfp", "text,quad,monospace")
+         , ("https://nunosempere.com/blog/2023/01/30/an-in-progress-experiment-to-test-how-laplace-s-rule-of/", "nuno", "text,quad,sans")
         ]
