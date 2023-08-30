@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-08-28 10:21:44 gwern"
+# When:  Time-stamp: "2023-08-29 23:10:15 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -214,7 +214,7 @@ else
         #### NOTE: for each new extension, add a `find` name, and an entry in `extracts-content.js`
         declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["bash"]="Bash" ["html"]="HTML" ["conf"]="Bash" ["php"]="PHP" ["opml"]="Xml" ["xml"]="Xml" ["page"]="Markdown"
                                          # NOTE: we do 'text' to get a 'syntax-highlighted' version which has wrapped columns etc.
-                                         ["txt"]="" ["yaml"]="YAML" ["jsonl"]="JSON" ["json"]="JSON" ["csv"]="CSV" )
+                                         ["txt"]="default" ["yaml"]="YAML" ["jsonl"]="JSON" ["json"]="JSON" ["csv"]="CSV" )
         LENGTH="2000"
         for FILE in "$@"; do
             FILEORIGINAL=$(echo "$FILE" | sed -e 's/_site//')
@@ -240,12 +240,12 @@ else
     }
     export -f syntaxHighlight
     set +e
-    find _site/static/ -type f,l -name "*.html" | sort | parallel --jobs 25 syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
+    find _site/static/ -type f,l -name "*.html" | sort | parallel --jobs "$N" syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
     find _site/ -type f,l -name "*.R" -or -name "*.c" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.diff" -or -name "*.py" -or -name "*.sh" -or -name "*.bash" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.page" -or -name "*.txt" -or -name "*.json" -or -name "*.jsonl" -or -name "*.yaml" -or -name "*.xml" -or -name "*.csv"  | \
         sort |  grep -F --invert-match \
                  `# Pandoc fails on embedded Unicode/regexps in JQuery` \
                  -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'index.page' \
-                 -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'doc/www/' -e 'sitemap.xml' | parallel  --jobs 25 syntaxHighlight
+                 -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'doc/www/' -e 'sitemap.xml' | parallel  --jobs "$N" syntaxHighlight
     set -e
 
     bold "Stripping compile-time-only classes unnecessary at runtime…"
@@ -302,7 +302,7 @@ else
     export -f staticCompileMathJax
     (find ./ -path ./_site -prune -type f -o -name "*.page" | grep -F --invert-match -e '#' | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/';
      find _site/metadata/annotation/ -name '*.html') | shuf | \
-        parallel --jobs 31 --max-args=1 staticCompileMathJax
+        parallel --jobs "$N" --max-args=1 staticCompileMathJax
 
     # 1. turn "As per Foo et al 2020, we can see." → "<p>As per Foo et al 2020, we can see.</p>" (&nbsp;); likewise for 'Foo 2020' or 'Foo & Bar 2020'
     # 2. add non-breaking character to punctuation after links to avoid issues with links like '[Foo](/bar);' where ';' gets broken onto the next line (this doesn't happen in regular text, but only after links, so I guess browsers have that builtin but only for regular text handling?), (U+2060 WORD JOINER (HTML &#8288; · &NoBreak; · WJ))
