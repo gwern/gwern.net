@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-08-29 23:10:15 gwern"
+# When:  Time-stamp: "2023-08-30 10:16:17 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -580,7 +580,8 @@ else
             -e '</em></em>' -e '<strong><strong>' -e '</strong></strong>' -e 'doi:' -e '\\\' -e 'href"http' \
             -e '… .' -e '... .'  -e '– ' -e  ' –' -e '### Competing' -e '<strong></strong>' -e '<span style="font-weight: 400;">' \
             -e '</p> </figcaption>' -e '</p></figcaption>' -e '<figcaption aria-hidden="true"><p>' -e '<figcaption aria-hidden="true"> <p>' \
-            -e '<figcaption><p>' -e '<figcaption> <p>' -e 'Your input seems to be incomplete.' -e 'tercile' -e 'tertile' -- ./metadata/*.yaml | \
+            -e '<figcaption><p>' -e '<figcaption> <p>' -e 'Your input seems to be incomplete.' -e 'tercile' -e 'tertile' \
+            -e '</strong> [' -- ./metadata/*.yaml | \
              grep -F --invert-match 'popular_shelves';
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
@@ -949,16 +950,32 @@ else
     λ(){ find * -type d -empty; }
     wrap λ "Unused or empty directories?"
 
-    bold "Checking for HTML/PDF/image anomalies…"
+    bold "Checking for HTML anomalies…"
     λ(){ BROKEN_HTMLS="$(find ./ -type f -name "*.html" | grep -F --invert-match 'static/' | \
                          parallel --max-args=500 "grep -F --ignore-case --files-with-matches \
                          -e '404 Not Found' -e '<title>Sign in - Google Accounts</title' -e 'Download Limit Exceeded' -e 'Access Denied'" | sort)"
-         for BROKEN_HTML in $BROKEN_HTMLS;
-         do grep --before-context=3 "$BROKEN_HTML" ./metadata/archive.hs | grep -F --invert-match -e 'Right' -e 'Just';
+         for BROKEN_HTML in $BROKEN_HTMLS; do
+             grep --before-context=3 "$BROKEN_HTML" ./metadata/archive.hs | grep -F --invert-match -e 'Right' -e 'Just';
          done; }
     wrap λ "Archives of broken links"
 
-    λ(){ BROKEN_PDFS="$(find ./ -type f -name "*.pdf" -not -size 0 | sort | parallel --max-args=500 file | grep --invert-match 'PDF document' | cut -d ':' -f 1)"
+    ## 'file' throws a lot of false negatives on HTML pages, often detecting XML and/or ASCII instead, so we whitelist some:
+    λ(){ find ./ -type f -name "*.html" | grep -F --invert-match -e 4a4187fdcd0c848285640ce9842ebdf1bf179369 -e 5fda79427f76747234982154aad027034ddf5309 \
+                                                -e f0cab2b23e1929d87f060beee71f339505da5cad -e a9abc8e6fcade0e4c49d531c7d9de11aaea37fe5 \
+                                                -e 2015-01-15-outlawmarket-index.html -e ac4f5ed5051405ddbb7deabae2bce48b7f43174c.html \
+                                                -e %3FDaicon-videos.html -e 86600697f8fd73d008d8383ff4878c25eda28473.html \
+                                                -e '16aacaabe05dfc07c0e966b994d7dd0a727cd90e' -e 'metadata/today-quote.html' -e 'metadata/today-annotation.html' \
+                                                -e '023a48cb80d48b1438d2accbceb5dc8ad01e8e02' -e '/Starr_Report/' \
+             | parallel --max-args=500 file | grep -F --invert-match -e 'HTML document, ' -e 'ASCII text' -e 'LaTeX document, UTF-8 Unicode text'; }
+    wrap λ "Corrupted filetype HTMLs"
+
+    ## having noindex tags causes conflicts with the robots.txt and throws SEO errors; except in the ./doc/www/ mirrors, where we don't want them to be crawled:
+    λ(){ find ./ -type f -name "*.html" | grep -F --invert-match -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | xargs grep -F --files-with-matches 'noindex'; }
+    wrap λ "Noindex tags detected in HTML pages."
+
+    bold "Checking for PDF anomalies…"
+    λ(){ BROKEN_PDFS="$(find ./ -type f -name "*.pdf" -not -size 0 | sort | parallel --max-args=500 file | \
+                                grep --invert-match 'PDF document' | cut -d ':' -f 1)"
          for BROKEN_PDF in $BROKEN_PDFS; do
              echo "$BROKEN_PDF"; grep --before-context=3 "$BROKEN_PDF" ./metadata/archive.hs;
          done; }
@@ -988,6 +1005,19 @@ else
     }
     wrap λ "Remove academic-publisher wrapper junk from PDFs."
 
+    removeEncryption () { ENCRYPTION=$(exiftool -quiet -quiet -Encryption "$@");
+                          if [ "$ENCRYPTION" != "" ]; then
+                              echo "$@"
+                              TEMP=$(mktemp /tmp/encrypted-XXXX.pdf)
+                              pdftk "$@" input_pw output "$TEMP" && mv "$TEMP" "$@";
+                          fi; }
+    export -f removeEncryption
+    find ./ -type f -name "*.pdf" -not -size 0 | sort | parallel removeEncryption
+
+    λ(){ find ./ -type f -name "*.djvu"; }
+    wrap λ "Legacy DjVu detected (convert to JBIG2 PDF; see <https://gwern.net/design-graveyard#djvu-files>)."
+
+    bold "Checking for image anomalies…"
     λ(){ find ./doc/ -type f -name "*.jpg" | parallel --max-args=500 file | grep -F --invert-match 'JPEG image data'; }
     wrap λ "Corrupted JPGs"
 
@@ -996,32 +1026,6 @@ else
 
     λ(){  find ./doc/ -name "*.png" | grep -F --invert-match -e '/static/img/' -e '/doc/www/misc/' | sort | xargs identify -format '%F %[opaque]\n' | grep -F ' false'; }
     wrap λ "Partially transparent PNGs (may break in dark mode, convert with 'mogrify -background white -alpha remove -alpha off')"
-
-    ## 'file' throws a lot of false negatives on HTML pages, often detecting XML and/or ASCII instead, so we whitelist some:
-    λ(){ find ./ -type f -name "*.html" | grep -F --invert-match -e 4a4187fdcd0c848285640ce9842ebdf1bf179369 -e 5fda79427f76747234982154aad027034ddf5309 \
-                                                -e f0cab2b23e1929d87f060beee71f339505da5cad -e a9abc8e6fcade0e4c49d531c7d9de11aaea37fe5 \
-                                                -e 2015-01-15-outlawmarket-index.html -e ac4f5ed5051405ddbb7deabae2bce48b7f43174c.html \
-                                                -e %3FDaicon-videos.html -e 86600697f8fd73d008d8383ff4878c25eda28473.html \
-                                                -e '16aacaabe05dfc07c0e966b994d7dd0a727cd90e' -e 'metadata/today-quote.html' -e 'metadata/today-annotation.html' \
-                                                -e '023a48cb80d48b1438d2accbceb5dc8ad01e8e02' -e '/Starr_Report/' \
-             | parallel --max-args=500 file | grep -F --invert-match -e 'HTML document, ' -e 'ASCII text' -e 'LaTeX document, UTF-8 Unicode text'; }
-    wrap λ "Corrupted filetype HTMLs"
-
-    removeEncryption () { ENCRYPTION=$(exiftool -quiet -quiet -Encryption "$@");
-                          if [ "$ENCRYPTION" != "" ]; then
-                              echo "$@"
-                              TEMP=$(mktemp /tmp/encrypted-XXXX.pdf)
-                              pdftk "$FILE" input_pw output "$TEMP" && mv "$TEMP" "$FILE";
-                          fi; }
-    export -f removeEncryption
-    find ./ -type f -name "*.pdf" -not -size 0 | sort | parallel removeEncryption
-
-    λ(){ find ./ -type f -name "*.djvu"; }
-    wrap λ "Legacy DjVu detected (convert to JBIG2 PDF; see <https://gwern.net/design-graveyard#djvu-files>)."
-
-    ## having noindex tags causes conflicts with the robots.txt and throws SEO errors; except in the ./doc/www/ mirrors, where we don't want them to be crawled:
-    λ(){ find ./ -type f -name "*.html" | grep -F --invert-match -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | xargs grep -F --files-with-matches 'noindex'; }
-    wrap λ "Noindex tags detected in HTML pages."
 
     λ(){ find ./ -type f -name "*.gif" | grep -F --invert-match -e 'static/img/' -e 'doc/gwern.net-gitstats/' -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' | parallel --max-args=500 identify | grep -E '\.gif\[[0-9]\] '; }
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4s."
@@ -1044,6 +1048,7 @@ else
           done; }
     wrap λ "Too-wide images (downscale)"
 
+    bold "Running site functionality checks…"
     ## Look for domains that may benefit from link icons or link live status now:
     λ() { ghci -istatic/build/ ./static/build/LinkIcon.hs  -e 'linkIconPrioritize' | grep -F --invert-match -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
     wrap λ "Need link icons?"

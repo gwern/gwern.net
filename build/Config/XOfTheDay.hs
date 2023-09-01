@@ -466,4 +466,6 @@ siteBlackList = [
           "hpmor.com","xtools.wmcloud.org","tech.msu.edu", "nap.nationalacademies.org", "docs.iza.org","www.findarticles.com","hal.science",
           "platform.openai.com","www8.austlii.edu.au","www.noahpinion.blog","www.mattridley.co.uk","www.cryonicsarchive.org","shs.hal.science",
           "psychology.wvu.edu","blogs.lanecc.edu","bayesianinvestor.com", "danielpovey.com", "www.nasonline.org", "calteches.library.caltech.edu",
-          "pile.eleuther.ai", "verdagon.dev", "dataverse.harvard.edu", "tim.blog", "radiolab.org", "melaniemitchell.me", "www.ece.uvic.ca", "classic.clinicaltrials.gov", "www.takimag.com", "theathletic.com", "fasttext.cc", "ars.els-cdn.com", "pubs.aip.org"]
+          "pile.eleuther.ai", "verdagon.dev", "dataverse.harvard.edu", "tim.blog", "radiolab.org", "melaniemitchell.me", "www.ece.uvic.ca",
+          "classic.clinicaltrials.gov", "www.takimag.com", "theathletic.com", "fasttext.cc", "ars.els-cdn.com", "pubs.aip.org",
+          "tools.openlab.psu.edu"]

@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-08-27 10:59:46 gwern"
+;;; When:  Time-stamp: "2023-08-30 11:28:41 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1480,7 +1480,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([[:digit:]]+\\)x" "\\1×" nil begin end)
        (query-replace-regexp "\\([[:digit:]]+\\)-times" "\\1×" nil begin end)
        (query-replace-regexp "\\([[:digit:]]+\\) times" "\\1×" nil begin end)
-       (query-replace-regexp "\\([[:digit:]]+\\) x \\([[:digit:]]+\\)" "\\1×\\2" nil begin end)
+       (query-replace-regexp "\\([[:digit:]]+\\) x \\([[:digit:]]+\\)" "\\1 × \\2" nil begin end)
+       (query-replace-regexp "\\([[:digit:]]+\\) \\* \\([[:digit:]]+\\)" "\\1 × \\2" nil begin end)
        ; comma formatting: eg. '100000000000' -> '100,000,000,000' - but we need to skip URLs where such numbers are ubiquitous & time-wasting. Avoid possible years which start with 1/2.
        (my-markdown-or-html-query-replace-regexp "\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]]+\\)" #'comma-format-number nil begin end) ; 5+ digit numbers
        (my-markdown-or-html-query-replace-regexp "\\([3-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number nil begin end) ; 4-digit numbers, which might be years/dates
