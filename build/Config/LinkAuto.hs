@@ -3,11 +3,12 @@ module Config.LinkAuto where
 
 import Data.List (sortBy)
 import qualified Data.Text as T (length, Text)
+import Utils (isUniqueAll)
 
 -- descending order, longest match to shortest (for regex priority):
 -- WARNING: we appear to be hitting some sort of exponential slowdown despite the optimizations. From now on, delete at least one rewrite for every added rewrite. Many are unnecessary.
 custom :: [(T.Text, T.Text)]
-custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
+custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) $ isUniqueAll [
         ("(1-Lipschitz|Lipschitz)", "https://en.wikipedia.org/wiki/Lipschitz_continuity")
         , ("(A2C|A3C|[Aa]synchronous [Aa]dvantage [Aa]ctor-[Cc]ritic)", "https://arxiv.org/abs/1602.01783#deepmind")
         , ("(ADHD|[Aa]ttention[ -][Dd]eficit [Hh]yperactivity [Dd]isorder)s?", "https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder")

@@ -3,7 +3,7 @@ module Utils where
 
 import Control.Monad (when)
 import Data.Char (isSpace)
-import Data.List (group, intercalate, intersperse, sort, isInfixOf, isPrefixOf, isSuffixOf, tails)
+import Data.List (group, intercalate, intersperse, sort, isInfixOf, isPrefixOf, isSuffixOf, tails, nub, (\\))
 import Data.Text.IO as TIO (readFile, writeFile)
 import Data.Time.Calendar (toGregorian, toModifiedJulianDay)
 import Data.Time.Clock (getCurrentTime, utctDay)
@@ -1963,3 +1963,52 @@ balanced str = helper str "" 0 0
     matchingBracket ']' = '['
     matchingBracket '}' = '{' -- TODO: if this approach works, add double-quotes as delimiters that should be balanced
     matchingBracket _ = error "Invalid bracket"
+
+-- Enable additional runtime checks to very long config lists which risk error from overlap or redundancy. Prints out the duplicates.
+-- (Since the config lists are static, they can in theory be checked at compile-time, but my attempt to do that with Template Haskell
+-- for XMonad keymap configs many years ago ran into a lot of pain, so I won't bother even trying again.)
+-- Helper function to check uniqueness & report the offending list:
+
+-- Helper function to get duplicates
+getDuplicates :: (Eq a) => [a] -> [a]
+getDuplicates xs = xs \\ nub xs
+throwError :: Show a => String -> [a] -> b
+throwError msg xs = error $ "Error: " ++ msg ++ " " ++ show xs
+checkUniqueOrThrow :: (Eq a, Show a) => String -> [a] -> [a]
+checkUniqueOrThrow msg xs
+  | null duplicates = xs
+  | otherwise = throwError msg duplicates
+  where duplicates = getDuplicates xs
+
+-- 0. check a simple list for uniqueness in the only way possible:
+isUniqueList :: (Eq a, Show a) => [a] -> [a]
+isUniqueList = checkUniqueOrThrow "Simple list contains duplicates:"
+
+-- Association-list checks:
+-- 1. isUnique: all key-value pairs are unique and there are no duplicates
+isUnique :: (Eq a, Show a, Eq b, Show b) => [(a,b)] -> [(a,b)]
+isUnique = checkUniqueOrThrow "Association List contains duplicate key-value pairs:"
+
+-- 2. isUniqueKeys: all keys are unique and there are no duplicates
+isUniqueKeys :: (Eq a, Show a, Show b) => [(a,b)] -> [(a,b)]
+isUniqueKeys xs
+  | null duplicates = xs
+  | otherwise = throwError "Association List contains duplicate keys:" duplicates
+  where duplicates = getDuplicates (map fst xs)
+-- special-case:
+isUniqueKeys3 :: (Eq a, Show a) => [(a,b,c)] -> [(a,b,c)]
+isUniqueKeys3 xs
+  | null duplicates = xs
+  | otherwise = throwError "Association List contains duplicate keys:" duplicates
+  where duplicates = getDuplicates (map (\(a,_,_) -> a) xs)
+
+-- 3. isUniqueValues: all values are unique and there are no duplicates
+isUniqueValues :: (Show a, Eq b, Show b) => [(a,b)] -> [(a,b)]
+isUniqueValues xs
+  | null duplicates = xs
+  | otherwise = throwError "Association List contains duplicate values:" duplicates
+  where duplicates = getDuplicates (map snd xs)
+
+-- 4. isUniqueAll: all keys, values, and key-value pairs are unique
+isUniqueAll :: (Eq a, Show a, Eq b, Show b) => [(a,b)] -> [(a,b)]
+isUniqueAll xs = isUniqueValues $ isUniqueKeys $ isUnique xs

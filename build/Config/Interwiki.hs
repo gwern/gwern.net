@@ -2,12 +2,13 @@
 module Config.Interwiki where
 
 import qualified Data.Text as T (Text)
+import Utils (isUniqueList, isUniqueKeys)
 
 quoteOverrides :: [T.Text]
-quoteOverrides = ["Antoine's", "Bloomingdale's", "Collier's", "Kinko's", "Mzoli's", "Security_hacker#Birth_of_subculture_and_entering_mainstream:_1960's-1980's", "Security hacker#Birth of subculture and entering mainstream: 1960's-1980's"]
+quoteOverrides = isUniqueList ["Antoine's", "Bloomingdale's", "Collier's", "Kinko's", "Mzoli's", "Security_hacker#Birth_of_subculture_and_entering_mainstream:_1960's-1980's", "Security hacker#Birth of subculture and entering mainstream: 1960's-1980's"]
 
 redirectDB :: [(T.Text, T.Text)]
-redirectDB = [
+redirectDB = isUniqueKeys [
           ("https://en.wikipedia.org/wiki/WP:RS", "https://en.wikipedia.org/wiki/Wikipedia:Reliable_sources")
           , ("https://en.wikipedia.org/wiki/1000_Genomes", "https://en.wikipedia.org/wiki/1000_Genomes_Project")
           , ("https://en.wikipedia.org/wiki/120_Days_of_Sodom", "https://en.wikipedia.org/wiki/The_120_Days_of_Sodom")

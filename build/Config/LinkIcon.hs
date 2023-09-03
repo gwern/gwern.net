@@ -3,6 +3,7 @@ module Config.LinkIcon where
 
 import qualified Data.Text as T (Text)
 import Text.Pandoc (Inline(Link, Str))
+import Utils (isUniqueList, isUniqueKeys3)
 
 -- hardwire globally icons for exact-matches of specific URLs (`[(URL, (Link icon, Link icon type))]`), in cases where we can't or won't edit the link directly to set link-icons (eg. in /fiction/clippy, I do a manual override of link-icons to rickroll the reader: `[HQU Colab notebook](https://​tinyurl.com/hquv34 "Colab notebook: HQU-v3.4-light (Jax TPU)"){link-icon="alphabet" link-icon-type="svg" .link-live-not .archive-not}`)
 overrideLinkIcons :: [(T.Text, (T.Text,T.Text))]
@@ -15,7 +16,7 @@ prioritizeLinkIconMin :: Int
 prioritizeLinkIconMin = 4
 
 prioritizeLinkIconBlackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc:
-prioritizeLinkIconBlackList = ["lilianweng.github.io", "digital.library.unt.edu", "www.smartpowders.com", "www.silverhandmeadery.com",
+prioritizeLinkIconBlackList = isUniqueList ["lilianweng.github.io", "digital.library.unt.edu", "www.smartpowders.com", "www.silverhandmeadery.com",
                      "forums.animesuki.com", "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.theregister.com",
                      "www.thedailybeast.com", "www.teanobi.com", "www.straighttalkonevidence.org", "www.joelonsoftware.com",
                      "www.jstage.jst.go.jp", "blog.codinghorror.com", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am",
@@ -58,7 +59,7 @@ linkIconTestUnitsLink = [(Link ("", ["directory-indexes-upwards"],      []) [Str
 
 -- in /lorem order:
 linkIconTestUnitsText :: [(T.Text,T.Text,T.Text)]
-linkIconTestUnitsText =
+linkIconTestUnitsText = isUniqueKeys3
         [("/static/img/icon/deepmind.svg",  "deepmind","svg")
          , ("https://academic.oup.com/ije/article/43/3/775/758445",  "OUP","text,tri")
          , ("https://ajcn.nutrition.org/content/69/5/842.full", "OUP", "text,tri")

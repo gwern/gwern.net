@@ -2,15 +2,17 @@
 module Config.XOfTheDay where
 
 import qualified Data.Text as T (Text)
+import Utils (isUniqueList)
 
+-- at >500, yielded 10,046 on 2023-03-08; >2,000 yielded a more reasonable 3,313 (still far above requirements of 1/day)
 minAnnotationAbstractLength :: Int
-minAnnotationAbstractLength = 2000 -- at >500, yielded 10,046 on 2023-03-08; >2,000 yielded a more reasonable 3,313 (still far above requirements of 1/day)
+minAnnotationAbstractLength = 2000
 
 siteLinkMin :: Int
 siteLinkMin = 3
 
 siteBlackList :: [T.Text] -- definitely excluded from recs
-siteBlackList = [
+siteBlackList = isUniqueList [
           "07th-expansion.fandom.com", "17th-angel.tumblr.com", "2chan.us", "abandonedfootnotes.blogspot.com", "abcnews.go.com",
           "abcnotation.com", "academic.oup.com", "academictorrents.com", "aclanthology.org", "acoup.blog",
           "actavet.vfu.cz", "addons.mozilla.org", "advancedfertility.com", "aeon.co", "ageing.oxfordjournals.org",

@@ -1,6 +1,6 @@
 module Config.LinkArchive where
 
-import Utils (sed, anyInfix, anyPrefix, anySuffix, replace)
+import Utils (sed, anyInfix, anyPrefix, anySuffix, replace, isUniqueList)
 
 archiveDelay, archivePerRunN :: Integer
 archiveDelay = 60
@@ -94,7 +94,7 @@ whiteList url
   | anyInfix url ["citeseerx.ist.psu.edu"] = False -- TODO: after fixing all existing Citeseer links, set this rule to False
   | anyPrefix url ["/", "./", "../", "https://gwern.net", "#", "!", "$", "mailto", "irc", "/metadata/", "/doc/"] = True
   | anySuffix url [".pdf", "/pdf", ".pdf#"] = False
-  | anyInfix url [
+  | anyInfix url $ isUniqueList [
       "archive.org"
       , "web.archive.org" -- TODO: we want to avoid IA links long-term (see <https://gwern.net/archiving#why-not-internet-archive>), so once all the regular links are archived, remove IA from the whitelist so they start archiving too
       , ".txt" -- TODO: generalize the PDF download to handle all non-HTML filetypes
@@ -106,7 +106,6 @@ whiteList url
       , ".png"
       , ".ogg"
       , ".jpg"
-      , ".ogg"
       , "halshs.archives-ouvertes.fr/"
       , "apenwarr.ca"
       , "distill.pub"
@@ -140,7 +139,6 @@ whiteList url
       , "cdlib.org"
       , "econlib.org"
       , "ssgac.org"
-      , "stlouisfed.org"
       , "davidsongifted.org"
       , "projecteuclid.org"
       , "erowid.org"
@@ -530,7 +528,6 @@ whiteList url
       , "scp-wiki.net" -- stable
       , "touhouwiki.net" -- stable
       , "epjournal.net"
-      , "gwern.net" -- redundant
       , "gwern.net" -- redundant
       , "lwn.net" -- stable
       , "incompleteideas.net" -- stable
@@ -922,7 +919,6 @@ whiteList url
       , "https://tfhub.dev/google/collections/gtr/1" -- source code/doc/updated
       , "https://universome.github.io/stylegan-v" -- video embed
       , "https://openaipublic.blob.core.windows.net/webgpt-answer-viewer/index.html" -- interactive
-      , "http://recur-env.eba-rm3fchmn.us-east-2.elasticbeanstalk.com/" -- interactive
       , "http://recur-env.eba-rm3fchmn.us-east-2.elasticbeanstalk.com/" -- interactive
       , "https://pandoc.org/" -- homepage
       , "https://caniuse.com/" -- updated

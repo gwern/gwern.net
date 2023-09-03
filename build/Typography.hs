@@ -237,7 +237,7 @@ imageCaptionLinebreak x@(Image _ (Strong _ : Str ": (" : Emph _ : _) _) = x
 imageCaptionLinebreak (Image y (Strong a : Str b : Space : Emph c : d) z) = Image y
                                                                                       (Strong a : Str b : Emph c : LineBreak : d)
                                                                                       z
-imageCaptionLinebreak (Image y (Strong a : Str b : Emph c : d) z) = Image y
+imageCaptionLinebreak (Image y (Strong a : Str b :         Emph c : d) z) = Image y
                                                                                       (Strong a : Str b : Emph c : LineBreak : d)
                                                                                       z
 imageCaptionLinebreak x = x

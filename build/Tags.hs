@@ -13,7 +13,7 @@ import qualified Data.Map.Strict as M (elems, map, toList )
 import qualified Data.Text as T (append, pack, unpack, Text)
 
 import LinkMetadataTypes (Metadata)
-import Utils (anyInfix, replace, sed, sedMany, trim, split, replaceMany, frequency, pairs, fixedPoint)
+import Utils (anyInfix, replace, sed, sedMany, trim, split, replaceMany, frequency, pairs, fixedPoint, isUniqueKeys, isUniqueList, isUniqueAll)
 
 -- Remind to refine link tags: should be <100. (We count using the annotation database instead of counting files inside each directory because so many are now cross-tagged or virtual.)
 tagMax, tagPairMax :: Int
@@ -102,7 +102,7 @@ abbreviateTag :: T.Text -> T.Text
 abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagsLong2Short . replace "/doc/" "" . T.unpack
   where
         tagRewritesRegexes  :: [(String,String)]
-        tagRewritesRegexes = [("^cs/", "CS/")
+        tagRewritesRegexes = isUniqueKeys [("^cs/", "CS/")
                              , ("^cs$", "CS")
                              , ("^cs/c$", "C")
                              , ("^cs/r$", "R")
@@ -153,21 +153,19 @@ guessTagFromShort l s = fixedPoint (f l) s
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
 tagsLong2Short, tagsShort2Long :: [(String,String)]
-tagsShort2Long = [("power", "statistics/power-analysis"), ("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dogs", "dog"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/sample"), ("samples", "ai/nn/transformer/clip/sample"), ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"), ("quantization", "ai/nn/sparsity/low-precision") , ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision"), ("evolution", "genetics/selection/natural"), ("gpt-3", "ai/nn/transformer/gpt"), ("gpt3", "ai/nn/transformer/gpt"), ("gpt/nonfiction", "ai/nn/transformer/gpt/non-fiction"), ("red", "design/typography/rubrication"), ("self-attention", "ai/nn/transformer/attention"), ("efficient-attention", "ai/nn/transformer/attention"), ("ai/rnn", "ai/nn/rnn"), ("ai/retrieval", "ai/nn/retrieval"), ("mr", "genetics/heritable/correlation/mendelian-randomization"), ("japan/anime", "anime"), ("psychology/bird", "psychology/animal/bird"), ("psychology/birds/neuroscience", "psychology/animal/bird/neuroscience"), ("psychology/birds", "psychology/animal/bird"), ("dalle","dall-e/2"), ("dall-e", "ai/nn/transformer/gpt/dall-e/2"), ("darknet-markets", "darknet-market"), ("silk-road-1", "darknet-market/silk-road/1"), ("sr1", "darknet-market/silk-road/1"), ("silk-road-2", "darknet-market/silk-road/2"), ("sr2", "darknet-market/silk-road/2"), ("sr/1", "darknet-market/silk-road/1"), ("sr/2", "darknet-market/silk-road/2"), ("sr", "darknet-market/silk-road"), ("psychology/neuroscience/bird", "psychology/animal/bird/neuroscience"), ("uighurs", "history/uighur"), ("ai/adversarial", "ai/nn/adversarial"), ("add", "psychiatry/adhd"), ("asperger", "psychiatry/autism"), ("aspergers", "psychiatry/autism"), ("personality/conscientiousness", "psychology/personality/conscientiousness"), ("conscientiousness", "psychology/personality/conscientiousness"), ("anorexia-nervosa", "psychiatry/anorexia"), ("anxiety-disorder", "psychiatry/anxiety"), ("masked-auto-encoder", "ai/nn/vae/mae"), ("masked-autoencoder", "ai/nn/vae/mae"), ("masked", "ai/nn/vae/mae"), ("alzheimer's", "psychiatry/alzheimers"), ("ad", "psychiatry/alzheimers"), ("alzheimers-disease", "psychiatry/alzheimers"), ("alzheimer", "psychiatry/alzheimers"), ("psychedelics", "psychedelic"), ("stylometric", "statistics/stylometry"), ("stylometrics", "statistics/stylometry"), ("dune", "fiction/science-fiction/frank-herbert"), ("herbert", "fiction/science-fiction/frank-herbert"), ("instruct-tuning", "instruction-tuning"), ("instruction-finetuning", "instruction-tuning"), ("psychopath", "psychology/personality/psychopathy"), ("sociopath", "psychology/personality/psychopathy"), ("psychopathic", "psychology/personality/psychopathy"), ("sociopathic", "psychology/personality/psychopathy"), ("cognitive-biases", "psychology/cognitive-bias"), ("sort", "cs/algorithm/sorting"), ("moe", "ai/scaling/mixture-of-experts"), ("ai/datasets", "ai/dataset"), ("ai/gan", "ai/nn/gan"), ("safety", "reinforcement-learning/safe"), ("ads", "economics/advertising"), ("rl/scaling", "reinforcement-learning/scaling"), ("rl/scale", "reinforcement-learning/scaling"), ("reinforcement-learning/scale", "reinforcement-learning/scaling"), ("rl-scaling", "reinforcement-learning/scaling"), ("scaling/rl", "reinforcement-learning/scaling"), ("scaling/reinforcement-learning", "reinforcement-learning/scaling"), ("reinforcement-learning/alphago", "reinforcement-learning/model/alphago"), ("evolution/human", "genetics/selection/natural/human"), ("rl/chess", "reinforcement-learning/chess"), ("xrisk", "existential-risk"), ("risk", "existential-risk"), ("human-adversarial", "ai/nn/adversarial/human"), ("adversarial-human", "ai/nn/adversarial/human"), ("mlps", "ai/nn/fully-connected"), ("mlp", "ai/nn/fully-connected"), ("gpt-4", "ai/nn/transformer/gpt/4"), ("gpt4", "ai/nn/transformer/gpt/4"), ("gp-4", "ai/nn/transformer/gpt/4"), ("gp4", "ai/nn/transformer/gpt/4"), ("gpt-5", "ai/nn/transformer/gpt/5"), ("gpt5", "ai/nn/transformer/gpt/5"), ("gp-5", "ai/nn/transformer/gpt/5"), ("gp5", "ai/nn/transformer/gpt/5"), ("attention/sparse", "ai/nn/transformer/attention/sparsity"), ("gp4-4", "ai/nn/transformer/gpt/4"), ("gp4", "ai/nn/transformer/gpt/4"), ("gpt-4/nonfiction", "ai/nn/transformer/gpt/4/nonfiction"), ("ai/nn/transformer/gpt/4/non-fiction", "ai/nn/transformer/gpt/4/nonfiction"), ("gpt-4/non-fiction", "ai/nn/transformer/gpt/4/nonfiction"), ("4/non", "ai/nn/transformer/gpt/4/nonfiction"), ("gpt-4/fiction", "ai/nn/transformer/gpt/4/fiction"), ("gpt-4/poetry", "ai/nn/transformer/gpt/4/poetry"), ("gpt-4poetry", "ai/nn/transformer/gpt/4/poetry"), ("gpt4/poetry", "ai/nn/transformer/gpt/4/poetry"), ("gpt-4/poem", "ai/nn/transformer/gpt/4/poetry"), ("chess", "reinforcement-learning/chess"), ("animal", "psychology/animal"), ("artificial", "ai"), ("code", "cs"), ("for", "statistics/prediction"), ("forecast", "statistics/prediction"), ("forecasting", "statistics/prediction"), ("genetic", "genetics"), ("graph", "design/visualization"), ("hardware" , "cs/hardware"), ("human" , "genetics/selection/natural/human"), ("learning", "reinforcement-learning"), ("sf", "fiction/science-fiction"), ("text" , "fiction/text-game"), ("psych", "psychology"), ("psych/inner-monologue", "psychology/inner-monologue"), ("latex", "design/typography/tex"), ("vitamind", "vitamin-d"), ("des", "design"), ("attention/recurrence", "attention/recurrent"), ("human-evolution", "genetics/selection/natural/human"), ("attention/algebra", "ai/nn/transformer/attention/linear-algebra"), ("bpe", "tokenization"), ("bpes", "tokenization"), ("silex", "psychiatry/anxiety/lavender"), ("silex", "psychiatry/anxiety/lavender"), ("lavandar", "psychiatry/anxiety/lavender"), ("decision-theory", "decision"), ("statistics/decision-theory", "statistics/decision"), ("language", "linguistics"), ("ai/datasets", "ai/dataset"), ("auction-design", "auction"), ("bilingualism", "bilingual"), ("rare-variants", "rare"), ("explore", "exploration"), ("allergies", "allergy"), ("cat-allergy", "cat/biology/allergy"), ("cat-allergies", "cat/biology/allergy"), ("antibodies", "antibody"), ("animal/iq", "iq/animal"), ("cellular-automata", "cellular-automaton"), ("mathematics", "math"), ("frank-p-ramsey", "frank-ramsey"), ("artificial-selection", "genetics/selection/artificial"), ("intrasexual-agression", "intrasexual-aggression"), ("javascript", "js"), ("psych/chess", "psychology/chess")] ++
+tagsShort2Long = isUniqueKeys [("power", "statistics/power-analysis"), ("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"), ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dogs", "dog"), ("dog/genetics", "genetics/heritable/dog"), ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"), ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"), ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/sample"), ("samples", "ai/nn/transformer/clip/sample"), ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"), ("quantization", "ai/nn/sparsity/low-precision") , ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision"), ("evolution", "genetics/selection/natural"), ("gpt-3", "ai/nn/transformer/gpt"), ("gpt3", "ai/nn/transformer/gpt"), ("gpt/nonfiction", "ai/nn/transformer/gpt/non-fiction"), ("red", "design/typography/rubrication"), ("self-attention", "ai/nn/transformer/attention"), ("efficient-attention", "ai/nn/transformer/attention"), ("ai/rnn", "ai/nn/rnn"), ("ai/retrieval", "ai/nn/retrieval"), ("mr", "genetics/heritable/correlation/mendelian-randomization"), ("japan/anime", "anime"), ("psychology/bird", "psychology/animal/bird"), ("psychology/birds/neuroscience", "psychology/animal/bird/neuroscience"), ("psychology/birds", "psychology/animal/bird"), ("dalle","dall-e/2"), ("dall-e", "ai/nn/transformer/gpt/dall-e/2"), ("darknet-markets", "darknet-market"), ("silk-road-1", "darknet-market/silk-road/1"), ("sr1", "darknet-market/silk-road/1"), ("silk-road-2", "darknet-market/silk-road/2"), ("sr2", "darknet-market/silk-road/2"), ("sr/1", "darknet-market/silk-road/1"), ("sr/2", "darknet-market/silk-road/2"), ("sr", "darknet-market/silk-road"), ("psychology/neuroscience/bird", "psychology/animal/bird/neuroscience"), ("uighurs", "history/uighur"), ("ai/adversarial", "ai/nn/adversarial"), ("add", "psychiatry/adhd"), ("asperger", "psychiatry/autism"), ("aspergers", "psychiatry/autism"), ("personality/conscientiousness", "psychology/personality/conscientiousness"), ("conscientiousness", "psychology/personality/conscientiousness"), ("anorexia-nervosa", "psychiatry/anorexia"), ("anxiety-disorder", "psychiatry/anxiety"), ("masked-auto-encoder", "ai/nn/vae/mae"), ("masked-autoencoder", "ai/nn/vae/mae"), ("masked", "ai/nn/vae/mae"), ("alzheimer's", "psychiatry/alzheimers"), ("ad", "psychiatry/alzheimers"), ("alzheimers-disease", "psychiatry/alzheimers"), ("alzheimer", "psychiatry/alzheimers"), ("psychedelics", "psychedelic"), ("stylometric", "statistics/stylometry"), ("stylometrics", "statistics/stylometry"), ("dune", "fiction/science-fiction/frank-herbert"), ("herbert", "fiction/science-fiction/frank-herbert"), ("instruct-tuning", "instruction-tuning"), ("instruction-finetuning", "instruction-tuning"), ("psychopath", "psychology/personality/psychopathy"), ("sociopath", "psychology/personality/psychopathy"), ("psychopathic", "psychology/personality/psychopathy"), ("sociopathic", "psychology/personality/psychopathy"), ("cognitive-biases", "psychology/cognitive-bias"), ("sort", "cs/algorithm/sorting"), ("moe", "ai/scaling/mixture-of-experts"), ("ai/datasets", "ai/dataset"), ("ai/gan", "ai/nn/gan"), ("safety", "reinforcement-learning/safe"), ("ads", "economics/advertising"), ("rl/scaling", "reinforcement-learning/scaling"), ("rl/scale", "reinforcement-learning/scaling"), ("reinforcement-learning/scale", "reinforcement-learning/scaling"), ("rl-scaling", "reinforcement-learning/scaling"), ("scaling/rl", "reinforcement-learning/scaling"), ("scaling/reinforcement-learning", "reinforcement-learning/scaling"), ("reinforcement-learning/alphago", "reinforcement-learning/model/alphago"), ("evolution/human", "genetics/selection/natural/human"), ("rl/chess", "reinforcement-learning/chess"), ("xrisk", "existential-risk"), ("risk", "existential-risk"), ("human-adversarial", "ai/nn/adversarial/human"), ("adversarial-human", "ai/nn/adversarial/human"), ("mlps", "ai/nn/fully-connected"), ("mlp", "ai/nn/fully-connected"), ("gpt-4", "ai/nn/transformer/gpt/4"), ("gpt4", "ai/nn/transformer/gpt/4"), ("gp-4", "ai/nn/transformer/gpt/4"), ("gpt-5", "ai/nn/transformer/gpt/5"), ("gpt5", "ai/nn/transformer/gpt/5"), ("gp-5", "ai/nn/transformer/gpt/5"), ("gp5", "ai/nn/transformer/gpt/5"), ("attention/sparse", "ai/nn/transformer/attention/sparsity"), ("gp4-4", "ai/nn/transformer/gpt/4"), ("gp4", "ai/nn/transformer/gpt/4"), ("gpt-4/nonfiction", "ai/nn/transformer/gpt/4/nonfiction"), ("ai/nn/transformer/gpt/4/non-fiction", "ai/nn/transformer/gpt/4/nonfiction"), ("gpt-4/non-fiction", "ai/nn/transformer/gpt/4/nonfiction"), ("4/non", "ai/nn/transformer/gpt/4/nonfiction"), ("gpt-4/fiction", "ai/nn/transformer/gpt/4/fiction"), ("gpt-4/poetry", "ai/nn/transformer/gpt/4/poetry"), ("gpt-4poetry", "ai/nn/transformer/gpt/4/poetry"), ("gpt4/poetry", "ai/nn/transformer/gpt/4/poetry"), ("gpt-4/poem", "ai/nn/transformer/gpt/4/poetry"), ("chess", "reinforcement-learning/chess"), ("animal", "psychology/animal"), ("artificial", "ai"), ("code", "cs"), ("for", "statistics/prediction"), ("forecast", "statistics/prediction"), ("forecasting", "statistics/prediction"), ("genetic", "genetics"), ("graph", "design/visualization"), ("hardware" , "cs/hardware"), ("human" , "genetics/selection/natural/human"), ("learning", "reinforcement-learning"), ("sf", "fiction/science-fiction"), ("text" , "fiction/text-game"), ("psych", "psychology"), ("psych/inner-monologue", "psychology/inner-monologue"), ("latex", "design/typography/tex"), ("vitamind", "vitamin-d"), ("des", "design"), ("attention/recurrence", "attention/recurrent"), ("human-evolution", "genetics/selection/natural/human"), ("attention/algebra", "ai/nn/transformer/attention/linear-algebra"), ("bpe", "tokenization"), ("bpes", "tokenization"), ("silex", "psychiatry/anxiety/lavender"), ("lavandar", "psychiatry/anxiety/lavender"), ("decision-theory", "decision"), ("statistics/decision-theory", "statistics/decision"), ("language", "linguistics"), ("auction-design", "auction"), ("bilingualism", "bilingual"), ("rare-variants", "rare"), ("explore", "exploration"), ("allergies", "allergy"), ("cat-allergy", "cat/biology/allergy"), ("cat-allergies", "cat/biology/allergy"), ("antibodies", "antibody"), ("animal/iq", "iq/animal"), ("cellular-automata", "cellular-automaton"), ("mathematics", "math"), ("frank-p-ramsey", "frank-ramsey"), ("artificial-selection", "genetics/selection/artificial"), ("intrasexual-agression", "intrasexual-aggression"), ("javascript", "js"), ("psych/chess", "psychology/chess"), ("self-experiment", "quantified-self")] ++
                  -- ^ custom tag shortcuts, to fix typos etc
-                 (map (\s -> (s, error s)) ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f", "fine", "free", "g", "git", "if", "in", "is", "it", "of", "on", "option", "rm", "sed", "strong", "the", "to", "tr", "up", "we"]) ++ -- hopelessly ambiguous ones which should be error (for now)
+                 (map (\s -> (s, error s)) (isUniqueList ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f", "fine", "free", "g", "git", "if", "in", "is", "it", "of", "on", "option", "rm", "sed", "strong", "the", "to", "tr", "up", "we"])) ++ -- hopelessly ambiguous ones which should be error (for now)
                  -- attempt to infer short->long rewrites from the displayed tag names, which are long->short; but note that many of them are inherently invalid and the mapping only goes one way.
                   (map (\(a,b) -> (map toLower b,a)) $ filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
 
-tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories should come before their directories if they are going to override the prefix.
+tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-directories should come before their directories if they are going to override the prefix.
           ("traffic/ab-testing", "Web A/B testing")
           , ("technology/northpaw", "Northpaw compass")
           , ("technology/self-sinking", "self-sinking disposal")
           , ("technology/google/alerts", "Google Alerts")
           , ("statistics/probability", "probability theory")
-          , ("statistics/prediction/election", "election forecasting")
           , ("statistics/peer-review", "peer-review methodology")
-          , ("statistics/order/comparison", "statistical comparison")
           , ("statistics/causality", "causality")
           , ("statistics/bias/animal", "animal study methodology")
           , ("statistics/bias", "scientific bias")
@@ -204,19 +202,16 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("personal/2013-cicadas", "2013 cicadas")
           , ("personal/2011-gwern-yourmorals.org", "Gwern YourMorals surveys")
           , ("nootropic/caffeine", "caffeine")
-          , ("modafinil/darknet-market", "modafinil (DNMs)")
           , ("math/humor", "STEM humor")
           , ("longevity/fasting", "fasting")
           , ("longevity/epigenetics", "epigenetics (aging)")
           , ("longevity/aspirin", "aspirin (aging)")
           , ("japan/history/tominaga-nakamoto", "Tominaga Nakamoto")
           , ("genetics/selection/artificial/index-selection", "index selection (breeding)")
-          , ("genetics/selection/artificial/apple", "apple breeding")
           , ("genetics/heritable/adoption", "adoption studies")
           , ("genetics/genome-synthesis/virus-proof", "virus-proof cells")
           , ("genetics/genome-synthesis", "genome synthesis")
           , ("food/mead", "mead")
-          , ("fiction/science-fiction/frank-herbert", "Frank Herbert")
           , ("fiction/science-fiction/batman", "Batman")
           , ("fiction/humor/hardtruthsfromsoftcats.tumblr.com", "<em>Hard Truths From Soft Cats</em>")
           , ("fiction/humor/dinosaur-comics", "<em>Dinosaur Comics</em>")
@@ -254,12 +249,9 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("ai/poetry", "poetry by AI")
           , ("ai/nn/transformer/gpt/calibration", "GPT calibration")
           , ("ai/nn/transformer/fiction", "Transformer fiction")
-          , ("ai/nn/sampling", "NN sequence sampling")
           , ("ai/nn/gan/stylegan/progan", "ProGAN")
           , ("ai/nn/gan/data-augmentation", "data-augmented GANs")
           , ("ai/nn/diffusion/discrete", "discrete diffusion model")
-          , ("ai/nn/adversarial/human", "human adversarial examples")
-          , ("ai/nn/adversarial", "adversarial AI")
           , ("ai/highleyman", "Highleyman’s AI")
           , ("psychology/neuroscience/tcs", "TDCS")
           , ("traffic", "web traffic")
@@ -271,7 +263,6 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("bitcoin/nashx", "Nash eXchange")
           , ("bitcoin", "Bitcoin")
           , ("borges", "J. L. Borges")
-          , ("cs/haskell", "Haskell")
           , ("algernon", "Algernon's Law")
           , ("japan/poetry/teika",    "Fujiwara no Teika")
           , ("japan/poetry/shotetsu", "Shōtetsu")
@@ -321,9 +312,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("genetics/selection/natural/human", "human evolution")
           , ("genetics/heritable/emergenesis", "emergenesis")
           , ("genetics/heritable/rare", "rare mutations")
-          , ("genetics/selection/artificial/index-selection", "index selection")
           , ("genetics/selection/artificial/apple", "apple breeding")
-          , ("genetics/heritable/adoption", "adoption")
           , ("genetics/heritable/dog", "dog genetics")
           , ("genetics/heritable", "heritability")
           , ("genetics/cloning/dog", "dog cloning")
@@ -335,6 +324,9 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("psychology/personality/psychopathy", "psychopath")
           , ("psychiatry/meditation", "meditation")
           , ("psychiatry/depression", "MDD")
+          , ("psychiatry/bipolar/elon-musk", "Elon Musk (BP)")
+          , ("psychiatry/bipolar/sleep", "BP & sleep")
+          , ("psychiatry/bipolar/lithium", "lithium (BP)")
           , ("psychiatry/bipolar", "bipolar")
           , ("psychiatry/schizophrenia/rosenhan", "Rosenhan fraud")
           , ("psychiatry/schizophrenia", "SCZ")
@@ -437,8 +429,6 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("ai/video/generation", "video generation")
           , ("ai/video", "AI video")
           , ("ai/text-style-transfer", "text style transfer")
-          , ("conscientiousness", "Conscientiousness")
-          , ("japan/history/tominaga-nakamoto", "Tominaga Nakamoto (phi)")
           , ("exercise/gravitostat", "gravitostat")
           , ("longevity/semaglutide", "glutides")
           , ("longevity/tirzepatide", "tirzepatide")
@@ -450,7 +440,6 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("ai/nn/sparsity/pruning", "NN pruning")
           , ("ai/nn/sparsity/low-precision", "reduced-precision NNs")
           , ("ai/nn/sparsity", "NN sparsity")
-          , ("ai/highleyman", "Highleyman")
           , ("ai/nn/transformer/attention/hierarchical", "multi-scale Transformer")
           , ("ai/nn/transformer/attention/sparsity", "sparse Transformer")
           , ("ai/nn/transformer/attention/linear-algebra", "Transformer matrix optimization")
@@ -533,7 +522,7 @@ testTags = do tags <- listTagsAll
 
 shortTagTestSuite ::[String] -> [(String, String, String)]
 shortTagTestSuite alltags = filter (\(_, realOutput, shouldbeOutput) -> realOutput /= shouldbeOutput) $
-  map (\(input,output) -> (input, guessTagFromShort alltags input, output)) [("active-learning"
+  map (\(input,output) -> (input, guessTagFromShort alltags input, output)) $ isUniqueKeys [("active-learning"
           , "reinforcement-learning/exploration/active-learning"
           )
         , ("add" , "psychiatry/adhd")
