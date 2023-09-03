@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-08-17 12:49:13 gwern"
+When:  Time-stamp: "2023-09-02 21:15:24 gwern"
 License: CC-0
 -}
 
@@ -58,7 +58,7 @@ import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(..
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
-import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, anySuffix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, parseRawAllClean)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, anySuffix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, parseRawAllClean, balanced)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 
@@ -222,20 +222,9 @@ readLinkMetadataAndCheck = do
                                              count > 0 && (count `mod` 2 == 1) ) finalL
              unless (null balancedQuotes) $ error $ "YAML: Link Annotation Error: unbalanced double quotes! " ++ show balancedQuotes
 
-             let balancedBracketsCurly = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '{' || c == '}') abst in
-                                                                     count > 0 && (count `mod` 2 == 1) ) finalL
-             unless (null balancedBracketsCurly) $ error $ "YAML: Link Annotation Error: unbalanced curly brackets! " ++ show balancedBracketsCurly
-
-             let balancedBracketsSquare = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '[' || c == ']') abst in
-                                                                     count > 0 && (count `mod` 2 == 1) ) finalL
-             unless (null balancedBracketsSquare) $ error $ "YAML: Link Annotation Error: unbalanced square brackets! " ++ show balancedBracketsSquare
-
-             let balancedParens = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '(' || c == ')') abst in
-                                                                     count > 0 && (count `mod` 2 == 1) ) finalL
-             unless (null balancedParens) $ error $ "YAML: Link Annotation Error: unbalanced parentheses! " ++ show (map fst balancedParens)
-             let balancedParensTitle = filter (\(_,(t,_,_,_,_,_)) -> let count = length $ filter (\c -> c == '(' || c == ')') t in
-                                                                       count > 0 && (count `mod` 2 == 1) ) finalL
-             unless (null balancedParensTitle) $ error $ "YAML: Link Title Error: unbalanced parentheses! " ++ show (map fst balancedParensTitle)
+             let balancedBrackets = map (\(p,(title',_,_,_,_,abst) ) -> (p, balanced title', balanced abst)) $ filter (\(_,(title,_,_,_,_,abst)) -> not $ null (balanced title ++ balanced abst)) finalL
+             unless (null balancedBrackets) $ do printRed "YAML: Link Annotation Error: unbalanced brackets!"
+                                                 putStrLn $ ppShow balancedBrackets
 
              -- check validity of all external links:
              let urlsAll = filter (\(x@(u:_),_) -> if u `elem` ['/', '!', '$', '\8383'] ||
@@ -268,7 +257,7 @@ readLinkMetadataAndCheck = do
                                                          in any ((fileTag++"/") `isPrefixOf`) tags) final
              unless (null tagIsNarrowerThanFilename) $ printRed "Files whose tags are more specific than their path: " >> printGreen (unlines $ map (\(f',(t',tag')) -> t' ++ " : " ++ f' ++ " " ++ unwords tag') $ M.toList tagIsNarrowerThanFilename)
 
-             -- check tags (not just full but all of them, including halfs)
+             -- check tags (not just full but all of them, including half.yaml)
              let tagsSet = sort $ nubOrd $ concat $ M.elems $ M.map (\(_,_,_,_,tags,_) -> tags) $ M.filter (\(t,_,_,_,_,_) -> t /= "") final
              tagsAll <- listTagsAll
              let tagsBad = tagsSet \\ tagsAll

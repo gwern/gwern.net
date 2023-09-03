@@ -1944,3 +1944,22 @@ authorsInitialize aut = let authors = split ", " aut in
                                                -- no middle-name:
                                                , ("^([A-Z.-])[A-za-z.-]+ (.*)", "\\1. \\2")]) a in
                                            if a==short then Str (T.pack a) else Span ("", [], [("title", T.pack a)]) [Str (T.pack short)]) authors
+
+-- check whether brackets are balanced in a text string:
+balanced :: String -> String
+balanced str = helper str "" 0 0
+  where
+    helper [] stack _ idx = if null stack then "" else drop idx str
+    helper (s:ss) stack n idx
+      | s `elem` openBrackets = helper ss (s:stack) (n+1) (if null stack then n else idx)
+      | s `elem` closeBrackets =
+          if not (null stack) && head stack == matchingBracket s
+            then helper ss (tail stack) (n+1) (if null stack then n else idx)
+            else drop n str
+      | otherwise = helper ss stack (n+1) idx
+    openBrackets = "([{"::String
+    closeBrackets = ")]}"::String
+    matchingBracket ')' = '('
+    matchingBracket ']' = '['
+    matchingBracket '}' = '{' -- TODO: if this approach works, add double-quotes as delimiters that should be balanced
+    matchingBracket _ = error "Invalid bracket"
