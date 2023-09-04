@@ -244,14 +244,15 @@ knnEmbedding f k (_,_,_,_,embd) = V.toList $
                               -- 'knn', 'knnH', 'knnPQ': knnH/knnPQ always perform way worse for me.
                                knn metricL2 k f (fromListDv embd :: DVector Double)
 
-findNearest :: Forest -> Int -> Embedding -> [String]
-findNearest f k e = map (\(_,Embed _ p) -> p) $ knnEmbedding f k e
 
--- we'll keep the distance to insert into the metadata for debugging purposes.
+-- we'll filter based on acceptable distance
+findNearest :: Forest -> Int -> (Double,Double) -> Embedding -> [String]
+findNearest f k (minDist,maxDist) e = map (\(_,Embed _ p) -> p) $ filter (\(dist,_) -> dist < maxDist && dist > minDist) $ knnEmbedding f k e
+
 findN :: Forest -> Int -> Int -> Embedding -> (String,[String])
 findN _ 0 _    e = error ("findN called for k=0; embedding target: " ++ show e)
 findN _ _ 0    e = error ("findN failed to return enough candidates within iteration loop limit. Something went wrong! Embedding target: " ++ show e)
-findN f k iter e@(p1,_,_,_,_) = let results = take C.bestNEmbeddings $ nub $ filter (\p2 -> p2/="" && (not $ C.blackList p2) && p1/=p2) $ findNearest f k e in
+findN f k iter e@(p1,_,_,_,_) = let results = take C.bestNEmbeddings $ nub $ filter (\p2 -> p2/="" && (not $ C.blackList p2) && p1/=p2) $ findNearest f k (C.minDistance, C.maxDistance) e in
                  -- NOTE: 'knn' is the fastest (and most accurate?), but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
                  -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed…)
                  -- If that happens, back off and request more k up to a max of 50.
@@ -280,7 +281,7 @@ let f2 = embeddings2ForestConfigurable 60 1 32 edb
 Data.RPTree.recallWith metricL2 f1 20 $ (\(_,_,embd) -> ((fromListDv embd)::DVector Double)) $ head edb
 Data.RPTree.recallWith metricL2 f2 20 $ (\(_,_,embd) -> ((fromListDv embd)::DVector Double)) $ head edb
 
-findNearest f 20 $ head edb
+findNearest f 20 (C.minDistance, C.maxDistance) $ head edb
 findN f 20 C.iterationLimit $ head edb
 -}
 
@@ -504,8 +505,8 @@ lookupNextAndShrink targets embeddings previous = do results <- go targets embed
                       -- putStrLn ("remainingTargets: " ++ ppShow ta) >> putStrLn ("remainingEmbeddings: " ++ ppShow (map (\(a,b,c,d,_) -> (a,b,take 100 c,d)) em)) >> putStrLn ("previous: " ++ previous)
                       case M.lookup previous (M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) em) of
                               Nothing ->  putStr "Exited at Nothing in lookupNextAndShrink, this should never happen?" >> error ""
-                              Just (b,c,d,e) -> do -- putStrLn $ "findNearest: " ++ show (findNearest ddb 6 (previous,b,c,d,e))
-                                                   let match = filter (/=previous) $ findNearest ddb 6 (previous,b,c,d,e) :: [FilePath]
+                              Just (b,c,d,e) -> do -- putStrLn $ "findNearest: " ++ show (findNearest ddb 6 (C.minDistance, C.maxDistance) (previous,b,c,d,e))
+                                                   let match = filter (/=previous) $ findNearest ddb 6 (C.minDistance, C.maxDistance) (previous,b,c,d,e) :: [FilePath]
                                                    let match' = head match
                                                    if null match then
                                                           let fallback = head targets in
