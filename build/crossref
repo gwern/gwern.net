@@ -40,7 +40,7 @@ if [ "${*##*.}" = "pdf" ]; then
     ## (eg in /doc/psychiatry/alzheimers/2021-huang.pdf, Author = 'Youtong Huang' but Creator = 'Youtong Huang, Kaisa E. Happonen, Patrick G. Burrola, Carolyn O’Connor, Nasun Hah, Ling Huang, Axel Nimmerjahn, Greg Lemke')
     echo -n "  - ";
     AUTHOR="$(exiftool -q -q -printFormat '$Author' -Author "$TARGET" | \
-                       sed -e 's/;/,/g' -e 's/ \([A-Z]\.\)\([A-Z]\.\) / \1 \2 /g' -e 's/, and /, /g' -e 's/ and /, /g' -e "s/'/’/g" -e 's/^ *//g' -e 's/ +$//g' -e 's/ & /, /g' | \
+                       sed -e 's/;/,/g' -e 's/ \([A-Z]\.\)\([A-Z]\.\) / \1 \2 /g' -e 's/, and /, /g' -e 's/ , /, /g' -e 's/ and /, /g' -e "s/'/’/g" -e 's/^ *//g' -e 's/ +$//g' -e 's/ & /, /g' | \
                        tr -d '\n' | tr ' [:space:]' ' ' | tr --squeeze-repeats '[:space:]')"
     CREATOR="$(exiftool -q -q -printFormat '$Creator' -Creator "$TARGET" | \
                         sed -e 's/;/,/g' -e 's/ \([A-Z]\.\)\([A-Z]\.\) / \1 \2 /g' -e 's/, and /, /g' -e 's/ , /, /g' -e 's/^ *//g' -e 's/ +$//g' -e 's/ & /, /g' | \

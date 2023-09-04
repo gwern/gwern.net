@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-08-30 11:28:41 gwern"
+;;; When:  Time-stamp: "2023-09-03 21:49:35 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -418,6 +418,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("three-quarters" . "3⁄4<sup>ths</sup>")
                      ("two-thirds" . "2⁄3<sup>rds</sup>")
                      ("2 thirds" . "2⁄3<sup>rds</sup>")
+                     ("and/ or" . "and/or")
                      )
                    )
             )
@@ -897,6 +898,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" twenty-two" . " 22")
                         (" twenty one" . " 21")
                         (" twenty-one" . " 21")
+                        ("twenty-first century" . "21<sup>st</sup> century")
                         (" twenty" . " 20")
                         (" twentieth" . " 20<sup>th</sup>")
                         (" nineteen" . " 19")
@@ -1331,6 +1333,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace "two thirds" "2⁄3" nil begin end)
        (query-replace "two-thirds" "2⁄3" nil begin end)
        (query-replace "three-fourths" "3⁄4" nil begin end)
+       (query-replace "3-fourths" "3⁄4" nil begin end)
        (query-replace "three-fifths" "3⁄5" nil begin end)
        (query-replace-regexp "\\([0-9]+\\) of \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
        (query-replace-regexp "\\([0-9]+\\) of the \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
@@ -1425,6 +1428,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([[:digit:]\\.]+\\)[Ee]-\\([[:digit:]]+\\)" "\\1 × 10<sup>−\\2</sup>" nil begin end) ; 2.0E-26, 2.0e-26
        ; (query-replace-regexp "[x×] ?10--\\([0-9]+\\)" "× 10<sup>−\\1</sup>" nil begin end)
        (query-replace-regexp "\\([a-zA-Z0-9]\\.\\)\\([[:digit:]]+\\) \\([A-Z]\\)" "\\1<sup>\\2</sup> \\3" nil begin end) ; look for copy-pasted footnotes, like "X works great.13 Therefore"
+       (query-replace-regexp "Footnote\\([0-9]+\\)" "<sup>\\1</sup>" nil begin end) ; cambridge.org has footnotes that copypaste like 'Footnote10'
        (query-replace-regexp "\\([a-zA-Z0-9.]\\”\\)\\([[:digit:]]+\\) \\([A-Z]\\)" "\\1<sup>\\2</sup> \\3" nil begin end)
        (query-replace-regexp "\\([[:punct:]]\\)\\[\\([0-9, -]+\\)\\] " "\\1<sup>\\2</sup> " nil begin end) ; Wikipedia-style referencs: "Foo.[33]" or "is around 75%,[83 but varies"
        ; (query-replace-regexp "\\([[:punct:]]\\)\\([0-9]+\\) " "\\1<sup>\\2</sup> " nil begin end) ; looser
@@ -1868,6 +1872,17 @@ These margin-notes are used as very abbreviated italicized summaries of the
  paragraph \(like very small inlined section headers\)."
   (interactive)
   (surround-region-or-word "[" "]{.marginnote}"))
+(defun html-insert-margin-note ()
+  "Surround selected region FOO BAR (or word FOO) with a 'margin-note'.
+\(Implemented as a special `<span>` class.\)
+This creates marginal glosses (in the left margin) as counterparts to sidenotes.
+These margin-notes are used as very abbreviated italicized summaries of the
+ paragraph \(like very small inlined section headers\).
+When inserting margin-notes into HTML snippets, that usually means an annotation
+and the margin-note is an editorial insertion, which are denoted by paired `[]` brackets.
+To save effort, we add those as well."
+  (interactive)
+  (surround-region-or-word "<span class=\"marginnote\">[" "]</span>"))
 ;; keybindings:
 ;;; Markdown:
 (add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-e" 'markdown-insert-emphasis)))
@@ -1880,11 +1895,13 @@ These margin-notes are used as very abbreviated italicized summaries of the
 (add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-s" 'html-insert-strong)))
 (add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ s"    'html-insert-smallcaps)))
 (add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-w" 'html-insert-wp-link)))
+(add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-m" 'html-insert-margin-note)))
 ;;; YAML: (the YAML files store raw HTML snippets, so insert HTML rather than Markdown markup)
 (add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-e" 'html-insert-emphasis)))
 (add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-s" 'html-insert-strong)))
 (add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ s"    'html-insert-smallcaps)))
 (add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-w" 'html-insert-wp-link)))
+(add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-m" 'html-insert-margin-note)))
 
 ;sp
 (add-hook 'markdown-mode-hook 'flyspell)

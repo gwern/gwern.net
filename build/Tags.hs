@@ -327,6 +327,8 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("psychiatry/bipolar/elon-musk", "Elon Musk (BP)")
           , ("psychiatry/bipolar/sleep", "BP & sleep")
           , ("psychiatry/bipolar/lithium", "lithium (BP)")
+          , ("psychiatry/bipolar/energy", "BP personality")
+          , ("psychiatry/bipolar/genetics", "BP genes")
           , ("psychiatry/bipolar", "bipolar")
           , ("psychiatry/schizophrenia/rosenhan", "Rosenhan fraud")
           , ("psychiatry/schizophrenia", "SCZ")
