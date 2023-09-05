@@ -179,23 +179,5 @@
       gtag('js', new Date());
       gtag('config', 'UA-18912926-1');
     </script>
-
-    <!-- low priority CSS, for JS-disabled users: ensure that NoScripters know what they are missing even if they jump to a section & miss the warning at top/bottom. -->
-    <noscript>
-      <style>
-        #markdownBody #noscript-warning-header {
-            position: fixed; /* sticky */
-            top: 0; /* at top */
-            width: 100%;
-            z-index: 99; /* Make sure it is on top */
-            background-color: #f8f8f8; /* Set a solid background color so   legible while positioned over text */
-            border-color: var(--GW-abstract-border-color); /* Make look like theme-toggle/admonitions a bit more */
-            border-width: 3px 3px 0 0 double;
-            border-style: double;
-        }
-        nav#sidebar { padding-top: 80px; } /* avoid overlap with page header */
-      </style>
-    </noscript>
-
   </body>
 </html>
