@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, inlinesToText, wpPopupClasses, interwikiTestSuite) where
+module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, inlinesToText, wpPopupClasses, interwikiTestSuite, interwikiCycleTestSuite) where
 
 import Data.List (intersect, nub)
 import Data.Containers.ListUtils (nubOrd)
@@ -11,7 +11,7 @@ import qualified Network.URI.Encode as E (encodeTextWith, isAllowed)
 import Text.Pandoc (Inline(..), Pandoc)
 import Text.Pandoc.Walk (walk)
 
-import Utils (replaceManyT, anyPrefixT, fixedPoint)
+import Utils (replaceManyT, anyPrefixT, fixedPoint, isCycleLess, findCycles)
 import qualified Config.Interwiki as C (redirectDB, quoteOverrides, testCases)
 
 -- INTERWIKI PLUGIN
@@ -107,6 +107,9 @@ interwikiTestSuite = let redirectsCircular = (map fst C.redirectDB) `intersect` 
      else if redirectsDuplicate then error "Interwiki.hs: duplicate redirects detected (in either original or destination)"
   else
             map (\(a,b) -> (a, (convertInterwikiLinksInline undefined) a, b)) $ filter (\(link1, link2) -> (convertInterwikiLinksInline undefined) link1 /= link2) C.testCases
+
+interwikiCycleTestSuite :: [(T.Text, T.Text)]
+interwikiCycleTestSuite = if null (isCycleLess C.redirectDB) then [] else findCycles C.redirectDB
 
 -- Set link-live/link-live-not and link-annotated/link-annotated-not classes on a WP link depending on its namespace. As the quality of WP API annotations, and the possibility of iframe popups, varies across WP namespaces, we can't simply set them universally.
 --
