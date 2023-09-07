@@ -13,9 +13,9 @@
 
 TARGET_ORIGINAL="$(echo "$@" | sed -e 's/\/home\/gwern\/wiki\/doc/doc/g' -e 's/.*wiki\/doc/doc/g' -e 's/^\/doc/doc/g' -e 's/^\///' -e 's/https:\/\/gwern\.net\///' )"
 
-if [ ! -f "$TARGET_ORIGINAL" ]; then
+if [[ ! -f "$TARGET_ORIGINAL" ]]; then
     TARGET="/home/gwern/wiki/$TARGET_ORIGINAL"
-    if [ ! -f "$TARGET" ]; then
+    if [[ ! -f "$TARGET" ]]; then
         echo "Error: arg ('$TARGET') does not exist?" && exit 1
     fi
 else TARGET="$TARGET_ORIGINAL"; fi
@@ -27,7 +27,7 @@ if [ "${*##*.}" = "pdf" ]; then
         TITLE=$(exiftool -q -q -printFormat '$Title' -Title "$TARGET" | \
                     sed -e 's/()//' -e 's/­//g' -e 's/[–—]/-/g' -e "s/\(.\+\)'\(.\+\)'\(.\+\)/\1‘\2’\3/g" -e "s/'/\&\#39\;/g"  -e 's/\([0-9]+\)-\([0-9]+\)/\1–\2/g' -e 's/\(.*\) - \(.*\)/\1—\2/g' -e 's/\([a-z]\)_ /\1: /g' -e 's/^ *//g' -e 's/ *$//g' -e 's/\.$//' |\
                     tr -d '\n')
-        if [ -n "$TITLE" ];
+        if [[ -n "$TITLE" ]];
         then gwa | grep -F -e "$(basename "$@")" -e "$TITLE";
         else gwa "$(basename "$@")";
         fi
@@ -37,26 +37,28 @@ if [ "${*##*.}" = "pdf" ]; then
     echo "  - \"$TITLE\"";
 
     ## Check if 'Author' is prefix of 'Creator', in which case 'Creator is probably the 'real' list of authors
-    ## (eg in /doc/psychiatry/alzheimers/2021-huang.pdf, Author = 'Youtong Huang' but Creator = 'Youtong Huang, Kaisa E. Happonen, Patrick G. Burrola, Carolyn O’Connor, Nasun Hah, Ling Huang, Axel Nimmerjahn, Greg Lemke')
+    ## (eg in `/doc/psychiatry/alzheimers/2021-huang.pdf`, Author = 'Youtong Huang' but Creator = 'Youtong Huang, Kaisa E. Happonen, Patrick G. Burrola, Carolyn O’Connor, Nasun Hah, Ling Huang, Axel Nimmerjahn, Greg Lemke')
     echo -n "  - ";
-    AUTHOR="$(exiftool -q -q -printFormat '$Author' -Author "$TARGET" | \
-                       sed -e 's/;/,/g' -e 's/ \([A-Z]\.\)\([A-Z]\.\) / \1 \2 /g' -e 's/, and /, /g' -e 's/ , /, /g' -e 's/ and /, /g' -e "s/'/’/g" -e 's/^ *//g' -e 's/ +$//g' -e 's/ & /, /g' | \
-                       tr -d '\n' | tr ' [:space:]' ' ' | tr --squeeze-repeats '[:space:]')"
-    CREATOR="$(exiftool -q -q -printFormat '$Creator' -Creator "$TARGET" | \
-                        sed -e 's/;/,/g' -e 's/ \([A-Z]\.\)\([A-Z]\.\) / \1 \2 /g' -e 's/, and /, /g' -e 's/ , /, /g' -e 's/^ *//g' -e 's/ +$//g' -e 's/ & /, /g' | \
-                        tr --squeeze-repeats '[:space:]')"
+    clean_maker() {
+        exiftool -q -q -printFormat \$"$1" -"$1" "$TARGET" | \
+            sed -e 's/;/,/g' -e 's/ \([A-Z]\.\)\([A-Z]\.\) / \1 \2 /g' -e 's/, and /, /g' -e 's/ , /, /g' -e 's/^ *//g' \
+                -e 's/ +$//g' -e 's/ & /, /g' -e 's/,,/,/g' | \
+            tr --squeeze-repeats '[:space:]'
+    }
+    AUTHOR="$(clean_maker Author)"
+    CREATOR="$(clean_maker Creator)"
     if [[ "$CREATOR" =~ $AUTHOR.* ]]; then echo "$CREATOR"; else echo "$AUTHOR"; fi
 
     echo "  - \"$(exiftool -q -q -dateFormat '%F' -printFormat '$Date' $TARGET | \
          sed -e "s/^\([1-2][0-9][0-9][0-9]\)$/'\1'/" -e "s/-01$//")\""
     DOI=$(exiftool -q -q -printFormat '$DOI' -DOI "$TARGET" | tr -d '\n' | tr '–—­' '-' | \
               sed -e 's/^doi://' -e 's/https\:\/\/doi\.org\///' -e 's/https\:\/\/dx\.doi\.org\///')
-    if [ -z "$DOI" ]; then echo "  - ''"; else echo "  - $DOI"; fi
+    if [[ -z "$DOI" ]]; then echo "  - ''"; else echo "  - $DOI"; fi
 
     echo "  - ''" # empty string for tags (files will inherit a tag, but we still need the empty string explicitly, and may want to add some anyway)
 
     echo -n "  - "
-    timeout 9s curl -s -L 'https://api.crossref.org/works/'"$DOI" | jq .message.abstract 2> /dev/null | grep -E -v '^null$'
+    timeout 8s curl -s -L 'https://api.crossref.org/works/'"$DOI" | jq .message.abstract 2> /dev/null | grep -E -v '^null$'
     echo ""
 
     exiftool -q -q -Subject "$TARGET"  | tr '\n' ' '; echo ""
