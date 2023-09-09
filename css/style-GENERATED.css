@@ -7568,7 +7568,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 /*  Graphical icons.
     */
 a[data-link-icon-type='svg'] .link-icon-hook::after {
-    --link-icon-size: 0.5em;
+    --link-icon-size: 0.6em;
     --link-icon-offset-x: 0.20em;
     --link-icon-offset-y: 0.25em;
 
