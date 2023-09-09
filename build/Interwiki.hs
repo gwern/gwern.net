@@ -103,7 +103,7 @@ wpURLRedirectRewrites url = let baseURL = T.takeWhile (/='#') url
                               if null hits then url else T.replace baseURL (snd $ head hits) url
 
 interwikiTestSuite :: [(Inline, Inline, Inline)]
-interwikiTestSuite = let redirectsCircular = (map fst C.redirectDB) `intersect` (map snd C.redirectDB)
+interwikiTestSuite = let redirectsCircular = map fst C.redirectDB `intersect` map snd C.redirectDB
                          redirectsDuplicate = nub (map fst C.redirectDB) /= map fst C.redirectDB
   in if not (null redirectsCircular) then error ("Interwiki.hs: circular redirects detected: " ++ show redirectsCircular)
      else if redirectsDuplicate then error "Interwiki.hs: duplicate redirects detected (in either original or destination)"
