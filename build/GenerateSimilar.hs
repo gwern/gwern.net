@@ -49,7 +49,7 @@ singleShotRecommendations html =
 
      newEmbedding <- embed [] md bdb ("",("","","","",[],html))
      ddb <- embeddings2Forest (newEmbedding:edb)
-     let (_,hits) = findN ddb (2*C.bestNEmbeddings) C.iterationLimit newEmbedding :: (String,[String])
+     let (_,hits) = findN ddb (2*C.bestNEmbeddings) C.iterationLimit (Just (0,0)) newEmbedding :: (String,[String])
      hitsSorted <- sortSimilars edb (head hits) hits
 
      let matchListHtml = generateMatches md bdb True True "" html hitsSorted :: T.Text
@@ -249,15 +249,16 @@ knnEmbedding f k (_,_,_,_,embd) = V.toList $
 findNearest :: Forest -> Int -> (Double,Double) -> Embedding -> [String]
 findNearest f k (minDist,maxDist) e = map (\(_,Embed _ p) -> p) $ filter (\(dist,_) -> dist < maxDist && dist > minDist) $ knnEmbedding f k e
 
-findN :: Forest -> Int -> Int -> Embedding -> (String,[String])
-findN _ 0 _    e = error ("findN called for k=0; embedding target: " ++ show e)
-findN _ _ 0    e = error ("findN failed to return enough candidates within iteration loop limit. Something went wrong! Embedding target: " ++ show e)
-findN f k iter e@(p1,_,_,_,_) = let results = take C.bestNEmbeddings $ nub $ filter (\p2 -> p2/="" && (not $ C.blackList p2) && p1/=p2) $ findNearest f k (C.minDistance, C.maxDistance) e in
+findN :: Forest -> Int -> Int -> Maybe (Double,Double) -> Embedding -> (String,[String])
+findN _ 0 _    _ e = error ("findN called for k=0; embedding target: " ++ show e)
+findN _ _ 0    _ e = error ("findN failed to return enough candidates within iteration loop limit. Something went wrong! Embedding target: " ++ show e)
+findN f k iter Nothing e = findN f k iter (Just (C.minDistance, C.maxDistance)) e
+findN f k iter j@(Just (mn,mx)) e@(p1,_,_,_,_) = let results = take C.bestNEmbeddings $ nub $ filter (\p2 -> p2/="" && (not $ C.blackList p2) && p1/=p2) $ findNearest f k (mn,mx) e in
                  -- NOTE: 'knn' is the fastest (and most accurate?), but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
                  -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed…)
                  -- If that happens, back off and request more k up to a max of 50.
                  if k>50 then (p1, [])
-                 else if length results < C.bestNEmbeddings then findN f (k*2) (iter - 1) e else (p1,results)
+                 else if length results < C.bestNEmbeddings then findN f (k*2) (iter - 1) j e else (p1,results)
 
 -- hyperparameterSweep :: Embeddings -> [(Double, (Int,Int,Int))]
 -- hyperparameterSweep edb =

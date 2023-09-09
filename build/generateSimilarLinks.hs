@@ -66,7 +66,7 @@ main = do md  <- readLinkMetadata
                                   unless exists $
                                                case M.lookup f edbDB of
                                                  Nothing        -> return ()
-                                                 Just (b,c,d,e) -> do let (path,hits) = findN ddb C.bestNEmbeddings C.iterationLimit (f,b,c,d,e)
+                                                 Just (b,c,d,e) -> do let (path,hits) = findN ddb C.bestNEmbeddings C.iterationLimit Nothing (f,b,c,d,e)
                                                                       -- rerank the _n_ matches to put them into a more internally-coherent ordering by pairwise distance minimization, rather than merely minimizing distance to the target URL:
                                                                       hitsSorted <- sortSimilars edb (head hits) hits
                                                                       let nmatchesSorted = (path, hitsSorted)
@@ -77,10 +77,10 @@ main = do md  <- readLinkMetadata
               printGreen "Wrote out missing."
               unless (args == ["--update-only-missing-embeddings"]) $ do
                 printGreen "Rewriting all embeddings…"
-                Par.mapM_ (writeOutMatch md bdb . findN ddb C.bestNEmbeddings C.iterationLimit) edb''
+                Par.mapM_ (writeOutMatch md bdb . findN ddb C.bestNEmbeddings C.iterationLimit Nothing) edb''
                 Par.mapM_ (\f -> case M.lookup f edbDB of
                                        Nothing        -> return ()
-                                       Just (b,c,d,e) -> do let (path,hits) = findN ddb C.bestNEmbeddings C.iterationLimit (f,b,c,d,e)
+                                       Just (b,c,d,e) -> do let (path,hits) = findN ddb C.bestNEmbeddings C.iterationLimit Nothing (f,b,c,d,e)
                                                             hitsSorted <- sortSimilars edb (head hits) hits
                                                             let nmatchesSorted = (path, hitsSorted)
                                                             writeOutMatch md bdb nmatchesSorted
