@@ -65,7 +65,7 @@ siteBlackList = isUniqueList [
           "energycontrol.org", "engineering.fb.com", "eng.uber.com", "en.touhouwiki.net", "en.wikifur.com",
           "en.wikiquote.org", "en.wikisource.org", "en.wiktionary.org", "eprint.iacr.org", "eprints.lse.ac.uk",
           "eprints.nottingham.ac.uk", "eprints.whiterose.ac.uk", "eric.ed.gov", "escapingflatland.substack.com", "escholarship.org",
-          "etherscan.io", "evacommentary.org", "eva-fan.com", "evaresources.wordpress.com", "eveningstarmusic.bandcamp.com",
+          "etherscan.io", "eva-fan.com", "evaresources.wordpress.com", "eveningstarmusic.bandcamp.com",
           "everything2.com", "every.to", "ew.com", "exac.broadinstitute.org", "examine.com",
           "faculty.chicagobooth.edu", "faculty.haas.berkeley.edu", "familiarcycle.net", "felinegenetics.missouri.edu", "figshare.manchester.ac.uk",
           "files.eric.ed.gov", "files.givewell.org", "files.osf.io", "findarticles.com", "fis.fda.gov",
