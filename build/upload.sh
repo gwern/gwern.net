@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-05-10 11:21:58 gwern"
+# When:  Time-stamp: "2023-09-07 20:04:12 gwern"
 # License: CC-0
 #
 # This will reformat, run PDFs through `ocrmypdf` (via the `compressPdf` wrapper), and `git commit` new files.
@@ -38,8 +38,14 @@ function check_duplicate_file() {
 }
 check_duplicate_file "$1";
 
+FILENAME="$1"
+if [[ $FILENAME == *.jpeg ]]; then
+  FILENAME="${FILENAME%.jpeg}.jpg"
+  mv "$1" "$FILENAME"
+fi
+
 if [ $# -eq 1 ]; then
-    TARGET=$(basename "$1")
+    TARGET=$(basename "$FILENAME")
     if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then exiftool -overwrite_original -All="" "$TARGET"; fi # strip potentially dangerous metadata from scrap images
     # format Markdown/text files for more readability
     TEMPFILE=$(mktemp /tmp/text.XXXXX)
@@ -63,17 +69,17 @@ else
         if [ ! -d ~/wiki/doc/"$GUESS"/ ]; then
             # the guess failed too, so bail out entirely:
             ls ~/wiki/"$TARGET_DIR" ~/wiki/doc/"$GUESS"/
-            echo "$1; Directory $TARGET_DIR $2 (and fallback guess $GUESS) does not exist?"
+            echo "$FILENAME; Directory $TARGET_DIR $2 (and fallback guess $GUESS) does not exist?"
             return 2
         else
             # restart with fixed directory
-            echo "Retry as \"upload $1 $GUESS\""
-            upload "$1" "$GUESS"
+            echo "Retry as \"upload $FILENAME $GUESS\""
+            upload "$FILENAME" "$GUESS"
         fi
     else
-        if [ -a "$1" ]; then
+        if [ -a "$FILENAME" ]; then
             ## automatically rename a file like 'benter1994.pdf' (Libgen) to '1994-benter.pdf' (gwern.net):
-            FILE="$1"
+            FILE="$FILENAME"
             if [[ "$FILE" =~ ([a-zA-Z]+)([0-9][0-9][0-9][0-9])\.pdf ]];
             then
                 SWAP="${BASH_REMATCH[2]}-${BASH_REMATCH[1]}.pdf"
@@ -104,7 +110,7 @@ else
 
             else echo ~/wiki/"$TARGET" " already exists"
             fi
-        else echo "First argument $1 is not a file?"
+        else echo "First argument $FILENAME is not a file?"
              return 1
         fi
     fi

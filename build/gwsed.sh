@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Do fixed-string rewrites across the Gwern.net source corpus, inclusive of both code & generated snippets & YAML & Markdown.
+# Needs to handle a number of special cases like affiliation anchors.
+
 if [ $# -eq 4 ]; then
     # special-case https://validator.w3.org output of the form
     # "http://haskell.org/haskellwiki/Xmonad/Config_archive/Gwern's_xmonad.hs redirected to https://wiki.haskell.org/Xmonad/Config_archive/Gwern's_xmonad.hs"
@@ -21,7 +24,10 @@ else
             gwhttp "$1"
         else
             # proceed with trying to do a normal sitewide replacement:
-            FILES=$((find ~/wiki/ -name "*.page"; find ~/wiki/metadata/ ~/wiki/haskell/ ~/wiki/static/ -name "*.yaml" -or -name "*.hs" -or -name "*.html"; ) | grep -F -v -e '.#' -e 'backlink/' -e '_site/' -e 'static/includes/' -e 'static/build/Utils.hs' | xargs grep -F --files-with-matches "$1" | sort)
+            FILES=$((find ~/wiki/ -name "*.page"; find ~/wiki/metadata/ ~/wiki/haskell/ ~/wiki/static/ \
+                                                       -name "*.yaml" -or -name "*.hs" -or -name "*.html"; ) | \
+                        grep -F -v -e '.#' -e 'backlink/' -e '_site/' -e 'static/includes/' -e 'static/build/Utils.hs' | \
+                        xargs grep -F --files-with-matches "$1" | sort)
             if [ -z "$FILES" ]; then
                 echo "No matches; exiting while doing nothing." 1>&2
             else
@@ -41,6 +47,11 @@ else
                 if [[ "$2" =~ "$1"\#.+ ]];
                 then SUFFIX=$(echo "$2" | sed -e 's/.*#//g'); echo $SUFFIX;
                      gwsed "#$SUFFIX#$SUFFIX" "#$SUFFIX"; gwsed "#$SUFFIX#$SUFFIX" "#$SUFFIX";
+                fi
+                # Special case cleanup: Remove any doubled trailing slashes
+                if [[ "$2" =~ ^http.*/$ ]]; then
+                    DOUBLES=$(echo "$2" | sed 's/\/\/$/\//')
+                    if [[ "$2" != "$DOUBLES" ]]; then gwsed "$2" "$DOUBLES"; fi
                 fi
 
             fi
