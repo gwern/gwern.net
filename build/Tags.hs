@@ -332,7 +332,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("radiance", "<em>Radiance</em>")
           , ("psychology/cognitive-bias/stereotype-threat", "stereotype threat")
           , ("psychology/cognitive-bias/sunk-cost", "sunk cost bias")
-          , ("psychology/cognitive-bias", "cognitive biases")
+          , ("psychology/cognitive-bias", "cognitive bias")
           , ("wikipedia", "Wikipedia")
           , ("insight-porn", "insight porn")
           , ("fiction/science-fiction", "Sci-Fi")

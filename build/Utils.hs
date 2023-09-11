@@ -1789,6 +1789,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" CO2", " CO<sub>2</sub>")
          , (" O2", " O<sub>2</sub>")
          , ("NAD+", "NAD⁺")
+         , (" controled", " controlled")
          , ("amp#x02019;", "’")
          , ("Oamp#x02019;", "O’")
          , ("amp#x000ED;", "í")

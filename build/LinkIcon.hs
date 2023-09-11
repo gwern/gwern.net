@@ -127,7 +127,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "examine.com" = aI "Eχ" "text,sans"
  | u'' "www.sciencedirect.com" = aI "E" "text" -- Elsevier/Sciencedirect.com: also an ‘E’
  | u'' "www.esquire.com" = aI "ℰ" "text"
- | aU'' ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' "www.evacommentary.org" || u' "twitter.com/EvaMonkey/" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
+ | aU'' ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' "twitter.com/EvaMonkey/" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
  | aU'' ["www.fda.gov","fis.fda.gov","clinicaltrials.gov", "classic.clinicaltrials.gov"] = aI "FDA" "text,tri,sans" -- U.S. Food & Drug Administration
  | u'' "hpmor.com" || u' "www.fanfiction.net/r/5782108/" || u' "www.reddit.com/r/HPMOR/" = aI "MoR" "text,tri,italic"
  | u' "mozilla.org" = aI "FF" "text,sans" -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized, and confusable with DeepMind.
@@ -166,7 +166,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "silkroadvb5piz3r.onion" || u'' "silkroad5v7dywlc.onion" = aI "SR1" "text,sans"
  | u'' "beepb00p.xyz" = aI "\129302" "text" -- ROBOT FACE U+1F916
  | u'' "antilop.cc" = aI "෴" "text" -- SINHALA PUNCTUATION KUNDDALIYA 0x0DF4 - because it's written by "Moustache", get it
- | u'' "www.memteaimports.com" = aI "MT" "text,sans"
+ | u'' "memteaimports.com" = aI "MT" "text,sans"
  | u'' "forum.effectivealtruism.org" || u'' "www.effectivealtruism.org" = aI "EA" "text"
  | u'' "boards.fireden.net" || u'' "archive.foolz.us" || u' "4channel.org"  = aI "4CH" "text,sans"
  | u'' "www.kaggle.com" = aI "k" "text,sans"
@@ -238,7 +238,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.pragmatic.ml" = aI "𝕄" "text" -- Madison May, machine learning blog
  | u'' "www.research.va.gov" = aI "VA" "text,sans" -- US Department of Veterans Affair (mostly linked for Million Veteran Project)
  | u'' "apnews.com" = aI "AP" "text,sans"
- | aU' ["www.unz.com/gnxp/", "razib.substack.com", "www.razib.com", "www.gnxp.com", "twitter.com/razibkhan"] = aI "RK" "text,sans" -- Razib Khan
+ | aU' ["www.unz.com/gnxp/", "razib.substack.com", "www.razib.com", "www.razibkhan.com", "www.gnxp.com", "twitter.com/razibkhan"] = aI "RK" "text,sans" -- Razib Khan
  | u'' "www.outsideonline.com" = aI "𝕆" "text,sans" -- imitate the shadowing on Outside Online's 'O' <https://www.outsideonline.com/wp-content/uploads/2021/07/favicon-194x194-1.png>
  | u'' "jaymans.wordpress.com" = aI "J👨🏾" "text,sans" -- JayMan
  | u'' "norvig.com" = aI "N" "text,sans" -- Google Director of Research <https://en.wikipedia.org/wiki/Peter_Norvig>; <http://norvig.com/favicon.ico> is actually instantly recognizable & well-chosen, but unfortunately, only works because of the *colors*... so we'll settle for a plain sans capital N.

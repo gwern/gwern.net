@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-09-06 16:42:22 gwern"
+When: Time-stamp: "2023-09-10 20:05:10 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -208,7 +208,7 @@ woptions = defaultHakyllWriterOptions{ writerSectionDivs = True,
 
    -- NOTE: we need to do the site-wide `<noscript>` warning  to make sure it is inside the #markdownBody and gets all of the CSS styling that we expect it to.
     noScriptTemplate = "<noscript><div id=\"noscript-warning-header\" class=\"admonition error\"><div class=\"admonition-title\"><p>[<strong>Warning</strong>: JavaScript Disabled!]</p></div> <p>[For support of <a href=\"/design\" title=\"About: Gwern.net Design: principles, features, links, tricks\">website features</a> (link annotation popups/popins & transclusions, collapsible sections, <a href=\"/design#backlink\">backlinks</a>, tablesorting, image zooming, <a href=\"/sidenote\">sidenotes</a> etc), you <strong>must</strong> enable JavaScript!]</p></div>" ++
-      "<!-- low priority CSS, for JS-disabled users: ensure that NoScripters know what they are missing even if they jump to a section & miss the warning at top/bottom. --><noscript><style>#markdownBody #noscript-warning-header {position: fixed; /* sticky */top: 0; /* at top */width: 100%;z-index: 99; /* Make sure it is on top */background-color: #f8f8f8; /* Set a solid background color so  legible while positioned over text */border-color: var(--GW-abstract-border-color); /* Make look like theme-toggle/admonitions a bit more */border-width: 3px 3px 0 0 double;border-style: double;}nav#sidebar { padding-top: 80px; } /* avoid overlap with page header */</style></noscript>" ++
+      "<!-- low priority CSS, for JS-disabled users: ensure that NoScripters know what they are missing even if they jump to a section & miss the warning at top/bottom. --> <style>#markdownBody #noscript-warning-header {position: fixed; /* sticky */top: 0; /* at top */width: 100%;z-index: 99; /* Make sure it is on top */background-color: #f8f8f8; /* Set a solid background color so  legible while positioned over text */border-color: var(--GW-abstract-border-color); /* Make look like theme-toggle/admonitions a bit more */border-width: 3px 3px 0 0 double;border-style: double;}nav#sidebar { padding-top: 80px; } /* avoid overlap with page header */</style></noscript>" ++
       "</noscript>"
 
 imgUrls :: Item String -> Compiler (Item String)

@@ -21,7 +21,7 @@ prioritizeLinkIconBlackList = isUniqueList ["lilianweng.github.io", "digital.lib
                      "www.thedailybeast.com", "www.teanobi.com", "www.straighttalkonevidence.org", "www.joelonsoftware.com",
                      "www.jstage.jst.go.jp", "blog.codinghorror.com", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am",
                      "ascii.textfiles.com", "blog.johantibell.com", "humanvarieties.org", "ilovetypography.com",
-                     "new.cognitivefun.net", "findarticles.com", "dataprivacylab.org", "www.thefreelibrary.com", "www.unitedpharmacies-uk.md",
+                     "cognitivefun.net", "findarticles.com", "dataprivacylab.org", "www.thefreelibrary.com", "www.unitedpharmacies-uk.md",
                      "www.petforums.co.uk", "www.e-codices.unifr.ch", "www.bartleby.com", "wellcomecollection.org", "darcs.net",
                      "annals.org", "www.smh.com.au", "www.rrauction.com", "www.replicatedtypo.com", "www.mangaupdates.com",
                      "www.instructables.com", "www.baltimoresun.com", "www.aleph.se", "www.cs.virginia.edu", "mujoco.org", "www.incompleteideas.net",
@@ -42,7 +42,8 @@ prioritizeLinkIconBlackList = isUniqueList ["lilianweng.github.io", "digital.lib
                      "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org",
                      "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com",
                      "www.acpjournals.org", "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com",
-                     "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com"]
+                     "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com",
+                     "cognitivefun.net"]
 ------------------------------------------------------------------------------------------
 
 linkIconTestUnitsLink :: [(Inline,T.Text,T.Text)]
@@ -181,7 +182,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.108.7127&rep=rep1&type=pdf",  "pdf","svg")
          , ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.2289&rep=rep1&type=pdf",  "pdf","svg")
          , ("https://classic.clinicaltrials.gov/ct2/show/NCT01684306", "FDA","text,tri,sans")
-         , ("https://clinicaltrials.gov/show/NCT03429075",  "FDA","text,tri,sans")
+         , ("https://clinicaltrials.gov/study/NCT03429075",  "FDA","text,tri,sans")
          , ("https://cognitivemedium.com/srs-mathematics", "MN", "text")
          , ("https://commons.wikimedia.org/wiki/File:Energy_density.svg",  "wikipedia","svg")
          , ("https://compvis.github.io/taming-transformers/",  "github","svg")
@@ -343,7 +344,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://qwantz.com/index.php?comic=1896", "DC", "text,sans")
          , ("https://qz.com/1028528/custos-startup-uses-bitcoin-bounties-to-make-pirates-rat-on-one-another", "QZ", "text,sans")
          , ("https://radiolab.org/podcast/91725-words/transcript", "audio-waveform-lines", "svg")
-         , ("https://razib.substack.com/p/get-lucky", "RK", "text,sans")
+         , ("https://www.razibkhan.com/p/get-lucky", "RK", "text,sans")
          , ("https://rd.springer.com/article/10.1007/s10071-021-01530-3",  "springerlink", "svg")
          , ("https://replicationindex.com/2016/04/18/is-replicability-report-ego-depletionreplicability-report-of-165-ego-depletion-articles/", "RI", "text,sans")
          , ("https://retractionwatch.com/2011/02/28/crystal-myth-11-more-retractions-from-crystallography-journal-after-2010-fakery/", "magnifying-glass", "svg")
@@ -411,7 +412,6 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://web.archive.org/web/20090713005058/http://homepage3.nifty.com/mana/ecom4.htm", "NGE", "text,tri")
          , ("https://web.archive.org/web/20110415182316/http://packdeps.haskellers.com/",  "\120524","text")
          , ("https://web.archive.org/web/20110724123419/szabo.best.vwh.net/bearer_contracts.html", "N.S.", "text,sans")
-         , ("https://web.archive.org/web/20151106005148/http://www.evacommentary.org/appendix/character-names.html", "EG", "text")
          , ("https://what-if.xkcd.com/145/",  "XKCD","text,quad,sans")
          , ("https://wiki.archiveteam.org/index.php?title=Google_Reader",  "internetarchive","svg")
          , ("https://wiki.haskell.org/Xmonad/Config_archive/Gwern's_xmonad.hs",  "code","svg")
@@ -499,7 +499,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.mdpi.com/2220-9964/8/5/232/htm", "MDPI","text,quad,sans")
          , ("https://www.mediawiki.org/wiki/Multilingual_MediaWiki", "wikipedia","svg")
          , ("https://www.medrxiv.org/content/10.1101/2020.05.18.20100685.full",  "chi-dna","svg")
-         , ("https://www.memteaimports.com/tea/fern-stream-amber-oolong", "MT", "text,sans")
+         , ("https://memteaimports.com/tea/fern-stream-amber-oolong", "MT", "text,sans")
          , ("https://www.metaculus.com/questions/notebooks/8702/the-promise-and-impact-of-the-next-generation-of-weight-loss-drugs/", "metaculus", "svg")
          , ("https://www.metafilter.com/183095/On-having-sufficient-complexity-to-allow-for-arbitrary-computation", "MF", "text,sans,italic")
          , ("https://www.metopera.org/season/2019-20-season/madama-butterfly/", "Met", "text,tri")
@@ -552,7 +552,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.science.org/doi/10.1126/sciadv.aar3620",  "S","text")
          , ("https://www.scientificamerican.com/article/the-mind-of-an-octopus/", "SA", "text")
          , ("https://www.scottaaronson.com/democritus/", "S.A.", "text,sans")
-         , ("https://www.sfgate.com/bayarea/article/Test-lab-called-1-billion-over-budget-2921620.php", "SFG", "text,tri,sans")
+         , ("https://www.sfgate.com/bayarea/article/test-lab-called-1-billion-over-budget-2921620.php", "SFG", "text,tri,sans")
          , ("https://www.smithsonianmag.com/history/native-intelligence-109314481/", "SM", "text")
          , ("https://www.spiegel.de/panorama/justiz/amokschuetze-von-muenchen-tatwaffe-aus-dem-darknet-a-1104461.html", "SPGL", "text,quad")
          , ("https://www.ssc.wisc.edu/wlsresearch/about/description.php", "WLS", "text,tri,sans")
@@ -625,5 +625,5 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("/static/js/sidenotes.js",  "code","svg")
          , ("/static/nginx/twdne.conf",  "code","svg")
          , ("/static/template/default.html",  "code","svg")
-         , ("https://solar.lowtechmagazine.com/2015/12/fruit-walls-urban-farming.html", "☀", "text,sans")
+         , ("https://solar.lowtechmagazine.com/2015/12/fruit-walls-urban-farming-in-the-1600s/", "☀", "text,sans")
         ]

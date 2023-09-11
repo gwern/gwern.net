@@ -2,7 +2,7 @@
 module Config.Interwiki where
 
 import Text.Pandoc (Inline(..), nullAttr)
-import qualified Data.Text as T (Text, append)
+import qualified Data.Text as T (Text, append, isPrefixOf)
 
 import Utils (isUniqueList, isUniqueKeys)
 
@@ -2144,7 +2144,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u else T.append "https:/
           , ("Incremental_cost-effectiveness_ratios", "Incremental_cost-effectiveness_ratio")
           , ("Incubation_effect", "Incubation_(psychology)")
           , ("Independent_software_vendors", "Independent_software_vendor")
-          , ("index.php?title=Lightsaber_combat&oldid=220748376", "Lightsaber_combat")
+          , ("Lightsaber_combat", "index.php?title=Lightsaber_combat&oldid=220748376")
           , ("Index_(typography)", "Manicule")
           , ("Indian_Institute_of_Technology", "Indian_Institutes_of_Technology")
           , ("Induced_pluripotent_stem_cells", "Induced_pluripotent_stem_cell")

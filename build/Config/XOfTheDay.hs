@@ -64,7 +64,7 @@ siteBlackList = isUniqueList [
           "elifesciences.org", "eli.thegreenplace.net", "emilkirkegaard.dk", "en.bitcoin.it", "en.chessbase.com",
           "energycontrol.org", "engineering.fb.com", "eng.uber.com", "en.touhouwiki.net", "en.wikifur.com",
           "en.wikiquote.org", "en.wikisource.org", "en.wiktionary.org", "eprint.iacr.org", "eprints.lse.ac.uk",
-          "eprints.nottingham.ac.uk", "eprints.whiterose.ac.uk", "eric.ed.gov", "escapingflatland.substack.com", "escholarship.org",
+          "eprints.nottingham.ac.uk", "eprints.whiterose.ac.uk", "eric.ed.gov", "escholarship.org",
           "etherscan.io", "eva-fan.com", "evaresources.wordpress.com", "eveningstarmusic.bandcamp.com",
           "everything2.com", "every.to", "ew.com", "exac.broadinstitute.org", "examine.com",
           "faculty.chicagobooth.edu", "faculty.haas.berkeley.edu", "familiarcycle.net", "felinegenetics.missouri.edu", "figshare.manchester.ac.uk",
@@ -113,7 +113,7 @@ siteBlackList = isUniqueList [
           "mssv.net", "msu.edu", "mujoco.org", "muse.jhu.edu", "myanimelist.net",
           "mynationalistpony.tumblr.com", "my.pgp-hms.org", "my.vanderbilt.edu", "naldc.nal.usda.gov", "nap.nationalacademies.org",
           "ncase.me", "nces.ed.gov", "nearcyan.com", "neojaponisme.com", "neomarxisme.com",
-          "netecon.seas.harvard.edu", "neurosciencenews.com", "new.cognitivefun.net", "newcriterion.com", "new.nubrain.com",
+          "netecon.seas.harvard.edu", "neurosciencenews.com", "cognitivefun.net", "newcriterion.com", "new.nubrain.com",
           "news.bbc.co.uk", "news.microsoft.com", "news.ycombinator.com", "ngm.nationalgeographic.com", "nickdrozd.github.io",
           "nitro.biosci.arizona.edu", "nitter.moomoo.me", "nmteaco.com", "n.neurology.org", "noahpinion.substack.com",
           "nonsymbolic.org", "nootropicsdepot.com", "norvig.com", "nostalgebraist.tumblr.com", "novelai.net",
@@ -470,4 +470,4 @@ siteBlackList = isUniqueList [
           "psychology.wvu.edu","blogs.lanecc.edu","bayesianinvestor.com", "danielpovey.com", "www.nasonline.org", "calteches.library.caltech.edu",
           "pile.eleuther.ai", "verdagon.dev", "dataverse.harvard.edu", "tim.blog", "radiolab.org", "melaniemitchell.me", "www.ece.uvic.ca",
           "classic.clinicaltrials.gov", "www.takimag.com", "theathletic.com", "fasttext.cc", "ars.els-cdn.com", "pubs.aip.org",
-          "tools.openlab.psu.edu", "www.memteaimports.com","tomodachi.de","blog.daviskedrosky.com"]
+          "tools.openlab.psu.edu", "www.memteaimports.com","tomodachi.de","blog.daviskedrosky.com","cognitivefun.net"]

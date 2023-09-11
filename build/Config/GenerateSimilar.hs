@@ -31,7 +31,7 @@ blackList :: String -> Bool
 blackList p = p `elem` isUniqueList ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554.full",
                                       "/doc/genetics/heritable/correlation/2019-kandler.pdf", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4210287/",
                                       "https://www.wired.com/1996/12/ffglass/", "https://andrewmayneblog.wordpress.com/2021/05/18/a-simple-method-to-keep-gpt-3-focused-in-a-conversation/",
-                                      "https://www.dutchnews.nl/news/2022/07/german-fighter-pilot-identified-after-79-years-from-dna-on-envelope/",
+                                      "https://www.dutchnews.nl/2022/07/german-fighter-pilot-identified-after-79-years-from-dna-on-envelope/",
                                       "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1065034/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2653069/",
                                       "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2925254/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2998793/",
                                       "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4763788/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4921196/",

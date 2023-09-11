@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-09-07 12:13:06 gwern"
+;;; When:  Time-stamp: "2023-09-07 19:25:58 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -414,6 +414,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      (" Saccharomyces cerevisiae" . " <em>Saccharomyces cerevisiae</em>")
                      ("two-by-two" . "2×2")
                      (" B.M.I" . " BMI")
+                     ("controled" . "controlled")
                      ("one-fourth" . "1⁄4")
                      ("one-half" . "1⁄2")
                      ("One-fifth" . "1⁄5<sup>th</sup>")

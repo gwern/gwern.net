@@ -1086,7 +1086,7 @@ whiteList url
       , "https://www.autoregex.xyz/" -- interactive
       , "https://thisimagedoesnotexist.com/" -- interactive (quiz)
       , "https://podcast.ai/" -- low quality (audio embed)
-      , "https://csm.ai/commonsim-1-generating-3d-worlds-2/" -- low quality (video embeds)
+      , "https://www.csm.ai/commonsim-1-generating-3d-worlds-2/" -- low quality (video embeds)
       , "https://wilson1yan.github.io/teco/" -- low quality (video embeds)
       , "https://www.matthewtancik.com/nerf" -- low quality (video embeds)
       , "https://www.reddit.com/r/thisisthewayitwillbe/" -- private
@@ -1111,7 +1111,7 @@ whiteList url
       , "https://pudding.cool/2018/08/wiki-death/" -- low quality (interactive? JS?)
       , "https://mimic-play.github.io/" -- low quality (video embeds)
       , "https://www.alzchem.com/de/" -- homepage
-      , "https://heypi.com/talk" -- interactive
+      , "https://pi.ai/talk" -- interactive
       , "https://vecta.io/nano" -- service
       , "https://jukebox.openai.com/" -- interactive
       , "https://www.photoprompts.io/" -- interactive
