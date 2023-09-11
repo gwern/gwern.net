@@ -1,15 +1,22 @@
 #!/bin/bash
 
-# upload: convenience script for uploading PDFs, images, and other files to gwern.net.
+# upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-09-07 20:04:12 gwern"
+# When:  Time-stamp: "2023-09-10 19:05:22 gwern"
 # License: CC-0
 #
-# This will reformat, run PDFs through `ocrmypdf` (via the `compressPdf` wrapper), and `git commit` new files.
-# Example command: `$ upload benter1994.pdf statistics/decision` will upload a compressed, OCRed <https://gwern.net/doc/statistics/decision/1994-benter.pdf>.
-# It will also try to guess the full document directory from a short tag, so `$ upload benter1994.pdf decision` works just as well.
-# If no tag is provided, it is assumed this is a temporary or scratch file, and it's uploaded to an unindexed dump directory that is periodically deleted.
+# Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
+# Usage:
+# $ upload file # temporary documents are uploaded to /doc/www/misc/$file, and deleted after 90 days.
+# $ upload file directory-name # uploaded to /doc/$directory-name/$file if that is unique, otherwise the tag rewrite system guesses
+# $ upload 1994-benter.pdf statistics/decision # uploads to `/doc/statistics/decision/1994-benter.pdf`
+# $ upload benter1994.pdf decision # renames to `1994-benter.pdf` and uploads to `/doc/statistics/decision/1994-benter.pdf`
+#
+# Files receive standard optimization, reformatting, compression, metadata-scrubbing etc.
+# This will rename to be globally-unique, reformat, run PDFs through `ocrmypdf`
+# (via the `compressPdf` wrapper, to JBIG2-compress, OCR, and convert to PDF/A), and `git add` new files.
+# They are then opened in a web browser to verify they uploaded, have permissions, and render.
 
 . ~/wiki/static/build/bash.sh
 
@@ -17,32 +24,54 @@ set -e
 
 WWW_BROWSER="firefox"
 
-if [ ! -f "$1" ]; then echo "l18: '$1' is not a file‽" && exit 1; fi
+if [ ! -f "$1" ]; then echo "l20: '$1' is not a file‽" && exit 1; fi
 
 (locate "$1" &)
-
-function check_duplicate_file() {
-  local filename="$1"
-  local file_path
-
-  # Find all files in ~/wiki/ and its subdirectories with the same filename
-  file_path=$(find ~/wiki/ -type f -name "$filename" -print -quit)
-
-  # If a file with the same name exists, exit with an error
-  if [[ -n "$file_path" ]]; then
-    echo "Error: File '$filename' already exists at '$file_path'" >&2
-    return 1
-  fi
-
-  return 0
-}
-check_duplicate_file "$1";
 
 FILENAME="$1"
 if [[ $FILENAME == *.jpeg ]]; then
   FILENAME="${FILENAME%.jpeg}.jpg"
   mv "$1" "$FILENAME"
 fi
+
+# Attempt to make filename globally unique, due to repetition of surnames.
+#
+# eg. I go to do `upload 2023-liu-2.pdf economics`, and it turns out `/doc/psychology/2023-liu-2.pdf` already exists...
+# as do `/doc/biology/2023-liu-3.pdf` and `/doc/technology/2023-liu-4.pdf`. (Liu is an *extremely* common Asian surname.)
+# So this function will try to loop over numeric suffixes 1–9 to rename it to the first workable filename, in this case, `2023-liu-5.pdf`.
+function rename_file() {
+  local filename="$1"
+  local base_name extension new_filename new_file_path
+
+  base_name="${filename%.*}"
+  extension="${filename##*.}"
+
+  new_file_path=$(find ~/wiki/ -type f -name "$filename" -print -quit)
+
+  # if filename already exists, try to rename it
+  if [[ -n "$new_file_path" ]]; then
+    for ((i=1; i<=20; i++)); do
+      new_filename="${base_name}-${i}.${extension}"
+      new_file_path=$(find ~/wiki/ -type f -name "$new_filename" -print -quit)
+
+      if [[ -z "$new_file_path" ]]; then
+        mv "$filename" "$new_filename"
+        echo "File '$filename' has been renamed to '$new_filename'"
+        filename="$new_filename"
+        break
+      fi
+    done
+  fi
+
+  # if filename after possible renaming does not exist, that means we're using a new filename
+  if [[ ! -e "$filename" ]]; then
+    echo "Error: File '$filename' could not be renamed. Please check for possible issues." >&2
+    return 1
+  fi
+
+  return 0
+}
+rename_file "$FILENAME"
 
 if [ $# -eq 1 ]; then
     TARGET=$(basename "$FILENAME")
