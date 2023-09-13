@@ -809,12 +809,12 @@ Hyphenopoly.config({
     }
 });
 
-/******************************************************************/
+/**********************************************/
 /*  Hyphenate with Hyphenopoly.
 
     Requires Hyphenopoly_Loader.js to be loaded prior to this file.
  */
-function hyphenate(eventInfo) {
+addContentInjectHandler(GW.contentInjectHandlers.hyphenate = (eventInfo) => {
     GWLog("hyphenate", "rewrite.js", 1);
 
     if (!(Hyphenopoly.hyphenators))
@@ -835,13 +835,6 @@ function hyphenate(eventInfo) {
             Typography.processElement(block, Typography.replacementTypes.NONE, true);
         });
     });
-}
-
-/**********************************************/
-/*  Add content inject handlers for typography.
- */
-addContentInjectHandler(GW.contentInjectHandlers.rectifyTypography = (eventInfo) => {
-    hyphenate(eventInfo);
 }, "rewrite");
 
 /************************************************************************/
