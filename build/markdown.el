@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-09-07 19:25:58 gwern"
+;;; When:  Time-stamp: "2023-09-12 20:58:12 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -349,6 +349,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("†," . ",")
                      ("‡" . "")
                      (",," . ",")
+                     , (".," . ". ")
                      (",”" . "”,")
                      ("‘‘" . "\"")
                      ("’’" . "\"")
@@ -978,15 +979,17 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ; appropriately, but the glyphs are way too similar-looking. (Sorry, I didn't design English punctuation.)
                         ; And this is also true if any of the numbers have minus signs (eg. '−0.3–3.7' or '0.3–−3.7' would be no better).
                         ("between \\([0-9∞.]+\\) and \\([0-9∞.]+\\)" . "\\1–\\2")
-                        (" one to \\([0-9∞.]+\\)"                   . " \\1–\\2")
+                        (" one to \\([0-9∞.]+\\)"                    . " \\1–\\2")
                         ("from \\([0-9∞.]+\\) to \\([0-9∞.]+\\)"     . "\\1–\\2")
                         ("\\([0-9∞\\.]+\\) to \\([0-9∞\\.]+\\)"      . "\\1–\\2")
+                        ("\\([0-9∞\\.]+\\) through \\([0-9∞\\.]+\\)" . "\\1–\\2")
                         ("from \\([0-9∞.]+|one|two|three\\) to \\([0-9∞.]+\\)"     . "\\1 → \\2")
-                        ("\\([a-z]+\\)- and \\([a-z]+-[a-z]+\\)"   . "\\1 & \\2")
+                        ("\\([a-z]+\\)- and \\([a-z]+-[a-z]+\\)"     . "\\1 & \\2")
                         ("\\([0-9∞.]++|one|two|three\\) to \\([0-9∞.]+\\)"          . "\\1 → \\2")
                         ("between \\([0-9∞.]+\\) and \\([0-9∞.]+\\)" . "\\1–\\2") ; "range between 2 and 10" → "range 2–10"
                         (" \\([0-9∞.]+\\) or \\([0-9∞.]+\\) "        . " \\1–\\2 ")
-                        ("\\([0-9∞]+\\)- to \\([0-9∞]+\\)-"          . "\\1--\\2-") ; "18- to 20-year-olds" → "18--20-year-olds"
+                        ("\\([0-9∞]+\\)- to \\([0-9∞]+\\)-"          . "\\1–\\2-") ; "18- to 20-year-olds" → "18--20-year-olds"
+                        ("95% CI = \\([0-9]\\.[0-9]+\\), \\([0-9]\\.[0-9]+\\)" . "95% CI = \\1–\\2")
                         )
                       ))
          (dolist (pair regexps)
@@ -1981,3 +1984,17 @@ To save effort, we add those as well."
            ("—" . ?⸺) ; EM DASH
            ("−" . ?━) ; MINUS SIGN
            ))))
+
+;; for line-by-line incrementing IDs; useful for popup links.
+;; (defun add-html-spans (start end)
+;;   (interactive "r")
+;;   (goto-char start)
+;;   (let ((id 1))
+;;     (while (and (< (point) end)
+;;                 (re-search-forward "^>.*$" nil t))
+;;       (let ((line (match-string 0)))
+;;         (unless (string-match "^>[ \t]*$" line)
+;;           (replace-match (format "> <span id=\"line-%d\">%s</span>" id
+;;                                  (substring line 2))
+;;                          t nil nil 0)
+;;           (setq id (1+ id)))))))

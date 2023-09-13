@@ -470,4 +470,4 @@ siteBlackList = isUniqueList [
           "psychology.wvu.edu","blogs.lanecc.edu","bayesianinvestor.com", "danielpovey.com", "www.nasonline.org", "calteches.library.caltech.edu",
           "pile.eleuther.ai", "verdagon.dev", "dataverse.harvard.edu", "tim.blog", "radiolab.org", "melaniemitchell.me", "www.ece.uvic.ca",
           "classic.clinicaltrials.gov", "www.takimag.com", "theathletic.com", "fasttext.cc", "ars.els-cdn.com", "pubs.aip.org",
-          "tools.openlab.psu.edu", "www.memteaimports.com","tomodachi.de","blog.daviskedrosky.com","cognitivefun.net"]
+          "tools.openlab.psu.edu", "www.memteaimports.com","tomodachi.de","blog.daviskedrosky.com"]
