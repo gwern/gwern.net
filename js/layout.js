@@ -826,9 +826,10 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 				".annotation .data-field"
 			].join(", ");
 			let strictPreviousBlock = previousBlockOf(block, { 
+				alsoBlockElements: [ ".list" ],
 				notWrapperElements: [ "li", ".list" ], 
 				notHalfWrapperElements: [ "section" ],
-				cacheKey: "notWrappers_listsAndListItems_notHalfWrappers_sections"
+				cacheKey: "alsoBlocks_lists_notWrappers_listsAndListItems_notHalfWrappers_sections"
 			});
 			if (   strictPreviousBlock == null
 				|| strictPreviousBlock.matches(previousBlockSelector) == true)
