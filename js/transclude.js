@@ -485,10 +485,6 @@ function fillTemplate(template, data = null, context = null, options = { }) {
 	a string, a URL object, or an HTMLAnchorElement, in which case it, or its
 	.href property, is used as the ‘href’ attribute of the synthesized
 	include-link.
-
-	If the ‘link’ argument is an HTMLAnchorElement and has a ‘data-url-original’
-	attribute, then the same attribute is assigned the same value on the
-	synthesized include-link.
  */
 function synthesizeIncludeLink(link, attributes, properties) {
 	let includeLink = newElement("A", attributes, properties);
@@ -501,10 +497,6 @@ function synthesizeIncludeLink(link, attributes, properties) {
 	else if (   link instanceof HTMLAnchorElement
 			 || link instanceof URL)
 		includeLink.href = link.href;
-
-	if (   link instanceof HTMLAnchorElement
-		&& link.dataset.urlOriginal)
-		includeLink.dataset.urlOriginal = link.dataset.urlOriginal;
 
 	if (   link instanceof HTMLAnchorElement
 		&& link.dataset.backlinkTargetUrl)

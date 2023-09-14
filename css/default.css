@@ -2674,8 +2674,8 @@ section.footnotes .footnote-self-link {
     --text-indent: 0em;
 }
 
-.annotation span.data-field,
-.annotation-partial span.data-field {
+.annotation p.data-field.author-date-aux,
+.annotation-partial p.data-field.author-date-aux {
     --text-hyphenation: none;
 }
 
@@ -2688,8 +2688,8 @@ section.footnotes .footnote-self-link {
 
 /*  Original URL.
  */
-.annotation .originalURL,
-.annotation-partial .originalURL {
+.annotation .archiveURL,
+.annotation-partial .archiveURL {
     font-variant-caps: small-caps;
     margin-left: 0.25em;
 }

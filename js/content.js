@@ -205,19 +205,18 @@ Content = {
 	contentTypes: {
 		localTweetArchive: {
 			matches: (link) => {
-				let originalURL = originalURLForLink(link);
-				return (   link.hostname == location.hostname
-						&& link.pathname.startsWith("/doc/www/")
-						&& originalURL.hostname == "twitter.com"
-						&& originalURL.pathname.match(/\/.+?\/status\/[0-9]+$/));
+				if (link.dataset.urlArchive == null)
+					return false;
+
+				let archiveURL = new URL(location.origin + link.dataset.urlArchive);
+				return (   [ "twitter.com", "x.com" ].includes(link.hostname)
+						&& link.pathname.match(/\/.+?\/status\/[0-9]+$/));
 			},
 
 			sourceURLsForLink: (link) => {
-				let url = new URL(link.href);
-				url.hash = "";
-				url.search = "";
+				let archiveURL = new URL(location.hostname + link.dataset.urlArchive);
 
-				return [ url ];
+				return [ archiveURL ];
 			},
 
 			contentFromResponse: (response, link = null, loadURL) => {
@@ -245,7 +244,7 @@ Content = {
 				//	Link to tweet.
 				let tweetDate = new Date(Date.parse(tweetPage.document.querySelector(".main-tweet .tweet-date").textContent));
 				let tweetDateString = `${tweetDate.getFullYear()}-${tweetDate.getMonth()}-${tweetDate.getDate()}`;
-				let tweetLinkURL = originalURLForLink(link);
+				let tweetLinkURL = new URL(link.href);
 				tweetLinkURL.hostname = nitterHost;
 				tweetLinkURL.hash = "m";
 				let secondaryTitleLinksHTML = ` on <a href="${tweetLinkURL.href}" class="${titleLinkClass}" ${titleLinkIconMetadata}>${tweetDateString}</a>:`;

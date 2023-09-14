@@ -5,17 +5,18 @@
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
 		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
+		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
 		   <{titleLinkIconMetadata}>
 			   ><{titleHTML}></a>\
 		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\
 
-		<[IF originalURL]>
-		<span class="originalURL">[<a
-			 title="Link to original URL for <{titleText}>"
-			 href="<{originalURL}>"
+		<[IF archiveURL]>
+		<span class="archiveURL">[<a
+			 title="Link to local archive for <{titleText}>"
+			 href="<{archiveURL}>"
 			 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-			 alt="Original URL for this archived link; may be broken."
-				 ><{originalURLText}></a>]</span>
+			 alt="Locally archived version of this URL"
+				 ><{archiveURLText}></a>]</span>
 		<[IFEND]>
 	</p>
 	<[IF authorDateAux]>
