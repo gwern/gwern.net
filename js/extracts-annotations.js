@@ -51,7 +51,7 @@ Extracts = { ...Extracts,
 		if (referenceData == null) {
 			referenceData = {
 				popFrameTitleLinkHref:          target.href,
-				popFrameTitleOriginalLinkHref:  (target.dataset.urlOriginal ?? null),
+				popFrameTitleArchiveLinkHref:   (target.dataset.urlArchive ?? null),
 				popFrameTitleText:              (target.hostname == location.hostname
 												 ? target.pathname + target.hash
 												 : target.href)
@@ -205,7 +205,7 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 				   (Extracts.popFrameProvider == Popups ? "popup-body" : "popin-body")
 				   ].join(" ")
 	});
-	partialAnnotationAppendContainer.appendChild(synthesizeIncludeLink((target.dataset.urlOriginal ?? target.href), {
+	partialAnnotationAppendContainer.appendChild(synthesizeIncludeLink(target.href, {
 		"class": "link-annotated-partial include-annotation-partial include-strict",
 		"data-template": "annotation-blockquote-not"
 	}));

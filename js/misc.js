@@ -196,10 +196,7 @@ function targetElementInDocument(link, doc) {
 // 				exactBacklinkSelector = `a[href*='${CSS.escape(link.dataset.backlinkTargetUrl + targetID)}']`;
 // 		}
 
-		let backlinkSelector = [
-			`a[href*='${CSS.escape(link.dataset.backlinkTargetUrl)}']:not(.backlink-not)`,
-			`a[data-url-original='${(link.dataset.backlinkTargetUrl)}']:not(.backlink-not)`
-		].join(", ");
+		let backlinkSelector = `a[href*='${CSS.escape(link.dataset.backlinkTargetUrl)}']:not(.backlink-not)`;
 		let exclusionSelector = [
 			"#page-metadata a",
 			".aux-links-list a"
@@ -210,8 +207,7 @@ function targetElementInDocument(link, doc) {
         element = /* doc.querySelector(exactBacklinkSelector) ?? */ (Array.from(doc.querySelectorAll(backlinkSelector)).filter(backlink => {
             return (   (link.dataset.backlinkTargetUrl.startsWith("/")
             			? backlink.pathname == link.dataset.backlinkTargetUrl
-            			: (   backlink.href == link.dataset.backlinkTargetUrl
-            			   || backlink.dataset.urlOriginal == link.dataset.backlinkTargetUrl))
+            			: backlink.href == link.dataset.backlinkTargetUrl)
                     && backlink.closest(exclusionSelector) == null);
         }).first);
     }
@@ -264,33 +260,6 @@ function anchorsForLink(link) {
 	} else {
 		 return link.hash.match(/#[^#]*/g) ?? [ ];
 	}
-}
-
-/******************************************************************************/
-/*  Return original URL for a link. (Equal to the link’s URL itself for all but
-    locally archived links.)
- */
-function originalURLForLink(link) {
-    if (   link.dataset.urlOriginal == null
-        || link.dataset.urlOriginal == "")
-        return new URL(link.href);
-
-    let originalURL = new URL(link.dataset.urlOriginal);
-
-    /*  Special cases where the original URL of the target does not
-        match the target’s proper identifier (possibly due to outgoing
-        link rewriting).
-     */
-    if (originalURL.hostname == "ar5iv.labs.arxiv.org") {
-        originalURL.hostname = "arxiv.org";
-        originalURL.pathname = originalURL.pathname.replace("/html/", "/abs/");
-        /*  Erase the ?fallback=original query parameter necessary to
-            make it redirect if no Ar5iv version is available.
-         */
-        originalURL.search = "";
-    }
-
-    return originalURL;
 }
 
 

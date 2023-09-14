@@ -1229,10 +1229,9 @@ Extracts = { ...Extracts,
         let target = popFrame.spawningTarget;
 		let referenceData = Content.referenceDataForLink(target);
 		if (referenceData == null) {
-        	let originalURL = originalURLForLink(target);
 			referenceData = {
-				popFrameTitleLinkHref:  originalURL.href,
-				popFrameTitleText:      `<code>${originalURL.href}</code>`
+				popFrameTitleLinkHref:  target.href,
+				popFrameTitleText:      `<code>${target.href}</code>`
 			};
 		}
 
@@ -1359,35 +1358,6 @@ Extracts = { ...Extracts,
 
     //  Used in: Extracts.foreignSiteForTarget
     foreignSiteEmbedURLTransforms: [
-        //  Less Wrong
-        [   (url) => [ "www.lesswrong.com", "lesswrong.com", "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname),
-            (url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "www"); }
-            ],
-        //  Alignment Forum
-        [   (url) => (   [ "www.alignmentforum.org", "alignmentforum.org" ].includes(url.hostname)
-                      || (   [ "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)
-                          && url.searchParams.get("view") == "alignment-forum")),
-            (url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "www", "view=alignment-forum"); }
-            ],
-        //  EA Forum
-        [   (url) => [ "forum.effectivealtruism.org", "ea.greaterwrong.com" ].includes(url.hostname),
-            (url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "ea"); }
-            ],
-        //  Arbital
-        [   (url) => [ "arbital.com", "arbital.greaterwrong.com" ].includes(url.hostname),
-            (url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "arbital"); }
-            ],
-		//	Twitter
-		[	(url) => [ "twitter.com", "mobile.twitter.com" ].includes(url.hostname),
-			(url) => { url.hostname = "nitter.moomoo.me"; }
-			],
-        //  Wikipedia
-        [   (url) => /(.+?)\.wikipedia\.org/.test(url.hostname) == true,
-            (url) => {
-                url.hostname = url.hostname.replace(/(.+?)(?:\.m)?\.wikipedia\.org/, "$1.m.wikipedia.org");
-                if (!url.hash)
-                    url.hash = "#bodyContent";
-            } ],
         //	Wikimedia commons
         [	(url) => (   url.hostname == "commons.wikimedia.org" 
         			  && url.pathname.startsWith("/wiki/File:")),
@@ -1416,27 +1386,15 @@ Extracts = { ...Extracts,
 			} ]
     ],
 
-    //  Used in: Extracts.foreignSiteEmbedURLTransforms
-    foreignSiteEmbedURLTransform_GreaterWrong: (url, subdomain = "www", searchString = null) => {
-        url.hostname = `${subdomain}.greaterwrong.com`;
-
-		//	Ensure that comment permalinks display properly.
-        if (url.searchParams.has("commentId")) {
-        	url.pathname += `/comment/${(url.searchParams.get("commentId"))}`;
-        	url.searchParams.delete("commentId");
-        }
-
-        url.search = (searchString
-                      ? `${searchString}&`
-                      : ``) +
-                     "format=preview&theme=classic";
-    },
-
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
     foreignSiteForTarget: (target) => {
         GWLog("Extracts.foreignSiteForTarget", "extracts-content.js", 2);
 
-        let url = new URL(target.href);
+		let url = target.dataset.urlHtml
+				  ? (target.dataset.urlHtml.startsWith("/")
+				     ? new URL(location.origin + target.dataset.urlHtml)
+				     : new URL(target.dataset.urlHtml))
+				  : new URL(target.href);
 
         //  WARNING: EXPERIMENTAL FEATURE!
         if (localStorage.getItem("enable-embed-proxy") == "true") {
@@ -1486,29 +1444,24 @@ Extracts = { ...Extracts,
         }
         //  END EXPERIMENTAL SECTION
 
-        //  Transform URL for embedding.
-        /*  NOTE: the protocol *must* be https, not http; attempting to load
-            http URLs from a page loaded over https, even in a shadow-root, will
-            fail with a “Mixed Content” error. This way, we force https, in the
-            hopes that the foreign site supports TLS, despite that the URL we’ve
-            got is http. Unfortunately, some sites do not in fact support TLS;
-            those sites will fail to load. This is unavoidable, and means that
-            such sites cannot be live-embedded.
+		/*	If a special ‘HTML’ URL is specified, use that, sans transformation.
+        	Otherwise, transform URL for embedding.
          */
-        url.protocol = "https:";
-        for ([ test, transform, special ] of Extracts.foreignSiteEmbedURLTransforms) {
-            if (test(url)) {
-            	if (transform) {
-            		transform(url);
-            	}
-            	if (special) {
-            		let retval = special(url, target);
-            		if (retval)
-            			return retval;
-            	}
-                break;
-            }
-        }
+        if (target.dataset.urlHtml == null) {
+			for ([ test, transform, special ] of Extracts.foreignSiteEmbedURLTransforms) {
+				if (test(url)) {
+					if (transform) {
+						transform(url);
+					}
+					if (special) {
+						let retval = special(url, target);
+						if (retval)
+							return retval;
+					}
+					break;
+				}
+			}
+		}
 
         return newDocument(Extracts.objectHTMLForURL(url, "sandbox"));
     },

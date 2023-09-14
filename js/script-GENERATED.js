@@ -196,10 +196,7 @@ function targetElementInDocument(link, doc) {
 // 				exactBacklinkSelector = `a[href*='${CSS.escape(link.dataset.backlinkTargetUrl + targetID)}']`;
 // 		}
 
-		let backlinkSelector = [
-			`a[href*='${CSS.escape(link.dataset.backlinkTargetUrl)}']:not(.backlink-not)`,
-			`a[data-url-original='${(link.dataset.backlinkTargetUrl)}']:not(.backlink-not)`
-		].join(", ");
+		let backlinkSelector = `a[href*='${CSS.escape(link.dataset.backlinkTargetUrl)}']:not(.backlink-not)`;
 		let exclusionSelector = [
 			"#page-metadata a",
 			".aux-links-list a"
@@ -210,8 +207,7 @@ function targetElementInDocument(link, doc) {
         element = /* doc.querySelector(exactBacklinkSelector) ?? */ (Array.from(doc.querySelectorAll(backlinkSelector)).filter(backlink => {
             return (   (link.dataset.backlinkTargetUrl.startsWith("/")
             			? backlink.pathname == link.dataset.backlinkTargetUrl
-            			: (   backlink.href == link.dataset.backlinkTargetUrl
-            			   || backlink.dataset.urlOriginal == link.dataset.backlinkTargetUrl))
+            			: backlink.href == link.dataset.backlinkTargetUrl)
                     && backlink.closest(exclusionSelector) == null);
         }).first);
     }
@@ -264,33 +260,6 @@ function anchorsForLink(link) {
 	} else {
 		 return link.hash.match(/#[^#]*/g) ?? [ ];
 	}
-}
-
-/******************************************************************************/
-/*  Return original URL for a link. (Equal to the link’s URL itself for all but
-    locally archived links.)
- */
-function originalURLForLink(link) {
-    if (   link.dataset.urlOriginal == null
-        || link.dataset.urlOriginal == "")
-        return new URL(link.href);
-
-    let originalURL = new URL(link.dataset.urlOriginal);
-
-    /*  Special cases where the original URL of the target does not
-        match the target’s proper identifier (possibly due to outgoing
-        link rewriting).
-     */
-    if (originalURL.hostname == "ar5iv.labs.arxiv.org") {
-        originalURL.hostname = "arxiv.org";
-        originalURL.pathname = originalURL.pathname.replace("/html/", "/abs/");
-        /*  Erase the ?fallback=original query parameter necessary to
-            make it redirect if no Ar5iv version is available.
-         */
-        originalURL.search = "";
-    }
-
-    return originalURL;
 }
 
 
@@ -4231,20 +4200,15 @@ Annotations = { ...Annotations,
         return Array.from(container.querySelectorAll("a[class*='link-annotated']")).filter(link => Annotations.isAnnotatedLink(link));
     },
 
-    /*  Returns the target identifier: the original URL (for locally archived
-        pages), or the relative url (for local links), or the full URL (for
-        foreign links).
+    /*  Returns the target identifier: the relative url (for local links), 
+    	or the full URL (for foreign links).
 
         Used for loading annotations, and caching reference data.
      */
 	targetIdentifier: (target) => {
-        if (target.dataset.urlOriginal) {
-            return originalURLForLink(target).href;
-        } else {
-            return (target.hostname == location.hostname
-                   ? target.pathname + target.hash
-                   : target.href);
-        }
+		return (target.hostname == location.hostname
+			   ? target.pathname + target.hash
+			   : target.href);
 	},
 
 	/***************************/
@@ -4546,7 +4510,12 @@ Annotations = { ...Annotations,
 
 				let titleHTML = referenceElement.innerHTML;
 				let titleText = referenceElement.textContent;
-				let titleLinkHref = referenceElement.href;
+
+				//	On mobile, use mobile-specific link href, if provided.
+				let titleLinkHref = (   referenceElement.dataset.hrefMobile 
+									 && GW.isMobile())
+									? referenceElement.dataset.hrefMobile
+									: referenceElement.href;
 
 				let titleLinkClass = "title-link";
 				//  Import certain link classes.
@@ -4564,6 +4533,11 @@ Annotations = { ...Annotations,
 						titleLinkClass += ` ${targetClass}`;
 				});
 
+				//	Special handling for links with separate ‘HTML’ URLs.
+				if (   referenceElement.dataset.urlHtml
+					&& titleLinkClass.includes("link-live") == false)
+					titleLinkClass += " link-live";
+
 				//	Link icon for the title link.
 				let titleLinkIconMetadata;
 				if (referenceElement.dataset.linkIcon) {
@@ -4574,12 +4548,22 @@ Annotations = { ...Annotations,
 										  + `data-link-icon="${(link.dataset.linkIcon)}"`;
 				}
 
-				//	Original URL.
-				let originalURL = referenceElement.dataset.urlOriginal ?? null;
-				let originalURLText = originalURL
-									  ? (originalURL.includes("ar5iv") 
-									     ? `<span class="smallcaps">HTML</span>` 
-									     : "live")
+				//	Special data attributes for the title link.
+				let titleLinkDataAttributes = [ 
+					"urlHtml", 
+					"urlArchive"
+				].map(attr => 
+					attr 
+					? `data-${(attr.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${referenceElement.dataset[attr]}"` 
+					: null
+				).filter(Boolean).join(" ");
+				if (titleLinkDataAttributes == "")
+					titleLinkDataAttributes = null;
+
+				//	Archive URL.
+				let archiveURL = referenceElement.dataset.urlArchive ?? null;
+				let archiveURLText = archiveURL
+									  ? "archive"
 									  : null;
 
 				//  Author list.
@@ -4663,19 +4647,20 @@ Annotations = { ...Annotations,
 
 				return {
 					content: {
-						originalURL:            originalURL,
-						originalURLText:        originalURLText,
-						titleHTML:              titleHTML,
-						fullTitleHTML:          titleHTML,
-						titleText:              titleText,
-						titleLinkHref:          titleLinkHref,
-						titleLinkClass:         titleLinkClass,
-						titleLinkIconMetadata:  titleLinkIconMetadata,
-						author:                 author,
-						date:                   date,
-						auxLinks:               auxLinks,
-						authorDateAux:          authorDateAux,
-						abstract:               abstractHTML,
+						titleHTML:                titleHTML,
+						fullTitleHTML:            titleHTML,
+						titleText:                titleText,
+						titleLinkHref:            titleLinkHref,
+						titleLinkClass:           titleLinkClass,
+						titleLinkIconMetadata:    titleLinkIconMetadata,
+						titleLinkDataAttributes:  titleLinkDataAttributes,
+						archiveURL:               archiveURL,
+						archiveURLText:           archiveURLText,
+						author:                   author,
+						date:                     date,
+						auxLinks:                 auxLinks,
+						authorDateAux:            authorDateAux,
+						abstract:                 abstractHTML,
 					},
 					template:                       "annotation-blockquote-inside",
 					linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
@@ -4683,7 +4668,7 @@ Annotations = { ...Annotations,
 					tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
 					popFrameTitleText:              popFrameTitleText,
 					popFrameTitleLinkHref:          titleLinkHref,
-					popFrameTitleOriginalLinkHref:  originalURL
+					popFrameTitleArchiveLinkHref:   archiveURL
 				};
 			},
 
@@ -5360,19 +5345,18 @@ Content = {
 	contentTypes: {
 		localTweetArchive: {
 			matches: (link) => {
-				let originalURL = originalURLForLink(link);
-				return (   link.hostname == location.hostname
-						&& link.pathname.startsWith("/doc/www/")
-						&& originalURL.hostname == "twitter.com"
-						&& originalURL.pathname.match(/\/.+?\/status\/[0-9]+$/));
+				if (link.dataset.urlArchive == null)
+					return false;
+
+				let archiveURL = new URL(location.origin + link.dataset.urlArchive);
+				return (   [ "twitter.com", "x.com" ].includes(link.hostname)
+						&& link.pathname.match(/\/.+?\/status\/[0-9]+$/));
 			},
 
 			sourceURLsForLink: (link) => {
-				let url = new URL(link.href);
-				url.hash = "";
-				url.search = "";
+				let archiveURL = new URL(location.hostname + link.dataset.urlArchive);
 
-				return [ url ];
+				return [ archiveURL ];
 			},
 
 			contentFromResponse: (response, link = null, loadURL) => {
@@ -5400,7 +5384,7 @@ Content = {
 				//	Link to tweet.
 				let tweetDate = new Date(Date.parse(tweetPage.document.querySelector(".main-tweet .tweet-date").textContent));
 				let tweetDateString = `${tweetDate.getFullYear()}-${tweetDate.getMonth()}-${tweetDate.getDate()}`;
-				let tweetLinkURL = originalURLForLink(link);
+				let tweetLinkURL = new URL(link.href);
 				tweetLinkURL.hostname = nitterHost;
 				tweetLinkURL.hash = "m";
 				let secondaryTitleLinksHTML = ` on <a href="${tweetLinkURL.href}" class="${titleLinkClass}" ${titleLinkIconMetadata}>${tweetDateString}</a>:`;
@@ -6278,10 +6262,6 @@ function fillTemplate(template, data = null, context = null, options = { }) {
 	a string, a URL object, or an HTMLAnchorElement, in which case it, or its
 	.href property, is used as the ‘href’ attribute of the synthesized
 	include-link.
-
-	If the ‘link’ argument is an HTMLAnchorElement and has a ‘data-url-original’
-	attribute, then the same attribute is assigned the same value on the
-	synthesized include-link.
  */
 function synthesizeIncludeLink(link, attributes, properties) {
 	let includeLink = newElement("A", attributes, properties);
@@ -6294,10 +6274,6 @@ function synthesizeIncludeLink(link, attributes, properties) {
 	else if (   link instanceof HTMLAnchorElement
 			 || link instanceof URL)
 		includeLink.href = link.href;
-
-	if (   link instanceof HTMLAnchorElement
-		&& link.dataset.urlOriginal)
-		includeLink.dataset.urlOriginal = link.dataset.urlOriginal;
 
 	if (   link instanceof HTMLAnchorElement
 		&& link.dataset.backlinkTargetUrl)
@@ -7501,18 +7477,19 @@ Transclude.templates = {
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
 		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
+		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
 		   <{titleLinkIconMetadata}>
 			   ><{fullTitleHTML}></a>\\
 		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
-		<[IF abstract & ![ originalURL | authorDateAux ] ]>:<[IFEND]>\\
+		<[IF abstract & ![ archiveURL | authorDateAux ] ]>:<[IFEND]>\\
 
-		<[IF originalURL]>
-		<span class="originalURL">[<a
-			 title="Link to original URL for <{titleText}>"
-			 href="<{originalURL}>"
+		<[IF archiveURL]>
+		<span class="archiveURL">[<a
+			 title="Link to local archive for <{titleText}>"
+			 href="<{archiveURL}>"
 			 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-			 alt="Original URL for this archived link; may be broken."
-				 ><{originalURLText}></a>]</span>
+			 alt="Locally archived version of this URL"
+				 ><{archiveURLText}></a>]</span>
 		<[IFEND]>\\
 
 		<[IF authorDateAux]><[IF2 author | date]>,\\ <[IF2END]><{authorDateAux}><[IF2 abstract]>:<[IF2END]><[IFEND]>
@@ -7528,17 +7505,18 @@ Transclude.templates = {
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
 		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
+		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
 		   <{titleLinkIconMetadata}>
 			   ><{titleHTML}></a>\\
 		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
 
-		<[IF originalURL]>
-		<span class="originalURL">[<a
-			 title="Link to original URL for <{titleText}>"
-			 href="<{originalURL}>"
+		<[IF archiveURL]>
+		<span class="archiveURL">[<a
+			 title="Link to local archive for <{titleText}>"
+			 href="<{archiveURL}>"
 			 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-			 alt="Original URL for this archived link; may be broken."
-				 ><{originalURLText}></a>]</span>
+			 alt="Locally archived version of this URL"
+				 ><{archiveURLText}></a>]</span>
 		<[IFEND]>
 	</p>
 	<[IF authorDateAux]>
@@ -7555,17 +7533,18 @@ Transclude.templates = {
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
 		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
+		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
 		   <{titleLinkIconMetadata}>
 			   ><{titleHTML}></a>\\
 		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
 
-		<[IF originalURL]>
-		<span class="originalURL">[<a
-			 title="Link to original URL for <{titleText}>"
-			 href="<{originalURL}>"
+		<[IF archiveURL]>
+		<span class="archiveURL">[<a
+			 title="Link to local archive for <{titleText}>"
+			 href="<{archiveURL}>"
 			 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-			 alt="Original URL for this archived link; may be broken."
-				 ><{originalURLText}></a
+			 alt="Locally archived version of this URL"
+				 ><{archiveURLText}></a
 		>]</span>
 		<[IFEND]>
 	</p>
@@ -7576,11 +7555,11 @@ Transclude.templates = {
 	<div class="data-field annotation-abstract"><{abstract}></div>
 	<[IFEND]>
 </blockquote>`,
-	"pop-frame-title-annotation": `<[IF popFrameTitleOriginalLinkHref]>
+	"pop-frame-title-annotation": `<[IF popFrameTitleArchiveLinkHref]>
 <a
     class="popframe-title-link"
-    title="Open <{popFrameTitleOriginalLinkHref}> in <{whichTab}> <{tabOrWindow}>."
-    href="<{popFrameTitleOriginalLinkHref}>"
+    title="Open <{popFrameTitleArchiveLinkHref}> in <{whichTab}> <{tabOrWindow}>."
+    href="<{popFrameTitleArchiveLinkHref}>"
     target="<{linkTarget}>"
         ><{popFrameTitleText}></a>
 <[ELSE]>
@@ -8592,7 +8571,7 @@ Extracts = { ...Extracts,
 		if (referenceData == null) {
 			referenceData = {
 				popFrameTitleLinkHref:          target.href,
-				popFrameTitleOriginalLinkHref:  (target.dataset.urlOriginal ?? null),
+				popFrameTitleArchiveLinkHref:   (target.dataset.urlArchive ?? null),
 				popFrameTitleText:              (target.hostname == location.hostname
 												 ? target.pathname + target.hash
 												 : target.href)
@@ -8746,7 +8725,7 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 				   (Extracts.popFrameProvider == Popups ? "popup-body" : "popin-body")
 				   ].join(" ")
 	});
-	partialAnnotationAppendContainer.appendChild(synthesizeIncludeLink((target.dataset.urlOriginal ?? target.href), {
+	partialAnnotationAppendContainer.appendChild(synthesizeIncludeLink(target.href, {
 		"class": "link-annotated-partial include-annotation-partial include-strict",
 		"data-template": "annotation-blockquote-not"
 	}));
@@ -10052,10 +10031,9 @@ Extracts = { ...Extracts,
         let target = popFrame.spawningTarget;
 		let referenceData = Content.referenceDataForLink(target);
 		if (referenceData == null) {
-        	let originalURL = originalURLForLink(target);
 			referenceData = {
-				popFrameTitleLinkHref:  originalURL.href,
-				popFrameTitleText:      `<code>${originalURL.href}</code>`
+				popFrameTitleLinkHref:  target.href,
+				popFrameTitleText:      `<code>${target.href}</code>`
 			};
 		}
 
@@ -10182,35 +10160,6 @@ Extracts = { ...Extracts,
 
     //  Used in: Extracts.foreignSiteForTarget
     foreignSiteEmbedURLTransforms: [
-        //  Less Wrong
-        [   (url) => [ "www.lesswrong.com", "lesswrong.com", "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname),
-            (url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "www"); }
-            ],
-        //  Alignment Forum
-        [   (url) => (   [ "www.alignmentforum.org", "alignmentforum.org" ].includes(url.hostname)
-                      || (   [ "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)
-                          && url.searchParams.get("view") == "alignment-forum")),
-            (url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "www", "view=alignment-forum"); }
-            ],
-        //  EA Forum
-        [   (url) => [ "forum.effectivealtruism.org", "ea.greaterwrong.com" ].includes(url.hostname),
-            (url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "ea"); }
-            ],
-        //  Arbital
-        [   (url) => [ "arbital.com", "arbital.greaterwrong.com" ].includes(url.hostname),
-            (url) => { Extracts.foreignSiteEmbedURLTransform_GreaterWrong(url, "arbital"); }
-            ],
-		//	Twitter
-		[	(url) => [ "twitter.com", "mobile.twitter.com" ].includes(url.hostname),
-			(url) => { url.hostname = "nitter.moomoo.me"; }
-			],
-        //  Wikipedia
-        [   (url) => /(.+?)\.wikipedia\.org/.test(url.hostname) == true,
-            (url) => {
-                url.hostname = url.hostname.replace(/(.+?)(?:\.m)?\.wikipedia\.org/, "$1.m.wikipedia.org");
-                if (!url.hash)
-                    url.hash = "#bodyContent";
-            } ],
         //	Wikimedia commons
         [	(url) => (   url.hostname == "commons.wikimedia.org" 
         			  && url.pathname.startsWith("/wiki/File:")),
@@ -10239,27 +10188,15 @@ Extracts = { ...Extracts,
 			} ]
     ],
 
-    //  Used in: Extracts.foreignSiteEmbedURLTransforms
-    foreignSiteEmbedURLTransform_GreaterWrong: (url, subdomain = "www", searchString = null) => {
-        url.hostname = `${subdomain}.greaterwrong.com`;
-
-		//	Ensure that comment permalinks display properly.
-        if (url.searchParams.has("commentId")) {
-        	url.pathname += `/comment/${(url.searchParams.get("commentId"))}`;
-        	url.searchParams.delete("commentId");
-        }
-
-        url.search = (searchString
-                      ? `${searchString}&`
-                      : ``) +
-                     "format=preview&theme=classic";
-    },
-
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
     foreignSiteForTarget: (target) => {
         GWLog("Extracts.foreignSiteForTarget", "extracts-content.js", 2);
 
-        let url = new URL(target.href);
+		let url = target.dataset.urlHtml
+				  ? (target.dataset.urlHtml.startsWith("/")
+				     ? new URL(location.origin + target.dataset.urlHtml)
+				     : new URL(target.dataset.urlHtml))
+				  : new URL(target.href);
 
         //  WARNING: EXPERIMENTAL FEATURE!
         if (localStorage.getItem("enable-embed-proxy") == "true") {
@@ -10309,29 +10246,24 @@ Extracts = { ...Extracts,
         }
         //  END EXPERIMENTAL SECTION
 
-        //  Transform URL for embedding.
-        /*  NOTE: the protocol *must* be https, not http; attempting to load
-            http URLs from a page loaded over https, even in a shadow-root, will
-            fail with a “Mixed Content” error. This way, we force https, in the
-            hopes that the foreign site supports TLS, despite that the URL we’ve
-            got is http. Unfortunately, some sites do not in fact support TLS;
-            those sites will fail to load. This is unavoidable, and means that
-            such sites cannot be live-embedded.
+		/*	If a special ‘HTML’ URL is specified, use that, sans transformation.
+        	Otherwise, transform URL for embedding.
          */
-        url.protocol = "https:";
-        for ([ test, transform, special ] of Extracts.foreignSiteEmbedURLTransforms) {
-            if (test(url)) {
-            	if (transform) {
-            		transform(url);
-            	}
-            	if (special) {
-            		let retval = special(url, target);
-            		if (retval)
-            			return retval;
-            	}
-                break;
-            }
-        }
+        if (target.dataset.urlHtml == null) {
+			for ([ test, transform, special ] of Extracts.foreignSiteEmbedURLTransforms) {
+				if (test(url)) {
+					if (transform) {
+						transform(url);
+					}
+					if (special) {
+						let retval = special(url, target);
+						if (retval)
+							return retval;
+					}
+					break;
+				}
+			}
+		}
 
         return newDocument(Extracts.objectHTMLForURL(url, "sandbox"));
     },
@@ -12252,11 +12184,6 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (even
         //  Rewrite title-link.
         let titleLink = partialAnnotation.querySelector("a.title-link");
         titleLink.classList.add(Annotations.annotatedLinkFullClass);
-
-        //  Set original URL, for annotation retrieval.
-        partialAnnotation.querySelectorAll(".title-link + .originalURL a").forEach(originalURLLink => {
-            titleLink.dataset.urlOriginal = originalURLLink.href;
-        });
     });
 }, "<rewrite", (info) => (   info.source == "transclude"
                           && info.contentType == "annotation"));

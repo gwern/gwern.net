@@ -1032,11 +1032,6 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (even
         //  Rewrite title-link.
         let titleLink = partialAnnotation.querySelector("a.title-link");
         titleLink.classList.add(Annotations.annotatedLinkFullClass);
-
-        //  Set original URL, for annotation retrieval.
-        partialAnnotation.querySelectorAll(".title-link + .originalURL a").forEach(originalURLLink => {
-            titleLink.dataset.urlOriginal = originalURLLink.href;
-        });
     });
 }, "<rewrite", (info) => (   info.source == "transclude"
                           && info.contentType == "annotation"));

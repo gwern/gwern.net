@@ -6,18 +6,19 @@ Transclude.templates = {
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
 		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
+		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
 		   <{titleLinkIconMetadata}>
 			   ><{fullTitleHTML}></a>\\
 		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
-		<[IF abstract & ![ originalURL | authorDateAux ] ]>:<[IFEND]>\\
+		<[IF abstract & ![ archiveURL | authorDateAux ] ]>:<[IFEND]>\\
 
-		<[IF originalURL]>
-		<span class="originalURL">[<a
-			 title="Link to original URL for <{titleText}>"
-			 href="<{originalURL}>"
+		<[IF archiveURL]>
+		<span class="archiveURL">[<a
+			 title="Link to local archive for <{titleText}>"
+			 href="<{archiveURL}>"
 			 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-			 alt="Original URL for this archived link; may be broken."
-				 ><{originalURLText}></a>]</span>
+			 alt="Locally archived version of this URL"
+				 ><{archiveURLText}></a>]</span>
 		<[IFEND]>\\
 
 		<[IF authorDateAux]><[IF2 author | date]>,\\ <[IF2END]><{authorDateAux}><[IF2 abstract]>:<[IF2END]><[IFEND]>
@@ -33,17 +34,18 @@ Transclude.templates = {
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
 		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
+		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
 		   <{titleLinkIconMetadata}>
 			   ><{titleHTML}></a>\\
 		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
 
-		<[IF originalURL]>
-		<span class="originalURL">[<a
-			 title="Link to original URL for <{titleText}>"
-			 href="<{originalURL}>"
+		<[IF archiveURL]>
+		<span class="archiveURL">[<a
+			 title="Link to local archive for <{titleText}>"
+			 href="<{archiveURL}>"
 			 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-			 alt="Original URL for this archived link; may be broken."
-				 ><{originalURLText}></a>]</span>
+			 alt="Locally archived version of this URL"
+				 ><{archiveURLText}></a>]</span>
 		<[IFEND]>
 	</p>
 	<[IF authorDateAux]>
@@ -60,17 +62,18 @@ Transclude.templates = {
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
 		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
+		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
 		   <{titleLinkIconMetadata}>
 			   ><{titleHTML}></a>\\
 		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
 
-		<[IF originalURL]>
-		<span class="originalURL">[<a
-			 title="Link to original URL for <{titleText}>"
-			 href="<{originalURL}>"
+		<[IF archiveURL]>
+		<span class="archiveURL">[<a
+			 title="Link to local archive for <{titleText}>"
+			 href="<{archiveURL}>"
 			 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-			 alt="Original URL for this archived link; may be broken."
-				 ><{originalURLText}></a
+			 alt="Locally archived version of this URL"
+				 ><{archiveURLText}></a
 		>]</span>
 		<[IFEND]>
 	</p>
@@ -81,11 +84,11 @@ Transclude.templates = {
 	<div class="data-field annotation-abstract"><{abstract}></div>
 	<[IFEND]>
 </blockquote>`,
-	"pop-frame-title-annotation": `<[IF popFrameTitleOriginalLinkHref]>
+	"pop-frame-title-annotation": `<[IF popFrameTitleArchiveLinkHref]>
 <a
     class="popframe-title-link"
-    title="Open <{popFrameTitleOriginalLinkHref}> in <{whichTab}> <{tabOrWindow}>."
-    href="<{popFrameTitleOriginalLinkHref}>"
+    title="Open <{popFrameTitleArchiveLinkHref}> in <{whichTab}> <{tabOrWindow}>."
+    href="<{popFrameTitleArchiveLinkHref}>"
     target="<{linkTarget}>"
         ><{popFrameTitleText}></a>
 <[ELSE]>

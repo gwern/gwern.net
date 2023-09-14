@@ -24,20 +24,15 @@ Annotations = { ...Annotations,
         return Array.from(container.querySelectorAll("a[class*='link-annotated']")).filter(link => Annotations.isAnnotatedLink(link));
     },
 
-    /*  Returns the target identifier: the original URL (for locally archived
-        pages), or the relative url (for local links), or the full URL (for
-        foreign links).
+    /*  Returns the target identifier: the relative url (for local links), 
+    	or the full URL (for foreign links).
 
         Used for loading annotations, and caching reference data.
      */
 	targetIdentifier: (target) => {
-        if (target.dataset.urlOriginal) {
-            return originalURLForLink(target).href;
-        } else {
-            return (target.hostname == location.hostname
-                   ? target.pathname + target.hash
-                   : target.href);
-        }
+		return (target.hostname == location.hostname
+			   ? target.pathname + target.hash
+			   : target.href);
 	},
 
 	/***************************/
@@ -339,7 +334,12 @@ Annotations = { ...Annotations,
 
 				let titleHTML = referenceElement.innerHTML;
 				let titleText = referenceElement.textContent;
-				let titleLinkHref = referenceElement.href;
+
+				//	On mobile, use mobile-specific link href, if provided.
+				let titleLinkHref = (   referenceElement.dataset.hrefMobile 
+									 && GW.isMobile())
+									? referenceElement.dataset.hrefMobile
+									: referenceElement.href;
 
 				let titleLinkClass = "title-link";
 				//  Import certain link classes.
@@ -357,6 +357,11 @@ Annotations = { ...Annotations,
 						titleLinkClass += ` ${targetClass}`;
 				});
 
+				//	Special handling for links with separate ‘HTML’ URLs.
+				if (   referenceElement.dataset.urlHtml
+					&& titleLinkClass.includes("link-live") == false)
+					titleLinkClass += " link-live";
+
 				//	Link icon for the title link.
 				let titleLinkIconMetadata;
 				if (referenceElement.dataset.linkIcon) {
@@ -367,12 +372,22 @@ Annotations = { ...Annotations,
 										  + `data-link-icon="${(link.dataset.linkIcon)}"`;
 				}
 
-				//	Original URL.
-				let originalURL = referenceElement.dataset.urlOriginal ?? null;
-				let originalURLText = originalURL
-									  ? (originalURL.includes("ar5iv") 
-									     ? `<span class="smallcaps">HTML</span>` 
-									     : "live")
+				//	Special data attributes for the title link.
+				let titleLinkDataAttributes = [ 
+					"urlHtml", 
+					"urlArchive"
+				].map(attr => 
+					attr 
+					? `data-${(attr.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${referenceElement.dataset[attr]}"` 
+					: null
+				).filter(Boolean).join(" ");
+				if (titleLinkDataAttributes == "")
+					titleLinkDataAttributes = null;
+
+				//	Archive URL.
+				let archiveURL = referenceElement.dataset.urlArchive ?? null;
+				let archiveURLText = archiveURL
+									  ? "archive"
 									  : null;
 
 				//  Author list.
@@ -456,19 +471,20 @@ Annotations = { ...Annotations,
 
 				return {
 					content: {
-						originalURL:            originalURL,
-						originalURLText:        originalURLText,
-						titleHTML:              titleHTML,
-						fullTitleHTML:          titleHTML,
-						titleText:              titleText,
-						titleLinkHref:          titleLinkHref,
-						titleLinkClass:         titleLinkClass,
-						titleLinkIconMetadata:  titleLinkIconMetadata,
-						author:                 author,
-						date:                   date,
-						auxLinks:               auxLinks,
-						authorDateAux:          authorDateAux,
-						abstract:               abstractHTML,
+						titleHTML:                titleHTML,
+						fullTitleHTML:            titleHTML,
+						titleText:                titleText,
+						titleLinkHref:            titleLinkHref,
+						titleLinkClass:           titleLinkClass,
+						titleLinkIconMetadata:    titleLinkIconMetadata,
+						titleLinkDataAttributes:  titleLinkDataAttributes,
+						archiveURL:               archiveURL,
+						archiveURLText:           archiveURLText,
+						author:                   author,
+						date:                     date,
+						auxLinks:                 auxLinks,
+						authorDateAux:            authorDateAux,
+						abstract:                 abstractHTML,
 					},
 					template:                       "annotation-blockquote-inside",
 					linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
@@ -476,7 +492,7 @@ Annotations = { ...Annotations,
 					tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
 					popFrameTitleText:              popFrameTitleText,
 					popFrameTitleLinkHref:          titleLinkHref,
-					popFrameTitleOriginalLinkHref:  originalURL
+					popFrameTitleArchiveLinkHref:   archiveURL
 				};
 			},
 
