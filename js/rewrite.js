@@ -776,6 +776,20 @@ addContentLoadHandler(GW.contentLoadHandlers.aggregateMarginNotes = (eventInfo) 
 /* TYPOGRAPHY */
 /**************/
 
+/***********************************/
+/*	Rectify typography in body text.
+
+	NOTE: This should be temporary. Word breaks after slashes should be added
+	in body text on the back end, at content build time. But that is currently
+	not working, hence this temporary client-side solution.
+	—SA 2023-09-13
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInBodyText = (eventInfo) => {
+    GWLog("rectifyTypographyInBodyText", "rewrite.js", 1);
+
+    Typography.processElement(eventInfo.container, Typography.replacementTypes.WORDBREAKS);
+}, "rewrite");
+
 /******************************************************************************/
 /*  Remove extraneous whitespace-only text nodes from between the element parts
     of a .cite (citation element).
@@ -809,12 +823,12 @@ Hyphenopoly.config({
     }
 });
 
-/******************************************************************/
+/**********************************************/
 /*  Hyphenate with Hyphenopoly.
 
     Requires Hyphenopoly_Loader.js to be loaded prior to this file.
  */
-function hyphenate(eventInfo) {
+addContentInjectHandler(GW.contentInjectHandlers.hyphenate = (eventInfo) => {
     GWLog("hyphenate", "rewrite.js", 1);
 
     if (!(Hyphenopoly.hyphenators))
@@ -835,13 +849,6 @@ function hyphenate(eventInfo) {
             Typography.processElement(block, Typography.replacementTypes.NONE, true);
         });
     });
-}
-
-/**********************************************/
-/*  Add content inject handlers for typography.
- */
-addContentInjectHandler(GW.contentInjectHandlers.rectifyTypography = (eventInfo) => {
-    hyphenate(eventInfo);
 }, "rewrite");
 
 /************************************************************************/

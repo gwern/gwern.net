@@ -1230,6 +1230,7 @@ blockquote,
 /*********/
 
 .list {
+	--text-alignment: left;
     --list-left-padding: 2.5em;
 
 	margin: 0;
@@ -1240,6 +1241,11 @@ blockquote,
     .list {
         --list-left-padding: 1.75em;
     }
+}
+@media all and (min-width: 650px) {
+	.list.big-list {
+		--text-alignment: justify;
+	}
 }
 
 li {
