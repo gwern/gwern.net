@@ -1128,5 +1128,6 @@ whiteList url
       , "https://tsm-hanlab.mit.edu/" -- low quality (video embeds)
       , "https://muse-model.github.io/" -- low quality (video embeds)
       , "https://accelagent.github.io/" -- low quality (interactive)
+      , "http://www.cgg.cs.tsukuba.ac.jp/~endo/projects/UserControllableLT/" -- low quality (video embeds)
       ] = True
     | otherwise = False
