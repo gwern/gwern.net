@@ -310,10 +310,9 @@ Annotations = { ...Annotations,
 			//	Called by: Annotations.processedAPIResponseForLink
 			//	Called by: Annotations.sourceURLForLink
 			sourceURLForLink: (link) => {
-				return new URL(  location.origin 
-							   + Annotations.dataSources.local.basePathname
-							   + fixedEncodeURIComponent(fixedEncodeURIComponent(Annotations.targetIdentifier(link)))
-							   + ".html");
+				return URLFromString(  Annotations.dataSources.local.basePathname
+									 + fixedEncodeURIComponent(fixedEncodeURIComponent(Annotations.targetIdentifier(link)))
+									 + ".html");
 			},
 
 			//	Called by: Annotations.processedAPIResponseForLink
@@ -323,7 +322,7 @@ Annotations = { ...Annotations,
 				//	Request the image, to cache it.
 				let thumbnail = responseDoc.querySelector(".page-thumbnail");
 				if (thumbnail)
-					doAjax({ location: new URL(thumbnail.src) });
+					doAjax({ location: URLFromString(thumbnail.src) });
 
 				return responseDoc;
 			},
@@ -545,7 +544,7 @@ Annotations.dataSources.wikipedia = {
 	//	Called by: Annotations.processedAPIResponseForLink
 	//	Called by: Annotations.sourceURLForLink
 	sourceURLForLink: (link) => {
-		annotationURL = new URL(link.href);
+		annotationURL = URLFromString(link.href);
 
 		let wikiPageName = fixedEncodeURIComponent(/\/wiki\/(.+?)$/.exec(decodeURIComponent(annotationURL.pathname))[1]);
 		annotationURL.pathname = `/api/rest_v1/page/html/${wikiPageName}`;
@@ -766,7 +765,7 @@ Annotations.dataSources.wikipedia = {
 
 		//	Remove other maps.
 		referenceEntry.querySelectorAll("img").forEach(image => {
-			let imageSourceURL = new URL(image.src);
+			let imageSourceURL = URLFromString(image.src);
 			if (imageSourceURL.hostname == "maps.wikimedia.org")
 				image.remove();
 		});

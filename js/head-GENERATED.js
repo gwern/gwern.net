@@ -176,12 +176,29 @@ URL.prototype.deleteQueryVariable = function (key) {
 	this.search = query.toString();
 }
 
+/*****************************************************************************/
+/*	Returns a URL constructed from either a fully qualified URL string,
+	or an absolute local URL (pathname starting at root), or a relative URL
+	(pathname component replacing part of current URL after last slash).
+
+	(The existing URL() constructor only handles fully qualified URL strings.)
+ */
+function URLFromString(urlString) {
+	if (   urlString.startsWith("http://")
+		|| urlString.startsWith("https://"))
+		return new URL(urlString);
+
+	return (urlString.startsWith("/")
+			? new URL(location.origin + urlString)
+			: new URL(location.href.replace(/[^\/]*$/, urlString)));
+}
+
 /***************************************************************************/
 /*	Returns the value of the search param with the given key for a the given
 	HTMLAnchorElement object.
  */
 HTMLAnchorElement.prototype.getQueryVariable = function (key) {
-	let url = new URL(this.href);
+	let url = URLFromString(this.href);
 	return url.searchParams.get(key);
 }
 
@@ -190,7 +207,7 @@ HTMLAnchorElement.prototype.getQueryVariable = function (key) {
 	given HTMLAnchorElement.
  */
 HTMLAnchorElement.prototype.setQueryVariable = function (key, value) {
-	let url = new URL(this.href);
+	let url = URLFromString(this.href);
 	url.setQueryVariable(key, value);
 	this.search = url.search;
 }
@@ -200,7 +217,7 @@ HTMLAnchorElement.prototype.setQueryVariable = function (key, value) {
 	HTMLAnchorElement.
  */
 HTMLAnchorElement.prototype.deleteQueryVariable = function (key) {
-	let url = new URL(this.href);
+	let url = URLFromString(this.href);
 	url.deleteQueryVariable(key);
 	this.search = url.search;
 }
@@ -1269,15 +1286,15 @@ function baseLocationForDocument(doc) {
 	if (doc == null) {
 		return null;
 	} else if (doc == document) {
-        return new URL(location.href);
+        return URLFromString(location.href);
     } else if (   doc.body instanceof Element
                && doc.body.classList.contains("popframe-body")) {
         let spawningTarget = (Extracts.popFrameProvider == Popups
                               ? doc.body.popup.spawningTarget
                               : doc.body.popin.spawningTarget);
-        return new URL(spawningTarget.href);
+        return URLFromString(spawningTarget.href);
     } else if (doc.baseLocation) {
-        return new URL(doc.baseLocation.href);
+        return URLFromString(doc.baseLocation.href);
     } else {
         return null;
     }
@@ -2198,7 +2215,7 @@ GWLog("document.readyState." + document.readyState, "browser event");
 window.addEventListener("DOMContentLoaded", () => {
     GWLog("window.DOMContentLoaded", "browser event");
     GW.DOMContentLoaded = true;
-    let pageURL = new URL(location.href);
+    let pageURL = URLFromString(location.href);
     GW.notificationCenter.fireEvent("GW.contentDidLoad", {
         source: "DOMContentLoaded",
         container: document.body,

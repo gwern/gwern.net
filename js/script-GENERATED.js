@@ -148,9 +148,7 @@ GW.assetVersions = (GW.assetVersions ?? { });
 function versionedAssetURL(pathname) {
     let version = GW.assetVersions[pathname];
     let versionString = (version ? `?v=${version}` : ``);
-    return new URL(  location.origin
-                   + pathname
-                   + versionString);
+    return URLFromString(pathname + versionString);
 }
 
 
@@ -4486,10 +4484,9 @@ Annotations = { ...Annotations,
 			//	Called by: Annotations.processedAPIResponseForLink
 			//	Called by: Annotations.sourceURLForLink
 			sourceURLForLink: (link) => {
-				return new URL(  location.origin 
-							   + Annotations.dataSources.local.basePathname
-							   + fixedEncodeURIComponent(fixedEncodeURIComponent(Annotations.targetIdentifier(link)))
-							   + ".html");
+				return URLFromString(  Annotations.dataSources.local.basePathname
+									 + fixedEncodeURIComponent(fixedEncodeURIComponent(Annotations.targetIdentifier(link)))
+									 + ".html");
 			},
 
 			//	Called by: Annotations.processedAPIResponseForLink
@@ -4499,7 +4496,7 @@ Annotations = { ...Annotations,
 				//	Request the image, to cache it.
 				let thumbnail = responseDoc.querySelector(".page-thumbnail");
 				if (thumbnail)
-					doAjax({ location: new URL(thumbnail.src) });
+					doAjax({ location: URLFromString(thumbnail.src) });
 
 				return responseDoc;
 			},
@@ -4721,7 +4718,7 @@ Annotations.dataSources.wikipedia = {
 	//	Called by: Annotations.processedAPIResponseForLink
 	//	Called by: Annotations.sourceURLForLink
 	sourceURLForLink: (link) => {
-		annotationURL = new URL(link.href);
+		annotationURL = URLFromString(link.href);
 
 		let wikiPageName = fixedEncodeURIComponent(/\/wiki\/(.+?)$/.exec(decodeURIComponent(annotationURL.pathname))[1]);
 		annotationURL.pathname = `/api/rest_v1/page/html/${wikiPageName}`;
@@ -4942,7 +4939,7 @@ Annotations.dataSources.wikipedia = {
 
 		//	Remove other maps.
 		referenceEntry.querySelectorAll("img").forEach(image => {
-			let imageSourceURL = new URL(image.src);
+			let imageSourceURL = URLFromString(image.src);
 			if (imageSourceURL.hostname == "maps.wikimedia.org")
 				image.remove();
 		});
@@ -5348,13 +5345,13 @@ Content = {
 				if (link.dataset.urlArchive == null)
 					return false;
 
-				let archiveURL = new URL(location.origin + link.dataset.urlArchive);
+				let archiveURL = URLFromString(link.dataset.urlArchive);
 				return (   [ "twitter.com", "x.com" ].includes(link.hostname)
 						&& link.pathname.match(/\/.+?\/status\/[0-9]+$/));
 			},
 
 			sourceURLsForLink: (link) => {
-				let archiveURL = new URL(location.hostname + link.dataset.urlArchive);
+				let archiveURL = URLFromString(link.dataset.urlArchive);
 
 				return [ archiveURL ];
 			},
@@ -5373,7 +5370,7 @@ Content = {
 				let nitterHost = Content.contentTypes.localTweetArchive.getNitterHost();
 
 				//	URL for link to user’s page.
-				let titleLinkURL = new URL(tweetPage.document.querySelector(".main-tweet a.username").href);
+				let titleLinkURL = URLFromString(tweetPage.document.querySelector(".main-tweet a.username").href);
 				titleLinkURL.hostname = nitterHost;
 				let titleLinkHref = titleLinkURL.href;
 
@@ -5384,7 +5381,7 @@ Content = {
 				//	Link to tweet.
 				let tweetDate = new Date(Date.parse(tweetPage.document.querySelector(".main-tweet .tweet-date").textContent));
 				let tweetDateString = `${tweetDate.getFullYear()}-${tweetDate.getMonth()}-${tweetDate.getDate()}`;
-				let tweetLinkURL = new URL(link.href);
+				let tweetLinkURL = URLFromString(link.href);
 				tweetLinkURL.hostname = nitterHost;
 				tweetLinkURL.hash = "m";
 				let secondaryTitleLinksHTML = ` on <a href="${tweetLinkURL.href}" class="${titleLinkClass}" ${titleLinkIconMetadata}>${tweetDateString}</a>:`;
@@ -5420,9 +5417,7 @@ Content = {
 			},
 
 			mediaURLFromMetaTag: (mediaMetaTag, nitterHost) => {
-				let mediaURL = mediaMetaTag.content.startsWith("/")
-							   ? new URL(location.origin + mediaMetaTag.content)
-							   : new URL(mediaMetaTag.content);
+				let mediaURL = URLFromString(mediaMetaTag.content);
 				mediaURL.hostname = nitterHost;
 				return mediaURL;
 			},
@@ -5499,11 +5494,11 @@ Content = {
 				<pre>-wrapped <code> element.
 			 */
 			sourceURLsForLink: (link) => {
-				let codeFileURL = new URL(link.href);
+				let codeFileURL = URLFromString(link.href);
 				codeFileURL.hash = "";
 				codeFileURL.search = "";
 
-				let syntaxHighlightedCodeFileURL = new URL(codeFileURL.href);
+				let syntaxHighlightedCodeFileURL = URLFromString(codeFileURL.href);
 				syntaxHighlightedCodeFileURL.pathname += ".html";
 
 				return [ syntaxHighlightedCodeFileURL, codeFileURL ];
@@ -5569,7 +5564,7 @@ Content = {
 			},
 
 			sourceURLsForLink: (link) => {
-				let url = new URL(link.href);
+				let url = URLFromString(link.href);
 				url.hash = "";
 				url.search = "";
 
@@ -5642,7 +5637,7 @@ Content = {
 			},
 
 			sourceURLsForLink: (link) => {
-				let url = new URL(link.href);
+				let url = URLFromString(link.href);
 				url.hash = "";
 				url.search = "";
 
@@ -5667,7 +5662,7 @@ Content = {
 				let pageThumbnailHTML;
 				let pageThumbnailMetaTag = page.querySelector("meta[property='og:image']");
 				if (pageThumbnailMetaTag) {
-					let pageThumbnailURL = new URL(pageThumbnailMetaTag.getAttribute("content"));
+					let pageThumbnailURL = URLFromString(pageThumbnailMetaTag.getAttribute("content"));
 
 					//	Alt text, if provided.
 					let pageThumbnailAltMetaTag = page.querySelector("meta[property='og:image:alt']");
@@ -9195,7 +9190,7 @@ Extracts = { ...Extracts,
 				source: "Extracts.loadAdjacentSections",
 				container: popFrame.body.firstElementChild,
 				document: popFrame.document,
-				loadLocation: new URL(target.href)
+				loadLocation: URLFromString(target.href)
 			});
 		}
 
@@ -9208,7 +9203,7 @@ Extracts = { ...Extracts,
 				source: "Extracts.loadAdjacentSections",
 				container: popFrame.body.firstElementChild,
 				document: popFrame.document,
-				loadLocation: new URL(target.href)
+				loadLocation: URLFromString(target.href)
 			});
 
 			popFrame.firstSection = prevSection;
@@ -9223,7 +9218,7 @@ Extracts = { ...Extracts,
 				source: "Extracts.loadAdjacentSections",
 				container: popFrame.body.lastElementChild,
 				document: popFrame.document,
-				loadLocation: new URL(target.href)
+				loadLocation: URLFromString(target.href)
 			});
 
 			popFrame.lastSection = nextSection;
@@ -9627,7 +9622,7 @@ Extracts = { ...Extracts,
 				+ `</style>`;
 
 			let videoId = Extracts.youtubeId(target);
-			let videoEmbedURL = new URL(`https://www.youtube.com/embed/${videoId}`);
+			let videoEmbedURL = URLFromString(`https://www.youtube.com/embed/${videoId}`);
 			let placeholderImgSrc = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
 			let playButtonHTML = `<span class='video-embed-play-button'>&#x25BA;</span>`;
 			let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
@@ -9637,7 +9632,7 @@ Extracts = { ...Extracts,
 				`srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`));
         } else if ([ "vimeo.com" ].includes(target.hostname)) {
 			let videoId = Extracts.vimeoId(target);
-			let videoEmbedURL = new URL(`https://player.vimeo.com/video/${videoId}`);
+			let videoEmbedURL = URLFromString(`https://player.vimeo.com/video/${videoId}`);
         	return newDocument(Extracts.objectHTMLForURL(videoEmbedURL,
         		`allow="autoplay; fullscreen; picture-in-picture" allowfullscreen`));
 		}
@@ -9970,7 +9965,7 @@ Extracts = { ...Extracts,
         		has a `src` attribute with a hash and that hash points to an
         		old-style anchor (`<a name="foo">`).
         	 */
-			let srcURL = new URL(iframe.src);
+			let srcURL = URLFromString(iframe.src);
 			if (   srcURL.pathname.endsWith(".html")
 				&& srcURL.hash > "") {
 				srcURL.savedHash = srcURL.hash;
@@ -10192,15 +10187,11 @@ Extracts = { ...Extracts,
     foreignSiteForTarget: (target) => {
         GWLog("Extracts.foreignSiteForTarget", "extracts-content.js", 2);
 
-		let url = target.dataset.urlHtml
-				  ? (target.dataset.urlHtml.startsWith("/")
-				     ? new URL(location.origin + target.dataset.urlHtml)
-				     : new URL(target.dataset.urlHtml))
-				  : new URL(target.href);
+		let url = URLFromString(target.dataset.urlHtml ?? target.href);
 
         //  WARNING: EXPERIMENTAL FEATURE!
         if (localStorage.getItem("enable-embed-proxy") == "true") {
-            let proxyURL = new URL("https://api.obormot.net/embed.php");
+            let proxyURL = URLFromString("https://api.obormot.net/embed.php");
 
             doAjax({
                 location: proxyURL.href,
@@ -10212,14 +10203,14 @@ Extracts = { ...Extracts,
                     let doc = newElement("DIV", null, { "innerHTML": event.target.responseText });
                     doc.querySelectorAll("[href], [src]").forEach(element => {
                         if (element.href) {
-                            let elementURL = new URL(element.href);
+                            let elementURL = URLFromString(element.href);
                             if (   elementURL.host == location.host
                                 && !element.getAttribute("href").startsWith("#")) {
                                 elementURL.host = url.host;
                                 element.href = elementURL.href;
                             }
                         } else if (element.src) {
-                            let elementURL = new URL(element.src);
+                            let elementURL = URLFromString(element.src);
                             if (elementURL.host == location.host) {
                                 elementURL.host = url.host;
                                 element.src = elementURL.href;
@@ -10285,7 +10276,7 @@ Extracts = { ...Extracts,
     //  Called by: Extracts.foreignSiteForTarget
     objectHTMLForURL: (url, additionalAttributes = null) => {
 		if (typeof url == "string")
-			url = new URL(url);
+			url = URLFromString(url);
 
         if (url.href.match(/\.pdf(#|$)/) != null) {
             let data = url.href + (url.hash ? "&" : "#") + "view=FitH";
@@ -15381,7 +15372,7 @@ ImageFocus = {
 
 		//  Make sure that initially, the image fits into the viewport.
 		let imageWidth, imageHeight;
-		if ((new URL(ImageFocus.imageInFocus.src)).pathname.endsWith(".svg")) {
+		if ((URLFromString(ImageFocus.imageInFocus.src)).pathname.endsWith(".svg")) {
 			//	Special handling for SVGs, which have no intrinsic size.
 			if (ImageFocus.imageInFocus.dataset.aspectRatio > "") {
 				ImageFocus.imageInFocus.style.aspectRatio = ImageFocus.imageInFocus.dataset.aspectRatio;
@@ -15516,7 +15507,7 @@ ImageFocus = {
 
 			//  Reset the hash, if needed.
 			if (location.hash.startsWith("#if_slide_")) {
-				let previousURL = new URL(location.href);
+				let previousURL = URLFromString(location.href);
 				previousURL.hash = ImageFocus.savedHash ?? "";
 				relocate(previousURL.href);
 

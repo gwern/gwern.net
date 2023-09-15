@@ -208,13 +208,13 @@ Content = {
 				if (link.dataset.urlArchive == null)
 					return false;
 
-				let archiveURL = new URL(location.origin + link.dataset.urlArchive);
+				let archiveURL = URLFromString(link.dataset.urlArchive);
 				return (   [ "twitter.com", "x.com" ].includes(link.hostname)
 						&& link.pathname.match(/\/.+?\/status\/[0-9]+$/));
 			},
 
 			sourceURLsForLink: (link) => {
-				let archiveURL = new URL(location.hostname + link.dataset.urlArchive);
+				let archiveURL = URLFromString(link.dataset.urlArchive);
 
 				return [ archiveURL ];
 			},
@@ -233,7 +233,7 @@ Content = {
 				let nitterHost = Content.contentTypes.localTweetArchive.getNitterHost();
 
 				//	URL for link to user’s page.
-				let titleLinkURL = new URL(tweetPage.document.querySelector(".main-tweet a.username").href);
+				let titleLinkURL = URLFromString(tweetPage.document.querySelector(".main-tweet a.username").href);
 				titleLinkURL.hostname = nitterHost;
 				let titleLinkHref = titleLinkURL.href;
 
@@ -244,7 +244,7 @@ Content = {
 				//	Link to tweet.
 				let tweetDate = new Date(Date.parse(tweetPage.document.querySelector(".main-tweet .tweet-date").textContent));
 				let tweetDateString = `${tweetDate.getFullYear()}-${tweetDate.getMonth()}-${tweetDate.getDate()}`;
-				let tweetLinkURL = new URL(link.href);
+				let tweetLinkURL = URLFromString(link.href);
 				tweetLinkURL.hostname = nitterHost;
 				tweetLinkURL.hash = "m";
 				let secondaryTitleLinksHTML = ` on <a href="${tweetLinkURL.href}" class="${titleLinkClass}" ${titleLinkIconMetadata}>${tweetDateString}</a>:`;
@@ -280,9 +280,7 @@ Content = {
 			},
 
 			mediaURLFromMetaTag: (mediaMetaTag, nitterHost) => {
-				let mediaURL = mediaMetaTag.content.startsWith("/")
-							   ? new URL(location.origin + mediaMetaTag.content)
-							   : new URL(mediaMetaTag.content);
+				let mediaURL = URLFromString(mediaMetaTag.content);
 				mediaURL.hostname = nitterHost;
 				return mediaURL;
 			},
@@ -359,11 +357,11 @@ Content = {
 				<pre>-wrapped <code> element.
 			 */
 			sourceURLsForLink: (link) => {
-				let codeFileURL = new URL(link.href);
+				let codeFileURL = URLFromString(link.href);
 				codeFileURL.hash = "";
 				codeFileURL.search = "";
 
-				let syntaxHighlightedCodeFileURL = new URL(codeFileURL.href);
+				let syntaxHighlightedCodeFileURL = URLFromString(codeFileURL.href);
 				syntaxHighlightedCodeFileURL.pathname += ".html";
 
 				return [ syntaxHighlightedCodeFileURL, codeFileURL ];
@@ -429,7 +427,7 @@ Content = {
 			},
 
 			sourceURLsForLink: (link) => {
-				let url = new URL(link.href);
+				let url = URLFromString(link.href);
 				url.hash = "";
 				url.search = "";
 
@@ -502,7 +500,7 @@ Content = {
 			},
 
 			sourceURLsForLink: (link) => {
-				let url = new URL(link.href);
+				let url = URLFromString(link.href);
 				url.hash = "";
 				url.search = "";
 
@@ -527,7 +525,7 @@ Content = {
 				let pageThumbnailHTML;
 				let pageThumbnailMetaTag = page.querySelector("meta[property='og:image']");
 				if (pageThumbnailMetaTag) {
-					let pageThumbnailURL = new URL(pageThumbnailMetaTag.getAttribute("content"));
+					let pageThumbnailURL = URLFromString(pageThumbnailMetaTag.getAttribute("content"));
 
 					//	Alt text, if provided.
 					let pageThumbnailAltMetaTag = page.querySelector("meta[property='og:image:alt']");
