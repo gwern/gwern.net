@@ -9,7 +9,7 @@ archivePerRunN = 13
 -- some URLs are so cheap & easy & reliable to archive that we don't need to count them
 -- against our manual-review limit, because we won't meaningfully manually review them.
 isCheapArchive :: String -> Bool
-isCheapArchive url = anyInfix url [".pdf", "#pdf", "twitter.com", "nitter.moomoo.me", "https://scribe.rip/", "news.ycombinator.com"]
+isCheapArchive url = anyInfix url [".pdf", "#pdf", "twitter.com", "nitter.net", "https://scribe.rip/", "news.ycombinator.com"]
 
 -- sometimes we may want to do automated transformations of a URL *before* we check any whitelists. In the case of
 -- Arxiv, we want to generate the PDF equivalent of the HTML abstract landing page, so the PDF gets archived, but then
@@ -24,7 +24,7 @@ transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
                             -- Old Reddit is the preferred browsing & archiving frontend given the death of `i.reddit.com` & `.compact`
                             . replace "https://i.reddit.com" "https://old.reddit.com"
                             . replace "https://www.reddit.com" "https://old.reddit.com"
-                            . replace "https://twitter.com" "https://nitter.moomoo.me"
+                            . replace "https://twitter.com" "https://nitter.net"
                             . replace "https://medium.com" "https://scribe.rip" -- clean Medium frontend; can also handle custom domains with a bit more work: <https://scribe.rip/faq#custom-domains>
 transformURLsForMobile    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
   sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" -- handle oddities like hep-ph
@@ -739,9 +739,9 @@ whiteList url
       , "www.caniuse.com" -- updated service
       , "archiveofourown.org" -- blocks archiving
       -- Nitter mirrors seem to be setting X headers to block live popups, but linkrot & uptime remains a problem, so time to start mirroring them:
-      -- , "nitter.moomoo.me/search" -- example/updated
-      -- , "nitter.moomoo.me/search" -- example/updated
-      -- , "nitter.moomoo.me" -- service/mirror, low quality (videos don't save)
+      -- , "nitter.net/search" -- example/updated
+      -- , "nitter.net/search" -- example/updated
+      -- , "nitter.net" -- service/mirror, low quality (videos don't save)
       , "flashgamehistory.com" -- low quality
       , "thebrowser.com" -- paywall
       , "git.sr.ht" -- service/updated

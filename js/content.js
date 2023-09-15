@@ -313,7 +313,7 @@ Content = {
 			},
 
 			liveNitterHosts: [
-				"nitter.moomoo.me"
+				"nitter.net"
 			],
 
 			getNitterHost: () => {
