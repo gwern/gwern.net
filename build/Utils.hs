@@ -408,6 +408,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<xref rid=\"sec[0-9]+\" ref-type=\"sec\">([A-Za-z]+ [0-9]+)</xref>", "<strong>\\1</strong>") -- PLOS: '<xref rid="sec022" ref-type="sec">Experiment 3</xref>' etc.
          , ("^en$", "")
          , (" ([0-9]) h ", " \\1h ") -- hour abbreviation
+         , ("range: ([0-9%.]+) to ([0-9%.]+)", "range: \\1–\\2") -- eg. "range: 0.59 to 43.89"
          , ("between ([0-9%]+) and ([0-9]+)", "\\1–\\2") -- "range between 2 and 10" → "range 2–10"
          , ("([0-9%]) – ([0-9])", "\\1–\\2") -- space-separated en-dash ranges eg. "with a range of ~0.60 – 0.71 for height"
          , ("([0-9%]) – ([a-z])", "\\1—\\2") -- a number-alphabet en-dash is usually an em-dash eg. "a Fréchet Inception Distance (FID) of 10.59 – beating the baseline BigGAN model—at"
@@ -1347,6 +1348,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" z-latent", "<em>z</em>-latent")
          , (" w-latent", "<em>w</em>-latent")
          , (" &lt; .0", " &lt; 0.0")
+         , (" 5e-8/53", "(5 × 10<sup>−8</sup>) / 53") -- https://www.biorxiv.org/content/10.1101/2023.09.10.557084v1.full.pdf#page=2
          , (" p &amp;gt; ", " <em>p</em> &gt; ")
          , (" p &amp;lt; ", " <em>p</em> &lt; ")
          , ("<em>p<\\/em>=", "<em>p</em> = ")
