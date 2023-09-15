@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2023-06-27 10:25:22 gwern"
+-- When:  Time-stamp: "2023-09-14 20:32:38 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -64,13 +64,21 @@ $  echo 'Span ("",["inflation-adjusted"],[("year-original","2017-01-01"),("amoun
 <span class="inflation-adjusted" data-year-original="2017-01-01" data-amount-original="50.50" data-year-current="2020" data-amount-current="56,617" title="Exchange-rate-adjusted currency: ₿50.50 in 2017-01-01 → $56,617">$56,617<span class="subsup"><sub>2017</sub><sup>₿50.50</sup></span></span>
 -}
 
-import Text.Pandoc (Inline(Code, Link, Span, Str, Subscript, Superscript))
+import Text.Pandoc (Inline(Link, Span, Str, Subscript, Superscript))
 import Text.Read (readMaybe)
 import qualified Data.Map.Strict as M (findMax, findMin, lookup, lookupGE, lookupLE, mapWithKey, Map)
 import qualified Data.Text as T (head, length, pack, unpack, tail)
 
+import Interwiki (inlinesToText)
 import Utils (currentYear)
 import Config.Inflation as C
+
+-- print all meaningful digits of a float (this avoids behavior with fixed-precision printing, which is the easy way through Text.Printf but requires you to figure out how many digits you want).
+customShowRational :: Real p => p -> String
+customShowRational r = let (h, f) = properFraction $ toRational r
+                    in show (h::Int) ++ if f == 0
+                                  then ""
+                                  else tail (show (fromRational f :: Float))
 
 nominalToRealInflationAdjuster :: Inline -> Inline
 nominalToRealInflationAdjuster x@(Link _ _ ("", _)) = error $ "Inflation adjustment (Inflation.hs: nominalToRealInflationAdjuster) failed on malformed link: " ++ show x
@@ -97,31 +105,24 @@ dollarAdjuster l@(Link _ text (oldYears, _)) =
       [Str (T.pack $ "$"++adjustedDollarString),  Span ("",["subsup"],[]) [Superscript [Str $ T.pack $ "$" ++ oldDollarString'], Subscript [Str oldYear]]]
     where -- oldYear = '$1970' → '1970'
           oldYear = if T.length oldYears /= 5 || T.head oldYears /= '$' then error (show l) else T.tail oldYears
-          oldDollarString = multiplyByUnits $ filter (/= '$') $ inlinesToText text -- '$50.50' → '50.50'; '$50.50k' → '50500.0'; '$50.50m' → 5.05e7; '$50.50b' → 5.05e10; '$50.50t' → 5.05e13
+          oldDollarString = multiplyByUnits l $ filter (/= '$') $ T.unpack $ inlinesToText text -- '$50.50' → '50.50'; '$50.50k' → '50500.0'; '$50.50m' → 5.05e7; '$50.50b' → 5.05e10; '$50.50t' → 5.05e13
           oldDollar = case (readMaybe (filter (/=',') oldDollarString) :: Maybe Float) of
                         Just d -> d
                         Nothing -> error (show l)
-          oldDollarString' = show oldDollar
+          oldDollarString' = customShowRational oldDollar
           adjustedDollar = dollarAdjust oldDollar (T.unpack oldYear)
-          adjustedDollarString = show adjustedDollar
-          multiplyByUnits :: String -> String
-          multiplyByUnits "" = error $ "Inflation.hs (dollarAdjuster): an empty amount was processed from 'text' variable. Original input: " ++ show l
-          multiplyByUnits amount = let (unit, rest) = (last amount, read (init amount) :: Float) in -- eg. '100m' → ('m',"100")
-                                     if unit `elem` ("0123456789"::String) then amount else show $ case unit of
-                                                                                        'k' -> rest*1000
-                                                                                        'm' -> rest*1000000
-                                                                                        'b' -> rest*1000000000
-                                                                                        't' -> rest*1000000000000
-                                                                                        e -> error $ "Inflation.hs (dollarAdjuster:multiplyByUnits): a malformed unit multiplier appeared in 'text' variable. Attempted unit multiplication by '" ++ show e ++ "'; original: " ++ show l
-
+          adjustedDollarString = customShowRational adjustedDollar
 dollarAdjuster x = x
 
-inlinesToText :: [Inline] -> String
-inlinesToText = concatMap go
-  where go x = case x of
-               Str s    -> T.unpack s
-               Code _ s -> T.unpack s
-               _        -> " "
+multiplyByUnits :: Inline -> String -> String
+multiplyByUnits l "" = error $ "Inflation.hs (dollarAdjuster): an empty amount was processed from 'text' variable. Original input: " ++ show l
+multiplyByUnits l amount = let (unit, rest) = (last amount, read (init amount) :: Float) in -- eg. '100m' → ('m',"100")
+                           if unit `elem` ("0123456789"::String) then amount else show $ case unit of
+                                                                              'k' -> rest*1000
+                                                                              'm' -> rest*1000000
+                                                                              'b' -> rest*1000000000
+                                                                              't' -> rest*1000000000000
+                                                                              e -> error $ "Inflation.hs (dollarAdjuster:multiplyByUnits): a malformed unit multiplier appeared in 'text' variable. Attempted unit multiplication by '" ++ show e ++ "'; original: " ++ show l
 
 -- dollarAdjust "5.50" "1950" → "59.84"
 dollarAdjust :: Float -> String -> Float
@@ -141,7 +142,7 @@ inflationAdjustUSD d yOld yCurrent = if yOld>=1913 && yCurrent>=1913 then d * to
 bitcoinAdjuster :: Inline -> Inline
 bitcoinAdjuster l@(Link _ _ ("", _)) = error $ "Inflation adjustment (bitcoinAdjuster) failed on malformed link: " ++ show l
 bitcoinAdjuster l@(Link _ text (oldDates, _)) =
- if (adjustedBitcoin / oldBitcoin) < C.minPercentage
+ if (adjustedDollar / oldDollar) < C.minPercentage
  then Str $ T.pack ("\8383"++oldBitcoinString)
  else Span ("",
             ["inflation-adjusted"],
@@ -150,18 +151,28 @@ bitcoinAdjuster l@(Link _ text (oldDates, _)) =
              ("title", T.pack ("Exchange-rate-adjusted currency: \8383"++oldBitcoinString++" in "++T.unpack oldDate++" → $"++adjustedBitcoinString)) ])
       [Str (T.pack $ "$"++adjustedBitcoinString),  Span ("",["subsup"],[]) [Superscript text, Subscript [Str (T.pack oldYear)]]]
   where oldDate = if T.length oldDates /= 11 || T.head oldDates /= '\8383' then error (show l) else T.tail oldDates
-        oldBitcoinString = filter (/= '\8383') $ inlinesToText text
+        oldBitcoinString = filter (/= '\8383') $ T.unpack $ inlinesToText text
         oldBitcoin = case (readMaybe (filter (/=',') oldBitcoinString) :: Maybe Float) of
                        Just ob -> ob
                        Nothing -> error (show l)
         oldYear = take 4 $ T.unpack oldDate -- it takes up too much space to display full dates like '2017-01-01'; readers only really need the year; the exact date is provided in the tooltip
-        adjustedBitcoin = bitcoinAdjust oldBitcoin (T.unpack oldDate)
-        adjustedBitcoinString = show adjustedBitcoin
+        oldDollar = bitcoinAdjust oldBitcoin (T.unpack oldDate)
+        adjustedDollar = dollarAdjust oldDollar oldYear
+        adjustedBitcoinString = customShowRational adjustedDollar
+
+      -- oldYear = if T.length oldYears /= 5 || T.head oldYears /= '$' then error (show l) else T.tail oldYears
+      -- oldDollarString = multiplyByUnits l $ filter (/= '$') $ T.unpack $ inlinesToText text -- '$50.50' → '50.50'; '$50.50k' → '50500.0'; '$50.50m' → 5.05e7; '$50.50b' → 5.05e10; '$50.50t' → 5.05e13
+      -- oldDollar = case (readMaybe (filter (/=',') oldDollarString) :: Maybe Float) of
+      --               Just d -> d
+      --               Nothing -> error (show l)
+      -- oldDollarString' = show oldDollar
+      -- adjustedDollar = dollarAdjust oldDollar (T.unpack oldYear)
+      -- adjustedDollarString = show adjustedDollar
 bitcoinAdjuster x = x
 
 -- convert to historical USD, and then inflation-adjust the then-exchange rate to the present day for a real value
 bitcoinAdjust :: Float -> String -> Float
-bitcoinAdjust oldBitcoin oldDate = oldBitcoin * bitcoinQuery oldDate
+bitcoinAdjust oldBitcoinAmount oldDate = let oldExchangeRate = bitcoinQuery oldDate in oldBitcoinAmount * oldExchangeRate
 
 -- Look up USD/₿ daily exchange rate for a given day using a hardwired exchange rate database; due to the extreme volatility of Bitcoin, yearly exchange rates are not precise enough.
 -- If the requested date is after the last available date, the last exchange rate is carried forward indefinitely; if the date is inside the database range but not available (due to spotty time-series), linearly interpolate (average) the two nearest rates before & after; if the date is before the first well-known Bitcoin purchase (Pizza Day), carry that backwards indefinitely.
