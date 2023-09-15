@@ -217,15 +217,15 @@ function baseLocationForDocument(doc) {
 	if (doc == null) {
 		return null;
 	} else if (doc == document) {
-        return new URL(location.href);
+        return URLFromString(location.href);
     } else if (   doc.body instanceof Element
                && doc.body.classList.contains("popframe-body")) {
         let spawningTarget = (Extracts.popFrameProvider == Popups
                               ? doc.body.popup.spawningTarget
                               : doc.body.popin.spawningTarget);
-        return new URL(spawningTarget.href);
+        return URLFromString(spawningTarget.href);
     } else if (doc.baseLocation) {
-        return new URL(doc.baseLocation.href);
+        return URLFromString(doc.baseLocation.href);
     } else {
         return null;
     }
@@ -1146,7 +1146,7 @@ GWLog("document.readyState." + document.readyState, "browser event");
 window.addEventListener("DOMContentLoaded", () => {
     GWLog("window.DOMContentLoaded", "browser event");
     GW.DOMContentLoaded = true;
-    let pageURL = new URL(location.href);
+    let pageURL = URLFromString(location.href);
     GW.notificationCenter.fireEvent("GW.contentDidLoad", {
         source: "DOMContentLoaded",
         container: document.body,

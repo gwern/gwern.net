@@ -298,7 +298,7 @@ ImageFocus = {
 
 		//  Make sure that initially, the image fits into the viewport.
 		let imageWidth, imageHeight;
-		if ((new URL(ImageFocus.imageInFocus.src)).pathname.endsWith(".svg")) {
+		if ((URLFromString(ImageFocus.imageInFocus.src)).pathname.endsWith(".svg")) {
 			//	Special handling for SVGs, which have no intrinsic size.
 			if (ImageFocus.imageInFocus.dataset.aspectRatio > "") {
 				ImageFocus.imageInFocus.style.aspectRatio = ImageFocus.imageInFocus.dataset.aspectRatio;
@@ -433,7 +433,7 @@ ImageFocus = {
 
 			//  Reset the hash, if needed.
 			if (location.hash.startsWith("#if_slide_")) {
-				let previousURL = new URL(location.href);
+				let previousURL = URLFromString(location.href);
 				previousURL.hash = ImageFocus.savedHash ?? "";
 				relocate(previousURL.href);
 

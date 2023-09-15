@@ -176,12 +176,29 @@ URL.prototype.deleteQueryVariable = function (key) {
 	this.search = query.toString();
 }
 
+/*****************************************************************************/
+/*	Returns a URL constructed from either a fully qualified URL string,
+	or an absolute local URL (pathname starting at root), or a relative URL
+	(pathname component replacing part of current URL after last slash).
+
+	(The existing URL() constructor only handles fully qualified URL strings.)
+ */
+function URLFromString(urlString) {
+	if (   urlString.startsWith("http://")
+		|| urlString.startsWith("https://"))
+		return new URL(urlString);
+
+	return (urlString.startsWith("/")
+			? new URL(location.origin + urlString)
+			: new URL(location.href.replace(/[^\/]*$/, urlString)));
+}
+
 /***************************************************************************/
 /*	Returns the value of the search param with the given key for a the given
 	HTMLAnchorElement object.
  */
 HTMLAnchorElement.prototype.getQueryVariable = function (key) {
-	let url = new URL(this.href);
+	let url = URLFromString(this.href);
 	return url.searchParams.get(key);
 }
 
@@ -190,7 +207,7 @@ HTMLAnchorElement.prototype.getQueryVariable = function (key) {
 	given HTMLAnchorElement.
  */
 HTMLAnchorElement.prototype.setQueryVariable = function (key, value) {
-	let url = new URL(this.href);
+	let url = URLFromString(this.href);
 	url.setQueryVariable(key, value);
 	this.search = url.search;
 }
@@ -200,7 +217,7 @@ HTMLAnchorElement.prototype.setQueryVariable = function (key, value) {
 	HTMLAnchorElement.
  */
 HTMLAnchorElement.prototype.deleteQueryVariable = function (key) {
-	let url = new URL(this.href);
+	let url = URLFromString(this.href);
 	url.deleteQueryVariable(key);
 	this.search = url.search;
 }

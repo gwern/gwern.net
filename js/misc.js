@@ -148,9 +148,7 @@ GW.assetVersions = (GW.assetVersions ?? { });
 function versionedAssetURL(pathname) {
     let version = GW.assetVersions[pathname];
     let versionString = (version ? `?v=${version}` : ``);
-    return new URL(  location.origin
-                   + pathname
-                   + versionString);
+    return URLFromString(pathname + versionString);
 }
 
 
