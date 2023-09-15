@@ -562,7 +562,6 @@ whiteList url
       , "equestriadaily.com/search" -- service
       , "libgen.is" -- service
       , "libgen.rs" -- service
-      , "gen.lib.rus.ec" -- service
       , "nyaa.se" -- service
       , "nyaa.eu" -- service
       , "nyaa.si" -- service
@@ -1059,7 +1058,7 @@ whiteList url
       , "https://ajayj.com/vectorfusion" -- low quality (video embeds)
       , "https://realsinger.github.io/" -- low quality (audio embeds)
       , "https://www.ibd.la/" -- interactive
-      , "http://www.complexity-calculator.com/" -- interactive
+      , "https://www.complexity-calculator.com/" -- interactive
       , "https://drugs.globalincidentmap.com/" -- interactive (visualization)
       , "https://coveryourtracks.eff.org/" -- interactive (tool)
       , "https://ppubs.uspto.gov/pubwebapp/static/pages/landing.html" -- interactive (database)

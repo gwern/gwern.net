@@ -10825,7 +10825,7 @@ Typography = {
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
- * http://mnater.github.io/Hyphenopoly/LICENSE
+ * https://github.com/mnater/Hyphenopoly/blob/master/LICENSE
  */
 /* globals Hyphenopoly:readonly */
 window.Hyphenopoly = {};

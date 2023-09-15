@@ -355,7 +355,7 @@ siteBlackList = isUniqueList [
           "www.ecns.cn", "www.dwheeler.com", "www.dw.com", "www.drmichaeljoyner.com", "www.dharmaoverground.org",
           "www.demarcken.org", "www.deepspeed.ai", "www.deathindiorama.com", "www.datascienceweekly.org", "www.danieldjohnson.com",
           "www.currentaffairs.org", "www.culturalcognition.net", "www.cs.uic.edu", "www.cs.tau.ac.il", "www.cs.fsu.edu",
-          "www.crema-research.ch", "www.coyneoftherealm.com", "www.counterpunch.org", "www.cooperativeai.com", "www.conwaylife.com",
+          "www.crema-research.ch", "www.counterpunch.org", "www.cooperativeai.com", "www.conwaylife.com",
           "www.combinatorics.org", "www.coldbacon.com", "www.coderelay.io", "www.cmaj.ca", "www.cincinnatimagazine.com",
           "www.christianitytoday.com", "www.chrisstucchio.com", "www.chinaheritagequarterly.org", "www.chinafile.com", "www.chemistryworld.com",
           "www.changetip.com", "www.cbc.ca", "www.calnewport.com", "www.cabinetmagazine.org", "www.byronknoll.com",

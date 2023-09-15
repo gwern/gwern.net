@@ -391,10 +391,10 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://people.csail.mit.edu/pkrafft/papers/krafft-thesis-final.pdf"
     , [ "A Rational Choice Framework for Collective Behavior" ]
     )
-  , ( "http://people.seas.harvard.edu/~salil/research/timelock.pdf"
+  , ( "https://people.seas.harvard.edu/~salil/research/timelock.pdf"
     , [ "Time-Lock Puzzles in the Random Oracle Model" ]
     )
-  , ( "http://perfdynamics.blogspot.com/2013/09/laplace-bayesianista-and-mass-of-saturn.html"
+  , ( "https://perfdynamics.blogspot.com/2013/09/laplace-bayesianista-and-mass-of-saturn.html"
     , [ "Laplace the Bayesianista and the Mass of Saturn" ]
     )
   , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3270388/"

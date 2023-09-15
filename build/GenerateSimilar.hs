@@ -49,7 +49,7 @@ singleShotRecommendations html =
 
      newEmbedding <- embed [] md bdb ("",("","","","",[],html))
      ddb <- embeddings2Forest (newEmbedding:edb)
-     let (_,hits) = findN ddb (2*C.bestNEmbeddings) C.iterationLimit (Just (0,0)) newEmbedding :: (String,[String])
+     let (_,hits) = findN ddb (2*C.bestNEmbeddings) C.iterationLimit (Just (0,1)) newEmbedding :: (String,[String])
      hitsSorted <- sortSimilars edb (head hits) hits
 
      let matchListHtml = generateMatches md bdb True True "" html hitsSorted :: T.Text

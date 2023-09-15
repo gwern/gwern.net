@@ -66,7 +66,7 @@ getXLinkExists linkType p = do let x@(linkRaw,_) = getXLink linkType p
                                if not linkExists then return ("","")
                                  else return x
 
--- convert a URL to the local path of its annotation (which may not exist because it hasn't been written yet so no need to do IO to check disk), eg. 'http://www2.biology.ualberta.ca/locke.hp/dougandbill.htm' → 'metadata/annotation/http%3A%2F%2Fwww2.biology.ualberta.ca%2Flocke.hp%2Fdougandbill.htm.html'
+-- convert a URL to the local path of its annotation (which may not exist because it hasn't been written yet so no need to do IO to check disk), eg. 'http://www.biology.ualberta.ca/locke.hp/dougandbill.htm' → 'metadata/annotation/http%3A%2F%2Fwww2.biology.ualberta.ca%2Flocke.hp%2Fdougandbill.htm.html'
 getAnnotationLink, getBackLink, getLinkBibLink, getSimilarLink :: FilePath -> (FilePath,FilePath)
 getAnnotationLink = getXLink ""
 getBackLink       = getXLink "backlink"

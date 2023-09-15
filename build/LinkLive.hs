@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-05-12 19:34:35 gwern"
+When:  Time-stamp: "2023-09-15 11:40:09 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -28,7 +28,7 @@ tested & found bad, and testing is not done or ambiguous (due to practical issue
 a local archive or 404 or changed domain entirely).
 
 Finally, to keep up to date with new domains, each sync we rank domains by # of uses, and above a threshold,
-automatically generate a live-link testcase appended to /lorem for manual review.
+automatically generate a live-link test-case appended to /lorem for manual review.
 
 For an independent JS NPM library implementation, see <https://github.com/Stvad/link-summoner>.
 -}
@@ -58,7 +58,8 @@ linkLive :: Inline -> Inline
 linkLive x@(Link (_,cl,_) _ (u, _))
  | "link-live-not" `elem` cl = x
  | u `elem` overrideLinkLive = aL x
- | "/" `T.isPrefixOf` u = x -- local links shouldn't match anything, but to be safe, we'll check anyway.
+ | "http://" `T.isPrefixOf` u   = x -- WARNING: no HTTP page can be live-link loaded by a browser visiting HTTPS Gwern.net due to mixed security context
+ | "/"    `T.isPrefixOf` u   = x -- local links shouldn't match anything, but to be safe, we'll check anyway.
  | otherwise = case urlLive u of
                  Just True -> aL x
                  _         -> x
