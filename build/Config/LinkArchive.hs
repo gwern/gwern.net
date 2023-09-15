@@ -18,7 +18,9 @@ isCheapArchive url = anyInfix url [".pdf", "#pdf", "twitter.com", "nitter.net", 
 -- In the case of OpenReview, the `forum?id=` is the peer reviews, which are worth reading, but we'd like to provide the
 -- PDF link too. We don't need a third version, just to provide the two, so this is easier than the Ar5iv rewrite.
 -- (Hypothetically, we could do Reddit.com → Old.Reddit.com, or LW → GW rewrites this way too.)
-transformURLsForArchiving, transformURLsForLinking, transformURLsForMobile :: String -> String
+transformURLsForArchiving, -- data-url-archive
+  transformURLsForLinking, -- data-url-html
+  transformURLsForMobile :: String -> String -- data-href-mobile
 transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/pdf/\\1.pdf\\2" . sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://arxiv.org/pdf/\\1/\\2.pdf\\3"
                             . replace "https://openreview.net/forum" "https://openreview.net/pdf"
                             -- Old Reddit is the preferred browsing & archiving frontend given the death of `i.reddit.com` & `.compact`
@@ -26,12 +28,13 @@ transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
                             . replace "https://www.reddit.com" "https://old.reddit.com"
                             . replace "https://twitter.com" "https://nitter.net"
                             . replace "https://medium.com" "https://scribe.rip" -- clean Medium frontend; can also handle custom domains with a bit more work: <https://scribe.rip/faq#custom-domains>
-transformURLsForMobile    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
-  sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" -- handle oddities like hep-ph
 transformURLsForLinking   = replace "https://www.reddit.com" "https://old.reddit.com" . -- Old Reddit is much politer to send people to
   -- make IA book/item pages pop up nicer in live-links, by making them jump to the metadata section (which is all that works in the JS-less live-link iframe), and skipping the warnings about JS not being available. `#flag-button-container` is, weirdly enough, the first available ID to jump to, there's no better ID set inside the metadata section, it's all classes.
   (\u -> if u `anyPrefix` ["https://archive.org/details/"]    && '#' `notElem` u && not (u `anyInfix` ["flag-button-container"]) then u ++ "#flag-button-container" else u)
   . replace "https://medium.com" "https://scribe.rip"
+transformURLsForMobile    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
+  sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" . -- handle oddities like hep-ph
+  replace "https://twitter.com" "https://nitter.net"
 
 {- re URL transforms: Why?
 

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-09-02 21:15:24 gwern"
+When:  Time-stamp: "2023-09-15 19:42:22 gwern"
 License: CC-0
 -}
 
@@ -453,7 +453,8 @@ addID maybeMetadataItem inline = case inline of
 addHasAnnotation :: MetadataItem -> Inline -> Inline
 addHasAnnotation (title,aut,dt,_,_,abstrct) (Link (a,b,c) e (f,g))
   | "https://en.wikipedia.org" `T.isPrefixOf` f = x'
-  | length abstrct > minimumAnnotationLength = addClass "link-annotated" x' -- full annotation, no problem.
+  | "https://twitter.com" `T.isPrefixOf` f      = addClass "link-annotated" x' -- TODO: when Twitter is merged into the backend, parsing the Nitter mirrors to create proper annotations, rather than using JS to parse them at runtime, this should be removed.
+  | length abstrct > minimumAnnotationLength    = addClass "link-annotated" x' -- full annotation, no problem.
    -- may be a partial...
   | not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f = x' -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
   | otherwise = addClass "link-annotated-partial" x'

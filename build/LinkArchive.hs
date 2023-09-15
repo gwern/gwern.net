@@ -139,7 +139,7 @@ localizeLink adb archivedN x@(Link (identifier, classes, pairs) b (targetURL, ta
        else do -- annotate link with data attribute specifying with local archive:
          let archiveAttributes = [("data-url-archive", T.pack ('/':targetURL'))] ++
                                   (let mobileURL = T.pack $ C.transformURLsForMobile $ T.unpack targetURL in
-                                    if mobileURL == targetURL then [] else [("data-url-mobile", mobileURL)]) ++
+                                    if mobileURL == targetURL then [] else [("data-href-mobile", mobileURL)]) ++
                                   (let cleanURL = T.pack $ C.transformURLsForLinking $ T.unpack targetURL in
                                   if cleanURL == targetURL then [] else [("data-url-html", cleanURL)])
          let archiveAnnotatedLink = Link (identifier, classes, pairs++archiveAttributes) b (targetURL, targetDescription)
