@@ -203,20 +203,22 @@ Content = {
 	},
 
 	contentTypes: {
-		localTweetArchive: {
+		tweet: {
 			matches: (link) => {
-				if (link.dataset.urlArchive == null)
-					return false;
-
-				let archiveURL = URLFromString(link.dataset.urlArchive);
 				return (   [ "twitter.com", "x.com" ].includes(link.hostname)
-						&& link.pathname.match(/\/.+?\/status\/[0-9]+$/));
+						&& link.pathname.match(/\/.+?\/status\/[0-9]+$/) != null);
 			},
 
 			sourceURLsForLink: (link) => {
-				let archiveURL = URLFromString(link.dataset.urlArchive);
+				let urls = [ ];
 
-				return [ archiveURL ];
+				if (link.dataset.urlArchive)
+					urls.push(URLFromString(link.dataset.urlArchive));
+
+				if (link.dataset.urlHtml)
+					urls.push(URLFromString(link.dataset.urlHtml));
+
+				return urls.concat(Content.contentTypes.tweet.liveNitterHosts);
 			},
 
 			contentFromResponse: (response, link = null, loadURL) => {
@@ -230,7 +232,7 @@ Content = {
 				let titleLinkClass = "title-link link-live content-transform-not";
 				let titleLinkIconMetadata = `data-link-icon-type="svg" data-link-icon="twitter"`;
 
-				let nitterHost = Content.contentTypes.localTweetArchive.getNitterHost();
+				let nitterHost = Content.contentTypes.tweet.getNitterHost();
 
 				//	URL for link to user’s page.
 				let titleLinkURL = URLFromString(tweetPage.document.querySelector(".main-tweet a.username").href);
@@ -238,8 +240,9 @@ Content = {
 				let titleLinkHref = titleLinkURL.href;
 
 				//	Text of link to user’s page.
-				let titleText = tweetPage.document.querySelector("title").textContent.match(/^(.+?):/)[1];
-				let titleHTML = titleText.replace(/\((@.+?)\)/, "(<code>$1</code>)");
+				let titleParts = tweetPage.document.querySelector("title").textContent.match(/^(.+?) \((@.+?)\):/);
+				let titleText = `“${titleParts[1]}” (${titleParts[2]})`;
+				let titleHTML = `“${titleParts[1]}” (<code>${titleParts[2]}</code>)`;
 
 				//	Link to tweet.
 				let tweetDate = new Date(Date.parse(tweetPage.document.querySelector(".main-tweet .tweet-date").textContent));
@@ -252,8 +255,10 @@ Content = {
 				//	Tweet content itself.
 				let tweetContent = tweetPage.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
 
+				//	TODO: Qualify links in tweet
+
 				//	Attached media (video or images).
-				tweetContent += Content.contentTypes.localTweetArchive.mediaEmbedHTML(tweetPage.document);
+				tweetContent += Content.contentTypes.tweet.mediaEmbedHTML(tweetPage.document);
 
 				//	Pop-frame title text.
 				let popFrameTitleText = `${titleHTML} on ${tweetDateString}`;
@@ -262,15 +267,15 @@ Content = {
 					content: {
 						titleHTML:                titleHTML,
 						fullTitleHTML:            titleHTML,
+						secondaryTitleLinksHTML:  secondaryTitleLinksHTML,
 						titleText:                titleText,
 						titleLinkHref:            titleLinkHref,
 						titleLinkClass:           titleLinkClass,
 						titleLinkIconMetadata:    titleLinkIconMetadata,
-						secondaryTitleLinksHTML:  secondaryTitleLinksHTML,
 						abstract: 		          tweetContent,
 						dataSourceClass:          "tweet",
 					},
-					template:                       "annotation-blockquote-not",
+					template:                       "annotation-blockquote-outside",
 					linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
 					whichTab:                       (GW.isMobile() ? "current" : "new"),
 					tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
@@ -285,31 +290,18 @@ Content = {
 				return mediaURL;
 			},
 
-			mediaEmbedHTML: (response) => {
-				let nitterHost = Content.contentTypes.localTweetArchive.getNitterHost();
+			mediaEmbedHTML: (tweetDoc) => {
+				let attachments = tweetDoc.querySelector(".main-tweet .attachments");
+				if (attachments) {
+					let mediaHTML = ``;
+					attachments.querySelectorAll("img, video").forEach(mediaElement => {
+						mediaHTML += `<figure>${mediaElement.outerHTML}</figure>`;
+					});
 
-				let imageMetaTagSelector = "meta[property='og:image']";
-				let videoMetaTagSelector = "meta[property='og:video:url']";
-
-				let videoMetaTag = response.querySelector(videoMetaTagSelector);
-				if (videoMetaTag) {
-					let videoURL = Content.contentTypes.localTweetArchive.mediaURLFromMetaTag(videoMetaTag, nitterHost);
-					let imageMetaTag = response.querySelector(imageMetaTagSelector);
-					let imageURL = Content.contentTypes.localTweetArchive.mediaURLFromMetaTag(imageMetaTag, nitterHost);
-					return (  `<figure>`
-							+ `<video controls="controls" preload="none" poster="${imageURL.href}">`
-							+ `<source src="${videoURL.href}">`
-							+ `</video></figure>`);
+					return mediaHTML;
+				} else {
+					return "";
 				}
-
-				let imageMetaTags = response.querySelectorAll(imageMetaTagSelector);
-				if (imageMetaTags.length > 0) {
-					return Array.from(imageMetaTags).map(tag => 
-							`<img src="${(Content.contentTypes.localTweetArchive.mediaURLFromMetaTag(tag, nitterHost).href)}" loading="lazy">`
-						  ).join("");
-				}
-
-				return ``;
 			},
 
 			liveNitterHosts: [
@@ -317,7 +309,7 @@ Content = {
 			],
 
 			getNitterHost: () => {
-				let hosts = Content.contentTypes.localTweetArchive.liveNitterHosts;
+				let hosts = Content.contentTypes.tweet.liveNitterHosts;
 				return hosts[rollDie(hosts.length) - 1];
 			}
 		},

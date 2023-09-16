@@ -6,7 +6,7 @@ Annotations = {
 Annotations = { ...Annotations,
     /***********/
     /*  General.
-        */
+     */
 
 	isAnnotatedLink: (link) => {
 		return link.classList.containsAnyOf([ Annotations.annotatedLinkFullClass,  Annotations.annotatedLinkPartialClass ]);
@@ -41,6 +41,15 @@ Annotations = { ...Annotations,
 
 	//	Convenience method.
 	cachedDocumentForLink: (link) => {
+		/*	If the data source for this link delegates its functionality to
+			a different data source, request the cached document from the
+			delegate’s provider object.
+		 */
+		let dataSource = Annotations.dataSourceForLink(link);
+		if (   dataSource
+			&& dataSource.delegateDataProvider)
+			return dataSource.delegateDataProvider.cachedDocumentForLink(link);
+
 		let cachedAPIResponse = Annotations.cachedAPIResponseForLink(link);
 
 		if (   cachedAPIResponse
@@ -50,9 +59,18 @@ Annotations = { ...Annotations,
 	},
 
     /*  Returns true iff a cached API response exists for the given link.
-        */
+     */
     //	Called by: Extracts.setUpAnnotationLoadEventsWithin (extracts-annotations.js)
     cachedDataExists: (link) => {
+		/*	If the data source for this link delegates its functionality to
+			a different data source, request the cached data from the
+			delegate’s provider object.
+		 */
+		let dataSource = Annotations.dataSourceForLink(link);
+		if (   dataSource
+			&& dataSource.delegateDataProvider)
+			return dataSource.delegateDataProvider.cachedDataExists(link);
+
         let cachedAPIResponse = Annotations.cachedAPIResponseForLink(link);
         return (   cachedAPIResponse != null
         		&& cachedAPIResponse != "LOADING_FAILED");
@@ -81,7 +99,7 @@ Annotations = { ...Annotations,
 	 */
 
     /*  Storage for retrieved and cached annotations.
-        */
+     */
     cachedReferenceData: { },
 
 	referenceDataCacheKeyForLink: (link) => {
@@ -92,15 +110,24 @@ Annotations = { ...Annotations,
 		return Annotations.cachedReferenceData[Annotations.referenceDataCacheKeyForLink(link)];
 	},
 
-	cacheReferenceDataForlink: (referenceData, link) => {
+	cacheReferenceDataForLink: (referenceData, link) => {
 		Annotations.cachedReferenceData[Annotations.referenceDataCacheKeyForLink(link)] = referenceData;
 	},
 
     /*  Returns cached annotation reference data for a given link, or else 
     	either “LOADING_FAILED” (if loading the annotation was attempted but 
     	failed) or null (if the annotation has not been loaded).
-        */
+     */
     referenceDataForLink: (link) => {
+		/*	If the data source for this link delegates its functionality to
+			a different data source, request the cached data from the
+			delegate’s provider object.
+		 */
+		let dataSource = Annotations.dataSourceForLink(link);
+		if (   dataSource
+			&& dataSource.delegateDataProvider)
+			return dataSource.delegateDataProvider.referenceDataForLink(link);
+
     	let referenceData = Annotations.cachedReferenceDataForLink(link);
 		if (   referenceData == null
 			&& Annotations.cachedDataExists(link)) {
@@ -120,7 +147,7 @@ Annotations = { ...Annotations,
 				GWServerLogError(Annotations.sourceURLForLink(link).href + `--could-not-process`, "problematic annotation");
 
 			//	Cache reference data (successfully constructed or not).
-			Annotations.cacheReferenceDataForlink(referenceData, link);
+			Annotations.cacheReferenceDataForLink(referenceData, link);
 		}
 
         return referenceData;
@@ -134,10 +161,17 @@ Annotations = { ...Annotations,
 	//	Called by: Annotations.processedAPIResponseForLink
 	//	Called by: Annotations.referenceDataFromParsedAPIResponse
 	dataSourceForLink: (link) => {
-		for ([ sourceName, dataSource ] of Object.entries(Annotations.dataSources))
-			if (   sourceName != "local"
-				&& dataSource.matches(link))
+		for ([ sourceName, dataSource ] of Object.entries(Annotations.dataSources)) {
+			if (sourceName == "local")
+				continue;
+
+			if (   (   dataSource.matches
+					&& dataSource.matches(link))
+				|| (   dataSource.delegateDataSource
+					&& dataSource.delegateDataSource.matches
+					&& dataSource.delegateDataSource.matches(link)))
 				return dataSource;
+		}
 
 		return Annotations.dataSources.local;
 	},
@@ -158,6 +192,17 @@ Annotations = { ...Annotations,
 
 	//	Called by: extracts.annotationForTarget (extracts-annotations.js)
 	waitForDataLoad: (link, loadHandler = null, loadFailHandler = null) => {
+		/*	If the data source for this link delegates its functionality to
+			a different data source, the delegate’s provider object should
+			handle loading.
+		 */
+		let dataSource = Annotations.dataSourceForLink(link);
+		if (   dataSource
+			&& dataSource.delegateDataProvider) {
+			dataSource.delegateDataProvider.waitForDataLoad(link, loadHandler, loadFailHandler);
+			return;
+		}
+
 		if (Annotations.cachedAPIResponseForLink(link) == "LOADING_FAILED") {
             if (loadFailHandler)
             	loadFailHandler(link);
@@ -197,10 +242,21 @@ Annotations = { ...Annotations,
 	},
 
     /*  Load and process the annotation for the given link.
-        */
+     */
     //	Called by: Extracts.setUpAnnotationLoadEventsWithin (extracts-annotations.js)
     load: (link, loadHandler = null, loadFailHandler = null) => {
         GWLog("Annotations.load", "annotations.js", 2);
+
+		/*	If the data source for this link delegates its functionality to
+			a different data source, the delegate’s provider object should
+			handle loading.
+		 */
+		let dataSource = Annotations.dataSourceForLink(link);
+		if (   dataSource
+			&& dataSource.delegateDataProvider) {
+			dataSource.delegateDataProvider.load(link, loadHandler, loadFailHandler);
+			return;
+		}
 
 		/*	Get URL of the annotation resource.
 		 */
@@ -214,13 +270,13 @@ Annotations = { ...Annotations,
 			let referenceData = Annotations.referenceDataFromParsedAPIResponse(response, link);
 
 			if (referenceData) {
-				Annotations.cacheReferenceDataForlink(referenceData, link);
+				Annotations.cacheReferenceDataForLink(referenceData, link);
 
 				GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { 
 					link: link 
 				});
 			} else {
-				Annotations.cacheReferenceDataForlink("LOADING_FAILED", link);
+				Annotations.cacheReferenceDataForLink("LOADING_FAILED", link);
 
 				GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { 
 					link: link 
@@ -249,7 +305,7 @@ Annotations = { ...Annotations,
 				},
 				onFailure: (event) => {
 					Annotations.cacheAPIResponseForLink("LOADING_FAILED", link);
-					Annotations.cacheReferenceDataForlink("LOADING_FAILED", link);
+					Annotations.cacheReferenceDataForLink("LOADING_FAILED", link);
 
 					GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { link: link });
 
@@ -497,7 +553,7 @@ Annotations = { ...Annotations,
 
 			/*  Post-process an already-constructed local annotation 
 				(do HTML cleanup, etc.).
-				*/
+			 */
 			//	Called by: Annotations.dataSources.local.referenceDataFromParsedAPIResponse
 			postProcessReferenceEntry: (referenceEntry, link = null) => {
 				//	Unwrap extraneous <div>s, if present.
@@ -528,9 +584,19 @@ Annotations = { ...Annotations,
 	}
 };
 
+
+/**********/
+/*	Tweets.
+ */
+Annotations.dataSources.twitter = {
+	get delegateDataProvider() { return Content; },
+	get delegateDataSource() { return Content.contentTypes.tweet; }
+};
+
+
 /**************************************************/
 /*  Wikipedia entries (page summaries or sections).
-	*/
+ */
 Annotations.dataSources.wikipedia = {
 	/*	The Wikipedia API only gives usable responses for most, not all,
 		Wikipedia URLs.
@@ -714,7 +780,7 @@ Annotations.dataSources.wikipedia = {
 	},
 
 	/*  Elements to excise from a Wikipedia entry.
-		*/
+	 */
 	//	Used in: Annotations.dataSources.wikipedia.postProcessReferenceEntry
 	extraneousElementSelectors: [
 		"style",
@@ -734,7 +800,7 @@ Annotations.dataSources.wikipedia = {
 	],
 
 	/*  CSS properties to preserve when stripping inline styles.
-		*/
+	 */
 	//	Used in: Annotations.dataSources.wikipedia.postProcessReferenceEntry
 	preservedInlineStyleProperties: [
 		"display",
@@ -750,7 +816,7 @@ Annotations.dataSources.wikipedia = {
 
 	/*  Post-process an already-constructed annotation created from a Wikipedia
 		entry (do HTML cleanup, etc.).
-		*/
+	 */
 	//	Called by: Annotations.dataSources.wikipedia.referenceDataFromParsedAPIResponse
 	postProcessReferenceEntry: (referenceEntry, articleLink) => {
 		//  Remove unwanted elements.
@@ -960,4 +1026,5 @@ Annotations.dataSources.wikipedia = {
 	}
 };
 
+//	Fire load event.
 GW.notificationCenter.fireEvent("Annotations.didLoad");

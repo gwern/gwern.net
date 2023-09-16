@@ -181,19 +181,29 @@ Typography = {
 			});
 
 			//	Remove all but one of each set of consecutive <wbr> tags.
+			function isWBR(node) {
+				return (   node.nodeType === Node.ELEMENT_NODE
+						&& node.tagName == "WBR");
+			}
+
+			function isEmptyTextNode(node) {
+				return (   node.nodeType === Node.TEXT_NODE
+						&& isNodeEmpty(node) == true);
+			}
+
 			let prevNodeIsWBR = false;
 			for (let i = 0; i < element.childNodes.length; i++) {
 				let node = element.childNodes[i];
-				if (   node.nodeType === Node.ELEMENT_NODE
-					&& node.tagName == "WBR") {
-					if (prevNodeIsWBR) {
+				if (isWBR(node) && prevNodeIsWBR == false) {
+					prevNodeIsWBR = true;
+				} else if (prevNodeIsWBR) {
+					if (   isWBR(node) 
+						|| isEmptyTextNode(node)) {
 						node.remove();
 						i--;
 					} else {
-						prevNodeIsWBR = true;
+						prevNodeIsWBR = false;
 					}
-				} else {
-					prevNodeIsWBR = false;
 				}
 			}
 		}
