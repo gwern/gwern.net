@@ -36,7 +36,7 @@ import LinkMetadata (readLinkMetadata, authorsTruncate, sortItemPathDate)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, safeHtmlWriterOptions, anyPrefixT, printRed, trim, parseRawInline, sed)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, safeHtmlWriterOptions, anyPrefixT, printRed, trim, sed)
 
 import Config.GenerateSimilar as C
 
@@ -380,7 +380,7 @@ generateItem md linkTagsP p2 = case M.lookup p2 md of
                                       [Link ("", ["link-annotated", "backlink-not", "id-not"],
                                              -- link-tags are particularly useful when reviewing single-shot reccomendations while writing annotations
                                               if null tags || not linkTagsP then [] else [("link-tags", T.pack $ unwords tags) ]
-                                            ) [parseRawInline nullAttr $ RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
+                                            ) [RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
                                     ]
 
 -----------------------------------

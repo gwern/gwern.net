@@ -33,7 +33,7 @@ import Tags (listTagDirectories, abbreviateTag)
 import LinkBacklink (getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy)
-import Utils (replace, writeUpdatedFile, printRed, toPandoc, anySuffix, parseRawBlock,  parseRawInline)
+import Utils (replace, writeUpdatedFile, printRed, toPandoc, anySuffix, parseRawBlock)
 import Config.Misc as C (miscellaneousLinksCollapseLimit)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto)
 -- import Text.Show.Pretty (ppShow)
@@ -338,5 +338,5 @@ generateSections' headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_)) ->
                                     sectionTitle = T.pack $ "“"++titlecase t++"”" ++
                                                      (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt)
                                 in
-                                 Header headerLevel (sectionID, ["link-annotated-not"], []) [parseRawInline nullAttr $ RawInline (Format "html") sectionTitle]
+                                 Header headerLevel (sectionID, ["link-annotated-not"], []) [RawInline (Format "html") sectionTitle]
                                  : LM.generateAnnotationTransclusionBlock (f,a))

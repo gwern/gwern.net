@@ -24,7 +24,7 @@ import Text.Regex (subRegex, mkRegex)
 import Text.Regex.TDFA ((=~))
 
 import Text.Pandoc (def, nullAttr, nullMeta, runPure,
-                    writerColumns, writePlain, Block(Div, Plain, RawBlock), Pandoc(Pandoc), Inline(Code, Image, Link, Math, RawInline, Span, Str), MathType(InlineMath), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown)
+                    writerColumns, writePlain, Block(Div, RawBlock), Pandoc(Pandoc), Inline(Code, Image, Link, Math, RawInline, Span, Str), MathType(InlineMath), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown)
 import Text.Pandoc.Walk (walk)
 
 -- Auto-update the current year.
@@ -82,7 +82,10 @@ toPandoc abst = let clean = runPure $ readHtml def{readerExtensions=pandocExtens
                      Right output -> output
 
 parseRawAllClean :: Pandoc -> Pandoc
-parseRawAllClean = topDown cleanUpDivsEmpty . walk cleanUpSpans . walk (parseRawInline nullAttr) . walk (parseRawBlock nullAttr)
+parseRawAllClean = topDown cleanUpDivsEmpty .
+                   walk cleanUpSpans .
+                   -- walk (parseRawInline ("", ["parsed-raw-inline"], [])) .
+                   walk (parseRawBlock ("", ["parsed-raw-block"], []))
 
 parseRawBlock :: Attr -> Block -> Block
 parseRawBlock attr x@(RawBlock (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
@@ -90,17 +93,18 @@ parseRawBlock attr x@(RawBlock (Format "html") h) = let pandoc = runPure $ readH
                                             Left e -> error (show x ++ " : " ++ show e)
                                             Right (Pandoc _ blocks) -> Div attr blocks
 parseRawBlock _ x = x
-parseRawInline :: Attr -> Inline -> Inline
-parseRawInline attr x@(RawInline (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
-                                          case pandoc of
-                                            Left e -> error (show x ++ " : " ++ show e)
-                                            Right (Pandoc _ [Para inlines]) -> Span attr inlines
-                                            Right (Pandoc _ [Plain inlines]) -> Span attr inlines
-                                            Right (Pandoc _ inlines) -> Span attr (extractAndFlattenInlines inlines)
-parseRawInline _ x = x
-extractAndFlattenInlines :: [Block] -> [Inline]
-extractAndFlattenInlines [RawBlock (Format "html") x]  = [RawInline (Format "html") x]
-extractAndFlattenInlines x = error ("extractAndFlattenInlines: hit a RawBlock which couldn't be parsed? : " ++ show x)
+-- WARNING: appears to break some instances of inline HTML, especially subsup instances. I was unable to debug why.
+-- parseRawInline :: Attr -> Inline -> Inline
+-- parseRawInline attr x@(RawInline (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
+--                                           case pandoc of
+--                                             Left e -> error (show x ++ " : " ++ show e)
+--                                             Right (Pandoc _ [Para inlines]) -> Span attr inlines
+--                                             Right (Pandoc _ [Plain inlines]) -> Span attr inlines
+--                                             Right (Pandoc _ inlines) -> Span attr (extractAndFlattenInlines inlines)
+-- parseRawInline _ x = x
+-- extractAndFlattenInlines :: [Block] -> [Inline]
+-- extractAndFlattenInlines [RawBlock (Format "html") x]  = [RawInline (Format "html") x]
+-- extractAndFlattenInlines x = error ("extractAndFlattenInlines: hit a RawBlock which couldn't be parsed? : " ++ show x)
 
 -- we probably want to remove the link-auto-skipped Spans if we are not actively debugging, because they inflate the markup & browser DOM.
 -- We can't just remove the Span using a 'Inline -> Inline' walk, because a Span is an Inline with an [Inline] payload, so if we just remove the Span wrapper, it is a type error: we've actually done 'Inline -> [Inline]'.
@@ -115,12 +119,12 @@ extractAndFlattenInlines x = error ("extractAndFlattenInlines: hit a RawBlock wh
 -- NOTE: might need to generalize this to clean up other Span crud?
 cleanUpSpans :: [Inline] -> [Inline]
 cleanUpSpans [] = []
-cleanUpSpans   (Span ("",[],[]) payload : rest) = payload ++ rest
-cleanUpSpans x@(Span (_,[],_) _ : _) = x
-cleanUpSpans   (Span (_,["link-auto-skipped"],_) payload : rest) = payload ++ rest
+cleanUpSpans   (Span ("",[],[]) payload : rest)                             = payload ++ rest
+cleanUpSpans x@(Span (_,[],_) _ : _)                                        = x
+cleanUpSpans   (Span (_,["link-auto-skipped"],_) payload : rest)            = payload ++ rest
 cleanUpSpans   (Span (_,["link-auto-first", "link-auto"],_) payload : rest) = payload ++ rest
 cleanUpSpans   (Span (a,classes,b) c : rest) = let classes' = filter (\cl -> cl `notElem` ["link-auto","link-auto-first","link-auto-skipped"]) classes in
-                                                       Span (a,classes',b) c : rest
+                                                                              Span (a,classes',b) c : rest
 cleanUpSpans (x@Link{} : rest) =  removeClass "link-auto" x : cleanUpSpans rest
 cleanUpSpans (r:rest) = r : cleanUpSpans rest
 
