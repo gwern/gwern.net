@@ -182,15 +182,18 @@ URL.prototype.deleteQueryVariable = function (key) {
 	(pathname component replacing part of current URL after last slash).
 
 	(The existing URL() constructor only handles fully qualified URL strings.)
+
+	The optional baseURL argument allows for qualifying non-fully-qualified
+	URL strings relative to a base URL other than the current page location.
  */
-function URLFromString(urlString) {
+function URLFromString(urlString, baseURL = location) {
 	if (   urlString.startsWith("http://")
 		|| urlString.startsWith("https://"))
 		return new URL(urlString);
 
 	return (urlString.startsWith("/")
-			? new URL(location.origin + urlString)
-			: new URL(location.href.replace(/[^\/]*$/, urlString)));
+			? new URL(baseURL.origin + urlString)
+			: new URL(baseURL.href.replace(/[^\/]*$/, urlString)));
 }
 
 /***************************************************************************/

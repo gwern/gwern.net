@@ -4180,7 +4180,7 @@ Annotations = {
 Annotations = { ...Annotations,
     /***********/
     /*  General.
-        */
+     */
 
 	isAnnotatedLink: (link) => {
 		return link.classList.containsAnyOf([ Annotations.annotatedLinkFullClass,  Annotations.annotatedLinkPartialClass ]);
@@ -4215,6 +4215,15 @@ Annotations = { ...Annotations,
 
 	//	Convenience method.
 	cachedDocumentForLink: (link) => {
+		/*	If the data source for this link delegates its functionality to
+			a different data source, request the cached document from the
+			delegate’s provider object.
+		 */
+		let dataSource = Annotations.dataSourceForLink(link);
+		if (   dataSource
+			&& dataSource.delegateDataProvider)
+			return dataSource.delegateDataProvider.cachedDocumentForLink(link);
+
 		let cachedAPIResponse = Annotations.cachedAPIResponseForLink(link);
 
 		if (   cachedAPIResponse
@@ -4224,9 +4233,18 @@ Annotations = { ...Annotations,
 	},
 
     /*  Returns true iff a cached API response exists for the given link.
-        */
+     */
     //	Called by: Extracts.setUpAnnotationLoadEventsWithin (extracts-annotations.js)
     cachedDataExists: (link) => {
+		/*	If the data source for this link delegates its functionality to
+			a different data source, request the cached data from the
+			delegate’s provider object.
+		 */
+		let dataSource = Annotations.dataSourceForLink(link);
+		if (   dataSource
+			&& dataSource.delegateDataProvider)
+			return dataSource.delegateDataProvider.cachedDataExists(link);
+
         let cachedAPIResponse = Annotations.cachedAPIResponseForLink(link);
         return (   cachedAPIResponse != null
         		&& cachedAPIResponse != "LOADING_FAILED");
@@ -4255,7 +4273,7 @@ Annotations = { ...Annotations,
 	 */
 
     /*  Storage for retrieved and cached annotations.
-        */
+     */
     cachedReferenceData: { },
 
 	referenceDataCacheKeyForLink: (link) => {
@@ -4266,15 +4284,24 @@ Annotations = { ...Annotations,
 		return Annotations.cachedReferenceData[Annotations.referenceDataCacheKeyForLink(link)];
 	},
 
-	cacheReferenceDataForlink: (referenceData, link) => {
+	cacheReferenceDataForLink: (referenceData, link) => {
 		Annotations.cachedReferenceData[Annotations.referenceDataCacheKeyForLink(link)] = referenceData;
 	},
 
     /*  Returns cached annotation reference data for a given link, or else 
     	either “LOADING_FAILED” (if loading the annotation was attempted but 
     	failed) or null (if the annotation has not been loaded).
-        */
+     */
     referenceDataForLink: (link) => {
+		/*	If the data source for this link delegates its functionality to
+			a different data source, request the cached data from the
+			delegate’s provider object.
+		 */
+		let dataSource = Annotations.dataSourceForLink(link);
+		if (   dataSource
+			&& dataSource.delegateDataProvider)
+			return dataSource.delegateDataProvider.referenceDataForLink(link);
+
     	let referenceData = Annotations.cachedReferenceDataForLink(link);
 		if (   referenceData == null
 			&& Annotations.cachedDataExists(link)) {
@@ -4294,7 +4321,7 @@ Annotations = { ...Annotations,
 				GWServerLogError(Annotations.sourceURLForLink(link).href + `--could-not-process`, "problematic annotation");
 
 			//	Cache reference data (successfully constructed or not).
-			Annotations.cacheReferenceDataForlink(referenceData, link);
+			Annotations.cacheReferenceDataForLink(referenceData, link);
 		}
 
         return referenceData;
@@ -4308,10 +4335,17 @@ Annotations = { ...Annotations,
 	//	Called by: Annotations.processedAPIResponseForLink
 	//	Called by: Annotations.referenceDataFromParsedAPIResponse
 	dataSourceForLink: (link) => {
-		for ([ sourceName, dataSource ] of Object.entries(Annotations.dataSources))
-			if (   sourceName != "local"
-				&& dataSource.matches(link))
+		for ([ sourceName, dataSource ] of Object.entries(Annotations.dataSources)) {
+			if (sourceName == "local")
+				continue;
+
+			if (   (   dataSource.matches
+					&& dataSource.matches(link))
+				|| (   dataSource.delegateDataSource
+					&& dataSource.delegateDataSource.matches
+					&& dataSource.delegateDataSource.matches(link)))
 				return dataSource;
+		}
 
 		return Annotations.dataSources.local;
 	},
@@ -4332,6 +4366,17 @@ Annotations = { ...Annotations,
 
 	//	Called by: extracts.annotationForTarget (extracts-annotations.js)
 	waitForDataLoad: (link, loadHandler = null, loadFailHandler = null) => {
+		/*	If the data source for this link delegates its functionality to
+			a different data source, the delegate’s provider object should
+			handle loading.
+		 */
+		let dataSource = Annotations.dataSourceForLink(link);
+		if (   dataSource
+			&& dataSource.delegateDataProvider) {
+			dataSource.delegateDataProvider.waitForDataLoad(link, loadHandler, loadFailHandler);
+			return;
+		}
+
 		if (Annotations.cachedAPIResponseForLink(link) == "LOADING_FAILED") {
             if (loadFailHandler)
             	loadFailHandler(link);
@@ -4371,10 +4416,21 @@ Annotations = { ...Annotations,
 	},
 
     /*  Load and process the annotation for the given link.
-        */
+     */
     //	Called by: Extracts.setUpAnnotationLoadEventsWithin (extracts-annotations.js)
     load: (link, loadHandler = null, loadFailHandler = null) => {
         GWLog("Annotations.load", "annotations.js", 2);
+
+		/*	If the data source for this link delegates its functionality to
+			a different data source, the delegate’s provider object should
+			handle loading.
+		 */
+		let dataSource = Annotations.dataSourceForLink(link);
+		if (   dataSource
+			&& dataSource.delegateDataProvider) {
+			dataSource.delegateDataProvider.load(link, loadHandler, loadFailHandler);
+			return;
+		}
 
 		/*	Get URL of the annotation resource.
 		 */
@@ -4388,13 +4444,13 @@ Annotations = { ...Annotations,
 			let referenceData = Annotations.referenceDataFromParsedAPIResponse(response, link);
 
 			if (referenceData) {
-				Annotations.cacheReferenceDataForlink(referenceData, link);
+				Annotations.cacheReferenceDataForLink(referenceData, link);
 
 				GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { 
 					link: link 
 				});
 			} else {
-				Annotations.cacheReferenceDataForlink("LOADING_FAILED", link);
+				Annotations.cacheReferenceDataForLink("LOADING_FAILED", link);
 
 				GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { 
 					link: link 
@@ -4423,7 +4479,7 @@ Annotations = { ...Annotations,
 				},
 				onFailure: (event) => {
 					Annotations.cacheAPIResponseForLink("LOADING_FAILED", link);
-					Annotations.cacheReferenceDataForlink("LOADING_FAILED", link);
+					Annotations.cacheReferenceDataForLink("LOADING_FAILED", link);
 
 					GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { link: link });
 
@@ -4671,7 +4727,7 @@ Annotations = { ...Annotations,
 
 			/*  Post-process an already-constructed local annotation 
 				(do HTML cleanup, etc.).
-				*/
+			 */
 			//	Called by: Annotations.dataSources.local.referenceDataFromParsedAPIResponse
 			postProcessReferenceEntry: (referenceEntry, link = null) => {
 				//	Unwrap extraneous <div>s, if present.
@@ -4702,9 +4758,19 @@ Annotations = { ...Annotations,
 	}
 };
 
+
+/**********/
+/*	Tweets.
+ */
+Annotations.dataSources.twitter = {
+	get delegateDataProvider() { return Content; },
+	get delegateDataSource() { return Content.contentTypes.tweet; }
+};
+
+
 /**************************************************/
 /*  Wikipedia entries (page summaries or sections).
-	*/
+ */
 Annotations.dataSources.wikipedia = {
 	/*	The Wikipedia API only gives usable responses for most, not all,
 		Wikipedia URLs.
@@ -4888,7 +4954,7 @@ Annotations.dataSources.wikipedia = {
 	},
 
 	/*  Elements to excise from a Wikipedia entry.
-		*/
+	 */
 	//	Used in: Annotations.dataSources.wikipedia.postProcessReferenceEntry
 	extraneousElementSelectors: [
 		"style",
@@ -4908,7 +4974,7 @@ Annotations.dataSources.wikipedia = {
 	],
 
 	/*  CSS properties to preserve when stripping inline styles.
-		*/
+	 */
 	//	Used in: Annotations.dataSources.wikipedia.postProcessReferenceEntry
 	preservedInlineStyleProperties: [
 		"display",
@@ -4924,7 +4990,7 @@ Annotations.dataSources.wikipedia = {
 
 	/*  Post-process an already-constructed annotation created from a Wikipedia
 		entry (do HTML cleanup, etc.).
-		*/
+	 */
 	//	Called by: Annotations.dataSources.wikipedia.referenceDataFromParsedAPIResponse
 	postProcessReferenceEntry: (referenceEntry, articleLink) => {
 		//  Remove unwanted elements.
@@ -5134,6 +5200,7 @@ Annotations.dataSources.wikipedia = {
 	}
 };
 
+//	Fire load event.
 GW.notificationCenter.fireEvent("Annotations.didLoad");
 Content = {
 	/*******************/
@@ -5340,20 +5407,22 @@ Content = {
 	},
 
 	contentTypes: {
-		localTweetArchive: {
+		tweet: {
 			matches: (link) => {
-				if (link.dataset.urlArchive == null)
-					return false;
-
-				let archiveURL = URLFromString(link.dataset.urlArchive);
 				return (   [ "twitter.com", "x.com" ].includes(link.hostname)
-						&& link.pathname.match(/\/.+?\/status\/[0-9]+$/));
+						&& link.pathname.match(/\/.+?\/status\/[0-9]+$/) != null);
 			},
 
 			sourceURLsForLink: (link) => {
-				let archiveURL = URLFromString(link.dataset.urlArchive);
+				let urls = [ ];
 
-				return [ archiveURL ];
+				if (link.dataset.urlArchive)
+					urls.push(URLFromString(link.dataset.urlArchive));
+
+				if (link.dataset.urlHtml)
+					urls.push(URLFromString(link.dataset.urlHtml));
+
+				return urls.concat(Content.contentTypes.tweet.liveNitterHosts);
 			},
 
 			contentFromResponse: (response, link = null, loadURL) => {
@@ -5367,7 +5436,7 @@ Content = {
 				let titleLinkClass = "title-link link-live content-transform-not";
 				let titleLinkIconMetadata = `data-link-icon-type="svg" data-link-icon="twitter"`;
 
-				let nitterHost = Content.contentTypes.localTweetArchive.getNitterHost();
+				let nitterHost = Content.contentTypes.tweet.getNitterHost();
 
 				//	URL for link to user’s page.
 				let titleLinkURL = URLFromString(tweetPage.document.querySelector(".main-tweet a.username").href);
@@ -5375,8 +5444,9 @@ Content = {
 				let titleLinkHref = titleLinkURL.href;
 
 				//	Text of link to user’s page.
-				let titleText = tweetPage.document.querySelector("title").textContent.match(/^(.+?):/)[1];
-				let titleHTML = titleText.replace(/\((@.+?)\)/, "(<code>$1</code>)");
+				let titleParts = tweetPage.document.querySelector("title").textContent.match(/^(.+?) \((@.+?)\):/);
+				let titleText = `“${titleParts[1]}” (${titleParts[2]})`;
+				let titleHTML = `“${titleParts[1]}” (<code>${titleParts[2]}</code>)`;
 
 				//	Link to tweet.
 				let tweetDate = new Date(Date.parse(tweetPage.document.querySelector(".main-tweet .tweet-date").textContent));
@@ -5389,8 +5459,10 @@ Content = {
 				//	Tweet content itself.
 				let tweetContent = tweetPage.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
 
+				//	TODO: Qualify links in tweet
+
 				//	Attached media (video or images).
-				tweetContent += Content.contentTypes.localTweetArchive.mediaEmbedHTML(tweetPage.document);
+				tweetContent += Content.contentTypes.tweet.mediaEmbedHTML(tweetPage.document);
 
 				//	Pop-frame title text.
 				let popFrameTitleText = `${titleHTML} on ${tweetDateString}`;
@@ -5399,15 +5471,15 @@ Content = {
 					content: {
 						titleHTML:                titleHTML,
 						fullTitleHTML:            titleHTML,
+						secondaryTitleLinksHTML:  secondaryTitleLinksHTML,
 						titleText:                titleText,
 						titleLinkHref:            titleLinkHref,
 						titleLinkClass:           titleLinkClass,
 						titleLinkIconMetadata:    titleLinkIconMetadata,
-						secondaryTitleLinksHTML:  secondaryTitleLinksHTML,
 						abstract: 		          tweetContent,
 						dataSourceClass:          "tweet",
 					},
-					template:                       "annotation-blockquote-not",
+					template:                       "annotation-blockquote-outside",
 					linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
 					whichTab:                       (GW.isMobile() ? "current" : "new"),
 					tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
@@ -5422,39 +5494,26 @@ Content = {
 				return mediaURL;
 			},
 
-			mediaEmbedHTML: (response) => {
-				let nitterHost = Content.contentTypes.localTweetArchive.getNitterHost();
+			mediaEmbedHTML: (tweetDoc) => {
+				let attachments = tweetDoc.querySelector(".main-tweet .attachments");
+				if (attachments) {
+					let mediaHTML = ``;
+					attachments.querySelectorAll("img, video").forEach(mediaElement => {
+						mediaHTML += `<figure>${mediaElement.outerHTML}</figure>`;
+					});
 
-				let imageMetaTagSelector = "meta[property='og:image']";
-				let videoMetaTagSelector = "meta[property='og:video:url']";
-
-				let videoMetaTag = response.querySelector(videoMetaTagSelector);
-				if (videoMetaTag) {
-					let videoURL = Content.contentTypes.localTweetArchive.mediaURLFromMetaTag(videoMetaTag, nitterHost);
-					let imageMetaTag = response.querySelector(imageMetaTagSelector);
-					let imageURL = Content.contentTypes.localTweetArchive.mediaURLFromMetaTag(imageMetaTag, nitterHost);
-					return (  `<figure>`
-							+ `<video controls="controls" preload="none" poster="${imageURL.href}">`
-							+ `<source src="${videoURL.href}">`
-							+ `</video></figure>`);
+					return mediaHTML;
+				} else {
+					return "";
 				}
-
-				let imageMetaTags = response.querySelectorAll(imageMetaTagSelector);
-				if (imageMetaTags.length > 0) {
-					return Array.from(imageMetaTags).map(tag => 
-							`<img src="${(Content.contentTypes.localTweetArchive.mediaURLFromMetaTag(tag, nitterHost).href)}" loading="lazy">`
-						  ).join("");
-				}
-
-				return ``;
 			},
 
 			liveNitterHosts: [
-				"nitter.moomoo.me"
+				"nitter.net"
 			],
 
 			getNitterHost: () => {
-				let hosts = Content.contentTypes.localTweetArchive.liveNitterHosts;
+				let hosts = Content.contentTypes.tweet.liveNitterHosts;
 				return hosts[rollDie(hosts.length) - 1];
 			}
 		},
@@ -9991,89 +10050,6 @@ Extracts = { ...Extracts,
     }
 };
 
-/*=-----------------------------=*/
-/*= TRANSFORMED LOCAL DOCUMENTS =*/
-/*=-----------------------------=*/
-
-Extracts.targetTypeDefinitions.insertBefore([
-    "LOCAL_DOCUMENT_TRANSFORM",          // Type name
-    "isTransformableLocalDocumentLink",  // Type predicate function
-    "has-content",                       // Target classes to add
-    "localDocumentTransformForTarget",   // Pop-frame fill function
-    "local-document-transform"           // Pop-frame classes
-], (def => def[0] == "LOCAL_DOCUMENT"));
-
-Extracts = { ...Extracts,
-    //  Called by: extracts.js (as `predicateFunctionName`)
-    isTransformableLocalDocumentLink: (target) => {
-		if (target.classList.contains("content-transform-not"))
-			return false;
-
-		return Content.contentTypes.localTweetArchive.matches(target);
-    },
-
-    //  Called by: extracts.js (as `popFrameFillFunctionName`)
-    localDocumentTransformForTarget: (target) => {
-        GWLog("Extracts.localDocumentTransformForTarget", "extracts-content.js", 2);
-
-        return newDocument(synthesizeIncludeLink(target));
-    },
-
-    //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
-    titleForPopFrame_LOCAL_DOCUMENT_TRANSFORM: (popFrame) => {
-        GWLog("Extracts.titleForPopFrame_LOCAL_DOCUMENT_TRANSFORM", "extracts-annotations.js", 2);
-
-        let target = popFrame.spawningTarget;
-		let referenceData = Content.referenceDataForLink(target);
-		if (referenceData == null) {
-			referenceData = {
-				popFrameTitleLinkHref:  target.href,
-				popFrameTitleText:      `<code>${target.href}</code>`
-			};
-		}
-
-		return Transclude.fillTemplateNamed("pop-frame-title-annotation", referenceData, Extracts.getStandardPopFrameTitleTemplateFillContext());
-    },
-
-    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_LOCAL_DOCUMENT_TRANSFORM: (popFrame, injectEventInfo = null) => {
-        let target = popFrame.spawningTarget;
-
-		if (injectEventInfo == null) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_LOCAL_DOCUMENT_TRANSFORM(popFrame, info);
-			}, {
-				phase: "rewrite",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popFrame.document),
-				once: true
-			});
-
-			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popFrame.body, {
-				source: "Extracts.rewritePopFrameContent_LOCAL_DOCUMENT_TRANSFORM",
-				container: popFrame.body,
-				document: popFrame.document,
-				context: "popFrame"
-			});
-
-			return;
-		}
-
-		//	REAL REWRITES BEGIN HERE
-
-		let referenceData = Content.referenceDataForLink(target);
-
-        //  Add data source class.
-        if (   referenceData
-        	&& referenceData.content.dataSourceClass)
-            Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.content.dataSourceClass.split(" ")));
-
-		//	Update pop-frame title.
-		Extracts.updatePopFrameTitle(popFrame);
-	}
-};
-
 /*=---------------------------=*/
 /*= LOCALLY HOSTED CODE FILES =*/
 /*=---------------------------=*/
@@ -10749,19 +10725,29 @@ Typography = {
 			});
 
 			//	Remove all but one of each set of consecutive <wbr> tags.
+			function isWBR(node) {
+				return (   node.nodeType === Node.ELEMENT_NODE
+						&& node.tagName == "WBR");
+			}
+
+			function isEmptyTextNode(node) {
+				return (   node.nodeType === Node.TEXT_NODE
+						&& isNodeEmpty(node) == true);
+			}
+
 			let prevNodeIsWBR = false;
 			for (let i = 0; i < element.childNodes.length; i++) {
 				let node = element.childNodes[i];
-				if (   node.nodeType === Node.ELEMENT_NODE
-					&& node.tagName == "WBR") {
-					if (prevNodeIsWBR) {
+				if (isWBR(node) && prevNodeIsWBR == false) {
+					prevNodeIsWBR = true;
+				} else if (prevNodeIsWBR) {
+					if (   isWBR(node) 
+						|| isEmptyTextNode(node)) {
 						node.remove();
 						i--;
 					} else {
-						prevNodeIsWBR = true;
+						prevNodeIsWBR = false;
 					}
-				} else {
-					prevNodeIsWBR = false;
 				}
 			}
 		}
