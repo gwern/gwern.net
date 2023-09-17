@@ -1,0 +1,7 @@
+# Serve .php files as plain text, instead of executing them.
+
+<Files *.php>
+	SetHandler default-handler
+</Files>
+
+AddType text/plain .php
