@@ -46,6 +46,7 @@
     --GW-popups-annotation-popup-min-width: 480px;
     --GW-popups-annotation-popup-min-height: 240px;
     --GW-popups-tweet-popup-min-height: 120px;
+    --GW-popups-tweet-avatar-size: 75px;
     --GW-popups-aux-links-popup-min-width: 480px;
     --GW-popups-aux-links-popup-min-height: 240px;
     --GW-popups-local-page-popup-min-width: 480px;
@@ -2899,14 +2900,30 @@ ol.link-bibliography-list-compact > li::before {
 /*  Tweets.
  */
 
-.local-document-transform.tweet .data-field.annotation-abstract {
+.annotation.tweet {
+	--avatar-margin: 1em;
+	--avatar-border-width: 1px;
+}
+
+.annotation.tweet img.avatar {
+	display: block;
+	width: var(--GW-popups-tweet-avatar-size);
+	height: var(--GW-popups-tweet-avatar-size);
+	float: left;
+	margin: 0.25em var(--avatar-margin) var(--avatar-margin) 0;
+	border-radius: 50%;
+	border: var(--avatar-border-width) solid var(--GW-figure-outline-color);
+}
+
+.annotation.tweet .data-field.annotation-abstract {
     margin-top: 0.75em;
 }
-.local-document-transform.tweet .data-field.annotation-abstract p {
+.annotation.tweet .data-field.annotation-abstract p {
     text-indent: 0;
-    margin-top: 0.5em;
+    margin-top: 0.75em;
+    padding-left: calc(var(--GW-popups-tweet-avatar-size) + var(--avatar-margin) + 2 * var(--avatar-border-width));
 }
-.local-document-transform.tweet figure {
+.annotation.tweet figure {
     margin: 2em auto 0.1em auto;
     max-width: unset;
 }
