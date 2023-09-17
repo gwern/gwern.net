@@ -5443,10 +5443,19 @@ Content = {
 				titleLinkURL.hostname = nitterHost;
 				let titleLinkHref = titleLinkURL.href;
 
+				//	Avatar.
+				let avatarImgElement = tweetPage.document.querySelector(".main-tweet img.avatar").cloneNode(true);
+				avatarImgElement.setAttribute("style", avatarImgElement.getAttribute("style") 
+													   + ";" 
+													   + tweetPage.document.querySelector("style").innerHTML.match(/:root\{(.+?)\}/)[1]);
+				let avatarImgSrcVar = avatarImgElement.style.getPropertyValue("background-image").match(/var\((.+?)\)/)[1];
+				let avatarImgSrc = avatarImgElement.style.getPropertyValue(avatarImgSrcVar).match(/url\("(.+?)"\)/)[1];
+				let avatarImg = newElement("IMG", { src: avatarImgSrc, class: "avatar figure-not" });
+
 				//	Text of link to user’s page.
 				let titleParts = tweetPage.document.querySelector("title").textContent.match(/^(.+?) \((@.+?)\):/);
 				let titleText = `“${titleParts[1]}” (${titleParts[2]})`;
-				let titleHTML = `“${titleParts[1]}” (<code>${titleParts[2]}</code>)`;
+				let titleHTML = `${avatarImg.outerHTML}“${titleParts[1]}” (<code>${titleParts[2]}</code>)`;
 
 				//	Link to tweet.
 				let tweetDate = new Date(Date.parse(tweetPage.document.querySelector(".main-tweet .tweet-date").textContent));
@@ -5454,12 +5463,12 @@ Content = {
 				let tweetLinkURL = URLFromString(link.href);
 				tweetLinkURL.hostname = nitterHost;
 				tweetLinkURL.hash = "m";
+
+				//	Secondary title links.
 				let secondaryTitleLinksHTML = ` on <a href="${tweetLinkURL.href}" class="${titleLinkClass}" ${titleLinkIconMetadata}>${tweetDateString}</a>:`;
 
 				//	Tweet content itself.
 				let tweetContent = tweetPage.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
-
-				//	TODO: Qualify links in tweet
 
 				//	Attached media (video or images).
 				tweetContent += Content.contentTypes.tweet.mediaEmbedHTML(tweetPage.document);
