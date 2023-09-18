@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-09-16 23:09:47 gwern"
+;;; When:  Time-stamp: "2023-09-17 10:36:52 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1148,6 +1148,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "\nObjectives " "\n**Objectives**: ")
          (replace-all "INTRODUCTION\n\n" "\n**Background**: ")
          (replace-all "\nContext " "\n**Background**: ")
+         (replace-all "\nBackground and objective " "\n**Background**: ")
          (replace-all "INTRODUCTION\n" "**Background**: ")
          (replace-all "INTRODUCTION: " "**Background**: ")
          (replace-all "Introduction\n\n" "\n**Background**: ")
@@ -1794,7 +1795,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
   (when (and (equal (buffer-name) "foo")
              (derived-mode-p 'markdown-mode)
              (eq this-command 'yank)
-             (>= (buffer-size) 600)) ; ensure that there is enough in the buffer to plausibly be a full copy-pasted abstract, as opposed to a random snippet or line.
+             (>= (buffer-size) 500)) ; ensure that there is enough in the buffer to plausibly be a full copy-pasted abstract, as opposed to a random snippet or line.
     (markdown-paragraphize)))
 (add-hook 'post-command-hook #'markdown-paragraphize-hook)
 

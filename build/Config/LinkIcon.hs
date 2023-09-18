@@ -625,4 +625,5 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("/static/nginx/twdne.conf",  "code","svg")
          , ("/static/template/default.html",  "code","svg")
          , ("https://solar.lowtechmagazine.com/2015/12/fruit-walls-urban-farming-in-the-1600s/", "☀", "text,sans")
+         , ("https://www.rollingstone.com/culture/culture-features/elon-musk-the-architect-of-tomorrow-120850/", "𝓡𝐒", "text")
         ]

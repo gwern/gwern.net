@@ -245,6 +245,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "novelai.net" = aI "🖋" "text" -- LOWER LEFT FOUNTAIN PEN (U+1F58B); NovelAI logo is a fountain pen nib.
  | u'' "www.thebeliever.net" = aI "𝐁" "text,serif" -- _The Believer_ magazine <https://en.wikipedia.org/wiki/The_Believer_(magazine)>, McSweeney's spinoff (formerly <https://believermag.com>): logo is a dropshadow serif capital B logo
  | u'' "solar.lowtechmagazine.com" = aI "☀" "text,sans" -- Low Tech Magazine (U+2600 BLACK SUN WITH RAYS)
+ | u'' "www.rollingstone.com" = aI "𝓡𝐒" "text" -- Rolling Stone <https://www.rollingstone.com/wp-content/uploads/2022/08/cropped-Rolling-Stone-Favicon.png> <https://en.wikipedia.org/wiki/File:Rolling_Stone_2022.svg>
 
  -- Tri/triple TLAs
  | u' "animenewsnetwork.com" = aI "ANN" "text,tri"

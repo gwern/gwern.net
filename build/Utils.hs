@@ -1618,6 +1618,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("pro-posed", "proposed")
          , ("case- control", "case-control")
          , ("high- g", "high-<em>g</em>")
+         , ("semi– structured", "semi-structure")
          , ("ap-proach", "approach")
          , ("AsRL", "As RL")
          , ("spaceusing", "space using")
