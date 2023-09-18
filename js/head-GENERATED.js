@@ -2354,7 +2354,8 @@ GW.layout = {
 		"div",
 		"span",
 		".list",
-		"li"
+		"li",
+		".parsed-raw-block"
 	],
 
 	//	Half-wrappers are transparent at the bottom only, not the top.
@@ -2747,8 +2748,11 @@ function sequentialBlockOf(element, direction, options) {
 	let terminus = (direction == "next" ? "first" : "last");
 
 	//	Look inside “transparent” wrappers (that don’t affect layout).
-	if (isWrapper(element[siblingKey], wrapperInType, options))
-		return terminalBlockOf(element[siblingKey], terminus, options);
+	if (isWrapper(element[siblingKey], wrapperInType, options)) {
+		let terminalBlock = terminalBlockOf(element[siblingKey], terminus, options);
+		if (terminalBlock)
+			return terminalBlock;
+	}
 	
 	//	Skip elements that don’t participate in block flow.
 	if (   isSkipped(element[siblingKey], options)
