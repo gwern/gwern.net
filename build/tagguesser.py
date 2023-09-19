@@ -4,7 +4,7 @@
 # tagguesser.py: suggest a tag for links/annotations based on a list of titles fed into the OA API
 # Author: Gwern Branwen
 # Date: 2023-06-17
-# When:  Time-stamp: "2023-08-28 12:34:37 gwern"
+# When:  Time-stamp: "2023-09-19 15:59:24 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python tagguesser.py
@@ -33,7 +33,7 @@ def handler(signum, frame):
 
 # define function to run with timeout:
 def run_with_timeout(func_name, args=(), kwargs={}, timeout=5):
-    func = getattr(openai.ChatCompletion, func_name)
+    func = getattr(openai.Completion, func_name)
     signal.signal(signal.SIGALRM, handler)
     signal.alarm(timeout)
     try:
@@ -60,17 +60,14 @@ blacklist_tags = lines[1]
 targetUnshuffled = lines[2:]
 target = shuffle_input(targetUnshuffled)
 
-messages = [
-    {"role": "system", "content": "You are a helpful research librarian."},
-    {"role": "user", "content": f"Below is a list of article titles (between the '<title>' and '</title>' labels) with some unifying theme or topic.\nPlease suggest a 1-word or 2-words-max phrase, which can be used as a tag for organizing documents, which is more specific than the current tag for them ('{parent_tag}'). The tag should summarize them in a simple comprehensible way, be easy to type, be singular not plural, be lowercase alphanumerical only, English, and be command-line & URL safe.\nExample tags include 'video, fiction, psychedelic, scaling, discrete, bird, tabular, anxiety, hardware, heritable, t5, gpt/4, adversarial, dnm-archive, imitation-learning, mulberry-tree, muzero, nonfiction, long-now, sociology, prediction, linkrot'.\nOutput tag suggestions on a single line, with no other formatting or padding such as quotation marks. Do not write any comments or suggestions. Do not print anything but your suggested tag. Do not use any of the following tags: '{blacklist_tags}'.\nFirst, step by step, generate 5 tag suggestions a/b/c/d/e/f, which are unique and are not any of the previous tags. Then select the best tag out of the 5 tag suggestions, and print it on the final line by itself with no other formatting (remove the ID, do not include formatting like 'c) '). The input to summarize:\n<titles>\n{target}\n</titles>"}
-]
+prompt_text = f"You are a helpful research librarian. Below is a list of article titles (between the '<title>' and '</title>' labels) with some unifying theme or topic.\nPlease suggest a 1-word or 2-words-max phrase, which can be used as a tag for organizing documents, which is more specific than the current tag for them ('{parent_tag}'). The tag should summarize them in a simple comprehensible way, be easy to type, be singular not plural, be lowercase alphanumerical only, English, and be command-line & URL safe.\nExample tags include 'video, fiction, psychedelic, scaling, discrete, bird, tabular, anxiety, hardware, heritable, t5, gpt/4, adversarial, dnm-archive, imitation-learning, mulberry-tree, muzero, nonfiction, long-now, sociology, prediction, linkrot'.\nOutput tag suggestions on a single line, with no other formatting or padding such as quotation marks. Do not write any comments or suggestions. Do not print anything but your suggested tag. Do not use any of the following tags: '{blacklist_tags}'.\nFirst, step by step, generate 5 tag suggestions, which are unique and are not any of the previous tags. Then select one best tag out of the 5 tag suggestions, and print it on the final line by itself with no other formatting. Print only one tag like '\nfoo\n'.\n The input to summarize:\n<titles>\n{target}\n</titles>"
 
 result = run_with_timeout(
     "create",
     kwargs={
         # "model": "gpt-4", # TODO: once caching is implemented, switch to GPT-4 for the highest-possible quality. (Unfortunately, it'd cost way too much to run them all through GPT-4 each time, which is how the current sort-by-magic auto-tagging works.)
-        "model": "gpt-3.5-turbo",
-        "messages": messages,
+        "engine": "gpt-3.5-turbo-instruct",
+        "prompt": prompt_text,
         # "max_tokens": 4090,
         "temperature": 0
     },
@@ -78,6 +75,6 @@ result = run_with_timeout(
 )
 
 if result is None:
-                          sys.stderr.write("Function call timed out")
+    sys.stderr.write("Function call timed out")
 else:
-                          print(result['choices'][0]['message']['content'])
+    print(result.choices[0].text.strip())
