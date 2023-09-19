@@ -5422,7 +5422,11 @@ Content = {
 				if (link.dataset.urlHtml)
 					urls.push(URLFromString(link.dataset.urlHtml));
 
-				return urls.concat(Content.contentTypes.tweet.liveNitterHosts);
+				return urls.concat(Content.contentTypes.tweet.liveNitterHosts.map(nitterHost => {
+					let nitterURL = URLFromString(link.href);
+					nitterURL.hostname = nitterHost;
+					return nitterURL;
+				}));
 			},
 
 			contentFromResponse: (response, link = null, loadURL) => {
