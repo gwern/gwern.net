@@ -2128,24 +2128,6 @@ ul.interview .speaker {
     margin-right: var(--speaker-spacing);
 }
 
-/*****************************************************/
-/*  Legacy styles for un-converted interviews
-    (e.g. https://gwern.net/Morning-writing#examples )
-
-    NOTE: Remove this once interviews are all converted. —SA 2023-06-07
- */
-
-blockquote p > code:first-child,
-blockquote p > a:first-child code:first-child {
-    border: none;
-    background-color: transparent;
-    font-weight: bold;
-    font-family: inherit;
-    padding: 0;
-    font-size: inherit;
-}
-
-
 /*************/
 /* ABSTRACTS */
 /*************/
