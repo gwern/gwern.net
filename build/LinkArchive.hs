@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-09-16 10:28:13 gwern"
+When:  Time-stamp: "2023-09-19 14:36:04 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -190,9 +190,8 @@ checksumIsValid url (Right (Just file)) = let derivedChecksum = Data.ByteString.
 --    locally archive immediately.) Do only 1 archive per run by checking the IORef to see
 -- 4. Return archive contents.
 rewriteLink :: ArchiveMetadata -> IORef Integer -> String -> IO String
-rewriteLink adb archivedN url = do
-  today <- currentDay
-  fromMaybe url <$> if C.whiteList url then return Nothing else
+rewriteLink adb archivedN url = fromMaybe url <$> if C.whiteList url then return Nothing else
+ do today <- currentDay
     case M.lookup url adb of
       Nothing               -> Nothing <$ insertLinkIntoDB (Left today) url
       Just (Left firstSeen) -> let cheapArchive = C.isCheapArchive url
@@ -206,7 +205,7 @@ rewriteLink adb archivedN url = do
                                        return archive
                   else do archivedNAlreadyP <- readIORef archivedN
                           -- have we already used up our link archive 'budget' this run? If so, skip all additional link archives
-                          if archivedNAlreadyP < 1 then return Nothing
+                          if archivedNAlreadyP < 1 && not cheapArchive then return Nothing
                           else do archive <- archiveURL url'
                                   insertLinkIntoDB (Right archive) url
                                   unless cheapArchive $ writeIORef archivedN (archivedNAlreadyP - 1)
