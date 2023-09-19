@@ -12,7 +12,7 @@ import Annotation.Pubmed (pubmed)
 import Annotation.OpenReview (openreview)
 import Annotation.Arxiv (arxiv)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path)
-import Utils (replace, trimTitle, cleanAbstractsHTML, pageNumberParse, sed, filterMeta, anyInfix, anyPrefix, linkCanonicalize)
+import Utils (replace, trimTitle, cleanAbstractsHTML, pageNumberParse, sed, filterMeta, anyInfix, anyPrefix, linkCanonicalize, extractTwitterUsername)
 
 linkDispatcher :: Inline -> IO (Either Failure (Path, MetadataItem))
 linkDispatcher (Link _ _ (l, tooltip)) = do l' <- linkDispatcherURL (T.unpack l)
@@ -33,6 +33,7 @@ linkDispatcherURL l | anyPrefix l ["/metadata/annotation/backlink/", "/metadata/
                  | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l = pubmed l
                      -- WARNING: this is not a complete list of PLOS domains, just the ones currently used on Gwern.net; didn't see a complete list anywhere...
                  | anyInfix l ["journals.plos.org", "plosbiology.org", "ploscompbiology.org", "plosgenetics.org", "plosmedicine.org", "plosone.org"] = pubmed l
+                 | "https://twitter.com/" `isPrefixOf` l = twitter l
                  | null l = return (Left Permanent)
                  -- locally-hosted PDF?
                  | ".pdf" `isInfixOf` l = let l' = linkCanonicalize l in if head l' == '/' then pdf $ tail l' else return (Left Permanent)
@@ -82,3 +83,6 @@ tooltipToMetadataTest = filter (\((t1, t2), goodResult) -> tooltipToMetadata t1 
 
 wikipediaURLToTitle :: String -> String
 wikipediaURLToTitle u = trimTitle $ cleanAbstractsHTML $ replace "#" " § " $ urlDecode $ replace "% " "%25 " $ replace "_" " " $ replace "https://en.wikipedia.org/wiki/" "" u
+
+twitter :: Path -> IO (Either Failure (Path, MetadataItem))
+twitter u = return $ Right (u, ("", extractTwitterUsername u, "", "", [], ""))

@@ -1465,6 +1465,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("P-value", "<em>p</em>-value")
          , ("p-value", "<em>p</em>-value")
          , (" p-level ", " <em>p</em>-level ")
+         , ("P for linear trend", "<em>p</em><sub>linear trend</sub>")
+         , ("P for quadratic trend", "<em>p</em><sub>quadratic trend</sub>")
          , ("level-k ", "level-<em>k</em> ")
          , (" level-k", " level-<em>k</em>")
          , ("<em>b</em> = ", "β = ")
@@ -1725,6 +1727,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" utilisation", " usage")
          , (" utilization", " usage")
          , (" rivall", " rival")
+         , ("hospitalisation", "hospitalization")
          , ("apriori", "a priori")
          , ("nonstationary", "non-stationary")
          , ("posttraumatic", "post-traumatic")
@@ -2041,3 +2044,7 @@ testCycleDetection = testCycleExists
             , ([(1, 1), (2, 2), (3, 3)], True) --where every node in the list points to itself (simple loop for every node)
             ]
 -}
+
+-- must handle both "https://twitter.com/grantslatton/status/1703913578036904431" and "https://twitter.com/grantslatton":
+extractTwitterUsername :: String -> String
+extractTwitterUsername = sed "^https:\\/\\/twitter\\.com\\/([a-z0-9]+)$" "\\1" . sed "^https:\\/\\/twitter\\.com\\/([^\\/]+)/status/[0-9]+$" "\\1"

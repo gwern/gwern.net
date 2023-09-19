@@ -33,7 +33,7 @@ import Tags (listTagDirectories, abbreviateTag)
 import LinkBacklink (getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy)
-import Utils (replace, writeUpdatedFile, printRed, toPandoc, anySuffix, parseRawBlock)
+import Utils (replace, writeUpdatedFile, printRed, toPandoc, anySuffix, parseRawBlock, extractTwitterUsername)
 import Config.Misc as C (miscellaneousLinksCollapseLimit)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto)
 -- import Text.Show.Pretty (ppShow)
@@ -335,8 +335,11 @@ generateSections' headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_)) ->
                                 let sectionID = if aut=="" then "" else let linkId = generateID f aut dt in
                                                                           if linkId=="" then "" else linkId `T.append` "-section"
                                     authorShort = authorsToCite f aut dt
-                                    sectionTitle = T.pack $ "“"++titlecase t++"”" ++
+                                    -- for tag-directory purposes (but nowhere else), we simplify tweet titles to just 'USER @ DATE' if possible.
+                                    sectionTitle = if "https://twitter.com/" `isPrefixOf` f then T.pack $ twitterTitle f dt else
+                                                     T.pack $ "“"++titlecase t++"”" ++
                                                      (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt)
                                 in
                                  Header headerLevel (sectionID, ["link-annotated-not"], []) [RawInline (Format "html") sectionTitle]
                                  : LM.generateAnnotationTransclusionBlock (f,a))
+   where twitterTitle u dte = let username = extractTwitterUsername u in username ++ (if null dte then "" else " @ " ++ show dte)
