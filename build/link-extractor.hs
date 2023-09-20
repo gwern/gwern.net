@@ -6,7 +6,8 @@
 -- targeted Pandoc Markdown .page files (or simple Pandoc-readable HTML .html files) when parsed.
 -- Local anchor links are rewritten assuming Gwern.net-style paths of Markdown .page files (ie. a link like `[discriminator ranking](#discriminator-ranking)` in ~/wiki/face.page will be parsed to `/face#discriminator-ranking`). Interwiki links are rewritten to their full URLs.
 --
--- If no filename arguments, link-extractor will instead read stdin as Markdown and attempt to parse that instead. This makes it easy to pipe in arbitrary sections of pages or annotations, such as `$ xclip -o | runghc -i/home/gwern/wiki/static/build/ /home/gwern/wiki/static/build/link-extractor.hs`.
+-- If no filename arguments, link-extractor will instead read stdin as Markdown and attempt to parse that instead (falling back to HTML if no URLs are parsed).
+-- This makes it easy to pipe in arbitrary sections of pages or annotations, such as `$ xclip -o | runghc -i/home/gwern/wiki/static/build/ /home/gwern/wiki/static/build/link-extractor.hs`.
 --
 -- Hyperlinks are not necessarily to the WWW but can be internal or interwiki hyperlinks (eg.
 -- '/local/file.pdf' or '!W').
@@ -31,7 +32,9 @@ main = do
   let printfilename = take 1 fs == ["--print-filenames"]
   let fs' = if printfilename then Prelude.drop 1 fs else fs
   if null fs then do stdin <- TIO.getContents
-                     mapM_ TIO.putStrLn $ extractLinks True stdin
+                     let links = extractLinks True stdin
+                     let links' = if links /= [] then links else extractLinks False stdin
+                     mapM_ TIO.putStrLn links'
     else mapM_ (printURLs printfilename) fs'
 
 -- | Read 1 file and print out its URLs
