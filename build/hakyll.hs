@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-09-13 11:59:09 gwern"
+When: Time-stamp: "2023-09-20 18:04:44 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -332,24 +332,10 @@ pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `con
      let pb = walk (hasAnnotation md) $ addPageLinkWalk pw  -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
      pbt <- fmap typographyTransform . walkM (localizeLink adb archived)
               $ if indexp then pb else
-                walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) pb
+                walk (map nominalToRealInflationAdjuster) pb
      let pbth = addPageLinkWalk $ walk headerSelflink pbt
      if indexp then return pbth else
        walkM (imageLinkHeightWidthSet <=< invertImageInline) pbth
-
--- For Amazon links, there are two scenarios: there are parameters (denoted by a
--- '?' in the URL), or there are not. In the former, we need to append the tag as
--- another item ('&tag='), while in the latter, we need to set up our own
--- parameter ('?tag='). The transform may be run many times since
--- they are supposed to be pure, so we
--- need to also check a tag hasn't already been appended.
---
--- For non-Amazon links, we just return them unchanged.
-addAmazonAffiliate :: Inline -> Inline
-addAmazonAffiliate x@(Link attr r (l, t)) = if ("www.amazon.com/" `T.isInfixOf` l) && not ("tag=gwernnet-20" `T.isInfixOf` l) then
-                                        if "?" `T.isInfixOf` l then Link attr r (l `T.append` "&tag=gwernnet-20", t) else Link attr r (l `T.append` "?tag=gwernnet-20", t)
-                                       else x
-addAmazonAffiliate x = x
 
 -- | Make headers into links to themselves, so they can be clicked on or copy-pasted easily. Put the displayed text into title-case if not already.
 headerSelflink :: Block -> Block

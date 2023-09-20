@@ -1,5 +1,6 @@
 module Config.LinkArchive where
 
+import Data.List (isInfixOf)
 import Utils (sed, anyInfix, anyPrefix, anySuffix, replace, isUniqueList)
 
 archiveDelay, archivePerRunN :: Integer
@@ -32,9 +33,23 @@ transformURLsForLinking   = replace "https://www.reddit.com" "https://old.reddit
   -- make IA book/item pages pop up nicer in live-links, by making them jump to the metadata section (which is all that works in the JS-less live-link iframe), and skipping the warnings about JS not being available. `#flag-button-container` is, weirdly enough, the first available ID to jump to, there's no better ID set inside the metadata section, it's all classes.
   (\u -> if u `anyPrefix` ["https://archive.org/details/"]    && '#' `notElem` u && not (u `anyInfix` ["flag-button-container"]) then u ++ "#flag-button-container" else u)
   . replace "https://medium.com" "https://scribe.rip"
+  . addAmazonAffiliate
 transformURLsForMobile    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
   sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" . -- handle oddities like hep-ph
   replace "https://twitter.com" "https://nitter.net"
+
+-- For Amazon links, there are two scenarios: there are parameters (denoted by a
+-- '?' in the URL), or there are not. In the former, we need to append the tag as
+-- another item ('&tag='), while in the latter, we need to set up our own
+-- parameter ('?tag='). The transform may be run many times since
+-- they are supposed to be pure, so we
+-- need to also check a tag hasn't already been appended.
+--
+-- For non-Amazon links, we just return them unchanged.
+addAmazonAffiliate :: String -> String
+addAmazonAffiliate l = if ("www.amazon.com/" `isInfixOf` l) && not ("tag=gwernnet-20" `isInfixOf` l) then
+                                        if "?" `isInfixOf` l then l ++ "&tag=gwernnet-20" else l ++ "?tag=gwernnet-20"
+                                       else l
 
 {- re URL transforms: Why?
 
@@ -656,7 +671,6 @@ whiteList url
       , "stlouisfed.org" -- service/stable (FRED economic statistics)
       , "apps.allenai.org" -- service/interactive
       , "bam-dataset.org" -- service/dataset
-      , "streamable.com" -- service/video
       , "blockchain.info" -- service
       , "polecat.mascherari.press" -- dataset
       , "explorabl.es" -- interactive
