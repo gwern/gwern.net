@@ -448,7 +448,7 @@ processTitles parentTag blacklistTags a =
          (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/tagguesser.py", a']
          case status of
            ExitFailure err -> printRed "tagguesser.py failed!" >> printRed (show err) >> print a' >> return "" -- printGreen (ppShow (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb])) >> printRed "tagguesser.py failed!" >> return ""
-           _ -> return $ (last . lines . replace "Best tag: " "" . sed "[a-z0-9]\\) " "" -- NOTE: (can't quite seem to prompt away the tendency to leave in the list number like 'c) foo' or descriptions
+           _ -> return $ (last . lines . replace "The best tag suggestion is: " "" . replace "Best tag: " "" . sed "[a-z0-9]\\) " "" -- NOTE: (can't quite seem to prompt away the tendency to leave in the list number like 'c) foo' or descriptions
                            . trim . U.toString) mb
 
 sortSimilarsStartingWithNewest :: Metadata -> [(FilePath, MetadataItem)] -> IO [[(FilePath, MetadataItem)]]

@@ -1145,5 +1145,6 @@ whiteList url
       , "https://muse-model.github.io/" -- low quality (video embeds)
       , "https://accelagent.github.io/" -- low quality (interactive)
       , "http://www.cgg.cs.tsukuba.ac.jp/~endo/projects/UserControllableLT/" -- low quality (video embeds)
+      , "https://sites.google.com/view/aistat/home" -- low quality (video embeds)
       ] = True
     | otherwise = False

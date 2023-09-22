@@ -376,7 +376,7 @@ siteBlackList = isUniqueList [
           "thepsychologist.bps.org.uk", "theplosblog.plos.org", "theoutline.com", "thenewstatistics.com", "thefloatinglibrary.com",
           "theeggandtherock.substack.com", "theeagle.com", "thedistantjourneytoyou.bandcamp.com", "the-toast.net", "terrytao.files.wordpress.com",
           "teageegeepea.tripod.com", "tcwang0509.github.io", "tattuinardoelasaga.wordpress.com", "taeb-nethack.blogspot.com", "syncedreview.com",
-          "surma.dev", "sudoscript.com", "stumblingandmumbling.typepad.com", "streamable.com", "steveblank.com",
+          "surma.dev", "sudoscript.com", "stumblingandmumbling.typepad.com", "steveblank.com",
           "stephenmalina.com", "stefan.saasen.me", "static1.1.sqspcdn.com", "stanislavfort.github.io", "sssscomic.com",
           "sqapo.com", "sound-of-pixels.csail.mit.edu", "snugspace.jugem.jp", "sistersaki.tumblr.com", "silkandhornheresy.blogspot.co.uk",
           "sideways-view.com", "shattered.io", "shape-of-code.coding-guidelines.com", "seths.blog", "securelist.com",

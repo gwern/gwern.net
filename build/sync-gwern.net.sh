@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-09-17 12:19:59 gwern"
+# When:  Time-stamp: "2023-09-21 21:08:00 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -53,6 +53,7 @@ else
     ## Parallelization: WARNING: post-2022-03 Hakyll uses parallelism which catastrophically slows down at >= # of physical cores; see <https://groups.google.com/g/hakyll/c/5_evK9wCb7M/m/3oQYlX9PAAAJ>
     N="29" # "$(if [ ${#} == 0 ]; then echo 29; else echo "$1"; fi)"
     if [ "$1" == "--slow" ]; then export SLOW="--slow"; else SLOW=""; fi
+    if [ "$1" == "--skip-directories" ]; then export SKIP_DIRECTORIES="true"; else SKIP_DIRECTORIES=""; fi
 
     if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true; fi &
     bold "Pulling infrastructure updates…"
@@ -99,7 +100,7 @@ else
     compile () { ghc -O2 -Wall -rtsopts -threaded --make "$@"; }
     compile hakyll.hs
     compile generateLinkBibliography.hs
-    compile generateDirectory.hs
+    if [ -z "$SKIP_DIRECTORIES" ]; then compile generateDirectory.hs; fi
     compile preprocess-markdown.hs &
     compile guessTag.hs &
     ## NOTE: generateSimilarLinks.hs & link-suggester.hs are done at midnight by a cron job because
@@ -156,7 +157,7 @@ else
 
     # we want to generate all directories first before running Hakyll in case a new tag was created
     bold "Building directory indexes…"
-    ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS
+    if [ -z "$SKIP_DIRECTORIES" ]; then ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS; fi
   fi
 
     bold "Check & update VCS…"
@@ -453,6 +454,9 @@ else
     wrap λ "Punctuation like possessives should go *inside* the link (unless it is an apostrophe in which case it should go outside due to Pandoc bug #8381)."
     ## NOTE: 8381 <https://github.com/jgm/pandoc/issues/8381> is a WONTFIX by jgm, so no solution but to manually check for it. Fortunately, it is rare.
 
+    λ(){  find . -name "*.page" -exec grep -E --with-filename 'thumbnail: /doc/.*/.*\.svg$' {} \; ; }
+    wrap λ "SVGs don't work as page thumbnails in Twitter (and perhaps many other websites), so replace with a PNG."
+
     λ(){ grep -E 'http.*http' metadata/archive.hs  | grep -F --invert-match -e 'web.archive.org' -e 'https-everywhere' -e 'check_cookie.html' -e 'translate.goog' -e 'archive.md' -e 'webarchive.loc.gov' -e 'https://http.cat/' -e '//)' -e 'https://esolangs.org/wiki////' -e 'https://ansiwave.net/blog/sqlite-over-http.html'; }
     wrap λ "Bad URL links in archive database (and perhaps site-wide)."
 
@@ -558,7 +562,8 @@ else
             -e '[⁰ⁱ⁴⁵⁶⁷⁸⁹⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]' -e '<p>Table [0-9]' -e '<p>Figure [0-9]' \
             -e 'id="[0-9]' -e '</[a-z][a-z]\+\?' -e 'via.*ihub' -e " '$" -e "’’" -e ' a [aei]' -e '</[0-9]\+' \
             -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' -e '#googl$' -e "#googl$'" -e 'gwtag' -e ' <p><strong>[A-Z][A-Z][A-Z]\+</strong>' \
-            -e '&org=.*&org=' -e '[0-9]⁄[0-9]\.[0-9]' -e '[0-9]\.[0-9]⁄[0-9]' -e '\[[Kk]eywords\?: ' -- ./metadata/*.yaml; }
+            -e '&org=.*&org=' -e '[0-9]⁄[0-9]\.[0-9]' -e '[0-9]\.[0-9]⁄[0-9]' -e '\[[Kk]eywords\?: ' \
+            -e ' 19[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -e ' 20[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database (regexp matches)."
 
     λ(){ grep -F --color=always -e ']{' -e 'id="cb1"' -e '<dd>' -e '<dl>' \

@@ -4,7 +4,7 @@
 #
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-05-17 11:35:28 gwern"
+# When:  Time-stamp: "2023-09-21 10:03:26 gwern"
 # License: CC-0
 
 set -e
@@ -16,7 +16,7 @@ cp "$1" "$PDF"
 TMP=$(mktemp /tmp/XXXXXX-small.pdf)
 
 source activate fastai
-nice -n 20 ocrmypdf --skip-text --optimize 3 --jbig2-lossy "$PDF" "$TMP" &> /dev/null || true
+nice -n 20 timeout 10m ocrmypdf --skip-text --optimize 3 --jbig2-lossy "$PDF" "$TMP" &> /dev/null || true
 
 ORIGINAL=$(wc --bytes < "$PDF")
 SMALL=$(   wc --bytes < "$TMP")

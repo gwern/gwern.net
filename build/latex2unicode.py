@@ -84,7 +84,7 @@ result = run_with_timeout(
     "create",
     kwargs={
         "model": "gpt-4", # we use GPT-4 because the outputs are short, we want the highest accuracy possible, we provide a lot of examples & instructions which may overload dumber models, and reviewing for correctness can be difficult, so we are willing to spend a few pennies to avoid the risk of a lower model
-        # "model": "gpt-3.5-turbo",
+        # "model": "gpt-3.5-turbo-instruct",
         "messages": messages,
         "max_tokens": 30,
         "temperature": 0

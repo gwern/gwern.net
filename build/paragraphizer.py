@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using GPT-3 neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2023-09-17 14:08:13 gwern"
+# When:  Time-stamp: "2023-09-19 09:36:51 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python paragraphizer.py
@@ -101,14 +101,14 @@ else:
 
 messages = [
     {"role": "system", "content": "You are a helpful assistant that adds relevant hyperlinks to text, and adds double-newlines to split abstracts into Markdown paragraphs (one topic per paragraph.)"},
-    {"role": "user", "content": f"Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) Use American spelling & conventions. Italicize biological binomial species names using '<em></em>' tags, but do not add unnecessary italics. Please also add useful hyperlinks (such as Wikipedia articles) in HTML format to technical terminology or names; do not duplicate links: include each link ONLY once. Please include ONLY the resulting text with hyperlinks in your output, include ALL the original text, and include NO other conversation or comments.\n\n<abstract>\n{target}\n</abstract>"}
+    {"role": "user", "content": f"Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) Use American spelling & conventions. Do not add unnecessary italics. Please also add useful hyperlinks (such as Wikipedia articles) in HTML format to technical terminology or names; do not duplicate links: include each link ONLY once. Please include ONLY the resulting text with hyperlinks in your output, include ALL the original text, and include NO other conversation or comments.\n\n<abstract>\n{target}\n</abstract>"}
 ]
 
 result = run_with_timeout(
     "create",
     kwargs={
         "model": "gpt-4",
-        # "model": "gpt-3.5-turbo",
+        # "model": "gpt-3.5-turbo-instruct",
         "messages": messages,
         # "max_tokens": 4090,
         "temperature": 0

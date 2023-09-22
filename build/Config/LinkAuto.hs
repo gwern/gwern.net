@@ -1015,4 +1015,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) $ isUniq
         , ("[Pp]areto[ -]front(ier)?", "https://en.wikipedia.org/wiki/Pareto_front")
         , ("Whisper", "https://openai.com/research/whisper")
         , ("F1[- ][Ss]core", "https://en.wikipedia.org/wiki/F-score")
+        , ("GSM8K", "https://arxiv.org/abs/2110.14168#openai")
+        , ("BM25", "https://en.wikipedia.org/wiki/Okapi_BM25")
         ]

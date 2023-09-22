@@ -165,7 +165,7 @@ tagsShort2LongRewrites = isUniqueKeys
     ("red", "design/typography/rubrication"), ("self-attention", "ai/nn/transformer/attention"), ("efficient-attention", "ai/nn/transformer/attention"),
     ("ai/rnn", "ai/nn/rnn"), ("ai/retrieval", "ai/nn/retrieval"), ("mr", "genetics/heritable/correlation/mendelian-randomization"),
     ("japan/anime", "anime"), ("psychology/bird", "psychology/animal/bird"), ("psychology/birds/neuroscience", "psychology/animal/bird/neuroscience"),
-    ("psychology/birds", "psychology/animal/bird"), ("dalle","dall-e/2"), ("dall-e", "ai/nn/transformer/gpt/dall-e/2"),
+    ("psychology/birds", "psychology/animal/bird"), ("dalle", "dall-e/3"), ("dall-e", "ai/nn/transformer/gpt/dall-e/3"), ("dall-e-3", "ai/nn/transformer/gpt/dall-e/3"), ("dall-1", "ai/nn/transformer/gpt/dall-e/1"), ("dall-2", "ai/nn/transformer/gpt/dall-e/2"), ("dall-3", "ai/nn/transformer/gpt/dall-e/3"),
     ("darknet-markets", "darknet-market"), ("silk-road-1", "darknet-market/silk-road/1"), ("sr1", "darknet-market/silk-road/1"),
     ("silk-road-2", "darknet-market/silk-road/2"), ("sr2", "darknet-market/silk-road/2"), ("sr/1", "darknet-market/silk-road/1"),
     ("sr/2", "darknet-market/silk-road/2"), ("sr", "darknet-market/silk-road"), ("psychology/neuroscience/bird", "psychology/animal/bird/neuroscience"),
@@ -191,7 +191,7 @@ tagsShort2LongRewrites = isUniqueKeys
     ("gp4-4", "ai/nn/transformer/gpt/4"), ("gp4", "ai/nn/transformer/gpt/4"), ("gpt-4/nonfiction", "ai/nn/transformer/gpt/4/nonfiction"),
     ("ai/nn/transformer/gpt/4/non-fiction", "ai/nn/transformer/gpt/4/nonfiction"), ("gpt-4/non-fiction", "ai/nn/transformer/gpt/4/nonfiction"), ("4/non", "ai/nn/transformer/gpt/4/nonfiction"),
     ("gpt-4/fiction", "ai/nn/transformer/gpt/4/fiction"), ("gpt-4/poetry", "ai/nn/transformer/gpt/4/poetry"), ("gpt-4poetry", "ai/nn/transformer/gpt/4/poetry"),
-    ("gpt4/poetry", "ai/nn/transformer/gpt/4/poetry"), ("gpt-4/poem", "ai/nn/transformer/gpt/4/poetry"), ("chess", "reinforcement-learning/chess"),
+    ("gpt4/poetry", "ai/nn/transformer/gpt/4/poetry"), ("gpt-4/poem", "ai/nn/transformer/gpt/4/poetry"), ("chess", "reinforcement-learning/chess"), ("rl-chess", "reinforcement-learning/chess"), ("aimusic", "ai/music"),
     ("animal", "psychology/animal"), ("artificial", "ai"), ("code", "cs"),
     ("for", "statistics/prediction"), ("forecast", "statistics/prediction"), ("forecasting", "statistics/prediction"),
     ("genetic", "genetics"), ("graph", "design/visualization"), ("hardware" , "cs/hardware"),
@@ -207,7 +207,7 @@ tagsShort2LongRewrites = isUniqueKeys
     ("animal/iq", "iq/animal"), ("cellular-automata", "cellular-automaton"), ("mathematics", "math"),
     ("frank-p-ramsey", "frank-ramsey"), ("artificial-selection", "genetics/selection/artificial"), ("intrasexual-agression", "intrasexual-aggression"),
     ("javascript", "js"), ("psych/chess", "psychology/chess"), ("self-experiment", "quantified-self"),
-    ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing"), ("quadratic-vote", "quadratic-voting"), ("bipolar/genes", "bipolar/genetics")]
+    ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing"), ("quadratic-vote", "quadratic-voting"), ("bipolar/genes", "bipolar/genetics"), ("dynamic-evaliation", "dynamic-evaluation"), ("dog-cloning", "genetics/cloning/dog"), ("dog-clone", "genetics/cloning/dog"), ("dog/clone", "genetics/cloning/dog")]
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   (map (\s -> (s, error s)) (isUniqueList ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f",
@@ -382,7 +382,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("psychology/personality/psychopathy", "psychopath")
           , ("psychiatry/meditation", "meditation")
           , ("psychiatry/depression", "MDD")
-          , ("psychiatry/bipolar/autism", "autism+BP")
+          , ("psychiatry/bipolar/autism", "BP & autism")
           , ("psychiatry/bipolar/elon-musk", "Elon Musk (BP)")
           , ("psychiatry/bipolar/sleep", "BP & sleep")
           , ("psychiatry/bipolar/lithium", "lithium (BP)")
@@ -464,6 +464,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("darknet-market/silk-road/2", "SR2 DNM")
           , ("darknet-market/silk-road/1", "SR1 DNM")
           , ("darknet-market/silk-road", "SR DNMs")
+          , ("darknet-market/hydra", "Hydra DNM")
           , ("darknet-market/sheep-marketplace", "Sheep DNM")
           , ("darknet-market/evolution", "Evolution DNM")
           , ("darknet-market/blackmarket-reloaded", "BMR DNM")
@@ -519,6 +520,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("ai/nn/transformer/gpt/jukebox",            "Jukebox")
           , ("ai/nn/transformer/gpt/poetry",             "GPT poetry")
           , ("ai/nn/transformer/gpt/fiction",            "GPT fiction")
+          , ("ai/nn/transformer/gpt/dall-e/3",           "DALL·E 3")
           , ("ai/nn/transformer/gpt/dall-e/2",           "DALL·E 2")
           , ("ai/nn/transformer/gpt/dall-e/1",           "DALL·E 1")
           , ("ai/nn/transformer/gpt/dall-e",             "DALL·E")
@@ -558,6 +560,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("ai/nn/vae", "autoencoder NN")
           , ("ai/nn/transformer", "Transformer NN")
           , ("ai/nn/fully-connected", "MLP NN")
+          , ("ai/nn/rnn/dynamic-evaluation", "dynamic evaluation (NN)")
           , ("ai/nn/rnn", "RNN")
           , ("ai/nn/cnn", "CNN")
           , ("ai/nn/sampling", "NN sampling")
@@ -656,7 +659,7 @@ shortTagTestSuite alltags = filter (\(_, realOutput, shouldbeOutput) -> realOutp
         , ("cost" , "psychology/cognitive-bias/sunk-cost")
         , ("cryptography" , "cs/cryptography")
         , ("css" , "cs/css")
-        , ("dall-e" , "ai/nn/transformer/gpt/dall-e/2")
+        , ("dall-e" , "ai/nn/transformer/gpt/dall-e/3")
         , ("danbooru" , "ai/anime/danbooru")
         , ("dark-knowledge" , "psychology/dark-knowledge")
         , ("data" , "ai/dataset")

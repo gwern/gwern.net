@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-09-15 19:42:22 gwern"
+When:  Time-stamp: "2023-09-19 14:47:50 gwern"
 License: CC-0
 -}
 
@@ -531,6 +531,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
 generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
 generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
                                 let tle' = if null tle then "<code>"++f++"</code>" else "“" ++ tle ++ "”"
+                                    -- NOTE: we set this on special-case links like Twitter links anyway, even if they technically do not have 'an annotation'; the JS will handle `.include-annotation` correctly anyway
                                     link = addHasAnnotation x $ linkLive $ Link ("", ["id-not", "include-annotation", "include-replace-container"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
                                 in

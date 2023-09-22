@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-09-17 10:36:52 gwern"
+;;; When:  Time-stamp: "2023-09-21 23:41:45 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -412,6 +412,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      (" Escherichia coli" . " <em>Escherichia coli</em>")
                      (" E. coli" . " <em>E. coli</em>")
                      (" Saccharomyces cerevisiae" . " <em>Saccharomyces cerevisiae</em>")
+                     (" in vivo " . " _in vivo_ ")
+                     (" ex vivo " . " _ex vivo_ ")
                      ("two-by-two" . "2×2")
                      (" B.M.I" . " BMI")
                      ("controled" . "controlled")
@@ -423,6 +425,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("two-thirds" . "2⁄3<sup>rds</sup>")
                      ("2 thirds" . "2⁄3<sup>rds</sup>")
                      ("and/ or" . "and/or")
+                     ("[](!W)" . " ERROR ")
                      )
                    )
             )
@@ -1327,6 +1330,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (query-replace "r2" "R^2^" nil begin end)
          (query-replace "χ2" "χ^2^" nil begin end)
          (query-replace "mm 2" "mm^2^" nil begin end)
+         (query-replace "age2" "age^2^" nil begin end)
          (query-replace "m−2" "m^−2^" nil begin end)
          (query-replace "rxy " "<em>r<sub>xy</sub></em>" nil begin end)
          (query-replace "n-of-1" "<em>n</em>-of-1" nil begin end)
@@ -1341,6 +1345,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (query-replace "TEX" "<span class=\"logotype-tex\">T<sub>e</sub>X</span>" nil begin end))
        (query-replace "Nepeta cataria" "_Nepeta cataria_" nil begin end)
        (query-replace "MC4R" "_MC4R_" nil begin end)
+       (query-replace "GPT2" "GPT-2" nil begin end) (query-replace "GPT3" "GPT-3" nil begin end) (query-replace "GPT4" "GPT-4" nil begin end)
        (query-replace "two thirds" "2⁄3" nil begin end)
        (query-replace "two-thirds" "2⁄3" nil begin end)
        (query-replace "three-fourths" "3⁄4" nil begin end)
@@ -1352,6 +1357,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([0-9]+\\) out of \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
        (query-replace-regexp "\\([0-9]+\\) out of the \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
        (query-replace-regexp "\\([0-9]+\\) in every \\([0-9]+\\)" "\\1⁄\\2" nil begin end) ; eg. "approximately one in every 10 citations across leading psychology journals is inaccurate"
+       (query-replace-regexp "≈ \\([0-9]+\\)%" "≈\\1%" nil begin end) ; "to ≈ 15% for heroin"
+       (query-replace-regexp "^\.\.\.he" "...The" nil begin end) ; very common to truncate in copy-paste
        (query-replace "...." "..." nil begin end)
        (query-replace "....." "..." nil begin end)
        (query-replace-regexp "\n\\.\\.\\([A-Za-z]\\)" "\n...\\1" nil begin end) ; replace malformed '...' ellipsis excerpts
@@ -1557,7 +1564,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace "8*" "**" nil begin end)
        (query-replace "!{" "![" nil begin end)
        (query-replace "].(" ".](" nil begin end)
-       (query-replace-regexp " \"'\\(.+\\)', " " \"‘\\1’, " nil begin end) ; avoid downstream YAML errors from titles encoded in tooltips with single straight quotes
+       (query-replace-regexp " \"'\\(.+?\\)', " " \"‘\\1’, " nil begin end) ; avoid downstream YAML errors from titles encoded in tooltips with single straight quotes
        (replace-all "\n\n\n" "\n\n")
 
        (message "%s %s" begin end)
