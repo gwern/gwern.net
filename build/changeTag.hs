@@ -85,10 +85,13 @@ changeAndWriteTags :: String -> String -> MetadataList -> MetadataList -> Metada
 changeAndWriteTags t i c p a = do let cP = hasItem i c
                                       pP = hasItem i p
                                       aP = hasItem i a
-                                  if cP then writeYaml "metadata/full.yaml" (changeTag i c t) else
-                                    if pP then writeYaml "metadata/half.yaml" (changeTag i p t) else
-                                      if aP then let (autoNew,halfNew) = mvItem a p i in writeYaml "metadata/auto.yaml" autoNew >> writeYaml "metadata/half.yaml" (changeTag i halfNew t)
+                                  if cP then writeUpdatedYaml c "metadata/full.yaml" (changeTag i c t) else
+                                    if pP then writeUpdatedYaml p "metadata/half.yaml" (changeTag i p t) else
+                                      if aP then let (autoNew,halfNew) = mvItem a p i in writeUpdatedYaml a "metadata/auto.yaml" autoNew >> writeUpdatedYaml a "metadata/half.yaml" (changeTag i halfNew t)
                                       else addNewLink t i
+
+writeUpdatedYaml :: MetadataList -> String -> MetadataList -> IO ()
+writeUpdatedYaml oldList target newList = when (oldList /= newList) $ writeYaml target newList
 
 -- what if a link is completely new and is not in either full.yaml (handwritten) or auto.yaml
 -- (often auto-annotated)? If we write it directly into half.yaml, then for many links like
