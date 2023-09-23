@@ -523,6 +523,10 @@ a[data-link-icon='NBER'] .link-icon-hook::after {
     width: 1.6em;
 }
 
+a[data-link-icon='sgfp'] .link-icon-hook::after {
+        line-height: 1; /* 'g' overlaps without more line-height */
+}
+
 /*=---------------------------------=*/
 /*= Graphical per-domain link icons =*/
 /*=---------------------------------=*/
@@ -1046,6 +1050,16 @@ a[data-link-icon='scholarpedia'] .link-icon-hook::after {
     --link-icon-size: 0.80em;
     --link-icon-offset-x: 0.05em;
     opacity: 1.0;
+}
+
+a[data-link-icon='☀'] .link-icon-hook::after {
+    --link-icon-size: 0.9em;
+    opacity: 1.0;
+}
+
+a[data-link-icon='audio-waveform-lines'] .link-icon-hook::after {
+    --link-icon-size: 1.2em;
+    --link-icon-offset-x: -0.10em;
 }
 
 /*=------------------=*/

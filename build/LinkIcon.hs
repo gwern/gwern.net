@@ -242,7 +242,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.outsideonline.com" = aI "𝕆" "text,sans" -- imitate the shadowing on Outside Online's 'O' <https://www.outsideonline.com/wp-content/uploads/2021/07/favicon-194x194-1.png>
  | u'' "jaymans.wordpress.com" = aI "J👨🏾" "text,sans" -- JayMan
  | u'' "norvig.com" = aI "N" "text,sans" -- Google Director of Research <https://en.wikipedia.org/wiki/Peter_Norvig>; <https://norvig.com/favicon.ico> is actually instantly recognizable & well-chosen, but unfortunately, only works because of the *colors*... so we'll settle for a plain sans capital N.
- | u'' "novelai.net" = aI "🖋" "text" -- LOWER LEFT FOUNTAIN PEN (U+1F58B); NovelAI logo is a fountain pen nib.
+ | u'' "novelai.net" || u'' "blog.novelai.net" = aI "🖋" "text" -- LOWER LEFT FOUNTAIN PEN (U+1F58B); NovelAI logo is a fountain pen nib.
  | u'' "www.thebeliever.net" = aI "𝐁" "text,serif" -- _The Believer_ magazine <https://en.wikipedia.org/wiki/The_Believer_(magazine)>, McSweeney's spinoff (formerly <https://believermag.com>): logo is a dropshadow serif capital B logo
  | u'' "solar.lowtechmagazine.com" = aI "☀" "text,sans" -- Low Tech Magazine (U+2600 BLACK SUN WITH RAYS)
  | u'' "www.rollingstone.com" = aI "𝓡𝐒" "text" -- Rolling Stone <https://www.rollingstone.com/wp-content/uploads/2022/08/cropped-Rolling-Stone-Favicon.png> <https://en.wikipedia.org/wiki/File:Rolling_Stone_2022.svg>
