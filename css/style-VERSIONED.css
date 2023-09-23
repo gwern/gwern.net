@@ -5469,7 +5469,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 
     /*  Styling. */
     border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
-    filter: drop-shadow(1px 2px 4px var(--GW-popins-box-shadow-color));
+    filter: drop-shadow(0px 0px 12px var(--GW-popins-box-shadow-color));
     background-color: var(--background-color);
 }
 
