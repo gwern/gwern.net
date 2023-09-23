@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-09-19 14:47:50 gwern"
+When:  Time-stamp: "2023-09-22 20:53:58 gwern"
 License: CC-0
 -}
 
@@ -42,7 +42,7 @@ import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA ((=~))
 import Text.Show.Pretty (ppShow)
 
-import qualified Control.Monad.Parallel as Par (mapM_)
+import qualified Control.Monad.Parallel as Par (mapM_, mapM)
 
 import System.IO.Unsafe (unsafePerformIO)
 
@@ -197,9 +197,14 @@ readLinkMetadataAndCheck = do
 
              let urlsCP = map fst (full ++ half)
              let files = map (takeWhile (/='#') . tail) $ filter (\u -> head u == '/') urlsCP
-             Par.mapM_ (\f -> let f' = if '.' `elem` f then f else f ++ ".page" in
-                                    do exist <- doesFileExist f'
-                                       unless exist $ printRed ("Full+half annotation error: file does not exist? " ++ f ++ " (checked file name: " ++ f' ++ ")")) files
+
+             let ensureExtension f = if '.' `elem` f then f else f ++ ".page"
+             let checkFile f = fmap not $ doesFileExist $ ensureExtension f
+             let printError f = let f' = ensureExtension f in
+                                printRed ("Full+half annotation error: file does not exist? " ++ f ++ " (checked file name: " ++ f' ++ ")")
+             fileChecks <- Par.mapM checkFile files
+             let missingFiles = map fst $ filter snd $ zip files fileChecks
+             mapM_ printError missingFiles
 
              -- auto-generated cached definitions; can be deleted if gone stale
              rewriteLinkMetadata half full "metadata/auto.yaml" -- do auto-cleanup  first
@@ -222,9 +227,10 @@ readLinkMetadataAndCheck = do
                                              count > 0 && (count `mod` 2 == 1) ) finalL
              unless (null balancedQuotes) $ error $ "YAML: Link Annotation Error: unbalanced double quotes! " ++ show balancedQuotes
 
-             let balancedBrackets = map (\(p,(title',_,_,_,_,abst) ) -> (p, balanced title', balanced abst)) $ filter (\(_,(title,_,_,_,_,abst)) -> not $ null (balanced title ++ balanced abst)) finalL
+             let balancedBrackets = map (\(p,(title',_,_,_,_,abst) ) -> (p, balanced title', balanced abst)) $
+                                     filter (\(_,(title,_,_,_,_,abst)) -> not $ null (balanced title ++ balanced abst)) finalL
              unless (null balancedBrackets) $ do printRed "YAML: Link Annotation Error: unbalanced brackets!"
-                                                 putStrLn $ ppShow balancedBrackets
+                                                 printGreen $ ppShow balancedBrackets
 
              -- check validity of all external links:
              let urlsAll = filter (\(x@(u:_),_) -> if u `elem` ['/', '!', '$', '\8383'] ||
@@ -241,7 +247,7 @@ readLinkMetadataAndCheck = do
              unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in YAMLs!: " >> printGreen (show (titles \\ nubOrd titles))
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) finalL
-             Par.mapM_ (\a -> unless (null a) $ when (a =~ dateRegex || isNumber (head a) || isPunctuation (head a)) (printRed "Mixed up author & date?: " >> printGreen a) ) authors
+             mapM_ (\a -> unless (null a) $ when (a =~ dateRegex || isNumber (head a) || isPunctuation (head a)) (printRed "Mixed up author & date?: " >> printGreen a) ) authors
              let authorsBadChars = filter (\a -> anyInfix a [";", "&", "?", "!"] || isPunctuation (last a)) $ filter (not . null) authors
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
@@ -278,7 +284,7 @@ readLinkMetadataAndCheck = do
              return final
 
 -- return the n most recent/newest annotations, in terms of created, not publication date.
--- HACK: Because we do not (yet) track annotation creation date, we guess at it. *Usually* a new annotation is appended to the end of full.yaml/half.yaml, and so the newest n are the last n from full+half. (Auto.yaml is automatically sorted to deduplicate, erasing the temporal order of additions; however, this is not a big loss, as most auto.yaml entries which have a generated annotation worth reading would've been created by `gwtag`ing a link, which would put them into half.yaml instead.)
+-- HACK: Because we do not (yet) track annotation creation date, we guess at it. *Usually* a new annotation is appended to the end of full.yaml/half.yaml, and so the newest n are the last n from full+half. (auto.yaml is automatically sorted to deduplicate, erasing the temporal order of additions; however, this is not a big loss, as most auto.yaml entries which have a generated annotation worth reading would've been created by `gwtag`ing a link, which would put them into half.yaml instead.)
 readLinkMetadataNewest :: Int -> IO Metadata
 readLinkMetadataNewest n = do full  <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readYaml "metadata/full.yaml"
                               half    <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readYaml "metadata/half.yaml"
@@ -364,7 +370,7 @@ typesetHtmlField  t = let fieldPandocMaybe = runPure $ readHtml def{readerExtens
 
 -- walk each page, extract the links, and create annotations as necessary for new links
 createAnnotations :: Metadata -> Pandoc -> IO ()
-createAnnotations md (Pandoc _ markdown) = mapM_ (annotateLink md) $ extractLinksInlines (Pandoc nullMeta markdown)
+createAnnotations md (Pandoc _ markdown) = Par.mapM_ (annotateLink md) $ extractLinksInlines (Pandoc nullMeta markdown)
 
 annotateLink :: Metadata -> Inline -> IO Bool
 annotateLink md x@(Link (_,_,_) _ (targetT,_))
