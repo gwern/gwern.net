@@ -352,7 +352,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "mathshistory.st-andrews.ac.uk" = aI "M  T" "text,quad,sans" -- MacTutor History of Mathematics Archive: a weird one, <https://mathshistory.st-andrews.ac.uk/static/img/logo.png> - crude sans but only 2 letters kinda like a diagonal in a square or a TeX. Experiment with using EN SPACE to force a diagonal quad layout.
  | u'' "scale.com" = aI "SCLE" "text,quad,monospace" -- Scale, a large data-labeling company heavily used behind-the-scenes by FANG & OpenAI etc for outsourcing evaluating text, labeling images, and so on.
  | u'' "nunosempere.com" = aI "nuno" "text,quad,sans" -- Nuño Sempere
- | u'' "ourworldindata.org" = aI "OWID" "text,quad,sans" -- Our World In Data <https://en.wikipedia.org/wiki/Our_World_in_Data>
+ | u'' "ourworldindata.org" = aI "OWI    D" "text,quad,sans" -- Our World In Data <https://en.wikipedia.org/wiki/Our_World_in_Data>; NOTE: uses THIN SPACE+THIN SPACE because the 'W' is so wide
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
