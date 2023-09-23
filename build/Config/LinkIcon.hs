@@ -75,7 +75,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("/doc/ai/poetry/2019-10-17-117m-poetry-cleanprojectgutenberg-samples.txt",  "txt","svg")
          , ("/doc/ai/scaling/2020-bell.pdf#facebook",  "facebook","svg")
          , ("/doc/anime/eva/2010-1000enpark-tokyo-oota-heiwajimakoen.jpg",  "image","svg")
-         , ("/doc/cat/catnip/survey/2017-07-30-gs-pilot.csv",  "csv","svg")
+         , ("/doc/cat/psychology/drug/catnip/survey/2017-07-30-gs-pilot.csv",  "csv","svg")
          , ("/doc/creatine/2009-ling-data.xls",  "spreadsheet","svg")
          , ("/doc/cs/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx",  "spreadsheet","svg")
          , ("/doc/cs/linkrot/2009-08-20-b3ta-fujitsuhtml.mht",  "misc","svg")
@@ -626,4 +626,6 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("/static/template/default.html",  "code","svg")
          , ("https://solar.lowtechmagazine.com/2015/12/fruit-walls-urban-farming-in-the-1600s/", "☀", "text,sans")
          , ("https://www.rollingstone.com/culture/culture-features/elon-musk-the-architect-of-tomorrow-120850/", "𝓡𝐒", "text")
+         , ("https://ourworldindata.org/grapher/burden-disease-from-each-mental-illness", "OWID", "text,quad,sans")
+         , ("https://maggieappleton.com/bidirectionals", "maggie-appleton", "svg")
         ]

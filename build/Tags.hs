@@ -207,7 +207,7 @@ tagsShort2LongRewrites = isUniqueKeys
     ("animal/iq", "iq/animal"), ("cellular-automata", "cellular-automaton"), ("mathematics", "math"),
     ("frank-p-ramsey", "frank-ramsey"), ("artificial-selection", "genetics/selection/artificial"), ("intrasexual-agression", "intrasexual-aggression"),
     ("javascript", "js"), ("psych/chess", "psychology/chess"), ("self-experiment", "quantified-self"),
-    ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing"), ("quadratic-vote", "quadratic-voting"), ("bipolar/genes", "bipolar/genetics"), ("dynamic-evaliation", "dynamic-evaluation"), ("dog-cloning", "genetics/cloning/dog"), ("dog-clone", "genetics/cloning/dog"), ("dog/clone", "genetics/cloning/dog")]
+    ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing"), ("quadratic-vote", "quadratic-voting"), ("bipolar/genes", "bipolar/genetics"), ("dynamic-evaliation", "dynamic-evaluation"), ("dog-cloning", "genetics/cloning/dog"), ("dog-clone", "genetics/cloning/dog"), ("dog/clone", "genetics/cloning/dog"), ("cat-drug", "cat/psychology/drug"), ("cat/drug", "cat/psychology/drug")]
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   (map (\s -> (s, error s)) (isUniqueList ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f",
@@ -291,7 +291,6 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("cs/algorithm/sorting", "sorting")
           , ("cs/algorithm", "algorithms")
           , ("cs/computable", "computability")
-          , ("cat/silvervine", "silvervine (cats)")
           , ("cat/biology/allergy/antibody", "cat-allergen antibody")
           , ("cat/biology/allergy", "cat allergies")
           , ("cat/biology", "cat biology")
@@ -346,14 +345,16 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("modafinil/survey", "modafinil surveys")
           , ("crime/terrorism/rumiyah", "<em>Rumiyah</em> (ISIS)")
           , ("crime/terrorism", "terrorism")
-          , ("cat/earwax", "cats & earwax")
+          , ("cat/psychology/earwax", "cats & earwax")
           , ("cat/psychology", "cat psychology")
           , ("cat/genetics", "cat genetics")
-          , ("cat/catnip/survey", "catnip survey")
-          , ("cat/catnip", "catnip")
-          , ("cat/tatarian-honeysuckle", "Tatarian honeysuckle (cat)")
-          , ("cat/valerian", "Valerian (cat)")
+          , ("cat/psychology/drug/silvervine", "silvervine (cats)")
+          , ("cat/psychology/drug/catnip/survey", "catnip survey")
+          , ("cat/psychology/drug/catnip", "catnip")
+          , ("cat/psychology/drug/tatarian-honeysuckle", "Tatarian honeysuckle (cat)")
+          , ("cat/psychology/drug/valerian", "Valerian (cat)")
           , ("fiction/science-fiction/frank-herbert", "<em>Dune</em>")
+          , ("fiction/gene-wolfe/suzanne-delage", "“Suzanne Delage”")
           , ("fiction/gene-wolfe", "Gene Wolfe")
           , ("fiction/text-game", "text game")
           , ("fiction/humor", "humor")
@@ -560,7 +561,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("ai/nn/vae", "autoencoder NN")
           , ("ai/nn/transformer", "Transformer NN")
           , ("ai/nn/fully-connected", "MLP NN")
-          , ("ai/nn/rnn/dynamic-evaluation", "dynamic evaluation (NN)")
+          , ("ai/nn/dynamic-evaluation", "dynamic evaluation (NN)")
           , ("ai/nn/rnn", "RNN")
           , ("ai/nn/cnn", "CNN")
           , ("ai/nn/sampling", "NN sampling")
@@ -637,7 +638,7 @@ shortTagTestSuite alltags = filter (\(_, realOutput, shouldbeOutput) -> realOutp
         , ("caffeine" , "nootropic/caffeine")
         , ("calibration" , "ai/nn/transformer/gpt/calibration")
         , ("carbon-capture" , "technology/carbon-capture")
-        , ("catnip" , "cat/catnip")
+        , ("catnip" , "cat/psychology/drug/catnip")
         , ("causality" , "statistics/causality")
         , ("cellular-automaton" , "cs/cellular-automaton")
         , ("chess" , "reinforcement-learning/chess")

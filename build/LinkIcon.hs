@@ -352,6 +352,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "mathshistory.st-andrews.ac.uk" = aI "M  T" "text,quad,sans" -- MacTutor History of Mathematics Archive: a weird one, <https://mathshistory.st-andrews.ac.uk/static/img/logo.png> - crude sans but only 2 letters kinda like a diagonal in a square or a TeX. Experiment with using EN SPACE to force a diagonal quad layout.
  | u'' "scale.com" = aI "SCLE" "text,quad,monospace" -- Scale, a large data-labeling company heavily used behind-the-scenes by FANG & OpenAI etc for outsourcing evaluating text, labeling images, and so on.
  | u'' "nunosempere.com" = aI "nuno" "text,quad,sans" -- Nuño Sempere
+ | u'' "ourworldindata.org" = aI "OWID" "text,quad,sans" -- Our World In Data <https://en.wikipedia.org/wiki/Our_World_in_Data>
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -412,6 +413,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "nautil.us" = aI "nautilus" "svg" -- modeled after 🐚 SPIRAL SHELL (U+1F41A), but turned into monochrome SVG (this icon is usually rendered in color & differently across platforms, so we ship another SVG)
  | u'' "www.scholarpedia.org" = aI "scholarpedia" "svg" -- Scholarpedia <https://en.wikipedia.org/wiki/Scholarpedia>; Adobe trace of their PNG favicon
  | u'' "radiolab.org" = aI "audio-waveform-lines" "svg" -- Radiolab WNYC/NPR <https://en.wikipedia.org/wiki/Radiolab>; <https://fontawesome.com/icons/waveform-lines>/<https://www.svgrepo.com/svg/342965/audio-wave>
+ | u'' "maggieappleton.com" = aI "maggie-appleton" "svg"  -- <https://twitter.com/Mappletons> Maggie Appleton, designer (Elicit/Ought), blogger about hypermedia/personal wikis/PKM
 
  -- many orgs will use a medium subdomain, so we fall back here for Medium and override above:
  | u'' "medium.com" || u'' "towardsdatascience.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M

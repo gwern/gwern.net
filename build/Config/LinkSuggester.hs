@@ -410,7 +410,7 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
       , "ImageNet Classification with Deep Convolutional Neural Networks', Krizhevsky et al 2012"
       ]
     )
-  , ( "https://www.fhi.ox.ac.uk/reports/2008-3.pdf"
+  , ( "/doc/ai/scaling/hardware/2008-sandberg-wholebrainemulationroadmap.pdf"
     , [ "Sandberg & Bostrom 2008" , "Whole Brain Emulation Roadmap" ]
     )
   , ( "https://www.lightspeedmagazine.com/fiction/exhalation/"

@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-09-21 23:41:45 gwern"
+;;; When:  Time-stamp: "2023-09-22 22:35:11 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -425,7 +425,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("two-thirds" . "2⁄3<sup>rds</sup>")
                      ("2 thirds" . "2⁄3<sup>rds</sup>")
                      ("and/ or" . "and/or")
-                     ("[](!W)" . " ERROR ")
+                     ("\\[\\]\\(\\!W\\)" . " ERROR ")
+                     ("( <em>" . "(<em>")
                      )
                    )
             )
@@ -1342,7 +1343,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (query-replace "LaTeX" "<span class=\"logotype-latex\">L<span class=\"logotype-latex-a\">a</span>T<span class=\"logotype-latex-e\">e</span>X</span>" nil begin end) ; <span class="logotype-latex">L<span class="logotype-latex-a">a</span>T<span class="logotype-latex-e">e</span>X</span>
          (query-replace "LATEX" "<span class=\"logotype-latex\">L<span class=\"logotype-latex-a\">a</span>T<span class=\"logotype-latex-e\">e</span>X</span>" nil begin end)
          (query-replace "TeX" "<span class=\"logotype-tex\">T<sub>e</sub>X</span>" nil begin end) ; <span class="logotype-tex">T<sub>e</sub>X</span>
-         (query-replace "TEX" "<span class=\"logotype-tex\">T<sub>e</sub>X</span>" nil begin end))
+         (query-replace "TEX" "<span class=\"logotype-tex\">T<sub>e</sub>X</span>" nil begin end)
+         (query-replace-regexp "^\.\.\.he" "...The" nil begin end) ; very common to truncate in copy-paste
+         ) ; end case-fold let (should create strict case-matching?)
        (query-replace "Nepeta cataria" "_Nepeta cataria_" nil begin end)
        (query-replace "MC4R" "_MC4R_" nil begin end)
        (query-replace "GPT2" "GPT-2" nil begin end) (query-replace "GPT3" "GPT-3" nil begin end) (query-replace "GPT4" "GPT-4" nil begin end)
@@ -1358,7 +1361,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([0-9]+\\) out of the \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
        (query-replace-regexp "\\([0-9]+\\) in every \\([0-9]+\\)" "\\1⁄\\2" nil begin end) ; eg. "approximately one in every 10 citations across leading psychology journals is inaccurate"
        (query-replace-regexp "≈ \\([0-9]+\\)%" "≈\\1%" nil begin end) ; "to ≈ 15% for heroin"
-       (query-replace-regexp "^\.\.\.he" "...The" nil begin end) ; very common to truncate in copy-paste
+
        (query-replace "...." "..." nil begin end)
        (query-replace "....." "..." nil begin end)
        (query-replace-regexp "\n\\.\\.\\([A-Za-z]\\)" "\n...\\1" nil begin end) ; replace malformed '...' ellipsis excerpts
@@ -1443,6 +1446,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp " [x×] 10-\\([[:digit:]]+\\)" "×10<sup>−\\1</sup>" nil begin end) ; hyphen version
        (query-replace-regexp "[x×] ?10--\\([[:digit:]]+\\)" "× 10<sup>−\\1</sup>" nil begin end)
        (query-replace-regexp "\\([[:digit:]]+\\)[x×]10-\\([[:digit:]]+\\)" "\\1 × 10<sup>−\\2</sup>" nil begin end)
+       (query-replace-regexp "\\^-\\([[:digit:]]+\\)\\^" "<sup>−\\1</sup>" nil begin end) ; 'foo^-1^' → 'foo<sup>−1</sup>'
        (query-replace-regexp "\\([[:digit:]\\.]+\\)[Ee]-\\([[:digit:]]+\\)" "\\1 × 10<sup>−\\2</sup>" nil begin end) ; 2.0E-26, 2.0e-26
        ; (query-replace-regexp "[x×] ?10--\\([0-9]+\\)" "× 10<sup>−\\1</sup>" nil begin end)
        (query-replace-regexp "\\([a-zA-Z0-9]\\.\\)\\([[:digit:]]+\\) \\([A-Z]\\)" "\\1<sup>\\2</sup> \\3" nil begin end) ; look for copy-pasted footnotes, like "X works great.13 Therefore"
