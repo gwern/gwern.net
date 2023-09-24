@@ -4894,6 +4894,14 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 }
 #page-toolbar > button svg {
     display: block;
+
+	/*	The following two properties are not valid CSS. They are here to fix
+		a Safari-specific bug, which causes the toolbar toggle button to not
+		display. These properties should be ignored by non-Safari browsers.
+			—SA 2023-09-24
+	 */
+	width: intrinsic;
+	height: intrinsic;
 }
 
 /*  Collapse button (chevron); hidden on desktop.
