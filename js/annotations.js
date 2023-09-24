@@ -565,7 +565,10 @@ Annotations = { ...Annotations,
 				let seeAlsoList = referenceEntry.querySelector(_π(".see-also-append", " ", [ "ul", "ol" ]).join(", "));
 				if (seeAlsoList) {
 					seeAlsoList.classList.add("aux-links-list", "see-also-list");
-					seeAlsoList.previousElementSibling.classList.add("aux-links-list-label", "see-also-list-label");
+
+					let listLabel = previousBlockOf(seeAlsoList, { notBlockElements: [ ".columns" ] });
+					if (listLabel)
+						listLabel.classList.add("aux-links-list-label", "see-also-list-label");
 				}
 
 				//	Unwrap more extraneous <div>s, if present.

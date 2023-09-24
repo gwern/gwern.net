@@ -96,7 +96,7 @@ GW.layout = {
 
 		[ ".aux-links-append + .aux-links-append",
 										 0, false ],
-		[ ".collapse.expanded-not p.aux-links-list-label + p",
+		[ ".collapse.expanded-not p.aux-links-list-label + *",
 										 0, false ],
 
 		[ ".interview .exchange",		 4, false ],
@@ -123,6 +123,7 @@ GW.layout = {
 
 		[ "hr",							10 ],
 
+		[ ".aux-links-append .columns",	 4 ],
 		[ ".columns",					 6 ],
 
 		[ "figure.outline-not",			 9 ],
