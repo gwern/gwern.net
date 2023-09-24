@@ -460,18 +460,13 @@ function setImageDimensions(image, fixWidth = false, fixHeight = false) {
     image.style.aspectRatio = `${width} / ${height}`;
 
 	if (image.maxHeight == null) {
-		//	Avoid computing style when possible.
-		if (image.matches("#markdownBody figure img")) {
-			//	This should match `1rem`.
-			let baseFontSize = GW.isMobile() ? "18" : "20";
+		//	This should match `1rem`.
+		let baseFontSize = GW.isMobile() ? "18" : "20";
 
-			/*	This should match the `max-height` property value for images
-				in the main content column.
-			 */
-			image.maxHeight = window.innerHeight - (8 * baseFontSize);
-		} else {
-			image.maxHeight = parseInt(getComputedStyle(image).maxHeight);
-		}
+		/*	This should match the `max-height` property value for all images in
+			figures (the `figure img` selector; see initial.css).
+		 */
+		image.maxHeight = window.innerHeight - (8 * baseFontSize);
 	}
 
     if (image.maxHeight)
