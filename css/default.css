@@ -1887,23 +1887,6 @@ span.inflation-adjusted .subsup {
 /* MISC */
 /********/
 
-/*  Hanging Punctuation https://en.wikipedia.org/wiki/Hanging_punctuation
-
-    Microtypography: paragraphs starting/ending in quote marks outdent the quote
-    slightly, so the paragraph continues to line up. This is most noticeable in
-    epigraphs and blockquotes. Minor, but nice.
-
-    CSS standard: https://www.w3.org/TR/css-text-3/#propdef-hanging-punctuation
-
-    Supported only in Safari
-    ( https://caniuse.com/css-hanging-punctuation
-      https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation#browser_compatibility )
-    as of 2023-04-20, but that has 19% market share, which is not nothing.
- */
-p {
-    hanging-punctuation: first last;
-}
-
 /*  Enable standard Pandoc attribute-based syntax for small-caps like
     ‘[foo]{.smallcaps}’; see https://pandoc.org/MANUAL.html#small-caps
  */
