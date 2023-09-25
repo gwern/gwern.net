@@ -2572,8 +2572,16 @@ code {
 
     border: 1px solid var(--GW-code-element-border-color);
     background-color: var(--background-color);
+
+/*	This is currently broken in Safari. Since it’s not important enough to 
+	figure out a way to scope it to only non-Safari browsers, I’m disabling it
+	for now. This should be revisited in a year.
+		—SA 2023-09-24
+ */
+/*
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
+ */
 
     padding: 0 4px;
 
@@ -7454,8 +7462,16 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     padding-left: 0.3em;
     position: relative;
     z-index: 1;
+
+/*	This is currently broken in Safari. Since it’s not important enough to 
+	figure out a way to scope it to only non-Safari browsers, I’m disabling it
+	for now. This should be revisited in a year.
+		—SA 2023-09-24
+ */
+/*
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
+ */
 }
 
 .has-content .indicator-hook {
