@@ -84,8 +84,8 @@ toPandoc abst = let clean = runPure $ readHtml def{readerExtensions=pandocExtens
 parseRawAllClean :: Pandoc -> Pandoc
 parseRawAllClean = topDown cleanUpDivsEmpty .
                    walk cleanUpSpans .
-                   -- walk (parseRawInline ("", ["parsed-raw-inline"], [])) .
-                   walk (parseRawBlock ("", ["parsed-raw-block"], []))
+                   -- walk (parseRawInline nullAttr) .
+                   walk (parseRawBlock nullAttr)
 
 parseRawBlock :: Attr -> Block -> Block
 parseRawBlock attr x@(RawBlock (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in

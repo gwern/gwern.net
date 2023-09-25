@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-09-22 22:35:11 gwern"
+;;; When:  Time-stamp: "2023-09-23 20:22:15 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -611,6 +611,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("cm3" . "cm^3^")
                         (" m3" . " m^3^")
                         ("kg/m2" . "kg⁄m^2^")
+                        ("t1/2" . "t<sub>1⁄2</sub>")
                         (" m/s" . " m⁄s")
                         (" km/s" . " km⁄s")
                         ("µm3" . "µm^3^")

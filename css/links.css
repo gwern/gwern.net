@@ -524,7 +524,7 @@ a[data-link-icon='NBER'] .link-icon-hook::after {
 }
 
 a[data-link-icon='sgfp'] .link-icon-hook::after {
-        line-height: 1; /* 'g' overlaps without more line-height */
+        line-height: 1.1; /* 'g' overlaps without more line-height */
 }
 
 /*=---------------------------------=*/
@@ -964,8 +964,7 @@ a[data-link-icon='connected-papers'] .link-icon-hook::after {
     opacity: 0.65;
 }
 
-/* LibGen/Sci-Hub */
-a[data-link-icon='raven'] .link-icon-hook::after {
+a[data-link-icon='raven'] .link-icon-hook::after { /* LibGen/Sci-Hub */
     --link-icon-size: 0.65em;
     --link-icon-offset-y: 0.2em;
     --link-icon-offset-x: 0.1em;
@@ -1016,7 +1015,7 @@ a[data-link-icon='stat-news'] .link-icon-hook::after {
     opacity: 1;
 }
 
-a[data-link-icon='magnifying-glass'] .link-icon-hook::after {
+a[data-link-icon='magnifying-glass'] .link-icon-hook::after { /* Retraction Watch 8?
     --link-icon-size: 0.8em;
     --link-icon-offset-y: 0em;
     --link-icon-offset-x: -0.1em;
@@ -1039,11 +1038,11 @@ a[data-link-icon='laion'] .link-icon-hook::after {
     opacity: 0.65;
 }
 
-a[data-link-icon='tex'] .link-icon-hook::after { /* TeX logotype (actually uses Source Serif) */
-    --link-icon-size: 1.05em;
+a[data-link-icon='tex'] .link-icon-hook::after { /* CTAN etc; TeX logotype (actually uses Source Serif) */
+    --link-icon-size: 1.10em;
     --link-icon-offset-x: 0.05em;
 
-    opacity: 0.8;
+    opacity: 0.85;
 }
 
 a[data-link-icon='scholarpedia'] .link-icon-hook::after {
@@ -1052,12 +1051,12 @@ a[data-link-icon='scholarpedia'] .link-icon-hook::after {
     opacity: 1.0;
 }
 
-a[data-link-icon='☀'] .link-icon-hook::after {
+a[data-link-icon='☀'] .link-icon-hook::after { /* Low Tech Magazine */
     --link-icon-size: 0.9em;
     opacity: 1.0;
 }
 
-a[data-link-icon='audio-waveform-lines'] .link-icon-hook::after {
+a[data-link-icon='audio-waveform-lines'] .link-icon-hook::after { /* Radiolab */
     --link-icon-size: 1.2em;
     --link-icon-offset-x: -0.10em;
 }

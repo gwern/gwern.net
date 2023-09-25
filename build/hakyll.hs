@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-09-20 18:04:44 gwern"
+When: Time-stamp: "2023-09-23 10:54:04 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -318,7 +318,7 @@ descField escape d d' = field d' $ \item -> do
                               return $ (\t -> if escape then escapeHtml t else t) $ T.unpack htmlDesc
                       in case cleanedDesc of
                          Left _          -> noResult "no description field"
-                         Right finalDesc -> return $ sed "^<p>" "" $ sed "</p>$" "" finalDesc -- strip <p></p>
+                         Right finalDesc -> return $ replace "<p>" "" $ replace "</p>" "" finalDesc -- strip <p></p>
 
 pandocTransform :: Metadata -> ArchiveMetadata -> IORef Integer -> String -> Pandoc -> IO Pandoc
 pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
