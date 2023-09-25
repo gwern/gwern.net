@@ -335,6 +335,19 @@ Selection.prototype.selectNode = function (node) {
 	this.addRange(range);
 }
 
+/*************************************************************/
+/*	Polyfill for crypto.randomUUID, for older browser versions
+	(Mainly Safari < 15.4)
+	https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID
+ */
+if (crypto.randomUUID === undefined) {
+	crypto.randomUUID = function () {
+		return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+			(c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+		);
+	}
+}
+
 /*******************************************************************************/
 /*  Create and return a new element with the specified tag name, attributes, and
     object properties.
