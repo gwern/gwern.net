@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2023-04-27 11:27:27 gwern"
+# When:  Time-stamp: "2023-09-24 20:55:05 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -21,7 +21,7 @@
 #
 # Requires: sha1sum, SingleFile+chromium, timeout, curl, wget, ocrmypdf; pdftk recommended for 'decrypting' PDFs
 
-USER_AGENT="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:110.0) Gecko/20100101 Firefox/110.0"
+USER_AGENT="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0"
 
 TARGET=""
 ## NOTE: anchor-handling is tricky. We need to drop everything after '#' because it's technically not part of the
@@ -41,9 +41,9 @@ else
 
     URL=$(echo "$1" | sed -e 's/https:\/\/arxiv\.org/https:\/\/export.arxiv.org/') # NOTE: http://export.arxiv.org/help/robots (we do the rewrite here to keep the directories & URLs as expected like `/doc/www/arxiv.org/`).
     ## 404? NOTE: Infuriatingly, Nitter domains will lie to curl when we use `--head` GET requests to be bandwidth-efficient, and will return 404 hits for *everything*. Jerks. So we can't use `--head` to be efficient, we have to do a full request just to be sure we aren't being lied to about the status. (Jerks.)
-    HTTP_STATUS=$(timeout 20s curl --user-agent "$USER_AGENT" \
+    HTTP_STATUS=$(timeout 20s curl --user-agent "$USER_AGENT" --compressed -H 'Accept-Language: en-US,en;q=0.5' \
                           -H "Accept: */*" --write-out '%{http_code}' --silent -L -o /dev/null "$URL" || echo "Unsuccessful: $1 $HASH" 1>&2 && exit 1)
-    if [[ "$HTTP_STATUS" == "404" ]]; then
+    if [[ "$HTTP_STATUS" == "404" ]] || [[ "$HTTP_STATUS" == "403" ]]; then
         echo "Unsuccessful: $1 $HASH" 1>&2
         exit 1
     else
@@ -85,10 +85,11 @@ else
             # REGULAR:                           /home/gwern/snap/chromium/common/chromium/Default
             set -x
             timeout --kill-after=240s 240s \
-                    ~/src/SingleFile/cli/single-file --browser-executable-path "$(command -v chromium-browser)" --compress-CSS --remove-scripts false \
+                    ~/src/SingleFile/cli/single-file --browser-executable-path "$(command -v chromium-browser)" --compress-CSS --remove-scripts false --remove-video-src false \
                     `# --browser-extensions "$(find ~/snap/chromium/common/chromium/Default/Extensions/* -maxdepth 0 -type d | tr '\n' ',')"` \
                     --browser-args "[\"--profile-directory=Default\", \"--user-data-dir=/home/gwern/snap/chromium/common/chromium/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/cjpalhdlnbpafiamejdnhcphjbkeiagm/1.41.4_1/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/dmghijelimhndkbmpgbldicpogfkceaj/0.4.2_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/doojmbjmlfjjnbmnoijecmcbfeoakpjm/11.3.3_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/kkdpmhnladdopljabkgpacgpliggeeaf/1.12.2_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/mpiodijhokgodhhofbcjdecpffjipkle/1.19.30_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/nkbihfbeogaeaoehlefnkodbefgpgknn/10.9.3_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/oolchklbojaobiipbmcnlgacfgficiig/1.3.4_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/padekgcemlokbadohgkifijomclgjgif/2.5.21_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/pioclpoplcdbaefihamjohnefbikjilc/7.19.0_0/\"]" \
                     `# --browser-headless=false` \
+                    --accept-headers  "[{\"font\":\"application/font-woff2;q=1.0,application/font-woff;q=0.9,*/*;q=0.8\",\"image\":\"image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8\",\"stylesheet\":\"text/css,*/*;q=0.1\",\"script\":\"*/*\",\"document\":\"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\", \"Language\": \"en-US,en;q=0.5\", \"Encoding\": \"gzip, deflate, br\"}]" \
                     --user-agent "$USER_AGENT" \
                     --browser-load-max-time "120000" \
                     --load-deferred-images-max-idle-time "10000" \
@@ -100,7 +101,7 @@ else
 
             if [[ -f "$TARGET" ]]; then
                 ## Check for error pages which nevertheless returned validly:
-                ERROR_404=$(grep -F -e '404 Not Found' -e 'Download Limit Exceeded' -e 'Access Denied' "$TARGET")
+                ERROR_404=$(grep -F -e '403 Forbidden' -e '404 Not Found' -e 'Download Limit Exceeded' -e 'Access Denied' "$TARGET")
                 if [[ -z "$ERROR_404" ]]; then
                     mkdir --parents "./doc/www/$DOMAIN/"
                     mv "$TARGET" "./doc/www/$DOMAIN/$HASH.html"

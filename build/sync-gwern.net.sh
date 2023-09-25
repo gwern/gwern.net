@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-09-23 10:10:53 gwern"
+# When:  Time-stamp: "2023-09-24 20:57:08 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -941,7 +941,7 @@ else
     λ() { find . -perm u=r -path '.git' -prune; }
     wrap λ "Read-only file check" ## check for read-only outside ./.git/ (weird but happened):
 
-    λ(){ gf -e 'RealObjects' -e '404 Not Found Error: No Page' -e ' may refer to:' ./metadata/auto.yaml; }
+    λ(){ gf -e 'RealObjects' -e '404 Not Found Error: No Page' -e '403 Forbidden' -e ' may refer to:' ./metadata/auto.yaml; }
     wrap λ "Broken links, corrupt authors', or links to Wikipedia disambiguation pages in auto.yaml."
 
     λ(){ (find . -type f -name "*--*"; find . -type f -name "*~*"; ) | grep -F --invert-match -e metadata/annotation/; }
@@ -968,7 +968,7 @@ else
     bold "Checking for HTML anomalies…"
     λ(){ BROKEN_HTMLS="$(find ./ -type f -name "*.html" | grep -F --invert-match 'static/' | \
                          parallel --max-args=500 "grep -F --ignore-case --files-with-matches \
-                         -e '404 Not Found' -e '<title>Sign in - Google Accounts</title' -e 'Download Limit Exceeded' -e 'Access Denied'" | sort)"
+                         -e '404 Not Found' -e '<title>Sign in - Google Accounts</title' -e 'Download Limit Exceeded' -e 'Access Denied'" -e '403 Forbidden' | sort)"
          for BROKEN_HTML in $BROKEN_HTMLS; do
              grep --before-context=3 "$BROKEN_HTML" ./metadata/archive.hs | grep -F --invert-match -e 'Right' -e 'Just';
          done; }
