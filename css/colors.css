@@ -32,6 +32,10 @@
      */
     --GW-abstract-border-color: #bbb;
 
+	/*	Block context highlighting.
+	 */
+	--GW-block-context-span-highlight-color: #ddd;
+
     /*  Table of contents.
      */
     --GW-TOC-border-color: #ccc;

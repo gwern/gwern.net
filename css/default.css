@@ -6229,6 +6229,12 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     margin: 0 8px;
 }
 
+.markdownBody span.block-context-highlighted {
+	background-color: var(--GW-block-context-span-highlight-color);
+	padding: 0 0.25em;
+	box-shadow: 0 0 0 0.1em var(--GW-block-context-span-highlight-color);
+}
+
 
 /****************/
 /* PRINT STYLES */
