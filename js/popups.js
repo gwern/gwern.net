@@ -3,9 +3,9 @@
 	http://ignorethecode.net/blog/2010/04/20/footnotes/ for details.
 
 	Original author:  Lukas Mathis (2010-04-20)
-	License: public domain ("And some people have asked me about a license for 
-	this piece of code. I think it’s far too short to get its own license, so 
-	I’m relinquishing any copyright claims. Consider the code to be public 
+	License: public domain ("And some people have asked me about a license for
+	this piece of code. I think it’s far too short to get its own license, so
+	I’m relinquishing any copyright claims. Consider the code to be public
 	domain. No attribution is necessary.")
  */
 
@@ -21,7 +21,7 @@ Popups = {
     popupBreathingRoomY: 8.0,
     popupBreathingRoomYTight: -4.0,
 
-    popupTriggerDelay: 650,
+    popupTriggerDelay: 750,
     popupFadeoutDelay: 100,
     popupFadeoutDuration: 250,
 
@@ -2004,7 +2004,7 @@ Popups = {
 	keyUp: (event) => {
 		GWLog("Popups.keyUp", "popups.js", 3);
 		let allowedKeys = [ "Escape", "Esc", ...(Popups.popupTilingControlKeys.split("")) ];
-		if (   allowedKeys.includes(event.key) == false 
+		if (   allowedKeys.includes(event.key) == false
 			|| Popups.allSpawnedPopups().length == 0)
 			return;
 
