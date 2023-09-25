@@ -1147,7 +1147,12 @@ Transclude = {
 	generalBlockElementSelectors: [
 		"figure",
 		"li",
-		"p",
+		/*	Removing <p> from consideration as a block element for block context
+			purposes, to broaden block context includes / popups. If no bad
+			consequences result, this change should be made permanent.
+				—SA 2023-09-25
+		 */
+// 		"p",
 		"blockquote",
 		[	"section",
 			".markdownBody > *",
