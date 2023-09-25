@@ -28,7 +28,7 @@ goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple :: [T.Text]
 goodDomainsSub = isUniqueList [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com",
                    ".github.io", ".givewell.org", ".greenspun.com", ".imagemagick.org", ".mementoweb.org",
                    ".metafilter.com", ".nomeata.de", ".obormot.net", ".tumblr.com", ".xkcd.com", ".wordpress.com",
-                   ".blogspot.com"]
+                   ".blogspot.com", "antifandom.com"]
 goodDomainsSimple =
   isUniqueList ["1dollarscan.com"
                , "humanprogress.org"
@@ -659,7 +659,6 @@ goodDomainsSimple =
     , "www.r-bloggers.com"
     , "www.rdocumentation.org"
     , "www.reg.ru"
-    , "www.reuters.com"
     , "www.rfreitas.com"
     , "www.ribbonfarm.com"
     , "www.richardcarrier.info"
@@ -2297,6 +2296,7 @@ badDomainsSimple = isUniqueList [ "2chan.us"
    , "incompleteideas.net"
    , "www.incompleteideas.net"
    , "www.harvey.ai"
+   , "www.reuters.com"
    ]
 
 goodLinks, badLinks :: [(T.Text,Bool)]
@@ -2911,7 +2911,6 @@ goodLinks = map (\u -> (u,True)) $ isUniqueList ["https://demo.allennlp.org/next
             , "https://www.r-bloggers.com/2014/01/visualization-series-using-scatterplots-and-models-to-understand-the-diamond-market-so-you-dont-get-ripped-off/"
             , "https://www.rdocumentation.org/packages/EnvStats/versions/2.1.0/topics/evNormOrdStats"
             -- , "https://www.reg.ru/blog/anime-generation-with-stylegan/" -- bizarre infinite-redirect-loop problem only with curl
-            , "https://www.reuters.com/article/2011/11/26/us-vitamind-heartdisease-idUSTRE7AO1UM20111126"
             , "https://www.richardcarrier.info/archives/14522"
             , "https://www.rifters.com/crawl/?p=791"
             , "https://www.rosebud.ai/"
@@ -3028,6 +3027,7 @@ goodLinks = map (\u -> (u,True)) $ isUniqueList ["https://demo.allennlp.org/next
             , "https://www.urbandharma.org/udharma4/mpe.html"
             , "https://www.vetta.org/2009/12/tick-tock-tick-tock-bing/"
             , "https://www.wesjones.com/eoh.htm"
+            , "https://antifandom.com/mlp/wiki/Explore_Equestria:_Greatest_Hits"
             ]
 
 badLinks = map (\u -> (u,False)) $ isUniqueList ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
@@ -4501,4 +4501,5 @@ badLinks = map (\u -> (u,False)) $ isUniqueList ["https://1d4chan.org/wiki/Tale_
             , "http://incompleteideas.net/sutton/book/the-book.html"
             , "http://www.incompleteideas.net/book/the-book-2nd.html"
             , "https://www.harvey.ai/"
+            , "https://www.reuters.com/article/2011/11/26/us-vitamind-heartdisease-idUSTRE7AO1UM20111126"
             ]

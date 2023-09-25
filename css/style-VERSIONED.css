@@ -2302,18 +2302,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5189,14 +5189,14 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5329,7 +5329,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5751,14 +5751,14 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6661,7 +6661,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#question');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7227,7 +7227,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1695502497#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1695478579#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7966,7 +7966,7 @@ a[data-link-icon='NBER'] .link-icon-hook::after {
 }
 
 a[data-link-icon='sgfp'] .link-icon-hook::after {
-        line-height: 1; /* 'g' overlaps without more line-height */
+        line-height: 1.1; /* 'g' overlaps without more line-height */
 }
 
 /*=---------------------------------=*/
@@ -8406,8 +8406,7 @@ a[data-link-icon='connected-papers'] .link-icon-hook::after {
     opacity: 0.65;
 }
 
-/* LibGen/Sci-Hub */
-a[data-link-icon='raven'] .link-icon-hook::after {
+a[data-link-icon='raven'] .link-icon-hook::after { /* LibGen/Sci-Hub */
     --link-icon-size: 0.65em;
     --link-icon-offset-y: 0.2em;
     --link-icon-offset-x: 0.1em;
@@ -8458,7 +8457,7 @@ a[data-link-icon='stat-news'] .link-icon-hook::after {
     opacity: 1;
 }
 
-a[data-link-icon='magnifying-glass'] .link-icon-hook::after {
+a[data-link-icon='magnifying-glass'] .link-icon-hook::after { /* Retraction Watch 8?
     --link-icon-size: 0.8em;
     --link-icon-offset-y: 0em;
     --link-icon-offset-x: -0.1em;
@@ -8481,11 +8480,11 @@ a[data-link-icon='laion'] .link-icon-hook::after {
     opacity: 0.65;
 }
 
-a[data-link-icon='tex'] .link-icon-hook::after { /* TeX logotype (actually uses Source Serif) */
-    --link-icon-size: 1.05em;
+a[data-link-icon='tex'] .link-icon-hook::after { /* CTAN etc; TeX logotype (actually uses Source Serif) */
+    --link-icon-size: 1.10em;
     --link-icon-offset-x: 0.05em;
 
-    opacity: 0.8;
+    opacity: 0.85;
 }
 
 a[data-link-icon='scholarpedia'] .link-icon-hook::after {
@@ -8494,12 +8493,12 @@ a[data-link-icon='scholarpedia'] .link-icon-hook::after {
     opacity: 1.0;
 }
 
-a[data-link-icon='☀'] .link-icon-hook::after {
+a[data-link-icon='☀'] .link-icon-hook::after { /* Low Tech Magazine */
     --link-icon-size: 0.9em;
     opacity: 1.0;
 }
 
-a[data-link-icon='audio-waveform-lines'] .link-icon-hook::after {
+a[data-link-icon='audio-waveform-lines'] .link-icon-hook::after { /* Radiolab */
     --link-icon-size: 1.2em;
     --link-icon-offset-x: -0.10em;
 }

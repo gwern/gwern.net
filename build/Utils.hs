@@ -84,8 +84,8 @@ toPandoc abst = let clean = runPure $ readHtml def{readerExtensions=pandocExtens
 parseRawAllClean :: Pandoc -> Pandoc
 parseRawAllClean = topDown cleanUpDivsEmpty .
                    walk cleanUpSpans .
-                   -- walk (parseRawInline ("", ["parsed-raw-inline"], [])) .
-                   walk (parseRawBlock ("", ["parsed-raw-block"], []))
+                   -- walk (parseRawInline nullAttr) .
+                   walk (parseRawBlock nullAttr)
 
 parseRawBlock :: Attr -> Block -> Block
 parseRawBlock attr x@(RawBlock (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
@@ -284,7 +284,7 @@ cleanAuthors = trim . replaceMany (isUniqueKeys [(". . ", ". "), ("?",""), (",,"
                          ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3, \\6 \\5"), -- 3-author
                          ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3, \\6 \\5, \\8 \\7"), -- 4-author, and I won't try for more
                          ("([A-Z]\\.)([A-Za-z]+)", "\\1 \\2"),                              -- "A.Smith"      → "A. Smith"
-                         ("[ ^]?([A-Z])([A-Z]) ([A-Za-z]+)", " \\1. \\2. \\3"),             -- " LK Barnes"   → " L. K. Barnes"
+                         (" ([A-Z])([A-Z]) ([A-Za-z]+)", " \\1. \\2. \\3"),             -- " LK Barnes"   → " L. K. Barnes"
                          ("([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3"),               -- "A.B. Smith"   → "A. B. Smith"
                          ("([A-Z]\\.)([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3 \\4"), -- "C.A.B. Smith" → "C. A. B. Smith"
                          (" ([A-Z])([A-Z])([A-Z]) ", " \\1. \\2. \\3. "),                   -- "John HAB Smith" → "John H. A. B. Smith"
@@ -1746,6 +1746,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("assocation", "association")
          , ("foscussing", "focusing")
          , ("areused", "are used")
+         , ("insteaduse", "instead use")
          , ("humanlike", "human-like")
          , ("nevermind", "never mind")
          , ("parametris", "parameteriz")

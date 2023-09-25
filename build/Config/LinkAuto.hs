@@ -485,7 +485,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) $ isUniq
         , ("NVAE", "https://arxiv.org/abs/2007.03898#nvidia")
         , ("Narcissis(m|t|tic)", "https://en.wikipedia.org/wiki/Narcissism")
         , ("Nate Silver", "https://en.wikipedia.org/wiki/Nate_Silver")
-        , ("(NeRF|Neural Radiance Field)", "https://arxiv.org/abs/2003.08934")
+        , ("(NeRF|[Nn]eural [Rr]adiance [Ff]ields?)", "https://arxiv.org/abs/2003.08934")
         , ("Neal Stephenson", "https://en.wikipedia.org/wiki/Neal_Stephenson")
         , ("Neil Gaiman", "https://en.wikipedia.org/wiki/Neil_Gaiman")
         , ("Neuroticism", "https://en.wikipedia.org/wiki/Neuroticism")

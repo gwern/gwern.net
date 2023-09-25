@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-09-22 20:53:58 gwern"
+When:  Time-stamp: "2023-09-23 20:18:58 gwern"
 License: CC-0
 -}
 
@@ -58,7 +58,7 @@ import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(..
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
-import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, anySuffix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, parseRawAllClean, balanced)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, anySuffix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, parseRawAllClean, balanced, cleanAuthors)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 
@@ -622,12 +622,18 @@ readYaml yaml = do yaml' <- do filep <- doesFileExist yaml
                      Left  e -> error $ "File: "++ yaml ++ "; parse error: " ++ ppShow e
                      Right y -> (return $ concatMap (convertListToMetadata allTags) y) :: IO MetadataList
                 where
+                 -- we can enforce various rewrite constraints on metadata in a single location by doing it on read, instead of sprinkling them around everywhere that could be producing an annotation
                  convertListToMetadata :: [String] -> [String] -> MetadataList
-                 convertListToMetadata allTags' [u, t, a, d, di,     s] = [(stripUnicodeWhitespace u, (t,a,guessDateFromLocalSchema u d,di,map (guessTagFromShort allTags') $ uniqTags $ pages2Tags u $ tag2TagsWithDefault u "", s))]
-                 convertListToMetadata allTags' [u, t, a, d, di, ts, s] = [(stripUnicodeWhitespace u, (t,a,guessDateFromLocalSchema u d,di,map (guessTagFromShort allTags') $ uniqTags $ pages2Tags u $ tag2TagsWithDefault u ts, s))]
+                 convertListToMetadata allTags' [u, t, a, d, di,     s] = [(stripUnicodeWhitespace u,
+                     (reformatTitle t,cleanAuthors a,guessDateFromLocalSchema u d,di,
+                                       map (guessTagFromShort allTags') $ uniqTags $ pages2Tags u $ tag2TagsWithDefault u "", s))]
+                 convertListToMetadata allTags' [u, t, a, d, di, ts, s] = [(stripUnicodeWhitespace u,
+                     (reformatTitle t, cleanAuthors a,guessDateFromLocalSchema u d,di,
+                                       map (guessTagFromShort allTags') $ uniqTags $ pages2Tags u $ tag2TagsWithDefault u ts, s))]
                  convertListToMetadata _                     e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
-                 stripUnicodeWhitespace :: String -> String
+                 stripUnicodeWhitespace, reformatTitle :: String -> String
                  stripUnicodeWhitespace = replace "⁄" "/" . filter (not . isSpace)
+                 reformatTitle = sed "“(.*)”" "‘\\1’"-- we avoid double-quotes in titles because they are usually being substituted into double-quote wrappers blindly, so you wind up with problems like `““Foo” Bar Baz”`. We do not substitute anything but double-curly quotes, because there are way too many edge-cases and other ways to use quotes (eg. citation HTML fragments in titles).
 
 -- If no accurate date is available, attempt to guess date from the local file schema of 'YYYY-surname-[title, disambiguation, etc].ext' or 'YYYY-MM-DD-...'
 -- This is useful for PDFs with bad metadata, or data files with no easy way to extract metadata (like HTML files with hopelessly inconsistent dirty metadata fields like `<meta>` tags) or where it's not yet supported (image files usually have a reliable creation date).
