@@ -6230,9 +6230,11 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 }
 
 .markdownBody span.block-context-highlighted {
-	background-color: var(--GW-block-context-span-highlight-color);
+	--background-color: var(--GW-block-context-span-highlight-color);
+
+	background-color: var(--background-color);
 	padding: 0 0.25em;
-	box-shadow: 0 0 0 0.1em var(--GW-block-context-span-highlight-color);
+	box-shadow: 0 0 0 0.1em var(--background-color);
 }
 
 
