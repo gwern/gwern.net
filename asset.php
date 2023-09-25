@@ -15,7 +15,7 @@ else if (str_ends_with($file_name, '.css'))
 header ("Content-type: {$content_type}; charset=utf-8");
 
 if (   `git diff`
-	&& `git add . ; {$static_dir}/build/pre-commit.hook.php ; chgrp -R web .`)
+	&& `git add . ; {$static_dir}/build/pre-commit.hook.php ; chgrp -R web . ; chmod -R g+w css js include`)
 	`rm .git/index.lock`;
 
 echo file_get_contents("{$static_dir}/{$file_name}");
