@@ -87,7 +87,7 @@ transformURItoGW uri = case parseURI uri of
     shouldTransform hostname uri'' = isJust (findSubdomain hostname) && not ("view=alignment-forum" `isInfixOf` uri'' && "www" `isPrefixOf` hostname)
 
 -- redirect every WP to the mobile version, and if the top-level page is linked, append the ID of the top of the content to cut out the clutter:
--- eg. "https://en.m.wikipedia.org/wiki/George_Washington" → "https://en.m.wikipedia.org/wiki/George_Washington#bodyContent"
+-- eg. "https://en.wikipedia.org/wiki/George_Washington" → "https://en.​m.​wikipedia.org/wiki/George_Washington#bodyContent"
 transformWPtoMobileWP :: String -> String
 transformWPtoMobileWP uri = fromMaybe uri $ do
     parsedURI <- parseURI uri

@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-09-19 14:36:04 gwern"
+When:  Time-stamp: "2023-09-26 15:01:05 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -101,7 +101,7 @@ import Data.List (isInfixOf, isPrefixOf, nub)
 import Data.Maybe (isNothing, fromMaybe)
 import Text.Read (readMaybe)
 import qualified Data.Text.IO as TIO (readFile)
-import qualified Data.Text as T (pack, unpack)
+import qualified Data.Text as T (isPrefixOf, pack, unpack)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure, ExitSuccess))
 import System.Posix.Files (getFileStatus, fileSize)
@@ -129,20 +129,23 @@ type Path = String
 -- Pandoc types: Link = Link Attr [Inline] Target; Attr = (String, [String], [(String, String)]); Target = (String, String)
 localizeLink :: ArchiveMetadata -> IORef Integer -> Inline -> IO Inline
 localizeLink adb archivedN x@(Link (identifier, classes, pairs) b (targetURL, targetDescription)) =
-  -- skip local archiving if matches the whitelist, or it has a manual annotation '.archive-not' class on it, like
+  -- Skip local archiving if matches the whitelist, or it has a manual annotation '.archive-not' class on it, like
   -- `[Foo](!W "Bar"){.archive-not}` in which case we don't do any sort of 'archiving' such as rewriting to point to a
   -- local link (or possibly, in the future, rewriting WP links to point to the historical revision ID when first
-  -- linked, to avoid deletionist content rot)
+  -- linked, to avoid deletionist content rot).
+  -- NOTE: We *could* first check the archive database before the whitelist or .archive-not classes, which would allow arbitrary overrides
+  -- by editing `archive.hs`; but we do not, because in all such cases thus far, it would be better to simply rehost the URL in question.
   if C.whiteList (T.unpack targetURL) || "archive-not" `elem` classes then return x else
     do targetURL' <- rewriteLink adb archivedN $ T.unpack targetURL
        if targetURL' == T.unpack targetURL then return x -- no archiving has been done yet, return original
        else do -- annotate link with data attribute specifying with local archive:
-         let archiveAttributes = [("data-url-archive", T.pack ('/':targetURL'))] ++
-                                  (let mobileURL = T.pack $ C.transformURLsForMobile $ T.unpack targetURL in
-                                    if mobileURL == targetURL then [] else [("data-href-mobile", mobileURL)]) ++
-                                  (let cleanURL = T.pack $ C.transformURLsForLinking $ T.unpack targetURL in
-                                  if cleanURL == targetURL then [] else [("data-url-html", cleanURL)])
-         let archiveAnnotatedLink = Link (identifier, classes, nub (pairs++archiveAttributes)) b (targetURL, targetDescription)
+         let mobileURL = T.pack $ C.transformURLsForMobile  $ T.unpack targetURL
+             cleanURL  = T.pack $ C.transformURLsForLinking $ T.unpack targetURL
+             archiveAttributes = ("data-url-archive", T.pack ('/':targetURL')) :
+                                  (if mobileURL == targetURL then [] else [("data-href-mobile", mobileURL)]) ++
+                                  (if cleanURL  == targetURL then [] else [("data-url-html",    cleanURL)])
+         let classes' = if "/doc/www/nitter.net/" `T.isPrefixOf` cleanURL then "link-annotated" : classes else classes -- TODO: special case, due to unreliability of Nitter mirror creation + use of archive snapshots to create the 'annotation' at runtime. see `LM.addHasAnnotation`
+         let archiveAnnotatedLink = Link (identifier, classes', nub (pairs++archiveAttributes)) b (targetURL, targetDescription)
          return archiveAnnotatedLink
 localizeLink _ _ x = return x
 
