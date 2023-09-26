@@ -206,67 +206,46 @@ filterAnchors   t = T.length t > anchorLengthMaximum ||
              "\12454\12469\12462\12488\12456\12468", "\21380\31070\27096\12398\36890\23398\36335",
              "\24189\38597\12395\21682\12363\12379\12289\22696\26579\12398\26716",
              "\24651\24515\12402\12392\12388", "\26481\26041\22934\12293\22818", "\27531\12425\12378\12398\26862",
-             "\30495\29983\26410\20998\12398\19968\24515", "\37504\27827\12392\24651\33394\39764\27861", "Review of", "as happened", "non-trivial error rates", "the fulltext", "Smith et al", "heavily edited", "never worked"]
+             "\30495\29983\26410\20998\12398\19968\24515", "\37504\27827\12392\24651\33394\39764\27861", "Review of",
+             "as happened", "non-trivial error rates", "the fulltext", "Smith et al", "heavily edited", "never worked"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteList :: M.Map T.Text [T.Text]
-whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isURI (T.unpack k))) $ isUniqueAll [
-  ( "/crop#hands"
+whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isURI (T.unpack k))) $ isUniqueAll
+  [ ( "/crop#hands"
     , [ "PALM"
       , "PALM ('PALM Anime Locator Model') is a dataset of k=5,382 anime-style Danbooru2019 images annotated with the locations of _n_ = 14,394 hands, a YOLOv3 model trained using those annotations to detect hands in anime-style images, and a second dataset of _n_ = 96,534 hands cropped from the Danbooru2019 dataset using the PALM YOLO model and _n_ = 58,536 of them upscaled to \8805\&512px"
       , "PALM ('PALM Anime Locator Model') is a dataset of k=5,382 anime-style Danbooru2019 images annotated with the locations of n=14,394 hands, a YOLOv3 model trained using those annotations to detect hands in anime-style images, and a second dataset of n=96,534 hands cropped from the Danbooru2019 dataset using the PALM YOLO model and n=58,536 of them upscaled to \8805\&512px"
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
-  , ("https://en.wikipedia.org/wiki/Type_2_diabetes", ["T2D", "type 2 diabetes"])
-  , ("https://en.wikipedia.org/wiki/Demis_Hassabis", ["Hassabis", "Demis Hassabis"])
-  , ("https://openai.com/blog/chatgpt/", ["ChatGPT"])
-  , ("https://en.wikipedia.org/wiki/Sam_Altman", ["Sam Altman"])
-  , ("https://en.wikipedia.org/wiki/Satya_Nadella", ["Satya Nadella"])
-  , ("https://en.wikipedia.org/wiki/Replication_crisis", ["failed to replicate", "failure to replicate"])
-  , ("https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Adam", ["Adam"])
-  , ("https://en.wikipedia.org/wiki/Big_data", ["big data"])
-  , ("https://en.wikipedia.org/wiki/The_New_York_Times", ["NYT", "New York Times", "The New York Times"])
-  , ("https://en.wikipedia.org/wiki/Jeff_Dean", ["Jeff Dean"])
-  , ("https://arxiv.org/abs/2204.02311#google", ["PaLM"])
-  , ("https://en.wikipedia.org/wiki/Medical_school", ["medical school"])
-  , ("https://en.wikipedia.org/wiki/Reinforcement_learning", ["RL", "reinforcement learning"])
-  , ("https://en.wikipedia.org/wiki/Derek_Lowe_(chemist)", ["Derek Lowe"])
-  , ("https://en.wikipedia.org/wiki/California_Institute_of_Technology", ["Caltech"])
-  , ("https://www.teds.ac.uk/about-teds", ["TEDS", "Twins Early Development Study"])
-  , ("/doc/iq/2018-lee.pdf", ["Lee et al 2018"])
-  , ("https://en.wikipedia.org/wiki/Reliability_(statistics)", ["reliability", "reliable"])
-  , ("https://en.wikipedia.org/wiki/Functional_magnetic_resonance_imaging", ["fMRI", "functional magnetic resonance imaging"])
-  , ("regret", ["https://en.wikipedia.org/wiki/Regret_(decision_theory)"])
-  , ("https://en.wikipedia.org/wiki/Placebo", ["placebo effect", "placebo"])
-  , ("https://en.wikipedia.org/wiki/Nocebo", ["nocebo effect", "nocebo"])
-  , ("https://en.wikipedia.org/wiki/LinkedIn", ["LinkedIn"])
-  , ("https://en.wikipedia.org/wiki/Open_source", ["open source", "open-source"])
-  , ("https://arxiv.org/abs/1910.10683#google", ["T5", "T5 models"])
-  , ("https://en.wikipedia.org/wiki/Gene%E2%80%93environment_interaction", ["gene-environment interaction", "gene–environment interaction", "GxE", "G×E"])
-  , ("https://en.wikipedia.org/wiki/Autoregressive_model", ["autoregressive","autoregressive model", "autoregression"])
-  , ("https://en.wikipedia.org/wiki/Benjamin_Franklin", ["Benjamin Franklin", "Ben Franklin"])
-  , ("https://derpibooru.org/", ["Derpibooru"])
-  , ("https://en.wikipedia.org/wiki/Mother_Jones_(magazine)", ["Mother Jones", "Mother Jones magazine"])
-  , ("https://en.wikipedia.org/wiki/European_Union", ["EU", "European Union"] )
-  , ( "/gpt-3#prompts-as-programming"
-    , ["prompt programming", "prompt engineering" ]
+  , ( "/doc/ai/nn/diffusion/2018-sharma.pdf#google"
+    , [ "Conceptual Captions" ]
     )
-  , ("/twdne", ["TWDNE"])
-  , ( "/turing-complete#security-implications"
-    , [ "weird machines" ]
-    )
-    , ( "/doc/ai/scaling/2013-yudkowsky.pdf#miri"
+  , ( "/doc/ai/scaling/2013-yudkowsky.pdf#miri"
     , [ "Intelligence Explosion Microeconomics" , "Yudkowsky 2013" ]
     )
-  , ( "/doc/ai/nn/diffusion/2018-sharma.pdf#google" , [ "Conceptual Captions" ] )
-  , ( "/doc/dual-n-back/2010-zhang.pdf"
-    , [ "Chinese journal finds 31% of submissions plagiarized', Zhang 2010"])
-      , ( "/doc/anime/eva/2002-takeda-notenkimemoirs#opening-the-general-products-store"
+  , ( "/doc/ai/scaling/hardware/2008-sandberg-wholebrainemulationroadmap.pdf"
+    , [ "Sandberg & Bostrom 2008" , "Whole Brain Emulation Roadmap" ]
+    )
+  , ( "/doc/anime/eva/2002-takeda-notenkimemoirs#opening-the-general-products-store"
     , [ "General Products" ]
     )
   , ( "/doc/anime/eva/2002-takeda-notenkimemoirs#the-daicon-3-decision"
     , [ "DAICON III" ]
+    )
+  , ( "/doc/dual-n-back/2010-zhang.pdf"
+    , [ "Chinese journal finds 31% of submissions plagiarized', Zhang 2010"
+      ]
+    )
+  , ( "/doc/genetics/heritable/1987-plomin.pdf"
+    , [ "Why are children in the same family so different from one another"
+      ]
+    )
+  , ( "/doc/genetics/heritable/2014-pellegrino.pdf"
+    , [ "A Novel BHLHE41 Variant is Associated with Short Sleep and Resistance to Sleep Deprivation in Humans"
+      , "Pellegrino et al 2014"
+      ]
     )
   , ( "/doc/genetics/heritable/correlation/2014-mosing.pdf"
     , [ "Practice Does Not Make Perfect: No Causal Effect of Music Practice on Music Ability"
@@ -286,18 +265,19 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
       , "Zhu et al 2015"
       ]
     )
-  , ( "/doc/genetics/heritable/1987-plomin.pdf"
-    , [ "Why are children in the same family so different from one another"
-      ]
-    )
-  , ( "/doc/genetics/heritable/2014-pellegrino.pdf"
-    , [ "A Novel BHLHE41 Variant is Associated with Short Sleep and Resistance to Sleep Deprivation in Humans"
-      , "Pellegrino et al 2014"
-      ]
-    )
   , ( "/doc/genetics/selection/artificial/1933-student.pdf"
-    , ["Evolution By Selection: The Implications of Winter’s Selection Experiment [in <em>Student's Collected Papers</em>]"
+    , [ "Evolution By Selection: The Implications of Winter\8217s Selection Experiment [in <em>Student's Collected Papers</em>]"
       , "Student 1933"
+      ]
+    )
+  , ( "/doc/genetics/selection/artificial/index-selection/2011-cole.pdf"
+    , [ "Cole & VanRaden 2011"
+      , "Use of haplotypes to estimate Mendelian sampling effects and selection limits"
+      ]
+    )
+  , ( "/doc/iq/2013-rietveld.pdf"
+    , [ "GWAS of 126,559 Individuals Identifies Genetic Variants Associated with Educational Attainment"
+      , "Rietveld et al 2013"
       ]
     )
   , ( "/doc/iq/2014-shulman.pdf"
@@ -305,15 +285,13 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
       , "Shulman & Bostrom 2014"
       ]
     )
-  , ( "/doc/genetics/heritable/correlation/2015-zhu.pdf"
-    , [ "Educational attainment-related loci identified by GWAS are associated with select personality traits and mathematics and language abilities"
-      , "Zhu et al 2015"
+  , ( "/doc/iq/2018-lee.pdf" , [ "Lee et al 2018" ] )
+  , ( "/doc/nicotine/2009-lecacheux.pdf"
+    , [ "Cognitive modifications associated with tobacco smoking [review]', Lecacheux et al 2009"
       ]
     )
-  , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4883595/"
-    , [ "Genome-wide association study identifies 74 [162] loci associated with educational attainment"
-      , "Genome-wide association study identifies 74 loci associated with educational attainment"
-      , "Okbay et al 2016"
+  , ( "/doc/nootropic/2008-helland.pdf"
+    , [ "Effect of Supplementing Pregnant and Lactating Mothers With n-3 Very-Long-Chain Fatty Acids on Children's IQ and Body Mass Index at 7 Years of Age"
       ]
     )
   , ( "/doc/psychiatry/lithium/2015-helbich.pdf"
@@ -321,8 +299,14 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
       , "Lithium in drinking water and suicide mortality: interplay with lithium prescriptions"
       ]
     )
-      , ( "/doc/nicotine/2009-lecacheux.pdf"
-    , [ "Cognitive modifications associated with tobacco smoking [review]', Lecacheux et al 2009"
+  , ( "/doc/psychology/writing/2009-sio.pdf"
+    , [ "Does incubation enhance problem-solving? A meta-analytic review"
+      , "Sio & Ormerod 2009"
+      ]
+    )
+  , ( "/doc/reinforcement-learning/meta-learning/2018-wang.pdf#deepmind"
+    , [ "Prefrontal cortex as a meta-reinforcement learning system"
+      , "Wang et al 2018"
       ]
     )
   , ( "/doc/reinforcement-learning/model-free/1992-williams.pdf"
@@ -337,110 +321,64 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
       , "Mastering the game of Go without human knowledge', Silver et al 2017"
       ]
     )
-  , ( "/doc/reinforcement-learning/model/alphago/2017-silver.pdf#page=3&org=deepmind"
-    , [ "AlphaGo Zero"
-      , "Mastering the game of Go without human knowledge', Silver et al 2017"
-      ]
-    )
-  , ( "/doc/reinforcement-learning/meta-learning/2018-wang.pdf#deepmind"
-    , [ "Prefrontal cortex as a meta-reinforcement learning system"
-      , "Wang et al 2018"
-      ]
-    )
   , ( "/doc/sociology/1987-rossi.pdf"
-    , [ "The Iron Law Of Evaluation And Other Metallic Rules', Rossi 1987"      ]
-    )
-  , ( "/doc/sociology/intrasexual-aggression/1993-boehm.pdf"
-    , [ "Egalitarian Behavior and Reverse Dominance Hierarchy [and Comments and Reply]', Boehm et al 1993"
+    , [ "The Iron Law Of Evaluation And Other Metallic Rules', Rossi 1987"
       ]
     )
   , ( "/doc/sociology/2003-murray-humanaccomplishment.pdf"
     , [ "Human Accomplishment" ]
     )
+  , ( "/doc/sociology/intrasexual-aggression/1993-boehm.pdf"
+    , [ "Egalitarian Behavior and Reverse Dominance Hierarchy [and Comments and Reply]', Boehm et al 1993"
+      ]
+    )
   , ( "/doc/statistics/bayes/1994-falk.pdf"
-    , [ "The Ups and Downs of the Hope Function In a Fruitless Search', Falk et al 1994"      ]
+    , [ "The Ups and Downs of the Hope Function In a Fruitless Search', Falk et al 1994"
+      ]
     )
   , ( "/doc/statistics/bayes/2009-kaas.html"
-    , [ "A New Challenge to 98% Confidence"]
+    , [ "A New Challenge to 98% Confidence" ]
     )
   , ( "/doc/wikipedia/2018-teblunthuis.pdf"
     , [ "Revisiting The Rise and Decline in a Population of Peer Production Projects [769 wikis"
       ]
     )
-      , ( "https://ero.sagepub.com/content/1/3/2332858415599972?full"
-    , [ "Domingue et al 2015"
-      , "Polygenic Influence on Educational Attainment"
-      ]
+  , ( "/gpt-3#prompts-as-programming"
+    , [ "prompt programming" , "prompt engineering" ]
     )
+  , ( "/spaced-repetition"
+    , [ "spaced repetition" , "Mnemosyne" , "SRS" ]
+    )
+  , ( "/turing-complete#security-implications"
+    , [ "weird machines" ]
+    )
+  , ( "/twdne" , [ "TWDNE" ] )
   , ( "http://garote.bdmonkeys.net/commandline/"
     , [ "In the Beginning was the Command Line" ]
-    )
-  , ( "https://hpmor.com/"
-    , [ "Harry Potter and the Methods of Rationality" ]
     )
   , ( "http://leipper.org/manuals/zip-fill/safelocks_for_compscientist.pdf"
     , [ "Safecracking for the computer scientist" ]
     )
-  , ( "https://mason.gmu.edu/~rhanson/extraord.pdf"
-    , [ "When Do Extraordinary Claims Give Extraordinary Evidence" ]
-    )
-  , ( "/doc/nootropic/2008-helland.pdf"
-    , [ "Effect of Supplementing Pregnant and Lactating Mothers With n-3 Very-Long-Chain Fatty Acids on Children's IQ and Body Mass Index at 7 Years of Age"
-      ]
-    )
-  , ( "https://people.csail.mit.edu/pkrafft/papers/krafft-thesis-final.pdf"
-    , [ "A Rational Choice Framework for Collective Behavior" ]
-    )
-  , ( "https://people.seas.harvard.edu/~salil/research/timelock.pdf"
-    , [ "Time-Lock Puzzles in the Random Oracle Model" ]
-    )
-  , ( "https://perfdynamics.blogspot.com/2013/09/laplace-bayesianista-and-mass-of-saturn.html"
-    , [ "Laplace the Bayesianista and the Mass of Saturn" ]
-    )
-  , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3270388/"
-    , [ "The time resolution of the St Petersburg paradox" ]
-    )
-  , ( "https://www.avmf.org/clientuploads/documents/News%20Articles/Cat%20Health%20Network%20Feline%20SNP%20Chip%20Studies%20-%20Final%20Accomplishments%20MAFFINAL%2005-23-13.pdf"
-    , [ "Genome-Wide Association Study for Catnip Response in Domestic Cats', Lyons 2013"
-      , "catnip GWAS"
-      ]
-    )
-  , ( "https://papers.nips.cc/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf"
-    , [ "AlexNet"
-      , "ImageNet Classification with Deep Convolutional Neural Networks', Krizhevsky et al 2012"
-      ]
-    )
-  , ( "/doc/ai/scaling/hardware/2008-sandberg-wholebrainemulationroadmap.pdf"
-    , [ "Sandberg & Bostrom 2008" , "Whole Brain Emulation Roadmap" ]
-    )
-  , ( "https://www.lightspeedmagazine.com/fiction/exhalation/"
-    , [ "Exhalation" ]
-    )
-  , ( "/doc/psychology/writing/2009-sio.pdf"
-    , [ "Does incubation enhance problem-solving? A meta-analytic review"
-      , "Sio & Ormerod 2009"
-      ]
-    )
-  , ( "https://blog.research.google/2020/01/reformer-efficient-transformer.html"
-    , [ "Reformer: The Efficient Transformer"]
-    )
   , ( "https://arbtt.nomeata.de/" , [ "arbtt" ] )
-    , ( "https://archive.org/details/in.ernet.dli.2015.207427"
+  , ( "https://archive.org/details/in.ernet.dli.2015.207427"
     , [ "Animal Breeding Plans" ]
-    )
-    , ( "https://arxiv.org/abs/1801.01290" , [ "SAC" ] )
-  , ( "https://arxiv.org/abs/1807.03819#googledeepmind"
-    , [ "Dehghani et al 2018" , "Universal Transformers" ]
     )
   , ( "https://arxiv.org/abs/1707.02968#google"
     , [ "Revisiting Unreasonable Effectiveness of Data in Deep Learning Era"
       , "Sun et al 2017"
       ]
     )
+  , ( "https://arxiv.org/abs/1801.01290" , [ "SAC" ] )
+  , ( "https://arxiv.org/abs/1807.03819#googledeepmind"
+    , [ "Dehghani et al 2018" , "Universal Transformers" ]
+    )
   , ( "https://arxiv.org/abs/1909.08593#openai"
     , [ "Fine-Tuning Language Models from Human Preferences"
       , "Ziegler et al 2019"
       ]
+    )
+  , ( "https://arxiv.org/abs/1910.10683#google"
+    , [ "T5" , "T5 models" ]
     )
   , ( "https://arxiv.org/abs/1910.13038#google"
     , [ "Learning to Predict Without Looking Ahead: World Models Without Forward Prediction', Freeman et al 2019"
@@ -449,6 +387,10 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://arxiv.org/abs/2007.02382"
     , [ "Decentralized Reinforcement Learning: Global Decision-Making via Local Economic Transactions"
       ]
+    )
+  , ( "https://arxiv.org/abs/2204.02311#google" , [ "PaLM" ] )
+  , ( "https://blog.research.google/2020/01/reformer-efficient-transformer.html"
+    , [ "Reformer: The Efficient Transformer" ]
     )
   , ( "https://casual-effects.com/markdeep/features.md.html#basicformatting/admonitions"
     , [ "admonitions" ]
@@ -460,26 +402,7 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://davidepstein.com/david-epstein-the-sports-gene/"
     , [ "The Sports Gene" ]
     )
-  , ( "https://davidhume.org/texts/e/10" , [ "Of Miracles" ] )
-  , ( "https://www.deepmind.com/blog/agent57-outperforming-the-human-atari-benchmark"
-    , [ "Agent57"
-      , "Agent57: Outperforming the Atari Human Benchmark', Badia et al 2020"
-      ]
-    )
-  , ( "https://www.deepmind.com/blog/learning-through-human-feedback"
-    , ["Learning through human feedback" ]
-    )
-  , ( "https://www.deepmind.com/blog/learning-through-human-feedback"
-    , [ "Learning through human feedback" ]
-    )
-  , ( "https://www.deepmind.com/blog/prefrontal-cortex-meta-reinforcement-learning-system"
-    , [
-      "Prefrontal cortex as a meta-reinforcement learning system"
-      ]
-    )
-  , ( "https://www.deepmind.com/blog/wavenet-a-generative-model-for-raw-audio"
-    , [ "WaveNet: A Generative Model for Raw Audio" ]
-    )
+  , ( "https://derpibooru.org/" , [ "Derpibooru" ] )
   , ( "https://edwardtufte.github.io/tufte-css/"
     , [ "Tufte CSS" , "Tufte-CSS" ]
     )
@@ -491,15 +414,19 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/A.E._Housman"
     , [ "A.E. Housman" ]
     )
-  , ( "https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder" , [ "ADHD", "Attention deficit hyperactivity disorder" ] )
   , ( "https://en.wikipedia.org/wiki/AI_Dungeon" , [ "AI Dungeon" ] )
   , ( "https://en.wikipedia.org/wiki/ALGOL_60" , [ "ALGOL" ] )
+  , ( "https://en.wikipedia.org/wiki/AMD" , [ "AMD" ] )
   , ( "https://en.wikipedia.org/wiki/Acrostic"
     , [ "acrostic" , "acrostics" ]
     )
   , ( "https://en.wikipedia.org/wiki/Adderall" , [ "Adderall" ] )
-  , ( "https://en.wikipedia.org/wiki/AMD"
-    , [ "AMD" ]
+  , ( "https://en.wikipedia.org/wiki/Agreeableness"
+    , [ "agreeableness"
+      , "Agreeableness"
+      , "disagreeableness"
+      , "Disagreeableness"
+      ]
     )
   , ( "https://en.wikipedia.org/wiki/Agrippina_(opera)"
     , [ "Agrippina" ]
@@ -513,9 +440,6 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/Amphetamine"
     , [ "amphetamine" ]
     )
-  , ( "https://en.wikipedia.org/wiki/Substituted_amphetamine"
-    , [ "amphetamines" ]
-    )
   , ( "https://en.wikipedia.org/wiki/Anchoring_(cognitive_bias)"
     , [ "Anchor"
       , "Anchored"
@@ -528,6 +452,9 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/Andrew_Gelman"
     , [ "Andrew Gelman" ]
     )
+  , ( "https://en.wikipedia.org/wiki/Animal_welfare"
+    , [ "animal welfare" ]
+    )
   , ( "https://en.wikipedia.org/wiki/Apollo_11" , [ "Apollo 11" ] )
   , ( "https://en.wikipedia.org/wiki/Archive_Team"
     , [ "Archive Team" ]
@@ -537,10 +464,16 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "Ars Technica" ]
     )
   , ( "https://en.wikipedia.org/wiki/Assassination_markets"
-    , [ "assassination markets", "assassination market" ]
+    , [ "assassination markets" , "assassination market" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder"
+    , [ "ADHD" , "Attention deficit hyperactivity disorder" ]
     )
   , ( "https://en.wikipedia.org/wiki/Augur_%28software%29"
     , [ "Augur" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Autoregressive_model"
+    , [ "autoregressive" , "autoregressive model" , "autoregression" ]
     )
   , ( "https://en.wikipedia.org/wiki/Bash_%28Unix_shell%29"
     , [ "Bash" ]
@@ -548,6 +481,10 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/Batch_normalization"
     , [ "batchnorm" ]
     )
+  , ( "https://en.wikipedia.org/wiki/Benjamin_Franklin"
+    , [ "Benjamin Franklin" , "Ben Franklin" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Big_data" , [ "big data" ] )
   , ( "https://en.wikipedia.org/wiki/Blade_Runner"
     , [ "Blade Runner" ]
     )
@@ -563,6 +500,9 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/Calibration_%28statistics%29"
     , [ "calibrated" ]
     )
+  , ( "https://en.wikipedia.org/wiki/California_Institute_of_Technology"
+    , [ "Caltech" ]
+    )
   , ( "https://en.wikipedia.org/wiki/Carl_Friedrich_Gauss"
     , [ "Gauss" ]
     )
@@ -576,6 +516,14 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "CYOA" , "Choose-Your-Own-Adventure" ]
     )
   , ( "https://en.wikipedia.org/wiki/Cicero" , [ "Cicero" ] )
+  , ( "https://en.wikipedia.org/wiki/Circadian_rhythm"
+    , [ "circadian rhythm"
+      , "circadian rhythms"
+      , "circadian cycle"
+      , "circadian cycles"
+      , "circadian"
+      ]
+    )
   , ( "https://en.wikipedia.org/wiki/Claude_Shannon"
     , [ "Claude Shannon" ]
     )
@@ -585,9 +533,12 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/Confounding"
     , [ "Confounding" , "confounding" ]
     )
-
   , ( "https://en.wikipedia.org/wiki/Conscientiousness#Personality_models"
-    , [ "Conscientiousness" , "conscientiousness", "Conscientious", "conscientious" ]
+    , [ "Conscientiousness"
+      , "conscientiousness"
+      , "Conscientious"
+      , "conscientious"
+      ]
     )
   , ( "https://en.wikipedia.org/wiki/Cowpox"
     , [ "Cowpox" , "cowpox" ]
@@ -598,6 +549,12 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/Decision_theory"
     , [ "decision theory" ]
     )
+  , ( "https://en.wikipedia.org/wiki/Demis_Hassabis"
+    , [ "Hassabis" , "Demis Hassabis" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Derek_Lowe_(chemist)"
+    , [ "Derek Lowe" ]
+    )
   , ( "https://en.wikipedia.org/wiki/Dexter_and_sinister"
     , [ "dexter" , "sinister" ]
     )
@@ -606,6 +563,9 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     )
   , ( "https://en.wikipedia.org/wiki/Dropout_%28neural_networks%29"
     , [ "dropout" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Dungeons_%26_Dragons"
+    , [ "D&D" ]
     )
   , ( "https://en.wikipedia.org/wiki/Duplicity_%28software%29"
     , [ "duplicity" ]
@@ -628,6 +588,9 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "Epilepsy" , "epilepsy" ]
     )
   , ( "https://en.wikipedia.org/wiki/Escrow" , [ "escrow" ] )
+  , ( "https://en.wikipedia.org/wiki/European_Union"
+    , [ "EU" , "European Union" ]
+    )
   , ( "https://en.wikipedia.org/wiki/Experience_curve_effects"
     , [ "experience curve" ]
     )
@@ -639,9 +602,19 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "Fixation" , "fixation" , "reach fixation" ]
     )
   , ( "https://en.wikipedia.org/wiki/Flickr" , [ "Flickr" ] )
+  , ( "https://en.wikipedia.org/wiki/Functional_magnetic_resonance_imaging"
+    , [ "fMRI" , "functional magnetic resonance imaging" ]
+    )
   , ( "https://en.wikipedia.org/wiki/GCTA" , [ "GCTA" ] )
   , ( "https://en.wikipedia.org/wiki/GNOME" , [ "GNOME" , "Gnome" ] )
   , ( "https://en.wikipedia.org/wiki/Gala_%28apple%29" , [ "Gala" ] )
+  , ( "https://en.wikipedia.org/wiki/Gene%E2%80%93environment_interaction"
+    , [ "gene-environment interaction"
+      , "gene\8211environment interaction"
+      , "GxE"
+      , "G\215E"
+      ]
+    )
   , ( "https://en.wikipedia.org/wiki/Genetic_recombination"
     , [ "Recombination" , "recombination" ]
     )
@@ -653,9 +626,6 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     )
   , ( "https://en.wikipedia.org/wiki/Github"
     , [ "GitHub" , "Github" ]
-    )
-  , ( "https://en.wikipedia.org/wiki/Global_Burden_of_Disease"
-    , [ "Global Burden of Disease" ]
     )
   , ( "https://en.wikipedia.org/wiki/Global_Burden_of_Disease_Study"
     , [ "Global Burden of Disease" ]
@@ -673,9 +643,7 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "Hangul" , "hangul" ]
     )
   , ( "https://en.wikipedia.org/wiki/Hans_Eysenck" , [ "Eysenck" ] )
-  , ( "https://en.wikipedia.org/wiki/Haskell"
-    , [ "Haskell" ]
-    )
+  , ( "https://en.wikipedia.org/wiki/Haskell" , [ "Haskell" ] )
   , ( "https://en.wikipedia.org/wiki/Hells_Angels_(manga)"
     , [ "HELLS" , "Hells" ]
     )
@@ -686,9 +654,6 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "His and Her Circumstances" ]
     )
   , ( "https://en.wikipedia.org/wiki/Hubris" , [ "hubris" ] )
-  , ( "https://en.wikipedia.org/wiki/Human_Accomplishment"
-    , [ "Human Accomplishment" ]
-    )
   , ( "https://en.wikipedia.org/wiki/Hutter_Prize"
     , [ "Hutter Prize" ]
     )
@@ -703,12 +668,13 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/Isaac_Asimov"
     , [ "Isaac Asimov" ]
     )
-  , ( "https://en.wikipedia.org/wiki/J._B._S._Haldane"
-    , [ "J.B.S. Haldane" ]
-    )
   , ( "https://en.wikipedia.org/wiki/J.K._Rowling"
     , [ "J.K. Rowling" ]
     )
+  , ( "https://en.wikipedia.org/wiki/J._B._S._Haldane"
+    , [ "J.B.S. Haldane" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Jeff_Dean" , [ "Jeff Dean" ] )
   , ( "https://en.wikipedia.org/wiki/John_L._Fuller" , [ "Fuller" ] )
   , ( "https://en.wikipedia.org/wiki/Joseph_Louis_Lagrange"
     , [ "Lagrange" ]
@@ -720,14 +686,15 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "Kancolle" , "Kantai Collection" ]
     )
   , ( "https://en.wikipedia.org/wiki/Karl_Pearson" , [ "Pearson" ] )
-  , ( "https://en.wikipedia.org/wiki/Ketamine"
-    , [  "ketamine" ]
-    )
+  , ( "https://en.wikipedia.org/wiki/Ketamine" , [ "ketamine" ] )
   , ( "https://en.wikipedia.org/wiki/Kevin_Kelly_(editor)"
     , [ "Kevin Kelly" ]
     )
   , ( "https://en.wikipedia.org/wiki/King_Records_%28Japan%29"
     , [ "King Records" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/LSD"
+    , [ "LSD-25" , "LSD" , "lysergic acid diethylamide" ]
     )
   , ( "https://en.wikipedia.org/wiki/LaTeX" , [ "LaTeX" ] )
   , ( "https://en.wikipedia.org/wiki/Laplace%27s_rule_of_succession"
@@ -739,12 +706,13 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/Liability_threshold"
     , [ "liability threshold" ]
     )
+  , ( "https://en.wikipedia.org/wiki/LinkedIn" , [ "LinkedIn" ] )
   , ( "https://en.wikipedia.org/wiki/Linux" , [ "Linux" ] )
   , ( "https://en.wikipedia.org/wiki/Lisp_(programming_language)"
     , [ "LISP" , "Lisp" ]
     )
   , ( "https://en.wikipedia.org/wiki/Lisp_machines"
-    , [ "Lisp machines", "Lisp machine" ]
+    , [ "Lisp machines" , "Lisp machine" ]
     )
   , ( "https://en.wikipedia.org/wiki/Lithium"
     , [ "Lithium" , "lithium" ]
@@ -764,6 +732,9 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/Manifold_%28magazine%29"
     , [ "Manifold" ]
     )
+  , ( "https://en.wikipedia.org/wiki/Medical_school"
+    , [ "medical school" ]
+    )
   , ( "https://en.wikipedia.org/wiki/Medici_bank"
     , [ "Medici bank" ]
     )
@@ -775,7 +746,7 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "Mnemosyne" ]
     )
   , ( "https://en.wikipedia.org/wiki/Modafinil"
-    , [ "Modafinil" ,  "modafinil" ]
+    , [ "Modafinil" , "modafinil" ]
     )
   , ( "https://en.wikipedia.org/wiki/Modus_ponens"
     , [ "modus ponens" ]
@@ -789,6 +760,9 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     )
   , ( "https://en.wikipedia.org/wiki/Mosaic_%28web_browser%29"
     , [ "Mosaic" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Mother_Jones_(magazine)"
+    , [ "Mother Jones" , "Mother Jones magazine" ]
     )
   , ( "https://en.wikipedia.org/wiki/Multi-level_model"
     , [ "multi-level model" ]
@@ -809,10 +783,14 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     )
   , ( "https://en.wikipedia.org/wiki/Netflix" , [ "Netflix" ] )
   , ( "https://en.wikipedia.org/wiki/Neuroticism"
-    , [ "Neuroticism", "neuroticism", "neurotic", "Neurotic", "emotional stability", "Emotional Stability" ]
+    , [ "Neuroticism"
+      , "neuroticism"
+      , "neurotic"
+      , "Neurotic"
+      , "emotional stability"
+      , "Emotional Stability"
+      ]
     )
-  , ("https://en.wikipedia.org/wiki/Agreeableness", ["agreeableness", "Agreeableness", "disagreeableness", "Disagreeableness"])
-  , ("https://en.wikipedia.org/wiki/Circadian_rhythm", ["circadian rhythm", "circadian rhythms", "circadian cycle", "circadian cycles", "circadian"])
   , ( "https://en.wikipedia.org/wiki/Niccol%C3%B2_Machiavelli"
     , [ "Machiavelli" ]
     )
@@ -820,8 +798,21 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/Nim_Chimpsky"
     , [ "Project Nim" ]
     )
+  , ( "https://en.wikipedia.org/wiki/Nocebo"
+    , [ "nocebo effect" , "nocebo" ]
+    )
   , ( "https://en.wikipedia.org/wiki/Of_Miracles"
     , [ "Of Miracles" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Open_source"
+    , [ "open source" , "open-source" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Openness_to_experience"
+    , [ "Openness"
+      , "openness"
+      , "open to experience"
+      , "Open To Experience"
+      ]
     )
   , ( "https://en.wikipedia.org/wiki/Order_statistic"
     , [ "order statistics" ]
@@ -843,6 +834,9 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "pedigree" , "pedigrees" ]
     )
   , ( "https://en.wikipedia.org/wiki/Petard" , [ "petard" ] )
+  , ( "https://en.wikipedia.org/wiki/Placebo"
+    , [ "placebo effect" , "placebo" ]
+    )
   , ( "https://en.wikipedia.org/wiki/Polyamory" , [ "polyamory" ] )
   , ( "https://en.wikipedia.org/wiki/Polygenic_score"
     , [ "polygenic scores" ]
@@ -852,7 +846,7 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "deliberate practice" ]
     )
   , ( "https://en.wikipedia.org/wiki/Prediction_market"
-    , [ "prediction market", "prediction markets"  ]
+    , [ "prediction market" , "prediction markets" ]
     )
   , ( "https://en.wikipedia.org/wiki/Priming_(psychology)"
     , [ "Priming" , "priming" ]
@@ -875,15 +869,21 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "Radium" , "radium" ]
     )
   , ( "https://en.wikipedia.org/wiki/Random_forests"
-    , [ "random forests", "random forest" ]
+    , [ "random forests" , "random forest" ]
     )
   , ( "https://en.wikipedia.org/wiki/Rebus" , [ "rebus" ] )
   , ( "https://en.wikipedia.org/wiki/Reddit" , [ "Reddit" ] )
   , ( "https://en.wikipedia.org/wiki/Redshift_%28software%29"
     , [ "Redshift" ]
     )
-  , ( "https://en.wikipedia.org/wiki/replication_Crisis"
-    , [ "Replication Crisis" ]
+  , ( "https://en.wikipedia.org/wiki/Reinforcement_learning"
+    , [ "RL" , "reinforcement learning" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Reliability_(statistics)"
+    , [ "reliability" , "reliable" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Replication_crisis"
+    , [ "failed to replicate" , "failure to replicate" ]
     )
   , ( "https://en.wikipedia.org/wiki/Reproducibility"
     , [ "replicate" , "replicated" ]
@@ -891,17 +891,22 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/Richard_Hamming"
     , [ "Hamming" , "Richard Hamming" ]
     )
-      , ( "https://en.wikipedia.org/wiki/Robert_Bakewell_%28agriculturalist%29"
+  , ( "https://en.wikipedia.org/wiki/Robert_Bakewell_%28agriculturalist%29"
     , [ "Bakewell" , "Robert Bakewell" ]
     )
   , ( "https://en.wikipedia.org/wiki/Rotten.com" , [ "Rotten.com" ] )
+  , ( "https://en.wikipedia.org/wiki/Rumi" , [ "Rumi" ] )
   , ( "https://en.wikipedia.org/wiki/SQL" , [ "SQL" ] )
   , ( "https://en.wikipedia.org/wiki/Sadistic_personality_disorder"
     , [ "sadism" , "sadistic" ]
     )
+  , ( "https://en.wikipedia.org/wiki/Sam_Altman" , [ "Sam Altman" ] )
   , ( "https://en.wikipedia.org/wiki/Samsung" , [ "Samsung" ] )
   , ( "https://en.wikipedia.org/wiki/Samuel_Johnson"
     , [ "Samuel Johnson" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Satya_Nadella"
+    , [ "Satya Nadella" ]
     )
   , ( "https://en.wikipedia.org/wiki/Schizophrenia"
     , [ "Schizophrenia"
@@ -920,16 +925,31 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "Siegfried" ]
     )
   , ( "https://en.wikipedia.org/wiki/Silk_Road_%28anonymous_marketplace%29"
-    , [ "Silk Road"  ]
+    , [ "Silk Road" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Silk_Road_(marketplace)#Silk_Road_2.0"
+    , [ "Silk Road 2" , "Silk Road 2.0" ]
     )
   , ( "https://en.wikipedia.org/wiki/Social_status"
-    , [  "social status" ]
+    , [ "social status" ]
     )
-  , ( "/spaced-repetition"
-    , [ "spaced repetition", "Mnemosyne", "SRS" ]
+  , ( "https://en.wikipedia.org/wiki/Standard_score"
+    , [ "z-score"
+      , "z-scores"
+      , "Z-score"
+      , "_z_-score"
+      , "_z_-scores"
+      , "_Z_-score"
+      , "<em>z</em>-score"
+      , "<em>z</em>-scores"
+      , "<em>Z</em>-score"
+      ]
     )
   , ( "https://en.wikipedia.org/wiki/Stewart_Brand"
     , [ "Stewart Brand" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Adam"
+    , [ "Adam" ]
     )
   , ( "https://en.wikipedia.org/wiki/Stripe_%28company%29"
     , [ "Stripe" ]
@@ -939,6 +959,9 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     )
   , ( "https://en.wikipedia.org/wiki/Study_of_Mathematically_Precocious_Youth"
     , [ "SMPY" , "Study of Mathematically Precocious Youth" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Substituted_amphetamine"
+    , [ "amphetamines" ]
     )
   , ( "https://en.wikipedia.org/wiki/Sunk_cost_fallacy"
     , [ "sunk cost fallacy" ]
@@ -956,6 +979,12 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/The_Great_Gatsby"
     , [ "The Great Gatsby" ]
     )
+  , ( "https://en.wikipedia.org/wiki/The_Guardian"
+    , [ "_The Guardian_" , "The Guardian" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/The_New_York_Times"
+    , [ "NYT" , "New York Times" , "The New York Times" ]
+    )
   , ( "https://en.wikipedia.org/wiki/The_Sandman_%28Vertigo%29"
     , [ "Sandman" ]
     )
@@ -965,29 +994,32 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/Threshold_model#Liability_threshold_model"
     , [ "liability threshold" , "liability-threshold" ]
     )
-  , ( "https://en.wikipedia.org/wiki/Troll_%28Internet%29"
+  , ( "https://en.wikipedia.org/wiki/Troll_(Internet)"
     , [ "trolling" ]
     )
   , ( "https://en.wikipedia.org/wiki/Twitter" , [ "Twitter" ] )
+  , ( "https://en.wikipedia.org/wiki/Type_2_diabetes"
+    , [ "T2D" , "type 2 diabetes" ]
+    )
   , ( "https://en.wikipedia.org/wiki/Umineko_When_They_Cry"
     , [ "Umineko" ]
     )
   , ( "https://en.wikipedia.org/wiki/Unicode" , [ "Unicode" ] )
-  , ( "https://en.wikipedia.org/wiki/Usenet"
-    , [ "Usenet" ]
-    )
+  , ( "https://en.wikipedia.org/wiki/Usenet" , [ "Usenet" ] )
   , ( "https://en.wikipedia.org/wiki/Valerian_(herb)"
     , [ "Valerian" , "valerian" ]
     )
   , ( "https://en.wikipedia.org/wiki/Valium" , [ "Valium" ] )
   , ( "https://en.wikipedia.org/wiki/Value_of_information"
-    , [ "VoI", "value of information" ]
+    , [ "VoI" , "value of information" ]
     )
   , ( "https://en.wikipedia.org/wiki/Vaping" , [ "vaping" ] )
   , ( "https://en.wikipedia.org/wiki/Variance"
     , [ "Variance" , "variance" ]
     )
-  , ( "https://en.wikipedia.org/wiki/Vergina_Sun" , [ "Vergina sun" ] )
+  , ( "https://en.wikipedia.org/wiki/Vergina_Sun"
+    , [ "Vergina sun" ]
+    )
   , ( "https://en.wikipedia.org/wiki/Vermilion" , [ "vermilion" ] )
   , ( "https://en.wikipedia.org/wiki/Vitamin_D"
     , [ "Vitamin D" , "vitamin D" ]
@@ -996,7 +1028,10 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/What_Technology_Wants"
     , [ "What Technology Wants" ]
     )
-  , ( "https://en.wikipedia.org/wiki/WikiLeaks" , [ "Wikileaks", "WikiLeaks" ] )
+  , ( "https://en.wikipedia.org/wiki/WikiLeaks"
+    , [ "Wikileaks" , "WikiLeaks" ]
+    )
+  , ( "https://en.wikipedia.org/wiki/Wikileaks" , [ "Wikileaks" ] )
   , ( "https://en.wikipedia.org/wiki/William_Gibson"
     , [ "Gibson" , "William Gibson" ]
     )
@@ -1006,161 +1041,193 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://en.wikipedia.org/wiki/Wine_%28software%29"
     , [ "WINE" , "Wine" ]
     )
-  , ( "https://en.wikipedia.org/wiki/Wired_%28magazine%29"
+  , ( "https://en.wikipedia.org/wiki/Wine_(software)" , [ "WINE" ] )
+  , ( "https://en.wikipedia.org/wiki/Wired_(magazine)"
     , [ "Wired" ]
     )
   , ( "https://en.wikipedia.org/wiki/WorldCat" , [ "WorldCat" ] )
+  , ( "https://en.wikipedia.org/wiki/Wozzeck" , [ "Wozzeck" ] )
   , ( "https://en.wikipedia.org/wiki/Xenophon" , [ "Xenophon" ] )
+  , ( "https://en.wikipedia.org/wiki/replication_Crisis"
+    , [ "Replication Crisis" ]
+    )
   , ( "https://eprint.iacr.org/2002/160.pdf"
     , [ "Cryptology and Physical Security: Rights Amplification in Master-Keyed Mechanical Locks"
       ]
     )
-      , ( "https://github.com/KichangKim/DeepDanbooru"
+  , ( "https://ero.sagepub.com/content/1/3/2332858415599972?full"
+    , [ "Domingue et al 2015"
+      , "Polygenic Influence on Educational Attainment"
+      ]
+    )
+  , ( "https://github.com/KichangKim/DeepDanbooru"
     , [ "DeepDanbooru" ]
     )
   , ( "https://github.com/jgm/gitit" , [ "Gitit" , "gitit" ] )
   , ( "https://github.com/linkchecker/linkchecker"
     , [ "linkchecker" ]
     )
-      , ( "https://hackage.haskell.org/package/gitit"
-    , [ "Gitit" , "gitit" ]
-    )
+  , ( "https://github.com/oduwsdl/archivenow" , [ "archivenow" ] )
   , ( "https://hal.science/hal-00904097/document#pdf"
     , [ "Why do humans reason? Arguments for an argumentative theory" ]
     )
-  , ( "https://github.com/oduwsdl/archivenow" , [ "archivenow" ] )
+  , ( "https://hpmor.com/"
+    , [ "Harry Potter and the Methods of Rationality" ]
+    )
   , ( "https://jeffhuang.com/papers/HaloLearning_CHI13.pdf"
     , [ "Mastering the Art of War: How Patterns of Gameplay Influence Skill in Halo"
       ]
-    ),
-    ( "https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1000097"
-      , [ "Preferred Reporting Items for Systematic Reviews and Meta-Analyses: The PRISMA Statement', Moher et al 2009"
-        , "PRISMA" ])
-  , ( "https://www.reddit.com/r/MachineLearning/comments/akbc11/p_tag_estimation_for_animestyle_girl_image/"
-    , [ "DeepDanbooru" ]
-    ), ( "https://openai.com/research/openai-five-defeats-dota-2-world-champions" , [ "OA5"  ] ), ( "https://pactwebserial.wordpress.com/" , [ "Pact" ] ), ( "https://pdfs.semanticscholar.org/2576/fd36efa9be01a26269e94925283de306cd83.pdf"
+    )
+  , ( "https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1000097"
+    , [ "Preferred Reporting Items for Systematic Reviews and Meta-Analyses: The PRISMA Statement', Moher et al 2009"
+      , "PRISMA"
+      ]
+    )
+  , ( "https://learningtopredict.github.io/#google"
+    , [ "Learning to Predict Without Looking Ahead: World Models Without Forward Prediction"
+      , "Our agents are only given infrequent observations of the real environment. As a side effect for optimizing performance in this setting, a 'world model' emerges. We show the true dynamics in color, with full saturation denoting frames the policy can see. The black and white outline shows the state of the emergent world model. These world model exhibits similar, but not identical dynamics to forward predictive models but only model 'important' aspects of the environment"
+      ]
+    )
+  , ( "https://longbets.org/661/"
+    , [ "661, By 2020, Urban and vertical farms will replace 10% of city produce in Chicago"
+      , "By 2020, Urban and vertical farms will replace 10% of city produce in Chicago"
+      ]
+    )
+  , ( "https://mason.gmu.edu/~rhanson/extraord.pdf"
+    , [ "When Do Extraordinary Claims Give Extraordinary Evidence" ]
+    )
+  , ( "https://michaelnielsen.org/" , [ "Michael Nielsen" ] )
+  , ( "https://mlp.fandom.com/wiki/Maud_Pie" , [ "Maud Pie" ] )
+  , ( "https://openai.com/blog/chatgpt/" , [ "ChatGPT" ] )
+  , ( "https://openai.com/research/openai-five-defeats-dota-2-world-champions"
+    , [ "OA5" ]
+    )
+  , ( "https://pactwebserial.wordpress.com/" , [ "Pact" ] )
+  , ( "https://papers.nips.cc/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf"
+    , [ "AlexNet"
+      , "ImageNet Classification with Deep Convolutional Neural Networks', Krizhevsky et al 2012"
+      ]
+    )
+  , ( "https://pdfs.semanticscholar.org/2576/fd36efa9be01a26269e94925283de306cd83.pdf"
     , [ "Consumer Heterogeneity and Paid Search Effectiveness: A Large Scale Field Experiment"
       ]
-    ), ( "https://pdfs.semanticscholar.org/5e20/ba33230aa7d6d3a4c3e835fcd5c28fbde529.pdf"
-    , [ "A Novel BHLHE41 Variant is Associated with Short Sleep and Resistance to Sleep Deprivation in Humans"
-      , "Pellegrino et al 2014"
-      ]
-    ),  ( "https://predictionbook.com/"
+    )
+  , ( "https://people.csail.mit.edu/pkrafft/papers/krafft-thesis-final.pdf"
+    , [ "A Rational Choice Framework for Collective Behavior" ]
+    )
+  , ( "https://people.seas.harvard.edu/~salil/research/timelock.pdf"
+    , [ "Time-Lock Puzzles in the Random Oracle Model" ]
+    )
+  , ( "https://perfdynamics.blogspot.com/2013/09/laplace-bayesianista-and-mass-of-saturn.html"
+    , [ "Laplace the Bayesianista and the Mass of Saturn" ]
+    )
+  , ( "https://predictionbook.com/"
     , [ "PredictionBook" , "PredictionBook.com" ]
-    ), ( "https://web.archive.org/web/20140527121332/http://www.infinityplus.co.uk/stories/under.htm"
+    )
+  , ( "https://twitter.com/theshawwn" , [ "Shawn Presser" ] )
+  , ( "https://web.archive.org/web/20140527121332/http://www.infinityplus.co.uk/stories/under.htm"
     , [ "\"Understand\"" ]
-    ), ( "https://web.archive.org/web/20161021035119/http://www.ibooksonline.com/88/Text/hell.html"
+    )
+  , ( "https://web.archive.org/web/20161021035119/http://www.ibooksonline.com/88/Text/hell.html"
     , [ "Hell is the Absence of God" ]
-    ), ( "https://www.nplusonemag.com/issue-3/reviews/adventures-of-a-man-of-science/"
-    , [ "Adventures of a Man of Science" , "Batuman 2005" ]
-    ), ( "/doc/genetics/selection/artificial/index-selection/2011-cole.pdf"
-    , [ "Cole & VanRaden 2011"
-      , "Use of haplotypes to estimate Mendelian sampling effects and selection limits"
+    )
+  , ( "https://www.amazon.com/Turings-Cathedral-Origins-Digital-Universe/dp/1400075998/"
+    , [ "Turing\8217s Cathedral" ]
+    )
+  , ( "https://www.avmf.org/clientuploads/documents/News%20Articles/Cat%20Health%20Network%20Feline%20SNP%20Chip%20Studies%20-%20Final%20Accomplishments%20MAFFINAL%2005-23-13.pdf"
+    , [ "Genome-Wide Association Study for Catnip Response in Domestic Cats', Lyons 2013"
+      , "catnip GWAS"
       ]
     )
-  ,( "https://learningtopredict.github.io/#google"
-     , [ "Learning to Predict Without Looking Ahead: World Models Without Forward Prediction"
-       , "Our agents are only given infrequent observations of the real environment. As a side effect for optimizing performance in this setting, a 'world model' emerges. We show the true dynamics in color, with full saturation denoting frames the policy can see. The black and white outline shows the state of the emergent world model. These world model exhibits similar, but not identical dynamics to forward predictive models but only model 'important' aspects of the environment"
-       ]
-     )
-    , ( "https://www.lesswrong.com/" , [ "LessWrong" , "LessWrong.com" ] )
-    , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4417674/"
-      , [ "CRISPR/Cas9-mediated gene editing in human tripronuclear zygotes"
-        ]
-                                                                         )
-    , ( "https://longbets.org/661/"
-      , [ "661, By 2020, Urban and vertical farms will replace 10% of city produce in Chicago"
-        , "By 2020, Urban and vertical farms will replace 10% of city produce in Chicago"
-      ]
-                                                                            )
-    , ( "https://michaelnielsen.org/" , [ "Michael Nielsen" ] )
-    , ( "https://mlp.fandom.com/wiki/Maud_Pie" , [ "Maud Pie" ] )
-    , ( "https://twitter.com/theshawwn" , [ "Shawn Presser" ] )
-    , ( "https://www.amazon.com/Turings-Cathedral-Origins-Digital-Universe/dp/1400075998/"
-      , [ "Turing\8217s Cathedral" ]
-      )
-    , ( "https://www.biorxiv.org/content/10.1101/016477.full"
-      , [ "Eight thousand years of [human] natural selection in Europe" ]
-      )
-    , ( "https://www.biorxiv.org/content/10.1101/078014.full"
-      , [ "Educational attainment and personality are genetically intertwined"
-        ]
+  , ( "https://www.biorxiv.org/content/10.1101/016477.full"
+    , [ "Eight thousand years of [human] natural selection in Europe" ]
     )
-    , ( "https://www.biorxiv.org/content/10.1101/106203.full"
-    , [ "Genomic analysis of family data reveals additional genetic effects on intelligence and personality"
-      , "Hill et al 2017"
+  , ( "https://www.biorxiv.org/content/10.1101/078014.full"
+    , [ "Educational attainment and personality are genetically intertwined"
       ]
-    ), ( "https://www.biorxiv.org/content/10.1101/106203.full"
+    )
+  , ( "https://www.biorxiv.org/content/10.1101/106203.full"
     , [ "Genomic analysis of family data reveals additional genetic effects on intelligence and personality"
       ]
-    ), ( "https://www.biorxiv.org/content/10.1101/190124.full"
+    )
+  , ( "https://www.biorxiv.org/content/10.1101/190124.full"
     , [ "Accurate Genomic Prediction Of Human Height"
       , "Lello et al 2017"
       ]
-    ), ( "https://www.dougengelbart.org/pubs/papers/scanned/Doug_Engelbart-AugmentingHumanIntellect.pdf"
+    )
+  , ( "https://www.deepmind.com/blog/agent57-outperforming-the-human-atari-benchmark"
+    , [ "Agent57"
+      , "Agent57: Outperforming the Atari Human Benchmark', Badia et al 2020"
+      ]
+    )
+  , ( "https://www.deepmind.com/blog/learning-through-human-feedback"
+    , [ "Learning through human feedback" ]
+    )
+  , ( "https://www.deepmind.com/blog/prefrontal-cortex-meta-reinforcement-learning-system"
+    , [ "Prefrontal cortex as a meta-reinforcement learning system" ]
+    )
+  , ( "https://www.deepmind.com/blog/wavenet-a-generative-model-for-raw-audio"
+    , [ "WaveNet: A Generative Model for Raw Audio" ]
+    )
+  , ( "https://www.dougengelbart.org/pubs/papers/scanned/Doug_Engelbart-AugmentingHumanIntellect.pdf"
     , [ "Augmenting Human Intellect: A Conceptual Framework"
       , "Engelbart 1962"
       ]
-    ), ( "https://www.escholar.manchester.ac.uk/api/datastream?publicationPid=uk-ac-man-scw:227658&datastreamId=FULL-TEXT.PDF"
+    )
+  , ( "https://www.escholar.manchester.ac.uk/api/datastream?publicationPid=uk-ac-man-scw:227658&datastreamId=FULL-TEXT.PDF"
     , [ "Decision Making Using Thompson Sampling" , "Mellor 2014" ]
-    ), ( "https://www.fimfiction.net/story/62074/Friendship-is-Optimal"
+    )
+  , ( "https://www.fimfiction.net/story/62074/Friendship-is-Optimal"
     , [ "Friendship is Optimal" ]
-    ), ( "https://www.lesswrong.com/"
+    )
+  , ( "https://www.lesswrong.com/"
     , [ "Less Wrong" , "LessWrong" , "LessWrong.com" ]
-    ), ( "https://www.lesswrong.com/tag/computing-overhang"
+    )
+  , ( "https://www.lesswrong.com/tag/computing-overhang"
     , [ "hardware overhang" ]
-    ), ( "https://www.lesswrong.com/tag/inside-outside-view"
+    )
+  , ( "https://www.lesswrong.com/tag/inside-outside-view"
     , [ "Outside View" , "outside view" ]
-    ), ( "https://www.nature.com/articles/mp2014188/"
+    )
+  , ( "https://www.lightspeedmagazine.com/fiction/exhalation/"
+    , [ "Exhalation" ]
+    )
+  , ( "https://www.nature.com/articles/mp2014188/"
     , [ "Genetic contributions to variation in general cognitive function: a meta-analysis of genome-wide association studies in the CHARGE consortium (<em>n</em> = 53949"
       ]
-    ), ( "https://www.nature.com/articles/mp2016107"
+    )
+  , ( "https://www.nature.com/articles/mp2016107"
     , [ "Predicting educational achievement from DNA" ]
-    ), ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3652710/"
+    )
+  , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3270388/"
+    , [ "The time resolution of the St Petersburg paradox" ]
+    )
+  , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3652710/"
     , [ "Common DNA Markers Can Account for More Than Half of the Genetic Influence on Cognitive Abilities"
       ]
-    ), ( "/doc/iq/2013-rietveld.pdf"
-    , [ "GWAS of 126,559 Individuals Identifies Genetic Variants Associated with Educational Attainment"
-      , "Rietveld et al 2013"
-      ]
-    ), ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3969807/"
+    )
+  , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3969807/"
     , [ "The 1% of the population accountable for 63% of all violent crime convictions"
       ]
-    ), ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4096202/"
-    , [ "A Novel BHLHE41 Variant is Associated with Short Sleep and Resistance to Sleep Deprivation in Humans"
-      , "Pellegrino et al 2014"
-      ]
-    ), ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4313871/"
+    )
+  , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4313871/"
     , [ "The contribution of <em>de novo</em> coding mutations to autism spectrum disorder"
       ]
-    ), ( "/doc/psychiatry/lithium/2015-helbich.pdf"
-    , [ "Helbich et al 2015"
-      , "Lithium in drinking water and suicide mortality: interplay with lithium prescriptions"
+    )
+  , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4417674/"
+    , [ "CRISPR/Cas9-mediated gene editing in human tripronuclear zygotes"
       ]
-    ), ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4883595/"
-    , [ "Genome-wide association study identifies 74 loci associated with educational attainment"
+    )
+  , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4883595/"
+    , [ "Genome-wide association study identifies 74 [162] loci associated with educational attainment"
+      , "Genome-wide association study identifies 74 loci associated with educational attainment"
       , "Okbay et al 2016"
       ]
     )
-    , ( "https://en.wikipedia.org/wiki/Standard_score"
-    , ["z-score", "z-scores", "Z-score", "_z_-score", "_z_-scores", "_Z_-score", "<em>z</em>-score", "<em>z</em>-scores", "<em>Z</em>-score"]
+  , ( "https://www.nplusonemag.com/issue-3/reviews/adventures-of-a-man-of-science/"
+    , [ "Adventures of a Man of Science" , "Batuman 2005" ]
     )
-    , ("https://en.wikipedia.org/wiki/Silk_Road_(marketplace)#Silk_Road_2.0", ["Silk Road 2", "Silk Road 2.0"])
-    , ("https://en.wikipedia.org/wiki/LSD", ["LSD-25", "LSD", "lysergic acid diethylamide"])
-    , ("https://en.wikipedia.org/wiki/Animal_welfare", ["animal welfare"])
-    , ("https://en.wikipedia.org/wiki/Dungeons_%26_Dragons", ["D&D"])
-    , ("https://en.wikipedia.org/wiki/The_Guardian", ["_The Guardian_", "The Guardian"])
-    , ("https://en.wikipedia.org/wiki/Openness_to_experience", ["Openness", "openness", "open to experience", "Open To Experience"])
-  , ( "https://en.wikipedia.org/wiki/Wikileaks" , [ "Wikileaks" ] )
-  , ( "https://en.wikipedia.org/wiki/Wine_(software)"
-    , [ "WINE" ]
+  , ( "https://www.teds.ac.uk/about-teds"
+    , [ "TEDS" , "Twins Early Development Study" ]
     )
-  , ( "https://en.wikipedia.org/wiki/Wired_(magazine)"
-    , [ "Wired" ]
-    )
-  , ( "https://en.wikipedia.org/wiki/Wozzeck" , [ "Wozzeck" ] )
-    , ( "https://en.wikipedia.org/wiki/Troll_(Internet)"
-    , [ "trolling" ]
-    )
-    , ("https://en.wikipedia.org/wiki/Rumi", ["Rumi"] )
   ]
