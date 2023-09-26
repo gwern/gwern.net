@@ -1,7 +1,9 @@
 module Config.LinkArchive where
 
-import Data.List (isInfixOf)
+import Data.Maybe (fromMaybe, isJust)
+import Data.List (isInfixOf, isPrefixOf, isSuffixOf, find)
 import Utils (sed, anyInfix, anyPrefix, anySuffix, replace, isUniqueList)
+import Network.URI (parseURI, uriAuthority, uriFragment, uriRegName, URI, URIAuth)
 
 archiveDelay, archivePerRunN :: Integer
 archiveDelay = 60
@@ -20,8 +22,8 @@ isCheapArchive url = anyInfix url [".pdf", "#pdf", "twitter.com", "nitter.net", 
 -- PDF link too. We don't need a third version, just to provide the two, so this is easier than the Ar5iv rewrite.
 -- (Hypothetically, we could do Reddit.com → Old.Reddit.com, or LW → GW rewrites this way too.)
 transformURLsForArchiving, -- data-url-archive
-  transformURLsForLinking, -- data-url-html
-  transformURLsForMobile :: String -> String -- data-href-mobile
+  transformURLsForMobile, -- data-href-mobile
+  transformURLsForLinking :: String -> String -- data-url-html
 transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/pdf/\\1.pdf\\2" . sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://arxiv.org/pdf/\\1/\\2.pdf\\3"
                             . replace "https://openreview.net/forum" "https://openreview.net/pdf"
                             -- Old Reddit is the preferred browsing & archiving frontend given the death of `i.reddit.com` & `.compact`
@@ -30,16 +32,75 @@ transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
                             . replace "https://twitter.com" "https://nitter.net"
                             . replace "https://medium.com" "https://scribe.rip" -- clean Medium frontend; can also handle custom domains with a bit more work: <https://scribe.rip/faq#custom-domains>
                             . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
+
+transformURLsForMobile    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
+  sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" . -- handle oddities like hep-ph
+  replace "https://twitter.com" "https://nitter.net"
+  . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
+
 transformURLsForLinking   = replace "https://www.reddit.com" "https://old.reddit.com" . -- Old Reddit is much politer to send people to
   -- make IA book/item pages pop up nicer in live-links, by making them jump to the metadata section (which is all that works in the JS-less live-link iframe), and skipping the warnings about JS not being available. `#flag-button-container` is, weirdly enough, the first available ID to jump to, there's no better ID set inside the metadata section, it's all classes.
   (\u -> if u `anyPrefix` ["https://archive.org/details/"]    && '#' `notElem` u && not (u `anyInfix` ["flag-button-container"]) then u ++ "#flag-button-container" else u)
   . replace "https://medium.com" "https://scribe.rip"
   . addAmazonAffiliate
   . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
-transformURLsForMobile    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
-  sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" . -- handle oddities like hep-ph
-  replace "https://twitter.com" "https://nitter.net"
-  . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
+  . transformURItoGW
+
+-- GreaterWrong provides several mirrors: LessWrong, Alignment Forum, Effective Altruism, & Arbital (historical). This function handles them all, rewriting the domain name, and for links to comments, the `?commentId=n` to `/commentId/n` path.
+transformURItoGW :: String -> String
+transformURItoGW uri = case parseURI uri of
+    Nothing -> uri
+    Just parsedURI -> case uriAuthority parsedURI of
+        Nothing -> uri
+        Just auth -> let hostname = uriRegName auth
+                     in case findSubdomain hostname of
+                         Nothing -> uri
+                         Just subdomain ->
+                             let transformedURI = transformHostName subdomain parsedURI auth
+                             in if shouldTransform hostname uri
+                                then handleCommentId $ show transformedURI
+                                else uri
+  where
+    domains :: [(String,String)]
+    domains = [(".lesswrong.com", "www")
+              ,(".greaterwrong.com", "www")
+              ,(".alignmentforum.org", "www")
+              ,(".effectivealtruism.org", "ea")
+              ,(".ea.greaterwrong.com", "ea")
+              ,(".arbital.com", "arbital")
+              ,(".arbital.greaterwrong.com", "arbital")]
+
+    findSubdomain :: String -> Maybe String
+    findSubdomain hostname = snd <$> find ((`isSuffixOf` hostname) . fst) domains
+
+    transformHostName :: String -> URI -> URIAuth -> URI
+    transformHostName subdomain parsedURI auth =
+        parsedURI { uriAuthority = Just $ auth { uriRegName = subdomain ++ ".greaterwrong.com" } }
+
+    handleCommentId :: String -> String
+    handleCommentId uri' =
+        if "commentId=" `isInfixOf` uri'
+            then sed "[?&]commentId=([^&]*)" "/comment/\\1" uri'
+            else uri'
+
+    shouldTransform :: String -> String -> Bool
+    shouldTransform hostname uri'' = isJust (findSubdomain hostname) && not ("view=alignment-forum" `isInfixOf` uri'' && "www" `isPrefixOf` hostname)
+
+-- redirect every WP to the mobile version, and if the top-level page is linked, append the ID of the top of the content to cut out the clutter:
+-- eg. "https://en.m.wikipedia.org/wiki/George_Washington" → "https://en.m.wikipedia.org/wiki/George_Washington#bodyContent"
+transformWPtoMobileWP :: String -> String
+transformWPtoMobileWP uri = fromMaybe uri $ do
+    parsedURI <- parseURI uri
+    auth <- uriAuthority parsedURI
+    let hostname = uriRegName auth
+    if ".wikipedia.org" `isSuffixOf` hostname
+        then return $ show $ parsedURI { uriAuthority = Just $ auth { uriRegName = modifyHostname hostname }, uriFragment = "#bodyContent" }
+        else return uri
+    where
+        modifyHostname :: String -> String
+        modifyHostname hostname = if ".m.wikipedia.org" `isInfixOf` hostname then hostname else replaceSuffix ".wikipedia.org" ".m.wikipedia.org" hostname
+        replaceSuffix :: String -> String -> String -> String
+        replaceSuffix old new s = if old `isSuffixOf` s then take (length s - length old) s ++ new else s
 
 -- For Amazon links, there are two scenarios: there are parameters (denoted by a
 -- '?' in the URL), or there are not. In the former, we need to append the tag as
