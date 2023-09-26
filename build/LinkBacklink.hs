@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-05-11 13:18:48 gwern"
+When:  Time-stamp: "2023-09-26 19:38:22 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -18,17 +18,18 @@ is also a convenient way to get a list of all URLs. -}
 {-# LANGUAGE OverloadedStrings #-}
 module LinkBacklink (getBackLinkCount, getSimilarLinkCount, Backlinks, readBacklinksDB, writeBacklinksDB, getForwardLinks,
                     getAnnotationLink, getBackLink, getLinkBibLink, getSimilarLink,
-                    getAnnotationLinkCheck, getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck) where
+                    getAnnotationLinkCheck, getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck, suggestAnchorsToSplitOut) where
 
 import Data.List (sort)
-import qualified Data.Map.Strict as M (empty, filter, fromList, keys, map, toList, Map) -- fromListWith,
-import qualified Data.Text as T (count, pack, unpack, Text)
+import qualified Data.Map.Strict as M (empty, filter, fromList, fromListWith, mapWithKey, keys, map, toList, Map) -- fromListWith,
+import qualified Data.Text as T (count, isInfixOf, pack, unpack, Text)
 import Data.Text.IO as TIO (readFile)
 import Text.Read (readMaybe)
 import Network.HTTP (urlEncode)
 import Text.Show.Pretty (ppShow)
 import System.Directory (doesFileExist)
 
+import LinkMetadataTypes (isPagePath)
 import Utils (writeUpdatedFile)
 
 -- base URL, then fragment+links. eg. "/improvement" has links from "/note/note" etc, but those links may target anchors like "#microsoft", and those are conceptually distinct from the page as a whole - they are sub-pages. So to preserve that, we nest.
@@ -45,7 +46,7 @@ readBacklinksDB = do exists <- doesFileExist "metadata/backlinks.hs"
                        let bllM = readMaybe (T.unpack bll) :: Maybe [(T.Text,[(T.Text,[T.Text])])]
                        in case bllM of
                          Nothing   -> error ("Failed to parse backlinks.hs; read string: " ++ show bll)
-                         Just bldb -> return $ M.fromList bldb
+                         Just bldb -> return $ M.mapWithKey (\_ -> M.toList . M.fromListWith (++)) $ M.fromList bldb
 writeBacklinksDB :: Backlinks -> IO ()
 writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[(T.Text, [T.Text])])]
                            let bll' = sort $ map (\(a,b) -> (T.unpack a, map (\(c,d) -> (T.unpack c, sort $ map T.unpack d)) b)) bll
@@ -97,6 +98,15 @@ getSimilarLinkCount p = do (file,_) <- getSimilarLinkCheck p
 -- a backlinks database implicitly defines all the forward links as well. It's not efficient compared to converting it to a 'forwardlinks database', but we can support one-off searches easily:
 getForwardLinks :: Backlinks -> T.Text -> [T.Text]
 getForwardLinks bdb p = M.keys $  M.filter (p `elem`) $ M.map (concatMap snd) bdb
+
+-- look for candidates to refactor into standalone pages, by reading the backlinks database to get internal frequency use, and ranking.
+suggestAnchorsToSplitOut :: IO [(Int,T.Text)]
+suggestAnchorsToSplitOut = do bdb <- readBacklinksDB
+                              let anchors = filter (\(a,_) -> isPagePath a && "#" `T.isInfixOf` a && a `notElem` whiteList) $ concatMap snd $ M.toList bdb
+                              let anchorsPopular = reverse $ sort $ filter (\(b,_) -> b>3) $ map (\(a,b) -> (length b, a)) anchors
+                              return anchorsPopular
+                              where whiteList :: [T.Text]
+                                    whiteList = ["/danbooru2021#danbooru2018", "/danbooru2021#danbooru2019", "/danbooru2021#danbooru2020"]
 
 ----------------------
 

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-09-26 15:01:14 gwern"
+When:  Time-stamp: "2023-09-26 18:59:33 gwern"
 License: CC-0
 -}
 
@@ -32,7 +32,7 @@ import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) 
 import Network.HTTP (urlEncode)
 import Network.URI (isURIReference)
 import System.Directory (doesFileExist, doesDirectoryExist)
-import System.FilePath (takeDirectory, takeExtension, takeFileName, takeBaseName)
+import System.FilePath (takeDirectory, takeFileName, takeBaseName)
 import System.GlobalLock (lock)
 import Text.Pandoc (readerExtensions, Inline(Link, Span),
                     def, writeHtml5String, runPure, pandocExtensions,
@@ -54,7 +54,7 @@ import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
 import LinkID (authorsToCite, generateID)
 import LinkLive (linkLive)
-import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(..))
+import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(..), isPagePath)
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
@@ -74,14 +74,6 @@ addPageLink :: Inline -> Inline
 addPageLink y@(Link (a,b,c) e (f,g)) = if "link-page" `elem` b || "link-page-not" `elem` b || not (isPagePath f) then y
                                         else Link (a, "link-page" : b, c) e (f, g)
 addPageLink x = x
-
-isPagePath :: T.Text -> Bool
-isPagePath f = let f' = replace "https://gwern.net" "" $ T.unpack f in
-    (if
-        not ("/" `isPrefixOf` f') ||
-      ("/static/" `isPrefixOf` f')
-     then False else
-       takeExtension f' == "")
 
 -------------------------------------------------------------------------------------------------------------------------------
 
