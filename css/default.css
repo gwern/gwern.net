@@ -3214,6 +3214,14 @@ ol.link-bibliography-list-compact > li::before {
 /* PAGE-SPECIFIC MODIFICATIONS */
 /*******************************/
 
+/*=-------------=*/
+/*= /static/404 =*/
+/*=-------------=*/
+
+body.static-404 figure {
+	background-color: var(--GW-body-background-color);
+}
+
 /*=----------------=*/
 /*= /review/book =*/
 /*=----------------=*/
