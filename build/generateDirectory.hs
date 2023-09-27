@@ -146,10 +146,7 @@ generateDirectory filterp md dirs dir'' = do
 
              (if null untitledLinks then [] else
                  Header 1 ("", ["link-annotated-not"] ++ (if length untitledLinks > C.miscellaneousLinksCollapseLimit then ["collapse"] else []), []) [Str "Miscellaneous"] :
-                 if not allUnannotatedUntitledP then [untitledLinksSection] else
-                   [RawBlock (Format "html") "<div id=\"miscellaneous-links-list\">\n\n",
-                    untitledLinksSection,
-                    RawBlock (Format "html") "</div>"]) ++
+                 [untitledLinksSection]) ++
 
                (if null linkBibList then [] else
                  Para [] : Header 1 ("link-bibliography-section", ["link-annotated-not"], []) [Str "Link Bibliography"] :
