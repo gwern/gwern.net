@@ -11,6 +11,12 @@ listLengthMaxN = 75
 -- sublistsLengthMinN :: Int -- TODO: dead config variable?
 -- sublistsLengthMinN = 8
 
+-- LinkBacklinks:
+sectionizeWhiteList :: [T.Text]
+sectionizeWhiteList = ["/danbooru2021#danbooru2018", "/danbooru2021#danbooru2019", "/danbooru2021#danbooru2020"]
+sectionizeMinN :: Int
+sectionizeMinN = 3
+
 -- generateBacklinks.hs:
 backlinkBlackList :: T.Text -> Bool
 backlinkBlackList "" = error "generateBacklinks.hs (Config.Misc): backlinkBlackList: Called with an empty string! This should never happen."

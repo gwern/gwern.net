@@ -25,10 +25,9 @@ filterAnchors   t = T.length t > anchorLengthMaximum ||
                     t =~ regex ||
                     anyInfixT t ["$","%","[","]"] ||
                     anyPrefixT t ["(",".", "Wikipedia link about "] ||
-                    "&"==t ||
                     elem t badStrings
   where regex = intercalate "|" $ map (\r -> "^"++r++"$") ["[0-9]+[kmgbt]?", "[0-9]+[\\.,;–-][0-9]+", "pg[0-9]+", "p\\.[0-9]+", "[0-9]+[a-f]", "in [12][0-9][0-9][0-9]", "[Ff]igure S?[0-9]+[a-f]?", "[Tt]able S?[0-9]+[a-f]?", "[Cc]hapter [0-9]+"]
-        badStrings = isUniqueList ["#8", "#facebook", "& AI", "/r/SilkRoad", "0.45kg", "1 Second", "1 dead baby",
+        badStrings = isUniqueList ["", "&", "#8", "#facebook", "& AI", "/r/SilkRoad", "0.45kg", "1 Second", "1 dead baby",
              "10-50k", "100 days", "100GHz", "100\8211\&1000\215", "12-36 hours",
              "12kb/day", "150 people", "15\215", "175 days", "1908/1966", "1920s",
              "1933 paper", "1960s", "1980s", "1990s", "1kg", "1\8211\&4", "1\8211\&5",

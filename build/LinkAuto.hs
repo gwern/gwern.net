@@ -272,5 +272,5 @@ definitionsValidate defs
 -- more sensible to require them to be marked up explicitly, which is vastly easier to program &
 -- more efficient. We'll see.
 customDefinitions :: ([(T.Text, T.Text)] -> [(T.Text, T.Text)]) -> [(T.Text, R.Regex, T.Text)]
-customDefinitions subsetter = if length C.custom > 1007 then error ("LinkAuto.hs (customDefinitions): 'C.custom' too long (" ++ show (length C.custom) ++ "), which will trigger the LA slowdown, making site compiles unacceptably slow. Delete some unused regexpo rewrite rules!")
+customDefinitions subsetter = if length C.custom > 1007 then error ("LinkAuto.hs (customDefinitions): 'C.custom' too long (" ++ show (length C.custom) ++ "), which will trigger the LA slowdown, making site compiles unacceptably slow. Delete some unused regexp rewrite rules!")
                               else customDefinitionsR $ definitionsValidate $ subsetter C.custom -- delimit & compile

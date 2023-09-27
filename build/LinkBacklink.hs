@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-09-26 19:38:22 gwern"
+When:  Time-stamp: "2023-09-26 21:00:12 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -31,6 +31,7 @@ import System.Directory (doesFileExist)
 
 import LinkMetadataTypes (isPagePath)
 import Utils (writeUpdatedFile)
+import Config.Misc as C (sectionizeWhiteList, sectionizeMinN)
 
 -- base URL, then fragment+links. eg. "/improvement" has links from "/note/note" etc, but those links may target anchors like "#microsoft", and those are conceptually distinct from the page as a whole - they are sub-pages. So to preserve that, we nest.
 -- eg. ("/Improvements",
@@ -102,11 +103,9 @@ getForwardLinks bdb p = M.keys $  M.filter (p `elem`) $ M.map (concatMap snd) bd
 -- look for candidates to refactor into standalone pages, by reading the backlinks database to get internal frequency use, and ranking.
 suggestAnchorsToSplitOut :: IO [(Int,T.Text)]
 suggestAnchorsToSplitOut = do bdb <- readBacklinksDB
-                              let anchors = filter (\(a,_) -> isPagePath a && "#" `T.isInfixOf` a && a `notElem` whiteList) $ concatMap snd $ M.toList bdb
-                              let anchorsPopular = reverse $ sort $ filter (\(b,_) -> b>3) $ map (\(a,b) -> (length b, a)) anchors
+                              let anchors = filter (\(a,_) -> isPagePath a && "#" `T.isInfixOf` a && a `notElem` C.sectionizeWhiteList) $ concatMap snd $ M.toList bdb
+                              let anchorsPopular = reverse $ sort $ filter (\(b,_) -> b > C.sectionizeMinN) $ map (\(a,b) -> (length b, a)) anchors
                               return anchorsPopular
-                              where whiteList :: [T.Text]
-                                    whiteList = ["/danbooru2021#danbooru2018", "/danbooru2021#danbooru2019", "/danbooru2021#danbooru2020"]
 
 ----------------------
 

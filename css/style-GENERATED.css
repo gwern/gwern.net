@@ -7454,7 +7454,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     position: relative;
     z-index: 1;
 
-/*	This is currently broken in Safari. Since it’s not important enough to 
+/*	This is currently broken in Safari. Since it’s not important enough to
 	figure out a way to scope it to only non-Safari browsers, I’m disabling it
 	for now. This should be revisited in a year.
 		—SA 2023-09-24
@@ -7973,8 +7973,8 @@ a[data-link-icon='NBER'] .link-icon-hook::after {
     width: 1.6em;
 }
 
-a[data-link-icon='sgfp'] .link-icon-hook::after {
-        line-height: 1.1; /* 'g' overlaps without more line-height */
+a[data-link-icon='sgfp']a[data-link-icon-type*=quad][data-link-icon-type*=mono] .link-icon-hook::after {
+        line-height: 0.95; /* 'g' overlaps without more line-height */
 }
 
 /*=---------------------------------=*/
@@ -8503,7 +8503,7 @@ a[data-link-icon='scholarpedia'] .link-icon-hook::after {
 
 a[data-link-icon='☀'] .link-icon-hook::after { /* Low Tech Magazine */
     --link-icon-size: 0.9em;
-    opacity: 1.0;
+    opacity: 0.95;
 }
 
 a[data-link-icon='audio-waveform-lines'] .link-icon-hook::after { /* Radiolab */
