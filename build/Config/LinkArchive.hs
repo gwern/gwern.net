@@ -1,9 +1,11 @@
 module Config.LinkArchive where
 
-import Data.Maybe (fromMaybe, isJust)
-import Data.List (isInfixOf, isPrefixOf, isSuffixOf, find)
+import Data.Maybe (fromMaybe, isJust, fromJust)
+import Data.List (isInfixOf, isPrefixOf, isSuffixOf, find, delete)
 import Utils (sed, anyInfix, anyPrefix, anySuffix, replace, isUniqueList)
-import Network.URI (parseURI, uriAuthority, uriFragment, uriRegName, URI, URIAuth)
+import Network.URI (parseURI, uriAuthority, uriFragment, uriPath, uriQuery, uriRegName, uriToString, URI, URIAuth)
+import Network.HTTP.Types.URI (parseQuery, renderQuery)
+import Data.ByteString.Char8 (pack, unpack)
 
 archiveDelay, archivePerRunN :: Integer
 archiveDelay = 60
@@ -33,11 +35,13 @@ transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
                             . replace "https://medium.com" "https://scribe.rip" -- clean Medium frontend; can also handle custom domains with a bit more work: <https://scribe.rip/faq#custom-domains>
                             . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
 
+-- `data-href-mobile`:
 transformURLsForMobile    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
   sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" . -- handle oddities like hep-ph
   replace "https://twitter.com" "https://nitter.net"
   . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
 
+-- `data-url-html`:
 transformURLsForLinking   = replace "https://www.reddit.com" "https://old.reddit.com" . -- Old Reddit is much politer to send people to
   -- make IA book/item pages pop up nicer in live-links, by making them jump to the metadata section (which is all that works in the JS-less live-link iframe), and skipping the warnings about JS not being available. `#flag-button-container` is, weirdly enough, the first available ID to jump to, there's no better ID set inside the metadata section, it's all classes.
   (\u -> if u `anyPrefix` ["https://archive.org/details/"]    && '#' `notElem` u && not (u `anyInfix` ["flag-button-container"]) then u ++ "#flag-button-container" else u)
@@ -46,48 +50,60 @@ transformURLsForLinking   = replace "https://www.reddit.com" "https://old.reddit
   . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
   . transformURItoGW
 
--- GreaterWrong provides several mirrors: LessWrong, Alignment Forum, Effective Altruism, & Arbital (historical). This function handles them all, rewriting the domain name, and for links to comments, the `?commentId=n` to `/commentId/n` path.
+-- GreaterWrong provides several mirrors we want to rewrite URLs to: LessWrong, Alignment Forum, Effective Altruism, & Arbital (historical).
+-- This function handles them all, rewriting the domain name, and for links to comments, the `?commentId=n` to `/commentId/n` path. For a compact version, we append `?format=preview&theme=classic` or (if there is already a query parameter) `&format=preview&theme=classic`.
+--
+-- > transformURItoGW "https://www.lesswrong.com/posts/FkgsxrGf3QxhfLWHG/risks-from-learned-optimization-introduction"
+-- → "https://www.greaterwrong.com/posts/FkgsxrGf3QxhfLWHG/risks-from-learned-optimization-introduction?format=preview&theme=classic"
+-- transformURItoGW "https://www.lesswrong.com/posts/FkgsxrGf3QxhfLWHG/risks-from-learned-optimization-introduction?foo=bar"
+-- → "https://www.greaterwrong.com/posts/FkgsxrGf3QxhfLWHG/risks-from-learned-optimization-introduction?foo=bar&format=preview&theme=classic"
+-- > transformURItoGW "https://forum.effectivealtruism.org/posts/aFYduhr9pztFCWFpz/preliminary-analysis-of-intervention-to-reduce-lead-exposure?commentId=RLdntemEyqFLcCeb9"
+-- → "https://ea.greaterwrong.com/posts/aFYduhr9pztFCWFpz/preliminary-analysis-of-intervention-to-reduce-lead-exposure/comment/RLdntemEyqFLcCeb9?format=preview&theme=classic"
 transformURItoGW :: String -> String
-transformURItoGW uri = case parseURI uri of
-    Nothing -> uri
-    Just parsedURI -> case uriAuthority parsedURI of
-        Nothing -> uri
-        Just auth -> let hostname = uriRegName auth
-                     in case findSubdomain hostname of
-                         Nothing -> uri
-                         Just subdomain ->
-                             let transformedURI = transformHostName subdomain parsedURI auth
-                             in if shouldTransform hostname uri
-                                then handleCommentId $ show transformedURI
-                                else uri
+transformURItoGW uri = fromMaybe uri $ do
+    parsedURI <- parseURI uri
+    auth <- uriAuthority parsedURI
+    let hostname = uriRegName auth
+    mirrorPrefix <- findMirrorPrefix hostname
+    let transformedURI = transformToMirrorURI mirrorPrefix parsedURI auth
+    let transformedCommentURI = handleCommentId transformedURI
+    return $ if shouldTransform hostname uri
+        then let transformedStr = uriToString id transformedCommentURI ""
+             in if null (uriQuery transformedCommentURI)
+                then transformedStr ++ "?format=preview&theme=classic"
+                else transformedStr ++ "&format=preview&theme=classic"
+        else uri
   where
-    domains :: [(String,String)]
-    domains = [(".lesswrong.com", "www")
-              ,(".greaterwrong.com", "www")
-              ,(".alignmentforum.org", "www")
-              ,(".effectivealtruism.org", "ea")
-              ,(".ea.greaterwrong.com", "ea")
-              ,(".arbital.com", "arbital")
-              ,(".arbital.greaterwrong.com", "arbital")]
+    originalDomains :: [String]
+    originalDomains = [".lesswrong.com", ".alignmentforum.org", ".effectivealtruism.org", ".arbital.com"]
 
-    findSubdomain :: String -> Maybe String
-    findSubdomain hostname = snd <$> find ((`isSuffixOf` hostname) . fst) domains
+    mirrorPrefixes :: [String]
+    mirrorPrefixes = ["www", "www", "ea", "arbital"]
 
-    transformHostName :: String -> URI -> URIAuth -> URI
-    transformHostName subdomain parsedURI auth =
-        parsedURI { uriAuthority = Just $ auth { uriRegName = subdomain ++ ".greaterwrong.com" } }
+    domainMapping :: [(String,String)]
+    domainMapping = zip originalDomains mirrorPrefixes
 
-    handleCommentId :: String -> String
+    findMirrorPrefix :: String -> Maybe String
+    findMirrorPrefix hostname = snd <$> find ((`isSuffixOf` hostname) . fst) domainMapping
+
+    transformToMirrorURI :: String -> URI -> URIAuth -> URI
+    transformToMirrorURI mirrorPrefix parsedURI auth =
+        parsedURI { uriAuthority = Just $ auth { uriRegName = mirrorPrefix ++ ".greaterwrong.com" } }
+
+    handleCommentId :: URI -> URI
     handleCommentId uri' =
-        if "commentId=" `isInfixOf` uri'
-            then sed "[?&]commentId=([^&]*)" "/comment/\\1" uri'
-            else uri'
+        let query = parseQuery . pack $ uriQuery uri'
+        in case lookup "commentId" query of
+            Just commentId -> uri' { uriPath = uriPath uri' ++ "/comment/" ++ unpack (fromJust commentId)
+                                  , uriQuery = unpack $ renderQuery True $ delete ("commentId", commentId) query }
+            Nothing -> uri'
 
     shouldTransform :: String -> String -> Bool
-    shouldTransform hostname uri'' = isJust (findSubdomain hostname) && not ("view=alignment-forum" `isInfixOf` uri'' && "www" `isPrefixOf` hostname)
+    shouldTransform hostname uri'' = isJust (findMirrorPrefix hostname) && not ("view=alignment-forum" `isInfixOf` uri'' && "www" `isPrefixOf` hostname)
 
 -- redirect every WP to the mobile version, and if the top-level page is linked, append the ID of the top of the content to cut out the clutter:
--- eg. "https://en.wikipedia.org/wiki/George_Washington" → "https://en.​m.​wikipedia.org/wiki/George_Washington#bodyContent"
+-- > transformWPtoMobileWP "https://en.wikipedia.org/wiki/George_Washington"
+-- → "https://en.​m.​wikipedia.org/wiki/George_Washington#bodyContent"
 transformWPtoMobileWP :: String -> String
 transformWPtoMobileWP uri = fromMaybe uri $ do
     parsedURI <- parseURI uri
@@ -1210,5 +1226,6 @@ whiteList url
       , "https://accelagent.github.io/" -- low quality (interactive)
       , "http://www.cgg.cs.tsukuba.ac.jp/~endo/projects/UserControllableLT/" -- low quality (video embeds)
       , "https://sites.google.com/view/aistat/home" -- low quality (video embeds)
+      , "https://sites.google.com/view/llm-superpositions" -- low quality (contentless)
       ] = True
     | otherwise = False
