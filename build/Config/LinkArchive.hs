@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Config.LinkArchive where
 
 import Data.Maybe (fromMaybe, isJust, fromJust)
@@ -54,11 +55,11 @@ transformURLsForLinking   = replace "https://www.reddit.com" "https://old.reddit
 -- This function handles them all, rewriting the domain name, and for links to comments, the `?commentId=n` to `/commentId/n` path. For a compact version, we append `?format=preview&theme=classic` or (if there is already a query parameter) `&format=preview&theme=classic`.
 --
 -- > transformURItoGW "https://www.lesswrong.com/posts/FkgsxrGf3QxhfLWHG/risks-from-learned-optimization-introduction"
--- → "https://www.greaterwrong.com/posts/FkgsxrGf3QxhfLWHG/risks-from-learned-optimization-introduction?format=preview&theme=classic"
+-- → "https://www.greaterwrong​.com/posts/FkgsxrGf3QxhfLWHG/risks-from-learned-optimization-introduction?format=preview&theme=classic"
 -- transformURItoGW "https://www.lesswrong.com/posts/FkgsxrGf3QxhfLWHG/risks-from-learned-optimization-introduction?foo=bar"
--- → "https://www.greaterwrong.com/posts/FkgsxrGf3QxhfLWHG/risks-from-learned-optimization-introduction?foo=bar&format=preview&theme=classic"
+-- → "https://www.greaterwrong.​com/posts/FkgsxrGf3QxhfLWHG/risks-from-learned-optimization-introduction?foo=bar&format=preview&theme=classic"
 -- > transformURItoGW "https://forum.effectivealtruism.org/posts/aFYduhr9pztFCWFpz/preliminary-analysis-of-intervention-to-reduce-lead-exposure?commentId=RLdntemEyqFLcCeb9"
--- → "https://ea.greaterwrong.com/posts/aFYduhr9pztFCWFpz/preliminary-analysis-of-intervention-to-reduce-lead-exposure/comment/RLdntemEyqFLcCeb9?format=preview&theme=classic"
+-- → "https://ea.greaterwrong​.com/posts/aFYduhr9pztFCWFpz/preliminary-analysis-of-intervention-to-reduce-lead-exposure/comment/RLdntemEyqFLcCeb9?format=preview&theme=classic"
 transformURItoGW :: String -> String
 transformURItoGW uri = fromMaybe uri $ do
     parsedURI <- parseURI uri
