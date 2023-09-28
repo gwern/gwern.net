@@ -861,7 +861,7 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 			let introGraf = false;
 			if (   block.matches(".text-center, .margin-notes-block") != true
 				&& block.matches(".in-list") != true
-				&& block.closest("#footer") == null
+				&& block.closest("#footer, figcaption") == null
 				&& block.firstElementChild?.matches("span.smallcaps") != true
 				&& block.firstChild instanceof HTMLAnchorElement != true) {
 				let isFirstWithin = (block, containerSelector, options) => {
