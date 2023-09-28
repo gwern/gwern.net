@@ -1,7 +1,7 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2023-06-05 11:25:12 gwern"
+When:  Time-stamp: "2023-09-27 17:08:24 gwern"
 License: CC-0
 -}
 

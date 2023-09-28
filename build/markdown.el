@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-09-25 16:59:50 gwern"
+;;; When:  Time-stamp: "2023-09-27 11:53:59 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1346,7 +1346,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (query-replace "LATEX" "<span class=\"logotype-latex\">L<span class=\"logotype-latex-a\">a</span>T<span class=\"logotype-latex-e\">e</span>X</span>" nil begin end)
          (query-replace "TeX" "<span class=\"logotype-tex\">T<sub>e</sub>X</span>" nil begin end) ; <span class="logotype-tex">T<sub>e</sub>X</span>
          (query-replace "TEX" "<span class=\"logotype-tex\">T<sub>e</sub>X</span>" nil begin end)
-         (query-replace-regexp "^\.\.\.he" "...The" nil begin end) ; very common to truncate in copy-paste
+         (query-replace-regexp "^\\.\\.\\.he" "...The" nil begin end) ; very common to truncate in copy-paste
          ) ; end case-fold let (should create strict case-matching?)
        (query-replace "Nepeta cataria" "_Nepeta cataria_" nil begin end)
        (query-replace "MC4R" "_MC4R_" nil begin end)
@@ -1512,7 +1512,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([[:digit:]]+\\) \\* \\([[:digit:]]+\\)" "\\1 × \\2" nil begin end)
        ; comma formatting: eg. '100000000000' -> '100,000,000,000' - but we need to skip URLs where such numbers are ubiquitous & time-wasting. Avoid possible years which start with 1/2.
        (my-markdown-or-html-query-replace-regexp "\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]]+\\)" #'comma-format-number nil begin end) ; 5+ digit numbers
-       (my-markdown-or-html-query-replace-regexp "\\([3-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number nil begin end) ; 4-digit numbers, which might be years/dates
+       (my-markdown-or-html-query-replace-regexp "\\([3-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number nil begin end) ; 4-digit numbers, which might be years/dates, like '5000', but skipping ones starting in 1/2, which might be a year like '2023' etc
+       (my-markdown-or-html-query-replace-regexp "[[:punct:]] \\([3-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number nil begin end) ; 4-digit numbers, which might be years/dates: if preceded by punctuation, this is *usually* a number, because it'd be odd to write the year at the stard of a phrase. No one says 'Foo bar. 2023 is the date, June the month.' It'd always be 'Foo bar. In June 2023' etc.
        ; special currencies:
        (query-replace-regexp "\\([.0-9]*[[:space:]]\\)?btc" "₿\\1" nil begin end)
        ; fancy punctuation:

@@ -241,7 +241,7 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "Why are children in the same family so different from one another"
       ]
     )
-  , ( "/doc/genetics/heritable/2014-pellegrino.pdf"
+  , ( "/doc/genetics/heritable/rare/2014-pellegrino.pdf"
     , [ "A Novel BHLHE41 Variant is Associated with Short Sleep and Resistance to Sleep Deprivation in Humans"
       , "Pellegrino et al 2014"
       ]

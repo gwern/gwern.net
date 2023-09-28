@@ -61,6 +61,8 @@ tooltipToMetadata path s
 tooltipToMetadataTest :: [((String,String),(String,String,String))]
 tooltipToMetadataTest = filter (\((t1, t2), goodResult) -> tooltipToMetadata t1 t2 /= goodResult)
     [(("","‘Title1 Title2's First Word Title3’, Foo et al 2020a"),    ("Title1 Title2's First Word Title3","Foo, et al","2020"))
+      , (("","‘Title1 Title2’s First Word Title3’, Foo et al 2020a"), ("Title1 Title2’s First Word Title3","Foo, et al","2020"))
+      , (("","'Title1 Title2’s First Word Title3', Foo et al 2020a"), ("Title1 Title2’s First Word Title3","Foo, et al","2020"))
       , (("","“Title1 Title2's First Word Title3”, Foo et al 2020a"), ("Title1 Title2's First Word Title3","Foo, et al","2020"))
       , (("","'Title1 Title2's First Word Title3', Foo & Bar 2020a"), ("Title1 Title2's First Word Title3","Foo, Bar","2020"))
       , (("","'Title1 Title2's First Word Title3', Foo 2020a"),       ("Title1 Title2's First Word Title3","Foo","2020"))

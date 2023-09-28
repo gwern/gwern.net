@@ -471,4 +471,4 @@ siteBlackList = isUniqueList [
           "pile.eleuther.ai", "verdagon.dev", "dataverse.harvard.edu", "tim.blog", "radiolab.org", "melaniemitchell.me", "www.ece.uvic.ca",
           "classic.clinicaltrials.gov", "www.takimag.com", "theathletic.com", "fasttext.cc", "ars.els-cdn.com", "pubs.aip.org",
           "tools.openlab.psu.edu", "www.memteaimports.com","tomodachi.de","blog.daviskedrosky.com","researchers.wls.wisc.edu","www.harvey.ai",
-          "tylervigen.com"]
+          "tylervigen.com", "foundation.wikimedia.org"]
