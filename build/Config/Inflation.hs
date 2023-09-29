@@ -3,7 +3,7 @@ module Config.Inflation where
 import qualified Data.Map.Strict as M (fromList, Map)
 import Utils (isUniqueKeys)
 
-minPercentage :: Float
+minPercentage :: Double
 minPercentage = 1 + 0.20
 
 --
@@ -12,7 +12,7 @@ minPercentage = 1 + 0.20
 -- PCE: 1959
 -- https://en.wikipedia.org/wiki/Personal_consumption_expenditures_price_index
 -- "When gauging inflation and the overall economic stability of the United States, the Federal Reserve prefers to use the PCE Index. The CPI is the most well-known economic indicator, and the PCE is largely forgotten. However, the Federal Reserve prefers the PCE index when reviewing economic conditions and fiscal policy, inflation, and employment. The PCE is preferred because it is composed of a broad range of expenditures. While the CPI helps to depict shifts or changes in consumer expenditures, it only reveals changes in those expenditures that fall within the pre-established fixed basket. The PCE, on the other hand, includes a broad range of household expenses. The PCE is also weighted by data acquired through business surveys, which tend to be more reliable than the consumer surveys used by the CPI." https://www.investopedia.com/terms/p/pce.asp https://www.forbes.com/sites/scottwinship/2015/06/15/debunking-disagreement-over-cost-of-living-adjustment/
-inflationRatesUSD :: [Float]
+inflationRatesUSD :: [Double]
 inflationRatesUSD = let -- CPI: http://www.usinflationcalculator.com/inflation/consumer-price-index-and-annual-percent-changes-from-1913-to-2008/ 1913--1958
     cpi19131958 = [0.0,1.0,2.0,12.6,18.1,20.4,14.5,2.6,-10.8,-2.3,2.4,0.0,3.5,-1.1,-2.3,-1.2,0.6,-6.4,-9.3,-10.3,0.8,1.5,3.0,1.4,2.9,-2.8,0.0,0.7,9.9,9.0,3.0,2.3,2.2,18.1,8.8,3.0,-2.1,5.9,6.0,0.8,0.7,-0.7,0.4,3.0,2.9,1.8] -- [1.7,1.4,0.7,1.3,1.6,1.0,1.9,3.5,3.0,4.7,6.2,5.6,3.3,3.4,8.7,12.3,6.9,4.9,6.7,9.0,13.3,12.5,8.9,3.8,3.8,3.9,3.8,1.1,4.4,4.4,4.6,6.1,3.1,2.9,2.7,2.7,2.5,3.3,1.7,1.6,2.7,3.4,1.6,2.4,1.9,3.3,3.4,2.5,4.1,0.1,2.7,1.5,3.0,1.7,1.5,0.8,0.7,2.1,2.1,]
                        -- https://www.bea.gov/system/files/2019-08/pi0719_hist.pdf#page=3 "Annual Personal Income, DPI, PCE And Personal Saving: Levels And Percent Changes" 1959--2018
@@ -22,7 +22,7 @@ inflationRatesUSD = let -- CPI: http://www.usinflationcalculator.com/inflation/c
     pce2022 = [9.0] -- rough ballpark estimate of cumulative inflation over 2022, given its ~0.9%/month inflation & exceeding forecasts repeatedly
     in (cpi19131958 ++ pce19592018 ++ pce20192021) ++ pce20192021 ++ repeat (last pce2022)
 
-bitcoinUSDExchangeRateHistory :: M.Map String Float
+bitcoinUSDExchangeRateHistory :: M.Map String Double
 bitcoinUSDExchangeRateHistory = M.fromList $ isUniqueKeys [
     -- extrapolate from Pizza Day (22 May 2010), $30/₿10,000
     ("2010-05-20", 0.003)

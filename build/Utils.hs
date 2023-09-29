@@ -20,6 +20,8 @@ import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import Data.FileStore.Utils (runShellCommand)
 
+import Numeric (showFFloat)
+
 import Text.Regex (subRegex, mkRegex)
 import Text.Regex.TDFA ((=~))
 
@@ -398,6 +400,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" ([0-9]+)([0-9][0-9][0-9])([0-9][0-9][0-9])",                                   " \\1,\\2,\\3")         -- millions
          , (" ([0-9]+)([0-9][0-9][0-9])([0-9][0-9][0-9])([0-9][0-9][0-9])",                  " \\1,\\2,\\3,\\4")     -- billions
          , (" ([0-9]+)([0-9][0-9][0-9])([0-9][0-9][0-9])([0-9][0-9][0-9])([0-9][0-9][0-9])", " \\1,\\2,\\3,\\4,\\5") -- trillions
+         , ("([0-9]+) ([0-9]+)",                                                             "\\1,\\2") -- '50 000' → '50,000'
          , ("([0-9]+) percent([ [:punct:]])", "\\1%\\2") -- eg '$22,000 (46 percent) higher annual early-career wages than they would'
          , ("([0-9][0-9]+) [xX] ([0-9][0-9]+) ", "\\1×\\2") -- "high fidelity generation of 1024 x 1024 images" / "0.85 X 30 mEq/kg"
          , ("([0-9][0-9]+) ?[xX] ?([0-9][0-9]+) ?px", "\\1×\\2px") --  "Alexnet performance for 16 x16 px features)."
@@ -2055,3 +2058,44 @@ testCycleDetection = testCycleExists
 -- must handle both "https://twitter.com/grantslatton/status/1703913578036904431" and "https://twitter.com/grantslatton":
 extractTwitterUsername :: String -> String
 extractTwitterUsername = sed "^https:\\/\\/twitter\\.com\\/([a-z0-9]+)$" "\\1" . sed "^https:\\/\\/twitter\\.com\\/([^\\/]+)/status/[0-9]+$" "\\1"
+
+-- print out Doubles long-form, not in scientific notation. By default, Haskell will print values like '10e8', which is bad for downstream users like the inflation-adjuster JavaScript. But it turns out to be surprisingly hard to print out the literal of a Double/Float without rounding, scientific notation, fractions, precision limitations, or other issues. This tries to do so using Text.Numeric.showFFloat, and includes a test-suite of examples to ensure the String is as expected.
+printDouble :: Double -> String
+printDouble x = if x > 1.7976931348623157e308 || x < -1.7976931348623157e308
+               then error $ "printDouble: Extreme unsupported value past what showFFloat supports; you'll have to handle this differently: " ++ show x
+               else removeTrailingZeros $ showFFloat Nothing x ""
+    where removeTrailingZeros, drop1IfDot :: String -> String
+          removeTrailingZeros "-0"   = "0"
+          removeTrailingZeros "-0."  = "0"
+          removeTrailingZeros "-0.0" = "0"
+          removeTrailingZeros "0.0"  = "0"
+          removeTrailingZeros y = drop1IfDot $ reverse $ dropWhile (== '0') $ reverse y
+          drop1IfDot xs = if last xs == '.' then init xs else xs
+
+printDoubleTestSuite :: [(Double, String)]
+printDoubleTestSuite = filter (\(n,s) -> printDouble n /= s) printDoubleTests
+
+printDoubleTests :: [(Double, String)]
+printDoubleTests = [ (0.0, "0")
+            , (1.0, "1")
+            , (1.1, "1.1")
+            , (10.01, "10.01")
+            , (1000000.01, "1000000.01")
+            , (123456789.123456789, "123456789.12345679")
+            , (1.000000000000001, "1.000000000000001")
+            , (3.141592653589793, "3.141592653589793")
+            , (-3.141592653589793, "-3.141592653589793")
+            , (-1.000000000000001, "-1.000000000000001")
+            , (-123456789.123456789, "-123456789.12345679")
+            , (-1000000.01, "-1000000.01")
+            , (-10.01, "-10.01")
+            , (-1.1, "-1.1")
+            , (-1.0, "-1")
+            , (-0.0, "0")
+            , (0.000000000000001, "0.000000000000001")
+            , (-0.000000000000001, "-0.000000000000001")
+            , (0.9999999999999999, "0.9999999999999999")
+            , (-0.9999999999999999, "-0.9999999999999999")
+            , (1.0000000000000002, "1.0000000000000002")
+            , (-1.0000000000000002, "-1.0000000000000002")
+            ]
