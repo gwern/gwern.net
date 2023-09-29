@@ -4048,14 +4048,21 @@ Popins = {
 
 	//	Called by: Popins.injectPopinForTarget
 	//	Called by: extracts.js
-	//	Called by: extracts-annotations.js
 	scrollPopinIntoView: (popin) => {
 		let popinViewportRect = Popins.getPopinViewportRect(popin);
 
+		let windowScrollOffsetForThisPopin = parseInt(popin.dataset.windowScrollOffset ?? '0');
+
+		let scrollWindowBy = 0;
 		if (popinViewportRect.bottom > window.innerHeight) {
-			window.scrollBy(0, (window.innerHeight * 0.05) + popinViewportRect.bottom - window.innerHeight);
+			scrollWindowBy = Math.round((window.innerHeight * 0.05) + popinViewportRect.bottom - window.innerHeight);
 		} else if (popinViewportRect.top < 0) {
-			window.scrollBy(0, (window.innerHeight * -0.1) + popinViewportRect.top);
+			scrollWindowBy = Math.round((window.innerHeight * -0.1) + popinViewportRect.top);
+		}
+
+		if (scrollWindowBy > 0) {
+			window.scrollBy(0, scrollWindowBy);
+			popin.dataset.windowScrollOffset = windowScrollOffsetForThisPopin + scrollWindowBy;
 		}
 	},
 
@@ -4101,6 +4108,9 @@ Popins = {
 
 		//  Detach popin from its spawning target.
 		Popins.detachPopinFromTarget(popin);
+
+		//	Restore the window’s scroll state to before the popin was injected.
+		window.scrollBy(0, -1 * parseInt(popin.dataset.windowScrollOffset ?? '0'));
 	},
 
 	//	Called by: Popins.removePopin
