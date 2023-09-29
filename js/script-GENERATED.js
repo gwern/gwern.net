@@ -15277,7 +15277,7 @@ ImageFocus = {
 		image.decoding = "sync";
 	},
 
-	focusImage: (imageToFocus) => {
+	focusImage: (imageToFocus, scrollToImage = true) => {
 		GWLog("ImageFocus.focusImage", "image-focus.js", 1);
 
 		//	Show overlay.
@@ -15327,8 +15327,9 @@ ImageFocus = {
 		//	Save reference to newly focused image.
 		ImageFocus.currentlyFocusedImage = imageToFocus;
 
-		//	Scroll to focused image.
-		revealElement(ImageFocus.currentlyFocusedImage);
+		//	Scroll to focused image, if need be.
+		if (scrollToImage)
+			revealElement(ImageFocus.currentlyFocusedImage);
 
 		//  Create the focused version of the image.
 		ImageFocus.imageInFocus = imageToFocus.cloneNode(true);
@@ -15703,7 +15704,8 @@ ImageFocus = {
 	imageClickedToFocus: (event) => {
 		GWLog("ImageFocus.imageClickedToFocus", "image-focus.js", 2);
 
-		ImageFocus.focusImage(event.target);
+		//	Focus the clicked image, but don’t scroll to it.
+		ImageFocus.focusImage(event.target, false);
 	},
 
 	scrollEvent: (event) => {
