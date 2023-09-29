@@ -121,7 +121,7 @@ Extracts = { ...Extracts,
 			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "full-backlink-context");
 
 		//	Synthesize include-link (with or without hash, as appropriate).
-		let includeLink = synthesizeIncludeLink(target, { class: "include-block-context" });
+		let includeLink = synthesizeIncludeLink(target, { class: "include-block-context-expanded" });
 		if (fullPage) {
 			stripAnchorsFromLink(includeLink);
 		} else if (   Extracts.isFullBacklinkContextLink(target)

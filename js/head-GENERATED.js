@@ -302,9 +302,19 @@ Object.defineProperty(Node.prototype, "lastTextNode", {
  */
 DOMTokenList.prototype.containsAnyOf = function (tokens) {
     for (token of tokens)
-        if (this.contains(token))
+        if (this.contains(token) == true)
             return true;
     return false;
+}
+
+/**************************************************************************/
+/*  Returns true if the list contains all of the tokens in the given array.
+ */
+DOMTokenList.prototype.containsAllOf = function (tokens) {
+    for (token of tokens)
+        if (this.contains(token) == false)
+            return false;
+    return true;
 }
 
 /**************************************************/
