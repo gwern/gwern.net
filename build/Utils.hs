@@ -2025,21 +2025,18 @@ findCycles xs = snd $ foldl f ([], []) xs
       | cycleExists (rule : good) = (good, rule : bad)
       | otherwise = (rule : good, bad)
 
-{- `cycleExists` testsuite: (no need to rerun this)
-type TestCase = [(Int, Int)]
-type IsCycleExpected = Bool
-
-testCycleExists :: [(TestCase, IsCycleExpected)] -> [TestCase]
+-- `cycleExists` testsuite:
+testCycleExists :: [([(Int,Int)], Bool)] -> [[(Int,Int)]]
 testCycleExists testCases = [ rules | (rules, expected) <- testCases, cycleExists rules /= expected]
-
-testCycleDetection :: [TestCase]
-testCycleDetection = testCycleExists
-            [ ([], False) -- no rules, no cycles
+testCycleDetection :: [[(Int,Int)]]
+testCycleDetection = testCycleExists testCases
+ where testCases :: [([(Int, Int)], Bool)]
+       testCases = isUniqueKeys [ ([], False) -- no rules, no cycles
             , ([(1, 2)], False) -- one rule, no cycles
             , ([(1, 1)], True), ([(1, 2), (2, 3), (3, 4), (5, 5)], True), ([(1, 2), (2, 3), (4, 4), (5, 6)], True) -- self loop
             , ([(1, 2), (2, 3), (3, 4)], False) -- rules with no cycles
             , ([(1, 2), (2, 1)], True) -- simple cycle
-            , ([(1, 2), (2, 3), (3, 1)], True) -- cycle with more than 2 nodes
+            , ([(1, 2), (2, 3), (3, 1)], True) -- cycle with more than 2 nodes: where there is a cycle of nodes that all point to one another, but no node points to itself
             , ([(1, 2), (2, 3), (3, 4), (4, 1)], True) -- larger cycle
             , ([(1, 2), (2, 1), (3, 4), (4, 3), (5, 6), (6, 5)], True) -- Multiple disjoint cycles within a larger rule set
             , ([(1, 2), (1, 3), (2, 4), (2, 5), (3, 6), (3, 7)], False)
@@ -2050,10 +2047,8 @@ testCycleDetection = testCycleExists
             , ([(1, 2), (1, 2), (2, 3), (2, 3)], False) -- repetition
             , ([(1, 2), (1, 3), (2, 4), (3, 4)], False) -- Multiple paths to the same node, but no cycles
             , ([(1, 2), (1, 3), (2, 4), (3, 4), (4, 1)], True) -- where there are multiple paths leading to a node that is part of a cycle.
-            , ([(1, 2), (2, 3), (3, 1)], True) -- where there is a cycle of nodes that all point to one another, but no node points to itself
             , ([(1, 1), (2, 2), (3, 3)], True) --where every node in the list points to itself (simple loop for every node)
             ]
--}
 
 -- must handle both "https://twitter.com/grantslatton/status/1703913578036904431" and "https://twitter.com/grantslatton":
 extractTwitterUsername :: String -> String
@@ -2074,28 +2069,36 @@ printDouble x = if x > 1.7976931348623157e308 || x < -1.7976931348623157e308
 
 printDoubleTestSuite :: [(Double, String)]
 printDoubleTestSuite = filter (\(n,s) -> printDouble n /= s) printDoubleTests
-
-printDoubleTests :: [(Double, String)]
-printDoubleTests = [ (0.0, "0")
-            , (1.0, "1")
-            , (1.1, "1.1")
-            , (10.01, "10.01")
-            , (1000000.01, "1000000.01")
-            , (123456789.123456789, "123456789.12345679")
-            , (1.000000000000001, "1.000000000000001")
-            , (3.141592653589793, "3.141592653589793")
-            , (-3.141592653589793, "-3.141592653589793")
-            , (-1.000000000000001, "-1.000000000000001")
-            , (-123456789.123456789, "-123456789.12345679")
-            , (-1000000.01, "-1000000.01")
-            , (-10.01, "-10.01")
-            , (-1.1, "-1.1")
-            , (-1.0, "-1")
-            , (-0.0, "0")
-            , (0.000000000000001, "0.000000000000001")
-            , (-0.000000000000001, "-0.000000000000001")
-            , (0.9999999999999999, "0.9999999999999999")
-            , (-0.9999999999999999, "-0.9999999999999999")
-            , (1.0000000000000002, "1.0000000000000002")
-            , (-1.0000000000000002, "-1.0000000000000002")
-            ]
+ where
+  printDoubleTests :: [(Double, String)]
+  printDoubleTests =
+    -- no `isUnique` check for zeros because keys are not unique by value (eg. −0.0 == 0 == 0.00 etc) but we need to test that they print out the same
+              [
+              (-0, "0")
+              , (-0.0, "0")
+              , (-0.00, "0")
+              , (0, "0")
+              , (0.0, "0")
+              , (0.00, "0")
+              ] ++ isUnique [
+              (1.0, "1")
+              , (1.1, "1.1")
+              , (10.01, "10.01")
+              , (1000000.01, "1000000.01")
+              , (123456789.123456789, "123456789.12345679")
+              , (1.000000000000001, "1.000000000000001")
+              , (3.141592653589793, "3.141592653589793")
+              , (-3.141592653589793, "-3.141592653589793")
+              , (-1.000000000000001, "-1.000000000000001")
+              , (-123456789.123456789, "-123456789.12345679")
+              , (-1000000.01, "-1000000.01")
+              , (-10.01, "-10.01")
+              , (-1.1, "-1.1")
+              , (-1.0, "-1")
+              , (0.000000000000001, "0.000000000000001")
+              , (-0.000000000000001, "-0.000000000000001")
+              , (0.9999999999999999, "0.9999999999999999")
+              , (-0.9999999999999999, "-0.9999999999999999")
+              , (1.0000000000000002, "1.0000000000000002")
+              , (-1.0000000000000002, "-1.0000000000000002")
+              ]

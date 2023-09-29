@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-09-25 09:29:59 gwern"
+When: Time-stamp: "2023-09-29 19:10:17 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -71,7 +71,7 @@ import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadata, writeA
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv, testTags)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
-import Utils (printGreen, printRed, replace, safeHtmlWriterOptions, simplifiedHTMLString) -- sed
+import Utils (printGreen, printRed, replace, safeHtmlWriterOptions, simplifiedHTMLString, printDoubleTestSuite, testCycleDetection) -- sed
 
 main :: IO ()
 main =
@@ -82,6 +82,12 @@ main =
                               let linkIcons = linkIconTest
                               unless (null linkIcons) $ preprocess $ printRed ("Link icon rules have errors in: " ++ show linkIcons)
 
+                              let doubles = printDoubleTestSuite
+                              unless (null doubles) $ preprocess $ printRed ("Double-printing function test suite has errors in: " ++ show doubles)
+
+                              let cycles = testCycleDetection
+                              unless (null cycles) $ preprocess $ printRed ("Cycle-detection test suite has errors in: " ++ show cycles)
+
                               preprocess $ printGreen ("Testing tag rewrites…" :: String)
                               preprocess testTags
 
@@ -89,6 +95,7 @@ main =
                               let livelinks = linkLiveTest
                               unless (null livelinks) $ preprocess $ printRed ("Live link pop rules have errors in: " ++ show livelinks)
                               _ <- preprocess linkLivePrioritize -- generate testcases for new live-link targets
+                              -- NOTE: we skip `linkLiveTestHeaders` due to requiring too much time & IO & bandwidth, and instead do it once in a while post-sync
 
                               preprocess $ printGreen ("Testing interwiki rewrite rules…" :: String)
                               let interwikiPopupTestCases = interwikiTestSuite
