@@ -5955,6 +5955,7 @@ Content = {
          a single element ID to transclude.)
 
 	include-block-context
+	data-block-context-options
 		Normally, when an include-link’s URL specifies an element ID to
 		transclude, only (at most; see `include-unwrap`) that element is
 		transcluded. When the `include-block-context` option is used, not only
@@ -5971,6 +5972,15 @@ Content = {
 
         (This option has no effect unless the include-link’s URL hash specifies
          a single element ID to transclude.)
+
+		The `data-block-context-options` attribute allows various options to be 
+		specified for how block context should be determined and handled. The
+		value of this attribute is a pipe (`|`) separated list of option fields.
+		The following options may be specified:
+
+		expanded
+			Expanded block context mode omits paragraphs (the <p> element) from
+			consideration as containing blocks.
 
     include-replace-container
         Normally, when transclusion occurs, the transcluded content replaces the
@@ -6012,8 +6022,8 @@ Content = {
         <a class="include" href="/Sidenotes#tufte-css#tables"></a>
 
     This will include all parts of the "/Sidenotes" page’s content starting from
-    the element with ID `tufte-css`, all the way up to (but *not* including!) the
-    element with ID `tables`.
+    the element with ID `tufte-css`, all the way up to (but *not* including!) 
+    the element with ID `tables`.
 
     Either the first or the second identifier (the parts after the ‘#’) may
     instead be empty. The possibilities are:
@@ -7004,12 +7014,7 @@ Transclude = {
 	generalBlockElementSelectors: [
 		"figure",
 		"li",
-		/*	Removing <p> from consideration as a block element for block context
-			purposes, to broaden block context includes / popups. If no bad
-			consequences result, this change should be made permanent.
-				—SA 2023-09-25
-		 */
-// 		"p",
+		"p",
 		"blockquote",
 		[	"section",
 			".markdownBody > *",
@@ -7020,9 +7025,23 @@ Transclude = {
 	generalBlockContextMinimumLength: 200,
 
 	//	Called by: Transclude.sliceContentFromDocument
-	blockContext: (element) => {
+	blockContext: (element, includeLink) => {
 		let block = null;
+
 		let selectors = [ ...Transclude.specificBlockElementSelectors, ...Transclude.generalBlockElementSelectors ];
+
+		/*	Parse and process block context options (if any) specified by the 
+			include-link. (See documentation for the .include-block-context
+			class for details.)
+		 */
+		if (includeLink.dataset.blockContextOptions) {
+			let options = includeLink.dataset.blockContextOptions.split("|");
+
+			//	Expanded mode.
+			if (options.includes("expanded"))
+				selectors.remove("p");
+		}
+
 		for (selector of selectors)
 			if (block = element.closest(selector) ?? block)
 // 				if (   Transclude.specificBlockElementSelectors.includes(selector)
@@ -7198,7 +7217,7 @@ Transclude = {
 
 				if (   includeLink.classList.contains("include-block-context")
 					&& isBlockTranscludeLink == false) {
-					let blockContext = Transclude.blockContext(targetElement);
+					let blockContext = Transclude.blockContext(targetElement, includeLink);
 					if (blockContext) {
 						content = newDocument(blockContext);
 
@@ -7259,11 +7278,55 @@ Transclude = {
 												 { once: true });
 	},
 
+	/*  Implement alias classes for various forms of includes.
+		Entries below list the class(es) on the first line, followed by the full
+		list of what classes/attributes/etc. the aliases correspond to.
+
+		.include-annotation-partial
+			`class="include-annotation"`
+			`data-include-selector-not=".annotation-abstract"`
+			`data-template-fields="annotationClassSuffix:$"`
+			`data-annotation-class-suffix="-partial"`
+
+		.include-annotation.include-omit-metadata
+			`data-include-selector=".annotation-abstract"`
+
+		.include-block-context-expanded
+			`class="include-block-context"`
+			`data-block-context-options="expanded"`
+	 */
+	resolveIncludeLinkAliasClasses: (includeLink) => {
+		//  .include-annotation-partial
+		if (includeLink.classList.contains("include-annotation-partial")) {
+			includeLink.swapClasses([ "include-annotation-partial", "include-annotation" ], 1);
+			includeLink.dataset.includeSelectorNot = ".annotation-abstract";
+			includeLink.dataset.templateFields = [
+				...((includeLink.dataset.templateFields ?? "").split(",").filter(x => x)),
+				"annotationClassSuffix:$"
+			].join(",");
+			includeLink.dataset.annotationClassSuffix = "-partial";
+		}
+
+		//  .include-annotation.include-omit-metadata
+		if (includeLink.classList.containsAllOf([ "include-annotation", "include-omit-metadata" ])) {
+			includeLink.dataset.includeSelector = ".annotation-abstract";
+		}
+
+		//	.include-block-context-expanded
+		if (includeLink.classList.contains("include-block-context-expanded")) {
+			includeLink.swapClasses([ "include-block-context-expanded", "include-block-context" ], 1);
+			includeLink.dataset.blockContextOptions = "expanded";
+		}
+	},
+
     //  Called by: Transclude.transclude
     //  Called by: Transclude.triggerTranscludesInContainer
     //  Called by: handleTranscludes (rewrite function)
     transclude: (includeLink, now = false) => {
         GWLog("Transclude.transclude", "transclude.js", 2);
+
+		//	Resolve alias classes.
+		Transclude.resolveIncludeLinkAliasClasses(includeLink);
 
 		/*  We don’t retry failed loads, nor do we replicate ongoing loads.
          */
@@ -9008,7 +9071,7 @@ Extracts = { ...Extracts,
 			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "full-backlink-context");
 
 		//	Synthesize include-link (with or without hash, as appropriate).
-		let includeLink = synthesizeIncludeLink(target, { class: "include-block-context" });
+		let includeLink = synthesizeIncludeLink(target, { class: "include-block-context-expanded" });
 		if (fullPage) {
 			stripAnchorsFromLink(includeLink);
 		} else if (   Extracts.isFullBacklinkContextLink(target)
@@ -12137,40 +12200,6 @@ addContentInjectHandler(GW.contentInjectHandlers.setMarginsOnFullWidthBlocks = (
 /***************/
 /* ANNOTATIONS */
 /***************/
-
-/***************************************************************************/
-/*  Implement alias classes for various forms of annotation includes.
-    Entries below list the class(es) on the first line, followed by the full
-    list of what classes/attributes/etc. the aliases correspond to.
-
-    .include-annotation-partial
-        `class="include-annotation"`
-        `data-include-selector-not=".annotation-abstract"`
-        `data-template-fields="annotationClassSuffix:$"`
-        `data-annotation-class-suffix="-partial"`
-
-    .include-annotation.include-omit-metadata
-        `data-include-selector=".annotation-abstract"`
- */
-addContentLoadHandler(GW.contentLoadHandlers.addAnnotationIncludeLinkAliasClasses = (eventInfo) => {
-    GWLog("addAnnotationIncludeLinkAliasClasses", "rewrite.js", 1);
-
-    //  .include-annotation-partial
-    eventInfo.container.querySelectorAll("a.include-annotation-partial").forEach(includeLink => {
-        includeLink.swapClasses([ "include-annotation-partial", "include-annotation" ], 1);
-        includeLink.dataset.includeSelectorNot = ".annotation-abstract";
-        includeLink.dataset.templateFields = [
-            ...((includeLink.dataset.templateFields ?? "").split(",").filter(x => x)),
-            "annotationClassSuffix:$"
-        ].join(",");
-        includeLink.dataset.annotationClassSuffix = "-partial";
-    });
-
-    //  .include-annotation.include-omit-metadata
-    eventInfo.container.querySelectorAll("a.include-annotation.include-omit-metadata").forEach(includeLink => {
-        includeLink.dataset.includeSelector = ".annotation-abstract";
-    });
-}, "<transclude");
 
 /******************************************************************************/
 /*  Transform title-link of truncated annotations (i.e., full annotations

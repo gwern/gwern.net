@@ -975,40 +975,6 @@ addContentInjectHandler(GW.contentInjectHandlers.setMarginsOnFullWidthBlocks = (
 /* ANNOTATIONS */
 /***************/
 
-/***************************************************************************/
-/*  Implement alias classes for various forms of annotation includes.
-    Entries below list the class(es) on the first line, followed by the full
-    list of what classes/attributes/etc. the aliases correspond to.
-
-    .include-annotation-partial
-        `class="include-annotation"`
-        `data-include-selector-not=".annotation-abstract"`
-        `data-template-fields="annotationClassSuffix:$"`
-        `data-annotation-class-suffix="-partial"`
-
-    .include-annotation.include-omit-metadata
-        `data-include-selector=".annotation-abstract"`
- */
-addContentLoadHandler(GW.contentLoadHandlers.addAnnotationIncludeLinkAliasClasses = (eventInfo) => {
-    GWLog("addAnnotationIncludeLinkAliasClasses", "rewrite.js", 1);
-
-    //  .include-annotation-partial
-    eventInfo.container.querySelectorAll("a.include-annotation-partial").forEach(includeLink => {
-        includeLink.swapClasses([ "include-annotation-partial", "include-annotation" ], 1);
-        includeLink.dataset.includeSelectorNot = ".annotation-abstract";
-        includeLink.dataset.templateFields = [
-            ...((includeLink.dataset.templateFields ?? "").split(",").filter(x => x)),
-            "annotationClassSuffix:$"
-        ].join(",");
-        includeLink.dataset.annotationClassSuffix = "-partial";
-    });
-
-    //  .include-annotation.include-omit-metadata
-    eventInfo.container.querySelectorAll("a.include-annotation.include-omit-metadata").forEach(includeLink => {
-        includeLink.dataset.includeSelector = ".annotation-abstract";
-    });
-}, "<transclude");
-
 /******************************************************************************/
 /*  Transform title-link of truncated annotations (i.e., full annotations
     transcluded as partial annotations) to allow access to the full annotation.
