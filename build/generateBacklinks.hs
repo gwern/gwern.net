@@ -13,7 +13,7 @@ import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack, tail, takeWhile, Text)
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isSuffixOf, sort)
-import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter)
+import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter, filterWithKey)
 import System.Directory (createDirectoryIfMissing, doesFileExist, listDirectory)
 import Network.HTTP (urlEncode)
 import Data.Containers.ListUtils (nubOrd)
@@ -61,7 +61,7 @@ main' = do
   let html     = filter (".html" `isSuffixOf` ) fs
   links2 <- Par.mapM (parseFileForLinks False) html
 
-  let links3 = M.elems $ M.filter (not . null) $ M.mapWithKey (parseAnnotationForLinks . T.pack) md
+  let links3 = M.elems $ M.filter (not . null) $ M.mapWithKey (parseAnnotationForLinks . T.pack) $ M.filterWithKey (\u _ -> not (isPagePath $ T.pack u)) md
 
   let linksdb = M.fromListWith (++) $ map (\(a,b) -> (truncateAnchors a,[(a,[b])])) $ nubOrd $ concat $ links1++links2++links3
   let bldb' = linksdb `M.union` bldb
