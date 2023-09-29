@@ -2302,18 +2302,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1695859607#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1695859607#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1695859607#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1695859607#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5197,14 +5197,14 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1695859607#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1695859607#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5337,7 +5337,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1695859607#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5467,9 +5467,17 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
     z-index: 100;
 
     /*  Styling. */
-    border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
-    filter: drop-shadow(0px 0px 12px var(--GW-popins-box-shadow-color));
     background-color: var(--background-color);
+    border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
+
+	/*	Having a filter on the popin causes `position:fixed` to not work on 
+		the popin backdrop (see below). This is not, technically, a ‘bug’:
+		https://stackoverflow.com/questions/52937708/why-does-applying-a-css-filter-on-the-parent-break-the-child-positioning
+		https://github.com/w3c/fxtf-drafts/issues/402
+		Still, maybe CSSWG will come to their senses someday?
+			—SA 2023-09-29
+	 */
+/* 	filter: drop-shadow(0px 0px 12px var(--GW-popins-box-shadow-color)); */
 }
 
 .popin-ancestor {
@@ -5479,6 +5487,30 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popin + .popin {
     display: none;
+}
+
+/*	Backdrop.
+ */
+.popin-open + .popin::before {
+	content: "";
+	background-color: var(--background-color);
+	position: absolute;
+	top: calc(-1 * var(--GW-popins-popin-border-width));
+	left: calc(-1 * var(--GW-popins-popin-border-width));
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+    border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
+}
+.popin-open + .popin::after {
+	content: "";
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: var(--GW-popins-popin-backdrop-color);
+	z-index: -2;
 }
 
 /*┌──────────────────┐*/
@@ -5680,6 +5712,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
     overscroll-behavior: none;
     max-height: calc(var(--GW-popins-popin-max-height) - 2 * var(--GW-popins-popin-border-width) - var(--popin-title-bar-height));
     height: 100%;
+    background-color: var(--background-color);
 }
 
 /*  Scroll bar styles (for WebKit/Blink).
@@ -5759,14 +5792,14 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1695859607#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1695859607#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6669,7 +6702,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1695502497#question');
+    background-image: url('/static/img/icon/icons.svg?v=1695859607#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7235,7 +7268,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1695502497#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1695859607#circle-notch-solid');
 
     pointer-events: none;
 }

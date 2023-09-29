@@ -210,7 +210,7 @@
     --GW-code-popframe-line-number-color: #aaa;
     --GW-code-popframe-line-number-divider-color: #ccc;
 
-    --GW-extracts-options-dialog-backdrop-background-color: rgba(255,255,255,0.95);
+    --GW-extracts-options-dialog-backdrop-background-color: rgba(255, 255, 255, 0.95);
     --GW-extracts-options-dialog-background-color: var(--GW-body-background-color);
     --GW-extracts-options-dialog-border-color: #aaa;
     --GW-extracts-options-dialog-box-shadow-color: #444;
@@ -254,6 +254,7 @@
      */
     --GW-popins-popin-background-color: var(--GW-body-background-color);
     --GW-popins-popin-border-color: #aaa;
+    --GW-popins-popin-backdrop-color: rgba(0, 0, 0, 0.5);
     --GW-popins-box-shadow-color: #aaa;
     --GW-popins-popin-title-bar-background-color: #fff;
     --GW-popins-popin-title-bar-button-color: #888;
@@ -281,7 +282,7 @@
 
 	/*	Reader mode.
 	 */
-	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(0,0,0,0.6);
+	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(0, 0, 0, 0.6);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color: #fff;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color: #000;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-border-color: #bbb;
