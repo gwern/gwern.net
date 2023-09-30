@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-09-29 14:37:07 gwern"
+# When:  Time-stamp: "2023-09-30 18:45:44 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -51,9 +51,18 @@ else
     ionice --class 3     --pid "$$" &>/dev/null
 
     ## Parallelization: WARNING: post-2022-03 Hakyll uses parallelism which catastrophically slows down at >= # of physical cores; see <https://groups.google.com/g/hakyll/c/5_evK9wCb7M/m/3oQYlX9PAAAJ>
-    N="29" # "$(if [ ${#} == 0 ]; then echo 29; else echo "$1"; fi)"
-    if [ "$1" == "--slow" ]; then export SLOW="--slow"; else SLOW=""; fi
-    if [ "$1" == "--skip-directories" ]; then export SKIP_DIRECTORIES="true"; else SKIP_DIRECTORIES=""; fi
+    N=29
+    SLOW="true"
+    SKIP_DIRECTORIES=""
+    for ARG in "$@"; do
+        case "$ARG" in
+            --fast) SLOW="" ;;
+            --skip-directories) SKIP_DIRECTORIES="true" ;;
+            *[!0-9]*) ;; # skip non-numbers
+            *) N="$ARG" ;;
+        esac
+    done
+    export SLOW SKIP_DIRECTORIES N
 
     if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true; fi &
     bold "Pulling infrastructure updates…"
@@ -101,7 +110,7 @@ else
     compile hakyll.hs
     compile generateLinkBibliography.hs
     if [ -z "$SKIP_DIRECTORIES" ]; then compile generateDirectory.hs; fi
-    compile preprocess-markdown.hs &
+    compile preprocess-markdown.hs
     compile guessTag.hs &
     ## NOTE: generateSimilarLinks.hs & link-suggester.hs are done at midnight by a cron job because
     ## they are too slow to run during a regular site build & don't need to be super-up-to-date
@@ -174,7 +183,7 @@ else
         bold "Updating X-of-the-day…"
         ghci -i/home/gwern/wiki/static/build/ ./static/build/XOfTheDay.hs \
              -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; qotd; sotd; }' | \
-            grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]';
+            grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' &
     fi
 
     bold "Results size:"
@@ -344,7 +353,7 @@ else
     set +e
 
     bold "Checking metadata…"
-    ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'readLinkMetadataAndCheck' 1> /dev/null
+    ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'readLinkMetadataAndCheck' 1> /dev/null &
 
     # essays only:
     ## eg. './2012-election.page \n...\n ./doc/cs/cryptography/1955-nash.page \n...\n ./newsletter/2022/09.page \n...\n ./review/mcnamara.page \n...\n ./wikipedia-and-knol.page \n...\n ./zeo/zma.page'
@@ -444,7 +453,8 @@ else
                    -e '^mjx-vsize$' -e '^new$' -e '^outline-not$' -e '^warning$' -e '^markdown-body$' -e '^similars$' -e '^similars-append$' -e '^similar-links-search$' \
                    -e '^text-center$' -e '^abstract-tag-directory$' -e '^page-description-annotation$' -e '^link-bibliography$' \
                    -e '^link-bibliography-append$' -e '^expand-on-hover$' -e '^include-block-context$' -e '^tag-index-link-bibliography-block$' \
-                   -e '^decorate-not$' -e '^include-omit-metadata$' -e '^quote-of-the-day$' -e '^interview$' -e '^reader-mode-note$' -e '^parsed-raw-block$'; }
+                   -e '^decorate-not$' -e '^include-omit-metadata$' -e '^quote-of-the-day$' -e '^interview$' -e '^reader-mode-note$' \
+                   -e '^include-content-no-header$'; }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
     λ(){ echo "$PAGES_ALL" | grep -F --invert-match 'Hafu' | xargs --max-args=500 grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
@@ -477,7 +487,7 @@ else
              ## whitelist of papers to not warn about, because not dangerous or have appropriate warnings/caveats:
              grep -F --invert-match -e '/doc/economics/experience-curve/2020-kc.pdf' -e '/doc/food/2002-wansink.pdf' -e 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2244801/' -e 'https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0069258' -e '/doc/statistics/bias/2012-levelt.pdf' -e 'https://en.wikipedia.org/wiki/' -e 'https://guzey.com/books/why-we-sleep/' -e 'https://statmodeling.stat.columbia.edu/2019/11/' -e '/doc/psychiatry/schizophrenia/rosenhan/2020-01-25-andrewscull-howafraudulentexperimentsetpsychiatrybackdecades.html';
        }
-    wrap λ "Dishonest or serial fabricators detected as authors? (If a fraudulent publication should be annotated anyway, add a warning to the annotation & whitelist it.)"
+    wrap λ "Dishonest or serial fabricators detected as authors? (If a fraudulent publication should be annotated anyway, add a warning to the annotation & whitelist it.)" &
 
      λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '/variable' | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e '{#'; }
      wrap λ "Bad link ID overrides in Markdown."
@@ -526,7 +536,10 @@ else
     wrap λ "Warning: empty result or caret/tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
 
     λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeYAML "metadata/full.yaml"'; }
-    wrap λ "Annotations that need to be rewritten into paragraphs."
+    wrap λ "Annotations that need to be rewritten into paragraphs." &
+
+    λ(){ gwa | grep -F -- '[]' | grep -F --invert-match -e '/newsletter/' -e '/index#manual-annotation' | sort; } # we exclude future newsletter issues as deliberately untagged to avoid appearing at the top of the newsletter tag # | grep -E --invert-match --perl-regexp '\e\[36ma\e\[0m: '
+    wrap λ "Untagged annotations." &
 
     λ(){ runghc -istatic/build/ ./static/build/link-prioritize.hs 20; }
     wrap λ "Links needing annotations by priority:"
@@ -704,11 +717,8 @@ else
     λ(){ find . -not -name "*#*" -xtype l -printf 'Broken symbolic link: %p\n'; }
     wrap λ "Broken symbolic links"
 
-    λ(){ gwa | grep -F -- '[]' | grep -F --invert-match -e '/newsletter/' -e '/index#manual-annotation' | sort; } # we exclude future newsletter issues as deliberately untagged to avoid appearing at the top of the newsletter tag # | grep -E --invert-match --perl-regexp '\e\[36ma\e\[0m: '
-    wrap λ "Untagged annotations."
-
-    ## Is the Internet up?
-    ping -q -c 5 google.com  &>/dev/null
+    ## Is the remote server up?
+    ping -q -c 5 gwern.net  &>/dev/null
 
     # Testing complete.
   fi
@@ -718,6 +728,7 @@ else
     ## make sure nginx user can list all directories (x) and read all files (r)
     chmod a+x $(find ./ -type d)
     chmod --recursive a+r ./*
+    wait;
     ## sync to Hetzner server: (`--size-only` because Hakyll rebuilds mean that timestamps will always be different, forcing a slower rsync)
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. doc/*), just force a hash-based sync every time:

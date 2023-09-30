@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-09-29 21:23:55 gwern"
+When: Time-stamp: "2023-09-30 09:31:26 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -76,7 +76,7 @@ import Utils (printGreen, printRed, replace, safeHtmlWriterOptions, simplifiedHT
 main :: IO ()
 main =
  do arg <- lookupEnv "SLOW" -- whether to do the more expensive stuff; Hakyll eats the CLI arguments, so we pass it in as an exported environment variable instead
-    let slow = "--slow" == fromMaybe "" arg
+    let slow = "true" == fromMaybe "" arg
     hakyll $ do
                when slow $ do preprocess $ printGreen ("Testing link icon matches…" :: String)
                               let linkIcons = linkIconTest
