@@ -7287,45 +7287,21 @@ Transclude = {
 												 { once: true });
 	},
 
-	/*  Implement alias classes for various forms of includes.
-		Entries below list the class(es) on the first line, followed by the full
-		list of what classes/attributes/etc. the aliases correspond to.
+	//  Enable alias classes for various forms of includes.
+	includeLinkAliasTransforms: [ ],
 
-		.include-annotation-partial
-			`class="include-annotation"`
-			`data-include-selector-not=".annotation-abstract"`
-			`data-template-fields="annotationClassSuffix:$"`
-			`data-annotation-class-suffix="-partial"`
+	addIncludeLinkAliasClass: (aliasClass, linkTransform) => {
+		Transclude.permittedClassNames.push(aliasClass);
+		Transclude.includeLinkAliasTransforms.push([ aliasClass, linkTransform ]);
+	},
 
-		.include-annotation.include-omit-metadata
-			`data-include-selector=".annotation-abstract"`
-
-		.include-block-context-expanded
-			`class="include-block-context"`
-			`data-block-context-options="expanded"`
-	 */
 	resolveIncludeLinkAliasClasses: (includeLink) => {
-		//  .include-annotation-partial
-		if (includeLink.classList.contains("include-annotation-partial")) {
-			includeLink.swapClasses([ "include-annotation-partial", "include-annotation" ], 1);
-			includeLink.dataset.includeSelectorNot = ".annotation-abstract";
-			includeLink.dataset.templateFields = [
-				...((includeLink.dataset.templateFields ?? "").split(",").filter(x => x)),
-				"annotationClassSuffix:$"
-			].join(",");
-			includeLink.dataset.annotationClassSuffix = "-partial";
-		}
-
-		//  .include-annotation.include-omit-metadata
-		if (includeLink.classList.containsAllOf([ "include-annotation", "include-omit-metadata" ])) {
-			includeLink.dataset.includeSelector = ".annotation-abstract";
-		}
-
-		//	.include-block-context-expanded
-		if (includeLink.classList.contains("include-block-context-expanded")) {
-			includeLink.swapClasses([ "include-block-context-expanded", "include-block-context" ], 1);
-			includeLink.dataset.blockContextOptions = "expanded";
-		}
+		Transclude.includeLinkAliasTransforms.forEach(alias => {
+			let [ aliasClass, linkTransform ] = alias;
+			if (   includeLink.classList.contains(aliasClass)
+				&& linkTransform(includeLink))
+				includeLink.classList.remove(aliasClass);
+		});
 	},
 
     //  Called by: Transclude.transclude
@@ -7626,6 +7602,66 @@ addContentLoadHandler(GW.contentLoadHandlers.handleTranscludes = (eventInfo) => 
 /*	Re-process when injecting. (Necessary for cloned content.)
  */
 addContentInjectHandler(GW.contentInjectHandlers.handleTranscludes = GW.contentLoadHandlers.handleTranscludes, "rewrite");
+
+/******************************************/
+/*	Add various include-link alias classes.
+ */
+
+/*========================================================*/
+/*	.include-annotation-partial
+		`class="include-annotation"`
+		`data-include-selector-not=".annotation-abstract"`
+		`data-template-fields="annotationClassSuffix:$"`
+		`data-annotation-class-suffix="-partial"`
+ */
+Transclude.addIncludeLinkAliasClass("include-annotation-partial", (includeLink) => {
+	includeLink.classList.add("include-annotation");
+	includeLink.dataset.includeSelectorNot = ".annotation-abstract";
+	includeLink.dataset.templateFields = [
+		...((includeLink.dataset.templateFields ?? "").split(",").filter(x => x)),
+		"annotationClassSuffix:$"
+	].join(",");
+	includeLink.dataset.annotationClassSuffix = "-partial";
+
+	return true;
+});
+
+/*====================================================*/
+/*	.include-annotation.include-omit-metadata
+		`data-include-selector=".annotation-abstract"`
+ */
+Transclude.addIncludeLinkAliasClass("include-omit-metadata", (includeLink) => {
+	if (Transclude.isAnnotatedLinkFull(includeLink) == false)
+		return false;
+
+	includeLink.dataset.includeSelector = ".annotation-abstract";
+
+	return true;
+});
+
+/*=============================================*/
+/*	.include-block-context-expanded
+		`class="include-block-context"`
+		`data-block-context-options="expanded"`
+ */
+Transclude.addIncludeLinkAliasClass("include-block-context-expanded", (includeLink) => {
+	includeLink.classList.add("include-block-context");
+	includeLink.dataset.blockContextOptions = "expanded";
+
+	return true;
+});
+
+/*==========================================================*/
+/*	.include-content-no-header
+		`class="include-unwrap"`
+		`data-include-selector-not="h1, h2, h3, h4, h5, h6"`
+ */
+Transclude.addIncludeLinkAliasClass("include-content-no-header", (includeLink) => {
+	includeLink.classList.add("include-unwrap");
+	includeLink.dataset.includeSelectorNot = "h1, h2, h3, h4, h5, h6";
+
+	return true;
+});
 Transclude.templates = {
 	"annotation-blockquote-inside": `<div class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
 	<p class="data-field title <[IF authorDateAux]>author-date-aux<[IFEND]>">
