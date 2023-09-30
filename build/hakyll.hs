@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-09-29 19:10:17 gwern"
+When: Time-stamp: "2023-09-29 21:23:55 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -62,7 +62,7 @@ import Annotation (tooltipToMetadataTest)
 import Image (invertImageInline, imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet)
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToText, interwikiTestSuite, interwikiCycleTestSuite)
-import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata)
+import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, testLinkRewrites, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink (getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck)
 import LinkIcon (linkIconTest)
@@ -87,6 +87,9 @@ main =
 
                               let cycles = testCycleDetection
                               unless (null cycles) $ preprocess $ printRed ("Cycle-detection test suite has errors in: " ++ show cycles)
+
+                              archives <- preprocess testLinkRewrites
+                              unless (null archives) $ preprocess $ printRed ("Link-archive rewrite test suite has errors in: " ++ show archives)
 
                               preprocess $ printGreen ("Testing tag rewrites…" :: String)
                               preprocess testTags

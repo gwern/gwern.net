@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-09-28 10:22:16 gwern"
+When:  Time-stamp: "2023-09-29 21:26:28 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -92,22 +92,22 @@ thousands of dying links, regular reader frustration, and a considerable waste o
 dealing with the latest broken links. -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkArchive (C.archivePerRunN, localizeLink, readArchiveMetadata, ArchiveMetadata) where
+module LinkArchive (C.archivePerRunN, localizeLink, readArchiveMetadata, testLinkRewrites, ArchiveMetadata) where
 
 import Control.Monad (filterM, unless)
 import Data.IORef (IORef, readIORef, writeIORef)
-import qualified Data.Map.Strict as M (fromList, insert, lookup, toAscList, Map)
+import qualified Data.Map.Strict as M (fromList, insert, lookup, toAscList)
 import Data.List (isInfixOf, isPrefixOf, nub)
 import Data.Maybe (isNothing, fromMaybe)
 import Text.Read (readMaybe)
 import qualified Data.Text.IO as TIO (readFile)
-import qualified Data.Text as T (isPrefixOf, pack, unpack, append)
+import qualified Data.Text as T (isPrefixOf, pack, unpack, append, Text)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure, ExitSuccess))
 import System.Posix.Files (getFileStatus, fileSize)
 import Data.FileStore.Utils (runShellCommand)
 import Network.URI.TLD (parseTLD)
-import Text.Pandoc (Inline(Link))
+import Text.Pandoc (Inline(Link), nullAttr)
 import Text.Show.Pretty (ppShow)
 import Data.ByteString.Base16 (encode) -- base16-bytestring
 import Crypto.Hash.SHA1 (hash) -- cryptohash
@@ -115,16 +115,10 @@ import Data.ByteString.Char8 (pack, unpack)
 import System.FilePath (takeFileName)
 import System.Directory (doesFileExist)
 
-import Utils (writeUpdatedFile, printGreen, printRed, currentDay)
-import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, transformURLsForMobile, archivePerRunN, archiveDelay, isCheapArchive)
+import LinkMetadataTypes (ArchiveMetadataItem, ArchiveMetadataList, ArchiveMetadata, Path)
 
-type ArchiveMetadataItem = Either
-  Integer -- Age: first seen date -- ModifiedJulianDay, eg. 2019-11-22 = 58810
-  (Maybe FilePath) -- Our archive of the URL: local archive path (if successful, otherwise, should be skipped - already dead?)
-type ArchiveMetadataList= [(Path, -- URL: original raw URL of an external link
-                            ArchiveMetadataItem)] -- date/path
-type ArchiveMetadata = M.Map Path ArchiveMetadataItem
-type Path = String
+import Utils (writeUpdatedFile, printGreen, printRed, currentDay)
+import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, transformURLsForMobile, archivePerRunN, archiveDelay, isCheapArchive, localizeLinkTestDB, localizeLinktestCases)
 
 -- Pandoc types: Link = Link Attr [Inline] Target; Attr = (String, [String], [(String, String)]); Target = (String, String)
 localizeLink :: ArchiveMetadata -> IORef Integer -> Inline -> IO Inline
@@ -137,10 +131,25 @@ localizeLink adb archivedN (Link (identifier, classes, pairs) b (targetURL, targ
                               else [("data-url-archive", "/" `T.append` targetURL')]) ++
                           (if mobileURL == targetURL then [] else [("data-href-mobile", mobileURL)]) ++
                           (if cleanURL  == targetURL then [] else [("data-url-html",    cleanURL)])
-  let classes' = if "/doc/www/nitter.net/" `T.isPrefixOf` cleanURL then "link-annotated" : classes else classes -- TODO: special case, due to unreliability of Nitter mirror creation + use of archive snapshots to create the 'annotation' at runtime. see `LM.addHasAnnotation`
+  let classes' = if "doc/www/nitter.net/" `T.isPrefixOf` targetURL' then "link-annotated" : classes else classes -- TODO: special case, due to unreliability of Nitter mirror creation + use of archive snapshots to create the 'annotation' at runtime. see `LM.addHasAnnotation`
   let archiveAnnotatedLink = Link (identifier, classes', nub (pairs++archiveAttributes)) b (targetURL, targetDescription)
   return archiveAnnotatedLink
 localizeLink _ _ x = return x
+
+testLinkRewrites :: IO [(Inline, Inline)]
+testLinkRewrites = filterNotEqual $ mapM (\(u, results) -> do
+                            linkActual <- localizeLink C.localizeLinkTestDB undefined (l u)
+                            return (l' u results, linkActual)
+    ) C.localizeLinktestCases
+
+  where filterNotEqual :: IO [(Inline, Inline)] -> IO [(Inline, Inline)]
+        filterNotEqual values = filterM (\(x, y) -> return (x /= y)) =<< values
+        l :: T.Text -> Inline
+        l url = Link nullAttr [] (url, "")
+        l' :: T.Text -> (T.Text, T.Text, T.Text, [T.Text]) -> Inline
+        l' url (archive, mobile, html, classes) = Link ("", classes,
+                                                        filter (\(_,b) -> b/="") [("data-url-archive", archive), ("data-href-mobile", mobile), ("data-url-html", html)])
+                                                  [] (url, "")
 
 readArchiveMetadata :: IO ArchiveMetadata
 readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/archive.hs") :: IO String

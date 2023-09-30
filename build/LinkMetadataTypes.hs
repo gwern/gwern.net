@@ -7,6 +7,13 @@ import System.FilePath (takeExtension)
 
 import Utils (replace)
 
+type ArchiveMetadataItem = Either
+  Integer -- Age: first seen date -- ModifiedJulianDay, eg. 2019-11-22 = 58810
+  (Maybe FilePath) -- Our archive of the URL: local archive path (if successful, otherwise, should be skipped - already dead?)
+type ArchiveMetadataList= [(Path, -- URL: original raw URL of an external link
+                            ArchiveMetadataItem)] -- date/path
+type ArchiveMetadata = M.Map Path ArchiveMetadataItem
+
 type Metadata = M.Map Path MetadataItem                                --
 type MetadataItem = (String, String, String, String, [String], String) -- (Title, Author, Date, DOI, Tags, Abstract)
 type MetadataList = [(Path, MetadataItem)]
