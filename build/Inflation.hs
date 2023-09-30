@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2023-09-29 17:54:13 gwern"
+-- When:  Time-stamp: "2023-09-30 09:04:43 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -99,7 +99,7 @@ dollarAdjuster l@(Link _ text (oldYears, _)) =
     where -- oldYear = '$1970' → '1970'
           oldYear = if T.length oldYears /= 5 || T.head oldYears /= '$' then error (show l) else T.tail oldYears
           oldDollarString = multiplyByUnits l $ filter (/= '$') $ T.unpack $ inlinesToText text -- '$50.50' → '50.50'; '$50.50k' → '50500.0'; '$50.50m' → 5.05e7; '$50.50b' → 5.05e10; '$50.50t' → 5.05e13
-          oldDollar = case (readMaybe oldDollarString :: Maybe Double) of { Just d -> d; Nothing -> error (show l) }
+          oldDollar = case (readMaybe $ filter (/=',') oldDollarString :: Maybe Double) of { Just d -> d; Nothing -> error ("Inflation: oldDollar: " ++ show l ++ ":" ++ oldDollarString) }
           oldDollarString' = printDouble oldDollar
           adjustedDollar = dollarAdjust oldDollar (T.unpack oldYear)
           adjustedDollarString = printDouble adjustedDollar
