@@ -5909,11 +5909,16 @@ Content = {
 
         The default behavior is set via the
         Transclude.transcludeAnnotationsByDefault property. If this is set to
-        `true`, then annotated links transclude the annotation unless the
-        `include-content` class is set (in which case they transclude their
-        linked content). If it is set to `false`, then annotated links
-        transclude the annotation only if the `include-annotation` class is set
-        (otherwise they transclude their linked content).
+        `true`, then fully (not partially!) annotated links transclude the 
+        annotation unless the `include-content` class is set (in which case they 
+        transclude their linked content). If it is set to `false`, then fully
+        annotated links transclude the annotation only if the 
+        `include-annotation` class is set (otherwise they transclude their 
+        linked content).
+
+		Note that merely partially annotated links always default to 
+		transcluding content, unless the `include-annotation` class is set.
+		(See also the `include-annotation-partial` alias class.)
 
     include-strict
         By default, include-linked are lazy-loaded. A lazy-loaded include-link
@@ -6942,19 +6947,23 @@ Transclude = {
 		if (Transclude.isIncludeLink(link) == false)
 			return false;
 
-        if ((   Transclude.hasAnnotation(link) 
+        if ((   Transclude.hasFullAnnotation(link) 
         	 || link.classList.contains("include-annotation")
         	 ) == false)
             return false;
 
         return ((   Transclude.transcludeAnnotationsByDefault
-        		 && Transclude.hasAnnotation(link))
+        		 && Transclude.hasFullAnnotation(link))
                 ? link.classList.contains("include-content") == false
                 : link.classList.contains("include-annotation") == true);
     },
 
 	hasAnnotation: (link) => {
 		return (Annotations.isAnnotatedLink(link));
+	},
+
+	hasFullAnnotation: (link) => {
+		return (Annotations.isAnnotatedLinkFull(link));
 	},
 
     /**************/
