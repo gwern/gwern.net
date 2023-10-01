@@ -17,7 +17,7 @@
 
 Typography = {
 	replacements: (types) => {
-		let allReplacements = [ ];
+		let specifiedReplacements = [ ];
 		let replacementTypeDefinitions = [
 			[ Typography.replacementTypes.QUOTES,		Typography.replacementDefinitionGroups.quotes		],
 			[ Typography.replacementTypes.HYPHENS,		Typography.replacementDefinitionGroups.hyphens		],
@@ -32,9 +32,9 @@ Typography = {
 		for ([ replacementTypeCode, replacementGroup ] of replacementTypeDefinitions) {
 			if (types & replacementTypeCode)
 				for (replacement of replacementGroup)
-					allReplacements.push(replacement);
+					specifiedReplacements.push(replacement);
 		}
-		return allReplacements;
+		return specifiedReplacements;
 	},
 	replacementTypes: {
 		NONE:			0x0000,
@@ -52,112 +52,173 @@ Typography = {
 	replacementDefinitionGroups: {
 		quotes: [
 			// triple prime
-			[ /'''/g, retainLength => '\u2034' + (retainLength ? '\u2063\u2063' : '') ],
+			[ /'''/, '\u2034' ],
 			// beginning "
-			[ /([\s([]|^)"([^\s?!.,;\/)])/g, '$1\u201c$2' ],
+			[ /(?<=[\s([]|^)"(?=[^\s?!.,;\/)])/, '\u201c' ],
 			// ending "
-			[ /(\u201c[^"]*)"([^"]*$|[^\u201c"]*(?=\u201c))/g, '$1\u201d$2' ],
+			[ /(?<=\u201c[^"]*)"(?=[^"]*$|[^\u201c"]*(?=\u201c))/, '\u201d' ],
 			// remaining " at end of word
-			[ /([^0-9])"/g, '$1\u201d' ],
+			[ /(?<=[^0-9])"/, '\u201d' ],
 			// double quotes
-			[ /"(.+?)"/g, '\u201c$1\u201d' ],
+			[ /"(.+?)"/, '\u201c$1\u201d' ],
 			// double prime as two single quotes
-			[ /''/g, retainLength => '\u2033' + (retainLength ? '\u2063' : '') ],
+			[ /''/, '\u2033' ],
 			// beginning '
-			[ /(\W|^)'(\S)/g, '$1\u2018$2' ],
+			[ /(?<=\W|^)'(?=\S)/, '\u2018' ],
 			// conjunction's possession
-			[ /([a-z0-9])'([a-z])/ig, '$1\u2019$2' ],
+			[ /(?<=[a-z0-9])'(?=[a-z])/i, '\u2019' ],
 			// abbrev. years like '93
-			[ /(\u2018)([0-9]{2}[^\u2019]*)(\u2018([^0-9]|$)|$|\u2019[a-z])/ig, '\u2019$2$3' ],
+			[ /\u2018(?=(?:[0-9]{2}[^\u2019]*)(?:\u2018(?:[^0-9]|$)|$|\u2019[a-z]))/i, '\u2019' ],
 			// ending '
-			[ /((\u2018[^']*)|[a-z])'([^0-9]|$)/ig, '$1\u2019$3' ],
+			[ /(?<=(\u2018[^']*)|[a-z])'(?=[^0-9]|$)/i, '\u2019' ],
 			// backwards apostrophe
-			[ /(\B|^)\u2018(?=([^\u2018\u2019]*\u2019\b)*([^\u2018\u2019]*\B\W[\u2018\u2019]\b|[^\u2018\u2019]*$))/ig, '$1\u2019' ],
+			[ /(?<=\B|^)\u2018(?=([^\u2018\u2019]*\u2019\b)*([^\u2018\u2019]*\B\W[\u2018\u2019]\b|[^\u2018\u2019]*$))/i, '\u2019' ],
 			// double prime
-			[ /"/g, '\u2033' ],
+			[ /"/, '\u2033' ],
 			// prime
-			[ /'/g, '\u2032' ]
+			[ /'/, '\u2032' ]
 		],
 		hyphens: [
 			// turn a hyphen surrounded by spaces, between words, into an em-dash
-			[ /([a-z\u201d]) - ([a-z\u201c])/ig, retainLength => (retainLength ? '$1\u2063\u2014\u2063$2' : '$1\u2014$2') ],
+			[ /(?<=[a-z\u201d]) (-) (?=[a-z\u201c])/i, '\u2014' ],
 			// turn a hyphen between a space and a quote, into an em-dash
-			[ /([a-z]) -(\u201d)/ig, retainLength => (retainLength ? '$1\u2063\u2014$2' : '$1\u2014$2') ],
-			[ /(\u201c)- ([a-z])/ig, retainLength => (retainLength ? '$1\u2014\u2063$2' : '$1\u2014$2') ],
+			[ /(?<=[a-z]) (-)(?=\u201d)/i, '\u2014' ],
+			[ /(?<=\u201c)(-) (?=[a-z])/i, '\u2014' ],
 			// turn a double or triple hyphen, optionally surrounded by spaces, between words, or at the start of a line, into an em-dash
-			[ /([a-z"'“”‘’]|\n)( ?---? ?)([a-z"'“”‘’])/ig, retainLength => (retainLength
-				? (m0, m1, m2, m3) => (m1 + '\u2014'.padStart(m2.length - 1, '\u2063') + m3)
-				: (m0, m1, m2, m3) => (m1 + '\u2014' + m3)
-			  ) ],
+			[ /(?<=[a-z"'“”‘’]|\n) ?(---?) ?(?=[a-z"'“”‘’])/i, '\u2014' ],
 			// turn a hyphen surrounded by spaces, between decimal digits, into an en-dash
-			[ /([0-9]) - ([0-9])/g, retainLength => (retainLength ? '$1\u2063\u2013\u2063$2' : '$1\u2013$2') ]
+			[ /(?<=[0-9]) (-) (?=[0-9])/, '\u2013' ]
 		],
 		ellipses: [
 			// Ellipsis rectification.
-			[ /(^|\s)\.\.\./g, retainLength => (retainLength ? '$1…\u2063\u2063' : '$1…') ],
-			[ /\.\.\.(\s|$)/g, retainLength => (retainLength ? '\u2063\u2063…$1' : '…$1') ]
+			[ /(?<=^|\s)\.\.\./, '…' ],
+			[ /\.\.\.(?=\s|$)/, '…' ]
 		],
 		arrows: [
 			// Arrows
-			[ /(\s)->(\s)/g, retainLength => (retainLength ? '$1\u2063\u2192$2' : '$1\u2192$2') ],
-			[ /(\s)<-(\s)/g, retainLength => (retainLength ? '$1\u2192\u2063$2' : '$1\u2190$2') ],
-			[ /(\s)=>(\s)/g, retainLength => (retainLength ? '$1\u2063\u2192$2' : '$1\u21d2$2') ],
-			[ /(\s)<=(\s)/g, retainLength => (retainLength ? '$1\u2192\u2063$2' : '$1\u21d0$2') ],
-			[ /(\s)<=>(\s)/g, retainLength => (retainLength ? '$1\u2063\u2192\u2063$2' : '$1\u21d4$2') ]
+			[ /(?<=\s)->(?=\s)/, '\u2192' ],
+			[ /(?<=\s)<-(?=\s)/, '\u2190' ],
+			[ /(?<=\s)=>(?=\s)/, '\u21d2' ],
+			[ /(?<=\s)<=(?=\s)/, '\u21d0' ],
+			[ /(?<=\s)<=>(?=\s)/, '\u21d4' ]
 		],
-		/*	This replacement type adds length, so the ‘retainLength’ trick does
-			not work. See the ‘processElement’ method for how we deal with this.
-		 */
 		wordbreaks: [
 			// Word-breaks after slashes (for long URLs etc.).
-			[ /.\/+/g, '$&\u200b' ],
+			[ /(?<=.)\/+(?!\u200b)/, '$&\u200b' ],
 		],
 		misc: [
 			// Convert nbsp to regular space.
-			[ /\xa0/g, ' ' ],
+			[ /\xa0/, ' ' ],
 			// Two spaces after a period is INCORRECT.
-			[ /(\w[\.\?\!])[ \u00a0]{2}(\w)/g, retainLength => (retainLength ? '$1 \u2063$2' : '$1 $2') ],
+			[ /(?<=\w[\.\?\!])[ \u00a0]{2}(?=\w)/, ' ' ],
 			// Hyphen followed by a numeral (with an optional space first), becomes an actual minus sign.
-			[ /(\s)-( ?)([0-9])/g, '$1\u2212$2$3' ]
+			[ /(?<=\s)-( ?)(?=[0-9])/, '\u2212$1' ]
 		],
 		softHyphens: [
 			// Strip soft hyphens.
-			[ /\u00ad/g, retainLength => (retainLength ? '\u2063' : '') ]
+			[ /\u00ad/, '' ]
 		],
 		joiners: [
 			// Strip joiners.
-			[ /\u2060/g, retainLength => (retainLength ? '\u2063' : '') ]
+			[ /\u2060/, '' ]
 		],
 		separators: [
 			// Strip zero-width spaces.
-			[ /\u200b|&ZeroWidthSpace;/g, retainLength => (retainLength ? '\u2063' : '') ],
+			[ /\u200b|&ZeroWidthSpace;/, '' ],
 			// Strip hair spaces.
-			[ /\u200a|&hairsp;/g, retainLength => (retainLength ? '\u2063' : '') ],
+			[ /\u200a|&hairsp;/, '' ],
 		]
 	},
-	processString: (str, replacementTypes = Typography.replacementTypes.NONE, options = { }) => {
-		Typography.replacements(replacementTypes).forEach(replace => {
-			replacement = typeof replace[1] === "function"
-						  ? replace[1](options.retainLength)
-						  : replace[1];
-			str = str.replace(replace[0], replacement);
+	processString: (str, replacementTypes = Typography.replacementTypes.NONE, segments = null) => {
+		if (segments == null)
+			segments = [ str.length ];
+
+		function segmentIndexAtOffset(segments, offset) {
+			let currentSegmentStart = 0;
+			for (let i = 0; i < segments.length; i++) {
+				if (   offset >= currentSegmentStart
+					&& offset < currentSegmentStart + segments[i])
+					return i;
+
+				currentSegmentStart += segments[i];
+			}
+			return -1;
+		}
+
+		Typography.replacements(replacementTypes).forEach(replacement => {
+			let [ pattern, template ] = replacement;
+
+			let globalPattern = new RegExp(pattern.source, pattern.flags + "g");
+			let match = null;
+			while (match = globalPattern.exec(str)) {
+				let newStr = str.replace(pattern, template);
+				let lengthChange = newStr.length - str.length;
+
+				if (lengthChange == 0)
+					continue;
+
+				let segmentAtMatchStart = segmentIndexAtOffset(segments, match.index);
+				let segmentAtMatchEnd = segmentIndexAtOffset(segments, match.index + match[0].length - 1);
+				if (segmentAtMatchStart == segmentAtMatchEnd) {
+					segments[segmentAtMatchStart] += lengthChange;
+				} else {
+					//	TODO: THIS!
+				}
+
+				str = newStr;
+			}
 		});
+
 		return str;
 	},
-	substringSansSeparators: (text, value, position) => {
-		return text.substr(position, value.length).replace(/\u2063/g, '');
+	processElement: (element, replacementTypes = Typography.replacementTypes.NONE, rectifyWordBreaks = true) => {
+		if ([ 'CODE', 'PRE', 'SCRIPT', 'STYLE', 'NOSCRIPT' ].includes(element.nodeName))
+			return;
+
+		function decomposeElement(element) {
+			let text = "";
+			let textNodes = [ ];
+
+			for (node of element.childNodes) {
+				if (node.nodeType === Node.TEXT_NODE) {
+					textNodes.push(node);
+					text += node.nodeValue;
+				} else if (node.childNodes.length > 0) {
+					let [ subtext, subnodes ] = decomposeElement(node);
+					text += subtext;
+					textNodes.splice(textNodes.length, 0, ...subnodes);
+				}
+			}
+
+			return [ text, textNodes ];
+		}
+
+		let [ text, textNodes ] = decomposeElement(element);
+		let segments = textNodes.map(node => node.nodeValue.length);
+		text = Typography.processString(text, replacementTypes, segments);
+		let currentSegmentStart = 0;
+		for (let i = 0; i < textNodes.length; i++) {
+			textNodes[i].nodeValue = text.slice(currentSegmentStart, currentSegmentStart + segments[i]);
+			currentSegmentStart += segments[i];
+		}
+
+		//  Transform separators into <wbr> tags.
+		if (rectifyWordBreaks)
+			Typography.rectifyWordBreaks(element);
+
+		return text;
 	},
-	replaceZeroWidthSpaces: (element) => {
+	rectifyWordBreaks: (element) => {
 		let replacements = [ ];
 		for (node of element.childNodes) {
 			if (node.nodeType === Node.ELEMENT_NODE) {
-				Typography.replaceZeroWidthSpaces(node);
+				Typography.rectifyWordBreaks(node);
 			} else if (node.nodeType === Node.TEXT_NODE) {
-				let zwsRegExp = new RegExp(Typography.replacementDefinitionGroups.separators.map(x => x[0].source).join("|"), "g");
+				let sepRegExp = new RegExp(Typography.replacementDefinitionGroups.separators.map(x => x[0].source).join("|"), "g");
 				let parts = [ ];
 				let start = 0;
 				let match = null;
-				while (match = zwsRegExp.exec(node.textContent)) {
+				while (match = sepRegExp.exec(node.textContent)) {
 					parts.push([ start, match.index ]);
 					start = match.index + match[0].length;
 				}
@@ -207,48 +268,5 @@ Typography = {
 				}
 			}
 		}
-	},
-	processElement: (element, replacementTypes = Typography.replacementTypes.NONE, replaceZeroWidthSpaces = true) => {
-		if ([ 'CODE', 'PRE', 'SCRIPT', 'STYLE', 'NOSCRIPT' ].includes(element.nodeName))
-			return;
-
-		//	Word breaks require special treatment, because they add length.
-		let doWordbreaks = (replacementTypes & Typography.replacementTypes.WORDBREAKS);
-		replacementTypes &= ~(Typography.replacementTypes.WORDBREAKS);
-
-		let text = "";
-		let textNodes = [ ];
-
-		//	We process everything *but* the wordbreaks rule in a non-local way.
-		for (node of element.childNodes) {
-			if (node.nodeType === Node.TEXT_NODE) {
-				textNodes.push([ node, text.length ]);
-				text += node.nodeValue;
-			} else if (node.childNodes.length > 0) {
-				text += Typography.processElement(node, replacementTypes, false);
-			}
-		}
-		text = Typography.processString(text, replacementTypes, { retainLength: true });
-		for (nodeInfo of textNodes)
-			nodeInfo[0].nodeValue = Typography.substringSansSeparators(text, nodeInfo[0].nodeValue, nodeInfo[1]);
-
-		/*	Word breaks cannot be processed non-locally; each text node must be
-			handled individually, due to length increase from added word breaks.
-		 */
-		if (doWordbreaks) {
-			for (node of element.childNodes) {
-				if (node.nodeType === Node.TEXT_NODE) {
-					node.nodeValue = Typography.processString(node.nodeValue, Typography.replacementTypes.WORDBREAKS);
-				} else if (node.childNodes.length > 0) {
-					Typography.processElement(node, Typography.replacementTypes.WORDBREAKS, false);
-				}
-			}
-		}
-
-		//  Transform zero-width spaces into <wbr> tags.
-		if (replaceZeroWidthSpaces)
-			Typography.replaceZeroWidthSpaces(element);
-
-		return text;
 	}
 };

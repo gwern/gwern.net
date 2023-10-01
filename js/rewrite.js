@@ -782,7 +782,9 @@ addContentLoadHandler(GW.contentLoadHandlers.aggregateMarginNotes = (eventInfo) 
 addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInBodyText = (eventInfo) => {
     GWLog("rectifyTypographyInBodyText", "rewrite.js", 1);
 
-    Typography.processElement(eventInfo.container, Typography.replacementTypes.WORDBREAKS);
+	eventInfo.container.querySelectorAll("p").forEach(graf => {
+		Typography.processElement(graf, Typography.replacementTypes.WORDBREAKS);
+	});
 }, "rewrite");
 
 /******************************************************************************/
