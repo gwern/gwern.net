@@ -254,7 +254,7 @@
      */
     --GW-popins-popin-background-color: var(--GW-body-background-color);
     --GW-popins-popin-border-color: #7c7c7c;
-    --GW-popins-popin-backdrop-color: rgba(255, 255, 255, 0.5);
+    --GW-popins-popin-backdrop-color: rgba(255, 255, 255, 0.4);
     --GW-popins-box-shadow-color: #7c7c7c;
     --GW-popins-popin-title-bar-background-color: #000;
     --GW-popins-popin-title-bar-button-color: #999;
@@ -357,7 +357,7 @@
     --GW-popups-popup-title-bar-pattern: var(--GW-image-pattern-dotted-161616-on-252525-2x-gif);
     --GW-popups-popup-title-bar-pattern-focused: var(--GW-image-pattern-dotted-161616-on-3e3e3e-2x-gif);
 
-	--GW-popins-popin-backdrop-color: rgba(0, 0, 0, 0.8);
+	--GW-popins-popin-backdrop-color: rgba(0, 0, 0, 0.6);
 
     --GW-dotted-underline-background-image: var(--GW-image-linear-dotted-fff-transparent-2x-gif);
     --GW-dotted-underline-hover-background-image: var(--GW-image-linear-dotted-bbb-transparent-2x-gif);

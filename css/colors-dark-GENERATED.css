@@ -254,7 +254,7 @@
      */
     --GW-popins-popin-background-color: var(--GW-body-background-color);
     --GW-popins-popin-border-color: #7c7c7c;
-    --GW-popins-popin-backdrop-color: rgba(255, 255, 255, 0.5);
+    --GW-popins-popin-backdrop-color: rgba(255, 255, 255, 0.4);
     --GW-popins-box-shadow-color: #7c7c7c;
     --GW-popins-popin-title-bar-background-color: #000;
     --GW-popins-popin-title-bar-button-color: #999;
