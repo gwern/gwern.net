@@ -543,6 +543,8 @@ function aggregateMarginNotes(eventInfo) {
 			return;
 
 		let section = marginNote.closest("section, .markdownBody");
+		if (section == null)
+			return;
 
 		let marginNotesBlock = section.querySelector(`#${(CSS.escape(section.id))}-${marginNotesBlockClass}`);
 		if (marginNotesBlock == null) {
@@ -11548,7 +11550,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => 
 				speaker.querySelector("speaker")?.classList.remove("speaker");
 
 				//	Move colon.
-				(speaker.querySelector("strong") ?? speaker).innerHTML += nextNode.textContent.slice(0, 1);
+				(speaker.querySelector("strong") ?? speaker).innerHTML += nextNode.textContent.slice(0, 1) + " ";
 				nextNode.textContent = nextNode.textContent.slice(1).trimStart();
 			}
 		}

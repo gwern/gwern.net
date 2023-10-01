@@ -42,7 +42,7 @@
     --GW-popups-popup-title-bar-pattern: var(--GW-image-pattern-dotted-161616-on-252525-2x-gif);
     --GW-popups-popup-title-bar-pattern-focused: var(--GW-image-pattern-dotted-161616-on-3e3e3e-2x-gif);
 
-	--GW-popins-popin-backdrop-color: rgba(0, 0, 0, 0.8);
+	--GW-popins-popin-backdrop-color: rgba(0, 0, 0, 0.6);
 
     --GW-dotted-underline-background-image: var(--GW-image-linear-dotted-fff-transparent-2x-gif);
     --GW-dotted-underline-hover-background-image: var(--GW-image-linear-dotted-bbb-transparent-2x-gif);
