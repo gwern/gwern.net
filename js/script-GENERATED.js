@@ -543,6 +543,8 @@ function aggregateMarginNotes(eventInfo) {
 			return;
 
 		let section = marginNote.closest("section, .markdownBody");
+		if (section == null)
+			return;
 
 		let marginNotesBlock = section.querySelector(`#${(CSS.escape(section.id))}-${marginNotesBlockClass}`);
 		if (marginNotesBlock == null) {
