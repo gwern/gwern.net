@@ -7333,12 +7333,27 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     margin: 0 8px;
 }
 
-.markdownBody span.block-context-highlighted {
+.markdownBody span.block-context-highlighted:not(:empty) {
 	--background-color: var(--GW-block-context-span-highlight-color);
 
 	background-color: var(--background-color);
 	padding: 0 0.25em;
 	box-shadow: 0 0 0 0.1em var(--background-color);
+}
+
+.markdownBody span.block-context-highlighted:empty::before {
+	content: "";
+	background-image: url('/static/img/icon/icons.svg?v=1695859607#hand-point-right-regular');
+    background-origin: content-box;
+    background-clip: content-box;
+    background-repeat: no-repeat;
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	position: relative;
+	top: 0.1em;
+	margin-right: 0.5em;
+	opacity: 0.75;
 }
 
 
