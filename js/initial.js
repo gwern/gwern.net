@@ -952,10 +952,10 @@ GW.eventListeners = { };
 /*  Adds a named event listener to the page (or other target).
  */
 function addNamedEventListener(eventName, fn, name, options = { }, target = document) {
-    if (options.defer) {
+    if (options?.defer) {
         doWhenPageLoaded(() => {
             requestAnimationFrame(() => {
-                if (options.ifDeferCallWhenAdd)
+                if (options?.ifDeferCallWhenAdd)
                     fn();
                 addNamedEventListener(eventName, fn, name, { defer: false }, target);
             });

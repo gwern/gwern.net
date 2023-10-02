@@ -49,6 +49,8 @@ Popups = {
 
 		//	Remove scroll listener.
 		removeScrollListener("updatePopupsEventStateScrollListener");
+		//	Remove popup-spawn event handler.
+		GW.notificationCenter.removeHandlerForEvent("Popups.popupDidSpawn", Popups.addDisableHoverEventsOnScrollListenerOnPopupSpawned);
 		//	Remove mousemove listener.
 		window.removeEventListener("mousemove", Popups.windowMouseMove);
 	},
@@ -75,9 +77,15 @@ Popups = {
 		document.addEventListener("keyup", Popups.keyUp);
 
 		//	Add scroll listener, to disable hover on scroll.
-		addScrollListener((event) => {
+		addScrollListener(Popups.disableHoverEventsOnScroll = (event) => {
 			Popups.hoverEventsActive = false;
-		}, "updatePopupsEventStateScrollListener");
+		}, "disablePopupHoverEventsOnScrollListener");
+		/*	Add event handler to add scroll listener to spawned popups, to
+			disable hover events when scrolling within a popup.
+		 */
+		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Popups.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
+			addScrollListener(Popups.disableHoverEventsOnScroll, null, null, info.popup.scrollView);
+		});
 		//	Add mousemove listener, to enable hover on mouse move.
 		window.addEventListener("mousemove", Popups.windowMouseMove = (event) => {
 			Popups.hoverEventsActive = true;
