@@ -425,6 +425,10 @@ section.collapse > .heading {
     transition:
         transform 1.0s ease;
 }
+.collapse-block.expanded-not.hover-not > .disclosure-button:hover .part.top .icon svg {
+	transform: none;
+	transition: none;
+}
 .collapse-block.expanded > .disclosure-button .part.top .icon svg {
     transform: rotate(-0.25turn);
 }

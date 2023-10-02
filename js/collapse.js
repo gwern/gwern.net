@@ -1,12 +1,34 @@
-/*****************************************************************************/
-/*	Visibility of block collapse labels depends on how many times the user has
-	used them already.
+/*************************/
+/*	Configuration / state.
  */
 GW.collapse = {
+	/*	Visibility of block collapse labels depends on how many times the user 
+		has used them already.
+	 */
 	alwaysShowCollapseInteractionHints: (getSavedCount("clicked-to-expand-collapse-block-count") < (GW.isMobile() ? 6 : 3)),
 	showCollapseInteractionHintsOnHover: (   GW.isMobile() == false 
-										  && getSavedCount("clicked-to-expand-collapse-block-count") < 6)
+										  && getSavedCount("clicked-to-expand-collapse-block-count") < 6),
+
+	/*	Hover events (see below).
+	 */
+	hoverEventsEnabled: (GW.isMobile() == false),
+	hoverEventsActive: (GW.isMobile() == false)
 };
+
+/****************************************************************************/
+/*	On desktop, disable hover events on scroll; re-enable them on mouse move.
+ */
+if (GW.collapse.hoverEventsEnabled) {
+	//	Disable on scroll.
+	addScrollListener((event) => {
+		GW.collapse.hoverEventsActive = false;
+	}, "updateCollapseEventStateScrollListener");
+
+	//	Enable on mousemove.
+	window.addEventListener("mousemove", (event) => {
+		GW.collapse.hoverEventsActive = true;
+	});
+}
 
 /*******************************************************************************/
 /*  This function expands all collapse blocks containing the given node, if
@@ -186,7 +208,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 
 		let startExpanded = (collapseBlock.contains(getHashTargetedElement()) == true);
 
-		if (GW.isMobile() == false)
+		if (GW.collapse.hoverEventsEnabled)
 			collapseBlock.classList.add("expand-on-hover");
 
 		let collapseWrapper;
@@ -448,7 +470,7 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 
 			//	Update temporary state.
 			if (   collapseBlock.classList.contains("expand-on-hover")
-				&& GW.isMobile() == false) {
+				&& GW.collapse.hoverEventsEnabled) {
 				let tempClass = null;
 				switch (event.type) {
 				case "click":
@@ -472,8 +494,18 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 
 		//	Collapse block expand-on-hover.
 		if (   collapseBlock.classList.contains("expand-on-hover")
-			&& GW.isMobile() == false) {
+			&& GW.collapse.hoverEventsEnabled) {
+			collapseBlock.addEventListener("mouseenter", (event) => {
+				if (GW.collapse.hoverEventsActive == false) {
+					collapseBlock.classList.add("hover-not");
+				} else {
+					collapseBlock.classList.remove("hover-not");
+				}
+			});
 			onEventAfterDelayDo(collapseBlock, "mouseenter", 1000, (event) => {
+				if (GW.collapse.hoverEventsActive == false)
+					return;
+
 				if (isCollapsed(collapseBlock) == false)
 					return;
 
@@ -485,15 +517,21 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 		}
 
 		//	On-hover state changes.
-		if (GW.isMobile() == false) {
+		if (GW.collapse.hoverEventsEnabled) {
 			//	Add listener to show labels on hover, if need be.
 			if (   collapseBlock.classList.contains("collapse-block")
 				&& GW.collapse.showCollapseInteractionHintsOnHover == true
 				&& GW.collapse.alwaysShowCollapseInteractionHints == false) {
 				disclosureButton.addEventListener("mouseenter", (event) => {
+					if (GW.collapse.hoverEventsActive == false)
+						return;
+
 					updateDisclosureButtonState(collapseBlock, true);
 				});
 				disclosureButton.addEventListener("mouseleave", (event) => {
+					if (GW.collapse.hoverEventsActive == false)
+						return;
+
 					updateDisclosureButtonState(collapseBlock);
 				});
 			}
@@ -505,9 +543,15 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 								  ? collapseBlock.querySelector(".disclosure-button")
 								  : collapseBlock.querySelector(".collapse-content-wrapper").nextElementSibling;
 				disclosureButton.addEventListener("mouseenter", (event) => {
+					if (GW.collapse.hoverEventsActive == false)
+						return;
+
 					counterpart.classList.add("hover");
 				});
 				disclosureButton.addEventListener("mouseleave", (event) => {
+					if (GW.collapse.hoverEventsActive == false)
+						return;
+
 					counterpart.classList.remove("hover");
 				});
 			}
