@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-09-30 09:31:26 gwern"
+When: Time-stamp: "2023-10-02 19:26:44 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -217,7 +217,7 @@ woptions = defaultHakyllWriterOptions{ writerSectionDivs = True,
                               noScriptTemplate ++ "$body$" -- we do the main $body$ substitution inside default.html so we can inject stuff inside the #markdownBody wrapper; the div is closed there
 
    -- NOTE: we need to do the site-wide `<noscript>` warning  to make sure it is inside the #markdownBody and gets all of the CSS styling that we expect it to.
-    noScriptTemplate = "<noscript><div id=\"noscript-warning-header\" class=\"admonition error\"><div class=\"admonition-title\"><p>[<strong>Warning</strong>: JavaScript Disabled!]</p></div> <p>[For support of key <a href=\"/design\" title=\"About: Gwern.net Design: principles, features, links, tricks\">website features</a> (link annotation popups/popins & transclusions, collapsible sections, <a href=\"/design#backlink\">backlinks</a>, tablesorting, image zooming, <a href=\"/sidenote\">sidenotes</a> etc), you <strong>must</strong> enable JavaScript!]</p></div></noscript>"
+    noScriptTemplate = "<noscript><div id=\"noscript-warning-header\" class=\"admonition error\"><div class=\"admonition-title\"><p>[<strong>Warning</strong>: JavaScript Disabled!]</p></div> <p>[For support of key <a href=\"/design\" title=\"About: Gwern.net Design: principles, features, links, tricks\">website features</a> (link annotation popups/popins & transclusions, collapsible sections, <a href=\"/design#backlink\">backlinks</a>, tablesorting, image zooming, <a href=\"/sidenote\">sidenotes</a> etc), you must enable JavaScript.]</p></div></noscript>"
 
 imgUrls :: Item String -> Compiler (Item String)
 imgUrls item = do
