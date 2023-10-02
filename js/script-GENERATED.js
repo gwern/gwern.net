@@ -1564,6 +1564,10 @@ Popups = {
 	popupSpawnTimer: false,
 	popupContainer: null,
 
+	popupBeingDragged: null,
+
+	hoverEventsActive: true,
+
 	cleanup: () => {
 		GWLog("Popups.cleanup", "popups.js", 1);
 
@@ -1573,6 +1577,11 @@ Popups = {
 
 		//  Remove Escape key event listener.
 		document.removeEventListener("keyup", Popups.keyUp);
+
+		//	Remove scroll listener.
+		removeScrollListener("updatePopupsEventStateScrollListener");
+		//	Remove mousemove listener.
+		window.removeEventListener("mousemove", Popups.windowMouseMove);
 	},
 
 	setup: () => {
@@ -1595,6 +1604,15 @@ Popups = {
 
 		//  Add Escape key event listener.
 		document.addEventListener("keyup", Popups.keyUp);
+
+		//	Add scroll listener, to disable hover on scroll.
+		addScrollListener((event) => {
+			Popups.hoverEventsActive = false;
+		}, "updatePopupsEventStateScrollListener");
+		//	Add mousemove listener, to enable hover on mouse move.
+		window.addEventListener("mousemove", Popups.windowMouseMove = (event) => {
+			Popups.hoverEventsActive = true;
+		});
 
 		GW.notificationCenter.fireEvent("Popups.setupDidComplete");
 	},
@@ -1956,7 +1974,7 @@ Popups = {
 			GWLog("Popups.popupMouseMove", "popups.js", 3);
 
 			if (   event.target == popup
-				&& window.popupBeingDragged == null
+				&& Popups.popupBeingDragged == null
 				&& Popups.popupIsResizeable(popup)) {
 				//  Mouse position is relative to the popup’s coordinate system.
 				let edgeOrCorner = Popups.edgeOrCorner(popup, {
@@ -3080,7 +3098,7 @@ Popups = {
 	popupMouseLeave: (event) => {
 		GWLog("Popups.popupMouseLeave", "popups.js", 2);
 
-		if (window.popupBeingDragged)
+		if (Popups.popupBeingDragged)
 			return;
 
 		if (Popups.popupContainerIsVisible() == false)
@@ -3283,7 +3301,7 @@ Popups = {
 		GWLog("Popups.popupMouseOut", "popups.js", 3);
 
 		//  Reset cursor.
-		if (   window.popupBeingDragged == null
+		if (   Popups.popupBeingDragged == null
 			&& event.target.style.cursor == "")
 			document.documentElement.style.cursor = "";
 	},
@@ -3350,7 +3368,7 @@ Popups = {
 
 		//  We define the mousemove listener here to capture variables.
 		window.onmousemove = (event) => {
-			window.popupBeingDragged = popup;
+			Popups.popupBeingDragged = popup;
 
 			//  Mark popup as being dragged.
 			Popups.addClassesToPopFrame(popup, "dragging");
@@ -3391,7 +3409,7 @@ Popups = {
 		//  Reset cursor to normal.
 		document.documentElement.style.cursor = "";
 
-		let popup = window.popupBeingDragged;
+		let popup = Popups.popupBeingDragged;
 		if (popup) {
 			Popups.removeClassesFromPopFrame(popup, "grabbed", "dragging");
 
@@ -3427,7 +3445,7 @@ Popups = {
 			//  Pin popup.
 			Popups.pinPopup(popup);
 		}
-		window.popupBeingDragged = null;
+		Popups.popupBeingDragged = null;
 
 		//  Remove the listener (ie. we only want this fired once).
 		window.removeEventListener("mouseup", Popups.popupDragMouseUp);
@@ -3469,7 +3487,10 @@ Popups = {
 	targetMouseEnter: (event) => {
 		GWLog("Popups.targetMouseEnter", "popups.js", 2);
 
-		if (window.popupBeingDragged)
+		if (Popups.popupBeingDragged)
+			return;
+
+		if (Popups.hoverEventsActive == false)
 			return;
 
 		//	Stop the countdown to un-pop the popup.
@@ -3507,7 +3528,7 @@ Popups = {
 	targetMouseDown: (event) => {
 		GWLog("Popups.targetMouseDown", "popups.js", 2);
 
-		if (window.popupBeingDragged)
+		if (Popups.popupBeingDragged)
 			return;
 
 		if (   event.target.closest(".popframe-ui-elements-container")
