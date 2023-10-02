@@ -315,19 +315,26 @@ article {
 #page-metadata .page-metadata-fields > span {
     white-space: nowrap;
 }
-#page-metadata .page-metadata-fields > span:not(:last-child)::after {
-	/*  Interpunct separators for the metadata fields; looks nicer than
-		semicolons or slashes
-	 */
+/*  Interpunct separators for the metadata fields; looks nicer than semicolons 
+	or slashes.
+ */
+#page-metadata .page-metadata-fields > span::after {
     content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
-    margin: 0 0.35em 0 0.65em;
+    margin: 0 0.75em;
 }
+/*	No separator at line end.
+ */
+#page-metadata .page-metadata-fields .page-importance::after,
+#page-metadata .page-metadata-fields > span:last-child::after {
+	display: none;
+}
+
 
 /*	Flex order.
  */
 /* date, author, status */
-#page-metadata .page-metadata-fields .page-date-range,
 #page-metadata .page-metadata-fields .page-author,
+#page-metadata .page-metadata-fields .page-date-range,
 #page-metadata .page-metadata-fields .page-status {
 	order: 1;
 }
@@ -380,15 +387,12 @@ article {
     #page-metadata .page-metadata-fields::after {
         content: "";
         width: 100%;
-        height: calc(1em * (3/18));
+        height: calc(1em * (4/20));
     }
     /* break between certainty/importance and backlinks/similar/bibliography */
     #page-metadata .page-metadata-fields::after {
         order: 4;
     }
-	#page-metadata .page-metadata-fields > .page-importance::after {
-		display: none;
-	}
 }
 @media all and (max-width: 649px) {
     #page-metadata {
@@ -425,11 +429,23 @@ article {
     #page-metadata .page-metadata-fields::after {
         order: 4;
     }
-    #page-metadata .page-metadata-fields .page-author::after,
-    #page-metadata .page-metadata-fields .page-status::after,
-    #page-metadata .page-metadata-fields .page-importance::after {
+    /*	No separator at line end.
+     */
+	#page-metadata .page-metadata-fields .page-author::after,
+    #page-metadata .page-metadata-fields .page-status::after {
         display: none;
     }
+	/*	Author (on its own line).
+	 */
+	#page-metadata .page-metadata-fields .page-author {	
+		flex: 1 1 100%;
+		text-align: center;
+	}
+	#page-metadata .page-metadata-fields .page-author::after {
+		content: "";
+		display: block;
+		height: calc(1em * (3/18));
+	}
 }
 
 
