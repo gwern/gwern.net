@@ -2306,18 +2306,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695859607#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695859607#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695859607#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695859607#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5201,14 +5201,14 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695859607#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695859607#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5341,7 +5341,7 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1695859607#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5796,14 +5796,14 @@ body.dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695859607#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1695859607#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6706,7 +6706,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1695859607#question');
+    background-image: url('/static/img/icon/icons.svg?v=1695478579#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7272,7 +7272,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1695859607#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1695478579#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7347,7 +7347,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 
 .markdownBody span.block-context-highlighted:empty::before {
 	content: "";
-	background-image: url('/static/img/icon/icons.svg?v=1695859607#hand-point-right-regular');
+	background-image: url('/static/img/icon/icons.svg?v=1695478579#hand-point-right-regular');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;
@@ -7514,10 +7514,10 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     position: relative;
     z-index: 1;
 
-/*	This is currently broken in Safari. Since it’s not important enough to
-	figure out a way to scope it to only non-Safari browsers, I’m disabling it
-	for now. This should be revisited in a year.
-		—SA 2023-09-24
+/*  This is currently broken in Safari. Since it’s not important enough to
+    figure out a way to scope it to only non-Safari browsers, I’m disabling it
+    for now. This should be revisited in a year.
+        —SA 2023-09-24
  */
 /*
     -webkit-box-decoration-break: clone;
@@ -7975,6 +7975,10 @@ a[data-link-icon='ρ'] .link-icon-hook::after { /* Project Rho */
 a[data-link-icon='ℰ'] .link-icon-hook::after { /* Esquire */
     opacity: 0.9;
     --link-icon-size: 0.8em;
+}
+
+a[data-link-icon='𝓡𝐒'] .link-icon-hook::after { /* Rolling Stone */
+    opacity: 0.75;
 }
 
 /****************************/
@@ -8525,7 +8529,7 @@ a[data-link-icon='stat-news'] .link-icon-hook::after {
     opacity: 1;
 }
 
-a[data-link-icon='magnifying-glass'] .link-icon-hook::after { /* Retraction Watch 8?
+a[data-link-icon='magnifying-glass'] .link-icon-hook::after { /* Retraction Watch */
     --link-icon-size: 0.8em;
     --link-icon-offset-y: 0em;
     --link-icon-offset-x: -0.1em;
@@ -8563,7 +8567,7 @@ a[data-link-icon='scholarpedia'] .link-icon-hook::after {
 
 a[data-link-icon='☀'] .link-icon-hook::after { /* Low Tech Magazine */
     --link-icon-size: 0.9em;
-    opacity: 0.95;
+    opacity: 0.90;
 }
 
 a[data-link-icon='audio-waveform-lines'] .link-icon-hook::after { /* Radiolab */

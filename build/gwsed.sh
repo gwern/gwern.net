@@ -15,6 +15,10 @@ else
             echo "Either $1 or $2 appears to be multiple lines, which is probably a mistake, so not rewriting."
             exit 2;
         fi
+        if [ "$1" == 'http://https://' ] && [ "$2" == 'https://' ]; then
+            echo "Unsafe rewrite specified, erroring out."
+            exit 3
+        fi
 
         # special-case: if the transformation is merely 'http://' → 'https://' (most common rewrite I do), we call out to `gwhttp` (defined in /static/build/bash.sh because it's simple) instead
         # which will rewrite all links of that domain, not just this one instance. This can save a lot of time over doing rewrites one-by-one as they are noticed.
@@ -26,7 +30,7 @@ else
             # proceed with trying to do a normal sitewide replacement:
             FILES=$((find ~/wiki/ -name "*.page"; find ~/wiki/metadata/ ~/wiki/haskell/ ~/wiki/static/ \
                                                        -name "*.yaml" -or -name "*.hs" -or -name "*.html"; ) | \
-                        grep -F -v -e '.#' -e 'backlink/' -e '_site/' -e 'static/includes/' -e 'static/build/Utils.hs' | \
+                        grep -F -v -e '.#' -e 'backlink/' -e '_site/' -e 'static/includes/' -e 'static/build/Utils.hs' -e 'static/build/Config/LinkArchive.hs' | \
                         xargs grep -F --files-with-matches "$1" | sort)
             if [ -z "$FILES" ]; then
                 echo "No matches; exiting while doing nothing." 1>&2
@@ -39,7 +43,8 @@ else
                           find ~/wiki/metadata/ ~/wiki/haskell/ -name "*.hs" -or -name "*.yaml"
                           find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.yaml"
                           find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
-                            grep -F -v -e '.#' -e 'auto.hs' -e 'static/build/LinkMetadata.hs' -e 'static/js/tablesorter.js' -e metadata/annotation/ -e '.#' -e '_site/' | sort --unique  | xargs grep -F --ignore-case --color=always --with-filename "$@" | cut -c 1-2548; }
+                            grep -F -v -e '.#' -e 'auto.hs' -e 'static/build/LinkMetadata.hs' -e 'static/build/Config/LinkArchive.hs' -e 'static/js/tablesorter.js' -e metadata/annotation/ -e '.#' -e '_site/' | \
+                            sort --unique  | xargs grep -F --ignore-case --color=always --with-filename "$@" | cut -c 1-2548; }
                 gw "$1";
 
                 # special-case cleanup: if adding an affiliation, we need to clean up inconsistent doubled

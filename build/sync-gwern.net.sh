@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-09-30 18:45:44 gwern"
+# When:  Time-stamp: "2023-10-04 09:27:56 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -74,6 +74,7 @@ else
         ( s() { gwsed "$@"; }
           ## domain rewrites:
           s 'https://mobile.twitter.com' 'https://twitter.com'; s 'https://www.twitter.com' 'https://twitter.com'; s 'https://x.com/' 'https://twitter.com/'; s 'https://en.reddit.com/' 'https://www.reddit.com/'; s 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'http://en.wikipedia.org' 'https://en.wikipedia.org'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com'; s 'www.super-memory.com' 'super-memory.com'; s 'https://www.bldgblog.com' 'https://bldgblog.com'; s 'https://www.clinicaltrials.gov' 'https://clinicaltrials.gov'; s 'https://nitter.net/' 'https://twitter.com/'; s 'https://arxiv.org/abs//' 'https://arxiv.org/abs/';
+          ## NOTE: domains which are bad or unfixable are handled by a later lint. This is only for safe rewrites.
 
           ## link cruft rewrites:
           s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?s=61' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ref=thebrowser.com' ''; s '?ignored=irrelevant' ''; s '](/docs/' '](/doc/'; s 'href="/docs/' 'href="/doc/'; s '.pdf#pdf' '.pdf'; s '#fromrss' ''; s '&amp;hl=en' ''; s '?rss=1' ''; s '/doc/statistics/decision-theory' '/doc/statistics/decision'; s '?ref=quillette.com' '';
@@ -618,6 +619,35 @@ else
     λ(){ grep -E -e ' [0-9]/[0-9]\+ ' -- ./metadata/*.yaml | grep -F --invert-match -e 'Toll-like' -e 'Adam' -e '0/1' -e 'My Little Pony Seasons' -e '9/11'; }
     wrap λ "Possible uses of FRACTION SLASH ⁄ or EN DASH –?"
 
+    λ(){ grep -F -e 'http://dl.dropbox' -e '.wiley.com/doi/abs/'  \
+                 -e 'www.tandfonline.com/doi/abs/' -e 'jstor.org' -e 'springer.com' -e 'springerlink.com' \
+                 -e 'www.mendeley.com' -e 'academia.edu' -e 'researchgate.net' -e 'pdf.yt' \
+                 -e 'photobucket' -e 'imgur.com' -e 'hathitrust.org' -e 'emilkirkegaard.dk' -e 'arthurjensen.net' \
+                 -e 'humanvarieties.org' -e 'libgen.io/' -e 'gen.lib.rus.ec/' -e 'sci-hub.bz/' -e '](http://www.scilogs.com/' \
+                 -e 'sci-hub.cc/' -e "papers.nber.org/" -e '](!wikipedia' -e '](!wikipedia)'"'s" -e 'https://wwww.' -e 'http://wwww.' \
+                 -e 'http://33bits.org' -e 'https://gwern.net' -e 'https://gwern.net' -e 'web.archive.org/web/2' \
+                 -e 'webarchive.org.uk/wayback/' -e 'webcitation.org' -e 'plus.google.com' -e 'www.deepdotweb.com' -e 'raikoth.net' \
+                 -e 'drive.google.com/file' -e 'ssrn.com' -e 'ardenm.us' -e 'gnxp.nofe.me' -e 'psycnet.apa.org' \
+                 -e 'wellcomelibrary.org/item/' -e 'dlcs.io/pdf/' -e 'secure.wikimedia.org' \
+                 -e 'https://biorxiv.org' \
+                 -e 'fbclid=' -e '?gid=' -e 'twitter.com/#!' -e 'pay.reddit.com' -e 'europepmc.org' -e 'drugcite.com' \
+                 -e 'guardian.co.uk' -e 'mlp.wikia.com' -e '฿' -e '!Wikipedia ""' -e 'temcauley.staff.shef.ac.uk' \
+                 -e 'yahoo.com' -e 'bloomberg.com' -e '.wsj.com' -e 'extremelongevity.net' -e 'blog.openai.com' \
+                 -e 'https://ww.gwern.net' -e 'https://w.gwern.net' -e 'www.heretical.com' -e 'books.google.ca' \
+                 -e 'lesserwrong.com' -e 'au.news.yahoo.com' -e 'northjersey.com' -e 'tribune.com.pk' -e 'idsnews.com' \
+                 -e 'catsensebook.com' -e 'whec.com' -e 'www.mercurynews.com' -e 'meetup.com' \
+                 -e 'dlcs.io/' -e 'centerforcollegeaffordability.org' -e 'quora.com' -e 'times-news.com' -e 'www.cebp.nl' \
+                 -e '#filmtv' -e 'nybooks.com' -e '<div id="columns">' -e 'annualreviews.org' \
+                 -e 'dspace.mit.edu' -e 'shirky.com' -e '](http://www.nzherald.co.nz)' -e 'https://www.arxiv.org' \
+                  -e 'goodreads.com/review/show' -e 'myanimelist.net/reviews.php?id='  \
+                 -e 'cloudfront.net' -e 'https://www.amazon.com/s?ie=UTF8&field-isbn=&page=1&rh=i:stripbooks' -e 'http://ltimmelduchamp.com' \
+                 -e 'thiswaifudoesnotexist.net)' -e 'thiswaifudoesnotexist.net"' -e 'www.wikilivres.ca' -e 'worldtracker.org' \
+                 -e 'meaningness.wordpress.com' -e 'ibooksonline.com' -e 'tinypic.com' -e 'isteve.com' -e 'j-bradford-delong.net'\
+                 -e 'cdn.discordapp.com' -- ./metadata/backlinks.hs;
+         # NOTE: we do not need to ban bad domains which are handled by link rewrites like www.reddit.com or medium.com.
+       grep -E 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]\+v[0-9]' -- ./metadata/backlinks.hs; }
+    wrap λ "Bad or banned blacklisted domains found? They should be removed or rehosted."
+
     λ(){ grep -F -e '""' -- ./metadata/*.yaml | grep -F --invert-match -e ' alt=""' -e 'controls=""' -e 'loop=""'; }
     wrap λ "Doubled double-quotes in YAML, usually an error."
 
@@ -757,33 +787,36 @@ else
     done
     echo
 
+ # test a random page modified in the past month for W3 validation & dead-link/anchor errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
  if [ "$SLOW" ]; then
-    # test a random page modified in the past month for W3 validation & dead-link/anchor errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
-    CHECK_RANDOM_PAGE=$(echo "$PAGES" | grep -F --invert-match -e '/fulltext' -e '/lorem' | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
-                       | shuf | head -1 | xargs urlencode)
-    CHECK_RANDOM_ANNOTATION=$(find metadata/annotation/ -maxdepth 1 -name "*.html" -type f -size +2k | \
-                                  shuf | head -1 | \
-                                  sed -e 's/metadata\/annotation\/\(.*\)/\1/' | \
-                                  # once for the on-disk escaping, once for the URL argument to the W3C checker
-                                  xargs urlencode | xargs urlencode | \
-                                  sed -e 's/^\(.*\)$/https:\/\/gwern\.net\/metadata\/annotation\/\1/')
-    ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
-            --header "X-Auth-Email:gwern@gwern.net" \
-            --header "Authorization: Bearer $CLOUDFLARE_CACHE_TOKEN" \
-            --header "Content-Type: application/json" \
-            --data "{\"files\":[\"$CHECK_RANDOM_PAGE\", \"$CHECK_RANDOM_ANNOTATION\"]}" > /dev/null; )
+     # Define number of checks
+     CHECKS_N=2
 
-    # every other sync, check 4 pages in the W3 link-checker. (The error count has been going down thanks to local-archives, so more convenient to check in larger blocks. We'll shift to 8 checks every 4 syncs at some point, and so on.)
-    if ((RANDOM % 100 > 50)); then
-        # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
-        (if ((RANDOM % 100 > 90)); then sleep 30s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE"; fi;
-         sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
-         # sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
-         # sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on";
-         sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on";
-         if ((RANDOM % 100 > 90)); then $X_BROWSER "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE&form_factor=desktop"; fi;
-        )
-    fi
+     # Loop over for number of checks
+     for ((i=1; i<=CHECKS_N; i++))
+     do
+         CHECK_RANDOM_PAGE=$(echo "$PAGES" | grep -F --invert-match -e '/fulltext' -e '/lorem' | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
+                            | shuf | head -1 | xargs urlencode)
+         CHECK_RANDOM_ANNOTATION=$(find metadata/annotation/ -maxdepth 1 -name "*.html" -type f -size +2k | \
+                                       shuf | head -1 | \
+                                       sed -e 's/metadata\/annotation\/\(.*\)/\1/' | \
+                                       xargs urlencode | xargs urlencode | \ # once for the on-disk escaping, once for the URL argument to the W3C checker
+                                       sed -e 's/^\(.*\)$/https:\/\/gwern\.net\/metadata\/annotation\/\1/')
+         ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
+                 --header "X-Auth-Email:gwern@gwern.net" \
+                 --header "Authorization: Bearer $CLOUDFLARE_CACHE_TOKEN" \
+                 --header "Content-Type: application/json" \
+                 --data "{\"files\":[\"$CHECK_RANDOM_PAGE\", \"$CHECK_RANDOM_ANNOTATION\"]}" > /dev/null; )
+
+         if ((RANDOM % 100 > 50)); then
+             # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
+             (if ((RANDOM % 100 > 90)); then sleep 30s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE"; fi;
+              sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
+              sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on";
+              if ((RANDOM % 100 > 90)); then $X_BROWSER "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE&form_factor=desktop"; fi;
+             )
+         fi
+     done
 
     sleep 30s; chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null & # check the x-of-the-day in a different & cache-free browser instance
 

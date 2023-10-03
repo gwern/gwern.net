@@ -10,7 +10,7 @@ tagGuessBlacklist :: String -> Bool
 tagGuessBlacklist path = anyPrefix path ["/doc/biology/2000-iapac-norvir", "/doc/personal/2011-gwern-yourmorals.org", "/doc/rotten.com/",
                                           "/doc/statistics/order/beanmachine-multistage", "/doc/www/"]
 tagListBlacklist :: [String]
-tagListBlacklist = ["2000-iapac-norvir", "rotten.com", "personal/2011-gwern-yourmorals.org", "beanmachine-multistage", "/www/"]
+tagListBlacklist = ["2000-iapac-norvir", "rotten.com", "personal/2011-gwern-yourmorals.org", "beanmachine-multistage", "/www/", "biology/2000-iapac-norvir"]
 
 -- Similar to guessing tags from local files' directories, we can also guess tags from their URLs.
 -- We allow arbitrary string predicates when guessing (so one might use regexps as well).
@@ -108,7 +108,8 @@ tagsShort2LongRewrites = isUniqueKeys
     ("animal/iq", "iq/animal"), ("cellular-automata", "cellular-automaton"), ("mathematics", "math"),
     ("frank-p-ramsey", "frank-ramsey"), ("artificial-selection", "genetics/selection/artificial"), ("intrasexual-agression", "intrasexual-aggression"),
     ("javascript", "js"), ("psych/chess", "psychology/chess"), ("self-experiment", "quantified-self"),
-    ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing"), ("quadratic-vote", "quadratic-voting"), ("bipolar/genes", "bipolar/genetics"), ("dynamic-evaliation", "dynamic-evaluation"), ("dog-cloning", "genetics/cloning/dog"), ("dog-clone", "genetics/cloning/dog"), ("dog/clone", "genetics/cloning/dog"), ("cat-drug", "cat/psychology/drug"), ("cat/drug", "cat/psychology/drug"), ("fonts", "typography")]
+    ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing"), ("quadratic-vote", "quadratic-voting"), ("bipolar/genes", "bipolar/genetics"), ("dynamic-evaliation", "dynamic-evaluation"), ("dog-cloning", "genetics/cloning/dog"), ("dog-clone", "genetics/cloning/dog"), ("dog/clone", "genetics/cloning/dog"), ("cat-drug", "cat/psychology/drug"), ("cat/drug", "cat/psychology/drug"), ("fonts", "typography"),
+   ("time-lock", "timelock"), ("self-decrypting", "timelock")]
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   -- hopelessly ambiguous ones which should be error (for now)
@@ -383,6 +384,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("cs/python", "Python")
           , ("cs/haskell", "Haskell")
           , ("cs/js", "JS")
+          , ("cs/cryptography/time-lock", "time-lock crypto")
           , ("cs/cryptography", "crypto")
           , ("cs/css", "CSS")
           , ("cs/scheme", "Scheme Lisp")

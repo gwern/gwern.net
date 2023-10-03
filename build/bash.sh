@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-09-25 13:32:53 gwern"
+# When:  Time-stamp: "2023-10-03 16:15:10 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -224,7 +224,7 @@ alias t="gwtag"
 gwtag () { (
              cd ~/wiki/ &&
                      # echo "---" && grep -F -- "$1" ./metadata/*.yaml || true
-                     timeout 12m nice runghc -istatic/build/ ./static/build/changeTag.hs "$@"; echo "" # &&
+                     timeout 20m nice runghc -istatic/build/ ./static/build/changeTag.hs "$@"; echo "" # &&
                          # echo "---" && grep -F -- "$1" ./metadata/*.yaml
          ); }
 

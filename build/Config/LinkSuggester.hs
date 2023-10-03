@@ -206,7 +206,8 @@ filterAnchors   t = T.length t > anchorLengthMaximum ||
              "\24189\38597\12395\21682\12363\12379\12289\22696\26579\12398\26716",
              "\24651\24515\12402\12392\12388", "\26481\26041\22934\12293\22818", "\27531\12425\12378\12398\26862",
              "\30495\29983\26410\20998\12398\19968\24515", "\37504\27827\12392\24651\33394\39764\27861", "Review of",
-             "as happened", "non-trivial error rates", "the fulltext", "Smith et al", "heavily edited", "never worked"]
+             "as happened", "non-trivial error rates", "the fulltext", "Smith et al", "heavily edited", "never worked",
+             "other considerations"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteList :: M.Map T.Text [T.Text]

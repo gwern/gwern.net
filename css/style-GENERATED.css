@@ -7514,10 +7514,10 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     position: relative;
     z-index: 1;
 
-/*	This is currently broken in Safari. Since it’s not important enough to
-	figure out a way to scope it to only non-Safari browsers, I’m disabling it
-	for now. This should be revisited in a year.
-		—SA 2023-09-24
+/*  This is currently broken in Safari. Since it’s not important enough to
+    figure out a way to scope it to only non-Safari browsers, I’m disabling it
+    for now. This should be revisited in a year.
+        —SA 2023-09-24
  */
 /*
     -webkit-box-decoration-break: clone;
@@ -7975,6 +7975,10 @@ a[data-link-icon='ρ'] .link-icon-hook::after { /* Project Rho */
 a[data-link-icon='ℰ'] .link-icon-hook::after { /* Esquire */
     opacity: 0.9;
     --link-icon-size: 0.8em;
+}
+
+a[data-link-icon='𝓡𝐒'] .link-icon-hook::after { /* Rolling Stone */
+    opacity: 0.75;
 }
 
 /****************************/
@@ -8525,7 +8529,7 @@ a[data-link-icon='stat-news'] .link-icon-hook::after {
     opacity: 1;
 }
 
-a[data-link-icon='magnifying-glass'] .link-icon-hook::after { /* Retraction Watch 8?
+a[data-link-icon='magnifying-glass'] .link-icon-hook::after { /* Retraction Watch */
     --link-icon-size: 0.8em;
     --link-icon-offset-y: 0em;
     --link-icon-offset-x: -0.1em;
@@ -8563,7 +8567,7 @@ a[data-link-icon='scholarpedia'] .link-icon-hook::after {
 
 a[data-link-icon='☀'] .link-icon-hook::after { /* Low Tech Magazine */
     --link-icon-size: 0.9em;
-    opacity: 0.95;
+    opacity: 0.90;
 }
 
 a[data-link-icon='audio-waveform-lines'] .link-icon-hook::after { /* Radiolab */

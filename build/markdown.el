@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-09-27 11:53:59 gwern"
+;;; When:  Time-stamp: "2023-09-29 10:58:24 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -291,6 +291,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("" . " < ")
                      ("\n " . "\n")
                      (" = " . " = ")
+                     ("  =" . " =")
+                     ("=  " . "= ")
                      ("‐" . "-")
                      ("­\n" . "")
                      ("­" . "")
@@ -498,6 +500,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("( r =" . "(_r_ =")
                         ("(r)" . "(_r_)")
                         ("(r ≥" . "(_r_ ≥")
+                        ("≤ r ≤" . "≤ _r_ ≤")
+                        ("≤ r " . "≤ _r_ ")
+                        (" r ≤" . " _r_ ≤")
                         (" r values" . " _r_ values")
                         ("(rs =" . "(<em>r</em>s =")
                         (" rs =" . " <em>r</em>s =")
@@ -967,6 +972,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("!!+" . "!")
                         ("\\([[:alnum:]]\\)  \\([[:graph:]]\\)" . "\\1 \\2") ; remove subtle whitespace problems: double space
                         ("\\([a-z]+\\),\\([a-z]+\\)" . "\\1, \\2") ; run-together comma phrases often appear in PDF OCR like 'foo,bar'; outside chemical names, this is highly unusual.
+                        ("\\([0-9]+\\)[  ]\\([0-9]+\\)" . "\\1,\\2") ; '50 000' or '50 000' → '50,000'
                         ("\\([[:punct:]]\\)p<" . "\\1_p_ <")
                         (" Ne\\\([[:punct:]]\\)" . " <em>N<sub>e</sub></em>\\1")
                         ("\\\([[:punct:]]\\)Ne " . "\\1<em>N<sub>e</sub></em> ")

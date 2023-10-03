@@ -41,7 +41,7 @@ siteBlackList = isUniqueList [
           "books.google.com", "book.webtypography.net", "brainworkshop.sourceforge.net", "buddhism-for-vampires.com", "bugs.darcs.net",
           "bugs.launchpad.net", "burrsettles.com", "cacm.acm.org", "caniuse.com", "capitalteas.com",
           "carbonplan.org", "care.diabetesjournals.org", "carryiton.net", "casual-effects.com", "catb.org",
-          "cdn.discordapp.com", "cdn.harvardlawreview.org", "cdn.openai.com", "christina.kim", "chronopause.com",
+          "cdn.harvardlawreview.org", "cdn.openai.com", "christina.kim", "chronopause.com",
           "circ.ahajournals.org", "citeseerx.ist.psu.edu", "clagnut.com", "classics.mit.edu", "cleantypecheck.wordpress.com",
           "clemenswinter.com", "clinicaltrials.gov", "cloud.google.com", "coalition4evidence.org", "codegolf.stackexchange.com",
           "code.google.com", "cognitivemedium.com", "cogracenotes.wordpress.com", "cogsci.mindmodeling.org", "colab.research.google.com",

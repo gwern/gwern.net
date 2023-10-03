@@ -1,6 +1,6 @@
 #!/bin/bash
-# When:  Time-stamp: "2023-03-29 18:05:17 gwern"
-# see https://gwern.net/About#markdown-checker
+# When:  Time-stamp: "2023-10-03 17:03:08 gwern"
+# see https://gwern.net/about#markdown-checker
 
 set +x
 
@@ -40,14 +40,14 @@ do
                  -e 'yahoo.com' -e 'bloomberg.com' -e '.wsj.com' -e 'extremelongevity.net' -e 'blog.openai.com' \
                  -e 'https://ww.gwern.net' -e 'https://w.gwern.net' -e 'www.heretical.com' -e 'books.google.ca' \
                  -e 'lesserwrong.com' -e 'au.news.yahoo.com' -e 'northjersey.com' -e 'tribune.com.pk' -e 'idsnews.com' \
-                 -e 'catsensebook.com' -e 'whec.com' -e 'www.mercurynews.com' -e 'meetup.com' -e 'www.reddit.com' \
+                 -e 'catsensebook.com' -e 'whec.com' -e 'www.mercurynews.com' -e 'meetup.com' \
                  -e 'dlcs.io/' -e 'centerforcollegeaffordability.org' -e 'quora.com' -e 'times-news.com' -e 'www.cebp.nl' \
                  -e '#filmtv' -e 'nybooks.com' -e '<div id="columns">' -e 'annualreviews.org' \
                  -e 'dspace.mit.edu' -e 'shirky.com' -e '](http://www.nzherald.co.nz)' -e 'https://www.arxiv.org' \
                   -e 'goodreads.com/review/show' -e 'myanimelist.net/reviews.php?id='  \
                  -e 'cloudfront.net' -e 'https://www.amazon.com/s?ie=UTF8&field-isbn=&page=1&rh=i:stripbooks' -e 'http://ltimmelduchamp.com' \
                  -e 'thiswaifudoesnotexist.net)' -e 'thiswaifudoesnotexist.net"' -e 'www.wikilivres.ca' -e 'worldtracker.org' \
-                 -e 'meaningness.wordpress.com' -e 'ibooksonline.com' -e tinypic.com -e isteve.com -e 'j-bradford-delong.net' -- "$PAGE";
+                 -e 'meaningness.wordpress.com' -e 'ibooksonline.com' -e 'tinypic.com' -e 'isteve.com' -e 'j-bradford-delong.net' -- "$PAGE";
            egp -e 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]\+v[0-9]' -- "$PAGE";}
         wrap λ "find bad URLS, unacceptable/unreliable/risky domains, malformed syntax, unmatched apostrophes"
 
@@ -81,7 +81,7 @@ do
                  -e 'arxiv.org/pdf/.*\.pdf)' -e 'arxiv.org/pdf/.*\.pdf "'  -- "$PAGE"; }
         wrap λ "if I am not linking a specific page on Arxiv or BioRxiv, why am I linking to the PDF rather than the landing page?"
         λ(){ fgp -e ".pdf#subsection" -e ".pdf#Appendix" -- "$PAGE"; }
-        wrap λ "Section PDF links break when archived locally (thereby breaking the local-PDF popups), so avoid unusual anchors in favor of 'page=N' anchor links"
+        wrap λ "Section PDF links break when archived locally due to PDF/A restrictions (thereby breaking the local-PDF popups), so avoid unusual anchors in favor of 'page=N' anchor links"
 
         λ() { egp -e '<div id="abstract"' -e '<div id="collapseSummary"' -e '^</div$' -e '^\[\!Margin: ' -e ' n=[[:digit:]]' -e ' n = [[:digit:]]' \
                   -e ']\(/.*#fn[[:digit:]]' -e '[0-9]\.[0-9]*⁄' -e '^\.>' -e ' "\)[ );,$]' \
@@ -93,7 +93,7 @@ do
                   -e '<p class="drop-cap' -e 'class="drop-caps-' -e ' n_=' -e '~~~{.collape}' -e '~~~~' -e '{.fullwidth}' -e 'Wikiepdia' -e 'Wikipdia' -e '/doc/genetic/' \
                   -e '" ](' -e '!Marin:' -e '](image/' -e '](images/'  -e '](/image/' -e '](/images/' -e '\Mathcal{' -e "''" -e '``' -e ' " ' -e '\mathcal{O}(log' -e 'preload="metadata"' \
                   -e '#close' -e '#page=page' -e '.pdf#section' -e '.pdf#subsection' -e '^<sup>' -e '<sup>^' -e '^</sup>' -e '</sup>^' -e ' : ' -e ']^[' -- "$PAGE"; }
-        wrap λ "look for broken syntax in original Markdown: (NOTE: footnotes should not be linked to because they are unstable; they should either be sections/appendices, or given a long-term div ID)"
+        wrap λ "look for broken syntax in original Markdown: (NOTE: footnotes should not be linked to because they are unstable; they should either be sections/appendices, or given a stable permanent span ID)"
 
         λ() { grep --perl-regexp --null-data --only-matching '(?s)\n\<\/div\>\n\n\^\[\!Margin: .....' -- "$PAGE"; }
         wrap λ "Margin note possibly breaks drop caps by being first item on the first line after an abstract"
@@ -121,7 +121,7 @@ do
         wrap λ "indicates broken copy-paste of image location"
 
         λ(){ grep --perl-regexp --null --only-matching -e '\!\[.*\]\(.*\)\n\!\[.*\]\(.*\)' -- "$PAGE"; }
-        wrap λ "look for images used without newline in between them; in some situations, this leads to odd distortions of aspect ratio/zooming or something (first discovered in Correlation.page in blockquotes)"
+        wrap λ "look for images used without newline in between them; in some situations, this leads to odd distortions of aspect ratio/zooming or something (first discovered in /correlation in blockquotes)"
 
         λ(){ egp '^[^$]* [^\"]\$[^$]*$' -- "$PAGE"; }
         wrap λ "look for unescaped single dollar-signs (risk of future breakage)"
