@@ -2286,22 +2286,29 @@ GW.specialOccasions = [
 ];
 
 function isTodayHalloween() {
-    // only bother English-speakers with Anglosphere holidays like Halloween:
+    //	Only bother English-speakers with Anglosphere holidays like Halloween:
     let language = window.navigator.userLanguage || window.navigator.language;
-    if ("en" == language.slice(0,2)) { // match 'en', 'en-US', 'en-GB', 'en-AU'...
+    if ("en" == language.slice(0, 2)) { // match ‘en’, ‘en-US’, ‘en-GB’, ‘en-AU’...
         let now = new Date();
         let date = (now.toISOString()).slice(5,10); // `YYYY-MM-DDTHH:mm:ss.sssZ` → MM-DD
         let hour =  now.getHours();
-        // It is a sin to celebrate Halloween while there is daylight; however, calculating local sunset or local ambient light is too hard
-        // (where would we even get that geolocation or light sensor data from‽), so we will simply define 'night' as >5PM and <6AM.
+        /*	It is a sin to celebrate Halloween while there is daylight; however, 
+        	calculating local sunset or local ambient light is too hard (where 
+        	would we even get that geolocation or light sensor data from‽), so 
+        	we will simply define ‘night’ as >5PM and <6AM.
+         */
         return (date == "10-31" && hour > 17) || (date == "11-01" && hour < 6)
+    } else {
+    	return false;
     }
 }
 function isTodayChristmas() {
     let now = new Date();
     let date = (now.toISOString()).slice(5,10);
     let hour =  now.getHours();
-    // Christmas = Christmas Eve + all Christmas Day; Christmas Eve starts in the evening, so again >5PM.
+    /*	Christmas = Christmas Eve + all Christmas Day; Christmas Eve starts in 
+    	the evening, so again >5PM.
+     */
     return (date == "12-24" && hour > 17) || (date == "12-25")
 }
 
@@ -2318,7 +2325,6 @@ function applySpecialOccasionClasses() {
                 doIfFalse();
             else if (!doIfTrue)
                 document.body.classList.remove("special-" + name);
-
         }
     }
 }

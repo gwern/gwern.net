@@ -2020,7 +2020,8 @@ body.special-halloween-dark {
     --GW-blood-red-dried: #700;
     --GW-blood-red-arterial: #e00;
 
-    --GW-sidebar-horizontal-rule-color: var(--GW-blood-red);
+    --GW-nav-header-link-color: var(--GW-blood-red-dried);
+    --GW-nav-header-link-hover-color: var(--GW-blood-red-arterial);
 
     --GW-TOC-border-color: var(--GW-blood-red-dried);
     --GW-abstract-border-color: var(--GW-blood-red-dried);
@@ -2045,15 +2046,23 @@ body.special-halloween-dark {
     --GW-footnote-border-color: var(--GW-blood-red-arterial);
     --GW-sidenote-highlight-box-shadow-color: var(--GW-blood-red-arterial);
     --GW-footnote-backlink-border-color: var(--GW-blood-red);
+    --GW-footnote-backlink-border-hover-color: var(--GW-blood-red-arterial);
+	--GW-footnote-highlighted-border-color: var(--GW-blood-red);
 
     --GW-sidenote-self-link-border-color: var(--GW-blood-red-arterial);
     --GW-sidenote-border-color: var(--GW-blood-red-arterial);
 
     --GW-math-block-scrollbar-border-color: var(--GW-blood-red);
 
+    --GW-collapse-disclosure-button-text-color: var(--GW-blood-red-dried);
+    --GW-collapse-disclosure-button-text-hover-color: var(--GW-blood-red);
+
     --GW-page-toolbar-border-color: var(--GW-blood-red-dried);
+    --GW-page-toolbar-control-button-color: var(--GW-blood-red);
 
     --GW-back-to-top-link-color: var(--GW-blood-red-dried);
+
+	--GW-floating-header-scroll-indicator-color: var(--GW-blood-red);
 
     --GW-body-link-hover-color: var(--GW-blood-red-arterial);
 
@@ -2061,15 +2070,14 @@ body.special-halloween-dark {
 }
 
 body.special-halloween-dark blockquote {
-    --GW-blockquote-border-color: var(--GW-blood-red-dried);
-}
-
-body.special-halloween-dark #sidebar a.logo {
-    color: var(--GW-blood-red);
+    --border-color: var(--GW-blood-red-dried);
 }
 
 body.special-halloween-dark #navigation a {
     color: var(--GW-blood-red);
+}
+body.special-halloween-dark #navigation a:hover {
+    color: var(--GW-blood-red-arterial);
 }
 
 body.special-halloween-dark h1,
@@ -2080,8 +2088,10 @@ body.special-halloween-dark h5,
 body.special-halloween-dark h6 {
     --GW-body-text-color: var(--GW-blood-red);
     --GW-body-link-color: var(--GW-blood-red);
+}
 
-    color: var(--GW-body-text-color);
+body.index.special-halloween-dark #sidebar a:hover {
+	color: var(--GW-blood-red);
 }
 @charset "UTF-8";
 
