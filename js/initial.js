@@ -1200,9 +1200,9 @@ function isTodayHalloween() {
         /*	It is a sin to celebrate Halloween while there is daylight; however, 
         	calculating local sunset or local ambient light is too hard (where 
         	would we even get that geolocation or light sensor data from‽), so 
-        	we will simply define ‘night’ as >5PM and <6AM.
+        	we will simply define ‘night’ as >=6PM and <6AM.
          */
-        return (date == "10-31" && hour > 17) || (date == "11-01" && hour < 6)
+        return (date == "10-31" && hour >= 18) || (date == "11-01" && hour < 6)
     } else {
     	return false;
     }
