@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-10-04 09:27:56 gwern"
+# When:  Time-stamp: "2023-10-04 09:36:25 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -611,7 +611,7 @@ else
             -e '… .' -e '... .'  -e '– ' -e  ' –' -e '### Competing' -e '<strong></strong>' -e '<span style="font-weight: 400;">' \
             -e '</p> </figcaption>' -e '</p></figcaption>' -e '<figcaption aria-hidden="true"><p>' -e '<figcaption aria-hidden="true"> <p>' \
             -e '<figcaption><p>' -e '<figcaption> <p>' -e 'Your input seems to be incomplete.' -e 'tercile' -e 'tertile' -e '\\x01' -e '&#' \
-            -e '</strong>:. ' -- ./metadata/*.yaml | \
+            -e '</strong>:. ' -e 'http://https://' -- ./metadata/*.yaml | \
              grep -F --invert-match 'popular_shelves';
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
@@ -643,7 +643,7 @@ else
                  -e 'cloudfront.net' -e 'https://www.amazon.com/s?ie=UTF8&field-isbn=&page=1&rh=i:stripbooks' -e 'http://ltimmelduchamp.com' \
                  -e 'thiswaifudoesnotexist.net)' -e 'thiswaifudoesnotexist.net"' -e 'www.wikilivres.ca' -e 'worldtracker.org' \
                  -e 'meaningness.wordpress.com' -e 'ibooksonline.com' -e 'tinypic.com' -e 'isteve.com' -e 'j-bradford-delong.net'\
-                 -e 'cdn.discordapp.com' -- ./metadata/backlinks.hs;
+                 -e 'cdn.discordapp.com' -e 'http://https://' -- ./metadata/backlinks.hs;
          # NOTE: we do not need to ban bad domains which are handled by link rewrites like www.reddit.com or medium.com.
        grep -E 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]\+v[0-9]' -- ./metadata/backlinks.hs; }
     wrap λ "Bad or banned blacklisted domains found? They should be removed or rehosted."

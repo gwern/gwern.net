@@ -104,7 +104,8 @@ gwernAbstract _ p' description toc f =
                          title = renderTags $ takeWhile dropToLinkEnd $ dropWhile dropToText $ drop 1 $ dropWhile dropToLink beginning
                          titleClean = trim $ sed "<span>(.*)</span>" "\\1" $ replaceMany [("\n", " "), ("<span class=\"smallcaps\">",""), ("<span class=\"link-auto-first\">","")] title
                          abstractRaw = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
-                         restofpageAbstract = trim $ renderTags $ filter filterAbstract abstractRaw
+                         restofpageAbstract = replace "<p><span class=\"reader-mode-note\"><strong>Note</strong>: to hide apparatus like the links, you can use reader-mode (<span class=\"reader-mode-selector-inline\"><!-- non-empty span placeholder --></span>).</span></p>" "" $
+                                              trim $ renderTags $ filter filterAbstract abstractRaw
                          in (titleClean, abstractRaw, restofpageAbstract)
       abstrct'  = (if anyPrefix abstrct ["<p>", "<p>", "<figure>"] then abstrct
                     else if null abstrct then "" else "<p>"++abstrct++"</p>") ++ " " ++ toc

@@ -629,4 +629,5 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.rollingstone.com/culture/culture-features/elon-musk-the-architect-of-tomorrow-120850/", "𝓡𝐒", "text")
          , ("https://ourworldindata.org/grapher/burden-disease-from-each-mental-illness", "OWI  D", "text,quad,sans") -- OWID
          , ("https://maggieappleton.com/bidirectionals", "maggie-appleton", "svg")
+         , ("https://www.popsci.com/deadly-splinter-antibiotic-resistance/", "PS", "text,sans")
         ]

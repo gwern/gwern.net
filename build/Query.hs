@@ -1,7 +1,7 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2023-09-27 17:08:24 gwern"
+When:  Time-stamp: "2023-10-04 11:52:30 gwern"
 License: CC-0
 -}
 
@@ -56,7 +56,7 @@ extractURL = extractURLWith (const True)
 
 -- | Read 1 Pandoc AST and return its URLs/anchor-text pairs;
 -- if a URL has both a title and an anchor text, we return 2 pairs because both might be valid (eg.
--- '[GPT-3](https://arxiv.org/foo "Language Models are Few-Shot Learners")'—we would like to do
+-- `[GPT-3](https://arxiv.org/abs/2005.14165#openai "Language Models are Few-Shot Learners")`—we would like to do
 -- similar-links on both the short noun 'GPT-3' and the paper title, but we can't if we arbitrarily
 -- return one but not the other).
 --

@@ -718,6 +718,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<span class=\"math inline\">\\(O(n^2 \\log T)\\)</span>", "𝒪(<em>n</em><sup>2</sup> log<em>T</em>")
          , ("<span class=\"math inline\">\\(O(n^2)\\)</span>", "𝒪(<em>n</em><sup>2</sup>)")
          , ("<span class=\"math inline\">\\(O(N^2)\\)</span>", "𝒪(<em>n</em><sup>2</sup>)")
+         , ("𝒪(n^2)", "𝒪(<em>n</em><sup>2)")
          , ("<span class=\"math inline\">\\(O(n \\sqrt{n})\\)</span>", "𝒪(<em>n</em> √<em>n</em>)")
          , ("<span class=\"math inline\">\\(\\operatorname{bessel0}(10)\\approx \\frac{\\sin(10)+\\cos(10)}{\\sqrt{\\pi x}}\\)</span>", "<code>bessel0(<em>x</em>) ≈ sin(<em>x</em>)+cos(<em>x</em>) / √π<em>x</em>")
          , ("<span class=\"math inline\">\\(O\\sqrt{n})\\)</span>", "𝒪(√<em>n</em>)")
