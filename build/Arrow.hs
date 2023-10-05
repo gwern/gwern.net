@@ -8,8 +8,8 @@ import qualified Control.Monad.State as ST (evalState, get, modify, State)
 import qualified Data.Text as T (head, tail, Text)
 
 import Text.Pandoc.Definition (nullMeta, Attr, Inline(Link, Span, Str),
-                               Block(BlockQuote, BulletList, CodeBlock, DefinitionList, Div, Header, LineBlock, OrderedList, Para),
-                               Pandoc(..))
+                               Block(BlockQuote, BulletList, CodeBlock, DefinitionList, Div, Header, LineBlock, OrderedList, Para, Table),
+                               Pandoc(..), TableBody(..), Row(..), Cell(..))
 import Text.Pandoc.Walk (walkM)
 
 import Utils (isUniqueAll)
@@ -65,8 +65,29 @@ addArrowClass (DefinitionList defs) = do
                     blocksList' <- mapM (mapM addArrowClass) blocksList
                     return (inlines', blocksList')) defs
   return $ DefinitionList defs'
--- WARNING: `Table` is skipped due to the sheer complexity of Table processing; anyone who needs to link to a Table should wrap it in a Div & link that instead.
+-- WARNING: `Table` is only partially processed due to the sheer complexity of Table processing; we attempt to process cells, but skip the headers/footers/captions, so... don't link stuff there, or manually specify arrow-up/down if you care.
+addArrowClass (Table attr caption colSpecs tableHead tableBodies tableFoot) = do
+  addID attr
+  tableBodies' <- mapM addArrowClassTableBody tableBodies
+  return $ Table attr caption colSpecs tableHead tableBodies' tableFoot
 addArrowClass x = return x  -- wildcard: ignore all other blocks
+
+addArrowClassTableBody :: TableBody -> ST.State Refs TableBody
+addArrowClassTableBody (TableBody attr rowHeadColumns headerRows rows) = do
+  addID attr
+  rows' <- mapM addArrowClassRow rows
+  return $ TableBody attr rowHeadColumns headerRows rows'
+ where
+    addArrowClassRow :: Row -> ST.State Refs Row
+    addArrowClassRow (Row atr cells) = do
+      addID atr
+      cells' <- mapM addArrowClassCell cells
+      return $ Row atr cells'
+    addArrowClassCell :: Cell -> ST.State Refs Cell
+    addArrowClassCell (Cell atrr alignment rowSpan colSpan blocks) = do
+      addID atrr
+      blocks' <- mapM addArrowClass blocks
+      return $ Cell attr alignment rowSpan colSpan blocks'
 
 addArrowClassInline :: Inline -> ST.State Refs Inline
 addArrowClassInline link@(Link attr@(_,classes,_) inlines (url, title))
@@ -87,7 +108,9 @@ addArrowClassInline x = return x  -- other inlines
 
 addClass :: T.Text -> Attr -> Attr
 -- NOTE: we use nub because the class list is guaranteed to never be more than 3 or 4 long & Data.Set is overkill & more verbose.
-addClass cls (i, classes, kv) = (i, nub (cls:classes), kv)
+addClass cls (i, classes, kv)
+  | cls `elem` classes = (i, classes, kv)
+  | otherwise = (i, nub (cls:classes), kv)
 
 upDownArrows :: Pandoc -> Pandoc
 upDownArrows (Pandoc meta blocks) = Pandoc meta (ST.evalState (walkM addArrowClass blocks) S.empty)
