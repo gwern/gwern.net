@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-10-04 22:41:18 gwern"
+When: Time-stamp: "2023-10-05 11:40:10 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -61,7 +61,7 @@ import qualified Data.Text as T (append, filter, isInfixOf, pack, unpack, length
 import Annotation (tooltipToMetadataTest)
 import Image (invertImageInline, imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet)
 import Inflation (nominalToRealInflationAdjuster)
-import Interwiki (convertInterwikiLinks, inlinesToText, interwikiTestSuite, interwikiCycleTestSuite)
+import Interwiki (convertInterwikiLinks, interwikiTestSuite, interwikiCycleTestSuite)
 import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, testLinkRewrites, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink (getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck)
@@ -71,7 +71,7 @@ import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadata, writeA
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv, testTags)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
-import Utils (printGreen, printRed, replace, safeHtmlWriterOptions, simplifiedHTMLString, printDoubleTestSuite, testCycleDetection) -- sed
+import Utils (printGreen, printRed, replace, safeHtmlWriterOptions, simplifiedHTMLString, printDoubleTestSuite, testCycleDetection, inlinesToText) -- sed
 import Arrow (upDownArrows, testUpDownArrows)
 
 main :: IO ()

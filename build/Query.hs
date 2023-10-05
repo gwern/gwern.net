@@ -1,7 +1,7 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2023-10-04 11:52:30 gwern"
+When:  Time-stamp: "2023-10-05 11:40:23 gwern"
 License: CC-0
 -}
 
@@ -12,7 +12,8 @@ import qualified Data.Text as T (append, init, drop, head, last, takeWhile, Text
 import Text.Pandoc (def, pandocExtensions, queryWith, readerExtensions, readHtml, readMarkdown, Inline(Image, Link), runPure, Pandoc(..), Block(BulletList, OrderedList), nullMeta)
 import Text.Pandoc.Walk (query, walk)
 
-import Interwiki (convertInterwikiLinks, inlinesToText)
+import Interwiki (convertInterwikiLinks)
+import Utils (inlinesToText)
 
 parseMarkdownOrHTML :: Bool -> T.Text -> Pandoc
 parseMarkdownOrHTML md txt = let parsedEither = if md then runPure $ readMarkdown def{readerExtensions = pandocExtensions } txt

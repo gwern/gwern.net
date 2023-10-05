@@ -15,7 +15,7 @@ import System.IO (stderr, hPutStrLn)
 import System.IO.Temp (emptySystemTempFile)
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Show.Pretty (ppShow)
-import qualified Data.Text as T (Text, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf, replace)
+import qualified Data.Text as T (Text, concat, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf, replace)
 import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import Data.FileStore.Utils (runShellCommand)
@@ -26,7 +26,7 @@ import Text.Regex (subRegex, mkRegex)
 import Text.Regex.TDFA ((=~))
 
 import Text.Pandoc (def, nullAttr, nullMeta, runPure,
-                    writerColumns, writePlain, Block(Div, RawBlock), Pandoc(Pandoc), Inline(Code, Image, Link, Math, RawInline, Span, Str), MathType(InlineMath), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown)
+                    writerColumns, writePlain, Block(Div, RawBlock), Pandoc(Pandoc), Inline(..), MathType(InlineMath), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown)
 import Text.Pandoc.Walk (walk)
 
 -- Auto-update the current year.
@@ -2103,3 +2103,32 @@ printDoubleTestSuite = filter (\(n,s) -> printDouble n /= s) printDoubleTests
               , (1.0000000000000002, "1.0000000000000002")
               , (-1.0000000000000002, "-1.0000000000000002")
               ]
+
+-- | Convert a list of inlines into a string.
+inlinesToText :: [Inline] -> T.Text
+inlinesToText = -- HACK: dealing with RawInline pairs like [RawInline "<sup>", Text "th", RawInline "</sup>"] is a PITA to do properly (have to process to HTML and then back into AST), so we'll just handle special cases for now...
+  replaceManyT [("<sup>",""), ("</sup>",""), ("<sub>",""),("</sub>","")] .
+                T.concat . map go
+  where go x = case x of
+               -- reached the literal T.Text:
+               Str s    -> s
+               -- strip & recurse on the [Inline]:
+               Emph        x' -> inlinesToText x'
+               Underline   x' -> inlinesToText x'
+               Strong      x' -> inlinesToText x'
+               Strikeout   x' -> inlinesToText x'
+               Superscript x' -> inlinesToText x'
+               Subscript   x' -> inlinesToText x'
+               SmallCaps   x' -> inlinesToText x'
+               -- throw away attributes and recurse on the [Inline]:
+               Span _      x' -> inlinesToText x' -- eg. [foo]{.smallcaps} -> foo
+               Quoted _    x' -> inlinesToText x'
+               Cite _      x' -> inlinesToText x'
+               Link _   x' _  -> inlinesToText x'
+               Image _  x' _  -> inlinesToText x'
+               -- throw away attributes, return the literal T.Text:
+               Math _      x' -> x'
+               RawInline _ x' -> x'
+               Code _      x' -> x'
+               -- fall through with a blank:
+               _        -> " "::T.Text

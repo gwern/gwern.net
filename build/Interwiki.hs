@@ -1,50 +1,22 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, inlinesToText, wpPopupClasses, interwikiTestSuite, interwikiCycleTestSuite) where
+module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, interwikiTestSuite, interwikiCycleTestSuite) where
 
 import Data.List (intersect, nub)
 import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Map as M (fromList, lookup, Map)
-import qualified Data.Text as T (append, concat, head, isInfixOf, null, tail, take, toUpper, pack, unpack, Text, isPrefixOf, isSuffixOf, takeWhile, init, replace)
+import qualified Data.Text as T (append, head, isInfixOf, null, tail, take, toUpper, pack, unpack, Text, isPrefixOf, isSuffixOf, takeWhile, init, replace)
 import Network.URI (parseURIReference, uriPath, uriAuthority, uriRegName)
 import qualified Network.URI.Encode as E (encodeTextWith, isAllowed)
 
 import Text.Pandoc (Inline(..), Pandoc)
 import Text.Pandoc.Walk (walk)
 
-import Utils (replaceManyT, anyPrefixT, fixedPoint, isCycleLess, findCycles)
+import Utils (replaceManyT, anyPrefixT, fixedPoint, isCycleLess, findCycles, inlinesToText)
 import qualified Config.Interwiki as C (redirectDB, quoteOverrides, testCases)
 
 -- INTERWIKI PLUGIN
 -- This is a simplification of the original interwiki plugin I wrote for Gitit: <https://github.com/jgm/gitit/blob/master/plugins/Interwiki.hs>
 -- It's more or less the same thing, but the interwiki mapping is cut down to only the ones I use, and it avoids a dependency on Gitit.
--- | Convert a list of inlines into a string.
-inlinesToText :: [Inline] -> T.Text
-inlinesToText = -- HACK: dealing with RawInline pairs like [RawInline "<sup>", Text "th", RawInline "</sup>"] is a PITA to do properly (have to process to HTML and then back into AST), so we'll just handle special cases for now...
-  replaceManyT [("<sup>",""), ("</sup>",""), ("<sub>",""),("</sub>","")] .
-                T.concat . map go
-  where go x = case x of
-               -- reached the literal T.Text:
-               Str s    -> s
-               -- strip & recurse on the [Inline]:
-               Emph        x' -> inlinesToText x'
-               Underline   x' -> inlinesToText x'
-               Strong      x' -> inlinesToText x'
-               Strikeout   x' -> inlinesToText x'
-               Superscript x' -> inlinesToText x'
-               Subscript   x' -> inlinesToText x'
-               SmallCaps   x' -> inlinesToText x'
-               -- throw away attributes and recurse on the [Inline]:
-               Span _      x' -> inlinesToText x' -- eg. [foo]{.smallcaps} -> foo
-               Quoted _    x' -> inlinesToText x'
-               Cite _      x' -> inlinesToText x'
-               Link _   x' _  -> inlinesToText x'
-               Image _  x' _  -> inlinesToText x'
-               -- throw away attributes, return the literal T.Text:
-               Math _      x' -> x'
-               RawInline _ x' -> x'
-               Code _      x' -> x'
-               -- fall through with a blank:
-               _        -> " "::T.Text
 
 -- wrap `convertInterwikiLinksInline` with its document-level context for error-reporting purposes. It is too difficult to debug errors like empty links (eg. a `<a href="!W"></a>`) when you have no idea where they are located, and the empty link, almost by definition, has no information about itself & can be quite hard to search for (especially if it's generated or in an intermediate).
 convertInterwikiLinks :: Pandoc -> Pandoc

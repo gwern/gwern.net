@@ -25,7 +25,7 @@ import qualified Data.Text as T (append, pack, unpack, Text)
 import Control.Parallel.Strategies (parListChunk, rseq, using)
 import Text.Pandoc.Walk (walk)
 
-import Interwiki (inlinesToText)
+import Utils (inlinesToText)
 import LinkID (generateID, authorsToCite)
 import LinkMetadata as LM (readLinkMetadata, readLinkMetadataNewest, generateAnnotationTransclusionBlock, authorsTruncate, hasAnnotation, annotateLink, lookupFallback)
 import LinkMetadataTypes (Metadata, MetadataItem)

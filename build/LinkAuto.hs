@@ -58,7 +58,7 @@ import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa s
 
 import Utils (addClass, frequency, simplifiedDoc, safeHtmlWriterOptions, cleanUpDivsEmpty, cleanUpSpans)
 import Query (extractURLs)
-import Interwiki (inlinesToText)
+import Utils (inlinesToText)
 import Typography (mergeSpaces)
 import qualified Config.LinkAuto as C (custom)
 
