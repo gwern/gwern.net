@@ -7,8 +7,9 @@ import qualified Data.Text as T (unpack, Text)
 import Utils (isUniqueAll)
 
 linkIDOverrides :: [(String, T.Text)]
-linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start with `[a-zA-Z]`, and not numbers or periods etc
-                              if not $ isAlpha $ head $ T.unpack ident then error ("Invalid link ID override! " ++ ppShow o) else o)
+linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start with `[a-zA-Z]`, and not numbers or periods etc; they must not contain periods for CSS/JS compatibility
+                         let ident' = T.unpack ident in
+                              if '.' `elem` ident' || (not $ isAlpha $ head ident') then error ("Invalid link ID override! " ++ ppShow o) else o)
                       $ isUniqueAll [
        ("/doc/ai/anime/danbooru/2018-zhang-2.pdf", "zhang-et-al-2018-twostagecolorization")
        , ("/doc/ai/anime/danbooru/2020-akita-2.pdf", "akita-et-al-2020-2")
@@ -358,9 +359,10 @@ linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start wi
        , ("https://www.newcriterion.com/issues/2006/10/a-good-list", "leithauser-2006-good-list")
        , ("https://www.newyorker.com/magazine/2020/01/13/operatic-shows-of-force", "ross-2020-wozzeck")
        , ("https://www.newyorker.com/magazine/2020/08/31/how-wagner-shaped-hollywood", "ross-2020-wagner")
-       , ("https://www.reddit.com/r/gwern/", "gwern-old.reddit.com-r-gwern-2")
+       , ("https://www.reddit.com/r/gwern/", "gwern-old-reddit-com-r-gwern-2")
        , ("https://www.sciencedirect.com/science/article/pii/S0955395919303482", "norbutas-et-al-2020-4")
        , ("https://www.theatlantic.com/magazine/archive/2006/08/nightfall/305030/", "leithauser-2006-nightfall")
        , ("https://www.thisfursonadoesnotexist.com/", "arfafax-tfdne")
        , ("https://www.thiswaifudoesnotexist.net/", "gwern-twdne-website")
+       , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6764009/", "satyaraj-et-al-2019-2")
       ]
