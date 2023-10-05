@@ -2421,9 +2421,9 @@ GW.layout = {
 	].join(", "),
 
 	blockSpacing: [
-		[ "body.index .abstract > p.first-block",	 7, false ],
-		[ "body.index section",						 7, false ],
-		[ "body.index section li p + p",			 0, false ],
+		[ "body.page-index .abstract > p.first-block",	 7, false ],
+		[ "body.page-index section",						 7, false ],
+		[ "body.page-index section li p + p",			 0, false ],
 
 		[ ".float.first-block",			 2, false ],
 		[ ".first-block",				 0, false ],
