@@ -27,9 +27,9 @@ DarkMode = {
 			return;
 
 		//	Set `media` attribute of style block to match requested mode.
-		if (selectedMode == 'auto') {
+		if (selectedMode == "auto") {
 			darkModeStyles.media = "all and (prefers-color-scheme: dark)";
-		} else if (selectedMode == 'dark') {
+		} else if (selectedMode == "dark") {
 			darkModeStyles.media = "all";
 		} else {
 			darkModeStyles.media = "not all";
@@ -39,13 +39,16 @@ DarkMode = {
 		GW.notificationCenter.fireEvent("DarkMode.didSetMode");
 	},
 
+	//	Overridable default mode.
+	defaultMode: "auto",
+
     /*  Returns current (saved) mode (light, dark, or auto).
      */
     currentMode: () => {
-        return (localStorage.getItem("dark-mode-setting") || "auto");
+        return (localStorage.getItem("dark-mode-setting") ?? DarkMode.defaultMode);
     },
 
-	/*	Returns currently color mode (light or dark).
+	/*	Returns currently active color mode (light or dark).
 		Based on saved selector mode, plus system setting (if selected mode is
 		‘auto’).
 	 */

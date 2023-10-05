@@ -1179,10 +1179,14 @@ document.addEventListener("readystatechange", () => {
  */
 GW.specialOccasions = [
     [ "halloween", () => isTodayHalloween(), () => {
+		//	Default to dark mode during Halloween.
+        DarkMode.defaultMode = "dark";
+
+		//	Different special styles for light and dark mode.
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");
-        let specialClass = DarkMode.computedMode() == "dark"
-                           ? "special-halloween-dark"
-                           : "special-halloween-light";
+        let specialClass = DarkMode.computedMode() == "light"
+                           ? "special-halloween-light"
+                           : "special-halloween-dark";
         document.body.classList.add(specialClass);
       }, () => {
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");
@@ -1239,4 +1243,5 @@ doWhenBodyExists(() => {
     GW.notificationCenter.addHandlerForEvent("DarkMode.computedModeDidChange", (info) => {
         applySpecialOccasionClasses();
     });
+    DarkMode.setMode();
 });
