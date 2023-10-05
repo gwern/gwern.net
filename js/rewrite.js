@@ -1641,10 +1641,10 @@ addContentInjectHandler(GW.contentInjectHandlers.cleanSpuriousLinkIcons = (event
             and routinely modified/expanded, so doing it ‘manually’ would risk
             occasional omissions or syntax errors.
          */
-        "body.index",
-        "body.static-404",
-        ".popframe-body.index",
-        ".popframe-body.static-404",
+        "body.page-index",
+        "body.page-static-404",
+        ".popframe-body.page-index",
+        ".popframe-body.page-static-404",
 
         /*  TOC links should never have link icons under any circumstances.
          */

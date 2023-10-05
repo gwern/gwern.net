@@ -233,11 +233,8 @@ Extracts = { ...Extracts,
 			//	Preliminary rewrites.
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 				//	Add page body classes.
-				/*	NOTE: Temporarily disabled due to .sidenote bug.
-					—SA 2023-09-23
-				 */
-// 				let referenceData = Content.referenceDataForLink(target);
-// 				Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses));
+				let referenceData = Content.referenceDataForLink(target);
+				Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses));
 
 				//	Update pop-frame title.
 				Extracts.updatePopFrameTitle(popFrame);

@@ -9259,11 +9259,8 @@ Extracts = { ...Extracts,
 			//	Preliminary rewrites.
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 				//	Add page body classes.
-				/*	NOTE: Temporarily disabled due to .sidenote bug.
-					—SA 2023-09-23
-				 */
-// 				let referenceData = Content.referenceDataForLink(target);
-// 				Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses));
+				let referenceData = Content.referenceDataForLink(target);
+				Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses));
 
 				//	Update pop-frame title.
 				Extracts.updatePopFrameTitle(popFrame);
@@ -12965,10 +12962,10 @@ addContentInjectHandler(GW.contentInjectHandlers.cleanSpuriousLinkIcons = (event
             and routinely modified/expanded, so doing it ‘manually’ would risk
             occasional omissions or syntax errors.
          */
-        "body.index",
-        "body.static-404",
-        ".popframe-body.index",
-        ".popframe-body.static-404",
+        "body.page-index",
+        "body.page-static-404",
+        ".popframe-body.page-index",
+        ".popframe-body.page-static-404",
 
         /*  TOC links should never have link icons under any circumstances.
          */

@@ -1822,14 +1822,14 @@ a code {
 /*  On the index page, we hide article-related formatting, begging, to make it
     more compact & classy.
  */
-body.index header,
-body.index #TOC,
-body.index #sidebar a.patreon {
+body.page-index header,
+body.page-index #TOC,
+body.page-index #sidebar a.patreon {
     display: none;
 }
 
-body.index article,
-body.index #markdownBody {
+body.page-index article,
+body.page-index #markdownBody {
 	margin-top: 0;
 }
 
@@ -1838,21 +1838,21 @@ body.index #markdownBody {
  */
 
 /*  No index self-link. */
-body.index #sidebar a.logo {
+body.page-index #sidebar a.logo {
     pointer-events: none;
 }
 
 /*  Special nav link styling on /index. */
 @media all and (min-width: 650px) {
-    body.index #sidebar a {
+    body.page-index #sidebar a {
         color: var(--GW-nav-header-link-hover-color);
     }
-    body.index #sidebar a:hover {
+    body.page-index #sidebar a:hover {
         color: var(--GW-nav-header-link-color);
     }
 }
 @media all and (min-width: 1180px) {
-    body.index #sidebar a.logo {
+    body.page-index #sidebar a.logo {
         opacity: 1.0;
     }
 }
@@ -1862,33 +1862,33 @@ body.index #sidebar a.logo {
  */
 
 /* Suppress bonus section in single/double-column layout */
-body.index #markdownBody #notable {
+body.page-index #markdownBody #notable {
     display: none;
 }
 @media all and (min-width: 961px) {
-    body.index #markdownBody {
+    body.page-index #markdownBody {
         display: grid;
         grid-row-gap: 0.5em;
     }
     @media all and (max-width: 1040px) {
-        body.index #markdownBody {
+        body.page-index #markdownBody {
             grid-template-columns: 1fr;
         }
-        body.index #markdownBody section > ul {
+        body.page-index #markdownBody section > ul {
             column-count: 2;
             column-gap: 3em;
         }
-        body.index #markdownBody section > ul li {
+        body.page-index #markdownBody section > ul li {
             break-inside: avoid;
         }
     }
     @media all and (min-width: 1041px) {
-        body.index #markdownBody {
+        body.page-index #markdownBody {
 			grid-template-columns: 1fr 1fr;
 	        grid-column-gap: 2em;
         }
-		body.index #markdownBody .abstract,
-		body.index #markdownBody hr {
+		body.page-index #markdownBody .abstract,
+		body.page-index #markdownBody hr {
 			grid-column-start: 1;
 			grid-column-end: -1;
 		}
@@ -1898,18 +1898,18 @@ body.index #markdownBody #notable {
 		(for a newest/popular/notable triplet)
 	 */
 	@media all and (min-width: 1761px) {
-		body.index #markdownBody {
+		body.page-index #markdownBody {
 			grid-template-columns: 45ch 45ch 45ch;
 			margin-left: -20ch;
 		}
-		body.index #markdownBody #notable {
+		body.page-index #markdownBody #notable {
 			display: block;
 		}
-		body.index #markdownBody .abstract {
+		body.page-index #markdownBody .abstract {
 			max-width: 935px;
 			margin-left: 20ch;
 		}
-		body.index #markdownBody hr {
+		body.page-index #markdownBody hr {
 			margin-left: -5ch;
 		}
 	}
@@ -1921,7 +1921,7 @@ body.index #markdownBody #notable {
 
 /*	Headings.
  */
-body.index #markdownBody section h1 {
+body.page-index #markdownBody section h1 {
     font-size: 1.5em;
     line-height: 1.125;
     text-align: left;
@@ -1932,30 +1932,30 @@ body.index #markdownBody section h1 {
 }
 /*  No pilcrows.
  */
-body.index #markdownBody section h1 a::after {
+body.page-index #markdownBody section h1 a::after {
     display: none;
 }
 
 /*  Link lists.
  */
-body.index #markdownBody section ul {
+body.page-index #markdownBody section ul {
 	--list-left-padding: 1.375em;
 	--text-alignment: left;
     --list-bullet: var(--GW-image-single-white-star-svg);
     --list-bullet-opacity: 0.85;
 }
-body.index #markdownBody section ul ul {
+body.page-index #markdownBody section ul ul {
     --list-bullet: var(--GW-image-single-white-star-rotated-svg);
     --list-bullet-opacity: 0.85;
 }
 
 @media all and (max-width: 649px) {
-    body.index #markdownBody section ul p {
+    body.page-index #markdownBody section ul p {
 		margin-bottom: 0.15em;
         line-height: 1.65;
         overflow-wrap: break-word;
     }
-	body.index #markdownBody section ul li::before {
+	body.page-index #markdownBody section ul li::before {
 		top: 0.1em;
 	}
 }
@@ -1974,7 +1974,7 @@ body.index #markdownBody section ul ul {
 @media all and (min-width: 650px) {
 /*  Horizontal ruler on the home page.
     */
-    body.index div[class^='horizontal-rule'] {
+    body.page-index div[class^='horizontal-rule'] {
         display: none;
     }
 }
@@ -1982,7 +1982,7 @@ body.index #markdownBody section ul ul {
 /*  Back-to-top link on home page.
     */
 @media all and (min-width: 1761px) {
-    body.index #back-to-top {
+    body.page-index #back-to-top {
         left: calc((100% - 1430px - 50px)/2);
     }
 }
