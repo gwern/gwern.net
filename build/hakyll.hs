@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-10-05 11:40:10 gwern"
+When: Time-stamp: "2023-10-05 12:40:47 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -60,7 +60,7 @@ import qualified Data.Text as T (append, filter, isInfixOf, pack, unpack, length
 -- local custom modules:
 import Annotation (tooltipToMetadataTest)
 import Image (invertImageInline, imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet)
-import Inflation (nominalToRealInflationAdjuster)
+import Inflation (nominalToRealInflationAdjuster, inflationDollarTestSuite)
 import Interwiki (convertInterwikiLinks, interwikiTestSuite, interwikiCycleTestSuite)
 import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, testLinkRewrites, ArchiveMetadata)
 import LinkAuto (linkAuto)
@@ -109,6 +109,9 @@ main =
                               unless (null interwikiPopupTestCases) $ preprocess $ printRed ("Interwiki rules have errors in: " ++ show interwikiPopupTestCases)
                               let interwikiCycleTestCases = interwikiCycleTestSuite
                               unless (null interwikiCycleTestCases) $ preprocess $ printRed ("Interwiki redirect rewrite rules have errors in: " ++ show interwikiCycleTestCases)
+
+                              let inflationTestCases = inflationDollarTestSuite
+                              unless (null inflationTestCases) $ preprocess $ printRed ("Inflation-adjustment rules have errors in: " ++ show inflationTestCases)
 
                               unless (null tooltipToMetadataTest) $ preprocess $ printRed ("Tooltip-parsing rules have errors in: " ++ show tooltipToMetadataTest)
 

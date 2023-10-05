@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Inflation (nominalToRealInflationAdjuster) where
+module Inflation (nominalToRealInflationAdjuster, inflationDollarTestSuite) where
 
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2023-10-05 11:52:22 gwern"
+-- When:  Time-stamp: "2023-10-05 12:40:36 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -65,10 +65,10 @@ $  echo 'Span ("",["inflation-adjusted"],[("year-original","2017-01-01"),("amoun
 <span class="inflation-adjusted" data-year-original="2017-01-01" data-amount-original="50.50" data-year-current="2020" data-amount-current="56,617" title="Exchange-rate-adjusted currency: ₿50.50 in 2017-01-01 → $56,617">$56,617<span class="subsup"><sub>2017</sub><sup>₿50.50</sup></span></span>
 -}
 
-import Text.Pandoc (Inline(Link, Span, Str, Subscript, Superscript))
+import Text.Pandoc (nullAttr, Inline(Link, Span, Str, Subscript, Superscript))
 import Text.Read (readMaybe)
 import qualified Data.Map.Strict as M (findMax, findMin, lookup, lookupGE, lookupLE, mapWithKey, Map)
-import qualified Data.Text as T (head, length, pack, unpack, tail)
+import qualified Data.Text as T (head, length, pack, unpack, tail, Text)
 
 import Utils (currentYear, printDouble, inlinesToText)
 import Config.Inflation as C
@@ -81,6 +81,10 @@ nominalToRealInflationAdjuster x@(Link _ _ (ts, _))
   where t = T.head ts
 nominalToRealInflationAdjuster x = x
 
+-- hardwired for 2023 results.
+inflationDollarTestSuite :: [((T.Text,T.Text), Inline)]
+inflationDollarTestSuite = filter (\((t,y), expected) -> expected /= dollarAdjuster 2023 (Link ("",[],[]) [Str t] (y, ""))) C.inflationDollarTestCases
+
 -- TODO: refactor dollarAdjuster/bitcoinAdjuster - they do *almost* the same thing, aside from handling year vs dates
 dollarAdjuster :: Int -> Inline -> Inline
 dollarAdjuster _ l@(Link _ _ ("", _)) = error $ "Inflation.hs: dollarAdjuster: Inflation adjustment failed on malformed link (no old-date specified): " ++ show l
@@ -89,7 +93,7 @@ dollarAdjuster currentyear l@(Link _ text (oldYears, _)) =
   if head text' /= '$' then error $ "Inflation.hs: dollarAdjuster: amount text must begin with a dollar sign: " ++ show l
   else
    if (adjustedDollar / oldDollar) < C.minPercentage
-   then Str $ T.pack ("$"++ oldDollarString)
+   then Span nullAttr text -- just strip out the inflation annotation & do nothing
    else Span ("", -- no unique identifier available
               ["inflation-adjusted"], -- CSS/HTML class for styling
               -- provide all 4 variables as metadata the <span> tags for possible CSS/JS processing
@@ -111,7 +115,7 @@ dollarAdjuster _ x = x
 
 multiplyByUnits :: Inline -> String -> String
 multiplyByUnits l "" = error $ "Inflation.hs (dollarAdjuster): an empty amount was processed from 'text' variable. Original input: " ++ show l
-multiplyByUnits l amount = let (unit, rest) = (last amount, read (init amount) :: Double) in -- eg. '100m' → ('m',"100")
+multiplyByUnits l amount = let (unit, rest) = (last amount, read (init $ filter (/=',') amount) :: Double) in -- eg. '100m' → ('m',"100")
                            if unit `elem` ("0123456789"::String) then amount else show $ case unit of
                                                                               'k' -> rest*1000
                                                                               'm' -> rest*1000000
