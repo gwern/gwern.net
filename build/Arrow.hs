@@ -1,4 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
+
+module Arrow (upDownArrows, testUpDownArrows) where
+
 import Data.List (nub)
 import qualified Data.Set as S (empty, insert, member, Set)
 import qualified Control.Monad.State as ST (evalState, get, modify, State)
@@ -8,6 +11,8 @@ import Text.Pandoc.Definition (nullMeta, Attr, Inline(Link, Span, Str),
                                Block(BlockQuote, BulletList, CodeBlock, DefinitionList, Div, Header, LineBlock, OrderedList, Para),
                                Pandoc(..))
 import Text.Pandoc.Walk (walkM)
+
+import Utils (isUniqueAll)
 
 -- Compile-time Layout Optimization: annotate self-reference links with whether they are 'before' or 'after' the link, so they are decorated with either '↑' or '↓' icons to help the reader know what the link refers to & if they have read it already.
 -- Doing this at compile-time reduces the burden on client-side JS & layout shift.
@@ -26,7 +31,8 @@ arrowUp = "arrow-up"
 arrowDown = "arrow-down"
 
 addID :: Attr -> ST.State Refs ()
-addID = ST.modify . S.insert . fst3
+addID ("",_,_) = return ()
+addID (i, _,_) = ST.modify $ S.insert i
 
 addArrowClass :: Block -> ST.State Refs Block
 addArrowClass (Para inlines) = Para <$> mapM addArrowClassInline inlines
@@ -63,9 +69,9 @@ addArrowClass (DefinitionList defs) = do
 addArrowClass x = return x  -- wildcard: ignore all other blocks
 
 addArrowClassInline :: Inline -> ST.State Refs Inline
-addArrowClassInline link@(Link attr@(_,classes,_) inlines (url, title)) =
-  if T.head url /= '#' then return link else
-    do
+addArrowClassInline link@(Link attr@(_,classes,_) inlines (url, title))
+  | T.head url /= '#' = return link
+  | otherwise = do
       refs <- ST.get
       let newAttr = if S.member (T.tail url) refs &&
                        -- WARNING: depending on the recursion pattern, it's possible to add *both*! We must check to avoid that:
@@ -79,9 +85,6 @@ addArrowClassInline (Span attr inlines) = do
   return $ Span attr inlines'
 addArrowClassInline x = return x  -- other inlines
 
-fst3 :: (a, b, c) -> a
-fst3 (x, _, _) = x
-
 addClass :: T.Text -> Attr -> Attr
 -- NOTE: we use nub because the class list is guaranteed to never be more than 3 or 4 long & Data.Set is overkill & more verbose.
 addClass cls (i, classes, kv) = (i, nub (cls:classes), kv)
@@ -93,7 +96,7 @@ testUpDownArrows :: [(Pandoc, Pandoc)]
 testUpDownArrows = filter (uncurry ((/=) . upDownArrows)) $ map (\(a,b) -> (Pandoc nullMeta a, Pandoc nullMeta b)) testCases
   where
     testCases :: [([Block], [Block])]
-    testCases =
+    testCases = isUniqueAll
       [([Para [Link ("", [], []) [Str "simpleCase"] ("#target", "")]],
         [Para [Link ("", [arrowDown], []) [Str "simpleCase"] ("#target", "")]])
       , ([Para [Link ("", [], []) [Str "sameBlockCase"] ("#target", ""), Span ("target", [], []) [Str "span"]]],
