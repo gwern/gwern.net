@@ -171,13 +171,17 @@ Typography = {
 
 		return str;
 	},
+	excludedTags: [ 'CODE', 'PRE', 'SCRIPT', 'STYLE', 'NOSCRIPT' ],
 	processElement: (element, replacementTypes = Typography.replacementTypes.NONE, rectifyWordBreaks = true) => {
-		if ([ 'CODE', 'PRE', 'SCRIPT', 'STYLE', 'NOSCRIPT' ].includes(element.nodeName))
-			return;
+		if (Typography.excludedTags.includes(element.nodeName))
+			return null;
 
 		function decomposeElement(element) {
 			let text = "";
 			let textNodes = [ ];
+
+			if (Typography.excludedTags.includes(element.nodeName))
+				return [ text, textNodes ];
 
 			for (node of element.childNodes) {
 				if (node.nodeType === Node.TEXT_NODE) {

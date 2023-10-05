@@ -2274,10 +2274,14 @@ document.addEventListener("readystatechange", () => {
  */
 GW.specialOccasions = [
     [ "halloween", () => isTodayHalloween(), () => {
+		//	Default to dark mode during Halloween.
+        DarkMode.defaultMode = "dark";
+
+		//	Different special styles for light and dark mode.
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");
-        let specialClass = DarkMode.computedMode() == "dark"
-                           ? "special-halloween-dark"
-                           : "special-halloween-light";
+        let specialClass = DarkMode.computedMode() == "light"
+                           ? "special-halloween-light"
+                           : "special-halloween-dark";
         document.body.classList.add(specialClass);
       }, () => {
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");
@@ -2334,6 +2338,7 @@ doWhenBodyExists(() => {
     GW.notificationCenter.addHandlerForEvent("DarkMode.computedModeDidChange", (info) => {
         applySpecialOccasionClasses();
     });
+    DarkMode.setMode();
 });
 /**********/
 /* LAYOUT */
@@ -3369,9 +3374,9 @@ DarkMode = {
 			return;
 
 		//	Set `media` attribute of style block to match requested mode.
-		if (selectedMode == 'auto') {
+		if (selectedMode == "auto") {
 			darkModeStyles.media = "all and (prefers-color-scheme: dark)";
-		} else if (selectedMode == 'dark') {
+		} else if (selectedMode == "dark") {
 			darkModeStyles.media = "all";
 		} else {
 			darkModeStyles.media = "not all";
@@ -3381,13 +3386,16 @@ DarkMode = {
 		GW.notificationCenter.fireEvent("DarkMode.didSetMode");
 	},
 
+	//	Overridable default mode.
+	defaultMode: "auto",
+
     /*  Returns current (saved) mode (light, dark, or auto).
      */
     currentMode: () => {
-        return (localStorage.getItem("dark-mode-setting") || "auto");
+        return (localStorage.getItem("dark-mode-setting") ?? DarkMode.defaultMode);
     },
 
-	/*	Returns currently color mode (light or dark).
+	/*	Returns currently active color mode (light or dark).
 		Based on saved selector mode, plus system setting (if selected mode is
 		‘auto’).
 	 */

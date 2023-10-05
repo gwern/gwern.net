@@ -72,10 +72,10 @@ DarkMode = { ...DarkMode,
 	 */
 
 	//	Called by: DarkMode.modeSelectButtonClicked
-	saveMode: (newMode) => {
+	saveMode: (newMode = DarkMode.currentMode()) => {
 		GWLog("DarkMode.saveMode", "dark-mode.js", 1);
 
-		if (newMode == "auto")
+		if (newMode == DarkMode.defaultMode)
 			localStorage.removeItem("dark-mode-setting");
 		else
 			localStorage.setItem("dark-mode-setting", newMode);
@@ -90,10 +90,10 @@ DarkMode = { ...DarkMode,
 			let [ name, label, desc, icon ] = modeOption;
 			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
-			let active = ((   currentMode == "auto"
-						   && name == (GW.mediaQueries.systemDarkModeActive.matches ? "dark" : "light"))
+			let active = (   currentMode == "auto"
+						  && name == DarkMode.computedMode())
 						  ? " active"
-						  : "");
+						  : "";
 			if (name == currentMode)
 				desc += DarkMode.selectedModeOptionNote;
 			return `<button
@@ -149,6 +149,7 @@ DarkMode = { ...DarkMode,
 			replacedElement.replaceWith(modeSelector);
 		} else {
 			modeSelector = DarkMode.modeSelector = GW.pageToolbar.addWidget(DarkMode.modeSelectorHTML());
+			DarkMode.saveMode();
 		}
 
 		//	Activate mode selector widget buttons.
