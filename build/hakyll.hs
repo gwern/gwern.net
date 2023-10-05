@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-10-04 12:32:39 gwern"
+When: Time-stamp: "2023-10-04 22:41:18 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -343,7 +343,7 @@ pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `con
                walk footnoteAnchorChecker $ convertInterwikiLinks $
                  walk linkAuto p
      unless indexp $ createAnnotations md pw
-     let pb = upDownArrows $ walk (hasAnnotation md) $ addPageLinkWalk pw  -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
+     let pb = (if indexp then id else upDownArrows) $ walk (hasAnnotation md) $ addPageLinkWalk pw  -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
      pbt <- fmap typographyTransform . walkM (localizeLink adb archived)
               $ if indexp then pb else
                 walk (map nominalToRealInflationAdjuster) pb
@@ -356,14 +356,17 @@ pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `con
 -- While processing Headers, ensure that they have valid CSS IDs. (Pandoc will happily generate invalid HTML IDs, which contain CSS-forbidden characters like periods; this can cause fatal errors in JS/CSS without dangerous workarounds. So the author needs to manually add a period-less ID. This is an outstanding issue: <https://github.com/jgm/pandoc/issues/6553>.)
 -- NOTE: We could instead require the author to manually assign an ID like `# Foo.bar {#foobar}`, which would be reliable & compatible with other Markdown systems, but this would not solve the problem on *generated* pages, like the tag-directories which put paper titles in headers & will routinely incur this problem. So we have to automate it as a Pandoc rewrite.
 headerSelflinkAndSanitize :: Block -> Block
+headerSelflinkAndSanitize x@(Header _ _ (Link _ _ _:_)) = x -- already processed by `headerSelflinkAndSanitize`
 headerSelflinkAndSanitize x@(Header _ _ []) = error $ "hakyll.hs: headerSelflinkAndSanitize: Invalid header with no visible text‽ This should be impossible: " ++ show x
 headerSelflinkAndSanitize x@(Header _ ("",_,_) _) = error $ "hakyll.hs: headerSelflinkAndSanitize: Invalid header with no specified ID‽ This should be impossible: " ++ show x
 headerSelflinkAndSanitize x@(Header a (href,b,c) d) =
   let href' = T.filter (`notElem` ['.', '#', ':']) href in -- NOTE: these appear to be the only dangerously inconsistent allowed characters, and Pandoc already seems to filter out octothorpe & colon, but we will double-check by filtering those out too.
-    if href' == "" then error $ "hakyll.hs: headerSelflinkAndSanitize: Invalid ID for header after filtering! The header text must be changed or a valid ID manually set: " ++ show x else
-      -- NOTE: we do not need to check the new ID for uniqueness, as colliding IDs are invalid HTML and the document author is responsible for ensuring no collisions; this is enforced by checking the final HTML using HTML Tidy to verify validity.
-      Header a (href',b,c) [Link nullAttr (walk titlecaseInline d)
-                            ("#"`T.append`href', "Link to section: § '" `T.append` inlinesToText d `T.append` "'")]
+    unsafePerformIO $ do
+      when (href' /= href) $ putStrLn $ "hakyll.hs: headerSelflinkAndSanitize: Invalid ID for header after filtering! The header text must be changed or a valid ID manually set: " ++ show x
+      if href' == "" then error $ "hakyll.hs: headerSelflinkAndSanitize: Invalid ID for header after filtering! The header text must be changed or a valid ID manually set: " ++ show x else
+        -- NOTE: we do not need to check the new ID for uniqueness, as colliding IDs are invalid HTML and the document author is responsible for ensuring no collisions; this is enforced by checking the final HTML using HTML Tidy to verify validity.
+        return $ Header a (href',b,c) [Link nullAttr (walk titlecaseInline d)
+                                       ("#"`T.append`href', "Link to section: § '" `T.append` inlinesToText d `T.append` "'")]
 headerSelflinkAndSanitize x = x
 
 -- Check for footnotes which may be broken and rendering wrong, with the content inside the body rather than as a footnote. (An example was present for an embarrassingly long time in /gpt-3…)
