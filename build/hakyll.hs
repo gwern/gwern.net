@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-10-05 12:40:47 gwern"
+When: Time-stamp: "2023-10-05 15:53:48 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -79,41 +79,42 @@ main =
  do arg <- lookupEnv "SLOW" -- whether to do the more expensive stuff; Hakyll eats the CLI arguments, so we pass it in as an exported environment variable instead
     let slow = "true" == fromMaybe "" arg
     hakyll $ do
-               when slow $ do preprocess $ printGreen ("Testing link icon matches…" :: String)
-                              let linkIcons = linkIconTest
-                              unless (null linkIcons) $ preprocess $ printRed ("Link icon rules have errors in: " ++ show linkIcons)
+               preprocess $ printGreen ("Testing link icon matches…" :: String)
+               let linkIcons = linkIconTest
+               unless (null linkIcons) $ preprocess $ printRed ("Link icon rules have errors in: " ++ show linkIcons)
 
-                              let arrows = testUpDownArrows
-                              unless (null arrows) $ preprocess $ printRed ("Self-link arrow up/down AST test suite has errors in: " ++ show arrows)
+               let arrows = testUpDownArrows
+               unless (null arrows) $ preprocess $ printRed ("Self-link arrow up/down AST test suite has errors in: " ++ show arrows)
 
-                              let doubles = printDoubleTestSuite
-                              unless (null doubles) $ preprocess $ printRed ("Double-printing function test suite has errors in: " ++ show doubles)
+               let doubles = printDoubleTestSuite
+               unless (null doubles) $ preprocess $ printRed ("Double-printing function test suite has errors in: " ++ show doubles)
 
-                              let cycles = testCycleDetection
-                              unless (null cycles) $ preprocess $ printRed ("Cycle-detection test suite has errors in: " ++ show cycles)
+               let cycles = testCycleDetection
+               unless (null cycles) $ preprocess $ printRed ("Cycle-detection test suite has errors in: " ++ show cycles)
 
-                              archives <- preprocess testLinkRewrites
-                              unless (null archives) $ preprocess $ printRed ("Link-archive rewrite test suite has errors in: " ++ show archives)
+               archives <- preprocess testLinkRewrites
+               unless (null archives) $ preprocess $ printRed ("Link-archive rewrite test suite has errors in: " ++ show archives)
 
-                              preprocess $ printGreen ("Testing tag rewrites…" :: String)
-                              preprocess testTags
+               preprocess $ printGreen ("Testing tag rewrites…" :: String)
+               preprocess testTags
 
-                              preprocess $ printGreen ("Testing live-link-popup rules…" :: String)
-                              let livelinks = linkLiveTest
-                              unless (null livelinks) $ preprocess $ printRed ("Live link pop rules have errors in: " ++ show livelinks)
-                              _ <- preprocess linkLivePrioritize -- generate testcases for new live-link targets
-                              -- NOTE: we skip `linkLiveTestHeaders` due to requiring too much time & IO & bandwidth, and instead do it once in a while post-sync
+               preprocess $ printGreen ("Testing live-link-popup rules…" :: String)
+               let livelinks = linkLiveTest
+               unless (null livelinks) $ preprocess $ printRed ("Live link pop rules have errors in: " ++ show livelinks)
+               _ <- preprocess linkLivePrioritize -- generate testcases for new live-link targets
+               -- NOTE: we skip `linkLiveTestHeaders` due to requiring too much time & IO & bandwidth, and instead do it once in a while post-sync
 
-                              preprocess $ printGreen ("Testing interwiki rewrite rules…" :: String)
-                              let interwikiPopupTestCases = interwikiTestSuite
-                              unless (null interwikiPopupTestCases) $ preprocess $ printRed ("Interwiki rules have errors in: " ++ show interwikiPopupTestCases)
-                              let interwikiCycleTestCases = interwikiCycleTestSuite
-                              unless (null interwikiCycleTestCases) $ preprocess $ printRed ("Interwiki redirect rewrite rules have errors in: " ++ show interwikiCycleTestCases)
+               preprocess $ printGreen ("Testing interwiki rewrite rules…" :: String)
+               let interwikiPopupTestCases = interwikiTestSuite
+               unless (null interwikiPopupTestCases) $ preprocess $ printRed ("Interwiki rules have errors in: " ++ show interwikiPopupTestCases)
+               let interwikiCycleTestCases = interwikiCycleTestSuite
+               unless (null interwikiCycleTestCases) $ preprocess $ printRed ("Interwiki redirect rewrite rules have errors in: " ++ show interwikiCycleTestCases)
 
-                              let inflationTestCases = inflationDollarTestSuite
-                              unless (null inflationTestCases) $ preprocess $ printRed ("Inflation-adjustment rules have errors in: " ++ show inflationTestCases)
+               let inflationTestCases = inflationDollarTestSuite
+               unless (null inflationTestCases) $ preprocess $ printRed ("Inflation-adjustment rules have errors in: " ++ show inflationTestCases)
 
-                              unless (null tooltipToMetadataTest) $ preprocess $ printRed ("Tooltip-parsing rules have errors in: " ++ show tooltipToMetadataTest)
+               unless (null tooltipToMetadataTest) $ preprocess $ printRed ("Tooltip-parsing rules have errors in: " ++ show tooltipToMetadataTest)
+               preprocess $ printGreen ("Testing finished." :: String)
 
                preprocess $ printGreen ("Local archives parsing…" :: String)
                am           <- preprocess readArchiveMetadata
@@ -261,7 +262,7 @@ postCtx md =
     constField "cssExtension" "drop-caps-de-zs" <>
     imageDimensionWidth "thumbnailHeight" <>
     imageDimensionWidth "thumbnailWidth" <>
-    -- for use in templating, `<body class="$safeURL$">`, allowing page-specific CSS:
+    -- for use in templating, `<body class="page-$safeURL$">`, allowing page-specific CSS like `.page-sidenote` or `.page-slowing-moores-law`:
     escapedTitleField "safeURL" <>
     (mapContext (\p -> urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) ("/" ++ replace ".page" ".html" p)) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotation/backlink/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotation/backlink/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotation/backlink/%2Fnotes%2FFaster.html'
 
@@ -365,7 +366,7 @@ headerSelflinkAndSanitize x@(Header _ ("",_,_) _) = error $ "hakyll.hs: headerSe
 headerSelflinkAndSanitize x@(Header a (href,b,c) d) =
   let href' = T.filter (`notElem` ['.', '#', ':']) href in -- NOTE: these appear to be the only dangerously inconsistent allowed characters, and Pandoc already seems to filter out octothorpe & colon, but we will double-check by filtering those out too.
     unsafePerformIO $ do
-      when (href' /= href) $ putStrLn $ "hakyll.hs: headerSelflinkAndSanitize: Invalid ID for header after filtering! The header text must be changed or a valid ID manually set: " ++ show x
+      when (href' /= href) $ printRed $ "hakyll.hs: headerSelflinkAndSanitize: Invalid ID for header after filtering! The header text must be changed or a valid ID manually set: " ++ show x
       if href' == "" then error $ "hakyll.hs: headerSelflinkAndSanitize: Invalid ID for header after filtering! The header text must be changed or a valid ID manually set: " ++ show x else
         -- NOTE: we do not need to check the new ID for uniqueness, as colliding IDs are invalid HTML and the document author is responsible for ensuring no collisions; this is enforced by checking the final HTML using HTML Tidy to verify validity.
         return $ Header a (href',b,c) [Link nullAttr (walk titlecaseInline d)
