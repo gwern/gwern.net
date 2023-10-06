@@ -4410,6 +4410,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     width: 100%;
 }
 
+.popframe-body section.level1 > .heading {
+	font-size: 1.75em;
+}
+
 .popframe-body .list {
     --text-alignment: left;
 }
