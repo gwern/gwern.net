@@ -3360,6 +3360,33 @@ GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (eve
  */
 
 DarkMode = {
+	/*	Dark mode elements, switched on or off (or to match system setting) by
+		changing the value of their ‘media’ attribute.
+	 */
+	switchedElementsSelector: [
+		"#inlined-styles-colors-dark",
+		"#favicon-dark",
+		"#favicon-apple-touch-dark"
+	].join(", "),
+
+	/*	The ‘media’ attribute values for dark mode elements, for each mode.
+	 */
+	mediaAttributeValues: {
+		"auto":  "all and (prefers-color-scheme: dark)",
+		"dark":  "all",
+		"light": "not all"
+	},
+
+	/*	Overridable default mode.
+	 */
+	defaultMode: "auto",
+
+    /*  Returns current (saved) mode (light, dark, or auto).
+     */
+    currentMode: () => {
+        return (localStorage.getItem("dark-mode-setting") ?? DarkMode.defaultMode);
+    },
+
 	/*  Set specified color mode (auto, light, dark).
 
 		Called by: this file (immediately upon load)
@@ -3368,32 +3395,14 @@ DarkMode = {
 	setMode: (selectedMode = DarkMode.currentMode()) => {
 		GWLog("DarkMode.setMode", "dark-mode.js", 1);
 
-		//	The style block should be inlined (and already loaded).
-		let darkModeStyles = document.querySelector("#inlined-styles-colors-dark");
-		if (darkModeStyles == null)
-			return;
-
-		//	Set `media` attribute of style block to match requested mode.
-		if (selectedMode == "auto") {
-			darkModeStyles.media = "all and (prefers-color-scheme: dark)";
-		} else if (selectedMode == "dark") {
-			darkModeStyles.media = "all";
-		} else {
-			darkModeStyles.media = "not all";
-		}
+		//	Set ‘media’ attribute of dark mode elements to match requested mode.
+		document.querySelectorAll(DarkMode.switchedElementsSelector).forEach(element => {
+			element.media = DarkMode.mediaAttributeValues[selectedMode];
+		});
 
 		//	Fire event.
 		GW.notificationCenter.fireEvent("DarkMode.didSetMode");
 	},
-
-	//	Overridable default mode.
-	defaultMode: "auto",
-
-    /*  Returns current (saved) mode (light, dark, or auto).
-     */
-    currentMode: () => {
-        return (localStorage.getItem("dark-mode-setting") ?? DarkMode.defaultMode);
-    },
 
 	/*	Returns currently active color mode (light or dark).
 		Based on saved selector mode, plus system setting (if selected mode is
