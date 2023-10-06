@@ -1387,11 +1387,18 @@ GW.floatingHeader = {
 	setup: () => {
 		GWLog("GW.floatingHeader.setup", "rewrite.js", 1);
 
+		//	No floating header on desktop /index.
+		if (   GW.isMobile() == false
+			&& /\/(index)?$/.test(location.pathname))
+			return;
+
+		//	Inject header.
 		GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden">`
 												+ `<div class="link-chain"></div>`
 												+ `<div class="scroll-indicator"></div>`
 												+ `</div>`);
 
+		//	Designate desktop version of header.
 		if (GW.isMobile() == false)
 			GW.floatingHeader.header.classList.add("desktop");
 
