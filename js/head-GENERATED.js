@@ -2422,7 +2422,7 @@ GW.layout = {
 
 	blockSpacing: [
 		[ "body.page-index .abstract > p.first-block",	 7, false ],
-		[ "body.page-index section",						 7, false ],
+		[ "body.page-index section",					 7, false ],
 		[ "body.page-index section li p + p",			 0, false ],
 
 		[ ".float.first-block",			 2, false ],
