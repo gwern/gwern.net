@@ -10,15 +10,16 @@ import Data.Time.Calendar (toGregorian, toModifiedJulianDay)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import Network.URI (parseURIReference, uriAuthority, uriRegName)
 import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
-import System.FilePath (takeDirectory)
+import System.FilePath (takeDirectory, takeExtension)
 import System.IO (stderr, hPutStrLn)
 import System.IO.Temp (emptySystemTempFile)
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Show.Pretty (ppShow)
-import qualified Data.Text as T (Text, concat, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf, replace)
+import qualified Data.Text as T (Text, concat, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf, replace, head, append)
 import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import Data.FileStore.Utils (runShellCommand)
+import Network.URI (uriPath)
 
 import Numeric (showFFloat)
 
@@ -2132,3 +2133,19 @@ inlinesToText = -- HACK: dealing with RawInline pairs like [RawInline "<sup>", T
                Code _      x' -> x'
                -- fall through with a blank:
                _        -> " "::T.Text
+
+
+hasExtension :: T.Text -> T.Text -> Bool
+hasExtension ext p = extension p == ext
+
+extension :: T.Text -> T.Text
+extension = T.pack . maybe "" (takeExtension . uriPath) . parseURIReference . T.unpack
+
+isLocal :: T.Text -> Bool
+isLocal "" = error $ "LinkIcon: isLocal: Invalid empty string used as link."
+isLocal s = T.head s == '/'
+
+
+isHostOrArchive :: T.Text -> T.Text -> Bool
+isHostOrArchive domain url = let h = host url in
+                                h == domain || ("/doc/www/"`T.append`domain) `T.isPrefixOf` url
