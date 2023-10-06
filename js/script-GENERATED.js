@@ -1611,6 +1611,13 @@ Popups = {
         	style: `z-index: ${Popups.popupContainerZIndex};`
         }));
 
+		//	Add window resize listener, to reposition pinned popups.
+		addWindowResizeListener(Popups.repositionPopupsOnWindowResize = (event) => {
+			Popups.allSpawnedPopups().forEach(popup => {
+				Popups.setPopupViewportRect(popup, popup.viewportRect, { clampPositionToScreen: true });
+			});
+		}, "repositionPopupsOnWindowResizeListener", { defer: true });
+
 		//  Add Escape key event listener.
 		document.addEventListener("keyup", Popups.keyUp);
 
@@ -2832,6 +2839,15 @@ Popups = {
 		return target.preferSidePositioning ? target.preferSidePositioning() : false;
 	},
 
+	/*	Returns current popup position. (Usable only after popup is positioned.)
+	 */
+	popupPosition: (popup) => {
+		return {
+			x: parseInt(popup.style.left),
+			y: parseInt(popup.style.top)
+		};
+	},
+
 	positionPopup: (popup, spawnPoint, tight = false) => {
 		GWLog("Popups.positionPopup", "popups.js", 2);
 
@@ -2955,9 +2971,8 @@ Popups = {
 				does the popup extend past the *left* edge of the container?
 				Make its left edge flush with the container's left edge.
 			 */
-			if (provisionalPopupXPosition < 0) {
+			if (provisionalPopupXPosition < 0)
 				provisionalPopupXPosition = 0;
-			}
 
 			//  Special cases for maximizing/restoring and pinning/unpinning.
 			let getPositionToRestore = (popup) => {
@@ -3003,8 +3018,22 @@ Popups = {
 		});
 	},
 
-	setPopupViewportRect: (popup, rect) => {
+	setPopupViewportRect: (popup, rect, options = { }) => {
 		GWLog("Popups.setPopupViewportRect", "popups.js", 3);
+
+		if (options.clampPositionToScreen) {
+			//  Viewport width must account for vertical scroll bar.
+			let viewportWidth = document.documentElement.offsetWidth;
+			let viewportHeight = window.innerHeight;
+
+			//	Clamp position to screen, keeping size constant.
+			rect.x = valMinMax(rect.x,
+							   0,
+							   viewportWidth - (rect.width || popup.viewportRect.width));
+			rect.y = valMinMax(rect.y,
+							   0,
+							   viewportHeight - (rect.height || popup.viewportRect.height));
+		}
 
 		if (Popups.popupIsPinned(popup) == false) {
             let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
@@ -3377,10 +3406,6 @@ Popups = {
 		//  Add the drag-end mouseup listener.
 		window.addEventListener("mouseup", Popups.popupDragMouseUp);
 
-		//  Viewport width must account for vertical scroll bar.
-		let viewportWidth = document.documentElement.offsetWidth;
-		let viewportHeight = window.innerHeight;
-
 		//  We define the mousemove listener here to capture variables.
 		window.onmousemove = (event) => {
 			Popups.popupBeingDragged = popup;
@@ -3393,19 +3418,11 @@ Popups = {
 				popup.linkDragTarget.onclick = (event) => { return false; };
 
 			//  Current drag vector relative to mouse starting position.
-			let deltaX = event.clientX - dragStartMouseCoordX;
-			let deltaY = event.clientY - dragStartMouseCoordY;
+			newPopupViewportRect.x = popup.viewportRect.x + (event.clientX - dragStartMouseCoordX);
+			newPopupViewportRect.y = popup.viewportRect.y + (event.clientY - dragStartMouseCoordY);
 
-			//  Apply the vector to popup starting position; clamp to screen.
-			newPopupViewportRect.x = valMinMax(popup.viewportRect.left + deltaX,
-											   0,
-											   viewportWidth - popup.viewportRect.width);
-			newPopupViewportRect.y = valMinMax(popup.viewportRect.top + deltaY,
-											   0,
-											   viewportHeight - popup.viewportRect.height);
-
-			//  Set the new popup rect.
-			Popups.setPopupViewportRect(popup, newPopupViewportRect);
+			//  Set new viewport rect; clamp to screen.
+			Popups.setPopupViewportRect(popup, newPopupViewportRect, { clampPositionToScreen: true });
 		};
 	},
 
