@@ -19,7 +19,7 @@ archivePerRunN = 13
 -- some URLs are so cheap & easy & reliable to archive that we don't need to count them
 -- against our manual-review limit, because we won't meaningfully manually review them.
 isCheapArchive :: String -> Bool
-isCheapArchive url = anyInfix url [".pdf", "#pdf", "twitter.com", "nitter.net", "https://scribe.rip/", "news.ycombinator.com"]
+isCheapArchive url = anyInfix url [".pdf", "#pdf", "twitter.com", "nitter.net", "scribe.rip", "news.ycombinator.com", "localhost:8081"]
 
 -- sometimes we may want to do automated transformations of a URL *before* we check any whitelists. In the case of
 -- Arxiv, we want to generate the PDF equivalent of the HTML abstract landing page, so the PDF gets archived, but then
@@ -35,7 +35,7 @@ transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
                             . replace "https://openreview.net/forum" "https://openreview.net/pdf"
                             -- Old Reddit is the preferred browsing & archiving frontend given the death of `i.reddit.com` & `.compact`
                             . replace "https://www.reddit.com" "https://old.reddit.com"
-                            . replace "https://twitter.com" "https://nitter.net"
+                            . replace "https://twitter.com" "http://localhost:8081"
                             . replace "https://medium.com" "https://scribe.rip" -- clean Medium frontend; can also handle custom domains with a bit more work: <https://scribe.rip/faq#custom-domains>
                             . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
 
@@ -64,7 +64,7 @@ localizeLinktestCases = [
     , ("https://scholar.sun.ac.za/server/api/core/bitstreams/6dfdb0ca-e7e5-403e-9a2b-4161e3d93385/content#pdf", ("/doc/www/scholar.sun.ac.za/597ea379e3550e15a6355df58db5b19464dddd42.pdf", "", "", []))
     , ("https://scholar.sun.ac.za/server/api/core/bitstreams/6dfdb0ca-e7e5-403e-9a2b-4161e3d93385/content#pdf", ("/doc/www/scholar.sun.ac.za/597ea379e3550e15a6355df58db5b19464dddd42.pdf", "", "", []))
     , ("https://twitter.com/alexeyguzey/status/1068583101633359874", ("", "https://nitter.net/alexeyguzey/status/1068583101633359874", "", []))
-    , ("https://twitter.com/gdb/status/1495821544370708486", ("/doc/www/nitter.net/26c5938a85b27e976fdbaecb8570d9830362501e.html", "https://nitter.net/gdb/status/1495821544370708486", "", ["link-annotated"]))
+    , ("https://twitter.com/gdb/status/1495821544370708486", ("/doc/www/localhost/26c5938a85b27e976fdbaecb8570d9830362501e.html", "https://nitter.net/gdb/status/1495821544370708486", "", ["link-annotated"]))
     , ("https://medium.com/@alex.tabarrok/when-can-token-curated-registries-actually-work-%C2%B9-2ad908653aaf", ("/doc/www/scribe.rip/067a8f86abbb2ba5c0de0ed2f0ccfe046973bfb3.html", "", "https://scribe.rip/@alex.tabarrok/when-can-token-curated-registries-actually-work-%C2%B9-2ad908653aaf", []))
     , ("https://web.archive.org/web/20200215144602/https://twicsy-blog.tumblr.com/post/174063770074/how-i-targeted-the-reddit-ceo-with-facebook-ads-to", ("", "", "", []))
     , ("https://news.ycombinator.com/item?id=17110385", ("/doc/www/news.ycombinator.com/de1d1ce15816a607ef9cfb9e04c34051ee08211f.html", "", "", []))
@@ -95,7 +95,7 @@ localizeLinkTestDB = M.fromList $
                     , ("https://openreview.net/forum?id=0ZbPmmB61g#google", "doc/www/openreview.net/ec11c5bdd2766cd352fe7df9ae60e748f06d5175.pdf#google")
                     , ("https://www.reddit.com/r/AnarchyChess/comments/10ydnbb/i_placed_stockfish_white_against_chatgpt_black/", "doc/www/old.reddit.com/bd98124b170baeb9324c51c734083302aa65323a.html")
                     , ("https://arbital.com/p/edge_instantiation/", "doc/www/arbital.com/f3415bb9b168d3fcb051b458a48994ec1e8c4611.html")
-                    , ("https://twitter.com/gdb/status/1495821544370708486", "doc/www/nitter.net/26c5938a85b27e976fdbaecb8570d9830362501e.html")
+                    , ("https://twitter.com/gdb/status/1495821544370708486", "doc/www/localhost/26c5938a85b27e976fdbaecb8570d9830362501e.html")
                     ]
 
 -- GreaterWrong provides several mirrors we want to rewrite URLs to: LessWrong, Alignment Forum, Effective Altruism, & Arbital (historical).

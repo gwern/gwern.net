@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-10-04 09:36:25 gwern"
+# When:  Time-stamp: "2023-10-06 18:08:58 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -54,6 +54,8 @@ else
     N=29
     SLOW="true"
     SKIP_DIRECTORIES=""
+    NITTER_PID=""
+
     for ARG in "$@"; do
         case "$ARG" in
             --fast) SLOW="" ;;
@@ -62,7 +64,7 @@ else
             *) N="$ARG" ;;
         esac
     done
-    export SLOW SKIP_DIRECTORIES N
+    export SLOW SKIP_DIRECTORIES N NITTER_PID
 
     if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true; fi &
     bold "Pulling infrastructure updates…"
@@ -70,6 +72,11 @@ else
     (cd ./static/ && git status && timeout 10m git pull -Xtheirs --no-edit --verbose 'https://gwern.obormot.net/static/.git/' master) || true
 
     if [ "$SLOW" ]; then
+
+        # booting Nitter for making Twitter snapshots as necessary
+        pkill nitter || true
+        cd ~/src/nitter/ && ./nitter & NITTER_PID=$!
+
         bold "Executing string rewrite cleanups…" # automatically clean up some Gwern.net bad URL patterns, typos, inconsistencies, house-styles:
         ( s() { gwsed "$@"; }
           ## domain rewrites:
@@ -109,8 +116,9 @@ else
     cd ./static/build
     compile () { ghc -O2 -Wall -rtsopts -threaded --make "$@"; }
     compile hakyll.hs
-    compile generateLinkBibliography.hs
-    if [ -z "$SKIP_DIRECTORIES" ]; then compile generateDirectory.hs; fi
+    if [ -z "$SKIP_DIRECTORIES" ]; then
+        compile generateLinkBibliography.hs
+        compile generateDirectory.hs; fi
     compile preprocess-markdown.hs
     compile guessTag.hs &
     ## NOTE: generateSimilarLinks.hs & link-suggester.hs are done at midnight by a cron job because
@@ -161,13 +169,14 @@ else
                                         -e 'doc/statistics/order/beanmachine-multistage' -e 'doc/personal/2011-gwern-yourmorals.org/' \
                                         -e 'confidential/' -e 'private/' -e 'secret/' -e 'newest/')"
 
-    # wait for generateLinkBibliography to finish to ensure the annotation link-bibs are all created:
-    bold "Updating link bibliographies…"
-    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS
-
     # we want to generate all directories first before running Hakyll in case a new tag was created
-    bold "Building directory indexes…"
-    if [ -z "$SKIP_DIRECTORIES" ]; then ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS; fi
+    if [ -z "$SKIP_DIRECTORIES" ]; then
+        bold "Updating link bibliographies…"
+        ./static/build/generateLinkBibliography +RTS -N"$N" -RTS
+
+        bold "Building directory indexes…"
+        ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS
+    fi
   fi
 
     bold "Check & update VCS…"
@@ -181,6 +190,8 @@ else
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
 
     if [ "$SLOW" ]; then
+        kill "$NITTER_PID"
+
         bold "Updating X-of-the-day…"
         ghci -i/home/gwern/wiki/static/build/ ./static/build/XOfTheDay.hs \
              -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; qotd; sotd; }' | \
@@ -577,7 +588,9 @@ else
             -e 'id="[0-9]' -e '</[a-z][a-z]\+\?' -e 'via.*ihub' -e " '$" -e "’’" -e ' a [aei]' -e '</[0-9]\+' \
             -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' -e '#googl$' -e "#googl$'" -e 'gwtag' -e ' <p><strong>[A-Z][A-Z][A-Z]\+</strong>' \
             -e '&org=.*&org=' -e '[0-9]⁄[0-9]\.[0-9]' -e '[0-9]\.[0-9]⁄[0-9]' -e '\[[Kk]eywords\?: ' \
-            -e ' 19[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -e ' 20[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -e "''.*''" -- ./metadata/*.yaml; }
+            -e ' 19[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -e ' 20[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -e "''.*''" \
+            `# match both single & double-quotation versions of erroneous inflation-adjusters like "<a href='$2022'>148,749</a>":` \
+            -e '<a href=.\$[12][0-9][0-9][0-9].>[0-9a-zA-Z,.-]'  -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database (regexp matches)."
 
     λ(){ grep -F --color=always -e ']{' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
@@ -797,10 +810,11 @@ else
      do
          CHECK_RANDOM_PAGE=$(echo "$PAGES" | grep -F --invert-match -e '/fulltext' -e '/lorem' | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
                             | shuf | head -1 | xargs urlencode)
+         # urlencode twice: once for the on-disk escaping, once for the URL argument to the W3C checker
          CHECK_RANDOM_ANNOTATION=$(find metadata/annotation/ -maxdepth 1 -name "*.html" -type f -size +2k | \
                                        shuf | head -1 | \
                                        sed -e 's/metadata\/annotation\/\(.*\)/\1/' | \
-                                       xargs urlencode | xargs urlencode | \ # once for the on-disk escaping, once for the URL argument to the W3C checker
+                                       xargs urlencode | xargs urlencode | \
                                        sed -e 's/^\(.*\)$/https:\/\/gwern\.net\/metadata\/annotation\/\1/')
          ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
                  --header "X-Auth-Email:gwern@gwern.net" \

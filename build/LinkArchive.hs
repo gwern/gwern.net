@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-09-29 21:26:28 gwern"
+When:  Time-stamp: "2023-10-06 21:15:22 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -117,7 +117,7 @@ import System.Directory (doesFileExist)
 
 import LinkMetadataTypes (ArchiveMetadataItem, ArchiveMetadataList, ArchiveMetadata, Path)
 
-import Utils (writeUpdatedFile, printGreen, printRed, currentDay)
+import Utils (writeUpdatedFile, printGreen, printRed, currentDay, putStrGreen, putStrRed)
 import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, transformURLsForMobile, archivePerRunN, archiveDelay, isCheapArchive, localizeLinkTestDB, localizeLinktestCases)
 
 -- Pandoc types: Link = Link Attr [Inline] Target; Attr = (String, [String], [(String, String)]); Target = (String, String)
@@ -131,7 +131,7 @@ localizeLink adb archivedN (Link (identifier, classes, pairs) b (targetURL, targ
                               else [("data-url-archive", "/" `T.append` targetURL')]) ++
                           (if mobileURL == targetURL then [] else [("data-href-mobile", mobileURL)]) ++
                           (if cleanURL  == targetURL then [] else [("data-url-html",    cleanURL)])
-  let classes' = if "doc/www/nitter.net/" `T.isPrefixOf` targetURL' then "link-annotated" : classes else classes -- TODO: special case, due to unreliability of Nitter mirror creation + use of archive snapshots to create the 'annotation' at runtime. see `LM.addHasAnnotation`
+  let classes' = if "doc/www/localhost/" `T.isPrefixOf` targetURL' || "doc/www/nitter.net/" `T.isPrefixOf` targetURL' then "link-annotated" : classes else classes -- TODO: special case, due to unreliability of Nitter mirror creation + use of archive snapshots to create the 'annotation' at runtime. see `LM.addHasAnnotation`
   let archiveAnnotatedLink = Link (identifier, classes', nub (pairs++archiveAttributes)) b (targetURL, targetDescription)
   return archiveAnnotatedLink
 localizeLink _ _ x = return x
@@ -231,10 +231,10 @@ archiveURLCheck l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "li
 
 -- take a URL, archive it, and if successful return the hashed path
 archiveURL :: String -> IO (Maybe Path)
-archiveURL l = do let args = if not (C.isCheapArchive l) then [l] else [l, "--no-preview"]
+archiveURL l = do let args = if C.isCheapArchive l then [l, "--no-preview"] else [l]
                   (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArchive.sh" args
                   case exit of
                      ExitSuccess -> do let result = U.toString stdout
-                                       printGreen ( "Archiving (LinkArchive.hs): " ++ l ++ " returned: " ++ result)
+                                       putStrGreen "Archiving (LinkArchive.hs): " >> putStr l >> putStrGreen  " returned: " >> putStrLn result
                                        if result == "" then return Nothing else return $ Just result
-                     ExitFailure _ -> printRed (l ++ " : archiving script failed to run correctly: ") >> print (U.toString stderr') >> return Nothing
+                     ExitFailure _ -> putStrRed (l ++ " : archiving script failed to run correctly: ") >> putStrLn (U.toString stderr') >> return Nothing
