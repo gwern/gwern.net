@@ -66,8 +66,9 @@ linkIconRules, linkIconRulesOverrides, linkIconRulesSingle, linkIconRulesDouble,
   linkIconRulesSVG, linkIconRulesFiletypes :: T.Text -> (T.Text, T.Text)
 -- run all the rules in order, and take the first one that returns a non-empty tuple (because it matched):
 linkIconRules "" = error "Config.LinkIcon: linkIconRules: passed an empty URL; this should be impossible!"
-linkIconRules u = head $ filter (/=("","")) $ map (\f -> f u) [linkIconRulesOverrides, linkIconRulesSingle, linkIconRulesDouble,
+linkIconRules u = let result = filter (/=("","")) $ map (\f -> f u) [linkIconRulesOverrides, linkIconRulesSingle, linkIconRulesDouble,
                                                                 linkIconRulesTriple, linkIconRulesQuad, linkIconRulesSVG, linkIconRulesFiletypes]
+                               in if null result then ("","") else head result
 
 -- organizational mentions or affiliations take precedence over domain or filetypes; typically matches anywhere in the URL. This must be matched first.
 linkIconRulesOverrides u

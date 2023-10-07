@@ -3137,7 +3137,7 @@ badLinks = map (\u -> (u,False)) $ isUniqueList ["https://1d4chan.org/wiki/Tale_
             , "https://aka.ms/beit" -- is actually Github underneath
             , "https://almanac.httparchive.org/en/2019/"
             , "https://andrewbadr.com/log/11/anonymizing-bitcoin/"
-            , "https://anidb.net/perl-bin/animedb.pl?show=lexicon&mode=character&vtype=ctag&relid=2296"
+            , "https://anidb.net/tag/385/chartb"
             , "https://animesuperhero.com/forums/install/index.php?upgrade/"
             , "https://answers.google.com/answers/threadview/id/777105.html"
             , "https://antilop.cc/sr/vendors/24bb54ca7e.htm"

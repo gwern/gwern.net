@@ -11,7 +11,7 @@ import Data.Time.Clock (getCurrentTime, utctDay)
 import Network.URI (parseURIReference, uriAuthority, uriRegName)
 import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
 import System.FilePath (takeDirectory, takeExtension)
-import System.IO (stderr, hPutStrLn)
+import System.IO (stderr, hPutStr)
 import System.IO.Temp (emptySystemTempFile)
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Show.Pretty (ppShow)
@@ -155,16 +155,18 @@ removeClass clss x@(Code  (i, clsses, ks) code)        = if clss `notElem` clsse
 removeClass _    x = x
 
 -- print normal progress messages to stderr in bold green:
-printGreen :: String -> IO ()
-printGreen s = printStdErr $ "\x1b[32m" ++ s ++ "\x1b[0m"
+putStrGreen, printGreen :: String -> IO ()
+putStrGreen s = putStrStdErr $ "\x1b[32m" ++ s ++ "\x1b[0m"
+printGreen  s = putStrGreen (s ++ "\n")
 
 -- print danger or error messages to stderr in red background:
-printRed :: String -> IO ()
-printRed s = do when (length s > 2048) $ printRed "Warning: following error message was extremely long & truncated at 2048 characters!"
-                printStdErr $ "\x1b[41m" ++ take 2048 s ++ "\x1b[0m"
+putStrRed, printRed :: String -> IO ()
+putStrRed s = do when (length s > 2048) $ printRed "Warning: following error message was extremely long & truncated at 2048 characters!"
+                 putStrStdErr $ "\x1b[41m" ++ take 2048 s ++ "\x1b[0m"
+printRed s = putStrRed (s ++ "\n")
 
-printStdErr :: String -> IO ()
-printStdErr = hPutStrLn stderr
+putStrStdErr :: String -> IO ()
+putStrStdErr = hPutStr stderr
 
 -- Repeatedly apply `f` to an input until the input stops changing. Show constraint for better error
 -- reporting on the occasional infinite loop.
@@ -2134,7 +2136,6 @@ inlinesToText = -- HACK: dealing with RawInline pairs like [RawInline "<sup>", T
                -- fall through with a blank:
                _        -> " "::T.Text
 
-
 hasExtension :: T.Text -> T.Text -> Bool
 hasExtension ext p = extension p == ext
 
@@ -2142,9 +2143,8 @@ extension :: T.Text -> T.Text
 extension = T.pack . maybe "" (takeExtension . uriPath) . parseURIReference . T.unpack
 
 isLocal :: T.Text -> Bool
-isLocal "" = error $ "LinkIcon: isLocal: Invalid empty string used as link."
+isLocal "" = error "LinkIcon: isLocal: Invalid empty string used as link."
 isLocal s = T.head s == '/'
-
 
 isHostOrArchive :: T.Text -> T.Text -> Bool
 isHostOrArchive domain url = let h = host url in

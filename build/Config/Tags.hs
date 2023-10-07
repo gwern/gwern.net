@@ -109,7 +109,7 @@ tagsShort2LongRewrites = isUniqueKeys
     ("frank-p-ramsey", "frank-ramsey"), ("artificial-selection", "genetics/selection/artificial"), ("intrasexual-agression", "intrasexual-aggression"),
     ("javascript", "js"), ("psych/chess", "psychology/chess"), ("self-experiment", "quantified-self"),
     ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing"), ("quadratic-vote", "quadratic-voting"), ("bipolar/genes", "bipolar/genetics"), ("dynamic-evaliation", "dynamic-evaluation"), ("dog-cloning", "genetics/cloning/dog"), ("dog-clone", "genetics/cloning/dog"), ("dog/clone", "genetics/cloning/dog"), ("cat-drug", "cat/psychology/drug"), ("cat/drug", "cat/psychology/drug"), ("fonts", "typography"),
-   ("time-lock", "timelock"), ("self-decrypting", "timelock")]
+   ("time-lock", "timelock"), ("self-decrypting", "timelock"), ("tokenizer", "tokenization"), ("bash", "shell"), ("d+q", "d-q"), ("dasatinib", "d-q"), ("quercetin", "d-q"), ("dastinib", "d-q"), ("dasitinib", "d-q")]
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   -- hopelessly ambiguous ones which should be error (for now)
@@ -281,6 +281,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("genetics/cloning", "cloning")
           , ("genetics/editing", "gene editing")
           , ("genetics/sequencing", "genome sequencing")
+          , ("longevity/senolytic/d-q", "D+Q (senolytic)")
           , ("longevity/senolytic", "senolytics")
           , ("longevity/johan-bjorksten", "Johan Bjorksten (aging)")
           , ("psychology/personality/psychopathy", "psychopath")
@@ -397,8 +398,9 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("ai/video", "AI video")
           , ("ai/text-style-transfer", "text style transfer")
           , ("exercise/gravitostat", "gravitostat")
-          , ("longevity/semaglutide", "glutides")
-          , ("longevity/tirzepatide", "tirzepatide")
+          , ("longevity/glp/semaglutide", "semaglutide")
+          , ("longevity/glp/tirzepatide", "tirzepatide")
+          , ("longevity/glp", "GLP agonists")
           , ("philosophy/epistemology", "epistemology")
           , ("philosophy/brethren-of-purity", "Brethren of Purity")
           , ("philosophy/ethics", "ethics")
@@ -760,7 +762,7 @@ shortTagTestSuite = isUniqueKeys
         , ("selection/artificial" , "genetics/selection/artificial")
         , ("selection/natural" , "genetics/selection/natural")
         , ("self-sinking" , "technology/self-sinking")
-        , ("semaglutide" , "longevity/semaglutide")
+        , ("semaglutide" , "longevity/glp/semaglutide")
         , ("sentence-spacing" , "design/typography/sentence-spacing")
         , ("sequencing" , "genetics/sequencing")
         , ("sf" , "fiction/science-fiction")
@@ -775,9 +777,7 @@ shortTagTestSuite = isUniqueKeys
         , ("spaced-repetition" , "psychology/spaced-repetition")
         , ("sparsity" , "ai/nn/sparsity")
         , ("sparsity/pruning" , "ai/nn/sparsity/pruning")
-        , ("stereotype-threat"
-          , "psychology/cognitive-bias/stereotype-threat"
-          )
+        , ("stereotype-threat", "psychology/cognitive-bias/stereotype-threat")
         , ("stylegan" , "ai/nn/gan/stylegan")
         , ("stylometrics" , "statistics/stylometry")
         , ("stylometry" , "statistics/stylometry")
@@ -793,15 +793,13 @@ shortTagTestSuite = isUniqueKeys
         , ("text" , "fiction/text-game")
         , ("text-game" , "fiction/text-game")
         , ("text-style-transfer" , "ai/text-style-transfer")
-        , ("tirzepatide" , "longevity/tirzepatide")
+        , ("tirzepatide" , "longevity/glp/tirzepatide")
         , ("tokenization" , "ai/nn/tokenization")
         , ("traction" , "music/music-distraction")
         , ("transformer" , "ai/nn/transformer")
         , ("transformer/attention" , "ai/nn/transformer/attention")
         , ("transformer/gpt" , "ai/nn/transformer/gpt")
-        , ("traumatic-brain-injury"
-          , "psychiatry/traumatic-brain-injury"
-          )
+        , ("traumatic-brain-injury", "psychiatry/traumatic-brain-injury")
         , ("typography" , "design/typography")
         , ("uighur" , "history/uighur")
         , ("vae" , "ai/nn/vae")

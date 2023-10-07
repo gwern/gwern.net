@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Config.Inflation where
 
 import qualified Data.Map.Strict as M (fromList, Map)

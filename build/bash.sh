@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-10-03 16:15:10 gwern"
+# When:  Time-stamp: "2023-10-06 14:40:42 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -203,9 +203,18 @@ gwmv () {
 ## Move a directory:
 gwmvdir () {
     cd ~/wiki/
-    OLD="$(readlink --canonicalize "$1" | cut -d '/' -f 5-)"
+    OLD="$1"
+    NEW="$2"
+    if [[ "$OLD" == /* ]]; then
+        OLD="${OLD:1}"
+    fi
+    if [[ "$NEW" == /* ]]; then
+        NEW="${NEW:1}"
+    fi
+
+    OLD="$(readlink --canonicalize "$OLD" | cut -d '/' -f 5-)"
     ls "$OLD"
-    NEW="$(readlink --canonicalize "$2" | cut -d '/' -f 5-)"
+    NEW="$(readlink --canonicalize "$NEW" | cut -d '/' -f 5-)"
     mkdir -p "$NEW"
     git add "$NEW"
     for FILE in $(ls "$OLD"/* | grep -F -v 'index.page'); do
