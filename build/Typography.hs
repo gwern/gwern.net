@@ -15,7 +15,7 @@ import Control.Monad.State.Lazy (evalState, get, put, State)
 import Data.Char (toUpper)
 import qualified Data.Text as T (append, concat, pack, unpack, replace, splitOn, strip, Text) -- any
 import Data.Text.Read (decimal)
-import Text.Regex.TDFA ((=~), Regex, makeRegex, match)
+import Text.Regex.TDFA (Regex, makeRegex, match)
 import qualified Data.Map.Strict as M
 
 import Data.Text.Titlecase (titlecase)
@@ -211,9 +211,51 @@ titlecase' t = let t' = titlecase $ titlecase'' t
              in t'''
    where titlecase'' :: String -> String
          titlecase'' "" = ""
-         titlecase'' t' = let (before,matched,after) =  t' =~ ("[ $^][A-za-z]\\-[a-z][ $^]"::String) :: (String,String,String)
-                          in replaceMany [("Cite-author", "cite-author"), ("Cite-date", "cite-date"), ("Cite-joiner", "cite-joiner"), ("Class=","class=")] $ -- HACK
-                             before ++ map toUpper matched ++ titlecase'' after
+         titlecase'' t' =  replaceMany [("Cite-author", "cite-author"), ("Cite-date", "cite-date"), ("Cite-joiner", "cite-joiner"), ("Class=","class=")] $ -- HACK
+           capitalizeAfterHyphen t'
+
+         capitalizeAfterHyphen :: String -> String
+         capitalizeAfterHyphen "" = ""
+         capitalizeAfterHyphen s = case break (== '-') s of
+              (before, '-':after) -> before ++ "-" ++ capitalizeFirst (capitalizeAfterHyphen after)
+              (before, [])        -> before
+              _                   -> error ("Typography.hs: capitalizeAfterHyphen: case failed to match although that should be impossible: " ++ s ++ " ; original: " ++ t)
+            where
+              capitalizeFirst []     = []
+              capitalizeFirst (x:xs) = toUpper x : xs
+
+-- titleCaseTestCases :: [(String, String)]
+-- titleCaseTestCases = isUniqueAll [ ("‘Two Truths and a Lie’ As a Class-participation Activity", "‘Two Truths and a Lie’ As a Class-Participation Activity")
+--             , ("end-to-end testing", "End-To-End Testing")
+--             , ("mother-in-law", "Mother-In-Law")
+--             , ("state-of-the-art technology", "State-Of-The-Art Technology")
+--             , ("x-ray", "X-Ray")
+--             , ("e-commerce", "E-Commerce")
+--             , ("co-worker", "Co-Worker")
+--             , ("self-esteem", "Self-Esteem")
+--             , ("long-term plan", "Long-Term Plan")
+--             , ("high-quality product", "High-Quality Product")
+--             , ("no hyphen here", "No Hyphen Here")
+--             , ("double--hyphen", "Double--Hyphen")
+--             , ("--leading hyphen", "--Leading Hyphen")
+--             , ("trailing hyphen--", "Trailing Hyphen--")
+--             , ("hyphen-at-both-ends-", "Hyphen-At-Both-Ends-")
+--             , ("", "")
+--             , ("-", "-")
+--             , ("a-b-c-d-e-f", "A-B-C-D-E-F")
+--             , ("first-class mail", "First-Class Mail")
+--             , ("well-being", "Well-Being")
+--             , ("123-456", "123-456")
+--             , ("abc-def-123", "Abc-Def-123")
+--             , ("-start with hyphen", "-Start With Hyphen")
+--             , ("end with hyphen-", "End With Hyphen-")
+--             , ("hyphen--in--middle", "Hyphen--In--Middle")
+--             , ("test-case", "Test-Case")
+--             , ("test---case", "Test---Case")
+--             , ("test-Case", "Test-Case")
+--             , ("Test-case", "Test-Case")
+--             , ("TEST-CASE", "TEST-CASE")
+--             ]
 
 -- lift `titlecase'` to Inline so it can be walked, such as in Headers
 titlecaseInline :: Inline -> Inline
