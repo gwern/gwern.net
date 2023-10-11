@@ -4671,7 +4671,7 @@ Annotations = { ...Annotations,
 					"urlHtml", 
 					"urlArchive"
 				].map(attr => 
-					attr 
+					referenceElement.dataset[attr] 
 					? `data-${(attr.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${referenceElement.dataset[attr]}"` 
 					: null
 				).filter(Boolean).join(" ");
