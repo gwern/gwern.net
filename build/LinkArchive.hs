@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-10-06 21:15:22 gwern"
+When:  Time-stamp: "2023-10-09 11:29:00 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -117,7 +117,7 @@ import System.Directory (doesFileExist)
 
 import LinkMetadataTypes (ArchiveMetadataItem, ArchiveMetadataList, ArchiveMetadata, Path)
 
-import Utils (writeUpdatedFile, printGreen, printRed, currentDay, putStrGreen, putStrRed)
+import Utils (writeUpdatedFile, currentDay, putStrStdErr, green, printRed')
 import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, transformURLsForMobile, archivePerRunN, archiveDelay, isCheapArchive, localizeLinkTestDB, localizeLinktestCases)
 
 -- Pandoc types: Link = Link Attr [Inline] Target; Attr = (String, [String], [(String, String)]); Target = (String, String)
@@ -158,19 +158,19 @@ readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/ar
                            Just pdl -> do
                             -- check for failed archives:
                             pdl' <- filterM (\(p,ami) -> case ami of
-                                     Right (Just "") -> printRed "Error! Invalid empty archive link: " >> print (show p ++ show ami) >> return False
-                                     Right u@(Just ('/':'/':_)) -> printRed "Error! Invalid double-slash archive link: " >> print (show p ++ show ami ++ show u) >> return False
+                                     Right (Just "") -> printRed' "Error! Invalid empty archive link: " (show p ++ " : " ++ show ami) >> return False
+                                     Right u@(Just ('/':'/':_)) -> printRed' "Error! Invalid double-slash archive link: " (show p ++ show ami ++ show u) >> return False
                                      Right (Just u)  -> if not ("http" `isPrefixOf` p || "\n" `isInfixOf` p) then
-                                                          printRed "Warning: Did a local link slip in somehow? (this will be removed automatically) " >> print (show p ++ show u ++ show ami) >> return False
+                                                          printRed' "Warning: Did a local link slip in somehow? (this will be removed automatically) " (show p ++ show u ++ show ami) >> return False
                                                         else
                                                           if isNothing (parseTLD p) then
-                                                           printRed "Error! Invalid URI link in archive? " >> print (show p ++ show u ++ show ami) >> return False
+                                                           printRed' "Error! Invalid URI link in archive? " (show p ++ show u ++ show ami) >> return False
                                                           else do let filepath = takeWhile (/='#') u
                                                                   exists <- doesFileExist filepath
                                                                   unless exists $ error ("Archive file not found: " ++ filepath ++ " (original path in archive.hs: " ++ u ++ "; original tuple: " ++ show (p,ami) ++ ")")
                                                                   size <- getFileStatus filepath >>= \s -> return $ fileSize s
                                                                   if size == 0 then
-                                                                    printRed "Error! Empty archive file. Not using: " >> print (show p ++ show u ++ show ami) >> return False
+                                                                    printRed' "Error! Empty archive file. Not using: " (show p ++ show u ++ show ami) >> return False
                                                                     else if size > 1024 then return True else return False
                                      Right Nothing   -> return True
                                      Left  _         -> return True)
@@ -215,7 +215,7 @@ rewriteLink adb archivedN url = fromMaybe url <$> if C.whiteList url then return
                                   insertLinkIntoDB (Right archive) url
                                   unless cheapArchive $ writeIORef archivedN (archivedNAlreadyP - 1)
                                   return archive
-      Just (Right archive) -> if archive == Just "" then printRed "Error! Tried to return a link to a non-existent archive! " >> print url >> return Nothing else return archive
+      Just (Right archive) -> if archive == Just "" then printRed' "Error! Tried to return a link to a non-existent archive! " url >> return Nothing else return archive
 
 insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
 insertLinkIntoDB a url = do adb <- readArchiveMetadata
@@ -227,7 +227,7 @@ archiveURLCheck :: String -> IO Bool
 archiveURLCheck l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArchive.sh" [l, "--check"]
                        case exit of
                          ExitSuccess -> return $ stdout /= ""
-                         ExitFailure _ -> printRed (l ++ " : archiving script existence-check failed to run correctly: ") >> print (U.toString stderr') >> return False
+                         ExitFailure _ -> printRed' (l ++ " : archiving script existence-check failed to run correctly: ") (U.toString stderr') >> return False
 
 -- take a URL, archive it, and if successful return the hashed path
 archiveURL :: String -> IO (Maybe Path)
@@ -235,6 +235,6 @@ archiveURL l = do let args = if C.isCheapArchive l then [l, "--no-preview"] else
                   (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArchive.sh" args
                   case exit of
                      ExitSuccess -> do let result = U.toString stdout
-                                       putStrGreen "Archiving (LinkArchive.hs): " >> putStr l >> putStrGreen  " returned: " >> putStrLn result
+                                       putStrStdErr (green "Archiving (LinkArchive.hs): " ++ l ++ green  " returned: "  ++ result ++ "\n")
                                        if result == "" then return Nothing else return $ Just result
-                     ExitFailure _ -> putStrRed (l ++ " : archiving script failed to run correctly: ") >> putStrLn (U.toString stderr') >> return Nothing
+                     ExitFailure _ -> printRed' "LA: archiving script failed to run correctly: " (l ++ " result: " ++ U.toString stderr') >> return Nothing
