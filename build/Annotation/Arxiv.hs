@@ -44,7 +44,7 @@ arxivDownload url = do
                let arxivid = takeWhile (/='#') $ if "/pdf/" `isInfixOf` url && ".pdf" `isSuffixOf` url
                                  then replaceMany [("https://arxiv.org/pdf/", ""), (".pdf", "")] url
                                  else replace "https://arxiv.org/abs/" "" url
-               (a,_,c) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?search_query=id:"++arxivid++"&start=0&max_results=1", "--user-agent", "gwern+arxivscraping@gwern.net"]
+               (a,_,c) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?id_list="++arxivid, "--user-agent", "gwern+arxivscraping@gwern.net"]
                return (a,c,arxivid)
 
 -- NOTE: we inline Tagsoup convenience code from Network.Api.Arxiv (https://hackage.haskell.org/package/arxiv-0.0.1/docs/src/Network-Api-Arxiv.html); because that library is unmaintained & silently corrupts data (https://github.com/toschoo/Haskell-Libs/issues/1), we keep the necessary code close at hand so at least we can easily patch it when errors come up
