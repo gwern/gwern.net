@@ -41,11 +41,10 @@ import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto)
 main :: IO ()
 main = do dirs <- getArgs
           -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
-          let dirs' = map (\dir -> replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
+          let dirs' = sort $ map (\dir -> replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
           meta <- readLinkMetadata
 
-          -- Prelude.mapM_ (generateDirectory True meta dirs') dirs'
           Prelude.mapM_ (generateDirectory True meta dirs') (dirs' `using` parListChunk chunkSize rseq) -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
 
           -- Special-case directories:
@@ -58,7 +57,6 @@ main = do dirs <- getArgs
 generateDirectory :: Bool -> Metadata -> [FilePath] -> FilePath -> IO ()
 generateDirectory filterp md dirs dir'' = do
 
-  -- print dirs >> print dir''
   -- remove the tag for *this* directory; it is redundant to display 'cat/psychology/drug/catnip' on every doc/link inside '/doc/cat/psychology/drug/catnip/index.page', after all.
   let tagSelf = if dir'' == "doc/" then "" else init $ replace "doc/" "" dir'' -- "doc/cat/psychology/drug/catnip/" → 'cat/psychology/drug/catnip'
 
@@ -107,9 +105,7 @@ generateDirectory filterp md dirs dir'' = do
   -- (Entries without even a title must be squashed into a list and chucked at the end.)
   let titledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t /= "") links
   let untitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t == "") links
-  -- print ("titledLinks:"::String) >> putStrLn (ppShow $ sort titledLinks)
   titledLinksSorted <- if not filterp then return [] else sortSimilarsStartingWithNewestWithTag md tagSelf titledLinks -- skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
-  -- print ("-------------------------------------------------------"::String) >> print ("titledLinksSorted:"::String) >> print titledLinksSorted
 
   let titledLinksSections   = generateSections  titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
   let untitledLinksSection  = generateListItems untitledLinks

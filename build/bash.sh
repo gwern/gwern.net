@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-10-06 14:40:42 gwern"
+# When:  Time-stamp: "2023-10-15 16:00:06 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -10,7 +10,7 @@
 #
 # Helper functions include: website cache invalidation; PDF metadata query & editing; tab-completion for tag/directory names; querying the newsletters, filenames, annotation database, website, and IRC (in increasing generality); site-wide string search-and-replace (including a HTTP→HTTPS special-case which comes up a lot fixing redirects); functions to rename files & directories; and a `gwtag` CLIcommand which create new annotations (if there is a usable annotation source, such as being an Arxiv link) or add/remove tags from specified files/URLs.
 #
-# See also: ~/wiki/static/build/upload, gwa, crossref, compressJpg2
+# See also: /static/build/{upload, gwa, crossref, compressJpg2}
 
 # Default parallelism:
 export N="29"
@@ -54,7 +54,10 @@ pdfcut () { if [ $# -ne 1 ]; then echo "Too many arguments" && return 1; fi
           }
 
 # add white pixels to an image which has been cropped too tightly to look good:
-alias pad="mogrify -bordercolor white -border 25"
+pad () {
+    ORIGINAL=$(echo "$@" | sed -e 's/^\/doc\//\/home\/gwern\/wiki\/doc\//')
+    mogrify -bordercolor white -border 25 "$ORIGINAL"
+    }
 
 # crossref: defined in ~/wiki/static/build/crossref
 cr () { crossref "$@" & }
@@ -185,7 +188,8 @@ gwmv () {
             # 1. git mv the old filename to new
         elif [[ -a ~/wiki$OLD ]]; then
             touch ~/wiki"$NEW" && rm ~/wiki"$NEW" && git mv ~/wiki"$OLD" ~/wiki"$NEW" || return 3
-            rsync --mkpath --chmod='a+r' -q ~/wiki"$NEW" gwern@176.9.41.242:"/home/gwern/gwern.net$NEW" || true > /dev/null &
+            ssh gwern@176.9.41.242 "mkdir -p /home/gwern/gwern.net/$(dirname $NEW)" # TODO: replace this ssh line with the `--mkpath` option in rsync when that becomes available:
+            rsync --chmod='a+r' -q ~/wiki"$NEW" gwern@176.9.41.242:"/home/gwern/gwern.net$NEW" || echo "gwmv: rsync failed?" > /dev/null &
             # 2. gwsed old new
             gwsed "$OLD" "$NEW"
             # 3. add a redirected old to nw
@@ -196,6 +200,7 @@ gwmv () {
         else
                 echo "File does not exist? $OLD (to be moved to $NEW)" && return 1;
         fi
+        wait
         )
         set +x
     fi
@@ -231,6 +236,7 @@ gwmvdir () {
 alias gwt="gwtag"
 alias t="gwtag"
 gwtag () { (
+             wait; # just in case another tool might be running (eg. gwtag or gwsed)
              cd ~/wiki/ &&
                      # echo "---" && grep -F -- "$1" ./metadata/*.yaml || true
                      timeout 20m nice runghc -istatic/build/ ./static/build/changeTag.hs "$@"; echo "" # &&
@@ -270,19 +276,29 @@ is_downloading() {
   fi
 }
 
-# GPT-3-written:
 # shortcut for handling link-archiving review:
-# Bash shell function named `mvuri` which will take a filename with a URI encoding
+# `mvuri`: takes a filename with a URI encoding
 # like `file:///home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
 # and transform that argument into `/home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
 # (ignoring any anchor/hash on the original .html file) and then `mv` the URL snapshot to that like normal.
+# If the target starts with 'doc/' (perhaps because it has been copied from `/metadata/archive.hs` while manually fixing)
+# It is treated as if it had started with `file:///home/gwern/wiki/doc/`
 #
 # eg. `$ mvuri file:///home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
+# `$ mvuri file:///home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html#toc`
+# `$ mvuri doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
+# are all equivalent.
 mvuri () {
   local ENCODED_PATH="$1"
   local DECODED_PATH="${ENCODED_PATH//\%/\\x}"
   DECODED_PATH="${DECODED_PATH#file://}"
   DECODED_PATH="${DECODED_PATH%%#*}" # ignore anchors like `foo.html#id` by stripping them
+
+  # Check if DECODED_PATH starts with 'doc/', if so prepend with '/home/gwern/wiki/'
+  if [[ $DECODED_PATH == doc/* ]]; then
+    DECODED_PATH="/home/gwern/wiki/$DECODED_PATH"
+  fi
+
   local DESTINATION="$DECODED_PATH"
 
   local SOURCE

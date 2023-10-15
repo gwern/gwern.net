@@ -58,7 +58,11 @@ transformURLsForLinking   = replace "https://www.reddit.com" "https://old.reddit
   . sed "^(https://web\\.archive\\.org/web/[12][0-9]+)/http(.*)$" "\\1if_/http\\2"
 
 -- called by `LinkArchive.testLinkRewrites`:
-localizeLinktestCases :: [(T.Text, (T.Text, T.Text, T.Text, [T.Text]))]
+localizeLinktestCases :: [(T.Text, -- original URL
+                           (T.Text, -- on-disk archive file (if any); absolute for inserting into links, not relative
+                            T.Text, -- mobile version
+                            T.Text, -- HTML version
+                            [T.Text]))] -- classes (just in case, so far)
 localizeLinktestCases = [
     ("https://arxiv.org/abs/1909.05858#salesforce",
       ("/doc/www/arxiv.org/0b9e7be08a4baf0b4fc120364ea36172ecb3c9f0.pdf#salesforce", "https://ar5iv.labs.arxiv.org/html/1909.05858?fallback=original#salesforce", "", []))
@@ -69,7 +73,6 @@ localizeLinktestCases = [
     , ("https://twitter.com/alexeyguzey/status/1068583101633359874", ("", "https://nitter.net/alexeyguzey/status/1068583101633359874", "", []))
     , ("https://twitter.com/gdb/status/1495821544370708486", ("/doc/www/localhost/26c5938a85b27e976fdbaecb8570d9830362501e.html", "https://nitter.net/gdb/status/1495821544370708486", "", ["link-annotated"]))
     , ("https://medium.com/@alex.tabarrok/when-can-token-curated-registries-actually-work-%C2%B9-2ad908653aaf", ("/doc/www/scribe.rip/067a8f86abbb2ba5c0de0ed2f0ccfe046973bfb3.html", "", "https://scribe.rip/@alex.tabarrok/when-can-token-curated-registries-actually-work-%C2%B9-2ad908653aaf", []))
-    , ("https://web.archive.org/web/20200215144602/https://twicsy-blog.tumblr.com/post/174063770074/how-i-targeted-the-reddit-ceo-with-facebook-ads-to", ("https://web.archive.org/web/20200215144602if_/https://twicsy-blog.tumblr.com/post/174063770074/how-i-targeted-the-reddit-ceo-with-facebook-ads-to", "", "", []))
     , ("https://news.ycombinator.com/item?id=17110385", ("/doc/www/news.ycombinator.com/de1d1ce15816a607ef9cfb9e04c34051ee08211f.html", "", "", []))
     , ("https://openreview.net/forum?id=0ZbPmmB61g#google", ("/doc/www/openreview.net/ec11c5bdd2766cd352fe7df9ae60e748f06d5175.pdf#google", "", "", []))
     , ("https://www.reddit.com/r/AnarchyChess/comments/10ydnbb/i_placed_stockfish_white_against_chatgpt_black/", ("/doc/www/old.reddit.com/bd98124b170baeb9324c51c734083302aa65323a.html", "", "https://old.reddit.com/r/AnarchyChess/comments/10ydnbb/i_placed_stockfish_white_against_chatgpt_black/", []))
@@ -83,6 +86,8 @@ localizeLinktestCases = [
     , ("https://arbital.com/p/edge_instantiation/", ("/doc/www/arbital.com/f3415bb9b168d3fcb051b458a48994ec1e8c4611.html", "", "https://arbital.greaterwrong.com/p/edge_instantiation/?format=preview&theme=classic", []))
     , ("https://en.wikipedia.org/wiki/George_Washington", ("", "", "https://en.m.wikipedia.org/wiki/George_Washington#bodyContent", []))
     , ("https://web.archive.org/web/20200928174939/http://thismarketingblogdoesnotexist.com/", ("", "", "https://web.archive.org/web/20200928174939if_/http://thismarketingblogdoesnotexist.com/", []))
+    , ("https://web.archive.org/web/20230718144747/https://frc.ri.cmu.edu/~hpm/project.archive/robot.papers/2004/Predictions.html",
+       ("/doc/www/web.archive.org/6c2b9128766dab38ecadd896845cfe53920c3ea3.html", "", "https://web.archive.org/web/20230718144747if_/https://frc.ri.cmu.edu/~hpm/project.archive/robot.papers/2004/Predictions.html", []))
     ]
 
 localizeLinkTestDB :: ArchiveMetadata
@@ -100,6 +105,7 @@ localizeLinkTestDB = M.fromList $
                     , ("https://www.reddit.com/r/AnarchyChess/comments/10ydnbb/i_placed_stockfish_white_against_chatgpt_black/", "doc/www/old.reddit.com/bd98124b170baeb9324c51c734083302aa65323a.html")
                     , ("https://arbital.com/p/edge_instantiation/", "doc/www/arbital.com/f3415bb9b168d3fcb051b458a48994ec1e8c4611.html")
                     , ("https://twitter.com/gdb/status/1495821544370708486", "doc/www/localhost/26c5938a85b27e976fdbaecb8570d9830362501e.html")
+                    , ("https://web.archive.org/web/20230718144747/https://frc.ri.cmu.edu/~hpm/project.archive/robot.papers/2004/Predictions.html", "doc/www/web.archive.org/6c2b9128766dab38ecadd896845cfe53920c3ea3.html")
                     ]
 
 -- GreaterWrong provides several mirrors we want to rewrite URLs to: LessWrong, Alignment Forum, Effective Altruism, & Arbital (historical).

@@ -43,4 +43,4 @@ blackList p = p `elem` isUniqueList ["https://www.biorxiv.org/content/10.1101/20
 
 minDistance, maxDistance :: Double
 maxDistance = 0.63 -- chosen ad hoc by looking at a small sample and noting there seemed to be a cliff of relevancy at ~0.60 as of 2023-09-04 using text-embedding-ada-002 - WARNING: must be rechecked for every engine change!
-minDistance = 0.05 -- avoids self-matches and other odd errors
+minDistance = 0.02 -- avoids self-matches and other odd errors

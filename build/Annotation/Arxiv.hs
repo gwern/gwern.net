@@ -44,10 +44,11 @@ arxivDownload url = do
                let arxivid = takeWhile (/='#') $ if "/pdf/" `isInfixOf` url && ".pdf" `isSuffixOf` url
                                  then replaceMany [("https://arxiv.org/pdf/", ""), (".pdf", "")] url
                                  else replace "https://arxiv.org/abs/" "" url
+               -- <https://info.arxiv.org/help/api/user-manual.html#_query_interface>
                (a,_,c) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?id_list="++arxivid, "--user-agent", "gwern+arxivscraping@gwern.net"]
                return (a,c,arxivid)
 
--- NOTE: we inline Tagsoup convenience code from Network.Api.Arxiv (https://hackage.haskell.org/package/arxiv-0.0.1/docs/src/Network-Api-Arxiv.html); because that library is unmaintained & silently corrupts data (https://github.com/toschoo/Haskell-Libs/issues/1), we keep the necessary code close at hand so at least we can easily patch it when errors come up
+-- NOTE: we inline Tagsoup convenience code from Network.Api.Arxiv (<https://hackage.haskell.org/package/arxiv-0.0.1/docs/src/Network-Api-Arxiv.html>); because that library is unmaintained & silently corrupts data (<https://github.com/toschoo/Haskell-Libs/issues/1>), we keep the necessary code close at hand so at least we can easily patch it when errors come up
 -- Get the content of a 'TagText'
 findTxt :: [Tag String] -> String
 findTxt [] = ""
@@ -82,7 +83,7 @@ element nm (t:ts) | isTagOpenName nm t = let (r,rs) = closeEl 0 ts
 -- Arxiv makes multi-paragraph abstracts hard because the 'HTML' is actually LaTeX, so we need to special Pandoc preprocessing (for paragraph breaks, among other issues):
 processArxivAbstract :: String -> String
 processArxivAbstract a = let cleaned = runPure $ do
-                                     -- if we don't escape dollar signs, it breaks abstracts with dollar amounts like "a $700 GPU"; crude heuristic, if only 1 '$', then it's not being used for LaTeX math (eg. https://arxiv.org/abs/2108.05818#tencent )
+                                     -- if we don't escape dollar signs, it breaks abstracts with dollar amounts like "a $700 GPU"; crude heuristic, if only 1 '$', then it's not being used for LaTeX math (eg. in <https://arxiv.org/abs/2108.05818#tencent>)
                                     let dollarSignsN = length $ filter (=='$') a
                                     let tex = sedMany [("\\\\citep?\\{([[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                        ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),

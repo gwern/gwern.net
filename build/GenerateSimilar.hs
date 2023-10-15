@@ -49,7 +49,7 @@ singleShotRecommendations html =
 
      newEmbedding <- embed [] md bdb ("",("","","","",[],html))
      ddb <- embeddings2Forest (newEmbedding:edb)
-     let (_,hits) = findN ddb (2*C.bestNEmbeddings) C.iterationLimit (Just (0,1)) newEmbedding :: (String,[String])
+     let (_,hits) = findN ddb (2*C.bestNEmbeddings) C.iterationLimit (Just 0) newEmbedding :: (String,[String])
      hitsSorted <- sortSimilars edb (head hits) hits
 
      let matchListHtml = generateMatches md bdb True True "" html hitsSorted :: T.Text
@@ -146,7 +146,7 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
           (if aut=="" || aut=="N/A" then "" else ", by "++authorsTruncate aut) ++
           (if dt==""then "." else" ("++take 4 dt++")."),
 
-          (if null tags then "" else "Keywords: " ++ intercalate ", " tags ++ "."),
+          if null tags then "" else "Keywords: " ++ intercalate ", " tags ++ ".",
 
           replace "\n[]\n" "" $ replace "<hr>" "" $ replace "<hr />" "" abst]
         parsedEither = let parsed = runPure $ readHtml def{readerExtensions = pandocExtensions } document
@@ -156,7 +156,7 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
         -- create a numbered list of URL references inside each document to expose it to the embedding model, as 'simplifiedDoc' necessarily strips URLs:
         documentURLs = filter (\(u,_) -> not (T.pack path `T.isPrefixOf` u) && anyPrefixT u ["/", "http"]) $ extractURLsAndAnchorTooltips parsedEither
         documentURLsText = if null documentURLs then "" else "\nReferences:\n\n" `T.append` T.unlines
-          (map (\(n, (url,titles)) -> T.pack n `T.append` ". " `T.append` url `T.append` " " `T.append` (T.intercalate ", " titles)) $
+          (map (\(n, (url,titles)) -> T.pack n `T.append` ". " `T.append` url `T.append` " " `T.append` T.intercalate ", " titles) $
             zip (map show [(1::Int)..]) documentURLs)
         -- simple plaintext ASCII-ish version, which hopefully is more comprehensible to NN models than full-blown HTML
         plainText = simplifiedDoc parsedEither `T.append` documentURLsText
@@ -174,7 +174,7 @@ embed edb mdb bdb i@(p,_) =
                               Nothing -> []
                               Just bl -> map T.unpack (concatMap snd bl)
             let backlinksMetadata = if null backlinks then "" else
-                                      "\n\nReverse citations:\n\n- " ++ (intercalate "\n- " $ nub $
+                                      "\n\nReverse citations:\n\n- " ++ intercalate "\n- " (nub $
                                         map (\b -> case M.lookup b mdb of
                                                     Nothing -> ""
                                                     Just (t,a,d,_,_,_) -> "\"" ++ t ++ "\", " ++ authorsTruncate a ++ (if d=="" then "" else " (" ++ take 4 d ++ ")")) backlinks)
@@ -246,14 +246,14 @@ knnEmbedding f k (_,_,_,_,embd) = V.toList $
 
 
 -- we'll filter based on acceptable distance
-findNearest :: Forest -> Int -> (Double,Double) -> Embedding -> [String]
-findNearest f k (minDist,maxDist) e = map (\(_,Embed _ p) -> p) $ filter (\(dist,_) -> dist < maxDist && dist > minDist) $ knnEmbedding f k e
+findNearest :: Forest -> Int -> Double -> Embedding -> [String]
+findNearest f k maxDist e = map (\(_,Embed _ p) -> p) $ filter (\(dist,_) -> dist < maxDist) $ knnEmbedding f k e
 
-findN :: Forest -> Int -> Int -> Maybe (Double,Double) -> Embedding -> (String,[String])
+findN :: Forest -> Int -> Int -> Maybe Double -> Embedding -> (String,[String])
 findN _ 0 _    _ e = error ("findN called for k=0; embedding target: " ++ show e)
 findN _ _ 0    _ e = error ("findN failed to return enough candidates within iteration loop limit. Something went wrong! Embedding target: " ++ show e)
-findN f k iter Nothing e = findN f k iter (Just (C.minDistance, C.maxDistance)) e
-findN f k iter j@(Just (mn,mx)) e@(p1,_,_,_,_) = let results = take C.bestNEmbeddings $ nub $ filter (\p2 -> p2/="" && (not $ C.blackList p2) && p1/=p2) $ findNearest f k (mn,mx) e in
+findN f k iter Nothing e = findN f k iter (Just  C.maxDistance) e
+findN f k iter j@(Just mx) e@(p1,_,_,_,_) = let results = take C.bestNEmbeddings $ nub $ filter (\p2 -> p2/="" && not (C.blackList p2) && p1 /= p2) $ findNearest f k mx e in
                  -- NOTE: 'knn' is the fastest (and most accurate?), but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
                  -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed…)
                  -- If that happens, back off and request more k up to a max of 50.
@@ -282,7 +282,7 @@ let f2 = embeddings2ForestConfigurable 60 1 32 edb
 Data.RPTree.recallWith metricL2 f1 20 $ (\(_,_,embd) -> ((fromListDv embd)::DVector Double)) $ head edb
 Data.RPTree.recallWith metricL2 f2 20 $ (\(_,_,embd) -> ((fromListDv embd)::DVector Double)) $ head edb
 
-findNearest f 20 (C.minDistance, C.maxDistance) $ head edb
+findNearest f 20 C.maxDistance $ head edb
 findN f 20 C.iterationLimit $ head edb
 -}
 
@@ -311,7 +311,7 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
          let p' = T.pack p
              alreadyLinkedAbstract  = extractLinks False $ T.pack abst
              alreadyLinkedBody      = getForwardLinks bdb p'
-             alreadyLinkedBacklinks = fromMaybe [] (fmap (concatMap snd) $ M.lookup p' bdb)
+             alreadyLinkedBacklinks = maybe [] (concatMap snd) (M.lookup p' bdb)
              alreadyLinked = [p'] ++ alreadyLinkedAbstract ++ alreadyLinkedBody ++ alreadyLinkedBacklinks
              matchesPruned = filter (\p2 -> T.pack p2 `notElem` alreadyLinked) matches
 
@@ -439,7 +439,14 @@ sortSimilarsStartingWithNewestWithTag md parentTag items =
       suggestion <- processTitles parentTag blacklist $ map (\(_,(t,_,_,_,_,_)) -> t) fs
       -- retry once for sporadic API errors:
       suggestion' <- if not (null suggestion) then return suggestion else processTitles parentTag blacklist $ map (\(_,(t,_,_,_,_,_)) -> t) fs
-      return (acc ++ [(suggestion', fs)], blacklist ++ [suggestion'])
+      let newAcc = mergeIntoAccumulator acc (suggestion', fs)
+      return (newAcc, blacklist ++ [suggestion'])
+      where
+        mergeIntoAccumulator :: [(String, [(FilePath, MetadataItem)])] -> (String, [(FilePath, MetadataItem)]) -> [(String, [(FilePath, MetadataItem)])]
+        mergeIntoAccumulator accum (tag, fls) = -- despite the prompting, sometimes a duplicate tag-name will be returned anyway, so we try to merge those together
+          case lookup tag accum of
+            Just oldFls -> (tag, oldFls ++ fls) : filter ((/= tag) . fst) accum
+            Nothing -> (tag, fls) : accum
 
 processTitles :: String -> [String] -> [String] -> IO String
 processTitles _ _ [] = return ""
@@ -506,8 +513,8 @@ lookupNextAndShrink targets embeddings previous = do results <- go targets embed
                       -- putStrLn ("remainingTargets: " ++ ppShow ta) >> putStrLn ("remainingEmbeddings: " ++ ppShow (map (\(a,b,c,d,_) -> (a,b,take 100 c,d)) em)) >> putStrLn ("previous: " ++ previous)
                       case M.lookup previous (M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) em) of
                               Nothing ->  putStr "Exited at Nothing in lookupNextAndShrink, this should never happen?" >> error ""
-                              Just (b,c,d,e) -> do -- putStrLn $ "findNearest: " ++ show (findNearest ddb 6 (C.minDistance, C.maxDistance) (previous,b,c,d,e))
-                                                   let match = filter (/=previous) $ findNearest ddb 6 (C.minDistance, C.maxDistance) (previous,b,c,d,e) :: [FilePath]
+                              Just (b,c,d,e) -> do -- putStrLn $ "findNearest: " ++ show (findNearest ddb 6 C.maxDistance (previous,b,c,d,e))
+                                                   let match = filter (/=previous) $ findNearest ddb 6 C.maxDistance (previous,b,c,d,e) :: [FilePath]
                                                    let match' = head match
                                                    if null match then
                                                           let fallback = head targets in

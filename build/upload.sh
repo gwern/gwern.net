@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-09-16 19:06:58 gwern"
+# When:  Time-stamp: "2023-10-14 22:56:04 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -25,6 +25,8 @@ set -e
 WWW_BROWSER="firefox"
 
 if [ ! -f "$1" ]; then echo "l20: '$1' is not a file‽" && exit 1; fi
+
+wait
 
 (locate "$1" &)
 
@@ -129,7 +131,8 @@ else
                     chmod a+r "$TARGET";
                 fi
                 (git add "$TARGET" &)
-                (rsync --mkpath --chmod='a+r' -q "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/" || \
+                # TODO: add back in `--mkpath`
+                (rsync --chmod='a+r' -q "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/" || \
                     rsync --chmod='a+r' -v "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/"
                 URL="https://gwern.net/$TARGET_DIR/$(basename "$FILE")"
                 cloudflare-expire "$TARGET_DIR/$(basename "$FILE")"

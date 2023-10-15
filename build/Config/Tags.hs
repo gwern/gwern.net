@@ -109,7 +109,8 @@ tagsShort2LongRewrites = isUniqueKeys
     ("frank-p-ramsey", "frank-ramsey"), ("artificial-selection", "genetics/selection/artificial"), ("intrasexual-agression", "intrasexual-aggression"),
     ("javascript", "js"), ("psych/chess", "psychology/chess"), ("self-experiment", "quantified-self"),
     ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing"), ("quadratic-vote", "quadratic-voting"), ("bipolar/genes", "bipolar/genetics"), ("dynamic-evaliation", "dynamic-evaluation"), ("dog-cloning", "genetics/cloning/dog"), ("dog-clone", "genetics/cloning/dog"), ("dog/clone", "genetics/cloning/dog"), ("cat-drug", "cat/psychology/drug"), ("cat/drug", "cat/psychology/drug"), ("fonts", "typography"),
-   ("time-lock", "timelock"), ("self-decrypting", "timelock"), ("tokenizer", "tokenization"), ("bash", "shell"), ("d+q", "d-q"), ("dasatinib", "d-q"), ("quercetin", "d-q"), ("dastinib", "d-q"), ("dasitinib", "d-q")]
+   ("time-lock", "timelock"), ("self-decrypting", "timelock"), ("tokenizer", "tokenization"), ("bash", "shell"), ("d+q", "d-q"), ("dasatinib", "d-q"), ("quercetin", "d-q"), ("dastinib", "d-q"), ("dasitinib", "d-q"),
+   ("borderline-personality", "borderline"), ("borderline-disorder", "borderline"), ("borderline-personality-disorder", "borderline"), ("bp", "bipolar"), ("bpd", "borderline"), ("security-blanket", "transitional-object"), ("comfort-object", "transitional-object")]
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   -- hopelessly ambiguous ones which should be error (for now)
@@ -212,6 +213,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("ai/nn/gan/stylegan/progan", "ProGAN")
           , ("ai/nn/gan/data-augmentation", "data-augmented GANs")
           , ("ai/nn/diffusion/discrete", "discrete diffusion model")
+          , ("ai/nn/diffusion/midjourney", "Midjourney")
           , ("ai/highleyman", "Highleyman’s AI")
           , ("psychology/neuroscience/tcs", "TDCS")
           , ("traffic", "web traffic")
@@ -294,6 +296,8 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("psychiatry/bipolar/energy", "BP personality")
           , ("psychiatry/bipolar/genetics", "BP genes")
           , ("psychiatry/bipolar", "bipolar")
+          , ("psychiatry/borderline/transitional-object", "security blanket (BPD)")
+          , ("psychiatry/borderline", "borderline")
           , ("psychiatry/schizophrenia/rosenhan", "Rosenhan fraud")
           , ("psychiatry/schizophrenia", "SCZ")
           , ("psychiatry/anorexia", "anorexia")
@@ -398,6 +402,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("ai/video", "AI video")
           , ("ai/text-style-transfer", "text style transfer")
           , ("exercise/gravitostat", "gravitostat")
+          , ("longevity/glp/psychology", "GLP agonists (mind)")
           , ("longevity/glp/semaglutide", "semaglutide")
           , ("longevity/glp/tirzepatide", "tirzepatide")
           , ("longevity/glp", "GLP agonists")

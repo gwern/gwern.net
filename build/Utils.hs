@@ -154,16 +154,25 @@ removeClass clss x@(Image (i, clsses, ks) s (url, tt)) = if clss `notElem` clsse
 removeClass clss x@(Code  (i, clsses, ks) code)        = if clss `notElem` clsses then x else Code (i, filter (/=clss) clsses, ks) code
 removeClass _    x = x
 
+
+-- enable printing of normal vs dangerous log messages to terminal stderr:
+green, red :: String -> String
+green s = "\x1b[32m" ++ s ++ "\x1b[0m"
+red   s = "\x1b[41m" ++ s ++ "\x1b[0m"
+
 -- print normal progress messages to stderr in bold green:
 putStrGreen, printGreen :: String -> IO ()
-putStrGreen s = putStrStdErr $ "\x1b[32m" ++ s ++ "\x1b[0m"
+putStrGreen s = putStrStdErr $ green s
 printGreen  s = putStrGreen (s ++ "\n")
 
 -- print danger or error messages to stderr in red background:
 putStrRed, printRed :: String -> IO ()
 putStrRed s = do when (length s > 2048) $ printRed "Warning: following error message was extremely long & truncated at 2048 characters!"
-                 putStrStdErr $ "\x1b[41m" ++ take 2048 s ++ "\x1b[0m"
+                 putStrStdErr $ red $ take 2048 s
 printRed s = putStrRed (s ++ "\n")
+-- special-case: the error message, then useful values:
+printRed' :: String -> String -> IO ()
+printRed' e l = putStrRed e >> printGreen l
 
 putStrStdErr :: String -> IO ()
 putStrStdErr = hPutStr stderr
@@ -342,8 +351,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<em>R</em>  *<sup>2</sup>", "<em>R</em><sup>2</sup>")
 
          -- regexp substitutions:
+         , ("from ([0-9\\.]+) to ([0-9\\.]+)", "\\1 → \\2") -- "when moving from 8 to 256 GPUs" → "when moving 8 → 256 GPUs"
          , ("([0-9.]+)E10[-−–—]([0-9]+)", "\\1 × 10<sup>−\\2")
-         , ("\\([0-9]\\)- (millisecond|second|minute|hour|day|week|month|year)", "\\1-\\2") -- line-break errors like 'we observed the mice for 2- minutes or 10-minutes afterwards'
+         , ("([0-9])- (millisecond|second|minute|hour|day|week|month|year)", "\\1-\\2") -- line-break errors like 'we observed the mice for 2- minutes or 10-minutes afterwards'
          , ("\\\\emph{([a-zA-Z0-9-]+)}", "<em>\\1</em>")
          , ("\\\\textit{([a-zA-Z0-9-]+)}", "<em>\\1</em>")
          -- rewrite *Markdown italics* to <em>HTML italics</em>, and strong/bold:
@@ -983,11 +993,11 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<p>Background: ", "<p><strong>Background</strong>: ")
          , (" Interpretation. ", "</p> <p><strong>Interpretation</strong>: ")
          , (" Findings. ", "</p> <p><strong>Results</strong>: ")
-         , ("<strong>Methods</strong>\n<p>", "<p><strong>Methods</strong>: ")
-         , (" Methods. ", "</p> <p><strong>Methods</strong>: ")
-         , (". <strong>Methods</strong>: ", ".</p> <p><strong>Methods</strong>: ")
-         , (" \n <strong>Methods</strong>\n<p>", "<p><strong>Methods</strong>: ")
-         , ("<p>Methods: ", "<p><strong>Methods</strong>: ")
+         , ("<strong>Methods</strong>\n<p>", "<p><strong>Method</strong>: ")
+         , (" Methods. ", "</p> <p><strong>Method</strong>: ")
+         , (". <strong>Methods</strong>: ", ".</p> <p><strong>Method</strong>: ")
+         , (" \n <strong>Methods</strong>\n<p>", "<p><strong>Method</strong>: ")
+         , ("<p>Methods: ", "<p><strong>Method</strong>: ")
          , ("<p>Outcomes: ", "<p><strong>Outcomes</strong>: ")
          , ("<p>Interpretation: ", "<p><strong>Interpretation</strong>: ")
          , ("<p>Funding: ", "<p><strong>Funding</strong>: ")
@@ -1110,11 +1120,11 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<strong>Abstract</strong>:<p>", "<p>")
          , ("<p><strong>Abstract</strong>: ", "<p>")
          , ("<strong>AIM:</strong>", "<strong>Aim</strong>:")
-         , ("<strong>METHODS:</strong>", "<strong>Methods</strong>:")
+         , ("<strong>METHODS:</strong>", "<strong>Method</strong>:")
          , ("<strong>RESULTS:</strong>", "<strong>Results</strong>:")
          , ("<strong>CONCLUSION:</strong>", "<strong>Conclusion</strong>:")
          , ("<strong>AIM</strong>:", "<strong>Aim</strong>:")
-         , ("<strong>METHODS</strong>:", "<strong>Methods</strong>:")
+         , ("<strong>METHODS</strong>:", "<strong>Method</strong>:")
          , ("<strong>RESULTS</strong>:", "<strong>Results</strong>:")
          , ("<strong>CONCLUSION</strong>:", "<strong>Conclusion</strong>:")
          , ("\nHighlights: ", "\n<strong>Highlights</strong>: ")
@@ -1149,12 +1159,12 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("\nObjectives: ", "\n<strong>Objectives</strong>: ")
          , ("\nQuestion: ", "\n<strong>Question</strong>: ")
          , ("\nDescription: ", "\n<strong>Description</strong>: ")
-         , ("Design and</p>\n<p><strong>Methods</strong>: ", "</p> <p><strong>Methods</strong>: ")
-         , ("\nDesign: ", "\n<strong>Methods</strong>: ")
-         , ("\nMethods: ", "\n<strong>Methods</strong>: ")
-         , ("\nDesign and Methods: ", "\n<strong>Methods</strong>: ")
-         , ("<strong>Materials and Methods</strong>", "<strong>Methods</strong>")
-         , ("<strong>Materials and methods</strong>", "<strong>Methods</strong>")
+         , ("Design and</p>\n<p><strong>Methods</strong>: ", "</p> <p><strong>Method</strong>: ")
+         , ("\nDesign: ", "\n<strong>Method</strong>: ")
+         , ("\nMethods: ", "\n<strong>Method</strong>: ")
+         , ("\nDesign and Methods: ", "\n<strong>Method</strong>: ")
+         , ("<strong>Materials and Methods</strong>", "<strong>Method</strong>")
+         , ("<strong>Materials and methods</strong>", "<strong>Method</strong>")
          , ("\nSetting: ", "\n<strong>Setting</strong>: ")
          , ("\nParticipants: ", "\n<strong>Participants</strong>: ")
          , ("\nMeaning: ", "\n<strong>Meaning</strong>: ")
@@ -1184,8 +1194,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<h3>Objectives</h3>\n<p>", "<p><strong>Objectives</strong>: ")
          , ("<h3>Question</h3>\n<p>", "<p><strong>Question</strong>: ")
          , ("<h3>Description</h3>\n<p>", "<p><strong>Description</strong>: ")
-         , ("<h3>Design</h3>\n<p>", "<p><strong>Methods</strong>: ")
-         , ("<h3>Methods</h3>\n<p>", "<p><strong>Methods</strong>: ")
+         , ("<h3>Design</h3>\n<p>", "<p><strong>Method</strong>: ")
+         , ("<h3>Methods</h3>\n<p>", "<p><strong>Method</strong>: ")
          , ("<h3>Setting</h3>\n<p>", "<p><strong>Setting</strong>: ")
          , ("<h3>Participants</h3>\n<p>", "<p><strong>Participants</strong>: ")
          , ("<h3>Meaning</h3>\n<p>", "<p><strong>Meaning</strong>: ")

@@ -27,7 +27,7 @@ linkDispatcherURL :: Path -> IO (Either Failure (Path, MetadataItem))
 linkDispatcherURL l | anyPrefix l ["/metadata/annotation/backlink/", "/metadata/annotation/similar/", "/doc/www/"] = return (Left Permanent)
                  -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for tags.
                  | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return $ Right (l, (wikipediaURLToTitle l, "", "", "", [], ""))
-                 | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
+                 | "arxiv.org/abs/" `isInfixOf` l = arxiv l
                  | "https://openreview.net/forum?id=" `isPrefixOf` l || "https://openreview.net/pdf?id=" `isPrefixOf` l = openreview l
                  | anyPrefix l ["https://www.biorxiv.org/content/", "https://www.medrxiv.org/content/"] = biorxiv l
                  | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l = pubmed l

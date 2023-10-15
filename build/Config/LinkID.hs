@@ -9,7 +9,7 @@ import Utils (isUniqueAll)
 linkIDOverrides :: [(String, T.Text)]
 linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start with `[a-zA-Z]`, and not numbers or periods etc; they must not contain periods for CSS/JS compatibility
                          let ident' = T.unpack ident in
-                              if '.' `elem` ident' || (not $ isAlpha $ head ident') then error ("Invalid link ID override! " ++ ppShow o) else o)
+                              if '.' `elem` ident' || not (isAlpha $ head ident') then error ("Invalid link ID override! " ++ ppShow o) else o)
                       $ isUniqueAll [
        ("/doc/ai/anime/danbooru/2018-zhang-2.pdf", "zhang-et-al-2018-twostagecolorization")
        , ("/doc/ai/anime/danbooru/2020-akita-2.pdf", "akita-et-al-2020-2")
@@ -97,7 +97,7 @@ linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start wi
        , ("https://www.vetta.org/2009/12/the-teenies/", "legg-2009-the-teenies")
        , ("https://www.vetta.org/2009/12/tick-tock-tick-tock-bing/", "legg-2009-tick-tock")
        , ("https://zenpundit.com/?p=52965", "greer-thucydides-roundtable")
-       , ("https://ai.facebook.com/blog/state-of-the-art-open-source-chatbot", "blender-blog")
+       , ("https://ai.meta.com/blog/state-of-the-art-open-source-chatbot/", "blender-blog")
        , ("https://blog.research.google/2020/07/automl-zero-evolving-code-that-learns.html", "real-et-al-2020-blog")
        , ("https://artbreeder.com/", "simon-2019-2")
        , ("https://arxiv.org/abs/1610.04286", "rusu-et-al-2016-2")
@@ -248,7 +248,6 @@ linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start wi
        , ("https://link.springer.com/article/10.1140/epjds/s13688-021-00259-w", "bracci-et-al-2021-dnmvaccines")
        , ("https://lllyasviel.github.io/MangaFilter/", "mangafilter")
        , ("https://magenta.tensorflow.org/music-transformer", "huang-et-al-2018-code")
-       , ("https://mattlakeman.org/2020/01/22/disaster-artist-insanity-is-no-shortcut-to-inspiration/", "matt-lakeman-2020-disasterartist")
        , ("https://mattlakeman.org/2020/01/22/hill-billy-elegy-the-culture-of-white-american-poverty/", "matt-lakeman-2020-hillbillyelegy")
        , ("https://mattlakeman.org/2020/01/22/peep-show-the-most-realistic-portrayal-of-evil-ive-ever-seen/", "matt-lakeman-2020-peepshow")
        , ("https://mattlakeman.org/2020/01/22/the-new-epidemic-my-experience-of-losing-a-friend-to-heroin/", "matt-lakeman-2020-heroin")
@@ -365,4 +364,8 @@ linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start wi
        , ("https://www.thisfursonadoesnotexist.com/", "arfafax-tfdne")
        , ("https://www.thiswaifudoesnotexist.net/", "gwern-twdne-website")
        , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6764009/", "satyaraj-et-al-2019-2")
+       , ("https://www.reddit.com/r/TheMotte/comments/ceajmw/book_review_from_third_world_to_first_by_lee_kuan/", "tracingwoodgrains-2019-1")
+       , ("https://www.reddit.com/r/TheMotte/comments/cgowu1/lee_kuan_yew_review_part_two_you_are_free_to_agree/", "tracingwoodgrains-2019-2")
+       , ("https://www.reddit.com/r/TheMotte/comments/cjqd9i/lee_kuan_yew_review_part_three_race_language_and/", "tracingwoodgrains-2019-3")
+       , ("https://www.reddit.com/r/TheMotte/comments/cmoo25/lee_kuan_yew_review_part_four_the_pathway_to_power/", "tracingwoodgrains-2019-4")
       ]

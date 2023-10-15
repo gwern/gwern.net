@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-10-06 12:25:33 gwern"
+;;; When:  Time-stamp: "2023-10-15 10:29:53 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -310,6 +310,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("Previous article in issue\nNext article in issue\nKeywords\n" . "[**Keywords**: ")
                      ("Previous article in issue\nKeywords\n" . "[**Keywords**: ")
                      ("•\n\n    " . "- ")
+                     ("     ● " . "- ")
                      ("eta≠analys" . "eta-analys") ; odd typo in some PDFs: "meta≠analyses"
                      ("\n•\n" . "- ")
                      ("    •\n    " . "- ")
@@ -326,6 +327,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("Gf" . "_G~f~_")
                      ("5-HT2A" . "5-HT~2A~")
                      ("ﬁ" . "fi")
+                     ("" . "ff")
                      ("ﬀ" . "ff")
                      ("ﬃ" . "ffi")
                      ("ﬂ" . "fl")
@@ -429,6 +431,10 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("and/ or" . "and/or")
                      ("\\[\\]\\(\\!W\\)" . " ERROR ")
                      ("( <em>" . "(<em>")
+                     ("<Sup>" . "<sup>")
+                     ("</Sup>" . "</sup>")
+                     ("<Sub>" . "<sub>")
+                     ("</Sub>" . "</sub>")
                      )
                    )
             )
@@ -616,6 +622,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("cm3" . "cm^3^")
                         (" m3" . " m^3^")
                         ("kg/m2" . "kg⁄m^2^")
+                        (" m2" . "m^2^")
+                        ("×1−1×min" . " × 1<sup>−1</sup> × min")
                         ("t1/2" . "t<sub>1⁄2</sub>")
                         (" m/s" . " m⁄s")
                         (" km/s" . " km⁄s")
@@ -687,6 +695,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("l−1" . "l<sup>−1</sup>")
                         ("m s--1" . "m s<sup>−1</sup>")
                         ("cm--3" . "cm<sup>−3</sup>")
+                        ("m·h−1" . "m×h<sup>−</sup>")
                         (" </sup>" . "</sup>")
                         ("<sup> " . "<sup>")
                         ("60Co" . "^60^Co")
@@ -1035,14 +1044,15 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (query-replace "Question:" "**Question**: " nil begin end)
          (replace-all "\n\nPurpose" "\n\n**Purpose**:")
          (replace-all "\nFindings " "\n**Findings**: ")
+         (replace-all "\nRecent Findings " "\n**Findings**: ")
          (replace-all "\nMeaning " "\n**Meaning**: ")
          (replace-all "\nImportance " "\n**Importance**: ")
          (replace-all "^Importance " "**Importance**: ")
          (replace-all "\nObjective and Method: " "\n**Objective & Method**: ")
          (replace-all "\nObjective " "\n**Objective**: ")
          (replace-all "\nDesign, Setting, and Participants " "\n**Design, Setting, & Participants**: ")
-         (replace-all "\nSearch methods\n\n" "\n\n<strong>Search Methods</strong>: ")
-         (replace-all " (Methods)" " (<strong>Methods</strong>)")
+         (replace-all "\nSearch methods\n\n" "\n\n<strong>Search Method</strong>: ")
+         (replace-all " (Methods)" " (<strong>Method</strong>)")
          (replace-all "\nSelection criteria\n\n" "\n\n<strong>Selection Criteria</strong>: ")
          (replace-all "\nInterventions " "\n**Interventions**: ")
          (replace-all "\nMain Outcomes and Measures " "\n**Main Outcomes & Measures**: ")
@@ -1054,6 +1064,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "Background\n" "\n**Background**: ")
          (replace-all "\nBackground " "**Background**: ")
          (replace-all "Introduction: " "\n**Introduction**: ")
+         (replace-all "\nIntroduction. " "\n**Introduction**: ")
          (replace-all "\nAims\n" "\n**Aims**: ")
          (replace-all "\nStudy Design\n" "\n**Design**: ")
          (replace-all "\nDesign\n" "\n**Design**: ")
@@ -1062,8 +1073,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "\nMeasurements\n" "\n**Measurements**: ")
          (replace-all "\nMaterials and methods\n" "\n\n**Method & Materials**: " )
          (replace-all "\nMethods and materials\n" "\n\n**Method & Materials**: " )
-         (replace-all "Methods\n" "\n**Methods**: ")
-         (replace-all "\nMethods " "\n**Methods**: ")
+         (replace-all "Methods\n" "\n**Method**: ")
+         (replace-all "\nMethods " "\n**Method**: ")
+         (replace-all "\nMethod. " "\n**Method**: ")
          (replace-all "Highlights\n" "\n**Highlights**:\n\n")
          (replace-all "Interpretation\n" "\n**Interpretation**: ")
          (replace-all "Funding\n" "\n**Funding**: ")
@@ -1088,10 +1100,10 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "Design\n\n" "\n**Design**: ")
          (replace-all "Study Design and Setting\n" "**Study Design & Setting**: ")
          (replace-all "Subjects:" "**Subjects**: ")
-         (replace-all "Methods:" "**Methods**: ")
-         (replace-all "Methods\\. " "**Methods**: ")
-         (replace-all "\nMethods and findings\n\n" "\n\n**Methods & Findings**: ")
-         (replace-all "\n\nDesign and methods" "\n\n**Design & Methods**: ")
+         (replace-all "Methods:" "**Method**: ")
+         (replace-all "Methods\\. " "**Method**: ")
+         (replace-all "\nMethods and findings\n\n" "\n\n**Method & Findings**: ")
+         (replace-all "\n\nDesign and methods" "\n\n**Design & Method**: ")
          (replace-all "Method:" "**Method**:")
          (replace-all "Design, Setting, and Participants:" "**Design, Setting, & Participants**: ")
          (replace-all "Participants and Setting:" "**Participants & Setting**: ")
@@ -1119,7 +1131,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "Outcome measures:" "**Outcome Measures**: ")
          (replace-all "Outcomes:" "\n**Outcomes**: ")
          (replace-all "Outcomes\n\n" "\n**Outcomes**: ")
-         (replace-all "\n\nMethods and Results\n" "\n\n**Methods & Results**: ")
+         (replace-all "\n\nMethods and Results\n" "\n\n**Method & Results**: ")
          (replace-all "Results:" "**Results**: ")
          (replace-all "Results\\. " "**Results**: ")
          (replace-all "\nResult:" "\n**Results**: ")
@@ -1132,11 +1144,11 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "Methodology/Principal Findings\n\n" "\n**Methodology/Principal Results**: ")
          (replace-all "Methodology\n\n" "\n**Methodology**: ")
          (replace-all "Principal Findings\n\n" "\n**Principal Results**: ")
-         (replace-all "Methods and Findings\n\n" "\n**Methods & Results**: ")
+         (replace-all "Methods and Findings\n\n" "\n**Method & Results**: ")
          (replace-all "Findings\n\n" "\n**Results**: ")
          (replace-all "Findings\n" "\n**Results**: ")
          (replace-all "\nScope of review\n\n" "\n\n**Scope of Review**: ")
-         (replace-all "\n\nReview methods " "\n\n**Review Methods**: ")
+         (replace-all "\n\nReview methods " "\n\n**Review Method**: ")
          (replace-all "\nMajor conclusions\n\n" "\n\n**Conclusion**: ")
          (replace-all "\nFindings: " "\n**Results**: ")
          (replace-all "\nFinding: " "\n**Results**: ")
@@ -1214,6 +1226,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "\nAuthor Summary\n\n" "\n\n**Author Summary**: ")
          (replace-all "Purpose\n\n" "\n**Purpose**: ")
          (replace-all "Purpose\n" "**Purpose**: ")
+         (replace-all "Purpose of Review\n" "**Purpose**: ")
          (replace-all "Design/methodology/approach\n\n" "\n**Method**: ")
          (replace-all "RESEARCH DESIGN AND METHODS " "**Method**: ")
          (replace-all "RESEARCH DESIGN AND METHODS\n\n" "\n**Method**: ")
@@ -1294,7 +1307,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (query-replace "p < " "_p_ <" nil begin end)
          (query-replace "P ≤ " "_p_ ≤ " nil begin end)
          (query-replace "p<" "_p_ < "   nil begin end)
-         (query-replace "p>" "_p_ > "   nil begin end)
+         (query-replace-regexp "[^u]p>" "_p_ > "   nil begin end) ; avoid '<sup>'
          (query-replace "p < " "_p_ <"   nil begin end)
          (query-replace "P < " "_p_ <" nil begin end)
          (query-replace "P<" "_p_ <"   nil begin end)
@@ -1496,7 +1509,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "--\\.\\([[:digit:]]+\\)" "--0.\\1" nil begin end)
        (query-replace-regexp " \\+\\.\\([[:digit:]]+\\)" " +0.\\1" nil begin end) ; '_r_ = +.33.'
        (query-replace-regexp "\\[\\.\\([[:digit:]]+\\)" "[0.\\1" nil begin end)
-       (query-replace-regexp "10−\\([[:digit:]]+\\)" "10^−\\1^" nil begin end)
+       (query-replace-regexp "10[-−]\\([[:digit:]]+\\)" "10^−\\1^" nil begin end) ; eg '10-10 mol/liter'
        (query-replace-regexp "− \\([[:digit:]]+\\)" "−\\1" nil begin end)
        (query-replace-regexp "\\([[:digit:]]+\\)-)" "\\1--)" nil begin end)
        (query-replace-regexp "\\([[:digit:]]+\\)%−\\([[:digit:]]+\\)%" "\\1%--\\2%" nil begin end) ; MINUS SIGN
@@ -1684,9 +1697,13 @@ by word boundaries.
   :group 'markdown-newline-removal)
 (defun markdown-remove-newlines-in-paragraphs (&optional buffer use-region)
   "Replace newlines with spaces within paragraphs of Markdown text in BUFFER.
+It then adds a newline between each sentence.
+
 If BUFFER is nil, use the current buffer. If USE-REGION is non-nil,
 operate on the current region instead of the entire buffer.
-This assumes you have already removed hyphenation (either by removing the hyphen+newline for linebreaking-only hyphens, or just the newline when the hyphen is in the original word regardless of linebreaking)."
+This assumes you have already removed hyphenation (either by removing the
+hyphen+newline for line-breaking-only hyphens, or just the newline when the
+hyphen is in the original word regardless of line-breaking)."
   (interactive "P")
   (with-current-buffer (or buffer (current-buffer))
     ;; Save the current point position and restore it after the operation
@@ -1702,7 +1719,13 @@ This assumes you have already removed hyphenation (either by removing the hyphen
           ;; Search and replace newlines within paragraphs
           (save-match-data
             (while (re-search-forward pattern end t)
-              (replace-match "\\1 \\3" nil nil))))))
+              (replace-match "\\1 \\3" nil nil)))))
+      ;; Insert a newline at the end of each sentence
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward "\\([.!?]\\)\\([[:space:]]\\)" nil t)
+          (replace-match "\\1\n"))))
+
     ;; Inform the user when the operation is complete
     (message "Newlines removed within paragraphs.")))
 
