@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-10-14 22:56:04 gwern"
+# When:  Time-stamp: "2023-10-16 12:34:20 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -26,127 +26,145 @@ WWW_BROWSER="firefox"
 
 if [ ! -f "$1" ]; then echo "l20: '$1' is not a file‽" && exit 1; fi
 
-wait
+# the fundamental function which does all the real work. Jump to the bottom for the actual argument-handling loop of `upload`.
+_upload() {
+  wait
 
-(locate "$1" &)
+  (locate "$1" &)
 
-FILENAME="$1"
-if [[ $FILENAME == *.jpeg ]]; then
-  FILENAME="${FILENAME%.jpeg}.jpg"
-  mv "$1" "$FILENAME"
-fi
-
-# Attempt to make filename globally unique, due to repetition of surnames.
-#
-# eg. I go to do `upload 2023-liu-2.pdf economics`, and it turns out `/doc/psychology/2023-liu-2.pdf` already exists...
-# as do `/doc/biology/2023-liu-3.pdf` and `/doc/technology/2023-liu-4.pdf`. (Liu is an *extremely* common Asian surname.)
-# So this function will try to loop over numeric suffixes 1–9 to rename it to the first workable filename, in this case, `2023-liu-5.pdf`.
-function rename_file() {
-  local filename="$1"
-  local base_name extension new_filename new_file_path
-
-  base_name="${filename%.*}"
-  extension="${filename##*.}"
-
-  new_file_path=$(find ~/wiki/ -type f -name "$filename" -print -quit)
-
-  # if filename already exists, try to rename it
-  if [[ -n "$new_file_path" ]]; then
-    for ((i=2; i<=20; i++)); do
-      new_filename="${base_name}-${i}.${extension}"
-      new_file_path=$(find ~/wiki/ -type f -name "$new_filename" -print -quit)
-
-      if [[ -z "$new_file_path" ]]; then
-        mv "$filename" "$new_filename"
-        echo "File '$filename' has been renamed to '$new_filename'"
-        filename="$new_filename"
-        break
-      fi
-    done
+  FILENAME="$1"
+  if [[ $FILENAME == *.jpeg ]]; then
+    FILENAME="${FILENAME%.jpeg}.jpg"
+    mv "$1" "$FILENAME"
   fi
 
-  # if filename after possible renaming does not exist, that means we're using a new filename
-  if [[ ! -e "$filename" ]]; then
-    echo "Error: File '$filename' could not be renamed. Please check for possible issues." >&2
-    return 1
-  fi
+  # Attempt to make filename globally unique, due to repetition of surnames.
+  #
+  # eg. I go to do `upload 2023-liu-2.pdf economics`, and it turns out `/doc/psychology/2023-liu-2.pdf` already exists...
+  # as do `/doc/biology/2023-liu-3.pdf` and `/doc/technology/2023-liu-4.pdf`. (Liu is an *extremely* common Asian surname.)
+  # So this function will try to loop over numeric suffixes 1–9 to rename it to the first workable filename, in this case, `2023-liu-5.pdf`.
+  function rename_file() {
+    local filename="$1"
+    local base_name extension new_filename new_file_path
 
-  FILENAME="$filename"
-  return 0
-}
-rename_file "$FILENAME"
+    base_name="${filename%.*}"
+    extension="${filename##*.}"
 
-if [ $# -eq 1 ]; then
-    TARGET=$(basename "$FILENAME")
-    if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then exiftool -overwrite_original -All="" "$TARGET"; fi # strip potentially dangerous metadata from scrap images
-    # format Markdown/text files for more readability
-    TEMPFILE=$(mktemp /tmp/text.XXXXX)
-    if [[ "$TARGET" =~ .*\.page || "$TARGET" =~ .*\.txt ]]; then fold --spaces --width=120 "$TARGET" >> "$TEMPFILE" && mv "$TEMPFILE" "$TARGET"; fi
+    new_file_path=$(find ~/wiki/ -type f -name "$filename" -print -quit)
 
-    mv "$TARGET" ~/wiki/doc/www/misc/
-    cd ~/wiki/ || exit
-    TARGET2="./doc/www/misc/$TARGET"
-    (rsync --chmod='a+r' -q "$TARGET2" gwern@176.9.41.242:"/home/gwern/gwern.net/doc/www/misc/" || \
-        rsync --chmod='a+r' -v "$TARGET2" gwern@176.9.41.242:"/home/gwern/gwern.net/doc/www/misc/"
-    URL="https://gwern.net/doc/www/misc/$TARGET"
-    echo "$URL" && $WWW_BROWSER "$URL") &
+    # if filename already exists, try to rename it
+    if [[ -n "$new_file_path" ]]; then
+      for ((i=2; i<=20; i++)); do
+        new_filename="${base_name}-${i}.${extension}"
+        new_file_path=$(find ~/wiki/ -type f -name "$new_filename" -print -quit)
 
-else
-    TARGET_DIR=""
-    TARGET_DIR=doc/"$2"
-
-    if [ ! -d ~/wiki/"$TARGET_DIR"  ]; then
-        # try to guess a target:
-        GUESS=$(cd ~/wiki/ && ./static/build/guessTag "$2")
-        if [ ! -d ~/wiki/doc/"$GUESS"/ ]; then
-            # the guess failed too, so bail out entirely:
-            ls ~/wiki/"$TARGET_DIR" ~/wiki/doc/"$GUESS"/
-            echo "$FILENAME; Directory $TARGET_DIR $2 (and fallback guess $GUESS) does not exist?"
-            return 2
-        else
-            # restart with fixed directory
-            echo "Retry as \"upload $FILENAME $GUESS\""
-            upload "$FILENAME" "$GUESS"
+        if [[ -z "$new_file_path" ]]; then
+          mv "$filename" "$new_filename"
+          echo "File '$filename' has been renamed to '$new_filename'"
+          filename="$new_filename"
+          break
         fi
-    else
-        if [ -a "$FILENAME" ]; then
-            ## automatically rename a file like 'benter1994.pdf' (Libgen) to '1994-benter.pdf' (gwern.net):
-            FILE="$FILENAME"
-            if [[ "$FILE" =~ ([a-zA-Z]+)([0-9][0-9][0-9][0-9])\.pdf ]];
-            then
-                SWAP="${BASH_REMATCH[2]}-${BASH_REMATCH[1]}.pdf"
-                SWAP=$(echo "$SWAP" | tr 'A-Z' 'a-z') ## eg '1979-Svorny.pdf' → '1979-svorny.pdf'
-
-                mv "$FILE" "$SWAP"
-                FILE="$SWAP"
-            fi
-            TARGET=$TARGET_DIR/$(basename "$FILE")
-            if [ ! -e ~/wiki/"$TARGET" ]; then
-                mv "$FILE" ~/wiki/"$TARGET"
-                cd ~/wiki/ || return
-                chmod a+r "$TARGET"
-                if [[ "$TARGET" =~ .*\.pdf ]]; then
-                    METADATA=$(crossref "$TARGET") && echo "$METADATA" & # background for speed, but print it out mostly-atomically to avoid being mangled & impeding copy-paste of the annotation metadata
-                    compressPdf "$TARGET";
-                    chmod a+r "$TARGET";
-                fi
-                (git add "$TARGET" &)
-                # TODO: add back in `--mkpath`
-                (rsync --chmod='a+r' -q "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/" || \
-                    rsync --chmod='a+r' -v "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/"
-                URL="https://gwern.net/$TARGET_DIR/$(basename "$FILE")"
-                cloudflare-expire "$TARGET_DIR/$(basename "$FILE")"
-                echo ""
-                echo "/$TARGET $URL"
-
-                $WWW_BROWSER "$URL") &
-
-            else echo ~/wiki/"$TARGET" " already exists"
-            fi
-        else echo "First argument $FILENAME is not a file?"
-             return 1
-        fi
+      done
     fi
+
+    # if filename after possible renaming does not exist, that means we're using a new filename
+    if [[ ! -e "$filename" ]]; then
+      echo "Error: File '$filename' could not be renamed. Please check for possible issues." >&2
+      return 1
+    fi
+
+    FILENAME="$filename"
+    return 0
+  }
+  rename_file "$FILENAME"
+
+  if [ $# -eq 1 ]; then
+      TARGET=$(basename "$FILENAME")
+      if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then exiftool -overwrite_original -All="" "$TARGET"; fi # strip potentially dangerous metadata from scrap images
+      # format Markdown/text files for more readability
+      TEMPFILE=$(mktemp /tmp/text.XXXXX)
+      if [[ "$TARGET" =~ .*\.page || "$TARGET" =~ .*\.txt ]]; then fold --spaces --width=120 "$TARGET" >> "$TEMPFILE" && mv "$TEMPFILE" "$TARGET"; fi
+
+      mv "$TARGET" ~/wiki/doc/www/misc/
+      cd ~/wiki/ || exit
+      TARGET2="./doc/www/misc/$TARGET"
+      (rsync --chmod='a+r' -q "$TARGET2" gwern@176.9.41.242:"/home/gwern/gwern.net/doc/www/misc/" || \
+          rsync --chmod='a+r' -v "$TARGET2" gwern@176.9.41.242:"/home/gwern/gwern.net/doc/www/misc/"
+      URL="https://gwern.net/doc/www/misc/$TARGET"
+      echo "$URL" && $WWW_BROWSER "$URL") &
+
+  else
+      TARGET_DIR=""
+      TARGET_DIR=doc/"$2"
+
+      if [ ! -d ~/wiki/"$TARGET_DIR"  ]; then
+          # try to guess a target:
+          GUESS=$(cd ~/wiki/ && ./static/build/guessTag "$2")
+          if [ ! -d ~/wiki/doc/"$GUESS"/ ]; then
+              # the guess failed too, so bail out entirely:
+              ls ~/wiki/"$TARGET_DIR" ~/wiki/doc/"$GUESS"/
+              echo "$FILENAME; Directory $TARGET_DIR $2 (and fallback guess $GUESS) does not exist?"
+              return 2
+          else
+              # restart with fixed directory
+              echo "Retry as \"upload $FILENAME $GUESS\""
+              upload "$FILENAME" "$GUESS"
+          fi
+      else
+          if [ -a "$FILENAME" ]; then
+              ## automatically rename a file like 'benter1994.pdf' (Libgen) to '1994-benter.pdf' (gwern.net):
+              FILE="$FILENAME"
+              if [[ "$FILE" =~ ([a-zA-Z]+)([0-9][0-9][0-9][0-9])\.pdf ]];
+              then
+                  SWAP="${BASH_REMATCH[2]}-${BASH_REMATCH[1]}.pdf"
+                  SWAP=$(echo "$SWAP" | tr 'A-Z' 'a-z') ## eg '1979-Svorny.pdf' → '1979-svorny.pdf'
+
+                  mv "$FILE" "$SWAP"
+                  FILE="$SWAP"
+              fi
+              TARGET=$TARGET_DIR/$(basename "$FILE")
+              if [ ! -e ~/wiki/"$TARGET" ]; then
+                  mv "$FILE" ~/wiki/"$TARGET"
+                  cd ~/wiki/ || return
+                  chmod a+r "$TARGET"
+                  if [[ "$TARGET" =~ .*\.pdf ]]; then
+                      METADATA=$(crossref "$TARGET") && echo "$METADATA" & # background for speed, but print it out mostly-atomically to avoid being mangled & impeding copy-paste of the annotation metadata
+                      compressPdf "$TARGET";
+                      chmod a+r "$TARGET";
+                  fi
+                  (git add "$TARGET" &)
+                  # TODO: add back in `--mkpath`
+                  (rsync --chmod='a+r' -q "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/" || \
+                      rsync --chmod='a+r' -v "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/"
+                  URL="https://gwern.net/$TARGET_DIR/$(basename "$FILE")"
+                  cloudflare-expire "$TARGET_DIR/$(basename "$FILE")"
+                  echo ""
+                  echo "/$TARGET $URL"
+
+                  $WWW_BROWSER "$URL") &
+
+              else echo ~/wiki/"$TARGET" " already exists"
+              fi
+          else echo "First argument $FILENAME is not a file?"
+               return 1
+          fi
+      fi
+  fi
+}
+
+# `upload` main loop, calling `upload` as appropriate:
+## If last argument is not a file, it's a directory, and we call `_upload` repeatedly with `_upload $file_n $directory`.
+## This keeps the logic simpler than trying to handle many variable-length arguments in `_upload`.
+if [[ ! -f "${!#}" ]]; then
+    dir="${!#}"
+    files=("${@:1:$(($#-1))}")
+else
+    dir="" # or set to default directory
+    files=("$@")
 fi
 
-pwd
+for file in "${files[@]}"; do
+    _upload "$file" "$dir"
+done
+
+wait; pwd

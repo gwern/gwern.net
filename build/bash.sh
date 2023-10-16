@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-10-15 16:00:06 gwern"
+# When:  Time-stamp: "2023-10-16 11:51:32 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -11,6 +11,8 @@
 # Helper functions include: website cache invalidation; PDF metadata query & editing; tab-completion for tag/directory names; querying the newsletters, filenames, annotation database, website, and IRC (in increasing generality); site-wide string search-and-replace (including a HTTP→HTTPS special-case which comes up a lot fixing redirects); functions to rename files & directories; and a `gwtag` CLIcommand which create new annotations (if there is a usable annotation source, such as being an Arxiv link) or add/remove tags from specified files/URLs.
 #
 # See also: /static/build/{upload, gwa, crossref, compressJpg2}
+
+source /usr/share/bash-completion/bash_completion # useful for better `upload` tab-completion
 
 # Default parallelism:
 export N="29"
@@ -91,7 +93,7 @@ e () { FILE=""
                exiftool -m -overwrite_original "$FILE" "$@";
                # getting very tired of these hyphen junk in my titles...
                TITLE1="$(exiftool -printFormat '$Title' -Title "$FILE")"
-               TITLE2="$(echo "$TITLE1" | sed -e 's/‐/-/g' -e 's/^ +//g' -e 's/ +$//g' -e 's/\.$//' | tr '_' ':')" # WARNING: tr mangles Unicode, but sed doesn't
+               TITLE2="$(echo "$TITLE1" | sed -e 's/‐/-/g' -e 's/^ \+//g' -e 's/ \+$//g' -e 's/\.$//' | tr '_' ':')" # WARNING: tr mangles Unicode, but sed doesn't
                if [[ "$TITLE1" != "$TITLE2" ]]; then exiftool -overwrite_original -Title="$TITLE2" "$FILE"; fi
 
            else emacsclient "$FILE";
@@ -243,19 +245,36 @@ gwtag () { (
                          # echo "---" && grep -F -- "$1" ./metadata/*.yaml
          ); }
 
+# eg. `"ai ai/anime ai/anime/danbooru ... ai/scaling ai/scaling/economics ... japan/poetry/shotetsu japan/poetry/teika ... technology/digital-antiquarian ... zeo/short-sleeper"`
 GWERNNET_DIRS_FULL="$(cd ~/ && find wiki/doc/ -type d | grep -F -v -e 'doc/rotten.com' -e 'doc/www/' \
                          -e 2000-iapac-norvir -e mountimprobable.com -e personal/2011-gwern-yourmorals.org \
                          -e psychology/european-journal-of-parapsychology -e reinforcement-learning/armstrong-controlproblem \
                          -e statistics/order/beanmachine-multistage -e gwern.net-gitstats -e metadata/annotation | \
                          cut --delimiter='/' --fields=3- | sort)"
-GWERNNET_DIRS_SHORT="$(echo $GWERNNET_DIRS_FULL | tr '/' '\n' | sort --unique)"
+# eg. `"1 2 2010-crc 2013-cicadas 3 4 5 abandoned-footnotes ab-testing ... www zeami zeo"`
+GWERNNET_DIRS_SHORT="$(echo $GWERNNET_DIRS_FULL | tr '/' '\n' | tr ' ' '\n' | sort --unique)"
 # for completing tags which may need to be disambiguated, like 'gpt/nonfiction':
-GWERNNET_DIRS_SUFFIXES="$(echo $GWERNNET_DIRS_FULL | tr ' ' '\n' | grep -E -e '[a-z0-9-]\+/[a-z0-9-]\+/[a-z0-9-]\+' | \
-                               rev | cut --delimiter='/' --fields=1-2 | rev)"
-complete -W "$GWERNNET_DIRS_FULL $GWERNNET_DIRS_SHORT $GWERNNET_DIRS_SUFFIXES" -f upload
+# eg. `"1/lsd 2/2010-crc 3/fiction 3/nonfiction ... palm/2 personality/conscientiousness personality/psychopathy ... video/analysis video/generation vision/dream"`
+GWERNNET_DIRS_SUFFIXES="$(echo $GWERNNET_DIRS_FULL | tr ' ' '\n' | grep -E -e '[a-z0-9-]+/[a-z0-9-]+/[a-z0-9-]+' | \
+                               rev | cut --delimiter='/' --fields=1-2 | rev | sort --unique)"
 complete -W "$GWERNNET_DIRS_FULL $GWERNNET_DIRS_SHORT $GWERNNET_DIRS_SUFFIXES" u gwtag gwt t
+
 alias u="upload"
 # 'upload' moved to ~/wiki/static/build/upload for easier calling from XMonad
+## tab-complete the first argument as the local file, and the second argument as the remote directory:
+_upload() {
+    local cur cword
+    _init_completion || return ## assumes `bash-completion` package is installed & sourced previously
+
+    if [[ $cword -eq 1 ]]; then
+        # File completion on first argument
+        _filedir
+    elif [[ $cword -eq 2 ]]; then
+        # Directory completion on second argument
+        COMPREPLY=( $(compgen -W "${GWERNNET_DIRS_FULL} ${GWERNNET_DIRS_SHORT} ${GWERNNET_DIRS_SUFFIXES}" -- "$cur") )
+    fi
+}
+complete -F _upload upload
 
 # wait for a file to become quiescent because eg. Firefox is still downloading it:
 is_downloading() {
