@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-10-15 14:20:09 gwern"
+# When:  Time-stamp: "2023-10-16 11:51:01 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -98,7 +98,9 @@ else
           s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook'; s 'Tartarian' 'Tatarian'; s 'tartarian' 'tatarian'; s ' an One' ' a One'; s ' an one' ' a one'; s '<p>he ' '<p>He ';
 
           ## citation consistency:
-          s ']^[' '] ^['; s 'et. al.' 'et al'; s 'et al. (' 'et al ('; s ' et al. 1'  ' et al 1'; s ' et al. 2'  ' et al 2'; s ' et al., ' ' et al '; s 'et al., ' 'et al '; sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' metadata/*.yaml  `find . -name "*.page" -or -name "*.yaml"`; sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g'  `find . -name "*.page" -or -name "*.yaml"`;
+          s ']^[' '] ^['; s 'et. al.' 'et al'; s 'et al. (' 'et al ('; s ' et al. 1'  ' et al 1'; s ' et al. 2'  ' et al 2'; s ' et al., ' ' et al '; s 'et al., ' 'et al ';
+          ### WARNING: when using `+` in sed, by default, it is treated as an ordinary literal. It MUST be escaped to act as a regexp! Whereas in `grep -E`, it's the opposite. So remember: `\+` in sed, and `+` in grep.
+          sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' metadata/*.yaml  `find . -name "*.page" -or -name "*.yaml"`; sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g'  `find . -name "*.page" -or -name "*.yaml"`;
 
           ## anchor errors:
           s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber';
@@ -415,7 +417,7 @@ else
     λ(){ grep -E -e '#[[:alnum:]-]+#' -e '[[:alnum:]-]+##[[:alnum:]-]+' metadata/*.yaml metadata/*.hs | grep -E --invert-match -e '#[[:alnum:]-]+#$'; }
     wrap λ "Broken double-hash anchors in links somewhere?"
 
-    λ(){ grep -E -- '/[[:graph:]]\+[0-9]–[0-9]' ./metadata/*.yaml ./metadata/*.hs || true;
+    λ(){ grep -E -- '/[[:graph:]]+[0-9]–[0-9]' ./metadata/*.yaml ./metadata/*.hs || true;
          grep -F -- '–' ./metadata/*.hs || true; }
     wrap λ "En-dashes in URLs?"
 
@@ -504,7 +506,7 @@ else
      λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '/variable' | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 grep -F --with-filename --color=always -e '{#'; }
      wrap λ "Bad link ID overrides in Markdown."
 
-    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 grep -E --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]' -e '\#[a-z]\+\#[a-z]\+'; }
+    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 grep -E --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]' -e '\#[a-z]+\#[a-z]+'; }
     wrap λ "Incorrect PDF page links in Markdown."
 
     λ(){ find ./ -type f -name "*.page" -type f -exec grep -E -e 'cssExtension:' {} \; | \
@@ -541,7 +543,7 @@ else
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -F --with-filename --color=always -e '](/​image/​' -e '](/image/' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%'; }
     wrap λ "Miscellaneous fixed-string errors in compiled HTML."
 
-    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -E --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]\+"' -e 'href="#fn[0-9]\+"' -e '"></a>' | grep -F -v -e 'tabindex="-1"></a>'; }
+    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -E --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' | grep -F -v -e 'tabindex="-1"></a>'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
     λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' ./static/redirect/nginx*.conf | grep -F -e 'default "";'; }
@@ -582,11 +584,11 @@ else
     λ(){ gf -e 'amp#' -- ./metadata/*.yaml; }
     wrap λ "Unicode/HTML entity encoding error?"
 
-    λ(){ grep -E --color=always -e '^- - /docs/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]\+ [A-Z]' \
+    λ(){ grep -E --color=always -e '^- - /docs/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]+ [A-Z]' \
             -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
             -e '[⁰ⁱ⁴⁵⁶⁷⁸⁹⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]' -e '<p>Table [0-9]' -e '<p>Figure [0-9]' \
-            -e 'id="[0-9]' -e '</[a-z][a-z]\+\?' -e 'via.*ihub' -e " '$" -e "’’" -e ' a [aei]' -e '</[0-9]\+' \
-            -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' -e '#googl$' -e "#googl$'" -e 'gwtag' -e ' <p><strong>[A-Z][A-Z][A-Z]\+</strong>' \
+            -e 'id="[0-9]' -e '</[a-z][a-z]+\?' -e 'via.*ihub' -e " '$" -e "’’" -e ' a [aei]' -e '</[0-9]+' \
+            -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' -e '#googl$' -e "#googl$'" -e 'gwtag' -e ' <p><strong>[A-Z][A-Z][A-Z]+</strong>' \
             -e '&org=.*&org=' -e '[0-9]⁄[0-9]\.[0-9]' -e '[0-9]\.[0-9]⁄[0-9]' -e '\[[Kk]eywords\?: ' \
             -e ' 19[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -e ' 20[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -e "''.*''" \
             `# match both single & double-quotation versions of erroneous inflation-adjusters like "<a href='$2022'>148,749</a>":` \
@@ -629,7 +631,7 @@ else
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
 
-    λ(){ grep -E -e ' [0-9]/[0-9]\+ ' -- ./metadata/*.yaml | grep -F --invert-match -e 'Toll-like' -e 'Adam' -e '0/1' -e 'My Little Pony Seasons' -e '9/11'; }
+    λ(){ grep -E -e ' [0-9]/[0-9]+ ' -- ./metadata/*.yaml | grep -F --invert-match -e 'Toll-like' -e 'Adam' -e '0/1' -e 'My Little Pony Seasons' -e '9/11'; }
     wrap λ "Possible uses of FRACTION SLASH ⁄ or EN DASH –?"
 
     λ(){ grep -F -e 'http://dl.dropbox' -e '.wiley.com/doi/abs/'  \
@@ -658,7 +660,7 @@ else
                  -e 'meaningness.wordpress.com' -e 'ibooksonline.com' -e 'tinypic.com' -e 'isteve.com' -e 'j-bradford-delong.net'\
                  -e 'cdn.discordapp.com' -e 'http://https://' -e '#"' -e "#'" -- ./metadata/backlinks.hs;
          # NOTE: we do not need to ban bad domains which are handled by link rewrites like www.reddit.com or medium.com.
-       grep -E 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]\+v[0-9]' -- ./metadata/backlinks.hs; }
+       grep -E 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]+v[0-9]' -- ./metadata/backlinks.hs; }
     wrap λ "Bad or banned blacklisted domains found? They should be removed or rehosted."
 
     λ(){ grep -F -e '""' -- ./metadata/*.yaml | grep -F --invert-match -e ' alt=""' -e 'controls=""' -e 'loop=""'; }
@@ -716,7 +718,7 @@ else
     λ(){ gf -e 'backlink/' -e 'metadata/annotation/' -e '?gi=' -- ./metadata/backlinks.hs; }
     wrap λ "Bad paths in backlinks databases: metadata paths are being annotated when they should not be!"
 
-    λ(){ ge -e '#[[:alnum:]]\+#' -- ./metadata/*.hs ./metadata/*.yaml; }
+    λ(){ ge -e '#[[:alnum:]]+#' -- ./metadata/*.hs ./metadata/*.yaml; }
     wrap λ "Bad paths in metadata databases: redundant anchors"
 
     λ(){ find _site/ -type f -name "index" | gf -e '{#'; }
@@ -1135,7 +1137,7 @@ else
     λ() { ghci -istatic/build/ ./static/build/LinkBacklink.hs  -e 'suggestAnchorsToSplitOut' | grep -F --invert-match -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
     wrap λ "Refactor out pages?"
 
-    λ() { find ./metadata/annotation/similar/ -type f -name "*.html" | xargs --max-procs=0 --max-args=5000 grep -F --no-filename -e '<a href="' -- | sort | uniq --count | sort --numeric-sort | grep -E '^ \+[4-9][0-9]\+ \+'; }
+    λ() { find ./metadata/annotation/similar/ -type f -name "*.html" | xargs --max-procs=0 --max-args=5000 grep -F --no-filename -e '<a href="' -- | sort | uniq --count | sort --numeric-sort | grep -E '^ +[4-9][0-9]+ +'; }
     wrap λ "Similar-links: overused links indicate pathological lookups; blacklist links as necessary."
 
     λ(){ ghci -i/home/gwern/wiki/static/build/ ./static/build/XOfTheDay.hs -e 'sitePrioritize' | \

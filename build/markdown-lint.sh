@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2023-10-03 17:03:08 gwern"
+# When:  Time-stamp: "2023-10-16 12:40:04 gwern"
 # see https://gwern.net/about#markdown-checker
 
 set +x
@@ -48,7 +48,7 @@ do
                  -e 'cloudfront.net' -e 'https://www.amazon.com/s?ie=UTF8&field-isbn=&page=1&rh=i:stripbooks' -e 'http://ltimmelduchamp.com' \
                  -e 'thiswaifudoesnotexist.net)' -e 'thiswaifudoesnotexist.net"' -e 'www.wikilivres.ca' -e 'worldtracker.org' \
                  -e 'meaningness.wordpress.com' -e 'ibooksonline.com' -e 'tinypic.com' -e 'isteve.com' -e 'j-bradford-delong.net' -- "$PAGE";
-           egp -e 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]\+v[0-9]' -- "$PAGE";}
+           egp -e 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]+v[0-9]' -- "$PAGE";}
         wrap λ "find bad URLS, unacceptable/unreliable/risky domains, malformed syntax, unmatched apostrophes"
 
         λ(){ fgp  -e 'http://news.ycombinator.com' -e 'http://github.com' -e 'http://www.ncbi.nlm.nih.gov/pubmed/' \
@@ -138,7 +138,7 @@ do
         λ(){ egp -e '\$[[:alnum:]]\$' -e '\$\\sqrt{[[:digit:]]}\$' -e '\$[[:alnum:]]^[[:alnum:]]\$' -e '\$[[:alnum:]]+ \cdot [[:alnum:]]+\$' -e '\$[[:alnum:]]\$' \
                  -e '\$\\sqrt{[[:digit:]]}\$' -e '\$log_2\$' -e '\$log_10\$' -e '\$\\mathcal{N}' -- "$PAGE"; }
         wrap λ "LaTeX: simplify to Unicode/Markdown"
-        λ(){ egp -e '\$\\frac{[0-9]\+}{[0-9]\+}' -- "$PAGE"; }
+        λ(){ egp -e '\$\\frac{[0-9]+}{[0-9]+}' -- "$PAGE"; }
         wrap λ "Unicodify: LaTeX for simple numerical fractions is overkill; use '⁄' FRACTION SLASH instead"
         λ(){ grep -F ' \\times ' -- "$PAGE"; }
         wrap λ "LaTeX: \\cdot is nicer"
