@@ -660,7 +660,7 @@
 
     /*  Variable for SVGs to use (like for the —𝔊— footers on the index page)
      */
-    --GW-body-background-color-inverted: #ededed;
+    --GW-body-background-color-inverted: #e9e9e9;
 
     /*  Reader mode.
      */
@@ -729,18 +729,13 @@ figure img[src$=".svg"] {
 	just having the anonymous feedback link at the end of the page and ending
 	there with nothing else.
 
-	NOTE: this is for mobile only, and takes the place of desktop’s full
-	arabesque navbar (see default.css).
-
 	Implementation: Modifying the ‘fill’ does not work so well when we call an
 	SVG as a ‘background-image’ (like for the  footers on the index page), so we
 	do variable+invert tricks to get a white copy of the logo as a hack.
  */
-@media all and (max-width: 649px) {
-    #footer-decoration-container a.footer-logo::after {
-        filter: invert(1);
-        background-color: var(--GW-body-background-color-inverted);
-    }
+#footer-decoration-container a.footer-logo::after {
+	filter: invert(1);
+	background-color: var(--GW-body-background-color-inverted);
 }
 
 /*  The ‘celestial symbol’ horizontal rules are SVGs and must be inverted.
