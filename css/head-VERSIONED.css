@@ -2057,8 +2057,12 @@ body.special-halloween-dark {
     --GW-collapse-disclosure-button-text-color: var(--GW-blood-red-dried);
     --GW-collapse-disclosure-button-text-hover-color: var(--GW-blood-red);
 
+	--GW-x-of-the-day-border-color: var(--GW-blood-red-dried);
+
     --GW-page-toolbar-border-color: var(--GW-blood-red-dried);
     --GW-page-toolbar-control-button-color: var(--GW-blood-red);
+
+	--GW-bottom-ornament-line-color: var(--GW-blood-red-arterial);
 
     --GW-back-to-top-link-color: var(--GW-blood-red-dried);
 
@@ -2088,6 +2092,8 @@ body.special-halloween-dark h5,
 body.special-halloween-dark h6 {
     --GW-body-text-color: var(--GW-blood-red);
     --GW-body-link-color: var(--GW-blood-red);
+
+	color: var(--GW-body-text-color);
 }
 
 body.index.special-halloween-dark #sidebar a:hover {
