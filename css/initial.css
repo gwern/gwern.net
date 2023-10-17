@@ -101,7 +101,7 @@ main {
     display: flex;
     margin: 1px 0;
 }
-#sidebar a.logo svg {
+#sidebar a.logo .logo-image {
 	height: 100%;
 }
 
@@ -127,7 +127,7 @@ main {
     #sidebar a.logo {
         padding: 0.5em 0.375em;
     }
-    #sidebar a.logo svg {
+    #sidebar a.logo .logo-image {
         width: 2.5em;
     }
 
@@ -173,7 +173,7 @@ main {
         #sidebar a.logo {
             padding: 0.25em 0.375em;
         }
-        #sidebar a.logo svg {
+        #sidebar a.logo .logo-image {
             width: 1em;
         }
     }
@@ -191,7 +191,7 @@ main {
         #sidebar a.logo:hover {
             opacity: 1.0;
         }
-        #sidebar a.logo svg {
+        #sidebar a.logo .logo-image {
             width: 4em;
         }
 

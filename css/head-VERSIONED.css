@@ -101,7 +101,7 @@ main {
     display: flex;
     margin: 1px 0;
 }
-#sidebar a.logo svg {
+#sidebar a.logo .logo-image {
 	height: 100%;
 }
 
@@ -127,7 +127,7 @@ main {
     #sidebar a.logo {
         padding: 0.5em 0.375em;
     }
-    #sidebar a.logo svg {
+    #sidebar a.logo .logo-image {
         width: 2.5em;
     }
 
@@ -173,7 +173,7 @@ main {
         #sidebar a.logo {
             padding: 0.25em 0.375em;
         }
-        #sidebar a.logo svg {
+        #sidebar a.logo .logo-image {
             width: 1em;
         }
     }
@@ -191,7 +191,7 @@ main {
         #sidebar a.logo:hover {
             opacity: 1.0;
         }
-        #sidebar a.logo svg {
+        #sidebar a.logo .logo-image {
             width: 4em;
         }
 
@@ -2322,7 +2322,7 @@ body.reader-mode-active .markdownBody p code {
 		margin: 0;
 		padding: 0;
 	}
-	body.reader-mode-active #sidebar a.logo svg {
+	body.reader-mode-active #sidebar a.logo .logo-image {
 		width: 1.5rem;
 		background-color: var(--GW-body-background-color);
 		padding: 0 10px 0 11px;

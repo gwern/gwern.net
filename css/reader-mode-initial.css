@@ -159,7 +159,7 @@ body.reader-mode-active .markdownBody p code {
 		margin: 0;
 		padding: 0;
 	}
-	body.reader-mode-active #sidebar a.logo svg {
+	body.reader-mode-active #sidebar a.logo .logo-image {
 		width: 1.5rem;
 		background-color: var(--GW-body-background-color);
 		padding: 0 10px 0 11px;
