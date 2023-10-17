@@ -102,7 +102,8 @@ main {
     margin: 1px 0;
 }
 #sidebar a.logo .logo-image {
-	height: 100%;
+	width: var(--logo-width);
+	height: calc(var(--logo-width) * 94/80);
 }
 
 /*	Sidebar links (not including logo).
@@ -128,7 +129,7 @@ main {
         padding: 0.5em 0.375em;
     }
     #sidebar a.logo .logo-image {
-        width: 2.5em;
+        --logo-width: 2.5em;
     }
 
 	/*	Sidebar links (not including logo).
@@ -174,7 +175,7 @@ main {
             padding: 0.25em 0.375em;
         }
         #sidebar a.logo .logo-image {
-            width: 1em;
+            --logo-width: 1em;
         }
     }
     @media all and (min-width: 1180px) {
@@ -192,7 +193,7 @@ main {
             opacity: 1.0;
         }
         #sidebar a.logo .logo-image {
-            width: 4em;
+            --logo-width: 4em;
         }
 
 		/*	Sidebar links (not including logo).
@@ -2094,6 +2095,33 @@ body.special-halloween-dark h6 {
     --GW-body-link-color: var(--GW-blood-red);
 
 	color: var(--GW-body-text-color);
+}
+
+body.special-halloween-dark #sidebar svg.logo-image {
+	visibility: hidden;
+}
+@media all and (max-width: 649px) {
+	body.special-halloween-dark #sidebar span.logo-image img {
+		width: 133%;
+		position: relative;
+		left: -15%; top: -15%;
+	}
+}
+@media all and (min-width: 650px) {
+	@media all and (max-width: 1179px) {
+		body.special-halloween-dark #sidebar span.logo-image img {
+			width: 150%;
+			position: relative;
+			left: -30%; top: -15%;
+		}
+	}
+	@media all and (min-width: 1180px) {
+		body.special-halloween-dark #sidebar span.logo-image img {
+			width: 150%;
+			position: relative;
+			left: -30%; top: -10%;
+		}
+	}
 }
 
 body.index.special-halloween-dark #sidebar a:hover {

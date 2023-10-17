@@ -2283,6 +2283,24 @@ GW.specialOccasions = [
                            ? "special-halloween-light"
                            : "special-halloween-dark";
         document.body.classList.add(specialClass);
+
+		//	Replace logo.
+		let scale = valMinMax(window.devicePixelRatio, 1, 3);
+		let logoImage;
+        let observer = new MutationObserver((mutationsList, observer) => {
+            if (logoImage = document.querySelector("#sidebar .logo-image")) {
+                observer.disconnect();
+				let imageWrapper = newElement("SPAN", {
+					class: "logo-image"
+				});
+				imageWrapper.append(newElement("IMG", {
+					class: "figure-not", 
+					src: `/static/img/logo/halloween/${(DarkMode.computedMode())}/logo-halloween-castle-small-${scale}x.png`
+				}));
+                logoImage.replaceWith(imageWrapper);
+            }
+        });
+        observer.observe(document.documentElement, { childList: true });
       }, () => {
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");
       } ],
