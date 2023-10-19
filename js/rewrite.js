@@ -1913,16 +1913,13 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
 addContentInjectHandler(GW.contentInjectHandlers.preventDropCapsOverlap = (eventInfo) => {
     GWLog("preventDropCapsOverlap", "rewrite.js", 1);
 
-    eventInfo.container.querySelectorAll("[class*='drop-cap-']").forEach(dropCapBlock => {
-        if (dropCapBlock.nextElementSibling) {
-            if (   dropCapBlock.nextElementSibling.classList.containsAnyOf([ "columns", "collapse", "list-heading" ])
-                || [ "SECTION", "OL", "UL", "BLOCKQUOTE" ].includes(dropCapBlock.nextElementSibling.tagName))
-                dropCapBlock.classList.add("overlap-not");
-        } else {
-            dropCapBlock.classList.add("overlap-not");
-        }
+    eventInfo.container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
+    	let nextBlock = nextBlockOf(dropCapBlock, { alsoBlockElements: [ ".list" ] });
+        if (   nextBlock == null
+        	|| nextBlock.matches("section, blockquote, .list, .collapse, .list-heading"))
+			dropCapBlock.classList.add("overlap-not");
     });
-}, ">rewrite", (info) => (info.document == document))
+}, ">rewrite", (info) => (info.document == document));
 
 
 /********/
