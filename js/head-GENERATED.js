@@ -3250,16 +3250,18 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 					`drop-cap-not` (which nullifies any page-global drop-cap 
 					class for the given block).
 				 */
+				let dropCapType = null;
 				if (introGraf) {
-					let dropCapType = (previousBlock?.matches(".abstract blockquote")
-									   ? dropCapTypeOf(previousBlock)
-									   : null) ?? dropCapTypeOf(document.body);
-					if (   dropCapType != null
-						&& dropCapType != "not") {
-						addDropCapClassTo(block, dropCapType);
-					} else {
-						stripDropCapClassesFrom(block);
-					}
+					dropCapType = (previousBlock?.matches(".abstract blockquote")
+								   ? dropCapTypeOf(previousBlock)
+								   : null) ?? dropCapTypeOf(document.body);
+				} else if (block.parentElement?.tagName == "DIV") {
+					dropCapType = dropCapTypeOf(block.parentElement);
+					if (dropCapType && dropCapType != "not")
+						block.classList.add("first-graf");
+				}
+				if (dropCapType && dropCapType != "not") {
+					addDropCapClassTo(block, dropCapType);
 				} else {
 					stripDropCapClassesFrom(block);
 				}
