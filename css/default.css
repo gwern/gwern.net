@@ -1988,7 +1988,7 @@ del {
     }
 
     /*  All of these numbers are magic.
-        */
+     */
     p.drop-cap-goudy::first-letter {
         font-family: Goudy Initialen;
         font-size: 7em;
@@ -2026,7 +2026,7 @@ del {
     }
 
     /*  Compensating for responsive line-height reduction.
-        */
+     */
     @media all and (max-width: 1199px) {
         p.drop-cap-goudy::first-letter {
             font-size: 6.875em;
@@ -2063,7 +2063,7 @@ del {
     }
 
     /*  Special styles for special browsers.
-        */
+     */
     @supports (-moz-user-focus: normal) {
         p.drop-cap-goudy::first-letter {
             margin: 0.05em 0.02em 0 0;
@@ -2081,6 +2081,23 @@ del {
             margin: 0.05em 0.02em 0 -0.03em;
         }
     }
+
+	/*	Graphical drop-caps.
+	 */
+	p.graphical-drop-cap::first-letter {
+		float: none !important;
+	}
+	p.graphical-drop-cap .hidden-first-letter {
+		display: inline-block;
+		width: 0;
+		overflow: hidden;
+	}
+	p.graphical-drop-cap img.drop-cap {
+		float: left;
+		display: block;
+		height: 9.4em;
+		margin: -0.15em 0 0 -0.85em;
+	}
 }
 
 

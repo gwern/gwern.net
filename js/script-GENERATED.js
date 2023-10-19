@@ -13253,6 +13253,49 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
 /* DROP CAPS */
 /*************/
 
+/***********************/
+/*	Graphical drop-caps.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.enableGraphicalDropCaps = (eventInfo) => {
+    GWLog("enableGraphicalDropCaps", "rewrite.js", 1);
+
+	let graphicalDropCapTypes = [
+		"dropcat"
+	];
+
+	let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
+
+	eventInfo.container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
+		let dropCapType = dropCapTypeOf(dropCapBlock);
+		if (graphicalDropCapTypes.includes(dropCapType) == false)
+			return;
+
+		//	Designate as graphical drop-cap.
+		dropCapBlock.classList.add("graphical-drop-cap");
+
+		//	Determine initial letter.
+		let firstLetter = dropCapBlock.firstTextNode.textContent.slice(0, 1);
+
+		//	Separate first letter from rest of text content.
+		dropCapBlock.firstTextNode.textContent = dropCapBlock.firstTextNode.textContent.slice(1);
+		dropCapBlock.insertBefore(newElement("SPAN", {
+			class: "hidden-first-letter",
+		}, {
+			innerHTML: firstLetter
+		}), dropCapBlock.firstChild);
+
+		//	Determine number of alternates.
+		//	TODO: this
+		let numAlternateCaps = 5;
+
+		//	Insert image.
+		dropCapBlock.insertBefore(newElement("IMG", {
+			class: "drop-cap figure-not",
+			src: `/static/font/drop-cap/${dropCapType}/${(DarkMode.computedMode())}/${firstLetter}-${(rollDie(numAlternateCaps))}-small-${scale}x.png`
+		}), dropCapBlock.firstChild);
+	});
+}, "rewrite", (info) => (info.document == document));
+
 /***********************************************************************/
 /*	Prevent blocks with drop caps from overlapping the block below them.
  */
