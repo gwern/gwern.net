@@ -377,7 +377,6 @@ linkIconRulesSVG u
  | aU'' u ["www.ncbi.nlm.nih.gov", "pubmed.ncbi.nlm.nih.gov"] = ("nlm-ncbi", "svg") -- NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg). primary user: ncbi.nlm.nih.gov
  | u'' u "www.patreon.com" = ("patreon", "svg") -- Patreon. (Used the old one (https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg) because I don’t like the new one.)
  | aU' u ["plos.org", "plosone.org", "plosmedicine.org"] = ("plos", "svg") -- PLOS ONE in all their domain permutations… primary user: journals.plos.org
- | u' u "reddit.com" = ("reddit", "svg") -- www.reddit.com
  | aU' u ["overflow.net", "overflow.com", "stackexchange.com"] = ("stackexchange", "svg") -- The *Exchange/*Overflow family of websites.
  | u' u "substack.com" = ("substack", "svg") -- gwern.substack.com
  | u'' u "www.theguardian.com" || u'' u "www.guardian.co.uk" = ("theguardian", "svg") -- El Grauniad.
@@ -419,9 +418,11 @@ linkIconRulesSVG u
  | u'' u "www.scholarpedia.org" = ("scholarpedia", "svg") -- Scholarpedia <https://en.wikipedia.org/wiki/Scholarpedia>; Adobe trace of their PNG favicon
  | u'' u "radiolab.org" = ("audio-waveform-lines", "svg") -- Radiolab WNYC/NPR <https://en.wikipedia.org/wiki/Radiolab>; <https://fontawesome.com/icons/waveform-lines>/<https://www.svgrepo.com/svg/342965/audio-wave>
  | u'' u "maggieappleton.com" = ("maggie-appleton", "svg")  -- <https://twitter.com/Mappletons> Maggie Appleton, designer (Elicit/Ought), blogger about hypermedia/personal wikis/PKM
+ | aU'' u ["emacswiki.org", "www.reddit.com/r/emacs/", "www.gnu.org/software/emacs"] = ("emacs", "svg")
  -- FINAL MATCHES:
  -- many orgs will use a medium subdomain, so we fall back here for Medium as the lowest-priority, and override case by case above:
  | u'' u "medium.com" || u'' u "towardsdatascience.com" = ("𝐌", "text") -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
+ | u' u "reddit.com" = ("reddit", "svg") -- www.reddit.com
  | otherwise = ("", "")
 
 -- Filetypes: (we need to parse & extract the extension because many would be too short and match too many URLs if mere infix matching was used)
@@ -1029,4 +1030,6 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://ourworldindata.org/grapher/burden-disease-from-each-mental-illness", "OWI  D", "text,quad,sans") -- OWID
          , ("https://maggieappleton.com/bidirectionals", "maggie-appleton", "svg")
          , ("https://www.popsci.com/deadly-splinter-antibiotic-resistance/", "PS", "text,sans")
+         , ("https://www.emacswiki.org/emacs/MarkdownMode", "emacs", "svg")
+         , ("https://www.reddit.com/r/emacs/comments/1530yh8/kalman_reti_the_last_symbolics_developer_speaks/", "emacs", "svg")
         ]

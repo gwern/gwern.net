@@ -7646,7 +7646,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 /*  Graphical icons.
     */
 a[data-link-icon-type='svg'] .link-icon-hook::after {
-    --link-icon-size: 0.6em;
+    --link-icon-size: 0.55em;
     --link-icon-offset-x: 0.20em;
     --link-icon-offset-y: 0.25em;
 
@@ -7659,7 +7659,7 @@ a[data-link-icon-type='svg'] .link-icon-hook::after {
     background-position-x: center;
     background-position-y: var(--link-icon-offset-y);
     background-repeat: no-repeat;
-    opacity: 0.6;
+    opacity: 0.55;
 }
 a[data-link-icon-type='svg']:hover .link-icon-hook::after {
     opacity: 0.3;
