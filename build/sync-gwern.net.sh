@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-10-16 11:51:01 gwern"
+# When:  Time-stamp: "2023-10-18 20:51:32 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -192,6 +192,9 @@ else
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
 
     if [ "$SLOW" ]; then
+        bold "Checking metadata…"
+        ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'readLinkMetadataAndCheck' 1> /dev/null &
+
         kill "$NITTER_PID"
 
         bold "Updating X-of-the-day…"
@@ -365,9 +368,6 @@ else
   if [ "$SLOW" ]; then
     # Testing compilation results:
     set +e
-
-    bold "Checking metadata…"
-    ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'readLinkMetadataAndCheck' 1> /dev/null &
 
     # essays only:
     ## eg. './2012-election.page \n...\n ./doc/cs/cryptography/1955-nash.page \n...\n ./newsletter/2022/09.page \n...\n ./review/mcnamara.page \n...\n ./wikipedia-and-knol.page \n...\n ./zeo/zma.page'
@@ -556,7 +556,7 @@ else
     wrap λ "Untagged annotations." &
 
     λ(){ runghc -istatic/build/ ./static/build/link-prioritize.hs 20; }
-    wrap λ "Links needing annotations by priority:"
+    wrap λ "Links needing annotations by priority:" &
 
     λ(){ ge -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -e 'https://goo.gl' -- ./metadata/*.yaml | \
          grep -F --invert-match -e 'https://web.archive.org/web/'; }

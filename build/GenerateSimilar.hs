@@ -49,7 +49,7 @@ singleShotRecommendations html =
 
      newEmbedding <- embed [] md bdb ("",("","","","",[],html))
      ddb <- embeddings2Forest (newEmbedding:edb)
-     let (_,hits) = findN ddb (2*C.bestNEmbeddings) C.iterationLimit (Just 0) newEmbedding :: (String,[String])
+     let (_,hits) = findN ddb (2*C.bestNEmbeddings) C.iterationLimit (Just 1) newEmbedding :: (String,[String])
      hitsSorted <- sortSimilars edb (head hits) hits
 
      let matchListHtml = generateMatches md bdb True True "" html hitsSorted :: T.Text
@@ -455,7 +455,7 @@ processTitles parentTag blacklistTags a =
          (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/tagguesser.py", a']
          case status of
            ExitFailure err -> printRed "tagguesser.py failed!" >> printRed (show err) >> print a' >> return "" -- printGreen (ppShow (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb])) >> printRed "tagguesser.py failed!" >> return ""
-           _ -> return $ (last . lines . replace "The best tag suggestion is: " "" . replace "Best tag: " "" . sed "[a-z0-9]\\) " "" -- NOTE: (can't quite seem to prompt away the tendency to leave in the list number like 'c) foo' or descriptions
+           _ -> return $ (last . lines . replace "'" "" . replace "." "" . replace "The suggested tag is " "" . replace "The best tag suggestion is: " "" . replace "Best tag: " "" . sed "[a-z0-9]\\) " "" -- NOTE: (can't quite seem to prompt away the tendency to leave in the list number like 'c) foo' or descriptions
                            . trim . U.toString) mb
 
 sortSimilarsStartingWithNewest :: Metadata -> [(FilePath, MetadataItem)] -> IO [[(FilePath, MetadataItem)]]
