@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-10-16 12:34:20 gwern"
+# When:  Time-stamp: "2023-10-16 13:50:47 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -78,7 +78,7 @@ _upload() {
   }
   rename_file "$FILENAME"
 
-  if [ $# -eq 1 ]; then
+  if [[ $# -eq 1 || "$2" == "" ]]; then
       TARGET=$(basename "$FILENAME")
       if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then exiftool -overwrite_original -All="" "$TARGET"; fi # strip potentially dangerous metadata from scrap images
       # format Markdown/text files for more readability
@@ -159,7 +159,6 @@ if [[ ! -f "${!#}" ]]; then
     dir="${!#}"
     files=("${@:1:$(($#-1))}")
 else
-    dir="" # or set to default directory
     files=("$@")
 fi
 

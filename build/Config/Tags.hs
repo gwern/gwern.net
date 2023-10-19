@@ -90,9 +90,11 @@ tagsShort2LongRewrites = isUniqueKeys
     ("gp-4", "ai/nn/transformer/gpt/4"), ("gpt-5", "ai/nn/transformer/gpt/5"), ("gpt5", "ai/nn/transformer/gpt/5"),
     ("gp-5", "ai/nn/transformer/gpt/5"), ("gp5", "ai/nn/transformer/gpt/5"), ("attention/sparse", "ai/nn/transformer/attention/sparsity"),
     ("gp4-4", "ai/nn/transformer/gpt/4"), ("gp4", "ai/nn/transformer/gpt/4"), ("gpt-4/nonfiction", "ai/nn/transformer/gpt/4/nonfiction"),
-    ("ai/nn/transformer/gpt/4/non-fiction", "ai/nn/transformer/gpt/4/nonfiction"), ("gpt-4/non-fiction", "ai/nn/transformer/gpt/4/nonfiction"), ("4/non", "ai/nn/transformer/gpt/4/nonfiction"),
+    ("ai/nn/transformer/gpt/4/non-fiction", "ai/nn/transformer/gpt/4/nonfiction"), ("gpt-4/non-fiction", "ai/nn/transformer/gpt/4/nonfiction"),
+    ("4/non", "ai/nn/transformer/gpt/4/nonfiction"),
     ("gpt-4/fiction", "ai/nn/transformer/gpt/4/fiction"), ("gpt-4/poetry", "ai/nn/transformer/gpt/4/poetry"), ("gpt-4poetry", "ai/nn/transformer/gpt/4/poetry"),
-    ("gpt4/poetry", "ai/nn/transformer/gpt/4/poetry"), ("gpt-4/poem", "ai/nn/transformer/gpt/4/poetry"), ("chess", "reinforcement-learning/chess"), ("rl-chess", "reinforcement-learning/chess"), ("aimusic", "ai/music"),
+    ("gpt4/poetry", "ai/nn/transformer/gpt/4/poetry"), ("gpt-4/poem", "ai/nn/transformer/gpt/4/poetry"), ("chess", "reinforcement-learning/chess"),
+    ("rl-chess", "reinforcement-learning/chess"), ("aimusic", "ai/music"),
     ("animal", "psychology/animal"), ("artificial", "ai"), ("code", "cs"),
     ("for", "statistics/prediction"), ("forecast", "statistics/prediction"), ("forecasting", "statistics/prediction"),
     ("genetic", "genetics"), ("graph", "design/visualization"), ("hardware" , "cs/hardware"),
@@ -108,9 +110,15 @@ tagsShort2LongRewrites = isUniqueKeys
     ("animal/iq", "iq/animal"), ("cellular-automata", "cellular-automaton"), ("mathematics", "math"),
     ("frank-p-ramsey", "frank-ramsey"), ("artificial-selection", "genetics/selection/artificial"), ("intrasexual-agression", "intrasexual-aggression"),
     ("javascript", "js"), ("psych/chess", "psychology/chess"), ("self-experiment", "quantified-self"),
-    ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing"), ("quadratic-vote", "quadratic-voting"), ("bipolar/genes", "bipolar/genetics"), ("dynamic-evaliation", "dynamic-evaluation"), ("dog-cloning", "genetics/cloning/dog"), ("dog-clone", "genetics/cloning/dog"), ("dog/clone", "genetics/cloning/dog"), ("cat-drug", "cat/psychology/drug"), ("cat/drug", "cat/psychology/drug"), ("fonts", "typography"),
-   ("time-lock", "timelock"), ("self-decrypting", "timelock"), ("tokenizer", "tokenization"), ("bash", "shell"), ("d+q", "d-q"), ("dasatinib", "d-q"), ("quercetin", "d-q"), ("dastinib", "d-q"), ("dasitinib", "d-q"),
-   ("borderline-personality", "borderline"), ("borderline-disorder", "borderline"), ("borderline-personality-disorder", "borderline"), ("bp", "bipolar"), ("bpd", "borderline"), ("security-blanket", "transitional-object"), ("comfort-object", "transitional-object")]
+    ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing"), ("quadratic-vote", "quadratic-voting"),
+    ("bipolar/genes", "bipolar/genetics"), ("dynamic-evaliation", "dynamic-evaluation"), ("dog-cloning", "genetics/cloning/dog"),
+    ("dog-clone", "genetics/cloning/dog"), ("dog/clone", "genetics/cloning/dog"), ("cat-drug", "cat/psychology/drug"),
+    ("cat/drug", "cat/psychology/drug"), ("fonts", "typography"),
+   ("time-lock", "timelock"), ("self-decrypting", "timelock"), ("tokenizer", "tokenization"), ("bash", "shell"),
+   ("d+q", "d-q"), ("dasatinib", "d-q"), ("quercetin", "d-q"), ("dastinib", "d-q"), ("dasitinib", "d-q"),
+   ("borderline-personality", "borderline"), ("borderline-disorder", "borderline"), ("borderline-personality-disorder", "borderline"),
+   ("bp", "bipolar"), ("bpd", "borderline"), ("security-blanket", "transitional-object"), ("comfort-object", "transitional-object"),
+   ("animal/psych", "psychology/animal"), ("pruning", "data-pruning"), ("dataset-pruning", "data-pruning")]
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   -- hopelessly ambiguous ones which should be error (for now)
@@ -341,6 +349,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("statistics/prediction", "forecasting")
           , ("statistics/prediction/election", "election forecast")
           , ("reinforcement-learning/scaling", "RL scaling")
+          , ("reinforcement-learning/exploration/data-pruning", "data pruning")
           , ("reinforcement-learning/exploration/active-learning", "active learning")
           , ("reinforcement-learning/exploration", "RL exploration")
           , ("reinforcement-learning/safe", "AI safety")
