@@ -3257,10 +3257,10 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 								   : null) ?? dropCapTypeOf(document.body);
 				} else if (block.parentElement?.tagName == "DIV") {
 					dropCapType = dropCapTypeOf(block.parentElement);
-					block.classList.add("first-graf");
+					if (dropCapType && dropCapType != "not")
+						block.classList.add("first-graf");
 				}
-				if (   dropCapType != null
-					&& dropCapType != "not") {
+				if (dropCapType && dropCapType != "not") {
 					addDropCapClassTo(block, dropCapType);
 				} else {
 					stripDropCapClassesFrom(block);
