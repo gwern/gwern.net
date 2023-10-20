@@ -353,8 +353,8 @@ linkIconRulesQuad u
  | u' u "twitter.com/patio11" || aU'' u ["www.bitsaboutmoney.com", "training.kalzumeus.com", "www.kalzumeus.com"] = ("pt11", "text,quad,monospace") -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...
  | u'' u "mathshistory.st-andrews.ac.uk" = ("M  T", "text,quad,sans") -- MacTutor History of Mathematics Archive: a weird one, <https://mathshistory.st-andrews.ac.uk/static/img/logo.png> - crude sans but only 2 letters kinda like a diagonal in a square or a TeX. Experiment with using EN SPACE to force a diagonal quad layout.
  | u'' u "scale.com" = ("SCLE", "text,quad,monospace") -- Scale, a large data-labeling company heavily used behind-the-scenes by FANG & OpenAI etc for outsourcing evaluating text, labeling images, and so on.
- | u'' u "nunosempere.com" = ("nuno", "text,quad,sans") -- Nuño Sempere
- | u'' u "ourworldindata.org" = ("OWI  D", "text,quad,sans") -- Our World In Data (OWID) <https://en.wikipedia.org/wiki/Our_World_in_Data>; NOTE: uses THIN SPACE+THIN SPACE because the 'W' is so wide
+ | u'' u "nunosempere.com" = ("nuno", "text,quad,monospace") -- Nuño Sempere
+ | u'' u "ourworldindata.org" = ("OWI D", "text,quad,monospace") -- Our World In Data (OWID) <https://en.wikipedia.org/wiki/Our_World_in_Data>; NOTE: uses monospace because the 'W' is so wide
  | otherwise = ("", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
@@ -418,7 +418,7 @@ linkIconRulesSVG u
  | u'' u "www.scholarpedia.org" = ("scholarpedia", "svg") -- Scholarpedia <https://en.wikipedia.org/wiki/Scholarpedia>; Adobe trace of their PNG favicon
  | u'' u "radiolab.org" = ("audio-waveform-lines", "svg") -- Radiolab WNYC/NPR <https://en.wikipedia.org/wiki/Radiolab>; <https://fontawesome.com/icons/waveform-lines>/<https://www.svgrepo.com/svg/342965/audio-wave>
  | u'' u "maggieappleton.com" = ("maggie-appleton", "svg")  -- <https://twitter.com/Mappletons> Maggie Appleton, designer (Elicit/Ought), blogger about hypermedia/personal wikis/PKM
- | aU'' u ["emacswiki.org", "www.reddit.com/r/emacs/", "www.gnu.org/software/emacs"] = ("emacs", "svg")
+ | u'' u "www.emacswiki.org" || aU' u ["www.reddit.com/r/emacs/", "www.gnu.org/software/emacs"] = ("emacs", "svg")
  -- FINAL MATCHES:
  -- many orgs will use a medium subdomain, so we fall back here for Medium as the lowest-priority, and override case by case above:
  | u'' u "medium.com" || u'' u "towardsdatascience.com" = ("𝐌", "text") -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
@@ -707,7 +707,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://nintil.com/epigenetic-clocks", "𝓝", "text")
          , ("https://novelai.net/novelai-improvements-on-stable-diffusion-e10d38db82ac", "🖋", "text")
          , ("https://numinous.productions/ttft/", "MN", "text")
-         , ("https://nunosempere.com/blog/2023/01/30/an-in-progress-experiment-to-test-how-laplace-s-rule-of/", "nuno", "text,quad,sans")
+         , ("https://nunosempere.com/blog/2023/01/30/an-in-progress-experiment-to-test-how-laplace-s-rule-of/", "nuno", "text,quad,monospace")
          , ("https://nv-adlr.github.io/MegatronLM",  "n","text,sans,italic")
          , ("https://nvlabs.github.io/stylegan2/versions.html",  "n","text,sans,italic")
          , ("https://nv-tlabs.github.io/big-datasetgan/",  "n","text,sans,italic")
@@ -1027,7 +1027,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("/static/template/default.html",  "code","svg")
          , ("https://solar.lowtechmagazine.com/2015/12/fruit-walls-urban-farming-in-the-1600s/", "☀", "text,sans")
          , ("https://www.rollingstone.com/culture/culture-features/elon-musk-the-architect-of-tomorrow-120850/", "𝓡𝐒", "text")
-         , ("https://ourworldindata.org/grapher/burden-disease-from-each-mental-illness", "OWI  D", "text,quad,sans") -- OWID
+         , ("https://ourworldindata.org/grapher/burden-disease-from-each-mental-illness", "OWI D", "text,quad,monospace") -- OWID
          , ("https://maggieappleton.com/bidirectionals", "maggie-appleton", "svg")
          , ("https://www.popsci.com/deadly-splinter-antibiotic-resistance/", "PS", "text,sans")
          , ("https://www.emacswiki.org/emacs/MarkdownMode", "emacs", "svg")
