@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2023-10-16 16:48:42 gwern"
+# When:  Time-stamp: "2023-10-20 19:44:52 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -21,6 +21,33 @@
 #
 # Requires: sha1sum, SingleFile+chromium, timeout, curl, wget, ocrmypdf; pdftk recommended for 'decrypting' PDFs
 
+URL=""
+CHECK=0
+NO_PREVIEW=0
+
+if [[ $# != 1 && $# != 2 ]]; then
+    echo "Must have either 1 or 2 arguments (ie. 'url', '--check url', or '--no-preview url'), one of which is a URL. Received: $*" && exit 98
+fi
+
+for arg in "$@"
+do
+    case $arg in
+        --check)
+            CHECK=1
+            ;;
+        --no-preview)
+            NO_PREVIEW=1
+            ;;
+        http*://*)
+            URL="$arg"
+            ;;
+        *)
+            ;;
+    esac
+done
+
+if [[ -z $URL ]]; then echo "No URL argument in arguments? $*" && exit 99; fi
+
 USER_AGENT="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.1"
 
 TARGET=""
@@ -28,34 +55,34 @@ TARGET=""
 ## filepath/URL—it's only relevant to the web browser.
 ## A web browser visiting a URL like "https://foo.com/bar.html#1" is visiting the file "bar.html", *not* "bar.html#1".
 ## But we still need to return it as part of the final rewritten path/URL.
-HASH="$(echo -n "$1" | sed -e 's/^\///' | cut -d '#' -f 1 | sha1sum - | cut -d ' ' -f 1)"
-DOMAIN="$(echo "$1" | awk -F[/:] '{print $4}')"
-if [[ -n $(echo "$1" | grep -F '#') ]]; then
-    ANCHOR="#$(echo -n "$1" | cut -d '#' -f 2)"
+HASH="$(echo -n "$URL" | sed -e 's/^\///' | cut -d '#' -f 1 | sha1sum - | cut -d ' ' -f 1)"
+DOMAIN="$(echo "$URL" | awk -F[/:] '{print $4}')"
+if [[ -n $(echo "$URL" | grep -F '#') ]]; then
+    ANCHOR="#$(echo -n "$URL" | cut -d '#' -f 2)"
 fi
 
-FILE=$(ls -U "doc/www/$DOMAIN/$HASH."* 2> /dev/null) || true
-if [[ -n "$FILE" || "$2" == "--check" ]]; then # use of `--check` means that we always skip archiving and return either the path or its failure, an empty string
+FILE=$(ls "doc/www/$DOMAIN/$HASH."* 2> /dev/null) || true
+if [[ -n "$FILE" || $CHECK ]]; then # use of `--check` means that we always skip archiving and return either the path or its failure, an empty string
     echo -n "$FILE$ANCHOR"
 else
 
-    URL=$(echo "$1" | sed -e 's/https:\/\/arxiv\.org/https:\/\/export.arxiv.org/') # NOTE: http://export.arxiv.org/help/robots (we do the rewrite here to keep the directories & URLs as expected like `/doc/www/arxiv.org/`).
+    URL=$(echo "$URL" | sed -e 's/https:\/\/arxiv\.org/https:\/\/export.arxiv.org/') # NOTE: http://export.arxiv.org/help/robots (we do the rewrite here to keep the directories & URLs as expected like `/doc/www/arxiv.org/`).
     ## 404? NOTE: Infuriatingly, Nitter domains will lie to curl when we use `--head` GET requests to be bandwidth-efficient, and will return 404 hits for *everything*. Jerks. So we can't use `--head` to be efficient, we have to do a full request just to be sure we aren't being lied to about the status. (Jerks.)
     HTTP_STATUS=$(timeout 80s curl --user-agent "$USER_AGENT" --compressed -H 'Accept-Language: en-US,en;q=0.5' \
-                          -H "Accept: */*" --write-out '%{http_code}' --silent -L -o /dev/null "$URL" || echo "Unsuccessful: $1 $HASH" 1>&2 && exit 1)
+                          -H "Accept: */*" --write-out '%{http_code}' --silent -L -o /dev/null "$URL" || echo "Unsuccessful: $URL $HASH" 1>&2 && exit 1)
     if [[ "$HTTP_STATUS" == "404" ]] || [[ "$HTTP_STATUS" == "403" ]]; then
-        echo "Unsuccessful: $1 $HASH" 1>&2
+        echo "Unsuccessful: $URL $HASH" 1>&2
         exit 2
     else
         # Remote HTML, which might actually be a PDF:
         MIME_REMOTE=$(timeout 80s curl -H "Accept: */*" --user-agent "$USER_AGENT" \
-                          --head --write-out '%{content_type}' --silent -L -o /dev/null "$URL" || echo "Unsuccessful: $1 $HASH" 1>&2 && exit 3)
+                          --head --write-out '%{content_type}' --silent -L -o /dev/null "$URL" || echo "Unsuccessful: $URL $HASH" 1>&2 && exit 3)
 
         if [[ "$MIME_REMOTE" =~ "application/pdf".* || "$URL" =~ .*'.pdf'.* || "$URL" =~ .*'_pdf'.* || "$URL" =~ '#pdf'.* || "$URL" =~ .*'/pdf/'.* ]];
         then
 
             timeout --kill-after=1800s 1400s wget --user-agent="$USER_AGENT" \
-                    --quiet --output-file=/dev/null "$1" --output-document=/tmp/"$HASH".pdf
+                    --quiet --output-file=/dev/null "$URL" --output-document=/tmp/"$HASH".pdf
             TARGET=/tmp/"$HASH".pdf
             ## sometimes servers lie or a former PDF URL has linkrotted or changed to a HTML landing page, so we need to check
             ## that we actually got a real PDF file:
@@ -72,7 +99,7 @@ else
                 ## use my local custom installation of recent ocrmypdf + JBIG2 encoder to OCR & optimize PDFs I'm hosting:
                 compressPdf "./doc/www/$DOMAIN/$HASH.pdf" &> /dev/null # NOTE: we use `compressPdf` to benefit from its preservation of metadata & checks to avoid 'compressing' a PDF to 50× its original size (as happened with one Arxiv PDF).
             else
-                echo "Unsuccessful: $1 $HASH" 1>&2
+                echo "Unsuccessful: $URL $HASH" 1>&2
                 exit 4
             fi
             # Handle actual remote HTML file:
@@ -96,7 +123,7 @@ else
                     --max-resource-size 100 \
                     --browser-wait-until "networkidle2" \
                     --browser-height "10000" \
-                    "$1" "$TARGET" 1>&2
+                    "$URL" "$TARGET" 1>&2
             set +x
 
             if [[ -f "$TARGET" ]]; then
@@ -107,16 +134,16 @@ else
                     mv "$TARGET" "./doc/www/$DOMAIN/$HASH.html"
                     ## everything successful, so return the filepath of the final result to our caller:
                     echo -n "doc/www/$DOMAIN/$HASH.html$ANCHOR"
-                    if [[ "$2" == "--no-preview" ]];
+                    if $NO_PREVIEW;
                     then # do nothing
                         true
                     else
                         ## open original vs archived preview in web browser so the user can check that it preserved OK, or if it needs to be handled manually or domain blacklisted:
-                        "$WWW_BROWSER" "./doc/www/$DOMAIN/$HASH.html$ANCHOR" "$1" &
+                        "$WWW_BROWSER" "./doc/www/$DOMAIN/$HASH.html$ANCHOR" "$URL" &
                     fi
                 else
                     rm "$TARGET"
-                    echo "Unsuccessful: $1 $HASH" 1>&2
+                    echo "Unsuccessful: $URL $HASH" 1>&2
                     exit 5
                 fi
             fi
