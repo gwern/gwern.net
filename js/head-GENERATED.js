@@ -2285,7 +2285,7 @@ GW.specialOccasions = [
         document.body.classList.add(specialClass);
 
 		//	Replace logo.
-		let scale = valMinMax(window.devicePixelRatio, 1, 3);
+		let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 3);
 		let logoImage;
         let observer = new MutationObserver((mutationsList, observer) => {
             if (logoImage = document.querySelector("#sidebar .logo-image")) {
