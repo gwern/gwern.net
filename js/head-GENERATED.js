@@ -2308,6 +2308,10 @@ GW.specialOccasions = [
 ];
 
 function isTodayHalloween() {
+	//	The test page is Halloween Town.
+	if (document.body.classList.contains("test-halloween"))
+		return true;
+
     //	Only bother English-speakers with Anglosphere holidays like Halloween:
     let language = window.navigator.userLanguage || window.navigator.language;
     if ("en" == language.slice(0, 2)) { // match ‘en’, ‘en-US’, ‘en-GB’, ‘en-AU’...
@@ -2325,6 +2329,10 @@ function isTodayHalloween() {
     }
 }
 function isTodayChristmas() {
+	//	The test page is Christmas Town.
+	if (document.body.classList.contains("test-christmas"))
+		return true;
+
     let now = new Date();
     let date = (now.toISOString()).slice(5,10);
     let hour =  now.getHours();
