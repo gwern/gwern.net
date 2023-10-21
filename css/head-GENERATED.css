@@ -2189,7 +2189,7 @@ body.index.special-halloween-dark #sidebar a:hover {
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
-body.reader-mode-active #sidebar .sidebar-links, 
+body.reader-mode-active #sidebar .sidebar-links,
 body.reader-mode-active #page-metadata .page-status,
 body.reader-mode-active #page-metadata .page-confidence,
 body.reader-mode-active #page-metadata .page-importance,
@@ -2198,6 +2198,7 @@ body.reader-mode-active #page-metadata .link-bibliography,
 body.reader-mode-active #page-metadata .similars,
 body.reader-mode-active #page-metadata .page-date-range::after,
 body.reader-mode-active #TOC ul li::before,
+body.reader-mode-active #TOC .toc-collapse-toggle-button,
 body.reader-mode-active #sidenote-column-left,
 body.reader-mode-active #sidenote-column-right,
 body.reader-mode-active #navigation,

@@ -118,7 +118,7 @@ tagsShort2LongRewrites = isUniqueKeys
    ("d+q", "d-q"), ("dasatinib", "d-q"), ("quercetin", "d-q"), ("dastinib", "d-q"), ("dasitinib", "d-q"),
    ("borderline-personality", "borderline"), ("borderline-disorder", "borderline"), ("borderline-personality-disorder", "borderline"),
    ("bp", "bipolar"), ("bpd", "borderline"), ("security-blanket", "transitional-object"), ("comfort-object", "transitional-object"),
-   ("animal/psych", "psychology/animal"), ("pruning", "data-pruning"), ("dataset-pruning", "data-pruning")]
+   ("animal/psych", "psychology/animal"), ("dataset-pruning", "data-pruning")]
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   -- hopelessly ambiguous ones which should be error (for now)
@@ -574,7 +574,7 @@ shortTagTestSuite = isUniqueKeys
         , ("dall-e" , "ai/nn/transformer/gpt/dall-e/3")
         , ("danbooru" , "ai/anime/danbooru")
         , ("dark-knowledge" , "psychology/dark-knowledge")
-        , ("data" , "ai/dataset")
+        , ("data" , "reinforcement-learning/exploration/active-learning/data-pruning")
         , ("data-augmentation" , "ai/nn/gan/data-augmentation")
         , ("decision" , "statistics/decision")
         , ("decision-transformer"
