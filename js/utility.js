@@ -6,7 +6,7 @@
 /*	Generates integer from a uniform distribution over [1, size].
  */
 function rollDie(size) {
-	return Math.floor(Math.random() * (size - 1) + 1);
+	return Math.floor(Math.random() * size + 1);
 }
 
 /**************************************************************************/
