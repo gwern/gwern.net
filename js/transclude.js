@@ -1086,6 +1086,21 @@ Transclude = {
         return Array.from(container.querySelectorAll("a[class*='include']")).filter(link => Transclude.isIncludeLink(link));
     },
 
+	isContentTransclude: (link) => {
+		if (Transclude.isIncludeLink(link) == false)
+			return false;
+
+        if ((   Transclude.hasFullAnnotation(link) 
+        	 || link.classList.contains("include-annotation")
+        	 ) == false)
+            return true;
+
+		return ((   Transclude.transcludeAnnotationsByDefault
+				 && Transclude.hasFullAnnotation(link))
+				? link.classList.contains("include-content") == true
+				: link.classList.contains("include-annotation") == false);
+	},
+
     isAnnotationTransclude: (link) => {
 		if (Transclude.isIncludeLink(link) == false)
 			return false;
