@@ -714,7 +714,10 @@ function isNodeEmpty(node, options = { }) {
         return (node.textContent.match(/\S/) == null);
 
 	if (node.nodeType == Node.ELEMENT_NODE) {
-		if (options.excludeTags != null) {
+		if (   options.excludeIdentifiedElements
+			&& node.id > "") {
+			return false;
+		} else if (options.excludeTags != null) {
 			if (options.excludeTags.includes(node.tagName.toUpperCase()))
 				return false;
 		} else {
@@ -751,21 +754,22 @@ function paragraphizeTextNodesOfElement(element) {
 	let nodes = Array.from(element.childNodes);
 	let nodeSequence = [ ];
 	let node;
+	let omitNode = (node) => isNodeEmpty(node, { alsoExcludeTags: [ "A" ], excludeIdentifiedElements: true });
 	do {
 		node = nodes.shift();
 
 		if (   (   node?.nodeType == Node.TEXT_NODE
 				|| (   node?.nodeType == Node.ELEMENT_NODE
 					&& node.matches(inlineElementSelector)))
-			&& isNodeEmpty(node, { alsoExcludeTags: [ "A" ] }) == false) {
+			&& omitNode(node) == false) {
 			nodeSequence.push(node);
-		} else if (isNodeEmpty(node, { alsoExcludeTags: [ "A" ] })) {
+		} else if (omitNode(node)) {
 			node.remove();
 		} else {
 			if (nodeSequence.length > 0) {
 				//	Get next non-empty child node of the element (may be null).
 				let nextNode = nodeSequence.last.nextSibling;
-				while (isNodeEmpty(nextNode, { alsoExcludeTags: [ "A" ] }))
+				while (omitNode(nextNode))
 					nextNode = nextNode.nextSibling;
 
 				//	Construct paragraph (<p>) to wrap node sequence.
