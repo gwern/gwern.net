@@ -2,17 +2,12 @@
 
 echo "Building icon sprite file...\n";
 
-$static_root = __DIR__ . '/..';
-$icon_dir = "{$static_root}/img/icon";
+require_once(__DIR__ . '/build_paths.php');
+require_once(__DIR__ . '/build_variables.php');
+
 $icon_file_path = "{$icon_dir}/icons.svg";
 
-$inlined_head_file_path = "{$static_root}/include/inlined-head.html";
-
 $iconSpacingFactor = 1.1;
-
-## If the SSI <head> include file isn’t already built, build it.
-if (!file_exists($inlined_head_file_path))
-	require_once("{$static_root}/build/build_head_includes.php");
 
 ##	Delete existing icon file.
 if (file_exists($icon_file_path))
@@ -72,14 +67,6 @@ $out[] = '</svg>';
 
 ## Write out icon sprite file.
 file_put_contents($icon_file_path, implode("\n", $out) . "\n");
-
-## Append preload link to <head> includes file.
-$icon_file_pathname = '/static/img/icon/icons.svg';
-$file_mod_time = filemtime($icon_file_path);
-file_put_contents($inlined_head_file_path,
-				  trim(preg_replace('/<link rel="preload" href=".+?\/icons.svg" .+?>/', '', file_get_contents($inlined_head_file_path)))
-				  . "\n"
-				  . "<link rel=\"preload\" href=\"{$icon_file_pathname}?v={$file_mod_time}\" as=\"image\">"
-				  . "\n");
+$updated_files[] = $icon_file_path;
 
 ?>

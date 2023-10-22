@@ -2,14 +2,9 @@
 
 echo "Building unified CSS and JS assets...\n";
 
+require_once(__DIR__ . '/build_paths.php');
+require_once(__DIR__ . '/build_variables.php');
 require_once(__DIR__ . '/build_functions.php');
-
-## PATHS
-
-$static_root = __DIR__ . "/..";
-$js_dir = "{$static_root}/js";
-$css_dir = "{$static_root}/css";
-$template_dir = "{$static_root}/template/include";
 
 ## FILES
 
@@ -24,7 +19,8 @@ $head_js = [
 	'initial.js',
 	'layout.js',
 	'dark-mode-initial.js',
-	'reader-mode-initial.js'
+	'reader-mode-initial.js',
+	'asset-versions-GENERATED.js'
 ];
 
 $css = [
@@ -65,7 +61,11 @@ $head_css_file = "";
 foreach ($head_css as $head_css_component) {
 	$head_css_file .= file_get_contents("{$css_dir}/{$head_css_component}");
 }
-file_put_contents("{$css_dir}/head-GENERATED.css", $head_css_file);
+
+$head_css_file_path = "{$css_dir}/head-GENERATED.css";
+file_put_contents($head_css_file_path, $head_css_file);
+$updated_files[] = $head_css_file_path;
+
 
 ## Transclude templates.
 $templates_file = "Transclude.templates = {\n";
@@ -81,27 +81,42 @@ foreach ($templates as $template_path) {
 	$templates_file .= ",\n";
 }
 $templates_file .= "};\n";
-file_put_contents("{$js_dir}/transclude-templates-GENERATED.js", $templates_file);
+
+$transclude_templates_file_path = "{$js_dir}/transclude-templates-GENERATED.js";
+file_put_contents($transclude_templates_file_path, $templates_file);
+$updated_files[] = $transclude_templates_file_path;
+
 
 ## Initial JS.
 $head_js_file = "";
 foreach ($head_js as $head_js_component) {
 	$head_js_file .= file_get_contents("{$js_dir}/{$head_js_component}");
 }
-file_put_contents("{$js_dir}/head-GENERATED.js", $head_js_file);
+
+$head_js_file_path = "{$js_dir}/head-GENERATED.js";
+file_put_contents($head_js_file_path, $head_js_file);
+$updated_files[] = $head_js_file_path;
+
 
 ## Main CSS.
 $css_file = "";
 foreach ($css as $css_component) {
 	$css_file .= file_get_contents("{$css_dir}/{$css_component}");
 }
-file_put_contents("{$css_dir}/style-GENERATED.css", $css_file);
+
+$css_file_path = "{$css_dir}/style-GENERATED.css";
+file_put_contents($css_file_path, $css_file);
+$updated_files[] = $css_file_path;
+
 
 ## Main JS.
 $js_file = "";
 foreach ($js as $js_component) {
 	$js_file .= file_get_contents("{$js_dir}/{$js_component}");
 }
-file_put_contents("{$js_dir}/script-GENERATED.js", $js_file);
+
+$js_file_path = "{$js_dir}/script-GENERATED.js";
+file_put_contents($js_file_path, $js_file);
+$updated_files[] = $js_file_path;
 
 ?>

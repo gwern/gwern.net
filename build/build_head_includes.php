@@ -2,6 +2,8 @@
 
 echo "Building <head> includes...\n";
 
+require_once(__DIR__ . '/build_paths.php');
+require_once(__DIR__ . '/build_variables.php');
 require_once(__DIR__ . '/build_functions.php');
 
 /*
@@ -23,13 +25,6 @@ require_once(__DIR__ . '/build_functions.php');
 
  (Configuration for non-Apache servers left as exercise for reader.)
  */
-
-## Paths
-
-$static_root = __DIR__ . "/..";
-$js_dir = "{$static_root}/js";
-$css_dir = "{$static_root}/css";
-$includes_dir = "{$static_root}/include";
 
 ## Includes
 
@@ -87,6 +82,8 @@ foreach ($includes as $include) {
 	}
 }
 
-file_put_contents("{$includes_dir}/inlined-head.html", $outfile);
+$inlined_head_file_path = "{$include_dir}/inlined-head.html";
+file_put_contents($inlined_head_file_path, $outfile);
+$updated_files[] = $inlined_head_file_path;
 
 ?>
