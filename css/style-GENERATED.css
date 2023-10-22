@@ -8427,6 +8427,7 @@ a[data-link-icon='atlas-obscura'] .link-icon-hook::after { /* Darken & shift lef
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.05em;
     --link-icon-offset-y: 0.1em;
+
     opacity: 0.85;
 }
 
@@ -8442,6 +8443,7 @@ a[data-link-icon='apple'] .link-icon-hook::after { /* Darken, enlarge, & shift l
     --link-icon-size: 0.70em;
     --link-icon-offset-y: 0em;
     --link-icon-offset-x: 0.1em;
+
     opacity: 0.5;
 }
 
@@ -8583,17 +8585,19 @@ a[data-link-icon='tex'] .link-icon-hook::after { /* CTAN etc; TeX logotype (actu
 a[data-link-icon='scholarpedia'] .link-icon-hook::after {
     --link-icon-size: 0.80em;
     --link-icon-offset-x: 0.05em;
+
     opacity: 1.0;
 }
 
 a[data-link-icon='☀'] .link-icon-hook::after { /* Low Tech Magazine */
     --link-icon-size: 0.9em;
+
     opacity: 0.90;
 }
 
 a[data-link-icon='audio-waveform-lines'] .link-icon-hook::after { /* Radiolab */
-    --link-icon-size: 1.2em;
-    --link-icon-offset-x: -0.10em;
+    --link-icon-size: 0.6em;
+    --link-icon-offset-y: 0.1em;
 }
 
 /*=------------------=*/

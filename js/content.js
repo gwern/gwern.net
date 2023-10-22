@@ -492,7 +492,8 @@ Content = {
 					return false;
 
 				//	Maybe it’s an annotated link?
-				if (Annotations.isAnnotatedLinkFull(link))
+				if (   Annotations.isAnnotatedLinkFull(link) == true
+					&& Transclude.isContentTransclude(link) == false)
 					return false;
 
 				/*  If it has a period in it, it’s probably not a page, but is 
