@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-10-20 23:35:07 gwern"
+# When:  Time-stamp: "2023-10-21 12:43:46 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -170,4 +170,4 @@ for file in "${files[@]}"; do
     fi
 done
 
-wait; pwd
+wait

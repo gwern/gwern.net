@@ -1069,12 +1069,16 @@ a[data-link-icon='scholarpedia'] .link-icon-hook::after {
 a[data-link-icon='☀'] .link-icon-hook::after { /* Low Tech Magazine */
     --link-icon-size: 0.9em;
 
-    opacity: 0.90;
+    opacity: 0.85;
 }
 
 a[data-link-icon='audio-waveform-lines'] .link-icon-hook::after { /* Radiolab */
     --link-icon-size: 0.6em;
     --link-icon-offset-y: 0.1em;
+}
+
+a[data-link-icon='emacs'] .link-icon-hook::after {
+    opacity: 0.65;
 }
 
 /*=------------------=*/
