@@ -5,7 +5,7 @@ echo "Building asset versions...\n";
 require_once(__DIR__ . '/build_paths.php');
 require_once(__DIR__ . '/build_variables.php');
 
-global $static_root, $icon_dir, $logo_dir, $js_dir;
+global $static_root, $icon_dir, $logo_dir, $font_dir, $js_dir;
 
 $asset_file_paths = [
 	"{$icon_dir}/icons.svg"
@@ -13,6 +13,9 @@ $asset_file_paths = [
 $asset_patterns = [
 	"{$logo_dir}/*/*-small-*.png",
 	"{$logo_dir}/*/*/*-small-*.png",
+
+	"{$font_dir}/drop-cap/*/*-small-*.png",
+	"{$font_dir}/drop-cap/*/*/*-small-*.png"
 ];
 foreach ($asset_patterns as $pattern) {
 	$asset_file_paths = array_merge($asset_file_paths, glob($pattern));

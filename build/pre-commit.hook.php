@@ -85,6 +85,9 @@ $versioned_assets = [
 $versioned_asset_patterns = [
 	"{$logo_dir}/*/*-small-*.png",
 	"{$logo_dir}/*/*/*-small-*.png",
+
+	"{$font_dir}/drop-cap/*/*-small-*.png",
+	"{$font_dir}/drop-cap/*/*/*-small-*.png"
 ];
 foreach ($versioned_asset_patterns as $pattern) {
 	$versioned_assets = array_merge($versioned_assets, glob($pattern));

@@ -13305,6 +13305,7 @@ addContentLoadHandler(GW.contentLoadHandlers.enableGraphicalDropCaps = (eventInf
 	];
 
 	let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
+	let mode = DarkMode.computedMode();
 
 	eventInfo.container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
 		let dropCapType = dropCapTypeOf(dropCapBlock);
@@ -13325,14 +13326,12 @@ addContentLoadHandler(GW.contentLoadHandlers.enableGraphicalDropCaps = (eventInf
 			innerHTML: firstLetter
 		}), dropCapBlock.firstChild);
 
-		//	Determine number of alternates.
-		//	TODO: this
-		let numAlternateCaps = 5;
-
 		//	Insert image.
+		let dropCapPathname = randomAsset(`/static/font/drop-cap/${dropCapType}/${mode}/${firstLetter}-%R-small-${scale}x.png`);
+		let dropCapURL = versionedAssetURL(dropCapPathname);
 		dropCapBlock.insertBefore(newElement("IMG", {
 			class: "drop-cap figure-not",
-			src: `/static/font/drop-cap/${dropCapType}/${(DarkMode.computedMode())}/${firstLetter}-${(rollDie(numAlternateCaps))}-small-${scale}x.png`
+			src: dropCapURL.pathname + dropCapURL.search
 		}), dropCapBlock.firstChild);
 	});
 }, "rewrite", (info) => (info.document == document));

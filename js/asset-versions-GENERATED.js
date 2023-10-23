@@ -35,5 +35,15 @@ GW.assetVersions = {
 	"/static/img/logo/christmas/light/logo-christmas-light-6-small-3x.png": "1698080167",
 	"/static/img/logo/halloween/dark/logo-halloween-dark-1-small-1x.png": "1697576584",
 	"/static/img/logo/halloween/dark/logo-halloween-dark-1-small-2x.png": "1697576584",
-	"/static/img/logo/halloween/dark/logo-halloween-dark-1-small-3x.png": "1697576584"
+	"/static/img/logo/halloween/dark/logo-halloween-dark-1-small-3x.png": "1697576584",
+	"/static/font/drop-cap/dropcat/light/C-1-small-1x.png": "1697741351",
+	"/static/font/drop-cap/dropcat/light/C-1-small-2x.png": "1697741351",
+	"/static/font/drop-cap/dropcat/light/C-2-small-1x.png": "1697741351",
+	"/static/font/drop-cap/dropcat/light/C-2-small-2x.png": "1697741350",
+	"/static/font/drop-cap/dropcat/light/C-3-small-1x.png": "1697741350",
+	"/static/font/drop-cap/dropcat/light/C-3-small-2x.png": "1697741351",
+	"/static/font/drop-cap/dropcat/light/C-4-small-1x.png": "1697741350",
+	"/static/font/drop-cap/dropcat/light/C-4-small-2x.png": "1697741350",
+	"/static/font/drop-cap/dropcat/light/C-5-small-1x.png": "1697741351",
+	"/static/font/drop-cap/dropcat/light/C-5-small-2x.png": "1697741351"
 };
