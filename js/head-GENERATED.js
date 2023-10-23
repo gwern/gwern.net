@@ -2350,6 +2350,9 @@ GW.specialOccasions = [
     [ "christmas", () => isTodayChristmas(), () => {
     	document.body.classList.add("special-christmas");
 
+		//	TODO: this!
+		let numLogoVariants = 6;
+
 		//	Replace logo.
 		injectSpecialPageLogo("christmas", { mode: DarkMode.computedMode(), randomize: true });
       }, () => {

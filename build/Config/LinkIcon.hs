@@ -354,7 +354,7 @@ linkIconRulesQuad u
  | u'' u "mathshistory.st-andrews.ac.uk" = ("M  T", "text,quad,sans") -- MacTutor History of Mathematics Archive: a weird one, <https://mathshistory.st-andrews.ac.uk/static/img/logo.png> - crude sans but only 2 letters kinda like a diagonal in a square or a TeX. Experiment with using EN SPACE to force a diagonal quad layout.
  | u'' u "scale.com" = ("SCLE", "text,quad,monospace") -- Scale, a large data-labeling company heavily used behind-the-scenes by FANG & OpenAI etc for outsourcing evaluating text, labeling images, and so on.
  | u'' u "nunosempere.com" = ("nuno", "text,quad,monospace") -- Nuño Sempere
- | u'' u "ourworldindata.org" = ("OWI D", "text,quad,monospace") -- Our World In Data (OWID) <https://en.wikipedia.org/wiki/Our_World_in_Data>; NOTE: uses monospace because the 'W' is so wide
+ | u'' u "ourworldindata.org" = ("OWID", "text,quad,monospace") -- Our World In Data (OWID) <https://en.wikipedia.org/wiki/Our_World_in_Data>; NOTE: uses monospace because the 'W' is so wide
  | otherwise = ("", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)

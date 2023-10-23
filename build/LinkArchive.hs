@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-10-09 11:29:00 gwern"
+When:  Time-stamp: "2023-10-22 10:39:12 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -231,10 +231,14 @@ archiveURLCheck l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "li
 
 -- take a URL, archive it, and if successful return the hashed path
 archiveURL :: String -> IO (Maybe Path)
-archiveURL l = do let args = if C.isCheapArchive l then [l, "--no-preview"] else [l]
+archiveURL l = do let args = if C.isCheapArchive l then ["--no-preview", l] else [l]
                   (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArchive.sh" args
                   case exit of
                      ExitSuccess -> do let result = U.toString stdout
                                        putStrStdErr (green "Archiving (LinkArchive.hs): " ++ l ++ green  " returned: "  ++ result ++ "\n")
-                                       if result == "" then return Nothing else return $ Just result
+                                       if result == "" then return Nothing else
+                                         do let filepath = takeWhile (/='#') l
+                                            exists <- doesFileExist filepath
+                                            unless exists $ error ("LinkArchive.hs:archiveURL: Archived file not found: " ++ filepath ++ " (original path returned by linkArchive.sh: " ++ l ++ "); this should never happen.")
+                                            return $ Just result
                      ExitFailure _ -> printRed' "LA: archiving script failed to run correctly: " (l ++ " result: " ++ U.toString stderr') >> return Nothing
