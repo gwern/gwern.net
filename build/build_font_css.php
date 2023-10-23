@@ -2,6 +2,11 @@
 
 echo "Building font CSS...\n";
 
+require_once(__DIR__ . '/build_paths.php');
+require_once(__DIR__ . '/build_variables.php');
+
+global $font_dir, $css_dir;
+
 ## DEFINITIONS
 
 /*	Font info:
@@ -19,20 +24,18 @@ echo "Building font CSS...\n";
 	- font-display
 	- unicode-range
  */
+ 
+global $bare_fields, $formats;
+ 
 $bare_fields = [ "name", "base_path", "format" ];
 $formats = [
 	'ttf' => 'truetype',
 	'otf' => 'opentype',
 ];
 
-## PATHS
-
-$static_root = __DIR__ . "/..";
-
-$css_dir = "{$static_root}/css";
-$font_dir = "{$static_root}/font";
-
 ## ACTION
+
+global $entries_to_inline;
 
 //	Read spec file.
 ob_start();
@@ -80,8 +83,16 @@ foreach ($spec_blocks as $spec_block) {
 $out = implode("\n", $out) . "\n";
 $initial = implode("\n", $initial) . "\n";
 
-file_put_contents("{$css_dir}/fonts-GENERATED.css", $out);
-file_put_contents("{$css_dir}/initial-fonts-GENERATED.css", $initial);
+$files_to_generate = [
+	"fonts-GENERATED.css" => $out,
+	"initial-fonts-GENERATED.css" => $initial
+];
+
+foreach ($files_to_generate as $file_name => $file) {
+	$file_path = "{$css_dir}/{$file_name}";
+	file_put_contents($file_path, $file);
+	$updated_files[] = $file_path;
+}
 
 ## FUNCTIONS
 

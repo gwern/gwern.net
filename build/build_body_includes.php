@@ -2,7 +2,11 @@
 
 echo "Building versioned includes...\n";
 
+require_once(__DIR__ . '/build_paths.php');
+require_once(__DIR__ . '/build_variables.php');
 require_once(__DIR__ . '/build_functions.php');
+
+global $static_root, $include_dir;
 
 /*
  Instructions:
@@ -24,13 +28,6 @@ require_once(__DIR__ . '/build_functions.php');
  (Configuration for non-Apache servers left as exercise for reader.)
  */
 
-## Paths
-
-$static_root = __DIR__ . '/..';
-$js_dir = "{$static_root}/js";
-$css_dir = "{$static_root}/css";
-$includes_dir = "{$static_root}/include";
-
 ## Includes
 
 $includes = [
@@ -48,6 +45,9 @@ foreach ($includes as $file) {
 
 	$outfile .= preg_replace('/(src|href)="(.+?)"/', "$1={$href}", $file) . "\n";
 }
-file_put_contents("{$includes_dir}/inlined-asset-links.html", $outfile);
+
+$inlined_asset_links_file_path = "{$include_dir}/inlined-asset-links.html";
+file_put_contents($inlined_asset_links_file_path, $outfile);
+$updated_files[] = $inlined_asset_links_file_path;
 
 ?>

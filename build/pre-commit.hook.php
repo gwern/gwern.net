@@ -1,153 +1,185 @@
 #!/usr/bin/env php
 <?php
 
+require_once(__DIR__ . '/build_paths.php');
+require_once(__DIR__ . '/build_variables.php');
+
 $force = @$argv[1] == "--force";
 
-$build_dir = __DIR__;
-$static_dir = "{$build_dir}/..";
 
-## Fonts and font CSS.
+## Process given source files, if updated, with the given script file.
+function process_source_files($source_file_paths, $script_file_name) {
+	global $force, $build_dir, $updated_files;
+
+	if (count($source_file_paths) == 0)
+		return;
+
+	$file_paths_string = implode(" ", $source_file_paths);
+	if ($force || (`git diff-index --cached HEAD -- {$file_paths_string}`)) {
+		require_once("{$build_dir}/{$script_file_name}");
+
+		## Add updated files and clear updated files array.
+		$updated_files = implode(" ", $updated_files);
+		`git add {$updated_files}`;
+		$updated_files = [ ];
+	}
+}
+
+
+## Fonts and font spec.
 ## Build the font CSS from the font spec.
-$fonts_and_font_css = [
-	"{$static_dir}/font/font_spec.php"
+$fonts_and_font_spec = [ ];
+$font_spec = [
+	"{$font_dir}/font_spec.php"
 ];
 $font_path_patterns = [
-	"{$static_dir}/font/*/*.otf",
-	"{$static_dir}/font/*/*.ttf",
-	"{$static_dir}/font/*/*/*.otf",
-	"{$static_dir}/font/*/*/*.ttf"
+	"{$font_dir}/*/*.otf",
+	"{$font_dir}/*/*.ttf",
+	"{$font_dir}/*/*/*.otf",
+	"{$font_dir}/*/*/*.ttf"
 ];
+$fonts_and_font_spec = array_merge($fonts_and_font_spec, $font_spec);
 foreach ($font_path_patterns as $pattern) {
-	$fonts_and_font_css = array_merge($fonts_and_font_css, glob($pattern));
+	$fonts_and_font_spec = array_merge($fonts_and_font_spec, glob($pattern));
 }
-$fonts_and_font_css = implode(" ", $fonts_and_font_css);
-if ($force || (`git diff-index --cached HEAD -- {$fonts_and_font_css}`)) {
-	require_once("{$build_dir}/build_font_css.php");
-	require_once("{$build_dir}/build_versioned_font_css.php");
-	`git add {$static_dir}/css/.`;
-}
+
+process_source_files($fonts_and_font_spec, 'build_font_css.php');
+
+
+## Font CSS.
+## Build the versioned font CSS from the generated font CSS.
+$font_css = [
+	"{$font_dir}/fonts-GENERATED.css",
+	"{$font_dir}/initial-fonts-GENERATED.css"
+];
+
+process_source_files($font_css, 'build_versioned_font_css.php');
+
 
 ## Components of color (light/dark) inlined CSS.
 ## Build the inlined color CSS (for light and dark mode).
 $css_components = [
-	"{$static_dir}/css/colors.css",
-	"{$static_dir}/css/light-mode-adjustments.css",
-	"{$static_dir}/css/dark-mode-adjustments.css"
+	"{$css_dir}/colors.css",
+	"{$css_dir}/light-mode-adjustments.css",
+	"{$css_dir}/dark-mode-adjustments.css"
 ];
-$css_components = implode(" ", $css_components);
-if ($force || (`git diff-index --cached HEAD -- {$css_components}`)) {
-	require_once("{$build_dir}/build_css.php");
-	`git add {$static_dir}/css/.`;
-}
 
-## Unified assets (JS & CSS).
-## Assemble all the .css and .js files into head.css/style.css and 
-## head.js/script.js, respectively.
-$disparate_assets = [
-	"{$static_dir}/js/",
-	"{$static_dir}/js/initial.js",
-	"{$static_dir}/js/layout.js",
-	"{$static_dir}/js/dark-mode-initial.js",
-	"{$static_dir}/js/reader-mode-initial.js",
+process_source_files($css_components, 'build_mode_css.php');
 
-	"{$static_dir}/css/initial.css",
-	"{$static_dir}/css/initial-fonts-VERSIONED.css",
-	"{$static_dir}/css/reader-mode-initial.css",
-
-	"{$static_dir}/js/misc.js",
-	"{$static_dir}/js/popups.js",
-	"{$static_dir}/js/popins.js",
-	"{$static_dir}/js/annotations.js",
-	"{$static_dir}/js/content.js",
-	"{$static_dir}/js/transclude.js",
-	"{$static_dir}/js/extracts.js",
-	"{$static_dir}/js/extracts-annotations.js",
-	"{$static_dir}/js/extracts-content.js",
-	"{$static_dir}/js/extracts-options.js",
-	"{$static_dir}/js/extracts-load.js",
-	"{$static_dir}/js/typography.js",
-	"{$static_dir}/js/Hyphenopoly_Loader.js",
-	"{$static_dir}/js/rewrite.js",
-	"{$static_dir}/js/collapse.js",
-	"{$static_dir}/js/sidenotes.js",
-	"{$static_dir}/js/image-focus.js",
-	"{$static_dir}/js/dark-mode.js",
-	"{$static_dir}/js/reader-mode.js",
-
-	"{$static_dir}/css/fonts-VERSIONED.css",
-	"{$static_dir}/css/default.css",
-	"{$static_dir}/css/links.css"	
-];
-$disparate_asset_patterns = [
-	"{$static_dir}/template/include/*.tmpl",
-];
-foreach ($disparate_asset_patterns as $pattern)
-	$disparate_assets = array_merge($disparate_assets, glob($pattern));
-$disparate_assets = implode(" ", $disparate_assets);
-if ($force || (`git diff-index --cached HEAD -- {$disparate_assets}`)) {
-	require_once("{$build_dir}/build_unified_assets.php");
-	`git add {$static_dir}/css/. {$static_dir}/js/.`;
-}
 
 ## Icons.
 ## Build the icons.svg sprite file out of individual SVG icons.
 $icons = [ ];
 $icon_patterns = [
-	"{$static_dir}/img/icon/*.svg"
+	"{$icon_dir}/*.svg"
 ];
 foreach ($icon_patterns as $pattern)
 	$icons = array_merge($icons, glob($pattern));
-$icons = implode(" ", $icons);
-if (   $force 
-	|| (`git diff-index --cached HEAD -- {$build_dir}/build_icon_sprite_file.php`) 
-	|| (`git diff-index --cached HEAD -- {$icons}`)) {
-	require_once("{$build_dir}/build_icon_sprite_file.php");
-	`git add {$static_dir}/img/icon/. {$static_dir}/include/.`;
-}
+
+process_source_files($icons, 'build_icon_sprite_file.php');
+
+
+## Asset randomization data.
+## Build database of asset alternate counts, for randomization of assets.
+$randomizable_assets = [ ];
+$randomizable_asset_patterns = [
+
+];
+foreach ($randomizable_asset_patterns as $pattern)
+	$randomizable_assets = array_merge($randomizable_assets, glob($pattern));
+
+process_source_files($randomizable_assets, 'build_asset_alternates_spec.php');
+
+
+## Asset versions.
+## Build asset version database for JS-loaded assets.
+$versioned_assets = [
+	"{$icon_dir}/icons.svg"
+];
+
+process_source_files($versioned_assets, 'build_asset_versions.php');
+
+
+## Unified assets (JS & CSS).
+## Assemble all the .css and .js files into head.css/style.css and 
+## head.js/script.js, respectively.
+$disparate_assets = [
+	"{$js_dir}/initial.js",
+	"{$js_dir}/layout.js",
+	"{$js_dir}/dark-mode-initial.js",
+	"{$js_dir}/reader-mode-initial.js",
+	"{$js_dir}/asset-versions-GENERATED.js",
+
+	"{$css_dir}/initial.css",
+	"{$css_dir}/initial-fonts-VERSIONED.css",
+	"{$css_dir}/reader-mode-initial.css",
+
+	"{$js_dir}/misc.js",
+	"{$js_dir}/popups.js",
+	"{$js_dir}/popins.js",
+	"{$js_dir}/annotations.js",
+	"{$js_dir}/content.js",
+	"{$js_dir}/transclude.js",
+	"{$js_dir}/extracts.js",
+	"{$js_dir}/extracts-annotations.js",
+	"{$js_dir}/extracts-content.js",
+	"{$js_dir}/extracts-options.js",
+	"{$js_dir}/extracts-load.js",
+	"{$js_dir}/typography.js",
+	"{$js_dir}/Hyphenopoly_Loader.js",
+	"{$js_dir}/rewrite.js",
+	"{$js_dir}/collapse.js",
+	"{$js_dir}/sidenotes.js",
+	"{$js_dir}/image-focus.js",
+	"{$js_dir}/dark-mode.js",
+	"{$js_dir}/reader-mode.js",
+
+	"{$css_dir}/fonts-VERSIONED.css",
+	"{$css_dir}/default.css",
+	"{$css_dir}/links.css"	
+];
+$disparate_asset_patterns = [
+	"{$static_root}/template/include/*.tmpl",
+];
+foreach ($disparate_asset_patterns as $pattern)
+	$disparate_assets = array_merge($disparate_assets, glob($pattern));
+
+process_source_files($disparate_assets, 'build_unified_assets.php');
+
 
 ## Icons, redux.
 ## Ensure that the CSS files use versioned links to icons.svg.
-$versioned_assets = [
-	"{$static_dir}/img/icon/icons.svg"
+$files_with_asset_links = [
+	"{$css_dir}/head-GENERATED.css",
+	"{$css_dir}/style-GENERATED.css",
 ];
-$files_with_versioned_asset_links = [
-	"{$static_dir}/css/head-GENERATED.css",
-	"{$static_dir}/css/style-GENERATED.css",
-];
-$versioned_assets = array_merge($versioned_assets, $files_with_versioned_asset_links);
-$versioned_assets = implode(" ", $versioned_assets);
-if ($force || (`git diff-index --cached HEAD -- {$versioned_assets}`)) {
-	require_once("{$build_dir}/build_asset_versions.php");
-	`git add {$static_dir}/include/. {$static_dir}/css/.`;
-}
+
+process_source_files($files_with_asset_links, 'version_asset_links.php');
+
 
 ## Initial styles and scripts.
 ## Build the SSI-included <head> section, with both inlined styles and blocking
 ## (versioned) links to head.css and head.js.
 $head_includes = [
-	"{$static_dir}/css/light-mode-GENERATED.css",
-	"{$static_dir}/css/dark-mode-GENERATED.css",
-	"{$static_dir}/css/head-VERSIONED.css",
-	"{$static_dir}/js/head-GENERATED.js",
-	"{$static_dir}/img/icon/icons.svg"
+	"{$css_dir}/light-mode-GENERATED.css",
+	"{$css_dir}/dark-mode-GENERATED.css",
+	"{$css_dir}/head-VERSIONED.css",
+	"{$js_dir}/head-GENERATED.js",
+	"{$icon_dir}/icons.svg"
 ];
-$head_includes = implode(" ", $head_includes);
-if ($force || (`git diff-index --cached HEAD -- {$head_includes}`)) {
-	require_once("{$build_dir}/build_head_includes.php");
-	`git add {$static_dir}/include/.`;
-}
+
+process_source_files($head_includes, 'build_head_includes.php');
+
 
 ## External styles and scripts.
 ## Build the SSI-included <body> section, with non-blocking (versioned) links 
 ## to style.css and script.js.
 $body_includes = [
-	"{$static_dir}/css/style-VERSIONED.css",
-	"{$static_dir}/js/script-GENERATED.js"
+	"{$css_dir}/style-VERSIONED.css",
+	"{$js_dir}/script-GENERATED.js"
 ];
-$body_includes = implode(" ", $body_includes);
-if ($force || (`git diff-index --cached HEAD -- {$body_includes}`)) {
-	require_once("{$build_dir}/build_body_includes.php");
-	`git add {$static_dir}/include/.`;
-}
+
+process_source_files($body_includes, 'build_body_includes.php');
+
 
 ?>

@@ -2,10 +2,10 @@
 
 echo "Building versioned font CSS...\n";
 
-## Paths
+require_once(__DIR__ . '/build_paths.php');
+require_once(__DIR__ . '/build_variables.php');
 
-$static_root = __DIR__ . "/..";
-$css_dir = "{$static_root}/css";
+global $static_root, $css_dir;
 
 ## Files
 
@@ -21,7 +21,9 @@ foreach ($font_files as $file) {
 
 	$versioned_font_css = preg_replace_callback('/\'\/static\/(.+?)\'/i', 'VersionAssetURL', $font_css);
 
-	file_put_contents("{$css_dir}/{$file}-VERSIONED.css", $versioned_font_css);
+	$file_path = "{$css_dir}/{$file}-VERSIONED.css";
+	file_put_contents($file_path, $versioned_font_css);
+	$updated_files[] = $file_path;
 }
 
 ## FUNCTIONS

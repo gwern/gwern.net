@@ -2273,6 +2273,41 @@ document.addEventListener("readystatechange", () => {
 /* SPECIAL OCCASIONS */
 /*********************/
 
+/********************************************************************/
+/*	Inject a special page logo image of a specific type (‘halloween’, 
+	‘christmas’, etc.). Directory structure and file naming for the 
+	specified logo type must match existing holiday logos.
+ */
+function injectSpecialPageLogo(logoType, logoNamePrefix, options = { }) {
+	let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 3);
+
+	let logoSelector = "#sidebar .logo-image";
+	let logoImage;
+
+	let replaceLogo = (logoImage) => {
+		let imageWrapper = newElement("SPAN", {
+			class: "logo-image"
+		});
+		imageWrapper.append(newElement("IMG", {
+			class: "figure-not", 
+			src: `/static/img/logo/${logoType}/${(DarkMode.computedMode())}/${logoNamePrefix}-small-${scale}x.png`
+		}));
+		logoImage.replaceWith(imageWrapper);
+	};
+
+	if (logoImage = document.querySelector(logoSelector)) {
+		replaceLogo(logoImage);
+	} else {
+		let observer = new MutationObserver((mutationsList, observer) => {
+			if (logoImage = document.querySelector("#sidebar .logo-image")) {
+				observer.disconnect();
+				replaceLogo(logoImage);
+			}
+		});
+		observer.observe(document.documentElement, { childList: true });
+	}
+}
+
 /*  If a special function is provided to apply classes, one should also be
     provided to remove those classes. (See the ‘halloween’ entry for example.)
  */
@@ -2289,26 +2324,18 @@ GW.specialOccasions = [
         document.body.classList.add(specialClass);
 
 		//	Replace logo.
-		let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 3);
-		let logoImage;
-        let observer = new MutationObserver((mutationsList, observer) => {
-            if (logoImage = document.querySelector("#sidebar .logo-image")) {
-                observer.disconnect();
-				let imageWrapper = newElement("SPAN", {
-					class: "logo-image"
-				});
-				imageWrapper.append(newElement("IMG", {
-					class: "figure-not", 
-					src: `/static/img/logo/halloween/${(DarkMode.computedMode())}/logo-halloween-castle-small-${scale}x.png`
-				}));
-                logoImage.replaceWith(imageWrapper);
-            }
-        });
-        observer.observe(document.documentElement, { childList: true });
+		injectSpecialPageLogo("halloween", "logo-halloween-castle");
       }, () => {
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");
       } ],
-    [ "christmas", () => isTodayChristmas() ],
+    [ "christmas", () => isTodayChristmas(), () => {
+    	document.body.classList.add("special-christmas");
+
+		//	Replace logo.
+		injectSpecialPageLogo("christmas", "logo-christmas-" + DarkMode.computedMode() + "-1");
+      }, () => {
+    	document.body.classList.remove("special-christmas");
+      } ],
 ];
 
 function isTodayHalloween() {
@@ -3515,3 +3542,6 @@ ReaderMode = {
 
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
+GW.assetVersions = {
+	"/static/img/icon/icons.svg": "1698021605"
+};

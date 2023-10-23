@@ -1,27 +1,21 @@
 <?php
 
-echo "Versioning assets...\n";
+echo "Building asset versions...\n";
 
-$static_root = __DIR__ . "/..";
+require_once(__DIR__ . '/build_paths.php');
+require_once(__DIR__ . '/build_variables.php');
 
-$include_dir = "{$static_root}/include";
-$icon_dir = "{$static_root}/img/icon";
+global $static_root, $icon_dir, $js_dir;
 
-$patterns = [
+$asset_file_paths = [
 	"{$icon_dir}/icons.svg"
 ];
-
-$file_paths = [ ];
-foreach ($patterns as $pattern)
-	$file_paths = array_merge($file_paths, glob($pattern));
-
-$output = "<script>\n"
-		. "GW.assetVersions = {\n";
-
 $assets = [ ];
-foreach ($file_paths as $file_path) {
-	$assets[substr($file_path, strlen($static_root))] = filemtime($file_path);
+foreach ($asset_file_paths as $asset_file_path) {
+	$assets[substr($asset_file_path, strlen($static_root))] = filemtime($asset_file_path);
 }
+
+$output = "GW.assetVersions = {\n";
 
 $output_lines = [ ];
 foreach ($assets as $url_path => $file_mod_time) {
@@ -36,22 +30,9 @@ foreach ($assets as $url_path => $file_mod_time) {
 
 $output .= implode(",\n", $output_lines);
 $output .= "\n};\n";
-$output .= "</script>\n";
 
-file_put_contents("{$include_dir}/inlined-asset-versions.html", $output);
-
-$files = [
-	"{$static_root}/css/head-GENERATED.css",
-	"{$static_root}/css/style-GENERATED.css"
-];
-foreach ($files as $file_path) {
-	$file = file_get_contents($file_path);
-
-	foreach ($assets as $url_path => $file_mod_time) {
-		$file = str_replace($url_path, "{$url_path}?v={$file_mod_time}", $file);
-	}
-
-	file_put_contents(str_replace('-GENERATED', '-VERSIONED', $file_path), $file);
-}
+$asset_versions_file_path = "{$js_dir}/asset-versions-GENERATED.js";
+file_put_contents($asset_versions_file_path, $output);
+$updated_files[] = $asset_versions_file_path;
 
 ?>
