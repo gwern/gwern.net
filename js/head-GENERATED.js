@@ -2278,20 +2278,39 @@ document.addEventListener("readystatechange", () => {
 	‘christmas’, etc.). Directory structure and file naming for the 
 	specified logo type must match existing holiday logos.
  */
-function injectSpecialPageLogo(logoType, logoNamePrefix, options = { }) {
+function injectSpecialPageLogo(logoType, options = { }) {
 	let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 3);
+
+	let logoPathname;
+	if (options.randomize) {
+		logoPathname = options.mode
+					   ? `/static/img/logo/${logoType}/${options.mode}/logo-${logoType}-${options.mode}-%R-small-${scale}x.png`
+					   : `/static/img/logo/${logoType}/logo-${logoType}-%R-small-${scale}x.png`;
+	} else {
+		logoPathname = options.mode
+					   ? `/static/img/logo/${logoType}/${options.mode}/logo-${logoType}-${options.mode}-small-${scale}x.png`
+					   : `/static/img/logo/${logoType}/logo-${logoType}-small-${scale}x.png`;
+	}
 
 	let logoSelector = "#sidebar .logo-image";
 	let logoImage;
 
+	/*	Note that randomAsset() and versionedAssetURL() are defined in misc.js,
+		and so cannot be called prior to this.
+	 */
 	let replaceLogo = (logoImage) => {
+		if (options.randomize)
+			logoPathname = randomAsset(logoPathname);
+		let versionedLogoURL = versionedAssetURL(logoPathname);
+
 		let imageWrapper = newElement("SPAN", {
 			class: "logo-image"
 		});
 		imageWrapper.append(newElement("IMG", {
 			class: "figure-not", 
-			src: `/static/img/logo/${logoType}/${(DarkMode.computedMode())}/${logoNamePrefix}-small-${scale}x.png`
+			src: versionedLogoURL.pathname + versionedLogoURL.search
 		}));
+
 		logoImage.replaceWith(imageWrapper);
 	};
 
@@ -2299,7 +2318,7 @@ function injectSpecialPageLogo(logoType, logoNamePrefix, options = { }) {
 		replaceLogo(logoImage);
 	} else {
 		let observer = new MutationObserver((mutationsList, observer) => {
-			if (logoImage = document.querySelector("#sidebar .logo-image")) {
+			if (logoImage = document.querySelector(logoSelector)) {
 				observer.disconnect();
 				replaceLogo(logoImage);
 			}
@@ -2324,7 +2343,7 @@ GW.specialOccasions = [
         document.body.classList.add(specialClass);
 
 		//	Replace logo.
-		injectSpecialPageLogo("halloween", "logo-halloween-castle");
+		injectSpecialPageLogo("halloween", { mode: "dark", randomize: true });
       }, () => {
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");
       } ],
@@ -2332,7 +2351,7 @@ GW.specialOccasions = [
     	document.body.classList.add("special-christmas");
 
 		//	Replace logo.
-		injectSpecialPageLogo("christmas", "logo-christmas-" + DarkMode.computedMode() + "-1");
+		injectSpecialPageLogo("christmas", { mode: DarkMode.computedMode(), randomize: true });
       }, () => {
     	document.body.classList.remove("special-christmas");
       } ],
@@ -3543,5 +3562,41 @@ ReaderMode = {
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
 GW.assetVersions = {
-	"/static/img/icon/icons.svg": "1698021605"
+	"/static/img/icon/icons.svg": "1698021605",
+	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-1x.png": "1698080524",
+	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-2x.png": "1698080524",
+	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-3x.png": "1698080524",
+	"/static/img/logo/christmas/dark/logo-christmas-dark-2-small-1x.png": "1698080524",
+	"/static/img/logo/christmas/dark/logo-christmas-dark-2-small-2x.png": "1698080524",
+	"/static/img/logo/christmas/dark/logo-christmas-dark-2-small-3x.png": "1698080524",
+	"/static/img/logo/christmas/dark/logo-christmas-dark-3-small-1x.png": "1698080524",
+	"/static/img/logo/christmas/dark/logo-christmas-dark-3-small-2x.png": "1698080524",
+	"/static/img/logo/christmas/dark/logo-christmas-dark-3-small-3x.png": "1698080524",
+	"/static/img/logo/christmas/dark/logo-christmas-dark-4-small-1x.png": "1698080524",
+	"/static/img/logo/christmas/dark/logo-christmas-dark-4-small-2x.png": "1698080524",
+	"/static/img/logo/christmas/dark/logo-christmas-dark-4-small-3x.png": "1698080524",
+	"/static/img/logo/christmas/dark/logo-christmas-dark-5-small-1x.png": "1698080524",
+	"/static/img/logo/christmas/dark/logo-christmas-dark-5-small-2x.png": "1698080524",
+	"/static/img/logo/christmas/dark/logo-christmas-dark-5-small-3x.png": "1698080524",
+	"/static/img/logo/christmas/light/logo-christmas-light-1-small-1x.png": "1698080167",
+	"/static/img/logo/christmas/light/logo-christmas-light-1-small-2x.png": "1698080167",
+	"/static/img/logo/christmas/light/logo-christmas-light-1-small-3x.png": "1698080167",
+	"/static/img/logo/christmas/light/logo-christmas-light-2-small-1x.png": "1698080166",
+	"/static/img/logo/christmas/light/logo-christmas-light-2-small-2x.png": "1698080166",
+	"/static/img/logo/christmas/light/logo-christmas-light-2-small-3x.png": "1698080167",
+	"/static/img/logo/christmas/light/logo-christmas-light-3-small-1x.png": "1698080166",
+	"/static/img/logo/christmas/light/logo-christmas-light-3-small-2x.png": "1698080166",
+	"/static/img/logo/christmas/light/logo-christmas-light-3-small-3x.png": "1698080166",
+	"/static/img/logo/christmas/light/logo-christmas-light-4-small-1x.png": "1698080166",
+	"/static/img/logo/christmas/light/logo-christmas-light-4-small-2x.png": "1698080166",
+	"/static/img/logo/christmas/light/logo-christmas-light-4-small-3x.png": "1698080166",
+	"/static/img/logo/christmas/light/logo-christmas-light-5-small-1x.png": "1698080167",
+	"/static/img/logo/christmas/light/logo-christmas-light-5-small-2x.png": "1698080166",
+	"/static/img/logo/christmas/light/logo-christmas-light-5-small-3x.png": "1698080166",
+	"/static/img/logo/christmas/light/logo-christmas-light-6-small-1x.png": "1698080167",
+	"/static/img/logo/christmas/light/logo-christmas-light-6-small-2x.png": "1698080167",
+	"/static/img/logo/christmas/light/logo-christmas-light-6-small-3x.png": "1698080167",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-1-small-1x.png": "1697576584",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-1-small-2x.png": "1697576584",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-1-small-3x.png": "1697576584"
 };

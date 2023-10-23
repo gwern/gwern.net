@@ -151,6 +151,31 @@ function versionedAssetURL(pathname) {
     return URLFromString(pathname + versionString);
 }
 
+/*****************************************************************************/
+/*	Return a random alternate asset pathname (not versioned), given a pathname
+	with ‘%R’ where a number should be, e.g.:
+
+		/static/img/logo/christmas/light/logo-christmas-light-%R-small-1x.png
+
+	will return
+
+		/static/img/logo/christmas/light/logo-christmas-light-1-small-1x.png
+
+	(or -2, -3, etc., selecting randomly from available numbered alternates).
+
+	Specified assets must be listed in the versioned asset database.
+ */
+function randomAsset(assetPathname) {
+	let assetPathnameRegExp = new RegExp(assetPathname.replace("%R", "[0-9]+"));
+	let alternateAssetPathnames = [ ];
+	for (versionedAssetPathname of Object.keys(GW.assetVersions)) {
+		if (assetPathnameRegExp.test(versionedAssetPathname))
+			alternateAssetPathnames.push(versionedAssetPathname);
+	}
+
+	return alternateAssetPathnames[rollDie(alternateAssetPathnames.length) - 1];
+}
+
 
 /*********/
 /* LINKS */
