@@ -5,6 +5,8 @@ echo "Building font CSS...\n";
 require_once(__DIR__ . '/build_paths.php');
 require_once(__DIR__ . '/build_variables.php');
 
+global $font_dir, $css_dir;
+
 ## DEFINITIONS
 
 /*	Font info:
@@ -22,6 +24,9 @@ require_once(__DIR__ . '/build_variables.php');
 	- font-display
 	- unicode-range
  */
+ 
+global $bare_fields, $formats;
+ 
 $bare_fields = [ "name", "base_path", "format" ];
 $formats = [
 	'ttf' => 'truetype',
@@ -29,6 +34,8 @@ $formats = [
 ];
 
 ## ACTION
+
+global $entries_to_inline;
 
 //	Read spec file.
 ob_start();

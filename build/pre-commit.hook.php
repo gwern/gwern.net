@@ -11,6 +11,9 @@ $force = @$argv[1] == "--force";
 function process_source_files($source_file_paths, $script_file_name) {
 	global $force, $build_dir, $updated_files;
 
+	if (count($source_file_paths) == 0)
+		return;
+
 	$file_paths_string = implode(" ", $source_file_paths);
 	if ($force || (`git diff-index --cached HEAD -- {$file_paths_string}`)) {
 		require_once("{$build_dir}/{$script_file_name}");
@@ -50,7 +53,7 @@ $font_css = [
 	"{$font_dir}/initial-fonts-GENERATED.css"
 ];
 
-process_source_files($font_css, 'build_versioned_font_css');
+process_source_files($font_css, 'build_versioned_font_css.php');
 
 
 ## Components of color (light/dark) inlined CSS.
@@ -74,6 +77,18 @@ foreach ($icon_patterns as $pattern)
 	$icons = array_merge($icons, glob($pattern));
 
 process_source_files($icons, 'build_icon_sprite_file.php');
+
+
+## Asset randomization data.
+## Build database of asset alternate counts, for randomization of assets.
+$randomizable_assets = [ ];
+$randomizable_asset_patterns = [
+
+];
+foreach ($randomizable_asset_patterns as $pattern)
+	$randomizable_assets = array_merge($randomizable_assets, glob($pattern));
+
+process_source_files($randomizable_assets, 'build_asset_alternates_spec.php');
 
 
 ## Asset versions.

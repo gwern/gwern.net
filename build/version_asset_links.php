@@ -5,8 +5,10 @@ echo "Versioning assets links...\n";
 require_once(__DIR__ . '/build_paths.php');
 require_once(__DIR__ . '/build_variables.php');
 
+global $static_root, $css_dir, $icon_dir;
+
 $asset_file_paths = [
-	"{$static_root}/img/icon/icons.svg"
+	"{$icon_dir}/icons.svg"
 ];
 $assets = [ ];
 foreach ($asset_file_paths as $asset_file_path) {

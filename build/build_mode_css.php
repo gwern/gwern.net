@@ -5,6 +5,8 @@ echo "Building mode CSS...\n";
 require_once(__DIR__ . '/build_paths.php');
 require_once(__DIR__ . '/build_variables.php');
 
+global $build_dir, $css_dir;
+
 ## Generate dark mode colors.
 `php {$build_dir}/color-scheme-convert.php {$css_dir}/colors.css 1 "Lab" 0.55 > {$css_dir}/colors-dark-GENERATED.css`;
 $updated_files[] = "{$css_dir}/colors-dark-GENERATED.css";

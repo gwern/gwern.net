@@ -5,6 +5,8 @@ echo "Building icon sprite file...\n";
 require_once(__DIR__ . '/build_paths.php');
 require_once(__DIR__ . '/build_variables.php');
 
+global $icon_dir;
+
 $icon_file_path = "{$icon_dir}/icons.svg";
 
 $iconSpacingFactor = 1.1;

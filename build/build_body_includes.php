@@ -6,6 +6,8 @@ require_once(__DIR__ . '/build_paths.php');
 require_once(__DIR__ . '/build_variables.php');
 require_once(__DIR__ . '/build_functions.php');
 
+global $static_root, $include_dir;
+
 /*
  Instructions:
 

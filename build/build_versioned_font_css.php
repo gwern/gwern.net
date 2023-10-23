@@ -5,6 +5,8 @@ echo "Building versioned font CSS...\n";
 require_once(__DIR__ . '/build_paths.php');
 require_once(__DIR__ . '/build_variables.php');
 
+global $static_root, $css_dir;
+
 ## Files
 
 $font_files = [
