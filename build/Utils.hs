@@ -2068,53 +2068,62 @@ testCycleDetection = testCycleExists testCases
 extractTwitterUsername :: String -> String
 extractTwitterUsername = sed "^https:\\/\\/twitter\\.com\\/([a-z0-9]+)$" "\\1" . sed "^https:\\/\\/twitter\\.com\\/([^\\/]+)/status/[0-9]+$" "\\1"
 
--- print out Doubles long-form, not in scientific notation. By default, Haskell will print values like '10e8', which is bad for downstream users like the inflation-adjuster JavaScript. But it turns out to be surprisingly hard to print out the literal of a Double/Float without rounding, scientific notation, fractions, precision limitations, or other issues. This tries to do so using Text.Numeric.showFFloat, and includes a test-suite of examples to ensure the String is as expected.
-printDouble :: Double -> String
-printDouble x = if x > 1.7976931348623157e308 || x < -1.7976931348623157e308
+-- print out Doubles long-form, not in scientific notation. By default, Haskell will print values like '10e8', which is bad for downstream users like the inflation-adjuster JavaScript. But it turns out to be surprisingly hard to print out the literal of a Double/Float without rounding, scientific notation, fractions, precision limitations, or other issues. This tries to do so using Numeric.showFFloat, and includes a test-suite of examples to ensure the String is as expected. For very small amounts like '1.0000000000000002', they will be rounded (to '1').
+-- Precision '0' means nothing after the decimal point, like '0'; '1' means 1 digit after the decimal like '0.1', etc.
+printDouble :: Int -> Double -> String
+printDouble precision x = if x > 1.7976931348623157e308 || x < -1.7976931348623157e308
                then error $ "printDouble: Extreme unsupported value past what showFFloat supports; you'll have to handle this differently: " ++ show x
-               else removeTrailingZeros $ showFFloat Nothing x ""
+               else removeTrailingZeros $ showFFloat (Just precision) x ""
     where removeTrailingZeros, drop1IfDot :: String -> String
           removeTrailingZeros "-0"   = "0"
           removeTrailingZeros "-0."  = "0"
           removeTrailingZeros "-0.0" = "0"
           removeTrailingZeros "0.0"  = "0"
+          removeTrailingZeros "0"  = "0"
           removeTrailingZeros y = drop1IfDot $ reverse $ dropWhile (== '0') $ reverse y
           drop1IfDot xs = if last xs == '.' then init xs else xs
+          -- removeTrailingZeros y
+          --   | take 2 y == ".0" = "0"
+          --   | otherwise = drop1IfDot $ reverse $ dropWhile (== '0') $ reverse y
+          -- drop1IfDot xs = if not (null xs) && last xs == '.' then init xs else xs
 
-printDoubleTestSuite :: [(Double, String)]
-printDoubleTestSuite = filter (\(n,s) -> printDouble n /= s) printDoubleTests
+printDoubleTestSuite :: [(Double, Int, String, String)]
+printDoubleTestSuite = filter (\(_,_,expected,actual) -> expected /= actual) $ map (\(n,prec,s) -> (n,prec,s, printDouble prec n )) printDoubleTests
  where
-  printDoubleTests :: [(Double, String)]
+  printDoubleTests :: [(Double, Int, String)]
   printDoubleTests =
     -- no `isUnique` check for zeros because keys are not unique by value (eg. −0.0 == 0 == 0.00 etc) but we need to test that they print out the same
               [
-              (-0, "0")
-              , (-0.0, "0")
-              , (-0.00, "0")
-              , (0, "0")
-              , (0.0, "0")
-              , (0.00, "0")
-              ] ++ isUnique [
-              (1.0, "1")
-              , (1.1, "1.1")
-              , (10.01, "10.01")
-              , (1000000.01, "1000000.01")
-              , (123456789.123456789, "123456789.12345679")
-              , (1.000000000000001, "1.000000000000001")
-              , (3.141592653589793, "3.141592653589793")
-              , (-3.141592653589793, "-3.141592653589793")
-              , (-1.000000000000001, "-1.000000000000001")
-              , (-123456789.123456789, "-123456789.12345679")
-              , (-1000000.01, "-1000000.01")
-              , (-10.01, "-10.01")
-              , (-1.1, "-1.1")
-              , (-1.0, "-1")
-              , (0.000000000000001, "0.000000000000001")
-              , (-0.000000000000001, "-0.000000000000001")
-              , (0.9999999999999999, "0.9999999999999999")
-              , (-0.9999999999999999, "-0.9999999999999999")
-              , (1.0000000000000002, "1.0000000000000002")
-              , (-1.0000000000000002, "-1.0000000000000002")
+              (-0, 0, "0")
+              , (-0.0, 0, "0")
+              , (-0.00, 0, "0")
+              , (0, 0, "0")
+              , (0.0, 0, "0")
+              , (0.00, 0, "0")
+              ] ++ [
+              (1.0, 0, "1")
+              , (1.1, 1, "1.1")
+              , (10.01, 2, "10.01")
+              , (1000000.01, 2, "1000000.01")
+              , (123456789.123456789, 15, "123456789.12345679")
+              , (1.000000000000001, 15, "1.000000000000001")
+              , (3.141592653589793, 15, "3.141592653589793")
+              , (-3.141592653589793, 15, "-3.141592653589793")
+              , (-1.000000000000001, 15, "-1.000000000000001")
+              , (-123456789.123456789, 15, "-123456789.12345679")
+              , (-1000000.01, 2, "-1000000.01")
+              , (-10.01, 2, "-10.01")
+              , (-1.1, 2, "-1.1")
+              , (-1.0, 2, "-1")
+              , (0.000000000000001, 15, "0.000000000000001")
+              , (-0.000000000000001, 15, "-0.000000000000001")
+              , (0.9999999999999999, 15, "1")
+              , (-0.9999999999999999, 15, "-1")
+              , (1.0000000000000002, 15, "1")
+              , (-1.0000000000000002, 15, "-1")
+              , (0.224, 0, "0")
+              , (0.224, 1, "0.2")
+              , (0.224, 2, "0.22")
               ]
 
 -- | Convert a list of inlines into a string.

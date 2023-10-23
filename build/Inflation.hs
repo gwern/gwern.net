@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, inflationDollarTestSuite) wher
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2023-10-05 12:40:36 gwern"
+-- When:  Time-stamp: "2023-10-23 10:01:38 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -82,8 +82,8 @@ nominalToRealInflationAdjuster x@(Link _ _ (ts, _))
 nominalToRealInflationAdjuster x = x
 
 -- hardwired for 2023 results.
-inflationDollarTestSuite :: [((T.Text,T.Text), Inline)]
-inflationDollarTestSuite = filter (\((t,y), expected) -> expected /= dollarAdjuster 2023 (Link ("",[],[]) [Str t] (y, ""))) C.inflationDollarTestCases
+inflationDollarTestSuite :: [((T.Text,T.Text), Inline, Inline)]
+inflationDollarTestSuite = filter (\(_,expect,result) -> expect/=result) $ map (\((t,y), expected) -> ((t,y), expected, dollarAdjuster 2023 (Link ("",[],[]) [Str t] (y, "")))) C.inflationDollarTestCases
 
 -- TODO: refactor dollarAdjuster/bitcoinAdjuster - they do *almost* the same thing, aside from handling year vs dates
 dollarAdjuster :: Int -> Inline -> Inline
@@ -108,9 +108,9 @@ dollarAdjuster currentyear l@(Link _ text (oldYears, _)) =
           -- '$50.50' → '50.50'; '$50.50k' → '50500.0'; '$50.50m' → 5.05e7; '$50.50b' → 5.05e10; '$50.50t' → 5.05e13
           oldDollarString = multiplyByUnits l $ filter (/= '$') text'
           oldDollar = case (readMaybe $ filter (/=',') oldDollarString :: Maybe Double) of { Just d -> d; Nothing -> error ("Inflation: oldDollar: " ++ show l ++ ":" ++ oldDollarString) }
-          oldDollarString' = printDouble oldDollar
+          oldDollarString' = printDouble 2 oldDollar
           adjustedDollar = dollarAdjust currentyear oldDollar (T.unpack oldYear)
-          adjustedDollarString = printDouble adjustedDollar
+          adjustedDollarString = printDouble 2 adjustedDollar
 dollarAdjuster _ x = x
 
 multiplyByUnits :: Inline -> String -> String
@@ -157,7 +157,7 @@ bitcoinAdjuster currentyear l@(Link _ text (oldDates, _)) =
         oldYear = take 4 $ T.unpack oldDate -- it takes up too much space to display full dates like '2017-01-01'; readers only really need the year; the exact date is provided in the tooltip
         oldDollar = bitcoinAdjust currentyear oldBitcoin (T.unpack oldDate)
         adjustedDollar = dollarAdjust currentyear oldDollar oldYear
-        adjustedBitcoinString = printDouble adjustedDollar
+        adjustedBitcoinString = printDouble 2 adjustedDollar
 
       -- oldYear = if T.length oldYears /= 5 || T.head oldYears /= '$' then error (show l) else T.tail oldYears
       -- oldDollarString = multiplyByUnits l $ filter (/= '$') $ T.unpack $ inlinesToText text -- '$50.50' → '50.50'; '$50.50k' → '50500.0'; '$50.50m' → 5.05e7; '$50.50b' → 5.05e10; '$50.50t' → 5.05e13
