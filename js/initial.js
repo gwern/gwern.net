@@ -1232,8 +1232,11 @@ GW.specialOccasions = [
     [ "christmas", () => isTodayChristmas(), () => {
     	document.body.classList.add("special-christmas");
 
+		//	TODO: this!
+		let numLogoVariants = 6;
+
 		//	Replace logo.
-		injectSpecialPageLogo("christmas", "logo-christmas-" + DarkMode.computedMode() + "-1");
+		injectSpecialPageLogo("christmas", `logo-christmas-${(DarkMode.computedMode())}-${(rollDie(numLogoVariants))}`);
       }, () => {
     	document.body.classList.remove("special-christmas");
       } ],
