@@ -13598,7 +13598,7 @@ if (GW.collapse.hoverEventsEnabled) {
     per non-recursive call to expandCollapseBlocksToReveal(), even if recursive
     expansion occurred.)
  */
-function expandCollapseBlocksToReveal(node) {
+function expandCollapseBlocksToReveal(node, fireStateChangedEvent = true) {
     GWLog("expandCollapseBlocksToReveal", "collapse.js", 2);
 
 	if (!node)
@@ -13613,23 +13613,33 @@ function expandCollapseBlocksToReveal(node) {
     if (!isWithinCollapsedBlock(element))
     	return false;
 
-    //  Expand the nearest collapse block.
+    //  Determine if nearest collapse block needs expanding.
     let collapseBlock = element.closest(".collapse");
-    let expanded = isCollapsed(collapseBlock);
-    toggleCollapseBlockState(collapseBlock, expanded);
+    let expand = isCollapsed(collapseBlock);
 
-    /*  Expand any higher-level collapse blocks!
-        Fire state change event only if we did NOT have to do any further
-        expansion (otherwise we’ll do redundant layout).
+    /*  Expand any higher-level collapse blocks.
+		Fire state change event only if we will not have to expand this block
+		(otherwise we’ll do redundant layout).
      */
-    if (!expandCollapseBlocksToReveal(collapseBlock.parentElement) && expanded)
-    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
-    		source: "expandCollapseBlocksToReveal",
-    		collapseBlock: collapseBlock
-    	});
+	let expandedAncestor = expandCollapseBlocksToReveal(collapseBlock.parentElement, expand == false);
+
+    if (expand) {
+		//	Expand nearest collapse block.
+		toggleCollapseBlockState(collapseBlock, expand);
+
+		/*	Fire state change event only if we will not have to do any more 
+			expansion (otherwise we’ll do redundant layout).
+		 */
+		if (fireStateChangedEvent) {
+			GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
+				source: "expandCollapseBlocksToReveal",
+				collapseBlock: collapseBlock
+			});
+		}
+	}
 
     //  Report whether we had to expand a collapse block.
-    return expanded;
+    return (expand || expandedAncestor);
 }
 
 /*******************************************************************************/
@@ -13971,6 +13981,10 @@ function toggleCollapseBlockState(collapseBlock, expanding) {
 			let contentRect = collapseBlock.querySelector(".collapse-content-wrapper").getBoundingClientRect();
 			let enclosingContentRect = collapseBlock.closest(".markdownBody").getBoundingClientRect();
 			let offset = getComputedStyle(collapseBlock).getPropertyValue("--collapse-left-offset");
+
+			console.log(contentRect);
+			console.log(enclosingContentRect);
+			console.log(offset);
 
 			collapseBlock.style.marginLeft = `calc(${(enclosingContentRect.x - contentRect.x)}px - ${offset})`;
 		} else { // if (collapsing)
