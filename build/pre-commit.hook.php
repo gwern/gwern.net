@@ -28,8 +28,7 @@ function process_source_files($source_file_paths, $script_file_name) {
 
 ## Fonts and font spec.
 ## Build the font CSS from the font spec.
-$fonts_and_font_spec = [ ];
-$font_spec = [
+$fonts_and_font_spec = [
 	"{$font_dir}/font_spec.php"
 ];
 $font_path_patterns = [
@@ -38,7 +37,6 @@ $font_path_patterns = [
 	"{$font_dir}/*/*/*.otf",
 	"{$font_dir}/*/*/*.ttf"
 ];
-$fonts_and_font_spec = array_merge($fonts_and_font_spec, $font_spec);
 foreach ($font_path_patterns as $pattern) {
 	$fonts_and_font_spec = array_merge($fonts_and_font_spec, glob($pattern));
 }
@@ -79,23 +77,21 @@ foreach ($icon_patterns as $pattern)
 process_source_files($icons, 'build_icon_sprite_file.php');
 
 
-## Asset randomization data.
-## Build database of asset alternate counts, for randomization of assets.
-$randomizable_assets = [ ];
-$randomizable_asset_patterns = [
-
-];
-foreach ($randomizable_asset_patterns as $pattern)
-	$randomizable_assets = array_merge($randomizable_assets, glob($pattern));
-
-process_source_files($randomizable_assets, 'build_asset_alternates_spec.php');
-
-
 ## Asset versions.
 ## Build asset version database for JS-loaded assets.
 $versioned_assets = [
 	"{$icon_dir}/icons.svg"
 ];
+$versioned_asset_patterns = [
+	"{$logo_dir}/*/*-small-*.png",
+	"{$logo_dir}/*/*/*-small-*.png",
+
+	"{$font_dir}/drop-cap/*/*-small-*.png",
+	"{$font_dir}/drop-cap/*/*/*-small-*.png"
+];
+foreach ($versioned_asset_patterns as $pattern) {
+	$versioned_assets = array_merge($versioned_assets, glob($pattern));
+}
 
 process_source_files($versioned_assets, 'build_asset_versions.php');
 

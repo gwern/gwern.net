@@ -151,6 +151,31 @@ function versionedAssetURL(pathname) {
     return URLFromString(pathname + versionString);
 }
 
+/*****************************************************************************/
+/*	Return a random alternate asset pathname (not versioned), given a pathname
+	with ‘%R’ where a number should be, e.g.:
+
+		/static/img/logo/christmas/light/logo-christmas-light-%R-small-1x.png
+
+	will return
+
+		/static/img/logo/christmas/light/logo-christmas-light-1-small-1x.png
+
+	(or -2, -3, etc., selecting randomly from available numbered alternates).
+
+	Specified assets must be listed in the versioned asset database.
+ */
+function randomAsset(assetPathname) {
+	let assetPathnameRegExp = new RegExp(assetPathname.replace("%R", "[0-9]+"));
+	let alternateAssetPathnames = [ ];
+	for (versionedAssetPathname of Object.keys(GW.assetVersions)) {
+		if (assetPathnameRegExp.test(versionedAssetPathname))
+			alternateAssetPathnames.push(versionedAssetPathname);
+	}
+
+	return alternateAssetPathnames[rollDie(alternateAssetPathnames.length) - 1];
+}
+
 
 /*********/
 /* LINKS */
@@ -13280,6 +13305,7 @@ addContentLoadHandler(GW.contentLoadHandlers.enableGraphicalDropCaps = (eventInf
 	];
 
 	let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
+	let mode = DarkMode.computedMode();
 
 	eventInfo.container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
 		let dropCapType = dropCapTypeOf(dropCapBlock);
@@ -13300,14 +13326,12 @@ addContentLoadHandler(GW.contentLoadHandlers.enableGraphicalDropCaps = (eventInf
 			innerHTML: firstLetter
 		}), dropCapBlock.firstChild);
 
-		//	Determine number of alternates.
-		//	TODO: this
-		let numAlternateCaps = 5;
-
 		//	Insert image.
+		let dropCapPathname = randomAsset(`/static/font/drop-cap/${dropCapType}/${mode}/${firstLetter}-%R-small-${scale}x.png`);
+		let dropCapURL = versionedAssetURL(dropCapPathname);
 		dropCapBlock.insertBefore(newElement("IMG", {
 			class: "drop-cap figure-not",
-			src: `/static/font/drop-cap/${dropCapType}/${(DarkMode.computedMode())}/${firstLetter}-${(rollDie(numAlternateCaps))}-small-${scale}x.png`
+			src: dropCapURL.pathname + dropCapURL.search
 		}), dropCapBlock.firstChild);
 	});
 }, "rewrite", (info) => (info.document == document));
@@ -13573,7 +13597,7 @@ if (GW.collapse.hoverEventsEnabled) {
     per non-recursive call to expandCollapseBlocksToReveal(), even if recursive
     expansion occurred.)
  */
-function expandCollapseBlocksToReveal(node) {
+function expandCollapseBlocksToReveal(node, fireStateChangedEvent = true) {
     GWLog("expandCollapseBlocksToReveal", "collapse.js", 2);
 
 	if (!node)
@@ -13588,23 +13612,33 @@ function expandCollapseBlocksToReveal(node) {
     if (!isWithinCollapsedBlock(element))
     	return false;
 
-    //  Expand the nearest collapse block.
+    //  Determine if nearest collapse block needs expanding.
     let collapseBlock = element.closest(".collapse");
-    let expanded = isCollapsed(collapseBlock);
-    toggleCollapseBlockState(collapseBlock, expanded);
+    let expand = isCollapsed(collapseBlock);
 
-    /*  Expand any higher-level collapse blocks!
-        Fire state change event only if we did NOT have to do any further
-        expansion (otherwise we’ll do redundant layout).
+    /*  Expand any higher-level collapse blocks.
+		Fire state change event only if we will not have to expand this block
+		(otherwise we’ll do redundant layout).
      */
-    if (!expandCollapseBlocksToReveal(collapseBlock.parentElement) && expanded)
-    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
-    		source: "expandCollapseBlocksToReveal",
-    		collapseBlock: collapseBlock
-    	});
+	let expandedAncestor = expandCollapseBlocksToReveal(collapseBlock.parentElement, expand == false);
+
+    if (expand) {
+		//	Expand nearest collapse block.
+		toggleCollapseBlockState(collapseBlock, expand);
+
+		/*	Fire state change event only if we will not have to do any more 
+			expansion (otherwise we’ll do redundant layout).
+		 */
+		if (fireStateChangedEvent) {
+			GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
+				source: "expandCollapseBlocksToReveal",
+				collapseBlock: collapseBlock
+			});
+		}
+	}
 
     //  Report whether we had to expand a collapse block.
-    return expanded;
+    return (expand || expandedAncestor);
 }
 
 /*******************************************************************************/
@@ -13946,6 +13980,10 @@ function toggleCollapseBlockState(collapseBlock, expanding) {
 			let contentRect = collapseBlock.querySelector(".collapse-content-wrapper").getBoundingClientRect();
 			let enclosingContentRect = collapseBlock.closest(".markdownBody").getBoundingClientRect();
 			let offset = getComputedStyle(collapseBlock).getPropertyValue("--collapse-left-offset");
+
+			console.log(contentRect);
+			console.log(enclosingContentRect);
+			console.log(offset);
 
 			collapseBlock.style.marginLeft = `calc(${(enclosingContentRect.x - contentRect.x)}px - ${offset})`;
 		} else { // if (collapsing)

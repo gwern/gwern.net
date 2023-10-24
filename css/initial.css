@@ -2149,9 +2149,9 @@ body.index.special-halloween-dark #sidebar a:hover {
 	}
 	@media all and (min-width: 1180px) {
 		body.special-christmas #sidebar span.logo-image img {
-			width: 150%;
+			width: 125%;
 			position: relative;
-			left: -30%; top: -10%;
+			left: -10%; top: -10%;
 		}
 	}
 }
