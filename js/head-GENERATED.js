@@ -3645,5 +3645,21 @@ GW.assetVersions = {
 	"/static/font/drop-cap/dropcat/light/G-8-small-1x.png": "1698132111",
 	"/static/font/drop-cap/dropcat/light/G-8-small-2x.png": "1698132111",
 	"/static/font/drop-cap/dropcat/light/G-9-small-1x.png": "1698132111",
-	"/static/font/drop-cap/dropcat/light/G-9-small-2x.png": "1698132111"
+	"/static/font/drop-cap/dropcat/light/G-9-small-2x.png": "1698132111",
+	"/static/font/drop-cap/dropcat/light/I-1-small-1x.png": "1698152552",
+	"/static/font/drop-cap/dropcat/light/I-1-small-2x.png": "1698152552",
+	"/static/font/drop-cap/dropcat/light/T-1-small-1x.png": "1698156177",
+	"/static/font/drop-cap/dropcat/light/T-1-small-2x.png": "1698156177",
+	"/static/font/drop-cap/dropcat/light/T-2-small-1x.png": "1698156177",
+	"/static/font/drop-cap/dropcat/light/T-2-small-2x.png": "1698156178",
+	"/static/font/drop-cap/dropcat/light/T-3-small-1x.png": "1698156178",
+	"/static/font/drop-cap/dropcat/light/T-3-small-2x.png": "1698156178",
+	"/static/font/drop-cap/dropcat/light/T-4-small-1x.png": "1698156179",
+	"/static/font/drop-cap/dropcat/light/T-4-small-2x.png": "1698156179",
+	"/static/font/drop-cap/dropcat/light/T-5-small-1x.png": "1698156402",
+	"/static/font/drop-cap/dropcat/light/T-5-small-2x.png": "1698156402",
+	"/static/font/drop-cap/dropcat/light/T-6-small-1x.png": "1698156181",
+	"/static/font/drop-cap/dropcat/light/T-6-small-2x.png": "1698156181",
+	"/static/font/drop-cap/dropcat/light/T-7-small-1x.png": "1698156558",
+	"/static/font/drop-cap/dropcat/light/T-7-small-2x.png": "1698156558"
 };
