@@ -13294,6 +13294,20 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
 /* DROP CAPS */
 /*************/
 
+/***************************************************************************/
+/*	Returns URL of a random graphical drop-cap of the given type and letter,
+	appropriate for the current mode and the viewport’s device pixel ratio.
+ */
+function randomDropCapURL(dropCapType, letter) {
+	let mode = DarkMode.computedMode();
+	let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
+
+	let dropCapPathname = randomAsset(`/static/font/drop-cap/${dropCapType}/${mode}/${letter}-%R-small-${scale}x.png`);
+	let dropCapURL = versionedAssetURL(dropCapPathname);
+
+	return dropCapURL;
+}
+
 /***********************/
 /*	Graphical drop-caps.
  */
@@ -13303,9 +13317,6 @@ addContentLoadHandler(GW.contentLoadHandlers.enableGraphicalDropCaps = (eventInf
 	let graphicalDropCapTypes = [
 		"dropcat"
 	];
-
-	let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
-	let mode = DarkMode.computedMode();
 
 	eventInfo.container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
 		let dropCapType = dropCapTypeOf(dropCapBlock);
@@ -13326,13 +13337,21 @@ addContentLoadHandler(GW.contentLoadHandlers.enableGraphicalDropCaps = (eventInf
 			innerHTML: firstLetter
 		}), dropCapBlock.firstChild);
 
-		//	Insert image.
-		let dropCapPathname = randomAsset(`/static/font/drop-cap/${dropCapType}/${mode}/${firstLetter}-%R-small-${scale}x.png`);
-		let dropCapURL = versionedAssetURL(dropCapPathname);
-		dropCapBlock.insertBefore(newElement("IMG", {
+		//	Select a drop-cap.
+		let dropCapURL = randomDropCapURL(dropCapType, firstLetter);
+
+		//	Inject the drop-cap image element.
+		let dropCapImage = newElement("IMG", {
 			class: "drop-cap figure-not",
 			src: dropCapURL.pathname + dropCapURL.search
-		}), dropCapBlock.firstChild);
+		});
+		dropCapBlock.insertBefore(dropCapImage, dropCapBlock.firstChild);
+
+		//	Add event handler to switch image when mode changes.
+		GW.notificationCenter.addHandlerForEvent("DarkMode.computedModeDidChange", (info) => {
+			let newDropCapURL = randomDropCapURL(dropCapType, firstLetter);
+			dropCapImage.src = newDropCapURL.pathname + newDropCapURL.search;
+		});
 	});
 }, "rewrite", (info) => (info.document == document));
 
@@ -13980,10 +13999,6 @@ function toggleCollapseBlockState(collapseBlock, expanding) {
 			let contentRect = collapseBlock.querySelector(".collapse-content-wrapper").getBoundingClientRect();
 			let enclosingContentRect = collapseBlock.closest(".markdownBody").getBoundingClientRect();
 			let offset = getComputedStyle(collapseBlock).getPropertyValue("--collapse-left-offset");
-
-			console.log(contentRect);
-			console.log(enclosingContentRect);
-			console.log(offset);
 
 			collapseBlock.style.marginLeft = `calc(${(enclosingContentRect.x - contentRect.x)}px - ${offset})`;
 		} else { // if (collapsing)
