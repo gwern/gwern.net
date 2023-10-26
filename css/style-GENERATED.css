@@ -1489,8 +1489,8 @@ section.collapse > .heading {
         transform 1.0s ease;
 }
 .collapse-block.expanded-not.hover-not > .disclosure-button:hover .part.top .icon svg {
-	transform: none;
-	transition: none;
+    transform: none;
+    transition: none;
 }
 .collapse-block.expanded > .disclosure-button .part.top .icon svg {
     transform: rotate(-0.25turn);
@@ -2577,10 +2577,10 @@ code {
     border: 1px solid var(--GW-code-element-border-color);
     background-color: var(--background-color);
 
-/*	This is currently broken in Safari. Since it’s not important enough to
-	figure out a way to scope it to only non-Safari browsers, I’m disabling it
-	for now. This should be revisited in a year.
-		—SA 2023-09-24
+/*  This is currently broken in Safari. Since it’s not important enough to
+    figure out a way to scope it to only non-Safari browsers, I’m disabling it
+    for now. This should be revisited in a year.
+        —SA 2023-09-24
  */
 /*
     -webkit-box-decoration-break: clone;
@@ -3148,23 +3148,23 @@ del {
         }
     }
 
-	/*	Graphical drop-caps.
-	 */
-	p.graphical-drop-cap::first-letter {
-		float: none !important;
-	}
-	p.graphical-drop-cap .hidden-first-letter {
-		display: inline-block;
-		width: 0;
-		overflow: hidden;
-	}
-	p.graphical-drop-cap img.drop-cap {
-		float: left;
-		display: block;
-		height: 9.4em;
-		margin: -0.25em -0.10em -0.95em -0.75em;
-		filter: none;
-	}
+    /*  Graphical drop-caps.
+     */
+    p.graphical-drop-cap::first-letter {
+        float: none !important;
+    }
+    p.graphical-drop-cap .hidden-first-letter {
+        display: inline-block;
+        width: 0;
+        overflow: hidden;
+    }
+    p.graphical-drop-cap img.drop-cap {
+        float: left;
+        display: block;
+        height: 9.4em;
+        margin: -0.25em -0.10em -0.95em -0.75em;
+        filter: none;
+    }
 }
 
 
@@ -3962,18 +3962,18 @@ ol.link-bibliography-list-compact > li::before {
  */
 
 .annotation.tweet {
-	--avatar-margin: 1em;
-	--avatar-border-width: 1px;
+    --avatar-margin: 1em;
+    --avatar-border-width: 1px;
 }
 
 .annotation.tweet img.avatar {
-	display: block;
-	width: var(--GW-popups-tweet-avatar-size);
-	height: var(--GW-popups-tweet-avatar-size);
-	float: left;
-	margin: 0.25em var(--avatar-margin) var(--avatar-margin) 0;
-	border-radius: 50%;
-	border: var(--avatar-border-width) solid var(--GW-figure-outline-color);
+    display: block;
+    width: var(--GW-popups-tweet-avatar-size);
+    height: var(--GW-popups-tweet-avatar-size);
+    float: left;
+    margin: 0.25em var(--avatar-margin) var(--avatar-margin) 0;
+    border-radius: 50%;
+    border: var(--avatar-border-width) solid var(--GW-figure-outline-color);
 }
 
 .annotation.tweet .data-field.annotation-abstract {
@@ -4307,7 +4307,7 @@ ol.link-bibliography-list-compact > li::before {
 /*=-------------=*/
 
 body.page-static-404 figure {
-	background-color: var(--GW-body-background-color);
+    background-color: var(--GW-body-background-color);
 }
 
 /*=----------------=*/
@@ -4432,7 +4432,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 .popframe-body section.level1 > .heading {
-	font-size: 1.75em;
+    font-size: 1.75em;
 }
 
 .popframe-body .list {
@@ -5499,14 +5499,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     background-color: var(--background-color);
     border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
 
-	/*	Having a filter on the popin causes `position:fixed` to not work on
-		the popin backdrop (see below). This is not, technically, a ‘bug’:
-		https://stackoverflow.com/questions/52937708/why-does-applying-a-css-filter-on-the-parent-break-the-child-positioning
-		https://github.com/w3c/fxtf-drafts/issues/402
-		Still, maybe CSSWG will come to their senses someday?
-			—SA 2023-09-29
-	 */
-/* 	filter: drop-shadow(0px 0px 12px var(--GW-popins-box-shadow-color)); */
+    /*  Having a filter on the popin causes `position:fixed` to not work on
+        the popin backdrop (see below). This is not, technically, a ‘bug’:
+        https://stackoverflow.com/questions/52937708/why-does-applying-a-css-filter-on-the-parent-break-the-child-positioning
+        https://github.com/w3c/fxtf-drafts/issues/402
+        Still, maybe CSSWG will come to their senses someday?
+            —SA 2023-09-29
+     */
+/*  filter: drop-shadow(0px 0px 12px var(--GW-popins-box-shadow-color)); */
 }
 
 .popin-ancestor {
@@ -5518,28 +5518,28 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     display: none;
 }
 
-/*	Backdrop.
+/*  Backdrop.
  */
 .popin-open + .popin::before {
-	content: "";
-	background-color: var(--background-color);
-	position: absolute;
-	top: calc(-1 * var(--GW-popins-popin-border-width));
-	left: calc(-1 * var(--GW-popins-popin-border-width));
-	width: 100%;
-	height: 100%;
-	z-index: -1;
+    content: "";
+    background-color: var(--background-color);
+    position: absolute;
+    top: calc(-1 * var(--GW-popins-popin-border-width));
+    left: calc(-1 * var(--GW-popins-popin-border-width));
+    width: 100%;
+    height: 100%;
+    z-index: -1;
     border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
 }
 .popin-open + .popin::after {
-	content: "";
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	background-color: var(--GW-popins-popin-backdrop-color);
-	z-index: -2;
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--GW-popins-popin-backdrop-color);
+    z-index: -2;
 }
 
 /*┌──────────────────┐*/
@@ -6019,13 +6019,13 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 #page-toolbar > button svg {
     display: block;
 
-	/*	The following two properties are not valid CSS. They are here to fix
-		a Safari-specific bug, which causes the toolbar toggle button to not
-		display. These properties should be ignored by non-Safari browsers.
-			—SA 2023-09-24
-	 */
-	width: intrinsic;
-	height: intrinsic;
+    /*  The following two properties are not valid CSS. They are here to fix
+        a Safari-specific bug, which causes the toolbar toggle button to not
+        display. These properties should be ignored by non-Safari browsers.
+            —SA 2023-09-24
+     */
+    width: intrinsic;
+    height: intrinsic;
 }
 
 /*  Collapse button (chevron); hidden on desktop.
@@ -7363,26 +7363,26 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 }
 
 .markdownBody span.block-context-highlighted:not(:empty) {
-	--background-color: var(--GW-block-context-span-highlight-color);
+    --background-color: var(--GW-block-context-span-highlight-color);
 
-	background-color: var(--background-color);
-	padding: 0 0.25em;
-	box-shadow: 0 0 0 0.1em var(--background-color);
+    background-color: var(--background-color);
+    padding: 0 0.25em;
+    box-shadow: 0 0 0 0.1em var(--background-color);
 }
 
 .markdownBody span.block-context-highlighted:empty::before {
-	content: "";
-	background-image: url('/static/img/icon/icons.svg#hand-point-right-regular');
+    content: "";
+    background-image: url('/static/img/icon/icons.svg#hand-point-right-regular');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;
-	display: inline-block;
-	width: 1em;
-	height: 1em;
-	position: relative;
-	top: 0.1em;
-	margin-right: 0.5em;
-	opacity: 0.75;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    position: relative;
+    top: 0.1em;
+    margin-right: 0.5em;
+    opacity: 0.75;
 }
 
 
@@ -7410,6 +7410,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     #page-metadata .page-metadata-fields .link-bibliography,
     #page-metadata .page-metadata-fields .page-importance::after,
     #navigation,
+    #noscript-warning-header,
     .toc-collapse-toggle-button,
     #TOC .toc-collapse-toggle-button,
     .reader-mode-note,

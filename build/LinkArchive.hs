@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-10-22 10:39:12 gwern"
+When:  Time-stamp: "2023-10-24 09:56:55 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -237,8 +237,8 @@ archiveURL l = do let args = if C.isCheapArchive l then ["--no-preview", l] else
                      ExitSuccess -> do let result = U.toString stdout
                                        putStrStdErr (green "Archiving (LinkArchive.hs): " ++ l ++ green  " returned: "  ++ result ++ "\n")
                                        if result == "" then return Nothing else
-                                         do let filepath = takeWhile (/='#') l
+                                         do let filepath = takeWhile (/='#') result
                                             exists <- doesFileExist filepath
-                                            unless exists $ error ("LinkArchive.hs:archiveURL: Archived file not found: " ++ filepath ++ " (original path returned by linkArchive.sh: " ++ l ++ "); this should never happen.")
+                                            unless exists $ error ("LinkArchive.hs:archiveURL: Archived file not found: " ++ filepath ++ " (original path returned by linkArchive.sh: " ++ result ++ " for URL: " ++ l ++ "); this should never happen.")
                                             return $ Just result
                      ExitFailure _ -> printRed' "LA: archiving script failed to run correctly: " (l ++ " result: " ++ U.toString stderr') >> return Nothing

@@ -1014,7 +1014,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("http://www.usagi.org/doi/seiyuu/tv/1997eva.html", "NGE", "text,tri")
          , ("https://www.vetta.org/2009/12/tick-tock-tick-tock-bing/", "Legg", "text,quad,sans")
          , ("/lorem.page",  "txt","svg")
-         , ("/static/build/build_css.php",  "code","svg")
+         , ("/static/build/anchor-checker.php",  "code","svg")
          , ("/static/build/hakyll.hs",  "code","svg")
          , ("/static/build/linkAbstract.R",  "code","svg")
          , ("/static/build/markdown-lint.sh",  "code","svg")
@@ -1027,7 +1027,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("/static/template/default.html",  "code","svg")
          , ("https://solar.lowtechmagazine.com/2015/12/fruit-walls-urban-farming-in-the-1600s/", "☀", "text,sans")
          , ("https://www.rollingstone.com/culture/culture-features/elon-musk-the-architect-of-tomorrow-120850/", "𝓡𝐒", "text")
-         , ("https://ourworldindata.org/grapher/burden-disease-from-each-mental-illness", "OWI D", "text,quad,monospace") -- OWID
+         , ("https://ourworldindata.org/grapher/burden-disease-from-each-mental-illness", "OWID", "text,quad,monospace")
          , ("https://maggieappleton.com/bidirectionals", "maggie-appleton", "svg")
          , ("https://www.popsci.com/deadly-splinter-antibiotic-resistance/", "PS", "text,sans")
          , ("https://www.emacswiki.org/emacs/MarkdownMode", "emacs", "svg")

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-10-16 11:51:32 gwern"
+# When:  Time-stamp: "2023-10-26 09:24:10 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -287,8 +287,8 @@ is_downloading() {
     elapsed_time=$((current_time - modified_time))
 
     # Sleep if last-modified time is not at least 3 seconds ago
-    if [ $elapsed_time -lt 3 ]; then
-      sleep $((3 - elapsed_time))
+    if [ $elapsed_time -lt 4 ]; then
+      sleep $((4 - elapsed_time))
     fi
   else
     echo "File not found."
@@ -308,6 +308,12 @@ is_downloading() {
 # `$ mvuri doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
 # are all equivalent.
 mvuri () {
+    # Check if inotifywait is installed
+    if ! command -v inotifywait &> /dev/null; then
+        echo "inotifywait could not be found. Please install inotify-tools."
+        exit
+    fi
+
   local ENCODED_PATH="$1"
   local DECODED_PATH="${ENCODED_PATH//\%/\\x}"
   DECODED_PATH="${DECODED_PATH#file://}"
@@ -321,8 +327,18 @@ mvuri () {
   local DESTINATION="$DECODED_PATH"
 
   local SOURCE
-  SOURCE="$(find ~/ -maxdepth 1 -name "*.html" -print -quit)"
+  # the browser may not have yet begun writing the file, so make sure we wait until it does:
+  while true; do
+      # we target the oldest .html file, in case others have started being created in the mean time:
+    SOURCE="$(find ~/ -maxdepth 1 -name "*.html" -printf '%T+ %p\n' | sort --key=1,1 | cut --delimiter=' ' --fields=2- | head --lines=1)"
+    if [ -n "$SOURCE" ]; then
+      break
+    else
+      inotifywait --quiet --event create ~/
+    fi
+  done
   echo "$SOURCE" "$DESTINATION"
+  # the file may not yet be fully written, so we additionally wait until it's (probably) complete:
   is_downloading "$SOURCE"
   mv "$SOURCE" "$DESTINATION"
 }
