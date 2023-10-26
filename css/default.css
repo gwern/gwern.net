@@ -1514,7 +1514,7 @@ code {
     border: 1px solid var(--GW-code-element-border-color);
     background-color: var(--background-color);
 
-/*	This is currently broken in Safari. Since it’s not important enough to 
+/*	This is currently broken in Safari. Since it’s not important enough to
 	figure out a way to scope it to only non-Safari browsers, I’m disabling it
 	for now. This should be revisited in a year.
 		—SA 2023-09-24
@@ -1944,6 +1944,9 @@ del {
     pointer-events: none;
 }
 
+/* Utility classes: show something only on mobile (`.desktop-not`) or only on desktop (`.mobile-not`): */
+@media all and (min-width: 650px) { .desktop-not { display: none; } }
+@media all and (max-width: 649px) { .mobile-not  { display: none; } }
 
 /*************/
 /* DROP CAPS */
@@ -4433,7 +4436,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     background-color: var(--background-color);
     border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
 
-	/*	Having a filter on the popin causes `position:fixed` to not work on 
+	/*	Having a filter on the popin causes `position:fixed` to not work on
 		the popin backdrop (see below). This is not, technically, a ‘bug’:
 		https://stackoverflow.com/questions/52937708/why-does-applying-a-css-filter-on-the-parent-break-the-child-positioning
 		https://github.com/w3c/fxtf-drafts/issues/402
