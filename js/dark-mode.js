@@ -65,21 +65,14 @@ DarkMode = { ...DarkMode,
 		document.querySelectorAll(".dark-mode-selector-inline").forEach(element => {
 			DarkMode.injectModeSelector(element);
 		});
+
+		//	Update saved setting.
+		DarkMode.saveMode();
 	},
 
 	/******************/
 	/*	Mode selection.
 	 */
-
-	//	Called by: DarkMode.modeSelectButtonClicked
-	saveMode: (newMode = DarkMode.currentMode()) => {
-		GWLog("DarkMode.saveMode", "dark-mode.js", 1);
-
-		if (newMode == DarkMode.defaultMode)
-			localStorage.removeItem("dark-mode-setting");
-		else
-			localStorage.setItem("dark-mode-setting", newMode);
-	},
 
 	//	Called by: DarkMode.injectModeSelector
 	modeSelectorHTML: (inline = false) => {
@@ -121,7 +114,7 @@ DarkMode = { ...DarkMode,
 
 		let button = event.target.closest("button");
 
-		// Determine which setting was chosen (ie. which button was clicked).
+		//	Determine which setting was chosen (ie. which button was clicked).
 		let selectedMode = button.dataset.name;
 
 		/*	We don’t want clicks to go through if the transition 
@@ -130,10 +123,7 @@ DarkMode = { ...DarkMode,
 			modes.
 		 */
 		doIfAllowed(() => {
-			// Save the new setting.
-			DarkMode.saveMode(selectedMode);
-
-			// Actually change the mode.
+			//	Actually change the mode.
 			DarkMode.setMode(selectedMode);
 		}, DarkMode, "modeSelectorInteractable");
 	},
@@ -149,7 +139,6 @@ DarkMode = { ...DarkMode,
 			replacedElement.replaceWith(modeSelector);
 		} else {
 			modeSelector = DarkMode.modeSelector = GW.pageToolbar.addWidget(DarkMode.modeSelectorHTML());
-			DarkMode.saveMode();
 		}
 
 		//	Activate mode selector widget buttons.
