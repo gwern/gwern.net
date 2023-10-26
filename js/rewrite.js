@@ -1921,11 +1921,15 @@ function randomDropCapURL(dropCapType, letter) {
 	return dropCapURL;
 }
 
-/***********************/
-/*	Graphical drop-caps.
+/*************************************************************/
+/*	Graphical drop-caps (only on sufficiently wide viewports).
  */
 addContentLoadHandler(GW.contentLoadHandlers.enableGraphicalDropCaps = (eventInfo) => {
     GWLog("enableGraphicalDropCaps", "rewrite.js", 1);
+
+	//	No graphical drop-caps on smartphone-width screens.
+    if (GW.mediaQueries.mobileWidth.matches)
+        return;
 
 	let graphicalDropCapTypes = [
 		"dropcat"
