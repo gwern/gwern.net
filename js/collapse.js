@@ -429,10 +429,6 @@ function toggleCollapseBlockState(collapseBlock, expanding) {
 			let enclosingContentRect = collapseBlock.closest(".markdownBody").getBoundingClientRect();
 			let offset = getComputedStyle(collapseBlock).getPropertyValue("--collapse-left-offset");
 
-			console.log(contentRect);
-			console.log(enclosingContentRect);
-			console.log(offset);
-
 			collapseBlock.style.marginLeft = `calc(${(enclosingContentRect.x - contentRect.x)}px - ${offset})`;
 		} else { // if (collapsing)
 			collapseBlock.style.marginLeft = "";
