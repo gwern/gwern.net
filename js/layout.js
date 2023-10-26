@@ -5,7 +5,7 @@
 GW.layout = {
 	optionsCache: { },
 
-	containersNeedingLayout: [ ],
+	blockContainersNeedingLayout: [ ],
 
 	layoutProcessors: [ ],
 
@@ -199,50 +199,50 @@ function startDynamicLayoutInContainer(container) {
 		let baseDocumentLocation = baseLocationForDocument(mutationsList.first?.target?.getRootNode());
 
 		//	Construct list of all block containers affected by these mutations.
-		let affectedContainers = [ ];
+		let affectedBlockContainers = [ ];
 
 		for (mutationRecord of mutationsList) {
 			//	Find block container in which the mutated element is contained.
-			let nearestContainer = mutationRecord.target.closest(blockContainersSelector);
+			let nearestBlockContainer = mutationRecord.target.closest(blockContainersSelector);
 
 			//	Avoid adding a container twice, and apply exclusions.
-			if (   nearestContainer
-				&& affectedContainers.includes(nearestContainer) == false
-				&& nearestContainer.closest(GW.layout.blockLayoutExclusionSelector) == null)
-				affectedContainers.push(nearestContainer);
+			if (   nearestBlockContainer
+				&& affectedBlockContainers.includes(nearestBlockContainer) == false
+				&& nearestBlockContainer.closest(GW.layout.blockLayoutExclusionSelector) == null)
+				affectedBlockContainers.push(nearestBlockContainer);
 		}
 
-		/*	Exclude containers that are contained within other containers in
-			the list, to prevent redundant processing.
+		/*	Exclude block containers that are contained within other block 
+			containers in the list, to prevent redundant processing.
 		 */
-		affectedContainers = affectedContainers.filter(c => affectedContainers.findIndex(x => 
+		affectedBlockContainers = affectedBlockContainers.filter(c => affectedBlockContainers.findIndex(x => 
 			(c.compareDocumentPosition(x) & Node.DOCUMENT_POSITION_CONTAINS)
 		) == -1);
 
 		/*	Add containers to list of containers needing layout processing, if
 			they are not there already.
 		 */
-		affectedContainers.forEach(affectedContainer => {
-			if (GW.layout.containersNeedingLayout.includes(affectedContainer) == false)
-				GW.layout.containersNeedingLayout.push(affectedContainer);
+		affectedBlockContainers.forEach(affectedBlockContainer => {
+			if (GW.layout.blockContainersNeedingLayout.includes(affectedBlockContainer) == false)
+				GW.layout.blockContainersNeedingLayout.push(affectedBlockContainer);
 		});
 		requestAnimationFrame(() => {
 			GW.layout.currentPassBegin = performance.now();
 
-			//	Do layout in all waiting containers.
-			while (GW.layout.containersNeedingLayout.length > 0) {
-				let nextContainer = GW.layout.containersNeedingLayout.shift();
+			//	Do layout in all waiting block containers.
+			while (GW.layout.blockContainersNeedingLayout.length > 0) {
+				let nextBlockContainer = GW.layout.blockContainersNeedingLayout.shift();
 				GW.layout.layoutProcessors.forEach(layoutProcessor => {
 					let [ processor, options ] = layoutProcessor;
 
 					let info = {
-						container: nextContainer,
+						container: nextBlockContainer,
 						baseLocation: baseDocumentLocation
 					};
 					if (options.condition?.(info) == false)
 						return;
 
-					processor(nextContainer);
+					processor(nextBlockContainer);
 				});
 			}
 		});
