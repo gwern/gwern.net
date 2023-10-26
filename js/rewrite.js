@@ -1917,8 +1917,8 @@ addContentLoadHandler(GW.contentLoadHandlers.enableGraphicalDropCaps = (eventInf
     if (GW.mediaQueries.mobileWidth.matches)
         return;
 
-	//	We use requestAnimationFrame() to give the layout code time to run.
-	requestAnimationFrame(() => {
+	//	We use requestIdleCallback() to give the layout code time to run.
+	requestIdleCallback(() => {
 		enableGraphicalDropCapsInContainer(eventInfo.container);
 	});
 }, "rewrite", (info) => (info.document == document));
@@ -1933,8 +1933,8 @@ addContentInjectHandler(GW.contentInjectHandlers.activateDynamicGraphicalDropCap
     if (GW.mediaQueries.mobileWidth.matches)
         return;
 
-	//	We use requestAnimationFrame() to give the layout code time to run.
-	requestAnimationFrame(() => {
+	//	We use requestIdleCallback() to give the layout code time to run.
+	requestIdleCallback(() => {
 		activateDynamicGraphicalDropCapsInContainer(eventInfo.container);
 	});
 }, "eventListeners", (info) => (info.document == document));
@@ -1945,8 +1945,8 @@ addContentInjectHandler(GW.contentInjectHandlers.activateDynamicGraphicalDropCap
 addContentInjectHandler(GW.contentInjectHandlers.preventDropCapsOverlap = (eventInfo) => {
     GWLog("preventDropCapsOverlap", "rewrite.js", 1);
 
-	//	We use requestAnimationFrame() to give the layout code time to run.
-	requestAnimationFrame(() => {
+	//	We use requestIdleCallback() to give the layout code time to run.
+	requestIdleCallback(() => {
 		eventInfo.container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
 			let nextBlock = nextBlockOf(dropCapBlock, { alsoBlockElements: [ ".list" ] });
 			if (   nextBlock == null
