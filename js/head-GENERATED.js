@@ -2606,14 +2606,20 @@ GW.layout.defaultOptions = processLayoutOptions({
 /*	Registers a layout processor function, which will be applied to all 
 	rendered content as part of the dynamic layout process.
  */
-function addLayoutProcessor(processor, options = { }) {
-	GW.layout.layoutProcessors.push([ processor, options ]);
+function addLayoutProcessor(name, processor, options = { }) {
+	//	Reference for easy direct calling.
+	GW.layout[name] = processor;
+
+	//	Add to layout processor list.
+	GW.layout.layoutProcessors.push([ name, processor, options ]);
 }
 
 /****************************************************/
 /*	Activates dynamic layout for the given container.
  */
 function startDynamicLayoutInContainer(container) {
+	let containingDocument = container.getRootNode();
+
 	let blockContainersSelector = selectorize(GW.layout.blockContainers);
 
 	let observer = new MutationObserver((mutationsList, observer) => {
@@ -2654,7 +2660,7 @@ function startDynamicLayoutInContainer(container) {
 			while (GW.layout.blockContainersNeedingLayout.length > 0) {
 				let nextBlockContainer = GW.layout.blockContainersNeedingLayout.shift();
 				GW.layout.layoutProcessors.forEach(layoutProcessor => {
-					let [ processor, options ] = layoutProcessor;
+					let [ name, processor, options ] = layoutProcessor;
 
 					let info = {
 						container: nextBlockContainer,
@@ -2664,6 +2670,14 @@ function startDynamicLayoutInContainer(container) {
 						return;
 
 					processor(nextBlockContainer);
+
+					GW.notificationCenter.fireEvent("Layout.layoutProcessorDidComplete", {
+						document: containingDocument,
+						container: container,
+						processorName: name,
+						processorOptions: options,
+						blockContainer: nextBlockContainer
+					});
 				});
 			}
 		});
@@ -3128,7 +3142,7 @@ function stripDropCapClassesFrom(block) {
 /*************************************************************************/
 /*	Apply block layout classes to appropriate elements in given container.
  */
-addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) => {
+addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 	//	Designate headings.
 	container.querySelectorAll(selectorize(range(1, 6).map(x => `h${x}`))).forEach(heading => {
 		heading.classList.add("heading");
@@ -3335,7 +3349,7 @@ addLayoutProcessor(GW.layout.applyBlockLayoutClassesInContainer = (container) =>
 /**********************************************/
 /*	Apply block spacing in the given container.
  */
-addLayoutProcessor(GW.layout.applyBlockSpacingInContainer = (container) => {
+addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 	//	Apply block spacing.
 	container.querySelectorAll(selectorize(GW.layout.blockElements)).forEach(block => {
 		if (block.closest(GW.layout.blockLayoutExclusionSelector))

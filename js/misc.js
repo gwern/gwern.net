@@ -805,7 +805,13 @@ function randomDropCapURL(dropCapType, letter) {
 function enableGraphicalDropCapsInContainer(container) {
 	container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
 		let dropCapType = dropCapTypeOf(dropCapBlock);
+
+		//	Is this a recognized graphical drop-cap type?
 		if (GW.graphicalDropCaps.dropCapTypes.includes(dropCapType) == false)
+			return;
+
+		//	If this block has already been processed, no need to do anything.
+		if (dropCapBlock.classList.contains("graphical-drop-cap"))
 			return;
 
 		//	Designate as graphical drop-cap.
@@ -841,19 +847,27 @@ function enableGraphicalDropCapsInContainer(container) {
 function activateDynamicGraphicalDropCapsInContainer(container) {
 	container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
 		let dropCapType = dropCapTypeOf(dropCapBlock);
+
+		//	Is this a recognized graphical drop-cap type?
 		if (GW.graphicalDropCaps.dropCapTypes.includes(dropCapType) == false)
 			return;
 
-		let firstLetter = dropCapBlock.querySelector(".hidden-first-letter")?.textContent;
-		if (firstLetter == null)
-			return;
-
+		//	Get the drop-cap image element.
 		let dropCapImage = dropCapBlock.querySelector("img.drop-cap");
 		if (dropCapImage == null)
 			return;
 
+		//	If the handler already exists, do nothing.
+		if (dropCapImage.modeChangeHandler)
+			return;
+
+		//	Get the initial letter.
+		let firstLetter = dropCapBlock.querySelector(".hidden-first-letter")?.textContent;
+		if (firstLetter == null)
+			return;
+
 		//	Add event handler to switch image when mode changes.
-		GW.notificationCenter.addHandlerForEvent("DarkMode.computedModeDidChange", (info) => {
+		GW.notificationCenter.addHandlerForEvent(dropCapImage.modeChangeHandler = "DarkMode.computedModeDidChange", (info) => {
 			let dropCapUrl = randomDropCapURL(dropCapType, firstLetter);
 			dropCapImage.src = dropCapUrl.pathname + dropCapUrl.search;
 		});

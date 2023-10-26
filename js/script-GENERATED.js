@@ -805,7 +805,13 @@ function randomDropCapURL(dropCapType, letter) {
 function enableGraphicalDropCapsInContainer(container) {
 	container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
 		let dropCapType = dropCapTypeOf(dropCapBlock);
+
+		//	Is this a recognized graphical drop-cap type?
 		if (GW.graphicalDropCaps.dropCapTypes.includes(dropCapType) == false)
+			return;
+
+		//	If this block has already been processed, no need to do anything.
+		if (dropCapBlock.classList.contains("graphical-drop-cap"))
 			return;
 
 		//	Designate as graphical drop-cap.
@@ -841,19 +847,27 @@ function enableGraphicalDropCapsInContainer(container) {
 function activateDynamicGraphicalDropCapsInContainer(container) {
 	container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
 		let dropCapType = dropCapTypeOf(dropCapBlock);
+
+		//	Is this a recognized graphical drop-cap type?
 		if (GW.graphicalDropCaps.dropCapTypes.includes(dropCapType) == false)
 			return;
 
-		let firstLetter = dropCapBlock.querySelector(".hidden-first-letter")?.textContent;
-		if (firstLetter == null)
-			return;
-
+		//	Get the drop-cap image element.
 		let dropCapImage = dropCapBlock.querySelector("img.drop-cap");
 		if (dropCapImage == null)
 			return;
 
+		//	If the handler already exists, do nothing.
+		if (dropCapImage.modeChangeHandler)
+			return;
+
+		//	Get the initial letter.
+		let firstLetter = dropCapBlock.querySelector(".hidden-first-letter")?.textContent;
+		if (firstLetter == null)
+			return;
+
 		//	Add event handler to switch image when mode changes.
-		GW.notificationCenter.addHandlerForEvent("DarkMode.computedModeDidChange", (info) => {
+		GW.notificationCenter.addHandlerForEvent(dropCapImage.modeChangeHandler = "DarkMode.computedModeDidChange", (info) => {
 			let dropCapUrl = randomDropCapURL(dropCapType, firstLetter);
 			dropCapImage.src = dropCapUrl.pathname + dropCapUrl.search;
 		});
@@ -13383,32 +13397,24 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
 /*************************************************************/
 /*	Graphical drop-caps (only on sufficiently wide viewports).
  */
-addContentLoadHandler(GW.contentLoadHandlers.enableGraphicalDropCaps = (eventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.enableGraphicalDropCaps = (eventInfo) => {
     GWLog("enableGraphicalDropCaps", "rewrite.js", 1);
 
 	//	No graphical drop-caps on smartphone-width screens.
     if (GW.mediaQueries.mobileWidth.matches)
         return;
 
-	//	We use requestIdleCallback() to give the layout code time to run.
-	requestIdleCallback(() => {
-		enableGraphicalDropCapsInContainer(eventInfo.container);
-	});
-}, "rewrite", (info) => (info.document == document));
+	//	Run immediately...
+	enableGraphicalDropCapsInContainer(eventInfo.container);
+	activateDynamicGraphicalDropCapsInContainer(eventInfo.container);
 
-/********************************************************************/
-/*	Activates mode-dependent dynamic swapping of graphical drop-caps.
- */
-addContentInjectHandler(GW.contentInjectHandlers.activateDynamicGraphicalDropCaps = (eventInfo) => {
-    GWLog("enableGraphicalDropCaps", "rewrite.js", 1);
-
-	//	No graphical drop-caps on smartphone-width screens.
-    if (GW.mediaQueries.mobileWidth.matches)
-        return;
-
-	//	We use requestIdleCallback() to give the layout code time to run.
-	requestIdleCallback(() => {
-		activateDynamicGraphicalDropCapsInContainer(eventInfo.container);
+	//	... and also add event listener for if more drop-caps are added later.
+	GW.notificationCenter.addHandlerForEvent("Layout.layoutProcessorDidComplete", (layoutEventInfo) => {
+		enableGraphicalDropCapsInContainer(layoutEventInfo.blockContainer);
+		activateDynamicGraphicalDropCapsInContainer(layoutEventInfo.blockContainer);
+	}, {
+		condition: (layoutEventInfo) => (   layoutEventInfo.container == eventInfo.container
+										 && layoutEventInfo.processorName == "applyBlockLayoutClassesInContainer")
 	});
 }, "eventListeners", (info) => (info.document == document));
 
@@ -13418,14 +13424,28 @@ addContentInjectHandler(GW.contentInjectHandlers.activateDynamicGraphicalDropCap
 addContentInjectHandler(GW.contentInjectHandlers.preventDropCapsOverlap = (eventInfo) => {
     GWLog("preventDropCapsOverlap", "rewrite.js", 1);
 
-	//	We use requestIdleCallback() to give the layout code time to run.
-	requestIdleCallback(() => {
-		eventInfo.container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
+	//	No drop-caps on smartphone-width screens.
+    if (GW.mediaQueries.mobileWidth.matches)
+        return;
+
+	let preventDropCapsOverlapInContainer = (container) => {
+		container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
 			let nextBlock = nextBlockOf(dropCapBlock, { alsoBlockElements: [ ".list" ] });
 			if (   nextBlock == null
 				|| nextBlock.matches("section, blockquote, .list, .collapse, .list-heading"))
 				dropCapBlock.classList.add("overlap-not");
 		});
+	};
+
+	//	Run immediately...
+	preventDropCapsOverlapInContainer(eventInfo.container);
+
+	//	... and also add event listener for if more drop-caps are added later.
+	GW.notificationCenter.addHandlerForEvent("Layout.layoutProcessorDidComplete", (layoutEventInfo) => {
+		preventDropCapsOverlapInContainer(layoutEventInfo.blockContainer);
+	}, {
+		condition: (layoutEventInfo) => (   layoutEventInfo.container == eventInfo.container
+										 && layoutEventInfo.processorName == "applyBlockLayoutClassesInContainer")
 	});
 }, ">rewrite", (info) => (info.document == document));
 
